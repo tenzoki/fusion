@@ -85,6 +85,34 @@
  * set has shrunk three times since it was measured, so a number written into
  * prose about it is stale before it is committed.
  *
+ * ## The second product: this session's `session_start` row
+ *
+ * Since the substrate step of the ceremony cut, this hook also appends one
+ * machine-written `session_start` row to the workbench's event log — the
+ * session identifier, the identity pair, the head commit the session starts
+ * from, and the resolved domain. The row's schema, its coexistence with the
+ * model-written row of the same name, and the once-per-session rule are
+ * authored in `lib/orchestrator-events.ts` `## The session_start row` and are
+ * deliberately not restated here. What belongs to THIS file is the ordering and
+ * the two resolutions:
+ *
+ *   - **The envelope goes out first, before stdin is touched.** The warning
+ *     above is this hook's verdict and the row is an addendum to it. Reading
+ *     stdin is the one thing here that can block, so a payload that never
+ *     arrives costs the row and never the warning.
+ *   - **The head commit and the domain are resolved here, not in the module.**
+ *     Each costs a subprocess, and that module is imported by three hooks that
+ *     run on a tool call's own latency budget. They are passed in behind a
+ *     thunk the module calls only when the row will actually be written, so a
+ *     resumed session's second SessionStart spawns nothing.
+ *   - **The domain is the cascade's own answer and no second implementation
+ *     of it.** `lib/domain-cascade.ts` parses the cascade out of
+ *     `agents/orchestrator.md` and runs it over the counts
+ *     `bin/fusion-count-sources` prints. A helper that could not be run at all
+ *     is NOT the same fact as a count it declined to take: the first leaves the
+ *     key absent, the second reaches the cascade's own `counted_by == "none"`
+ *     branch and is a real verdict.
+ *
  * ## Channel
  *
  * `systemMessage`, not plain stdout. Plain stdout from a SessionStart hook is
@@ -103,8 +131,14 @@
  * two are separate commands because one process writes one stdout and the two
  * concerns need opposite channels; that module's header carries the argument.
  */
-import { resolve } from "node:path";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { countsFromHelperOutput, domainFor } from "./lib/domain-cascade.js";
 import { failOpen } from "./lib/fail-open.js";
+import { git } from "./lib/git.js";
+import { emitSessionStartEvent, } from "./lib/orchestrator-events.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 /**
  * The warning text for a session whose working directory is `cwd`, given the
@@ -132,35 +166,128 @@ export function subdirectoryWarning(cwd, root) {
         `files and settings are still read from the right place.`,
     ].join("\n");
 }
-function main() {
-    const cwd = resolve(process.cwd());
-    const warning = subdirectoryWarning(cwd, findWorkbenchRoot(cwd));
+/**
+ * The plugin's own root. The environment carries it under two names, either of
+ * which beats a path derived from this file's location; the derivation is the
+ * fallback and assumes the shipped `hooks/dist/` layout.
+ */
+function pluginRoot() {
+    const fromEnv = process.env.CLAUDE_PLUGIN_ROOT ?? process.env.FUSION_PLUGIN_ROOT;
+    if (fromEnv)
+        return fromEnv;
+    return resolve(dirname(fileURLToPath(import.meta.url)), "..");
+}
+/** The head commit, or `undefined` when git would not say. */
+function gitHeadAtStart(root) {
+    const out = git(root, ["rev-parse", "HEAD"]);
+    return out === null || out.trim() === "" ? undefined : out.trim();
+}
+/**
+ * The session's domain, by the cascade in `agents/orchestrator.md`.
+ *
+ * `undefined` whenever the resolution could not be PERFORMED — no helper, no
+ * prompt to read the cascade out of, output that carries no counts. A helper
+ * that ran and declined to count prints `counted_by=none` on a non-zero exit,
+ * and that is evidence rather than a failure: its stdout is read off the thrown
+ * error exactly as `resolveIdentity` reads `bin/fusion-identity`'s, and the
+ * cascade's own top branch answers it.
+ */
+function sessionDomain(root) {
+    try {
+        const plugin = pluginRoot();
+        const helper = resolve(plugin, "bin", "fusion-count-sources");
+        if (!existsSync(helper))
+            return undefined;
+        let out = "";
+        try {
+            out = execFileSync(helper, [], {
+                cwd: root,
+                encoding: "utf-8",
+                timeout: 5_000,
+                stdio: ["ignore", "pipe", "ignore"],
+            });
+        }
+        catch (err) {
+            const e = err;
+            out = typeof e.stdout === "string" ? e.stdout : (e.stdout?.toString("utf-8") ?? "");
+        }
+        const prompt = readFileSync(resolve(plugin, "agents", "orchestrator.md"), "utf-8");
+        return domainFor(prompt, countsFromHelperOutput(out));
+    }
+    catch {
+        return undefined;
+    }
+}
+/** The two facts the row carries that this file resolves. */
+function sessionStartFacts(root) {
+    return { gitHeadAtStart: gitHeadAtStart(root), domain: sessionDomain(root) };
+}
+/**
+ * The hook's payload. `null` for anything that is not a JSON object — an empty
+ * stdin included, which is what a `spawnSync` with no `input` hands a child.
+ */
+async function readPayload() {
+    const chunks = [];
+    for await (const chunk of process.stdin)
+        chunks.push(chunk);
+    const raw = Buffer.concat(chunks).toString("utf-8").trim();
+    if (raw === "")
+        return null;
+    try {
+        const parsed = JSON.parse(raw);
+        return typeof parsed === "object" && parsed !== null
+            ? parsed
+            : null;
+    }
+    catch {
+        return null;
+    }
+}
+/**
+ * Whether the verdict has already reached stdout. The fail-open handler reads
+ * it so a late failure cannot emit a second envelope on top of the first.
+ */
+let envelopeWritten = false;
+function emitEnvelope(warning) {
     if (warning === null) {
         // A bare object: valid JSON, no fields, no banner. Same shape the guard's
         // allow path emits, so a quiet run is parseable rather than empty.
         process.stdout.write("{}\n");
-        return;
     }
-    process.stdout.write(JSON.stringify({
-        hookSpecificOutput: {
-            hookEventName: "SessionStart",
-            systemMessage: warning,
-        },
-    }) + "\n");
+    else {
+        process.stdout.write(JSON.stringify({
+            hookSpecificOutput: {
+                hookEventName: "SessionStart",
+                systemMessage: warning,
+            },
+        }) + "\n");
+    }
+    envelopeWritten = true;
 }
-try {
-    main();
+async function main() {
+    const cwd = resolve(process.cwd());
+    const root = findWorkbenchRoot(cwd);
+    emitEnvelope(subdirectoryWarning(cwd, root));
+    // Everything below is the addendum. No workbench, no log to append to.
+    if (root === null)
+        return;
+    const payload = await readPayload();
+    if (payload === null)
+        return;
+    emitSessionStartEvent(root, payload, () => sessionStartFacts(root));
 }
-catch (error) {
+main().catch((error) => {
     // Fail open, exactly as guard.ts and tracker.ts do: a hook that cannot decide
     // must not take the session down with it. The marker line is what the test
     // harness watches for, so a crash cannot pass as a quiet run.
     //
-    // No event is emitted here, and that is the one way this handler differs from
-    // its two siblings. This hook writes nothing under `.guard-state/` on any
-    // path, so it has no log to append to and teaching it one would mean a
-    // SessionStart hook creating guard state before a single tool call has run.
-    // What it shares is the order: the `{}` goes out before the marker line, so a
-    // broken stderr cannot cost the session its verdict.
-    failOpen("session-start", error, () => process.stdout.write("{}\n"));
-}
+    // The verdict goes out first, as in both siblings — but only if it has not
+    // gone out already. `main` writes the envelope before it touches stdin or the
+    // event log, so the reachable failures are almost all AFTER it, and a second
+    // envelope on top of the first would be unparseable stdout rather than a
+    // degraded verdict.
+    failOpen("session-start", error, () => {
+        if (!envelopeWritten)
+            process.stdout.write("{}\n");
+    });
+});

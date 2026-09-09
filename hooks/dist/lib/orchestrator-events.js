@@ -15,7 +15,7 @@
  * (`260825-1430-reconciliation.md`). The repair is not a louder
  * mandate; it is moving the mechanical rows to a writer that cannot forget.
  *
- * Three row kinds are machine-written now, and only three:
+ * Four row kinds are machine-written now, and only four:
  *
  *   - `task_start` — emitted by `guard.ts` (PreToolUse) when the tool is the
  *     sub-agent dispatch tool.
@@ -24,10 +24,18 @@
  *     deterministic point every locked commit passes through. That emitter is
  *     bash and shares this module's schema by convention, not by import;
  *     `rules/commit-lock.md` carries its contract.
+ *   - `session_start` — emitted by `session-start.ts` (SessionStart), once per
+ *     session. See `## The session_start row` at the foot of this module for
+ *     what it carries, why the model's own row is not replaced by it, and what
+ *     tells the two apart.
  *
- * Everything semantic — `turn_start`, `session_start`, gates, reviews — stays
+ * Everything else semantic — `turn_start`, gates, reviews — stays
  * model-written: those rows carry judgements (a Directive, a verdict, a Turn's
- * stats) that no hook can know.
+ * stats) that no hook can know. `session_start` is the one row kind written
+ * from both sides at once, and it is deliberately a coexistence rather than a
+ * replacement: the hook can know the session's identity, head and domain and
+ * cannot know its Directive or its history file, so for now each writer writes
+ * the row it can, and the `writer` field says which wrote which.
  *
  * ## The gate: rows are written only while an orchestrator session is in flight
  *
@@ -274,4 +282,110 @@ export function emitDispatchEvent(event, input) {
         ...(detail && { detail }),
     };
     appendFileSync(resolve(root, "fusion-workbench", "orchestrator-events.jsonl"), JSON.stringify(row) + "\n", "utf-8");
+}
+/* ------------------------------------------------------------------ *
+ * ## The session_start row
+ *
+ * Written by `session-start.ts` at SessionStart, once per session, and by
+ * nothing else. It carries what a hook can know for certain and the model has
+ * been measured to forget: the session identifier, the identity pair, the head
+ * commit the session started from, and the resolved domain.
+ *
+ * ## Why it does not replace the model-written row
+ *
+ * The two rows are not the same row. The model's carries `history_file` and a
+ * `detail` naming the session's Directive — judgements no hook holds. This one
+ * carries `git_head_at_start` and `domain` — facts the model has to re-derive
+ * and, measured over this repository's own log, frequently did not. So both are
+ * written and the `writer` field is what tells them apart: a reader that wants
+ * the mechanical facts filters on `writer === SESSION_START_WRITER`, and one
+ * that wants the Directive filters on its absence. Whether the model's row
+ * survives at all is a later question and is deliberately not answered here.
+ *
+ * ## Once per session, keyed on the identifier
+ *
+ * SessionStart fires again on a resume and on a clear, with the SAME session
+ * identifier. The dedup therefore reads the log back rather than keeping a mark
+ * of its own: the log IS the record of what was written, so no second state file
+ * can disagree with it, and a log rolled to the archive correctly reads as "not
+ * written yet" rather than as a lie about a row that is no longer there.
+ *
+ * The match requires all three of event, `writer` and `session_id`. Dropping the
+ * `writer` term would let the model's own row for this session suppress the
+ * hook's, which is the one row this step exists to guarantee.
+ *
+ * ## No identifier, no row
+ *
+ * The identifier is the dedup key, so without one there is nothing to key on and
+ * a second SessionStart could not be told from the first. A row is therefore not
+ * written at all, rather than written with the key absent — which is the same
+ * absent-rather-than-empty rule this module states everywhere else, applied to
+ * the one field that is load-bearing rather than descriptive. Every OTHER field
+ * follows the ordinary rule: unresolved means the key is absent from the row.
+ * ------------------------------------------------------------------ */
+/** The `writer` value on every row this module writes from the SessionStart hook. */
+export const SESSION_START_WRITER = "session-start-hook";
+/** The event log's path under a workbench root. */
+function eventLogPath(root) {
+    return resolve(root, "fusion-workbench", "orchestrator-events.jsonl");
+}
+/**
+ * True when this session already has a hook-written `session_start` row.
+ *
+ * An unreadable or absent log is `false`: nothing can duplicate a row that is
+ * not there. A line that will not parse is skipped rather than throwing — the
+ * file carries `merge=union` and a conflict marker in it must not cost the
+ * session its row.
+ */
+export function sessionStartAlreadyWritten(root, sessionId) {
+    let text;
+    try {
+        text = readFileSync(eventLogPath(root), "utf-8");
+    }
+    catch {
+        return false;
+    }
+    for (const line of text.split("\n")) {
+        // The substring test rejects almost every line without parsing it; the
+        // parse below is what decides, so a coincidental match costs nothing.
+        if (!line.includes(sessionId))
+            continue;
+        let row;
+        try {
+            row = JSON.parse(line);
+        }
+        catch {
+            continue;
+        }
+        if (row.event === "session_start" &&
+            row.writer === SESSION_START_WRITER &&
+            row.session_id === sessionId) {
+            return true;
+        }
+    }
+    return false;
+}
+/**
+ * Append this session's `session_start` row, or return `null` having written
+ * nothing. `resolveFacts` is a thunk rather than a value so that the two
+ * subprocesses behind it are never spawned for a row that will not be written.
+ */
+export function emitSessionStartEvent(root, input, resolveFacts) {
+    const sessionId = typeof input.session_id === "string" && input.session_id !== "" ? input.session_id : undefined;
+    if (sessionId === undefined)
+        return null;
+    if (sessionStartAlreadyWritten(root, sessionId))
+        return null;
+    const facts = resolveFacts();
+    const row = {
+        ts: utcStamp(),
+        event: "session_start",
+        writer: SESSION_START_WRITER,
+        ...resolveIdentity(root),
+        session_id: sessionId,
+        ...(facts.gitHeadAtStart && { git_head_at_start: facts.gitHeadAtStart }),
+        ...(facts.domain && { domain: facts.domain }),
+    };
+    appendFileSync(eventLogPath(root), JSON.stringify(row) + "\n", "utf-8");
+    return row;
 }

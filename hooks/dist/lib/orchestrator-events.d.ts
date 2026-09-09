@@ -15,7 +15,7 @@
  * (`260825-1430-reconciliation.md`). The repair is not a louder
  * mandate; it is moving the mechanical rows to a writer that cannot forget.
  *
- * Three row kinds are machine-written now, and only three:
+ * Four row kinds are machine-written now, and only four:
  *
  *   - `task_start` — emitted by `guard.ts` (PreToolUse) when the tool is the
  *     sub-agent dispatch tool.
@@ -24,10 +24,18 @@
  *     deterministic point every locked commit passes through. That emitter is
  *     bash and shares this module's schema by convention, not by import;
  *     `rules/commit-lock.md` carries its contract.
+ *   - `session_start` — emitted by `session-start.ts` (SessionStart), once per
+ *     session. See `## The session_start row` at the foot of this module for
+ *     what it carries, why the model's own row is not replaced by it, and what
+ *     tells the two apart.
  *
- * Everything semantic — `turn_start`, `session_start`, gates, reviews — stays
+ * Everything else semantic — `turn_start`, gates, reviews — stays
  * model-written: those rows carry judgements (a Directive, a verdict, a Turn's
- * stats) that no hook can know.
+ * stats) that no hook can know. `session_start` is the one row kind written
+ * from both sides at once, and it is deliberately a coexistence rather than a
+ * replacement: the hook can know the session's identity, head and domain and
+ * cannot know its Directive or its history file, so for now each writer writes
+ * the row it can, and the `writer` field says which wrote which.
  *
  * ## The gate: rows are written only while an orchestrator session is in flight
  *
@@ -118,3 +126,44 @@ export declare function emitSubagentStop(input: SubagentStopInput): void;
  * `bestEffort`; the append itself is the last thing that can fail.
  */
 export declare function emitDispatchEvent(event: "task_start" | "task_done", input: DispatchHookInput): void;
+/** The `writer` value on every row this module writes from the SessionStart hook. */
+export declare const SESSION_START_WRITER = "session-start-hook";
+/** What the SessionStart hook reads off its payload. */
+export interface SessionStartHookInput {
+    session_id?: unknown;
+}
+/**
+ * The two facts only the caller can resolve — the head commit and the domain.
+ * They are resolved by `session-start.ts` because each costs a subprocess, and
+ * this module is imported by three hooks that must never pay for them.
+ */
+export interface SessionStartFacts {
+    gitHeadAtStart?: string;
+    domain?: string;
+}
+/** One hook-written `session_start` row. Field order matches the model's. */
+export interface SessionStartEventRow {
+    ts: string;
+    event: "session_start";
+    writer: string;
+    person?: string;
+    checkout?: string;
+    session_id: string;
+    git_head_at_start?: string;
+    domain?: string;
+}
+/**
+ * True when this session already has a hook-written `session_start` row.
+ *
+ * An unreadable or absent log is `false`: nothing can duplicate a row that is
+ * not there. A line that will not parse is skipped rather than throwing — the
+ * file carries `merge=union` and a conflict marker in it must not cost the
+ * session its row.
+ */
+export declare function sessionStartAlreadyWritten(root: string, sessionId: string): boolean;
+/**
+ * Append this session's `session_start` row, or return `null` having written
+ * nothing. `resolveFacts` is a thunk rather than a value so that the two
+ * subprocesses behind it are never spawned for a row that will not be written.
+ */
+export declare function emitSessionStartEvent(root: string, input: SessionStartHookInput, resolveFacts: () => SessionStartFacts): SessionStartEventRow | null;

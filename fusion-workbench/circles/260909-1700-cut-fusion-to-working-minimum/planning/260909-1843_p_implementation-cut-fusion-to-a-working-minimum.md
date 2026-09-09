@@ -162,7 +162,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
 
 ### Session 2 — build the substrate. Every step is additive; nothing is deleted.
 
-4. **B1: the SessionStart hook writes the `session_start` row**
+4. [DONE] **B1: the SessionStart hook writes the `session_start` row**
    - Executor: `coder`
    - Files: `hooks/session-start.ts`, `hooks/lib/orchestrator-events.ts`
    - Changes: emit one `session_start` row per session, carrying `session_id` from the payload, `person` and `checkout` by the module's existing env-first rule, `git_head_at_start` from `hooks/lib/git.ts`, and `domain` by the existing `hooks/lib/domain-cascade.ts` resolution. Written once per session, keyed on the session identifier so a second SessionStart in the same session writes no duplicate. The model-written `session_start` row stays for now; the two are distinguishable by a `writer` field.

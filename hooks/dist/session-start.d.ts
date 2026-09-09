@@ -85,6 +85,34 @@
  * set has shrunk three times since it was measured, so a number written into
  * prose about it is stale before it is committed.
  *
+ * ## The second product: this session's `session_start` row
+ *
+ * Since the substrate step of the ceremony cut, this hook also appends one
+ * machine-written `session_start` row to the workbench's event log — the
+ * session identifier, the identity pair, the head commit the session starts
+ * from, and the resolved domain. The row's schema, its coexistence with the
+ * model-written row of the same name, and the once-per-session rule are
+ * authored in `lib/orchestrator-events.ts` `## The session_start row` and are
+ * deliberately not restated here. What belongs to THIS file is the ordering and
+ * the two resolutions:
+ *
+ *   - **The envelope goes out first, before stdin is touched.** The warning
+ *     above is this hook's verdict and the row is an addendum to it. Reading
+ *     stdin is the one thing here that can block, so a payload that never
+ *     arrives costs the row and never the warning.
+ *   - **The head commit and the domain are resolved here, not in the module.**
+ *     Each costs a subprocess, and that module is imported by three hooks that
+ *     run on a tool call's own latency budget. They are passed in behind a
+ *     thunk the module calls only when the row will actually be written, so a
+ *     resumed session's second SessionStart spawns nothing.
+ *   - **The domain is the cascade's own answer and no second implementation
+ *     of it.** `lib/domain-cascade.ts` parses the cascade out of
+ *     `agents/orchestrator.md` and runs it over the counts
+ *     `bin/fusion-count-sources` prints. A helper that could not be run at all
+ *     is NOT the same fact as a count it declined to take: the first leaves the
+ *     key absent, the second reaches the cascade's own `counted_by == "none"`
+ *     branch and is a real verdict.
+ *
  * ## Channel
  *
  * `systemMessage`, not plain stdout. Plain stdout from a SessionStart hook is

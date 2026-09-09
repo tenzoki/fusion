@@ -22,7 +22,7 @@ commit until step A3's (`e8dbeb74`), so this is the first reconciliation pass ov
 
 Verified against disk, each independently:
 
-- **A1** → `86e06783`. `fusion-workbench/circles/.../analyses/260909-2215-gate-firing-read-before-the-cut.md`
+- **A1** → `86e06783`. `260909-2215-gate-firing-read-before-the-cut.md`
   exists and states, per gate, a numerator, a denominator and the command used. Three issue
   records filed as claimed (two in this Circle's `issues/`, one in `shared/issues/` for a
   truncated-line defect in a consuming project's log).
@@ -47,7 +47,7 @@ above. No drift found between what the plan claims for session 1 and what is on 
 - One `_o_` issue filed by A1 in `shared/issues/` (truncated-line defect in a consuming project's
   log) — out of this repository's tree by construction; appended a note saying so; left `_o_`.
 - One `_c_` issue in this Circle's store
-  (`260909-1852_c_the-order-decisions-answered-line-cites-a-stamp-...`) — verified its `Resolved:`
+  (`260909-1852_*_the-order-decisions-answered-line-cites-a-stamp-no-record-carries-and-the-citation-gate-is-red.md`) — verified its `Resolved:`
   note against `npx vitest run workbench-citation-lint` (13/13 pass at HEAD, the collision it names
   as separate is itself now closed). No change needed.
 - One `_c_` issue in `shared/issues/` (`260909-1455_*_...basename...`) — verified closed correctly;
