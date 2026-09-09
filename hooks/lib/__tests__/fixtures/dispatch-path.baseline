@@ -1,0 +1,145 @@
+# dispatch-path.baseline — what one dispatch of each agent reads before it reads
+# one line of the project's own work.
+#
+# HAND-EDITED, NEVER GENERATED. UPDATE_RULES_GOLDEN=1 rewrites
+# `rules-emission.golden` and does not touch this file. There is no flag that
+# rewrites it, deliberately: the golden records what the text weighs, this file
+# records what it is ALLOWED to weigh from, and a baseline that followed the
+# measurement would measure nothing.
+#
+# Three components per path, and the bound is their SUM against the sum of the
+# three figures below:
+#
+#   agents/<name>.md          the agent prompt
+#   rules emitted to <name>   every path `bin/fusion-rules <name>` emits, run
+#                             from this repository's root — plugin rules, any
+#                             project-side rules in reach, and the stilwerk
+#                             voice profiles. Not the neutral-cwd measurement
+#                             the golden takes: that one excludes project-side
+#                             text by construction, and two of this quantity's
+#                             three components are the project's.
+#   CLAUDE.md                 the project instructions, charged to every path
+#
+# HEAD-ROOM IS ZERO. This is not a budget. A path's total may not rise above its
+# row at all, and an addition of N bytes to any component requires a removal of
+# at least N from the same path's total.
+#
+# ## The arming, 2026-09-09, and what it does NOT absolve
+#
+# Armed at `bb341360`, BEFORE the cut this instrument was built to hold, and not
+# at it. A baseline armed at the moment of a cut absolves the cut.
+#
+# It is the second event of the three in `helpers/growth-bound.ts`
+# `## Re-baselining: the three events at which a baseline moves` — an arming —
+# and it is the fifth surface to obey that rule. What the arming absolves is
+# written here rather than disappearing with the number: over the thirteen days
+# from 2026-08-27 to 2026-09-09 the coder path rose from 154 440 to 188 256
+# bytes, 21.9 percent, while the always-on core bound in
+# `rules-emission-golden.test.ts` stayed green throughout — 43 percent of the
+# rise was `CLAUDE.md`, which that bound does not measure, and the rest was in
+# rule files outside the universal core it does. Every one of the fifteen rows
+# below therefore carries growth nobody cut. That is the state this bound is
+# armed on, and it is stated so that a later reader can see the request the
+# instrument stopped being able to make.
+#
+# THE GAP IN THE RULE, NAMED RATHER THAN CLOSED. The three-event rule was
+# written for a surface fusion owns, and two thirds of this quantity is the
+# project's. It has NO EVENT for a project that legitimately needs a larger
+# `CLAUDE.md`. No fourth event is added: inside this repository the offset comes
+# from another component of the same paths, and the bound's failure text says so.
+# Outside this repository the question does not arise, because nothing is
+# refused there — the consuming-project carrier reports and never blocks.
+#
+# Provenance: capability C8 of the spec
+# `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`, step A2 of
+# `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md`.
+
+[analyst]
+  agents/analyst.md 21038
+  rules emitted to analyst 84319
+  CLAUDE.md 93432
+  total 198789
+
+[bugfixer]
+  agents/bugfixer.md 11509
+  rules emitted to bugfixer 85175
+  CLAUDE.md 93432
+  total 190116
+
+[coder]
+  agents/coder.md 9649
+  rules emitted to coder 85175
+  CLAUDE.md 93432
+  total 188256
+
+[coderev]
+  agents/coderev.md 8141
+  rules emitted to coderev 91995
+  CLAUDE.md 93432
+  total 193568
+
+[consultant]
+  agents/consultant.md 14329
+  rules emitted to consultant 89918
+  CLAUDE.md 93432
+  total 197679
+
+[curator]
+  agents/curator.md 34554
+  rules emitted to curator 99080
+  CLAUDE.md 93432
+  total 227066
+
+[editor]
+  agents/editor.md 13635
+  rules emitted to editor 95672
+  CLAUDE.md 93432
+  total 202739
+
+[ontocoder]
+  agents/ontocoder.md 13262
+  rules emitted to ontocoder 85175
+  CLAUDE.md 93432
+  total 191869
+
+[ontorev]
+  agents/ontorev.md 7094
+  rules emitted to ontorev 91995
+  CLAUDE.md 93432
+  total 192521
+
+[orchestrator]
+  agents/orchestrator.md 155302
+  rules emitted to orchestrator 131331
+  CLAUDE.md 93432
+  total 380065
+
+[planner]
+  agents/planner.md 19725
+  rules emitted to planner 89271
+  CLAUDE.md 93432
+  total 202428
+
+[playmaker]
+  agents/playmaker.md 42955
+  rules emitted to playmaker 125674
+  CLAUDE.md 93432
+  total 262061
+
+[reconciler]
+  agents/reconciler.md 22825
+  rules emitted to reconciler 90127
+  CLAUDE.md 93432
+  total 206384
+
+[shaper]
+  agents/shaper.md 29057
+  rules emitted to shaper 128279
+  CLAUDE.md 93432
+  total 250768
+
+[taskplanner]
+  agents/taskplanner.md 14070
+  rules emitted to taskplanner 81298
+  CLAUDE.md 93432
+  total 188800

@@ -29,3 +29,6 @@ the surviving name before the rename lands.
 
 `npx vitest run lib/__tests__/workbench-citation-lint.test.ts` passes, with the two artifacts
 carrying distinct basenames and any citation of either resolving to one file.
+
+---
+Resolved: the history file is renamed to `260909-1345-analyst-verification-of-the-size-versus-bookkeeping-analysis.md`, which restores the `<stamp>-<agent>-<topic>` shape the project's other analyst history files already carry and which this one alone lacked. The analysis keeps its name, so no citation moved: every reference in the workbench pointed at the analysis, never at the history file.

@@ -5,10 +5,12 @@
 // over the always-on rule corpus on 2026-08-14. On 2026-08-15 the same bound was
 // extended to three more surfaces — `agents/*.md`, `skills/*/SKILL.md` and the
 // hook test lines — and the arithmetic they share was lifted here rather than
-// copied. One budget mechanism, four surfaces, four INDEPENDENT budgets: growth
-// in one surface can never be paid for by shrinkage in another, because each
-// surface calls `growth()` with its own baseline map and its own head-room and
-// asserts on its own result.
+// copied. On 2026-09-09 a fifth arrived in the same file the first one lives in:
+// the per-dispatch-path total — an agent's prompt plus the rules emitted to it
+// plus `CLAUDE.md` — armed at zero head-room. One budget mechanism, five
+// surfaces, five INDEPENDENT budgets: growth in one surface can never be paid
+// for by shrinkage in another, because each surface calls `growth()` with its own
+// baseline map and its own head-room and asserts on its own result.
 //
 // WHY IT SITS UNDER `__tests__/helpers/` AND NOT IN `hooks/lib/`. Two reasons,
 // and either is sufficient. `derivable-enumerations-lint.test.ts` holds
@@ -36,9 +38,20 @@
 //   2. AT AN ARMING. A measurement that used to report starts blocking, and the
 //      corpus it is armed on is already past the head-room the new gate would
 //      enforce. Arming at the old baseline would ship a permanently red suite,
-//      which is a suite nobody reads. This has happened twice: on 2026-08-14 for
-//      the always-on rule core (`rules-emission-golden.test.ts`), and on
-//      2026-08-15 for the three surfaces in `surface-growth-bound.test.ts`.
+//      which is a suite nobody reads. This has happened three times: on
+//      2026-08-14 for the always-on rule core (`rules-emission-golden.test.ts`),
+//      on 2026-08-15 for the three surfaces in `surface-growth-bound.test.ts`,
+//      and on 2026-09-09 for the per-dispatch-path total, whose arming is the
+//      one deliberately taken BEFORE the cut it bounds rather than at it — a
+//      baseline armed at a cut absolves the cut.
+//
+//      THE FIFTH SURFACE HAS A GAP IN THIS RULE AND IT IS NAMED, NOT CLOSED.
+//      Two of its three components — `CLAUDE.md` and the project-side rules —
+//      belong to the consuming project, and none of the three events covers a
+//      project that legitimately needs a larger `CLAUDE.md`. No fourth event was
+//      added for it: inside this repository the addition is offset against
+//      another component of the same paths, and outside it the question does not
+//      arise, because the consuming-project carrier reports and never refuses.
 //
 //   3. AT A MERGE OF TWO LINES THAT WERE EACH INSIDE THE BOUND. What this
 //      instrument measures is addition per line of development. A merge adds
@@ -91,7 +104,7 @@
 
 /**
  * One file's contribution to a surface, in whatever unit that surface is
- * measured in. `size` is deliberately unit-neutral: two of the four bounded
+ * measured in. `size` is deliberately unit-neutral: four of the five bounded
  * surfaces count bytes and one counts lines, and the arithmetic is the same.
  */
 export interface Sized {
@@ -127,7 +140,7 @@ export interface Growth {
 
 /**
  * The one function every bound reads. The baseline map and the head-room are
- * PARAMETERS rather than module state, which is what keeps the four budgets
+ * PARAMETERS rather than module state, which is what keeps the five budgets
  * independent: nothing here can see another surface's numbers, so nothing here
  * can spend them.
  */
