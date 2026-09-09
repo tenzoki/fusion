@@ -174,3 +174,42 @@ critical path behind one cached marker, and the questions moved into the work ra
 at the end. The guard event log was tried first as the instrument and dropped: it carries
 machine timestamps and file paths, which is exactly right, but only eleven days and nine usable
 sessions, so the event log and the skill bodies carried the finding instead.
+
+## Fifth pass: every claim re-checked, sixteen of them wrong or loose
+
+The user asked for every single claim to be verified and the presentation and conclusions
+brought up to date. The git parse was rebuilt from scratch and pinned to the three commits the
+Scope table names, rather than reusing the cached one, and a second agent checked the
+structural claims from the report text alone.
+
+Two trees had moved while the analysis was being written. fusion stood three commits ahead of
+its snapshot and krk three ahead of its own, from sessions running concurrently with this one;
+one of fusion's three was not mine. That is the concurrency the setup skill warns about, met in
+practice. The figures stay pinned to the snapshot commits and the Scope table now says so, with
+the current heads named.
+
+Nine claims were wrong. The phase ledger's ramp-up was 382 KiB and is 425, because the
+orchestrator's emitted rule set is 128 KiB rather than the 72 KiB floor plus a resume rule it is
+never emitted; `/fusion:setup` has 16 numbered steps and eleven pre-flight, not 19 and twelve,
+because the heading pattern counted three sub-items of Step 0g; the two cut commits are forty
+minutes apart, not ninety; finding 1 carried August-only figures inside a table for the whole
+window; the minutes-per-100-lines figure had a denominator that included lines from commits
+whose interval had been dropped; one cell of finding 6 folded three `ci` commits into the
+documentation side; finding 10 called all-records figures live ones; the machine-timestamped era
+starts 2026-08-26 here, not 2026-08-27; and the twenty-day window in Scope was described as
+three weeks.
+
+Seven more were imprecise, the largest being that the always-on figure omitted the chat voice
+profile the same script emits, so the floor is 74.2 KiB and not 72.5. Findings 3 and 4 now say
+they use today's file sizes and give the commit-time reconstruction beside them, where the middle
+quartiles turn out not to be monotone. The report had used three size conventions and now uses
+one, 1024-based throughout.
+
+What reproduced exactly: findings 2, 5, 7, 13, 14 and 16, including the pooled 3353-commit
+stratification cell by cell and the before-and-after table row by row. No conclusion moved. The
+ramp-up came out more expensive than reported, not less, and the per-100-lines figure stayed
+flat and stayed unordered by project size.
+
+A Verification pass section was added ahead of the Findings, carrying the corrections as a table
+rather than leaving them only in the paragraphs they touch, and every correction is also named
+where it sits.

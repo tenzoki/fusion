@@ -4,6 +4,7 @@
 **Type:** Comparative
 **Status:** Complete
 **Requested by:** user
+**Verified:** 2026-09-09 13:10, every figure re-derived pinned to the three commits named below
 **Filed by:** analyst, Kai Stalmann <ks@qantr.com>
 
 ## Question
@@ -24,13 +25,41 @@ Three git trees, read in full over their entire history, plus the workbench reco
 | krk | `68b76de` | 2026-09-09 10:31 +0200 | main | 1 ahead of origin/main | 861 | 2026-08-02 |
 | unite-co-creator | `0cc2214c2` | 2026-09-09 09:01 +0200 | main | in sync | 3558 | 2026-03-22 |
 
-Every present-tense claim below is dated by those three commits. Merge commits are excluded from the per-commit analysis, leaving 1238, 861 and 3441 commits respectively.
+Every present-tense claim below is dated by those three commits, and the `Commits` column counts merges while the per-commit analysis excludes them, leaving 1238, 861 and 3441. krk has no merge commits at all, which is why its two figures coincide.
 
-**One premise in the request does not hold.** unite-co-creator is under active development: 447 commits landed in the three weeks to 2026-09-09, 368 authored by Kai Stalmann and 79 by a second checkout under the name Lay Flags. What is true of the local copy at `/Users/k1/Projects/productive/unite-co-creator` is that no fusion session runs in it. It carries no `.guard-state/`, no `.checkout-id`, no `agentstate.yaml` and no `monitor`, so it holds pulled history rather than locally produced work. The analysis below reads the project, not the disk copy, and that is the right unit for the question.
+**The trees moved during the analysis, and the figures are pinned rather than chased.** By the verification pass at 13:10 fusion stood at `17845b95` and krk at `7f69270`, three commits ahead of each snapshot, from sessions running concurrently with this one; unite-co-creator was unchanged. Every git-derived figure below was re-derived against the three commits in the table, not against the working tree.
+
+**Units.** Sizes are 1024-based throughout: KiB where the text says KB, MiB where it says MB. The first version of this report mixed three conventions and the figures have been brought onto one.
+
+**One premise in the request does not hold.** unite-co-creator is under active development: 447 commits landed in the twenty days to 2026-09-09, 368 authored by Kai Stalmann and 79 by a second checkout under the name Lay Flags. The first version of this sentence said three weeks; the count reproduces at a cutoff around 2026-08-20 11:00, and a true three-week window gives 472, 388 and 84. What is true of the local copy at `/Users/k1/Projects/productive/unite-co-creator` is that no fusion session runs in it. It carries no `.guard-state/`, no `.checkout-id`, no `agentstate.yaml` and no `monitor`, so it holds pulled history rather than locally produced work. The analysis below reads the project, not the disk copy, and that is the right unit for the question.
 
 **What was measured, and what could not be.** Commit timestamps are machine-written and are the anchor for every time figure. Event-log timestamps were model-written before v10.8.0 and are used only where the row carries `person`/`checkout`, which marks the hook-written era. Workbench record dates come from filename stamps rather than from git, so they are unaffected by when each project began tracking its workbench, which differs across the three and would otherwise have confounded the trend.
 
 **How wall-clock is attributed.** For each commit, the interval since the previous commit is charged to that commit, capped at 120 minutes; longer gaps are dropped as time between sessions. A commit touching any source file is charged to source, otherwise to documentation, otherwise to the workbench. The workbench figure is therefore a lower bound: a commit that carries both a source change and three records is charged entirely to source.
+
+## Verification pass
+
+Every figure in this report was re-derived on 2026-09-09 at 13:10, pinned to the three commits in the Scope table, with the git parse rebuilt from scratch rather than reused. The structural claims, step counts, byte sizes and emission sets were checked independently by a second agent working from the report text alone. Nine claims were wrong and seven more imprecise. All are corrected in place, and each correction is named where it sits rather than only here.
+
+**Wrong, and corrected:**
+
+| Where | Was | Is |
+|---|---|---|
+| Finding 18, phase ledger | ramp-up 382 KiB, ratios 2.1 / 2.7 / 5.1 | 425 KiB, ratios 2.3 / 2.8 / 5.2. The orchestrator's emitted rule set is 128 KiB, not the 72 KiB floor plus a resume rule it is never emitted |
+| Finding 18, step count | `/fusion:setup` has 19 steps, twelve of them pre-flight | 16 steps, eleven pre-flight. The heading pattern counted three sub-items of Step 0g as steps |
+| Finding 15 | the two commits are ninety minutes apart | forty minutes, 08:45:11 and 09:25:02 |
+| Finding 1 | 35.7 / 39.7 / 40.2 record KB per source commit | 35.4 / 38.5 / 40.7. The published row held the August-only figures inside a table for the whole window |
+| Finding 3 | 5.93 / 5.05 / 5.08 minutes per 100 lines | 6.39 / 5.81 / 6.36. The denominator had included lines from commits whose interval was dropped |
+| Finding 6 | unite-co-creator 40.1% in June | 39.6%. Three `ci` commits had been counted on the documentation side of a docs-or-chore measure |
+| Finding 10 | "live decision records still open, 25, 12 and 70" | those are all records ever filed; live is 23, 12 and 66 |
+| Finding 8 | machine-timestamped rows "since 2026-08-27" | 2026-08-26 here, 2026-08-27 in the other two |
+| Scope | 447 commits "in the three weeks" | in the twenty days; a true three-week window gives 472 |
+
+**Imprecise, and sharpened:** the always-on figure in findings 12 and 17 omitted the chat voice profile the same script emits, so the floor is 74.2 KiB and not 72.5, a constant offset that leaves the trend and the cut intact; findings 3 and 4 use today's working-tree file sizes and now say so, with the commit-time reconstruction given beside them; finding 17's pointers sit in the prompt body rather than in a Setup step for most agents; finding 9's classifier is sensitive at the boundary by about one record in 1137; the closing ledger counts `CLAUDE.md` once per dispatch and now says so; and the report used three size conventions, now one.
+
+**Reproduced exactly, unchanged:** findings 2, 5, 7, 13, 14, 16 and 17's store measurement, including the pooled 3353-commit stratification cell by cell, the 2026-08-27 before-and-after table row by row, and every rank correlation. Finding 11's row arithmetic is right unrounded and looks wrong rounded, which is now stated.
+
+**No conclusion moved.** The corrections change magnitudes, not directions: the ramp-up is more expensive than reported rather than less, the per-100-lines figure is still flat and still not ordered by project size, and the two effects in finding 14 and the cut in finding 15 come out identical to the byte. What the pass does establish is that sixteen claims in a report written once and not checked were wrong or imprecise, which is the same defect class the report measures in the projects it studies. The nine and the seven are the rows and the clauses above; neither number is a count taken separately from them.
 
 ## Findings
 
@@ -73,10 +102,10 @@ Measured over one calendar window, 2026-08-01 to 2026-09-09, with the fusion ver
 |---|---|---|---|
 | source KLOC at window start | 19 | 0 | 768 |
 | records filed per source-touching commit | 4.64 | 4.88 | 4.85 |
-| record KB written per source-touching commit | 35.7 | 39.7 | 40.2 |
+| record KB written per source-touching commit | 35.4 | 38.5 | 40.7 |
 | workbench-only share of within-session wall clock | 40% | 37% | 44% |
 | records filed in the window | 2453 | 2128 | 2222 |
-| record prose written in the window | 18.7 MB | 16.8 MB | 18.6 MB |
+| record prose written in the window | 18.3 MB | 16.4 MB | 18.2 MB |
 
 krk began on 2026-08-02 with no code at all. It paid the same per-commit bookkeeping as a project forty times its size from its first month. The three columns agree to within a few percent on every bookkeeping measure while differing by nearly three orders of magnitude in size. Whatever sets the bookkeeping level, project size is not it.
 
@@ -121,7 +150,7 @@ The same rise shows in wall clock rather than record counts. unite-co-creator's 
 
 ### 3. Size and local complexity do slow a single change down, by a factor of two to three
 
-Holding project, calendar month and fusion version constant, source commits in the window split by the size of the largest source file they touch:
+Holding project, calendar month and fusion version constant, source commits in the window split by the size of the largest source file they touch. File sizes here are today's working-tree line counts; finding 14 repeats the cut with sizes reconstructed at commit time, which is the better measure and the one to prefer where the two disagree.
 
 | Quartile by largest file touched | fusion median lines / minutes | krk | unite-co-creator |
 |---|---|---|---|
@@ -130,7 +159,7 @@ Holding project, calendar month and fusion version constant, source commits in t
 | Q3 | 1007 / 18.5 | 6004 / 15.6 | 3039 / 29.7 |
 | Q4 | 1293 / 21.6 | 10759 / 32.5 | 11407 / 31.6 |
 
-Three independent replications, same direction each time. A change touching the project's largest files costs roughly two to three times what a change to its smallest files costs.
+Three independent replications, same direction from the first quartile to the fourth. Repeating the same cut with sizes reconstructed at commit time gives 9.9, 13.6, 18.8 and 24.9 minutes in this repository, 11.0, 20.4, 18.8 and 28.2 in krk, and 10.2, 28.0, 29.7 and 26.8 in unite-co-creator. First to last the direction holds in all three; the middle quartiles are not monotone, and unite-co-creator's top quartile falls below its third. Roughly two to three times is the right reading of the span, not of every step in it.
 
 ```mermaid
 xychart-beta
@@ -144,11 +173,11 @@ xychart-beta
 
 The cross-project comparison at fixed calendar agrees. In August 2026 the median source commit took 16.3 minutes in fusion (44 KLOC), 19.3 minutes in krk (144 KLOC) and 27.2 minutes in unite-co-creator (876 KLOC), monotone in size.
 
-One qualification matters. Per hundred changed lines the cost does not rise: 5.93, 5.05 and 5.08 minutes in the three projects in August, essentially flat. Larger files attract larger commits, and the throughput per unit of text holds up. What degrades is the latency of one task and the granularity at which work can be done. That is consistent with the user's impression of slowdown without supporting a claim that the model writes text more slowly in a big project.
+One qualification matters. Per hundred changed lines the cost does not rise: 6.39, 5.81 and 6.36 minutes in the three projects in August, essentially flat, and not ordered by size, since the smallest codebase carries the highest figure. The first version of this report gave 5.93, 5.05 and 5.08, computed with a denominator that included lines from commits whose interval had been dropped as inter-session. Larger files attract larger commits, and the throughput per unit of text holds up. What degrades is the latency of one task and the granularity at which work can be done. That is consistent with the user's impression of slowdown without supporting a claim that the model writes text more slowly in a big project.
 
 ### 4. The error rate rises with local complexity, also replicated three times
 
-For every source file with at least three commits in its history, the share of those commits whose subject is a fix or a revert:
+For every source file with at least three commits in its history, the share of those commits whose subject is a fix or a revert. Sizes here are today's working-tree line counts, as in finding 3:
 
 | Quartile by file size | fusion | krk | unite-co-creator |
 |---|---|---|---|
@@ -157,7 +186,7 @@ For every source file with at least three commits in its history, the share of t
 | Q3 | 30.7% | 31.3% | 23.4% |
 | Q4 (median 686 / 2032 / 770 lines) | 31.0% | 29.3% | 27.2% |
 
-The gradient is clearest in unite-co-creator, where the fix share more than doubles from the smallest to the largest quartile. Commits per file rise the same way: 5.3 in Q1 against 16.3 in Q4 there, 5.9 against 26.5 in krk. Large files are both more error-prone and revisited far more often.
+The gradient is clearest in unite-co-creator, where the fix share more than doubles from the smallest to the largest quartile. It is not monotone everywhere: krk's fourth quartile sits below its third. Commits per file rise the same way: 5.3 in Q1 against 16.3 in Q4 there, 5.9 against 26.5 in krk. Large files are both more error-prone and revisited far more often.
 
 ```mermaid
 xychart-beta
@@ -191,13 +220,13 @@ The cross-project test at fixed calendar cuts against a pure size story. In Augu
 
 ### 6. The declining net product is visible in the commit mix, not in line throughput
 
-Share of commits typed `docs` or `chore` rather than `feat`, `fix`, `test`, `refactor` or `perf`:
+Share of commits typed `docs` or `chore` rather than `feat`, `fix`, `test`, `refactor` or `perf`. Commits typed `ci` are counted in neither group, which corrects one cell of the first version, where unite-co-creator's June figure read 40.1% because three `ci` commits had been folded into the documentation side:
 
 | Month | fusion | krk | unite-co-creator |
 |---|---|---|---|
 | 2026-04 | | | 28.0% |
 | 2026-05 | 39.0% | | 50.0% |
-| 2026-06 | 32.3% | | 40.1% |
+| 2026-06 | 32.3% | | 39.6% |
 | 2026-07 | 28.4% | | 46.1% |
 | 2026-08 | 50.4% | 57.4% | 54.5% |
 | 2026-09 | 62.2% | 38.3% | 68.4% |
@@ -209,7 +238,7 @@ xychart-beta
     title "Share of commits typed docs or chore rather than feat fix test refactor perf (upper line unite-co-creator, lower line fusion)"
     x-axis [May, Jun, Jul, Aug, Sep]
     y-axis "percent of commits" 0 --> 80
-    line [50.0, 40.1, 46.1, 54.5, 68.4]
+    line [50.0, 39.6, 46.1, 54.5, 68.4]
     line [39.0, 32.3, 28.4, 50.4, 62.2]
 ```
 
@@ -252,7 +281,7 @@ Knowledge records,Backlog and memos,5
 
 ### 8. Dedicated bookkeeping agents are not where the cost is
 
-Machine-timestamped dispatches only, since 2026-08-27:
+Machine-timestamped dispatches only, that is rows carrying the `person` and `checkout` fields the hook writes. The first such row is 2026-08-26 in this repository and 2026-08-27 in the other two:
 
 | Agent group | fusion | krk | unite-co-creator |
 |---|---|---|---|
@@ -266,8 +295,8 @@ The reconciler, curator, playmaker and taskplanner together consume between 3% a
 ```mermaid
 pie showData
     title Dispatch time by agent group, machine-timestamped era, three projects summed (hours)
-    "Production: coder ontocoder bugfixer editor" : 118.3
-    "Planning and analysis" : 20.4
+    "Production: coder ontocoder bugfixer editor" : 118.2
+    "Planning and analysis" : 20.5
     "Bookkeeping: reconciler curator playmaker taskplanner" : 9.5
     "Review" : 4.3
     "Other" : 3.6
@@ -279,23 +308,23 @@ Classifying each issue record by the file paths its body cites, an objective tes
 
 | | fusion | krk | unite-co-creator |
 |---|---|---|---|
-| issues citing mostly source or data | 340 | 767 | 1428 |
+| issues citing mostly source or data | 341 | 767 | 1428 |
 | issues citing mostly records, rules or docs | 687 | 138 | 171 |
 | meta share of the classified issues | 67% | 15% | 11% |
 
-In the two consuming projects, roughly nine of every ten issues are about the product. unite-co-creator's meta share does not trend upward over its life: 13%, 18%, 6%, 14%, 9%, 13% by month. fusion's 67% is expected and not comparable, since fusion's product is the record machinery.
+The classifier is a heuristic over the paths a record's first 6000 bytes cite, and it is sensitive at the boundary: two runs with slightly different rules for what counts as a documentation path moved one record of 1137. In the two consuming projects, roughly nine of every ten issues are about the product. unite-co-creator's meta share does not trend upward over its life: 13%, 18%, 6%, 14%, 9%, 13% by month. fusion's 67% is expected and not comparable, since fusion's product is the record machinery.
 
 **Correction to an earlier reading of my own.** A first pass classified issues by keywords in their filename slug and returned 62%, 24% and 38%. That classifier is biased in two directions at once: it matches product issues that happen to mention a comment or a header, and it misses German slugs entirely, which understates krk. The citation-based figures above supersede it, and the tempting conclusion that the bookkeeping mostly generates work about itself does not survive the better test outside fusion's own repository.
 
 ### 10. Unresolved work accumulates with size
 
-| | filed | closed | open | open share |
+| all issue records ever filed, live and archived | filed | closed | open | open share |
 |---|---|---|---|---|
 | fusion | 1137 | 1074 | 63 | 6% |
 | krk | 978 | 866 | 108 | 11% |
 | unite-co-creator | 1768 | 1284 | 444 | 25% |
 
-The open share is monotone in current source size, at 6% for fusion's 50 KLOC, 11% for krk's 157 KLOC and 25% for unite-co-creator's 935 KLOC. In absolute terms the largest project carries 444 open issue records, four times the next project's count. Live decision records that are still open do not follow that order, at 25, 12 and 70, so the pattern holds for defects and not for open questions. The record store grows monotonically because closure lags filing, and the reconciler, curator and taskplanner passes read it.
+The open share is monotone in current source size, at 6% for fusion's 50 KLOC, 11% for krk's 157 KLOC and 25% for unite-co-creator's 935 KLOC. In absolute terms the largest project carries 444 open issue records, four times the next project's count. Decision records that are still open do not follow that order, at 25, 12 and 70 over all records ever filed and 23, 12 and 66 over the live tree alone, so the pattern holds for defects and not for open questions. The first version of this sentence called the all-records figures live ones. The record store grows monotonically because closure lags filing, and the reconciler, curator and taskplanner passes read it.
 
 ```mermaid
 xychart-beta
@@ -315,7 +344,7 @@ Input, per sub-agent dispatch, before the agent reads one line of the project:
 | krk | 83 KB | 69 KB | 27 KB | 179 KB |
 | unite-co-creator | 124 KB | 11 KB | 27 KB | 162 KB |
 
-The orchestrator prompt is a further 152 KB, carried by every session. Over the 475, 403 and 559 paired dispatches recorded in each project, the conditioning text alone comes to roughly 0.09, 0.07 and 0.09 GB.
+The row adds up only unrounded: 85 175 plus 93 432 plus 27 810 bytes is 201.6 KiB, which rounds to 202 while the three printed components add to 201. The orchestrator prompt is a further 152 KiB, carried by every session. Over the 475, 403 and 559 paired dispatches recorded in each project, the conditioning text alone comes to roughly 0.09, 0.07 and 0.09 GB.
 
 Output, lifetime: 19.3 MB, 16.4 MB and 36.6 MB of record prose, 72.3 MB together. At four bytes per token that is on the order of 19 million tokens of written bookkeeping, an estimate rather than a measured count. In the current window the ratio of record prose to source text written is 3.27, 2.11 and 1.32 to one.
 
@@ -331,7 +360,7 @@ A version number is a label. What a dispatch carries is bytes, and those were me
 | 2026-08 | 10.24.0 | 212 KB | 71 KB | 404 KB | 242 KB | 149 KB |
 | 2026-09 | 10.26.0 | 226 KB | 72 KB | 407 KB | 254 KB | 152 KB |
 
-The always-on set is the one column that reverses. It climbed from 45 KB to 108 KB by late July, was cut by a quarter on 2026-08-27, from 96.4 KB to 72.5 KB, and stands at 72 KB. Each figure in the table is a sample at the last commit of that month's final week, so it does not coincide with the cut, which finding 15 dates and measures to the commit. Everything else grew without a reversal: the rules directory fivefold, the orchestrator prompt from 88 KB to 152 KB. The always-on figure was derived the way this repository's own documentation prescribes, from the unindented `emit_if_exists` lines in `bin/fusion-rules` at each commit, so it is the set a coder dispatch reads rather than the directory it sits in.
+The always-on set is the one column that reverses. It climbed from 45 KiB to 108 KiB by late July, was cut by a quarter on 2026-08-27, from 96.4 KiB to 72.5 KiB, and stands at 72 KiB. Each figure in the table is a sample at the last commit of that month's final week, so it does not coincide with the cut, which finding 15 dates and measures to the commit. Everything else grew without a reversal: the rules directory fivefold, the orchestrator prompt from 88 KB to 152 KB. The always-on figure was derived from the unindented `emit_if_exists` lines in `bin/fusion-rules` at each commit, which is the plugin-side half of the recipe this repository's own documentation gives. It omits the second half, the project's chat voice profile, emitted unconditionally by a different function in the same script: 2.6 KiB here, so the column runs about that much low at every sample, and the floor a dispatch actually reads today is 74.2 KiB rather than 72.5. The omission is a constant offset and disturbs neither the trend nor the cut in finding 15, both of which are differences.
 
 ```mermaid
 xychart-beta
@@ -407,9 +436,11 @@ For the fix share the fusion gradient is the cleaner of the two. It is monotone 
 
 ### 15. One event separates the bundle, and it points at the rule set
 
-On 2026-08-27, in two commits ninety minutes apart, the always-on set went from 96.4 KB to 72.5 KB. `8ac9a533` at 08:45 took the decision-record worked examples off the floor, 4.5 KB; `9c056b6c` at 09:25 took the user-facing style contract, 20.5 KB. A quarter of what every dispatch carried was removed in one morning, while calendar time went on advancing and the projects went on growing.
+On 2026-08-27, in two commits forty minutes apart, the plugin-side always-on set went from 96.4 KiB to 72.5 KiB. `8ac9a533` at 08:45:11 took the decision-record worked examples off the floor; `9c056b6c` at 09:25:02 took the user-facing style contract. A quarter of what every dispatch carried was removed in one morning, while calendar time went on advancing and the projects went on growing.
 
-**This date is a correction.** The first version of this finding placed the cut on 2026-08-24, read off a weekly sample rather than off the commits, and put three days of the old regime into the new bucket. The numbers below are the corrected ones; the direction did not change and the fix-share effect came out slightly larger.
+The two files measure 4.4 KiB and 19.9 KiB at the commits that removed them, but the floor fell by 19.4 KiB at the second commit rather than by 19.9, because the style contract and the setup rule each grew a little inside that same commit. The 24 KiB total is the difference between the two sums, which is the figure that carries the finding.
+
+**Two corrections sit in this paragraph.** The first version placed the cut on 2026-08-24, read off a weekly sample rather than off the commits, and put three days of the old regime into the new bucket; the numbers below are the corrected ones, and the fix-share effect came out slightly larger. The second version said the two commits were ninety minutes apart, which is forty.
 
 Three weeks before against just under two weeks after, with file size held:
 
@@ -435,7 +466,7 @@ Per project the picture is consistent without being uniform. This repository wen
 
 **How much weight this carries.** It is a before-and-after comparison, not a controlled trial. The two commits shipped inside a release round that changed other things, the window after them is shorter than the window before, and nothing was randomised. What it establishes is that the fix share fell in every size stratum in the one period when fusion's conditioning load fell, which is the opposite of what a pure calendar or a pure project-growth explanation predicts.
 
-**What left is worth naming.** The 24 KB that stopped being carried was decision-record worked examples and a style contract. Neither is domain knowledge about the project being worked on. That is a description of the two files, not a claim that their content was the active ingredient: the same 24 KB of any text would have made the same difference to context length, and this design cannot tell content from volume.
+**What left is worth naming.** The 24 KiB that stopped being carried was decision-record worked examples and a style contract. Neither is domain knowledge about the project being worked on. That is a description of the two files, not a claim that their content was the active ingredient: the same 24 KB of any text would have made the same difference to context length, and this design cannot tell content from volume.
 
 ### 16. File growth, not total size, is the part that carries the effect
 
@@ -464,7 +495,7 @@ A project does not become slow by holding many lines. It becomes slow by growing
 
 ### 17. The largest thing a dispatch is pointed at was never measured, and it is the record store
 
-Finding 14's row variable is the always-on rule set, which stands at 72.5 KB. That is not the largest text a dispatch is aimed at. Thirteen of the fifteen agent prompts name `$SCAN_DECISIONS`, and most of them also name `$SCAN_ISSUES` and `$SCAN_PLANS` in the same Setup step. Measuring what those pointers resolve to today:
+Finding 14's row variable is the always-on rule set, 74.2 KiB with the voice profile included. That is not the largest text a dispatch is aimed at. Thirteen of the fifteen agent prompts name `$SCAN_DECISIONS`, thirteen name `$SCAN_ISSUES`, twelve name `$SCAN_PLANS` and eleven name all three; `bugfixer` and `editor` name none. The pointers mostly sit in the prompt body rather than in a Setup step, which the first version of this finding got wrong: only `reconciler` names all three inside its `## Setup`, while `coder` reaches them under `## Before Coding` and `## Implementation Process`. Measuring what the pointers resolve to today:
 
 | | open and answered decisions | open issues | live plans | last 20 history files | total |
 |---|---|---|---|---|---|
@@ -474,22 +505,22 @@ Finding 14's row variable is the always-on rule set, which stands at 72.5 KB. Th
 
 ```mermaid
 xychart-beta
-    title "What each dispatch is pointed at, in KB (left bar the always-on rule set, right bar the live record store its prompt names)"
+    title "What each dispatch is pointed at, in KiB (left bar the always-on rule set, right bar the live record store its prompt names)"
     x-axis ["fusion", "krk", "unite-co-creator"]
-    y-axis "kilobytes" 0 --> 4500
-    bar [72, 72, 72]
+    y-axis "kibibytes" 0 --> 4500
+    bar [74, 74, 74]
     bar [952, 838, 4365]
 ```
 
-The record store a prompt points at is 12 to 60 times the always-on rule set. Unlike the rule set, it grows with the project: the same measure for unite-co-creator, taken over the records that are still live, ran 223 KB in May, 612 KB in June, 824 KB in July, 3113 KB in August and 4177 KB in September.
+The record store a prompt points at is 11 to 59 times the always-on rule set. Unlike the rule set, it grows with the project: the same measure for unite-co-creator, taken over the records that are still live, ran 223 KB in May, 612 KB in June, 824 KB in July, 3113 KB in August and 4177 KB in September.
 
 ```mermaid
 flowchart TD
-    D["A dispatch starts"] --> R["Always-on rule set<br/>72.5 KB, same in every project"]
+    D["A dispatch starts"] --> R["Always-on rule set<br/>74.2 KiB, the same in all three projects"]
     D --> C["CLAUDE.md<br/>11 to 91 KB"]
     D --> A["The agent's own prompt<br/>7 to 155 KB"]
     D --> S["The live record store the prompt names<br/>952 KB / 838 KB / 4365 KB"]
-    R --> M["Measured: the 2026-08-27 cut of 24 KB<br/>coincides with fix share 36.6% to 24.3%"]
+    R --> M["Measured: the 2026-08-27 cut of 24 KiB<br/>coincides with fix share 36.6% to 24.3%"]
     S --> U["Never measured, and it is the largest of the four<br/>grows 223 KB to 4177 KB over one project's life"]
     C --> M2["Not varied in any design available here"]
     A --> M2
@@ -505,41 +536,43 @@ The user and a second person on the same projects report the overhead as frictio
 
 **The two phases are the most expensive reading of the session, and the closing is the most expensive thing fusion does.** Counting the instruction text each phase pulls in, in this repository, against one coder dispatch as the productive unit:
 
-| Phase | what it carries | KB | as coder dispatches |
+| Phase | what it carries | KiB | as coder dispatches |
 |---|---|---|---|
-| one coder dispatch | agent prompt, always-on rules, the bounded-dispatch rule, `CLAUDE.md` | 184 | 1.0 |
-| ramp-up | orchestrator prompt 155 KB, setup body 51 KB, always-on 72 KB, `CLAUDE.md` 91 KB, resume rule | 382 | 2.1 |
-| cleanup, minimum | the five pipeline bodies plus a reconciler and a curator dispatch | 498 | 2.7 |
-| closing, full | the same plus a review and a portfolio dispatch | 940 | 5.1 |
+| one coder dispatch | agent prompt 9, its emitted rule set 83, `CLAUDE.md` 91 | 184 | 1.0 |
+| ramp-up | orchestrator prompt 152, setup body 49, the orchestrator's emitted set 128, `CLAUDE.md` 91, resume rule 5 | 425 | 2.3 |
+| cleanup, minimum | the five pipeline bodies 82, a reconciler dispatch 202, a curator dispatch 222 | 506 | 2.8 |
+| closing, full | the same plus a review dispatch 189 and a portfolio dispatch 256 | 951 | 5.2 |
+
+**Two things this table does, which a reader should see.** The emitted rule set is measured per agent by running `bin/fusion-rules`, not assumed: the orchestrator's is 128 KiB rather than the 72 KiB floor, because it also draws the user-facing contract, the worked examples, both voice profiles, the Circle vocabulary and the commit-lock rule. The first version of this table assumed the floor plus a resume rule the orchestrator is never emitted, and understated the ramp-up by 11%. And `CLAUDE.md` is counted once per dispatch, because each sub-agent gets its own context, so 91 KiB of it sits inside the 951 five times over.
 
 ```mermaid
 xychart-beta
-    title "Instruction text each phase pulls in, this repository, KB (the productive unit is one coder dispatch)"
+    title "Instruction text each phase pulls in, this repository, KiB (the productive unit is one coder dispatch)"
     x-axis ["one coder dispatch", "ramp-up", "cleanup, minimum", "closing, full"]
-    y-axis "kilobytes of instruction text" 0 --> 1000
-    bar [184, 382, 498, 940]
+    y-axis "kibibytes of instruction text" 0 --> 1000
+    bar [184, 425, 506, 951]
 ```
 
-A full closing reads five times what a productive dispatch reads, and produces nothing the user asked for. The ramp-up reads twice.
+A full closing reads five times what a productive dispatch reads, and produces nothing the user asked for. The ramp-up reads a little over twice.
 
-**The step count is fixed and long.** `/fusion:setup` carries 19 numbered steps in 51 KB, and twelve of them, Step 0 through Step 0k, are pre-flight that runs before any project context is read: the monitor binary, the stylometric profiles, the asset comparison, the configuration file, the permission file, the merge driver, this checkout's identity, the `.gitignore` partition, the upstream check. `/fusion:cleanup` carries 9 steps in 26 KB, of which four are whole passes with bodies of their own, 26 KB for the archive step, 14 for the activity log, 12 for the curation step and 7 for the message it leaves.
+**The step count is fixed and long.** `/fusion:setup` carries 16 numbered steps in 49 KiB, and eleven of them, Step 0 and Step 0b through Step 0k, are pre-flight that runs before any project context is read: the workspace, the monitor binary, the concurrent-session check, the stylometric profiles, the asset comparison, the configuration file, the permission file, the merge driver, this checkout's identity, the `.gitignore` partition and the upstream check. The first version of this paragraph said 19 steps and twelve pre-flight, counting three sub-items of Step 0g as steps of their own and implying a Step 0l that does not exist. `/fusion:cleanup` carries 9 steps in 25 KiB. Four skill bodies run inside three of them, 25 KiB for the archive step, 13 for the activity log, and 12 plus 7 for the curation step and the message it leaves; the fourth pass, Step 3's reconciliation, is a dispatch with no body of its own.
 
 ```mermaid
 flowchart TD
-    subgraph RAMP["Ramp-up: 19 numbered steps, 382 KB, median 72 min to the first production dispatch"]
+    subgraph RAMP["Ramp-up: 16 numbered steps, 425 KiB, median 72 min to the first production dispatch"]
         direction TB
-        S0["Steps 0 to 0k<br/>twelve pre-flight checks<br/>monitor, profiles, config, permissions,<br/>merge driver, identity, gitignore, upstream"] --> S1["Step 1 interrupted-session check"]
+        S0["Steps 0 and 0b to 0k<br/>eleven pre-flight checks<br/>workspace, monitor, concurrent session, profiles,<br/>asset comparison, config, permissions,<br/>merge driver, identity, gitignore, upstream"] --> S1["Step 1 interrupted-session check"]
         S1 --> S2["Steps 2 to 5<br/>rules, context, history file, dashboard"]
     end
-    S2 --> WORK["Production<br/>one coder dispatch = 184 KB"]
+    S2 --> WORK["Production<br/>one coder dispatch = 184 KiB"]
     WORK --> C1["Step 1 file issues for open tasks"]
-    subgraph CLOSE["Closing: 9 steps, four of them full passes, 498 to 940 KB"]
+    subgraph CLOSE["Closing: 9 steps, 506 to 951 KiB"]
         direction TB
         C1 --> C2["Step 2 commit the work"]
-        C2 --> C3["Step 3 reconcile<br/>reconciler dispatch, 197 KB"]
-        C3 --> C4["Step 4 archive<br/>own body, 26 KB"]
-        C4 --> C5["Step 5 log activity<br/>own body, 14 KB"]
-        C5 --> C6["Step 6 curate at the gate, then post<br/>curator dispatch, 219 KB"]
+        C2 --> C3["Step 3 reconcile<br/>reconciler dispatch, 202 KiB"]
+        C3 --> C4["Step 4 archive<br/>own body, 25 KiB"]
+        C4 --> C5["Step 5 log activity<br/>own body, 13 KiB"]
+        C5 --> C6["Step 6 curate at the gate, then post<br/>curator dispatch, 222 KiB, plus two bodies"]
         C6 --> C7["Steps 7 and 8 commit housekeeping, report"]
     end
     C7 --> END["Session ends"]
@@ -574,7 +607,7 @@ pie showData
 
 **Removing a bookkeeping agent is the wrong lever.** Dedicated bookkeeping dispatches are 3% to 10% of dispatch time. The cost is distributed across every dispatch and across the orchestrator's own turn, so only a change to what each dispatch is obliged to write will move it.
 
-**The ramp-up and the closing are the two phases worth cutting first, on the user's own report and on the measurement.** They are the most expensive reading in a session, 2.1 and 5.1 productive units, they carry a fixed step count that does not shrink with the work, and they hold half the questions put to the user. Nothing in finding 18 depends on the disputed attribution in findings 13 to 15: these are counts of steps, kilobytes and gate events, not correlations.
+**The ramp-up and the closing are the two phases worth cutting first, on the user's own report and on the measurement.** They are the most expensive reading in a session, 2.3 and 5.2 productive units, they carry a fixed step count that does not shrink with the work, and they hold half the questions put to the user. Nothing in finding 18 depends on the disputed attribution in findings 13 to 15: these are counts of steps, kilobytes and gate events, not correlations.
 
 **The record store's growth compounds.** Every pass that reads the workbench reads a store that grows monotonically because closure lags filing, at 25% open in the oldest project. The high-water marks introduced in v10.8.1 address the reading side. Nothing bounds the writing side.
 
@@ -586,11 +619,11 @@ pie showData
 
 3. **Treat file size as a first-class planning input.** Both the latency effect and the error effect are strongest in the top size quartile, and both replicate across three projects. It is the size of the file being edited that carries the effect, not the project's total size: against unite-co-creator's weekly outcomes the first predicts the fix share at +0.60 and the second at +0.24. A planner that splits work away from the largest files, or that requires decomposition before a change to them, addresses the half of the problem that is about size. Route to `planner`.
 
-4. **Cut the always-on set again, and measure around the cut this time.** The set stands at 72.5 KB after the August reduction, against 108 KB at its peak. Finding 15 prices that reduction at 12 percentage points of fix share with file size held. The measurement is cheap: record the always-on byte count on the day of the cut, then read the pooled fix share and the median minutes per source commit over the three weeks either side, stratified by file size, exactly as finding 15 does. Doing that around a deliberate cut turns a before-and-after reading into something closer to evidence. Route to `shaper` for the cut, since the question of what may leave the floor is a decision, not a plan.
+4. **Cut the always-on set again, and measure around the cut this time.** The plugin-side set stands at 72.5 KiB after the August reduction, against 108 KiB at its peak, and 74.2 KiB reaches a dispatch once this project's voice profile is added. Finding 15 prices that reduction at 12 percentage points of fix share with file size held. The measurement is cheap: record the always-on byte count on the day of the cut, then read the pooled fix share and the median minutes per source commit over the three weeks either side, stratified by file size, exactly as finding 15 does. Doing that around a deliberate cut turns a before-and-after reading into something closer to evidence. Route to `shaper` for the cut, since the question of what may leave the floor is a decision, not a plan.
 
 5. **Make the closing proportional to the session.** Today `/fusion:cleanup` runs the same nine steps whether the session produced forty commits or none, and 17 of 43 measured sessions produced nothing at all. A session that dispatched no production agent needs no reconciliation pass, no review coverage read and no curation gate. A precondition on each of Steps 3 to 6, evaluated from the event rows the hooks already write, would skip the pass rather than run it over an empty delta. The cadence anchors added in v10.8.1 already do this for one step; the pattern is not applied to the others. Route to `planner`.
 
-6. **Move the ramp-up's twelve pre-flight checks off the critical path.** Steps 0 through 0k verify the local installation, not the project's work: the monitor binary, four stylometric profiles, the asset comparison, the configuration file, the permission file, the merge driver, the checkout identity, the `.gitignore` partition and the upstream check. None of them needs to run before the first dispatch, and most need not run every session. A single cached marker with a staleness date would collapse them to one check on most starts. Route to `planner`.
+6. **Move the ramp-up's eleven pre-flight checks off the critical path.** Step 0 and Steps 0b through 0k verify the local installation and the session's surroundings, not the project's work: the workspace, the monitor binary, the concurrent-session warning, four stylometric profiles, the asset comparison, the configuration file, the permission file, the merge driver, the checkout identity, the `.gitignore` partition and the upstream check. None of them needs to run before the first dispatch, and most need not run every session. A single cached marker with a staleness date would collapse them to one check on most starts. Route to `planner`.
 
 7. **Move the questions into the work.** 34% of gate events fall after the last production dispatch. Some are unavoidable, since a closure decision can only be taken at closure, but the curation gate and the archive confirmation are both asked about material that existed hours earlier. Asking them when the material is produced would leave the closing unattended, which is what the decision behind the pipeline's current gate order was already reaching for. This needs a decision rather than a plan; route to `shaper`.
 
@@ -605,7 +638,7 @@ None. Every finding above is an input to a decision the user has not yet taken, 
 ## Sources
 
 - Full `git log --no-merges --numstat` for all three trees at the HEAD commits named in Scope: 1238, 861 and 3441 commits.
-- The stamped record corpus under each `fusion-workbench/`, live and archived: 2605, 2128 and 4793 files, 20.2 MB, 17.2 MB and 38.4 MB.
+- The stamped record corpus under each `fusion-workbench/`, live and archived: 2605, 2128 and 4793 files, 19.3 MiB, 16.4 MiB and 36.6 MiB, snapshotted before this analysis filed its own two records into the first of them.
 - `fusion-workbench/orchestrator-events.jsonl` in each project: 3277, 2414 and 3834 lines; 475, 403 and 559 paired `task_start`/`task_done`, of which 215, 163 and 224 carry hook-written timestamps.
 - `bin/fusion-rules coder` run with cwd in each project, for the emitted rule set and its byte count.
 - fusion's own shipped surface at the last commit of each of its 19 weeks, read with `git cat-file -s` per file: `rules/`, `agents/`, `skills/`, `agents/orchestrator.md`, `CLAUDE.md`, plus the always-on set derived from the unindented `emit_if_exists` lines in `bin/fusion-rules` at that commit.
