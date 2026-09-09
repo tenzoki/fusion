@@ -373,11 +373,17 @@ describe("fusion-commit-lock: stale holder file (the pre-existing reap path)", (
 
 /* ------------------------------------------------------------------ *
  * The machine-written `commit` row (v10.8.0; `rules/commit-lock.md`
- * `## The lock writes the commit event`). Three behaviours, one each: a row
- * lands only when HEAD moved under `with` AND an orchestrator session is in
- * flight (`agentstate.yaml`); identity and session id come from the
- * SessionStart exports. The dispatch-side rows (`task_start`/`task_done`)
- * are still owed — `shared/issues/260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md`.
+ * `## The lock writes the commit event`). A row lands only when HEAD moved
+ * under `with` AND the row can be scoped to a session — `FUSION_SESSION_ID` is
+ * exported, or `agentstate.yaml` exists. That second condition is a
+ * DISJUNCTION, matching `eventRowsAdmitted` in
+ * `hooks/lib/orchestrator-events.ts`, and it used to be the state file alone;
+ * the cases below take both arms and the neither-arm case, so a future edit
+ * that collapses it back to one term fails here. Identity and session id come
+ * from the SessionStart exports. The dispatch-side rows
+ * (`task_start`/`task_done`) are asserted in `guard-state-shape.test.ts` since
+ * the gate widened; `shared/issues/260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md` recorded that they had
+ * nothing but wiring asserts before that.
  * ------------------------------------------------------------------ */
 
 const EVENT_LOG = "fusion-workbench/orchestrator-events.jsonl";
@@ -415,9 +421,31 @@ describe("fusion-commit-lock: the machine-written commit row", () => {
     expect(existsSync(join(projectRoot, EVENT_LOG))).toBe(false);
   });
 
-  it("writes no row outside an orchestrator session, even though a commit landed", () => {
+  it("writes the row on the session identifier alone, with no agentstate.yaml", () => {
+    // The first arm of the gate, on its own. This is the case that keeps the
+    // commit row being written once the Turn loop's state file goes, and it
+    // fails if the disjunction is ever narrowed back to the file.
     gitRepo();
     const r = commitUnderLock();
+    expect(r.status, r.stderr).toBe(0);
+    expect(existsSync(join(projectRoot, "fusion-workbench", "agentstate.yaml"))).toBe(false);
+    const rows = readFileSync(join(projectRoot, EVENT_LOG), "utf-8").trim().split("\n").map((l) => JSON.parse(l));
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ event: "commit", session_id: "sid-1" });
+  });
+
+  it("writes no row when NEITHER arm of the gate holds, even though a commit landed", () => {
+    // `run` merges `process.env`, and a developer running this suite inside a
+    // fusion session HAS `FUSION_SESSION_ID` exported by the SessionStart hook.
+    // Left alone, this case would pass on a bare shell and assert nothing on
+    // the machine most likely to run it — the same failure `STRIPPED_ENV_VARS`
+    // in helpers/guard-harness.ts exists to prevent. The empty string is the
+    // strip: the script tests `[ -n "${FUSION_SESSION_ID:-}" ]`.
+    gitRepo();
+    const r = run(
+      ["with", "coder", "--", "git", "commit", "-q", "--allow-empty", "-m", "landed"],
+      { ...IDENTITY_ENV, FUSION_SESSION_ID: "" },
+    );
     expect(r.status, r.stderr).toBe(0);
     expect(existsSync(join(projectRoot, EVENT_LOG))).toBe(false);
   });

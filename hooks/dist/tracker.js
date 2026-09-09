@@ -496,7 +496,9 @@ async function main() {
     // which has no `input` in scope. See `lib/events.ts`.
     setEventSession(input.session_id);
     // The dispatch trace's second half: a machine-written `task_done` row per
-    // completed sub-agent dispatch, while an orchestrator session is in flight.
+    // completed sub-agent dispatch, for every session running inside a fusion
+    // project — `lib/orchestrator-events.ts` carries the gate and why it is
+    // project-scoped rather than orchestrator-scoped.
     // Not a measurement and not a sibling of the family below — it reports
     // nothing to the model, it records; the trigger question in the family
     // header does not apply to a row with no sentence. `guard.ts` writes the

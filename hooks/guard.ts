@@ -14,11 +14,19 @@
  *      key.
  *   3. The dispatch trace (v10.8.0) — one machine-written `task_start` row in
  *      `fusion-workbench/orchestrator-events.jsonl` per sub-agent dispatch,
- *      while an orchestrator session is in flight. `lib/orchestrator-events.ts`
- *      carries the schema, the identity resolution and the gate, and why the
- *      row moved from a prompt mandate to a writer that cannot forget.
- *      Dispatch calls take this branch alone: they are not "guarded calls", so
- *      they see no configuration diagnostic and write no guard state.
+ *      for every session running inside a fusion project.
+ *      `lib/orchestrator-events.ts` carries the schema, the identity
+ *      resolution and the gate, why the row moved from a prompt mandate to a
+ *      writer that cannot forget, and why the gate widened from
+ *      orchestrator-scoped to project-scoped. Dispatch calls take this branch
+ *      alone: they are not "guarded calls", so they see no configuration
+ *      diagnostic — and they write no guard state either, with ONE exception
+ *      the widening introduced. A dispatch payload carrying no session
+ *      identifier earns one `guard_advisory` in `.guard-state/events.jsonl`,
+ *      because the alternative is the silent drop that let the model-written
+ *      rows stand on zero identifiers for a whole release without anything
+ *      noticing. A payload that carries one — every measured payload does —
+ *      still writes nothing here.
  *
  * The name is historical and is kept because the event vocabulary, the state
  * directory and the monitor panel all carry it. Nothing here guards anything.
@@ -157,8 +165,11 @@ async function main(): Promise<void> {
 
   // The dispatch trace: a machine-written `task_start` row per sub-agent
   // dispatch. Before the config load on purpose — a dispatch is not a "guarded
-  // call", so it sees no advisory and writes no guard state. The verdict goes
-  // first, the row after it, same order as the write trace below.
+  // call", so it sees no CONFIGURATION advisory and, on every payload that
+  // carries a session identifier, writes no guard state at all. The one
+  // advisory it can write is its own, about that identifier being absent; see
+  // product 3 in the header. The verdict goes first, the row after it, same
+  // order as the write trace below.
   if (isDispatchTool(input.tool_name)) {
     answer("guard", allow, () => emitDispatchEvent("task_start", input));
     return;

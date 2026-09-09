@@ -282,8 +282,14 @@ do_release() {
 # `with` branch only, after the wrapped command exited 0, with the pre-command
 # HEAD as argument; cwd is the workbench root. The row is written only when a
 # commit actually landed (HEAD read from the repository and compared — never
-# inferred from the command's text) and only while an orchestrator session is
-# in flight (`agentstate.yaml` exists), so the log stays what its name says.
+# inferred from the command's text) and only when the row can be scoped to a
+# session: `FUSION_SESSION_ID` is exported (the SessionStart hook exports it)
+# or `agentstate.yaml` exists. That disjunction is the same gate
+# `hooks/lib/orchestrator-events.ts` states as `eventRowsAdmitted`, and the
+# second term is kept so the widening removed nothing; that module's header
+# carries why it widened. No advisory is written here — this script is not a
+# hook and has no `.guard-state/` writer, and a bare `commit` row with no
+# session is the honest degradation.
 # Identity is env-first (the SessionStart export), else one run of the sibling
 # `fusion-identity` — the single implementation of the criterion. An
 # unresolved half is an absent key, never an empty one. Schema and reasoning:
@@ -296,7 +302,7 @@ json_escape() {
 
 emit_commit_event() {
   local before="$1" head subject person checkout sid id_out line
-  [ -f fusion-workbench/agentstate.yaml ] || return 0
+  [ -f fusion-workbench/agentstate.yaml ] || [ -n "${FUSION_SESSION_ID:-}" ] || return 0
   head="$(git rev-parse --short HEAD 2>/dev/null || true)"
   [ -n "$head" ] || return 0
   [ "$head" = "$before" ] && return 0

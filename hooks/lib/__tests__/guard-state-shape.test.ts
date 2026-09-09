@@ -43,6 +43,23 @@
  * resets repeats its sentence on every tool call, which is the failure the
  * throttle exists to prevent.
  *
+ * ## The second subject: the dispatch gate, and what `.guard-state/` says about it
+ *
+ * The last describe block is about a different mechanism and belongs here for
+ * the same reason the rows above do — its subject is what a hook writes when a
+ * state file is NOT there. `lib/orchestrator-events.ts` used to gate every
+ * machine dispatch row on `fusion-workbench/agentstate.yaml` existing, which
+ * made the gate orchestrator-scoped; it is now that file OR a session identifier
+ * on the payload, which makes it project-scoped, and the file arm is kept so the
+ * widening removed nothing.
+ *
+ * What makes these cases `.guard-state/` cases rather than event-log cases is
+ * the second half of the change. A payload with no identifier is no longer a
+ * bare `return`: it earns one `guard_advisory` in `.guard-state/events.jsonl`,
+ * and every case below reads BOTH logs, because a case reading only the event
+ * log cannot tell a row that was written from a row that was dropped in silence
+ * — which is the failure mode that let the model-written rows stand on zero
+ * session identifiers for a whole release.
  */
 
 import { describe, expect, it } from "vitest";
@@ -52,13 +69,18 @@ import {
   CASE_TIMEOUT,
   COVERAGE_SENTENCE_MARKERS,
   REVIEW_PAYLOAD,
+  guardStateWritten,
   openCoverageGap,
   openCoverageWindowWithNoGap,
+  openOrchestratorSession,
   readEvents,
+  readOrchestratorEvents,
+  runDispatch,
   runToolCall,
   withProject,
   type Project,
 } from "./helpers/guard-harness.js";
+import { ABSENT_SESSION_ID_ADVISORY } from "../orchestrator-events.js";
 
 const THROTTLE_FILE = "fusion-workbench/.guard-state/review-coverage.json";
 
@@ -208,6 +230,120 @@ describe("a well-formed state file is carried forward, not emptied", () => {
         // review landing is the failure the throttle exists to prevent.
         expect(reviewLands(root)).toBe("");
         expect(readState(root, THROTTLE_FILE)?.reported).toBe(first);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/* ------------------------------------------------------------------ *
+ * The dispatch gate — see the second subject in this file's header
+ * ------------------------------------------------------------------ */
+
+const AGENTSTATE = "fusion-workbench/agentstate.yaml";
+
+/** One dispatch payload's worth of fields, so every case names the same row. */
+const DISPATCH = {
+  toolUseId: "toolu_01B2gate",
+  subagentType: "fusion:coder",
+  description: "generalise the gate",
+} as const;
+
+/** The `task_start` rows in the workbench-root event log. */
+function dispatchRows(root: string): Record<string, unknown>[] {
+  return readOrchestratorEvents(root).filter((r) => r.event === "task_start");
+}
+
+/** The advisories in `.guard-state/events.jsonl` about an absent identifier. */
+function absentIdAdvisories(root: string): string[] {
+  return readEvents(root)
+    .filter((e) => e.event === "guard_advisory")
+    .map((e) => e.detail ?? "")
+    .filter((detail) => detail.includes(ABSENT_SESSION_ID_ADVISORY));
+}
+
+describe("the dispatch row is gated on a session, not on agentstate.yaml", () => {
+  it(
+    "writes the row with NO agentstate.yaml, on the payload's session identifier",
+    () => {
+      withProject(({ root }) => {
+        expect(existsSync(resolve(root, AGENTSTATE))).toBe(false);
+        runDispatch(root, { ...DISPATCH, sessionId: "sid-project-scoped" });
+
+        const rows = dispatchRows(root);
+        expect(rows, "the widened gate admitted nothing").toHaveLength(1);
+        expect(rows[0]).toMatchObject({
+          event: "task_start",
+          task: DISPATCH.toolUseId,
+          agent: "coder",
+          session_id: "sid-project-scoped",
+          detail: DISPATCH.description,
+        });
+
+        // The ordinary path is still silent under `.guard-state/`: the advisory
+        // is the exception an absent identifier earns, not a new per-dispatch
+        // write. This is the strongest spelling — it needs no list of files.
+        expect(guardStateWritten(root), "an ordinary dispatch wrote guard state").toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still writes the row on agentstate.yaml alone, which is what it always did",
+    () => {
+      // The regression half. The widening added a term and removed none, so a
+      // payload the OLD gate admitted must still be admitted — and this is the
+      // case that fails if a future edit turns the disjunction into the new
+      // term standing on its own.
+      withProject(({ root }) => {
+        openOrchestratorSession(root);
+        runDispatch(root, { ...DISPATCH, sessionId: "sid-in-flight" });
+        expect(dispatchRows(root)).toHaveLength(1);
+        expect(absentIdAdvisories(root)).toEqual([]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "writes the row with session_id ABSENT when only agentstate.yaml admits it",
+    () => {
+      withProject(({ root }) => {
+        openOrchestratorSession(root);
+        runDispatch(root, DISPATCH);
+
+        const rows = dispatchRows(root);
+        expect(rows).toHaveLength(1);
+        expect(Object.keys(rows[0]), "session_id was written empty").not.toContain("session_id");
+        expect(rows[0]).toMatchObject({ task: DISPATCH.toolUseId, agent: "coder" });
+
+        // Absent, and SAID so. The row on its own cannot distinguish a payload
+        // that carried no identifier from a schema that never had the field.
+        const advisories = absentIdAdvisories(root);
+        expect(advisories, "the absent identifier went unreported").toHaveLength(1);
+        expect(advisories[0]).toContain("session_id absent");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reports rather than drops when NEITHER arm of the gate holds",
+    () => {
+      withProject(({ root }) => {
+        expect(existsSync(resolve(root, AGENTSTATE))).toBe(false);
+        runDispatch(root, DISPATCH);
+
+        // No row: neither term is satisfied, so nothing scopes it.
+        expect(readOrchestratorEvents(root)).toEqual([]);
+
+        // But not a silent drop. Exactly one advisory, naming the condition and
+        // saying that no row was written — which is the whole difference
+        // between this and the bare `return` it replaced.
+        const advisories = absentIdAdvisories(root);
+        expect(advisories, "the dropped row was never reported").toHaveLength(1);
+        expect(advisories[0]).toContain("no task_start row is written");
       });
     },
     CASE_TIMEOUT,

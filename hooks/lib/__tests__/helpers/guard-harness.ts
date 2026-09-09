@@ -692,14 +692,29 @@ export function runGuard(
   toolInput: Record<string, unknown>,
   overrides: Record<string, string> = {},
 ): GuardResult {
-  const entry = guardEntry();
-
   const input: HookInput = {
     session_id: "guard-harness",
     hook_event_name: "PreToolUse",
     tool_name: toolName,
     tool_input: toolInput,
   };
+  return spawnGuard(root, input, overrides);
+}
+
+/**
+ * One guard run over an ALREADY-BUILT payload.
+ *
+ * Factored out of `runGuard` rather than copied for `runDispatch`, whose whole
+ * subject is a payload field `runGuard` hard-codes: the session identifier. A
+ * second spawn here would be a second place for the fail-open check, the status
+ * check and the env strip to drift.
+ */
+function spawnGuard(
+  root: string,
+  input: Record<string, unknown>,
+  overrides: Record<string, string> = {},
+): GuardResult {
+  const entry = guardEntry();
 
   const run = spawnSync(entry.bin, entry.args, {
     cwd: root,
@@ -749,6 +764,73 @@ export function runWrite(
   overrides: Record<string, string> = {},
 ): GuardResult {
   return runGuard(root, toolName, { file_path: filePath }, overrides);
+}
+
+/* ------------------------------------------------------------------ *
+ * The sub-agent dispatch payload
+ *
+ * `runGuard` writes `session_id: "guard-harness"` into every payload it builds,
+ * which is right for the ~50 cases whose subject is a write tool or Bash. It is
+ * exactly wrong for the gate in `lib/orchestrator-events.ts`, whose two arms
+ * are that identifier and `agentstate.yaml`: a runner that always supplies one
+ * arm can never reach the case where neither holds. So the identifier here is
+ * OPTIONAL and, when omitted, the key is left off the payload entirely rather
+ * than written empty — which is what Claude Code would do, and what the module's
+ * absent-rather-than-empty rule is about.
+ * ------------------------------------------------------------------ */
+
+/** What a case may put on a dispatch payload. Every field is optional. */
+export interface DispatchPayload {
+  /** Omitted from the payload entirely when undefined. */
+  sessionId?: string;
+  /** Pairs `task_start` with `task_done`; the row's `task` field. */
+  toolUseId?: string;
+  /** `fusion:coder` and the like; the row's `agent` field, colon-stripped. */
+  subagentType?: string;
+  /** The row's `detail` field. */
+  description?: string;
+  /** `Task` by default; `Agent` is the other name Claude Code has used. */
+  toolName?: string;
+}
+
+/** Run one sub-agent dispatch through the guard (the `task_start` half). */
+export function runDispatch(
+  root: string,
+  payload: DispatchPayload = {},
+  overrides: Record<string, string> = {},
+): GuardResult {
+  const toolInput: Record<string, unknown> = {
+    ...(payload.subagentType !== undefined && { subagent_type: payload.subagentType }),
+    ...(payload.description !== undefined && { description: payload.description }),
+  };
+  return spawnGuard(
+    root,
+    {
+      hook_event_name: "PreToolUse",
+      tool_name: payload.toolName ?? "Task",
+      tool_input: toolInput,
+      ...(payload.sessionId !== undefined && { session_id: payload.sessionId }),
+      ...(payload.toolUseId !== undefined && { tool_use_id: payload.toolUseId }),
+    },
+    overrides,
+  );
+}
+
+/**
+ * Put an orchestrator session in flight — the gate's second arm, on its own.
+ *
+ * Deliberately not `openCoverageWindowWithNoGap`, which writes the same file
+ * with a session anchor in it and requires `git: true` to produce one. A case
+ * about the gate wants the file's EXISTENCE and nothing else, and coupling it
+ * to a git repository would make the two cases that need no repository pay for
+ * one.
+ */
+export function openOrchestratorSession(root: string): void {
+  writeFileSync(
+    resolve(root, "fusion-workbench", "agentstate.yaml"),
+    "session:\n  domain: code\n",
+    "utf-8",
+  );
 }
 
 /* ------------------------------------------------------------------ *
@@ -942,6 +1024,24 @@ export function readEvents(root: string): EventLine[] {
     .split("\n")
     .filter((line) => line.trim().length > 0)
     .map((line) => JSON.parse(line) as EventLine);
+}
+
+/**
+ * `orchestrator-events.jsonl` as parsed rows; `[]` when nothing wrote it.
+ *
+ * A DIFFERENT log from `readEvents` above, and the pair is the whole point of
+ * the gate cases: the machine dispatch rows go to the workbench-root log here,
+ * while the advisory about a row that could not be scoped goes to
+ * `.guard-state/events.jsonl` there. A case that read only one of them could
+ * not tell a written row from a silent drop.
+ */
+export function readOrchestratorEvents(root: string): Record<string, unknown>[] {
+  const p = resolve(root, "fusion-workbench", "orchestrator-events.jsonl");
+  if (!existsSync(p)) return [];
+  return readFileSync(p, "utf-8")
+    .split("\n")
+    .filter((line) => line.trim().length > 0)
+    .map((line) => JSON.parse(line) as Record<string, unknown>);
 }
 
 /**

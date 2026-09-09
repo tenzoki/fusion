@@ -27,7 +27,10 @@
  *   - `session_start` — emitted by `session-start.ts` (SessionStart), once per
  *     session. See `## The session_start row` at the foot of this module for
  *     what it carries, why the model's own row is not replaced by it, and what
- *     tells the two apart.
+ *     tells the two apart. It is the one machine row that does NOT pass the
+ *     gate below: at SessionStart `agentstate.yaml` does not exist yet, and the
+ *     identifier is that row's dedup key rather than a descriptive field, so it
+ *     is required outright.
  *
  * Everything else semantic — `turn_start`, gates, reviews — stays
  * model-written: those rows carry judgements (a Directive, a verdict, a Turn's
@@ -37,15 +40,58 @@
  * cannot know its Directive or its history file, so for now each writer writes
  * the row it can, and the `writer` field says which wrote which.
  *
- * ## The gate: rows are written only while an orchestrator session is in flight
+ * ## The gate: a workbench root, and a session the row can be scoped to
  *
- * `fusion-workbench/agentstate.yaml` exists exactly while an orchestrator
- * session is running (Setup writes it, a clean close deletes it). A dispatch
- * outside that window — a plain Claude session in the same project using its
- * own subagents — writes nothing here, so the log stays what its name says it
- * is. Residual, stated rather than hidden: a plain session's dispatches DURING
- * a live orchestrator session do land in the log; their rows carry their own
- * `session_id`, which is what lets a reader tell them apart.
+ * A dispatch row is written when `findWorkbenchRoot()` found a root AND either
+ * of two terms holds: the hook payload carries a session identifier, or
+ * `fusion-workbench/agentstate.yaml` exists. `eventRowsAdmitted` is the
+ * predicate and `orchestratorSessionInFlight` is the second term, kept intact
+ * as one arm of the disjunction — every call admitted before the widening is
+ * still admitted, and this module removed nothing to gain the first term.
+ *
+ * ## Why it widened: from orchestrator-scoped to project-scoped
+ *
+ * The `agentstate.yaml` term made the gate ORCHESTRATOR-scoped. That file
+ * exists exactly while an orchestrator session is running (Setup writes it, a
+ * clean close deletes it), so a dispatch outside that window — a plain Claude
+ * session in the same project using its own subagents — wrote nothing here and
+ * the log stayed what its name says it is.
+ *
+ * That reading is being retired at its source. The state file is the Turn
+ * loop's bookkeeping, the Turn loop is going, and a gate keyed on a file that
+ * will not exist admits nothing at all. The identifier term replaces the
+ * inference with the thing it was inferring: a session identifier plus a
+ * workbench root IS a Claude Code session running inside a fusion project, read
+ * off the payload rather than deduced from a file's existence.
+ *
+ * So the gate is PROJECT-scoped now, and the consequence is the point rather
+ * than a cost to apologise for. A plain session's dispatches land in the log
+ * whether or not an orchestrator is running — which the old gate already
+ * admitted for the window it could not exclude, and stated as its residual.
+ * Every row carries its own `session_id`, so scoping is the READER's job:
+ * `bin/fusion-events` already reads this log by the identity on each line
+ * rather than by a line's position in it, and after the widening that is the
+ * only correct way to read it.
+ *
+ * ## An absent identifier is reported, never silently dropped
+ *
+ * With a root found and no identifier on the payload, one `guard_advisory`
+ * naming the condition goes to `.guard-state/events.jsonl` — the same log the
+ * configuration diagnostics use and the monitor's panel renders. The row itself
+ * then follows the disjunction: written with `session_id` ABSENT when
+ * `agentstate.yaml` still admits it, per this module's absent-rather-than-empty
+ * rule, and not written at all when nothing does. Either way a reader of the
+ * guard log can tell that a row was owed and what was missing. A bare `return`
+ * could tell them neither, which is how the model-written rows came to stand on
+ * zero session identifiers without anything noticing.
+ *
+ * The advisory is emitted once per emission call, and only where a row was
+ * actually owed: `recordDispatchLaunch` parks a mapping entry rather than
+ * writing a row, so it takes the gate and stays silent — `emitSubagentStop`
+ * raises the advisory when that parked dispatch's row finally comes due.
+ * `heartbeatSessionMarker` keeps the narrow `orchestratorSessionInFlight` gate
+ * unwidened and unadvised, because its subject is the orchestrator's own
+ * session marker rather than a row in this log.
  *
  * ## Identity: env first, then the one implementation, never a re-derivation
  *
@@ -79,6 +125,7 @@ import {
 } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { emitEvent } from "./events.js";
 import { findWorkbenchRoot } from "./workbench-root.js";
 
 /** The sub-agent dispatch tool, under both names Claude Code has used for it. */
@@ -91,9 +138,66 @@ export function utcStamp(now: Date = new Date()): string {
   return now.toISOString().slice(0, 19);
 }
 
-/** An orchestrator session is in flight iff Setup's state file exists. */
+/**
+ * An orchestrator session is in flight iff Setup's state file exists.
+ *
+ * No longer the gate on its own — see `## The gate` — but still one arm of it,
+ * and still the whole gate for the session-marker heartbeat below.
+ */
 export function orchestratorSessionInFlight(root: string): boolean {
   return existsSync(resolve(root, "fusion-workbench", "agentstate.yaml"));
+}
+
+/**
+ * The session identifier off a hook payload: absent rather than empty.
+ *
+ * Every hook this module serves declares `session_id` as `unknown`, because a
+ * payload is data from another process. A non-string or an empty string reads
+ * as unresolved, the same rule `lib/events.ts` states for its own copy of this
+ * field, so that "no session was named" and "the session is the empty string"
+ * stay distinguishable — only one of them is a thing that can happen.
+ */
+export function payloadSessionId(input: { session_id?: unknown }): string | undefined {
+  return typeof input.session_id === "string" && input.session_id !== ""
+    ? input.session_id
+    : undefined;
+}
+
+/**
+ * The gate. A row is admitted with a workbench root found and either term of
+ * the disjunction satisfied — see `## The gate` in the header for both terms,
+ * why the second one is kept, and why the first one was added.
+ */
+export function eventRowsAdmitted(root: string, sessionId: string | undefined): boolean {
+  return sessionId !== undefined || orchestratorSessionInFlight(root);
+}
+
+/**
+ * The advisory an absent session identifier earns, as a stable prefix a reader
+ * and a test can both match on. The rest of the detail says which row kind was
+ * owed and what became of it.
+ */
+export const ABSENT_SESSION_ID_ADVISORY =
+  "orchestrator-events: the hook payload carried no session identifier";
+
+/**
+ * Report an absent identifier into the guard's own event log.
+ *
+ * Wrapped in its own `try`, and that is deliberate rather than defensive
+ * habit: this call sits AHEAD of the row it is about, so an unwritable
+ * `.guard-state/` here would cost the caller the row itself. The module's
+ * standing contract is that the append is the last thing that can fail, and
+ * this keeps it true.
+ */
+function adviseAbsentSessionId(rowKind: string, written: boolean): void {
+  const outcome = written
+    ? `the ${rowKind} row is written with session_id absent`
+    : `no ${rowKind} row is written, and no orchestrator session is in flight either`;
+  try {
+    emitEvent("guard_advisory", undefined, undefined, `${ABSENT_SESSION_ID_ADVISORY}; ${outcome}.`);
+  } catch {
+    // An advisory that cannot be written may not cost the row it is about.
+  }
 }
 
 /**
@@ -109,6 +213,13 @@ export function orchestratorSessionInFlight(root: string): boolean {
  * session also refresh the marker; the `running` verdict that produces at
  * Setup Step 0c is then true anyway. Never creates, never deletes — writing
  * and clearing stay `bin/fusion-session-mark`'s.
+ *
+ * It keeps `orchestratorSessionInFlight` UNWIDENED where the row emitters now
+ * take `eventRowsAdmitted`, and the reason is that its subject is different:
+ * the marker records that an ORCHESTRATOR is running against this project, and
+ * a plain session refreshing it on the strength of having a session identifier
+ * would make Setup Step 0c's `running` verdict a statement about the wrong
+ * thing.
  */
 export function heartbeatSessionMarker(root: string): void {
   const marker = resolve(root, "fusion-workbench", ".session-marker");
@@ -237,10 +348,17 @@ export function dispatchWasBackgrounded(input: DispatchHookInput): boolean {
   return (resp as { status?: unknown }).status === "async_launched";
 }
 
-/** Park the pairing for the SubagentStop hook. No-op without an agentId. */
+/**
+ * Park the pairing for the SubagentStop hook. No-op without an agentId.
+ *
+ * Takes the gate and raises no advisory: nothing is written to the event log
+ * here, so there is no row for an absent identifier to be missing from.
+ * `emitSubagentStop` advises when this launch's row actually comes due.
+ */
 export function recordDispatchLaunch(input: DispatchHookInput): void {
   const root = findWorkbenchRoot();
-  if (root === null || !orchestratorSessionInFlight(root)) return;
+  if (root === null) return;
+  if (!eventRowsAdmitted(root, payloadSessionId(input))) return;
   const agentId = (input.tool_response as { agentId?: unknown } | null | undefined)?.agentId;
   if (typeof agentId !== "string" || agentId === "") return;
   const map = readMap(root);
@@ -268,18 +386,27 @@ export interface SubagentStopInput {
  */
 export function emitSubagentStop(input: SubagentStopInput): void {
   const root = findWorkbenchRoot();
-  if (root === null || !orchestratorSessionInFlight(root)) return;
+  if (root === null) return;
   const agentId = typeof input.agent_id === "string" ? input.agent_id : "";
   if (agentId === "") return;
   const map = readMap(root);
   const entry = map[agentId];
   if (entry === undefined) return;
+
+  // The gate sits AFTER the mapping lookup on purpose. A sync dispatch's
+  // SubagentStop reaches here with no parked entry and is owed no row at all,
+  // so gating first would advise about a row nobody expected — one spurious
+  // advisory per sync dispatch, which is the noise that teaches a reader to
+  // ignore the log. Past this point a row is owed.
+  const sessionId = payloadSessionId(input);
+  const admitted = eventRowsAdmitted(root, sessionId);
+  if (sessionId === undefined) adviseAbsentSessionId("task_done", admitted);
+  if (!admitted) return;
+
   delete map[agentId];
   writeMap(root, map);
 
   const identity = resolveIdentity(root);
-  const sessionId =
-    typeof input.session_id === "string" && input.session_id !== "" ? input.session_id : undefined;
   const row: OrchestratorEventRow = {
     ts: utcStamp(),
     event: "task_done",
@@ -317,9 +444,12 @@ function agentName(toolInput: Record<string, unknown> | undefined): string | und
 }
 
 /**
- * Append one machine-written dispatch row. No-op without a workbench or
- * outside an orchestrator session. Never throws past its caller's
- * `bestEffort`; the append itself is the last thing that can fail.
+ * Append one machine-written dispatch row. No-op without a workbench, and
+ * gated by `eventRowsAdmitted`. An absent identifier is advised rather than
+ * dropped in silence — see `## An absent identifier is reported` in the header.
+ * Never throws past its caller's `bestEffort`; the append itself is still the
+ * last thing that can fail, which is what `adviseAbsentSessionId`'s own `try`
+ * preserves.
  */
 export function emitDispatchEvent(
   event: "task_start" | "task_done",
@@ -327,12 +457,14 @@ export function emitDispatchEvent(
 ): void {
   const root = findWorkbenchRoot();
   if (root === null) return;
-  if (!orchestratorSessionInFlight(root)) return;
+
+  const sessionId = payloadSessionId(input);
+  const admitted = eventRowsAdmitted(root, sessionId);
+  if (sessionId === undefined) adviseAbsentSessionId(event, admitted);
+  if (!admitted) return;
 
   const identity = resolveIdentity(root);
   const task = typeof input.tool_use_id === "string" && input.tool_use_id !== "" ? input.tool_use_id : undefined;
-  const sessionId =
-    typeof input.session_id === "string" && input.session_id !== "" ? input.session_id : undefined;
   const description = input.tool_input?.description;
   const detail =
     typeof description === "string" && description !== "" ? description.slice(0, 200) : undefined;
@@ -476,8 +608,7 @@ export function emitSessionStartEvent(
   input: SessionStartHookInput,
   resolveFacts: () => SessionStartFacts,
 ): SessionStartEventRow | null {
-  const sessionId =
-    typeof input.session_id === "string" && input.session_id !== "" ? input.session_id : undefined;
+  const sessionId = payloadSessionId(input);
   if (sessionId === undefined) return null;
   if (sessionStartAlreadyWritten(root, sessionId)) return null;
 

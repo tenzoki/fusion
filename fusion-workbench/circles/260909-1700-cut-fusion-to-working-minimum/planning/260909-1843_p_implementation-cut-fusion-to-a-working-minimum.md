@@ -169,7 +169,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
    - Dependencies: none
    - Verification: after `fusion --update` and a restart, `grep session_start fusion-workbench/orchestrator-events.jsonl | tail -1` shows a row carrying all five fields with `writer` naming the hook. Falls in session 3 (step C0).
 
-5. **B2: the sentinel becomes the session identifier**
+5. [DONE] **B2: the sentinel becomes the session identifier**
    - Executor: `coder`
    - Files: `hooks/lib/orchestrator-events.ts`, `hooks/guard.ts`, `hooks/tracker.ts`, `bin/fusion-commit-lock`
    - Changes: replace `orchestratorSessionInFlight(root)` with a predicate that is satisfied when a workbench root was found and the payload carries a session identifier, **disjoined with the existing `existsSync` check** so that this step can remove nothing. An absent identifier emits one `guard_advisory` naming the condition and the row is written with `session_id` absent, per the module's own absent-key rule. Rewrite the module header: the gate's meaning changes from orchestrator-scoped to project-scoped, and the header is where that is authored.
