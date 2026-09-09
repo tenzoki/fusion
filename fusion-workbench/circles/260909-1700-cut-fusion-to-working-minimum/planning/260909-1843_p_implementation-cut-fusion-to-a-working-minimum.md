@@ -1,7 +1,7 @@
 # Implementation Plan: cut fusion to a working minimum
 
 **Date:** 2026-09-09
-**Status:** Draft
+**Status:** In Progress (session 1 of 4 complete)
 **Spec:** `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`, C1 to C9. Later rulings bind and one supersedes the spec's text: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3) and the two records this plan files, `260909-1843_*_which-sentinel-replaces-the-state-files-existence-as-the-gate-on-machine-written-rows.md` and `260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md`.
 **Amended:** 2026-09-09, against the two answers at gate G1. `260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md`: the dashboard file does not survive and its information does, which added one field to step B3, one renderer to step B4, one check to step C0, and turned C1's re-sourcing into a removal. `260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md`: report only, which resolved step C6's conditional to a stdout verdict. No step was renumbered and no session boundary moved.
 
@@ -131,21 +131,21 @@ flowchart LR
 
 ### Session 1 — measure and arm. Nothing is removed.
 
-1. **A1: read how often each removed gate fired**
+1. [DONE] **A1: read how often each removed gate fired**
    - Executor: `analyst`
    - Files: reads `fusion-workbench/orchestrator-events.jsonl` and the two other project logs the user names; writes one analysis file to `$OUT_ANALYSIS`
    - Changes: count, per checkout via the `checkout` field so union-merged foreign lines are excluded, the firings of each gate C1 removes — the Max-Turns circuit breaker (`circuit_breaker`), the convergence check, the per-Turn coherence gate (`coherence_review`, `gate_hit`), the Rebalance gate (`rebalance_grounding`, `rebalance_artifact`, `rebalance_directive`), the review-coverage read and the resume procedure. Denominator is the `session_start` rows carrying a session identifier, stated with the count. Where a gate has no row kind, say so and report it as unmeasurable rather than as zero.
    - Dependencies: none
    - Verification: the analysis file names every gate scheduled for removal, each with a numerator, the denominator and the command that produced both. Any gate whose firing rate exceeds half its population is listed in the file's head as **returns to the user**, and step C1 may not delete it.
 
-2. **A2: arm the per-path byte bound at the pre-cut totals**
+2. [DONE] **A2: arm the per-path byte bound at the pre-cut totals**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/rules-emission-golden.test.ts`, `hooks/lib/__tests__/fixtures/`
    - Changes: add a bound over the per-dispatch-path total — agent prompt plus emitted plugin rules plus `CLAUDE.md` — with the fifteen totals of the spec's C8 table as its baseline map and zero head-room. Reuse `helpers/growth-bound.ts` `growth()`; do not write second arithmetic. The failure text names the path, the component that grew, and the sentence that a shared component's addition must be offset once in a shared component or once per path, and states that no re-baselining event covers a growing `CLAUDE.md`.
    - Dependencies: none
    - Verification: three replays, all three required. Against the tree at `bb341360` the bound is green (total equals baseline). Replayed over 2026-08-27 to 2026-09-09 it goes red while the existing always-on core bound stays green over the same window. Replayed over a window in which no component grew it stays green. Each replay is a `git stash`-free checkout into a scratch worktree and one `npx vitest run rules-emission-golden`, and the three outputs are pasted into the commit message.
 
-3. **A3: restate the sentence the later ruling superseded**
+3. [DONE] **A3: restate the sentence the later ruling superseded**
    - Executor: `coder`
    - Files: the spec, `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`
    - Changes: in C6, replace `Order is the user's and is not computed.` with `Order is computed from confirmed prerequisite edges and reported; the user overrides it where he wants to.` and add one sentence to C6's `**Decisions made:**` recording that the work-item file carries a machine-readable dependency field from its first version, citing `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md`. Change nothing else in the spec. Do not plan or build the helper that computes the order; that is the other Circle's work.
@@ -309,6 +309,23 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
 - Two checkouts worked the project through a full cycle without either overwriting the other's records or taking the other's claimed item.
 
 **Precondition of the release tag:** D3 is complete and D4's review-coverage read has been run and stated. A plan-stated precondition gets no mechanism here and is read by a human at the gate, per `260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`.
+
+## Reconciliation Log
+
+**260909-2107 (reconciler, session b47820a4):** Session 1's three steps verified against HEAD
+`08e81db3`. A1 → `86e06783` (analysis `260909-2215-gate-firing-read-before-the-cut.md`, plus three
+issue records: two filed in this Circle's issue store, one in `shared/issues/` for a truncated-line
+defect in a consuming project's log). A2 → `303488a8` (`hooks/lib/__tests__/rules-emission-golden.test.ts`
+and `fixtures/dispatch-path.baseline` added; `npx vitest run rules-emission-golden` reruns green, 21/21
+at HEAD). A3 → `e8dbeb74` (`grep -c "is not computed"` on the spec returns 0; C6 now reads "Order is
+computed from confirmed prerequisite edges..."). All three inline markers set to `[DONE]` above; none
+were marked at all before this pass, despite being committed — the plan file itself entered no commit
+until A3's, so this is the first reconciliation pass over it. `workbench-citation-lint` is green
+(13/13) at HEAD; the basename collision the A3 and A2 commit messages both name as still-open
+(`260909-1455_*_...`) was resolved by the session's last commit (`08e81db3`), which is untouched by
+this Circle's own numbered steps and is not claimed as one. Top-level `**Status:**` moved from
+`Draft` to `In Progress (session 1 of 4 complete)`, since no step in Sessions 2-4 has started.
+No drift found between what the plan claims for session 1 and what is on disk.
 
 ## Data Structures
 

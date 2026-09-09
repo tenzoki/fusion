@@ -6,3 +6,9 @@ The plan's Current State says every removed gate has its own row kind and three 
 Found while performing step A1. The sentence is what a later reader would rely on to decide the A1 measurement was complete, and step A1's verification line forbids C1 from deleting a gate that was not measured. Evidence and the per-gate table: `260909-2215-gate-firing-read-before-the-cut.md` `## Not measured, therefore not cleared`.
 
 **Acceptance test:** the Current State sentence names which gates carry a row kind and which do not, or is restated so it makes no claim about the three that do not.
+
+---
+Reconciliation (260909-2107, reconciler): still open at HEAD `08e81db3`. Verified independently:
+`grep -n "Convergence Check\|Review Coverage Read" agents/orchestrator.md` confirms both sections
+exist and neither writes an `orchestrator-events.jsonl` row kind; the plan's Current State sentence
+is unchanged. Correctly carries `_o_`.
