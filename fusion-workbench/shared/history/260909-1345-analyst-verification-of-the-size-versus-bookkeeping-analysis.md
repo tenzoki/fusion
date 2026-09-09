@@ -20,6 +20,6 @@ The finding that most affects a planned cut is not in the report at all. Thirtee
 ## Products
 
 - `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md` in the shared analysis store
-- Five issue records: `260909-1345_o_`, `260909-1346_o_`, `260909-1347_o_`, `260909-1348_o_`, `260909-1349_o_`
+- Five issue records: `260909-1345_*_`, `260909-1346_*_`, `260909-1347_*_`, `260909-1348_*_`, `260909-1349_*_`
 
 The analysis under review was not edited. No code, data, prompt or rule file was touched.

@@ -154,9 +154,9 @@ flowchart LR
 
 **User gate G1 — answered on 2026-09-09; both records carry their `Answered:` line.**
 
-`260909-1700_a_does-the-live-dashboard-file-survive-a-session-with-no-turns.md`: the file does not survive and its information does. The ruling's own measurement bounds the work — the ETA, the event list and the warnings panel read the two sources that survive, so what needs a carrier is the dashboard panel and the state panel alone. Both land in session 2, additive, while `orchestrator-live.md` still exists: the carrier in B3, the renderer in B4, the check in C0. C1 is then left with a removal and nothing to re-source.
+`260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md`: the file does not survive and its information does. The ruling's own measurement bounds the work — the ETA, the event list and the warnings panel read the two sources that survive, so what needs a carrier is the dashboard panel and the state panel alone. Both land in session 2, additive, while `orchestrator-live.md` still exists: the carrier in B3, the renderer in B4, the check in C0. C1 is then left with a removal and nothing to re-source.
 
-`260909-1700_a_does-the-plan-size-ceiling-fail-hard-or-only-report.md`: report only, never a hard failure. Step C6 adds a stdout verdict and no test.
+`260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md`: report only, never a hard failure. Step C6 adds a stdout verdict and no test.
 
 Neither record is realised yet. Each transitions to `_i_` when the step that carries it commits: B4 for the first, C6 for the second.
 
@@ -365,7 +365,7 @@ Each step states its own check above, and the rule is that no step's acceptance 
 
 ## Open Questions
 
-- [x] `260909-1700_a_does-the-live-dashboard-file-survive-a-session-with-no-turns.md` — answered at G1: the file goes and its information rides the log. Carried by B3 and B4, checked by C0, stripped of its fallback by C1. Transitions to `_i_` when B4 commits.
-- [x] `260909-1700_a_does-the-plan-size-ceiling-fail-hard-or-only-report.md` — answered at G1: report only. Carried by C6. Transitions to `_i_` when C6 commits.
+- [x] `260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md` — answered at G1: the file goes and its information rides the log. Carried by B3 and B4, checked by C0, stripped of its fallback by C1. Transitions to `_i_` when B4 commits.
+- [x] `260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md` — answered at G1: report only. Carried by C6. Transitions to `_i_` when C6 commits.
 - [ ] Whether the second and third project logs A1 needs are available to this checkout, or whether the read is scoped to fusion's own log with the narrower denominator stated. A1 answers this by looking; if only one log is reachable, the analysis says so and the population is fusion's alone.
 - [ ] `260909-1631`, `260909-1632` and `260909-1633` are answered inside the spec and still carry the open marker. They transition when C1, C7 and A2 respectively commit; nothing in this plan re-decides them.

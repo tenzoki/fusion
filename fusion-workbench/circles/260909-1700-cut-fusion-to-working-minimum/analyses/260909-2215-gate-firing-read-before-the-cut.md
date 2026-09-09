@@ -243,9 +243,9 @@ Three of the six gates cannot be cleared by this step at all, because they leave
 
 ## Filed Issues
 
-- `260909-2215_o_the-plans-current-state-says-every-removed-gate-has-its-own-row-kind-and-three-of-six-have-none.md`
-- `260909-2215_o_step-a1s-denominator-names-a-field-eleven-rows-carry-and-the-plans-own-figure-uses-ninety-four.md`
-- `260909-2215_o_four-truncated-lines-make-a-streaming-jq-read-of-the-event-log-stop-at-forty-percent.md`
+- `260909-2215_*_the-plans-current-state-says-every-removed-gate-has-its-own-row-kind-and-three-of-six-have-none.md`
+- `260909-2215_*_step-a1s-denominator-names-a-field-eleven-rows-carry-and-the-plans-own-figure-uses-ninety-four.md`
+- `260909-2215_*_four-truncated-lines-make-a-streaming-jq-read-of-the-event-log-stop-at-forty-percent.md`
 
 ## Sources
 

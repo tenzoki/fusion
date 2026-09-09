@@ -17,7 +17,7 @@ and nothing else anywhere in the spec.
 
 ## What was done
 
-One file touched: `shared/planning/260909-1615_o_spec-cut-fusion-to-a-working-minimum.md`.
+One file touched: `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`.
 
 1. In C6's `What replaces it:` paragraph, `Order is the user's and is not computed.` became
    `Order is computed from confirmed prerequisite edges and reported; the user overrides it where he
@@ -39,8 +39,8 @@ The dispatch forbade edits to neighbouring sentences, so it stands and is report
 ## Verification
 
 `npx vitest run workbench-citation-lint` — exit 1. The single failure is the pre-existing basename
-collision between `shared/analyses/260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md`
-and `shared/history/260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md`, filed as
+collision between `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md`
+and `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md`, filed as
 `260909-1455_*_an-analysis-and-its-history-file-share-one-basename-and-the-citation-gate-is-red.md`.
 The twelve citation-resolution tests pass, so the citation added here resolves. No new violation.
 
