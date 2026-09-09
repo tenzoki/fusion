@@ -153,3 +153,31 @@ what pays for the change this Circle makes to `agents/playmaker.md`, and this re
 "binds this Circle if `agents/playmaker.md` cannot be changed inside 698 bytes". A re-sharpen
 through the shaper's portfolio-activation mode before the marker moves would fold the closed Circle
 into the snapshot and settle that question at the gate rather than at the implementation step.
+
+## Activation proposal
+
+**Proposed activation:** 260909-0756. **Run:** playmaker session
+`260909-0756-playmaker-direct-dispatch.md`.
+
+Rank 1 of 1 among anticipated Circles, unchanged, and this checkout still holds no active Circle.
+This block exists to correct one figure the 260908-2313 proposal above states. That block reads
+"it was written four commits before HEAD, so its measurements are fresh". The branch has since been
+rebased onto a concurrent session's work, and the commit this record's `## Grounding snapshot`
+names, `de94102f`, is no longer reachable from HEAD: `git merge-base --is-ancestor de94102f HEAD`
+exits non-zero and `git branch -a --contains de94102f` names no branch. From the merge base
+`25bee305` the two sides stand 14 and 39 commits apart. So the distance from the snapshot to HEAD
+is not a number that can be taken at all, and the 39 that `git rev-list --count de94102f..HEAD`
+prints is a divergence count rather than that distance. A commit carrying the identical subject
+line, `79d4f84f`, is an ancestor of HEAD and stands 9 commits behind it; **inference:** that is the
+rebased continuation of the same work, matched by subject line rather than by identity, and its
+tree is not equal to `de94102f`'s.
+
+Nothing else in the ranking moved. The `## Dependencies` section above still names no Circle, so
+the cycle graph over anticipated and active records carries no edge into or out of this one; seven
+of the eight records the snapshot cites still carry a terminal marker or resolve only under the
+archive store; and the four decision records carrying the open marker in this Circle's own decision
+store are unchanged, including
+`260908-2018_*_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.md`. The
+recommendation is therefore the one the previous block made and this run does not restate: a
+re-sharpen through the shaper's portfolio-activation mode before the marker moves, which would now
+also re-anchor the snapshot to a commit that resolves.
