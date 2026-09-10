@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   existsSync,
   mkdtempSync,
@@ -595,9 +595,14 @@ afterAll(() => {
   if (neutralCwd) rmSync(neutralCwd, { recursive: true, force: true });
 });
 
-/** Raw stdout lines of `bin/fusion-rules <agent>`, run in the neutral cwd. */
-function runRules(agent: string): string[] {
-  const stdout = execFileSync(fusionRules, [agent], {
+/**
+ * Raw stdout lines of `bin/fusion-rules <agent> [...extra]`, run in the neutral
+ * cwd. `extra` defaults to nothing, so every existing caller — the golden, the
+ * roles, both bounds — measures exactly the call it measured before the audience
+ * argument existed. Only the audience cases below pass anything.
+ */
+function runRules(agent: string, extra: string[] = []): string[] {
+  const stdout = execFileSync(fusionRules, [agent, ...extra], {
     cwd: neutralCwd,
     encoding: "utf-8",
     env: { ...process.env, FUSION_PLUGIN_ROOT: pluginRoot },
@@ -984,6 +989,83 @@ describe("rules emission golden", () => {
         "RULE_BASELINE. Raising DRIFT_CEILING is not the third option: it is a " +
         "historical fact about a state this project decided to leave.",
     ).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// THE AUDIENCE ARGUMENT — the one emission a dispatch can ask for by name.
+//
+// Every other conditional in `bin/fusion-rules` is keyed on the agent NAME, and
+// a name answers "what is this role always". It cannot answer "who reads this
+// run's output", so a role that holds a gate on some dispatches and reports to
+// the orchestrator on the rest carries the whole user-facing style contract on
+// every one of them — 10 884 bytes, the single largest conditional there is.
+// `--audience=user` asks the dispatch instead. Decision
+// `260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md`,
+// option 1, deliberately scoped to this ONE file.
+//
+// WHAT THESE CASES PIN, AND WHY EACH IS HERE. The scope, because a flag that
+// quietly moved a second emission would be the additive thicket the decision
+// declined. The fallback, because the three roles that are user-facing by nature
+// must keep the file with no parameter at all — no path may LOSE the rule by
+// default. And the two refusals, because a misspelt value that emitted nothing
+// would be indistinguishable from a correct call whose rule file is missing.
+// ---------------------------------------------------------------------------
+describe("the audience argument", () => {
+  const rel = (lines: string[]) => lines.map((p) => relative(rulesDir, p));
+
+  it("adds exactly user-facing-output.md, for an agent the name list excludes", () => {
+    const plain = rel(runRules("planner"));
+    const asked = rel(runRules("planner", ["", "--audience=user"]));
+    expect(plain, "planner is user-facing by name after all; pick another agent").not.toContain(
+      "user-facing-output.md",
+    );
+    expect(
+      asked.filter((f) => !plain.includes(f)),
+      "the audience argument moved something other than the user-facing contract",
+    ).toEqual(["user-facing-output.md"]);
+    expect(plain.filter((f) => !asked.includes(f)), "the flag removed an emission").toEqual([]);
+  });
+
+  it("moves nothing else for any agent — the other conditionals stay keyed on the name", () => {
+    // The scope claim, asserted over the whole roster rather than one agent, so
+    // that keying a SECOND conditional on the audience cannot land unnoticed.
+    for (const a of agentNames()) {
+      const plain = rel(runRules(a));
+      const asked = rel(runRules(a, ["", "--audience=user"]));
+      expect(
+        asked.filter((f) => !plain.includes(f)),
+        `the audience argument changed more than one emission for '${a}'`,
+      ).toEqual(plain.includes("user-facing-output.md") ? [] : ["user-facing-output.md"]);
+    }
+  });
+
+  it("keeps the name list as the fallback, so no role loses the rule by default", () => {
+    for (const a of ["orchestrator", "editor", "curator"]) {
+      expect(rel(runRules(a)), `${a} lost the user-facing contract`).toContain(
+        "user-facing-output.md",
+      );
+      expect(
+        rel(runRules(a, ["", "--audience=user"])),
+        `${a}'s emission is not idempotent under the flag`,
+      ).toEqual(rel(runRules(a)));
+    }
+  });
+
+  it("refuses an unrecognised audience and an unrecognised option, printing nothing", () => {
+    for (const [args, needle] of [
+      [["planner", "", "--audience=users"], "unknown audience"],
+      [["planner", "--bogus"], "unknown option"],
+    ] as [string[], string][]) {
+      const r = spawnSync(fusionRules, args, {
+        cwd: neutralCwd,
+        encoding: "utf-8",
+        env: { ...process.env, FUSION_PLUGIN_ROOT: pluginRoot },
+      });
+      expect(r.status, `${args.join(" ")} did not fail`).toBe(1);
+      expect(r.stdout, "a refused call emitted a partial rule set").toBe("");
+      expect(r.stderr).toContain(needle);
+    }
   });
 });
 

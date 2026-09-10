@@ -279,7 +279,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
     - Dependencies: G1
     - Verification: `grep -rniE 'file (an? )?(issue|record) for (every|each)' agents/ rules/` returns nothing; a scratch one-line fix is committed with no record file and `npm test` stays green. `bin/fusion-plan-size` exits 0 over a plan above the ceiling and prints the verdict; its own unit test asserts that, and no other test reads it. The success measurement itself is deferred: record in the commit message the date at which the pair — share of commits whose message is the only record, against records filed — is to be read, one month out.
 
-15. **C7: re-key the user-facing emission off the agent name**
+15. [DONE] **C7: re-key the user-facing emission off the agent name**
     - Executor: `coder`
     - Files: `bin/fusion-rules`, `README-agents.md`, `agents/*.md` (the Setup pointer), `hooks/lib/__tests__/rules-emission-golden.test.ts`
     - Changes: per `260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md`, add an optional `--audience=user` argument sourced from an `**Audience:**` dispatch parameter, with the existing `IS_USER_FACING_AGENT` case kept as the fallback for orchestrator, editor and curator. Add the parameter to the roster in `README-agents.md`, which is its single authoring home. The other six conditionals stay keyed on the name.

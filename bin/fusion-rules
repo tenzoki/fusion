@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # fusion-rules — list rule files an agent must read during Setup
 #
-# Usage: fusion-rules <agent-name> [<topic>]
+# Usage: fusion-rules <agent-name> [<topic>] [--audience=user]
 #
 # Prints one path per line. Searches three locations in order:
 #   1. The plugin's rules/        (via $FUSION_PLUGIN_ROOT, set by SessionStart;
@@ -40,7 +40,9 @@
 #   - The user-read agents (orchestrator, consultant, playmaker, shaper,
 #     editor, curator) additionally read user-facing-output.md — the full
 #     user-facing style contract (gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md); everyone else carries
-#     the chat profile's anti-patterns via agent-setup.md.
+#     the chat profile's anti-patterns via agent-setup.md. This is the ONE
+#     emission a dispatch can also ask for by hand, with `--audience=user`; the
+#     name list above is the fallback and nothing else here reads the flag.
 #   - Every agent also reads critical-stance.md (shipped by plugin) —
 #     the epistemic norms governing reasoning substance (not formatting):
 #     own your errors, no premature solutions, calibrated certainty, case
@@ -94,7 +96,9 @@
 #   (HYG-NO-SILENT-FAIL). The full schema, predicate, and resolution order are
 #   authored once in rules/context-manifest.md.
 #
-# Exit codes: 0 success; 1 usage error; 2 unknown agent; 3 malformed manifest.
+# Exit codes: 0 success; 1 usage error (no agent, an unknown option, an
+#   unrecognised --audience value, or a third positional); 2 unknown agent;
+#   3 malformed manifest.
 #   - Two stylometric profile families, each resolved from its OWN declaration
 #     in CLAUDE.md:
 #       chat-voice-<lang>.yaml     — emitted for EVERY agent, for short-form
@@ -139,10 +143,62 @@
 
 set -eu
 
-AGENT="${1:-}"
-TOPIC="${2:-}"
+# Argument parsing. Two positionals — the agent name and an optional topic — plus
+# one optional flag, `--audience=user`, which may stand anywhere after the agent.
+# The flag is scanned out first so that `fusion-rules planner --audience=user`
+# and `fusion-rules planner "" --audience=user` are the same call; the plan's
+# verification uses the second form and a reader should not have to know which
+# one the parser wants.
+#
+# WHY AN AUDIENCE ARGUMENT AT ALL. Every other conditional emission in this file
+# is keyed on the agent NAME, which answers "what is this role always". It cannot
+# answer "who reads this particular run's output", and a role that is user-facing
+# on some dispatches and not on others inherits the whole user-facing style
+# contract on every one of them. `--audience=user` is that second question, asked
+# of the dispatch instead of the roster. Decision
+# 260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md,
+# option 1, scoped deliberately to `user-facing-output.md` and to nothing else:
+# the other conditionals stay keyed on the name.
+#
+# ONLY `user` IS A VALUE. An unrecognised value and an unrecognised flag are both
+# exit 1 rather than a silent ignore: a misspelt `--audience=users` that quietly
+# emitted nothing would look exactly like a correct call whose rule file is
+# missing, and the agent would never learn which it had (HYG-NO-SILENT-FAIL).
+AUDIENCE_USER=0
+AGENT=""
+TOPIC=""
+POSITIONAL=0
+for arg in "$@"; do
+  case "$arg" in
+    --audience=*)
+      case "${arg#--audience=}" in
+        user) AUDIENCE_USER=1 ;;
+        *)
+          echo "fusion-rules: unknown audience '${arg#--audience=}' (only 'user' is defined)" >&2
+          exit 1
+          ;;
+      esac
+      ;;
+    --*)
+      echo "fusion-rules: unknown option '$arg'" >&2
+      exit 1
+      ;;
+    *)
+      POSITIONAL=$((POSITIONAL + 1))
+      case "$POSITIONAL" in
+        1) AGENT="$arg" ;;
+        2) TOPIC="$arg" ;;
+        *)
+          echo "fusion-rules: too many arguments" >&2
+          exit 1
+          ;;
+      esac
+      ;;
+  esac
+done
+
 if [ -z "$AGENT" ]; then
-  echo "Usage: $0 <agent-name> [<topic>]" >&2
+  echo "Usage: $0 <agent-name> [<topic>] [--audience=user]" >&2
   exit 1
 fi
 
@@ -472,7 +528,14 @@ emit_if_exists "$PLUGIN_RULES_DIR/critical-stance.md"
 #      directly (the IS_USER_FACING_AGENT case above; gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md). For
 #      everyone else, agent-setup.md `## Voice profiles` carries the two
 #      sentences that still bind them.
-if [ "$IS_USER_FACING_AGENT" -eq 1 ]; then
+#      Two keys, and the name is only the first of them. `--audience=user` is
+#      the second: it asks the DISPATCH who reads this run's output, which the
+#      roster cannot answer for a role that holds a gate on some dispatches and
+#      reports to the orchestrator on others. Either key alone emits the file, so
+#      a role that is user-facing by nature never loses it and only a role that
+#      is not gains the ability to ask. Decision
+#      260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md.
+if [ "$IS_USER_FACING_AGENT" -eq 1 ] || [ "$AUDIENCE_USER" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
 fi
 
