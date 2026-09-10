@@ -117,7 +117,7 @@ Four bounds can go red. Measured at `0c793392` plus the concurrent `coder`'s unc
    - Dependencies: S3
    - Verification: each rewritten block is run against a scratch workbench holding two containers and returns both records. `path-literal-lint` green, which is what proves no store literal entered a prompt. `surface-growth-bound` green for `agents/` and `skills/`.
 
-7. **S7: Setup stops refusing a container workbench**
+7. [DONE] **S7: Setup stops refusing a container workbench**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`
    - Changes: the out-of-format probe drops the `circles/` clause and its accompanying paragraphs. The pre-v4 type-folder probe and the bracket-marker probe stay, both unchanged, and the bracket probe keeps walking `shared/` and `circles/` from depth 2, which is now the ordinary tree rather than a legacy one. Setup pre-creates `circles/` alongside `shared/`.

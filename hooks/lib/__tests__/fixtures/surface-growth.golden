@@ -39,8 +39,8 @@
   news/SKILL.md 8766
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
-  setup/SKILL.md 17727
-  total 216562
+  setup/SKILL.md 18605
+  total 217440
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -89,7 +89,7 @@
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
-  reference-resolution-lint.test.ts 999
+  reference-resolution-lint.test.ts 1000
   review-coverage-mandate.test.ts 368
   review-coverage.test.ts 890
   rules-emission-golden.test.ts 1406
@@ -100,4 +100,4 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 690
   workbench-citation-lint.test.ts 325
-  total 21727
+  total 21728
