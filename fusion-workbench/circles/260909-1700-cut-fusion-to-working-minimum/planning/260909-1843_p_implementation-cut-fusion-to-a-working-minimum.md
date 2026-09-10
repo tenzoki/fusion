@@ -217,12 +217,34 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
     - Dependencies: C1
     - Verification: `grep -cE '^#+ *(Phase|Turn)|maxTurns|circuit breaker' agents/orchestrator.md` returns 0; `wc -c agents/orchestrator.md` is reported in the commit message against the pre-cut 155 302 and against the C8 bound, which must be green.
 
-11. **C3: the ramp-up keeps two steps; nine move behind a cached marker**
+11. [DONE] **C3: the ramp-up keeps two steps; nine move behind a cached marker**
     - Executor: `coder`
     - Files: `skills/setup/SKILL.md`, a new `skills/check/SKILL.md`, `hooks/session-start.ts`
     - Changes: `.fusion-setup` gains a `checks` object recording, per selector, the date the check ran and the plugin version it ran against. Setup keeps Step 0 (the marker) and Step 0d (the profiles) on the critical path and defers Steps 0b, 0c, 0e, 0f, 0g, 0h, 0i, 0j, 0k behind that marker; they re-run when the plugin version differs or the recorded date is older than 30 days. All nine become one body with a per-step selector, `/fusion:check [--only <selector>]`. Step 1 and Step 4 are deleted outright, Step 3 moves off the critical path, Step 5's dashboard half goes and its row half is now hook-written.
     - Dependencies: C2
     - Verification: net bytes under `skills/` do not rise — `wc -c skills/*/SKILL.md | tail -1` before and after, both in the commit message; `surface-growth-bound.test.ts` green with its baseline untouched. A second session in an unchanged installation reaches its first dispatch with no model-written step other than the two prerequisites, checked by reading that session's own event log.
+   - Done 2026-09-10. `skills/` 260 339 before, 260 329 after; `surface-growth-bound` green with
+     both baseline maps untouched, only the golden fixture regenerated. `.fusion-setup` gains
+     `checks`, one entry per selector carrying `at` (a date) and `version`; a selector re-runs when
+     `version` differs from the shipped one or `at` is 30 days old, and both conditions were
+     exercised in a scratch workbench together with the warm case (`checks_due=none`,
+     `marker=unchanged`, modification time unmoved) and the four degradations. Ten selectors, not
+     nine: Step 3's legacy-leftover probe is the only half of that step not already duplicated by
+     the orchestrator's own Setup steps 3 to 5, so it became the tenth and the rest was dropped
+     rather than moved. `path-literal-lint` cleared as the dispatch predicted, `derivable-
+     enumerations-lint` gained the expected `CLAUDE.md` skill-roster failure for C4, and
+     `README-agents.md` took its `/fusion:check` row here because its own roster check is a
+     separate case. **Four things this step could not do.** The behavioural check is unrunnable in
+     this session, because a session reads its skill roster from the installed copy at start;
+     the shell was exercised instead. `hooks/session-start.ts` was left untouched: the due list has
+     to reach the model, and `hooks/session-id.ts`'s own measurement says a SessionStart hook's
+     `systemMessage` never does while `additionalContext` is unmeasured there, so the computation
+     stays in Setup's marker block and a second copy in the hook would be a second answer.
+     `hooks/lib/orchestrator-events.ts:535` still says the model's `session_start` row carries
+     `history_file`, which C5 made false. And the cache's location is filed as open:
+     `260910-1600_*_does-the-periodic-check-cache-belong-in-a-file-that-travels-between-checkouts.md`
+     — `.fusion-setup` is class R3 and travels, so a pulled `checks` object suppresses checks a
+     checkout never ran, which is the reason `.cadence-anchors` is class L.
 
 12. **C4: the pipeline becomes five commands invoked by name**
     - Executor: `coder`

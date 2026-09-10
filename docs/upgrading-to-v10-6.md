@@ -116,7 +116,8 @@ fifteen agents.
 - `agents/orchestrator.md` `## Capturing a Directive as an anticipated Circle` — the permission, its
   one condition, and why the bound is what makes it grantable.
 - `skills/help/SKILL.md` — the update topic, its three paragraphs and the standing line.
-- `skills/setup/SKILL.md` `## Step 0e` — the guarded blocks and what the Done report says.
+- `skills/check/SKILL.md` `## assets` — the guarded blocks and what the Done report says (the
+  step moved out of `/fusion:setup` with the v11 ramp-up cut).
 - `rules/review-contract.md` — the review file's contract, in the one place that now defines it.
 - `README-hooks.md` `### Growth bounds on the shipped text` — the four surfaces, their budgets, and
   what no bound covers.

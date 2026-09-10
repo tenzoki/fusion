@@ -153,7 +153,7 @@
 # `GIT_TERMINAL_PROMPT=0` and `GIT_SSH_COMMAND='ssh -oBatchMode=yes'` turn
 # every credential prompt into an immediate, reportable failure. The residual
 # is a slow transfer, and there this case differs from the one
-# `skills/setup/SKILL.md` `## Step 0k` refuses in the one way that matters:
+# `skills/check/SKILL.md` `## upstream` refuses in the one way that matters:
 # this runs behind a foreground command the user typed and is watching, so an
 # interruption is theirs to make. The split is disjoint and complete — a
 # prompt-shaped hang fails at once and is reported, a slow transfer is visible

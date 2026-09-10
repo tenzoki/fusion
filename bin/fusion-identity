@@ -59,8 +59,8 @@
 #      identity is owed and none is missing.
 #
 # fusion supports a non-git project deliberately and in shipped code
-# (`skills/setup/SKILL.md` Step 0h, `bin/fusion-count-sources`, neither of which
-# treats the absence of git as a fault). Folding 4 into 1 would withdraw that
+# (`skills/check/SKILL.md` `## gitattributes`, `bin/fusion-count-sources`, neither
+# of which treats absence of git as a fault). Folding 4 into 1 would withdraw that
 # support as a side effect of a field on a template. Binding record:
 # `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
 # option 2.

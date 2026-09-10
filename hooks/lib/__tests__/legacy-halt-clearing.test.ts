@@ -30,12 +30,16 @@
  *
  * ## What is asserted about the skill, and what that is worth
  *
- * The third property is a TEXT check over `skills/setup/SKILL.md`. No test can
- * assert that `/fusion:setup` makes the offer at run time, because a skill body
- * is a prompt rather than a program — the same honest bound
- * `turn-budget-lint.test.ts` states about its own prompt assertions. What it
- * buys is that the offer cannot quietly leave the skill while the code that made
- * it necessary stays gone.
+ * The third property is a TEXT check over `skills/check/SKILL.md`. No test can
+ * assert that `/fusion:check` makes the offer at run time, because a skill body
+ * is a prompt rather than a program. What it buys is that the offer cannot
+ * quietly leave the skill while the code that made it necessary stays gone.
+ *
+ * THE BODY IT READS MOVED, and the constant below moved with it. The probe and
+ * the offer were `/fusion:setup` Step 3 until the v11 ramp-up cut took every
+ * periodic check out of Setup; they are the `leftovers` selector of
+ * `/fusion:check` now. Nothing about what is asserted changed — only which
+ * shipped body carries it.
  */
 
 import { describe, it, expect } from "vitest";
@@ -52,8 +56,9 @@ import {
   type EscalationSnapshot,
 } from "./helpers/guard-harness.js";
 
-/** The skill body that carries the migration offer (plan step 1). */
-const SETUP_SKILL = resolve(REPO_ROOT, "skills", "setup", "SKILL.md");
+/** The skill body that carries the migration offer (plan step 1; moved to
+ *  `/fusion:check` by the v11 ramp-up cut). */
+const LEFTOVERS_SKILL = resolve(REPO_ROOT, "skills", "check", "SKILL.md");
 
 /** The legacy state file, relative to a project root. */
 const STATE_FILE = "fusion-workbench/.guard-state/escalation.json";
@@ -172,8 +177,8 @@ for (const legacy of LEGACY_HALTS) {
   });
 }
 
-describe("the remedy the code no longer carries is carried by /fusion:setup", () => {
-  const skill = (): string => readFileSync(SETUP_SKILL, "utf-8");
+describe("the remedy the code no longer carries is carried by /fusion:check", () => {
+  const skill = (): string => readFileSync(LEFTOVERS_SKILL, "utf-8");
 
   it("probes for the flag and offers to delete the file", () => {
     const text = skill();
