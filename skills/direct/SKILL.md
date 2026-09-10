@@ -52,7 +52,7 @@ The same guarded call `/fusion:next` Step 2 makes; `bin/fusion-session-domain`'s
 if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain" ]; then "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain"; else printf 'domain=code\nsource=helper-missing\n'; fi
 ```
 
-`domain=` is `<detected-domain>` ∈ `{code, data}`, and a `source=` other than `agentstate` is reported beside it — passed to shaper so it sets the Circle's `**Domain:**` field correctly. The user can edit the field later if the heuristic misjudged.
+`domain=` is `<detected-domain>` ∈ `{code, data}`, and a `source=` other than `event-log` is reported beside it — passed to shaper so it sets the Circle's `**Domain:**` field correctly. The user can edit the field later if the heuristic misjudged.
 
 ## Step 4 — Dispatch shaper in anticipated-circle mode
 

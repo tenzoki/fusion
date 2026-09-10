@@ -38,3 +38,6 @@ None. This is the user's call, and the spec files it rather than resolving it.
 
 ---
 Answered: 260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md `## Question` — report only, never a hard failure. It joins the three existing stdout-verdict helpers, none of which has been promoted to a gate. The reason against hard: no plan has a measured reader, so enforcing the ceiling would be the first bound in this specification enforced without one, which is the shape the specification refuses elsewhere; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 069c54ae — `bin/fusion-plan-size` prints a `KEY=value` block and one `verdict=` line over the live plans, carries the ceiling in no exit code, and is wired into no gate and no pipeline; its own unit test asserts exit 0 over a plan above the ceiling, which is the inverse of the usual assertion and is what would catch this ruling being reversed.

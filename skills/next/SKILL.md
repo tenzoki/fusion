@@ -72,7 +72,7 @@ Decide which `**Domain:**` value to pass to playmaker. The read has one home, `b
 if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain" ]; then "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain"; else printf 'domain=code\nsource=helper-missing\n'; fi
 ```
 
-`domain=` is `<detected-domain>` ∈ `{code, data}` for the remainder of this skill. A `source=` other than `agentstate` is a fallback: report it beside the value, never apply it silently.
+`domain=` is `<detected-domain>` ∈ `{code, data}` for the remainder of this skill. A `source=` other than `event-log` is a fallback: report it beside the value, never apply it silently.
 
 ## Step 3 — Dispatch playmaker
 
@@ -222,37 +222,21 @@ The pointer holds the **directory name** — no marker, no `circles/` prefix, no
 printf '%s\n' "<candidate-dirname>" > "$WORKBENCH/.active-circle"
 ```
 
-### 6.4 — Overwrite the dashboard placeholder
-
-The dashboard may carry stale state from a previous session ("Session: Complete", a final commit list). Overwrite it so the prior session's final state cannot be mistaken for the current one. Use the `Write` tool to overwrite `$WORKBENCH/orchestrator-live.md` with this exact content (substitute the directory name):
-
-```markdown
-# Orchestrator — Live
-
-**Active Circle:** <candidate-dirname>
-**Session:** Not started — orchestrator Setup will refresh this dashboard on next session start
-
-## Current
-  [READY] orchestrator -> Activation complete; awaiting Turn 1
-```
-
-This is a minimal placeholder — the orchestrator overwrites it in full at the next Setup.
-
-### 6.5 — Chain into a fresh orchestrator session
+### 6.4 — Chain into a fresh orchestrator session
 
 Print the following, rendered in the project's chat language (`## Tone`), changing nothing but the substitution:
 
 > *Activated. The Circle now stands at `_t_` and the `.active-circle` pointer names it.*
 >
-> *Circle `<candidate-dirname>` is ready to run. An orchestrator session against it runs Setup (which overwrites the dashboard) and proceeds with Phase 0 → Phase 1 → Phase 2; if this message is all that happens next, say "go" and it starts.*
+> *Circle `<candidate-dirname>` is ready to run. An orchestrator session against it runs its Setup and then takes tasks one at a time; if this message is all that happens next, say "go" and it starts.*
 
 The session Directive is not read off the record here or by any orchestrator step: the Coherence gate resolves it from the active plan, else the active spec, else the session history's `**Directive:**` line, and that chain is the whole resolution.
 
-**Then act on it in the same turn, and who you are decides how.** If you are the orchestrator, this activation is one of the self-initiated runs your own MANDATORY section anticipates: run your Setup now, then continue into Phase 0. Its steps are not restated here and must not be. If you are any other agent, stop here. The printed message stands as the user's next step, and this skill starts no session on its own.
+**Then act on it in the same turn, and who you are decides how.** If you are the orchestrator, this activation is one of the self-initiated runs your own MANDATORY section anticipates: run your Setup now, then enter your dispatch loop. Its steps are not restated here and must not be. If you are any other agent, stop here. The printed message stands as the user's next step, and this skill starts no session on its own.
 
 ## Boundaries
 
-The skill's writes are the record rename (`_a_`→`_t_`), the `**Claim:**` value that rides it (or the `Overridden ` sentence, on the Step 6.1 takeover), the `.active-circle` write, and the dashboard placeholder — all in Step 6, all gated by explicit confirmation. **Step 5b adds no write of its own** — it asks and it dispatches; the backlog operations the user approves there are performed by playmaker on the second dispatch, out of the key it holds and this skill does not. **It writes no Circle *content* at all**: no section of the record is touched and the one head field it sets is `**Claim:**`, both path fields left to the writers Step 6.2 names. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything, and its writes are four: the three appended sections on Circle records, the portfolio, its own history log, and the backlog store it maintains under `agents/playmaker.md` `## Two mandates, by dispatch path`. The active Turn loop writes none of the four, so it cannot interfere with the Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
+The skill's writes are the record rename (`_a_`→`_t_`), the `**Claim:**` value that rides it (or the `Overridden ` sentence, on the Step 6.1 takeover) and the `.active-circle` write — all in Step 6, all gated by explicit confirmation. A fourth write, a placeholder into a dashboard file at the workbench root, went on 2026-09-10 with the file itself: nothing reads it, and the monitor reads the event log the hooks write. **Step 5b adds no write of its own** — it asks and it dispatches; the backlog operations the user approves there are performed by playmaker on the second dispatch, out of the key it holds and this skill does not. **It writes no Circle *content* at all**: no section of the record is touched and the one head field it sets is `**Claim:**`, both path fields left to the writers Step 6.2 names. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything, and its writes are four: the three appended sections on Circle records, the portfolio, its own history log, and the backlog store it maintains under `agents/playmaker.md` `## Two mandates, by dispatch path`. A running dispatch loop writes none of the four, so the two cannot collide. The Step 6 activation branch is short-circuited when a Circle is already active.
 
 ## Tone
 
@@ -260,6 +244,6 @@ Every user-facing sentence below is rendered in the project's chat language (`ru
 
 - The briefing leads with the **recommendation** (action), then counts, then warnings. No leading metadata block.
 - Marker syntax in prose uses the **words** ("1 active, 4 anticipated"), not the bracket codes. The bracket codes belong in filenames.
-- The activation confirmation leads with the **user action**, not a paragraph of Turn-loop jargon.
+- The activation confirmation leads with the **user action**, not a paragraph of orchestrator jargon.
 
 Concise. One line for the recommendation, one for counts, the warnings list if any. The user invoked `/fusion:next` for a snapshot, not a discussion. The activation confirm is one short prompt with three clear options.

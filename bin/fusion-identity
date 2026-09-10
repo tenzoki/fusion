@@ -92,9 +92,9 @@
 # and the cause is on stderr for the human. The code is deliberately phrased as
 # "the identifier could not be resolved" and not as "this project has no
 # workbench", so that a broken install is never reported as an answer about the
-# project. That is the distinction `bin/fusion-turn-budget` draws with two codes
-# and this program draws inside one, because there the two causes changed what
-# the user had to go and fix and here they do not.
+# project. That is the distinction `bin/fusion-plan-size` draws with two codes
+# and this program draws inside one, because there the two causes change what
+# the user has to go and fix and here they do not.
 #
 # A `.checkout-id` holding anything but eight lowercase hex is reported and
 # **never overwritten.** A value that is already in use elsewhere is not this

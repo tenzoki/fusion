@@ -7,11 +7,15 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 
 // `bin/fusion-session-domain` is a bash script; this drives the real one against
 // throwaway workbenches, the way its three skill callers do. Under test is the
-// header's contract: two lines always, in order; the three-way stderr reason on a
+// header's contract: two lines always, in order; the stderr reason on a
 // fallback; exit 3 with NOTHING on stdout when no workbench is above cwd, because
 // a defaulted domain there would be an answer about a project that never ran
-// setup; and the read's true bound, the first two-space `domain:` key in the file
+// setup; and the row filters that decide which `session_start` is read
 // (issue 260824-2056, the session-domain helper ships with no test).
+//
+// The state-file fallback under the event-log read went on 2026-09-10 with the
+// file nothing writes any more, and the cases that drove it went with it. A
+// leftover state file is now inert, which the case below asserts directly.
 
 const script = join(pluginRoot, "bin", "fusion-session-domain");
 const tmpRoots: string[] = [];
@@ -20,8 +24,9 @@ afterAll(() => {
 });
 
 /**
- * A project with a workbench. `state` is the agentstate.yaml body, `null` for
- * none; `log` the event-log lines, `checkout` this checkout's own identifier.
+ * A project with a workbench. `state` is a leftover state-file body, `null` for
+ * none — nothing reads it, and one case proves that; `log` the event-log lines,
+ * `checkout` this checkout's own identifier.
  */
 function project(
   state: string | null,
@@ -62,31 +67,37 @@ function run(cwd: string, ...args: string[]) {
 
 describe("bin/fusion-session-domain", () => {
   it.each([
-    ["quoted", 'session:\n  domain: "data"\n'],
-    ["bare", "session:\n  domain: data\n"],
-  ])("reads a %s session.domain and says it came from agentstate", (_, yaml) => {
-    const r = run(project(yaml));
+    ["quoted", '{"domain":"data"}'],
+    ["a further field after it", '{"domain":"data","detail":"x"}'],
+  ])("reads the hook-written row's domain and says it came from the event log (%s)", (_, tail) => {
+    const row =
+      '{"ts":"2026-09-10T05:00:00","event":"session_start","writer":"session-start-hook",' +
+      tail.slice(1);
+    const r = run(project(null, true, { log: [JSON.parse(row)] }));
     expect(r.status, r.stderr).toBe(0);
-    expect(r.stdout).toBe("domain=data\nsource=agentstate\n");
+    expect(r.stdout).toBe("domain=data\nsource=event-log\n");
     expect(r.stderr).toBe("");
   });
 
   it.each([
-    ["missing file", null, "does not exist"],
-    ["missing key", "session:\n  turn: 1\n", "carries no session.domain"],
-    ["invalid value", "session:\n  domain: both\n", "session.domain=both, which is neither"],
-    ["uncapturable value", "session:\n  domain: Code\n", "session.domain=Code, which is neither"],
-    ["key nested deeper", "session:\n  meta:\n    domain: data\n", "carries no session.domain"],
-  ])("defaults to code on a %s and says why on stderr", (_, yaml, reason) => {
-    const r = run(project(yaml));
+    ["missing log", undefined, "does not exist"],
+    ["log with no hook row", [{ ts: "2026-09-10T05:00:00", event: "session_start", domain: "data" }],
+      "carries no hook-written session_start row"],
+    ["invalid value", [hookRow("2026-09-10T05:00:00", "both")],
+      "carries no hook-written session_start row"],
+  ])("defaults to code on a %s and says why on stderr", (_, log, reason) => {
+    const r = run(project(null, true, log === undefined ? {} : { log: log as never }));
     expect(r.status).toBe(0);
     expect(r.stdout).toBe("domain=code\nsource=default\n");
-    expect(r.stderr).toContain(reason);
+    expect(r.stderr).toContain(reason as string);
   });
 
-  it("reads the first two-space domain key, whichever block holds it (the header states this bound)", () => {
-    const r = run(project("plan_context:\n  domain: data\nsession:\n  domain: code\n"));
-    expect(r.stdout).toBe("domain=data\nsource=agentstate\n");
+  it("a leftover state file at the workbench root is inert — nothing reads it", () => {
+    // The one source went to the event log on 2026-09-10. A project upgrading
+    // with the old file still in its workbench must default, not read it.
+    const r = run(project('session:\n  domain: "data"\n'));
+    expect(r.stdout).toBe("domain=code\nsource=default\n");
+    expect(r.stderr).not.toContain("agentstate");
   });
 
   it("exit 3 with nothing on stdout when no workbench is above the working directory", () => {
@@ -97,22 +108,9 @@ describe("bin/fusion-session-domain", () => {
   });
 
   it("exit 2 on any argument, with nothing on stdout", () => {
-    const r = run(project("session:\n  domain: data\n"), "--help");
+    const r = run(project(null), "--help");
     expect(r.status).toBe(2);
     expect(r.stdout).toBe("");
-  });
-
-  // The event log ahead of the file, and the file still behind it. Step B4 is
-  // additive: nothing here removes the agentstate read, and the cases above
-  // still pass unchanged because a project with no log reaches it exactly as
-  // it did.
-  it("prefers the hook-written row's domain over the one agentstate.yaml records", () => {
-    const r = run(project("session:\n  domain: code\n", true, {
-      log: [hookRow("2026-09-10T05:00:00", "data")],
-    }));
-    expect(r.status, r.stderr).toBe(0);
-    expect(r.stdout).toBe("domain=data\nsource=event-log\n");
-    expect(r.stderr).toBe("");
   });
 
   it("reads the newest row of its own checkout, not another checkout's block", () => {
@@ -129,20 +127,14 @@ describe("bin/fusion-session-domain", () => {
   });
 
   it("ignores the model's own session_start row, which carries no domain to read", () => {
-    const r = run(project("session:\n  domain: data\n", true, {
-      log: [{ ts: "2026-09-10T05:00:00", event: "session_start", session_id: "s", domain: "code" }],
+    const r = run(project(null, true, {
+      log: [
+        { ts: "2026-09-10T05:00:00", event: "session_start", session_id: "s", domain: "code" },
+        hookRow("2026-09-10T04:00:00", "data"),
+      ],
     }));
     expect(r.stdout, "a row with no `writer` was read as the hook's").toBe(
-      "domain=data\nsource=agentstate\n",
+      "domain=data\nsource=event-log\n",
     );
-  });
-
-  it("names both sources on a default, not the file alone", () => {
-    const r = run(project(null, true, {
-      log: [hookRow("2026-09-10T05:00:00", "both")],
-    }));
-    expect(r.stdout).toBe("domain=code\nsource=default\n");
-    expect(r.stderr).toContain("carries no hook-written session_start row");
-    expect(r.stderr).toContain("agentstate.yaml does not exist");
   });
 });

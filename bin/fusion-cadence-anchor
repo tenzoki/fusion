@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# fusion-cadence-anchor — the per-checkout high-water marks the cleanup
-# pipeline reads so its passes run over the delta instead of the whole
+# fusion-cadence-anchor — the per-checkout high-water marks the session-closing
+# commands read so their passes run over the delta instead of the whole
 # workbench, every time.
 #
-# THIS HEADER IS THE AUTHORITATIVE DOCUMENTATION. The rows in CLAUDE.md and
-# the call sites in skills/cleanup summarise it and deliberately do not
-# restate it.
+# THIS HEADER IS THE AUTHORITATIVE DOCUMENTATION. The row in CLAUDE.md and the
+# call sites in skills/reconcile and bin/fusion-forum summarise it and
+# deliberately do not restate it.
 #
 # ## What it holds, and where
 #
@@ -15,15 +15,15 @@
 # whitespace; one line per key, last write wins, unknown keys are preserved.
 # The file is CLASS L in rules/workbench-tracking.md's split: per-checkout
 # live state, never committed, never travels. Two checkouts each keep their
-# own marks, because "what did MY last cleanup already cover" is a fact about
+# own marks, because "what did MY last pass already cover" is a fact about
 # this checkout's runs, not about the project — a pulled mark would claim
 # coverage a checkout never performed, which is exactly the false "already
 # done" this file must never produce.
 #
-# ## The keys the pipeline uses today
+# ## The keys in use today
 #
 #   last_reconcile_commit   The commit HEAD stood on when the reconciler last
-#                           ran to completion here. /fusion:cleanup Step 3
+#                           ran to completion here. /fusion:reconcile Step 3
 #                           skips the dispatch when nothing under
 #                           fusion-workbench/ changed since it — read via
 #                           `changed-since`, written after the reconciler
@@ -42,7 +42,7 @@
 #                           ref, not the working tree. An absent or
 #                           unresolvable mark reads the whole store as new.
 #                           That is bounded by retention rather than by a
-#                           special case: the archive step prunes the store by
+#                           special case: /fusion:archive prunes the store by
 #                           age at the run's own threshold, fourteen days by
 #                           default, so a fresh checkout is shown about a
 #                           fortnight of messages on its first run.

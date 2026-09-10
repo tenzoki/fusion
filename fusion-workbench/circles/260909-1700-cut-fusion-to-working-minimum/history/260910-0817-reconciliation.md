@@ -2,7 +2,7 @@
 
 **Domain:** code
 **Filed by:** reconciler, Kai Stalmann <kai@qantr.com>
-**Range verified:** `983c3cbb..d7b701d2` (Turn 2), against the plan `260909-1843_p_implementation-cut-fusion-to-a-working-minimum.md`
+**Range verified:** `983c3cbb..d7b701d2` (Turn 2), against the plan `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md`
 
 ---
 
@@ -15,7 +15,7 @@ B1–B4, R1, R2, the two decision transitions, and the Circle record's Turn 2 en
 
 ## Plans reviewed: 1. Updated: 1.
 
-`260909-1843_p_implementation-cut-fusion-to-a-working-minimum.md`.
+`260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md`.
 
 - Step 6 (B3) carried no `[DONE]` marker despite being fully committed at `9c4dbdbb` —
   corrected. Steps 4 (B1), 5 (B2) and 7 (B4) were already marked correctly.

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # fusion-session-domain — the one place a skill body reads the session's
-# domain, instead of each body carrying its own two-line read of
-# agentstate.yaml (issue 260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md: the same lines stood in three skill
-# bodies and had already diverged on the first copy; decision 260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md,
+# domain, instead of each body carrying its own copy of the read (issue 260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md:
+# the same lines stood in three skill bodies and had already diverged on the
+# first copy; decision 260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md,
 # the reserved half, chose a bin/ helper over a DOMAIN key in fusion-paths,
 # which resolves paths and not state).
 #
@@ -13,29 +13,23 @@
 # `bin/fusion-paths` uses, always both and always in this order:
 #
 #   domain=code                  # code | data
-#   source=event-log             # or `agentstate` or `default`; a caller
-#                                # prints `helper-missing`
+#   source=event-log             # or `default`; a caller prints
+#                                # `helper-missing`
 #
-#   domain  `code` or `data`, resolved from three sources in this order and
-#           defaulted to `code` when none of them answers.
-#   source  WHICH of the three answered, so a caller that must report a
+#   domain  `code` or `data`, read from one source and defaulted to `code`
+#           when that source does not answer.
+#   source  WHETHER it was read or defaulted, so a caller that must report a
 #           fallback rather than apply it silently has the fact on its own line:
 #
 #             event-log   the `domain` on the newest hook-written
 #                         `session_start` row for this checkout in
-#                         fusion-workbench/orchestrator-events.jsonl. Preferred
-#                         because it is machine-written at SessionStart and
-#                         cannot go stale, and because it is what survives the
-#                         removal of the state file.
-#             agentstate  `session.domain` in fusion-workbench/agentstate.yaml.
-#                         The fallback while that file exists — every session
-#                         whose installed hook predates the row's writer has no
-#                         row to read.
-#             default     neither answered. Never silent: one line on stderr
-#                         says which of the two was absent, unset or holding a
-#                         value that is neither `code` nor `data`.
+#                         fusion-workbench/orchestrator-events.jsonl. It is
+#                         machine-written at SessionStart and cannot go stale.
+#             default     it did not answer. Never silent: one line on stderr
+#                         says whether the log was absent or carried no such
+#                         row.
 #
-#           A fourth value, `helper-missing`, is never printed here: it is what
+#           A third value, `helper-missing`, is never printed here: it is what
 #           each call site prints on its `[ -x ]` miss, when this program is not
 #           installed at all, so the same line reports that case too.
 #
@@ -48,15 +42,15 @@
 #      session for the domain to be the domain of, and `domain=code` here
 #      would be a made-up answer about a project that has not run setup.
 #
-# The agentstate read is deliberately narrow, and its true bound is this: the FIRST
-# `domain:` key sitting exactly two spaces deep, in whichever top-level block
-# holds it, with the value double-quoted or bare. Only `session:` carries one today
-# (`agents/orchestrator.md` `## Persistent State File`), so the read is the session's;
-# a two-space `domain:` added to an earlier block would be read instead, and
-# a `domain:` at any other depth is never read. The three call sites are
-# skills/next/SKILL.md, skills/direct/SKILL.md and skills/cleanup/SKILL.md,
-# each guarded with `[ -x ]` (decision 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md) because an installed copy
-# may predate this helper.
+# One source and no second one. A read of `session.domain` in a state file at
+# the workbench root stood behind the event-log read until 2026-09-10 and went
+# when nothing wrote that file any more: a fallback onto a file no writer
+# maintains answers with whatever the last writer left, which is worse than
+# saying the domain was not read. So a session whose installed hook predates
+# the row's writer now defaults and says so, rather than reading a stale value.
+# The three call sites are skills/next/SKILL.md, skills/direct/SKILL.md and
+# skills/reconcile/SKILL.md, each guarded with `[ -x ]` (decision 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md)
+# because an installed copy may predate this helper.
 
 set -eu
 
@@ -117,30 +111,8 @@ case "$domain" in
     exit 0
     ;;
 esac
+
 log_why="carries no hook-written session_start row with a domain for this checkout"
 [ -f "$log" ] || log_why="does not exist"
-
-state="$root/fusion-workbench/agentstate.yaml"
-domain=''
-if [ -f "$state" ]; then
-  # Capture whatever stands there, so a value that is not `code` or `data`
-  # is named as itself on stderr rather than as the whole line.
-  domain="$(grep -E '^  domain:' "$state" | head -1 | sed -E 's/^  domain:[[:space:]]*"?([^"[:space:]]*)"?.*/\1/' || true)"
-fi
-
-case "$domain" in
-  code|data)
-    printf 'domain=%s\nsource=agentstate\n' "$domain"
-    ;;
-  *)
-    echo "fusion-session-domain: $log $log_why." >&2
-    if [ ! -f "$state" ]; then
-      echo "fusion-session-domain: $state does not exist; domain defaulted to code." >&2
-    elif [ -z "$domain" ]; then
-      echo "fusion-session-domain: $state carries no session.domain; domain defaulted to code." >&2
-    else
-      echo "fusion-session-domain: $state carries session.domain=$domain, which is neither code nor data; domain defaulted to code." >&2
-    fi
-    printf 'domain=code\nsource=default\n'
-    ;;
-esac
+echo "fusion-session-domain: $log $log_why; domain defaulted to code." >&2
+printf 'domain=code\nsource=default\n'

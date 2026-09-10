@@ -68,10 +68,11 @@ more, and the default is 20. Anything else (0, a negative, 2.5, the string `"20"
 exactly one diagnostic naming the key and inherits the default, which is how every other leaf in
 this loader behaves. Your existing `orchestrator.maxTurns` is untouched.
 
-`bin/fusion-turn-budget` prints the resolved value as a second `KEY=value` line, `dispatch_minutes=`,
-after `max_turns=`, unconditionally and in that order. It rides that helper rather than a new one
-because the loader's diagnostics are printed once per process, and a second helper would either
-repeat every advisory or stay silent about it. The helper's three exit codes are unchanged.
+The `fusion-turn-budget` helper — one of that release's `bin/` programs, removed since — prints the
+resolved value as a second `KEY=value` line, `dispatch_minutes=`, after `max_turns=`, unconditionally
+and in that order. It rides that helper rather than a new one because the loader's diagnostics are
+printed once per process, and a second helper would either repeat every advisory or stay silent about
+it. The helper's three exit codes are unchanged.
 
 **What it does not do yet, and this is the part to read.** The value is the wall-clock stopping time
 the orchestrator is meant to hand a bound agent's dispatch, and in this release nothing hands it: no
@@ -130,8 +131,9 @@ exactly once. The agent roster is unchanged; the skill roster gains `news`, and 
 - `bin/fusion-forum` header: the fetch, the two-tree set difference the delta comes from, the state
   vocabulary and the exit codes. It is the authoritative text for all of it, and nothing copies it.
 - `skills/news/SKILL.md` and the message half of `skills/cleanup/SKILL.md`: the flow on each side.
-- `bin/fusion-turn-budget` header: both printed lines, why they come from one process, and the exit
-  table.
+- The `fusion-turn-budget` helper's own header: both printed lines, why they come from one process,
+  and the exit table. The helper was removed after this release, so read it in an install of that
+  vintage or in the source repo's history.
 - `docs/upgrading-to-v10-24.md` and `docs/upgrading-to-v10-23.md`: the two rungs below this one, if
   you are coming from further back.
 - `/fusion:help`: install, update and configure, answered from your live installation.

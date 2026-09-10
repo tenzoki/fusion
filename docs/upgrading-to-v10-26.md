@@ -43,10 +43,10 @@ project root:
 { "orchestrator": { "dispatchMinutes": 30 } }
 ```
 
-`bin/fusion-turn-budget` prints it as its second line, beside `max_turns`, and both are resolved once
-at the orchestrator's Setup. A value that does not resolve is not substituted: no stopping time
-reaches any dispatch prompt, every dispatch runs to its natural end as it did before, and the session
-says so once in its Setup report.
+The `fusion-turn-budget` helper — removed since this release — prints it as its second line, beside
+`max_turns`, and both are resolved once at the orchestrator's Setup. A value that does not resolve
+is not substituted: no stopping time reaches any dispatch prompt, every dispatch runs to its natural
+end as it did before, and the session says so once in its Setup report.
 
 ## `bin/fusion-events dispatches` says what actually happened
 

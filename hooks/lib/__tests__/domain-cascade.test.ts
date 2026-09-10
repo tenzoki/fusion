@@ -516,9 +516,9 @@ function reportStatements(rel: string, found: CascadeStatement[]): string {
         `    domains: ${s.domains.join(", ")}   inputs: ${s.inputs.join(", ")}\n` +
         `    ${s.text.slice(0, 160)}\n` +
         `    -> ${DEFINITION_SITE} Setup Step 5 is the one definition. Obtain the domain,\n` +
-        `       do not decide it: read session.domain from fusion-workbench/agentstate.yaml\n` +
-        `       (the route /fusion:next, /fusion:direct and /fusion:cleanup take), or\n` +
-        `       take it from a **Domain:** dispatch parameter.`,
+        `       do not decide it: run bin/fusion-session-domain (the route /fusion:next,\n` +
+        `       /fusion:direct and /fusion:reconcile take), or take it from a\n` +
+        `       **Domain:** dispatch parameter.`,
     )
     .join("\n");
 }
@@ -609,7 +609,7 @@ describe("the reach gate catches the copy it was written for", () => {
 
     const msg = reportStatements("skills/cleanup/SKILL.md", found);
     expect(msg).toContain(`skills/cleanup/SKILL.md:${injectAt + 2}`);
-    expect(msg).toContain("agentstate.yaml");
+    expect(msg).toContain("bin/fusion-session-domain");
   });
 
   it("catches a statement spliced into a RULE file, which the old file set could not read", () => {

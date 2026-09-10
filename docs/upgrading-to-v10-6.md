@@ -111,7 +111,7 @@ fifteen agents.
 
 ## Where to read more
 
-- `skills/next/SKILL.md` `### 6.5 — Chain into a fresh orchestrator session` — the activation step
+- `skills/next/SKILL.md` `### 6.4 — Chain into a fresh orchestrator session` — the activation step
   and the split by who is running it.
 - `agents/orchestrator.md` `## Capturing a Directive as an anticipated Circle` — the permission, its
   one condition, and why the bound is what makes it grantable.

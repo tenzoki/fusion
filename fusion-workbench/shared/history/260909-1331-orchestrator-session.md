@@ -267,13 +267,13 @@ sequenceDiagram
   opposite of that word, with the reconciliation resting on a plan-stage argument (later sessions pay
   it down) that has not yet been tested by anything landing.
 - Grounding↔Directive: 5 active decisions in this Circle checked in full — the plan-size ceiling and
-  the order-computing helper (`260909-1700_a_`, `260909-1808_a_`, both unrealized, neither
-  contradicted by anything in Turn 2), the conditional-rule-emission keying (`260909-1843_a_`,
-  scoped to session 3's C7, untouched), and the two `260909-2305_o_` questions about which project's
+  the order-computing helper (`260909-1700_*_`, `260909-1808_*_`, both unrealized, neither
+  contradicted by anything in Turn 2), the conditional-rule-emission keying (`260909-1843_*_`,
+  scoped to session 3's C7, untouched), and the two `260909-2305_*_` questions about which project's
   gate-firing rate binds fusion's own cut (both still open, neither pre-empted by Turn 2's work) /
   0 conflicting. The shared decision store was re-checked for changes rather than re-scanned in full:
   `git diff --name-status a1ecf86e..d7b701d2 -- fusion-workbench/shared/decisions/` shows exactly one
-  addition, `260909-1634_o_how-should-the-skill-surface-be-cut-once-the-agent-and-ceremony-cut-has-landed.md`,
+  addition, `260909-1634_*_how-should-the-skill-surface-be-cut-once-the-agent-and-ceremony-cut-has-landed.md`,
   already filed and cross-referenced before Turn 1's own Coherence pass; nothing in the shared store
   moved during Turn 2, so Turn 1's finding of 0 conflicting among the 12 checked-in-full plus 39
   scanned-by-filename carries forward unchanged.

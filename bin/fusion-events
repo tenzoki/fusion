@@ -64,7 +64,10 @@
 # construction. A person the line did not record renders `(not recorded)`; the
 # Circle is read off `history_file` (`circles/<dir>/…` names its Circle,
 # anything else is `shared`, an absent field is `unknown`) and off no field of
-# its own.
+# its own. **Since 2026-09-10 no row carries that field**, the history store
+# having closed to writes, so every line renders `unknown` there until some
+# writer supplies a Circle again; the field is kept because the pre-cut log
+# still answers, and reading a stale one is not among the options.
 #
 # **Every field is flattened before it is joined**: a control character inside
 # one, TAB and newline included, becomes a single space. `person` is git's

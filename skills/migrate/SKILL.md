@@ -107,6 +107,6 @@ For `MODE=plain`, remind the user that the move is not in any diff, so a `git re
 
 - **Never migrate without an explicit user choice.** The survey is read-only; nothing moves before Step 3's answer.
 - **Never overwrite.** A destination that exists means the source stays and the collision is reported. Move only; never copy, never delete.
-- **Never touch the root-anchored surfaces.** `agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/`, `.session-marker`, `monitor`, `stilwerk/`, `.fusion-setup` stay where they are; their consumers read them at fixed root-relative paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`).
+- **Never touch the root-anchored surfaces.** `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/`, `.session-marker`, `.active-circle`, `.checkout-id`, `.cadence-anchors`, `monitor`, `stilwerk/`, `.fusion-setup` stay where they are; their consumers read them at fixed root-relative paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`).
 - **Never guess a Circle affiliation.** Everything migrated goes to `shared/`. Re-filing into a Circle is the user's separate, deliberate act.
 - **Never touch git beyond `git mv`.** No `git add`, no `git commit`. The user decides whether to commit the migration.

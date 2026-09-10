@@ -40,7 +40,7 @@ In einem zweiten Terminal im Projekt-Root:
 ./fusion-workbench/monitor "Meine Sitzung" 8099
 ```
 
-Das serviert ein Live-Dashboard unter `http://localhost:8099`. Es liest `orchestrator-live.md` und `orchestrator-events.jsonl` und zeigt Turn-Fortschritt, Dispatches, Commits und die Schreibspur der Hooks. Optionen: `-n <N>` maximale Event-Zeilen (Standard 100), `-i <sec>` Refresh-Intervall (Standard 2). Bei mehreren Checkouts zeigt der Monitor nur die Sitzungen des eigenen Checkouts (siehe Abschnitt 8).
+Das serviert ein Live-Dashboard unter `http://localhost:8099`. Es liest `orchestrator-events.jsonl` und zeigt Dispatches, Commits, Gates und die Schreibspur der Hooks. Optionen: `-n <N>` maximale Event-Zeilen (Standard 100), `-i <sec>` Refresh-Intervall (Standard 2). Bei mehreren Checkouts zeigt der Monitor nur die Sitzungen des eigenen Checkouts (siehe Abschnitt 8).
 
 ## 3. Hilfe und Selbstauskunft
 
@@ -146,9 +146,9 @@ fusion-workbench/
 ├── stilwerk/                   # die vier Stilprofile (projektlokal editierbar)
 ├── portfolio.md                # vom playmaker regeneriert
 ├── .active-circle              # Zeiger auf den aktiven Circle
-└── agentstate.yaml, orchestrator-live.md, orchestrator-events.jsonl,
-    .guard-state/, .commit-lock/, .session-marker, .checkout-id,
-    .cadence-anchors, .fusion-setup, .asset-provenance, monitor
+└── orchestrator-events.jsonl, .guard-state/, .commit-lock/,
+    .session-marker, .checkout-id, .cadence-anchors, .fusion-setup,
+    .asset-provenance, monitor
 ```
 
 **Origin Rule:** ein Artefakt gehört zu dem Circle, dessen Directive es verursacht hat. Ohne aktiven Circle landet es in `shared/`. Querbezüge werden zitiert, nicht durch Ablage abgebildet. Agenten schreiben keine Pfade fest; sie lösen sie zur Laufzeit über `bin/fusion-paths <agent>` auf.
@@ -164,7 +164,7 @@ fusion-workbench/
 | R1 viele Dateien, je ein Schreiber | `circles/`, `shared/`, `archive/`, `stilwerk/` | tracken |
 | R2 eine Datei, viele Anhänger | `orchestrator-events.jsonl` | tracken, mit `merge=union` |
 | R3 einmal geschrieben | `.fusion-setup`, `.asset-provenance` | tracken |
-| L bleibt im Checkout | `agentstate.yaml`, `orchestrator-live.md`, `.session-marker`, `.active-circle`, `.checkout-id`, `.cadence-anchors`, `.commit-lock/`, `.guard-state/`, `monitor`, `portfolio.md` | ignorieren |
+| L bleibt im Checkout | `.session-marker`, `.active-circle`, `.checkout-id`, `.cadence-anchors`, `.commit-lock/`, `.guard-state/`, `monitor`, `portfolio.md` | ignorieren |
 
 Klasse L beschreibt *jetzt* (Sitzungszustand) oder *dieses Checkout* (`.checkout-id`, `.cadence-anchors`) und würde im Diff nur rauschen oder, aus einem fremden Checkout gezogen, lügen. Dieses Repository wendet genau diese Partition an; seine `.gitignore` ist die Vorlage für eine eigene.
 

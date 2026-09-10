@@ -450,9 +450,11 @@ export function emitDispatchEvent(event, input) {
  *
  * ## Why it does not replace the model-written row
  *
- * The two rows are not the same row. The model's carries `history_file` and a
- * `detail` naming the session's Directive — judgements no hook holds. This one
- * carries `git_head_at_start` and `domain` — facts the model has to re-derive
+ * The two rows are not the same row. The model's carries a `detail` naming the
+ * session's Directive and mode — a judgement no hook holds. It carried a
+ * `history_file` beside it until 2026-09-10 and stopped when the history store
+ * closed to writes; no row carries that field now. This one carries
+ * `git_head_at_start` and `domain` — facts the model has to re-derive
  * and, measured over this repository's own log, frequently did not. So both are
  * written and the `writer` field is what tells them apart: a reader that wants
  * the mechanical facts filters on `writer === SESSION_START_WRITER`, and one

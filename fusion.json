@@ -1,5 +1,4 @@
 {
-  "orchestrator": { "maxTurns": 12 },
   "citations": {
     "extraPaths": ["bin/*", "hooks/*.ts", "hooks/lib/*.ts"],
     "_note": "hooks/lib/__tests__/*.ts is deliberately NOT declared: those files are fixtures, the record names in them are exhibits rather than pointers, and telling the two apart is exactly the judgement a declaration exists to record. Measured before this key was written, the 45 files the three patterns above name carried 167 resolved citations, 2 dangling and 0 store-prefixed, while the 51 test files carried 21 resolved, 90 dangling and 133 store-prefixed. This clause sits inside the entry rather than in the top-level _citations note because that note is held byte-identical to the seeded template's by the drift check in hooks/lib/__tests__/config.test.ts, which cuts this whole entry out of the comparison instead."

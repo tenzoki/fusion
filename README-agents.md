@@ -34,7 +34,7 @@ Since v4.0.0 the **Writes** column names artifact *kinds*, not fixed root paths.
 | `consultant` | On-demand expert consultation — answers a specific question from a referenced corpus, files issues for whatever work the answer reveals | Anything | `consult/` (shared-only), `issues/`, `decisions/`, `history/` (history entries only when explicitly asked) | Consultation report + issue and decision files |
 | `analyst` | Document study and problem analysis — comparative, gap, risk, feasibility, impact, plus decision records, architectural snapshots and forensic investigation of a captured failure | Anything (esp. logs, prompts, ontology, code, image files via vision) | `analyses/`, `issues/`, `decisions/`, `history/` | Analysis report + issue files |
 | `editor` | Produce-only Redakteur — writes, revises, translates (en↔de), and renders **customer-ready deliverables**; branded decks via `dl-brand-pptx` + `pptx`. Never reviews, files issues, or dispatches. The dispatch must name the deliverable's language or the agent halts — see **Dispatch parameters** below | Anything | **Project-side deliverables** (Markdown, branded pptx, translations), `history/` (session log only) | Finished deliverable + history log |
-| `orchestrator` | Automates multi-task work sessions: runs Turns of execution, review, and reconciliation until the Directive converges or a circuit breaker fires | Anything except `.secret` | Dispatches agents and creates commits. Writes `history/`; `issues/` (out-of-scope reverts, fusion bugs); `decisions/` (a new open record raised at a human gate); the four root-anchored session files `orchestrator-live.md`, `orchestrator-events.jsonl`, `agentstate.yaml` and `.active-circle`; state-marker renames on issues, plans and the Circle record; and exactly four parts of the active Circle record (`## Closure note`, this Turn's `## Turn log` entry, the two head fields, and the `## Directive` section written only as the fixed pointer literal riding a head-field write) | Progress report + commits + updated tracking files |
+| `orchestrator` | Runs the session's dispatch loop: reads one task, dispatches it, reads the return, commits it, and says where things stand | Anything except `.secret` | Dispatches agents and creates commits. Writes `issues/` (out-of-scope reverts, fusion bugs); `decisions/` (a new open record raised at a human gate); the two root-anchored session files `orchestrator-events.jsonl` and `.active-circle`; state-marker renames on issues, plans and the Circle record; and exactly three parts of the active Circle record (`## Closure note`, the two head fields, and the `## Directive` section written only as the fixed pointer literal riding a head-field write) | Progress report + commits + updated tracking files |
 | `playmaker` | Circle portfolio management — ranks anticipated Circles, proposes next activation, detects dependency cycles, flags parent-Grounding-stale; also **maintains** the shared backlog store: it ranks the entries and renames one between open (`_o_`) and recommended (`_p_`) on its own, and splits, merges, closes or defers one only with a user confirmation the run holds for that operation. It never originates an entry | All of `fusion-workbench/` except the frozen stores (`archive/`, `.migration-v2-backup/`, and any legacy `stashes/`), plus `CLAUDE.md` and the codebase | Circle records — appended `## Activation proposal`, `## Dependency warning` and `## Parent grounding stale` sections only, on a record of any marker, never a rename — `portfolio.md` (regenerated in full), `backlog/`, `history/` | Updated Circle records + portfolio brief + ranked backlog + history log |
 | `curator` | Reconciles the three **normative surfaces** — decision records, the project's own `./rules/` and `.claude/rules/` files, and `CLAUDE.md` — against the project's recorded history. Removes what history retired, resolves what the surfaces state in contradiction. Every change carries an evidence tier and a citation; nothing lands before a user gate. It advances no marker on ground-truth verification (reconciler) and proposes nothing on the strength of what the current session did | Anything except `.secret` — plus the whole workbench, the archive store and the full git history as evidence | The three surfaces themselves (gated); `history/` (the run file, which is also the change ledger), `decisions/` (an open record for a contradiction it may not resolve), `issues/` (work outside its remit) | Change ledger + applied edits + history log |
 
@@ -124,9 +124,9 @@ ontorev       →  reviews/<review>.md                       + new issue files
 reconciler    →  ground-truth pass over all tracking files in fusion-workbench/
 ```
 
-**Automated outer loop:** The `orchestrator` agent wraps the full pipeline — from shaping through execution, review, and reconciliation — in a managed session. It invokes `shaper` and `planner` (with human gates) when the input needs specification, then dispatches `taskplanner`, executors (`coder`/`ontocoder`), reviewers (`coderev`/`ontorev`), and `reconciler`, committing after each task and feeding review findings back into the next Turn. The orchestrator is the **only** agent that dispatches other agents.
+**The session's dispatch loop:** The `orchestrator` agent runs the work one task at a time. It invokes `shaper` and `planner` (with human gates) when the input needs specification, then dispatches executors (`coder`/`ontocoder`), reviewers (`coderev`/`ontorev`) and, when the user asks for it, `reconciler` — committing after each task and reporting before it takes the next one. The orchestrator is the **only** agent that dispatches other agents.
 
-Since v2.9.0, every Turn closes with a **Coherence check** against the Directive — silent when its verdict is `ok` (a status line, no question — decision `260827-1310_*_does-the-coherence-gate-ask-when-its-own-verdict-is-ok.md`), asking only on drift; when it concludes the Directive is unreachable as written, the orchestrator opens a **Rebalance gate** with four user options (Revise Artifact, Revise Directive, Revise Grounding, Accept Bounded Closure). At session end a **per-Circle three-edge verdict** judges the whole arc. See `docs/working-model.md` (the gates, Coherence Review, and Rebalance model) for the full model.
+**Coherence is judged when a person asks for it, and never on a schedule.** A reconciliation the user runs by hand returns a three-edge verdict against the Directive; on anything but `coherent` the orchestrator opens a **Rebalance gate** with four moves (Revise Artifact, Revise Directive, Revise Grounding, Accept Bounded Closure). That is the gate's only trigger — the per-round Coherence check that used to reach it was removed on 2026-09-10, so a session that runs no reconciliation never meets it. See `docs/working-model.md` for the gates and the Rebalance model.
 
 ```
                           ┌──────────────────────────────┐
@@ -135,7 +135,7 @@ Since v2.9.0, every Turn closes with a **Coherence check** against the Directive
                                  │               │
                     ┌────────────▼──┐   ┌────────▼────────┐
                     │   shaper      │   │   reconciler     │
-                    │ (if needed)   │   │   (once, end)    │
+                    │ (if needed)   │   │  (when asked)    │
                     └────────┬──────┘   └─────────────────┘
                     ← human gate: spec review
                     ┌────────▼──────┐
@@ -148,7 +148,7 @@ Since v2.9.0, every Turn closes with a **Coherence check** against the Directive
                     └────────┬──────┘
                              │
               ┌──────────────▼──────────────┐
-              │  Turn loop                  │ ← Turn budget (see below)
+              │  dispatch loop              │ ← one task at a time (see below)
               │  ┌────────┐  ┌───────────┐  │
               │  │ coder  │  │ ontocoder │  │ ← human gate on ontocoder
               │  └───┬────┘  └─────┬─────┘  │
@@ -164,33 +164,30 @@ Since v2.9.0, every Turn closes with a **Coherence check** against the Directive
               │      │ ontorev     │        │
               │      └──────┬──────┘        │
               │      ┌──────▼──────┐        │
-              │      │ Coherence   │        │ ← per-Turn gate (v2.9.0+)
-              │      │ Review      │        │   may open Rebalance gate
+              │      │ report, and │        │ ← the user says what is next
+              │      │ ask         │        │
               │      └──────┬──────┘        │
               │             │ new issues    │
-              │             │ → next Turn   │
+              │             │ → next task   │
               └─────────────┴───────────────┘
 ```
 
-**The Turn budget is configuration, not a constant.** `bin/fusion-turn-budget` resolves it once per session, at the orchestrator's Setup, from `{"orchestrator": {"maxTurns": <n>}}` in the project's `fusion.json`, merged per leaf over the built-in default, which is defined once in `hooks/lib/config.ts` `DEFAULTS`. Two layers and no third: the plugin-level layer that used to sit between them went on 2026-08-16 with the guard settings it carried. It is one of the settings fusion resolves; the other is `citations.extraPaths`, which the two citation helpers read and no agent does. No count is written into the orchestrator prompt or into the diagram above. When the resolution fails, the orchestrator substitutes none: it writes no number in the budget's place — `agentstate.yaml` has carried no maximum since 2026-08-15, when its hand-maintained counters were removed — shows the dashboard's Turn field as `<current>/--`, treats the Max-Turns circuit breaker as not evaluable, and asks the user at the start of each Turn instead, through the Unresolved-budget check-in that runs as Phase 2 step 1.
+**The loop is bounded by the user, and by nothing else.** One task is in flight at a time; when it is committed the orchestrator reports and asks what is next. There is no Turn count, no configured ceiling and no circuit breaker: the Turn budget, the `orchestrator.maxTurns` setting behind it and the helper that resolved it all went on 2026-09-10, and the setting is a retired leaf that earns one advisory in any project still declaring it. `citations.extraPaths` is the one setting fusion's configuration loader resolves now. **Do not read the removal as "the loop is unbounded"** — it is bounded by a person paying attention, which is a real bound and a different one.
 
 ### Orchestrator observability
 
-When the orchestrator runs, it produces three artifacts so the human can follow along and review afterward:
+When the orchestrator runs, one artifact records what happened, and one program renders it:
 
 | Artifact | File | What it shows | How to view |
 |----------|------|---------------|-------------|
-| **Live dashboard** | `fusion-workbench/orchestrator-live.md` | Current task, Turn progress, queue, blocked items — overwritten at every transition | `watch cat fusion-workbench/orchestrator-live.md` in a second terminal |
-| **Event log** | `fusion-workbench/orchestrator-events.jsonl` | Append-only JSONL with timestamped events (task start/done/error, gate hits, commits, reviews, circuit breakers) | `tail -f fusion-workbench/orchestrator-events.jsonl` for streaming, or `jq` for queries |
-| **Sequence diagram** | Appended to the session's history file | Mermaid diagram of all agent dispatches, gate interactions, commits, and reviews | Open the history file in any Markdown viewer with Mermaid support |
+| **Event log** | `fusion-workbench/orchestrator-events.jsonl` | Append-only JSONL with timestamped events (task start/done/error, gate hits, commits, reviews), each line naming the person, the checkout and the session that wrote it | `tail -f fusion-workbench/orchestrator-events.jsonl` for streaming, or `jq` for queries |
+| **Dashboard** | rendered from that log | The dispatch in flight, recent events, commits and the hooks' write trail | `./fusion-workbench/monitor "<session-name>" <port>` in a second terminal, then open `http://localhost:<port>` |
 
-**Combined view:** Run `./fusion-workbench/monitor "<session-name>" <port>` (e.g. `./fusion-workbench/monitor "My Session" 8099`) in a second terminal to see the live dashboard and recent events together in a browser. Use `-n 200` for more event lines (default 100) or `-i 1` for faster refresh.
-
-The sequence diagram is the retrospective summary, appended to the history file at session end.
+Use `-n 200` for more event lines (default 100) or `-i 1` for faster refresh. Two artifacts stood beside the log until 2026-09-10 and both went: a dashboard **file** the model overwrote by hand, replaced by the monitor reading the log directly, and a Mermaid sequence diagram appended to the session's history file, which went with the history store.
 
 One side loop feeds into the chain at any point (outside the orchestrator's scope):
 
-- **reconciler** — periodically run between sessions to make sure plan and issue states reflect what is actually in the codebase (file headers lie, the codebase doesn't). Also invoked by the orchestrator at session end.
+- **reconciler** — run by hand, by the user, to make sure plan and issue states reflect what is actually in the codebase (file headers lie, the codebase doesn't). `/fusion:reconcile` is the command; the orchestrator dispatches it when the user asks and never on a schedule of its own.
 
 ## Plugin structure
 

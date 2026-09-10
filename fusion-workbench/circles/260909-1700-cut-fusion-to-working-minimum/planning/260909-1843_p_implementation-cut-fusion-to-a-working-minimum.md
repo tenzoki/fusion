@@ -383,9 +383,9 @@ Two steps outside the plan's own text, R1 (`9c4dbdbb`, bundled into the B3 commi
 (`c925fd9d`), cut 497 lines of duplicated hook-test comment prose. **The plan does not name R1 or
 R2 anywhere** — `grep -n "R1\|R2\b"` over this file returns nothing — so they carry no step number
 and no `[DONE]` marker to set; they are recorded only in the Circle record's Turn 2 log entry and in
-issue `260910-0020_o_session-2s-own-additions-do-not-fit-the-hook-test-growth-bound-and-the-plan-does-not-say-so.md`,
+issue `260910-0020_*_session-2s-own-additions-do-not-fit-the-hook-test-growth-bound-and-the-plan-does-not-say-so.md`,
 which is itself the record of the gap. That issue and its follow-on
-`260910-0445_o_deleting-a-test-file-at-its-baseline-frees-no-head-room-so-the-turn-budget-cut-cannot-pay-the-bound.md`
+`260910-0445_*_deleting-a-test-file-at-its-baseline-frees-no-head-room-so-the-turn-budget-cut-cannot-pay-the-bound.md`
 remain open at HEAD — neither is resolved by anything in session 2, and both are correctly still
 `_o_`. `cd hooks && npm test` is green at 987/987 including `surface-growth-bound` (12/12) at HEAD,
 confirming R1+R2 bought back the head-room B3 spent. `bin/fusion-citation-check` reports

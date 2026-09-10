@@ -9,14 +9,14 @@
  * one of them, who wrote it and from which checkout. This supplies the third
  * name: which of that checkout's Claude Code sessions.
  *
- * That is NOT what `history_file` already says, and the difference is the whole
- * reason this hook exists. A fusion resume is a *new* Claude Code session that
- * finds `fusion-workbench/agentstate.yaml`, presents the saved state and
- * carries on with `session.history_file` held fixed (`agents/orchestrator.md`
- * `## Setup`, **What a resumed session inherits**) — so two processes share one
- * `history_file` and nothing in the log tells them apart. Claude Code's own
- * `--resume` and `--continue` are a different operation and preserve the
- * identifier; conflating the two is the defect recorded in
+ * No other field answers it. The two that came closest are both gone: fusion's
+ * own session resume, which produced a *new* Claude Code process carrying the
+ * previous session's `history_file` so that two processes were indistinguishable
+ * in the log, and the `history_file` field itself, which stopped being written on
+ * 2026-09-10 when the history store closed. Neither ever named the process, which
+ * is why the identifier is read from the hook payload rather than derived. Claude
+ * Code's own `--resume` and `--continue` are a different operation and preserve
+ * the identifier; conflating the two is the defect recorded in
  * `260826-0805_*_the-resumption-measurement-answers-for-claude-codes-resume-and-the-plan-asked-about-fusions.md`.
  *
  * ## Channel: plain stdout, and it was MEASURED

@@ -17,17 +17,17 @@
   coder.md 9591
   coderev.md 8457
   consultant.md 13855
-  curator.md 34402
+  curator.md 34335
   editor.md 13309
   ontocoder.md 13260
   ontorev.md 7392
   orchestrator.md 95213
   planner.md 19696
   playmaker.md 41906
-  reconciler.md 21221
+  reconciler.md 21194
   shaper.md 28956
-  taskplanner.md 13542
-  total 352757
+  taskplanner.md 13475
+  total 352596
 
 [skills bytes]
   archive/SKILL.md 25489
@@ -36,17 +36,17 @@
   cleanup/SKILL.md 6496
   commit/SKILL.md 6298
   curate/SKILL.md 11972
-  direct/SKILL.md 10231
-  help/SKILL.md 16671
+  direct/SKILL.md 10230
+  help/SKILL.md 16903
   log-activity/SKILL.md 13608
   memo/SKILL.md 12336
-  migrate/SKILL.md 25340
+  migrate/SKILL.md 25351
   news/SKILL.md 8766
-  next/SKILL.md 26041
+  next/SKILL.md 25425
   post/SKILL.md 6301
   reconcile/SKILL.md 6581
   setup/SKILL.md 17332
-  total 246343
+  total 245969
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -74,7 +74,7 @@
   fusion-identity.test.ts 217
   fusion-paths.test.ts 936
   fusion-prose-metric.test.ts 173
-  fusion-session-domain.test.ts 148
+  fusion-session-domain.test.ts 140
   glob-nomatch-lint.test.ts 140
   guard-bash-integration.test.ts 334
   guard-project-config-integration.test.ts 240
@@ -107,4 +107,4 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 683
   workbench-citation-lint.test.ts 325
-  total 22104
+  total 22096

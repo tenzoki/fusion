@@ -124,8 +124,9 @@ section and the step described above, and no prompt arrived or left.
 - `rules/decision-record-examples.md` — the worked example, and its pointer back to that paragraph.
 - `agents/planner.md` `## Where this Circle stops` — the section, and the paragraph beside the
   `**Decidability:**` one saying what does and does not read it.
-- `agents/orchestrator.md` `### Phase 4 — Portfolio sync` — step 2b, and its row in the table of
-  gates that stop for a human.
+- `agents/orchestrator.md` `## Closing a Circle` — the step that reads the section back, and its row
+  in the table of gates that stop for a human. At v10.3 that section was headed *Phase 4 — Portfolio
+  sync* and the step was its 2b.
 - `rules/workbench-tracking.md` — the record-versus-live-state split, if you track your workbench.
 - `docs/upgrading-to-v10-2.md` and `docs/upgrading-to-v10.md` — the two previous notes, if you are
   coming from further back and skipped one.
