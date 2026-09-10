@@ -174,4 +174,4 @@ Name each line in the Done report.
 
 ## Done
 
-Only after every step above completes may you begin the user's task. Report Setup complete with: the workspace path, what Step 0's marker block reported (`marker=`, `checks_due=`, or `marker-version-unresolved`), which checks Step 1 ran and what each said, and every helper Step 2 found in the work tree and not in the install. End with the three usual next moves: name a task, "run the active Circle", or `/fusion:next` for a recommendation.
+Only after every step above completes may you begin the user's task. Report Setup complete with: the workspace path, what Step 0's marker block reported (`marker=`, `checks_due=`, or `marker-version-unresolved`), which checks Step 1 ran and what each said, and every helper Step 2 found in the work tree and not in the install. End with the two usual next moves: name a task, or "run the active Circle".

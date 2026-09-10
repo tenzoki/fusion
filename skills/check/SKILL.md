@@ -225,7 +225,7 @@ fi
 
 ## identity — this checkout's identity, and a Circle it never activated
 
-A `_t_` Circle record travels between checkouts and `.active-circle` does not (`rules/workbench-tracking.md`), so a clone taken mid-Circle holds an active record with no pointer: `MISSING-POINTER`, the condition `agents/playmaker.md` names and `/fusion:next` renders. A pointer deleted by hand is that same state.
+A `_t_` Circle record travels between checkouts and `.active-circle` does not (`rules/workbench-tracking.md`), so a clone taken mid-Circle holds an active record with no pointer: `MISSING-POINTER`. A pointer deleted by hand is that same state.
 
 **Two conditions here ask**, each at most once per checkout: that one, and a checkout with no registry entry.
 
@@ -259,8 +259,8 @@ The count is taken unconditionally; the pointer gates the offer, not the detecti
 - **No path, or one path with `pointer-present`** — report nothing, ask nothing: a pointer is present, whichever Circle it names.
 - **One path and no `pointer-present`** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*. Read the record's `**Claim:**` too: where it opens with `Claimed ` and names an identity other than the one just read, name the holder and the time **before** the offer, and the offer overrides, writing the field's `Overridden ` sentence per `rules/circle-records.md` `### The claim field`. `Unclaimed`, no field, or this checkout's own identity behaves as today.
   - **Activate** — `printf '%s\n' "<dir>" > ./fusion-workbench/.active-circle`. Step 2 resolves against it.
-  - **Leave** — write nothing; the Circle stays inactive here, and `/fusion:next` can activate it later.
-- **More than one path, pointer or not** — attribute before you report. Sort the records by `**Claim:**` against the identity read above, per `rules/circle-records.md` `### How many Circles may be active, and in whose checkout`, and name the outcome that section gives. On `MULTI-CHECKOUT` say so in its terms, that one active Circle per checkout is the designed shape and not a condition, naming each holder through `"$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name" resolve <hex>` under its `[ -x ]` guard, its misses in that helper's header. On `MULTIPLE-ACTIVE` or `CLAIM-UNATTRIBUTED` name every record found and what failed. **Offer nothing and write nothing in any of the three**: which Circle to run here is a portfolio judgement, and `/fusion:next` is where the project makes it. Point the user there.
+  - **Leave** — write nothing; the Circle stays inactive here, and the pointer can be written later.
+- **More than one path, pointer or not** — attribute before you report. Sort the records by `**Claim:**` against the identity read above, per `rules/circle-records.md` `### How many Circles may be active, and in whose checkout`, and name the outcome that section gives. On `MULTI-CHECKOUT` say so in its terms, that one active Circle per checkout is the designed shape and not a condition, naming each holder through `"$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name" resolve <hex>` under its `[ -x ]` guard, its misses in that helper's header. On `MULTIPLE-ACTIVE` or `CLAIM-UNATTRIBUTED` name every record found and what failed. **Offer nothing and write nothing in any of the three**: which Circle to run here is a portfolio judgement, and it is the user's, made by hand since the portfolio command went at v11. Report and stop.
 
 Name the branch that ran in the Done report.
 

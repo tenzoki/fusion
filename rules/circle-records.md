@@ -256,7 +256,7 @@ every `_t_` record's `**Claim:**` against this checkout's identity by the halves
 `### The claim field`. That sorts the records into three groups, and every `_t_` record
 falls in exactly one of them, because the halves-test either matches this checkout, matches
 some other, or does not resolve. The three conditions are named because three consumers
-cite them: `agents/playmaker.md` `### Step 1: Inventory`, its portfolio render, and
+cite them: the removed portfolio prompt's inventory step and its portfolio render, and
 `/fusion:setup` Step 0i.
 
 - **Claimed by this checkout.** At most one may stand, and `.active-circle` names it. A

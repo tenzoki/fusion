@@ -10,7 +10,7 @@ The user invoked `/fusion:direct <draft>`. This skill is the user-facing surface
 
 A Circle is a directory, not a file: shaper creates `<dirname>/` with its record `_a_circle.md` and the six artifact subdirectories. See `rules/circle-records.md` `## Circle record template`.
 
-The skill itself does not write Circle content — shaper does. Its only writes are (a) a `mkdir -p` of the Circle store if absent (Step 2 — the one deviation from `/fusion:next`'s stricter "run setup" rule, and a deliberate choice for this skill), and (b) the follow-up text printed to the user.
+The skill itself does not write Circle content — shaper does. Its only writes are (a) a `mkdir -p` of the Circle store if absent (Step 2 — a deliberate deviation from the stricter "run setup" rule, and a deliberate choice for this skill), and (b) the follow-up text printed to the user.
 
 ## Step 1 — Pre-flight: resolve paths
 
@@ -46,7 +46,7 @@ mkdir -p "$WORKBENCH/$OUT_CIRCLE"
 
 ## Step 3 — Detect domain
 
-The same guarded call `/fusion:next` Step 2 makes; `bin/fusion-session-domain`'s header carries the contract:
+The guarded call every consumer of the session domain makes; `bin/fusion-session-domain`'s header carries the contract:
 
 ```bash
 if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain" ]; then "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain"; else printf 'domain=code\nsource=helper-missing\n'; fi
@@ -88,7 +88,7 @@ Wait for shaper to return, then go to Step 4b. The clarification flow may take s
 
 ## Step 4b — Relay shaper's questions to the user
 
-The `AskUserQuestion` grant in this skill's frontmatter belongs to the skill body running in the main session; it does not travel to the agent the skill dispatches. So shaper returns its clarification round as report text and this skill asks. Same shape as `/fusion:next` Step 5b.
+The `AskUserQuestion` grant in this skill's frontmatter belongs to the skill body running in the main session; it does not travel to the agent the skill dispatches. So shaper returns its clarification round as report text and this skill asks. Same shape as any skill that relays an agent's question to the user.
 
 **A returned Circle, no step.** When the report names the Circle directory instead of questions, go straight to Step 5.
 
@@ -117,11 +117,9 @@ When shaper returns, report:
 3. **The source entry's state**, and only when the draft was a backlog entry — closed, or left open with what is still in it. Take it from shaper's report; do not open the entry to check. One line, because the answer decides whether the user still has something to file.
 4. **Follow-up hint** — print:
 
-   > *Next:*
-   > - *`/fusion:next` shows this Circle in the portfolio beside the other anticipated ones, with an activation prompt.*
-   > - *`/fusion:next <dirname>` activates it directly and skips the proposal. (`--write-activation <dirname>` stays as an old alias.)*
+   > *Next:* *the Circle is anticipated (`_a_`). Activate it by renaming its record to `_t_` and writing the directory name into `fusion-workbench/.active-circle`, or hand the directory name to an orchestrator session and let it activate.*
 
-   Substitute `<dirname>` with the actual Circle directory name (e.g. `260511-1925-replace-auth-with-oauth`) — no marker, no `.md`. The marker lives on the record inside the directory, not on the name you type here.
+   Name the actual Circle directory (e.g. `260511-1925-replace-auth-with-oauth`) — no marker, no `.md`. The marker lives on the record inside the directory, not on the directory name. The portfolio command that used to render this activation went at v11 with the portfolio layer.
 
 This is the entire user-facing output.
 

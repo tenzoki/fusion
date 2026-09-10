@@ -1,6 +1,6 @@
 # fusion
 
-A multi-agent orchestration framework for Claude Code. Fusion runs a work session as a team of **15 specialized agents** — an orchestrator that dispatches the rest, plus coders, reviewers, planners, and analysts — coordinating through files on disk, with a human at the decisions that matter and a hook layer that traces every write the agents make.
+A multi-agent orchestration framework for Claude Code. Fusion runs a work session as a team of **11 specialized agents** — an orchestrator that dispatches the rest, plus coders, reviewers, planners, and analysts — coordinating through files on disk, with a human at the decisions that matter and a hook layer that traces every write the agents make.
 
 See [`docs/philosophy.md`](docs/philosophy.md) for why it's built this way, [`docs/working-model.md`](docs/working-model.md) for how a session runs (the Circle flow, the gates, and the guard), and [`README-agents.md`](README-agents.md) for the full agent reference.
 
@@ -90,7 +90,7 @@ Setup is the only thing that creates a workbench. Without it, agents halt with "
 
 ## Your first session
 
-**The daily loop, in five lines:** morning — `/fusion:cadence` shows what you have actually been doing; work — start the orchestrator and say what you want, or ask `/fusion:next` what is worth doing; ideas on the way — `/fusion:memo` files them without breaking stride; done — `/fusion:cleanup`, and you may walk away: one question waits for your return. Everything below is that loop in detail.
+**The daily loop, in five lines:** morning — `/fusion:cadence` shows what you have actually been doing; work — start the orchestrator and say what you want; ideas on the way — `/fusion:memo` files them without breaking stride; done — `/fusion:cleanup`, and you may walk away: one question waits for your return. Everything below is that loop in detail.
 
 Start the orchestrator and give it a task:
 
@@ -116,7 +116,7 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 - **Let the gates do their job.** The human gates before ontology edits and destructive operations are where fusion earns its keep. Don't `--yolo` through them out of habit; `--yolo` is for a throwaway loop where nothing is at stake, not for real work on a shared tree.
 - **Trust tracking files only after reconciliation.** Status markers in plans and issues can lag reality mid-session. Let Phase 3 (final reconciliation) run, or dispatch the `reconciler` explicitly, before you rely on what the tracking files claim.
 - **Keep the working tree clean.** The orchestrator commits per task. Start a session from a clean tree so its commits are legible; don't mix hand-edits into a running session, or you'll blur which change came from where.
-- **Direct mode vs. portfolio.** For one obvious task, just tell the orchestrator (direct mode). When you have several units of future work whose priority isn't obvious, capture them as Circles with `/fusion:direct` and let `/fusion:next` rank them. Small projects rarely need the portfolio; large ones benefit from the dependency and cycle detection.
+- **Direct mode vs. portfolio.** For one obvious task, just tell the orchestrator (direct mode). When you have several units of future work whose priority isn't obvious, capture them as Circles with `/fusion:direct` and pick one by hand. The ranking command went at v11 with the agent behind it.
 - **Keep `CLAUDE.md` and `./rules/` current.** Agents load your project rules every session through `fusion-rules`. Stale rules mean stale behavior — treat them as living config, not documentation.
 - **Say yes to Setup's permission question rather than reaching for `--yolo`.** `/fusion:setup` offers once to write a permissive `.claude/settings.local.json` for the project. It persists across sessions, it is a considered choice you made once, and it keeps the catastrophic-operation backstop that `--yolo` removes. `--yolo` is per-run, unconditional, and worth keeping for throwaway loops. Decline the question and the project simply keeps its per-tool approval prompts; Setup will offer again next run.
 - **Nothing blocks your writes.** fusion's hook layer is observation-only: it allows every tool call, traces the write-tool ones into the event log the monitor renders, and tells you when your `fusion.json` is broken. It used to enforce — a protected-path deny, a decision-governed deny, and a halt after three blocks — and each was removed on its own measurement. See [Configuration](#configuration) for what the file still sets, and [`README-hooks.md`](README-hooks.md) for what each check was and why it went.

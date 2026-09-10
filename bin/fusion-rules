@@ -17,7 +17,7 @@
 #
 # Convention for the project-side split:
 #   - ./rules/        — rules only fusion agents care about (capture layouts,
-#                       taskplanner priority overrides, ontology-review
+#                       review priority overrides, ontology-review
 #                       heuristics — anything that has no meaning outside a
 #                       fusion-agent context).
 #   - .claude/rules/  — binding project guidelines that any Claude instance
@@ -33,12 +33,12 @@
 #     instruction. Emitted before fusion-workbench-conventions.md so an agent
 #     reads "how Setup works" before the detailed conventions.
 #   - Every agent reads fusion-workbench-conventions.md (shipped by plugin).
-#   - The decision-transition agents (orchestrator, shaper, playmaker,
-#     planner, reconciler) additionally read decision-record-examples.md —
+#   - The decision-transition agents (orchestrator, shaper, planner,
+#     reconciler) additionally read decision-record-examples.md —
 #     the worked marker transitions; audience decided at 260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md, when
 #     the always-on floor could no longer carry the tutorial.
-#   - The user-read agents (orchestrator, consultant, playmaker, shaper,
-#     editor, curator) additionally read user-facing-output.md — the full
+#   - The user-read agents (orchestrator, consultant, shaper, editor,
+#     curator) additionally read user-facing-output.md — the full
 #     user-facing style contract (gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md); everyone else carries
 #     the chat profile's anti-patterns via agent-setup.md. This is the ONE
 #     emission a dispatch can also ask for by hand, with `--audience=user`; the
@@ -47,7 +47,7 @@
 #     the epistemic norms governing reasoning substance (not formatting):
 #     own your errors, no premature solutions, calibrated certainty, case
 #     splits disjoint-and-complete, cardinalities enumerated or derived.
-#   - Circle-transitioning agents (orchestrator, playmaker, shaper) additionally
+#   - Circle-transitioning agents (orchestrator, shaper) additionally
 #     read circle-records.md (shipped by plugin) — the Circle state vocabulary,
 #     its worked transitions, the Circle record template and the portfolio
 #     template. The audience is DERIVED rather than asserted: these are exactly
@@ -56,23 +56,26 @@
 #     rule-file-provenance.md — are emitted to no agent at all; they are the
 #     authoring homes for prompt/resolver authoring and for rule-file writing,
 #     reached by pointer from fusion-workbench-conventions.md.
-#   - The review-writing agents (coderev, ontorev) additionally read
+#   - The review-writing agent (reviewer) additionally reads
 #     review-contract.md (shipped by plugin) — the single authoring home of the
 #     review file's two mandated header fields, the per-topic working files and
-#     the final consolidated review. The audience is the two agents that write
+#     the final consolidated review. The audience is the one agent that writes
 #     review files; every other agent would be carrying a contract it can never
 #     apply.
 #   - Design-diagram agents additionally read design-diagrams.md (shipped by
 #     plugin) — the doctrine for expressing technical design as formal,
 #     parseable Mermaid (when / which type, validity, coherence self-check).
-#     Recipients: planner, analyst, taskplanner, shaper — the agents that
+#     Recipients: planner, analyst, shaper — the agents that
 #     produce the diagrams.
 #   - Domain agents additionally match filename patterns:
-#       coder, coderev, bugfixer  → *coding*.md
-#       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
+#       coder                     → *coding*.md
+#       ontocoder                 → *ontology*.md, *normative*.md, *verb*.md
+#       reviewer                  → both sets, because one agent covers both
+#                                   review domains
 #       planner                   → *coding*.md, *ontology*.md
-#   - The editor additionally reads project-language.md and the playmaker
-#     backlog-entries.md (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md); agents matching none of the
+#   - The editor additionally reads project-language.md and the orchestrator
+#     backlog-entries.md, which followed the four backlog operations to the one
+#     agent that still performs them (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md); agents matching none of the
 #     conditions above get the always-on core alone.
 #
 # Optional topic-scoped loading (the context manifest):
@@ -106,11 +109,11 @@
 #                                    line.
 #       default-voice-<lang>.yaml  — emitted for the long-form-prose agents only
 #                                    (orchestrator, consultant, shaper, planner,
-#                                    analyst, playmaker, editor, curator), for
+#                                    analyst, editor, curator), for
 #                                    narrative outputs:
 #                                    session summary bodies, consultation
 #                                    replies, analysis reports including
-#                                    failure timelines, playmaker briefings,
+#                                    failure timelines,
 #                                    prose sections of specs and plans, editor
 #                                    deliverables. Language: the
 #                                    `**Artifact language:**` line.
@@ -225,8 +228,14 @@ else
 fi
 
 case "$AGENT" in
-  coder|coderev|bugfixer)        PATTERNS="coding" ;;
-  ontocoder|ontorev)              PATTERNS="ontology normative verb" ;;
+  coder)                          PATTERNS="coding" ;;
+  ontocoder)                      PATTERNS="ontology normative verb" ;;
+  # The reviewer covers both domains in one agent, so it takes both pattern
+  # sets: a code pass needs the project's coding rules and an ontology pass its
+  # ontology, normative and verb rules. The plugin ships none of these, so in
+  # this repository the union costs 0 bytes; in a consuming project it is what
+  # keeps an ontology review from running without the heuristics that bind it.
+  reviewer)                       PATTERNS="coding ontology normative verb" ;;
   planner)                        PATTERNS="coding ontology" ;;
   # `analyst` carries its own pattern so a SMALL project-local rule reaches it by
   # filename, the way ./rules/investigator-*.md reached the investigator before
@@ -242,7 +251,7 @@ case "$AGENT" in
   # 260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md,
   # option 3 (both), answered by the user 2026-08-20.
   analyst)                        PATTERNS="analyst" ;;
-  orchestrator|shaper|taskplanner|reconciler|consultant|playmaker|editor|curator)
+  orchestrator|shaper|reconciler|consultant|editor|curator)
                                   PATTERNS="" ;;
   *)
     echo "fusion-rules: unknown agent '$AGENT'" >&2
@@ -253,7 +262,7 @@ esac
 # Prose-agent flag — independent of PATTERNS. The agents below produce
 # long-form narrative output that the stylometric profile governs.
 case "$AGENT" in
-  orchestrator|consultant|shaper|planner|analyst|playmaker|editor|curator)
+  orchestrator|consultant|shaper|planner|analyst|editor|curator)
                                   IS_PROSE_AGENT=1 ;;
   *)                              IS_PROSE_AGENT=0 ;;
 esac
@@ -263,39 +272,40 @@ esac
 # Mermaid. They read the shared rubric in rules/design-diagrams.md so that one
 # definition of "coherent" governs every diagram the plugin's agents draw.
 case "$AGENT" in
-  planner|analyst|taskplanner|shaper)
-                                  IS_DIAGRAM_AGENT=1 ;;
+  planner|analyst|shaper)         IS_DIAGRAM_AGENT=1 ;;
   *)                              IS_DIAGRAM_AGENT=0 ;;
 esac
 
 # Circle-transitioning-agent flag — independent of PATTERNS. The three agents
-# that create, activate, close or rank a Circle additionally read
+# that create, activate or close a Circle additionally read
 # rules/circle-records.md: the Circle state vocabulary, its worked transitions,
 # the Circle record template and the portfolio template.
 #
 # The audience is DERIVED, not guessed: `bin/fusion-paths` builds each consumer's
-# key set by grepping that consumer's own prompt, and exactly these three name a
-# Circle-scoped key — orchestrator ($SCAN_CIRCLES, $PORTFOLIO), playmaker
-# ($OUT_CIRCLE, $SCAN_CIRCLES, $PORTFOLIO), shaper ($OUT_CIRCLE, $SCAN_CIRCLES).
+# key set by grepping that consumer's own prompt, and exactly these two name a
+# Circle-scoped key — orchestrator ($SCAN_CIRCLES, $PORTFOLIO) and shaper
+# ($OUT_CIRCLE, $SCAN_CIRCLES).
 # An agent that names no Circle key cannot transition a Circle, so the vocabulary
 # is text it can never act on. Every other agent reaches the file through the
 # pointer at `## Circle records` in fusion-workbench-conventions.md; the skills
 # that transition Circles cite it directly, as skills always must (this helper
 # serves agents only and exits 2 on any other name).
 case "$AGENT" in
-  orchestrator|playmaker|shaper)  IS_CIRCLE_AGENT=1 ;;
+  orchestrator|shaper)            IS_CIRCLE_AGENT=1 ;;
   *)                              IS_CIRCLE_AGENT=0 ;;
 esac
 
-# Review-writing-agent flag — independent of PATTERNS. The two agents that write
-# review files read rules/review-contract.md: the two mandated header fields,
+# Review-writing-agent flag — independent of PATTERNS. The one agent that writes
+# review files reads rules/review-contract.md: the two mandated header fields,
 # the per-topic working files and the final consolidated review. The audience is
 # bounded by a mechanism rather than a guess — a review file is what
 # bin/fusion-review-coverage tiles, and the REVIEW_SENDERS constant in
-# hooks/lib/review-coverage.ts is that same pair. Every other agent would carry
+# hooks/lib/review-coverage.ts names the same sender. The two review kinds were
+# two agents until v11, and the constant still recognises their old segments so
+# that review files already on disk keep parsing. Every other agent would carry
 # a contract it can never apply.
 case "$AGENT" in
-  coderev|ontorev)                IS_REVIEWER_AGENT=1 ;;
+  reviewer)                       IS_REVIEWER_AGENT=1 ;;
   *)                              IS_REVIEWER_AGENT=0 ;;
 esac
 
@@ -303,22 +313,23 @@ esac
 # marker transitions and therefore read the worked examples (audience decided
 # at the 260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md user gate; the vocabulary itself stays always-on).
 case "$AGENT" in
-  orchestrator|shaper|playmaker|planner|reconciler) IS_DECISION_TRANSITION_AGENT=1 ;;
+  orchestrator|shaper|planner|reconciler) IS_DECISION_TRANSITION_AGENT=1 ;;
   *)                                                IS_DECISION_TRANSITION_AGENT=0 ;;
 esac
 
 # User-facing-agent flag — the agents whose output the user reads DIRECTLY:
-# the orchestrator (gates, status, chat), consultant (replies), playmaker
-# (briefings), shaper (clarification rounds), editor (deliverable chat) and
-# curator (the gate ledger reports). They carry the full user-facing style
-# contract. The nine that report to the orchestrator do not: measured before
+# the orchestrator (gates, status, chat), consultant (replies), shaper
+# (clarification rounds), editor (deliverable chat) and curator (the gate ledger
+# reports). They carry the full user-facing style contract. The rest, which
+# report to the orchestrator, do not — and reach the file on the dispatches where
+# they do hold a gate through `--audience=user`, which is the second key below: measured before
 # the 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md user gate, they took ~95 % of all dispatches and carried
 # 20 KB of gate-prompt and chat-format doctrine per dispatch without ever
 # holding a gate or a chat. Their replacement is two sentences in
 # agent-setup.md: the chat profile's anti-patterns still bind every line a
 # human may read, and a report's audience is the dispatcher.
 case "$AGENT" in
-  orchestrator|consultant|playmaker|shaper|editor|curator) IS_USER_FACING_AGENT=1 ;;
+  orchestrator|consultant|shaper|editor|curator) IS_USER_FACING_AGENT=1 ;;
   *)                                                       IS_USER_FACING_AGENT=0 ;;
 esac
 
@@ -540,7 +551,7 @@ if [ "$IS_USER_FACING_AGENT" -eq 1 ] || [ "$AUDIENCE_USER" -eq 1 ]; then
 fi
 
 # 1b2. The decision-marker WORKED EXAMPLES go to the agents that transition or
-#      plan decision transitions: orchestrator, shaper, playmaker, planner,
+#      plan decision transitions: orchestrator, shaper, planner,
 #      reconciler (worked transition 1, the _o_ -> _a_ rename, is its act).
 #      Every agent still files records and still carries the marker VOCABULARY
 #      (fusion-workbench-conventions.md, always-on); what leaves the always-on
@@ -580,7 +591,7 @@ if [ "$IS_DIAGRAM_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/design-diagrams.md"
 fi
 
-# 1d. Circle-transitioning agents (orchestrator, playmaker, shaper) additionally
+# 1d. Circle-transitioning agents (orchestrator, shaper) additionally
 #     receive the Circle record rules: the state vocabulary, the worked
 #     transitions, the record template and the portfolio template. Derived
 #     audience — see the IS_CIRCLE_AGENT block above.
@@ -617,20 +628,23 @@ fi
 # 1e2. Two partitioned conventions topics go to the one agent each whose act
 #      they govern (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md): the language cascade's full text to
 #      the editor, whose deliverable-language halt lives in it, and the backlog
-#      maintenance mandate to the playmaker, the store's one maintainer. The
-#      operative cores stay always-on in fusion-workbench-conventions.md.
+#      maintenance mandate to the orchestrator, which performs the four backlog
+#      operations at the user's word since the playmaker went with the portfolio
+#      layer. The operative cores stay always-on in
+#      fusion-workbench-conventions.md.
 if [ "$AGENT" = "editor" ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/project-language.md"
 fi
-if [ "$AGENT" = "playmaker" ]; then
+if [ "$AGENT" = "orchestrator" ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/backlog-entries.md"
 fi
 
-# 1f. The two review-writing agents additionally receive the review contract.
-#     It left agents/coderev.md and agents/ontorev.md, where the same text stood
-#     twice with no pointer between the copies; one authoring home is what keeps
-#     the two review kinds readable by one parser. See the IS_REVIEWER_AGENT
-#     block above for the audience.
+# 1f. The review-writing agent additionally receives the review contract.
+#     It left the two review prompts of the day at v10.6.0, where the same
+#     text stood twice with no pointer between the copies; those two prompts
+#     themselves merged into agents/reviewer.md at v11, and one authoring home is
+#     what keeps the two review kinds readable by one parser. See the
+#     IS_REVIEWER_AGENT block above for the audience.
 if [ "$IS_REVIEWER_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/review-contract.md"
 fi

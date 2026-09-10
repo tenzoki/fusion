@@ -286,12 +286,34 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
     - Dependencies: none within session 3
     - Verification: `bin/fusion-rules planner` and `bin/fusion-rules planner "" --audience=user` differ by exactly `user-facing-output.md`, 10 884 bytes; the emission golden is regenerated and its diff shows only that; the role-coverage assertion stays hard.
 
-16. **C8: merge four prompt pairs, each against its measured budget**
+16. [DONE] **C8: merge four prompt pairs, each against its measured budget**
     - Executor: `coder`
     - Files: `agents/planner.md` (absorbs shaper), `agents/analyst.md` (absorbs consultant), a new `agents/reviewer.md` (absorbs coderev and ontorev), `agents/curator.md` (absorbs reconciler); `agents/shaper.md`, `agents/consultant.md`, `agents/coderev.md`, `agents/ontorev.md`, `agents/reconciler.md`, `agents/playmaker.md`, `agents/taskplanner.md`, `agents/bugfixer.md` deleted; `bin/fusion-rules` case lists; `.claude-plugin/plugin.json`; `README-agents.md`
     - Changes: eight prompts remain. Each states its write surface; the eight surfaces do not overlap; issue and decision filing is declared a shared surface rather than counted against exclusivity. `bugfixer`'s diagnose-before-editing instruction survives in `coder` and `ontocoder`. The `coder`/`ontocoder` split is kept.
     - Dependencies: C7
     - Verification: for each merge, the C8 bound must be green against the smallest pre-cut total among the paths it replaces — 202 428 for planner, 197 679 for analyst, 192 521 for reviewer, 206 384 for curator. **A merge that cannot reach its budget stops and those roles stay split**, and the stop is written into the commit message with the measurement that produced it. Three of the four are expected to be tight. Roster proof — `claude --plugin-dir . --agent fusion:reviewer -p "reply SMOKE-OK"` for each of the eight — falls in session 4.
+
+    - Done 2026-09-10. **One merge of four landed; three stopped on the bound, which is this
+      step's own instruction rather than a failure.** The roster is eleven, not eight.
+      Budgets re-measured at this head, against the armed baseline rows (the plan's figures) and
+      against the smallest pre-cut total re-measured on the tree, which are two different numbers
+      because nine commits took bytes off the rule set without moving the fixture:
+      **reviewer** (coderev+ontorev) 186 973 against 192 521 — **green**, 5 548 under; against the
+      re-measured 181 449 (ontorev's total at this head) it is 5 524 over, and that reading is
+      reported rather than resolved here. **planner**←shaper stopped: allowance 202 428 leaves
+      2 160 bytes over planner's own 200 268 for a 28 942-byte role. **analyst**←consultant
+      stopped: 1 046 bytes for a 13 855-byte role. **curator**←reconciler stopped hardest: the
+      curator path measures 215 553 against a merge budget of 206 384, so it is 9 169 over before
+      absorbing a byte of reconciler. Nothing was cut from a surviving prompt to reach a budget.
+      `playmaker`, `taskplanner` and `bugfixer` were deleted with no absorber as planned;
+      bugfixer's diagnose-before-editing contract is now eleven numbered steps in both `coder` and
+      `ontocoder`, pinned by five assertions in `executor-verification-report-lint.test.ts`.
+      **One thing this step did that the plan did not name:** `skills/next/SKILL.md` was deleted
+      here rather than at C9, because its entire body dispatches `playmaker` and leaving a command
+      that hard-fails for one step is worse than pulling one deletion forward. `skills/direct` and
+      `skills/reconcile` needed no change — shaper and reconciler both survive the stops.
+      All nine conditional emissions land on a surviving agent; `backlog-entries.md` moved from
+      playmaker to orchestrator and `review-contract.md` from the two review prompts to `reviewer`.
 
 17. **C9: the work item, the resolver, and the migration body**
     - Executor: `ontocoder` for the item grammar and the conventions text; `coder` for the resolver, the helper and the skill body. **Split into two commits in that order**, the second depending on the first.

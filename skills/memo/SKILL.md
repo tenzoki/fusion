@@ -10,7 +10,7 @@ Capture something the user wants kept. Three kinds of capture, and the third is 
 
 - **Memos** — informal captures: notes, options to remember, the shape of an open problem, a pointer to a file. Snapshots the user wants to keep. They are **not** issues, plans, or history entries.
 - **Tasks** — things to do: a todo, an open action, something to pick up later. Kept as a checkbox list so they can be ticked off.
-- **Ideas** — something worth considering that is not yet worth planning: a direction for the project rather than a note to self. An idea goes to the **project backlog**, where the playmaker ranks it, `/fusion:next` surfaces it, and it can become a Circle.
+- **Ideas** — something worth considering that is not yet worth planning: a direction for the project rather than a note to self. An idea goes to the **project backlog**, where it waits until somebody promotes it, and it can become a Circle.
 
 **The memo and task files are append logs; a backlog entry is not.** One memo file and one task file per checkout, and every capture adds a block to the end of the right one. An idea is **a new file each time** — one file per idea, in a different store, carrying a state marker on its name. That difference is stated rather than left to be inferred from the two siblings, because inferring it produces the wrong write: every reader of the backlog takes one file to be one idea.
 
@@ -61,7 +61,7 @@ Decide the kind first; it picks the target.
 - The argument starts with an explicit keyword: `idea:`, `idee:`, or `backlog:` (case-insensitive). Strip the keyword from the captured text.
 - The conversational reference names the backlog: `this idea for the backlog`, `das gehört ins Backlog`, `merk das als Idee vor`.
 
-**Route to the memo file (`memos-$CO.md`) otherwise** — the default, and the backlog has to be asked for to win it. Notes, options, problem shapes, pointers. The asymmetry is on purpose: a memo is the user's own log and nothing reads it, while an entry is a proposal the playmaker ranks and `/fusion:next` puts in front of the user beside the Circles. A note misfiled as a memo costs nothing; a note misfiled as an idea gets recommended.
+**Route to the memo file (`memos-$CO.md`) otherwise** — the default, and the backlog has to be asked for to win it. Notes, options, problem shapes, pointers. The asymmetry is on purpose: a memo is the user's own log and nothing reads it, while an entry is a proposal that stands beside the Circles until somebody acts on it. A note misfiled as a memo costs nothing; a note misfiled as an idea gets promoted.
 
 If genuinely ambiguous (the content reads as two of the three), ask via `AskUserQuestion`: memo, task, or idea? Do not guess on a true coin-flip; default to memo only when there is neither a task signal nor an idea signal.
 
@@ -138,7 +138,7 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 8. For mode 2 (conversational ref): identify the referenced content in the recent context, extract it verbatim. Memo: use a short topic like "Options for X discussed in session". Task: one checkbox line per discrete todo. Idea: one entry per idea, the user's own words in the paragraph.
 9. For mode 3 (empty): ask the user for kind, topic, and content.
 10. Write. Memo and task: append to the end of the target file, do not reorder existing entries, and do not edit prior ones unless the user explicitly says "update the last memo", "tick that task", or similar. Idea: **create** the new entry file. Never append to an existing entry and never edit one.
-11. Report to the user: which target, the path, and the topic or task text. For a memo or task, the line count of the file after the append. For an idea, that it is a new entry at `_o_`, and that `/fusion:next` will show it once playmaker has ranked the backlog on its next run.
+11. Report to the user: which target, the path, and the topic or task text. For a memo or task, the line count of the file after the append. For an idea, that it is a new entry at `_o_`, and where in the backlog store it landed.
 
 ## Guardrails
 
@@ -147,5 +147,5 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 - Never rewrite the user's pasted content in your own words — verbatim only.
 - Keep entries short. If the user wants a full write-up, direct them to a plan, an analysis, or a consultation instead — those are separate artifact kinds with their own stores.
 - Do not file an issue or plan based on a memo or task — these are for keeping, not for acting.
-- Never edit, rename, close or defer an existing backlog entry. This skill creates entries at `_o_` and does nothing else to the store. Markers move elsewhere: the playmaker maintains the store, the shaper closes an entry a Circle took whole, and the user can move one by hand. Which of the three writes which marker, and under what gate, is the table in `rules/fusion-workbench-conventions.md` `## Backlog entries`.
+- Never edit, rename, close or defer an existing backlog entry. This skill creates entries at `_o_` and does nothing else to the store. Markers move elsewhere: the orchestrator maintains the store, the shaper closes an entry a Circle took whole, and the user can move one by hand. Which of the three writes which marker, and under what gate, is the table in `rules/fusion-workbench-conventions.md` `## Backlog entries`.
 - **Never file an entry on an agent's behalf.** The backlog holds what the *user* files (`rules/fusion-workbench-conventions.md` `## Backlog entries`), and this skill is that surface — it runs because the user typed `/fusion:memo` with an idea of their own. A finding an agent carried into the conversation does not become the user's idea by being routed through here: something broken is still an issue, something to settle is still a decision record, and neither is filed from this skill at all.

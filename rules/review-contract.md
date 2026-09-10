@@ -39,7 +39,7 @@ A pass that opened everything in a real range, and one that did not:
 
 ```
 **Reviewed-range:** `7f617b1..7ddacbc`
-**Not-opened:** `agents/orchestrator.md`, `skills/next/SKILL.md`, `skills/archive/SKILL.md`
+**Not-opened:** `agents/orchestrator.md`, `skills/archive/SKILL.md`, `skills/direct/SKILL.md`
 ```
 
 **Why this is mandated and not left to your judgement.** Reviewers already state their scope — the problem is that they each state it differently. Ten `coderev` files in one store carried four spellings of the range (`**Range:**`, `**Scope:**`, `**Scope reviewed:**`, `**Scope as dispatched:**`), several carried none, and the filenames disagreed too. So nothing could read them, and nothing did: in session `260810-0844-orchestrator-session.md` two passes ran, their ranges did not tile the session's range, and **seven code-bearing commits reached a pushed release tag with no reviewer having opened them** while the session's own report said one. The record is `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`, in fusion's own workbench.

@@ -35,7 +35,8 @@
  * read. A computation over a format nobody mandated returns nothing and calls
  * it coverage.
  *
- * So `agents/coderev.md` and `agents/ontorev.md` now mandate two header fields,
+ * So the review prompt (`agents/coderev.md` and `agents/ontorev.md` then, one
+ * `agents/reviewer.md` since v11) mandates two header fields,
  * and this module reads exactly those and nothing else:
  *
  *     **Reviewed-range:** `<from>..<to>`
@@ -137,9 +138,19 @@ export declare const NOT_OPENED_FIELD = "**Not-opened:**";
  * `hooks/tracker.ts` through that same function for the trigger. Two literals
  * would be a silent widening waiting to happen, which is the shape of the
  * defect itself: `review-coverage-mandate.test.ts` already fixed the mandate at
- * two prompts and nothing carried that fact into the scan.
+ * the prompts that carry it and nothing carried that fact into the scan.
+ *
+ * **THREE NAMES, ONE MANDATED WRITER.** `coderev` and `ontorev` merged into one
+ * `reviewer` at v11, and the mandate moved with them — `agents/reviewer.md` is
+ * the only prompt that writes a review file now. The two retired segments stay
+ * in this set because review files carrying them are ON DISK, in every
+ * workbench this plugin has ever run against, and a scan that stopped
+ * recognising them would silently drop every review written before the merge
+ * from the coverage it tiles. Recognising a sender is not mandating one: the
+ * mandate is what `review-coverage-mandate.test.ts` pins against the prompts,
+ * and it pins one.
  */
-export declare const REVIEW_SENDERS: readonly ["coderev", "ontorev"];
+export declare const REVIEW_SENDERS: readonly ["reviewer", "coderev", "ontorev"];
 /**
  * The `<sender>` segment of a review filename, or null when it has none.
  *

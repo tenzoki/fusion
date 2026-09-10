@@ -96,7 +96,7 @@
 # Why the key sets are derived and not declared
 # ---------------------------------------------------------------------------
 # Emission is per-consumer, as in bin/fusion-rules: each gets only the keys it
-# needs — a coder gets no OUT_PLAN, a playmaker gets no OUT_ISSUE. What each
+# needs — a coder gets no OUT_PLAN, an editor gets no OUT_ISSUE. What each
 # needs is READ OUT OF ITS PROMPT, not declared here.
 #
 # The declared version failed twice. The sets were built in T2-A by a

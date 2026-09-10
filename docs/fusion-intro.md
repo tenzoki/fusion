@@ -58,7 +58,7 @@ Der Help-Skill liest die ausgelieferten Docs und zitiert sie mit Pfad, statt aus
 1. Im Projekt-Root `fusion` eingeben. Das öffnet eine Claude-Code-Sitzung mit dem Orchestrator. Alle `/fusion:`-Kommandos werden in dieser Sitzung getippt.
 2. Beim allerersten Mal im Projekt `/fusion:setup` ausführen. Danach nicht mehr nötig: der Orchestrator führt Setup selbst aus, sobald er die erste Aufgabe bekommt.
 3. `/fusion:cadence`: was habe ich zuletzt getan. Braucht keinen laufenden Orchestrator, nur die Sitzung und die Workbench.
-4. Arbeiten: dem Orchestrator sagen, was man will, oder `/fusion:next` fragen, welcher Circle dran ist.
+4. Arbeiten: dem Orchestrator sagen, was man will.
 5. Ideen unterwegs mit `/fusion:memo` ablegen, ohne die laufende Arbeit zu stören.
 6. Fertig: `/fusion:cleanup`. Man kann weggehen; eine Frage wartet auf die Rückkehr.
 
@@ -90,9 +90,8 @@ Die letzten vier sind terminal; ein geschlossener Circle wird nie wieder geöffn
 
 ```
 /fusion:memo idea: <eine Zeile>      Idee als Backlog-Eintrag ablegen (_o_)
-/fusion:next                          Portfolio: playmaker rankt Circles und Backlog
 /fusion:direct <Entwurf | Backlog-Pfad>   shaper schärft den Entwurf, schreibt einen _a_-Circle
-/fusion:next <circle-dir>             aktiviert ihn (_a_ → _t_) und startet die Sitzung
+Record _a_ → _t_ umbenennen        aktiviert ihn, Verzeichnisname nach .active-circle
 ```
 
 `/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<checkout>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<checkout>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigene Datei in `shared/backlog/`). Kein Agent legt Backlog-Einträge an; das ist Sache des Menschen. Der `playmaker` rankt sie und benennt einen Eintrag eigenständig von `_o_` nach `_p_` (empfohlen) um; teilen, zusammenlegen, schließen und verschieben tut er nur mit Bestätigung.
@@ -189,7 +188,7 @@ fusion-workbench/orchestrator-events.jsonl merge=union
 1. Workbench tracken, `.gitignore` nach der Vier-Klassen-Partition, `.gitattributes` mit `merge=union` (Setup schreibt sie).
 2. `git config user.name` und `user.email` in jedem Checkout gesetzt.
 3. Vor Sitzungsbeginn pullen, damit Presence und Claims aktuell sind; `/fusion:cleanup` pusht am Ende.
-4. Im Projekt ist ein Circle aktiv. Wer ihn in einem zweiten Checkout aufnimmt, überschreibt bewusst den Claim; mehrere `_t_`-Records meldet Setup als `MULTIPLE-ACTIVE` und verweist auf `/fusion:next`.
+4. Im Projekt ist ein Circle aktiv. Wer ihn in einem zweiten Checkout aufnimmt, überschreibt bewusst den Claim; mehrere `_t_`-Records meldet Setup als `MULTIPLE-ACTIVE` und stoppt.
 5. Sauberer Arbeitsbaum beim Start; Hand-Edits nicht in eine laufende Sitzung mischen.
 
 ## 9. Update und Stilprofile
@@ -210,7 +209,6 @@ Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung fes
 | `/fusion:cleanup` | Sitzungsende, Pipeline mit einem Gate |
 | `/fusion:cadence` | Was ist passiert (gestern, 7 Tage, wiederkehrend) |
 | `/fusion:news` | Was ein anderes Checkout hinterlassen hat, gelesen vor dem Pull |
-| `/fusion:next` | Portfolio-Briefing, Circle aktivieren |
 | `/fusion:direct <Entwurf>` | Directive erfassen, `_a_`-Circle anlegen |
 | `/fusion:memo` | Memo, Aufgabe oder Idee ablegen |
 | `/fusion:help [topic]` | Selbstauskunft |

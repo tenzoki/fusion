@@ -10,7 +10,7 @@ version.
 
 ## The one you will notice: activating a Circle now starts the session
 
-`/fusion:next` ends by activating the Circle you picked, and its last step used to print a sentence
+The portfolio command (removed at v11) ended by activating the Circle you picked, and its last step used to print a sentence
 saying that a fresh orchestrator session begins, runs Setup, and proceeds. The sentence described
 somebody else doing it. There was nobody else: the skill body runs inside the orchestrator's own
 session, so the text was an instruction addressed to a parent thread that is the same thread, and
@@ -21,7 +21,7 @@ orchestrator activates a Circle, it runs its own Setup and continues into Phase 
 printed sentence always claimed. When any other agent runs the skill, it stops there and the printed
 message stands as your next step.
 
-**What this changes for you:** after `/fusion:next` activates a Circle, the work begins. Before, it
+**What this changes for you:** after the portfolio command activated a Circle, the work began. Before, it
 sometimes did and sometimes waited for you to say "go", and nothing on screen distinguished the two
 cases. If you want the briefing without the session starting, decline the activation offer.
 
@@ -74,7 +74,7 @@ report is supposed to mean.
 ## The reviewer contract has one home
 
 What a review file contains, its two mandated header fields, its per-topic working files and its
-final consolidated form, stood twice: once in `agents/coderev.md` and once in `agents/ontorev.md`,
+final consolidated form, stood twice: once in each of the two review prompts of the day,
 with no pointer between the copies. It is now `rules/review-contract.md`, and `bin/fusion-rules`
 emits it to those two agents and to no other. Both reviewers read the same text at run time, and
 each prompt keeps only its own domain-specific analysis steps.
@@ -98,7 +98,7 @@ restatement rather than a retired rule.
 **Nothing.** No workbench file is rewritten, no marker moves, no configuration key changes, and no
 agent, skill or slash command arrived or left.
 
-One habit is worth adjusting, and it is not required: if you have been running `/fusion:next`,
+One habit is worth adjusting, and it is not required: if you have been running the portfolio command,
 reading the briefing, and then typing "go", expect the session to have started already.
 
 ## What did not change
@@ -111,7 +111,7 @@ fifteen agents.
 
 ## Where to read more
 
-- `skills/next/SKILL.md` `### 6.4 — Chain into a fresh orchestrator session` — the activation step
+- the portfolio command's `### 6.4 — Chain into a fresh orchestrator session` — the activation step
   and the split by who is running it.
 - `agents/orchestrator.md` `## Capturing a Directive as an anticipated Circle` — the permission, its
   one condition, and why the bound is what makes it grantable.

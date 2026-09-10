@@ -40,7 +40,7 @@ Read `CLAUDE.md` to identify the project's normative source material, its locati
   swept into a commit by default — but nothing scans for one either. Not
   making the edit is the only safeguard.
 
-**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — bugfixer's verification-then-commit pattern is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with ontocoder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
+**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — a defect task that must verify and commit in one pass is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with ontocoder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
 
 If a data change requires a code change to function (loader update, schema migration), **STOP and file an issue** in `$OUT_ISSUE` for the `coder` agent; an open question that is nobody's defect goes to `$OUT_DECISION`. Do not silently leave the code stale.
 
@@ -56,6 +56,23 @@ You may **read** code freely to understand how data is consumed (loaders, parser
 4. If the spec is brittle, ambiguous, or could violate guidelines: **STOP and ask user**
 
 **Decision realisation (when applicable):** If the task's source is a decision file under `$SCAN_DECISIONS` with marker `_a_` (answered, awaiting implementation), after committing your data change you MUST append `Implemented: <short-hash> — <one-line summary>` to that decision file and rename `_a_` → `_i_`. Cite the commit hash you just produced.
+
+
+### Diagnose before you edit, when the task is a defect
+
+A task that names an error, a failing test or a broken behaviour is not an implementation task and does not start with an edit. It starts with a diagnosis, and the fix is minimal because the diagnosis is precise. This is the contract the `bugfixer` agent carried until v11, when that agent was removed and its subject — one self-healing attempt inside a phase procedure — went with the procedure; the instruction survives here because the work does.
+
+1. **Parse the error.** Extract the message, the file and line if present, the stack trace, the operation that failed, and expected against actual.
+2. **Reproduce it.** Run the failing test, build or check and confirm the error is live. If you cannot reproduce it, say so — it may be intermittent or environment-dependent — and do not edit on a guess.
+3. **Locate the failure point** — the exact file and line where the error *originates*, not where it surfaces.
+4. **Walk the call chain backward.** Read each caller to see how the failing state was produced. Do not stop at the first suspicious function.
+5. **Check recent changes** — `git log --oneline -20 -- <suspect files>` and `git diff HEAD~5 -- <suspect files>`.
+6. **Cross-layer check.** A failure involving data means reading the data file AND the code that loads it; a failure involving AI output means reading the prompt AND the caller. Bugs live at layer boundaries.
+7. **Read the test's expectation.** The test may be wrong or the code may be wrong. Verify which; do not assume.
+8. **Name the root cause precisely** — which file, which line, what is wrong, why it produces the observed error, with evidence. The error you were handed is a symptom; the cause may be several layers deeper, and a symptom fix leaves the bug in place.
+9. **Verify there is exactly one root cause.** If several contribute, identify all of them before fixing any: a partial fix that masks the rest is worse than no fix.
+10. **Make the smallest change that resolves the cause** — the wrong value or logic at its origin rather than a guard downstream, the data where it is defined rather than where it is consumed. Check ripple effects in callers, tests and cross-references and include only what correctness requires. Change nothing else; do not reformat, rename or restructure around it.
+11. **If verification then fails, you introduced a regression.** Revert your change, reassess, and try again. Never leave the tree worse than you found it.
 
 ## Data Editing Rules
 
@@ -88,7 +105,7 @@ These defaults are non-negotiable for data editing — adapt them under any proj
 
 ### Report shape
 
-Four fields, in this order. The contract is authored here and in `agents/coder.md` `### Report shape`, pinned by `hooks/lib/__tests__/executor-verification-report-lint.test.ts`; it extends the report `agents/bugfixer.md` Phase 6 carries, replacing its free-text verification result with the locked line below — one shape, so the orchestrator reads every executor's report the same way.
+Four fields, in this order. The contract is authored here and in `agents/coder.md` `### Report shape`, pinned by `hooks/lib/__tests__/executor-verification-report-lint.test.ts`; it extends the four-part report the removed `bugfixer` agent carried, replacing that report's free-text verification result with the locked line below — one shape, so the orchestrator reads every executor's report the same way.
 
 1. **Files changed** — every file you modified, absolute paths.
 2. **Verification** — one line, in exactly one of these three forms and no fourth:

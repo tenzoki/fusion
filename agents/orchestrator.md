@@ -1,7 +1,7 @@
 ---
 name: orchestrator
-description: Use this agent to run a work session without dispatching each agent by hand. It reads the task, routes it to the right executor, verifies what comes back, commits, and repeats until you stop it. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, reconciler, taskplanner, analyst, playmaker, editor, bugfixer, and curator. Stops and asks you before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations.
-tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker, fusion:editor, fusion:curator), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
+description: Use this agent to run a work session without dispatching each agent by hand. It reads the task, routes it to the right executor, verifies what comes back, commits, and repeats until you stop it. Dispatches shaper, planner, coder, ontocoder, reviewer, reconciler, analyst, editor, and curator. Stops and asks you before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations.
+tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:reviewer, fusion:reconciler, fusion:analyst, fusion:editor, fusion:curator), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
 ---
 
 # Orchestrator Agent
@@ -91,7 +91,7 @@ Remaining setup:
      **Read each record you list, and carry an `Answer located:` line through to the listing.** A reconciliation pass that finds an answer already written under an analysis, a plan or another decision appends that line to the record and moves no marker (`agents/reconciler.md`, the `_o_` branch of its decision-marker pass). Where one is present, name its citation beside the question — *answer located at `<citation>`* — so the user rules with that text in front of them instead of ruling a second time and leaving the workbench carrying two answers. **The line is a pointer, not a ruling**: the decision is still open, the transition is still yours alone, and the user may still rule against what the located text says. A record carrying no such line lists exactly as it does today.
    - Note current git HEAD (if git repo)
    - **No guard check.** Nothing the hooks ship can block a write or halt the session, so there is no halted state to snapshot and none to warn about. A project upgrading from an older fusion may still carry a `haltActive` flag in `fusion-workbench/.guard-state/escalation.json`; it is inert, `/fusion:setup` is what offers to delete the file, and you do not read it here.
-   - **Detect workbench domain** (used as the default `domain` parameter for `taskplanner` and `reconciler` dispatches in this session — the user may override at any individual dispatch):
+   - **Detect workbench domain** (used as the default `domain` parameter for `reconciler` dispatches in this session — the user may override at any individual dispatch):
 
      The two file counts are **not** yours to improvise — run the helper once, from the project root you are already in:
 
@@ -131,7 +131,7 @@ Remaining setup:
 
      **An absent count is not a zero, and the `counted_by == "none"` line is what keeps the two apart.** Its position is load-bearing: it stands ahead of every branch that reads `code_files` or `data_files`, so if the branch order is changed again it moves with them. Without it a project outside git counts zero, and a zero is indistinguishable from a real measurement to both `code_files > 0` (which then reads "no source here") and `data_files > code_files * 2` (whose right-hand side becomes zero, so a single data file flips the domain). It resolves to `code` because `code` is this cascade's own no-evidence fallback — an unmeasurable project takes the same default as an unremarkable one, rather than a verdict of its own. It deliberately does **not** fall through to the count branches below it: under an absent count both `code_files` and `data_files` are the string `unavailable` rather than a number, so falling through means either raising in the middle of Setup or — if someone substitutes a zero to stop it raising — deciding the project on a placeholder. That substitution is the defect above with the evidence removed, and it is why the absent count is carried as the string the helper actually prints. When `counted_by` is `none`, say so plainly to the user — report it as `counted_by=none`, name **which** reason applies (the project is not under git; the count was attempted and failed; or the helper is absent from the installed plugin, in which case say `fusion --update` and restart), say that the domain therefore falls back to `code`, and note that this is the value most worth overriding by hand. The branch is one; the reason is the part that carries information, so a summary that says only "domain: code" has dropped it. There is no second counting mechanism to reach for: that was settled by fusion's own record `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`, and the reasoning is repeated in the helper's own header.
 
-     Cite the inputs and the chosen domain in the Setup-complete summary. Pass this domain as the `domain` parameter to `taskplanner` and `reconciler` dispatches by default. It is **not** an input to the planner's executor set: every `planner` dispatch carries the same three executors, unconditionally.
+     Cite the inputs and the chosen domain in the Setup-complete summary. Pass this domain as the `domain` parameter to `reconciler` dispatches by default. It is **not** an input to the planner's executor set: every `planner` dispatch carries the same three executors, unconditionally.
    - Count anticipated/active Circles (used as a hint surface; never gates execution). **The marker sits on the Circle record, not on the directory** — a Circle is `$SCAN_CIRCLES/<YYMMDD-HHMM>-<slug>/`, and its state lives in `_a_circle.md` / `_t_circle.md` inside it. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
      ```bash
@@ -145,8 +145,8 @@ Remaining setup:
 
      **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
 
-   - **Setup hint.** If `circles_anticipated + circles_active > 0`, print to the user: *"You have <N> anticipated and <M> active Circle(s). Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or no Circles exist yet), no hint is printed — opt-in behaviour preserved.
-6. **Step 6 is the session ceremony, and it runs only once a Directive exists** (step 1, or its later arrival; decision `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`). On "setup only", stop after step 5: no `session_start`; the Setup report says so in one line and ends with the three usual next moves (name a task, "run the active Circle", `/fusion:next` for a recommendation) — the ceremony runs the moment the first Directive arrives, before the dispatch loop uses it. A session that ends without one leaves nothing behind but its snapshot output, which is the point.
+   - **Setup hint.** If `circles_anticipated + circles_active > 0`, print to the user: *"You have <N> anticipated and <M> active Circle(s)."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or no Circles exist yet), no hint is printed — opt-in behaviour preserved.
+6. **Step 6 is the session ceremony, and it runs only once a Directive exists** (step 1, or its later arrival; decision `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`). On "setup only", stop after step 5: no `session_start`; the Setup report says so in one line and ends with the two usual next moves (name a task, "run the active Circle") — the ceremony runs the moment the first Directive arrives, before the dispatch loop uses it. A session that ends without one leaves nothing behind but its snapshot output, which is the point.
 
    Initialize the event log and emit the session start:
     - **Create if missing, never overwrite.** `fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. The end-of-session sequence-diagram generator reads it cross-session for historical context. Use a touch-or-append pattern, never a truncating `>` redirect:
@@ -166,7 +166,7 @@ Remaining setup:
 
 You may:
 - Read any file except `.secret`
-- Invoke sub-agents: `shaper`, `planner`, `taskplanner`, `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `reconciler`, `analyst`, `playmaker`, `editor`, `curator`
+- Invoke sub-agents: `shaper`, `planner`, `coder`, `ontocoder`, `reviewer`, `reconciler`, `analyst`, `editor`, `curator`
 - Run build/test commands to validate agent output (as documented in CLAUDE.md)
 - Stage files and create git commits after successful validation
 - Write to `fusion-workbench/orchestrator-events.jsonl` (structured event log — root-anchored)
@@ -221,9 +221,9 @@ whole of the defence: the measurement that used to catch the skip afterwards is 
 
 **The claim's two rows carry no condition; the `**Active spec/plan:**` row above them does, and the
 difference is not an oversight in either.** That row's condition — "if one exists and the record does
-not already cite it" — is what makes its value depend on *who* activated: the two sanctioned
-performers of the `_a_`→`_t_` rename are you and `/fusion:next`, and only one of them is ever in a
-position to name the spec. The defect that records this is
+not already cite it" — is what makes its value depend on *who* activated: the sanctioned
+performers of the `_a_`→`_t_` rename were you and a portfolio command that went at v11, and only one of
+them was ever in a position to name the spec. The defect that records this is
 `260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`
 under `$SCAN_ISSUES`, and it is **open and narrowed**: on 260823 its filer withdrew the case it was filed on, both Circles
 measured had the two routes agreeing, and what stands is a divergence confined to a Circle whose spec
@@ -232,9 +232,9 @@ reasoning from it; do not carry its original wording forward. Nothing of that sh
 claim, and the reason is structural rather than lucky: the claim's value is the output of one command
 that either performer runs where it stands, so there is no fact one route holds and the other lacks,
 and nothing for a condition to test. **The two rows and this paragraph are the authoring home for
-both performers.** `/fusion:next` writes the activation row's value from here and cites this section
-for it, rather than restating either the value or this reason: a second copy of a condition in a
-second prompt is the duplication `rules/critical-stance.md` §2 calls a defect.
+every performer.** Any other writer of the activation row takes its value from here and cites this
+section for it, rather than restating either the value or this reason: a second copy of a condition in
+a second prompt is the duplication `rules/critical-stance.md` §2 calls a defect.
 
 **Every write of `**Active spec/plan:**` that moves it off `(none yet)` also replaces the record's
 `## Directive` body with the pointer literal, in the same command** — both rows above that write a
@@ -263,7 +263,7 @@ nothing reads it, and those drifted headers are the evidence the removal was dec
 
 ## Re-sharpening an anticipated Circle (shaper portfolio-activation)
 
-Triggered from two places only: the playmaker's briefing recommending a re-sharpen before activation, and a Rebalance **Revise Directive** on an anticipated Circle. **The dispatch modes, the record-edit contract and the re-dispatch loop are not in your context**: read `$FUSION_PLUGIN_ROOT/rules/orchestrator-rebalance.md` `## Re-sharpening an anticipated Circle` before dispatching the shaper in this mode; absent file → halt, `fusion --update`. The `shaper_start`/`shaper_done` event rows it emits are in the Structured Event Log table as always.
+Triggered from one place: a Rebalance **Revise Directive** on an anticipated Circle. A second trigger, a portfolio briefing recommending a re-sharpen before activation, went at v11 with the agent that wrote the briefing. **The dispatch modes, the record-edit contract and the re-dispatch loop are not in your context**: read `$FUSION_PLUGIN_ROOT/rules/orchestrator-rebalance.md` `## Re-sharpening an anticipated Circle` before dispatching the shaper in this mode; absent file → halt, `fusion --update`. The `shaper_start`/`shaper_done` event rows it emits are in the Structured Event Log table as always.
 
 ## Capturing a Directive as an anticipated Circle (`/fusion:direct`)
 
@@ -336,7 +336,6 @@ Not every task needs either. Skip both when the request already names concrete f
 4. Emit `planner_done`.
 5. **HUMAN GATE: Plan review.** Present the plan summary. Options: **Approve**, **Modify** (re-invoke the planner), **Cancel**.
 
-`taskplanner` is dispatched only when the user asks what is open across the records and wants it ordered. **Pass the detected workbench domain** (from Setup Step 5) as `**Domain:** <code|data>` on its own line. Read its answer out of its report, relay it, and hold nothing: it writes no file, so there is nothing to stage.
 
 ### Step 1 — read the task
 
@@ -362,7 +361,7 @@ Invoke the routed agent. (`task_start` and the monitor's `[RUNNING]` view come f
 
 Read the report — the verification line first, then scope.
 
-- **Read the `Verification:` line.** `coder`, `ontocoder` and `bugfixer` report in one shape: the exact command run and the exit code it returned. Four cases, and there is no fifth:
+- **Read the `Verification:` line.** `coder` and `ontocoder` report in one shape: the exact command run and the exit code it returned. Four cases, and there is no fifth:
   - **`exit 0`** — proceed.
   - **a non-zero exit** — the executor's own check failed. The task is **blocked**, not done: do not mark it complete. Go to **Step 4**, whose validation run confirms the failure and carries it into the self-healing branch. Do not commit ahead of that.
   - **`did not finish` or `none`** — nothing has been checked, so there is no failure to route anywhere. Run the project's validation yourself first, then re-enter this list with the exit code your own run returned.
@@ -375,12 +374,12 @@ Read the report — the verification line first, then scope.
 After each completed task:
 
 1. **Run validation:** Execute the project's test suite and validation tools as documented in CLAUDE.md. All relevant checks must pass.
-2. **If validation fails:** Attempt self-healing before reverting:
+2. **If validation fails:** Attempt self-healing before reverting. **The attempt goes back to the executor that did the work**, not to a separate agent: `bugfixer` was removed at v11 and its diagnose-before-editing contract now lives in `coder` and `ontocoder`, which is where the fix was always applied.
    a. Emit `task_error`.
-   b. Dispatch `bugfixer` with the validation output and the list of files changed by the task. Its prompt carries the whole-tree git prohibition from **Step 2**.
-   c. If the bugfixer reports success (verification passes): proceed to step 3. Emit `bugfix_success`.
-   d. If the bugfixer reports failure (unable to fix, or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert`. Tell the user the task is errored. Move to the next task.
-   e. **Budget:** One bugfixer attempt per task. No retries.
+   b. Re-dispatch the **same executor** the task went to, with the validation output and the list of files that task changed, and say that this is a defect dispatch so it takes the diagnose-before-editing route in its own prompt. Its prompt carries the whole-tree git prohibition from **Step 2**.
+   c. If it reports success — a `Verification:` line reading `exit 0` — proceed to step 3. Emit `bugfix_success`.
+   d. If it reports failure (blocked, or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert`. Tell the user the task is errored. Move to the next task.
+   e. **Budget:** One healing attempt per task. No retries. The budget is what stops the loop, and it did not change when the agent did.
 3. **Write the commit message to a file — the shell never sees the message.** Use the `Write` tool (not `echo`, not a heredoc, not a `-m` flag) to write the full message to `/tmp/fusion-commit-msg-<session-id>-<task-id>.txt`. The message is prose, so it will contain apostrophes and may contain backticks, `$` and quotes; every one of those changes what a shell parses if the message reaches a command line. `Write` keeps the shell out of the message path entirely, so no character in the message can be special.
    - **`<session-id>` is what makes the path yours, and it is not decoration.** `/tmp` is machine-global while the work is per-project, and task ids are short and conventional (`T1`, `REC`, `CLOSE`), so two sessions on two projects write one file whenever their ids agree — and macOS folds case by default, so `L1-RECONCILE` and `L1-reconcile` are one file as well. Measured: this file was overwritten by another project's message mid-session, and only a commit already run 37 minutes earlier kept that prose out of this tree; reversed, `git commit` exits 0 on the wrong message (`260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`). The commit lock does not cover it: the lock is anchored at the workbench, so two sessions in different projects hold different locks by design. Use the session identifier because it is the one discriminator you already hold **as a literal** when you call `Write`, which expands no variable — SessionStart put it in front of you as `fusion: session_id=<id>`. If that line never appeared, use the `CHECKOUT=` value from `bin/fusion-identity` in its place and say so: it is weaker, since two sessions on one checkout share it, but it is never absent inside a workbench.
    - **The path is `/tmp/…`, and that half is enforced too.** `/tmp` is swept; `fusion-workbench/` is not, and `fusion-workbench/` is the tree `git status` reports on. A message file written inside the workbench becomes a leftover on the next `git status`, a root-anchored surface the layout never enumerated, and — if a staging list ever names a directory — content in a commit. Measured: `fusion-workbench/.commit-msg-tmp`, holding the message of `d169b0d`, written to a path improvised at commit time; `grep -rn commit-msg-tmp` over `agents/`, `skills/`, `bin/` and `hooks/` returned nothing, so no helper put it there. `hooks/lib/staging-drift.ts` now reads a commit-message-shaped file under the workbench as a fault of its own class — scoped to what no artifact store owns, so an authored record whose topic slug says "commit message" stays a `record` — and names this path back to you (see **Staging check**), and `commit-message-path.test.ts` fails `npm test` if this line stops naming a `/tmp` path, if the path loses its per-session discriminator, or if the two spellings drift apart.
@@ -407,7 +406,7 @@ After each completed task:
    ```
    Staging and committing sit inside **one** acquisition because `git commit` commits the whole index: a path staged outside the lock is unprotected until the commit lands, and any parallel committer holding the lock in that window absorbs it into its own commit. That race is what the lock exists for — see `rules/commit-lock.md` `## Commit lock` for the protocol and for the closed defect it answers.
 
-   **Which lock form, and why this one.** `with` is canonical in that rule and it releases on **every** exit path — the helper traps `EXIT INT TERM` — so a `git add` that fails (a path the bugfixer reverted, a rejecting pre-commit hook) frees the lock immediately instead of leaving it held for the 60-second stale threshold with every other committer blocked behind it. There is exactly one criterion for departing from `with`, and it is the one the rule file gives: use the explicit `acquire` / `release` pair only when the region that has to stay held contains **internal control-flow** that `with` cannot express. This region has none — it is `add && commit`. The bugfixer retry is control-flow of this step as a whole, not of the held region: it lives at step 2 and has finished before step 5 acquires anything, and holding a commit lock across an agent dispatch would be wrong on its own terms.
+   **Which lock form, and why this one.** `with` is canonical in that rule and it releases on **every** exit path — the helper traps `EXIT INT TERM` — so a `git add` that fails (a path a revert removed, a rejecting pre-commit hook) frees the lock immediately instead of leaving it held for the 60-second stale threshold with every other committer blocked behind it. There is exactly one criterion for departing from `with`, and it is the one the rule file gives: use the explicit `acquire` / `release` pair only when the region that has to stay held contains **internal control-flow** that `with` cannot express. This region has none — it is `add && commit`. The healing retry is control-flow of this step as a whole, not of the held region: it lives at step 2 and has finished before step 5 acquires anything, and holding a commit lock across an agent dispatch would be wrong on its own terms.
 
    **The commit message is not a criterion, because it is not in this command.** Step 3 wrote it to a file and `git commit -F <path>` names that file, so everything inside the `bash -c` string is a path or a flag you authored as a literal. That is precisely what makes the wrapper safe: a single-quoted shell string ends at the first apostrophe, and prose has apostrophes — the defect at step 3. An earlier revision of this step dropped `with` on the reasoning that the message would have to travel inside the `--` argument. It does not, and has not since the message moved into a file; `/fusion:commit` and `/fusion:cleanup` run this same shape for this same reason. One thing to check before you send it: no path in your staging list contains a `'`. fusion's own filenames are slug-cased and never do; a path that did would be a Human Gate matter, not something to quote your way around.
 6. The `commit` event is machine-written by `fusion-commit-lock with` (`rules/commit-lock.md` `## The lock writes the commit event`) — emit none yourself.
@@ -516,7 +515,7 @@ What you may do, at the user's word and with no dispatch, is maintain the store 
 
 **Two transitions deliberately do not exist**: `_d_`→`_p_`, because reviving reverses a disposition the user took and a reversal is not a ranking judgement — revival is `_d_`→`_o_`, by the user, by hand; and `_d_`→`_c_` by promotion, because the promotion path renames `_o_` or `_p_` and nothing else.
 
-**Ranking is not yours.** Renaming an entry between `_o_` and `_p_` states a judgement about which idea is worth acting on next, and that is the playmaker's, reachable through `/fusion:next`. You perform the four dispositions the user asks for; you do not decide which idea comes first.
+**Ranking became yours at v11, and it is the one backlog act that needs no confirmation.** Renaming an entry between `_o_` and `_p_` states a judgement about which idea is worth acting on next; it was the playmaker's until that agent went with the portfolio layer, and it is now yours, on the mandate `rules/backlog-entries.md` carries. The four dispositions above still each need the user's word for that operation on that entry. A rename is reversible and adds nothing; a split, merge, close or defer is neither.
 
 ## Closing a Circle
 
@@ -527,11 +526,12 @@ Run this when a Circle is being closed in this session. With no `.active-circle`
    The new marker is `_c_` when the closing verdict was `coherent` and no Rebalance was opened, and `_b_` when the user chose **Accept Bounded Closure** at the Rebalance gate or Bounded Closure was forced by **Rebalance bounding**. **Revise Directive**, **Revise Grounding** and **Revise Artifact** all continue the Circle: do not touch the marker and skip the rest of this section.
 
 2. **The Circle review — the one pass this Circle gets** (decision `260827-1120_*_how-often-does-the-review-pass-run.md`). Closure paths only; a continued Circle waits. Take the coverage read once more (**Review coverage**), then route by what the uncovered commits changed, scoped to their files **plus the carried `**Not-opened:**` list**:
-   - Code files → emit `review_start`, invoke `coderev`, emit `review_done`.
-   - Ontology/data files (`.yaml`, `.json`, `.toml`, `.csv` in `ontology/` or `manifests/`) → the same with `ontorev`.
+   - Code files → emit `review_start`, invoke `reviewer` with `**Review domain:** code`, emit `review_done`.
+   - Ontology/data files (`.yaml`, `.json`, `.toml`, `.csv` in `ontology/` or `manifests/`) → the same with `**Review domain:** ontology`. Both kinds in one uncovered range are **one** dispatch carrying `**Review domain:** both`, not two.
+
    - `uncovered 0` **and** an empty carried list → skip cleanly; an uncovered list that is empty only because nothing was committed is the same skip.
 
-   Findings land as issues (the reviewers file them) for the follow-on Circle; the `## Closure note` at step 3 names them and any remaining gap — coverage is advisory and never blocks the closure. A bounded reviewer return is continued here, before step 3; on the stall, closure proceeds and the gap goes into that note like any uncovered range.
+   Findings land as issues (the reviewer files them) for the follow-on Circle; the `## Closure note` at step 3 names them and any remaining gap — coverage is advisory and never blocks the closure. A bounded reviewer return is continued here, before step 3; on the stall, closure proceeds and the gap goes into that note like any uncovered range.
 
 3. **Read the plan's `## Where this Circle stops` back to the user, before the rename.** Resolve the plan in scope: the Circle record's `**Active spec/plan:**` field, else the plan file this session ran on. Skip any clause that sits wholly inside angle brackets — that is the template's placeholder, whether it stands alone or beside a real clause. If no plan is in scope, if the plan carries no such section, or if no clause is left, do nothing and go to step 4 — no question is put to the user. Otherwise put **all** remaining clauses to the user as **one** question: a numbered list, multi-select for the clauses that do **not** hold (unmarked = holds). One stop, never one per clause.
 
@@ -547,9 +547,7 @@ Run this when a Circle is being closed in this session. With no `.active-circle`
 
    (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` to the renamed record, citing the session's commit range and the closing verdict. Set the record's `**Claim:**` to `Unclaimed` and run `rm -f fusion-workbench/.active-circle` together with the rename (see **Circle head fields**). Clearing the pointer is what makes a closure a closure — the one act here that cannot be skipped and still leave a closed Circle — and the claim rides it because the two say the same thing to different readers: the pointer tells this checkout no Circle is active, the field tells every *other* checkout the same. No head field duplicates the marker: the marker on the filename is the state.
 
-5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `$PORTFOLIO` to reflect the closure and writes any `## Parent grounding stale` notes for `_b_` propagation. When its briefing says an anticipated Circle must be re-sharpened before activation, put that to the user as an option; an answer choosing it is the condition **Re-sharpening an anticipated Circle** dispatches on.
-
-6. **Emit `portfolio_refresh`**, carrying the post-rename Circle record path, and relay the playmaker's briefing to the user.
+5. **Tell the user the Circle closed**, naming the record path and the closing verdict. The portfolio regeneration that stood here went at v11 with the agent that performed it: `$PORTFOLIO` is no longer written by any dispatch, and a `_b_` closure's `## Parent grounding stale` note, if the parent needs one, is yours to append to the parent record by hand. Emit `portfolio_refresh` carrying the post-rename Circle record path — the row is what a reader tiles closures from, and it outlived the regeneration it was named for.
 
 ## Ending the session
 
@@ -578,7 +576,7 @@ The session ends when the user says so. Then:
 |--------------|----------|
 | Agent produces no changes | Emit `task_blocked` with the reason, tell the user, move on |
 | Agent modifies wrong files (out of scope) | Revert out-of-scope files with `git checkout HEAD -- <file>`, log error, file issue for correct agent |
-| Validation fails after agent work (tests fail, consistency check fails) | Dispatch `bugfixer` (one attempt). On success: commit. On failure: revert all task changes, mark the task errored, tell the user |
+| Validation fails after agent work (tests fail, consistency check fails) | Re-dispatch the same executor as a defect task (one attempt). On success: commit. On failure: revert all task changes, mark the task errored, tell the user |
 | Agent edits outside its declared scope (`coder` edits `.yaml`, `ontocoder` edits `.go`) | Revert out-of-scope files, file issue for correct agent, log the scope violation |
 | Cross-domain task discovered at runtime (task needs both code + data changes) | Split into two subtasks with dependency, present to user for confirmation |
 | Git conflict during commit | Log the conflict details, skip commit, mark task as errored |
@@ -675,7 +673,7 @@ Fields `task`, `agent` and `detail` are included when relevant — omit when not
 | `gate_response` | User responded to a gate | Decision (proceed/skip/defer/modify); the stop-conditions gate writes `holds`/`does not hold`, one per clause |
 | `commit` | **Machine-written** (`fusion-commit-lock with`, on a landed HEAD) | Short hash, message summary |
 | `revert` | Files reverted after error | File list, reason |
-| `review_start` | The Circle review begins | Agent (coderev/ontorev), file count |
+| `review_start` | The Circle review begins | Review domain (code/ontology/both), file count |
 | `review_done` | The Circle review returned | Issues filed count |
 | `coherence_review` | A hand-run reconciliation's verdict was read | `verdict` (ok \| review-needed) + the three edge-summary lines (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive) |
 | `rebalance_artifact` | Rebalance gate, user chose Revise Artifact | Re-tried task ID or new task description |
@@ -696,16 +694,12 @@ Fields `task`, `agent` and `detail` are included when relevant — omit when not
 |-------|------|---------|
 | `shaper` | When a request needs specification. Also outside the loop, in **portfolio-activation** mode, when the user's answer at a gate asked for an anticipated Circle to be re-sharpened before activation | Turn brittle input into a precise spec (with user involvement). For the second shape read **Re-sharpening an anticipated Circle** above: it carries the one condition under which you may dispatch it, the parameter lines the dispatch must repeat on every round, and your obligation to relay the shaper's clarification rounds. |
 | `planner` | After shaping, or when a clear request needs an implementation plan | Design the implementation approach. Prefix `**Executors:** coder, ontocoder, analyst` on every dispatch, unconditionally. |
-| `taskplanner` | When the user asks what is open across the records and wants it ordered | Order the open work and return it in its report. **Pass `domain`** (from Setup Step 5). Writes no file, so there is nothing to stage. |
 | `coder` | When a task routes to application code | Implement code changes |
 | `ontocoder` | When a task routes to data/ontology (after the human gate) | Implement data/ontology changes |
-| `coderev` | At a Circle's closure, over the uncovered code files plus the carried list | Review changed code files |
-| `ontorev` | At a Circle's closure, over the uncovered ontology files plus the carried list | Review changed ontology files |
-| `bugfixer` | When validation fails after a task | One self-healing attempt before reverting |
+| `reviewer` | At a Circle's closure, over the uncovered files plus the carried list | Review the changed files. **Pass `**Review domain:** code \| ontology \| both`** — one dispatch, whichever mix the range holds |
 | `reconciler` | When the user asks for a reconciliation, and never otherwise | Ground-truth pass over all tracking files, with the three-edge Coherence verdict. **Pass `domain`** (from Setup Step 5). |
 | `analyst` | When a task needs analysis before implementation, or when a failure has to be traced before it can be fixed | Document study, comparative, gap, risk, feasibility, impact analysis, and forensic investigation of a captured failure |
 | `editor` | When a task produces a customer-facing deliverable | Write, revise, translate (en↔de), or render a polished document or branded deck (produce-only). **Pass `**Deliverable language:** <de|en>`** — there is no default and the agent halts without it. |
-| `playmaker` | After a `_t_→_c_/_b_` Circle transition, and when the user asks for the portfolio ranked | Regenerate `$PORTFOLIO` and write any `## Parent grounding stale` notes. **Pass `domain`** (from Setup Step 5). |
 | `curator` | Only when the user asks mid-session for the project's binding text to be reconciled | Survey the three normative surfaces (decision records, the project's own rule files, `CLAUDE.md`) against recorded history and return the change ledger's gate question. Dispatch it twice — see the paragraph below. |
 
 **A `curator` dispatch is asked for by the user, and you hold its gate.** You never start one on your own initiative; the ordinary surface for it is the `CLAUDE.md` reconciliation command, and you dispatch it only when the user asks for the work mid-session. What the curator's third invocation shape requires of you is the proxy: it runs non-interactively, so it completes the survey pass, returns the run file's path, the per-group counts, the candidate count and the blast-radius verdict, and stops. Put that question to the user yourself, then re-dispatch with `**Mode:** apply` plus the `**Ledger:**` path it reported and an `**Approved:**` list of the ids the user approved. **Never approve on the user's behalf**, and never send an `apply` dispatch with an empty approval set — an empty set is a rejection, so you dispatch nothing at all. The curator's edits are working-tree edits it does not commit; they are yours to commit under **Step 4** like any other executor's.

@@ -96,7 +96,7 @@ These are non-negotiable defaults. The user can override them at the `refine` st
 2. **Active markers — never archive in tier modes:**
    - The **active Circle** (`$CIRCLE`) and any anticipated (`_a_`) or active (`_t_`) Circle — live work.
    - `_d_` Circles — *deferred ≠ done*; the user may want to revisit. Terminal, but excluded by default.
-   - `_o_` (open) and `_p_` (in-progress) defects, plans and backlog entries — live work. A `_p_` backlog entry is an idea the playmaker has recommended for promotion and the user has not yet acted on, which is as live as an idea gets.
+   - `_o_` (open) and `_p_` (in-progress) defects, plans and backlog entries — live work. A `_p_` backlog entry is an idea recommended for promotion that the user has not yet acted on, which is as live as an idea gets.
    - `_d_` defects, plans and backlog entries — same reasoning as `_d_` Circles. A deferred backlog entry is the one record in the workbench that can come back: `_d_ → _o_` is a permitted transition for this kind, because a deferred idea is not a recorded commitment. Archiving one would take away the thing the user deferred rather than dropped.
    - `_a_` decisions — answer recorded but not yet realised in code/data. Archiving breaks decision↔implementation traceability. Promote to `_i_` when implementation lands; do not bulk-archive `_a_`.
    - A terminal Circle whose own issue, plan or decision store holds a live record (an `_o_`/`_p_` issue or plan, an `_o_`/`_a_` decision; a `_d_` one is frozen with the Circle and does not count): moving the directory would take those records out of every store their consumers scan. Excluded from every tier, listed with its open count, left in place until the records close or move (Step 3 counts them).

@@ -138,7 +138,7 @@ Author a decision record for an open question — typically when shaping or plan
 3. Recommend if you have evidence; otherwise mark "no recommendation, awaits user input"
 4. Write to `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`
 5. If the analysis itself answers the question (e.g. a comparative analysis selects an option), file the decision in state `_a_` with `Answered: <this-analysis-path>:<line>` instead of `_o_`.
-6. Always include a `Cross-references:` line in the header listing related issues, plans, prior decisions, and the analysis (if any) that informed the record. The reconciler and taskplanner use this for routing.
+6. Always include a `Cross-references:` line in the header listing related issues, plans, prior decisions, and the analysis (if any) that informed the record. The reconciler uses this for routing.
 
 **Output path:** `$OUT_DECISION`. The analysis report (if separately authored) goes to `$OUT_ANALYSIS`; the decision record cross-references it.
 

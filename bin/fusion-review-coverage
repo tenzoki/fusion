@@ -29,7 +29,7 @@
 #   verdict=uncovered
 #     uncovered 7785330 chore(workbench): the reconciler's annotations land
 #     review 260810-2110-….md range=da8c9db..b3cc034 not-opened=none covers=5
-#   carried=agents/orchestrator.md, skills/next/SKILL.md
+#   carried=agents/orchestrator.md, skills/archive/SKILL.md
 #   carried-from=260810-2110-….md
 #
 # Exit codes:
@@ -57,7 +57,7 @@
 #
 # The data was already on disk, in the review files, in four different spellings
 # with two of the filenames ending in `-to-head`. So the range is now a mandated
-# header field in agents/coderev.md and agents/ontorev.md, and this reads it.
+# header field in agents/reviewer.md, and this reads it.
 #
 # It reports. It is not a release gate — whether a release may go out over an
 # uncovered range is an unfiled decision, and building the gate ahead of it was

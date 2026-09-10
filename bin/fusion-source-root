@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # fusion-source-root — the root a citation of a plugin-shipped FILE resolves
-# against. Read at a skill's first step (skills/setup, skills/next,
+# against. Read at a skill's first step (skills/setup, skills/direct,
 # skills/cleanup, skills/help) in place of restating the branch inline.
 #
 # Usage:

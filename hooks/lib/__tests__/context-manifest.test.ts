@@ -19,10 +19,9 @@ import { agentNames, pluginRoot } from "./helpers/citation-scan.js";
 const fusionRules = join(pluginRoot, "bin", "fusion-rules");
 
 const AGENTS = [
-  "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
-  "ontorev", "planner", "shaper", "taskplanner",
-  "reconciler", "analyst", "consultant", "playmaker",
-  "editor", "curator",
+  "orchestrator", "coder", "ontocoder", "reviewer",
+  "planner", "shaper", "reconciler", "analyst",
+  "consultant", "editor", "curator",
 ];
 
 interface RunResult {
@@ -99,7 +98,7 @@ const SAMPLE_MANIFEST = [
   "# fixture manifest",
   "units:",
   "  - path: .claude/rules/ONTO-ENG-RULES.md   # loaded rule",
-  "    agents: [ontocoder, ontorev, planner]",
+  "    agents: [ontocoder, reviewer, planner]",
   "    topics: [ontology]",
   '    note: "UEOF/UIF engineering rules"',
   "  - path: .claude/rules/READER.md",
@@ -109,7 +108,7 @@ const SAMPLE_MANIFEST = [
   '    agents: ["*"]',
   "    topics: [unite-framework]",
   "  - path: .claude/rules/CODING-HYGIENE.md",
-  "    agents: [coder, coderev]",
+  "    agents: [coder, reviewer]",
   "    topics: [always]",
   "",
 ].join("\n");
@@ -208,13 +207,13 @@ describe("context-manifest: emit predicate (agent-match AND topic-match)", () =>
   });
 
   it("[always] units do NOT emit for a non-matching agent", () => {
-    // CODING-HYGIENE is [always] but only for [coder, coderev].
+    // CODING-HYGIENE is [always] but only for [coder, reviewer].
     const out = lines(run(manifestProject, "ontocoder", "ontology").stdout);
     expect(out).not.toContain(".claude/rules/CODING-HYGIENE.md");
   });
 
   it("agents: [*] wildcard matches every agent", () => {
-    for (const agent of ["reconciler", "playmaker", "coder"]) {
+    for (const agent of ["reconciler", "curator", "coder"]) {
       const out = lines(run(manifestProject, agent, "unite-framework").stdout);
       expect(out, `${agent} should get the [*] skill unit`).toContain("skill:unite-bok-sc-skill");
     }

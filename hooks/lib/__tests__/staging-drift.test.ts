@@ -376,7 +376,7 @@ describe("staging drift: what it reports without raising an alarm", () => {
           expect(line, `${path} must be reported, never dropped`).toBeDefined();
           expect(line).toMatch(/^ {2}in-flight/);
         }
-        expect(row(res.stdout, "portfolio.md")).toContain("every playmaker run");
+        expect(row(res.stdout, "portfolio.md")).toContain("until v11 removed both");
         expect(row(res.stdout, ".asset-provenance")).toContain("/fusion:setup");
       });
     },

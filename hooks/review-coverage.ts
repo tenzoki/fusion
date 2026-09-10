@@ -6,7 +6,7 @@
  * lands under a reviews store. Read that module's header for the defect
  * (issue `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md` — seven commits reached a pushed tag unreviewed while
  * the session reported one) and for why the ranges had to be mandated in
- * `agents/coderev.md` and `agents/ontorev.md` before anything could read them.
+ * the review prompts before anything could read them.
  *
  * Called through `bin/fusion-review-coverage` by `agents/orchestrator.md` at
  * Step 3c (to widen the next review dispatch's scope) and at Phase 4 (to state

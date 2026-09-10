@@ -592,8 +592,9 @@ export function countsFromHelperOutput(stdout) {
 // least two DOMAINS as literals AND at least two INPUTS. Two outcomes plus two
 // of the counts they are decided from is a decision procedure; anything less is
 // a consumer talking about a domain it was handed. That split was measured, not
-// assumed: it leaves the per-domain tables in `reconciler`, `taskplanner` and
-// `playmaker` alone, which name the domains and no input.
+// assumed: it leaves the per-domain table in `reconciler` alone, which names
+// the domains and no input. Two further such tables went at v11 with the agents
+// that carried them.
 //
 // The input half deliberately spans more than the cascade now reads. Both
 // `COUNT_NAMES` and `RETIRED_COUNT_NAMES` count, so a copy restating the
@@ -685,9 +686,9 @@ export function inputsNamedIn(line) {
  * wrap split in half; joining a line to the next BLOCK would re-admit exactly
  * the per-domain lists and tables the two-input rule was chosen to leave alone
  * — measured on this tree, an unconditional two-line window selects
- * `agents/playmaker.md:31-32`, two rows of a legitimate per-domain table, and
- * `agents/reconciler.md:107-108`, two adjacent bullets of the edge list. The
- * continuation rule selects neither.
+ * two rows of a legitimate per-domain table in the ranking prompt removed at
+ * v11, and `agents/reconciler.md:107-108`, two adjacent bullets of the edge
+ * list. The continuation rule selects neither.
  */
 const BLOCK_START = /^\s*(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||>|```|~~~|<!--|<[A-Za-z/]|\[[^\]]+\]:)/;
 const FENCE_LINE = /^\s*(?:```|~~~)/;
@@ -769,8 +770,8 @@ export const REACH = {
     covered: [
         {
             claim: "A domain name in backticks, double quotes, single quotes or asterisk bold. Four " +
-                "spellings, because nothing in this project requires one of them and " +
-                "`agents/taskplanner.md:128` writes the names bare.",
+                "spellings, because nothing in this project requires one of them and the " +
+                "removed work-queue prompt wrote the names bare.",
             probes: [
                 "Use `data` when the data files outnumber the source files, otherwise `code`.",
                 'Use "data" when the data files outnumber the source files, otherwise "code".',
@@ -830,12 +831,14 @@ export const REACH = {
                 "second copy anyone would write and it is NOT caught. Matching bare words was measured " +
                 "over the scanned set and rejected on cost, because both surviving domain names are " +
                 "ordinary English words in these files and `code files` is both a domain name and an " +
-                "input phrase.",
+                "input phrase. The figure below fell from 11 to 8 at the v11 roster cut, which " +
+                "removed three of the scanned prompts; the cost is a property of the corpus, so it " +
+                "is re-measured whenever the corpus moves and never carried forward.",
             probes: [
                 "Detect the workbench domain: data if the data files outnumber the source files, " +
                     "else code.",
             ],
-            cost: { widening: "matching bare words", singleLine: 11, withWindow: 11 },
+            cost: { widening: "matching bare words", singleLine: 8, withWindow: 8 },
         },
         {
             claim: "A paraphrase spread across the rows of a table, or across three or more wrapped lines. " +

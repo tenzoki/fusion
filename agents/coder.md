@@ -23,7 +23,7 @@ You implement application code, build files, and tests. File types you own:
 
 You do NOT edit ontology, manifest, schema or fixture data — the `.yaml`, `.json`, `.toml` and `.csv` files that carry it, wherever they live. Those belong to the `ontocoder` agent. **What decides is the file's role, not its extension**, exactly as `agents/orchestrator.md` `## Agent Routing Table` decides it: a `.json` or `.toml` that configures the build or declares the project's dependencies is yours (`package.json`, `Cargo.toml`, `tsconfig.json`), and the same extension holding ontology entries or manifest data is the ontocoder's. Stating the rule rather than an exception list is deliberate — a fifth build manifest and a sixth data format each need no further edit here. If a code change requires a coordinated data change, **stop and file an issue** in `$OUT_ISSUE` for `ontocoder`; an open question that is nobody's defect goes to `$OUT_DECISION`.
 
-**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — bugfixer's verification-then-commit pattern is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with coder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
+**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — a defect task that must verify and commit in one pass is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with coder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
 
 ## Before Coding
 
@@ -45,6 +45,22 @@ You do NOT edit ontology, manifest, schema or fixture data — the `.yaml`, `.js
    - Issue → append `Resolved:` note + rename marker `_o_` (or `_p_`) → `_c_`
    - Decision (under `$SCAN_DECISIONS`, marker `_a_`) — if your task realises the recorded answer in code, append `Implemented: <short-hash> — <one-line summary>` and rename `_a_` → `_i_`. Cite the commit hash you just produced.
 4. Report to whoever dispatched you, in the shape below
+
+### Diagnose before you edit, when the task is a defect
+
+A task that names an error, a failing test or a broken behaviour is not an implementation task and does not start with an edit. It starts with a diagnosis, and the fix is minimal because the diagnosis is precise. This is the contract the `bugfixer` agent carried until v11, when that agent was removed and its subject — one self-healing attempt inside a phase procedure — went with the procedure; the instruction survives here because the work does.
+
+1. **Parse the error.** Extract the message, the file and line if present, the stack trace, the operation that failed, and expected against actual.
+2. **Reproduce it.** Run the failing test, build or check and confirm the error is live. If you cannot reproduce it, say so — it may be intermittent or environment-dependent — and do not edit on a guess.
+3. **Locate the failure point** — the exact file and line where the error *originates*, not where it surfaces.
+4. **Walk the call chain backward.** Read each caller to see how the failing state was produced. Do not stop at the first suspicious function.
+5. **Check recent changes** — `git log --oneline -20 -- <suspect files>` and `git diff HEAD~5 -- <suspect files>`.
+6. **Cross-layer check.** A failure involving data means reading the data file AND the code that loads it; a failure involving AI output means reading the prompt AND the caller. Bugs live at layer boundaries.
+7. **Read the test's expectation.** The test may be wrong or the code may be wrong. Verify which; do not assume.
+8. **Name the root cause precisely** — which file, which line, what is wrong, why it produces the observed error, with evidence. The error you were handed is a symptom; the cause may be several layers deeper, and a symptom fix leaves the bug in place.
+9. **Verify there is exactly one root cause.** If several contribute, identify all of them before fixing any: a partial fix that masks the rest is worse than no fix.
+10. **Make the smallest change that resolves the cause** — the wrong value or logic at its origin rather than a guard downstream, the data where it is defined rather than where it is consumed. Check ripple effects in callers, tests and cross-references and include only what correctness requires. Change nothing else; do not reformat, rename or restructure around it.
+11. **If verification then fails, you introduced a regression.** Revert your change, reassess, and try again. Never leave the tree worse than you found it.
 
 ## Coding Rules
 
@@ -69,7 +85,7 @@ Apply the rules loaded in Setup step 2. The defaults below hold even when no pro
 
 ### Report shape
 
-Three fields, in this order. The contract is authored here and in `agents/ontocoder.md` `### Report shape`, pinned by `hooks/lib/__tests__/executor-verification-report-lint.test.ts`; it extends the report `agents/bugfixer.md` Phase 6 carries, replacing its free-text verification result with the locked line below — one shape, so the orchestrator reads every executor's report the same way.
+Three fields, in this order. The contract is authored here and in `agents/ontocoder.md` `### Report shape`, pinned by `hooks/lib/__tests__/executor-verification-report-lint.test.ts`; it extends the four-part report the removed `bugfixer` agent carried, replacing that report's free-text verification result with the locked line below — one shape, so the orchestrator reads every executor's report the same way.
 
 1. **Files changed** — every file you modified, absolute paths.
 2. **Verification** — one line, in exactly one of these three forms and no fourth:

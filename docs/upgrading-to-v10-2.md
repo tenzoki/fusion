@@ -99,7 +99,7 @@ Do not convert them.
 ## What did not change
 
 Every other section of the Circle record, the state markers and their transitions, the
-directory layout, and the portfolio. Activating a Circle through `/fusion:next` is unchanged in
+directory layout, and the portfolio. Activating a Circle through the portfolio command (removed at v11) was unchanged in
 what you do and in what you get, with one write fewer inside it: the step that renames the record
 used to set `**Status:** active` in the same breath, and there is no longer a field to set. The
 orchestrator's new permission to write `## Directive` is deliberately narrow: it may write one

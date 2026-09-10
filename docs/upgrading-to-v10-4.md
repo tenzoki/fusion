@@ -115,7 +115,7 @@ nothing and the waiver rested on a case that does not distinguish.
 
 **What this means in practice.** If you run the shaper yourself with `**Mode:** portfolio-activation`
 and no `**Initiated by:**` line, the run now halts and reports the contract violation where it
-previously proceeded. Add the line. Every orchestrator dispatch already carries it, and `/fusion:next`
+previously proceeded. Add the line. Every orchestrator dispatch already carries it, and the portfolio command
 performs its activation writes without dispatching the shaper at all, so neither of those paths
 changes.
 

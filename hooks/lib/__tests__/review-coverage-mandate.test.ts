@@ -57,7 +57,18 @@ import {
 const read = (...p: string[]) => readFileSync(join(pluginRoot, ...p), "utf-8");
 
 /** The two prompts that write review files, and therefore reach the mandate. */
-const REVIEWER_PROMPTS = ["coderev.md", "ontorev.md"] as const;
+const REVIEWER_PROMPTS = ["reviewer.md"] as const;
+
+/**
+ * The two senders that no longer have a prompt. `coderev` and `ontorev` merged
+ * into `reviewer` at v11 and the MANDATE moved with them, but review files
+ * carrying the old segments are on disk in every workbench, so the scan still
+ * RECOGNISES them. Mandating and recognising are different questions and this
+ * file asks the first; `hooks/lib/review-coverage.ts` `REVIEW_SENDERS` carries
+ * the second, and the case below holds the two apart rather than letting a
+ * widening on either side pass as agreement with the other.
+ */
+const RETIRED_SENDERS = ["coderev", "ontorev"] as const;
 
 /**
  * The mandate's single authoring home since 2026-08-22. It stood in both
@@ -141,9 +152,9 @@ describe("review-coverage mandate: the producers", () => {
     ).toEqual([]);
   });
 
-  it("both prompts reach the mandate, and bin/fusion-rules delivers it to both", () => {
+  it("the reviewer prompt reaches the mandate, and bin/fusion-rules delivers it", () => {
     // One authoring home replaces the drift check two copies needed. What has
-    // to hold instead is that each reviewer still gets there: the prompt names
+    // to hold instead is that the reviewer still gets there: the prompt names
     // the file, and the emission arm names the agent.
     for (const prompt of REVIEWER_PROMPTS) {
       expect(
@@ -155,9 +166,9 @@ describe("review-coverage mandate: the producers", () => {
     const helper = read("bin", "fusion-rules");
     expect(helper).toContain('emit_if_exists "$PLUGIN_RULES_DIR/review-contract.md"');
     expect(
-      /coderev\|ontorev\)\s*IS_REVIEWER_AGENT=1/.test(helper),
-      "bin/fusion-rules stopped emitting review-contract.md to exactly coderev and " +
-        "ontorev. An agent that writes review files without the contract writes a " +
+      /^\s*reviewer\)\s+IS_REVIEWER_AGENT=1/m.test(helper),
+      "bin/fusion-rules stopped emitting review-contract.md to exactly reviewer. " +
+        "An agent that writes review files without the contract writes a " +
         "header the coverage check reports UNUSABLE.",
     ).toBe(true);
   });
@@ -165,9 +176,14 @@ describe("review-coverage mandate: the producers", () => {
   // Issue 260811-1145: `REVIEWER_PROMPTS` above already fixed the mandate at two
   // prompts and nothing carried that fact into the scan or the trigger. One
   // constant both consumers reach makes a fourth sender somebody's decision.
-  it("the recognised sender set is those same two prompts, and both sides read it", () => {
-    expect([...REVIEW_SENDERS].sort()).toEqual(
-      REVIEWER_PROMPTS.map((p) => p.replace(/\.md$/, "")).sort(),
+  it("the recognised sender set is the mandated prompt plus the retired two, and both sides read it", () => {
+    expect(
+      [...REVIEW_SENDERS].sort(),
+      "REVIEW_SENDERS drifted from the mandate. It is exactly the prompts that " +
+        "carry the mandate today plus the segments retired at the v11 merge — a " +
+        "name in neither group is a sender nobody mandated and nobody wrote.",
+    ).toEqual(
+      [...REVIEWER_PROMPTS.map((p) => p.replace(/\.md$/, "")), ...RETIRED_SENDERS].sort(),
     );
 
     const tracker = read("hooks", "tracker.ts");
@@ -177,8 +193,8 @@ describe("review-coverage mandate: the producers", () => {
         "trigger can drift wider than the scan it fires.",
     ).toContain("isMeasuredReview");
     expect(
-      /["']coderev["']|["']ontorev["']/.test(tracker),
-      "hooks/tracker.ts names a sender literally. Two literals is the silent " +
+      /["'](?:coderev|ontorev|reviewer)["']/.test(tracker),
+      "hooks/tracker.ts names a sender literally. A second literal is the silent " +
         "widening this constant exists to prevent.",
     ).toBe(false);
   });

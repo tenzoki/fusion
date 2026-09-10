@@ -10,10 +10,9 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 const fusionPaths = join(pluginRoot, "bin", "fusion-paths");
 
 const AGENTS = [
-  "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
-  "ontorev", "planner", "shaper", "taskplanner",
-  "reconciler", "analyst", "consultant", "playmaker",
-  "editor", "curator",
+  "orchestrator", "coder", "ontocoder", "reviewer",
+  "planner", "shaper", "reconciler", "analyst",
+  "consultant", "editor", "curator",
 ];
 
 // Read off the tree, not hand-written: a hand-written roster omitted two skills
@@ -361,19 +360,13 @@ describe("bin/fusion-paths", () => {
       // Emission stays per-consumer: adding a key to the resolver gives it to
       // nobody until a prompt asks for it.
       //
-      // `direct` and `next` are here on purpose, not by accident of not having
-      // been thought about. Both are user surfaces onto the backlog and
-      // neither touches the store: `/fusion:direct` passes an entry path to
-      // the shaper verbatim without opening it, and `/fusion:next` renders the
-      // ranking out of `portfolio.md`, which playmaker already wrote, then
-      // relays the backlog operations that run proposed — it puts them to the
-      // user and passes the answer back on a second dispatch. The relay
-      // carries text copied out of a report, operation words and entry paths,
-      // and never resolves a path into the store. Holding no key is what makes
-      // those statements mechanical, and for `next` it is now a live
-      // constraint rather than an observation: the dispatch-prompt example in
-      // `skills/next/SKILL.md` hands the skill a key the moment it spells
-      // either token, which is why that example writes `<entry path>`.
+      // `direct` is here on purpose, not by accident of not having been
+      // thought about. It is a user surface onto the backlog and it does not
+      // touch the store: `/fusion:direct` passes an entry path to the shaper
+      // verbatim without opening it. Holding no key is what makes that
+      // statement mechanical. A second such surface, the portfolio command,
+      // stood beside it until v11 and was removed with the ranking agent whose
+      // output it rendered.
       //
       // `orchestrator` left this list on 2026-09-10. Its prompt now names both
       // tokens, because the four confirm-gated backlog operations became edits
@@ -381,7 +374,7 @@ describe("bin/fusion-paths", () => {
       // agent that writes the store needs the store resolved — unnamed, both
       // keys expand to the empty string and the write lands at the workbench
       // root. It moved to the case below rather than being dropped.
-      for (const name of ["coder", "planner", "direct", "next"]) {
+      for (const name of ["coder", "planner", "direct"]) {
         const p = parse(run(project, name).stdout);
         expect(p.OUT_BACKLOG, name).toBeUndefined();
         expect(p.SCAN_BACKLOG, name).toBeUndefined();
@@ -400,23 +393,15 @@ describe("bin/fusion-paths", () => {
       }
     });
 
-    it("gives playmaker both keys, and says nothing about how the write is bounded", () => {
-      // The first shipped consumer to hold both. Nothing in the resolver moved
-      // to bring the write key across: a consumer's key set is one grep over
-      // its own prompt (`rules/workbench-path-resolution.md`), so naming
-      // `$OUT_BACKLOG` in `agents/playmaker.md` is the whole of the change, and
-      // that derivation is what this case proves.
-      //
-      // It is also ALL it proves. What bounds the playmaker is prose, authored
-      // in `rules/fusion-workbench-conventions.md` `## Backlog entries` and
-      // `agents/playmaker.md` `## Two mandates, by dispatch path`; no assertion
-      // here reaches it, and `playmaker-backlog-mandate-lint.test.ts` checks
-      // only that it is STATED. Read a green result as "the key is granted",
-      // never as "the write is bounded".
-      const p = parse(run(project, "playmaker").stdout);
-      expect(p.SCAN_BACKLOG).toBe("shared/backlog");
-      expect(p.OUT_BACKLOG).toBe("shared/backlog");
-    });
+    // A `playmaker` case stood here and held the same pair. It was the FIRST
+    // shipped consumer to hold both, and it went at v11 with the agent; the
+    // orchestrator case above is now the only holder and carries the same
+    // derivation. What the removed case also carried is worth keeping in
+    // words, because it applies unchanged to the case above: a green result
+    // says "the key is granted" and says NOTHING about the write being
+    // bounded. What bounds the writer is prose, in
+    // `rules/fusion-workbench-conventions.md` `## Backlog entries` and
+    // `rules/backlog-entries.md`; no assertion in this file reaches it.
 
     it("gives shaper the read key and withholds the write key", () => {
       // The second shipped consumer, and the same asymmetry for a different
@@ -551,11 +536,14 @@ describe("bin/fusion-paths", () => {
       expect(p.OUT_ISSUE).toBeDefined();
     });
 
-    it("gives a playmaker no OUT_ISSUE", () => {
-      const p = parse(run(project, "playmaker").stdout);
+    // The negative example used to be `playmaker`, which read every store and
+    // filed into none. That agent went at v11 and `editor` is the survivor with
+    // the same shape from the other direction: it writes plenty, all of it
+    // project-side, and holds no workbench key at all.
+    it("gives an editor no OUT_ISSUE and no store key whatsoever", () => {
+      const p = parse(run(project, "editor").stdout);
       expect(p.OUT_ISSUE).toBeUndefined();
-      expect(p.PORTFOLIO).toBe("portfolio.md");
-      expect(p.SCAN_CIRCLES).toBe("circles");
+      expect(Object.keys(p)).toEqual(["WORKBENCH"]);
     });
 
     it("gives every agent WORKBENCH, and every workbench writer at least one key", () => {
@@ -584,15 +572,14 @@ describe("bin/fusion-paths", () => {
     it("routes writers to their own output kind", () => {
       expect(parse(run(project, "planner").stdout).OUT_PLAN).toBe("shared/planning");
       expect(parse(run(project, "analyst").stdout).OUT_ANALYSIS).toBe("shared/analyses");
-      expect(parse(run(project, "coderev").stdout).OUT_REVIEW).toBe("shared/reviews");
-      expect(parse(run(project, "ontorev").stdout).OUT_REVIEW).toBe("shared/reviews");
+      expect(parse(run(project, "reviewer").stdout).OUT_REVIEW).toBe("shared/reviews");
       expect(parse(run(project, "shaper").stdout).OUT_CIRCLE).toBe("circles");
     });
 
     it("emits no key it cannot resolve", () => {
       // Guards against a key landing in an agent's set without a value —
       // an empty right-hand side would send writes to the workbench root.
-      for (const agent of ["orchestrator", "reconciler", "playmaker"]) {
+      for (const agent of ["orchestrator", "reconciler", "curator"]) {
         for (const [key, value] of Object.entries(parse(run(project, agent).stdout))) {
           expect(value.trim(), `${agent}: ${key} resolved empty`).not.toBe("");
         }
@@ -688,14 +675,18 @@ describe("bin/fusion-paths", () => {
     it("keeps SCAN_CONSULT shared-only, Circle active or not", () => {
       // Invariant 2 collapses for the unconditionally-shared kinds: they exist
       // only in shared/, so "both stores" has nothing to range over.
+      // The consumer used to be `playmaker`, which read every store. That
+      // agent went at v11 and `/fusion:archive` is now the only consumer whose
+      // body names the key — no agent prompt does, which is why this reads a
+      // skill.
       for (const withCircle of [false, true]) {
         if (withCircle) activate();
-        expect(parse(run(project, "playmaker").stdout).SCAN_CONSULT).toBe("shared/consult");
+        expect(parse(run(project, "archive").stdout).SCAN_CONSULT).toBe("shared/consult");
       }
     });
 
     it("emits no SCAN_MEMOS to anyone — nothing reads memos", () => {
-      for (const agent of ["orchestrator", "playmaker", "consultant", "analyst"]) {
+      for (const agent of ["orchestrator", "curator", "consultant", "analyst"]) {
         expect(parse(run(project, agent).stdout).SCAN_MEMOS).toBeUndefined();
       }
     });

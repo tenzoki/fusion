@@ -381,7 +381,10 @@ interface Role {
 const ROLES: Record<string, Role> = {
   /**
    * The agents that edit the tree as they work and carry nothing beyond the
-   * always-on core: coder, ontocoder, bugfixer.
+   * always-on core: coder and ontocoder. `bugfixer` was the third until v11,
+   * when it was removed and its diagnose-before-editing contract moved into
+   * these two — prompt text, not a rule file, so the role's file set is
+   * unchanged by that.
    *
    * THE ROLE CAME BACK on 2026-09-10. It had been the floor every other role was
    * read against until the bounded-dispatch audience gave these three
@@ -402,13 +405,13 @@ const ROLES: Record<string, Role> = {
   "decision-record-examples.md": {},
 
   /**
-   * The two agents that write review files. They pay for `review-contract.md`,
-   * the single authoring home of the review header's two mandated fields, the
-   * per-topic working files and the final consolidated review. It arrived on
-   * 2026-08-22 out of `agents/coderev.md` and `agents/ontorev.md`, where the
-   * same contract stood twice with no pointer between the copies; the role
-   * exists so that one file governs both review kinds. It has no
-   * `RULE_BASELINE` entry, so this role's floor is the core alone.
+   * The agent that writes review files. It pays for `review-contract.md`, the
+   * single authoring home of the review header's two mandated fields, the
+   * per-topic working files and the final consolidated review. The file arrived
+   * on 2026-08-22 out of the two review prompts, where the same contract stood
+   * twice with no pointer between the copies; at v11 those two prompts merged
+   * as well, so the role that was two agents is one. It has no `RULE_BASELINE`
+   * entry, so this role's floor is the core alone.
    */
   "review-contract.md": {},
 
@@ -424,19 +427,13 @@ const ROLES: Record<string, Role> = {
   /** The planner: diagrams plus the worked transitions (gate 260827-0830). */
   "decision-record-examples.md + design-diagrams.md": {},
 
-  /**
-   * Ranks Circles without producing design diagrams. Pays 9 302 for the Circle
-   * state vocabulary, which it needs because it reads and orders every Circle
-   * record there is and proposes which one should activate next.
-   *
-   * It is the one role in the Circle-key audience that does not itself rename a
-   * marker — `agents/playmaker.md` forbids it, and the rename stays with the
-   * orchestrator at Phase 4 or with the user via /fusion:next. That does not
-   * take it out of the audience: `bin/fusion-rules` derives membership from
-   * naming a Circle-scoped `fusion-paths` key, and a proposal has to be written
-   * in the same vocabulary as the transition it proposes.
-   */
-  "backlog-entries.md + circle-records.md + decision-record-examples.md + user-facing-output.md": {}, // playmaker: + the backlog maintenance mandate (decision 260827-1056)
+  // A role stood here for the agent that ranked Circles and maintained the
+  // backlog: circle-records.md + decision-record-examples.md +
+  // user-facing-output.md + backlog-entries.md. It went at v11 with the
+  // portfolio layer. `backlog-entries.md` did not go with it — the four
+  // confirm-gated operations became the orchestrator's, so that file followed
+  // them into the role below, which is why that key grew a name rather than
+  // this one merely disappearing.
 
   /**
    * Turns a Directive into a Circle record and draws the design diagram that
@@ -492,7 +489,7 @@ const ROLES: Record<string, Role> = {
    * most distinct jobs. The overage is not shaveable from the core, where every
    * remaining byte is text every agent applies.
    */
-  "circle-records.md + commit-lock.md + decision-record-examples.md + user-facing-output.md": {
+  "backlog-entries.md + circle-records.md + commit-lock.md + decision-record-examples.md + user-facing-output.md": {
     overRelease:
       "circle-records.md (9 302) carries the Circle state vocabulary and the record " +
       "template, and this role is the one that writes the `_a_ -> _t_` and `_t_ -> _c_` " +

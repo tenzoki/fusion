@@ -298,23 +298,29 @@ interface Surface {
  * produce them. It does not move at the 2026-09-05 merge: this surface was
  * inside its bound on the merged tree, and event 3 reaches only what a merge put
  * over.
+ *
+ * SIX ENTRIES WERE DROPPED at the v11 roster cut on 2026-09-10, five here and
+ * one from the skills map below: `bugfixer.md`, `coderev.md`, `ontorev.md`,
+ * `playmaker.md`, `taskplanner.md` and `next/SKILL.md`, whose files were
+ * deleted. **That is not a re-baselining event and no surviving figure moved.**
+ * An entry for a file that is gone inflates the floor and grants head-room
+ * nobody decided to grant, which is what the case below measures; dropping it
+ * is the removal's own bookkeeping. `reviewer.md` arrived in the same commit
+ * and deliberately gets NO entry: a file with no baseline contributes 0 to the
+ * floor, so its whole size counts as growth against this surface, which is the
+ * correct charge for a new file.
  */
 const AGENT_BASELINE: Record<string, number> = {
   "analyst.md": 21317,
-  "bugfixer.md": 11808,
   "coder.md": 9688,
-  "coderev.md": 13257,
   "consultant.md": 14825,
   "curator.md": 33541,
   "editor.md": 14272,
   "ontocoder.md": 13305,
-  "ontorev.md": 11234,
   "orchestrator.md": 139859,
   "planner.md": 18434,
-  "playmaker.md": 38602,
   "reconciler.md": 20006,
   "shaper.md": 25320,
-  "taskplanner.md": 14375,
 };
 
 /**
@@ -334,7 +340,6 @@ const SKILL_BASELINE: Record<string, number> = {
   "log-activity/SKILL.md": 13629,
   "memo/SKILL.md": 12336,
   "migrate/SKILL.md": 26620,
-  "next/SKILL.md": 27604,
   "setup/SKILL.md": 47236,
 };
 
@@ -388,8 +393,6 @@ const TEST_LINE_BASELINE: Record<string, number> = {
   "path-literal-lint.test.ts": 338,
   "paths.test.ts": 31,
   "plan-stopping-section-lint.test.ts": 266,
-  "playmaker-backlog-mandate-lint.test.ts": 357,
-  "portfolio-citation-form-lint.test.ts": 170,
   "provenance-header-lint.test.ts": 448,
   "reference-resolution-lint.test.ts": 1004,
   "review-coverage-mandate.test.ts": 353,

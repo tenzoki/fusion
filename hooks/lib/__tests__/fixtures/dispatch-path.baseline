@@ -50,6 +50,45 @@
 # Outside this repository the question does not arise, because nothing is
 # refused there — the consuming-project carrier reports and never blocks.
 #
+# ## The v11 roster cut, 2026-09-10 — five rows removed, one added
+#
+# This is the THIRD event in `helpers/growth-bound.ts` `## Re-baselining` — a
+# merge of two lines that were each inside the bound — and it reaches exactly one
+# row. `agents/coderev.md` and `agents/ontorev.md` merged into
+# `agents/reviewer.md` at step C8 of the working-minimum cut. BOTH PARENTS WERE
+# MEASURED INSIDE THEIR OWN BOUND AT THAT HEAD, which is the condition the event
+# requires and not an assumption: coderev 182 514 against a row of 193 568, and
+# ontorev 181 449 against a row of 192 521. The merged path measures 186 973.
+#
+# THE ROW WRITTEN IN IS NOT THE MEASURED TOTAL, AND THE DIFFERENCE IS ONE
+# COMPONENT. Prompt and rules carry their measured values, 12 837 and 82 743.
+# `CLAUDE.md` carries 93 432, the same figure every other row carries, rather
+# than today's 91 393. It is a SHARED component: giving one row a smaller entry
+# than its ten siblings would make that path the first to fail on any future
+# CLAUDE.md growth, which is a bound on the project's instructions wearing a
+# reviewer's name. So the row is 189 012, and the 2 039 between it and the
+# measured total is head-room in `CLAUDE.md` that all eleven rows have.
+#
+# The step's own acceptance was tighter than this bound and is recorded because
+# it is not reproducible from the numbers here: each merge had to be green
+# against the SMALLEST pre-cut total among the paths it replaced. Reviewer's was
+# 192 521 and the merged path is under it. The other three merges the step
+# planned — planner absorbing shaper, analyst absorbing consultant, curator
+# absorbing reconciler — were each measured against that same rule and STOPPED,
+# so those five roles are still five agents and their rows below are untouched.
+# The measurements that stopped them are in the C8 commit message.
+#
+# FIVE ROWS WERE REMOVED, and only two of them by merger. `agents/bugfixer.md`,
+# `agents/playmaker.md` and `agents/taskplanner.md` were deleted with the
+# subjects they served — the phase procedure, the Circle portfolio and the
+# session work queue — and absorbed into nothing, so no row inherits their
+# figures and nothing here was credited with their removal.
+#
+# THE SURVIVING ROWS WERE NOT RE-CUT. Nine commits took real bytes off the rule
+# set between the arming and this cut, so every surviving path now measures well
+# under its row. Following the measurement down is none of the three events and
+# is deliberately not done here.
+#
 # Provenance: capability C8 of the spec
 # `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`, step A2 of
 # `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md`.
@@ -60,11 +99,6 @@
   CLAUDE.md 93432
   total 198789
 
-[bugfixer]
-  agents/bugfixer.md 11509
-  rules emitted to bugfixer 85175
-  CLAUDE.md 93432
-  total 190116
 
 [coder]
   agents/coder.md 9649
@@ -72,11 +106,6 @@
   CLAUDE.md 93432
   total 188256
 
-[coderev]
-  agents/coderev.md 8141
-  rules emitted to coderev 91995
-  CLAUDE.md 93432
-  total 193568
 
 [consultant]
   agents/consultant.md 14329
@@ -102,11 +131,6 @@
   CLAUDE.md 93432
   total 191869
 
-[ontorev]
-  agents/ontorev.md 7094
-  rules emitted to ontorev 91995
-  CLAUDE.md 93432
-  total 192521
 
 [orchestrator]
   agents/orchestrator.md 155302
@@ -120,11 +144,6 @@
   CLAUDE.md 93432
   total 202428
 
-[playmaker]
-  agents/playmaker.md 42955
-  rules emitted to playmaker 125674
-  CLAUDE.md 93432
-  total 262061
 
 [reconciler]
   agents/reconciler.md 22825
@@ -132,14 +151,15 @@
   CLAUDE.md 93432
   total 206384
 
+[reviewer]
+  agents/reviewer.md 12837
+  rules emitted to reviewer 82743
+  CLAUDE.md 93432
+  total 189012
+
 [shaper]
   agents/shaper.md 29057
   rules emitted to shaper 128279
   CLAUDE.md 93432
   total 250768
 
-[taskplanner]
-  agents/taskplanner.md 14070
-  rules emitted to taskplanner 81298
-  CLAUDE.md 93432
-  total 188800

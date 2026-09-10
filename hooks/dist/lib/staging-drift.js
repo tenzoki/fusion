@@ -197,7 +197,7 @@ const LIVE_STATE = [
     { path: ".session-marker", why: "the orchestrator heartbeat — mtime is the signal" },
     { path: ".active-circle", why: "the active-Circle pointer — one line, rewritten on activation" },
     { path: "monitor", why: "a verbatim copy of bin/monitor, re-created by /fusion:setup" },
-    { path: "portfolio.md", why: "the portfolio briefing — regenerated in full by every playmaker run" },
+    { path: "portfolio.md", why: "the portfolio briefing — regenerated in full by the ranking pass that wrote it, until v11 removed both" },
     { path: "orchestrator-events.jsonl", why: "append-only — written by every event emission, in flight all session" },
     { path: ".fusion-setup", why: "the setup marker — written by /fusion:setup" },
     { path: ".asset-provenance", why: "the asset provenance record — written by /fusion:setup" },
@@ -234,7 +234,7 @@ const STORES = [
  *
  * **Empty, deliberately.** Its one entry was `portfolio.md`, and it moved to
  * `LIVE_STATE` on 2026-08-23: `rules/workbench-tracking.md` places that file in
- * class L, regenerated in full by every playmaker run, so calling it an authored
+ * class L, regenerated in full by the ranking pass that wrote it, so calling it an authored
  * record told the model to stage a briefing the next run overwrites.
  *
  * The list is kept, along with its branch in `classify`, because the workbench

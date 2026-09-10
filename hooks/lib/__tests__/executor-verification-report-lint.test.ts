@@ -114,23 +114,46 @@ describe("executor report shape", () => {
       ).toMatch(/while (the|a) run is still in flight/);
     });
 
-    it(`${who} points at the bugfixer's shape rather than inventing a second one`, () => {
+    // The shape used to be anchored on a third prompt: `agents/bugfixer.md`
+    // carried the prior-art report and both executors cited it. That agent went
+    // at v11 and there is no third prompt left to point at, so the anchor is now
+    // MUTUAL — each executor names the other as the co-author of one shape. The
+    // property the old assertion bought is unchanged and still measured: there
+    // is one reporting mechanism, not two, and a prompt that quietly invented a
+    // second would stop citing its counterpart.
+    it(`${who} names the other executor as co-author of the one shape`, () => {
+      const other = who === "coder" ? "ontocoder" : "coder";
       expect(
         reportShape(agent(who), who),
-        `${who}: the report shape does not cite agents/bugfixer.md as the shape it extends. ` +
-          `Reuse before you build (rules/critical-stance.md §2) — a second reporting ` +
-          `mechanism is what this issue said not to add.`,
-      ).toMatch(/agents\/bugfixer\.md/);
+        `${who}: the report shape does not cite agents/${other}.md as the prompt it shares ` +
+          `the contract with. Reuse before you build (rules/critical-stance.md §2) — a ` +
+          `second reporting mechanism is what this issue said not to add.`,
+      ).toMatch(new RegExp(`agents/${other}\\.md`));
+    });
+
+    // What the removed agent actually contributed, and where it went. The
+    // diagnose-before-editing contract was the whole of `bugfixer`'s method, and
+    // the v11 merge kept it by moving it into both executors rather than by
+    // trusting them to re-derive it. An executor that lost it would take a
+    // defect task straight to an edit, which is the failure the contract exists
+    // to prevent, so the survival is asserted and not assumed.
+    it(`${who} carries the diagnose-before-editing contract the bugfixer left behind`, () => {
+      const text = agent(who);
+      for (const [what, re] of [
+        ["reproduce before editing", /\*\*Reproduce it\.\*\*/],
+        ["the origin, not the surface", /where the error \*originates\*/],
+        ["root cause named with evidence", /\*\*Name the root cause precisely\*\*/],
+        ["exactly one root cause", /exactly one root cause/],
+        ["revert on a regression", /you introduced a regression/],
+      ] as const) {
+        expect(
+          text,
+          `${who}: the diagnose-before-editing contract lost "${what}". It came from the ` +
+            `removed bugfixer prompt and this is the only place it now lives.`,
+        ).toMatch(re);
+      }
     });
   }
-
-  it("bugfixer still carries the verification field the two executors extend", () => {
-    expect(
-      agent("bugfixer"),
-      "bugfixer: the prior-art report no longer names a verification result. The two " +
-        "executors cite it as the shape they extend; that citation is now false.",
-    ).toMatch(/Verification result/);
-  });
 });
 
 describe("orchestrator acceptance of an executor report", () => {

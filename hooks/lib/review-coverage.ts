@@ -35,7 +35,8 @@
  * read. A computation over a format nobody mandated returns nothing and calls
  * it coverage.
  *
- * So `agents/coderev.md` and `agents/ontorev.md` now mandate two header fields,
+ * So the review prompt (`agents/coderev.md` and `agents/ontorev.md` then, one
+ * `agents/reviewer.md` since v11) mandates two header fields,
  * and this module reads exactly those and nothing else:
  *
  *     **Reviewed-range:** `<from>..<to>`
@@ -177,9 +178,19 @@ const HASH = /^[0-9a-f]{7,40}$/;
  * `hooks/tracker.ts` through that same function for the trigger. Two literals
  * would be a silent widening waiting to happen, which is the shape of the
  * defect itself: `review-coverage-mandate.test.ts` already fixed the mandate at
- * two prompts and nothing carried that fact into the scan.
+ * the prompts that carry it and nothing carried that fact into the scan.
+ *
+ * **THREE NAMES, ONE MANDATED WRITER.** `coderev` and `ontorev` merged into one
+ * `reviewer` at v11, and the mandate moved with them — `agents/reviewer.md` is
+ * the only prompt that writes a review file now. The two retired segments stay
+ * in this set because review files carrying them are ON DISK, in every
+ * workbench this plugin has ever run against, and a scan that stopped
+ * recognising them would silently drop every review written before the merge
+ * from the coverage it tiles. Recognising a sender is not mandating one: the
+ * mandate is what `review-coverage-mandate.test.ts` pins against the prompts,
+ * and it pins one.
  */
-export const REVIEW_SENDERS = ["coderev", "ontorev"] as const;
+export const REVIEW_SENDERS = ["reviewer", "coderev", "ontorev"] as const;
 
 /**
  * The `<sender>` segment of a review filename, or null when it has none.
@@ -288,7 +299,7 @@ export interface CoverageReport {
  * when the block carries no such line.
  *
  * The header block ends at the first `##` heading, which is exactly the
- * placement `agents/coderev.md` and `agents/ontorev.md` mandate — parser and
+ * placement `agents/reviewer.md` mandates — parser and
  * mandate state one rule, and issue `260811-1147_*_both-reviewer-prompts-place-the-mandated-fields-beside-a-sender-field-neither-prompt-defines.md` is the two of them disagreeing.
  * Scanning the whole file made the first line of PROSE that opens with the field
  * name win, and a review whose subject is the mandate is precisely such a file.

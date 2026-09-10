@@ -239,6 +239,14 @@ export declare function renderParty(p: Party, aliasOf: (hex: string) => string |
  *
  * The order is the one the retired specification gave, agent by agent:
  * `260907-0820_*_spec-bounded-executor-dispatches.md`.
+ *
+ * **THE v11 ROSTER CUT DID NOT MOVE THIS SET, DELIBERATELY.** `bugfixer` went
+ * and `coderev`/`ontorev` merged into `reviewer`, and all three names stay
+ * here while `reviewer` is absent: this set names the population that WAS
+ * measured, and rows carrying the old names are in the log. Adding `reviewer`
+ * would start counting a role whose dispatches predate nothing, which is the
+ * widening the paragraph above refuses. A reading that wants the new roster
+ * passes its own `agents` list — the option exists for exactly that.
  */
 export declare const MEASURED_AGENTS: readonly ["coder", "ontocoder", "bugfixer", "reconciler", "coderev", "ontorev", "curator"];
 /**

@@ -250,12 +250,11 @@ cd hooks && npm run build && cd .. \
 ```
 
 <!-- BEGIN generated: domain-cascade reach -->
-
 **Scanned:** `agents/*.md`, `skills/*/SKILL.md`, `rules/*.md` — every agent prompt, every skill body, every rule file. Exactly one of them may state the cascade.
 
 **Caught.** Each line is asserted against probes in `domain-cascade.test.ts`:
 
-- A domain name in backticks, double quotes, single quotes or asterisk bold. Four spellings, because nothing in this project requires one of them and `agents/taskplanner.md:128` writes the names bare.
+- A domain name in backticks, double quotes, single quotes or asterisk bold. Four spellings, because nothing in this project requires one of them and the removed work-queue prompt wrote the names bare.
 - A paraphrase naming the counts in prose — code files, source files, data files, and the decisions, issues, analyses and commits the retired branches read — rather than by variable name.
 - A paraphrase written with the cascade's own variable names.
 - A stale copy restating the retired four-outcome cascade. Its two surviving outcomes still fire, and the four counts only the retired branches ever read are still recognised as inputs, so the likeliest second copy from here on is caught rather than walked past.
@@ -264,7 +263,7 @@ cd hooks && npm run build && cd .. \
 
 **Not caught.** Each line is asserted to still be a miss, so closing one of these turns the suite red until this list is corrected:
 
-- A domain name written as a plain word, with no markup around it. This is the plainest second copy anyone would write and it is NOT caught. Matching bare words was measured over the scanned set and rejected on cost, because both surviving domain names are ordinary English words in these files and `code files` is both a domain name and an input phrase. Measured cost of matching bare words, across the scanned set and outside the definition site: 11 lines of honest prose selected on single lines, 11 with the continuation window. The suite re-measures both numbers.
+- A domain name written as a plain word, with no markup around it. This is the plainest second copy anyone would write and it is NOT caught. Matching bare words was measured over the scanned set and rejected on cost, because both surviving domain names are ordinary English words in these files and `code files` is both a domain name and an input phrase. The figure below fell from 11 to 8 at the v11 roster cut, which removed three of the scanned prompts; the cost is a property of the corpus, so it is re-measured whenever the corpus moves and never carried forward. Measured cost of matching bare words, across the scanned set and outside the definition site: 8 lines of honest prose selected on single lines, 8 with the continuation window. The suite re-measures both numbers.
 - A paraphrase spread across the rows of a table, or across three or more wrapped lines. A table row and a list item each open a block and are never joined to the line above them, and the window is two lines wide.
 - A paraphrase naming no input. It names no evidence, so it restates less than the cascade decides.
 - A paraphrase naming its inputs in words the prose list does not carry. The list is a fixed set of spellings, not a synonym set.
@@ -274,7 +273,6 @@ cd hooks && npm run build && cd .. \
 - `docs/*.md` — clean. Left out on a measured cost that has since expired. `docs/philosophy.md:19` said what each of four domains PRIORITISED, in a line shape-identical to a paraphrase, and scanning `docs/` meant either that false positive or an exemption list. With two domains the line names no count and the directory now measures clean, so the reason for the exclusion is gone and only the exclusion is left. That is an uncovered directory, not a justified one.
 - `CLAUDE.md` — fires. A consumer by the same contract that puts `rules/` in the file set, and it is not scanned. It measured clean until the retired domain names joined the detector on 2026-08-24; its agent-roster line, which names the two retired values beside the two live ones and the words the input list carries, now selects. That is the one measured cost of the widening, and it falls outside the scanned set.
 - `README-hooks.md` — clean. Documentation about the gate, including this block. Not scanned, and it would be wrong to scan the file whose job is to quote the claim.
-
 <!-- END generated: domain-cascade reach -->
 
 ## Usage
