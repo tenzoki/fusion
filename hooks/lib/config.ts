@@ -19,17 +19,35 @@
  *
  * ## The settings
  *
- * `orchestrator.dispatchMinutes` is the stopping time, in minutes, that the
- * orchestrator asks of a bound agent's dispatch. No hook reads it; Setup does,
- * once per session, and the orchestrator carries the answer from there.
+ * `citations.extraPaths` is the ONLY setting this loader resolves. The
+ * `orchestrator` container is still walked, and it carries nothing but its two
+ * retirements.
  *
- * `orchestrator.maxTurns` stood beside it as the Turn budget of the
- * orchestrator's Phase-2 loop, and went with that loop on 2026-09-10. It is
- * retired as a LEAF, in `RETIRED_LEAF_KEYS` below, because its container is
- * still read. The budget had been prose in `agents/orchestrator.md`, written
- * out as `5` in seven places and four spellings, with one of them already
- * calling it a "default" — a word that was false, because no source could
- * override it (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
+ * `orchestrator.maxTurns` was the Turn budget of the orchestrator's Phase-2
+ * loop and went with that loop on 2026-09-10. The budget had been prose in
+ * `agents/orchestrator.md`, written out as `5` in seven places and four
+ * spellings, with one of them already calling it a "default" — a word that was
+ * false, because no source could override it (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
+ *
+ * `orchestrator.dispatchMinutes` was the stopping time, in minutes, that the
+ * orchestrator asked of a bound agent's dispatch, and went the same way on the
+ * same day. The mechanism it configured — the `**Stop by:**` dispatch
+ * parameter, the clock read between units of work and the bounded return that
+ * handed the unfinished half back — was retired whole, on the measurement that
+ * every bounded dispatch of the session that removed it had overrun the bound
+ * by about half an hour with nothing enforcing it. Nothing could enforce it: an
+ * agent reads its own clock between units of its own work, so the bound was a
+ * request, and a request the work routinely overran bought nothing that asking
+ * would not.
+ *
+ * BOTH ARE RETIRED AS LEAVES, in `RETIRED_LEAF_KEYS` below, rather than by
+ * retiring the `orchestrator` container that holds them. The container-scoped
+ * table would name `orchestrator` and say one thing about it; a project that
+ * declared a stopping time and a project that declared a Turn budget wrote down
+ * two different intentions and each is owed the sentence about its own. That
+ * costs the container a live leaf: `orchestrator` is now walked so that the two
+ * leaves inside it can be named, and for nothing else. See
+ * `CONTAINER_LEAF_RULES` for the one line that keeps that walk happening.
  *
  * `citations.extraPaths` is the project's own list of the NON-MARKDOWN files
  * that carry record citations, written as glob patterns.
@@ -51,9 +69,9 @@
  * deliberately not here.
  *
  * EVERY DEFAULT ABOVE IS DEFINED ONCE, in `DEFAULTS` below. A project that
- * wants a different stopping time declares
- * `{"orchestrator":{"dispatchMinutes":30}}` in its own `fusion.json` and the
- * leaf walk does the rest.
+ * wants a wider citation corpus declares
+ * `{"citations":{"extraPaths":["internal/*.go"]}}` in its own `fusion.json` and
+ * the leaf walk does the rest.
  *
  * ## Merge: PER LEAF, across both layers
  *
@@ -120,13 +138,14 @@
  *     Today: `guard`, `decisions`, `escalation` and `churn`, which is what a
  *     project sees if it copies its old file across rather than starting from
  *     the template.
- *   - `RETIRED_LEAF_KEYS` — a LEAF inside a container that is still read.
- *     Today: `orchestrator.maxTurns`, whose container still holds
- *     `dispatchMinutes`.
+ *   - `RETIRED_LEAF_KEYS` — a LEAF inside a container that is still walked.
+ *     Today: `orchestrator.maxTurns` and `orchestrator.dispatchMinutes`, which
+ *     between them are everything that container ever held.
  *
  * The leaf-scoped table stood empty between 2026-08-16 and 2026-09-10, with a
  * note saying to reinstate it "if a leaf inside a LIVE container is ever
- * retired". That is exactly what the Turn budget's removal is.
+ * retired". That is exactly what the Turn budget's removal was, and the
+ * dispatch bound's removal followed it into the same table hours later.
  *
  * THE RETIRED-FILE DIAGNOSTIC IS THE WHOLE OF THE v10 MIGRATION, and it is
  * written that way on purpose. `/fusion:setup` MOVING THE BUDGET was the
@@ -176,14 +195,6 @@ export const PROJECT_CONFIG_FILENAME = "fusion.json";
  * answerable only if the settings are a nameable subset.
  */
 export interface GuardSettings {
-  orchestrator: {
-    /**
-     * The requested stopping time, in minutes, that the orchestrator hands to a
-     * bound agent's dispatch. Read at Setup, not by any hook.
-     */
-    dispatchMinutes: number;
-  };
-
   /**
    * The project's own answer to "which of my non-Markdown files carry record
    * citations", as glob patterns. Read by `bin/fusion-citation-check` and
@@ -217,31 +228,10 @@ export interface GuardConfig extends GuardSettings {
 
 /** Raw shape from JSON (may have missing fields). */
 interface RawConfig {
-  orchestrator?: Partial<GuardSettings["orchestrator"]>;
   citations?: Partial<GuardSettings["citations"]>;
 }
 
 const DEFAULTS: GuardSettings = {
-  orchestrator: {
-    // THE DISPATCH BOUND'S ONE DEFINITION, and the measurement it rests on.
-    // Both sentences stand here, because either one alone reads as an arbitrary
-    // round figure.
-    //
-    // Over the 131 machine-written dispatch pairs in this project's own event log, read on
-    // 2026-09-07, 15 of them, 11.5 percent, ran longer than 20 minutes; over the 114 of those pairs
-    // made by an agent the bound covers, 13, 11.4 percent, did. Of four candidate values checked
-    // against the break-even arithmetic, 10, 20, 25 and 30 minutes, 20 is the one that maximises
-    // the pessimistic cell, and the break-even run length sits at 20.2 to 27.5 minutes, just past
-    // the bound itself.
-    //
-    // The log the first sentence reads is `fusion-workbench/orchestrator-events.jsonl`,
-    // on the date named in it, so a later reader can re-take the figure. The
-    // second sentence is derived arithmetic and comes from
-    // `260907-2012-break-even-arithmetic-for-the-dispatch-split.md`; nothing
-    // else in the tree reproduces the four-candidate check or the break-even
-    // band.
-    dispatchMinutes: 20,
-  },
   // NOTHING DECLARED, which is the state of every project that has not written
   // this key and keeps the two citation helpers' corpus exactly the Markdown it
   // is now. A project inheriting this leaf is handed THIS array, so a caller
@@ -333,27 +323,6 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * A budget of `0` is a session that can never run a Turn — a project writing it
- * almost certainly means "no limit" and would get the tightest limit there is;
- * a negative one is not a count; `2.5` is not a number of Turns. All three are
- * out of range, all three are dropped, named in an advisory, and inherit the
- * default, because that is the one behaviour an absent, an unusable and an
- * unwritten key are all required to share.
- *
- * There is no upper bound, deliberately: a project that wants 60 Turns has said
- * so in a git-tracked file, and inventing a ceiling here would be a policy
- * nobody asked for. The shape was first argued for the escalation threshold
- * (`260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md`), whose `0` halted on the first denied call; that setting went
- * with the counter on 2026-08-16 and the argument transferred intact.
- */
-function explainPositiveInteger(value: unknown): string | null {
-  if (typeof value === "number" && Number.isInteger(value) && value >= 1) {
-    return null;
-  }
-  return `must be a whole number of 1 or more, got ${describeValue(value)}`;
-}
-
-/**
  * The array AND its elements, checked as ONE thing.
  *
  * A pattern list is used whole or not at all. A caller handed the usable half
@@ -416,9 +385,17 @@ interface LeafRule {
  * this table existed.
  */
 const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
-  orchestrator: {
-    dispatchMinutes: { explain: explainPositiveInteger },
-  },
+  // NO LIVE LEAF, AND THE ENTRY IS STILL REQUIRED. Both of this container's
+  // leaves are retired, and `validateLayer` reaches the retired-leaf table only
+  // by walking INTO a container it finds here — a key with no entry is carried
+  // through as an unknown key, undiagnosed, which is the one outcome the
+  // retirement family exists to prevent. So the empty table is what keeps
+  // `orchestrator.maxTurns` and `orchestrator.dispatchMinutes` audible.
+  //
+  // Delete this entry only when a project could no longer plausibly still be
+  // declaring either, which is the same condition `RETIRED_PROJECT_FILES`
+  // states for dropping one of its rows.
+  orchestrator: {},
   citations: {
     extraPaths: { explain: explainArrayOfNonEmptyStrings },
   },
@@ -477,17 +454,26 @@ const RETIRED_TOP_LEVEL_KEYS: Record<string, string> = {
  *
  * The third member of the retirement family, and the one the module docstring
  * said to reinstate "if a leaf inside a LIVE container is ever retired". That
- * case arrived on 2026-09-10: `orchestrator` is still a read container, holding
- * `dispatchMinutes`, while `orchestrator.maxTurns` went with the Turn loop it
- * bounded. `RETIRED_TOP_LEVEL_KEYS` cannot express that — it retires a whole
- * container — and leaving the leaf unnamed would put it in the silence an
- * unknown key gets, which is the one outcome the family exists to prevent.
+ * case arrived on 2026-09-10, twice in one day: `orchestrator.maxTurns` went
+ * with the Turn loop it bounded, and `orchestrator.dispatchMinutes` went with
+ * the dispatch bound it configured. `RETIRED_TOP_LEVEL_KEYS` cannot express
+ * either — it retires a whole container and says one thing about it — and
+ * leaving a leaf unnamed would put it in the silence an unknown key gets, which
+ * is the one outcome the family exists to prevent.
+ *
+ * The two entries left `orchestrator` with no live leaf at all. That does NOT
+ * promote them to the container's scope: a project that wrote a Turn budget and
+ * a project that wrote a stopping time recorded two different intentions, and
+ * each is owed the sentence about its own. `CONTAINER_LEAF_RULES` keeps the
+ * container walked so both can be reached.
  *
  * The value completes the sentence "… is no longer read — ___".
  */
 const RETIRED_LEAF_KEYS: Record<string, string> = {
   "orchestrator.maxTurns":
     "the orchestrator's Phase-2 Turn loop was removed on 2026-09-10, and with it the budget that bounded it. The setting is not read, here or anywhere, and there is no replacement to move it to.",
+  "orchestrator.dispatchMinutes":
+    "the dispatch bound was removed on 2026-09-10, and with it the stopping time a dispatch carried. Every dispatch runs to its natural end. The setting is not read, here or anywhere, and there is no replacement to move it to.",
 };
 
 /** A type name for a diagnostic, short enough to read in a dashboard row. */
@@ -636,20 +622,12 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
   // purpose and that must survive as itself. `citations.extraPaths` is where
   // that clause stopped being anticipatory: an explicit `[]` there is a project
   // saying "no extra files", and it arrives as the empty list it wrote.
-  const pickOrchestrator = <K extends keyof GuardSettings["orchestrator"]>(
-    key: K,
-  ): GuardSettings["orchestrator"][K] =>
-    project.raw.orchestrator?.[key] ?? DEFAULTS.orchestrator[key];
-
   const pickCitations = <K extends keyof GuardSettings["citations"]>(
     key: K,
   ): GuardSettings["citations"][K] =>
     project.raw.citations?.[key] ?? DEFAULTS.citations[key];
 
   const value: GuardConfig = {
-    orchestrator: {
-      dispatchMinutes: pickOrchestrator("dispatchMinutes"),
-    },
     citations: {
       extraPaths: pickCitations("extraPaths"),
     },

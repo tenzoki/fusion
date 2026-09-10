@@ -5,8 +5,8 @@
 # Usage:
 #   fusion-events presence [--days N]      who else has been here (default 7)
 #   fusion-events dispatches [--minutes N] [--since YYYY-MM-DD]
-#                                          how long each dispatch of a bound
-#                                          agent ran, since the bound landed
+#                                          how long each dispatch of a measured
+#                                          agent ran, since a cutoff
 #
 # Output on stdout, one KEY=value per line in the shape bin/fusion-paths
 # established. Every reason goes to stderr, including bin/fusion-identity's own,
@@ -24,14 +24,14 @@
 #
 #   dispatches
 #     threshold_minutes=20
-#     threshold_source=configured
+#     threshold_source=default
 #     cutoff=2026-09-08
 #     counted=4
 #     longer_than_threshold=1
 #     unattributable=0
 #     unpaired=1
-#     limit=dispatcher-unknown<TAB><one sentence>
-#     limit=threshold-is-todays<TAB><one sentence>
+#     limit=no-bound-to-overrun<TAB><one sentence>
+#     limit=threshold-is-the-readings<TAB><one sentence>
 #     limit=no-session-invisible<TAB><one sentence>
 #     dispatch=coder<TAB>toolu_01H3L9xg<TAB>2026-09-08T16:00:55<TAB>24.3<TAB>longer
 #
@@ -96,15 +96,17 @@
 # ---------------------------------------------------------------------------
 # The `dispatches` reading, and the question it answers instead
 #
-# It reports how long each dispatch of a bound agent ran and whether that was
+# It reports how long each dispatch of a measured agent ran and whether that was
 # longer than the value it was handed. **It calls no dispatch a violation**, and
-# that is not modesty: a row carries `ts`, `event`, `task`, `agent`, `person`,
-# `checkout`, `session_id` and `detail`, so inside one orchestrator session a
-# skill body's dispatch of `curator` and the orchestrator's own are identical in
-# every field, and only the second was given a stopping time. "Which dispatches
-# overran their own bound" is undecidable from these inputs. "Which ran longer
-# than the configured value" is decidable, and the three `limit=` lines say
-# which of the two was answered.
+# since 2026-09-10 there is nothing left for one to violate: the dispatch bound
+# was retired, no dispatch carries a stopping time, and every dispatch runs to
+# its natural end. Before that the question was undecidable rather than empty —
+# a row carries `ts`, `event`, `task`, `agent`, `person`, `checkout`,
+# `session_id` and `detail`, so inside one orchestrator session a skill body's
+# dispatch of `curator` and the orchestrator's own were identical in every
+# field, and only the second had been given a stopping time. "Which ran longer
+# than the figure this reading was handed" is what is decidable, then and now,
+# and the three `limit=` lines say so.
 #
 # **The three `limit=` lines are on stdout**, against this helper's own rule
 # that stdout carries values and stderr carries reasons. They are a third class:
@@ -130,23 +132,26 @@
 # `counted` is `within` plus `longer` and nothing else, so the four figures and
 # the lines below them tile.
 #
-# **`threshold_source=`** is `configured` when the threshold came from
-# `orchestrator.dispatchMinutes` in the project's fusion.json merged over the
-# shipped default, and `argument` when `--minutes` named it. No row records the
-# threshold in force when a dispatch ran, so the comparison is against today's
-# setting either way, which is what `limit=threshold-is-todays` says.
+# **`threshold_source=`** is `default` when the threshold is this program's own
+# figure of 20 minutes, and `argument` when `--minutes` named another. **No
+# project can set it.** The leaf that once did, `orchestrator.dispatchMinutes`,
+# was retired with the dispatch bound on 2026-09-10; a project still declaring
+# it gets one advisory naming the leaf and nothing else. The threshold is a
+# property of the reading, never of any dispatch, which is what
+# `limit=threshold-is-the-readings` says.
 #
-# **`cutoff=`** is the date the reading starts at, defaulting to the date the
-# dispatch bound landed. Without it the reading would report every long dispatch
-# in the log's history, none of which was ever asked to stop. `--since`
-# overrides it and takes YYYY-MM-DD; anything else is a usage error rather than
-# an empty reading that looks like an answer.
+# **`cutoff=`** is the date the reading starts at, defaulting to 2026-09-08 —
+# the date the dispatch bound landed, kept as the floor after its retirement so
+# that a reading taken today covers the same window as the readings taken while
+# the bound existed. `--since` overrides it and takes YYYY-MM-DD; anything else
+# is a usage error rather than an empty reading that looks like an answer.
+# `--since 1970-01-01` reads the whole log.
 #
 # **This subcommand is deliberately not identity-scoped.** The other one is,
-# and this one is not: a bound dispatch made from another checkout is still a
-# bound dispatch, and scoping to one checkout would hide exactly what a reader
-# of a merged log is looking for. The identity is still exported below, because
-# one script serves both subcommands.
+# and this one is not: a dispatch made from another checkout is still a
+# dispatch, and scoping to one checkout would hide exactly what a reader of a
+# merged log is looking for. The identity is still exported below, because one
+# script serves both subcommands.
 #
 # It is a reading and a gate on nothing. Nothing runs it automatically.
 #

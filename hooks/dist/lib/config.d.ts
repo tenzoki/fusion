@@ -19,17 +19,35 @@
  *
  * ## The settings
  *
- * `orchestrator.dispatchMinutes` is the stopping time, in minutes, that the
- * orchestrator asks of a bound agent's dispatch. No hook reads it; Setup does,
- * once per session, and the orchestrator carries the answer from there.
+ * `citations.extraPaths` is the ONLY setting this loader resolves. The
+ * `orchestrator` container is still walked, and it carries nothing but its two
+ * retirements.
  *
- * `orchestrator.maxTurns` stood beside it as the Turn budget of the
- * orchestrator's Phase-2 loop, and went with that loop on 2026-09-10. It is
- * retired as a LEAF, in `RETIRED_LEAF_KEYS` below, because its container is
- * still read. The budget had been prose in `agents/orchestrator.md`, written
- * out as `5` in seven places and four spellings, with one of them already
- * calling it a "default" — a word that was false, because no source could
- * override it (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
+ * `orchestrator.maxTurns` was the Turn budget of the orchestrator's Phase-2
+ * loop and went with that loop on 2026-09-10. The budget had been prose in
+ * `agents/orchestrator.md`, written out as `5` in seven places and four
+ * spellings, with one of them already calling it a "default" — a word that was
+ * false, because no source could override it (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
+ *
+ * `orchestrator.dispatchMinutes` was the stopping time, in minutes, that the
+ * orchestrator asked of a bound agent's dispatch, and went the same way on the
+ * same day. The mechanism it configured — the `**Stop by:**` dispatch
+ * parameter, the clock read between units of work and the bounded return that
+ * handed the unfinished half back — was retired whole, on the measurement that
+ * every bounded dispatch of the session that removed it had overrun the bound
+ * by about half an hour with nothing enforcing it. Nothing could enforce it: an
+ * agent reads its own clock between units of its own work, so the bound was a
+ * request, and a request the work routinely overran bought nothing that asking
+ * would not.
+ *
+ * BOTH ARE RETIRED AS LEAVES, in `RETIRED_LEAF_KEYS` below, rather than by
+ * retiring the `orchestrator` container that holds them. The container-scoped
+ * table would name `orchestrator` and say one thing about it; a project that
+ * declared a stopping time and a project that declared a Turn budget wrote down
+ * two different intentions and each is owed the sentence about its own. That
+ * costs the container a live leaf: `orchestrator` is now walked so that the two
+ * leaves inside it can be named, and for nothing else. See
+ * `CONTAINER_LEAF_RULES` for the one line that keeps that walk happening.
  *
  * `citations.extraPaths` is the project's own list of the NON-MARKDOWN files
  * that carry record citations, written as glob patterns.
@@ -51,9 +69,9 @@
  * deliberately not here.
  *
  * EVERY DEFAULT ABOVE IS DEFINED ONCE, in `DEFAULTS` below. A project that
- * wants a different stopping time declares
- * `{"orchestrator":{"dispatchMinutes":30}}` in its own `fusion.json` and the
- * leaf walk does the rest.
+ * wants a wider citation corpus declares
+ * `{"citations":{"extraPaths":["internal/*.go"]}}` in its own `fusion.json` and
+ * the leaf walk does the rest.
  *
  * ## Merge: PER LEAF, across both layers
  *
@@ -120,13 +138,14 @@
  *     Today: `guard`, `decisions`, `escalation` and `churn`, which is what a
  *     project sees if it copies its old file across rather than starting from
  *     the template.
- *   - `RETIRED_LEAF_KEYS` — a LEAF inside a container that is still read.
- *     Today: `orchestrator.maxTurns`, whose container still holds
- *     `dispatchMinutes`.
+ *   - `RETIRED_LEAF_KEYS` — a LEAF inside a container that is still walked.
+ *     Today: `orchestrator.maxTurns` and `orchestrator.dispatchMinutes`, which
+ *     between them are everything that container ever held.
  *
  * The leaf-scoped table stood empty between 2026-08-16 and 2026-09-10, with a
  * note saying to reinstate it "if a leaf inside a LIVE container is ever
- * retired". That is exactly what the Turn budget's removal is.
+ * retired". That is exactly what the Turn budget's removal was, and the
+ * dispatch bound's removal followed it into the same table hours later.
  *
  * THE RETIRED-FILE DIAGNOSTIC IS THE WHOLE OF THE v10 MIGRATION, and it is
  * written that way on purpose. `/fusion:setup` MOVING THE BUDGET was the
@@ -170,13 +189,6 @@ export declare const PROJECT_CONFIG_FILENAME = "fusion.json";
  * answerable only if the settings are a nameable subset.
  */
 export interface GuardSettings {
-    orchestrator: {
-        /**
-         * The requested stopping time, in minutes, that the orchestrator hands to a
-         * bound agent's dispatch. Read at Setup, not by any hook.
-         */
-        dispatchMinutes: number;
-    };
     /**
      * The project's own answer to "which of my non-Markdown files carry record
      * citations", as glob patterns. Read by `bin/fusion-citation-check` and

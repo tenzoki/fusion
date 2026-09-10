@@ -365,9 +365,10 @@ interface Role {
  * role emits today: for the core files the two are equal, and for a role's
  * extras the gap between them is what the budget report prints. The figures
  * below are the floors measured between the 2026-08-14 arming and 2026-08-22,
- * under role KEYS the gates of 2026-08-27 and the bounded-dispatch audience have
- * since re-cut — they are kept as the record of what the fleet stood at, not as
- * a listing of the map. The map is the only authority for which roles exist, and
+ * under role KEYS the gates of 2026-08-27 re-cut, the bounded-dispatch audience
+ * re-cut again, and the dispatch bound's retirement on 2026-09-10 re-cut back —
+ * they are kept as the record of what the fleet stood at, not as a listing of
+ * the map. The map is the only authority for which roles exist, and
  * how many agents each holds is not written here at all: it is measured, and the
  * messages print it.
  *
@@ -379,31 +380,26 @@ interface Role {
  */
 const ROLES: Record<string, Role> = {
   /**
-   * The agents that edit the tree as they work and carry nothing else. They pay
-   * for `bounded-dispatch.md`: what a dispatched agent does when it reaches the
-   * wall-clock stopping time its dispatch named, and what its return has to say
-   * for the orchestrator to continue from the work already on disk instead of
-   * redoing it. The audience is the agents whose deliverable accumulates as the
-   * run proceeds, which is exactly the condition a stopping time can be spent
-   * under. It has no `RULE_BASELINE` entry, so this role's floor is the core
-   * alone and the file counts as growth in full against the role budget's report.
+   * The agents that edit the tree as they work and carry nothing beyond the
+   * always-on core: coder, ontocoder, bugfixer.
    *
-   * THIS ENTRY REPLACES `(core only)`, which held the same three agents — coder,
-   * ontocoder, bugfixer — and was the floor every other role was read against.
-   * There is no core-only role any more: every agent now carries at least one
-   * file that not every agent carries, so the number that says what the
-   * always-on set costs is the hard bound's own measurement of the universal
-   * core, not any role's floor.
+   * THE ROLE CAME BACK on 2026-09-10. It had been the floor every other role was
+   * read against until the bounded-dispatch audience gave these three
+   * `bounded-dispatch.md` and emptied it; the dispatch bound was retired, that
+   * file was deleted, and its whole audience fell back to whatever else it
+   * carried. The number that says what the always-on set costs is still the hard
+   * bound's own measurement of the universal core rather than this role's floor
+   * — the two are equal here, and only one of them is the definition.
    */
-  "bounded-dispatch.md": {},
+  "(core only)": {},
 
   /**
-   * The reconciler: the stopping-time contract, because it walks the tracking
-   * corpus record by record and its updates land as it goes, plus the worked
-   * transitions, because worked transition 1, `_o_ -> _a_`, is its act
-   * (gate 260827-0830).
+   * The reconciler: the worked transitions, because worked transition 1,
+   * `_o_ -> _a_`, is its act (gate 260827-0830). It carried
+   * `bounded-dispatch.md` beside them until the bound's retirement on
+   * 2026-09-10.
    */
-  "bounded-dispatch.md + decision-record-examples.md": {},
+  "decision-record-examples.md": {},
 
   /**
    * The two agents that write review files. They pay for `review-contract.md`,
@@ -411,22 +407,10 @@ const ROLES: Record<string, Role> = {
    * per-topic working files and the final consolidated review. It arrived on
    * 2026-08-22 out of `agents/coderev.md` and `agents/ontorev.md`, where the
    * same contract stood twice with no pointer between the copies; the role
-   * exists so that one file governs both review kinds. They pay for
-   * `bounded-dispatch.md` because those per-topic working files are exactly a
-   * deliverable that accumulates on disk: a review cut short has findings
-   * already filed, and the return says which topics were opened. Neither file
-   * has a `RULE_BASELINE` entry, so this role's floor is the core alone.
+   * exists so that one file governs both review kinds. It has no
+   * `RULE_BASELINE` entry, so this role's floor is the core alone.
    */
-  "bounded-dispatch.md + review-contract.md": {},
-
-  /**
-   * The curator: the full user-facing style contract, because the change ledger
-   * it puts to the user at the gate is read in the terminal (gate 260827-0910),
-   * plus the stopping-time contract, because its survey accumulates proposed
-   * changes one normative surface at a time and a run cut short still hands
-   * back the surfaces it finished.
-   */
-  "bounded-dispatch.md + user-facing-output.md": {},
+  "review-contract.md": {},
 
   /**
    * The design-diagram producers. They pay 5 673 for the shared Mermaid rubric
@@ -464,7 +448,12 @@ const ROLES: Record<string, Role> = {
    */
   "circle-records.md + decision-record-examples.md + design-diagrams.md + user-facing-output.md": {},
 
-  "user-facing-output.md": {}, // consultant: a user-read surface (gate 260827-0910)
+  // consultant, and since 2026-09-10 the curator too: a user-read surface (gate
+  // 260827-0910). The curator held its own role while it also carried
+  // `bounded-dispatch.md` — the change ledger it puts to the user at the gate is
+  // read in the terminal, and its survey accumulated one normative surface at a
+  // time — and the retirement of the bound merged it into this one.
+  "user-facing-output.md": {},
   "project-language.md + user-facing-output.md": {}, // editor: + the language cascade, its deliverable halt (decision 260827-1056)
 
   /**

@@ -10,7 +10,7 @@ import {
   renderParty,
   measureDispatchDurations,
   renderDispatch,
-  BOUND_AGENTS,
+  MEASURED_AGENTS,
 } from "../events-query.js";
 import type { Party, PresenceResult, ReadingIdentity } from "../events-query.js";
 
@@ -281,7 +281,7 @@ describe("the entry point: scope=, the identity split, and the missing-state exi
 // comparable with `counted` beside it; and `unstamped` is a returned count whose
 // sentence the entry point puts on stderr.
 
-const DISPATCH_OPTS = { thresholdMinutes: 20, cutoffIso: "2026-09-08", agents: BOUND_AGENTS };
+const DISPATCH_OPTS = { thresholdMinutes: 20, cutoffIso: "2026-09-08", agents: MEASURED_AGENTS };
 const dispatchIn = (text: string, o: Partial<typeof DISPATCH_OPTS> = {}) =>
   measureDispatchDurations(text, { ...DISPATCH_OPTS, ...o });
 
@@ -398,7 +398,7 @@ describe("measureDispatchDurations scores each pair into exactly one of four out
 describe("the entry point puts the three limit= qualifications on stdout", () => {
   // C4's seventh criterion. A qualification on the other stream is a
   // qualification nobody reads: a prompt captures stdout and an exit code.
-  const LIMIT_KEYS = ["dispatcher-unknown", "threshold-is-todays", "no-session-invisible"];
+  const LIMIT_KEYS = ["no-bound-to-overrun", "threshold-is-the-readings", "no-session-invisible"];
 
   it("all three are on stdout, beside the figures, and on stderr none of them is", () => {
     const dir = workbench(log(sess(), ...dispatch("t1", { end: "2026-09-08T09:10:00" })));

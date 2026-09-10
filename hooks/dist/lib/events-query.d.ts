@@ -17,9 +17,9 @@
  * is the readings that follow from that, and nothing else.
  *
  * One of the two is identity-scoped, `measurePresence`.
- * `measureDispatchDurations` deliberately is not: a bound dispatch made from
- * another checkout is still a bound dispatch, so it reads every line and calls
- * `isOurs` nowhere.
+ * `measureDispatchDurations` deliberately is not: a dispatch made from another
+ * checkout is still a dispatch, so it reads every line and calls `isOurs`
+ * nowhere.
  *
  * ## Why it is a pure function
  *
@@ -220,31 +220,38 @@ export declare function measurePresence(text: string, identity: ReadingIdentity,
  */
 export declare function renderParty(p: Party, aliasOf: (hex: string) => string | null): string;
 /**
- * The seven agents whose dispatches carry a stopping time.
+ * The seven agents whose dispatch durations this reading measures.
  *
- * **Two copies of one set, one gate holding them equal, and no third copy.**
- * The other copy is the `IS_BOUND_AGENT` case arm in `bin/fusion-rules`, which
- * is what decides who receives `rules/bounded-dispatch.md`; a test pins the two
- * in exact set equality, the way `review-coverage-mandate.test.ts` pins
- * `REVIEW_SENDERS` in `hooks/lib/review-coverage.ts` against `IS_REVIEWER_AGENT`.
- * They exist separately because a shell script cannot import a TypeScript
- * constant and this module must stay free of subprocesses; the gate is what
- * stops a name being added to one side alone.
+ * **It was the bound-agent set, and it is now a set with one definition site.**
+ * Until 2026-09-10 it was one of two copies — the other being the
+ * `IS_BOUND_AGENT` case arm in `bin/fusion-rules`, which decided who was told
+ * about the stopping time — held equal by a gate. The bound was retired, the
+ * case arm went with it, and the gate went with the case arm. Nothing else in
+ * the tree names this set.
  *
- * The order is the script's, which is the specification's: agent by agent, with
- * the reason beside each name at
+ * WHY THE SEVEN NAMES STAYED. They were sorted by a criterion the retirement
+ * removed: an agent was bound when its deliverable accumulated on disk as the
+ * run proceeded. That is no longer why they are here. They are here because
+ * they are the same seven the readings taken while the bound existed covered,
+ * so a duration read today and one read in the log's own history are readings
+ * of one population. Widening the set would be a different measurement wearing
+ * the same name.
+ *
+ * The order is the one the retired specification gave, agent by agent:
  * `260907-0820_*_spec-bounded-executor-dispatches.md`.
  */
-export declare const BOUND_AGENTS: readonly ["coder", "ontocoder", "bugfixer", "reconciler", "coderev", "ontorev", "curator"];
+export declare const MEASURED_AGENTS: readonly ["coder", "ontocoder", "bugfixer", "reconciler", "coderev", "ontorev", "curator"];
 /**
  * What the reading did with one dispatch. The four are disjoint and every row
  * carries exactly one.
  *
- * **None of them is `violation`.** The rows cannot say whether a dispatch was
- * one the orchestrator bounded: inside a single orchestrator session a skill
- * body's dispatch and the orchestrator's own carry the same `agent`, the same
- * `session_id` and no field that separates them. `longer` therefore says the
- * dispatch ran longer than the value this reading was handed, and nothing more.
+ * **None of them is `violation`.** Since 2026-09-10 no dispatch carries a
+ * stopping time at all, so there is nothing for one to be in violation of; and
+ * before that the rows could not say which dispatches had been given one, since
+ * inside a single orchestrator session a skill body's dispatch and the
+ * orchestrator's own carry the same `agent`, the same `session_id` and no field
+ * that separates them. `longer` says the dispatch ran longer than the value
+ * this reading was handed, and nothing more.
  */
 export type DispatchOutcome = "longer" | "within" | "unattributable" | "unpaired";
 export interface DispatchRow {
@@ -289,16 +296,16 @@ export interface DispatchOptions {
     thresholdMinutes: number;
     /** `YYYY-MM-DD`. Dispatches starting before it are outside the reading. */
     cutoffIso: string;
-    /** The agents to read. `BOUND_AGENTS` in ordinary use. */
+    /** The agents to read. `MEASURED_AGENTS` in ordinary use. */
     agents: readonly string[];
 }
 /**
- * How long each dispatch of a bound agent ran, since a cutoff.
+ * How long each dispatch of a measured agent ran, since a cutoff.
  *
  * Pure, like its two siblings: it opens no file, runs no subprocess and phrases
- * no sentence for a user. It is **not** identity-scoped, deliberately — a bound
- * dispatch made from another checkout is still a bound dispatch, and `isOurs`
- * is not applied anywhere below.
+ * no sentence for a user. It is **not** identity-scoped, deliberately — a
+ * dispatch made from another checkout is still a dispatch, and `isOurs` is not
+ * applied anywhere below.
  *
  * The order of the filters is the specification's and matters:
  *

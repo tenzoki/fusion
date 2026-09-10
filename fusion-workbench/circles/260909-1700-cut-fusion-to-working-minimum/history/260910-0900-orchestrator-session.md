@@ -79,3 +79,27 @@ Two consequences for the plan, both carried into the C2 dispatch. Step C1 has al
 deleted `rules/orchestrator-rebalance.md`, which holds the gate's per-option mechanics; it
 is restored from `91179f35`. And C2's brief, which says "no coherence gate, no Rebalance",
 is amended to remove the first and keep the second.
+
+## Ruling on the dispatch bound
+
+Put to the user after C2 landed, on the finding the executor surfaced and the record
+`260910-1033_*_deleting-the-turn-budget-helper-leaves-the-dispatch-bound-with-no-reader.md`
+had already filed: deleting `bin/fusion-turn-budget` in C1 removed the only program that
+resolved `orchestrator.dispatchMinutes`, so from the next session no dispatch would carry a
+stopping time.
+
+**The user retired it, taking the second of the record's two acceptance branches:** the
+setting goes the way `orchestrator.maxTurns` went, and dispatches run to their natural end.
+The evidence in front of the ruling was this session's own: both bounded dispatches so far,
+C1 and C2, ran roughly half an hour past the twenty minutes they were given, and the second
+of them said so in its report rather than handing back a half-finished tree. A bound that
+the work routinely overruns, and that no mechanism enforces, was buying the session nothing
+it could not get by asking.
+
+What follows is one task, queued as C1b: retire `orchestrator.dispatchMinutes` as a leaf
+beside `maxTurns` in the leaf-scoped retirement list C1 built; retire the `**Stop by:**`
+dispatch parameter and the bounded return that hands unfinished work back, both authored in
+`rules/bounded-dispatch.md`; stop `bin/fusion-rules` emitting that file to the seven bound
+agents; and bring `dispatch-bound-lint.test.ts` to the same answer. The orchestrator stops
+computing a stopping time and stops passing the line, which this session begins doing
+immediately rather than at the next one, since that half is behaviour rather than text.

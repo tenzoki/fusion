@@ -1,5 +1,10 @@
 # Upgrading to v10.26 (from v10.25)
 
+**Read this note as history.** The mechanism it describes was retired after v10.26: no dispatch
+carries a stopping time any more, every dispatch runs to its natural end, and the configuration leaf
+below is retired too — a project still declaring it gets one advisory naming the leaf and nothing
+else. Nothing here needs undoing; the note is kept as the record of what v10.26 shipped.
+
 v10.26 gives a dispatched agent a wall-clock stopping time. Seven of the agents the orchestrator
 sends work to now receive one line on the dispatch prompt saying when to stop where they stand, and
 an agent that reaches it hands back what it finished together with what it did not. The orchestrator
@@ -88,6 +93,6 @@ bounds are all as they were in v10.25.
 
 ## Where to read more
 
-`rules/bounded-dispatch.md` is the authoring home for the stopping time: what one unit of work is for
-each of the seven agents, what the four-line return carries, and how the orchestrator continues it.
-It ships with the plugin and is emitted to those seven agents at their Setup.
+The authoring home for the stopping time was a rule file the plugin shipped and emitted to those
+seven agents at Setup. It was deleted with the mechanism, so there is nothing left to read: the
+retirement is what this note's opening paragraph says.

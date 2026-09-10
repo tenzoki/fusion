@@ -44,14 +44,13 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
-  BOUND_AGENTS,
+  MEASURED_AGENTS,
   measureDispatchDurations,
   measurePresence,
   renderDispatch,
   renderParty,
   type ReadingIdentity,
 } from "./lib/events-query.js";
-import { loadConfig } from "./lib/config.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 
 // The reader may close stdout first; see exitZeroOnStdoutEpipe.
@@ -68,14 +67,42 @@ const LOG_REL = "fusion-workbench/orchestrator-events.jsonl";
 const DEFAULT_DAYS = 7;
 
 /**
- * The date the dispatch bound landed, in UTC, and the default floor of the
- * `dispatches` reading.
+ * The default floor of the `dispatches` reading, in UTC.
  *
- * Without it the reading reports every long dispatch in the log's history —
- * dispatches nothing ever asked to stop, made before the mechanism existed.
- * C4's third criterion requires the constant; `--since` overrides it.
+ * It is the date the dispatch bound landed, and it stayed the floor after the
+ * bound was retired on 2026-09-10 so that a reading taken today covers the same
+ * window as the readings taken while the bound existed. `--since` overrides it,
+ * and `--since 1970-01-01` reads the whole log.
  */
-const BOUND_LANDED = "2026-09-08";
+const DEFAULT_SINCE = "2026-09-08";
+
+/**
+ * The default cut point of the `dispatches` reading, in minutes.
+ *
+ * IT CONFIGURES NOTHING AND BOUNDS NOTHING. It is the figure `longer` is read
+ * against, and `--minutes` replaces it; no project can set it, because the
+ * setting that once did — `orchestrator.dispatchMinutes` — was retired with the
+ * dispatch bound on 2026-09-10 and is now named by `hooks/lib/config.ts` as a
+ * retirement rather than resolved as a value.
+ *
+ * The number is kept where the bound left it, and its measurement with it,
+ * because either sentence alone reads as an arbitrary round figure. Over the
+ * 131 machine-written dispatch pairs in this project's own event log, read on
+ * 2026-09-07, 15 of them, 11.5 percent, ran longer than 20 minutes; over the
+ * 114 of those pairs made by an agent the bound covered, 13, 11.4 percent, did.
+ * Of four candidate values checked against the break-even arithmetic, 10, 20,
+ * 25 and 30 minutes, 20 is the one that maximises the pessimistic cell, and the
+ * break-even run length sits at 20.2 to 27.5 minutes, just past the figure
+ * itself.
+ *
+ * The log the first sentence reads is
+ * `fusion-workbench/orchestrator-events.jsonl`, on the date named in it, so a
+ * later reader can re-take the figure. The second sentence is derived
+ * arithmetic and comes from
+ * `260907-2012-break-even-arithmetic-for-the-dispatch-split.md`; nothing else
+ * in the tree reproduces the four-candidate check or the break-even band.
+ */
+const DEFAULT_THRESHOLD_MINUTES = 20;
 
 function say(line: string): void {
   process.stderr.write(`fusion-events: ${line}\n`);
@@ -374,16 +401,17 @@ function presence(root: string, days: number): number {
  */
 const DISPATCH_LIMITS: ReadonlyArray<readonly [string, string]> = [
   [
-    "dispatcher-unknown",
-    "inside a single orchestrator session a skill body's dispatch and the orchestrator's own " +
-      "carry the same agent, the same session_id and no field that distinguishes them, so a " +
-      "long curator or reconciler dispatch may be one that never carried a stopping time; no " +
-      "dispatch here is called a violation.",
+    "no-bound-to-overrun",
+    "no dispatch carries a stopping time. The bound was retired on 2026-09-10, and every " +
+      "dispatch before that overran it or did not with nothing enforcing either, so `longer` " +
+      "says a dispatch ran past the threshold this reading was handed and never that it broke " +
+      "a rule.",
   ],
   [
-    "threshold-is-todays",
-    "the threshold is a parameter and no row records the value in force at the time, so " +
-      "yesterday's durations are compared against today's setting.",
+    "threshold-is-the-readings",
+    "the threshold belongs to the reading and to no dispatch. It is 20 minutes unless " +
+      "--minutes named another figure, and no row records what any dispatch was asked for, " +
+      "because none was asked for anything.",
   ],
   [
     "no-session-invisible",
@@ -393,30 +421,28 @@ const DISPATCH_LIMITS: ReadonlyArray<readonly [string, string]> = [
 ];
 
 /**
- * How long each dispatch of a bound agent ran, since the cutoff.
+ * How long each dispatch of a measured agent ran, since the cutoff.
  *
  * **Identity is deliberately not used here.** The wrapper obtains it for the
- * other two subcommands and this one ignores it: a bound dispatch made from
- * another checkout is still a bound dispatch, and scoping this reading to one
- * checkout would hide exactly the dispatches a reviewer of a merged log is
- * looking for. Nothing below calls `readIdentity`.
+ * other two subcommands and this one ignores it: a dispatch made from another
+ * checkout is still a dispatch, and scoping this reading to one checkout would
+ * hide exactly the dispatches a reviewer of a merged log is looking for.
+ * Nothing below calls `readIdentity`.
  */
 function dispatches(root: string, minutes: number | null, since: string | null): number {
   const text = readLog(root);
   if (text === null) return 3;
 
-  // The default threshold is the project's configured value, merged per leaf
-  // over the shipped default. It is the same read `bin/fusion-turn-budget`
-  // makes at Setup, so the reading compares against the value a dispatch would
-  // be handed today — which is the whole of what `threshold-is-todays` says.
-  const config = loadConfig({ projectRoot: root });
-  const thresholdMinutes = minutes ?? config.orchestrator.dispatchMinutes;
-  const cutoff = since ?? BOUND_LANDED;
+  // The threshold is this program's own, and no project sets it: the leaf that
+  // once did was retired with the dispatch bound. `--minutes` is the only way
+  // to read against a different figure.
+  const thresholdMinutes = minutes ?? DEFAULT_THRESHOLD_MINUTES;
+  const cutoff = since ?? DEFAULT_SINCE;
 
   const r = measureDispatchDurations(text, {
     thresholdMinutes,
     cutoffIso: cutoff,
-    agents: BOUND_AGENTS,
+    agents: MEASURED_AGENTS,
   });
 
   noteMalformed(r.malformed);
@@ -429,7 +455,7 @@ function dispatches(root: string, minutes: number | null, since: string | null):
 
   const out: string[] = [
     `threshold_minutes=${thresholdMinutes}`,
-    `threshold_source=${minutes === null ? "configured" : "argument"}`,
+    `threshold_source=${minutes === null ? "default" : "argument"}`,
     `cutoff=${cutoff}`,
     `counted=${r.counted}`,
     `longer_than_threshold=${r.longerThanThreshold}`,
