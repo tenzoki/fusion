@@ -5,7 +5,7 @@
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 **Claim:** Claimed 260909-1702: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
 **Active spec/plan:** 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md (the plan in execution); 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md (the spec it was planned from, and the one that states the Directive)
-**Active session history:** 260909-1331-orchestrator-session.md
+**Active session history:** 260910-0842-orchestrator-session.md
 
 ---
 
