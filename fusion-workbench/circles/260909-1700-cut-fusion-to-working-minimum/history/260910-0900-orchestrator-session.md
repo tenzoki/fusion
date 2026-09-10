@@ -160,3 +160,29 @@ citation now resolves to.
 Deferring was offered as a third option and declined in favour of settling it. The record
 stays available to a later cleanup that wants option 2 with a quiet tree, which is what its
 own recommendation asks for.
+
+## Ruling on the growth bounds
+
+Put to the user after step S2 left 44 bytes of head-room on the tightest dispatch path and
+41 lines on the hook-test surface, with seven of the plan's eleven steps still to run.
+
+**The user ruled that the budgets are raised as far as needed for now, and a reduction is
+attempted afterwards.** That reverses the standing rule for the duration of this work: the
+instrument's own text says a red bound is answered by a cut and never by moving a baseline,
+and that a baseline moves at exactly two written-down moments, neither of which is this.
+
+The residual was stated before the ruling rather than after it, and it is not small. The
+instrument stops measuring during precisely the work it exists to measure, and this
+project's own history carries one instance of that shape: the 2026-08-27 cut lasted thirteen
+days because its baseline was armed at the cut. "We will reduce later" is the sentence that
+history says does not get honoured on its own.
+
+So the ruling is executed with an instrument attached rather than as a promise. The
+pre-raise fixtures are preserved in the commit that records the ruling. Every raise names
+itself in its own step's commit message, with the figure before and after, so the total is
+recoverable by reading the range rather than by trusting a memory. And the reduction is read
+on 2026-10-10, the date step C6's deferred measurement already carries, so one reading
+answers both questions.
+
+Filed as `260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md`,
+answered in the same act.
