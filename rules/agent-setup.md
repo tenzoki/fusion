@@ -36,13 +36,15 @@ list names. Hold these values for the whole session and use them wherever your p
 names one: they are the only correct answer to "where does this go". Never guess a path
 when the resolver fails; stop and report.
 
-A `SCAN_*` value names one directory, the same one its `OUT_*` names: one kind, one store.
+A `SCAN_*` value may name more than one directory, space separated: the store inside the
+item in scope, then the shared one. Search every directory it names, not the first.
 
 A non-zero exit says whose fault it is (full table in `fusion-workbench-conventions.md`
 `## Path Resolution` → Exit codes). **exit 4** is the one you will meet: an internal
 `fusion-paths` bug, so the user's workbench is fine and must not be sent anywhere to be
-repaired. There is no exit 3 — a 3 from `fusion-rules` is that helper's own code, for a
-malformed manifest, and says nothing about your paths.
+repaired. **exit 3** is scope the resolver could not determine, and the user clears it. A 3
+from `fusion-rules` is a different thing entirely, that helper's own code for a malformed
+manifest, and says nothing about your paths.
 
 ## Voice profiles
 

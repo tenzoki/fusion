@@ -2,7 +2,7 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
-Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the operative half of path resolution, the work-item grammar, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, timestamps, and the project's two language declarations.
+Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the Origin Rule, the operative half of path resolution, the work-item grammar, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, timestamps, and the project's two language declarations.
 
 **This document is the definition** of everything it still states in full. Topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to every agent:
 
@@ -20,12 +20,20 @@ No agent prompt and no skill body may carry a competing or supplementary definit
 
 ## fusion-workbench Layout
 
-**There is one store per artifact kind, and they all live under `shared/`.** Everything the hooks and the `bin/` helpers read stays at the workbench root.
+**A work item keeps its own container; everything with no item to belong to lives under `shared/`.** The two hold the same artifact kinds, and `## Origin Rule` below says which of them an artifact goes to. Everything the hooks and the `bin/` helpers read stays at the workbench root.
 
 ```
 fusion-workbench/
-├── shared/                            # every store, one per artifact kind
-│   ├── backlog/                       # work items, one file per item — see ## Backlog entries
+├── circles/                           # one directory per work item — see ## Backlog entries
+│   └── <stamp>-<slug>/                # the container: the item's record, plus what the item produced
+│       ├── <stamp>-<slug>.md          # the item record — the directory's own name
+│       ├── planning/
+│       ├── issues/
+│       ├── decisions/
+│       ├── reviews/
+│       ├── analyses/
+│       └── history/                   # write-frozen — see ## Session history
+├── shared/                            # the same kinds, for work belonging to no item
 │   ├── planning/                      # specs and plans
 │   ├── issues/
 │   ├── decisions/
@@ -53,11 +61,13 @@ fusion-workbench/
 └── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
 ```
 
+**The container store keeps the directory name `circles/`, and the name outlived its concept.** A Circle was a six-state unit with a portfolio layer over it; both are gone and neither returns. The directory survives because its reason does: a unit of work bundles what it produced, and without the bundling there is no overview. Whether to rename the store is asked and deliberately not answered here: `260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md`.
+
 **Two legacy stores are absent from this tree on purpose.** A workbench may carry `stashes/`, written by the stash skills removed on 2026-08-15, and `.migration-v2-backup/`, left by the retired `/fusion:migrate-workbench-v2` (fusion v2.3–v2.5) as its rollback copy. Nothing shipped writes to either any more: a line in the tree above would read as a store the plugin still creates. Frozen content is not live content, so live-tree consumers keep it out. `skills/log-activity/SKILL.md` and `skills/archive/SKILL.md` exclude both by path. `/fusion:setup` names no exclusion at all: it bounds its probe to the two live trees (`skills/setup/SKILL.md:45`), leaving every frozen store outside by construction. Do not drop the three that remain: `skills/setup/SKILL.md:38` records the cost, a Setup that refuses permanently and routes to a migration with nothing to do.
 
 **The root-anchored surfaces are not negotiable.** Each is bound to a fixed root-relative path by every consumer named beside it in the tree, and none of those consumers has a fallback path: relocating one into `shared/` breaks it silently. The column names a consumer that only *names* the path, in an exclusion or classification list, next to one that reads the file: what breaks on a move is the same dependency either way.
 
-They are root-anchored because none of them belongs to a unit of work. `orchestrator-events.jsonl` is session state, and a session may span work items. `.guard-state/` counters are project-wide. `.commit-lock/` guards the project's git index, which no single Circle owns. `.session-marker` answers "is an orchestrator already running in this project", which is meaningless scoped to a Circle. This placement is what makes the guarantee "hooks behave unchanged across the layout" structural rather than promised.
+They are root-anchored because none of them belongs to a unit of work. `orchestrator-events.jsonl` is session state, and a session may span work items. `.guard-state/` counters are project-wide. `.commit-lock/` guards the project's git index, which no single work item owns. `.session-marker` answers "is an orchestrator already running in this project", which is meaningless scoped to one item. This placement is what makes the guarantee "hooks behave unchanged across the layout" structural rather than promised.
 
 The list is exhaustive as written, and it is a list rather than a count on purpose: a count goes stale on the next helper that needs project-wide state, and this one already had. When a `bin/` helper or a hook adds a root-anchored surface, it lands in this tree and in the record-or-live-state split in `rules/workbench-tracking.md`, both in the same commit: this document is the definition, and an incomplete tree invites exactly the reasoning-by-omission it exists to prevent.
 
@@ -65,7 +75,7 @@ The list is exhaustive as written, and it is a list rather than a count on purpo
 
 Whether a consuming project tracks its workbench at all is that project's decision: fusion ships no `.gitignore` rule for it. Which of the root entries above a project that *does* track it should commit, which it should not, and what preserves the evidence in the ones it does not, are authored in `rules/workbench-tracking.md`, which `bin/fusion-rules` emits to **no agent**: its two readers are a human writing a project's `.gitignore` and `/fusion:archive`.
 
-**One kind, one store, and no placement decision to make.** `bin/fusion-paths` names the store for a kind and there is no second candidate, so an artifact's home follows from what it is. What a citation carries is the record's basename and never its store, which is what lets a record be moved by an archive sweep without breaking a pointer to it (`## Filename Patterns`). Reach is cited, never copied: one record, one location, many citations.
+**One kind, two candidate stores, and one decision between them.** A kind never has two stores inside one container, so all that is left to decide is container or `shared/`, and `## Origin Rule` decides it, while `bin/fusion-paths` applies that decision once per Setup so no consumer is ever asked. What a citation carries is the record's basename and never its store, which is what lets a record be moved by an archive sweep without breaking a pointer to it (`## Filename Patterns`).
 
 `checkouts/` holds one file per checkout, written by `bin/fusion-checkout-name` and by nothing else; that script's header is the authoritative documentation for the entry grammar, and this document does not restate it. `investigations/` is **write-frozen** since the `investigator` fold of 2026-08-15: the store and its reports stay, nothing writes there any more, and a failure analysis goes to `$OUT_ANALYSIS` like every other analysis.
 
@@ -78,6 +88,19 @@ Whether a consuming project tracks its workbench at all is that project's decisi
 The `fusion-workbench/` is anchored to the directory where setup was run: the working directory `pwd` reports, not necessarily the git toplevel. A subfolder may legitimately have its own independent workbench, separate from any workbench at a parent level; the plugin's hooks resolve `process.cwd()` directly and follow whichever directory is active.
 
 Within a given working directory there is exactly **one** `fusion-workbench/`. Never create a nested duplicate inside it, and never split one unit of work's artifacts across multiple workbenches in the same tree: they all live in the single workbench at the active `pwd`.
+
+## Origin Rule (Herkunftsregel)
+
+**An artifact belongs to the work item whose directive caused it to come into existence. With no item in scope, it goes to `shared/`. Cross-cutting relevance is expressed by citation, not by placement.**
+
+The rule is origin, not durability, and that choice is load-bearing. An agent *knows* its own origin: it was dispatched under an item's directive, or it was not. It would have to *guess* an artifact's future reach. A rule built on a fact is mechanically applicable by every agent without judgment; a rule built on a prognosis produces a different answer from every agent that applies it, and the placement decision drifts. So: file by where the work came from, and let citation carry the rest.
+
+Worked example. A coder implementing the item in scope finds a broken test in the code that item is writing → the container's `issues/`. The same coder notices in passing an unrelated dangling reference in a module the item never touches → `shared/issues/`. The second defect did not arise from the directive; it was found next to it. Note the consequence, accepted deliberately: a project-wide decision that *arose inside* an item stays in that item's container. It is not promoted, and later items cite it by basename.
+
+Two corollaries follow:
+
+1. **Unknown origin means `shared/`.** When an artifact's affiliation was never recorded and cannot be reconstructed, it is by definition not attributable to a directive, so it belongs in `shared/`. This is what makes migrating a workbench that never had containers a mechanical move rather than an act of interpretation.
+2. **Reach is cited, never placed.** If one item's decision binds a later item, the later item references it by basename in its `**Depends-on:**` or `**Cross-references:**` header. Do not copy it, do not move it, do not file a duplicate in `shared/`. One record, one location, many citations.
 
 ## Path Resolution (Pfadauflösung)
 
@@ -103,7 +126,13 @@ In **Setup step 2**, alongside `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" <agent>`.
 
 ### Contract
 
-Signature `fusion-paths <name>`. Output: one `KEY=value` line per emitted key on stdout. Paths are workbench-relative except `WORKBENCH` itself, which is absolute. Multi-value keys are space-separated. The resolver takes no second argument and reads no workbench state: one kind has one store, so an `OUT_*` key and its matching `SCAN_*` key name the same directory and nothing selects between candidates.
+Signature `fusion-paths <name> [<item-dir>]`. Output: one `KEY=value` line per emitted key on stdout. Paths are workbench-relative except `WORKBENCH` itself, which is absolute. Multi-value keys are space-separated.
+
+**The second argument names the item in scope**, as a directory name that must already exist under `circles/`; one that does not is exit 1, a caller usage error rather than a workbench fault. It is how a dispatcher sends an agent into an item other than the one this checkout holds.
+
+**With no second argument the resolver reads the claim.** The item in scope is the one whose record carries `**Status:** claimed` and a `**Claim:**` naming this checkout's eight hex characters (`## Backlog entries — work items`). No claimed item is a real answer and resolves to `shared/`, exit 0. **Two claimed items is refused, never resolved:** exit 3, both files named on stderr, no output at all. Taking either would file this item's work into that item's container, which is the same silent-wrong-place failure the exit-4 refusal prevents one step earlier. The criterion is implemented in exactly one helper, which `bin/fusion-paths` and `bin/fusion-rules` both call rather than each carrying a claim scan of its own; binding decision `260910-2145_*_how-does-the-resolver-learn-which-work-item-is-in-scope.md` (option 2), against a pointer file that would store one fact twice with no writer to keep the copies in step.
+
+**Scope is per checkout, and holds by construction rather than by a rule.** A claim names one checkout, so an item another checkout holds does not match here and is not this checkout's scope: its writes go to `shared/`, or into the container of whatever it holds itself. The claim travels with git, so both checkouts read one store and reach different answers out of it. No pointer, no per-checkout state, nothing to reconcile.
 
 #### Exit codes
 
@@ -112,16 +141,17 @@ Signature `fusion-paths <name>`. Output: one `KEY=value` line per emitted key on
 | 0 | Success | yes |
 | 1 | Usage error, including no workbench found above `pwd` | yes |
 | 2 | Unknown name: no such agent and no such skill | yes |
+| 3 | The item in scope cannot be determined: this checkout holds two or more claimed items, or its own identifier could not be read inside a git work tree. No output, and never a fall back to `shared/` | no |
 | 4 | Internal error: a prompt names a key the resolver cannot order or value, or one name is both an agent and a skill (a **fusion bug**) | no |
 
-**There is no exit 3.** It said `.active-circle` was corrupt or orphaned, and it went with the pointer.
+**Exit 3 is unknown scope and nothing else.** A project that is not a git work tree takes no claim at all, so no item in scope is the true answer there and it exits 0 into `shared/`. The two look alike and are not, which is why `bin/fusion-identity` splits its 3 and 5 from its 4.
 
-The `0/1/2` core is shared with `bin/fusion-rules`; 4 is this resolver's own. `bin/fusion-rules` still exits 3, for a malformed `rules/context-manifest.yaml`: read exit 3 against the helper that returned it, and never against this table.
+The `0/1/2` core is shared with `bin/fusion-rules`; 3 and 4 are this resolver's own. `bin/fusion-rules` also exits 3, for an unrelated reason, a malformed `rules/context-manifest.yaml`, so read an exit 3 against the helper that returned it, never across the two.
 
 ### Two invariants
 
-1. **Every `OUT_*` points into `shared/`, always.** There is no state the resolver reads and no condition under which a key resolves elsewhere, so a consumer needs no branch and there is no "nothing active" error to handle.
-2. **Every `SCAN_*` names one store, the same one its `OUT_*` names.** A scan that misses a store is the failure this invariant used to guard against when there were two; with one, a `SCAN_*` value is a single directory and a consumer that searches it has searched the kind.
+1. **Every `OUT_*` points into the container of the item in scope, and into `shared/` when there is none.** That is `## Origin Rule` stated executably. The resolver answers the placement question once, at Setup, so a consumer carries no branch and is never asked where something goes; "no item in scope" is an answer it resolves, not an error it hands on.
+2. **Every `SCAN_*` names both stores for its kind, container first and then the shared one, and collapses to the shared one alone when no item is in scope.** A scan that misses a store is the failure this invariant guards against: an artifact filed under a directive is the same kind as one filed without, so a consumer that searched one store would report a clean pass over half the corpus.
 
    There is deliberately no `SCAN_MEMOS`. `memos/` is a store like the others, but no agent reads it: a memo is written for the user, not for an agent. A key is emitted when a prompt reads the kind, not because the symmetry of the table would look better with it.
 
@@ -146,7 +176,9 @@ This three-way distinction is about **what kind of thing** an artifact is, and t
 
 ## Backlog entries — work items
 
-A **work item** is one unit of work: something somebody is going to do, or has decided not to. It lives in `shared/backlog/` (`$OUT_BACKLOG`), one file per item, named `YYMMDD-HHMM-<slug>.md` with **no marker on the filename**. One file per item rather than one list file, because two checkouts adding work at the same time then merge with no conflict. No marker, because an item's state is a head field: a state change edits the file instead of renaming it, so every citation of an item stays valid for the item's whole life.
+A **work item** is one unit of work: something somebody is going to do, or has decided not to. **It is a directory, and its record lives inside it.** The container is `circles/YYMMDD-HHMM-<slug>/` (`$OUT_BACKLOG`) and the record is `circles/YYMMDD-HHMM-<slug>/YYMMDD-HHMM-<slug>.md`: the same name twice, directory and record, with **no marker on either**. Everything the item produces goes into that directory too, in the same per-kind subdirectories `shared/` carries (`## fusion-workbench Layout`), so `ls` on one path is a unit of work's whole account of itself. Finding the record is finding the container, so a claim that resolves can never point at a directory that is not there.
+
+One file per item rather than one list file, because two checkouts adding work at the same time then merge with no conflict. No marker, because an item's state is a head field: a state change edits the file instead of renaming it, so every citation of an item stays valid for the item's whole life.
 
 ```markdown
 # <one-line directive>
@@ -215,7 +247,7 @@ Patterns attach to the **kind of artifact**, and the kind decides the store too.
 
 | Artifact kind | Written to | Pattern | State marker |
 |---|---|---|---|
-| Work item | `$OUT_BACKLOG` | `YYMMDD-HHMM-<slug>.md` | no: the state is the `**Status:**` head field |
+| Work item | `$OUT_BACKLOG` | `YYMMDD-HHMM-<slug>/YYMMDD-HHMM-<slug>.md` | no: the state is the `**Status:**` head field |
 | Spec / plan | `$OUT_PLAN` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Defect | `$OUT_ISSUE` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Decision record | `$OUT_DECISION` | `YYMMDD-HHMM_S_<topic>.md` | yes (decisions vocabulary, richer set) |
@@ -287,7 +319,7 @@ The marker vocabulary mirrors foundation_V3 §1.2's two-layer Grounding model:
 - `_o_` (open) and `_a_` (answered, awaiting realisation) are **Grounding-Stand**: the current best-of-knowledge the project is working with.
 - `_i_` (implemented), `_s_` (superseded), and `_d_` (deferred) are **Grounding-Historie**: preserved record of what was decided, including elements that have been replaced or postponed.
 
-Each decision store holds both layers; the marker carries the layer information. Reconciliation passes that "list active Grounding" filter on `_o_` + `_a_`; passes that "show project history" include all five. A scan for active Grounding must cover every path in `$SCAN_DECISIONS`, not just the Circle's.
+Each decision store holds both layers; the marker carries the layer information. Reconciliation passes that "list active Grounding" filter on `_o_` + `_a_`; passes that "show project history" include all five. A scan for active Grounding must cover every path in `$SCAN_DECISIONS`, not just the container's.
 
 ## Marker globs
 
@@ -410,7 +442,7 @@ A record file is written when the change carries something the diff and its mess
 
 **The split is over statements, not over events**, which is what makes it disjoint: one statement falls in exactly one row, while one event may raise several. A review pass that finds a defect owes both a review and an issue, which is two answers rather than one filed twice; two files carrying the *same* statement is the duplication to refuse. The sixth branch completes the split and is the common one: no condition held, so nothing is filed. Binding: `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md` `### C5`.
 
-**Where it goes** is resolved for you by `bin/fusion-paths`, and there is no judgment left in it: one kind has one store, and a store whose key the resolver did not emit for you is a kind you do not write. **Reach is cited, never copied.** Where a record binds work filed elsewhere, the citing record names it by basename in its `**Cross-references:**` header. Do not copy it, do not move it, do not file a duplicate: one record, one location, many citations.
+**Where it goes** is resolved for you by `bin/fusion-paths`, and there is no judgment left in it: the resolver applied `## Origin Rule` once at Setup, and a store whose key it did not emit for you is a kind you do not write. **Reach is cited, never copied.** Where a record binds work filed elsewhere, the citing record names it by basename in its `**Cross-references:**` header. Do not copy it, do not move it, do not file a duplicate: one record, one location, many citations.
 
 **Before writing, list what is already there.** One `ls` over the open (`_o_`) record names in every `$SCAN_ISSUES` store — names only, never bodies, because a costlier check gets skipped. A hit is a slug naming the same file or mechanism as yours; append one line to that record, `Also seen: YYMMDD-HHMM by <agent> — <one clause>`, write no second file and move no marker. In doubt, write the new record: a duplicate costs one merge, an unfiled defect costs the defect.
 
