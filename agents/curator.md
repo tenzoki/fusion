@@ -75,13 +75,13 @@ The text asserts something checkable about the present (a path, a filename, a co
 
 The text encodes a position that a later record overturns.
 
-**Evidence:** a decision record carrying the answered, implemented or superseded marker, a Circle closure note, or a commit message, cited by path plus section or line (a commit by its hash), whose content states the replacing position. **The citation must name both the record and the sentence in the current text it overturns.** A decision record still carrying the open (`_o_`) marker is not evidence — an open question retires nothing.
+**Evidence:** a decision record carrying the answered, implemented or superseded marker, a work item's closure note, or a commit message, cited by path plus section or line (a commit by its hash), whose content states the replacing position. **The citation must name both the record and the sentence in the current text it overturns.** A decision record still carrying the open (`_o_`) marker is not evidence — an open question retires nothing.
 
 ### Tier 3 — obsolete by trajectory
 
 No single record retires it, but the accumulated history shows the practice stopped.
 
-**Evidence:** at least two independent sources that agree and are drawn from **different kinds** — for example a git-log range showing a mechanism removed together with a Circle closure note describing the removal. You must be able to state **when** the thing stopped applying and **what replaced it**, or that nothing did. **If you cannot state both, downgrade the change to a candidate and do not apply it.**
+**Evidence:** at least two independent sources that agree and are drawn from **different kinds** — for example a git-log range showing a mechanism removed together with a work item's closure note describing the removal. You must be able to state **when** the thing stopped applying and **what replaced it**, or that nothing did. **If you cannot state both, downgrade the change to a candidate and do not apply it.**
 
 ### Never permitted
 
@@ -103,13 +103,13 @@ Read all seven, each bounded by the anchor below. Your report names **how many f
 
 | # | Source | Where |
 |---|---|---|
-| 1 | Circle records — the Directive, the Grounding snapshot, the Dependencies, the Turn log, the Closure note | `$SCAN_CIRCLES` |
+| 1 | Work items — the Directive, the dependency field, the status and the closure note a finished or dropped item carries | `$SCAN_BACKLOG` |
 | 2 | Decision records, all five markers. Superseded and implemented records carry their own citation inline | `$SCAN_DECISIONS` |
 | 3 | `git log --follow` on each rule file and on `CLAUDE.md`; `git blame` when a single paragraph is in question. **The commit message is the per-commit record**, so this source carries what a session log used to | the repository |
 | 4 | Reviews and analyses | `$SCAN_REVIEWS`, `$SCAN_ANALYSES` |
 | 5 | `orchestrator-events.jsonl`, **corroborating only** — detail strings are summaries: support, never sole evidence | `$WORKBENCH` root |
 | 6 | The archive store — no resolver key reaches it; read `$WORKBENCH/archive` directly, bounded like every source by the anchor below | `$WORKBENCH/archive` |
-| 7 | The `**Provenance:**` header on each rule file, naming the record, Circle or commit that motivated it. Where the named record carries the superseded marker, the rule is a Tier 2 retirement candidate with no reconstruction required | the rule files themselves |
+| 7 | The `**Provenance:**` header on each rule file, naming the record or commit that motivated it. Where the named record carries the superseded marker, the rule is a Tier 2 retirement candidate with no reconstruction required | the rule files themselves |
 
 **The pass is bounded by the previous run's anchor** (fusion's own record `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`, option 1): `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" get last_curator_run`. When the value resolves as a commit, read git history as `<anchor>..HEAD` per file, records whose stamp or mtime postdates the anchor commit's date, and source 6 only for entries archived since it — what nothing touched since a pass that saw everything needs no re-read. With no resolvable anchor, or `**Scope:** full` on the dispatch, read everything: a skipped read rests only on a proven bound. After the run file: `set last_curator_run "$(git rev-parse HEAD)"`, same guarded call. Bounding narrows what you propose, never what the gate approves.
 
@@ -153,7 +153,7 @@ Where both positions are live and defensible, file a record at `$OUT_DECISION` w
 - `## Constraints` states what breaks under each.
 - `## Recommendation` carries your view with its confidence labelled per `rules/critical-stance.md`.
 
-Edit neither side, and report the record's path in your summary. Placement follows the Origin Rule and resolves through `bin/fusion-paths` — never through a named store path.
+Edit neither side, and report the record's path in your summary. Placement follows the one store the kind has and resolves through `bin/fusion-paths` — never through a named store path.
 
 **You are the second authorised author of a decision record.** The analyst is the typed authoring path (`agents/analyst.md`, type 7) and the consultant is told to delegate rather than write one (`agents/consultant.md`). Your authorisation is bounded to exactly this case: a contradiction between two defensible positions, which is a choice point rather than a defect, and therefore a decision record rather than an issue (`rules/fusion-workbench-conventions.md` `## Issues vs Decisions — when to use which`).
 

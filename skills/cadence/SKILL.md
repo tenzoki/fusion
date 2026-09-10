@@ -14,7 +14,7 @@ When the user invokes `/fusion:cadence`, read the project's log sources, identif
 
 **Scope — a project digest, saved per checkout.** The three lists cover every session history in reach, whoever wrote it. The `-$CO` in the filename names the checkout that ran the digest, not the author of the work inside it, so two checkouts of one project produce two files holding the same project. Do not filter the gathering step by author. One section is not project-wide, step 7b's session-flow metrics, which read this checkout's own event lines; the report labels that line and names the writers the rest of it covers.
 
-This is an **analysis** skill: you read the logs and identify topics by understanding them, not by keyword-matching. A topic is a short, human-readable theme label you assign (for example "Circle container restructure", "Plane bridge seeding", "guard blocker on skills"). Two log entries about the same thing in different words are the **same** topic — collapse them.
+This is an **analysis** skill: you read the logs and identify topics by understanding them, not by keyword-matching. A topic is a short, human-readable theme label you assign (for example "workbench layout restructure", "Plane bridge seeding", "guard blocker on skills"). Two log entries about the same thing in different words are the **same** topic — collapse them.
 
 ## Process
 
@@ -128,7 +128,7 @@ for f in "activity-log-$CO.md" "$WORKBENCH/activity-log-$CO.md"; do [ -f "$f" ] 
 git log --date=short --pretty='%ad %h %s' 2>/dev/null
 ```
 
-**Iterate over every path in `$SCAN_HISTORY`** — it names two directories when a Circle is active and one when none is (`rules/fusion-workbench-conventions.md` `## Path Resolution` → "Two invariants", invariant 2). Reading only the first silently under-reports: the whole active Circle's work, or the whole non-Circle work, disappears from all three lists, and the result looks like a quiet week rather than a bug.
+**`$SCAN_HISTORY` names one directory** — one kind, one store (`rules/fusion-workbench-conventions.md` `## Path Resolution` → "Two invariants", invariant 2) — and reading it is reading the whole frozen corpus. A history file older than the cut may sit in the archive store instead; that is a move, not a second live store, and this body does not follow it.
 
 The log lives in the project root; the workbench copy is the fallback for projects that moved it. Note in the final report which sources were found and which were absent.
 
@@ -240,7 +240,7 @@ _No theme recurs across two or more sessions yet._
 ## Notes
 
 - **Always:** name the `h` cut date and state that no session log covers anything after it.
-- <caveats: which history stores were scanned and whether a Circle was active, undated files fallen back to mtime, where the activity log was found, anything ambiguous>
+- <caveats: which sources were scanned, undated files fallen back to mtime, where the activity log was found, anything ambiguous>
 ```
 
 ### 9. Report to the user
@@ -251,7 +251,7 @@ Output follows `rules/user-facing-output.md` plus the chat profile for the proje
 
 ## Graceful degradation
 
-- **No active Circle** (the common case): scan the shared store alone and note it in the report. Not a warning.
+- **An empty history store:** say so and carry the analysis on git and the activity log alone. Not a warning — the store has been closed to writes since v11, so an old corpus and no corpus are both ordinary.
 - **No activity log:** note "activity log: none" in the sources line; the session histories and git carry the analysis.
 - **Not a git repo:** skip the `g` source silently; note it in the sources line.
 - **Nothing datable in the window:** still write the file, with the empty-window note in the affected list.

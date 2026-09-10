@@ -76,35 +76,39 @@ Die Zahl der Turns pro Sitzung ist das einzige Setting in `fusion.json`: `{"orch
 
 Fusion ist absichtlich nicht autonom. Es hält an und fragt vor: Spec-Freigabe, Plan-Freigabe, jeder Ontologie- oder Strukturdaten-Änderung, destruktiven Operationen (löschen, Features entfernen) und bei mehrdeutigen Aufgaben. Die Antworten an den Gates sind die Steuerung.
 
-### Circle
+### Work Item
 
-Ein Circle ist eine abgegrenzte Arbeitseinheit, definiert durch **Directive** (Ziel), **Grounding** (Annahmen) und **Artifact** (Ergebnis). Ein Circle ist ein *Verzeichnis* `fusion-workbench/circles/<stamp>-<slug>/` mit eigener Datei `_t_circle.md` und eigenen Unterordnern. Der Zustand steht als Buchstabe im Dateinamen des Records:
+Ein Work Item ist eine abgegrenzte Arbeitseinheit, definiert durch **Directive** (Ziel), **Grounding** (Annahmen) und **Artifact** (Ergebnis). Es ist *eine Datei*, `fusion-workbench/shared/backlog/<stamp>-<slug>.md`, **ohne Marker im Dateinamen**. Der Zustand steht als Kopffeld `**Status:**` in der Datei:
 
-- `_a_` anticipated (erfasst, nicht begonnen)
-- `_t_` active (genau einer zur Zeit; `.active-circle` zeigt darauf)
-- `_c_` closed-coherent, `_b_` bounded (Ziel nicht erreichbar, das Gelernte ist das Ergebnis), `_s_` superseded, `_d_` deferred
+- `open` — niemand arbeitet daran
+- `claimed` — ein Checkout arbeitet gerade daran; `**Claim:**` nennt welcher
+- `done` — die Arbeit ist gelandet; der Claim bleibt stehen und nennt, wer sie getan hat
+- `dropped` — nicht mehr aktuell; der Text sagt warum
 
-Die letzten vier sind terminal; ein geschlossener Circle wird nie wieder geöffnet. Kleine Projekte brauchen Circles kaum: eine Anfrage an den Orchestrator ohne aktiven Circle läuft einfach ohne, und die Artefakte landen in `shared/`.
+`done` und `dropped` sind terminal; ein abgeschlossenes Item wird nie wieder geöffnet, sondern durch ein neues ersetzt, das es zitiert. Zwei Entwurfsentscheidungen tragen den Rest: eine Datei je Item statt einer Listendatei, damit zwei Checkouts konfliktfrei mergen; und der Zustand im Feld statt im Namen, damit ein Zustandswechsel die Datei ändert statt sie umzubenennen und jede Zitierung ein Leben lang gültig bleibt.
 
-### Backlog, Memo und der Weg zum Circle
+Kleine Projekte brauchen den Backlog kaum: eine Anfrage an den Orchestrator ohne Item läuft einfach ohne, und die Artefakte landen in ihrem jeweiligen Store.
+
+Bis v11 war die Arbeitseinheit ein *Circle*: ein Verzeichnis unter `circles/` mit eigenem Record, sechs Markern und einer eigenen Kopie jedes Stores. Diese Schicht ist entfallen; `/fusion:migrate` wandelt eine Workbench um, die sie noch hat.
+
+### Backlog, Memo und der Weg zur Arbeit
 
 ```
-/fusion:memo idea: <eine Zeile>      Idee als Backlog-Eintrag ablegen (_o_)
-/fusion:direct <Entwurf | Backlog-Pfad>   shaper schärft den Entwurf, schreibt einen _a_-Circle
-Record _a_ → _t_ umbenennen        aktiviert ihn, Verzeichnisname nach .active-circle
+/fusion:memo idea: <eine Zeile>   Idee als Work Item ablegen (Status: open)
+Store lesen, eines auswählen      nichts rankt sie; die Reihenfolge ist deine
+Orchestrator claimed es           Status: open → claimed, Claim: <dein Checkout>
+Item-Pfad an den shaper           er liest es als Anfrage und schreibt kein Byte hinein
 ```
 
-`/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<checkout>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<checkout>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigene Datei in `shared/backlog/`). Kein Agent legt Backlog-Einträge an; das ist Sache des Menschen. Der `playmaker` rankt sie und benennt einen Eintrag eigenständig von `_o_` nach `_p_` (empfohlen) um; teilen, zusammenlegen, schließen und verschieben tut er nur mit Bestätigung.
+`/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<checkout>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<checkout>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigene Datei in `shared/backlog/`). Kein Agent legt ein Work Item an; das ist Sache des Menschen. Der Orchestrator pflegt den Store — claimen, freigeben, abschließen, verwerfen, teilen, zusammenlegen — und zwar je Operation und je Item nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
 
 ### Issues und Decisions
 
 Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen, `_p_` in Arbeit, `_c_` geschlossen, `_d_` verschoben). „Entscheiden und festhalten“ ist eine **Decision** (`decisions/`, Marker `_o_` offen, `_a_` beantwortet, `_i_` umgesetzt, `_d_` verschoben, `_s_` abgelöst). Reviewer (`coderev`, `ontorev`) legen ihre Befunde als Issues ab; der Orchestrator legt bei Sitzungsende Issues für offene Tasks an.
 
-## 5. Abschluss von Turn, Circle und Sitzung
+## 5. Abschluss von Arbeitseinheit und Sitzung
 
-**Turn-Ende:** Commit, Kohärenz-Check, weiter oder Rebalance-Gate (Abschnitt 4).
-
-**Circle-Ende:** Ein Circle kann mehrere Sitzungen dauern; Sitzungsende und Circle-Ende sind zwei verschiedene Dinge. Wenn die Arbeitsliste des Circles leer ist, läuft die Abschlussprüfung. Der `reconciler` gleicht die Tracking-Dateien mit dem Code ab. Seit v10.14 laufen die Reviewer **einmal pro Circle, beim Abschluss**, über alle Commits, die noch kein Review abgedeckt hat (`bin/fusion-review-coverage`). Der Orchestrator liest die Klauseln aus `## Where this Circle stops` des Plans vor und fragt, ob jede hält. Dann geht der Record auf `_c_` oder `_b_`, `.active-circle` wird gelöscht und der `playmaker` regeneriert das Portfolio.
+**Item-Ende:** Ein Work Item kann mehrere Sitzungen dauern; Sitzungsende und Item-Ende sind zwei verschiedene Dinge. Der `reconciler` gleicht die Tracking-Dateien mit dem Code ab, wenn du ihn darum bittest. Der Reviewer läuft **einmal je Item, beim Abschluss**, über alle Commits, die noch kein Review abgedeckt hat (`bin/fusion-review-coverage`). Der Orchestrator liest die Abbruchklauseln des Plans vor und fragt, ob jede hält. Dann geht `**Status:**` auf `done` oder `dropped`, der Claim bleibt stehen und nennt, wer die Arbeit getan hat, und eine Abschlussnotiz mit dem Commit-Bereich wird angehängt.
 
 **Sitzungsende:**
 
@@ -121,49 +125,46 @@ Eine Pipeline aus acht Schritten: Issues für offene Tasks anlegen, die eigentli
 - **Erster Setup-Lauf in einem Projekt:** legt die Workbench an, kopiert Assets, erzeugt Identität und Marker. Spätere Setups sind idempotent (bestehende Profile werden nicht überschrieben; der Marker wird nur bei Versionswechsel neu geschrieben).
 - **Erstes `/fusion:cleanup` in einem Checkout:** ohne Anker in `fusion-workbench/.cadence-anchors` läuft der Reconciler über die ganze Workbench. Ab dem zweiten Lauf ist Cleanup inkrementell (v10.8.1): der Reconciler wird übersprungen, wenn seit dem letzten Lauf nichts im Tracking-Korpus geändert wurde, und der Curator prüft nur die Evidenz seit seinem letzten Durchgang (`--full` erzwingt den vollen Lauf).
 - **Die Regel-Last pro Dispatch:** jeder Agent lädt bei seinem Setup den immer geladenen Regelsatz plus das Chat-Stilprofil des Projekts (`bin/fusion-rules <agent>`), aktuell rund 66 KB für einen Coder-Dispatch. Das ist der Preis, den man bei jedem Sub-Agenten zahlt; darum sind Regeln bewusst knapp und teils nur an die Agenten emittiert, die sie brauchen.
-- **Review beim Circle-Abschluss:** ein Durchlauf über alle nicht abgedeckten Commits; bei einem Circle über mehrere Sitzungen entsprechend länger.
+- **Review beim Item-Abschluss:** ein Durchlauf über alle nicht abgedeckten Commits; bei einem Item über mehrere Sitzungen entsprechend länger.
 - **Curator-Gate in Cleanup:** wartet auf eine Antwort; alles davor läuft ohne Aufsicht durch.
 
 **Aufräumarbeiten, die dazugehören:**
 
-- **Archivierung:** `/fusion:cleanup --only archive` (oder Step 4 der Pipeline) verschiebt terminale Circles und terminale Marker aus `shared/` nach `fusion-workbench/archive/` und rollt das Guard-Event-Log unter datiertem Namen dorthin. Tier 2 nimmt gealterte Reviews dazu, Tier 3 gealterte History (Standardalter 14 Tage, z. B. `tier-3 21d`). Archivieren verschiebt, löscht nie.
+- **Archivierung:** `/fusion:archive` verschiebt terminale Work Items und terminale Marker aus `shared/` nach `fusion-workbench/archive/` und rollt das Guard-Event-Log unter datiertem Namen dorthin. Tier 2 nimmt gealterte Reviews dazu, Tier 3 gealterte History (Standardalter 14 Tage, z. B. `tier-3 21d`). Archivieren verschiebt, löscht nie.
 - **`/fusion:cadence`:** liest Aktivitätslog, Session-Histories und git und schreibt eine Übersicht (gestern, letzte 7 Tage, wiederkehrende Themen) nach `shared/memos/cadence-<checkout>.md`. Wer das zugrundeliegende Log frisch will, lässt vorher `/fusion:cleanup --only log-activity` laufen.
 
 Ein Hinweis zur Einordnung, als Beobachtung und nicht als Messung dieses Dokuments: die Buchhaltung (Setup, Reconcile, Reviews, Cleanup) macht einen großen Teil der Sitzungszeit aus. Die inkrementellen Mechanismen seit v10.8.1 sind die Antwort darauf.
 
-## 7. Die Workbench: Circle vs. shared
+## 7. Die Workbench: eine Art, ein Store
 
 ```
 fusion-workbench/
-├── circles/<stamp>-<slug>/     # ein Verzeichnis je Arbeitseinheit, Name stabil
-│   ├── _t_circle.md            #   der Record, trägt den Zustandsmarker
-│   ├── planning/ issues/ decisions/ history/ reviews/ analyses/
-├── shared/                     # alles ohne Circle-Zugehörigkeit
-│   ├── planning/ issues/ decisions/ history/ reviews/ analyses/
-│   ├── investigations/ consult/ memos/ backlog/     # nur in shared
+├── shared/
+│   ├── backlog/                # die Work Items selbst, eine Datei je Item
+│   ├── planning/ issues/ decisions/ reviews/ analyses/
+│   ├── history/                # seit v11 schreibgesperrt, lesbar bleibt es
+│   ├── investigations/ consult/ memos/ forum/ checkouts/
 ├── archive/                    # Ziel der Archivierung
 ├── stilwerk/                   # die vier Stilprofile (projektlokal editierbar)
-├── portfolio.md                # vom playmaker regeneriert
-├── .active-circle              # Zeiger auf den aktiven Circle
 └── orchestrator-events.jsonl, .guard-state/, .commit-lock/,
     .session-marker, .checkout-id, .cadence-anchors, .fusion-setup,
     .asset-provenance, monitor
 ```
 
-**Origin Rule:** ein Artefakt gehört zu dem Circle, dessen Directive es verursacht hat. Ohne aktiven Circle landet es in `shared/`. Querbezüge werden zitiert, nicht durch Ablage abgebildet. Agenten schreiben keine Pfade fest; sie lösen sie zur Laufzeit über `bin/fusion-paths <agent>` auf.
+**Es gibt keine Ablageentscheidung mehr:** eine Art hat genau einen Store, also folgt der Ort eines Artefakts daraus, was es ist. Querbezüge werden zitiert, nicht durch Ablage abgebildet. Agenten schreiben keine Pfade fest; sie lösen sie zur Laufzeit über `bin/fusion-paths <agent>` auf. Bis v11 stand hier ein Verzeichnis je Arbeitseinheit unter `circles/` mit einer eigenen Kopie jedes Stores und einer Origin Rule, die entschied, welche Kopie gemeint war; `/fusion:migrate` wandelt eine Workbench um, die das noch hat.
 
 ## 8. Mehrere Personen, gemeinsame Workbench, und die Rolle von git
 
-**Git ist der einzige Transport.** Zwei Personen arbeiten in zwei Clones, und zwei Clones teilen genau das, was git zwischen ihnen trägt: kein gemeinsames Dateisystem, kein Server. Deshalb gilt: **wer zu mehreren arbeitet, trackt die Workbench in git.** Eine ungetrackte Workbench ist eine private Notizsammlung je Rechner; die Circle-Records, Decisions, Issues und Pläne wären dann keine gemeinsame Fläche mehr. Fusion liefert keine `.gitignore`-Regel dafür; ein Einzelner darf ignorieren, ein Team muss tracken.
+**Git ist der einzige Transport.** Zwei Personen arbeiten in zwei Clones, und zwei Clones teilen genau das, was git zwischen ihnen trägt: kein gemeinsames Dateisystem, kein Server. Deshalb gilt: **wer zu mehreren arbeitet, trackt die Workbench in git.** Eine ungetrackte Workbench ist eine private Notizsammlung je Rechner; die Work Items, Decisions, Issues und Pläne wären dann keine gemeinsame Fläche mehr. Fusion liefert keine `.gitignore`-Regel dafür; ein Einzelner darf ignorieren, ein Team muss tracken.
 
 **Nicht alles wird getrackt.** `rules/workbench-tracking.md` teilt jeden Eintrag der Workbench in vier Klassen:
 
 | Klasse | Einträge | git |
 |---|---|---|
-| R1 viele Dateien, je ein Schreiber | `circles/`, `shared/`, `archive/`, `stilwerk/` | tracken |
+| R1 viele Dateien, je ein Schreiber | `shared/`, `archive/`, `stilwerk/` | tracken |
 | R2 eine Datei, viele Anhänger | `orchestrator-events.jsonl` | tracken, mit `merge=union` |
 | R3 einmal geschrieben | `.fusion-setup`, `.asset-provenance` | tracken |
-| L bleibt im Checkout | `.session-marker`, `.active-circle`, `.checkout-id`, `.cadence-anchors`, `.commit-lock/`, `.guard-state/`, `monitor`, `portfolio.md` | ignorieren |
+| L bleibt im Checkout | `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.commit-lock/`, `.guard-state/`, `monitor` | ignorieren |
 
 Klasse L beschreibt *jetzt* (Sitzungszustand) oder *dieses Checkout* (`.checkout-id`, `.cadence-anchors`) und würde im Diff nur rauschen oder, aus einem fremden Checkout gezogen, lügen. Dieses Repository wendet genau diese Partition an; seine `.gitignore` ist die Vorlage für eine eigene.
 
@@ -177,9 +178,9 @@ fusion-workbench/orchestrator-events.jsonl merge=union
 
 **Identität.** `bin/fusion-identity` liest die Person aus `git config user.name/user.email` (nie geschrieben) und prägt beim ersten Aufruf eine Checkout-Kennung in `fusion-workbench/.checkout-id`. Fehlen `user.name` oder `user.email` in einem git-Arbeitsbaum, hält der Agent an: ohne Identität wird nichts abgelegt. Außerhalb eines git-Arbeitsbaums ist keine Identität geschuldet; der Record trägt dann nur den Agenten.
 
-**Wer arbeitet gerade woran.** Setup Schritt 0c warnt vor einer zweiten Orchestrator-Sitzung auf demselben Checkout (`.session-marker`, Heartbeat vom PostToolUse-Hook, `running` bis 10 Minuten, danach `stale`). Für andere Checkouts meldet `bin/fusion-events presence` bei Setup, welche anderen Personen und weiteren eigenen Checkouts im Fenster (Standard 7 Tage) eine Sitzung gestartet haben und auf welchem Circle. Der Blick reicht nur so weit wie der letzte Pull (`scope=pulled`): eine Sitzung, die seit dem letzten Fetch anderswo begann, ist unsichtbar, nicht abwesend.
+**Wer arbeitet gerade woran.** Setup Schritt 0c warnt vor einer zweiten Orchestrator-Sitzung auf demselben Checkout (`.session-marker`, Heartbeat vom PostToolUse-Hook, `running` bis 10 Minuten, danach `stale`). Für andere Checkouts meldet `bin/fusion-events presence` bei Setup, welche anderen Personen und weiteren eigenen Checkouts im Fenster (Standard 7 Tage) eine Sitzung gestartet haben. Der Blick reicht nur so weit wie der letzte Pull (`scope=pulled`): eine Sitzung, die seit dem letzten Fetch anderswo begann, ist unsichtbar, nicht abwesend.
 
-**Ein Circle sagt, wer ihn fährt.** Der Circle-Record trägt ein Feld `**Claim:**`: `Unclaimed` oder `Claimed <stamp>: <person>, checkout <id>.` Es wird beim Aktivieren (`_a_ → _t_`) geschrieben und beim Verlassen von `_t_` zurückgesetzt. Ein Clone, der mitten in einem Circle gezogen wird, hat den `_t_`-Record, aber keinen `.active-circle`-Zeiger (Klasse L). Setup Schritt 0i erkennt das, nennt den Halter des Claims und bietet an, den Circle hier zu aktivieren oder inaktiv zu lassen. Aktivieren zwei Personen denselben Circle, bevor die jeweils andere Aktivierung gepullt wurde, kollidiert der Record beim Merge; wer den Merge verliert, sieht den fremden Claim und wählt einen anderen Circle.
+**Ein Work Item sagt, wer es fährt.** Es trägt ein Feld `**Claim:**` mit den acht Hex-Zeichen des Checkouts, dann der Person, dann dem Zeitstempel; fehlt das Feld, ist niemand dran. Verglichen wird auf den acht Zeichen und nie auf der Person: zwei Checkouts einer Person tragen eine git-Identität, also kann die Person allein die Frage nicht beantworten. Das Feld reist mit der Datei, also sieht jedes Checkout dasselbe. Claimen zwei Personen dasselbe Item, bevor die jeweils andere Änderung gepullt wurde, kollidiert genau diese eine Zeile beim Merge; wer den Merge verliert, sieht den fremden Claim und wählt ein anderes Item. Die Kollision wird erkannt und nicht verhindert — reserviert wird nichts im Voraus.
 
 **Der Commit-Lock** (`bin/fusion-commit-lock`) ist ein Mutex um `git add` + `git commit` *innerhalb eines Checkouts*: er schützt den git-Index vor parallelen Agenten derselben Sitzung. Zwischen Checkouts gibt es keinen Lock, und das ist Absicht: dort gilt die normale Git-Disziplin, pullen, mergen, pushen.
 
@@ -188,7 +189,7 @@ fusion-workbench/orchestrator-events.jsonl merge=union
 1. Workbench tracken, `.gitignore` nach der Vier-Klassen-Partition, `.gitattributes` mit `merge=union` (Setup schreibt sie).
 2. `git config user.name` und `user.email` in jedem Checkout gesetzt.
 3. Vor Sitzungsbeginn pullen, damit Presence und Claims aktuell sind; `/fusion:cleanup` pusht am Ende.
-4. Im Projekt ist ein Circle aktiv. Wer ihn in einem zweiten Checkout aufnimmt, überschreibt bewusst den Claim; mehrere `_t_`-Records meldet Setup als `MULTIPLE-ACTIVE` und stoppt.
+4. Ein Item gehört dem Checkout, dessen Kennung im Claim steht. Wer es in einem zweiten Checkout aufnimmt, überschreibt bewusst den Claim; wer es vorher hielt, steht im Commit, der ihn genommen hat.
 5. Sauberer Arbeitsbaum beim Start; Hand-Edits nicht in eine laufende Sitzung mischen.
 
 ## 9. Update und Stilprofile
@@ -206,13 +207,12 @@ Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung fes
 | Kommando | Zweck |
 |---|---|
 | `/fusion:setup` | Einmal pro Projekt die Workbench anlegen; danach führt der Orchestrator Setup selbst aus |
-| `/fusion:cleanup` | Sitzungsende, Pipeline mit einem Gate |
+| `/fusion:cleanup` | Sitzungsende: committen und pushen, sonst nichts |
 | `/fusion:cadence` | Was ist passiert (gestern, 7 Tage, wiederkehrend) |
 | `/fusion:news` | Was ein anderes Checkout hinterlassen hat, gelesen vor dem Pull |
-| `/fusion:direct <Entwurf>` | Directive erfassen, `_a_`-Circle anlegen |
 | `/fusion:memo` | Memo, Aufgabe oder Idee ablegen |
 | `/fusion:help [topic]` | Selbstauskunft |
 | `/fusion:commit` | Commit mit generierter Nachricht, unter dem Lock |
 | `/fusion:migrate` | Alte Workbench-Layouts auf das aktuelle Format bringen |
 
-Quellen: `README.md`, `docs/working-model.md`, `skills/*/SKILL.md`, `rules/workbench-tracking.md`, `rules/commit-lock.md`, `rules/circle-records.md` `### The claim field`, `bin/fusion-events`, `bin/fusion-identity`, `bin/fusion-cadence-anchor`, `docs/upgrading-to-v10-8.md`, `docs/upgrading-to-v10-14.md`.
+Quellen: `README.md`, `docs/working-model.md`, `skills/*/SKILL.md`, `rules/workbench-tracking.md`, `rules/commit-lock.md`, `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, `bin/fusion-events`, `bin/fusion-identity`, `bin/fusion-cadence-anchor`, `docs/upgrading-to-v10-8.md`, `docs/upgrading-to-v10-14.md`.

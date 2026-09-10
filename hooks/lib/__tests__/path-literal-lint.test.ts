@@ -26,12 +26,12 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 //
 // Deliberately EXCLUDED: the structural container roots `circles/`, `shared/`,
 // `archive/`, `stashes/`. They are not artifact stores — they are the layout's
-// roots, legitimately named in prose (help explaining the layout), in Circle
-// globs (next/direct citing `circles/<dir>/[m]-circle.md`), and as the
-// resolver's own values ($OUT_CIRCLE=circles, $SCAN_CIRCLES=circles). Flagging
-// them would fire on legitimate mentions and force wrong exemptions. An
-// artifact-type segment nested inside a circle path (e.g. `circles/x/reviews/y`)
-// is still caught, because `reviews/` matches on its own.
+// roots, legitimately named in prose (help explaining the layout) and, for
+// `circles/`, by the two skills that recognise the superseded layout in order to
+// refuse or convert it. Flagging them would fire on legitimate mentions and
+// force wrong exemptions. An artifact-type segment nested inside such a path
+// (e.g. `circles/x/reviews/y`) is still caught, because `reviews/` matches on
+// its own.
 const TYPE_FOLDERS = [
   "planning",
   "issues",
@@ -63,10 +63,9 @@ const EXEMPT_SKILLS = new Set(["setup", "migrate"]);
 // that creates it, or the tree carries one nobody chose. Ordered as the
 // conventions file's own header table orders them.
 const DEFINITION_SITES = [
-  "rules/fusion-workbench-conventions.md", // layout, Origin Rule, operative path resolution
+  "rules/fusion-workbench-conventions.md", // layout, work-item grammar, operative path resolution
   "bin/fusion-paths", // the executable definition
   "rules/workbench-path-resolution.md", // name namespace, key table, key-set derivation
-  "rules/circle-records.md", // Circle markers, record and portfolio templates
 ];
 
 const alt = TYPE_FOLDERS.join("|");
@@ -311,11 +310,11 @@ describe("path-literal lint: setup's key needs stay a subset of the orchestrator
   // This is not the retired key-set-agreement gate (which became a tautology
   // once fusion-paths derived each set by grepping the one prompt that names
   // it). It relates two DIFFERENT prompts and can genuinely drift: drop a
-  // `$SCAN_CIRCLES` usage from orchestrator.md, or add a new `$`-key to setup,
+  // `$SCAN_BACKLOG` usage from orchestrator.md, or add a new `$`-key to setup,
   // and the subset breaks.
   function keysNamedIn(rel: string): Set<string> {
     const body = readFileSync(join(pluginRoot, rel), "utf-8");
-    const found = body.match(/\$(?:(?:OUT|SCAN)_[A-Z][A-Z_]*|PORTFOLIO)/g) ?? [];
+    const found = body.match(/\$(?:OUT|SCAN)_[A-Z][A-Z_]*/g) ?? [];
     return new Set(found.map((m) => m.slice(1)));
   }
 

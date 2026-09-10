@@ -2,7 +2,7 @@
 
 A multi-agent orchestration framework for Claude Code. Fusion runs a work session as a team of **11 specialized agents** — an orchestrator that dispatches the rest, plus coders, reviewers, planners, and analysts — coordinating through files on disk, with a human at the decisions that matter and a hook layer that traces every write the agents make.
 
-See [`docs/philosophy.md`](docs/philosophy.md) for why it's built this way, [`docs/working-model.md`](docs/working-model.md) for how a session runs (the Circle flow, the gates, and the guard), and [`README-agents.md`](README-agents.md) for the full agent reference.
+See [`docs/philosophy.md`](docs/philosophy.md) for why it's built this way, [`docs/working-model.md`](docs/working-model.md) for how a session runs (the work item's life, the gates, and the guard), and [`README-agents.md`](README-agents.md) for the full agent reference.
 
 ## Install
 
@@ -112,11 +112,11 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 
 ## Best practices
 
-- **One Directive per session.** Give the orchestrator a single, clear outcome. If you find yourself describing three unrelated goals, that's three sessions — or capture the extras as Circles (below) and run them one at a time.
+- **One Directive per session.** Give the orchestrator a single, clear outcome. If you find yourself describing three unrelated goals, that's three sessions — or file the extras as work items (below) and take them one at a time.
 - **Let the gates do their job.** The human gates before ontology edits and destructive operations are where fusion earns its keep. Don't `--yolo` through them out of habit; `--yolo` is for a throwaway loop where nothing is at stake, not for real work on a shared tree.
 - **Trust tracking files only after reconciliation.** Status markers in plans and issues can lag reality mid-session. Let Phase 3 (final reconciliation) run, or dispatch the `reconciler` explicitly, before you rely on what the tracking files claim.
 - **Keep the working tree clean.** The orchestrator commits per task. Start a session from a clean tree so its commits are legible; don't mix hand-edits into a running session, or you'll blur which change came from where.
-- **Direct mode vs. portfolio.** For one obvious task, just tell the orchestrator (direct mode). When you have several units of future work whose priority isn't obvious, capture them as Circles with `/fusion:direct` and pick one by hand. The ranking command went at v11 with the agent behind it.
+- **One task, or a backlog.** For one obvious task, just tell the orchestrator. When you have several units of future work whose priority isn't obvious, file each as a work item with `/fusion:memo` and claim one by hand. Nothing ranks them: the ranking agent and its command both went at v11.
 - **Keep `CLAUDE.md` and `./rules/` current.** Agents load your project rules every session through `fusion-rules`. Stale rules mean stale behavior — treat them as living config, not documentation.
 - **Say yes to Setup's permission question rather than reaching for `--yolo`.** `/fusion:setup` offers once to write a permissive `.claude/settings.local.json` for the project. It persists across sessions, it is a considered choice you made once, and it keeps the catastrophic-operation backstop that `--yolo` removes. `--yolo` is per-run, unconditional, and worth keeping for throwaway loops. Decline the question and the project simply keeps its per-tool approval prompts; Setup will offer again next run.
 - **Nothing blocks your writes.** fusion's hook layer is observation-only: it allows every tool call, traces the write-tool ones into the event log the monitor renders, and tells you when your `fusion.json` is broken. It used to enforce — a protected-path deny, a decision-governed deny, and a halt after three blocks — and each was removed on its own measurement. See [Configuration](#configuration) for what the file still sets, and [`README-hooks.md`](README-hooks.md) for what each check was and why it went.
@@ -139,32 +139,27 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 
 ## fusion-workbench
 
-`fusion-workbench/` at the project root is the shared workspace for all agents. The layout is **Circle-as-container**: a Circle is a *directory* holding everything one unit of work produces; work with no Circle affiliation lives in `shared/`; session and hook state stays at the root.
+`fusion-workbench/` at the project root is the shared workspace for all agents. **One kind, one store**, and every store lives under `shared/`; session and hook state stays at the root.
 
 ```
 fusion-workbench/
-├── circles/
-│   └── <stamp>-<slug>/      # one directory per unit of work (stable name, no marker)
-│       ├── _t_circle.md     #   the Circle record — carries the state marker
-│       ├── planning/  issues/  decisions/  history/  analyses/
-│       └── reviews/          #   code + onto + concept reviews, merged (sender in filename)
-├── shared/                   # everything with no Circle affiliation (same kinds, plus:)
-│   ├── planning/  issues/  decisions/  history/  reviews/  analyses/
-│   ├── investigations/  consult/  memos/  backlog/   # shared-only
-├── portfolio.md             # playmaker output
-├── .active-circle           # pointer to the active Circle's directory name
+├── shared/
+│   ├── backlog/              # the work items themselves — one file per unit of work
+│   ├── planning/  issues/  decisions/  reviews/  analyses/
+│   ├── history/              # write-frozen since v11; the corpus stays readable
+│   ├── investigations/  consult/  memos/  forum/  checkouts/
 └── (root-anchored state: orchestrator-events.jsonl, .guard-state/,
      .commit-lock/, .session-marker, .checkout-id, monitor)
 ```
 
-**The Origin Rule** decides where an artifact goes: it belongs to the Circle whose Directive caused it to exist; with no active Circle it goes to `shared/`; cross-cutting relevance is cited, not placed. Agents never hard-code these paths — they resolve write and scan targets through `bin/fusion-paths` at Setup.
+**There is no placement decision to make**: a kind has one store, so where an artifact goes follows from what it is, and cross-cutting relevance is cited rather than copied. Agents never hard-code these paths — they resolve write and scan targets through `bin/fusion-paths` at Setup. A per-unit-of-work container under `circles/` stood here from v4 until v11; `/fusion:migrate` converts a workbench that still has one.
 
 **State markers** (encoded as `_x_` in filenames):
 
 - **issues / planning:** `_o_` open · `_p_` in progress · `_c_` closed · `_d_` deferred
 - **decisions:** `_o_` open question · `_a_` answered · `_i_` implemented · `_d_` deferred · `_s_` superseded
-- **circles:** `_a_` anticipated · `_t_` active · `_c_` closed-coherent · `_b_` bounded closure · `_s_` superseded · `_d_` deferred
+**A work item carries no marker at all.** Its state is the `**Status:**` head field — `open`, `claimed`, `done`, `dropped` — so a state change edits the file instead of renaming it and every citation of an item stays valid for the item's whole life. `claimed` is the value the other two vocabularies have no equivalent for, and it is what the store exists to carry: it names the checkout doing the work.
 
-Rule of thumb: file in `issues/` when the resolution is "go fix it," in `decisions/` when it's "decide and record." The full layout and the issue, planning and decision marker transitions live in [`rules/fusion-workbench-conventions.md`](rules/fusion-workbench-conventions.md); the Circle state vocabulary and the Circle-record template live in [`rules/circle-records.md`](rules/circle-records.md).
+Rule of thumb: file in `issues/` when the resolution is "go fix it," in `decisions/` when it's "decide and record," and in `backlog/` when it is a job somebody is going to do. The full layout, the work-item grammar and the issue, planning and decision marker transitions live in [`rules/fusion-workbench-conventions.md`](rules/fusion-workbench-conventions.md).
 
-Three surfaces open the workbench for you directly: `/fusion:memo` appends personal notes to `shared/memos/` and files ideas as entries in `shared/backlog/`, the activity-log step of `/fusion:cleanup` scans commits and the workbench into a per-day activity log at the project root, and `/fusion:cadence` reads that log together with the session histories and git to write a digest of what you have actually been working on — topics since yesterday, topics of the last seven days, and the themes that keep recurring ranked by how many sessions they show up in. The digest lands next to the memos as `cadence-<checkout>.md` and is overwritten on each run; it summarizes the activity log rather than replacing it, so run `/fusion:cleanup --only log-activity` first when you want the underlying record fresh.
+Three surfaces open the workbench for you directly: `/fusion:memo` appends personal notes to `shared/memos/` and files ideas as work items in `shared/backlog/`, the activity-log step of `/fusion:cleanup` scans commits and the workbench into a per-day activity log at the project root, and `/fusion:cadence` reads that log together with the session histories and git to write a digest of what you have actually been working on — topics since yesterday, topics of the last seven days, and the themes that keep recurring ranked by how many sessions they show up in. The digest lands next to the memos as `cadence-<checkout>.md` and is overwritten on each run; it summarizes the activity log rather than replacing it, so run `/fusion:cleanup --only log-activity` first when you want the underlying record fresh.

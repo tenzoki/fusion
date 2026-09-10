@@ -178,8 +178,8 @@ Deliberately deleted 260805: Circle `260802-2220`, `throwaway-plane-bridge-smoke
 
 The stamp and the slug go in separate spans and no store path is left behind. A reader recognises the
 annotation by the literal opening `Deliberately deleted `. **This is a convention for a human, not a
-mechanism**: `rules/circle-records.md` is emitted to `orchestrator`, `playmaker` and `shaper`, and a
-person deleting a directory by hand reads none of it. Whether a dedicated delete command should find
+mechanism**: the Circle-record rule was emitted to `orchestrator`, `playmaker` and `shaper`, and a
+person deleting a directory by hand read none of it. Whether a dedicated delete command should find
 the surviving references and apply the annotation is an open question the binding decision left open
 and this release does not answer.
 
@@ -230,7 +230,9 @@ judges none of them.
   sits among; `README-agents.md` `## Dispatch parameters` for the row.
 - `rules/fusion-workbench-conventions.md` — the widened `Retired:` line and the statement-versus-
   pointer convention.
-- `rules/circle-records.md` `### Deletion is outside the vocabulary` — the annotation form.
+- The Circle-record rule's `### Deletion is outside the vocabulary` — the annotation form.
+  That file was retired at v11 with the Circle container; the annotation itself survives,
+  generalised to any record, in `rules/fusion-workbench-conventions.md`.
 - `docs/upgrading-to-v10-3.md`, `docs/upgrading-to-v10-2.md` and `docs/upgrading-to-v10.md` — the
   previous notes, if you are coming from further back and skipped one.
 - `/fusion:help` — install, update and configure, answered from your live installation.

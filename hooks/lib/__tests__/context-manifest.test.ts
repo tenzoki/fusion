@@ -84,14 +84,39 @@ afterEach(() => {
   }
 });
 
-/** Stand up an active Circle in `dir`'s workbench with the given slug + record. */
-function makeCircle(dir: string, slug: string, record: string): void {
+/**
+ * File a work item in `dir`'s workbench and claim it for THIS checkout.
+ *
+ * The checkout identifier is pinned rather than minted, because the claim is
+ * compared by equality on those eight hex characters and a test that let
+ * `bin/fusion-identity` mint one would be asserting against a value it does
+ * not know. Writing `.checkout-id` first is exactly what the helper reads.
+ */
+const CHECKOUT = "a1b2c3d4";
+
+function makeClaimedItem(dir: string, slug: string, body: string): void {
   const wb = join(dir, "fusion-workbench");
-  const circle = join(wb, "circles", slug);
-  mkdirSync(circle, { recursive: true });
+  const backlog = join(wb, "shared", "backlog");
+  mkdirSync(backlog, { recursive: true });
   writeFileSync(join(wb, ".fusion-setup"), "{}\n");
-  writeFileSync(join(wb, ".active-circle"), `${slug}\n`);
-  writeFileSync(join(circle, "_t_circle.md"), record);
+  writeFileSync(join(wb, ".checkout-id"), `${CHECKOUT}\n`);
+  writeFileSync(
+    join(backlog, `${slug}.md`),
+    `${body}**Status:** claimed\n**Claim:** ${CHECKOUT} — Tester <t@example.com>, 260910-1200\n`,
+  );
+}
+
+/** The same item, claimed by somebody else. */
+function makeForeignItem(dir: string, slug: string, body: string): void {
+  const wb = join(dir, "fusion-workbench");
+  const backlog = join(wb, "shared", "backlog");
+  mkdirSync(backlog, { recursive: true });
+  writeFileSync(join(wb, ".fusion-setup"), "{}\n");
+  writeFileSync(join(wb, ".checkout-id"), `${CHECKOUT}\n`);
+  writeFileSync(
+    join(backlog, `${slug}.md`),
+    `${body}**Status:** claimed\n**Claim:** 99887766 — Other <o@example.com>, 260910-1200\n`,
+  );
 }
 
 const SAMPLE_MANIFEST = [
@@ -244,26 +269,26 @@ describe("context-manifest: emit predicate (agent-match AND topic-match)", () =>
   });
 });
 
-describe("context-manifest: topic resolution from the active Circle", () => {
+describe("context-manifest: topic resolution from the claimed work item", () => {
   beforeEach(() => writeManifest(manifestProject, SAMPLE_MANIFEST));
 
-  it("derives topic keywords from the Circle slug when no CLI topic is given", () => {
+  it("derives topic keywords from the item's slug when no CLI topic is given", () => {
     // slug 'ontology-refactor' → keywords {ontology, refactor} → matches the ontology unit.
-    makeCircle(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
+    makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
     const out = lines(run(manifestProject, "ontocoder").stdout);
     expect(out).toContain(".claude/rules/ONTO-ENG-RULES.md");
   });
 
-  it("an explicit CLI topic overrides the Circle slug", () => {
-    makeCircle(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
+  it("an explicit CLI topic overrides the item's slug", () => {
+    makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
     // Ask for llm-pipeline as coder → READER, NOT the slug-derived ontology unit.
     const out = lines(run(manifestProject, "coder", "llm-pipeline").stdout);
     expect(out).toContain(".claude/rules/READER.md");
   });
 
-  it("an explicit Topic: line on the Circle record overrides the slug", () => {
-    // slug says 'plain' (no keyword match), but the record pins topic unite-framework.
-    makeCircle(
+  it("an explicit Topic: line in the item overrides the slug", () => {
+    // slug says 'plain' (no keyword match), but the item pins topic unite-framework.
+    makeClaimedItem(
       manifestProject,
       "260718-1924-plain",
       "# c\n**Domain:** code\n**Topic:** unite-framework\n",
@@ -272,23 +297,51 @@ describe("context-manifest: topic resolution from the active Circle", () => {
     expect(out).toContain("skill:unite-bok-sc-skill");
   });
 
-  it("a Tags: line (multi-value) on the record resolves each tag", () => {
-    makeCircle(
-      manifestProject,
-      "260718-1924-plain",
-      "# c\n**Tags:** ontology, unite-framework\n",
-    );
+  it("a Tags: line (multi-value) in the item resolves each tag", () => {
+    makeClaimedItem(manifestProject, "260718-1924-plain", "# c\n**Tags:** ontology, unite-framework\n");
     const planner = lines(run(manifestProject, "planner").stdout);
     expect(planner, "planner in ontology unit").toContain(".claude/rules/ONTO-ENG-RULES.md");
     const coder = lines(run(manifestProject, "coder").stdout);
     expect(coder, "coder in unite-framework skill").toContain("skill:unite-bok-sc-skill");
   });
 
-  it("no active Circle → only [always] units match (empty topic set)", () => {
-    // manifestProject has a manifest but no workbench/.active-circle.
+  it("nothing claimed → only [always] units match (empty topic set)", () => {
+    // manifestProject has a manifest but no backlog store at all.
     const out = lines(run(manifestProject, "coder").stdout);
     expect(out).toContain(".claude/rules/CODING-HYGIENE.md"); // [always]
     expect(out).not.toContain(".claude/rules/READER.md");     // topic'd, no topic resolved
+  });
+
+  it("an item claimed by another checkout resolves no topic", () => {
+    // The whole reason the claim is compared on the checkout: what is resolved
+    // is what THIS checkout is working on. Another checkout's claim is not an
+    // answer about this one, and reading it would hand an agent somebody
+    // else's rules.
+    makeForeignItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
+    const r = run(manifestProject, "ontocoder");
+    expect(r.status, "a foreign claim is an ordinary answer, not a fault").toBe(0);
+    expect(lines(r.stdout)).not.toContain(".claude/rules/ONTO-ENG-RULES.md");
+    // And the same item DOES resolve for the checkout that holds it, so the
+    // absence above is the comparison working rather than the read failing.
+    makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
+    expect(lines(run(manifestProject, "ontocoder").stdout)).toContain(
+      ".claude/rules/ONTO-ENG-RULES.md",
+    );
+  });
+
+  it("an unclaimed item resolves no topic, even when it is the only one", () => {
+    // Both halves are tested, not just the status: an item nobody has claimed
+    // is not this checkout's work however few of them there are.
+    const wb = join(manifestProject, "fusion-workbench");
+    mkdirSync(join(wb, "shared", "backlog"), { recursive: true });
+    writeFileSync(join(wb, ".fusion-setup"), "{}\n");
+    writeFileSync(join(wb, ".checkout-id"), `${CHECKOUT}\n`);
+    writeFileSync(
+      join(wb, "shared", "backlog", "260718-1924-ontology-refactor.md"),
+      "# c\n**Status:** open\n",
+    );
+    const out = lines(run(manifestProject, "ontocoder").stdout);
+    expect(out).not.toContain(".claude/rules/ONTO-ENG-RULES.md");
   });
 });
 

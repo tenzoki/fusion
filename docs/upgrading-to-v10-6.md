@@ -28,8 +28,9 @@ cases. If you want the briefing without the session starting, decline the activa
 ## The orchestrator may now have a Directive captured
 
 The orchestrator cannot create a Circle and still cannot. What it gains is permission to invoke
-`/fusion:direct` on your behalf, the skill that runs the clarification rounds and writes an
-anticipated Circle record.
+the capture command on your behalf — the skill that runs the clarification rounds and writes an
+anticipated Circle record. (That command and the Circle it created were both removed at v11;
+this note is release history and describes what was true then.)
 
 **The permission carries one condition: your own words asked for it.** The orchestrator applies the
 same test it already applies before re-sharpening an anticipated Circle. A specification it just
@@ -113,7 +114,7 @@ fifteen agents.
 
 - the portfolio command's `### 6.4 — Chain into a fresh orchestrator session` — the activation step
   and the split by who is running it.
-- `agents/orchestrator.md` `## Capturing a Directive as an anticipated Circle` — the permission, its
+- `agents/orchestrator.md`'s capture section of the day — the permission, its
   one condition, and why the bound is what makes it grantable.
 - `skills/help/SKILL.md` — the update topic, its three paragraphs and the standing line.
 - `skills/check/SKILL.md` `## assets` — the guarded blocks and what the Done report says (the

@@ -17,7 +17,7 @@ These ten checks ran at the top of every session until the ramp-up was cut. **No
 | `config` | the project has its own `fusion.json` |
 | `permissions` | the project has a permission file, so a session need not approve every write |
 | `gitattributes` | the event log has a union merge driver |
-| `identity` | this checkout is in the registry, and holds no active Circle it never activated |
+| `identity` | this checkout is in the registry |
 | `gitignore` | a tracked workbench's `.gitignore` against the four-class partition |
 | `upstream` | how far this checkout is behind what it last saw of the remote |
 | `leftovers` | files written by mechanisms fusion no longer ships |
@@ -67,7 +67,7 @@ E="$FUSION_PLUGIN_ROOT/bin/fusion-events"
 if [ -x "$E" ]; then "$E" presence; echo "exit=$?"; else echo "presence=unread"; fi
 ```
 
-**Both counts `0`: print nothing at all.** Otherwise one line in the project's chat language: `other_people` and `other_checkouts` apart (*"1 other person, 1 further checkout of your own"*), each `party=`'s person, Circle and time, its sixth field as that checkout's alias where the field is not `-`, the `window_days` window, and `scope=pulled`. **A failed read says so and never prints a zero**: `exit=3` — presence could not be read, this checkout has no identifier; `exit=4` — `other_checkouts`, another person not tellable from a further checkout of your own; `presence=unread` — not read, this install lacks the helper. The rest: that helper's header.
+**Both counts `0`: print nothing at all.** Otherwise one line in the project's chat language: `other_people` and `other_checkouts` apart (*"1 other person, 1 further checkout of your own"*), each `party=`'s person, its fifth field and its time, its sixth field as that checkout's alias where the field is not `-`, the `window_days` window, and `scope=pulled`. **A failed read says so and never prints a zero**: `exit=3` — presence could not be read, this checkout has no identifier; `exit=4` — `other_checkouts`, another person not tellable from a further checkout of your own; `presence=unread` — not read, this install lacks the helper. The rest: that helper's header.
 
 ## assets — the copied profiles against the ones this version ships
 
@@ -223,11 +223,11 @@ else
 fi
 ```
 
-## identity — this checkout's identity, and a Circle it never activated
+## identity — this checkout's identity
 
-A `_t_` Circle record travels between checkouts and `.active-circle` does not (`rules/workbench-tracking.md`), so a clone taken mid-Circle holds an active record with no pointer: `MISSING-POINTER`. A pointer deleted by hand is that same state.
+**One condition here asks**, at most once per checkout: a checkout with no registry entry.
 
-**Two conditions here ask**, each at most once per checkout: that one, and a checkout with no registry entry.
+A second stood beside it and went with the unit-of-work container it was about. That container's record travelled between checkouts while the local pointer naming the running one did not, so a clone taken mid-run held a record that said "running" with no pointer beside it, and this selector offered to write one. No record carries a running state now and no such pointer is read anywhere, so the condition is unreachable rather than unchecked: a work item's `**Claim:**` names the checkout that holds it, which is a fact every checkout reads the same way off the file it pulled.
 
 **This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`; its header documents the mint and the six exit codes, and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as your own Setup step 2 defines it (the bullet "Who, which checkout, which session"): three keys, `session_id` from the line a SessionStart hook printed into your context, and no line means no key.
 
@@ -249,21 +249,6 @@ C="$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name"
 
 The rest: that helper's header.
 
-```bash
-[ -f ./fusion-workbench/.active-circle ] && echo pointer-present
-find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '_t_circle.md' 2>/dev/null
-```
-
-The count is taken unconditionally; the pointer gates the offer, not the detection.
-
-- **No path, or one path with `pointer-present`** — report nothing, ask nothing: a pointer is present, whichever Circle it names.
-- **One path and no `pointer-present`** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*. Read the record's `**Claim:**` too: where it opens with `Claimed ` and names an identity other than the one just read, name the holder and the time **before** the offer, and the offer overrides, writing the field's `Overridden ` sentence per `rules/circle-records.md` `### The claim field`. `Unclaimed`, no field, or this checkout's own identity behaves as today.
-  - **Activate** — `printf '%s\n' "<dir>" > ./fusion-workbench/.active-circle`. Step 2 resolves against it.
-  - **Leave** — write nothing; the Circle stays inactive here, and the pointer can be written later.
-- **More than one path, pointer or not** — attribute before you report. Sort the records by `**Claim:**` against the identity read above, per `rules/circle-records.md` `### How many Circles may be active, and in whose checkout`, and name the outcome that section gives. On `MULTI-CHECKOUT` say so in its terms, that one active Circle per checkout is the designed shape and not a condition, naming each holder through `"$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name" resolve <hex>` under its `[ -x ]` guard, its misses in that helper's header. On `MULTIPLE-ACTIVE` or `CLAIM-UNATTRIBUTED` name every record found and what failed. **Offer nothing and write nothing in any of the three**: which Circle to run here is a portfolio judgement, and it is the user's, made by hand since the portfolio command went at v11. Report and stop.
-
-Name the branch that ran in the Done report.
-
 ## gitignore — a tracked workbench against the four-class partition
 
 `rules/workbench-tracking.md` `## The four classes` says which root entries travel and which stay; decisions `260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md` and `260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md` say what fusion does when a tracked workbench's `.gitignore` departs from it: repair an excluded R2/R3 entry with a negation line, report a tracked class L entry, repair `.checkout-id` alone (the one whose tracking gives a wrong answer, not noise), never touch an R1 exclusion, ask nothing. Only in a git work tree that already tracks `fusion-workbench/`; the choice not to track is the project's. The question is `git check-ignore -q`, never a text read of `.gitignore`, for the reason the rule gives for `git check-attr`. A class L entry that is neither tracked nor ignored is reported as well: no rule covers it, so it stands as `??` in `git status` from the moment it holds a byte, and the next `git add` of a directory commits it. **That entry is found with `git ls-files --others --exclude-standard` over it** — what git would actually pick up — and never with `check-ignore` on the entry's own path, which is the wrong question for a directory covered by the `dir/*` form (defect `260905-2234_*_step-0js-new-unignored-branch-fires-on-a-directory-whose-contents-are-ignored-by-the-dir-star-form.md`). The existence test that stood in front of it went with the question it guarded. Reported and not repaired, because nothing is tracked yet and the direction-B criterion repairs a wrong answer, not a risk (defect `260828-0853_*_setup-step-0j-misses-a-class-l-entry-that-is-untracked-but-not-ignored.md`).
@@ -278,7 +263,7 @@ if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ] && git ls-f
   if git ls-files --error-unmatch fusion-workbench/.checkout-id >/dev/null 2>&1; then
     git rm -q --cached fusion-workbench/.checkout-id && printf 'fusion-workbench/.checkout-id\n' >> ./.gitignore && echo "gitignore: .checkout-id was tracked — untracked (file kept on disk) and excluded"
   fi
-  for p in .session-marker .active-circle .cadence-anchors .commit-lock monitor portfolio.md .guard-state; do
+  for p in .session-marker .cadence-anchors .commit-lock monitor .guard-state; do
     if git ls-files --error-unmatch "fusion-workbench/$p" >/dev/null 2>&1; then echo "gitignore: class L entry $p is tracked — not repaired, report it"
     elif [ -n "$(git ls-files --others --exclude-standard -- "fusion-workbench/$p")" ]; then echo "gitignore: class L entry $p is untracked and covered by no ignore rule — not repaired, report it"
     fi

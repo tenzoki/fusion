@@ -4,52 +4,66 @@ This is the *how it works in practice* guide. It walks through the shape of a fu
 
 For *why* fusion is built this way, see [`docs/philosophy.md`](philosophy.md). For install and hands-on usage, see [`README.md`](../README.md). This doc sits between them: it explains the machinery you'll steer.
 
-## 1. The Circle — one unit of work
+## 1. The work item — one unit of work
 
-A **Circle** is one bounded unit of work. It is defined by three things: a **Directive** (the outcome you're aiming for), its **Grounding** (what you know going in — the assumptions and facts the work builds on), and its **Artifact** (what the work produces). When those three hold together, the Circle is done.
+A **work item** is one bounded unit of work: something somebody is going to do, or has decided not to. It is defined by three things: a **Directive** (the outcome you're aiming for), its **Grounding** (what you know going in — the assumptions and facts the work builds on), and its **Artifact** (what the work produces). When those three hold together, the item is done.
 
-A Circle moves through a small set of states. Each state is written as a single letter between underscores in the Circle's record filename (`_t_circle.md` means the active one):
+**One file per item, and no marker on the filename.** An item lives at `fusion-workbench/shared/backlog/<timestamp>-<slug>.md`, and its state is a head field inside it:
 
-- **anticipated** (`_a_`) — captured as future work, not started. A provisional Directive with no Grounding yet.
-- **active** (`_t_`) — being worked on right now. Directive refined, Grounding filled in, the orchestrator running it.
-- **closed-coherent** (`_c_`) — finished cleanly; the work matched the goal.
-- **bounded** (`_b_`) — stopped short because the goal turned out unreachable; what was learned is the result.
-- **superseded** (`_s_`) — replaced by another Circle (scope split, or redirected).
-- **deferred** (`_d_`) — an anticipated Circle pushed out indefinitely.
+```markdown
+# split the manifest loader from the validator
 
-The last four are terminal — a closed Circle is never reopened. If work needs to continue, a new Circle is created that cites the old one.
+---
+**Domain:** code
+**Status:** claimed
+**Claim:** 3f9a1c07 — Ada Lovelace <ada@example.com>, 260910-1145
+**Depends-on:** 260901-1030-extract-the-schema-reader.md
+**Filed by:** user, Ada Lovelace <ada@example.com>
+---
 
-**A Circle is a directory, not a file.** It lives at `fusion-workbench/circles/<timestamp>-<slug>/` and holds everything that unit of work produces — its plans, issues, decisions, reviews, and session history, each in its own subfolder. The directory name never changes across the Circle's life, so references into it never break; only the state letter on the record file inside moves.
+## Directive
 
-**One Circle is active at a time.** A one-line pointer file, `.active-circle`, names the active Circle's directory. The orchestrator writes it when a Circle goes active and deletes it when the Circle closes. Most sessions run a single Circle implicitly — you don't have to think about Circles at all until you have several units of future work to juggle. When you do, capture them as anticipated Circles and run them one at a time; a `portfolio.md` file ranked what was waiting until v11, when the agent that regenerated it was removed and the ranking became yours.
+…
+```
 
-### How a Circle comes into existence
+`**Status:**` takes four values and there is no fifth:
 
-**Every Circle is created by a command you type.** One agent creates them, the **shaper** in its anticipated-circle mode ([`agents/shaper.md`](../agents/shaper.md) `## Four invocation modes`), and these are the commands that reach it:
+- **open** — nobody is working on it.
+- **claimed** — a checkout is working on it now, and `**Claim:**` names which.
+- **done** — the work landed. The claim stays, naming who did it.
+- **dropped** — no longer live; the body says why, citing the item that replaced it or the reason.
 
-1. **From a draft you want kept rather than started.** `/fusion:direct <draft>` passes your draft to the **shaper**, which asks a round or two of clarifying questions and then creates the anticipated Circle: the directory, its `_a_circle.md` record, and its artifact subfolders. It writes no spec and no plan, opens no gate, and starts no Turn loop. Capturing the goal is the whole product ([`skills/direct/SKILL.md`](../skills/direct/SKILL.md)).
-2. **From an idea somebody filed in the backlog**, promoted later by the same `/fusion:direct` path — you pass the entry's path where you would otherwise type a draft.
+`done` and `dropped` are terminal. If work needs to continue, you file a new item that cites the old one.
 
-**A request you hand the orchestrator creates no Circle.** It runs against the Circle that is already active, and when none is active it runs without one — its plans, issues and decisions land in `shared/`, which is the ordinary case and the one "implicitly" above describes. A Circle becomes active by being activated — the record renamed `_a_`→`_t_` and its directory name written into `fusion-workbench/.active-circle` — never by a session starting.
+**Two design choices are worth knowing, because everything else follows from them.** One file per item rather than one list file, so two checkouts adding work at the same time merge with no conflict. And the state in a field rather than in the filename, so a state change edits the file instead of renaming it and every citation of an item stays valid for the item's whole life.
 
-**The backlog is where an idea waits before it is a unit of work.** It is a shared store at `fusion-workbench/shared/backlog/`, one file per idea, holding what is worth considering but not yet worth planning. You file an entry with `/fusion:memo idea: <one line>`, and a title plus one paragraph is the whole minimum ([`skills/memo/SKILL.md`](../skills/memo/SKILL.md)). The cheapness is the design: an entry that costs more to write than a note is an entry nobody writes. Two bounds hold the store in place, both stated in [`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) `## Backlog entries`. **No agent files an entry** — filing is yours, by hand or through `/fusion:memo`; a defect an agent finds is still an issue, and a choice point is still a decision record. And **the backlog is not the work queue** — it holds ideas, not tasks.
+**`claimed` names a checkout, and that is what stops two people doing one job.** The value compared is the eight hex characters `bin/fusion-identity` prints for this checkout, never the person beside them — two checkouts of one person carry one git identity, so the person alone cannot answer whose claim this is. A takeover overwrites the field; who held it before is in the commit that took it. The collision is detected and not prevented: two checkouts that both pull, both see no claim and both claim will conflict on that one line at the next merge, and whoever loses the race picks another item.
 
-**The idea-to-Circle path**, from filing to activation:
+**`**Depends-on:**` carries edges you confirmed**, as a comma-separated list of item basenames. A helper may read the store and *report* an order over those edges; that report is a report, and you override it wherever you want to. No agent asserts a ranking.
+
+### How an item comes into existence
+
+**You file it, and no agent ever does.** `/fusion:memo idea: <one line>` writes the item — a title, one paragraph, `**Status:** open` — and a title plus one paragraph is the whole minimum ([`skills/memo/SKILL.md`](../skills/memo/SKILL.md)). The cheapness is the design: an item that costs more to write than a note is an item nobody writes. A defect an agent finds is still an issue, and a choice point is still a decision record; neither becomes a work item by being routed through here.
+
+**What the orchestrator may do to the store, it does at your word.** Claiming, releasing, finishing, dropping, splitting one item into several and merging several into one are edits it performs once you have said so, one confirmation per operation on that item. None of them adds a job to the store, which is what keeps the no-agent-files bound intact across all of them.
+
+**A request you hand the orchestrator needs no item at all.** Most sessions are one task told to the orchestrator directly; the backlog is what you reach for when you have several units of future work whose order is not obvious. Where a session *is* working a claimed item, its basename rides every dispatch, which is what lets the monitor say what this session is doing.
+
+**A per-unit-of-work container stood here from v4 until v11.** Each unit was a directory under `circles/`, carrying a six-marker record and its own copy of every store, ranked by a portfolio agent and activated through a per-checkout pointer file that never travelled between checkouts. `/fusion:migrate` converts a workbench that still has one: each directory becomes one item, its artifacts empty into the shared stores.
+
+**The idea-to-work path**, from filing to claiming:
 
 ```
-/fusion:memo idea: …     you file the entry, always at open (_o_)
+/fusion:memo idea: …     you file the item, always at Status: open
        ↓
-you read the store      and pick the entry worth shaping. A ranking agent and
-                         a portfolio command did this until v11; the four
-                         reshaping operations are now the orchestrator's, each
-                         on a confirmation you gave for that entry
+you read the store       and pick the item worth doing. Nothing ranks it: the
+                         ranking agent and its command both went at v11
        ↓
-/fusion:direct <entry>   shaper reads the entry as its draft, clarifies it
-                         with you, writes the anticipated Circle, and closes
-                         the entry with a Promoted: line naming that Circle
+the orchestrator claims  Status: open → claimed, Claim: <your checkout>,
+                         on your word
        ↓
-you activate it          rename the record _a_ → _t_ and write its directory
-                         name into fusion-workbench/.active-circle
+shaper / planner         the item's path is a valid request to the shaper,
+                         which writes a spec from it and edits no byte of it
 ```
 
 Section 5 walks that path step by step, beside a code session that never touches it.
@@ -62,20 +76,19 @@ Fusion doesn't execute a vague request directly. It turns the request into a wri
 your request  →  shaper  →  SPEC GATE  →  planner  →  PLAN GATE  →  execute  →  report
                  (if the request needs sharpening)
 
-/fusion:direct <draft>  →  shaper  →  an anticipated Circle  →  activate it  →  the flow above
-                           (anticipated-circle mode: a Circle, not a spec.
-                            No gate, no plan, no Turn loop — capture only.)
+a work item's path  →  shaper  →  the same flow, with the item as the request
+                       (the item is read, never written)
 ```
 
-- **shaper** takes an ambiguous or many-sided request and produces a **spec** — a precise statement of what will be built, with the hidden decisions surfaced. If your request is already clear and single-purpose, the shaper is skipped and fusion goes straight to planning. That is its default mode; the note below covers the one mode that produces a Circle instead.
+- **shaper** takes an ambiguous or many-sided request and produces a **spec** — a precise statement of what will be built, with the hidden decisions surfaced. If your request is already clear and single-purpose, the shaper is skipped and fusion goes straight to planning.
 - The **spec gate** is where you approve (or revise) what will be built, before any planning happens.
 - **planner** turns the approved spec into a **plan** — ordered, dependency-aware steps, each routed to an executor (coder for code, ontocoder for data and ontology).
 - The **plan gate** is where you approve *how* it will be built, before any code is written.
 - **execute** runs the plan step by step.
 
-**The shaper has four invocation modes, and one of them ends in a Circle rather than a spec** ([`agents/shaper.md`](../agents/shaper.md) `## Four invocation modes`). Three produce the spec described above: your direct request, a mid-Circle clarification the orchestrator asks for, and a re-clarification of an anticipated Circle's Directive before you activate it. The fourth, **anticipated-circle** mode, is the second line of the diagram: `/fusion:direct` dispatches it ([`skills/direct/SKILL.md`](../skills/direct/SKILL.md)). It captures the refined Directive as a new anticipated Circle. There is no spec, because there is nothing to approve yet — you are writing down a goal, not commissioning work.
+**The shaper has two invocation modes and both end in a spec** ([`agents/shaper.md`](../agents/shaper.md) `## Two invocation modes`): your direct request, and a task clarification the orchestrator asks for before a vague task is planned. A **work item is a valid request** — hand the shaper the item's path and it reads the item's Directive as your words. It edits no byte of the item: its key set carries the read key and no write key, so a run that tried to file or claim one has no path to write to.
 
-That mode creates the Circle as its **first** write, then re-resolves its own paths against the new directory, so its history file and any decision you defer during the clarification land inside the Circle instead of in the shared store. This is the Circle-first placement rule the workbench follows generally: an artifact belongs to the Circle whose Directive caused it, and once a Circle is in scope, every spec, plan, issue and decision written for it lands inside it ([`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) `## Origin Rule`; the one extra resolution a mid-run creation is allowed is in `## Path Resolution`).
+Two further modes stood here until v11 and went with the record they edited: one re-clarified a unit-of-work record's Directive in place, the other created such a record from a draft and was the whole of what the removed `/fusion:memo`-adjacent capture command dispatched. A re-shape is now an ordinary run producing an ordinary spec.
 
 The spec and the plan are the contract. Every later check — "is this work still on track?" — is measured against them, not against a fresh reading of your original sentence.
 
@@ -125,7 +138,7 @@ The one thing left to configure is not the guard: `orchestrator.maxTurns`, in yo
 
 ## 5. Two worked walkthroughs
 
-Two paths reach the same place and cross different machinery. The first is one code session from request to close, with each gate and hook marked. The second is the portfolio path — an idea filed today, a Circle activated weeks later — which passes through no gate and no guard at all, because it produces no code.
+Two paths reach the same place and cross different machinery. The first is one code session from request to close, with each gate and hook marked. The second is the backlog path — an idea filed today, claimed weeks later — which passes through no gate and no guard at all, because it produces no code.
 
 ### 5a. One code session, from request to close
 
@@ -134,31 +147,31 @@ Two paths reach the same place and cross different machinery. The first is one c
 3. The request is specific enough, so the **shaper** is skipped. The **planner** produces a plan — a middleware step, a config step, a test step.
 4. **PLAN GATE** — you review the three steps and approve.
 5. **Turn 1 begins.** The **coder** edits the middleware. Each write passes through the **hook layer**, which allows it and records a row naming the tool and the file, so the monitor shows the edit as it happens. The coder edits it twice more while iterating, and nothing stands in the way.
-6. The coverage read notes what a review will eventually tile — **coderev** itself runs once per Circle, at its close (v10.14), scoped to every commit no review has covered.
+6. The coverage read notes what a review will eventually tile — the **reviewer** itself runs once per work item, at its close, scoped to every commit no review has covered.
 7. The orchestrator **commits** the work (holding the commit lock so parallel agents don't collide on the git index).
 8. **Per-Turn Coherence check** — the three questions pass: the work matches the assumptions, moves toward the goal, and the goal is still reachable. You see one status line; the Turn continues without asking.
 9. Turn 2 handles the tests the same way. The queue is now empty.
-10. **Final reconciliation** — the `reconciler` verifies the tracking files against the actual code and confirms the Circle is coherent.
-11. The Circle closes as **closed-coherent** (`_c_`), the `.active-circle` pointer is removed, and the orchestrator **reports** what landed.
+10. **Reconciliation, if you ask for it** — the `reconciler` verifies the tracking files against the actual code and returns its three-edge Coherence verdict. Nothing schedules this; it runs when you say so.
+11. The item's `**Status:**` moves to **done**, its `**Claim:**` stays naming who did the work, a closure note is appended citing the commit range, and the orchestrator **reports** what landed.
 
 Had step 8 shown the work drifting — say the coder had started refactoring an unrelated module — the Coherence check would have flagged it and opened the **Rebalance gate** for you to steer.
 
-### 5b. From an idea to a Circle
+### 5b. From an idea to a claimed work item
 
-The same machinery, used at portfolio speed. Nothing here is executed, nothing is committed, and the steps can sit weeks apart.
+The same store, at a slower speed. Nothing here is executed, nothing is committed, and the steps can sit weeks apart.
 
-1. **You file the idea.** Mid-session you notice something worth doing later and type `/fusion:memo idea: split the manifest loader from the validator`. A new entry appears at `shared/backlog/<stamp>_o_split-manifest-loader-from-validator.md` — a title, one paragraph, marker open (`_o_`). That is all that happens: the memo skill files entries and never reads the store back, so nothing ranks or reshapes what you just wrote.
-2. **Somebody ranks it.** A `playmaker` agent did this until v11 and the mandate moved to the orchestrator with it. Renaming an entry between open (`_o_`) and recommended (`_p_`) is the one backlog write made on its own authority, because that rename states a ranking and nothing more. Splitting an entry that turned out to hold several ideas, merging duplicates into one, closing an entry whose idea is no longer live, and deferring one to a named later moment are four further operations, and each is performed only with a confirmation you gave for that operation on that entry. No agent files an entry of its own: they reshape ideas the store already holds ([`rules/backlog-entries.md`](../rules/backlog-entries.md)).
-3. **You read the store.** The anticipated Circles and the ranked backlog entries stand side by side on disk; a portfolio command rendered them until v11 and you now open them. An entry holding several ideas wants **splitting first** and never shaping, because everything downstream takes an entry whole — promoting a dozen observations would make one Circle of all of them and retire the rest unread.
-4. **You promote it.** `/fusion:direct <entry path>` dispatches the shaper in anticipated-circle mode. It reads the entry as its draft, clarifies it with you over a round or two, creates the Circle, and closes the entry in the same act: the marker moves to closed (`_c_`) and one `Promoted:` line naming the new Circle is appended. If the entry did hold several ideas, the shaper leaves it untouched instead, and its first question to you is which of them this Circle is.
-5. **You activate it when you're ready.** Rename the record from anticipated to active and write the directory name into `.active-circle`. The first walkthrough takes over from there.
+1. **You file the item.** Mid-session you notice something worth doing later and type `/fusion:memo idea: split the manifest loader from the validator`. A new file appears at `shared/backlog/<stamp>-split-manifest-loader-from-validator.md` — a title, one paragraph, `**Status:** open`, no marker on the name. That is all that happens: the memo skill files items and never reads the store back, so nothing ranks or reshapes what you just wrote.
+2. **Nothing ranks it.** A `playmaker` agent did until v11, and no replacement was built: an order over the store is yours to hold. What a helper may do is *report* an order over the `**Depends-on:**` edges you confirmed, with cycles named — and you override that report wherever you want to.
+3. **You read the store.** The items stand side by side on disk with their statuses in their heads. An item holding several jobs wants **splitting first**, because everything downstream takes an item whole — a spec written from a dozen observations covers one of them and leaves the rest unread. Splitting is one of the orchestrator's operations and needs your word for that item.
+4. **You claim it.** The orchestrator sets `**Status:** claimed` and writes `**Claim:** <your checkout> — <you>, <stamp>`, on your say-so and in one edit. From that moment the session holds the item's basename and puts it on every dispatch, so the monitor can say what this session is doing.
+5. **You work it.** Hand the item's path to the shaper and the first walkthrough takes over from there — the item is read as the request, and no byte of it is written by the shaper or by anything else until the orchestrator closes it at your word.
 
-Nothing in steps 1 to 4 writes what an active Turn loop writes, so this path is safe to walk in the middle of an active session. The backlog store is the only thing they write, and a running dispatch loop writes none of it. A new anticipated Circle does not disturb the active one.
+None of steps 1 to 3 writes anything but the backlog store, so they are safe to walk in the middle of a running session. Filing an item disturbs nothing that a dispatch loop is holding.
 
 ## 6. Where to go next
 
-- [`docs/philosophy.md`](philosophy.md) — *why* fusion is built this way (the design ideas behind Circles, file-based coordination, and observation over enforcement).
+- [`docs/philosophy.md`](philosophy.md) — *why* fusion is built this way (the design ideas behind the unit of work, file-based coordination, and observation over enforcement).
 - [`README.md`](../README.md) — install, setup, your first session, best practices, configuration.
 - [`README-hooks.md`](../README-hooks.md) — the hook layer in full: what it traces, the one project setting, and the account of every check that was removed and the measurement behind it.
-- [`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) — the exact workbench layout and the issue, planning and decision marker vocabularies. The Circle state vocabulary and the Circle-record template are next door in [`rules/circle-records.md`](../rules/circle-records.md).
+- [`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) — the exact workbench layout, the work-item grammar, and the issue, planning and decision marker vocabularies.
 - Run `/fusion:help` inside Claude Code for an interactive explainer.

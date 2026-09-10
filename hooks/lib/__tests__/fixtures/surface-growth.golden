@@ -15,33 +15,32 @@
   analyst.md 21013
   coder.md 12131
   consultant.md 13855
-  curator.md 34335
+  curator.md 34360
   editor.md 13309
   ontocoder.md 15801
-  orchestrator.md 94869
-  planner.md 19696
-  reconciler.md 21187
+  orchestrator.md 84055
+  planner.md 19040
+  reconciler.md 21122
   reviewer.md 12837
-  shaper.md 28942
-  total 287975
+  shaper.md 15784
+  total 263307
 
 [skills bytes]
-  archive/SKILL.md 25472
-  cadence/SKILL.md 19640
-  check/SKILL.md 33188
+  archive/SKILL.md 22224
+  cadence/SKILL.md 19643
+  check/SKILL.md 31244
   cleanup/SKILL.md 6496
   commit/SKILL.md 6298
-  curate/SKILL.md 11972
-  direct/SKILL.md 10297
-  help/SKILL.md 16950
-  log-activity/SKILL.md 13608
-  memo/SKILL.md 12244
-  migrate/SKILL.md 25351
+  curate/SKILL.md 11863
+  help/SKILL.md 16692
+  log-activity/SKILL.md 13273
+  memo/SKILL.md 12446
+  migrate/SKILL.md 36874
   news/SKILL.md 8766
-  post/SKILL.md 6301
-  reconcile/SKILL.md 6581
-  setup/SKILL.md 17293
-  total 220457
+  post/SKILL.md 6228
+  reconcile/SKILL.md 6604
+  setup/SKILL.md 17727
+  total 216378
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -51,7 +50,7 @@
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
   config.test.ts 954
-  context-manifest.test.ts 467
+  context-manifest.test.ts 520
   declared-citation-paths.test.ts 70
   deliverable-language-lint.test.ts 136
   derivable-enumerations-lint.test.ts 449
@@ -67,7 +66,7 @@
   fusion-events.test.ts 414
   fusion-forum.test.ts 220
   fusion-identity.test.ts 217
-  fusion-paths.test.ts 927
+  fusion-paths.test.ts 734
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
   glob-nomatch-lint.test.ts 140
@@ -84,20 +83,20 @@
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 168
   monitor-warnings-panel.test.ts 1222
-  path-literal-lint.test.ts 333
+  path-literal-lint.test.ts 332
   paths.test.ts 31
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
-  reference-resolution-lint.test.ts 992
-  review-coverage-mandate.test.ts 362
+  reference-resolution-lint.test.ts 994
+  review-coverage-mandate.test.ts 368
   review-coverage.test.ts 890
-  rules-emission-golden.test.ts 1400
+  rules-emission-golden.test.ts 1406
   rules-voice-profile.test.ts 319
   sentence-identifier-containment.test.ts 472
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 673
-  surface-growth-bound.test.ts 686
+  surface-growth-bound.test.ts 690
   workbench-citation-lint.test.ts 325
-  total 21615
+  total 21492

@@ -10,7 +10,7 @@ You are an architecture and implementation planning specialist. You analyze requ
 ## Setup
 
 1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. `/fusion:setup` pre-creates the layout; it is defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` and nowhere else. Never hard-code a store path — step 2 resolves them for you.
-2. **Rules and paths.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" planner` and `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" planner`. Read every path `fusion-rules` emits, and follow `rules/agent-setup.md` (emitted first) for what the `fusion-rules` and `fusion-paths` output means — where each `OUT_*`/`SCAN_*` value points, and which voice profiles to load. Add `--audience=user` to that call when your dispatch says `**Audience:** user`. Read your dispatch prompt's parameter block before this call: when it carries `**Circle:** <directory-name>` (`## Parameter parsing` below), pass that name as the resolver's second argument (`fusion-paths planner <directory-name>`) and everything you write lands inside that Circle. That is still one resolution at Setup.
+2. **Rules and paths.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" planner` and `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" planner`. Read every path `fusion-rules` emits, and follow `rules/agent-setup.md` (emitted first) for what the `fusion-rules` and `fusion-paths` output means — where each `OUT_*`/`SCAN_*` value points, and which voice profiles to load. Add `--audience=user` to that call when your dispatch says `**Audience:** user`. The resolver takes your name and nothing else — one kind, one store — so this is the only resolution the run performs.
 
 ## Scope
 
@@ -46,13 +46,11 @@ The file's role in the system decides, not its extension — `agents/orchestrato
 
 ## Parameter parsing
 
-The dispatch prompt may open with a **parameter block**: `**<Keyword>:**` lines, one per line, ahead of the directive body. Both parameters below are optional and their order does not matter; a dispatch carrying neither behaves exactly as it does today. Do not echo a parsed parameter line back to the user as part of the plan body — it is a control prefix, not part of the directive.
+The dispatch prompt may open with a **parameter block**: `**<Keyword>:**` lines, one per line, ahead of the directive body. The parameter below is optional; a dispatch carrying none behaves exactly as it does today. Do not echo a parsed parameter line back to the user as part of the plan body — it is a control prefix, not part of the directive.
 
 - `**Executors:** <comma-separated list>` — the active executor set. Each name must be one of `coder | ontocoder | analyst`; ignore any unrecognised entries. Absent, or naming nothing recognised, the set is `[coder, ontocoder]` per `## Executor Agents` above.
 
-- `**Circle:** <directory-name>` — the Circle this plan belongs to, named by its directory: no marker, no `.md`, no prefix. Pass it as the resolver's second argument at Setup step 2, and the plan and any issue or decision record you file all land inside that Circle. This is what lets you plan an **anticipated** Circle before it is activated — the pointer names a different Circle, or none, and neither is consulted for the substitution once a target is given. Absent, you resolve with no target and placement is exactly today's: the active Circle when one is active, `shared/` when none is.
-
-  A `**Circle:**` value naming no Circle directory exits 1 from the resolver, with the argument in the message. Halt and report it. Do not re-run the resolver without the target — that resolution succeeds, and it writes the plan wherever the pointer happens to point, which is the one placement the dispatcher ruled out by naming another.
+**A second parameter stood here and went with the container it named.** `**Circle:**` carried a directory name that became the resolver's second argument, so a plan could be written into a Circle other than the active one. There is one store per kind now, the resolver takes no second argument, and a dispatch carrying the line is dispatching against a version that no longer exists: report it rather than guessing what was meant.
 
 ## Open decisions as planning input, and the ones you file yourself
 
@@ -129,7 +127,7 @@ You may receive work in two forms:
 
 ## Where this Circle stops
 
-<The conditions under which this Circle is finished, and any precondition a later act — a release, a tag, a closure — must satisfy first. One clause per condition, each answerable yes or no. A conditional whose antecedent is a measurement this Circle performs is a clause here, never an acceptance criterion; one whose condition never arose is annotated inline, `(condition did not arise: one clause)`.>
+<The conditions under which this work is finished, and any precondition a later act — a release, a tag, a closure — must satisfy first. One clause per condition, each answerable yes or no. A conditional whose antecedent is a measurement this plan performs is a clause here, never an acceptance criterion; one whose condition never arose is annotated inline, `(condition did not arise: one clause)`.>
 
 ## Data Structures
 
@@ -156,7 +154,7 @@ You may receive work in two forms:
 
 (The **Decidability** line is mandatory and is never left empty. It is defined in `rules/critical-stance.md` §4, which also says what to do when the answer is no. The label reads `**Decidability:**` in every project, a `de` one included: it is defined in this shipped template, which is an exempt surface, while the plan body under it follows the artifact language. See `rules/fusion-workbench-conventions.md` `## Project language`.)
 
-(**`## Where this Circle stops` is mandatory and is never left as the angle-bracket placeholder**, the same standing `**Decidability:**` has; with no Circle active it says where this plan's own work stops. **A gate reads it for presence, never for substance.** `hooks/lib/__tests__/plan-stopping-section-lint.test.ts` fails the suite when a live plan's section is absent, empty, or still the bare placeholder, and it judges no clause. Whether a clause is the right one is a human answering the orchestrator's question at Phase 4, which reads the section back clause by clause before the Circle closes, and that remains the whole of that enforcement. The split is what makes the gate buildable at all: whether a heading carries a body is settled by reading the file, and whether a stopping condition is correct is not. Write clauses accordingly. Measured: a plan made this Circle's review pass a precondition of the tag, v10.0.0 was tagged and pushed without the pass, and only a post-release reconciliation noticed. Binding decision: fusion's own record `260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`.)
+(**The stopping section is mandatory and is never left as the angle-bracket placeholder**, the same standing `**Decidability:**` has; it says where this plan's own work stops. **Its heading is verbatim, `## Where this Circle stops`** — the noun is the one the gate matches on and it is renamed with the gate, not here. **A gate reads it for presence, never for substance.** `hooks/lib/__tests__/plan-stopping-section-lint.test.ts` fails the suite when a live plan's section is absent, empty, or still the bare placeholder, and it judges no clause. Whether a clause is the right one is a human answering the orchestrator's question at the closing gate, which reads the section back clause by clause, and that remains the whole of that enforcement. The split is what makes the gate buildable at all: whether a heading carries a body is settled by reading the file, and whether a stopping condition is correct is not. Write clauses accordingly. Measured: a plan made its own review pass a precondition of the tag, v10.0.0 was tagged and pushed without the pass, and only a post-release reconciliation noticed. Binding decision: fusion's own record `260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`.)
 
 ## Design Principles
 

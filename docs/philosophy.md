@@ -36,7 +36,7 @@ If all three hold, the work continues or closes cleanly. If something is off, th
 
 That last option matters because the **Directive is revisable** — a stated outcome that can change mid-work when the assumptions turn out wrong or the world moves, not a fixed target to push against until it breaks.
 
-A unit of work is a **Circle**. Most sessions run one Circle implicitly. When you have several units of future work, you can capture them as files and pick one by hand. A ranking agent and a portfolio command did that until v11, when both were removed. `README.md` owns the operational detail.
+A unit of work is a **work item**: one file, carrying its Directive and its state, in the project's backlog. Most sessions never need one — you tell the orchestrator a task and it runs it. When you have several units of future work, you file each as an item and claim one by hand. Nothing ranks them: a ranking agent and its command did until v11, when both were removed. `README.md` owns the operational detail.
 
 ## What fusion is not
 
@@ -47,9 +47,9 @@ A unit of work is a **Circle**. Most sessions run one Circle implicitly. When yo
 ## Where to read more
 
 - `README.md` — install, setup, first session, best practices, configuration.
-- [`working-model.md`](working-model.md) — how the working model operates: the Circle flow, the spec-driven pipeline, the gates, and the compliance guard, walked end to end (the "how" companion to this "why").
+- [`working-model.md`](working-model.md) — how the working model operates: the work item's life, the spec-driven pipeline, the gates, and the compliance guard, walked end to end (the "how" companion to this "why").
 - `README-agents.md` — the full agent reference (scope, inputs, outputs, when to invoke).
 - `README-hooks.md` — the compliance guard in detail.
 - `CLAUDE.md` — layout, release process, troubleshooting (for plugin developers).
-- `rules/fusion-workbench-conventions.md` — workbench layout, issue/planning and decision marker vocabularies; `rules/circle-records.md` — the Circle state vocabulary and the Circle record template.
+- `rules/fusion-workbench-conventions.md` — workbench layout, the work-item grammar, and the issue/planning and decision marker vocabularies.
 - Run `/fusion:help` inside Claude Code for an interactive explainer.

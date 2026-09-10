@@ -18,7 +18,7 @@ demand, not read a file. The set is layered, not ranked: you read all of it.
 ## What `fusion-rules` emits
 
 - `fusion-workbench-conventions.md`: always, for every agent. The framework ground truth
-  (workbench layout, the Origin Rule, marker vocabularies, the Path Resolution contract).
+  (workbench layout, the work-item grammar, marker vocabularies, the Path Resolution contract).
 - **Pattern-matched domain rules**: coding, ontology, normative, verb, etc., selected per
   your agent. The descriptive name of the pattern does not matter; you read
   whatever is emitted regardless of what kind of rule it is.
@@ -36,13 +36,13 @@ list names. Hold these values for the whole session and use them wherever your p
 names one: they are the only correct answer to "where does this go". Never guess a path
 when the resolver fails; stop and report.
 
-A single `SCAN_*` value may name **two directories** (the active Circle's and the shared
-one), so search across all of them or your scan silently under-reports.
+A `SCAN_*` value names one directory, the same one its `OUT_*` names: one kind, one store.
 
 A non-zero exit says whose fault it is (full table in `fusion-workbench-conventions.md`
-`## Path Resolution` → Exit codes): **exit 3**: `.active-circle` is orphaned or corrupt;
-the user fixes the pointer. **exit 4**: an internal `fusion-paths` bug; the user's
-workbench is fine and must not be sent to check the pointer.
+`## Path Resolution` → Exit codes). **exit 4** is the one you will meet: an internal
+`fusion-paths` bug, so the user's workbench is fine and must not be sent anywhere to be
+repaired. There is no exit 3 — a 3 from `fusion-rules` is that helper's own code, for a
+malformed manifest, and says nothing about your paths.
 
 ## Voice profiles
 

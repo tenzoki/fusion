@@ -14,82 +14,82 @@
 # profiles are out of scope — they vary per consuming project.
 
 [analyst]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
   design-diagrams.md 5285
-  total 74420
+  total 74441
 
 [coder]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
-  total 69135
+  total 69156
 
 [consultant]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
   user-facing-output.md 10883
-  total 80018
+  total 80039
 
 [curator]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
   user-facing-output.md 10883
-  total 80018
+  total 80039
 
 [editor]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
   user-facing-output.md 10883
   project-language.md 5754
-  total 85772
+  total 85793
 
 [ontocoder]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
-  total 69135
+  total 69156
 
 [orchestrator]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
   user-facing-output.md 10883
   decision-record-examples.md 4952
   commit-lock.md 8305
-  total 93275
+  total 93296
 
 [planner]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
   decision-record-examples.md 4952
   design-diagrams.md 5285
-  total 79372
+  total 79393
 
 [reconciler]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
   decision-record-examples.md 4952
-  total 74087
+  total 74108
 
 [reviewer]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
-  review-contract.md 6822
-  total 75957
+  review-contract.md 6823
+  total 75979
 
 [shaper]
-  agent-setup.md 4181
+  agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
   user-facing-output.md 10883
   decision-record-examples.md 4952
   design-diagrams.md 5285
-  total 90255
+  total 90276

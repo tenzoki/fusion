@@ -17,7 +17,7 @@ The user invoked `/fusion:reconcile`. This body performs one procedure: it dispa
 All four are optional, and a bare `/fusion:reconcile` is the ordinary invocation.
 
 - `<directive text>` — the session Directive, in the user's own words. It is what the reconciler's two Directive edges are evaluated against.
-- `--since <commit>` — the anchor the ground-truth walk starts from. Absent, this body reads the checkout's own reconcile mark; absent that too, the reconciler falls back to the active Circle's stamp and says so.
+- `--since <commit>` — the anchor the ground-truth walk starts from. Absent, this body reads the checkout's own reconcile mark; absent that too, the reconciler falls back to the stamp on the work item this checkout claimed and says so.
 - `--domain code|data` — overrides the detected domain.
 - `--force` — dispatch even when nothing has moved since the last pass (Step 3).
 

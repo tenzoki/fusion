@@ -27,28 +27,30 @@ pwd
 
 Note the path: the workbench is created here.
 
-### Pre-v4 layout check (CRITICAL — refuse, do not migrate)
+### Superseded-layout check (CRITICAL — refuse, do not migrate)
 
-**This runs before the `mkdir` below, and the order is the whole point.** A workbench created before v4 keeps its artifacts in type folders at the workbench root (`planning/`, `issues/`, `decisions/`, …); the container layout puts them in `shared/`. Setup does **not** migrate — `/fusion:migrate` does. Setup's job here is to notice and stop.
+**This runs before the `mkdir` below, and the order is the whole point.** Two layouts preceded the current one, and a workbench carrying either is refused rather than repaired. A workbench created before v4 keeps its artifacts in type folders at the workbench root (`planning/`, `issues/`, `decisions/`, …). A v4-to-v10 workbench keeps them inside per-unit-of-work directories under `circles/`, each with its own copy of every store. The current layout has one store per kind, all of them under `shared/`. Setup does **not** migrate — `/fusion:migrate` does. Setup's job here is to notice and stop.
 
 Running the `mkdir` first splits the workbench across two layouts and leaves every pre-v4 artifact unreachable; the marker write further down overwrites `plugin_version`.
 
-Detection is by artifact presence, not by version — a workbench with no out-of-format artifacts has nothing to migrate regardless of which version created it. It fires on two shapes: a pre-v4 type-folder / flat-Circle layout, **and** a container-layout workbench whose filenames still carry the old bracket-form state marker (`…[o]-….md`) instead of the underscore form. Both route to `/fusion:migrate`, which brings the workbench fully to the current format. Read-only:
+Detection is by artifact presence, not by version — a workbench with no out-of-format artifacts has nothing to migrate regardless of which version created it. It fires on three shapes: a pre-v4 type-folder layout, **a `circles/` container holding anything at all**, and a workbench whose filenames still carry the old bracket-form state marker (`…[o]-….md`) instead of the underscore form. All three route to `/fusion:migrate`, which brings the workbench fully to the current format. Read-only:
 
-**The bracket-marker probe walks the two trees `/fusion:migrate` converts, and nothing else — do not widen it.** It anchors its `find` at `shared/` (any depth) and `circles/` (from depth 2), the same candidate list migrate's reformat pass renames (`skills/migrate/SKILL.md:54,87`). A live markered artifact has nowhere else to be, and `archive/`, `stashes/` and `.migration-v2-backup/` keep the filenames their content was frozen with, so a probe reaching them reads an unconverted workbench, refuses Setup permanently, and routes the user to a migration that reports nothing to do.
+**An empty or absent `circles/` is not a finding.** A workbench set up under v4-to-v10 has the directory whether or not it was ever used, and refusing on the directory alone would refuse a workbench with nothing in it to move. What is refused is a container with content.
+
+**The bracket-marker probe walks the two trees `/fusion:migrate` converts, and nothing else — do not widen it.** It anchors its `find` at `shared/` (any depth) and `circles/` (from depth 2), the same candidate list migrate's reformat pass renames. A live markered artifact has nowhere else to be, and `archive/`, `stashes/` and `.migration-v2-backup/` keep the filenames their content was frozen with, so a probe reaching them reads an unconverted workbench, refuses Setup permanently, and routes the user to a migration that reports nothing to do.
 
 **The bracket-marker probe matches the marker shape, not any bracket pair.** The `find` name test `'*[[]*[]]*.md'` is only the cheap prefilter; the `grep` behind it keeps a file only when its basename carries the actual old marker form `[x]-` with `x` one of `oatcibspd` — exactly the set `/fusion:migrate`'s rename pass converts (`s/\[([oatcibspd])\]-/_\1_/g`, `skills/migrate/SKILL.md` Step 4). The detector must only look for things the executor can remove: a name like `notes [draft].md` carries a bracket pair no migration will ever rename, and flagging it would refuse Setup permanently while `/fusion:migrate` correctly reports nothing to do.
 
 All three probes are now bounded by construction, and none may be given a path exception.
 
 ```bash
-WB=./fusion-workbench; OLD=0; if [ -d "$WB" ]; then for d in planning issues decisions history analyses investigations consult memos codereview ontoreview conceptreview; do [ -d "$WB/$d" ] && { echo "  $d/ (root type folder)"; OLD=1; }; done; while IFS= read -r f; do printf '%s' "$(basename "$f" .md)" | grep -qE '^[0-9]{6}-[0-9]{4}\[[a-z]\]' && { echo "  circles/$(basename "$f") (Circle file in the old marker format)"; OLD=1; }; done < <(find "$WB/circles" -mindepth 1 -maxdepth 1 -name '*.md' 2>/dev/null); BM="$({ [ -d "$WB/shared" ] && find "$WB/shared" -type f -name '*[[]*[]]*.md' 2>/dev/null; [ -d "$WB/circles" ] && find "$WB/circles" -mindepth 2 -type f -name '*[[]*[]]*.md' 2>/dev/null; } | grep -E '\[[oatcibspd]\]-[^/]*$' | head -1)"; [ -n "$BM" ] && { echo "  files with a bracket marker in the name (the format before the underscore form), e.g. ${BM#"$WB"/}"; OLD=1; }; fi; echo "OLD=$OLD"
+WB=./fusion-workbench; OLD=0; if [ -d "$WB" ]; then for d in planning issues decisions history analyses investigations consult memos codereview ontoreview conceptreview; do [ -d "$WB/$d" ] && { echo "  $d/ (root type folder)"; OLD=1; }; done; N="$(find "$WB/circles" -mindepth 1 2>/dev/null | head -1)"; [ -n "$N" ] && { echo "  circles/ (per-unit-of-work container, superseded by one store per kind under shared/)"; OLD=1; }; BM="$({ [ -d "$WB/shared" ] && find "$WB/shared" -type f -name '*[[]*[]]*.md' 2>/dev/null; [ -d "$WB/circles" ] && find "$WB/circles" -mindepth 2 -type f -name '*[[]*[]]*.md' 2>/dev/null; } | grep -E '\[[oatcibspd]\]-[^/]*$' | head -1)"; [ -n "$BM" ] && { echo "  files with a bracket marker in the name (the format before the underscore form), e.g. ${BM#"$WB"/}"; OLD=1; }; fi; echo "OLD=$OLD"
 ```
 
 - **`OLD=0`** — nothing pre-v4 here. Continue with the `mkdir` below. Say nothing about it.
 - **`OLD=1`** — **stop Setup here.** Do not run the `mkdir`. Do not write the marker. Do not proceed to any later step. Tell the user, in the project's language per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`), following `rules/user-facing-output.md` and the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Show the detected entries above the message so the user sees what was found. The message is specified here in English; render it in that language:
 
-  > **Setup stopped.** This workbench still carries the pre-v4 layout: the artifacts listed above sit in root type folders instead of in `shared/`. Setup does not create the new structure beside them, because the workbench would then be spread across two layouts and no search would reach the old entries.
+  > **Setup stopped.** This workbench still carries a superseded layout: the entries listed above sit somewhere other than the one store per kind under `shared/`. Setup does not create the new structure beside them, because the workbench would then be spread across two layouts and no search would reach the old entries.
   >
   > **Next step:** run `/fusion:migrate`, then start `/fusion:setup` again. The migration shows what it will move and asks before moving anything.
 
@@ -57,12 +59,12 @@ WB=./fusion-workbench; OLD=0; if [ -d "$WB" ]; then for d in planning issues dec
 Only when `OLD=0`:
 
 ```bash
-mkdir -p ./fusion-workbench/circles ./fusion-workbench/shared/planning ./fusion-workbench/shared/issues ./fusion-workbench/shared/decisions ./fusion-workbench/shared/analyses ./fusion-workbench/shared/reviews ./fusion-workbench/shared/investigations ./fusion-workbench/shared/consult ./fusion-workbench/shared/history ./fusion-workbench/shared/memos ./fusion-workbench/shared/backlog ./fusion-workbench/archive ./fusion-workbench/.guard-state
+mkdir -p ./fusion-workbench/shared/planning ./fusion-workbench/shared/issues ./fusion-workbench/shared/decisions ./fusion-workbench/shared/analyses ./fusion-workbench/shared/reviews ./fusion-workbench/shared/investigations ./fusion-workbench/shared/consult ./fusion-workbench/shared/history ./fusion-workbench/shared/memos ./fusion-workbench/shared/backlog ./fusion-workbench/archive ./fusion-workbench/.guard-state
 ```
 
-This is the Circle-container layout defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, which enumerates every store and every root-anchored surface. Two facts about it are Setup's own:
+This is the layout defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, which enumerates every store and every root-anchored surface. Two facts about it are Setup's own:
 
-- **A Circle is a directory, not a file.** `circles/` starts empty; each unit of work later gets `circles/<YYMMDD-HHMM>-<slug>/` with its own stores. Setup does not create any Circle.
+- **One kind, one store, and every store is under `shared/`.** There is no per-unit-of-work container and nothing for Setup to create per unit of work: a work item is a file in `shared/backlog/`, filed by the user.
 - **Of the root-anchored surfaces, only `.guard-state/` is pre-created above.** The rest appear when their consumer first writes them, at the fixed root-relative paths the layout names; never create one anywhere else, because no consumer has a fallback path.
 
 Write the setup marker — the file every agent and hook looks for to confirm fusion is set up here — and read, out of the same block, which periodic checks are due. Both halves need the version the plugin ships, so they are one call rather than two. The marker is rewritten only when its content would change; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run` says why that matters.
@@ -174,4 +176,4 @@ Name each line in the Done report.
 
 ## Done
 
-Only after every step above completes may you begin the user's task. Report Setup complete with: the workspace path, what Step 0's marker block reported (`marker=`, `checks_due=`, or `marker-version-unresolved`), which checks Step 1 ran and what each said, and every helper Step 2 found in the work tree and not in the install. End with the two usual next moves: name a task, or "run the active Circle".
+Only after every step above completes may you begin the user's task. Report Setup complete with: the workspace path, what Step 0's marker block reported (`marker=`, `checks_due=`, or `marker-version-unresolved`), which checks Step 1 ran and what each said, and every helper Step 2 found in the work tree and not in the install. End with the two usual next moves: name a task, or claim a work item.

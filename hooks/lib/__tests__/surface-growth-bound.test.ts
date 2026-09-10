@@ -335,7 +335,11 @@ const SKILL_BASELINE: Record<string, number> = {
   "cleanup/SKILL.md": 23674,
   "commit/SKILL.md": 6298,
   "curate/SKILL.md": 12398,
-  "direct/SKILL.md": 10613,
+  // `direct/SKILL.md` (10 613) stood here until 2026-09-10 and went with the
+  // per-unit-of-work record its whole body dispatched the shaper to create.
+  // The entry is DROPPED rather than zeroed: a baseline entry for a file the
+  // tree no longer holds inflates the surface's floor by its whole size and
+  // grants that much head-room nobody decided to grant.
   "help/SKILL.md": 16919,
   "log-activity/SKILL.md": 13629,
   "memo/SKILL.md": 12336,

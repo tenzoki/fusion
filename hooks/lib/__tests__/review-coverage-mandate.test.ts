@@ -317,18 +317,24 @@ describe("review-coverage mandate: the consumer", () => {
     ).toEqual([]);
   });
 
-  it("the Circle review widens the dispatch scope rather than merely reporting the gap", () => {
+  it("the closing review widens the dispatch scope rather than merely reporting the gap", () => {
     // The prompt's own section, split on its heading and the next `## ` one.
     // Both anchors moved on 2026-09-10 when the Turn loop was removed: the
     // read used to sit at "Step 3c" inside a numbered phase, and the one
-    // dispatch left used to sit at "Phase 4 step 2a". Neither the measurement
-    // nor what it is for changed — only where the prompt keeps them.
+    // dispatch left used to sit at "Phase 4 step 2a". They moved again the
+    // same day when the Circle became a work item and the closing section was
+    // renamed with it. Neither the measurement nor what it is for changed —
+    // only where the prompt keeps them, which is why this reads the shape
+    // (a review scoped to the carried list, ahead of the stop-conditions read)
+    // and not the words around it.
     const section = orchestrator().split(/^## Review coverage\s*$/m)[1]?.split(/^## /m)[0] ?? "";
     expect(section, "the `## Review coverage` section is gone or was renamed").not.toBe("");
     expect(section).toContain("bin/fusion-review-coverage");
     expect(
-      /\*\*The Circle review[\s\S]*?plus the carried[\s\S]*?\*\*Read the plan/.test(orchestrator()),
-      "the one dispatch left (Closing a Circle step 2, decision 260827-1120) never adds the carried out-of-scope list to its scope.",
+      /\*\*The review — the one pass[\s\S]*?plus the carried[\s\S]*?\*\*Read the plan/.test(
+        orchestrator(),
+      ),
+      "the one dispatch left (Closing a work item step 2, decision 260827-1120) never adds the carried out-of-scope list to its scope.",
     ).toBe(true);
   });
 

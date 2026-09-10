@@ -21,7 +21,7 @@ Then resolve the workbench itself:
 
 Take `WORKBENCH` (absolute) from the output. It is the only key this skill gets, and that is the whole answer: `fusion-paths` reads a consumer's key set out of its prompt (`rules/fusion-workbench-conventions.md` `## Path Resolution`), this file names no `$OUT_*` or `$SCAN_*`, and `WORKBENCH` is emitted unconditionally. See Step 3 for why it scans the tree rather than an enumeration of stores.
 
-On a non-zero exit, read the code (full table in the conventions' `## Path Resolution` → Exit codes): **exit 1** — no workbench, scan git alone as above; **exit 3** — `.active-circle` is orphaned or corrupt, tell the user to fix or delete the pointer; **exit 4** — a bug in `fusion-paths`, not the user's workbench, report it and do not send them to check their pointer.
+On a non-zero exit, read the code (full table in the conventions' `## Path Resolution` → Exit codes): **exit 1** — no workbench, scan git alone as above; **exit 4** — a bug in `fusion-paths`, not the user's workbench, report it and do not send them anywhere in it to repair something.
 
 ### 1. This checkout
 
@@ -45,7 +45,7 @@ I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true
 
 Collect timestamped activity from git and from the whole workbench tree. For each item, record: timestamp, topic/description, source code.
 
-**Source legend** — the code names the *kind* of artifact, and the kind is the name of the directory the file sits in. The same kind carries the same code whether the file lives inside a Circle or in the shared store:
+**Source legend** — the code names the *kind* of artifact, and the kind is the name of the directory the file sits in:
 
 | Code | Artifact kind |
 |------|---------------|
@@ -59,7 +59,6 @@ Collect timestamped activity from git and from the whole workbench tree. For eac
 | `n` | investigations |
 | `t` | consultations |
 | `b` | backlog entries |
-| `k` | Circle records |
 | `w` | workbench root-level files |
 
 Two codes are **retired but still readable**: `o` (ontology reviews) and `c` (code reviews) appear in days logged before v4, when the three review kinds had a directory each. Leave those historic rows alone. New rows use `r`. When updating an existing log whose legend predates v4, add the `r` row and keep `o` and `c` listed, marked as historic — deleting them would strand the rows that use them.
@@ -82,11 +81,11 @@ b) **Workbench files** — one scan of the tree, not a walk of an enumerated lis
 
    `-newermt` is behaviour-preserving: an older mtime can only feed dates Step 2 already closed.
 
-   - **Derive the code from the containing directory's basename**, per the legend above. A file directly in the workbench root is `w`; a `*_circle.md` inside a Circle directory is `k`.
+   - **Derive the code from the containing directory's basename**, per the legend above. A file directly in the workbench root is `w`.
    - Parse filenames for embedded timestamps (e.g. `260408-1523-topic.md` means April 8, 15:23). Fall back to the modification time when the filename carries no stamp.
    - Read file headers for date metadata if available.
 
-   **Scan the tree; do not enumerate the stores.** This skill's job is *all* activity, and the tree is what "all" means. An enumeration would have to list every store the layout defines and would silently under-report the day someone adds one, or the day a Circle holds a kind the list forgot — and a missing source here looks exactly like a quiet day. `archive/`, `stashes/`, `stilwerk/` and `.migration-v2-backup/` are excluded because they hold moved, frozen, or configured content rather than activity: archived and stashed files would otherwise re-report their original days at their move date, and a v2-migration backup carries copies with the originals' timestamps — old working days would appear in the log a second time.
+   **Scan the tree; do not enumerate the stores.** This skill's job is *all* activity, and the tree is what "all" means. An enumeration would have to list every store the layout defines and would silently under-report the day someone adds one — and a missing source here looks exactly like a quiet day. `archive/`, `stashes/`, `stilwerk/` and `.migration-v2-backup/` are excluded because they hold moved, frozen, or configured content rather than activity: archived and stashed files would otherwise re-report their original days at their move date, and a v2-migration backup carries copies with the originals' timestamps — old working days would appear in the log a second time.
 
 ### 4. Group by date
 
@@ -121,7 +120,6 @@ b) **Workbench files** — one scan of the tree, not a walk of an enumerated lis
 | a | analyses |
 | n | investigations |
 | t | consultations |
-| k | Circle records |
 | w | workbench root-level files |
 
 ## High-level arc

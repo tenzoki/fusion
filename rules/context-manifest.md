@@ -94,22 +94,39 @@ old set followed by the topic-scoped additions.
 ## Topic resolution (locked)
 
 The topic is **not** a per-invocation user argument in the standard flow. It is
-**derived from the active Circle**. Resolution order:
+**derived from the work item this checkout has claimed**. Resolution order:
 
 1. **Explicit CLI topic** — if `fusion-rules <agent> <topic>` is called with a
    second argument, `resolvedTopics = {<topic>}` (comma-separated accepted). This
    is the plumbing an agent's Setup may use when it already knows the topic; it
-   overrides Circle derivation.
-2. **Explicit tag on the Circle record** — otherwise, if the active Circle's
-   record (`circles/<dir>/_<marker>_circle.md`) carries a `Topic:` or `Tags:`
-   line (bold `**Topic:**` or plain `topic:`, case-insensitive), those become
-   `resolvedTopics`. This is the precision override for when the slug alone is
-   too coarse.
-3. **Circle slug keywords** — otherwise, `resolvedTopics` is the set of keyword
-   tokens in the active Circle's slug: the directory name with the `YYMMDD-HHMM-`
-   stamp stripped, split on `-`. A Circle `YYMMDD-HHMM-ontology-refactor` yields
-   `{ontology, refactor}`, matching any unit tagged `ontology` or `refactor`.
-4. **No active Circle** — `resolvedTopics` is empty; only `[always]` units match.
+   overrides the derivation below.
+2. **Explicit tag in the claimed item** — otherwise, if the item carries a
+   `Topic:` or `Tags:` line (bold `**Topic:**` or plain `topic:`,
+   case-insensitive), those become `resolvedTopics`. This is the precision
+   override for when the slug alone is too coarse.
+3. **Item slug keywords** — otherwise, `resolvedTopics` is the set of keyword
+   tokens in the item's own filename: the basename with the `YYMMDD-HHMM-` stamp
+   stripped and the `.md` suffix dropped, split on `-`. An item
+   `YYMMDD-HHMM-ontology-refactor.md` yields `{ontology, refactor}`, matching any
+   unit tagged `ontology` or `refactor`.
+4. **Nothing claimed by this checkout** — `resolvedTopics` is empty; only
+   `[always]` units match.
+
+**The claimed item is found by the checkout, not by the store's order.** An item
+qualifies when its `**Status:**` reads `claimed` **and** its `**Claim:**` names
+this checkout's eight hex characters, compared for equality the way
+`rules/fusion-workbench-conventions.md` `## Backlog entries — work items` defines
+it. Both halves are tested: a `claimed` status with no claim beside it names no
+holder, and a claim left standing on a `done` item names a holder who has
+finished. An item another checkout claimed is not this checkout's topic. When the
+checkout identifier cannot be read at all, no topic resolves — the comparison has
+no left-hand side, and guessing one would hand an agent another checkout's rules.
+
+**This source replaced the active Circle when the Circle container was cut**, and
+the shape of the answer changed with it. A Circle was a pointer file: one read,
+and every session in the checkout saw the same topic. A claim is a field on an
+item and it names a checkout, so what is resolved is "what is *this checkout*
+working on".
 
 Units tagged `[always]` are emitted regardless of the resolved topics (as long as
 the agent matches), so a project's per-agent always-on rules survive every path.
@@ -117,7 +134,7 @@ the agent matches), so a project's per-agent always-on rules survive every path.
 **Who passes the topic.** The mechanism defines the calling convention; wiring
 every agent's Setup to pass or derive the topic is a prompt-side concern handled
 in the agent-prompt revision pass, not here. `bin/fusion-rules` derives the topic
-from the active Circle automatically when no CLI topic is given, so the common
+from the claimed item automatically when no CLI topic is given, so the common
 case needs no author action.
 
 ## The Skill-packaging boundary

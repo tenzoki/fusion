@@ -1,35 +1,23 @@
 #!/usr/bin/env bash
 # fusion-paths — resolve a consumer's workbench write and search targets
 #
-# Usage: fusion-paths <name> [<circle-dir>]
+# Usage: fusion-paths <name>
 #
 # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md).
 # The two share one flat namespace: each consumer asks for its own keys under
 # its own name — `fusion-paths coder`, `fusion-paths memo`.
-#
-# <circle-dir> is optional: the bare directory name of an EXISTING Circle under
-# circles/. When given, that Circle is the Circle in scope — it replaces the
-# active one for the OUT_* base and for the Circle half of every SCAN_*.
-# Nothing else changes. .active-circle is neither read for the substitution nor
-# written (its writer set is closed and enumerated in the conventions), and the
-# emitted CIRCLE key still names the ACTIVE Circle, or is absent when none is
-# active. That is deliberate: the usual caller is working an ANTICIPATED Circle,
-# which is not active, and a caller that needs the target already holds it — it
-# passed it. A name that is not an existing Circle directory exits 1: it is a
-# usage error by the caller, not a fault in the workbench.
 #
 # Prints one KEY=value line per emitted key on stdout. The single resolution
 # point for the workbench layout: no agent prompt and no skill body hard-codes
 # a store path — the prompt says "write your plan to $OUT_PLAN", this script
 # says what $OUT_PLAN is.
 #
-# The layout, the Origin Rule and the meaning of every key are defined in
-# rules/fusion-workbench-conventions.md (sections "## fusion-workbench Layout",
-# "## Origin Rule (Herkunftsregel)", "## Path Resolution (Pfadauflösung)").
-# That document and this script are two of the definition sites where a
-# store-directory path literal may appear; the full set (including the three
-# rule files that inherited a definition when the conventions file was
-# partitioned) is enumerated as DEFINITION_SITES in
+# The layout and the meaning of every key are defined in
+# rules/fusion-workbench-conventions.md ("## fusion-workbench Layout",
+# "## Path Resolution (Pfadauflösung)") and, for the key table and the name
+# namespace, in rules/workbench-path-resolution.md. That first document and
+# this script are two of the definition sites where a store-directory path
+# literal may appear; the full set is enumerated as DEFINITION_SITES in
 # hooks/lib/__tests__/path-literal-lint.test.ts, which enforces it.
 #
 # Called from Setup step 2, alongside `fusion-rules <agent>` — the step every
@@ -38,28 +26,31 @@
 # Output shape:
 #   WORKBENCH   absolute path to fusion-workbench/
 #   everything else  workbench-relative
-#   multi-value keys (SCAN_*)  space-separated
 #
-# Exit codes (0/1/2 are the shape of bin/fusion-rules; 3 and 4 are this
-# resolver's own). Callers key on the code, so no code carries two meanings:
+# Exit codes (0/1/2 are the shape of bin/fusion-rules; 4 is this resolver's
+# own). Callers key on the code, so no code carries two meanings:
 #   0  success
-#   1  usage error (missing name, too many arguments, or a <circle-dir> that
-#      names no existing Circle directory), or no workbench found above pwd
+#   1  usage error (missing name, more than one argument), or no workbench
+#      found above pwd
 #   2  unknown name (no such agent and no such skill)
-#   3  .active-circle is corrupt or orphaned (points at a missing directory)
-#      — a workbench-STATE fault. The user fixes the pointer.
 #   4  internal error: the prompt names a key this resolver cannot order or
 #      value, or one name is both an agent and a skill
 #      — a fusion BUG. The user cannot fix it by touching the workbench, and
 #      must not be told to (see rules/fusion-workbench-conventions.md
 #      "## Path Resolution" → Exit codes).
 #
+# THERE IS NO EXIT 3. It said .active-circle was corrupt or orphaned, and it
+# went with the pointer when the Circle container was cut. bin/fusion-rules
+# still exits 3, for a malformed rules/context-manifest.yaml: read a 3 against
+# the helper that returned it, never against this one.
+#
 # Resolution rules (from the conventions' "## Path Resolution"):
-#   - Circle in scope → every OUT_* points into circles/<name>/. The Circle in
-#     scope is the <circle-dir> argument when one is given, and the active
-#     Circle otherwise.
-#   - No Circle in scope → every OUT_* points into shared/. This is not an
-#     error state: work outside Circles is routine and has a defined home.
+#   - There is ONE store per artifact kind and it lives under shared/. Every
+#     OUT_* points there, always; no state is read and nothing selects between
+#     candidates, so a consumer needs no branch and there is no "nothing
+#     active" case to handle.
+#   - Every SCAN_* names the ONE store its OUT_* names. A SCAN_* value is a
+#     single directory, and a consumer that searches it has searched the kind.
 #   - OUT_HISTORY and SCAN_HISTORY are LEGACY. The history store is closed to
 #     writes (rules/fusion-workbench-conventions.md "## Session history"): no
 #     agent prompt names either key, the existing corpus stays on disk and stays
@@ -67,30 +58,6 @@
 #     that frozen corpus. Both arms stay valued only while a shipped prompt
 #     still names them — removing an arm a prompt names is exit 4, not silence,
 #     which is why the arm outlives the last write rather than preceding it.
-#   - OUT_CONSULT / OUT_MEMO / OUT_BACKLOG / OUT_FORUM are unconditionally
-#     shared. None of these kinds arises from executing a Directive, so none
-#     can originate in a Circle — and the two that stay shared under a
-#     <circle-dir> target say why. OUT_BACKLOG: a backlog entry PRECEDES every
-#     Directive, so there is no Circle it could belong to, target or not.
-#     OUT_FORUM: a forum entry is a message addressed to another checkout
-#     rather than a product of this checkout's work, so whichever Circle this
-#     one happens to be running says nothing about where the message belongs.
-#     OUT_INVESTIGATION and its read counterpart stood in this list until
-#     2026-08-15, when they were retired with the investigator agent, the last
-#     prompt naming either; shared/investigations/ itself stays and still holds
-#     reports. See rules/workbench-path-resolution.md for why the arm went
-#     rather than being left standing.
-#   - Every SCAN_* carries BOTH stores when a Circle is in scope — that Circle
-#     and the shared one — and collapses to the shared store alone when none
-#     is. Searching must cover both.
-#     SCAN_CONSULT, SCAN_BACKLOG and SCAN_FORUM are the exceptions, and only
-#     apparently so: their kinds exist solely in shared/, so "both stores"
-#     collapses to one. The rule is not weakened — it has nothing to range
-#     over.
-#   - An orphaned .active-circle is an error: stderr + non-zero exit, no silent
-#     fall back to shared/ (HYG-NO-SILENT-FAIL). A stale pointer means the
-#     workbench's state is inconsistent, and quietly writing to the wrong store
-#     is worse than stopping.
 #
 # ---------------------------------------------------------------------------
 # Why the key sets are derived and not declared
@@ -164,17 +131,14 @@ set -eu
 
 NAME="${1:-}"
 if [ -z "$NAME" ]; then
-  echo "Usage: $0 <name> [<circle-dir>]   # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md); <circle-dir> is an existing Circle directory name that becomes the Circle in scope" >&2
+  echo "Usage: $0 <name>   # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md)" >&2
   exit 1
 fi
 
-if [ "$#" -gt 2 ]; then
-  echo "fusion-paths: expected at most two arguments (<name> [<circle-dir>]), got $#" >&2
+if [ "$#" -gt 1 ]; then
+  echo "fusion-paths: expected exactly one argument (<name>), got $#. The resolver reads no workbench state and selects between no candidates, so there is nothing a second argument could name." >&2
   exit 1
 fi
-
-# The optional target Circle. Validated below, once the workbench is located.
-TARGET="${2:-}"
 
 # ---------------------------------------------------------------------------
 # 1. Resolve the name to exactly one prompt file, and derive its key set.
@@ -221,8 +185,8 @@ if [ -f "$AGENT_PROMPT" ] && [ -f "$SKILL_PROMPT" ]; then
   # Agents and skills share one flat namespace, so a name that is both has two
   # prompts and two key sets, and no basis to prefer either. Silently picking
   # one would hand a consumer another consumer's paths. No collision exists
-  # today (checked over all 16 agents and all 16 skills, 2026-08-06); this
-  # fires the moment someone creates one, at which point the fix is a rename.
+  # today; this fires the moment someone creates one, at which point the fix is
+  # a rename.
   echo "fusion-paths: internal error — '$NAME' is both an agent (agents/$NAME.md) and a skill (skills/$NAME/SKILL.md). The namespace is flat, so the key set is ambiguous. Rename one of them. This is a bug in fusion, not a fault in your workbench." >&2
   exit 4
 elif [ -f "$AGENT_PROMPT" ]; then
@@ -234,9 +198,9 @@ else
   exit 2
 fi
 
-# The prompt's own `$OUT_*` / `$SCAN_*` / `$PORTFOLIO` references
-# ARE the key set. WORKBENCH and CIRCLE are deliberately not matched: both are
-# emitted unconditionally, so they are not part of any consumer's set.
+# The prompt's own `$OUT_*` / `$SCAN_*` references ARE the key set. WORKBENCH is
+# deliberately not matched: it is emitted unconditionally, so it is not part of
+# any consumer's set.
 #
 # `$OUT_*` and `$SCAN_*` appear literally in the prompts' boilerplate ("use
 # them wherever a later step names a `$OUT_*` value"). They do not match: the
@@ -245,7 +209,7 @@ fi
 # A consumer whose prompt names no key derives an empty set and receives
 # WORKBENCH alone. That is a true answer, not a failure — /fusion:help and
 # /fusion:commit file nothing.
-KEYS="$(grep -oE '\$(OUT|SCAN)_[A-Z][A-Z_]*|\$PORTFOLIO' "$PROMPT" | tr -d '$' | sort -u | tr '\n' ' ')"
+KEYS="$(grep -oE '\$(OUT|SCAN)_[A-Z][A-Z_]*' "$PROMPT" | tr -d '$' | sort -u | tr '\n' ' ')"
 
 # ---------------------------------------------------------------------------
 # 2. Locate the workbench. Delegated to bin/fusion-workbench-root — the single
@@ -258,117 +222,27 @@ fi
 WORKBENCH="$PROJECT_ROOT/fusion-workbench"
 
 # ---------------------------------------------------------------------------
-# 3. Read .active-circle. Absent → no Circle (not an error). Present but
-#    corrupt or orphaned → error, no silent fallback.
+# 3. Resolve values. One kind, one store: an OUT_* key and its matching SCAN_*
+#    name the same directory, so the table below is one line per kind and
+#    there is no branch anywhere in it.
 # ---------------------------------------------------------------------------
-POINTER="$WORKBENCH/.active-circle"
-CIRCLE=""
-if [ -f "$POINTER" ]; then
-  # A bare directory name: no marker, no circles/ prefix, no .md.
-  CIRCLE_NAME="$(head -n 1 "$POINTER" | tr -d '\r' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
-
-  if [ -z "$CIRCLE_NAME" ]; then
-    echo "fusion-paths: $POINTER is empty. It must hold the active Circle's directory name (<YYMMDD-HHMM>-<slug>, one line, no trailing path), or be absent when no Circle is active." >&2
-    exit 3
-  fi
-
-  case "$CIRCLE_NAME" in
-    */*|.|..)
-      echo "fusion-paths: $POINTER holds '$CIRCLE_NAME'. It must be a bare directory name — no path separators, no 'circles/' prefix, no '.md' suffix." >&2
-      exit 3
-      ;;
-  esac
-
-  if [ ! -d "$WORKBENCH/circles/$CIRCLE_NAME" ]; then
-    echo "fusion-paths: $POINTER points at 'circles/$CIRCLE_NAME', which does not exist. The workbench state is inconsistent — refusing to fall back to shared/. Fix or delete the pointer." >&2
-    exit 3
-  fi
-
-  CIRCLE="circles/$CIRCLE_NAME"
-fi
-
-# ---------------------------------------------------------------------------
-# 3b. The Circle in scope. It is the <circle-dir> argument when one is given,
-#     and the active Circle otherwise. The pointer above is still read and
-#     still validated — an orphaned one exits 3 whether a target was passed or
-#     not — it is simply not what the substitution consults.
-#
-#     A bad target exits 1, not 3 and not 4. Exit 3 would send the user to fix
-#     an .active-circle that is intact, and exit 4 would claim a fusion bug
-#     when the caller may well be a person mistyping `/fusion:direct`. The
-#     argument came from the caller, so the caller is who the code addresses
-#     (see rules/fusion-workbench-conventions.md "## Path Resolution" → Exit
-#     codes: whose fault each code is).
-# ---------------------------------------------------------------------------
-SCOPE="$CIRCLE"
-if [ -n "$TARGET" ]; then
-  # The same safety property as the name guard above: the target is
-  # interpolated into a path, so a separator or a dot segment could reach a
-  # directory outside circles/ that happens to exist.
-  case "$TARGET" in
-    */*|.|..)
-      echo "fusion-paths: target Circle '$TARGET' must be a bare directory name — no path separators, no 'circles/' prefix, no '.md' suffix." >&2
-      exit 1
-      ;;
-  esac
-
-  if [ ! -d "$WORKBENCH/circles/$TARGET" ]; then
-    echo "fusion-paths: target Circle 'circles/$TARGET' does not exist. The second argument must name a Circle directory that is already there. This is a usage error in the call, not a fault in your workbench — your .active-circle is not involved." >&2
-    exit 1
-  fi
-
-  SCOPE="circles/$TARGET"
-fi
-
-# ---------------------------------------------------------------------------
-# 4. Resolve values.
-# ---------------------------------------------------------------------------
-
-# OUT_* base: the Circle in scope when there is one, the shared store when not.
-if [ -n "$SCOPE" ]; then
-  OUT_BASE="$SCOPE"
-else
-  OUT_BASE="shared"
-fi
-
-scan_value() {
-  # $1 = artifact subdirectory name. Always both stores when a Circle is in
-  # scope; the shared store alone when none is.
-  if [ -n "$SCOPE" ]; then
-    printf '%s %s' "$SCOPE/$1" "shared/$1"
-  else
-    printf '%s' "shared/$1"
-  fi
-}
-
 value_for() {
   case "$1" in
-    OUT_PLAN)           printf '%s' "$OUT_BASE/planning" ;;
-    OUT_HISTORY)        printf '%s' "$OUT_BASE/history" ;;
-    OUT_ISSUE)          printf '%s' "$OUT_BASE/issues" ;;
-    OUT_DECISION)       printf '%s' "$OUT_BASE/decisions" ;;
-    OUT_REVIEW)         printf '%s' "$OUT_BASE/reviews" ;;
-    OUT_ANALYSIS)       printf '%s' "$OUT_BASE/analyses" ;;
-    # Unconditionally shared — never Circle-bound.
-    OUT_CONSULT)        printf '%s' "shared/consult" ;;
-    OUT_MEMO)           printf '%s' "shared/memos" ;;
-    OUT_BACKLOG)        printf '%s' "shared/backlog" ;;
-    OUT_FORUM)          printf '%s' "shared/forum" ;;
-    OUT_CIRCLE)         printf '%s' "circles" ;;
-    SCAN_PLANS)         scan_value "planning" ;;
-    SCAN_ISSUES)        scan_value "issues" ;;
-    SCAN_DECISIONS)     scan_value "decisions" ;;
-    SCAN_HISTORY)       scan_value "history" ;;
-    SCAN_REVIEWS)       scan_value "reviews" ;;
-    SCAN_ANALYSES)      scan_value "analyses" ;;
-    # Read counterparts of the unconditionally-shared kinds. Shared-only, so
-    # the "both stores" invariant collapses to one — the kind has no Circle
-    # counterpart to carry.
-    SCAN_CONSULT)       printf '%s' "shared/consult" ;;
-    SCAN_BACKLOG)       printf '%s' "shared/backlog" ;;
-    SCAN_FORUM)         printf '%s' "shared/forum" ;;
-    SCAN_CIRCLES)       printf '%s' "circles" ;;
-    PORTFOLIO)          printf '%s' "portfolio.md" ;;
+    OUT_PLAN|SCAN_PLANS)          printf '%s' "shared/planning" ;;
+    OUT_HISTORY|SCAN_HISTORY)     printf '%s' "shared/history" ;;
+    OUT_ISSUE|SCAN_ISSUES)        printf '%s' "shared/issues" ;;
+    OUT_DECISION|SCAN_DECISIONS)  printf '%s' "shared/decisions" ;;
+    OUT_REVIEW|SCAN_REVIEWS)      printf '%s' "shared/reviews" ;;
+    OUT_ANALYSIS|SCAN_ANALYSES)   printf '%s' "shared/analyses" ;;
+    OUT_CONSULT)                  printf '%s' "shared/consult" ;;
+    OUT_BACKLOG|SCAN_BACKLOG)     printf '%s' "shared/backlog" ;;
+    OUT_FORUM|SCAN_FORUM)         printf '%s' "shared/forum" ;;
+    # Two kinds have a write key and no read key, and it is the same criterion
+    # both times: a key set restates the prompts, so a key no prompt names
+    # restates nothing. Nothing reads memos — a memo is written for the user.
+    # And SCAN_CONSULT lost its last consumer on 2026-09-10, when the archive
+    # skill's shared-store derivation went; the store and its reports stay.
+    OUT_MEMO)                     printf '%s' "shared/memos" ;;
     *)
       # Reached when a key is in ORDER but has no value here — the second half
       # of the same guarantee the ORDER check below enforces. Between them:
@@ -376,8 +250,6 @@ value_for() {
       # Neither can be forgotten silently.
       # Loud rather than silent, so a key added without a value cannot ship as
       # an empty string and send an agent's writes to the workbench root.
-      # Exit 4, not 3: a caller that keys on 3 tells the user to fix
-      # .active-circle, and there is nothing wrong with their pointer.
       echo "fusion-paths: internal error — no value defined for key '$1'. This is a bug in fusion-paths, not a fault in your workbench." >&2
       exit 4
       ;;
@@ -385,13 +257,12 @@ value_for() {
 }
 
 # ---------------------------------------------------------------------------
-# 5. Emit. Canonical order, filtered by the derived key set.
+# 4. Emit. Canonical order, filtered by the derived key set.
 # ---------------------------------------------------------------------------
 ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
-       OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_FORUM OUT_CIRCLE
+       OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_FORUM
        SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
-       SCAN_ANALYSES SCAN_CONSULT SCAN_BACKLOG SCAN_FORUM SCAN_CIRCLES
-       PORTFOLIO"
+       SCAN_ANALYSES SCAN_BACKLOG SCAN_FORUM"
 
 has_key() {
   local want="$1" k
@@ -428,20 +299,10 @@ done
 # Build the whole output before writing any of it. A failure mid-loop would
 # otherwise leave a partial key set on stdout alongside the error — and a
 # caller that reads stdout without checking the exit code would act on half a
-# contract. Every non-zero exit now yields no output at all, matching the
-# orphaned-pointer path above.
+# contract. Every non-zero exit yields no output at all.
 
 # WORKBENCH is always emitted, and is the only absolute path.
 OUT="$(printf 'WORKBENCH=%s\n' "$WORKBENCH")"
-
-# CIRCLE is emitted only when a Circle is ACTIVE, and always names the active
-# one — never the <circle-dir> target. Its absence is how a caller tells "no
-# Circle active" from "Circle active", and that answer must stay true when the
-# caller is working an anticipated Circle, which is not active.
-if [ -n "$CIRCLE" ]; then
-  OUT="$OUT
-$(printf 'CIRCLE=%s' "$CIRCLE")"
-fi
 
 for key in $ORDER; do
   if has_key "$key"; then

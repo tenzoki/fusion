@@ -30,12 +30,11 @@ function promptPath(name: string): string {
  * The keys a prompt names. This is the contract's own definition of a key set
  * — "the prompt defines which keys a consumer gets" — restated independently
  * of the script, so the tests below assert agreement rather than assuming it.
- * WORKBENCH and CIRCLE are excluded: both are emitted unconditionally and
- * belong to no set.
+ * WORKBENCH is excluded: it is emitted unconditionally and belongs to no set.
  */
 function keysNamedIn(name: string): string[] {
   const body = readFileSync(promptPath(name), "utf-8");
-  const found = body.match(/\$(?:(?:OUT|SCAN)_[A-Z][A-Z_]*|PORTFOLIO)/g) ?? [];
+  const found = body.match(/\$(?:OUT|SCAN)_[A-Z][A-Z_]*/g) ?? [];
   return [...new Set(found.map((m) => m.slice(1)))].sort();
 }
 
@@ -75,8 +74,6 @@ function parse(stdout: string): Record<string, string> {
   return out;
 }
 
-const CIRCLE_NAME = "260716-1847-workbench-umbau";
-
 describe("bin/fusion-paths", () => {
   let project: string;
   let workbench: string;
@@ -85,7 +82,6 @@ describe("bin/fusion-paths", () => {
   beforeEach(() => {
     project = mkdtempSync(join(tmpdir(), "fusion-paths-"));
     workbench = join(project, "fusion-workbench");
-    mkdirSync(join(workbench, "circles", CIRCLE_NAME), { recursive: true });
     mkdirSync(join(workbench, "shared"), { recursive: true });
     // The marker bin/fusion-workbench-root walks up looking for.
     writeFileSync(join(workbench, ".fusion-setup"), "{}\n");
@@ -100,220 +96,132 @@ describe("bin/fusion-paths", () => {
     rmSync(outside, { recursive: true, force: true });
   });
 
-  function activate(name: string = CIRCLE_NAME): void {
-    writeFileSync(join(workbench, ".active-circle"), `${name}\n`);
-  }
-
-  describe("active Circle", () => {
-    it("points every OUT_* into the Circle", () => {
-      activate();
-      // shaper, because its prompt names all four Circle-bound OUT_* keys.
-      // The agent is a vehicle for the OUT_BASE rule; the set is derived from
-      // the prompt, so the vehicle has to be a prompt that names them.
+  describe("one kind, one store", () => {
+    it("points every OUT_* into shared/", () => {
+      // shaper, because its prompt names three of the artifact-kind OUT_* keys.
       const r = run(project, "shaper");
       expect(r.status).toBe(0);
       const p = parse(r.stdout);
 
-      expect(p.CIRCLE).toBe(`circles/${CIRCLE_NAME}`);
-      expect(p.OUT_PLAN).toBe(`circles/${CIRCLE_NAME}/planning`);
-      expect(p.OUT_ISSUE).toBe(`circles/${CIRCLE_NAME}/issues`);
-      expect(p.OUT_DECISION).toBe(`circles/${CIRCLE_NAME}/decisions`);
-    });
-
-    it("emits WORKBENCH as the only absolute path", () => {
-      activate();
-      const p = parse(run(project, "planner").stdout);
-      expect(p.WORKBENCH).toMatch(/\/fusion-workbench$/);
-      for (const [key, value] of Object.entries(p)) {
-        if (key === "WORKBENCH") continue;
-        for (const part of value.split(" ")) {
-          expect(part.startsWith("/"), `${key} must be workbench-relative`).toBe(false);
-        }
-      }
-    });
-
-    it("carries both stores in every SCAN_* (Circle first, then shared)", () => {
-      activate();
-      const p = parse(run(project, "reconciler").stdout);
-      for (const key of [
-        "SCAN_PLANS",
-        "SCAN_ISSUES",
-        "SCAN_DECISIONS",
-        "SCAN_REVIEWS",
-        "SCAN_ANALYSES",
-      ]) {
-        const parts = p[key].split(" ");
-        expect(parts, `${key} must carry both stores`).toHaveLength(2);
-        expect(parts[0]).toMatch(new RegExp(`^circles/${CIRCLE_NAME}/`));
-        expect(parts[1]).toMatch(/^shared\//);
-      }
-    });
-
-    it("keeps OUT_CONSULT / OUT_MEMO shared even with a Circle active", () => {
-      activate();
-      expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consult");
-      // memo, not orchestrator: the memo skill is the only consumer that names
-      // OUT_MEMO, now that each asks under its own name.
-      expect(parse(run(project, "memo").stdout).OUT_MEMO).toBe("shared/memos");
-    });
-
-    it("tolerates a pointer written without a trailing newline", () => {
-      writeFileSync(join(workbench, ".active-circle"), CIRCLE_NAME);
-      const p = parse(run(project, "planner").stdout);
-      expect(p.CIRCLE).toBe(`circles/${CIRCLE_NAME}`);
-    });
-  });
-
-  describe("no Circle", () => {
-    it("points every OUT_* into shared/ and emits no CIRCLE", () => {
-      const r = run(project, "shaper");
-      expect(r.status).toBe(0);
-      const p = parse(r.stdout);
-
-      expect(p.CIRCLE).toBeUndefined();
       expect(p.OUT_PLAN).toBe("shared/planning");
       expect(p.OUT_ISSUE).toBe("shared/issues");
       expect(p.OUT_DECISION).toBe("shared/decisions");
     });
 
-    it("is not an error state", () => {
-      // Work outside Circles is routine and has a defined home.
+    it("emits WORKBENCH as the only absolute path", () => {
+      const p = parse(run(project, "planner").stdout);
+      expect(p.WORKBENCH).toMatch(/\/fusion-workbench$/);
+      for (const [key, value] of Object.entries(p)) {
+        if (key === "WORKBENCH") continue;
+        expect(value.startsWith("/"), `${key} must be workbench-relative`).toBe(false);
+      }
+    });
+
+    it("gives every SCAN_* one directory, the one its OUT_* names", () => {
+      // Invariant 2 as it now reads: a SCAN_* value is a single store, the
+      // same one the write key points at. It used to carry two — the active
+      // Circle's and the shared one — and a consumer that read only the first
+      // silently under-reported. There is no first and second any more.
+      const p = parse(run(project, "reconciler").stdout);
+      for (const key of ["SCAN_PLANS", "SCAN_ISSUES", "SCAN_DECISIONS", "SCAN_REVIEWS"]) {
+        expect(p[key].split(" "), `${key} must name exactly one store`).toHaveLength(1);
+        expect(p[key]).toMatch(/^shared\//);
+      }
+      // The pairing itself, on a consumer that names both halves of a kind:
+      // the read key and the write key are the same string.
+      const o = parse(run(project, "orchestrator").stdout);
+      for (const [scan, out] of [
+        ["SCAN_ISSUES", "OUT_ISSUE"],
+        ["SCAN_DECISIONS", "OUT_DECISION"],
+        ["SCAN_BACKLOG", "OUT_BACKLOG"],
+      ] as [string, string][]) {
+        expect(o[scan], `${scan} must name what ${out} names`).toBe(o[out]);
+      }
+    });
+
+    it("resolves the same values whatever the workbench holds", () => {
+      // The resolver reads no workbench state at all, so nothing anyone leaves
+      // in the tree can move a value. A leftover `.active-circle` from a
+      // workbench that has not been migrated is the case this pins: it is a
+      // file the resolver does not open, not a state it tolerates.
+      const before = run(project, "reconciler").stdout;
+      mkdirSync(join(workbench, "circles", "260716-1847-workbench-umbau"), { recursive: true });
+      writeFileSync(join(workbench, ".active-circle"), "260716-1847-workbench-umbau\n");
+      const after = run(project, "reconciler");
+      expect(after.status).toBe(0);
+      expect(after.stderr).toBe("");
+      expect(after.stdout).toBe(before);
+    });
+
+    it("emits no CIRCLE key, and no key naming the retired container", () => {
+      // CIRCLE was the one emitted key that named no store: it told a caller
+      // which Circle was active, or was absent when none was. OUT_CIRCLE,
+      // SCAN_CIRCLES and PORTFOLIO named the container and the ranking file.
+      // All four went with the layer; asserted over every consumer so a prompt
+      // that names one fails here rather than resolving to nothing.
+      for (const name of [...AGENTS, ...SKILLS]) {
+        const p = parse(run(project, name).stdout);
+        for (const key of ["CIRCLE", "OUT_CIRCLE", "SCAN_CIRCLES", "PORTFOLIO"]) {
+          expect(p[key], `${name} must get no ${key}`).toBeUndefined();
+        }
+      }
+    });
+
+    it("is not an error state to have no Circle, because there is no Circle", () => {
       expect(run(project, "coder").status).toBe(0);
       expect(run(project, "orchestrator").stderr).toBe("");
     });
-
-    it("collapses every SCAN_* to the shared store alone", () => {
-      const p = parse(run(project, "reconciler").stdout);
-      expect(p.SCAN_PLANS).toBe("shared/planning");
-      expect(p.SCAN_ISSUES).toBe("shared/issues");
-      expect(p.SCAN_DECISIONS).toBe("shared/decisions");
-      expect(p.SCAN_ANALYSES).toBe("shared/analyses");
-    });
   });
 
-  describe("target Circle argument", () => {
-    // `fusion-paths <name> [<circle-dir>]`. The second argument makes a Circle
-    // the Circle IN SCOPE without making it active — which is the whole point:
-    // the caller is a shaper or planner working an ANTICIPATED Circle, and
-    // anticipated is not active. .active-circle is neither read for the
-    // substitution nor written.
-    const OTHER = "260812-1720-circle-first-placement";
-
-    beforeEach(() => {
-      mkdirSync(join(workbench, "circles", OTHER), { recursive: true });
-    });
-
-    it("points every OUT_* into the target when no Circle is active", () => {
-      const r = run(project, "shaper", OTHER);
-      expect(r.status).toBe(0);
-      const p = parse(r.stdout);
-      expect(p.OUT_PLAN).toBe(`circles/${OTHER}/planning`);
-      expect(p.OUT_ISSUE).toBe(`circles/${OTHER}/issues`);
-      expect(p.OUT_DECISION).toBe(`circles/${OTHER}/decisions`);
-    });
-
-    it("emits no CIRCLE for a target, because the target is not active", () => {
-      // CIRCLE answers "which Circle is active", and a target does not make
-      // one active. A caller that needs the target already holds it.
-      const p = parse(run(project, "shaper", OTHER).stdout);
-      expect(p.CIRCLE).toBeUndefined();
-    });
-
-    it("displaces a DIFFERENT active Circle from OUT_* and from SCAN_*", () => {
-      activate();
-      const r = run(project, "reconciler", OTHER);
-      expect(r.status).toBe(0);
-      const p = parse(r.stdout);
-
-      // CIRCLE still reports the active one — the pointer was not consulted
-      // for the substitution and was certainly not rewritten.
-      expect(p.CIRCLE).toBe(`circles/${CIRCLE_NAME}`);
-      expect(readFileSync(join(workbench, ".active-circle"), "utf-8").trim()).toBe(CIRCLE_NAME);
-
-      for (const key of [
-        "SCAN_PLANS",
-        "SCAN_ISSUES",
-        "SCAN_DECISIONS",
-        "SCAN_REVIEWS",
-        "SCAN_ANALYSES",
-      ]) {
-        const parts = p[key].split(" ");
-        // Invariant 2 still holds and still means two stores: the Circle in
-        // scope and the shared one. The active Circle is not a third.
-        expect(parts, `${key} must carry exactly two stores`).toHaveLength(2);
-        expect(parts[0]).toBe(`circles/${OTHER}/${parts[1].slice("shared/".length)}`);
-        expect(parts[1]).toMatch(/^shared\//);
-        expect(p[key], `${key} must not name the active Circle`).not.toContain(CIRCLE_NAME);
-      }
-    });
-
-    it("keeps the unconditionally-shared kinds shared", () => {
-      expect(parse(run(project, "consultant", OTHER).stdout).OUT_CONSULT).toBe("shared/consult");
-      expect(parse(run(project, "memo", OTHER).stdout).OUT_MEMO).toBe("shared/memos");
-    });
-
-    it("exits 1 when the target names no such Circle directory", () => {
-      // 1, not 3 and not 4. Exit 3 would send the user to fix an .active-circle
-      // that is intact; exit 4 would claim a fusion bug when the caller may be
-      // a person mistyping `/fusion:direct`. The argument came from the caller.
-      const r = run(project, "shaper", "260101-0000-no-such-circle");
+  describe("there is no second argument, and no exit 3", () => {
+    // `fusion-paths <name>`. The optional `<circle-dir>` selected between two
+    // candidate stores for one kind; with one store per kind there is nothing
+    // to select and the argument names nothing.
+    it("exits 1 on a second argument rather than ignoring it", () => {
+      const r = run(project, "shaper", "260812-1720-anything");
       expect(r.status).toBe(1);
-      expect(r.stderr).toContain("260101-0000-no-such-circle");
+      expect(r.stderr).toContain("exactly one argument");
       expect(r.stdout).toBe("");
     });
 
-    it("exits 1 on a target that could escape circles/", () => {
-      // The target is interpolated into a path, so this is a safety property.
-      for (const bad of ["..", `../circles/${OTHER}`, `circles/${OTHER}`]) {
-        const r = run(project, "shaper", bad);
-        expect(r.status, `target '${bad}' must not resolve`).toBe(1);
-        expect(r.stdout).toBe("");
-      }
-    });
-
-    it("still exits 3 for an orphaned pointer, target or no target", () => {
-      // The pointer is not consulted for the substitution, but it is still
-      // read and still validated: a workbench in an inconsistent state stops
-      // the run whichever Circle the caller asked to write into.
-      activate("260101-0000-does-not-exist");
-      const r = run(project, "shaper", OTHER);
-      expect(r.status).toBe(3);
+    it("exits 1 on a third argument too", () => {
+      const r = run(project, "shaper", "a", "b");
+      expect(r.status).toBe(1);
       expect(r.stdout).toBe("");
     });
 
-    it("is a no-op when the target IS the active Circle", () => {
-      // The strongest available form of "the argument is additive": with the
-      // substitution resolving to what was already in scope, the output must be
-      // byte-identical. The no-target path itself is regression-covered by
-      // every other test in this file, which passes no second argument.
-      activate();
-      for (const name of ["shaper", "reconciler", "planner", "orchestrator"]) {
-        expect(run(project, name, CIRCLE_NAME).stdout, name).toBe(run(project, name).stdout);
+    it("never exits 3, whatever a leftover pointer says", () => {
+      // Exit 3 meant `.active-circle` was orphaned or corrupt — a
+      // workbench-state fault the user had to repair. Nothing reads that file,
+      // so the fault class is gone rather than unreported, and every shape
+      // that used to raise it now resolves normally.
+      for (const bad of ["", "\n", "260101-0000-does-not-exist\n", "circles/x\n", "../escape\n"]) {
+        writeFileSync(join(workbench, ".active-circle"), bad);
+        const r = run(project, "planner");
+        expect(r.status, `pointer ${JSON.stringify(bad)} must resolve`).toBe(0);
+        expect(r.stderr).toBe("");
       }
     });
 
-    it("exits 1 on a third argument", () => {
-      const r = run(project, "shaper", OTHER, "extra");
-      expect(r.status).toBe(1);
-      expect(r.stderr).toContain("at most two arguments");
+    it("leaves the pointer file untouched", () => {
+      // It is not read, and it is certainly not written. Deleting it belongs
+      // to `/fusion:migrate`, which is the one consumer that knows what the
+      // file was for.
+      writeFileSync(join(workbench, ".active-circle"), "260101-0000-whatever\n");
+      run(project, "planner");
+      expect(readFileSync(join(workbench, ".active-circle"), "utf-8")).toBe(
+        "260101-0000-whatever\n",
+      );
     });
   });
 
   describe("the backlog keys", () => {
-    // OUT_BACKLOG and SCAN_BACKLOG are the third unconditionally-shared kind,
-    // beside consultations and memos. Why a backlog entry can belong to no
-    // Circle is stated in `rules/fusion-workbench-conventions.md`
-    // `## Backlog entries`; here it means the `<circle-dir>` target does not
-    // move the keys either, so "unconditionally shared" has two conditions to
-    // survive rather than one.
-    //
-    // The staged-fixture cases below exercise the derivation path itself (see
-    // the block above `stage()`); the shipped-prompt cases at the end are where
+    // OUT_BACKLOG and SCAN_BACKLOG name the work-item store — the kind that
+    // holds the units of work themselves since the Circle container went. The
+    // staged-fixture cases below exercise the derivation path itself (see the
+    // block above `stage()`); the shipped-prompt cases at the end are where
     // each consumer's actual key set is pinned.
-    const OTHER = "260812-1720-circle-first-placement";
-
     beforeEach(() => {
-      mkdirSync(join(workbench, "circles", OTHER), { recursive: true });
       stageWithAgent("fixture", "File the idea to $OUT_BACKLOG, and skim $SCAN_BACKLOG.\n");
     });
 
@@ -323,58 +231,22 @@ describe("bin/fusion-paths", () => {
       const p = parse(r.stdout);
       expect(p.OUT_BACKLOG).toBe("shared/backlog");
       expect(p.SCAN_BACKLOG).toBe("shared/backlog");
-    });
-
-    it("keeps both shared with a Circle active", () => {
-      activate();
-      const p = parse(runStaged("fixture").stdout);
-      expect(p.OUT_BACKLOG).toBe("shared/backlog");
-      expect(p.SCAN_BACKLOG).toBe("shared/backlog");
-      // Invariant 2 collapses for SCAN_BACKLOG exactly as it does for
-      // SCAN_CONSULT: one store, because the kind has no Circle counterpart
-      // to carry.
       expect(p.SCAN_BACKLOG.split(" ")).toHaveLength(1);
-    });
-
-    it("keeps both shared when a target Circle is passed", () => {
-      // The case no key has had to face before. The target replaces the OUT_*
-      // base for every Circle-bound kind; these two are not Circle-bound, and
-      // must not move.
-      for (const active of [false, true]) {
-        if (active) activate();
-        const p = parse(runStaged("fixture", OTHER).stdout);
-        expect(p.OUT_BACKLOG, `active=${active}`).toBe("shared/backlog");
-        expect(p.SCAN_BACKLOG, `active=${active}`).toBe("shared/backlog");
-        expect(p.SCAN_BACKLOG).not.toContain(OTHER);
-      }
-    });
-
-    it("keeps the target from reaching them even when the target IS active", () => {
-      activate();
-      const p = parse(runStaged("fixture", CIRCLE_NAME).stdout);
-      expect(p.OUT_BACKLOG).toBe("shared/backlog");
-      expect(p.SCAN_BACKLOG).toBe("shared/backlog");
     });
 
     it("emits neither to a shipped prompt that names neither", () => {
       // Emission stays per-consumer: adding a key to the resolver gives it to
       // nobody until a prompt asks for it.
       //
-      // `direct` is here on purpose, not by accident of not having been
-      // thought about. It is a user surface onto the backlog and it does not
-      // touch the store: `/fusion:direct` passes an entry path to the shaper
-      // verbatim without opening it. Holding no key is what makes that
-      // statement mechanical. A second such surface, the portfolio command,
-      // stood beside it until v11 and was removed with the ranking agent whose
-      // output it rendered.
-      //
       // `orchestrator` left this list on 2026-09-10. Its prompt now names both
-      // tokens, because the four confirm-gated backlog operations became edits
-      // the orchestrator performs at the user's word with no dispatch, and an
+      // tokens, because the confirm-gated item operations became edits the
+      // orchestrator performs at the user's word with no dispatch, and an
       // agent that writes the store needs the store resolved — unnamed, both
       // keys expand to the empty string and the write lands at the workbench
-      // root. It moved to the case below rather than being dropped.
-      for (const name of ["coder", "planner", "direct"]) {
+      // root. It moved to the case below rather than being dropped. `direct`
+      // left it by being deleted: it was a user surface onto the store that
+      // held no key, and it went with the Circle it created.
+      for (const name of ["coder", "planner", "reviewer"]) {
         const p = parse(run(project, name).stdout);
         expect(p.OUT_BACKLOG, name).toBeUndefined();
         expect(p.SCAN_BACKLOG, name).toBeUndefined();
@@ -382,46 +254,36 @@ describe("bin/fusion-paths", () => {
     });
 
     it("gives the orchestrator both keys — it maintains the store at the user's word", () => {
-      // The second shipped consumer to hold both, by the same derivation: its
-      // prompt names `$OUT_BACKLOG` and `$SCAN_BACKLOG`, so the resolver emits
-      // them. Nothing in the resolver was changed to bring them across.
-      for (const withCircle of [false, true]) {
-        if (withCircle) activate();
-        const p = parse(run(project, "orchestrator").stdout);
-        expect(p.OUT_BACKLOG).toBe("shared/backlog");
-        expect(p.SCAN_BACKLOG).toBe("shared/backlog");
-      }
+      // Its prompt names `$OUT_BACKLOG` and `$SCAN_BACKLOG`, so the resolver
+      // emits them. Nothing in the resolver was changed to bring them across.
+      //
+      // A green result says "the key is granted" and says NOTHING about the
+      // write being bounded. What bounds the writer is prose, in
+      // `rules/fusion-workbench-conventions.md` `## Backlog entries — work
+      // items` and `agents/orchestrator.md` `## Work items`; no assertion in
+      // this file reaches it.
+      const p = parse(run(project, "orchestrator").stdout);
+      expect(p.OUT_BACKLOG).toBe("shared/backlog");
+      expect(p.SCAN_BACKLOG).toBe("shared/backlog");
     });
 
-    // A `playmaker` case stood here and held the same pair. It was the FIRST
-    // shipped consumer to hold both, and it went at v11 with the agent; the
-    // orchestrator case above is now the only holder and carries the same
-    // derivation. What the removed case also carried is worth keeping in
-    // words, because it applies unchanged to the case above: a green result
-    // says "the key is granted" and says NOTHING about the write being
-    // bounded. What bounds the writer is prose, in
-    // `rules/fusion-workbench-conventions.md` `## Backlog entries` and
-    // `rules/backlog-entries.md`; no assertion in this file reaches it.
-
     it("gives shaper the read key and withholds the write key", () => {
-      // The second shipped consumer, and the same asymmetry for a different
-      // reason: the shaper READS an entry handed to it as a draft and CLOSES
-      // it when the Circle takes it whole. Neither act needs a write target
-      // under the store, so a run that tried to file an entry has no resolved
-      // path to file it to.
+      // The asymmetry is the shaper's whole access to the store: an item may
+      // be its input and no byte of one is ever its output. A run that tried
+      // to file or claim one has no resolved path to write to.
       const p = parse(run(project, "shaper").stdout);
       expect(p.SCAN_BACKLOG).toBe("shared/backlog");
       expect(p.OUT_BACKLOG).toBeUndefined();
     });
 
     it("gives memo the write key and withholds the read key", () => {
-      // The third shipped consumer, and the asymmetry runs the other way for
-      // the first time. `/fusion:memo` is the one surface where the store is
-      // WRITTEN — by the user, which is what the "no agent files an entry"
-      // bound leaves open — and it files one entry per invocation without ever
-      // listing, re-reading or consolidating the store. Consolidation is the
-      // playmaker's job, so a run here that set out to do it has no resolved
-      // path to read from, exactly as playmaker has none to write to.
+      // The asymmetry runs the other way. `/fusion:memo` is the one surface
+      // where the store is WRITTEN — by the user, which is what the "no agent
+      // files an item" bound leaves open — and it files one item per
+      // invocation without ever listing, re-reading or consolidating the
+      // store. Consolidating is a maintenance operation the orchestrator
+      // performs at the user's word, so a run here that set out to do it has
+      // no resolved path to read from.
       const p = parse(run(project, "memo").stdout);
       expect(p.OUT_BACKLOG).toBe("shared/backlog");
       expect(p.SCAN_BACKLOG).toBeUndefined();
@@ -429,80 +291,21 @@ describe("bin/fusion-paths", () => {
   });
 
   describe("the forum keys", () => {
-    // The fourth unconditionally-shared kind, beside consultations, memos and
-    // the backlog: an entry is addressed to another checkout, not produced by
-    // executing this one's Directive, so no Circle could hold it. OUT_PLAN
-    // travels along as a MOVING control — a key that is never Circle-bound
-    // would read `shared/forum` under a target for the wrong reason.
-    const OTHER = "260812-1720-circle-first-placement";
-
+    // A message store like any other kind: one store, one pair of keys.
+    // OUT_PLAN travels along as a control, so a green result cannot come from
+    // every key having collapsed to the same string.
     beforeEach(() => {
-      mkdirSync(join(workbench, "circles", OTHER), { recursive: true });
       stageWithAgent("fixture", "Draft to $OUT_FORUM, read $SCAN_FORUM, plan to $OUT_PLAN.\n");
     });
 
-    it("emits both, shared, with no Circle active", () => {
+    it("emits both, each naming one store", () => {
       const r = runStaged("fixture");
       expect(r.status).toBe(0);
       const p = parse(r.stdout);
       expect(p.OUT_FORUM).toBe("shared/forum");
       expect(p.SCAN_FORUM).toBe("shared/forum");
-      expect(p.OUT_PLAN).toBe("shared/planning");
-    });
-
-    it("keeps both shared with a Circle active, while the control moves", () => {
-      activate();
-      const p = parse(runStaged("fixture").stdout);
-      expect(p.OUT_FORUM).toBe("shared/forum");
-      expect(p.SCAN_FORUM).toBe("shared/forum");
-      // Invariant 2 collapses for SCAN_FORUM as for SCAN_CONSULT and
-      // SCAN_BACKLOG: one store, the kind having no Circle counterpart.
       expect(p.SCAN_FORUM.split(" ")).toHaveLength(1);
-      expect(p.OUT_PLAN).toBe(`circles/${CIRCLE_NAME}/planning`);
-    });
-
-    it("keeps both shared under a target, while the control follows the target", () => {
-      for (const active of [false, true]) {
-        if (active) activate();
-        const p = parse(runStaged("fixture", OTHER).stdout);
-        expect(p.OUT_FORUM, `active=${active}`).toBe("shared/forum");
-        expect(p.SCAN_FORUM, `active=${active}`).toBe("shared/forum");
-        expect(p.SCAN_FORUM).not.toContain(OTHER);
-        expect(p.OUT_PLAN, `active=${active}`).toBe(`circles/${OTHER}/planning`);
-      }
-    });
-  });
-
-  describe("orphaned pointer", () => {
-    it("errors with a non-zero exit and never falls back to shared/", () => {
-      activate("260101-0000-does-not-exist");
-      const r = run(project, "planner");
-      expect(r.status).not.toBe(0);
-      expect(r.stderr).toContain("does not exist");
-      expect(r.stdout).toBe("");
-    });
-
-    it("rejects an empty pointer file", () => {
-      writeFileSync(join(workbench, ".active-circle"), "\n");
-      const r = run(project, "planner");
-      expect(r.status).not.toBe(0);
-      expect(r.stdout).toBe("");
-      // The placeholder is bare in the script: inside double quotes a backtick
-      // ran it as a command substitution and the message lost it (issue 260824-2056).
-      expect(r.stderr).toContain("<YYMMDD-HHMM>-<slug>");
-    });
-
-    it("rejects a pointer carrying a path, a prefix, or a marker", () => {
-      // The pointer holds a bare directory name — no circles/ prefix, no .md.
-      for (const bad of [`circles/${CIRCLE_NAME}`, `${CIRCLE_NAME}/[t]-circle.md`]) {
-        writeFileSync(join(workbench, ".active-circle"), `${bad}\n`);
-        const r = run(project, "planner");
-        expect(r.status, `pointer '${bad}' must be rejected`).not.toBe(0);
-        expect(r.stdout).toBe("");
-      }
-      // A marker-carrying name fails the existence check, not the shape check.
-      writeFileSync(join(workbench, ".active-circle"), `260716-1847[t]-workbench-umbau\n`);
-      expect(run(project, "planner").status).not.toBe(0);
+      expect(p.OUT_PLAN).toBe("shared/planning");
     });
   });
 
@@ -573,7 +376,7 @@ describe("bin/fusion-paths", () => {
       expect(parse(run(project, "planner").stdout).OUT_PLAN).toBe("shared/planning");
       expect(parse(run(project, "analyst").stdout).OUT_ANALYSIS).toBe("shared/analyses");
       expect(parse(run(project, "reviewer").stdout).OUT_REVIEW).toBe("shared/reviews");
-      expect(parse(run(project, "shaper").stdout).OUT_CIRCLE).toBe("circles");
+      expect(parse(run(project, "orchestrator").stdout).OUT_BACKLOG).toBe("shared/backlog");
     });
 
     it("emits no key it cannot resolve", () => {
@@ -599,7 +402,7 @@ describe("bin/fusion-paths", () => {
         expect(r.status, `${name}: ${r.stderr}`).toBe(0);
 
         const emitted = Object.keys(parse(r.stdout))
-          .filter((k) => k !== "WORKBENCH" && k !== "CIRCLE")
+          .filter((k) => k !== "WORKBENCH")
           .sort();
 
         // Both directions at once. Under-emission (a key the prompt names and
@@ -613,9 +416,8 @@ describe("bin/fusion-paths", () => {
 
     it("gives log-activity WORKBENCH alone — it names no key", () => {
       // The skill that broke the agent-only namespace: it reads consultations
-      // and investigations, SCAN_CONSULT is named only by playmaker, and the
-      // investigation kind has no key at all since the investigator fold, so
-      // no agent argument ever resolved it. It scans the
+      // and investigations, and the investigation kind has no key at all since
+      // the investigator fold, so no agent argument ever resolved it. It scans the
       // tree from WORKBENCH instead — and asking under its own name is what
       // makes that legible rather than a borrowed argument that "selects
       // nothing".
@@ -636,10 +438,6 @@ describe("bin/fusion-paths", () => {
       // the workbench root instead of the decision store. Silent: the write
       // succeeded, just in the wrong place.
       expect(parse(run(project, "reconciler").stdout).OUT_DECISION).toBe("shared/decisions");
-      activate();
-      expect(parse(run(project, "reconciler").stdout).OUT_DECISION).toBe(
-        `circles/${CIRCLE_NAME}/decisions`,
-      );
     });
 
     it("emits no history key to any agent — the store is closed to writes", () => {
@@ -672,17 +470,21 @@ describe("bin/fusion-paths", () => {
       }
     });
 
-    it("keeps SCAN_CONSULT shared-only, Circle active or not", () => {
-      // Invariant 2 collapses for the unconditionally-shared kinds: they exist
-      // only in shared/, so "both stores" has nothing to range over.
-      // The consumer used to be `playmaker`, which read every store. That
-      // agent went at v11 and `/fusion:archive` is now the only consumer whose
-      // body names the key — no agent prompt does, which is why this reads a
-      // skill.
-      for (const withCircle of [false, true]) {
-        if (withCircle) activate();
-        expect(parse(run(project, "archive").stdout).SCAN_CONSULT).toBe("shared/consult");
+    it("emits no SCAN_CONSULT to anyone — the kind lost its read key", () => {
+      // The same retirement the investigation keys took, and by the same
+      // criterion: a key set restates the prompts, so a key no prompt names
+      // restates nothing. `playmaker` read every store and went at v11;
+      // `/fusion:archive` then named the key in one sentence about deriving a
+      // shared store from a two-valued SCAN_*, and that derivation went with
+      // the second value on 2026-09-10. `shared/consult/` still exists, still
+      // holds reports, and `OUT_CONSULT` still resolves for the consultant
+      // that writes them — the store's survival was never the argument for the
+      // key's. A prompt that names it again exits 4 against the ORDER check,
+      // which is how the retirement stays reversible and loud.
+      for (const name of [...AGENTS, ...SKILLS]) {
+        expect(parse(run(project, name).stdout).SCAN_CONSULT, name).toBeUndefined();
       }
+      expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consult");
     });
 
     it("emits no SCAN_MEMOS to anyone — nothing reads memos", () => {
@@ -747,8 +549,8 @@ describe("bin/fusion-paths", () => {
       const bin = stage();
       const source = readFileSync(fusionPaths, "utf-8");
       const patched = source.replace(
-        /^       PORTFOLIO"$/m,
-        '       PORTFOLIO OUT_NOVALUE"',
+        /^       SCAN_ANALYSES SCAN_BACKLOG SCAN_FORUM"$/m,
+        '       SCAN_ANALYSES SCAN_BACKLOG SCAN_FORUM OUT_NOVALUE"',
       );
       expect(patched, "ORDER injection did not apply — update the anchor").not.toBe(source);
       writeFileSync(join(bin, "fusion-paths"), patched);
@@ -771,9 +573,14 @@ describe("bin/fusion-paths", () => {
       expect(r.stdout).toBe("");
     });
 
-    it("still exits 3 for an orphaned pointer, keeping the two faults distinct", () => {
-      activate("260101-0000-does-not-exist");
-      expect(run(project, "planner").status).toBe(3);
+    it("is the only non-usage failure the resolver has left", () => {
+      // Exit 3 used to sit beside it, for a workbench-state fault the user
+      // could repair. With the pointer gone there is no such fault: 1 and 2
+      // are the caller's, 4 is fusion's, and nothing in between belongs to
+      // the user's workbench.
+      const r = run(project, "planner");
+      expect(r.status).toBe(0);
+      expect(r.stderr).toBe("");
     });
   });
 

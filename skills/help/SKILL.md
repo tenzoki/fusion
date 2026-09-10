@@ -38,7 +38,7 @@ echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 
 Read `$FUSION_SRC/docs/philosophy.md`. It covers the five "Why it's built this way" pillars — specialization beats generalists, coordination through files (not shared memory), traceability as a first-class output, compliance over speed, and one framework across many project shapes — the last being the domain-parameter design that lets the same plumbing serve `code` and `data` projects.
 
-For *how the machinery actually runs* — the Circle lifecycle, the spec-driven flow, the gates, and the compliance guard end to end — point the user at `$FUSION_SRC/docs/working-model.md` (the operational companion to this "why" doc).
+For *how the machinery actually runs* — the work item's life, the spec-driven flow, the gates, and the compliance guard end to end — point the user at `$FUSION_SRC/docs/working-model.md` (the operational companion to this "why" doc).
 
 If the user wants a fast answer, summarize the pillars in a few sentences. If they want to go deep, walk them through the doc.
 
@@ -51,19 +51,18 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
 2. **Pick the right entry point** depending on what you're doing:
    - Multi-task batch session → **orchestrator**
    - Vague request that needs scoping → **shaper**, then planner
-   - A goal to capture without starting work on it → `/fusion:direct <draft>` — **shaper** sharpens the draft with you and writes it as an anticipated Circle; no Turn loop runs, and a backlog entry's path is a valid draft
    - Concrete change with a clear ask → **planner** directly
    - One bug to fix → **coder** or **ontocoder**, whichever owns the file; a task naming an error takes the diagnose-before-editing route in its own prompt
    - Customer-ready deliverable, branded deck, or en↔de translation → **editor**
-   - An idea worth keeping but not yet worth planning → `/fusion:memo` files it as its own new entry in the project backlog, where it waits until somebody promotes it with `/fusion:direct`
-   - "What should I work on next?" → read the backlog and the anticipated Circles yourself; the portfolio briefing and the session work queue both went at v11 with the agents that built them
+   - A goal to capture without starting work on it → `/fusion:memo` files it as its own work item in the project backlog, where it waits at `open` until somebody claims it. Its path is then a valid input to **shaper**, which turns it into a spec without touching the item
+   - "What should I work on next?" → read the backlog yourself; the portfolio briefing and the session work queue both went at v11 with the agents that built them
    - Tracking files feel stale → **reconciler**
    - Strategic advice or second opinion → **consultant**
    - Deep document/problem study before work, or a forensic look at a captured failed run → **analyst**
 
-3. **The workbench is the project's cross-session memory.** `fusion-workbench/` holds one directory per unit of work under `circles/` — each with its own plans, issues, decisions, history, reviews and analyses — plus a `shared/` store for everything that belongs to no unit of work, and `portfolio.md` at the root. Which artifact lands where is the Origin Rule: it belongs to the Circle whose Directive caused it, and to `shared/` when no Circle was active. The kinds split by what resolves them: plans (the approach), issues (go fix it), decisions (decide and record), and the shared-only backlog (ideas preceding any Directive). `portfolio.md` was a regenerated briefing until v11, when the agent and the command that wrote and read it both went.
+3. **The workbench is the project's cross-session memory.** `fusion-workbench/` holds one store per artifact kind, all of them under `shared/`: plans (the approach), issues (go fix it), decisions (decide and record), reviews, analyses, the frozen history corpus, and the backlog, which holds the work items themselves. **There is no placement decision to make** — one kind has one store, so where an artifact goes follows from what it is. Until v11 each unit of work had a directory of its own carrying a copy of every store, and an Origin Rule decided which copy an artifact belonged to; that whole layer went, and a workbench that still has it is migrated with `/fusion:migrate`.
 
-   The layout is defined once, in `$FUSION_SRC/rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`, `## Origin Rule`). Read it there and cite it rather than reciting paths from memory — agents themselves do not hard-code these paths either; they resolve them at run time via `$FUSION_PLUGIN_ROOT/bin/fusion-paths <name>`. If the user wants to know where a given artifact will land in *their* project, run that resolver and show them, rather than guessing from the layout.
+   The layout is defined once, in `$FUSION_SRC/rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`). Read it there and cite it rather than reciting paths from memory — agents themselves do not hard-code these paths either; they resolve them at run time via `$FUSION_PLUGIN_ROOT/bin/fusion-paths <name>`. If the user wants to know where a given artifact will land in *their* project, run that resolver and show them, rather than guessing from the layout.
 
 4. **Watch the dashboard.** In a second terminal, run `./fusion-workbench/monitor "<session-name>" <port>` (e.g. `./fusion-workbench/monitor "F03-fusion" 8099`) from the project root. The monitor is an executable bash script that serves an HTTP dashboard — open `http://localhost:<port>` in a browser. It auto-refreshes from `fusion-workbench/orchestrator-events.jsonl`, which the hooks write, and from the records in the workbench.
 
@@ -73,7 +72,7 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
 
    **The other end-of-session jobs are their own commands now**, each invoked by name and triggering no other: `/fusion:reconcile` (verify the tracking records against the tree), `/fusion:archive` (move completed artifacts out of the live stores), `/fusion:log-activity` (regenerate the activity log), `/fusion:curate` (reconcile `CLAUDE.md` and the project's rule files, at a user gate) and `/fusion:post` (leave a note for whoever pulls this work next). Tell a user who asks about archiving, the activity log or `CLAUDE.md` maintenance to type that command; cleanup no longer reaches any of them. `/fusion:check` runs the periodic installation checks that Setup used to carry.
 
-For the full agent reference (scope, inputs, outputs, exact dispatch criteria), point the user at `$FUSION_SRC/README-agents.md`. For the working model behind the day-to-day flow — the Circle lifecycle, spec-driven flow, the gates, and the compliance guard walked end to end — point them at `$FUSION_SRC/docs/working-model.md`.
+For the full agent reference (scope, inputs, outputs, exact dispatch criteria), point the user at `$FUSION_SRC/README-agents.md`. For the working model behind the day-to-day flow — the work item's life, spec-driven flow, the gates, and the compliance guard walked end to end — point them at `$FUSION_SRC/docs/working-model.md`.
 
 ### 3. Install — *getting fusion into a project*
 

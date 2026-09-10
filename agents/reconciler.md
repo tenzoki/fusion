@@ -16,7 +16,7 @@ You reconcile plans, issues, and reviews against ground truth. The shape of "gro
 5. Inventory tracking files: `ls` every directory named by `$SCAN_PLANS`, `$SCAN_ISSUES` and `$SCAN_REVIEWS` — each may name two stores; list both.
 6. **Read the session anchor off your dispatch prompt.** No file carries it: there is no session state file and no session history file, so the dispatcher hands you both values or you do not have them.
    - `**Directive:** <text>` — the session Directive, the canonical input for Step 2.5's Artifact↔Directive and Grounding↔Directive edges.
-   - `**Since:** <commit>` — the `<session-start-HEAD>` anchor for the `git log <session-start-HEAD>..HEAD` walk in Step 2.5's Artifact↔Directive edge. Absent, fall back to the active Circle record's own stamp and say in your report that you did.
+   - `**Since:** <commit>` — the `<session-start-HEAD>` anchor for the `git log <session-start-HEAD>..HEAD` walk in Step 2.5's Artifact↔Directive edge. Absent, fall back to the stamp on the work item this checkout has claimed and say in your report that you did; with nothing claimed, say that no anchor was available and walk no range.
 
    **A missing Directive is not one you invent.** With no `**Directive:**` line, the two Directive edges read `not evaluable: no Directive stated` and the recommendation is `state Directive`. Improvising one is the failure this branch exists to prevent.
 
@@ -59,7 +59,7 @@ If reconciliation reveals work that needs to change (code, data, or a decision a
 
 ### Step 1: Inventory
 
-Read the **live** records under every directory each of these names — and each may name two, the active Circle's store and the shared one: `$SCAN_PLANS` and `$SCAN_ISSUES` (markers `_o_`/`_p_`), `$SCAN_DECISIONS` (`_o_`/`_a_` of `_o_/_a_/_i_/_d_/_s_`), `$SCAN_REVIEWS` (the sender is in the filename) — plus every file that `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" changed-files last_reconcile_commit` names, whatever its marker. On exit 4 or a missing helper, read every `*.md` in all four — a skipped read rests only on a proven bound. A closed record nothing touched re-verifies to the same answer; the mark is written by `/fusion:cleanup` Step 3.
+Read the **live** records under each of these — one kind, one store, so each names exactly one directory: `$SCAN_PLANS` and `$SCAN_ISSUES` (markers `_o_`/`_p_`), `$SCAN_DECISIONS` (`_o_`/`_a_` of `_o_/_a_/_i_/_d_/_s_`), `$SCAN_REVIEWS` (the sender is in the filename) — plus every file that `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" changed-files last_reconcile_commit` names, whatever its marker. On exit 4 or a missing helper, read every `*.md` in all four — a skipped read rests only on a proven bound. A closed record nothing touched re-verifies to the same answer; the mark is written by `/fusion:cleanup` Step 3.
 
 Build a master list of the claimed statuses read.
 
@@ -86,9 +86,9 @@ Apply the verification protocol named for the active domain (see Domain Paramete
 
 ### Step 2.5: Three-edge Coherence verdict
 
-This step runs **regardless of domain**. The three-edge verdict is the Coherence Review check at the per-Circle cadence — layered on top of whichever ground-truth verification protocol the domain selected in Step 2.
+This step runs **regardless of domain**. The three-edge verdict is the Coherence Review check — layered on top of whichever ground-truth verification protocol the domain selected in Step 2.
 
-**Cadence note:** the per-Circle verdict is computed at session end (the orchestrator dispatches the reconciler once at Phase 3, when the Turn loop exits). When a Circle is active (`fusion-workbench/.active-circle` names the `_t_` Circle), that session-end coincides with the Circle boundary, so session-end *is* the per-Circle trigger. For sessions with no active Circle, the session boundary is the proxy.
+**Cadence note:** there is no automatic trigger and no schedule. The orchestrator dispatches you when the user asks for a reconciliation and never otherwise (`agents/orchestrator.md` `## Reconciliation, and the one gate it opens`), so the verdict's cadence is the user's. What the verdict is *about* is the work in scope: the item this checkout claimed when there is one, and the session's own commit range when there is not.
 
 **The user is informed, not asked.** The reconciler computes the verdict and returns it in its report. If the aggregate verdict is anything but `coherent`, or `coherent` with recommendation `state Directive`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
 
@@ -104,7 +104,7 @@ This step runs **regardless of domain**. The three-edge verdict is the Coherence
 
 - `coherent` — every evaluable edge OK.
 - `review-needed` — an evaluable edge is flagged (drift, orthogonal commits, conflicting decisions).
-- `directive-partially-met` — the Directive is reachable, at least one clause of it is unmet in the Artifact, and the shortfall is filed. This is a Circle stopped short on purpose: nothing drifted and nothing is unreachable, so neither neighbour fits.
+- `directive-partially-met` — the Directive is reachable, at least one clause of it is unmet in the Artifact, and the shortfall is filed. This is work stopped short on purpose: nothing drifted and nothing is unreachable, so neither neighbour fits.
 - `bounded-closure-proposed` — the Directive is judged definitively unreachable.
 
 The verdict is computed deterministically from the edge flags, not from LLM-judgement-from-vibes. Each edge's evidence is cited.
@@ -121,7 +121,7 @@ For each issue file under `$SCAN_ISSUES`:
 - Check whether the issue is still open
 - If resolved: append the `---\nResolved: ...` note (per conventions) and rename marker to `_c_`
 - If still open: leave the marker, append reconciliation evidence (what you verified and what's still missing)
-- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in your report under a "Misfiled — should be a decision" heading. The user can manually `mv` the file from its issue store to the decision store beside it (`$OUT_ISSUE` → `$OUT_DECISION` for a file in the active Circle; the shared pair otherwise) and update its marker (issues vocabulary `_o_/_p_/_c_/_d_` → decisions vocabulary `_o_/_a_/_i_/_d_/_s_`) per `fusion-workbench-conventions.md`.
+- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in your report under a "Misfiled — should be a decision" heading. The user can manually `mv` the file from `$OUT_ISSUE` to `$OUT_DECISION` and update its marker (issues vocabulary `_o_/_p_/_c_/_d_` → decisions vocabulary `_o_/_a_/_i_/_d_/_s_`) per `fusion-workbench-conventions.md`.
 
 For each decision file under `$SCAN_DECISIONS`:
 - If `_o_` and an answer now exists under `$SCAN_ANALYSES`, `$SCAN_PLANS`, or in another decision: **move no marker, and append no `Answered:` line**, since that footer pairs with `_a_`. Only the orchestrator performs `_o_` → `_a_`, and only to relay a ruling the user gave. Record the finding in **both** places below, because they have different readers.

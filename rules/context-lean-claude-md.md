@@ -25,8 +25,8 @@ irrelevant always-on context that crowds out the task.
 The fix has two halves:
 
 1. **The manifest** (`./rules/context-manifest.yaml`) makes heavy knowledge
-   **topic-scoped and agent-scoped** — loaded only when the active Circle's topic
-   and the running agent match. Documented in `context-manifest.md`.
+   **topic-scoped and agent-scoped** — loaded only when the claimed work item's
+   topic and the running agent match. Documented in `context-manifest.md`.
 2. **A lean `CLAUDE.md`** keeps only what genuinely must be present every session,
    and **points at** the rest.
 
@@ -132,7 +132,7 @@ units:
 ```
 
 The 60-line framework body is no longer always-on text — it is a `skill:` pointer
-an agent follows only when a Circle's topic is `unite-framework`. The ontology and
+an agent follows only when the claimed item's topic is `unite-framework`. The ontology and
 LLM-pipeline bodies load only for their agents when their topic is active. The
 always-on surface is the identity, the language line, two rules, and a table the
 reader can scan in seconds.

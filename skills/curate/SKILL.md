@@ -27,7 +27,7 @@ Hold the emitted values (`WORKBENCH`, `OUT_ANALYSIS`). `$WORKBENCH` is absolute;
 
 - **Exit 1** — no workbench above `pwd`. Halt: `/fusion:setup` must run once at the project root. Do NOT bootstrap a workbench from here — setup is the single point of workbench creation.
 
-`CIRCLE` is emitted only when a Circle is active. Nothing in this skill branches on it: the curator resolves its own write targets at its own Setup, and the run file lands in the Circle's store or in the shared one exactly as that resolution decides. Both cases are ordinary.
+Nothing in this skill branches on where a store is: the curator resolves its own write targets at its own Setup, and the run file lands where that resolution puts it.
 
 ## Step 2 — Dispatch the curator to survey
 
@@ -117,7 +117,7 @@ If an approved entry has no outcome line at all, say which one plainly. That, an
 - The skill **judges nothing**. It does not open a rule file, a decision record or `CLAUDE.md` to check a proposal, and it forms no view about whether an entry is right. The evidence the user judges is in the ledger, and the agent put it there.
 - The skill **dispatches only `fusion:curator`**, twice at most.
 - The skill **commits nothing**, and neither does the agent. The working-tree edits are left for the user or the orchestrator to commit.
-- Safe to invoke during an active orchestrator session in the sense that it starts nothing: it activates no Circle and touches no session state. The apply pass does edit files an active session may also be editing, so it is worth running at a quiet point.
+- Safe to invoke during a running orchestrator session in the sense that it starts nothing: it claims no work item and touches no session state. The apply pass does edit files an active session may also be editing, so it is worth running at a quiet point.
 - **The gate is never absent.** This body holds it. An orchestrator that dispatches the curator mid-session proxies the same question instead (`agents/orchestrator.md`); a caller that cannot ask the user runs the survey pass and stops.
 
 ## Tone

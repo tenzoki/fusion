@@ -77,11 +77,12 @@ Three ways forward, and fusion does not weigh them equally:
 2. **Re-shape it, and the conversion rides along.** A shaper run in the default `**Scope:** spec`
    does not halt on that record: it writes a new spec, points `**Active spec/plan:**` at it, and
    replaces the Directive prose with the pointer in the same command. This is what
-   `rules/circle-records.md` means by an existing record converting on the next sanctioned
-   write. Nothing here is migration work — it is ordinary re-shaping you would have done anyway.
+   the Circle-record rule of the day meant by an existing record converting on the next
+   sanctioned write. (That rule file was retired at v11 with the Circle container itself; this
+   note is release history and states what was true then rather than pointing at it.) Nothing here is migration work — it is ordinary re-shaping you would have done anyway.
 3. **Convert it by hand**, if you would rather have the invariant hold across every record now.
-   Replace the `## Directive` body with the pointer literal defined in
-   `rules/circle-records.md` `### The Directive is a pointer once a spec exists`. One line.
+   Replace the `## Directive` body with the pointer literal that rule's section
+   `### The Directive is a pointer once a spec exists` defined. One line.
    Weigh it against the reason fusion ships no migration: that record is the evidence of the
    contradiction the invariant was written to end, and converting it by hand deletes the
    evidence. It is the same trade the `**Status:**` field poses, where the shipped guidance is
@@ -134,8 +135,9 @@ Three things that need nothing done, though the last one changes what an agent w
 
 ## Where to read more
 
-- `rules/circle-records.md` `### The Directive is a pointer once a spec exists` — the invariant
-  itself, with the pointer literal and the reason no migration ships.
+- The Circle-record rule's `### The Directive is a pointer once a spec exists` — the invariant
+  itself, with the pointer literal and the reason no migration ships. Retired at v11 with the
+  Circle container; read it in git history at the tag for this release.
 - `agents/shaper.md` — mode 3, the `**Scope:**` parameter and each of its four halts.
 - `README-agents.md` `## Dispatch parameters` — the roster of run-time parameters, `**Scope:**`
   included.

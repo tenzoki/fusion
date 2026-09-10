@@ -333,8 +333,12 @@ const RULE_BASELINE: Record<string, number> = {
   // These and the two gated entries above are what the REPORT measures. NOT
   // touched by the 2026-08-14 arming: that growth still stands against the report.
   "design-diagrams.md": 5_673, // 2026-08-05 cut
-  "circle-records.md": 9_302, // 2026-08-05 cut
   "commit-lock.md": 9_250, // 2026-08-05 cut, carried through the 2026-08-15 rename
+  // `circle-records.md` (9 302) stood here until 2026-09-10 and went with the
+  // Circle container. A baseline entry for a file the tree no longer holds
+  // would credit every role that once loaded it with a shrink it did not earn,
+  // so the entry is removed rather than zeroed. Same for `backlog-entries.md`,
+  // which never had one: it was small enough to sit under the arming.
 };
 
 interface Role {
@@ -430,20 +434,20 @@ const ROLES: Record<string, Role> = {
   // A role stood here for the agent that ranked Circles and maintained the
   // backlog: circle-records.md + decision-record-examples.md +
   // user-facing-output.md + backlog-entries.md. It went at v11 with the
-  // portfolio layer. `backlog-entries.md` did not go with it — the four
-  // confirm-gated operations became the orchestrator's, so that file followed
-  // them into the role below, which is why that key grew a name rather than
-  // this one merely disappearing.
+  // portfolio layer, and both of the files that were peculiar to it have since
+  // gone too — `circle-records.md` retired with the Circle container on
+  // 2026-09-10, and `backlog-entries.md` folded back into the always-on
+  // conventions in the same change, the item grammar and its three-sentence
+  // maintenance mandate now standing side by side there.
 
   /**
-   * Turns a Directive into a Circle record and draws the design diagram that
-   * goes in it, so it pays for both files. It used to be the role closest to the
-   * release cap, 483 bytes under it; the 2026-08-12 cut put 26 725 bytes between
-   * them and the 2026-08-14 arming re-baseline brought that back to 3 806. The
-   * role that would cross the cap first is no longer this one but the
-   * orchestrator's, below.
+   * The shaper: the worked transitions plus the design diagram doctrine, over a
+   * user-read surface (gate 260827-0910). It carried `circle-records.md` as
+   * well until 2026-09-10 — it turned a Directive into a Circle record — and
+   * the two modes that did so went with the container, leaving the role one
+   * file lighter and its key one name shorter.
    */
-  "circle-records.md + decision-record-examples.md + design-diagrams.md + user-facing-output.md": {},
+  "decision-record-examples.md + design-diagrams.md + user-facing-output.md": {},
 
   // consultant, and since 2026-09-10 the curator too: a user-read surface (gate
   // 260827-0910). The curator held its own role while it also carried
@@ -472,11 +476,6 @@ const ROLES: Record<string, Role> = {
    * file. What the next core-file edit meets is the hard bound at
    * +GROWTH_BUDGET, not this cap.
    *
-   * `circle-records.md` (9 302) is the Circle state vocabulary and the record
-   * and portfolio templates. This role writes those transitions — it activates
-   * a Circle on `_a_ -> _t_` and closes it on `_t_ -> _c_` — so the vocabulary
-   * is the text it acts on, not background.
-   *
    * `commit-lock.md` is `## Commit lock`, and nothing else since 2026-08-15,
    * when the stash half was deleted with the two skills that consumed it. The
    * commit lock is this role's to take: it is the agent that commits after a
@@ -489,13 +488,12 @@ const ROLES: Record<string, Role> = {
    * most distinct jobs. The overage is not shaveable from the core, where every
    * remaining byte is text every agent applies.
    */
-  "backlog-entries.md + circle-records.md + commit-lock.md + decision-record-examples.md + user-facing-output.md": {
+  "commit-lock.md + decision-record-examples.md + user-facing-output.md": {
     overRelease:
-      "circle-records.md (9 302) carries the Circle state vocabulary and the record " +
-      "template, and this role is the one that writes the `_a_ -> _t_` and `_t_ -> _c_` " +
-      "transitions. commit-lock.md (9 250 at baseline) carries the commit lock this " +
+      "commit-lock.md (9 250 at baseline) carries the commit lock this " +
       "role takes before every commit, which bin/fusion-rules cannot deliver to the two " +
-      "committing skills; decision-record-examples.md (4 291) and user-facing-output.md (16 784) left the always-on floor into this role at gates 260827-0830/-0910.",
+      "committing skills; decision-record-examples.md (4 291) and user-facing-output.md (16 784) left the always-on floor into this role at gates 260827-0830/-0910. " +
+      "Two files left this role on 2026-09-10 with the Circle container — circle-records.md (9 302) and backlog-entries.md — and the overage is kept under review rather than assumed gone.",
   },
 
 };
@@ -1079,7 +1077,7 @@ describe("growth(), on synthetic file sets", () => {
   /** Three real core files, each at exactly its baseline: zero growth by construction. */
   const CORE = ["agent-setup.md", "fusion-workbench-conventions.md", "critical-stance.md"];
   /** One real role-specific file — the disjoint half the hard bound must not see. */
-  const EXTRA = "circle-records.md";
+  const EXTRA = "commit-lock.md";
 
   const at = (rels: string[]) => rels.map((rel) => ({ rel, size: RULE_BASELINE[rel] }));
 
@@ -1360,10 +1358,18 @@ describe("the dispatch-path bound, on synthetic component sizes", () => {
     // Derived, never listed: the recipients are read off the real emission, so
     // an audience change in bin/fusion-rules moves this test's expectation with
     // it instead of leaving a stale name list behind.
+    //
+    // `circle-records.md` was the probe here until 2026-09-10, when it was
+    // retired with the Circle container. `design-diagrams.md` replaces it
+    // because it has the same shape: emitted to a derived audience that is
+    // neither empty nor everybody. The two assertions below are what keep the
+    // replacement honest — a probe file that reached nobody, or reached every
+    // agent, would make this test pass while measuring nothing.
+    const PROBE = "design-diagrams.md";
     const recipients = agents.filter((a) =>
-      dispatchEmission(a).some((p) => p.endsWith("/circle-records.md")),
+      dispatchEmission(a).some((p) => p.endsWith(`/${PROBE}`)),
     );
-    expect(recipients.length, "no agent receives circle-records.md any more").toBeGreaterThan(0);
+    expect(recipients.length, `no agent receives ${PROBE} any more`).toBeGreaterThan(0);
     expect(recipients.length, "every agent receives it, so it is not conditional").toBeLessThan(
       agents.length,
     );

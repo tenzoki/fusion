@@ -47,15 +47,11 @@
 #     the epistemic norms governing reasoning substance (not formatting):
 #     own your errors, no premature solutions, calibrated certainty, case
 #     splits disjoint-and-complete, cardinalities enumerated or derived.
-#   - Circle-transitioning agents (orchestrator, shaper) additionally
-#     read circle-records.md (shipped by plugin) — the Circle state vocabulary,
-#     its worked transitions, the Circle record template and the portfolio
-#     template. The audience is DERIVED rather than asserted: these are exactly
-#     the agents whose prompts name a Circle-scoped fusion-paths key. Two sibling
-#     files from the same partition — workbench-path-resolution.md and
-#     rule-file-provenance.md — are emitted to no agent at all; they are the
-#     authoring homes for prompt/resolver authoring and for rule-file writing,
-#     reached by pointer from fusion-workbench-conventions.md.
+#   - Two files from the conventions partition are emitted to no agent at all:
+#     workbench-path-resolution.md and rule-file-provenance.md, the authoring
+#     homes for prompt/resolver authoring and for rule-file writing, reached by
+#     pointer from fusion-workbench-conventions.md. A third, circle-records.md,
+#     went with the Circle container itself.
 #   - The review-writing agent (reviewer) additionally reads
 #     review-contract.md (shipped by plugin) — the single authoring home of the
 #     review file's two mandated header fields, the per-topic working files and
@@ -73,10 +69,8 @@
 #       reviewer                  → both sets, because one agent covers both
 #                                   review domains
 #       planner                   → *coding*.md, *ontology*.md
-#   - The editor additionally reads project-language.md and the orchestrator
-#     backlog-entries.md, which followed the four backlog operations to the one
-#     agent that still performs them (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md); agents matching none of the
-#     conditions above get the always-on core alone.
+#   - The editor additionally reads project-language.md (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md);
+#     agents matching none of the conditions above get the always-on core alone.
 #
 # Optional topic-scoped loading (the context manifest):
 #   A consuming project MAY add ./rules/context-manifest.yaml to load large
@@ -92,12 +86,12 @@
 #     - a `path` unit emits its file path (an agent reads it, as today);
 #     - a `skill` unit emits a `skill:<name>` pointer line (invoked on demand).
 #   The topic is resolved (see resolve_topics below): an explicit CLI <topic>
-#   argument wins; otherwise it is derived from the active Circle — an explicit
-#   `Topic:`/`Tags:` line on the Circle record, else the Circle slug's keywords;
-#   with no active Circle, only `[always]` units match. A malformed manifest
-#   fails LOUDLY with exit 3 rather than silently emitting a partial set
-#   (HYG-NO-SILENT-FAIL). The full schema, predicate, and resolution order are
-#   authored once in rules/context-manifest.md.
+#   argument wins; otherwise it is derived from the work item this checkout has
+#   claimed — an explicit `Topic:`/`Tags:` line in the item, else the item
+#   filename's slug keywords; with nothing claimed here, only `[always]` units
+#   match. A malformed manifest fails LOUDLY with exit 3 rather than silently
+#   emitting a partial set (HYG-NO-SILENT-FAIL). The full schema, predicate, and
+#   resolution order are authored once in rules/context-manifest.md.
 #
 # Exit codes: 0 success; 1 usage error (no agent, an unknown option, an
 #   unrecognised --audience value, or a third positional); 2 unknown agent;
@@ -276,25 +270,6 @@ case "$AGENT" in
   *)                              IS_DIAGRAM_AGENT=0 ;;
 esac
 
-# Circle-transitioning-agent flag — independent of PATTERNS. The three agents
-# that create, activate or close a Circle additionally read
-# rules/circle-records.md: the Circle state vocabulary, its worked transitions,
-# the Circle record template and the portfolio template.
-#
-# The audience is DERIVED, not guessed: `bin/fusion-paths` builds each consumer's
-# key set by grepping that consumer's own prompt, and exactly these two name a
-# Circle-scoped key — orchestrator ($SCAN_CIRCLES, $PORTFOLIO) and shaper
-# ($OUT_CIRCLE, $SCAN_CIRCLES).
-# An agent that names no Circle key cannot transition a Circle, so the vocabulary
-# is text it can never act on. Every other agent reaches the file through the
-# pointer at `## Circle records` in fusion-workbench-conventions.md; the skills
-# that transition Circles cite it directly, as skills always must (this helper
-# serves agents only and exits 2 on any other name).
-case "$AGENT" in
-  orchestrator|shaper)            IS_CIRCLE_AGENT=1 ;;
-  *)                              IS_CIRCLE_AGENT=0 ;;
-esac
-
 # Review-writing-agent flag — independent of PATTERNS. The one agent that writes
 # review files reads rules/review-contract.md: the two mandated header fields,
 # the per-topic working files and the final consolidated review. The audience is
@@ -469,40 +444,75 @@ resolve_topics() {
   # present, so it adds no subprocess cost to the no-manifest path.
   #
   # Resolution order (documented in rules/context-manifest.md):
-  #   1. Explicit CLI <topic> argument (commas accepted) — overrides the Circle.
-  #   2. An explicit `Topic:`/`Tags:` line on the active Circle's record.
-  #   3. The active Circle's slug keywords (dir name minus the YYMMDD-HHMM- stamp).
-  #   4. No active Circle → empty.
+  #   1. Explicit CLI <topic> argument (commas accepted) — overrides the item.
+  #   2. An explicit `Topic:`/`Tags:` line in the work item this checkout has
+  #      claimed.
+  #   3. That item's slug keywords (basename minus the YYMMDD-HHMM- stamp and
+  #      the .md suffix).
+  #   4. Nothing claimed by this checkout → empty.
+  #
+  # The source moved from the active Circle to the claimed item when the Circle
+  # container was cut, and the shape of the answer moved with it. A Circle was a
+  # pointer file: one read, and every session in the checkout saw the same
+  # topic. A claim is a field on an item and it names a CHECKOUT, so what is
+  # resolved here is "what is this checkout working on", compared by equality on
+  # the eight hex characters bin/fusion-identity prints. An item another
+  # checkout claimed is not this checkout's topic, and an unclaimed store is a
+  # real answer of "no topic" rather than a failure.
   if [ -n "$TOPIC" ]; then
     printf '%s' "$TOPIC" | tr ',' ' '
     return 0
   fi
 
-  local proot wb pointer cname record tagline
+  local proot wb store checkout item tagline base
   proot="$("$SCRIPT_DIR/fusion-workbench-root" 2>/dev/null)" || return 0
   wb="$proot/fusion-workbench"
-  pointer="$wb/.active-circle"
-  [ -f "$pointer" ] || return 0
-  cname="$(head -n 1 "$pointer" | tr -d '\r' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
-  [ -n "$cname" ] || return 0
-  case "$cname" in */*|.|..) return 0 ;; esac
-  [ -d "$wb/circles/$cname" ] || return 0
 
-  # 2. Explicit tag on the Circle record. The record is _<marker>_circle.md;
-  #    find it without a no-match-fatal glob (zsh nomatch discipline).
-  record="$(find "$wb/circles/$cname" -mindepth 1 -maxdepth 1 -name '_*_circle.md' -type f 2>/dev/null | head -n 1)"
-  if [ -n "$record" ]; then
-    tagline="$(grep -iE '^[[:space:]]*(\*\*)?(topic|tags)(\*\*)?[[:space:]]*:' "$record" 2>/dev/null | head -n 1 || true)"
-    if [ -n "$tagline" ]; then
-      printf '%s' "$tagline" \
-        | sed -E 's/^[^:]*:[[:space:]]*//; s/#.*$//; s/\*\*//g; s/[][]//g; s/,/ /g' \
-        | tr -s '[:space:]' ' ' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//'
-      return 0
-    fi
+  # The one store a work item lives in. Named here rather than resolved through
+  # bin/fusion-paths because that resolver derives a key set from a CONSUMER
+  # PROMPT, and this helper is not a consumer — it has no prompt of its own to
+  # derive from, and asking under somebody else's name would make one agent's
+  # key set decide another agent's topic.
+  store="$wb/shared/backlog"
+  [ -d "$store" ] || return 0
+
+  # This checkout's identifier. bin/fusion-identity is the one place a run
+  # obtains it; an install that predates the helper, or a workbench where the
+  # identifier cannot be read at all, resolves no topic rather than guessing
+  # one. Guarded with [ -x ] per decision 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md.
+  [ -x "$SCRIPT_DIR/fusion-identity" ] || return 0
+  checkout="$("$SCRIPT_DIR/fusion-identity" 2>/dev/null | sed -n 's/^CHECKOUT=//p' | head -n 1)"
+  [ -n "$checkout" ] || return 0
+
+  # The claimed item: **Status:** claimed AND a **Claim:** whose first field is
+  # this checkout. Both are tested, because a Status that says claimed with no
+  # Claim beside it names no holder and a Claim left on a `done` item names a
+  # holder who has finished. `find` drives the loop so an empty store yields no
+  # input rather than an unexpanded glob.
+  item=""
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    grep -qE '^\*\*Status:\*\*[[:space:]]*claimed[[:space:]]*$' "$f" 2>/dev/null || continue
+    grep -qE "^\*\*Claim:\*\*[[:space:]]*$checkout([[:space:]]|$)" "$f" 2>/dev/null || continue
+    item="$f"
+    break
+  done <<EOF
+$(find "$store" -mindepth 1 -maxdepth 1 -name '*.md' -type f 2>/dev/null | sort)
+EOF
+  [ -n "$item" ] || return 0
+
+  # 2. Explicit tag in the item.
+  tagline="$(grep -iE '^[[:space:]]*(\*\*)?(topic|tags)(\*\*)?[[:space:]]*:' "$item" 2>/dev/null | head -n 1 || true)"
+  if [ -n "$tagline" ]; then
+    printf '%s' "$tagline" \
+      | sed -E 's/^[^:]*:[[:space:]]*//; s/#.*$//; s/\*\*//g; s/[][]//g; s/,/ /g' \
+      | tr -s '[:space:]' ' ' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//'
+    return 0
   fi
 
   # 3. Slug keywords.
-  printf '%s' "$cname" | sed -E 's/^[0-9]{6}-[0-9]{4}-//' | tr '-' ' '
+  base="$(basename "$item" .md)"
+  printf '%s' "$base" | sed -E 's/^[0-9]{6}-[0-9]{4}-//' | tr '-' ' '
 }
 
 if [ "$IN_PLUGIN_REPO" -eq 1 ]; then
@@ -591,12 +601,7 @@ if [ "$IS_DIAGRAM_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/design-diagrams.md"
 fi
 
-# 1d. Circle-transitioning agents (orchestrator, shaper) additionally
-#     receive the Circle record rules: the state vocabulary, the worked
-#     transitions, the record template and the portfolio template. Derived
-#     audience — see the IS_CIRCLE_AGENT block above.
-#
-#     Two files that came out of the same partition are emitted to NOBODY and so
+# 1d. Two files from the conventions partition are emitted to NOBODY and so
 #     appear nowhere below: rules/workbench-path-resolution.md (the resolver's
 #     name namespace, key table and key-set derivation — read when authoring a
 #     prompt or changing bin/fusion-paths) and rules/rule-file-provenance.md
@@ -605,10 +610,7 @@ fi
 #     at their sites in fusion-workbench-conventions.md. They live in rules/
 #     rather than outside it because they remain the authoring home of their
 #     topic — the emission decision is about audience, not about status.
-if [ "$IS_CIRCLE_AGENT" -eq 1 ]; then
-  emit_if_exists "$PLUGIN_RULES_DIR/circle-records.md"
-fi
-
+#
 # 1e. The orchestrator additionally receives the commit-lock protocol, whose
 #     audience a mechanism bounds rather than a guess: the lock is taken by
 #     whoever is about to commit, and among the agents that is the orchestrator.
@@ -625,18 +627,16 @@ if [ "$AGENT" = "orchestrator" ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/commit-lock.md"
 fi
 
-# 1e2. Two partitioned conventions topics go to the one agent each whose act
-#      they govern (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md): the language cascade's full text to
-#      the editor, whose deliverable-language halt lives in it, and the backlog
-#      maintenance mandate to the orchestrator, which performs the four backlog
-#      operations at the user's word since the playmaker went with the portfolio
-#      layer. The operative cores stay always-on in
+# 1e2. One partitioned conventions topic goes to the one agent whose act it
+#      governs (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md): the language cascade's full text to
+#      the editor, whose deliverable-language halt lives in it. Its sibling from
+#      that partition, the backlog maintenance mandate, was folded back into the
+#      conventions when the work item replaced the Circle: the mandate is now
+#      three sentences rather than a file, and the item grammar it sits beside is
+#      always-on. The operative core stays always-on in
 #      fusion-workbench-conventions.md.
 if [ "$AGENT" = "editor" ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/project-language.md"
-fi
-if [ "$AGENT" = "orchestrator" ]; then
-  emit_if_exists "$PLUGIN_RULES_DIR/backlog-entries.md"
 fi
 
 # 1f. The review-writing agent additionally receives the review contract.
