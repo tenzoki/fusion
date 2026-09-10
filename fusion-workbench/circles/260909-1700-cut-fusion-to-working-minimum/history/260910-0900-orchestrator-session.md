@@ -103,3 +103,30 @@ dispatch parameter and the bounded return that hands unfinished work back, both 
 agents; and bring `dispatch-bound-lint.test.ts` to the same answer. The orchestrator stops
 computing a stopping time and stops passing the line, which this session begins doing
 immediately rather than at the next one, since that half is behaviour rather than text.
+
+## Ruling on the container
+
+Put to the user after session 3 closed, when they asked whether Circles were gone and said
+that would be a loss. The answer they were given separated three things step C9 removed —
+the container that bundled a unit of work's artifacts, the portfolio layer that ranked and
+recommended, and the richer state vocabulary — and offered each back on its own.
+
+**The user chose the container.** Their reason, in their own words: the Circles were
+introduced for a good reason, and without the bundling it is impossible to keep an
+overview. That is a claim about what the tool is for rather than about what it costs, and
+it is recorded here in those terms because the byte measurements that drove the whole cut
+cannot see it. Every figure this Circle produced counts what a surface costs to carry; none
+of them counts what a reader loses when the thing they are looking for is spread across six
+stores by stamp.
+
+The portfolio layer and the state vocabulary were not chosen and stay removed. The
+work item's own shape stays exactly as C9 wrote it: no filename marker, state as a head
+field, one file per item. Those two properties were bought with the container's removal and
+are kept without paying for them again.
+
+Filed as `260910-2133_*_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md`,
+answered in the same act. The record notes what the ruling obliges: the Origin Rule comes
+back, because a placement decision exists again; the resolver needs a per-work branch; and
+`skills/migrate/SKILL.md` has to be rewritten before D1 runs, since the body as written
+flattens twenty-six containers into the shared stores. D1 is not reversible by a forward
+commit, which is why the question was asked before it rather than after.
