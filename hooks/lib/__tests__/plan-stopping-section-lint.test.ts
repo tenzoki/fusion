@@ -2,16 +2,13 @@
 // The stopping-section gate — a live plan must carry `## Where this Circle stops`,
 // filled.
 //
-// WHY THIS EXISTS. `agents/planner.md:131` has carried the section in the plan
-// output format since `b200902`, and `:160` made it mandatory at `06ab15b`:
-// "is mandatory and is never left as the angle-bracket placeholder". The first
-// plan written after both (`b6869aa`) does not carry it, and Phase 4 step 2b —
-// the step the mandate exists to feed, which reads the section back to the user
-// clause by clause before a Circle closes — took its no-such-section branch on
-// the very Circle that built it. The defect is
+// WHY THIS EXISTS. `agents/planner.md` has carried the section in the plan
+// output format since `b200902` and made it mandatory at `06ab15b`; the first
+// plan written after both does not carry it, and Phase 4 step 2b took its
+// no-such-section branch on the very Circle that built it. The measured account
+// is the defect record,
 // `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0917_*_the-first-plan-written-after-the-stopping-section-was-made-mandatory-does-not-carry-it.md`,
-// and this file is its fix direction 1, chosen by the user over directions 2
-// (ask at the plan-approval gate) and 3 (stop calling it mandatory).
+// and this file is its fix direction 1, chosen by the user over directions 2 and 3.
 //
 // "Does this file carry this heading, with something under it" is a property
 // the file HAS, answered by reading it (`rules/critical-stance.md` §4); that is
@@ -31,13 +28,11 @@
 // and `placeholder` are three named failures, each with its own remedy in the
 // message. A placeholder PLUS a real clause passes — that is substance.
 //
-// THE CORPUS IS LIVE PLANS: `_o_` (open) and `_p_` (in progress) from the
-// issues/planning marker vocabulary in `rules/fusion-workbench-conventions.md`
-// `## State Markers — issues and planning`; `_c_` and `_d_` are out, and so are
-// shaper specs, whose format has no such section. The mandate serves a step
-// that runs BEFORE a Circle closes, so the window in which the section must
-// exist is exactly the window in which the plan is live, and a plan written
-// without it reddens the suite on the day it is written.
+// THE CORPUS IS LIVE PLANS: `_o_` and `_p_` from the issues/planning marker
+// vocabulary authored in `rules/fusion-workbench-conventions.md`; `_c_` and `_d_`
+// are out, and so are shaper specs, whose format has no such section. The mandate
+// serves a step that runs BEFORE a Circle closes, so the window in which the
+// section must exist is exactly the window in which the plan is live.
 // WHAT THIS DOES NOT COVER, stated rather than discovered. At HEAD the live
 // corpus is EMPTY: 0 files, and the corpus assertion passes vacuously. It is a
 // trap set for the next plan, not a measurement of the current tree. The

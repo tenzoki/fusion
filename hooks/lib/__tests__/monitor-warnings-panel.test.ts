@@ -26,10 +26,10 @@ import { dirname, resolve, join } from "node:path";
 // wrong-typed or retired key in its `fusion-guard.json` emits an unbounded
 // stream of them, and thirty in a row would push every guard_block and
 // guard_halt off the panel. Measured first on the burst the
-// `FUSION_ALLOW_RULES_WRITE` exemption produced, one advisory per exempted
-// write; that flag went with the protected-path half on 2026-08-12 and the
-// fixture below keeps its rows, because the panel must still render an
-// advisory a consuming project logged before it upgraded. The fix is
+// `FUSION_ALLOW_RULES_WRITE` exemption produced; that flag's own history is in
+// `helpers/guard-harness.ts` `childEnv`, and the fixture below keeps its rows
+// because the panel must still render an advisory a consuming project logged
+// before it upgraded. The fix is
 // two independent caps (MAX_WARNINGS_RETURNED for the warning class,
 // MAX_ADVISORIES_RETURNED for the advisory class) merged back by timestamp, and
 // a fix nothing tests is a fix that comes back.
@@ -47,26 +47,14 @@ import { dirname, resolve, join } from "node:path";
 // the monitor on port 0 and reads back the URL the server published after
 // binding, through the file named in MONITOR_URL_FILE.
 //
-// It used to take the port itself, by binding :0, reading the assigned port and
-// releasing it, and it called the window between the release and the monitor's
-// bind "microseconds". The window is not what a second copy of this suite
-// competes for: an ephemeral port the kernel handed back to us is unreserved
-// for as long as the case runs, and the kernel recycles the range, so a second
-// suite's freePort() can hand out a number this suite's monitor is still
-// serving on. What happens then is not a lost bind but a kill. `bin/monitor`
-// SIGTERMs whatever is listening on its port before binding, which is its
-// documented behaviour and right for a monitor a person starts — and fatal when
-// a test harness aims it at a number nothing reserved.
-//
-// MEASURED 2026-09-06, and it is the whole of issue 260904-2140_*: with monitor
-// A serving the dual-stack wildcard and answering 200 on both loopback
-// families, starting monitor B on A's port killed A; the port then answered 200
-// over IPv4 (B, which the harness pins to 127.0.0.1) and refused ::1, which is
-// exactly `connect ECONNREFUSED ::1:<port>` after an IPv4 readiness poll had
-// already passed. The bind in `bin/monitor` is sound and was never implicated:
-// its URL follows its socket, naming `localhost` only where both families
-// answer. What was wrong was this harness asserting `localhost` at a port it
-// had guessed, without ever reading what the monitor said it bound.
+// It used to guess the port — bind :0, read the assigned number, release it,
+// then aim the harness at `localhost:<number>`. That loses a race no window is
+// small enough to close: a released ephemeral port is unreserved, `bin/monitor`
+// SIGTERMs whatever is listening on its port before binding, and the failure
+// arrives as `connect ECONNREFUSED ::1:<port>` after an IPv4 readiness poll has
+// already passed. Measured 2026-09-06, and the measurement is the whole of
+// `shared/issues/260904-2140_c_monitor-warnings-panel-test-fails-intermittently-on-the-dual-stack-bind.md`;
+// the bind in `bin/monitor` was never implicated.
 // ---------------------------------------------------------------------------
 
 const here = dirname(fileURLToPath(import.meta.url));

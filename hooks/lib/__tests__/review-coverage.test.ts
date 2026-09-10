@@ -5,16 +5,12 @@
  *
  * `review-coverage-mandate.test.ts` checks that the two reviewer prompts still
  * MANDATE the header fields and that `agents/orchestrator.md` still consumes
- * them. It reads text. It cannot tell whether the tiling is right, and it never
- * could — which is the same gap issue `260810-1205` measured at full scale,
- * where two thorough review passes ran and nothing compared their ranges with
- * the range.
- *
- * So every case here builds a real throwaway git repository with real commits
- * and real review files, and asserts on what came back. The subprocess cases go
- * through the harness for the reason `staging-drift.test.ts` gives at the same
- * place: `isFusionPluginCwd()` caches per process, so an in-process assertion
- * about the plugin-repo case would pass vacuously.
+ * them. It reads text, and cannot tell whether the tiling is right — which is
+ * the gap issue `260810-1205` measured at full scale, narrated in that sibling's
+ * header and in the record itself. So every case here builds a real throwaway git
+ * repository with real commits and real review files, and asserts on what came
+ * back. The subprocess cases go through the harness for the reason
+ * `staging-drift.test.ts` gives at the same place.
  *
  * ## The properties under test
  *

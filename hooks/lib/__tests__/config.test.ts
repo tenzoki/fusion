@@ -24,19 +24,16 @@ import { findWorkbenchRoot } from "../workbench-root.js";
 // ## What it resolves, and what that leaves this file measuring
 //
 // `orchestrator.maxTurns`, and `citations.extraPaths` since 2026-08-31. Six
-// former leaves were guard settings (`guard.enabled`,
-// `guard.defaultSensitivity`, `guard.categoryPaths`, `guard.categorySensitivity`,
-// `decisions`, `escalation.blocksBeforeHalt`) and went with the guard's verdict
-// on 2026-08-16; the plugin's own `config.json` went with them, because a middle
-// merge layer whose only reason was to give those settings a narrowable default
-// has nothing left to carry.
+// former leaves were guard settings and went with the guard's verdict on
+// 2026-08-16, taking the plugin's own `config.json` middle layer with them; the
+// six are named in `CLAUDE.md`'s `fusion.json` Layout row, which also names the
+// two retirement scopes the loader announces.
 //
 // So this file measures three things and no longer measures a fourth:
 //
 //   1. THE MERGE, which is one rule. The walk was kept in `loadConfig` rather
-//      than collapsed into a `??` so that the next setting would inherit the
-//      rule instead of re-deriving it; `citations.extraPaths` is that setting,
-//      and its own cases assert the rule rather than restating it.
+//      than collapsed into a `??` so the next setting inherits the rule instead
+//      of re-deriving it; `citations.extraPaths` is that setting.
 //   2. VALIDATION — an unusable value is dropped, NAMED, and then inherits, so
 //      that a dropped key, an omitted key and an unwritten file are three
 //      spellings of one behaviour (decision `260804-1630`).
@@ -50,11 +47,10 @@ import { findWorkbenchRoot } from "../workbench-root.js";
 // — and the `DISTINGUISHING_PLUGIN` fixture they shared — went with the
 // distinction.
 //
-// Everything here injects the project root. Nothing reads `process.cwd()`, so no
-// case depends on where the runner was started — which matters more than usual
-// in THIS repository, where the walk up from the working directory finds the
-// plugin's own root and would quietly give every case a project layer it never
-// asked for.
+// Everything here injects the project root; nothing reads `process.cwd()`. That
+// matters more than usual in THIS repository, where the walk up from the working
+// directory finds the plugin's own root and would quietly give every case a
+// project layer it never asked for.
 // ---------------------------------------------------------------------------
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -125,14 +121,12 @@ afterEach(() => {
 // `DEFAULTS`. A key it DOES supply is taken exactly as written.
 //
 // The rule was written for a loader with six guard leaves across three layers,
-// where "declaration wins outright" was the load-bearing half — a union of a
-// declared container can only grow, so narrowing is expressible only if a
-// declared value replaces rather than merges. With one leaf there is nothing
-// left to narrow, and what these cases hold down is the shape rather than the
-// arithmetic: the walk still reads declaration at LEAF granularity, so a project
-// that declares a container without declaring the leaf inside it inherits that
-// leaf rather than losing it (issue 260804-1601, the shape that used to wipe
-// every sibling in the same object).
+// where "declaration wins outright" was the load-bearing half; the reasoning is
+// in the decision above. With one leaf there is nothing left to narrow, and what
+// these cases hold down is the shape rather than the arithmetic: the walk still
+// reads declaration at LEAF granularity, so a project that declares a container
+// without declaring the leaf inside it inherits that leaf rather than losing it
+// (issue 260804-1601).
 // ---------------------------------------------------------------------------
 
 describe("merge — per leaf: project, then DEFAULTS", () => {

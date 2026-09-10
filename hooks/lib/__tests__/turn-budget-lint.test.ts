@@ -7,14 +7,12 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // Turn-budget lint (issue 260811-1712).
 //
 // The defect: the orchestrator's Phase-2 Turn budget was PROSE. `5` was written
-// into `agents/orchestrator.md` in seven places and four spellings — "Maximum 5
-// Turns (numbered 1 through 5)", "`**Turn:** <N>/5`", "the existing 5-Turn
-// circuit breaker", "`max_turns` (default 5)", "already reached (5/5)",
-// "max_turns: 5" in the state schema, "`**Turn:** --/5` … `**Turn:** 1/5`" —
-// plus the Threshold cell of the Max-Turns circuit-breaker row. No project
-// could change any of them, and one already called the number a "default",
-// which implies a source that can override it. None existed, so the word was
-// false.
+// into `agents/orchestrator.md` in seven places and four spellings, one of which
+// already called the number a "default" while no source could override it, so
+// the word was false. The seven sites and their spellings are enumerated in the
+// filed issue,
+// `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`,
+// and are not restated here.
 //
 // The fix makes the budget a configured value: `orchestrator.maxTurns`, merged
 // per leaf by `hooks/lib/config.ts` from the project's `fusion.json` and the

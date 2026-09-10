@@ -5,32 +5,23 @@
  *
  * ## The defect
  *
- * Sixteen commits landed in `18b6094..ed87d87`. Two `coderev` passes ran, their
+ * Sixteen commits landed in `18b6094..ed87d87`; two `coderev` passes ran whose
  * ranges did not tile the session's range, and seven code-bearing commits
- * reached HEAD and a pushed release tag with no reviewer having opened them.
- * The session reported ONE, because it measured the gap against the last Turn.
- *
- * The data to tile it was already on disk and unreadable. Ten `coderev` files in
- * one store stated their scope in four spellings — `**Range:**`, `**Scope:**`,
- * `**Scope reviewed:**`, `**Scope as dispatched:**` — several stated none, and
- * of the filenames that carried a range, two ended in `-to-head`, which names a
- * different commit every day it is read. There is no cleverer parse: the
- * producer either records the range in one form or the information is not
- * recoverable (`rules/critical-stance.md` §4). Hence a mandate, and hence this
- * gate on the mandate — the same shape the work queue's `**Active Circle:**`
- * head line was gated in until that queue left the plugin on 2026-08-15, and
- * for the same reason.
+ * reached a pushed release tag unopened. The data to tile it was on disk and
+ * unreadable — ten review files stating their scope in four spellings, two of
+ * them ending `-to-head`. The full account, including why there is no cleverer
+ * parse (`rules/critical-stance.md` §4), is the filed issue:
+ * `archive/260829-1110-safe-cleanup-tier-1/shared/issues/260810-1205_c_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`.
+ * Hence a mandate, and hence this gate on the mandate.
  *
  * ## What this gate does, and it is three things
  *
- *   1. It asserts the MANDATE is in `rules/review-contract.md` — the field names
- *      spelled as `lib/review-coverage.ts` reads them, the resolved-hash
- *      requirement, the refusal of `HEAD`, and the `none` spelling stated for
- *      the pass that opened everything. Until 2026-08-22 the mandate stood in
- *      both reviewer prompts and this gate held the two copies equal; the
- *      contract now has one authoring home, so what it checks instead is that
- *      each prompt still cites it and that `bin/fusion-rules` still emits it to
- *      exactly those two agents.
+ *   1. It asserts the MANDATE is in `rules/review-contract.md`, which is its one
+ *      authoring home since 2026-08-22 (`CLAUDE.md`, the `rules/review-contract.md`
+ *      Layout row) — the field names spelled as `lib/review-coverage.ts` reads
+ *      them, the resolved-hash requirement, the refusal of `HEAD`, the `none`
+ *      spelling — that each prompt still cites it, and that `bin/fusion-rules`
+ *      still emits it to exactly those two agents.
  *   2. It RUNS the real parser over the header lines taken OUT OF that contract,
  *      never transcribed. A spelling the contract shows that
  *      `lib/review-coverage.ts` cannot read fails here, at `npm test`, rather

@@ -10,13 +10,11 @@
  * threw on the next field access. The throw reached the top-level handler, which
  * calls `respond()` with NO argument, so the reply went out empty.
  *
- * What that costs is precise. Whatever the measurements before it had to say was
- * lost — and every one of them is a sentence the model would otherwise have
- * acted on. The state file was never repaired either, because the save sits
- * after the throw, so every later tool call in that project repeated it (issue
- * `260809-1101`). The fix is `lib/guard-state-file.ts`'s coercion seam, which
- * every state file on the tracker's path goes through; its header carries the
- * argument.
+ * What that costs is precise: whatever the measurements before it had to say was
+ * lost, and the state file was never repaired either, because the save sits after
+ * the throw — so every later tool call in that project repeated it (issue
+ * `260809-1101`). The fix is `lib/guard-state-file.ts`'s coercion seam, whose own
+ * header carries the argument.
  *
  * ## Which state file the rows seed
  *
@@ -27,10 +25,9 @@
  * not staging drift, is the one a malformed throttle can be seeded into.
  * ## Why every case here uses a write tool
  *
- * Now it is required rather than chosen: the coverage trigger fires only for a
- * write tool whose payload names a `.md` file under a `reviews/` store. It was
- * a choice under the two previous probes, and the reason it was made is the
- * reason it is comfortable now — the defect was measured on a write tool.
+ * Required rather than chosen: the coverage trigger fires only for a write tool
+ * whose payload names a `.md` file under a `reviews/` store — and the defect was
+ * measured on a write tool anyway.
  *
  * ## What proves the fix rather than the absence of the bug
  *
@@ -69,7 +66,7 @@ import {
   CASE_TIMEOUT,
   COVERAGE_SENTENCE_MARKERS,
   REVIEW_PAYLOAD,
-  guardStateWritten,
+  guardStateEntries,
   openCoverageGap,
   openCoverageWindowWithNoGap,
   openOrchestratorSession,
@@ -280,10 +277,13 @@ describe("the dispatch row is gated on a session, not on agentstate.yaml", () =>
           detail: DISPATCH.description,
         });
 
-        // The ordinary path is still silent under `.guard-state/`: the advisory
-        // is the exception an absent identifier earns, not a new per-dispatch
-        // write. This is the strongest spelling — it needs no list of files.
-        expect(guardStateWritten(root), "an ordinary dispatch wrote guard state").toBe(false);
+        // What the ordinary dispatch path writes under `.guard-state/` is the
+        // byte measurement's two memo files and NOTHING else — in particular no
+        // `events.jsonl`, which is the advisory an absent identifier earns and
+        // this payload carried one. The exact set is the discrimination; the
+        // directory's absence stopped being one when the measurement landed
+        // (`lib/dispatch-bytes.ts`).
+        expect(guardStateEntries(root).filter((f) => f !== "rule-sizes.json" && f !== "byte-baseline.json")).toEqual([]);
       });
     },
     CASE_TIMEOUT,

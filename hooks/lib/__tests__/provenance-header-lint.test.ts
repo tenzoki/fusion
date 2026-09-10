@@ -8,13 +8,10 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // Provenance-header lint gate (Circle 260801-1244-rule-provenance-header, step 3).
 //
 // Every file in the plugin's `rules/` directory opens with a line naming what
-// caused it to exist — a decision record, a Circle directory, or the honest
-// admission plus the introducing commit. A reader who opens a rule then learns,
-// within the first ten lines, which record put it there, and so has a way to ask
-// whether the reason still holds. The convention is defined in
-// `rules/rule-file-provenance.md`, section '## Provenance headers on rule files'
-// — it left `rules/fusion-workbench-conventions.md` in the partition this gate's
-// own comment anticipated below, which now leaves a pointer at that site.
+// caused it to exist. The convention — its placement, the three citation forms,
+// what this gate checks and what it cannot — is authored once, in
+// `rules/rule-file-provenance.md` `## Provenance headers on rule files`, and is
+// not restated here.
 //
 // This gate fails `npm test` when a rule file carries no `Provenance:` line in
 // its first HEADER_WINDOW lines. It names the offending file and states the fix.

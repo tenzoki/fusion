@@ -49,10 +49,10 @@ import {
 // here: it is a measurement of the neighbouring file, it moves whenever that
 // file's pin moves, and the argument needs the property and not the number —
 // which is the defect
-// `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-new-gate-says-the-sibling-pin-was-re-approved-four-times-and-the-file-carries-fourteen-notes.md`. That is the whole design, and the cost the user accepted with
-// it is stated rather than mitigated: an archive sweep, or a newly filed record
-// carrying a bad citation, turns `npm test` red for somebody who touched no
-// citation. Both are the gate working. Do not soften this into a warning.
+// `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-new-gate-says-the-sibling-pin-was-re-approved-four-times-and-the-file-carries-fourteen-notes.md`.
+// The cost the user accepted with that design — an archive sweep or a newly
+// filed record reddening `npm test` for somebody who touched no citation — is
+// stated in `CLAUDE.md`'s row for this gate. Do not soften this into a warning.
 // ---------------------------------------------------------------------------
 
 // --- the corpus -------------------------------------------------------------

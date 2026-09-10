@@ -3,12 +3,12 @@
  *
  * ## What this suite is for
  *
- * `lib/staging-drift.ts` answers issue `260811-0114`: a queue rebuild and its
- * history entry sat in the working tree for eighteen commits because the
+ * `lib/staging-drift.ts` answers issue `260811-0114`, whose account is the filed
+ * record and is told again in `commit-message-path.test.ts`'s header: the
  * staging rule at `agents/orchestrator.md` Step 3b step 4 is a shape — every
  * path passed to `git add` is one you wrote out yourself — and a file nobody
- * names is a file nobody commits. The shape is right and stays; what was
- * missing is a measurement of the result.
+ * names is a file nobody commits. The shape is right and stays; what was missing
+ * is a measurement of the result.
  *
  * `commit-message-path.test.ts` checks
  * that the prompts carry the contract. They read text and can prove nothing
@@ -32,10 +32,9 @@
  * 2. **It does not cry wolf.** The live example is `stilwerk/`, the voice
  *    profiles `/fusion:setup` copies in: hand-edited configuration that must be
  *    REPORTED and must not be a fault. The same for the machine-written
- *    surfaces and for this session's own history file. (It was
- *    `shared/backlogs/` until the backlog became a declared store, at which
- *    point that file correctly became a `record` — see the `unclassified`
- *    entry in `lib/staging-drift.ts`'s header.)
+ *    surfaces and for this session's own history file. Why `shared/backlogs/`
+ *    stopped being one is the `unclassified` entry in `lib/staging-drift.ts`'s
+ *    own header.
  * 3. **The trigger is HEAD moving, read from the repository.** The tracker is
  *    silent while a record sits unstaged mid-Turn — the normal state — and
  *    speaks on the tool call that committed.

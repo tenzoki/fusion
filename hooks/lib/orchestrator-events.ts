@@ -93,6 +93,25 @@
  * unwidened and unadvised, because its subject is the orchestrator's own
  * session marker rather than a row in this log.
  *
+ * ## What a task_start row measures
+ *
+ * A `task_start` row carries two things beyond the dispatch's identity: the byte
+ * cost of what the dispatch loads (`bytes_prompt`, `bytes_rules`,
+ * `bytes_claude_md`, `bytes_total`, and `bytes_delta` against the project's own
+ * armed baseline), and `work_item`, the basename a `**Work-item:**` line in the
+ * dispatch prompt claims. `lib/dispatch-bytes.ts` is the authoring home for all
+ * of it — where each figure comes from, why the rule count runs the helper
+ * rather than reproducing its emission list, what the memo is keyed on, and
+ * where the line between "absent" and "zero" falls.
+ *
+ * Two consequences belong here rather than there. Neither field goes on
+ * `task_done`: the row names the same dispatch and a second measurement would
+ * cost a second set of stats for a reader that already holds the first. And the
+ * dispatch path now writes `.guard-state/rule-sizes.json` and
+ * `.guard-state/byte-baseline.json`, which is a departure from the
+ * writes-no-guard-state property that path held until this measurement existed —
+ * `hooks/guard.ts`'s header states the widened form.
+ *
  * ## Identity: env first, then the one implementation, never a re-derivation
  *
  * `person` and `checkout` come from `FUSION_PERSON`/`FUSION_CHECKOUT` when the
@@ -125,6 +144,11 @@ import {
 } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  DispatchByteFields,
+  measureDispatchBytes,
+  workItemFromPrompt,
+} from "./dispatch-bytes.js";
 import { emitEvent } from "./events.js";
 import { findWorkbenchRoot } from "./workbench-root.js";
 
@@ -423,8 +447,13 @@ export function emitSubagentStop(input: SubagentStopInput): void {
   );
 }
 
-/** One machine row. Field order matches the model-written rows for a human diff. */
-interface OrchestratorEventRow {
+/**
+ * One machine row. Field order matches the model-written rows for a human diff.
+ *
+ * The `work_item` and `bytes_*` fields are written on `task_start` only — see
+ * `## What a task_start row measures` at the foot of this module.
+ */
+interface OrchestratorEventRow extends DispatchByteFields {
   ts: string;
   event: "task_start" | "task_done";
   task?: string;
@@ -433,6 +462,7 @@ interface OrchestratorEventRow {
   checkout?: string;
   session_id?: string;
   detail?: string;
+  work_item?: string;
 }
 
 /** `fusion:coder` → `coder`, matching the model-written rows' spelling. */
@@ -468,15 +498,37 @@ export function emitDispatchEvent(
   const description = input.tool_input?.description;
   const detail =
     typeof description === "string" && description !== "" ? description.slice(0, 200) : undefined;
+  const agent = agentName(input.tool_input);
+
+  // The dispatch's own measurements, on `task_start` and nowhere else. Both are
+  // absent-rather-than-empty: a dispatch naming no work item writes no
+  // `work_item` key, and an unmeasurable rule emission writes no `bytes_rules`
+  // and no `bytes_total` — and says so, in one advisory.
+  let bytes: DispatchByteFields = {};
+  let workItem: string | undefined;
+  if (event === "task_start" && agent !== undefined) {
+    workItem = workItemFromPrompt(input.tool_input);
+    const measured = measureDispatchBytes(root, agent);
+    bytes = measured.fields;
+    if (measured.advisory !== undefined) {
+      try {
+        emitEvent("guard_advisory", undefined, undefined, measured.advisory);
+      } catch {
+        // An advisory that cannot be written may not cost the row it is about.
+      }
+    }
+  }
 
   const row: OrchestratorEventRow = {
     ts: utcStamp(),
     event,
     ...(task && { task }),
-    ...(agentName(input.tool_input) && { agent: agentName(input.tool_input) }),
+    ...(agent && { agent }),
     ...identity,
     ...(sessionId && { session_id: sessionId }),
     ...(detail && { detail }),
+    ...(workItem && { work_item: workItem }),
+    ...bytes,
   };
 
   appendFileSync(

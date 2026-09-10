@@ -21,43 +21,32 @@
  *
  * ## What left, and when
  *
- * Two groups went in step 9 of the observation-only plan, with their subjects.
+ * Four describe groups. Two went in step 9 of the observation-only plan with
+ * their subjects — seven cases about `guard.enabled` and
+ * `escalation.blocksBeforeHalt`, whose keys and mechanisms are both retired, and
+ * one about a stand-down that no longer exists; Circle
+ * `circles/260816-1741-guard-becomes-observation-only` carries that step.
  *
- * "What a project configuration can and cannot reach — measured" was seven cases
- * about `guard.enabled` and `escalation.blocksBeforeHalt`: whether a project
- * could switch the guard off, whether it could halt itself on the first block.
- * Both keys are retired, both mechanisms are gone, and the boundary they measured
- * has no two sides left — a project configuration reaches one integer now, and
- * `config.test.ts` measures what it does with it.
- *
- * "The project configuration in the plugin's own repo" asserted that the config
- * LOAD was not stood down where the verdict was. There is no stand-down and no
- * verdict, so the asymmetry it pinned has collapsed into the ordinary case that
- * every other case here already covers.
- *
- * Two more went on 2026-08-26, to buy head room under the hook-test growth
- * bound. "A retired FILE is named, with the migration it needs" asserted the
- * migration advisory phrase by phrase, and `config.test.ts` holds every one of
- * those phrases, case for case, under the same describe title. The transport
- * claim that is this file's own — a loader diagnostic becomes a visible
- * `guard_advisory` from a real process — the two groups above still make twice.
- * "Harness capabilities the project-configuration cases depend on" asserted
- * `withProject`'s `files` merge and that the harness never seeds the retired
- * filename; add and merge hold by consequence, and the replace half is one
- * case in `guard-bash-integration.test.ts`. A dropped `files` option would leave
- * every case below with no configuration and an empty advisory list where each
- * asserts an exact one, and a seeded retired name would add one advisory to
- * every project in the suite, which `guard-bash-integration.test.ts` asserts
- * against with an exact single-element event list. The defect is
+ * Two more went on 2026-08-26 to buy head room under the hook-test growth bound.
+ * "A retired FILE is named, with the migration it needs" is held phrase for
+ * phrase by `config.test.ts` under the same describe title; this file's own
+ * transport claim — a loader diagnostic becomes a visible `guard_advisory` from a
+ * real process — is still made twice by the two groups above. "Harness
+ * capabilities the project-configuration cases depend on" holds by consequence:
+ * a dropped `files` option would leave every case below with an empty advisory
+ * list where each asserts an exact one, and a seeded retired filename would add
+ * one advisory to every project in the suite, which
+ * `guard-bash-integration.test.ts` asserts against with an exact single-element
+ * event list. The defect that reduction caused is
  * `circles/260816-1741-guard-becomes-observation-only/issues/260816-2122_*_step-9s-harness-reduction-deletes-four-fixtures-guard-bash-integration-still-imports.md`.
  *
  * ## Why every case is a subprocess against a throwaway root
  *
- * Not because of a stand-down — that went on 2026-08-16 — but because the loader
- * finds a project by walking up from the process's working directory. A
- * `fusion.json` placed in this repository and edited by hand would be read by
- * every case at once, and this repository's own configuration would be read by
- * every case that meant to have none.
+ * Not because of a stand-down — that went on 2026-08-16 — but for the reason
+ * `helpers/guard-harness.ts` `## Why a throwaway root` gives: the loader finds a
+ * project by walking up from the process's working directory, so a `fusion.json`
+ * placed here would be read by every case at once, and this repository's own
+ * configuration by every case that meant to have none.
  */
 
 import { describe, it, expect } from "vitest";

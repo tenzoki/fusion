@@ -17,11 +17,10 @@ import {
 // (code | data) from a fixed if/elif cascade.
 //
 // The defect this guards: a branch that answers "this workbench governs no
-// build" used to stand ahead of every branch reading `code_files`. Once it
-// fired, the project's code volume had no influence on the result. Measured in
-// the consuming project KRK — 122 commits, 108 Rust files, three open decisions
-// against one open defect record — the heuristic reported a no-build domain for
-// five straight days across four sessions and a human overrode it every time.
+// build" used to stand ahead of every branch reading `code_files`, so once it
+// fired the project's code volume had no influence on the result. The measured
+// case — the consuming project KRK, five straight days across four sessions,
+// overridden by a human every time — is the filed issue, 260807-1942.
 //
 // The two domains that defect produced have since been retired, and the
 // property did not go with them. The cascade still ends in a bare
@@ -51,11 +50,10 @@ import {
 // The measurement was itself defeated once (issue 260810-0503): it asked
 // whether a branch LINE mentioned `code_files`, so a token parked in a trailing
 // comment satisfied it. It now reads the parsed CONDITION, via
-// hooks/lib/domain-cascade.ts, so a comment cannot answer for a test and a
-// renamed variable fails loudly. What position alone still cannot see — a
-// branch that reads the count in a condition that can never hold, such as
-// `code_files < 0` — is the sibling file's job, and the sibling drives all four
-// defeats end to end.
+// hooks/lib/domain-cascade.ts. The four defeats themselves are enumerated and
+// driven end to end in the sibling, `domain-cascade.test.ts`; what position
+// alone still cannot see is a branch whose condition can never hold, which is
+// the same sibling's job.
 //
 // This is a guard, not a fixer (rules/critical-stance.md §2): it never rewrites
 // the prompt. The last describe block feeds both helpers cascades they must

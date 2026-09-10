@@ -22,10 +22,9 @@ import { agentNames } from "./helpers/citation-scan.js";
 // an agent reads at Setup, and its always-on list (`emit_if_exists`, one call
 // per line) is unconditional: every byte in those files is paid by every agent,
 // every dispatch, forever. That cost had never been measured by anything
-// executable, and it grew from 87 387 bytes (2026-07-31) to 145 144 bytes
-// (2026-08-04) inside the very Circle whose goal was to reduce it —
-// `rules/protected-path-discipline.md` alone went 11 032 -> 50 559 in four days.
-// A number nothing asserts is a number nobody notices moving.
+// executable, and the four days it drifted over — 87 387 to 145 144 bytes —
+// are the fact `DRIFT_CEILING` below is made of, with the per-file breakdown in
+// its doc comment. A number nothing asserts is a number nobody notices moving.
 //
 // This file is step 1 of
 // `circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`.
@@ -33,96 +32,62 @@ import { agentNames } from "./helpers/citation-scan.js";
 // measured against, so that "we reduced the context tax" is a diff and not a
 // claim.
 //
-// WHAT IT MEASURES. For each agent: the paths `bin/fusion-rules`
-// emits that live under `<plugin>/rules`, in emission order, each with its byte
-// size, plus the total. Project-side rules (`./rules`, `.claude/rules`) and the
-// stilwerk voice profiles are deliberately out of scope — both vary per
-// consuming project, so neither is a property of the plugin. They are excluded
-// by CONSTRUCTION, not by a filter: the script runs with an empty temp
-// directory as its working directory, so there is nothing project-side for it
-// to find. `assertOnlyPluginRules` then proves the exclusion held rather than
-// assuming it, because a filter that silently drops an unexpected line is how a
-// measurement quietly stops measuring.
+// WHAT IT MEASURES. For each agent: the paths `bin/fusion-rules` emits that live
+// under `<plugin>/rules`, in emission order, each with its byte size, plus the
+// total. Project-side rules and the stilwerk voice profiles are out of scope —
+// they vary per consuming project — and are excluded by CONSTRUCTION rather than
+// by a filter: the script runs with an empty temp directory as its working
+// directory. `assertOnlyPluginRules` proves the exclusion held rather than
+// assuming it. (THE DISPATCH-PATH BOUND below measures the other choice, from
+// this repository, and says why.)
 //
 // WHY IT DRIVES THE REAL SCRIPT. `bin/fusion-rules` is bash; there is no
-// importable module. `fusion-paths.test.ts` and `monitor-warnings-panel.test.ts`
-// set the precedent of driving a real `bin/` script through child_process, and
-// this file follows it. The seam is the script's stdout, which is exactly what
-// an agent's Setup reads.
+// importable module, and the seam is the script's stdout, which is exactly what
+// an agent's Setup reads. The precedent and its reasoning are in
+// `fusion-paths.test.ts` and `monitor-warnings-panel.test.ts`.
 //
 // ENVIRONMENT INDEPENDENCE. `FUSION_PLUGIN_ROOT` is forced to THIS repository
-// for every call. A developer almost always has it pointing at their installed
-// copy (`~/.fusion`), which carries a different — usually older — rule set; a
-// test that inherited it would measure the install, not the source tree, and
-// would report whatever the developer last installed.
+// for every call: a developer's copy points at `~/.fusion`, which carries an
+// older rule set, and a test that inherited it would measure the install. The
+// same hazard in the other direction is stated in `config.test.ts`'s header.
 //
-// WHAT IS ASSERTED, AND WHAT IS ONLY REPORTED.
+// WHAT IS ASSERTED, AND WHAT IS ONLY REPORTED. Five things, and each is
+// documented where it is declared rather than twice — read the doc comment on
+// the constant named beside it.
 //
 //   HARD — the GOLDEN (`fixtures/rules-emission.golden`) pins the path set, the
-//      emission order, each file's size and each agent's total. It fails on any
-//      change in either direction, including a cut that removes more than
-//      intended. It is meant to be regenerated whenever a change is deliberate;
-//      see `## Updating the golden`. Regenerating is one command and blocks
-//      nothing — the golden's job is to put every movement into a diff somebody
-//      reads, not to stop the movement.
-//
-//   HARD — the ROLE COVERAGE. A role is derived from measurement (see below). A
-//      role with no entry in `ROLES`, or an entry no agent matches any more,
-//      fails. An audience change in `bin/fusion-rules` is a decision, and it may
-//      not happen silently.
-//
-//   HARD — the JUSTIFICATION DUTY. A role whose floor stands above RELEASE_CAP
-//      has to say in `overRelease` which file carries the overage and why that
-//      role applies it. It is a prose obligation about an AUDIENCE decision — it
-//      never asks anyone to cut text.
-//
-//   HARD — the DRIFT CEILING. The far blocking number; see below.
-//
-//   HARD — the UNIVERSAL-CORE GROWTH BOUND. The near one, armed 2026-08-14. The
-//      rule text EVERY agent loads gets GROWTH_BUDGET bytes of head-room above
-//      its baseline, and past that the suite FAILS. Charged to every dispatch in
-//      the fleet, opt-out impossible; see `WHY THE CORE BLOCKS AND THE EXTRAS
-//      REPORT` below.
-//
-//   REPORTED, NEVER FAILING — the BUDGET on ROLE-SPECIFIC text. Each role's
-//      EXTRAS — the files it loads that not every agent loads — get their own
-//      GROWTH_BUDGET of head-room above `RULE_BASELINE`. Past that, the run
-//      PRINTS which files grew and by how much and says a cleanup is due. It
-//      does not fail.
+//      emission order, each file's size and each agent's total, and fails on any
+//      change in either direction. Regenerating is one command and blocks
+//      nothing; see `## Updating the golden, and re-baselining`.
+//   HARD — the ROLE COVERAGE. A role with no entry in `ROLES`, or an entry no
+//      agent matches any more, fails: an audience change may not happen silently.
+//   HARD — the JUSTIFICATION DUTY (`RELEASE_CAP`). A prose obligation about an
+//      AUDIENCE decision; it never asks anyone to cut text.
+//   HARD — the DRIFT CEILING (`DRIFT_CEILING`), the far blocking number.
+//   HARD — the UNIVERSAL-CORE GROWTH BOUND (`GROWTH_BUDGET`), the near one,
+//      armed 2026-08-14 over the text every agent loads.
+//   REPORTED, NEVER FAILING — the same budget over each role's EXTRAS, the files
+//      it loads that not every agent loads.
 //
 //      The two read ONE `growth()` over ONE `RULE_BASELINE`, called with two
-//      DISJOINT file sets: the universal core, and each role's extras. Every
-//      byte the fleet loads is measured by exactly one of them, so the gate and
-//      the report cannot disagree about a byte.
+//      DISJOINT file sets — the universal core, and each role's extras — so every
+//      byte the fleet loads is measured by exactly one of them and the gate and
+//      the report cannot disagree about a byte. `README-hooks.md`
+//      `### Growth bounds on the shipped text` states the same split for a user.
 //
-// WHY THE BUDGET REPORTS INSTEAD OF BLOCKING. Until 2026-08-05 this file carried
-// a ratchet: one cap per role, pinned to that role's measured high-water mark and
-// allowed to move in one direction only. It held the line, and it also made the
-// first finding-driven addition unlandable — the only way past it was to cut
-// somebody else's reasoned prose by the same number of bytes, which is the damage
-// the ratchet existed to prevent (decision 260805-1559). The user's answer was to
-// keep the MEASUREMENT and drop the BLOCK: growth is allowed, and from time to
-// time the text gets cleaned up. This file's job is to say when a cleanup is due,
-// in a form somebody can act on — which file grew, and by how much. Without the
-// per-file breakdown the report is a number nobody can do anything with.
-//
-// WHY THE CORE BLOCKS AND THE EXTRAS REPORT. On 2026-08-14 half of that answer
-// was taken back, deliberately and along one line: the universal core blocks
-// again, and only the role-specific text still merely reports. The reason the
-// ratchet failed was that it made a finding-driven addition unlandable unless
-// somebody else's reasoned prose was cut by the same number of bytes. That
-// argument holds where the text is bought by the agents that need it, and it
-// does not hold for the core, where a byte is charged to every dispatch in the
-// fleet and no agent can decline it. The report also had three years' worth of
-// evidence against it in this project's own history: the 2026-08-05 partition
-// was undone inside a week, and the largest deletion this project ever performed
-// was back above its pre-deletion peak in four days
-// (`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`).
-// A report is not a bound, and the binding constraint was measured to be the
-// RATE of addition rather than the size of the system. So the core gets a rate
-// bound and the extras keep the report. Capability C10 of Circle
-// `circles/260801-1244-curator`; the arming itself is the last entry in the cut
-// log above `RULE_BASELINE`.
+// WHY THE BUDGET REPORTS AND THE CORE BLOCKS. Both halves of that history are
+// told once, in `surface-growth-bound.test.ts`'s `WHY THIS FILE EXISTS`: the
+// 2026-08-05 conversion of the ratchet into a report (decision 260805-1559,
+// a ratchet makes the first finding-driven addition unlandable), and the
+// measurement that took half of it back on 2026-08-14 (the largest deletion in
+// this project's history back above its pre-deletion peak in days —
+// `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
+// — so the binding constraint is the RATE of addition). What is local here is
+// the LINE the two halves are split along: a byte of core text is charged to
+// every dispatch in the fleet and no agent can decline it, so the core blocks;
+// role-specific text is bought by the agents that need it, so it reports. The
+// arming is capability C10 of Circle `circles/260801-1244-curator`, and its own
+// entry is the last one in the cut log above `RULE_BASELINE`.
 //
 // WHERE THE THRESHOLD COMES FROM. It was measured, not guessed: `git log` over
 // `rules/` was replayed commit by commit from 2026-05-04 to 2026-08-05, re-running
@@ -144,18 +109,13 @@ import { agentNames } from "./helpers/citation-scan.js";
 //
 // WHY THERE IS STILL A FAR GATE. A gate that never blocks is not a gate, and a
 // gate that blocks on every byte is the ratchet this file gave up. The far one
-// is DRIFT_CEILING = 145 144 — the level the fleet actually reached on
-// 2026-08-04, before the cut. No finding-driven addition can reach it; it stands
-// weeks of calm-rate growth above the worst-off agent, and long before it is in
-// reach the near gate will have blocked and the budget report will have been
-// asking for a cleanup. It makes "back to 145 kB in four days without anyone noticing"
-// impossible by construction rather than by attention, which is the failure this
-// file exists to stop.
+// is `DRIFT_CEILING`, and what it is and why it cannot be reached by honest work
+// is in its own doc comment below.
 //
 // ONE FLOOR PER ROLE rather than one number for the whole fleet, because after
-// the cut the agents no longer carry the same load. A single figure has to sit at
-// the maximum, so it would grant the leanest agents thousands of bytes of silent
-// head-room and call that compliance.
+// the cut the agents no longer carry the same load: a single figure has to sit
+// at the maximum, granting the leanest agents thousands of bytes of silent
+// head-room. What a floor is, and what it is not, is on `RELEASE_CAP` below.
 //
 // HOW A ROLE IS DERIVED, AND WHY IT IS NOT A LIST OF NAMES. The universal core
 // is computed as the INTERSECTION of every agent's emission. An agent's role is
@@ -167,41 +127,24 @@ import { agentNames } from "./helpers/citation-scan.js";
 // have drifted at the first audience change, which is the failure mode this
 // Circle demonstrated repeatedly.
 //
-// ## Updating the golden
+// ## Updating the golden, and re-baselining
 //
-// Deliberate, one command, and it can never be left switched on:
+// One command, and it can never be left switched on — it rewrites the fixture
+// and then FAILS on purpose, so a second run without the flag is forced:
 //
 //     cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts
 //
-// That run rewrites the fixture from live measurement and then FAILS on
-// purpose. The failure is the point: it forces a second run without the flag,
-// and it means no CI or habitual `vitest run` can ever be green while the flag
-// is set. Review the fixture diff — that is the whole obligation. For
-// ROLE-SPECIFIC text nothing else has to move: a size change costs a
-// regeneration, never a cut. For the UNIVERSAL CORE that stopped being true on
-// 2026-08-14: a regeneration records the growth, and if the core has spent its
-// head-room the hard bound fails until the text comes back down. Regenerating
-// the golden does not move `RULE_BASELINE` and therefore never clears the bound.
+// Review the fixture diff; that is the whole obligation. Why a regeneration
+// records growth and never clears a bound, and the three events at which a
+// baseline may move instead, are authored twice over and not a third time here:
+// the rule in `helpers/growth-bound.ts` `## Re-baselining`, the user-facing
+// statement in `README-hooks.md` `### Growth bounds on the shipped text`.
 //
-// ## Re-baselining
-//
-// `RULE_BASELINE` is the reference both measurements read: the report measures a
-// role's extras from it, and the hard bound measures the universal core from it.
-// It is hand-edited, and it moves at exactly three moments, none of which is the
-// silent raise this file warns about. THE RULE IS AUTHORED ONCE, in
-// `helpers/growth-bound.ts` `## Re-baselining: the three events at which a
-// baseline moves`, because since 2026-08-15 four surfaces obey it and a second
-// copy would be a second rule. Read it there — the third, a merge of two lines
-// that were each inside the bound, arrived on 2026-09-05 and has not reached
-// this surface: `agents/`, `skills/` and the hook tests were the surfaces that
-// merge put over. What is local to this file is the CUT LOG above
-// `RULE_BASELINE`, where this surface's own events are recorded, and the
-// 2026-08-14 arming entry that is the only non-cut in it.
-//
-// `npx vitest run` is enough for this file: it measures rule text and needs no
-// compile at all. `npm test` also works and no longer wipes anything — the
-// build stopped deleting `hooks/dist/` (`scripts/build.mjs`), which is what
-// made a second run in the same checkout fail the suites that read it.
+// WHAT IS LOCAL TO THIS FILE. `RULE_BASELINE` is the reference BOTH measurements
+// read — the report measures a role's extras from it, the hard bound measures the
+// universal core from it — and the CUT LOG above it is where this surface's own
+// events are recorded, including the 2026-08-14 arming entry that is the only
+// non-cut in it. Event 3 (a merge) has not reached this surface.
 // ---------------------------------------------------------------------------
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -290,121 +233,37 @@ const DRIFT_CEILING = 145_144;
  * number moved to get here, event by event — kept because each line names which
  * cut, or which arming, produced which figure:
  *
- *   150 817 — 2026-08-05, at plan step 1. Introduced. The six design-diagram
- *             agents (analyst, conceptrev, investigator, planner, shaper,
- *             taskplanner) carry `design-diagrams.md` (5 673) on top of the
- *             145 144 always-on set the other ten load.
- *   131 685 — 2026-08-05, at plan step 2. `protected-path-discipline.md` was cut
- *             into three layers by ADDRESSEE (decision 260805-0709): the core
- *             rule (16 346, all sixteen agents), the classifier reference
- *             `protected-path-internals.md` (20 754, `coder`/`coderev`/
- *             `bugfixer` only), and the measured forensics, which left `rules/`
- *             for the Circle's analysis store and is loaded by nothing.
- *             The high-water mark is now the three guard-internals agents, which
- *             carry both rule layers; the seven plain agents stand at 110 931 and
- *             the six diagram agents at 116 604.
+ *   150 817 — 2026-08-05, plan step 1 (introduced).
+ *   131 685 — 2026-08-05, plan step 2 (the three-layer split by addressee).
+ *   128 555 — 2026-08-05, plan step 4 (the stash-and-lock shard).
+ *   111 810 — 2026-08-05, the pulled-forward C9 step 3 (the conventions file
+ *             partitioned by addressee).
+ *   111 766 — 2026-08-05, release preparation (five dead workbench paths).
+ *    90 878 — 2026-08-06, textschicht step 8 (the guard-internals audience
+ *             gated on `bin/fusion-plugin-cwd`).
+ *    80 670 — 2026-08-12, protected-path removal step 9.
  *
- *             NOTE, and it is the finding of the step rather than an aside: NO
- *             agent is under RELEASE_CAP after this cut, and the plan's own
- *             projection (104 600) never covered the six diagram agents either —
- *             at the plan's projected core size they would have stood at 110 273,
- *             over the cap before a single byte of this step was written. Step 4
- *             removes a further 8 484 from every agent, which clears the cap for
- *             the seven plain agents alone. The other nine need a fourth cut that
- *             does not exist in the plan.
- *   128 555 — 2026-08-05, at plan step 4. `## Stashes` and `## Commit lock` left
- *             `fusion-workbench-conventions.md` (59 303 -> 51 416) for
- *             `workbench-stash-and-lock.md` (renamed `commit-lock.md` on
- *             2026-08-15, when the stash half was deleted with its two skills),
- *             emitted to `orchestrator` alone
- *             because a mechanism bounds that audience: skills are never served
- *             by `bin/fusion-rules`, and the lock is the orchestrator's to take.
- *             Every agent drops 7 887 — the 8 484 the sections weighed, less the
- *             597-byte pointer block the plan requires at both sites. The
- *             orchestrator alone RISES, 114 545 -> 115 908: it pays the 9 250 of
- *             the new file (the sections plus a 766-byte provenance header) to
- *             save 7 887. The high-water mark stays the three guard-internals
- *             agents at 128 555; the six plain agents stand at 106 658 and the
- *             six diagram agents at 112 331.
+ *             WHAT EACH CUT DID, AND WHAT IT COST PER ROLE, IS NOT RESTATED
+ *             HERE. Every one of the eight is written up where it was made:
+ *             the plan
+ *             `circles/260801-1244-guard-rules-write/planning/260804-2356_c_plan-ausstieg-kontextsteuer-und-auslieferung.md`
+ *             carries the projections and the per-role tables, and the step's
+ *             own history log carries what it measured — `260805-0717-coder-step2-drei-schichten.md`,
+ *             `260805-0905-coder-step4-stash-and-lock-shard.md`,
+ *             `260805-1003-coder-step4a-konventionsdatei-partitionieren.md`,
+ *             `260805-1200-coder-step6-release-vorbereitet.md` in the same
+ *             Circle's `history/`, and `shared/history/260812-1500-coder-the-always-on-rule-its-emission-and-every-prose-citation.md`
+ *             for the last. The addressee split itself is decision
+ *             `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`.
  *
- *             STILL OVER THE CAP, and the shortfall is now the whole story: the
- *             best-off agent is 1 304 bytes above RELEASE_CAP and the worst is
- *             23 201 above. The plan's step-4 target (96 500) was unreachable
- *             from the step-3 position before this step began. What is left is
- *             the cut the plan explicitly excludes — partitioning the remaining
- *             51 416 bytes of `fusion-workbench-conventions.md` (C9 step 3).
- *   111 810 — 2026-08-05, at the pulled-forward C9 step 3: the conventions file
- *             itself was partitioned by ADDRESSEE, 51 416 -> 34 671. Three shards
- *             left it. `workbench-path-resolution.md` (8 962: the `<name>`
- *             namespace, the key table, the key-set derivation) and
- *             `rule-file-provenance.md` (5 745) are emitted to NO agent — their
- *             addressee is whoever authors a prompt, the resolver, or a rule
- *             file, which is nobody's routine dispatch work. `circle-records.md`
- *             (9 302: the Circle state vocabulary, its transitions, the record
- *             and portfolio templates) goes to `orchestrator`, `playmaker` and
- *             `shaper` — a DERIVED audience, being exactly the agents whose
- *             prompts name a Circle-scoped `fusion-paths` key and therefore the
- *             only ones that can transition a Circle. The marker-glob discipline
- *             stayed behind in the core under `## Marker globs`: it was filed
- *             inside the circles section for historical reasons, but it governs
- *             every marker in every vocabulary, and eight of the ten citations
- *             that pointed at the circles section were reaching for it.
- *
- *             THIRTEEN of sixteen agents are now under RELEASE_CAP, and the
- *             three that are not are the finding rather than a shortfall to be
- *             closed by cutting further. `coder`/`coderev`/`bugfixer` stand at
- *             111 810, 6 456 over: they alone carry `protected-path-internals.md`
- *             (21 897), so their overage is step 2's split, not this one's. The
- *             `orchestrator` stands at 108 465, 3 111 over, carrying both
- *             `workbench-stash-and-lock.md` (9 250) and `circle-records.md` —
- *             18 552 bytes of agent-specific text, because it is the agent with
- *             the most distinct jobs. Every remaining byte in the core is text
- *             all sixteen agents apply; getting these three under the cap means
- *             revisiting a file this step did not own, not shaving this one.
- *   111 766 — 2026-08-05, at release preparation. Not a cut: the five shipped
- *             sentences that named the measured forensics by full workbench path
- *             now name where it lives instead, because the installer never
- *             copies `fusion-workbench/` and the path carried this Circle's own
- *             directory name, so it resolved for no consumer under any
- *             circumstance (issue 260805-1145). `protected-path-discipline.md`
- *             19 960 -> 19 943 (all sixteen agents), `protected-path-internals.md`
- *             21 897 -> 21 870 (three agents). Every role drops 17; the
- *             guard-internals role drops 44.
- *    90 878 — 2026-08-06, at step 8 of the textschicht plan. Not a text cut but
- *             an audience made precise: the guard-internals emission is now
- *             gated on cwd being the fusion plugin's own repo
- *             (`bin/fusion-plugin-cwd`), because in a consuming project the
- *             audience "whoever changes or reviews the classifier" is empty by
- *             construction — the classifier's sources sit in the installed
- *             plugin, outside the project tree. In the CONSUMING context this
- *             file measures, coder/coderev/bugfixer therefore drop
- *             `protected-path-internals.md` (21 870) and join the core-only
- *             role; the measured high-water mark is now the orchestrator at
- *             109 430. In the plugin repo itself the three still load it.
- *    80 670 — 2026-08-12, at step 9 of the protected-path removal.
- *             `protected-path-discipline.md` (10 541 at deletion) was the
- *             agent-facing statement of a mechanism the plan removed from the
- *             guard, so the rule went with its subject rather than being cut for
- *             size. Every one of the sixteen roles drops the same 10 541 and
- *             gains 121, `critical-stance.md` 9 837 -> 9 958: its worked case
- *             said in the present tense that the guard "now" compares a
- *             fingerprint of the protected paths, which the same step made
- *             false, and correcting a false claim in an always-on rule costs
- *             what it costs. Net -10 420 per dispatch, on every role. The
- *             core-only role stands at 80 670 and the measured high-water mark,
- *             the orchestrator, at 104 521.
- *
- *             RULE_BASELINE loses that file's entry and NOTHING ELSE was
- *             re-cut, which is deliberate and has a visible consequence: the
- *             baseline sizes below are still the 2026-08-05 ones, the five
- *             remaining core files have grown 17 016 bytes since, and the
- *             oversized `protected-path-discipline.md` entry (19 943 against a
- *             10 541 file) had been masking 9 402 of that. With the mask gone
- *             the budget report fires for every role. That report is correct and
- *             is the instrument working: the growth is real, it was never cut,
- *             and re-baselining here would have absolved it in the same edit
- *             that removed the thing hiding it.
- *
+ *             ONE FINDING FROM THAT LOG IS KEPT, because it is the reason the
+ *             2026-08-12 entry does not re-cut the baseline: RULE_BASELINE lost
+ *             `protected-path-discipline.md`'s entry and nothing else moved, so
+ *             the five remaining core sizes below are still the 2026-08-05 ones
+ *             and the oversized entry had been masking 9 402 bytes of real
+ *             growth. With the mask gone the budget report fires for every
+ *             role, correctly: re-baselining there would have absolved that
+ *             growth in the same edit that removed the thing hiding it.
  *    86 573 — 2026-08-14, at the ARMING of the universal-core growth bound.
  *             NOT A CUT, and the only entry in this log that is not one. No byte
  *             was removed and no rule file was touched for its size. What moved

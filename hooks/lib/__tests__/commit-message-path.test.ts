@@ -4,20 +4,13 @@
  * ## The defect
  *
  * `fusion-workbench/.commit-msg-tmp` held the message of commit `d169b0d` and
- * sat at the workbench root as an untracked leftover. Two facts about it
- * (issue `260811-0114`):
- *
- *   1. `agents/orchestrator.md` Step 3b step 3 already prescribed
- *      `/tmp/fusion-commit-msg-<task-id>.txt`, and
- *      `grep -rn commit-msg-tmp` over `agents/`, `skills/`, `bin/` and `hooks/`
- *      returned nothing — no helper wrote that path, it was improvised at
- *      commit time.
- *   2. It is a root-anchored file in a tree whose root-anchored surfaces are
- *      enumerated and whose enumeration calls itself exhaustive.
- *
- * `/tmp` is swept and the workbench is not, and the workbench is the tree
- * `git status` reports on. So the location is not a matter of taste: it decides
- * whether the file becomes a leftover.
+ * sat at the workbench root as an untracked leftover, against a prompt that
+ * already prescribed `/tmp/fusion-commit-msg-<task-id>.txt` and no helper that
+ * wrote the improvised name. The account is the filed issue,
+ * `shared/issues/260811-0114_c_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`.
+ * What it turns on: `/tmp` is swept and the workbench is not, and the workbench
+ * is the tree `git status` reports on. So the location decides whether the file
+ * becomes a leftover.
  *
  * ## The two halves of the enforcement, and what each can prove
  *

@@ -17,11 +17,10 @@ import { fileURLToPath } from "node:url";
 // Is the committed `hooks/dist` the compilation of the committed source?
 //
 // `hooks/dist/*.js` is the artifact `install.sh` ships, and `install.sh`
-// defaults to `heads/main`, so EVERY commit is installable. Between `f45f76a`
-// and `71e97f4` the committed `dist` was the compilation of an older source,
-// and every install in that window shipped a fix that was closed in the
-// repository and absent from the tarball. Two later passes found it, both by
-// accident of what they happened to grep.
+// defaults to `heads/main`, so EVERY commit is installable. The measured defect
+// — a window in which the committed `dist` was the compilation of an older
+// source, so every install shipped a fix that was closed in the repository and
+// absent from the tarball — is in the answering decision cited below.
 //
 // `npm test` cannot answer the question and by design never will: the build
 // compiles into a private staging tree so that concurrent runs in one checkout

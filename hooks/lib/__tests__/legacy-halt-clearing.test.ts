@@ -14,12 +14,9 @@
  * The file stays because its subject is a MIGRATION and not a mechanism. A
  * consuming project can upgrade across this release carrying `haltActive: true`
  * in `fusion-workbench/.guard-state/escalation.json`, written by code that no
- * longer exists, and what it is owed is exactly three things:
- *
- *   1. nothing blocks — the flag is inert, not merely unreachable;
- *   2. nothing rewrites the file — the guard does not read it, so it must not
- *      touch it either, and a project that keeps the flag keeps it verbatim;
- *   3. there is a way to be rid of it — `/fusion:setup` offers to delete it.
+ * longer exists. The three things it is owed — nothing blocks, nothing rewrites
+ * the file, `/fusion:setup` offers to delete it — are enumerated in `CLAUDE.md`'s
+ * migration row for this condition, which names this file as what pins them.
  *
  * Deleting this file would remove the evidence that the removal was survivable,
  * which is a different thing from removing the mechanism. That distinction is

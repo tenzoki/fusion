@@ -26,38 +26,33 @@
  * survive.
  *
  * NOT a blacklist on identifier shape — `260817-2131`'s own proposal, and it
- * cannot be run: `coverageSentence()` emits `since`, `head` and one short hash
- * per uncovered commit, so a CORRECT emission there is a sentence full of
+ * cannot be run: a CORRECT `coverageSentence()` emission is a sentence full of
  * seven-character hashes, the consuming project's own. NOT a resolution check
- * either — `reference-resolution-lint.test.ts` asserts a citation resolves HERE,
- * and all four incident identifiers did. The defect is a property of an
- * identifier's origin, not of its text.
+ * either: all four incident identifiers resolved here. The defect is a property
+ * of an identifier's origin, not of its text.
  *
- * WHAT IT DOES NOT COVER. Branches nobody drives, hence every branch below and
- * the two silent ones included; an identifier authored into a report field
- * rather than by a builder, stated above; the other composed channels (config
- * advisories, the SessionStart banner, `bin/` helper stderr, the monitor HTML);
- * identifiers that are neither stamp nor hash, such as a Circle slug in prose;
- * and a 7+ character hash drawn entirely from `a`-`f`, excluded so English words
- * spelled in hex ("defaced") are not read as commits — 0.375^7, about 1 in 960
- * for the seven-character short hash `git log %h` yields here, and rarer at every
- * greater length. Record paths and Circle directory names need no class of their
- * own — both carry a stamp by the naming convention.
+ * WHAT IT DOES NOT COVER. Four residuals, and they are stated once, in §5 of the
+ * analysis cited at the foot: branches nobody drives, registry membership resting
+ * on the `*Sentence` naming convention, the other composed channels (config
+ * advisories, the SessionStart banner, `bin/` helper stderr, the monitor HTML),
+ * and identifiers that are neither stamp nor hash. A fifth is local and stated
+ * above: an identifier authored into a report field rather than by a builder.
+ *
+ * Two exclusions are this file's own. A 7+ character hash drawn entirely from
+ * `a`-`f` is not read as a commit, so English words spelled in hex ("defaced")
+ * do not fire — 0.375^7, about 1 in 960 for the seven-character short hash
+ * `git log %h` yields here, and rarer at every greater length. Record paths and
+ * Circle directory names need no class of their own: both carry a stamp by the
+ * naming convention.
  *
  * HOW FAR THE COMPLETENESS ASSERTION AT THE FOOT REACHES. It reads the static
- * `import` declarations of `hooks/tracker.ts` alone, and it keys on the IMPORTED
- * name, so a builder imported plainly or under any alias is named — one measured
- * case per form, at the foot. What it cannot see is below, and it is loud about
- * only the first of them. A NAMESPACE import (`import * as rc from
- * "./lib/review-coverage.js"`) binds its symbols at the call sites and not in the
- * import, so a parse of this kind cannot resolve it to a set of symbols at all;
- * the assertion REFUSES that form rather than reading it, for a relative module,
- * which is the only kind that can carry a fusion builder. A builder reached by
- * `require`, by a dynamic `import()` or through a re-export is invisible, and so
- * is one that reaches the model without passing through `hooks/tracker.ts`. And
- * membership still rests on the naming convention: a builder not named
- * `*Sentence` escapes the set, which is the residual the analysis states
- * (issue `260818-0745`).
+ * `import` declarations of `hooks/tracker.ts` alone and keys on the IMPORTED
+ * name, so a plain or aliased import is named — one measured case per form, at
+ * the foot — and a relative NAMESPACE import is REFUSED rather than read, since
+ * a parse of this kind cannot resolve one to a set of symbols. What stays
+ * invisible (a builder reached by `require`, by dynamic `import()` or through a
+ * re-export, one that never passes through `hooks/tracker.ts`, and one not named
+ * `*Sentence`) is the residual filed as issue `260818-0745`.
  *
  * The static shipped surface (`rules/`, `agents/`, `skills/`) is deliberately
  * OUT of scope and must not be swept: those citations are provenance addressed

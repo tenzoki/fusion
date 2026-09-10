@@ -52,15 +52,16 @@
   citation-form.test.ts 384
   citation-grammar-boundaries.test.ts 179
   citation-sweep.test.ts 527
-  commit-message-path.test.ts 392
-  committed-dist.test.ts 332
-  config.test.ts 866
+  commit-message-path.test.ts 385
+  committed-dist.test.ts 331
+  config.test.ts 860
   context-manifest.test.ts 472
   declared-citation-paths.test.ts 70
   deliverable-language-lint.test.ts 138
   derivable-enumerations-lint.test.ts 453
-  dispatch-bound-lint.test.ts 246
-  domain-cascade-order-lint.test.ts 234
+  dispatch-bound-lint.test.ts 245
+  dispatch-bytes.test.ts 223
+  domain-cascade-order-lint.test.ts 232
   domain-cascade.test.ts 911
   executor-verification-report-lint.test.ts 217
   fenced-code-exemption.test.ts 224
@@ -75,36 +76,36 @@
   fusion-prose-metric.test.ts 174
   fusion-session-domain.test.ts 80
   glob-nomatch-lint.test.ts 148
-  guard-bash-integration.test.ts 338
-  guard-project-config-integration.test.ts 251
+  guard-bash-integration.test.ts 334
+  guard-project-config-integration.test.ts 240
   guard-state-shape.test.ts 351
   helpers/citation-scan.ts 56
   helpers/growth-bound.ts 171
-  helpers/guard-harness.ts 1070
+  helpers/guard-harness.ts 1085
   helpers/prompt-blocks.ts 28
-  hook-fail-open.test.ts 624
+  hook-fail-open.test.ts 614
   hooks-wiring.test.ts 187
   identity-mint-notice.test.ts 118
-  legacy-halt-clearing.test.ts 213
+  legacy-halt-clearing.test.ts 210
   marker-format-lint.test.ts 171
-  monitor-warnings-panel.test.ts 1234
+  monitor-warnings-panel.test.ts 1222
   path-literal-lint.test.ts 339
   paths.test.ts 31
-  plan-stopping-section-lint.test.ts 266
+  plan-stopping-section-lint.test.ts 261
   playmaker-backlog-mandate-lint.test.ts 357
   portfolio-citation-form-lint.test.ts 170
-  provenance-header-lint.test.ts 448
+  provenance-header-lint.test.ts 445
   record-counts-measurement.test.ts 486
-  reference-resolution-lint.test.ts 1007
-  review-coverage-mandate.test.ts 353
-  review-coverage.test.ts 818
-  rules-emission-golden.test.ts 1473
+  reference-resolution-lint.test.ts 990
+  review-coverage-mandate.test.ts 344
+  review-coverage.test.ts 814
+  rules-emission-golden.test.ts 1332
   rules-voice-profile.test.ts 323
-  sentence-identifier-containment.test.ts 477
+  sentence-identifier-containment.test.ts 472
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 681
+  staging-drift.test.ts 680
   surface-growth-bound.test.ts 685
-  turn-budget-lint.test.ts 525
+  turn-budget-lint.test.ts 523
   workbench-citation-lint.test.ts 325
-  total 23257
+  total 23251

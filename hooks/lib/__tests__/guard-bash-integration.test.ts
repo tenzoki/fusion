@@ -36,17 +36,13 @@ import {
 // The verdict is where that third claim now lives, and only the verdict. A
 // describe that ran the command through a real shell and asserted git had put
 // the file back went on 2026-08-26, to buy head room under the hook-test growth
-// bound: `runBash` was not in its path, so it measured git's own semantics
-// rather than anything fusion can break, and the two shells it ran under exist
-// only for that half — the hook receives a JSON payload and never a shell. What
-// is genuinely given up with it is the case that watched for a revert which
-// "restored" the file by deleting it.
+// bound — `runBash` was not in its path, so it measured git's own semantics
+// rather than anything fusion can break. What is genuinely given up with it is
+// the case that watched for a revert which "restored" the file by deleting it.
 //
-// Each case is still a fresh subprocess against a temporary project root. That
-// is a requirement of the thing under test rather than a style choice: every
-// hook resolves its project by walking up from its own working directory, so a
-// case run in-process would measure this repository. See
-// helpers/guard-harness.ts.
+// Each case is still a fresh subprocess against a temporary project root — a
+// requirement of the thing under test rather than a style choice, for the reason
+// `helpers/guard-harness.ts` `## Why a throwaway root` states.
 // ---------------------------------------------------------------------------
 
 describe("integration harness — preconditions", () => {

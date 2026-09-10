@@ -9,14 +9,13 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 //
 // The specification of the bounded-dispatch mechanism does NOT require this
 // gate. It exists because this project has already measured the exact failure it
-// prevents, on the other value in the same block. The Phase-2 Turn budget was
-// PROSE: `5` written into `agents/orchestrator.md` in seven places and four
-// spellings, one of which already called itself a "default" while no source
-// could override it (issue
-// `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
-// None of those seven arrived at once — each was written by someone who wanted a
-// number in the sentence they were writing, and the eighth would have arrived
-// the same way.
+// prevents, on the other value in the same block: the Phase-2 Turn budget was
+// prose in seven places and four spellings. That defect is told once, in
+// `turn-budget-lint.test.ts`'s header and in issue
+// `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`.
+// What matters here is its shape: none of the seven arrived at once — each was
+// written by someone who wanted a number in the sentence they were writing, and
+// the eighth would have arrived the same way.
 //
 // The dispatch bound has the identical shape: a wall-clock figure the prompt
 // wants in a sentence ("stop after 20 minutes"), while the value is

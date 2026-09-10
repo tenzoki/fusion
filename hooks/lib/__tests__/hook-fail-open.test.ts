@@ -11,50 +11,40 @@
  * The second half is every site INSIDE `main` where a report stands next to a
  * verdict. There the fail-open verdict is not a fallback but a loss: something
  * the hook already worked out, thrown away because a file could not be written.
- * Four such sites were measured
- * (`shared/issues/260809-1825_*`, `…2046_*`, `…2045_*`), and while the guard
- * still denied, three of them were denies. The guard reached its last verdict of
- * any other kind on 2026-08-16 and now allows everything, so the class narrowed
- * to what a hook still produces: the guard's write trace, its configuration
- * diagnostic, and the tracker's coverage sentence. `describe("a report that
- * fails decides nothing")` below drives all three through the real hook
- * subprocess.
+ * Four such sites were measured (`shared/issues/260809-1825_*`, `…2046_*`,
+ * `…2045_*`); since the guard reached its last verdict on 2026-08-16 the class is
+ * the guard's write trace, its configuration diagnostic, and the tracker's
+ * coverage sentence. `describe("a report that fails decides nothing")` below
+ * drives all three through the real hook subprocess.
  *
  * Both halves are one rule, and `lib/fail-open.ts` states it: the verdict is
  * written first, everything that records it runs after, guarded.
  *
  * ## The defect
  *
- * `guard.ts` and `tracker.ts` each end with a handler whose comment promises
- * fail-open, and each used to call `emitEvent(...)` before `allow()` /
- * `respond()`. `emitEvent` appends to
- * `fusion-workbench/.guard-state/events.jsonl`. Nearly every write these two
- * files make goes under that directory, so an I/O failure there is the likeliest
- * reason the handler runs at all — and while the emit stood ahead of the verdict
- * it threw a second time, the verdict line never ran, and the process exited 1
- * with empty stdout. Measured at `exit=1, STDOUT: []` on both hooks
- * (`shared/issues/260809-1109_*_both-hooks-fail-silent-instead-of-open-….md`).
+ * Both handlers called `emitEvent(...)` before `allow()` / `respond()`, and
+ * `emitEvent` appends under `fusion-workbench/.guard-state/` — the likeliest
+ * reason the handler runs at all. It threw a second time, the verdict line
+ * never ran, and the process exited 1 with empty stdout. Measured at
+ * `exit=1, STDOUT: []` on both hooks; the account is the filed issue,
+ * `archive/260829-1110-safe-cleanup-tier-1/shared/issues/260809-1109_c_both-hooks-fail-silent-instead-of-open-when-the-guard-state-directory-is-unwritable.md`.
  *
  * ## Why the directory is made unwritable rather than the fault injected
  *
  * The acceptance criteria name the real failure — an unwritable `.guard-state/`
  * — and it is reachable without touching either hook: `chmod 0555` on the
- * directory, then one tool call. `saveEscalation` (guard) writes there on the
- * plain allow path at any payload; the tracker writes there only when one of its
- * two measurements has something to record, which since 2026-08-15 is never on
- * an ordinary write. So the two tracker cases name a review file under a
- * `reviews/` store instead, which is the review-coverage trigger. Either way the
+ * directory, then one tool call. Which probe opens the tracker's mouth, why it
+ * has been re-pointed three times, and why staging drift cannot serve as one are
+ * carried in full by `helpers/guard-harness.ts` `openCoverageGap`. Either way the
  * throw arrives through production code rather than through a seam opened for
- * the test. `helpers/guard-harness.ts` `openCoverageGap` carries the full
- * reasoning for that probe and for why staging drift cannot serve as one.
+ * the test.
  *
  * ## Why these cases spawn the hooks themselves
  *
- * `runGuard` and `runTracker` in the harness THROW when they see `[guard] Error:`
- * or `[tracker] Error:` on stderr, because a crashed hook would otherwise satisfy
- * every allow-side assertion in the suite. These cases are the ones that want the
- * fail-open path, so they reuse the harness's entry resolution (`guardEntry`,
- * `trackerEntry`) and its environment strip (`childEnv`) and read the raw result.
+ * `runGuard` and `runTracker` THROW on `[guard] Error:` / `[tracker] Error:` —
+ * the harness's `## Fail loud, never skip` states why. These cases want that
+ * path, so they reuse its entry resolution (`guardEntry`, `trackerEntry`) and its
+ * environment strip (`childEnv`) and read the raw result.
  *
  * ## What keeps them from passing vacuously
  *

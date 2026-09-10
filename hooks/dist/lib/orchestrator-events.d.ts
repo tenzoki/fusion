@@ -93,6 +93,25 @@
  * unwidened and unadvised, because its subject is the orchestrator's own
  * session marker rather than a row in this log.
  *
+ * ## What a task_start row measures
+ *
+ * A `task_start` row carries two things beyond the dispatch's identity: the byte
+ * cost of what the dispatch loads (`bytes_prompt`, `bytes_rules`,
+ * `bytes_claude_md`, `bytes_total`, and `bytes_delta` against the project's own
+ * armed baseline), and `work_item`, the basename a `**Work-item:**` line in the
+ * dispatch prompt claims. `lib/dispatch-bytes.ts` is the authoring home for all
+ * of it — where each figure comes from, why the rule count runs the helper
+ * rather than reproducing its emission list, what the memo is keyed on, and
+ * where the line between "absent" and "zero" falls.
+ *
+ * Two consequences belong here rather than there. Neither field goes on
+ * `task_done`: the row names the same dispatch and a second measurement would
+ * cost a second set of stats for a reader that already holds the first. And the
+ * dispatch path now writes `.guard-state/rule-sizes.json` and
+ * `.guard-state/byte-baseline.json`, which is a departure from the
+ * writes-no-guard-state property that path held until this measurement existed —
+ * `hooks/guard.ts`'s header states the widened form.
+ *
  * ## Identity: env first, then the one implementation, never a re-derivation
  *
  * `person` and `checkout` come from `FUSION_PERSON`/`FUSION_CHECKOUT` when the
