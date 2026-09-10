@@ -97,3 +97,16 @@ returned unexecuted once this measurement stood; no file changed for it, matchin
 claim. Neither fix (correct the closing sentence elsewhere, decide the refund question in
 `growth()`) has landed. Still open, and it returns to session 3's C1 per the plan and the Circle
 record.
+
+---
+
+Reconciliation (260910-2020, reconciler): open on both branches of its disjunctive acceptance, and
+exercised four more times since it was filed. The instrument's header
+(`hooks/lib/__tests__/helpers/growth-bound.ts`) still states nothing about a deleted file — a grep
+for `delet`, `removed file` and `absent` over it returns one comment about a file that shrank. And
+the behaviour is unchanged: `6357ebfc` deleted `turn-budget-lint.test.ts` and
+`record-counts-measurement.test.ts`, `1e367195` deleted `bound-agent-set.test.ts` and
+`dispatch-bound-lint.test.ts`, and `2a785ba2` reports dropping six stale baseline entries "because
+the instrument fails on a baseline naming a file that is gone" — a failure until the entry is
+removed, and no head-room once it is. Each removal was paid for by a cut elsewhere, exactly as this
+record predicts.

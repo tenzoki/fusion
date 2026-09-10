@@ -39,3 +39,12 @@ sentence's inference was falsified by the coder's own follow-on issue
 `npx vitest run surface-growth-bound` is green at HEAD `d7b701d2` (R1+R2 bought the head-room instead).
 Fix part 1 of the cross-referenced issue (correct the closing sentence) is not yet done — the
 sentence still stands as filed. Still open.
+
+---
+
+Reconciliation (260910-2020, reconciler): open. `npm test` is green at `07961552`, `surface-growth-bound`
+included, so the first half of the acceptance holds for session 2's four steps. The second half —
+that the route taken is named in the plan — is still unmet: `grep -n "R1\|R2\b"` over
+`260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md` still returns nothing, and session 3
+added two more steps of the same class (C1b and C2b), which the plan's status line names and its body
+does not define. The gap this record is about has widened rather than closed.

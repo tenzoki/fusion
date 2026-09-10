@@ -457,5 +457,30 @@ Three of the seven conditionals are directly touched by this cut: `circle-record
 
 ## User Decisions Pending
 
-- [ ] **Whether the live dashboard file survives C1 in any form.** The trade-off is now sharper than the first draft stated it. `orchestrator-live.md` is model-written on a schedule C1 removes, so keeping it means keeping a per-Turn write in a design with no Turns. The monitor has two readers, not one: the dashboard file and a state panel that reads `agentstate.yaml` directly. It also already reads the event log, so everything both readers show except the fields no row carries is reconstructible from the log. The question is therefore whether those remaining fields are worth a writer, and dropping the file means the monitor's state panel is re-sourced or goes dark.
-- [ ] **Whether the plan-size ceiling in C5 fails hard or only reports.** A hard failure splits a plan a reader may want whole, and enforces a discipline whose value is unmeasured, which is the shape this spec refuses elsewhere. A report is what fusion's three other stdout-verdict helpers do and none has been promoted to a gate. What argues for hard: plans are a third of the store a dispatch is pointed at, at 300.6 KiB across six live plans, and they are the one record kind whose size is measured. What argues for report: no plan has a measured reader either, so a hard failure would be the first bound in this spec enforced without one.
+- [x] **Whether the live dashboard file survives C1 in any form.** The trade-off is now sharper than the first draft stated it. `orchestrator-live.md` is model-written on a schedule C1 removes, so keeping it means keeping a per-Turn write in a design with no Turns. The monitor has two readers, not one: the dashboard file and a state panel that reads `agentstate.yaml` directly. It also already reads the event log, so everything both readers show except the fields no row carries is reconstructible from the log. The question is therefore whether those remaining fields are worth a writer, and dropping the file means the monitor's state panel is re-sourced or goes dark.
+- [x] **Whether the plan-size ceiling in C5 fails hard or only reports.** A hard failure splits a plan a reader may want whole, and enforces a discipline whose value is unmeasured, which is the shape this spec refuses elsewhere. A report is what fusion's three other stdout-verdict helpers do and none has been promoted to a gate. What argues for hard: plans are a third of the store a dispatch is pointed at, at 300.6 KiB across six live plans, and they are the one record kind whose size is measured. What argues for report: no plan has a measured reader either, so a hard failure would be the first bound in this spec enforced without one.
+
+## Reconciliation Log
+
+**260910-2020 (reconciler, domain `code`, range `91179f35..07961552`).** Both boxes under
+`## User Decisions Pending` are ticked in this pass. They were answered at gate G1 on 2026-09-09 and
+both records have since reached `_i_`:
+`260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md` (implemented
+`34cd5bc2`, its fallback removed at `6357ebfc`) and
+`260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md` (implemented `069c54ae`).
+The boxes had stood unticked through three reconciliation passes.
+
+**The roster is eleven, not eight, and this document's `## Directive` still says eight.** Step C8 of
+`260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md` landed one merge of four at
+`2a785ba2` — `reviewer`, absorbing `coderev` and `ontorev`, 186 973 against its armed budget of
+192 521. The other three stopped on the budget, which is the step's own instruction: `planner`←`shaper`
+had 2 160 bytes of allowance for a 28 942-byte role, `analyst`←`consultant` 1 046 for 13 855, and
+`curator` was 9 169 bytes over before absorbing any of `reconciler`. `playmaker`, `taskplanner` and
+`bugfixer` were deleted with no absorber. `ls agents/*.md` returns eleven at `07961552`, and
+`CLAUDE.md` and `README-agents.md` both name eleven.
+
+The Directive sentence and the acceptance boxes that read "the eight" are left as written — this
+document is what the work was measured against, and `## What the cut costs and what it risks`
+already states the outcome in advance ("the honest outcome is that the roster stays larger than
+eight"). What the eleven-role result changes is not this text but session 4's D4 verification, which
+is annotated in the plan.

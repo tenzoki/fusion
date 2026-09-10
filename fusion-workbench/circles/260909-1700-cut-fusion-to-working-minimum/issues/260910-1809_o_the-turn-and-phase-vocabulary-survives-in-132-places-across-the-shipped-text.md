@@ -23,3 +23,16 @@ grep -rniE '\bTurn( loop| budget)?\b|\bPhase [0-9]' agents/ rules/ skills/ docs/
 **Why it was left.** Nine steps of the cut were each scoped to their own files, and the pass that collected the fallout fixed this vocabulary only where a dangling reference or a state-file mention forced it into the paragraph. Nothing owns the rest.
 
 **Acceptance.** The count above, re-run, returns only lines of kind 3. Kinds 1 and 2 are gone, `rules/circle-records.md` and `rules/orchestrator-rebalance.md` included — the second describes a gate that survives on a changed trigger, so its Turn references are the ones most likely to be read as live.
+
+---
+
+Reconciliation (260910-2020, reconciler): open, and the headline figure has moved. The record's own
+command, re-run at `07961552`, returns **85** lines, not the 132 measured at `e6a0dc67`. The fall is
+not repair: four of the six surfaces the record named as heaviest were deleted whole in the two
+commits after it was filed — `agents/playmaker.md` (10) and `agents/bugfixer.md` (9) at `2a785ba2`,
+`rules/circle-records.md` (8) at `76d833be` — so the kind-1 "live instructions that cannot be
+followed" the record leads with are largely gone by deletion rather than by rewriting. What stands
+is kind 2 and the untouched kind 3: `README-hooks.md` 11, `rules/orchestrator-rebalance.md` 7,
+`docs/working-model.md` 6, `CLAUDE.md` 6, `README.md` 5, `docs/philosophy.md` 4,
+`agents/orchestrator.md` 4, `docs/fusion-intro.md` 3. The acceptance is unchanged and unmet; only
+its arithmetic is.

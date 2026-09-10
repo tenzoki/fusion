@@ -55,3 +55,13 @@ transition at B4's commit, and this is it. What has not happened yet is the remo
 `orchestrator-live.md` is still written and both panels still fall back to it, by design, until
 step C0 has proved the log-sourced panels against a live session and step C1 deletes the fallback.
 So the answer is realised as a capability and not yet as an absence.
+
+---
+
+Reconciliation (260910-2020, reconciler): the `Implemented:` note above closes by saying "what has
+not happened yet is the removal itself" and naming C0 and C1 as what would perform it. Both have
+since run. Step C1 (`6357ebfc`) stopped the writes and removed the two fallback halves from
+`bin/monitor` — the `orchestrator-live.md` reader, the `/api/state` file path and the two
+placeholder messages naming those files — after C0's five checks passed, whose result that commit's
+message carries. The answer is realised as an absence as well as a capability at `07961552`. The
+marker is untouched; this is evidence, not a transition.

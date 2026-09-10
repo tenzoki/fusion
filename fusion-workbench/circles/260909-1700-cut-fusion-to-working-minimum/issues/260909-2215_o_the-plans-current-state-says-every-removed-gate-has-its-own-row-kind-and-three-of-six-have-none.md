@@ -15,3 +15,12 @@ is unchanged. Correctly carries `_o_`.
 
 Reconciliation (260910-0620, reconciler, Turn 2): still open at HEAD `d7b701d2`. Unchanged since the
 last pass; the plan's Current State sentence was not touched by session 2. Correctly carries `_o_`.
+
+---
+
+Reconciliation (260910-2020, reconciler): still open at `07961552`. The plan's `## Current State`
+sentence is unchanged, so the acceptance is unmet. The three gates it names as unmeasurable are all
+gone from the tree now — the convergence check and the resume procedure at C2 (`7dde04a6`), the
+per-Turn review-coverage read with them — so nothing is left to measure and the sentence's claim
+about them can no longer be checked against a running mechanism. It is a false statement in a plan a
+later reader will consult, which is what the record says it is.

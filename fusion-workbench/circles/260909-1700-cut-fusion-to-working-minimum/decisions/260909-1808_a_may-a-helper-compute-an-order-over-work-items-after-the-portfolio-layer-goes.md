@@ -39,3 +39,15 @@ confirmed is a different question, and the two collide only on this sentence.
 
 ---
 Answered: 260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md `## Question` — option 3: the user ruled that the order is not necessarily his to set, and that it is to be computed. The helper computes it; the user overrides where he wants to. C6's sentence is superseded by this record and must be restated when the spec is next edited; the work-item file carries a machine-readable dependency field from its first version; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+
+Reconciliation (260910-2020, reconciler): the **enabling half** of option 3 landed at `76d833be`,
+step C9a. The work item carries `**Depends-on:**` as a comma-separated list of item basenames from
+its first version, and `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`
+carries the ruling in its own words: a helper may read the store and report an order over confirmed
+edges, with cycles named, and no agent asserts a ranking. The spec sentence this record supersedes
+was restated at A3 (`e8dbeb74`). **The helper itself does not exist**, and it is the work of the
+anticipated Circle `260908-2018-prerequisites-confirmed-once-order-computed`, so the record stays
+`_a_` and no `Implemented:` line is written: the field and the rule are the precondition the ruling
+required before the migration, not the capability it authorises. The marker is untouched.

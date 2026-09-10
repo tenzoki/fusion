@@ -17,3 +17,14 @@ for the planner or orchestrator, not an open question needing a ruling.
 Reconciliation (260910-0620, reconciler, Turn 2): still open at HEAD `d7b701d2`. Session 2 touched
 no line of the plan's `## Current State` section; `grep -n "population of 97"` on the plan still
 returns the same line. Correctly carries `_o_`.
+
+---
+
+Reconciliation (260910-2020, reconciler): still open at `07961552`. Unchanged and now partly moot in
+one direction: the plan's `## Current State` still reads "against a `session_start` population of 97
+before per-checkout scoping" and step A1's population sentence is untouched, so the acceptance is
+unmet. What has changed is the consequence — the head list the ambiguity fed into was consumed at
+C1 and C2, and the gate it decided (the per-Turn Coherence check) was ruled unprotected on a
+different quantity entirely
+(`260909-2305_*_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md`).
+The record stands as a defect in the plan's text rather than as a live risk to a deletion.

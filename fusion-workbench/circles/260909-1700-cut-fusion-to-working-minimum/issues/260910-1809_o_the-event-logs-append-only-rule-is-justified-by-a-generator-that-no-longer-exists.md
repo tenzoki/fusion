@@ -10,3 +10,13 @@ The event log's append-only rule is justified by a generator that no longer exis
 **Why it is worth a record rather than a silent edit.** The append-only rule protects something real — the log is now the only cross-session trace fusion keeps, since the history store is frozen and the state file is gone — so the rule is more load-bearing than it was, not less. A reader who checks the stated reason, finds it false and concludes the rule is stale would delete the wrong thing. The repair is to state the reason that holds now.
 
 **Acceptance.** Setup step 6 gives a reason that is true at the commit that fixes it, and no shipped surface names the sequence-diagram generator as a live reader.
+
+---
+
+Reconciliation (260910-2020, reconciler): open, verified at `07961552`. `agents/orchestrator.md`
+line 152 still reads "The end-of-session sequence-diagram generator reads it cross-session for
+historical context", inside the create-if-missing instruction. Two other surfaces have already been
+brought to the truth and are the model for the repair: `rules/workbench-tracking.md` names the
+generator as a third reader that "stood here until 2026-09-10" and went with the history store, and
+`README-agents.md` says the same of the diagram and the dashboard file together. The prompt is the
+one surface still asserting it in the present tense, and it is the one charged to every dispatch.

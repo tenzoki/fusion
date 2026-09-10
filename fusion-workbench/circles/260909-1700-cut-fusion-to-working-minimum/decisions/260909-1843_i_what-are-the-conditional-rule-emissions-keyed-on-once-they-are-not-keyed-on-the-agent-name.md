@@ -61,3 +61,18 @@ Answered: 260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-th
 
 ---
 Implemented: abf569b8 — `bin/fusion-rules` takes `--audience=user` from an `**Audience:**` dispatch parameter, with the `IS_USER_FACING_AGENT` name list kept as the fallback for orchestrator, editor and curator; the other eight conditional emissions stay keyed on the agent name. The record's count of seven was wrong in both directions and the commit states the corrected nine.
+
+---
+
+Reconciliation (260910-2020, reconciler): the mechanism is on the tree as the `Implemented:` note
+says — `bin/fusion-rules planner` and `bin/fusion-rules planner "" --audience=user` differ by
+exactly `rules/user-facing-output.md`, 10 883 bytes at this HEAD. **One statement in that note is
+false against the tree.** It says the name-list fallback is kept "for orchestrator, editor and
+curator", which is the three this record's own `## Recommendation` names. The list in
+`bin/fusion-rules` reads `orchestrator|consultant|shaper|editor|curator` — five. C7 (`abf569b8`)
+did not touch it; it stood at six (`playmaker` included) both before C7 and at C7, and lost
+`playmaker` at C8 (`2a785ba2`). So `consultant` and `shaper` receive the rule unconditionally where
+this record says they would receive it only on the parameter. The emission is a superset of what was
+ruled, which costs nothing at run time and misleads a reader of either the record or the commit.
+Filed as `260910-2020_*_the-user-facing-fallback-list-is-five-where-the-answered-decision-says-three.md`.
+The marker is untouched.

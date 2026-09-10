@@ -18,3 +18,23 @@ All three are committed and none is modified in the working tree, verified by `g
 **The second finding, which is the one that recurs.** Nothing between writing a record and pushing it asks this question. `/fusion:cleanup` prints the citation checker's verdict, and it is advisory; the release process runs a coverage read and `claude plugin validate`, neither of which fails on a red `npm test`.
 
 **Acceptance.** `cd hooks && npm test` passes `citation-sweep.test.ts` at HEAD, with the nine citations repaired to the storeless wildcard form per `rules/fusion-workbench-conventions.md` `## Filename Patterns`, and no fenced exhibit or statement-about-a-citation rewritten. Separately, the record names whether anything now catches this before a push, or states plainly that nothing does.
+
+---
+
+Reconciliation (260910-2020, reconciler): open on its second clause; the first is satisfied.
+`cd hooks && npm test` is green at `07961552`, 895 tests in 52 files including
+`citation-sweep.test.ts`, re-run in this pass. The nine citations were repaired by hand at
+`e6a0dc67`, which is step C2b: the workbench was copied to a scratch repository, swept there, the
+diff read, and the substitutions applied by hand, the sweep's own `--write` being forbidden while
+pending changes touched what it reads. All nine were pointers; no fenced exhibit and no statement
+about a citation was rewritten.
+
+**The second clause — "the record names whether anything now catches this before a push, or states
+plainly that nothing does" — is unmet, and the answer got worse in the same session.** One
+mechanism still reports: the PostToolUse hook (`hooks/tracker.ts`, registered in `hooks/hooks.json`)
+hands a record just written to the citation grammar and reports the retired forms on the lines that
+call wrote. It blocks nothing. What went is the pre-push read: `/fusion:cleanup` printed
+`bin/fusion-citation-check`'s verdict until step C4 (`115be68d`) reduced that body to commit and
+push, and `grep -rn 'citation-check\|citation-sweep\|npm test' skills/*/SKILL.md` now matches only
+a release note in the help body. So at `07961552` nothing between writing a record and pushing it
+runs the gate, and the only thing that speaks at all speaks at the keystroke.

@@ -1,7 +1,7 @@
 # Implementation Plan: cut fusion to a working minimum
 
 **Date:** 2026-09-09
-**Status:** In Progress (session 3 running: C0, C1, C2, C5 done, plus C1b added at a user ruling)
+**Status:** In Progress (session 3 of 4 complete: C0 to C9, plus C1b and C2b added at user rulings; session 4 is D1 to D4)
 **Spec:** `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`, C1 to C9. Later rulings bind and one supersedes the spec's text: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3) and the two records this plan files, `260909-1843_*_which-sentinel-replaces-the-state-files-existence-as-the-gate-on-machine-written-rows.md` and `260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md`.
 **Amended:** 2026-09-09, against the two answers at gate G1. `260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md`: the dashboard file does not survive and its information does, which added one field to step B3, one renderer to step B4, one check to step C0, and turned C1's re-sourcing into a removal. `260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md`: report only, which resolved step C6's conditional to a stdout verdict. No step was renumbered and no session boundary moved.
 
@@ -246,7 +246,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
      — `.fusion-setup` is class R3 and travels, so a pulled `checks` object suppresses checks a
      checkout never ran, which is the reason `.cadence-anchors` is class L.
 
-12. **C4: the pipeline becomes five commands invoked by name**
+12. [DONE] **C4: the pipeline becomes five commands invoked by name**
     - Executor: `coder`
     - Files: `skills/cleanup/SKILL.md` (reduced to commit and push), `skills/archive/SKILL.md`, `skills/log-activity/SKILL.md`, `skills/curate/SKILL.md`, `skills/post/SKILL.md`, a new reconciliation body, `CLAUDE.md`
     - Changes: closing is commit and push under the existing lock, no dispatch and no other pass. The pipeline's scheduled issue-filing step is removed, not re-homed. The four existing bodies plus one new reconciliation body become five commands, each performing only its own procedure and triggering no other. The `CLAUDE.md` reconciliation keeps its user gate and the curator keeps the write authority the gate gates. The archive body keeps its standalone confirmation.
@@ -315,7 +315,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
       All nine conditional emissions land on a surviving agent; `backlog-entries.md` moved from
       playmaker to orchestrator and `review-contract.md` from the two review prompts to `reviewer`.
 
-17. **C9: the work item, the resolver, and the migration body**
+17. [DONE] **C9: the work item, the resolver, and the migration body**
     - Executor: `ontocoder` for the item grammar and the conventions text; `coder` for the resolver, the helper and the skill body. **Split into two commits in that order**, the second depending on the first.
     - Files: `rules/fusion-workbench-conventions.md`, `rules/backlog-entries.md` (folded into the conventions), `rules/circle-records.md` (deleted); `bin/fusion-paths`, `bin/fusion-rules`, `skills/migrate/SKILL.md`, `skills/next/SKILL.md` and `skills/direct/SKILL.md` (deleted), `hooks/lib/__tests__/path-literal-lint.test.ts`
     - Changes: a work item is one file per item in the existing backlog store, named in the unmarked stamped form `YYMMDD-HHMM-<slug>.md` that the citation grammar already resolves, with head fields `**Status:**`, `**Claim:**` carrying the eight-hex checkout identifier, and `**Depends-on:**` carrying a comma-separated list of item basenames — the machine-readable dependency field the later ruling requires from the first version. No marker on any filename. The filing rule survives: no agent originates an item. `bin/fusion-paths` keeps its `KEY=value` shape and exit codes 0, 1, 2 and 4, loses exit 3, the second argument and the Circle branch. `bin/fusion-rules` re-sources its topic to the claimed item's slug and takes no topic when none is claimed. `path-literal-lint.test.ts` loses `rules/circle-records.md` from `DEFINITION_SITES` in the same commit. `skills/migrate/SKILL.md` gains the Circle-to-item migration: survey, propose, confirm, then move — the precedent it already sets.
@@ -350,7 +350,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
     - Files: `.claude-plugin/plugin.json`, `CLAUDE.md`, `README.md`, `README-agents.md`, `README-hooks.md`, `install.sh`, `docs/upgrading-to-v11.md`, the marketplace clone
     - Changes: the full release procedure in `CLAUDE.md`, including the four version surfaces and the two prose descriptions. `CLAUDE.md` is brought to the new shape through the curator's gate, not by hand — it is a normative surface and this is the one place a normative surface is changed on evidence. The upgrading note states what a consuming project must do: a workbench with Circles is migrated, `orchestrator.maxTurns` is retired, and the agent roster changed.
     - Dependencies: D3, C8
-    - Verification: `claude plugin validate .` passes; the eight-role smoke test passes for each of the eight; `bin/fusion-review-coverage --since <previous tag>` is run and its result stated in the release commit, per the release process; `wc -c CLAUDE.md` is reported against 93 432 and against the C8 bound, which must be green.
+    - Verification: `claude plugin validate .` passes; the eight-role smoke test passes for each of the eight; **[Reconciled 260910-2020: the roster is eleven, not eight. C8 landed one merge of four (`2a785ba2`) and the other three stopped on their budget, which is C8's own instruction. The smoke test covers eleven roles: orchestrator, coder, ontocoder, planner, shaper, analyst, consultant, reviewer, reconciler, editor, curator.]** `bin/fusion-review-coverage --since <previous tag>` is run and its result stated in the release commit, per the release process; `wc -c CLAUDE.md` is reported against 93 432 and against the C8 bound, which must be green.
 
 ## Where this Circle stops
 
@@ -420,6 +420,92 @@ The two `_a_`→`_i_` decision transitions in `d7b701d2` are judged separately, 
 file's `## Coherence` section. No drift found between what the plan claims for session 2 and what
 is on disk, once step 6's marker is corrected.
 
+**260910-2020 (reconciler, domain `code`):** Session 3's ten steps verified against `07961552`,
+over the thirteen commits from `91179f35`. Every `[DONE]` marker C0 to C9 is supported by a commit
+and by a read of the tree; none was set wrongly and none was missing.
+
+C0 → recorded in `6357ebfc`'s message, which is where this step's own text says its result lives.
+**Not independently re-verifiable at this HEAD** and named as such: four of its five checks read
+`agentstate.yaml`, `orchestrator-live.md` and the pre-C1 monitor against a live session, and C1
+deleted the writers. What can still be read agrees with it. C1 → `6357ebfc` (`bin/fusion-turn-budget`,
+`hooks/lib/state-file.ts`, `hooks/turn-budget.ts`, `rules/orchestrator-resume.md` absent from the
+tree; `turn-budget-lint` and `record-counts-measurement` gone with their subjects). C2 → `7dde04a6`
+(`grep -cE '^#+ *(Phase|Turn)|maxTurns|circuit breaker' agents/orchestrator.md` returns 0; the prompt
+is 84 055 bytes at HEAD, from 155 302). C3 → `71c0c873` (`skills/check/SKILL.md` exists and its
+Setup block writes a `checks` object; see the note on the marker below). C4 → `115be68d` (five
+bodies, `grep -c 'only ' skills/cleanup/SKILL.md` returns 0). C5 → `0ec15cb9` (`bin/fusion-paths`
+emits `OUT_HISTORY` to none of the eleven agents; `grep -rl OUT_HISTORY agents/` is empty; the 1046
+history entries are all present). C6 → `069c54ae` (`grep -rniE 'file (an? )?(issue|record) for
+(every|each)' agents/ rules/` returns 0; `bin/fusion-plan-size` exits 0 over an over-ceiling corpus
+and prints `verdict=over`). C7 → `abf569b8` (`bin/fusion-rules planner` and the same call with
+`--audience=user` differ by exactly `rules/user-facing-output.md`; 10 883 bytes at this HEAD against
+the 10 884 the commit measured, C6 having taken one byte off that file afterwards). C8 → `2a785ba2`.
+C9 → `76d833be` and `07961552`, in the order the step prescribes. `cd hooks && npm test` is green at
+895 tests in 52 files, re-run in this pass.
+
+**C1b and C2b are named in the status line and defined nowhere in this file.** C1b retired the
+dispatch bound whole (`1e367195`): `orchestrator.dispatchMinutes` joined `maxTurns` in the
+leaf-scoped retirement table, `rules/bounded-dispatch.md` and the `IS_BOUND_AGENT` emission were
+deleted, and seven agents dropped 9 162 bytes per dispatch. C2b was the collection pass
+(`e6a0dc67`): fifteen dangling references resolved, the citation sweep brought from `files=3
+rewrites=9` to zero, `CLAUDE.md` corrected in six places. Both were user rulings taken mid-session,
+both are load-bearing for later steps, and neither is recoverable from this file. **They should be
+recorded as numbered steps** — C1b immediately after C1, C2b after C2 with a note that it landed out
+of order, between C6 and C8 — because the precedent this plan already set for R1 and R2 in session 2
+(log-only) left two steps that `grep` over the plan cannot find, and the head now asserts two more
+of them. Writing the step bodies is plan authorship and is left to the planner or the user; this log
+is not a substitute for it.
+
+**Three step texts the session's own rulings made false, left as written and recorded here.** C2's
+Changes line says "no Rebalance"; the user ruled otherwise at the gate before C2 and
+`rules/orchestrator-rebalance.md` was restored from `91179f35` and re-cut (`7dde04a6`), with four
+bounds that named removed mechanisms tabulated rather than dropped. C1's Files line lists
+`rules/orchestrator-rebalance.md` as deleted; it was deleted there and restored one commit later, so
+the file exists at HEAD. C8's Changes line says "eight prompts remain"; eleven do, which its own Done
+note records and which is annotated at D4 and in `## Testing Strategy` above, those being the two
+places the figure would still misdirect session 4.
+
+**Two decisions reached `_a_` and two reached `_i_` in this range, and each citation resolves.**
+`260909-2305_*_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md` and
+`260909-2305_*_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md`
+both cite `260910-0900-orchestrator-session.md` `## Rulings at the gate before C2`; that file and
+that heading exist. `260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md` → `_i_` at
+`069c54ae` and `260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md`
+→ `_i_` at `abf569b8`, both correct. One defect in the second: its `Implemented:` line says the
+name-list fallback is "orchestrator, editor and curator" and the list in `bin/fusion-rules` at HEAD
+is five — `orchestrator|consultant|shaper|editor|curator`, unchanged by C7 and shortened only by
+C8's deletion of `playmaker`. Filed as
+`260910-2020_*_the-user-facing-fallback-list-is-five-where-the-answered-decision-says-three.md`.
+
+**Seven issues were filed in this range and one was closed on a real fix.**
+`260910-1033_*_deleting-the-turn-budget-helper-leaves-the-dispatch-bound-with-no-reader.md` → `_c_`,
+correctly: its second acceptance branch was taken whole at C1b, verified against the tree
+(`rules/bounded-dispatch.md` and `dispatch-bound-lint.test.ts` both absent, no agent emitted the
+rule, `bin/fusion-events` keeps the measurement on its own constant). The other six are open on the
+evidence and each carries a note from this pass. Two of them —
+`260910-2011_*_a-work-item-has-no-field-for-the-plan-it-runs-on-so-the-closure-step-lost-its-source.md`
+and `260910-2011_*_the-deferred-state-has-no-value-in-the-work-items-status-set.md` — are untracked
+in the working tree and enter no commit yet; both bear on step D1 and should be committed before it
+runs.
+
+**What the cut made false in the workbench, beyond what a commit message names.** The two entries in
+`shared/backlog/` still carry the retired filename markers (`_c_`, `_p_`) while
+`rules/fusion-workbench-conventions.md` `## Backlog entries — work items` now defines the store as
+markerless with a `**Status:**` head field, and `skills/migrate/SKILL.md` converts Circles into that
+store without converting what is already in it. Filed as
+`260910-2020_*_the-two-existing-backlog-entries-keep-the-retired-marker-form-that-d1-migrates-into.md`,
+because D1 is the one-way step. `fusion-workbench/portfolio.md` is now regenerated by nothing —
+`playmaker` and `/fusion:next` both went at C8 — and the migration body's never-touch list does not
+name it, so it survives D1 as a stale briefing; it is class L and untracked here, which is why this
+is recorded rather than filed. This Circle's `_t_circle.md` carries no log entry for session 3, and
+writing one would mean writing "Turn 3" in a vocabulary C2 retired; the record migrates at D1 and
+the entry is left to that step or to the user.
+
+**Review coverage over this range is nil.** `bin/fusion-review-coverage --since 91179f35` reports
+`commits=13 reviews=0 uncovered=13 verdict=uncovered`, and this Circle's `reviews/` store is empty.
+Nothing in session 3 was read by a reviewer. The Circle is not closing this session, so the pass is
+still due; it is carried into the Coherence verdict rather than smoothed over.
+
 ## Data Structures
 
 **The work item** (C9), one file per item in the backlog store, `YYMMDD-HHMM-<slug>.md`, no filename marker:
@@ -456,7 +542,7 @@ is on disk, once step 6's marker is corrected.
 
 ## Testing Strategy
 
-Each step states its own check above, and the rule is that no step's acceptance is a reading of the text that step wrote. Three checks carry the plan rather than a step. **The three replays in A2** are what establish the new bound measures what C8 specifies; if any fails, work on C8 stops until the quantity is corrected. **The live-log verification in C0** is what permits the first deletion; a partial pass stops session 3. It covers five things, the fifth being the re-sourced monitor, which no earlier session can serve at all. **The eight-role smoke test in D4** is the only proof the merged roster loads, and it is structurally unavailable before session 4.
+Each step states its own check above, and the rule is that no step's acceptance is a reading of the text that step wrote. Three checks carry the plan rather than a step. **The three replays in A2** are what establish the new bound measures what C8 specifies; if any fails, work on C8 stops until the quantity is corrected. **The live-log verification in C0** is what permits the first deletion; a partial pass stops session 3. It covers five things, the fifth being the re-sourced monitor, which no earlier session can serve at all. **The eight-role smoke test in D4** is the only proof the merged roster loads, and it is structurally unavailable before session 4. **[Reconciled 260910-2020: eleven roles, not eight — see the note on D4's verification line.]**
 
 `npm run build` precedes every `npm test` where a hook source changed, because `committed-dist.test.ts` compares the committed `dist/` against the committed source.
 

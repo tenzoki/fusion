@@ -15,3 +15,17 @@ Reconciliation (260910-0620, reconciler, Turn 2): still open at HEAD `d7b701d2`.
 "agentstate.yaml exists" README-hooks.md rules/commit-lock.md` still returns all three passages named
 above, unchanged by B1–B4. Correctly carries `_o_` — the fix is a docs pass B2 did not include in its
 own file list.
+
+---
+
+Reconciliation (260910-2020, reconciler): open, and the acceptance as written is now unreachable in
+its first clause. `grep -n "agentstate.yaml exists\|orchestratorSessionInFlight\|eventRowsAdmitted"
+README-hooks.md rules/commit-lock.md` returns nothing at `07961552`: all three passages were
+rewritten, two of them describing the gate as the payload's session identifier and the third as
+`FUSION_SESSION_ID` being exported. There is no disjunction left to describe — step C1 (`6357ebfc`)
+dropped the `existsSync` arm — so "all three passages describe the disjunction and name
+`eventRowsAdmitted`" cannot be satisfied and should not be. **The second clause is unmet and is now
+the whole of this record**: `README-hooks.md` still says a dispatch "writes nothing under
+`.guard-state/`", while `ABSENT_SESSION_ID_ADVISORY` in `hooks/lib/orchestrator-events.ts` still
+emits one `guard_advisory` when a dispatch payload carries no session identifier. A reader debugging
+that row still has no route from the document to the condition.
