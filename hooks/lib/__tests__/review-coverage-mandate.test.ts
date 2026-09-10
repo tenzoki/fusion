@@ -302,37 +302,41 @@ describe("review-coverage mandate: the consumer", () => {
   });
 
   it("the Circle review widens the dispatch scope rather than merely reporting the gap", () => {
-    const step = orchestrator().split("### Step 3c: Review Coverage Read")[1]?.split("### Step 3c-bis")[0] ?? "";
-    expect(step, "the Step 3c section is gone or was renamed").not.toBe("");
-    expect(step).toContain("bin/fusion-review-coverage");
+    // The prompt's own section, split on its heading and the next `## ` one.
+    // Both anchors moved on 2026-09-10 when the Turn loop was removed: the
+    // read used to sit at "Step 3c" inside a numbered phase, and the one
+    // dispatch left used to sit at "Phase 4 step 2a". Neither the measurement
+    // nor what it is for changed — only where the prompt keeps them.
+    const section = orchestrator().split(/^## Review coverage\s*$/m)[1]?.split(/^## /m)[0] ?? "";
+    expect(section, "the `## Review coverage` section is gone or was renamed").not.toBe("");
+    expect(section).toContain("bin/fusion-review-coverage");
     expect(
-      /2a\. \*\*Circle review[\s\S]*?plus the carried[\s\S]*?2b\. \*\*Read the plan/.test(orchestrator()),
-      "the one dispatch left (Phase 4 step 2a, decision 260827-1120) never adds the carried out-of-scope list to its scope.",
+      /\*\*The Circle review[\s\S]*?plus the carried[\s\S]*?\*\*Read the plan/.test(orchestrator()),
+      "the one dispatch left (Closing a Circle step 2, decision 260827-1120) never adds the carried out-of-scope list to its scope.",
     ).toBe(true);
   });
 
-  it("the summary section exists and the state-file schema gained no field for it", () => {
+  it("the summary section exists and nothing persists a reviewed-through marker", () => {
     const text = orchestrator();
     expect(text).toContain("## Review coverage");
 
-    // The `### Format` block is `agentstate.yaml`'s schema. Issue 260810-1205
-    // names the state file as carrying no review-coverage field, and it stays
-    // that way on purpose: a reviewed-through marker there would be a fifth
-    // surface a session can pass a boundary without writing — the class issue
-    // 260801-2038 measured freezing in six sessions out of six — answering a
-    // question the review files already answer unfreezably, because writing the
-    // review file IS the review.
-    const schema = text.split("### Format")[1]?.split("### Write Points")[0] ?? "";
-    expect(schema, "the state file's `### Format` block is gone or was renamed").not.toBe("");
-    expect(
-      /reviewed[_-]through|review_coverage|reviewed_range/.test(schema),
-      "a review-coverage field appeared in the agentstate.yaml schema. The measurement " +
-        "is derived from the review files precisely so that it cannot freeze the way the " +
-        "four surfaces in issue 260801-2038 did.",
-    ).toBe(false);
-
-    // …and the choice is stated rather than left to be rediscovered.
-    expect(text).toMatch(/No field for this goes into `agentstate\.yaml`/);
+    // Until 2026-09-10 this case read the `agentstate.yaml` schema block and
+    // asserted that no `reviewed_through` / `review_coverage` / `reviewed_range`
+    // field had appeared in it. The state file was removed that day, so THE
+    // SCHEMA THAT SCAN RAN OVER NO LONGER EXISTS and the scan went with it —
+    // run against the whole prompt it fires on the prompt's own sentence about
+    // the marker, which is a detector that cannot tell a prohibition from a
+    // violation.
+    //
+    // What survives is the reason, as a statement the prompt has to keep
+    // making: a persisted reviewed-through marker would be one more surface a
+    // session can pass a boundary without writing (the class issue 260801-2038
+    // measured freezing in six sessions out of six), answering a question the
+    // review files already answer unfreezably, because writing the review file
+    // IS the review. Held as a text assertion, and honestly weaker than the
+    // schema scan it replaces: it pins that the choice is stated, not that no
+    // field was added somewhere else.
+    expect(text).toMatch(/Nothing persists a reviewed-through marker, and nothing should/);
   });
 
   it("catches an orchestrator that reports the gap without acting on it — the control", () => {

@@ -21,13 +21,13 @@
   editor.md 13635
   ontocoder.md 13262
   ontorev.md 7094
-  orchestrator.md 155302
+  orchestrator.md 103302
   planner.md 19725
   playmaker.md 42955
   reconciler.md 22825
   shaper.md 29057
   taskplanner.md 14070
-  total 417145
+  total 365145
 
 [skills bytes]
   archive/SKILL.md 25850
@@ -59,11 +59,11 @@
   declared-citation-paths.test.ts 70
   deliverable-language-lint.test.ts 136
   derivable-enumerations-lint.test.ts 449
-  dispatch-bound-lint.test.ts 245
+  dispatch-bound-lint.test.ts 233
   dispatch-bytes.test.ts 223
   domain-cascade-order-lint.test.ts 232
   domain-cascade.test.ts 888
-  executor-verification-report-lint.test.ts 207
+  executor-verification-report-lint.test.ts 215
   fenced-code-exemption.test.ts 206
   fusion-checkout-name.test.ts 174
   fusion-citation-check.test.ts 284
@@ -72,7 +72,7 @@
   fusion-events.test.ts 414
   fusion-forum.test.ts 220
   fusion-identity.test.ts 217
-  fusion-paths.test.ts 896
+  fusion-paths.test.ts 915
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 148
   glob-nomatch-lint.test.ts 140
@@ -96,7 +96,7 @@
   portfolio-citation-form-lint.test.ts 158
   provenance-header-lint.test.ts 434
   reference-resolution-lint.test.ts 990
-  review-coverage-mandate.test.ts 342
+  review-coverage-mandate.test.ts 346
   review-coverage.test.ts 890
   rules-emission-golden.test.ts 1332
   rules-voice-profile.test.ts 319
@@ -106,4 +106,4 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 683
   workbench-citation-lint.test.ts 325
-  total 22097
+  total 22116

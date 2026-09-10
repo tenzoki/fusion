@@ -44,3 +44,6 @@ still has to be settled, because it moves every rate by about 8.5.
 
 None from the orchestrator. The analysis states both facts and declines to resolve them, on the
 ground that the choice is the user's; this record carries that choice rather than pre-empting it.
+
+---
+Answered: 260910-0900-orchestrator-session.md `## Rulings at the gate before C2` — option 2, the rate of returning to the user; the per-Turn Coherence check is therefore unprotected (4.7 % of Turns, or 25 % of the rows whose verdict is readable) and step C2 removes it, the user reconciling by hand instead; ruled by user, Kai Stalmann <ks@qantr.com>.

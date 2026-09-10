@@ -40,3 +40,6 @@ later reader can tell a deliberate scope from an unexamined one.
 
 None from the orchestrator. The analysis routes this to the user and states the figures without
 choosing between them.
+
+---
+Answered: 260910-0900-orchestrator-session.md `## Rulings at the gate before C2` — option 1, any one project protects; the Rebalance gate clears half in krk alone (50.9 %, against fusion 35.1 % and unite-co-creator 31.7 %) and survives on that, "for now" in the user's own words; ruled by user, Kai Stalmann <ks@qantr.com>.

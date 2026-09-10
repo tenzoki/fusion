@@ -25,7 +25,7 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 
 const agent = (name: string) => readFileSync(join(pluginRoot, "agents", `${name}.md`), "utf-8");
 
-/** The two executors that report to the orchestrator's Step 3a step 5. */
+/** The two executors that report to the orchestrator's `### Step 3 — read the return`. */
 const EXECUTORS = ["coder", "ontocoder"];
 
 /**
@@ -43,15 +43,21 @@ function reportShape(text: string, who: string): string {
 }
 
 /**
- * The orchestrator's acceptance step: from `5. **Verify output.**` up to
- * `6. **Mark complete.**`.
+ * The orchestrator's acceptance step, `### Step 3 — read the return`.
+ *
+ * It was `5. **Verify output.**` up to `6. **Mark complete.**` — two numbered
+ * items of the queue-driven procedure — until 2026-09-10, when that procedure
+ * became the dispatch loop and the numbering went with the queue. The step
+ * itself did not change: it is the same reading of the same four cases, under
+ * a heading instead of a list index.
  */
 function verifyOutputStep(text: string): string {
-  const from = text.indexOf("5. **Verify output.**");
-  const to = text.indexOf("6. **Mark complete.**", from);
-  expect(from, "orchestrator: no `5. **Verify output.**` step found").toBeGreaterThanOrEqual(0);
-  expect(to, "orchestrator: no `6. **Mark complete.**` step after step 5").toBeGreaterThan(from);
-  return text.slice(from, to);
+  const parts = text.split(/^### Step 3 — read the return\s*$/m);
+  expect(
+    parts.length,
+    "orchestrator: no `### Step 3 — read the return` section found",
+  ).toBe(2);
+  return parts[1].split(/^#{2,3} /m)[0];
 }
 
 /**
@@ -128,10 +134,10 @@ describe("executor report shape", () => {
 });
 
 describe("orchestrator acceptance of an executor report", () => {
-  it("reads the verification line at Step 3a step 5", () => {
+  it("reads the verification line where it reads the return", () => {
     expect(
       verifyOutputStep(agent("orchestrator")),
-      "orchestrator: Step 3a step 5 does not read the report's `Verification:` line. " +
+      "orchestrator: Step 3 does not read the report's `Verification:` line. " +
         "A field no one reads is the failure mode issue 260805-0629 named explicitly.",
     ).toMatch(/`Verification:` line/);
   });
@@ -140,29 +146,31 @@ describe("orchestrator acceptance of an executor report", () => {
     const step = verifyOutputStep(agent("orchestrator"));
     expect(
       step,
-      "orchestrator: step 5 has no branch for a report with no verification line at all — " +
+      "orchestrator: Step 3 has no branch for a report with no verification line at all — " +
         "the case every pre-fix report fell into.",
     ).toMatch(/the line is absent/);
     expect(
       step,
-      'orchestrator: step 5 does not say that "done" is not a verification result',
+      'orchestrator: Step 3 does not say that "done" is not a verification result',
     ).toMatch(/"done" is not a verification result/);
   });
 
   it("refuses to reach the commit step on a report whose verification it cannot name", () => {
     expect(
       verifyOutputStep(agent("orchestrator")),
-      "orchestrator: step 5 does not block the path to Step 3b's commit. Without that, the " +
+      "orchestrator: Step 3 does not block the path to the commit. Without that, the " +
         "two executor-side fields are obligations with no reader.",
-    ).toMatch(/Never advance to Step 3b's commit on a report whose verification you cannot name/);
+    ).toMatch(/Never advance to the commit on a report whose verification you cannot name/);
   });
 
   it("keeps the blocked task out of the mark-complete step", () => {
     expect(
       agent("orchestrator"),
-      "orchestrator: Step 3a step 6 marks a task complete without regard to the " +
-        "verification line, so a blocked task is still recorded as done.",
-    ).toMatch(/6\. \*\*Mark complete\.\*\* A task the verification line left blocked/);
+      "orchestrator: the mark-complete bullet marks a task complete without regard to " +
+        "the verification line, so a blocked task is still recorded as done.",
+    ).toMatch(
+      /\*\*Mark the source complete\*\* — but only on a verification you read as passing\. A task the verification line left blocked/,
+    );
   });
 });
 

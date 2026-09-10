@@ -379,10 +379,29 @@ describe("bin/fusion-paths", () => {
       // constraint rather than an observation: the dispatch-prompt example in
       // `skills/next/SKILL.md` hands the skill a key the moment it spells
       // either token, which is why that example writes `<entry path>`.
-      for (const name of ["coder", "orchestrator", "planner", "direct", "next"]) {
+      //
+      // `orchestrator` left this list on 2026-09-10. Its prompt now names both
+      // tokens, because the four confirm-gated backlog operations became edits
+      // the orchestrator performs at the user's word with no dispatch, and an
+      // agent that writes the store needs the store resolved — unnamed, both
+      // keys expand to the empty string and the write lands at the workbench
+      // root. It moved to the case below rather than being dropped.
+      for (const name of ["coder", "planner", "direct", "next"]) {
         const p = parse(run(project, name).stdout);
         expect(p.OUT_BACKLOG, name).toBeUndefined();
         expect(p.SCAN_BACKLOG, name).toBeUndefined();
+      }
+    });
+
+    it("gives the orchestrator both keys — it maintains the store at the user's word", () => {
+      // The second shipped consumer to hold both, by the same derivation: its
+      // prompt names `$OUT_BACKLOG` and `$SCAN_BACKLOG`, so the resolver emits
+      // them. Nothing in the resolver was changed to bring them across.
+      for (const withCircle of [false, true]) {
+        if (withCircle) activate();
+        const p = parse(run(project, "orchestrator").stdout);
+        expect(p.OUT_BACKLOG).toBe("shared/backlog");
+        expect(p.SCAN_BACKLOG).toBe("shared/backlog");
       }
     });
 

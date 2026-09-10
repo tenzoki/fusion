@@ -38,25 +38,34 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 //
 // A guard, not a fixer: it reads and asserts, it never rewrites a prompt.
 //
-// **The `[ -x ]` guard on the helper call is asserted by the sibling and is not
-// re-asserted here.** `bin/fusion-turn-budget` prints both values out of one
-// guarded block, so `turn-budget-lint.test.ts` "calls the helper at Setup,
-// behind the [ -x ] guard" already covers this value's read; a second copy would
-// be one more assertion to keep in step with the block's wording for no added
-// coverage. What that case cannot see is whether the block's SECOND line is read
-// at all, and that is the one thing the coupling case below adds.
+// **THE READER IS GONE, AND ONE CASE WENT WITH IT (2026-09-10).** Both values
+// came out of `bin/fusion-turn-budget`, which was deleted with the Turn budget
+// it also resolved. `turn-budget-lint.test.ts` — the sibling that pinned the
+// guarded call — went with its own subject in the same commit, and the case
+// here that pinned the block's SECOND output line went with it in the next: a
+// coupling assertion over a program that does not exist pins nothing, and
+// keeping it would only have asserted that a prompt still names a deleted path.
+//
+// `orchestrator.dispatchMinutes` is still a live configuration leaf and now has
+// no program that resolves it for a session. Whether it gets a reader again or
+// is retired beside `maxTurns` is open, filed as issue
+// `260910-1033_*_deleting-the-turn-budget-helper-leaves-the-dispatch-bound-with-no-reader.md`.
+// Until that is answered the prompt states the bound as `<dispatch-minutes>`,
+// says plainly that nothing resolves it, and passes no `**Stop by:**` line — so
+// the three cases below are exactly the coverage that still means something:
+// the figure may not return to the prose, and the bound must still be spoken
+// about under the name a reader would resolve it to.
 // ---------------------------------------------------------------------------
 
 const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
 
 const ORCHESTRATOR = "agents/orchestrator.md";
 const SETUP_SKILL = "skills/setup/SKILL.md";
-const HELPER = "bin/fusion-turn-budget";
 
 /** The name the prompt holds the resolved bound under, once Setup has read it. */
 const PLACEHOLDER = "<dispatch-minutes>";
 
-/** The helper's second output line — the key the prompt reads the bound out of. */
+/** The configuration key, named in the failure text so a reader can find it. */
 const OUTPUT_KEY = "dispatch_minutes";
 
 /**
@@ -74,8 +83,8 @@ const REMEDY =
   '{"orchestrator": {"dispatchMinutes": <n>}} in that project\'s fusion.json — nothing in ' +
   "this repository changes. For FUSION'S OWN DEFAULT, edit DEFAULTS.orchestrator.dispatchMinutes " +
   "in hooks/lib/config.ts, which is the one place it is written. In neither case does a number " +
-  `belong in an agent prompt: the prompt reads the resolved value through ${HELPER} at Setup ` +
-  `and names it as ${PLACEHOLDER}. Modelled on issue 260811-1712, which is the same defect on ` +
+  "belong in an agent prompt: the prompt names the bound as " +
+  `${PLACEHOLDER}, whatever resolves it. Modelled on issue 260811-1712, which is the same defect on ` +
   "the Turn budget.";
 
 /**
@@ -168,27 +177,6 @@ describe("the dispatch bound is not a number in a prompt", () => {
     ).toBe(true);
   });
 
-  it("reads the bound out of the helper's second output line", () => {
-    // The coupling the sibling's [ -x ] case cannot see. That case pins the
-    // guarded call; this one pins that the call's SECOND value is read, so the
-    // bound cannot come from anywhere else — including from a figure someone
-    // decided was reasonable.
-    const text = read(ORCHESTRATOR);
-    expect(
-      text.includes(`if [ -x "$FUSION_PLUGIN_ROOT/${HELPER}" ]`),
-      `${ORCHESTRATOR} must keep the guarded ${HELPER} block — it resolves the dispatch bound as ` +
-        `well as the Turn budget, and the [ -x ] guard is what keeps an installed copy without ` +
-        `the helper from exiting 127 at Setup. (Asserted for the budget in ` +
-        `turn-budget-lint.test.ts; named again here because this value depends on the same ` +
-        `block.)${REMEDY}`,
-    ).toBe(true);
-    expect(
-      text.includes(OUTPUT_KEY),
-      `${ORCHESTRATOR} must name ${OUTPUT_KEY}, the helper's second output line. A prompt that ` +
-        `calls the helper and never reads that line has no resolved bound, and the next author ` +
-        `who needs one will write a figure.${REMEDY}`,
-    ).toBe(true);
-  });
 });
 
 describe("the detector is measured on the sentences it exists to catch", () => {
