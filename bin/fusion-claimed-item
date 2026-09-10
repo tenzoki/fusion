@@ -1,0 +1,231 @@
+#!/usr/bin/env bash
+# fusion-claimed-item — which work item this checkout has claimed.
+#
+# Usage:
+#   fusion-claimed-item
+#
+# Takes no arguments. Output on stdout, in the KEY=value shape
+# `bin/fusion-paths` established: either both lines below, or nothing at all.
+#
+#   ITEM=circles/<stamp>-<slug>/<stamp>-<slug>.md
+#   CONTAINER=circles/<stamp>-<slug>
+#
+#   ITEM       the item record, workbench-relative.
+#   CONTAINER  the directory holding it, workbench-relative. Derivable from
+#              ITEM and printed anyway, so no caller re-implements the dirname.
+#
+# Every reason on stderr, one line each, plus whatever `bin/fusion-identity`
+# writes there: its stderr is passed through rather than swallowed, and a
+# caller that wants a quiet Setup redirects it.
+#
+# Exit codes:
+#   0  answered. Either both lines are printed, naming the one item this
+#      checkout has claimed, or NOTHING is printed and no item is in scope.
+#      An empty answer is a real answer: it is what puts a consumer's writes in
+#      the shared store, and it is not a degradation.
+#   1  the caller stops. Two causes, both named on stderr: no fusion workbench
+#      above the working directory, or `bin/fusion-identity` exiting 1, which
+#      is that helper's own only stop code (a git work tree whose `user.name`
+#      or `user.email` is unset, or no runnable `git` at all).
+#   2  usage error: an argument was given, or -h/--help. Nothing on stdout.
+#   3  the item in scope cannot be determined. Nothing on stdout, and NEVER a
+#      fall back to the shared store. Two causes, and the message says which:
+#      two or more items carry a claim naming this checkout, every one of them
+#      named on stderr; or this checkout's own identifier could not be read
+#      inside a git work tree (`bin/fusion-identity` exiting 3 or 5, or that
+#      helper missing from the install).
+#
+# ---------------------------------------------------------------------------
+# One criterion, one implementation
+#
+# "Which item has this checkout claimed" is asked from two places in the same
+# Setup step: `bin/fusion-paths`, to decide which container a write goes into,
+# and `bin/fusion-rules`, to derive the context-manifest topic. It was
+# implemented in the second of those and about to be implemented again in the
+# first. Two implementations of one criterion drift, and the drift is invisible
+# because each answers plausibly on its own; this program exists so that there
+# is one answer to compare against, not two to reconcile. `bin/fusion-rules`
+# deliberately does not reach it through `bin/fusion-paths`: that resolver
+# derives a key set from a CONSUMER PROMPT and `fusion-rules` has no prompt of
+# its own, so a third helper is the only place the two can share.
+#
+# The store is named here rather than resolved through `bin/fusion-paths`, for
+# that same reason and no other: this program is not a consumer with a prompt to
+# derive a key set from. `rules/fusion-workbench-conventions.md`
+# `## Backlog entries — work items` is the definition of both the store and the
+# record's name, and this program applies it rather than restating it.
+#
+# ---------------------------------------------------------------------------
+# Ambiguity is refused, never resolved
+#
+# Nothing in the store enforces at most one claim per checkout: two claimed
+# items is a state the store can reach, so this program may not assume it away.
+# It could take the first, which is what `bin/fusion-rules` did while it carried
+# its own scan, and there that is tolerable, because a wrong topic costs a few
+# optional context units. Here it is not: the same wrong pick files a plan, a
+# defect record or a decision silently into the other item's container, which is
+# the same silent-wrong-place failure `bin/fusion-paths` refuses one step later
+# by exiting 4 rather than emitting an empty `KEY=`. So exit 3 names every
+# claimed item and resolves nothing. Binding record:
+# `260910-2145_*_how-does-the-resolver-learn-which-work-item-is-in-scope.md`.
+#
+# ---------------------------------------------------------------------------
+# Exit 3 is unknown scope, and a tree that is not a git work tree is not it
+#
+# The two look alike and are not, which is the distinction the whole table turns
+# on. An identifier that could not be read INSIDE a git work tree means the
+# question has an answer this program failed to obtain: falling back to the
+# shared store there would file an item's work outside it and say nothing. A
+# project that is not a git work tree at all takes no part in the multi-checkout
+# arrangement the claim field exists for, so no item in scope is the TRUE answer
+# and it reaches exit 0. That is why `bin/fusion-identity` splits its 3 and 5
+# from its 4, and why this program must not merge them back.
+#
+# The consequence is stated rather than smoothed: in a tree that is not a git
+# work tree, a `**Claim:**` somebody wrote by hand is not read, even though the
+# checkout identifier there is minted and readable. That is the cost of exit 4
+# meaning one thing.
+#
+# ---------------------------------------------------------------------------
+# Another checkout's claim is not a match, and not an error
+#
+# The comparison is equality on the eight hex characters, so an item another
+# checkout holds simply does not match here. It is not a conflict to report and
+# not a scope to inherit: that checkout's writes go into its container, this
+# one's go into whatever this one holds, or the shared store. The claim travels
+# with git and the identifier does not, so both read one store and reach
+# different answers out of it, with nothing per-checkout to reconcile.
+#
+# ---------------------------------------------------------------------------
+# What a caller owes
+#
+# Guard the call with `[ -x ]`: an installed copy may predate this helper, and
+# a bare call is exit 127 at a consumer's own first step (decision
+# `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`).
+# On the miss, and on any non-zero, a caller resolves NO item rather than
+# guessing one: `bin/fusion-rules` then derives no topic, and `bin/fusion-paths`
+# passes the 1 and the 3 straight through instead of answering with the shared
+# store. The one thing no caller may do with a non-zero is treat it as "none
+# claimed": that is exit 0 with no output, and it is a different answer.
+
+set -eu
+
+usage() {
+  cat >&2 <<'USAGE'
+usage: fusion-claimed-item
+Prints ITEM= and CONTAINER= for the one work item this checkout has claimed, or
+nothing when it has claimed none. See the header of this script for the
+exit-code table; exit 3 is unknown scope and never a fall back to the shared
+store.
+USAGE
+}
+
+if [ "$#" -ne 0 ]; then
+  usage
+  exit 2
+fi
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# --- the workbench ----------------------------------------------------------
+
+if [ ! -x "$here/fusion-workbench-root" ]; then
+  printf 'fusion-claimed-item: %s is missing; the plugin install is incomplete.\n' \
+    "$here/fusion-workbench-root" >&2
+  exit 1
+fi
+
+root="$("$here/fusion-workbench-root" 2>/dev/null || true)"
+if [ -z "$root" ]; then
+  printf 'fusion-claimed-item: no fusion workbench found above %s. Run /fusion:setup at the project root.\n' \
+    "$(pwd)" >&2
+  exit 1
+fi
+
+# --- this checkout ----------------------------------------------------------
+#
+# Established before the store is read, because every outcome below except the
+# scan itself is decided by which code the identity helper returned.
+
+if [ ! -x "$here/fusion-identity" ]; then
+  printf 'fusion-claimed-item: %s is missing, so this checkout cannot be identified and the item in scope is unknown.\n' \
+    "$here/fusion-identity" >&2
+  exit 3
+fi
+
+set +e
+id_out="$("$here/fusion-identity")"
+id_rc=$?
+set -e
+
+case "$id_rc" in
+  0) ;;
+  1)
+    printf 'fusion-claimed-item: bin/fusion-identity stopped, for the reason it printed above. Nothing is resolved.\n' >&2
+    exit 1
+    ;;
+  4)
+    printf 'fusion-claimed-item: not a git work tree, so no claim is held here and no item is in scope.\n' >&2
+    exit 0
+    ;;
+  3|5)
+    printf 'fusion-claimed-item: this checkout identifier could not be read inside a git work tree, so the item in scope is unknown. Nothing falls back to the shared store.\n' >&2
+    exit 3
+    ;;
+  *)
+    printf 'fusion-claimed-item: bin/fusion-identity exited %s, which this program does not recognise, so the item in scope is unknown.\n' \
+      "$id_rc" >&2
+    exit 3
+    ;;
+esac
+
+checkout="$(printf '%s\n' "$id_out" | sed -n 's/^CHECKOUT=//p' | head -n 1)"
+if [ -z "$checkout" ]; then
+  # Exit 0 from the identity helper promises the line. Reaching here means the
+  # promise was broken, which is unknown scope and not an empty answer.
+  printf 'fusion-claimed-item: bin/fusion-identity exited 0 without a CHECKOUT line, so the item in scope is unknown.\n' >&2
+  exit 3
+fi
+
+# --- the scan ---------------------------------------------------------------
+#
+# A container directory whose own name, plus `.md`, is the record inside it.
+# Both head fields are tested, because a Status that says claimed with no Claim
+# beside it names no holder, and a Claim left on a `done` item names a holder
+# who has finished. `find` drives the loop so an empty or absent store yields no
+# input rather than an unexpanded glob.
+
+store="$root/fusion-workbench/circles"
+matches=''
+n=0
+
+if [ -d "$store" ]; then
+  while IFS= read -r dir; do
+    [ -n "$dir" ] || continue
+    base="$(basename "$dir")"
+    record="$dir/$base.md"
+    [ -f "$record" ] || continue
+    grep -qE '^\*\*Status:\*\*[[:space:]]*claimed[[:space:]]*$' "$record" 2>/dev/null || continue
+    grep -qE "^\*\*Claim:\*\*[[:space:]]*$checkout([[:space:]]|$)" "$record" 2>/dev/null || continue
+    matches="$matches$base
+"
+    n=$((n + 1))
+  done <<EOF
+$(find "$store" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+EOF
+fi
+
+if [ "$n" -eq 0 ]; then
+  exit 0
+fi
+
+if [ "$n" -gt 1 ]; then
+  printf 'fusion-claimed-item: %s items carry a claim naming this checkout (%s), so which one is in scope cannot be determined:\n' \
+    "$n" "$checkout" >&2
+  printf '%s' "$matches" | awk '{ printf "  circles/%s/%s.md\n", $0, $0 }' >&2
+  printf 'fusion-claimed-item: nothing is resolved and nothing falls back to the shared store. Leave one **Status:** claimed and set the others back to open.\n' >&2
+  exit 3
+fi
+
+item="$(printf '%s' "$matches" | head -n 1)"
+printf 'ITEM=circles/%s/%s.md\nCONTAINER=circles/%s\n' "$item" "$item" "$item"

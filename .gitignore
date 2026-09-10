@@ -47,6 +47,7 @@ bin/*
 !bin/fusion-citation-sweep
 !bin/fusion-forum
 !bin/fusion-plan-size
+!bin/fusion-claimed-item
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
