@@ -31,3 +31,11 @@ passing. B3's own report refused to move the baseline and returned the choice, w
 
 **Acceptance test:** session 2's four steps are all committed with `cd hooks && npm test` green, and
 the route taken is named in the plan so a later reader can tell a decision from a drift.
+
+---
+Reconciliation (260910-0620, reconciler, Turn 2): open, correctly filed. Verified the closing
+sentence's inference was falsified by the coder's own follow-on issue
+(`260910-0445_*_deleting-a-test-file-at-its-baseline-frees-no-head-room-so-the-turn-budget-cut-cannot-pay-the-bound.md`);
+`npx vitest run surface-growth-bound` is green at HEAD `d7b701d2` (R1+R2 bought the head-room instead).
+Fix part 1 of the cross-referenced issue (correct the closing sentence) is not yet done — the
+sentence still stands as filed. Still open.

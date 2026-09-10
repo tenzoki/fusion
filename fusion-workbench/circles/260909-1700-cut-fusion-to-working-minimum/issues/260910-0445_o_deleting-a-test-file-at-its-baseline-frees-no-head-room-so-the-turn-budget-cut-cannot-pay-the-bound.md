@@ -89,3 +89,11 @@ Two parts, and the second depends on a ruling rather than on this record.
 **Acceptance test:** `npx vitest run surface-growth-bound` from `hooks/` reports a figure that moves
 when a baselined file is deleted, or the instrument's header states in as many words that it does
 not.
+
+---
+Reconciliation (260910-0620, reconciler, Turn 2): open, correctly filed. The Circle record's Turn 2
+entry and the plan's own note both confirm the ruled Turn-budget-forward step was dispatched and
+returned unexecuted once this measurement stood; no file changed for it, matching this issue's own
+claim. Neither fix (correct the closing sentence elsewhere, decide the refund question in
+`growth()`) has landed. Still open, and it returns to session 3's C1 per the plan and the Circle
+record.

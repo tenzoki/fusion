@@ -13,3 +13,7 @@ unmet — the plan's `## Current State` line still reads "against a `session_sta
 97 before per-checkout scoping" and step A1's population sentence is unchanged. Correctly carries
 `_o_`; not misfiled, since its resolution is "restate the sentence," a code/data-adjacent text fix
 for the planner or orchestrator, not an open question needing a ruling.
+
+Reconciliation (260910-0620, reconciler, Turn 2): still open at HEAD `d7b701d2`. Session 2 touched
+no line of the plan's `## Current State` section; `grep -n "population of 97"` on the plan still
+returns the same line. Correctly carries `_o_`.

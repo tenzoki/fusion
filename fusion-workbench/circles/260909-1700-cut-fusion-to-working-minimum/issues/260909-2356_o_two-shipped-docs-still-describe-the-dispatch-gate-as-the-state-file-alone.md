@@ -9,3 +9,9 @@ Step B2 widened the machine-row gate in `hooks/lib/orchestrator-events.ts` from 
 **Why it matters more than an ordinary stale sentence.** `README-hooks.md`'s claim that a dispatch "writes nothing under `.guard-state/`" is now false on one path: a dispatch payload with no session identifier writes one `guard_advisory` there. A reader debugging an unexpected advisory row has no way from that document to the condition that produced it.
 
 **Acceptance.** All three passages describe the disjunction and name `eventRowsAdmitted` as the predicate; `README-hooks.md`'s zero-guard-state claim carries the advisory exception. `npm test` stays green — `derivable-enumerations-lint` holds the `hooks/lib` table in set equality with `hooks/lib/*.ts`, and no module was added or removed here, so the row's presence is not at issue, only its text.
+
+---
+Reconciliation (260910-0620, reconciler, Turn 2): still open at HEAD `d7b701d2`. Verified: `grep -n
+"agentstate.yaml exists" README-hooks.md rules/commit-lock.md` still returns all three passages named
+above, unchanged by B1–B4. Correctly carries `_o_` — the fix is a docs pass B2 did not include in its
+own file list.

@@ -1,7 +1,7 @@
 # Implementation Plan: cut fusion to a working minimum
 
 **Date:** 2026-09-09
-**Status:** In Progress (session 1 of 4 complete)
+**Status:** In Progress (session 2 of 4 complete)
 **Spec:** `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`, C1 to C9. Later rulings bind and one supersedes the spec's text: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3) and the two records this plan files, `260909-1843_*_which-sentinel-replaces-the-state-files-existence-as-the-gate-on-machine-written-rows.md` and `260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md`.
 **Amended:** 2026-09-09, against the two answers at gate G1. `260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md`: the dashboard file does not survive and its information does, which added one field to step B3, one renderer to step B4, one check to step C0, and turned C1's re-sourcing into a removal. `260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md`: report only, which resolved step C6's conditional to a stdout verdict. No step was renumbered and no session boundary moved.
 
@@ -176,7 +176,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
    - Dependencies: none
    - Verification: `hooks/lib/__tests__/guard-state-shape.test.ts` and the guard harness gain a case with no `agentstate.yaml` and a payload session id, asserting the row is written; and a case with neither, asserting one advisory and no silent drop. `npm test` green.
 
-6. **B3: the byte counts and the claimed work item ride the `task_start` row**
+6. [DONE] **B3: the byte counts and the claimed work item ride the `task_start` row**
    - Executor: `coder`
    - Files: `hooks/lib/orchestrator-events.ts`, `hooks/guard.ts`, a new `hooks/lib/dispatch-bytes.ts`
    - Changes: on each dispatch, add `bytes_prompt`, `bytes_rules`, `bytes_claude_md` and `bytes_total` to the `task_start` row. The two file counts are `statSync`. The rule count runs `bin/fusion-rules <agent>` **once per (agent, plugin root, newest mtime under the rule directories)** and memoises the result in `.guard-state/rule-sizes.json`; there is no second implementation of the emission list, which is what `rules/critical-stance.md` §2 forbids. A helper that is absent or non-zero makes `bytes_rules` and `bytes_total` **absent keys, never zero**, and emits one advisory. Per-project arming: the first row a project writes records its own totals under `.guard-state/byte-baseline.json`; later rows carry `bytes_delta` against it, and where none is armed the reader says so rather than comparing against fusion's.
@@ -326,6 +326,43 @@ until A3's, so this is the first reconciliation pass over it. `workbench-citatio
 this Circle's own numbered steps and is not claimed as one. Top-level `**Status:**` moved from
 `Draft` to `In Progress (session 1 of 4 complete)`, since no step in Sessions 2-4 has started.
 No drift found between what the plan claims for session 1 and what is on disk.
+
+**260910-0620 (reconciler, session b47820a4, Turn 2):** Session 2's four steps verified against HEAD
+`d7b701d2`. B1 → `0160c449` (`hooks/session-start.ts` emits one `session_start` row per session
+carrying `session_id`, `person`, `checkout`, `git_head_at_start`, `domain` and `writer`;
+`hooks/lib/orchestrator-events.ts` gains the row's schema and the model-written row's coexistence
+logic). B2 → `e257782d` (`eventRowsAdmitted(root, sessionId)` in `hooks/lib/orchestrator-events.ts`
+line 195 disjoins the payload session identifier with the pre-existing `orchestratorSessionInFlight`
+call; both arms pinned independently by mutation per the commit message). B3 → `9c4dbdbb` (`task_start`
+rows gain `bytes_prompt`, `bytes_rules`, `bytes_claude_md`, `bytes_total`, `bytes_delta` and
+`work_item`, all absent-not-zero on an unmeasurable read; `hooks/lib/dispatch-bytes.ts` is the new
+file the step named). B4 → `34cd5bc2` (`bin/fusion-review-coverage`/`hooks/lib/review-coverage.ts`,
+`bin/fusion-session-domain`, `bin/fusion-staging-drift` and `bin/monitor`'s two panels all read
+`session_start` rows ahead of `agentstate.yaml`, confirmed by grep against each file; the monitor's
+own dashboard and state-panel code read the event log with the file kept as fallback, matching the
+step's text that nothing is removed here). Step 6 (B3) was marked in this pass — it carried no
+`[DONE]` despite being fully committed at `9c4dbdbb`, the same drift class the session-1 pass found
+on A1–A3; corrected above. Steps 4, 5 and 7 were already marked `[DONE]` correctly. Top-level
+`**Status:**` moved from "session 1 of 4 complete" to "session 2 of 4 complete", above.
+
+Two steps outside the plan's own text, R1 (`9c4dbdbb`, bundled into the B3 commit) and R2
+(`c925fd9d`), cut 497 lines of duplicated hook-test comment prose. **The plan does not name R1 or
+R2 anywhere** — `grep -n "R1\|R2\b"` over this file returns nothing — so they carry no step number
+and no `[DONE]` marker to set; they are recorded only in the Circle record's Turn 2 log entry and in
+issue `260910-0020_o_session-2s-own-additions-do-not-fit-the-hook-test-growth-bound-and-the-plan-does-not-say-so.md`,
+which is itself the record of the gap. That issue and its follow-on
+`260910-0445_o_deleting-a-test-file-at-its-baseline-frees-no-head-room-so-the-turn-budget-cut-cannot-pay-the-bound.md`
+remain open at HEAD — neither is resolved by anything in session 2, and both are correctly still
+`_o_`. `cd hooks && npm test` is green at 987/987 including `surface-growth-bound` (12/12) at HEAD,
+confirming R1+R2 bought back the head-room B3 spent. `bin/fusion-citation-check` reports
+`verdict=clean` over the whole workbench; nothing this Turn's writes touch is among the residual
+pre-existing violations. The ruled-but-unexecuted step (pulling the Turn-budget removal forward out
+of C1) changed no file on disk, matching `d7b701d2`'s own verification line ("no code or data changed
+by this commit").
+
+The two `_a_`→`_i_` decision transitions in `d7b701d2` are judged separately, see the session history
+file's `## Coherence` section. No drift found between what the plan claims for session 2 and what
+is on disk, once step 6's marker is corrected.
 
 ## Data Structures
 
