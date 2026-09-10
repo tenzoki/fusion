@@ -272,7 +272,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
       disappearing, which the step did not specify: it is the ledger the apply pass reads back, so
       `/fusion:curate` rejects every ledger until C4 brings that body across.
 
-14. **C6: the record obligation becomes conditional and a plan gets a ceiling**
+14. [DONE] **C6: the record obligation becomes conditional and a plan gets a ceiling**
     - Executor: `coder`
     - Files: `rules/fusion-workbench-conventions.md`, the surviving `agents/*.md`, a new `bin/fusion-plan-size` with its `hooks/lib/` half
     - Changes: replace the per-commit and per-dispatch filing obligation with the five conditions of the spec's C5 table, one per record kind, non-overlapping. State that the commit message is the per-commit record and that a one-line fix may be committed with no record file. Add the plan-size ceiling as a stdout verdict and nothing else, per G1's second answer: `bin/fusion-plan-size` prints a `KEY=value` block and one `verdict=` line over the live plans, carries the ceiling in no exit code, and is wired into no test and no pipeline. It joins `bin/fusion-staging-drift`, `bin/fusion-review-coverage` and `bin/fusion-citation-check`, none of which has been promoted to a gate. **No `hooks/lib/__tests__/` bound is added.** No plan has a measured reader, so a bound here would be the first in this cut enforced without one, which is the shape the spec refuses everywhere else.

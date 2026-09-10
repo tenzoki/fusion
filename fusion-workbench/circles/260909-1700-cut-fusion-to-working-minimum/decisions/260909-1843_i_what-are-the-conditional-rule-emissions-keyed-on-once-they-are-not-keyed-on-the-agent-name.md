@@ -58,3 +58,6 @@ by either, and changing seven keys to fix one measured overage is the additive t
 
 ---
 Answered: 260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md `## Question` — option 1, scoped to `user-facing-output.md`: an optional `--audience=user` argument to `bin/fusion-rules`, sourced from an `**Audience:**` dispatch parameter, with the existing agent-name case kept as the fallback for the three unconditionally user-facing roles. Ruled by planner under the spec's `## Open for Planner`; unrealised until step C7 of `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md` commits.
+
+---
+Implemented: abf569b8 — `bin/fusion-rules` takes `--audience=user` from an `**Audience:**` dispatch parameter, with the `IS_USER_FACING_AGENT` name list kept as the fallback for orchestrator, editor and curator; the other eight conditional emissions stay keyed on the agent name. The record's count of seven was wrong in both directions and the commit states the corrected nine.

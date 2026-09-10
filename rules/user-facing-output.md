@@ -30,7 +30,7 @@ ASCII in chat (the terminal renders it); Mermaid only in files rendered elsewher
 
 ## Information architecture (in this order)
 
-The reply answers the question that was asked; what you noticed on the way is filed per `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing` and named in one line each.
+The reply answers the question that was asked; what you noticed on the way is filed where `rules/fusion-workbench-conventions.md` `## Record filing` says so, and named in one line each.
 
 1. **Action first.** The first line answers "what does the user do now?" — or states plainly that there is nothing to do.
 2. **Reason second.** One or two sentences, not a paragraph.

@@ -165,7 +165,7 @@ For each gap or ambiguity, formulate a concrete question with options. Categoriz
 
 Only surface behavioral, scope, and UX decisions. Flag technical decisions as "planner will determine" in the spec.
 
-**Decision-record discipline:** Behavioral / Scope / UX decisions that the user defers (rather than answers in the round) MUST be filed as decision records at `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`. Defects spotted during shaping go to `$OUT_ISSUE` as today. Read every directory in `$SCAN_DECISIONS` and `$SCAN_ISSUES` in your context-loading step so you don't refile something already tracked.
+**Decision-record discipline:** A behavioral, scope or UX decision the user defers rather than answers in the round is a decision record at `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md`, per the decision-record template in `fusion-workbench-conventions.md` and the decision row of its `## Record filing`. One answered in the round is a line of the spec and needs no file. Defects spotted during shaping go to `$OUT_ISSUE` as today. Read every directory in `$SCAN_DECISIONS` and `$SCAN_ISSUES` in your context-loading step so you don't refile something already tracked.
 
 ### 4. Involve the User
 

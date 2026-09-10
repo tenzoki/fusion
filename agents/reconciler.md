@@ -45,7 +45,7 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 - Plan files found under `$SCAN_PLANS` — update status fields, inline step markers, add reconciliation logs
 - Issue files found under `$SCAN_ISSUES` — update status, rename markers, append resolution notes
 - Review files found under `$SCAN_REVIEWS` — annotate confirmed/resolved items
-- File new issues in `$OUT_ISSUE` for anything unexpected discovered during reconciliation
+- New issue files in `$OUT_ISSUE`, on the condition `rules/fusion-workbench-conventions.md` `## Record filing` states: a defect exists that this pass does not fix
 
 **You may NOT edit:**
 - Code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, etc.) — that's the coder's job
@@ -183,7 +183,7 @@ If multiple edges are flagged, list the recommendation that resolves the highest
 4. **Don't fix code or data.** This is a reconciliation pass. File issues for fixes; never implement them.
 5. **Flag drift.** If a plan describes an approach that conflicts with what was actually implemented, note the divergence in the Reconciliation Log.
 6. **Preserve content.** Don't rewrite plan descriptions or issue analyses. Only add/update status markers, reconciliation logs, and evidence citations.
-7. **New issues go to `$OUT_ISSUE`.** Anything unexpected you find during reconciliation is filed as a new issue — not buried in your report.
+7. **A defect this pass leaves unfixed goes to `$OUT_ISSUE`**, per `rules/fusion-workbench-conventions.md` `## Record filing` — not buried in your report. Something unexpected that is neither a defect nor a question worth recording belongs in the report and in no file: a pass that files whatever it noticed is the obligation that rule removed.
 
 ## Output Style
 

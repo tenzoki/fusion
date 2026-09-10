@@ -175,18 +175,14 @@ Callers must distinguish the two: **exit 3 is the user's to fix, exit 4 is ours.
 
 ## Issues vs Decisions — when to use which
 
-A **defect** belongs in `issues/`. A **decision** belongs in `decisions/`. The distinction:
+A **defect** belongs in `issues/`, a **decision** in `decisions/`, and `## Record filing` below says when each is owed. What separates them is the resolution: "go fix it" is a defect, "decide and record" is a decision. A defect resolves to a fix in the tree, verifiable by reading a diff; a decision resolves to a recorded answer and, separately, to the implementation that realises it, which is why the two carry different marker vocabularies (`## State Markers — issues and planning`, `## State Markers — decisions`).
 
-| Defect | Decision |
-|---|---|
-| Something is wrong, broken, missing, or inconsistent. | A choice must be made between two or more options. |
-| Resolves to a code/data fix that can be verified by reading a diff. | Resolves to a recorded answer (decision record) and, separately, to implementation that realises the answer. |
-| Lifecycle: filed → fixed → closed. The fix and the closure are the same event. | Lifecycle: filed (open question) → answered (with pointer to where) → implemented (when the answer is realised in code/data) → optionally superseded later. The answer event and the implementation event are distinct. |
-| Examples: "term mapping is missing for entity X"; "test failure in pkg/foo"; "manifest doesn't validate". | Examples: "which IdP for v1?"; "should we adopt approach X or Y?"; "what is the cut decision for the platform?". |
+- Defects: "term mapping is missing for entity X"; "test failure in pkg/foo"; "manifest doesn't validate".
+- Decisions: "which IdP for v1?"; "should we adopt approach X or Y?"; "what is the cut decision for the platform?".
 
-**Decision rule for borderline items:** if the resolution is "go fix it" → defect; if the resolution is "decide and record" → decision. When in doubt, file as an issue and reclassify in the next reconciliation pass: that round-trip is cheap, the misfile cost is low.
+When in doubt, file as an issue and reclassify in the next reconciliation pass: that round-trip is cheap, the misfile cost is low.
 
-A **Circle** is a directory under `$OUT_CIRCLE`. Distinct from defect and choice point: a Circle is a unit of work bounded by a Directive + its Grounding + its Artifact (foundation V3 §2.1). When the resolution is "execute this Directive to closure," it's a Circle; when the resolution is "go fix it," it's an issue; when the resolution is "decide and record," it's a decision.
+A **Circle** is a directory under `$OUT_CIRCLE`, and it is neither: a unit of work bounded by a Directive + its Grounding + its Artifact (foundation V3 §2.1). "Execute this Directive to closure" is a Circle.
 
 This three-way distinction is about **what kind of thing** an artifact is. It is orthogonal to the Origin Rule, which decides **where** it goes. A defect is an issue whether it lands in `$OUT_ISSUE` or in `shared/issues/`.
 
@@ -408,27 +404,31 @@ answered, so a history pass has to open the body to learn otherwise.
 - When a review confirms a plan step, issue, or decision is done — the reviewing agent marks it.
 - When the user asks to close, defer, supersede, or reopen anything.
 
-## Issue and Decision Filing — MANDATORY
+## Record filing
 
-**Every defect, problem, inconsistency, concern, or TODO discovered during work MUST be written as a separate defect file. Every open question, choice point, or design fork MUST be written as a separate decision record. No exceptions.**
+**The commit message is the per-commit record.** It already exists, is already read, and travels with git rather than with the workbench. There is no per-commit and no per-dispatch filing obligation: a one-line fix is committed with its message and **no record file at all**, which is the normal case, not a lapse.
 
-This applies to:
-- Defects found during implementation, analysis, or review → defect
-- Inconsistencies in code, data, docs, or existing architecture → defect
-- Tech debt, dead code, stale docs, dangling references → defect
-- Open questions raised during shaping, planning, or analysis → decision
-- Choices the user has deferred or has not yet made → decision
-- Anything the user asks to track, note, or remember: choose kind per the issues-vs-decisions rule above
+A record file is written when the change carries something the diff and its message do not:
 
-**Where it goes** is the Origin Rule's answer, resolved for you: defects to `$OUT_ISSUE`, decisions to `$OUT_DECISION`. Both point into the active Circle when there is one and into `shared/` when there is not. The one judgment left to you is the one the Origin Rule names: did this arise from the active Directive, or did you merely find it nearby? If the latter, file it in the shared store even while a Circle is active.
+| Kind | Store | Filed when |
+|---|---|---|
+| issue | `$OUT_ISSUE` | a defect exists that this change does not fix |
+| decision | `$OUT_DECISION` | a choice was made whose reasoning a later reader would otherwise re-derive |
+| plan | `$OUT_PLAN` | work spans more than one dispatch, so an instruction must outlive the dispatch that received it |
+| review | `$OUT_REVIEW` | a review pass was run and found something |
+| analysis | `$OUT_ANALYSIS` | a question was studied and answered without changing anything |
 
-**Before writing, list what is already there.** One `ls` over the open (`_o_`) record names in every `$SCAN_ISSUES` store. Names only, never bodies: a costlier check gets skipped. A hit is a slug naming the same file or the same mechanism as yours. On a hit, append one line at the end of that record: `Also seen: YYMMDD-HHMM by <agent> — <one clause>`. No second file, no marker moves. **In doubt, write the new record**: a duplicate costs one merge, an unfiled defect costs the defect. This step never ends with nothing written.
+**The split is over statements, not over events**, which is what makes it disjoint: one statement falls in exactly one row, while one event may raise several. A review pass that finds a defect owes both a review and an issue, which is two answers rather than one filed twice; two files carrying the *same* statement is the duplication to refuse. The sixth branch completes the split and is the common one: no condition held, so nothing is filed. Binding: `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md` `### C5`.
 
-**NEVER put issues or decisions inside plan documents, review documents, analyses, code comments, chat output, or any other location.** Embedded items get lost. Each item is a separate file in its own store.
+**Where it goes** is the Origin Rule's answer, resolved for you by `bin/fusion-paths`: the active Circle when there is one, `shared/` when there is not, and a store whose key the resolver did not emit for you is a kind you do not write. The one judgment left is the Origin Rule's own: did this arise from the active Directive, or did you merely find it nearby? If the latter, use the shared store even while a Circle is active.
+
+**Before writing, list what is already there.** One `ls` over the open (`_o_`) record names in every `$SCAN_ISSUES` store — names only, never bodies, because a costlier check gets skipped. A hit is a slug naming the same file or mechanism as yours; append one line to that record, `Also seen: YYMMDD-HHMM by <agent> — <one clause>`, write no second file and move no marker. In doubt, write the new record: a duplicate costs one merge, an unfiled defect costs the defect.
+
+**A record that is owed is its own file.** Never put an issue or a decision inside a plan, a review, an analysis, a code comment or chat output. Embedded items get lost.
 
 **An issue states the defect, the evidence path, and the acceptance test — then stops.** Later passes re-read every record many times; narrative past the close-condition is recurring cost. Counts in it follow `rules/critical-stance.md` §5.
 
-**Filename:** `YYMMDD-HHMM_o_<topic>.md` (always `_o_` on creation, for either kind).
+**Filename:** `YYMMDD-HHMM_o_<topic>.md` (always `_o_` on creation, for issues and decisions alike).
 
 **Issue file format:**
 ```
@@ -441,8 +441,6 @@ This applies to:
 ```
 
 **Decision file format**: see the Decision Record Template below.
-
-Brief but precise: enough context to understand the item without the original conversation.
 
 ### Who filed it
 

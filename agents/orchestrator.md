@@ -388,12 +388,13 @@ After each completed task:
    <type>(<scope>): <summary>
 
    Task: <task ID>
-   Source: <path to source plan/issue file>
+   Source: <path to source plan/issue file — omit the line when the task came from no record>
 
    Co-Authored-By: Claude <noreply@anthropic.com>
    ```
    - `<type>`: `fix`, `feat`, `refactor`, `docs`, `chore`, `test` — conventional commits
    - `<scope>`: affected package or area (e.g., `ai`, `ontology`, `ui`, `pptx`)
+   - **This message is the record of what the commit did.** `rules/fusion-workbench-conventions.md` `## Record filing` puts a record file behind five conditions, and a task that meets none of them commits with no record file and no `Source:` line. Do not manufacture one to fill the field, and do not hold a commit back for a record nobody is owed. Write the body so a later reader needs nothing else.
    - Always create a new commit. Never amend.
    - **Why this is a rule and not a preference.** The measured defect is in `rules/commit-lock.md` `## Two measured defects behind this procedure`.
 4. **Assemble the staging list — every path written out in full.** Step 5 stages exactly the paths you name here, and the rule is a **shape**, not a list of banned flags: *every path passed to `git add` is one you wrote out yourself.* No `-A`, no `-u`, no directory argument, no glob, no `.`, and no list a command produced: a `$(git status …)` substitution is a glob with more steps, and it once staged a renamed record's deletion without its successor (`7ae6aae`). Stated that way you can check your own command before you run it, which "be explicit" is not. The list is the task-relevant files plus the `fusion-workbench/` tracking updates this task produced, and nothing else.

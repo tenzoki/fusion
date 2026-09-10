@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# fusion-plan-size — measure the live plans against the plan-size ceiling.
+#
+# Usage:
+#   fusion-plan-size [--ceiling <bytes>]
+#
+# Output on stdout, one KEY=value per line, then one line per live plan,
+# largest first:
+#
+#   anchor=workbench-root
+#   ceiling=40000
+#   plans=4
+#   over=3
+#   largest=57891
+#   total=195402
+#   skipped-specs=4
+#   verdict=over
+#     over      57891  circles/<dir>/planning/…_p_….md  (17891 over — …)
+#     under     33472  shared/planning/…_o_….md
+#
+# The corpus is live (_o_ / _p_) plans in every planning store, shaper specs
+# excluded and counted on `skipped-specs=`. A spec is not a plan and the ceiling
+# is not about it.
+#
+# Exit codes:
+#   0  the check ran. `verdict=` says what it found. A plan over the ceiling is
+#      NOT a non-zero exit, and `verdict=empty` is a real answer that reaches 0
+#      like the other two.
+#   1  usage error.
+#   2  no fusion workbench above the working directory; nothing to check.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "there are no plans to check" is an answer about the
+#      project, and a broken install must never be reported as one.
+#
+# ---------------------------------------------------------------------------
+# Why this exists, and what it deliberately does not do
+#
+# `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md` `### C5` removed the
+# per-commit and per-dispatch record obligation and kept one bound on what may
+# still be written: a plan is the fattest artifact in the store a dispatch is
+# pointed at, and a plan that needs more room is two plans.
+#
+# It reports and it gates nothing. The ceiling is carried in no exit code, and
+# no test and no pipeline step runs this program — ruled by the user at
+# `260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md`
+# (option 1): no plan has a measured reader, so a hard bound would be the first
+# in that cut enforced without one. It joins bin/fusion-staging-drift,
+# bin/fusion-review-coverage and bin/fusion-citation-check, none of which has
+# been promoted to a gate.
+#
+# The ceiling itself is a CHOSEN value and not a measured threshold; the
+# library header says what it was chosen against, and `--ceiling <bytes>`
+# re-reads the same corpus at any other number.
+#
+# The work is hooks/dist/plan-size.js, resolved relative to this script rather
+# than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run
+# their own build. node is already a hard requirement — the guard hooks are node
+# programs (hooks/hooks.json).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/plan-size.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-plan-size: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

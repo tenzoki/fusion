@@ -12,22 +12,22 @@
 # does not move any baseline and therefore never clears a bound.
 
 [agents bytes]
-  analyst.md 20934
+  analyst.md 21028
   bugfixer.md 10929
   coder.md 9591
-  coderev.md 8138
+  coderev.md 8457
   consultant.md 13855
   curator.md 34402
   editor.md 13309
   ontocoder.md 13260
-  ontorev.md 7073
-  orchestrator.md 94759
+  ontorev.md 7392
+  orchestrator.md 95213
   planner.md 19696
   playmaker.md 41906
-  reconciler.md 20946
-  shaper.md 28860
+  reconciler.md 21221
+  shaper.md 28956
   taskplanner.md 13542
-  total 351200
+  total 352757
 
 [skills bytes]
   archive/SKILL.md 25489
@@ -91,6 +91,7 @@
   monitor-warnings-panel.test.ts 1222
   path-literal-lint.test.ts 333
   paths.test.ts 31
+  plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
   playmaker-backlog-mandate-lint.test.ts 354
   portfolio-citation-form-lint.test.ts 158
@@ -106,4 +107,4 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 683
   workbench-citation-lint.test.ts 325
-  total 21941
+  total 22104
