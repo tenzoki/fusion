@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 # fusion-paths — resolve a consumer's workbench write and search targets
 #
-# Usage: fusion-paths <name>
+# Usage: fusion-paths <name> [<item-dir>]
 #
 # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md).
 # The two share one flat namespace: each consumer asks for its own keys under
 # its own name — `fusion-paths coder`, `fusion-paths memo`.
+#
+# <item-dir> names the work item in scope, as a directory name that must
+# already exist under circles/. It is how a dispatcher sends an agent into an
+# item other than the one this checkout holds. With no second argument the item
+# in scope is this checkout's own claim, read through bin/fusion-claimed-item —
+# the single implementation of that criterion, which bin/fusion-rules also
+# calls. This script does not re-derive it.
 #
 # Prints one KEY=value line per emitted key on stdout. The single resolution
 # point for the workbench layout: no agent prompt and no skill body hard-codes
@@ -27,30 +34,49 @@
 #   WORKBENCH   absolute path to fusion-workbench/
 #   everything else  workbench-relative
 #
-# Exit codes (0/1/2 are the shape of bin/fusion-rules; 4 is this resolver's
-# own). Callers key on the code, so no code carries two meanings:
+# Exit codes (0/1/2 are the shape of bin/fusion-rules; 3 and 4 are this
+# resolver's own). Callers key on the code, so no code carries two meanings:
 #   0  success
-#   1  usage error (missing name, more than one argument), or no workbench
-#      found above pwd
+#   1  usage error (missing name, more than two arguments, or an <item-dir>
+#      that names no directory under circles/ — a caller's mistake, not a fault
+#      in the workbench), or no workbench found above pwd
 #   2  unknown name (no such agent and no such skill)
+#   3  the item in scope cannot be determined: this checkout holds two or more
+#      claimed items, or its own identifier could not be read inside a git work
+#      tree. No output, and NEVER a fall back to shared/ — that answer is exit
+#      0, and it is a different answer.
 #   4  internal error: the prompt names a key this resolver cannot order or
 #      value, or one name is both an agent and a skill
 #      — a fusion BUG. The user cannot fix it by touching the workbench, and
 #      must not be told to (see rules/fusion-workbench-conventions.md
 #      "## Path Resolution" → Exit codes).
 #
-# THERE IS NO EXIT 3. It said .active-circle was corrupt or orphaned, and it
-# went with the pointer when the Circle container was cut. bin/fusion-rules
-# still exits 3, for a malformed rules/context-manifest.yaml: read a 3 against
-# the helper that returned it, never against this one.
+# EXIT 3 IS UNKNOWN SCOPE AND NOTHING ELSE. It is not the old orphaned-pointer
+# code wearing a new meaning: that one said .active-circle was corrupt, and it
+# went with the pointer. A caller that keys on the number gets the meaning the
+# conventions state and no other. A project that is not a git work tree takes
+# no claim at all, so no item in scope is the TRUE answer there and it exits 0
+# into shared/ — which is why bin/fusion-identity splits its 3 and 5 from its 4
+# and why neither this script nor bin/fusion-claimed-item merges them back.
+# bin/fusion-rules also exits 3, for an unrelated reason, a malformed
+# rules/context-manifest.yaml: read a 3 against the helper that returned it,
+# never across the two.
 #
 # Resolution rules (from the conventions' "## Path Resolution"):
-#   - There is ONE store per artifact kind and it lives under shared/. Every
-#     OUT_* points there, always; no state is read and nothing selects between
-#     candidates, so a consumer needs no branch and there is no "nothing
-#     active" case to handle.
-#   - Every SCAN_* names the ONE store its OUT_* names. A SCAN_* value is a
-#     single directory, and a consumer that searches it has searched the kind.
+#   - Every OUT_* points into the container of the item in scope, and into
+#     shared/ when there is none. That is the Origin Rule stated executably:
+#     the placement question is answered once, here, at Setup, so a consumer
+#     carries no branch and "no item in scope" is an answer it receives rather
+#     than an error it has to handle.
+#   - Every SCAN_* names BOTH stores for its kind, the container first and the
+#     shared one second, and collapses to the shared one alone when no item is
+#     in scope. An artifact filed under a directive is the same kind as one
+#     filed without, so a consumer that read only the first value would report
+#     a clean pass over half the corpus.
+#   - Three kinds are unconditionally shared, because no container holds them:
+#     consult/, memos/ and forum/ answer to nobody's directive. And circles/ IS
+#     the container store, so OUT_BACKLOG and SCAN_BACKLOG name it whole rather
+#     than naming anything inside one container.
 #   - OUT_HISTORY and SCAN_HISTORY are LEGACY. The history store is closed to
 #     writes (rules/fusion-workbench-conventions.md "## Session history"): no
 #     agent prompt names either key, the existing corpus stays on disk and stays
@@ -131,13 +157,23 @@ set -eu
 
 NAME="${1:-}"
 if [ -z "$NAME" ]; then
-  echo "Usage: $0 <name>   # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md)" >&2
+  echo "Usage: $0 <name> [<item-dir>]   # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md); <item-dir> is a work item's directory under circles/" >&2
   exit 1
 fi
 
-if [ "$#" -gt 1 ]; then
-  echo "fusion-paths: expected exactly one argument (<name>), got $#. The resolver reads no workbench state and selects between no candidates, so there is nothing a second argument could name." >&2
+if [ "$#" -gt 2 ]; then
+  echo "fusion-paths: expected at most two arguments (<name> [<item-dir>]), got $#." >&2
   exit 1
+fi
+
+# The second argument is present or absent, and an empty string is neither: it
+# would read as absent and silently resolve the claim instead of the item the
+# caller meant to name. `$#` is what tells them apart.
+ITEM_ARG=""
+HAVE_ITEM_ARG=0
+if [ "$#" -eq 2 ]; then
+  HAVE_ITEM_ARG=1
+  ITEM_ARG="$2"
 fi
 
 # ---------------------------------------------------------------------------
@@ -222,21 +258,133 @@ fi
 WORKBENCH="$PROJECT_ROOT/fusion-workbench"
 
 # ---------------------------------------------------------------------------
-# 3. Resolve values. One kind, one store: an OUT_* key and its matching SCAN_*
-#    name the same directory, so the table below is one line per kind and
-#    there is no branch anywhere in it.
+# 3. Resolve the item in scope. This is the whole of the workbench state this
+#    script reads, and it is read once.
+#
+#    Two ways in. A caller that NAMES an item overrides everything: it is how a
+#    dispatcher sends an agent into an item other than the one this checkout
+#    holds, and the named directory must already exist, because a container is
+#    created by whoever files the item and not as a side effect of resolving a
+#    path. A caller that names none gets this checkout's own claim.
+#
+#    The criterion behind that claim is NOT implemented here. It lives once, in
+#    bin/fusion-claimed-item, which bin/fusion-rules calls from the same Setup
+#    step for its own reason. Two implementations of one criterion drift, and
+#    the drift is invisible because each answers plausibly on its own.
 # ---------------------------------------------------------------------------
+SCOPE=""
+
+if [ "$HAVE_ITEM_ARG" = 1 ]; then
+  # The argument is interpolated into a path, so the shape guard is a safety
+  # property and not a style rule — the same reason <name> carries one above.
+  case "$ITEM_ARG" in
+    ""|.|..|*/*|*[!A-Za-z0-9._-]*)
+      echo "fusion-paths: '$ITEM_ARG' is not a work item directory name. Pass the directory's own name, as it stands under circles/ — not a path, and not empty." >&2
+      exit 1
+      ;;
+  esac
+  if [ ! -d "$WORKBENCH/circles/$ITEM_ARG" ]; then
+    # Exit 1 and not 3: the scope is perfectly determinable, the caller just
+    # named an item that is not there. Nothing in the workbench is at fault and
+    # the user must not be sent to repair it.
+    echo "fusion-paths: no work item directory 'circles/$ITEM_ARG' under $WORKBENCH. The second argument names an item that must already exist." >&2
+    exit 1
+  fi
+  SCOPE="circles/$ITEM_ARG"
+else
+  CLAIMED="$SCRIPT_DIR/fusion-claimed-item"
+  if [ ! -x "$CLAIMED" ]; then
+    # Not shared/. A missing sibling means the question was never asked, which
+    # is unknown scope; answering shared/ here would file an item's work outside
+    # its container and say nothing. An install carries both helpers or neither,
+    # so this is an incomplete install rather than a version skew.
+    echo "fusion-paths: $CLAIMED is missing, so the item in scope is unknown. The plugin install is incomplete." >&2
+    exit 3
+  fi
+
+  # Its stderr is kept back on a clean answer and passed through on every other:
+  # "not a git work tree" is a TRUE answer and would otherwise print on every
+  # agent's Setup in a project that has no git, while the two failure messages
+  # name the files the user has to fix and must reach them.
+  CLAIM_ERR="$(mktemp)"
+  trap 'rm -f "$CLAIM_ERR"' EXIT
+  set +e
+  CLAIM_OUT="$("$CLAIMED" 2>"$CLAIM_ERR")"
+  CLAIM_RC=$?
+  set -e
+
+  if [ "$CLAIM_RC" -ne 0 ]; then
+    cat "$CLAIM_ERR" >&2
+  fi
+
+  case "$CLAIM_RC" in
+    0)
+      # Exit 0 with no output is "no item claimed", and it is an answer, not a
+      # degradation: it is what puts a consumer's writes in the shared store.
+      SCOPE="$(printf '%s\n' "$CLAIM_OUT" | sed -n 's/^CONTAINER=//p' | head -n 1)"
+      ;;
+    1)
+      # The helper's only stop code, passed straight through with its own reason
+      # already on stderr.
+      echo "fusion-paths: bin/fusion-claimed-item stopped, so nothing is resolved." >&2
+      exit 1
+      ;;
+    *)
+      # 3, and anything the helper may grow that this script does not know: both
+      # are unknown scope. The one thing no caller may do with a non-zero is
+      # read it as "none claimed" — that is exit 0, and it is a different
+      # answer.
+      echo "fusion-paths: the item in scope cannot be determined (bin/fusion-claimed-item exited $CLAIM_RC), so no path is resolved and nothing falls back to shared/." >&2
+      exit 3
+      ;;
+  esac
+fi
+
+# ---------------------------------------------------------------------------
+# 4. Resolve values. One kind, two candidate stores, and section 3 already
+#    decided between them: OUT_BASE is the container of the item in scope, or
+#    shared/ when there is none, so the write table below carries no branch of
+#    its own. The read table carries exactly one, in scan_value().
+# ---------------------------------------------------------------------------
+if [ -n "$SCOPE" ]; then
+  OUT_BASE="$SCOPE"
+else
+  OUT_BASE="shared"
+fi
+
+scan_value() {
+  # $1 = the kind's subdirectory name. Both stores when an item is in scope,
+  # container first; the shared store alone when none is. The order is part of
+  # the contract: a consumer that shows the first hit shows the item's own.
+  if [ -n "$SCOPE" ]; then
+    printf '%s %s' "$SCOPE/$1" "shared/$1"
+  else
+    printf '%s' "shared/$1"
+  fi
+}
+
 value_for() {
   case "$1" in
-    OUT_PLAN|SCAN_PLANS)          printf '%s' "shared/planning" ;;
-    OUT_HISTORY|SCAN_HISTORY)     printf '%s' "shared/history" ;;
-    OUT_ISSUE|SCAN_ISSUES)        printf '%s' "shared/issues" ;;
-    OUT_DECISION|SCAN_DECISIONS)  printf '%s' "shared/decisions" ;;
-    OUT_REVIEW|SCAN_REVIEWS)      printf '%s' "shared/reviews" ;;
-    OUT_ANALYSIS|SCAN_ANALYSES)   printf '%s' "shared/analyses" ;;
+    OUT_PLAN)                     printf '%s' "$OUT_BASE/planning" ;;
+    OUT_HISTORY)                  printf '%s' "$OUT_BASE/history" ;;
+    OUT_ISSUE)                    printf '%s' "$OUT_BASE/issues" ;;
+    OUT_DECISION)                 printf '%s' "$OUT_BASE/decisions" ;;
+    OUT_REVIEW)                   printf '%s' "$OUT_BASE/reviews" ;;
+    OUT_ANALYSIS)                 printf '%s' "$OUT_BASE/analyses" ;;
+    SCAN_PLANS)                   scan_value "planning" ;;
+    SCAN_HISTORY)                 scan_value "history" ;;
+    SCAN_ISSUES)                  scan_value "issues" ;;
+    SCAN_DECISIONS)               scan_value "decisions" ;;
+    SCAN_REVIEWS)                 scan_value "reviews" ;;
+    SCAN_ANALYSES)                scan_value "analyses" ;;
+    # Unconditionally shared: a consultation, a memo and a message answer to
+    # nobody's directive, so no container holds them and the Origin Rule has
+    # nothing to decide.
     OUT_CONSULT)                  printf '%s' "shared/consult" ;;
-    OUT_BACKLOG|SCAN_BACKLOG)     printf '%s' "shared/backlog" ;;
     OUT_FORUM|SCAN_FORUM)         printf '%s' "shared/forum" ;;
+    # The container store itself, whole. An item's record lives inside its own
+    # container, so the pair names circles/ and never one directory in it.
+    OUT_BACKLOG|SCAN_BACKLOG)     printf '%s' "circles" ;;
     # Two kinds have a write key and no read key, and it is the same criterion
     # both times: a key set restates the prompts, so a key no prompt names
     # restates nothing. Nothing reads memos — a memo is written for the user.
@@ -257,7 +405,7 @@ value_for() {
 }
 
 # ---------------------------------------------------------------------------
-# 4. Emit. Canonical order, filtered by the derived key set.
+# 5. Emit. Canonical order, filtered by the derived key set.
 # ---------------------------------------------------------------------------
 ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
        OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_FORUM

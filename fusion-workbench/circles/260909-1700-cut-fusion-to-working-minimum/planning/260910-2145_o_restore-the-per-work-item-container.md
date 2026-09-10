@@ -75,21 +75,21 @@ Four bounds can go red. Measured at `0c793392` plus the concurrent `coder`'s unc
 
 ## Implementation Steps
 
-1. **S1: the conventions restore the container, the Origin Rule and the resolution contract**
+1. [DONE] **S1: the conventions restore the container, the Origin Rule and the resolution contract**
    - Executor: `ontocoder`
    - Files: `rules/fusion-workbench-conventions.md`
    - Changes: (a) `## fusion-workbench Layout` gains `circles/<stamp>-<slug>/` with its own `planning/`, `issues/`, `decisions/`, `reviews/`, `analyses/`, and one clause saying the directory keeps a name whose concept left, citing the naming record. `shared/` keeps every store and loses `backlog/`. (b) A restored `## Origin Rule` section: the rule itself, the origin-not-durability reason, one worked example rather than three, and the two corollaries. The promotion-step paragraph does not come back; nothing in the current design has a promotion step, and it was the part that invited a second placement rule. (c) `## Path Resolution` → `### Contract` regains the optional second argument; `#### Exit codes` regains the 3 row with its new meaning, "the item in scope cannot be determined", and the "there is no exit 3" statement goes; the note that `bin/fusion-rules` exits 3 for its own reason stays. (d) The two invariants are rewritten: every `OUT_*` points into the container of the item in scope and into `shared/` when none is, which is the Origin Rule stated executably, and every `SCAN_*` names both the container store and the shared store for its kind. (e) `## Backlog entries — work items` re-homes the item into its container and states the filename twice over, directory and record, without touching a word of the head-field grammar or the four `**Status:**` values. (f) `## Filename Patterns` updates the work-item row's store.
    - Dependencies: none
    - Verification: `cd hooks && npx vitest run lib/__tests__/rules-emission-golden.test.ts` green, which is both byte bounds at once. Report the two deltas in the commit message. `bin/fusion-prose-metric rules/fusion-workbench-conventions.md` reported, not gated.
 
-2. **S2: one helper answers which item this checkout has claimed**
+2. [DONE] **S2: one helper answers which item this checkout has claimed**
    - Executor: `coder`
    - Files: `bin/fusion-claimed-item` (new), `hooks/lib/__tests__/fusion-claimed-item.test.ts` (new, subject to the line budget above)
    - Changes: prints `ITEM=<workbench-relative path to the record>` and `CONTAINER=<workbench-relative directory>` in the `KEY=value` shape its siblings use, or nothing. Exit table, total by construction: 0 with both lines when exactly one item is claimed; 0 with no output when none is; 2 usage; 3 when the answer is unknown, which is two inputs and not one, either two or more claimed items (both paths named on stderr) or `bin/fusion-identity` exiting 3 or 5 inside a git work tree; 1 when `bin/fusion-identity` exits 1, which is the only code that means stop. `bin/fusion-identity` exit 4 is **not** an error here: no claim can exist in a tree that is not a git work tree, so no item in scope is the true answer and it reaches exit 0. Resolve the workbench through `bin/fusion-workbench-root`. The header carries the authoritative usage block and exit table, as every sibling's does.
    - Dependencies: S1
    - Verification: a scratch workbench with zero, one and two claimed items gives the three answers; a claim naming another checkout gives none; `**Status:** claimed` with no `**Claim:**`, and a `**Claim:**` on a `done` item, each give none. Every exit code is reached by a case.
 
-3. **S3: `bin/fusion-paths` gains the per-work branch and the second argument**
+3. [DONE] **S3: `bin/fusion-paths` gains the per-work branch and the second argument**
    - Executor: `coder`
    - Files: `bin/fusion-paths`, `hooks/lib/__tests__/fusion-paths.test.ts`, `hooks/lib/__tests__/paths.test.ts`
    - Changes: signature becomes `fusion-paths <name> [<item-dir>]`. With a second argument, that directory is the item in scope; it must already exist under `circles/`, and a name that does not is exit 1, a caller usage error and not a workbench fault. With no second argument, scope comes from `bin/fusion-claimed-item`, whose 1 and 3 pass straight through. `value_for()` gains the branch: an `OUT_*` resolves under the container when one is in scope and under `shared/` when none is; a `SCAN_*` emits both, space separated, container first, and collapses to the shared store alone when nothing is in scope. `OUT_BACKLOG` and `SCAN_BACKLOG` name `circles`. Every non-zero exit still yields no output at all. The header's "THERE IS NO EXIT 3" block is replaced by the new meaning.

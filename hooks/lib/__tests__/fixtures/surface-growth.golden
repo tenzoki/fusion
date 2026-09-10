@@ -67,7 +67,7 @@
   fusion-events.test.ts 414
   fusion-forum.test.ts 220
   fusion-identity.test.ts 217
-  fusion-paths.test.ts 734
+  fusion-paths.test.ts 774
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
   glob-nomatch-lint.test.ts 140
@@ -89,7 +89,7 @@
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
-  reference-resolution-lint.test.ts 997
+  reference-resolution-lint.test.ts 998
   review-coverage-mandate.test.ts 368
   review-coverage.test.ts 890
   rules-emission-golden.test.ts 1406
@@ -100,4 +100,4 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 690
   workbench-citation-lint.test.ts 325
-  total 21687
+  total 21728
