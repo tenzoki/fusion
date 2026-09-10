@@ -96,7 +96,7 @@ Four bounds can go red. Measured at `0c793392` plus the concurrent `coder`'s unc
    - Dependencies: S2
    - Verification: `fusion-paths <name>` for every agent and every skill exits 0 with no claimed item and resolves into `shared/`; with one claimed item every `OUT_*` is inside its container; with two, exit 3 and stdout is empty. No key ever emits an empty right-hand side. `npm test` green.
 
-4. **S4: `bin/fusion-rules` reads the claim through the shared helper**
+4. [DONE] **S4: `bin/fusion-rules` reads the claim through the shared helper**
    - Executor: `coder`
    - Files: `bin/fusion-rules`
    - Changes: `resolve_topics` drops its own store literal, its own `bin/fusion-identity` call and its own claim loop, and calls `bin/fusion-claimed-item` instead, reading `ITEM=`. The degradation stays exactly as documented: any non-zero from the helper resolves no topic rather than guessing one, because a missing topic costs optional manifest units and never a misplaced write. The `[ -x ]` guard stays. **Byte-identical output when no manifest is present** remains the acceptance property (`HYG-NO-REGRESS`).

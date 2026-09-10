@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, copyFileSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -30,24 +30,23 @@ interface RunResult {
   stderr: string;
 }
 
-/** Run fusion-rules with `cwd` as the working directory. Never throws. */
-function run(cwd: string, ...args: string[]): RunResult {
-  try {
-    const stdout = execFileSync(fusionRules, args, {
-      cwd,
-      encoding: "utf-8",
-      env: { ...process.env, FUSION_PLUGIN_ROOT: pluginRoot },
-      stdio: ["ignore", "pipe", "pipe"],
-    });
-    return { status: 0, stdout, stderr: "" };
-  } catch (err: any) {
-    return {
-      status: err.status ?? -1,
-      stdout: err.stdout?.toString() ?? "",
-      stderr: err.stderr?.toString() ?? "",
-    };
-  }
+/**
+ * Run a `fusion-rules` executable and capture BOTH streams on every path.
+ * Never throws. `spawnSync` rather than `execFileSync`, which returns stdout
+ * alone: a clean run's stderr was discarded, and that is exactly where the
+ * claim helper's reasons arrive for a case below to read.
+ */
+function runAt(script: string, cwd: string, root: string, args: string[]): RunResult {
+  const r = spawnSync(script, args, {
+    cwd,
+    encoding: "utf-8",
+    env: { ...process.env, FUSION_PLUGIN_ROOT: root },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  return { status: r.status ?? -1, stdout: r.stdout ?? "", stderr: r.stderr ?? "" };
 }
+
+const run = (cwd: string, ...args: string[]) => runAt(fusionRules, cwd, pluginRoot, args);
 
 /** The emitted set as an array of non-empty lines. */
 function lines(stdout: string): string[] {
@@ -85,39 +84,38 @@ afterEach(() => {
 });
 
 /**
- * File a work item in `dir`'s workbench and claim it for THIS checkout.
- *
- * The checkout identifier is pinned rather than minted, because the claim is
- * compared by equality on those eight hex characters and a test that let
- * `bin/fusion-identity` mint one would be asserting against a value it does
- * not know. Writing `.checkout-id` first is exactly what the helper reads.
+ * File a work item in `dir`'s workbench, in its own container, claimed by
+ * `claim`. Three properties of the setup are load-bearing, and each is what
+ * `bin/fusion-claimed-item` reads: the record lives INSIDE the container and is
+ * named after it; the checkout identifier is pinned rather than minted, because
+ * the claim is compared by equality on those eight hex characters and a test
+ * that let `bin/fusion-identity` mint one would assert against a value it does
+ * not know; and the tree is a git work tree WITH an identity, because outside
+ * one that helper exits 4 and the claim is never read at all — a true answer
+ * that would make every case below pass for the wrong reason.
  */
 const CHECKOUT = "a1b2c3d4";
 
-function makeClaimedItem(dir: string, slug: string, body: string): void {
+function makeItem(dir: string, slug: string, body: string, claim: string): void {
   const wb = join(dir, "fusion-workbench");
-  const backlog = join(wb, "shared", "backlog");
-  mkdirSync(backlog, { recursive: true });
+  const container = join(wb, "circles", slug);
+  mkdirSync(container, { recursive: true });
   writeFileSync(join(wb, ".fusion-setup"), "{}\n");
   writeFileSync(join(wb, ".checkout-id"), `${CHECKOUT}\n`);
+  for (const a of [["init", "-q"], ["config", "user.email", "t@e.com"], ["config", "user.name", "T"]])
+    execFileSync("git", a, { cwd: dir, stdio: "ignore" });
   writeFileSync(
-    join(backlog, `${slug}.md`),
-    `${body}**Status:** claimed\n**Claim:** ${CHECKOUT} — Tester <t@example.com>, 260910-1200\n`,
+    join(container, `${slug}.md`),
+    `${body}**Status:** claimed\n**Claim:** ${claim} — Tester <t@example.com>, 260910-1200\n`,
   );
 }
 
+const makeClaimedItem = (dir: string, slug: string, body: string) =>
+  makeItem(dir, slug, body, CHECKOUT);
+
 /** The same item, claimed by somebody else. */
-function makeForeignItem(dir: string, slug: string, body: string): void {
-  const wb = join(dir, "fusion-workbench");
-  const backlog = join(wb, "shared", "backlog");
-  mkdirSync(backlog, { recursive: true });
-  writeFileSync(join(wb, ".fusion-setup"), "{}\n");
-  writeFileSync(join(wb, ".checkout-id"), `${CHECKOUT}\n`);
-  writeFileSync(
-    join(backlog, `${slug}.md`),
-    `${body}**Status:** claimed\n**Claim:** 99887766 — Other <o@example.com>, 260910-1200\n`,
-  );
-}
+const makeForeignItem = (dir: string, slug: string, body: string) =>
+  makeItem(dir, slug, body, "99887766");
 
 const SAMPLE_MANIFEST = [
   "# fixture manifest",
@@ -306,7 +304,7 @@ describe("context-manifest: topic resolution from the claimed work item", () => 
   });
 
   it("nothing claimed → only [always] units match (empty topic set)", () => {
-    // manifestProject has a manifest but no backlog store at all.
+    // manifestProject has a manifest but no item store at all.
     const out = lines(run(manifestProject, "coder").stdout);
     expect(out).toContain(".claude/rules/CODING-HYGIENE.md"); // [always]
     expect(out).not.toContain(".claude/rules/READER.md");     // topic'd, no topic resolved
@@ -332,16 +330,31 @@ describe("context-manifest: topic resolution from the claimed work item", () => 
   it("an unclaimed item resolves no topic, even when it is the only one", () => {
     // Both halves are tested, not just the status: an item nobody has claimed
     // is not this checkout's work however few of them there are.
-    const wb = join(manifestProject, "fusion-workbench");
-    mkdirSync(join(wb, "shared", "backlog"), { recursive: true });
-    writeFileSync(join(wb, ".fusion-setup"), "{}\n");
-    writeFileSync(join(wb, ".checkout-id"), `${CHECKOUT}\n`);
+    const slug = "260718-1924-ontology-refactor";
+    makeClaimedItem(manifestProject, slug, "# c\n");
     writeFileSync(
-      join(wb, "shared", "backlog", "260718-1924-ontology-refactor.md"),
+      join(manifestProject, "fusion-workbench", "circles", slug, `${slug}.md`),
       "# c\n**Status:** open\n",
     );
     const out = lines(run(manifestProject, "ontocoder").stdout);
     expect(out).not.toContain(".claude/rules/ONTO-ENG-RULES.md");
+  });
+
+  it("two claimed items resolve no topic, and the helper's reason is not swallowed", () => {
+    // `bin/fusion-paths` refuses this case with exit 3 rather than picking one.
+    // Here the same 3 resolves NO topic and the emission carries on, because a
+    // topic buys optional units while a path decides where an artifact lands.
+    // And it is NOT re-raised as this script's exit 3, which means a malformed
+    // manifest and nothing else.
+    makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n");
+    makeClaimedItem(manifestProject, "260718-1930-second-claim", "# c\n");
+    const r = run(manifestProject, "ontocoder");
+    expect(r.status, "a refused claim is not this script's own failure").toBe(0);
+    expect(lines(r.stdout), "the slug of one of them must not become the topic")
+      .not.toContain(".claude/rules/ONTO-ENG-RULES.md");
+    expect(r.stderr, "the helper's own reason must reach the user").toContain(
+      "which one is in scope cannot be determined",
+    );
   });
 });
 
@@ -431,23 +444,8 @@ describe("emit_if_exists: a missing always-on rule file is skipped silently (set
     rmSync(strippedPlugin, { recursive: true, force: true });
   });
 
-  function runStripped(agent: string): RunResult {
-    try {
-      const stdout = execFileSync(join(strippedPlugin, "bin", "fusion-rules"), [agent], {
-        cwd: emptyProject,
-        encoding: "utf-8",
-        env: { ...process.env, FUSION_PLUGIN_ROOT: strippedPlugin },
-        stdio: ["ignore", "pipe", "pipe"],
-      });
-      return { status: 0, stdout, stderr: "" };
-    } catch (err: any) {
-      return {
-        status: err.status ?? -1,
-        stdout: err.stdout?.toString() ?? "",
-        stderr: err.stderr?.toString() ?? "",
-      };
-    }
-  }
+  const runStripped = (agent: string): RunResult =>
+    runAt(join(strippedPlugin, "bin", "fusion-rules"), emptyProject, strippedPlugin, [agent]);
 
   it("exits 0 and emits every remaining always-on path when one file is missing", () => {
     const r = runStripped("coder");

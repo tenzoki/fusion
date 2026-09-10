@@ -50,7 +50,7 @@
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
   config.test.ts 954
-  context-manifest.test.ts 520
+  context-manifest.test.ts 518
   declared-citation-paths.test.ts 70
   deliverable-language-lint.test.ts 136
   derivable-enumerations-lint.test.ts 449
@@ -89,7 +89,7 @@
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
-  reference-resolution-lint.test.ts 998
+  reference-resolution-lint.test.ts 999
   review-coverage-mandate.test.ts 368
   review-coverage.test.ts 890
   rules-emission-golden.test.ts 1406
@@ -100,4 +100,4 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 690
   workbench-citation-lint.test.ts 325
-  total 21728
+  total 21727

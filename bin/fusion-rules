@@ -87,9 +87,10 @@
 #     - a `skill` unit emits a `skill:<name>` pointer line (invoked on demand).
 #   The topic is resolved (see resolve_topics below): an explicit CLI <topic>
 #   argument wins; otherwise it is derived from the work item this checkout has
-#   claimed — an explicit `Topic:`/`Tags:` line in the item, else the item
-#   filename's slug keywords; with nothing claimed here, only `[always]` units
-#   match. A malformed manifest fails LOUDLY with exit 3 rather than silently
+#   claimed, which bin/fusion-claimed-item answers and this script does not
+#   decide for itself — an explicit `Topic:`/`Tags:` line in the item, else the
+#   item filename's slug keywords; with nothing claimed here, and on every
+#   non-zero from that helper, only `[always]` units match. A malformed manifest fails LOUDLY with exit 3 rather than silently
 #   emitting a partial set (HYG-NO-SILENT-FAIL). The full schema, predicate, and
 #   resolution order are authored once in rules/context-manifest.md.
 #
@@ -460,57 +461,64 @@ resolve_topics() {
   #      claimed.
   #   3. That item's slug keywords (basename minus the YYMMDD-HHMM- stamp and
   #      the .md suffix).
-  #   4. Nothing claimed by this checkout → empty.
+  #   4. Nothing claimed by this checkout, or no answer to be had → empty.
   #
-  # The source moved from the active Circle to the claimed item when the Circle
-  # container was cut, and the shape of the answer moved with it. A Circle was a
-  # pointer file: one read, and every session in the checkout saw the same
-  # topic. A claim is a field on an item and it names a CHECKOUT, so what is
-  # resolved here is "what is this checkout working on", compared by equality on
-  # the eight hex characters bin/fusion-identity prints. An item another
-  # checkout claimed is not this checkout's topic, and an unclaimed store is a
-  # real answer of "no topic" rather than a failure.
+  # WHICH ITEM IS CLAIMED IS NOT DECIDED HERE. One criterion, one
+  # implementation: bin/fusion-claimed-item, which bin/fusion-paths calls from
+  # this same Setup step for its own reason. This function carried the second
+  # implementation of it: its own store literal, its own bin/fusion-identity
+  # call and its own claim loop, whose first match it took, which is tolerable
+  # for a topic and wrong for a write target. Two implementations
+  # of one criterion drift, and the drift is invisible because each answers
+  # plausibly on its own.
+  #
+  # A claim names a CHECKOUT, so what is resolved here is "what is this checkout
+  # working on". An item another checkout claimed is not this checkout's topic,
+  # and an unclaimed store is a real answer of "no topic" rather than a failure.
+  #
+  # THE DEGRADATION IS DELIBERATE, AND IT DIFFERS FROM THE RESOLVER'S. Every
+  # non-zero the helper can return resolves NO topic here and lets the emission
+  # carry on, where bin/fusion-paths stops the caller on 1 and refuses on 3. The
+  # asymmetry is the cost of being wrong: a topic buys optional manifest units,
+  # so a missing one costs an agent a few files it then does not read, while a
+  # path decides where an artifact is written and a wrong one files a plan into
+  # another item's container in silence. In particular the helper's 3 is NOT
+  # re-raised as this script's exit 3, which means a malformed manifest and
+  # nothing else (`rules/fusion-workbench-conventions.md` `## Path Resolution` →
+  # Exit codes: read an exit 3 against the helper that returned it).
   if [ -n "$TOPIC" ]; then
     printf '%s' "$TOPIC" | tr ',' ' '
     return 0
   fi
 
-  local proot wb store checkout item tagline base
+  local claimed err out rc rel proot item tagline base
+
+  # Guarded with [ -x ] per decision 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md: an installed
+  # copy may predate the helper, and a bare call is exit 127 mid-Setup.
+  claimed="$SCRIPT_DIR/fusion-claimed-item"
+  [ -x "$claimed" ] || return 0
+
+  # Its stderr is passed through on every non-zero and held back on a clean
+  # answer, which is what bin/fusion-paths does with the same call: the two
+  # failure messages name files the user has to fix and must reach them, while
+  # "not a git work tree" is a TRUE answer that would otherwise print on every
+  # agent's Setup in a project that has no git.
+  err="$(mktemp)" || return 0
+  set +e
+  out="$("$claimed" 2>"$err")"
+  rc=$?
+  set -e
+  [ "$rc" -eq 0 ] || cat "$err" >&2
+  rm -f "$err"
+  [ "$rc" -eq 0 ] || return 0
+
+  # Exit 0 with no output is "nothing claimed", and it is an answer.
+  rel="$(printf '%s\n' "$out" | sed -n 's/^ITEM=//p' | head -n 1)"
+  [ -n "$rel" ] || return 0
+
   proot="$("$SCRIPT_DIR/fusion-workbench-root" 2>/dev/null)" || return 0
-  wb="$proot/fusion-workbench"
-
-  # The one store a work item lives in. Named here rather than resolved through
-  # bin/fusion-paths because that resolver derives a key set from a CONSUMER
-  # PROMPT, and this helper is not a consumer — it has no prompt of its own to
-  # derive from, and asking under somebody else's name would make one agent's
-  # key set decide another agent's topic.
-  store="$wb/shared/backlog"
-  [ -d "$store" ] || return 0
-
-  # This checkout's identifier. bin/fusion-identity is the one place a run
-  # obtains it; an install that predates the helper, or a workbench where the
-  # identifier cannot be read at all, resolves no topic rather than guessing
-  # one. Guarded with [ -x ] per decision 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md.
-  [ -x "$SCRIPT_DIR/fusion-identity" ] || return 0
-  checkout="$("$SCRIPT_DIR/fusion-identity" 2>/dev/null | sed -n 's/^CHECKOUT=//p' | head -n 1)"
-  [ -n "$checkout" ] || return 0
-
-  # The claimed item: **Status:** claimed AND a **Claim:** whose first field is
-  # this checkout. Both are tested, because a Status that says claimed with no
-  # Claim beside it names no holder and a Claim left on a `done` item names a
-  # holder who has finished. `find` drives the loop so an empty store yields no
-  # input rather than an unexpanded glob.
-  item=""
-  while IFS= read -r f; do
-    [ -n "$f" ] || continue
-    grep -qE '^\*\*Status:\*\*[[:space:]]*claimed[[:space:]]*$' "$f" 2>/dev/null || continue
-    grep -qE "^\*\*Claim:\*\*[[:space:]]*$checkout([[:space:]]|$)" "$f" 2>/dev/null || continue
-    item="$f"
-    break
-  done <<EOF
-$(find "$store" -mindepth 1 -maxdepth 1 -name '*.md' -type f 2>/dev/null | sort)
-EOF
-  [ -n "$item" ] || return 0
+  item="$proot/fusion-workbench/$rel"
+  [ -f "$item" ] || return 0
 
   # 2. Explicit tag in the item.
   tagline="$(grep -iE '^[[:space:]]*(\*\*)?(topic|tags)(\*\*)?[[:space:]]*:' "$item" 2>/dev/null | head -n 1 || true)"
