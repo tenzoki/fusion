@@ -46,3 +46,12 @@ the user deliberately.
 
 ---
 Answered: 260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md `## Question` — the file does not survive, and its information does. A machine-written event row carries the running task and what is pending; the monitor renders the panel from that row instead of from the file, and the state panel is re-sourced the same way rather than going dark. Measured against the alternative: the ETA, the event list and the warnings panel read `orchestrator-events.jsonl` and `.guard-state/events.jsonl` and are untouched by the removal, so what needed a carrier was the queue view alone. The cost is one-off hook work; the recurring model-side write per task disappears; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 34cd5bc2 — the carrier and the renderer both exist. The dispatch row carries the
+running task and the named work item (`9c4dbdbb`), and the monitor's dashboard and state panels
+render from `orchestrator-events.jsonl` (`34cd5bc2`), scoped to this checkout. The plan sets this
+transition at B4's commit, and this is it. What has not happened yet is the removal itself:
+`orchestrator-live.md` is still written and both panels still fall back to it, by design, until
+step C0 has proved the log-sourced panels against a live session and step C1 deletes the fallback.
+So the answer is realised as a capability and not yet as an absence.

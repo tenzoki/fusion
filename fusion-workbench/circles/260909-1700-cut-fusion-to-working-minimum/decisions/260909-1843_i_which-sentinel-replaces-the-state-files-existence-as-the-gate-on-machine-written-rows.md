@@ -66,3 +66,10 @@ cheaper inaccuracy than a migration.
 
 ---
 Answered: 260909-1843_*_which-sentinel-replaces-the-state-files-existence-as-the-gate-on-machine-written-rows.md `## Question` — option 2, the session identifier carried on the hook payload, with the log becoming project-scoped and the file keeping its name. Ruled by planner under the delegation in the spec's C1 ("the choice is the planner's"); unrealised until step B2 of `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md` commits.
+
+---
+Implemented: e257782d — `eventRowsAdmitted(root, sessionId)` replaced `orchestratorSessionInFlight(root)`
+as the gate on a machine-written row: the payload's session identifier, disjoined with the existing
+`existsSync` check so that step removed nothing. An absent identifier earns one advisory naming the
+condition rather than a silent drop. Both arms are pinned independently by mutation, and the module
+header authors the widened, project-scoped meaning. The `existsSync` arm is dropped at step C1.
