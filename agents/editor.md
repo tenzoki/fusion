@@ -60,7 +60,7 @@ Your deliverables are **customer- and project-facing artifacts**, not workbench 
 2. Otherwise, use the project's `deliverables/` convention if `CLAUDE.md` documents one.
 3. Otherwise, ask the user (or, when dispatched, state the chosen path back to the orchestrator — see Tool Discipline) for the intended location before writing, and default to a project-side `deliverables/` directory rather than anywhere under `fusion-workbench/`.
 
-**The only thing you write inside `fusion-workbench/` is your own session history** at `$OUT_HISTORY`. You resolve no deliverable path from `bin/fusion-paths` — the resolver values only your session-history target, because everything else you produce lives project-side. Do not invent an `OUT_*` deliverable key and do not write deliverables into the workbench.
+**You write nothing inside `fusion-workbench/`.** You resolve no deliverable path from `bin/fusion-paths` — the resolver values you no key at all, because everything you produce lives project-side. Do not invent an `OUT_*` deliverable key and do not write deliverables into the workbench. Your report to whoever dispatched you is the record of the run.
 
 ## Tool Discipline
 
@@ -80,8 +80,7 @@ You are produce-only, and you are **dispatchable as a sub-agent**. A dispatched 
    - *Branded pptx* — invoke `dl-brand-pptx` then `pptx`, render the deck to the project-side location, strip stray markdown syntax from slide text.
    - *Translation* — translate the full source into the target language, preserving structure, headings, tables, and meaning; do not summarise or editorialise unless asked. Keep canonical terms that the project marks as never-translated in their canonical form.
 4. **Apply the voice.** Long-form deliverable prose follows the `default-voice-*.yaml` writing profile loaded at Setup; your short-form chat replies follow `chat-voice-*.yaml`. Run the readability gate (see Output Style) on deliverable bodies before finishing.
-5. **Log the session.** Write a history entry to `$OUT_HISTORY/YYMMDD-HHMM-<topic>.md` (obtain the stamp from `date +%y%m%d-%H%M`); record what you produced, the output form, and the deliverable's project-side path. Mark status `Complete` as the final step (if interrupted before this, the completion state is lost).
-6. **Report to the user.** State the deliverable's path, its form and language, and any follow-on work you noticed as a recommendation (never as a filed issue).
+5. **Report to the user.** State the deliverable's path, its form and language, and any follow-on work you noticed as a recommendation (never as a filed issue).
 
 ## Standards
 

@@ -1,7 +1,7 @@
 # Implementation Plan: cut fusion to a working minimum
 
 **Date:** 2026-09-09
-**Status:** In Progress (session 2 of 4 complete)
+**Status:** In Progress (session 3 running: C0, C1, C2, C5 done, plus C1b added at a user ruling)
 **Spec:** `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`, C1 to C9. Later rulings bind and one supersedes the spec's text: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3) and the two records this plan files, `260909-1843_*_which-sentinel-replaces-the-state-files-existence-as-the-gate-on-machine-written-rows.md` and `260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md`.
 **Amended:** 2026-09-09, against the two answers at gate G1. `260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md`: the dashboard file does not survive and its information does, which added one field to step B3, one renderer to step B4, one check to step C0, and turned C1's re-sourcing into a removal. `260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md`: report only, which resolved step C6's conditional to a stdout verdict. No step was renumbered and no session boundary moved.
 
@@ -196,21 +196,21 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
 
 ### Session 3 — verify the substrate against a live log, then cut.
 
-8. **C0: verify session 2 before anything is deleted**
+8. [DONE] **C0: verify session 2 before anything is deleted**
    - Executor: `coder`
    - Files: none; writes its result into the commit message of step C1
    - Changes: none. Read the log this session is writing. Confirm the hook-written `session_start` row exists and carries all five fields; confirm every `task_start` in this session carries the four byte fields, and `work_item` wherever the dispatch named one; confirm `bin/fusion-review-coverage` and `bin/fusion-session-domain` return the same answers with the state file deliberately renamed away and restored; confirm the workbench monitor is the copy this session's Setup re-copied (`shasum` against `$FUSION_PLUGIN_ROOT/bin/monitor`) and that, with both files renamed away, it renders the running task, the named work item, the counters and the session fields from the log alone, no panel dark and no empty list under Up Next.
    - Dependencies: B1, B2, B3, B4
    - Verification: is the step. If any of the five fails, session 3 stops here and the failure returns to step B; **no deletion in C1 may proceed on a partial pass.** The monitor is the fifth and can be checked nowhere earlier, because the workbench copy of it is written at Setup from the installed plugin.
 
-9. **C1: delete the state file, the dashboard, the budget and the turns reader**
+9. [DONE] **C1: delete the state file, the dashboard, the budget and the turns reader**
    - Executor: `coder`
    - Files: `hooks/lib/state-file.ts` (deleted), `hooks/lib/orchestrator-events.ts`, `hooks/turn-budget.ts` (deleted), `bin/fusion-turn-budget` (deleted), `bin/fusion-events`, `hooks/lib/events-query.ts`, `hooks/lib/config.ts`, `bin/monitor`, `bin/fusion-session-mark`, `bin/fusion-cadence-anchor`, `rules/workbench-tracking.md`, `rules/orchestrator-resume.md` (deleted), `rules/orchestrator-rebalance.md` (deleted), `rules/commit-lock.md`, `README-hooks.md`
    - Changes: drop the `existsSync` disjunct from B2's predicate; stop writing `agentstate.yaml` and `orchestrator-live.md`; remove `bin/fusion-events turns` and its `events-query.ts` half rather than porting it; retire `orchestrator.maxTurns` as a **leaf**, which the existing `RETIRED_TOP_LEVEL_KEYS` mechanism cannot express, so add a leaf-scoped retirement list whose advisory names the leaf and says the setting is not read; remove the four dead entries from `rules/workbench-tracking.md`. In `bin/monitor`, remove the two fallback halves and nothing else: the `orchestrator-live.md` reader, the `/api/state` file path, and the two placeholder messages that name those files. **Nothing is re-sourced in this step** — B4 landed the log-sourced panels a session earlier, and this deletes what they fell back to, which is all G1's first answer leaves here. **A gate A1 reported over half its population is not deleted here** and stays until the user has answered.
    - Dependencies: C0, A1, A2, G1
    - Verification: `npm test` green after `npm run build`; `turn-budget-lint.test.ts` and `record-counts-measurement.test.ts` are deleted with their subjects; a full session runs, dispatches, commits and ends with `test ! -e fusion-workbench/agentstate.yaml && test ! -e fusion-workbench/orchestrator-live.md` true throughout and `wc -l` on the event log rising by the expected rows, with the monitor's two panels populated throughout that session and neither removed file present. A project setting `orchestrator.maxTurns` produces exactly one advisory naming the leaf.
 
-10. **C2: rewrite the orchestrator prompt**
+10. [DONE] **C2: rewrite the orchestrator prompt**
     - Executor: `coder`
     - Files: `agents/orchestrator.md`
     - Changes: replace the phase procedure with a dispatch loop — read the task, dispatch, commit, repeat until the user stops. No numbered phase, no Turn, no budget, no circuit breaker, no convergence check, no coherence gate, no Rebalance, no resume, no queue. Keep: dispatch, the commit procedure and its lock, the machine-written rows it no longer writes by hand, the `tools:` allowlist including `AskUserQuestion`, and the four backlog operations as edits the orchestrator performs at the user's word with no dispatch. Add one line to the dispatch prompt and no more: `**Work-item:** <basename>` when the session is working a claimed item, omitted when it is not. It is what B3's field reads, and it is the only model-written statement of what the session is doing that survives the cut.
@@ -231,12 +231,24 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
     - Dependencies: C2, C5
     - Verification: `grep -rn "only " skills/cleanup/SKILL.md` returns no selector vocabulary; invoking each of the five in a scratch project performs its own procedure and writes nothing another owns; `derivable-enumerations-lint.test.ts` green after `CLAUDE.md`'s skill listing is brought to the new set.
 
-13. **C5: the history store is closed to writes**
+13. [DONE] **C5: the history store is closed to writes**
     - Executor: `coder`
     - Files: all fifteen `agents/*.md`, `bin/fusion-paths`, `rules/fusion-workbench-conventions.md`, `rules/workbench-path-resolution.md`, `skills/cadence/SKILL.md`, `skills/post/SKILL.md`, `hooks/lib/__tests__/fusion-paths.test.ts`, `hooks/lib/__tests__/executor-verification-report-lint.test.ts`
     - Changes: no agent prompt names `$OUT_HISTORY`; the resolver stops emitting `OUT_HISTORY` to any consumer and emits `SCAN_HISTORY` only to `/fusion:cadence`, which reads the frozen corpus and states in its output that coverage past the cut is nil rather than reporting a silent zero. The message pass omits the history basename from its pointer block rather than inventing an anchor, which is what its body already specifies for an unread element. **The existing corpus is not deleted.**
     - Dependencies: none within session 3
     - Verification: `bin/fusion-paths <each agent> | grep -c OUT_HISTORY` returns 0 for all; `grep -rl 'OUT_HISTORY' agents/` is empty; `ls fusion-workbench/*/history fusion-workbench/circles/*/history` still lists what it listed before, diffed.
+    - Done 2026-09-10 (`260910-1501-coder-c5.md`). All three verification reads pass: every agent
+      resolves neither key, `agents/` is clean, and the corpus diffs empty at 1046 entries. Two
+      things the step could not reach and left named. The resolver keeps both arms valued, because
+      `skills/setup/SKILL.md` and `skills/curate/SKILL.md` still name `$OUT_HISTORY` and removing an
+      arm a shipped prompt names is exit 4; the arms go with those bodies in C3 and C4. And
+      `path-literal-lint.test.ts` now fails, because it requires every key the setup body names to be
+      one the orchestrator names — the orchestrator dropped `$OUT_HISTORY` here and the setup body is
+      C3's, so this is the step-boundary class
+      `260910-1033_*_step-c1s-acceptance-asks-for-a-green-suite-that-only-step-c2-can-deliver.md`
+      records, arriving once more. The curator's run file moved to `$OUT_ANALYSIS` rather than
+      disappearing, which the step did not specify: it is the ledger the apply pass reads back, so
+      `/fusion:curate` rejects every ledger until C4 brings that body across.
 
 14. **C6: the record obligation becomes conditional and a plan gets a ceiling**
     - Executor: `coder`

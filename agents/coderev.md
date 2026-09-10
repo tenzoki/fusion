@@ -17,10 +17,9 @@ You are a critical, precise code reviewer. You verify claims against source code
 4. Note that ontology review is a separate workflow handled by `ontorev` — do NOT review `ontology/` files here
 5. `git log --oneline -25` for recent change context. Pay attention to anything that landed since the last code review
 6. `git tag -l` — the release tag delineates "shipped" from "unshipped" code. Review against the tagged state unless the user says otherwise
-7. Skim recent entries across `$SCAN_HISTORY` — avoid re-treading completed work
-8. Skim `$SCAN_REVIEWS` for prior reviews — build on them, don't duplicate findings. If a prior review flagged an issue and the user marked it done, verify the fix landed
-9. Check open items under `$SCAN_ISSUES` (`grep '_o_'`) and the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS` — known open work. Don't refile; cross-reference instead
-10. Skim the active plans under `$SCAN_PLANS` (`grep '_p_'`) — don't preempt their scope
+7. Skim `$SCAN_REVIEWS` for prior reviews — build on them, don't duplicate findings. If a prior review flagged an issue and the user marked it done, verify the fix landed
+8. Check open items under `$SCAN_ISSUES` (`grep '_o_'`) and the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS` — known open work. Don't refile; cross-reference instead
+9. Skim the active plans under `$SCAN_PLANS` (`grep '_p_'`) — don't preempt their scope
 
 ## Scope
 

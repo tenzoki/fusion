@@ -2,7 +2,7 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
-Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the origin rule, the operative half of path resolution, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, history logging, timestamps, and the project's two language declarations.
+Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the origin rule, the operative half of path resolution, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, timestamps, and the project's two language declarations.
 
 **This document is the definition** of everything it still states in full. Topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to every agent:
 
@@ -33,7 +33,7 @@ fusion-workbench/
 │       ├── planning/                  # spec and plan of THIS unit of work
 │       ├── issues/
 │       ├── decisions/
-│       ├── history/
+│       ├── history/                   # frozen — see ## Session history
 │       ├── reviews/                   # codereview + ontoreview, merged
 │       └── analyses/
 ├── shared/                            # everything with no Circle affiliation
@@ -44,7 +44,7 @@ fusion-workbench/
 │   ├── reviews/                       # codereview + ontoreview, merged
 │   ├── investigations/                # always shared, and write-frozen — see below
 │   ├── consult/                       # consultations are always shared — see below
-│   ├── history/
+│   ├── history/                       # frozen — see ## Session history
 │   ├── memos/                         # memos are always shared — see below
 │   ├── backlog/                       # ideas not yet units of work — always shared, see below
 │   ├── forum/                         # messages left for another checkout — always shared, see below
@@ -228,7 +228,6 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 | Spec / plan | `$OUT_PLAN` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Defect | `$OUT_ISSUE` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Decision record | `$OUT_DECISION` | `YYMMDD-HHMM_S_<topic>.md` | yes (decisions vocabulary, richer set) |
-| Session history | `$OUT_HISTORY` | `YYMMDD-HHMM-<topic>.md` | no |
 | Review (code / onto) | `$OUT_REVIEW` | `YYMMDD-HHMM-<sender>-<topic>.md` | no |
 | Analysis | `$OUT_ANALYSIS` | `YYMMDD-HHMM-<topic>.md` | no |
 | Consultation | `$OUT_CONSULT` | `YYMMDD-HHMM-<topic>.md` | no |
@@ -240,7 +239,7 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 
 `<sender>` on a review file is `coderev` or `ontorev`. It is what distinguishes the two review kinds now that they share one `reviews/` directory: it is mandatory, and the document header repeats it. Older files may carry a third sender, `conceptrev`, retired with its agent on 2026-08-15.
 
-**Cite a record by its storeless basename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move and every archive sweep. **A citation carrying a store segment is a violation the gates report** (`shared/<store>/`, `circles/<dir>/<store>/`, or `circles/` in front of a Circle): the segment is what a sweep moves, so a citation spelling it dies at the sweep. A markerless artifact (history, review, analysis, consultation, forum entry) is cited as `YYMMDD-HHMM-<topic>.md`, and a Circle by its bare directory name `YYMMDD-HHMM-<slug>`. The reader resolves any of the three by one workbench-wide lookup (`find "$WORKBENCH" -name '<basename>'`, the wildcard as a glob), which is correct because no two stamped artifacts share a marker-normalised basename: measured over the live tree and `archive/` at commit `4b8f769d` (2 235 basenames, 0 collisions) and re-taken on every run by `hooks/lib/__tests__/workbench-citation-lint.test.ts`. **A record held in another project's workbench is cited `foreign:<project>:<citation>`**, both leading segments literal and required, as in `foreign:menue-rs:260905-2054-reconciliation.md`; the qualifier is read before any lookup, so such a token is reported neither dangling nor store-prefixed. It is supplied by the writer and never inferred: nothing separates a genuine foreign record from a local one mislabelled, so the form is a claim you are making rather than a fact a gate checked. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. **No pattern above changes.** In living text (prompts, rules, docs), which outlives its target, cite a rule file by heading anchor (`file.md` `## Section`), never by line number: an edit above the line moves it silently, and no gate resolves `path:N`. **A resolution line takes the same anchor**, never `:line` — `Resolved:` on an issue and the five decision lines `## Inline State Tracking` spells. `path:line` was mandated here until 2026-09-05, on the argument that a resolution line is point-in-time and carried by its commit. That argument is real but narrow: it holds for a target frozen at the citing commit and fails for the one these lines most often name, a session history the session goes on appending to after the citation is written. The corpus said the same — measured over the live tree on 2026-09-05, 1 of 30 `Answered:` lines wrote `path:line` and 11 wrote the anchor — so the rule moved on evidence, not on taste (`260905-1228_*_does-a-resolution-line-cite-path-line-or-a-heading-anchor.md`). The commit still carries the moment; what is given up is precision inside a file. When the target is a record the path half is its storeless basename (a rule file, a source file or a commit stays a path), and a commit hash takes no locator.
+**Cite a record by its storeless basename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move and every archive sweep. **A citation carrying a store segment is a violation the gates report** (`shared/<store>/`, `circles/<dir>/<store>/`, or `circles/` in front of a Circle): the segment is what a sweep moves, so a citation spelling it dies at the sweep. A markerless artifact (history, review, analysis, consultation, forum entry) is cited as `YYMMDD-HHMM-<topic>.md`, and a Circle by its bare directory name `YYMMDD-HHMM-<slug>`. The reader resolves any of the three by one workbench-wide lookup (`find "$WORKBENCH" -name '<basename>'`, the wildcard as a glob), which is correct because no two stamped artifacts share a marker-normalised basename: measured over the live tree and `archive/` at commit `4b8f769d` (2 235 basenames, 0 collisions) and re-taken on every run by `hooks/lib/__tests__/workbench-citation-lint.test.ts`. **A record held in another project's workbench is cited `foreign:<project>:<citation>`**, both leading segments literal and required, as in `foreign:menue-rs:260905-2054-reconciliation.md`; the qualifier is read before any lookup, so such a token is reported neither dangling nor store-prefixed. It is supplied by the writer and never inferred: nothing separates a genuine foreign record from a local one mislabelled, so the form is a claim you are making rather than a fact a gate checked. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. **No pattern above changes.** In living text (prompts, rules, docs), which outlives its target, cite a rule file by heading anchor (`file.md` `## Section`), never by line number: an edit above the line moves it silently, and no gate resolves `path:N`. **A resolution line takes the same anchor**, never `:line` — `Resolved:` on an issue and the five decision lines `## Inline State Tracking` spells. `path:line` was mandated here until 2026-09-05, on the argument that a resolution line is point-in-time and carried by its commit. That argument is real but narrow: it holds for a target frozen at the citing commit and failed for the one these lines then most often named, a session history the session went on appending to after the citation was written. The corpus said the same — measured over the live tree on 2026-09-05, 1 of 30 `Answered:` lines wrote `path:line` and 11 wrote the anchor — so the rule moved on evidence, not on taste (`260905-1228_*_does-a-resolution-line-cite-path-line-or-a-heading-anchor.md`). The commit still carries the moment; what is given up is precision inside a file. When the target is a record the path half is its storeless basename (a rule file, a source file or a commit stays a path), and a commit hash takes no locator.
 
 The two kinds sharing `$OUT_MEMO` differ in write semantics: the memo and task files are **append** logs (`/fusion:memo` adds to them), while the cadence digest is **overwritten** on each `/fusion:cadence` run (it is a fresh snapshot of the work cadence, not a history of its own runs).
 
@@ -275,7 +274,7 @@ Decision records carry a richer state marker that distinguishes "the answer is r
 | Marker | Meaning |
 |--------|---------|
 | `_o_` | Open: the question has been filed but not yet answered. Initial state on creation. |
-| `_a_` | Answered: a recorded answer exists somewhere on disk (typically an analysis, a plan, a session history, or the decision record itself). The file body MUST cite the answer's location and name who ruled: `Answered: <citation> — <one-line summary>; ruled by <agent name or "user">, <person>`. Both halves take the forms `## Filename Patterns` and `## Inline State Tracking` define. The decision is not yet realised in code or data. `_a_` does not assert that realising it is still possible: when the subject was removed before anyone built against it, the body gains a `Retired:` line and the marker does not move. |
+| `_a_` | Answered: a recorded answer exists somewhere on disk (typically an analysis, a plan, a commit message, or the decision record itself). The file body MUST cite the answer's location and name who ruled: `Answered: <citation> — <one-line summary>; ruled by <agent name or "user">, <person>`. Both halves take the forms `## Filename Patterns` and `## Inline State Tracking` define. The decision is not yet realised in code or data. `_a_` does not assert that realising it is still possible: when the subject was removed before anyone built against it, the body gains a `Retired:` line and the marker does not move. |
 | `_i_` | Implemented: the answer has been realised, and code or data on disk now reflects the decision. The file body MUST cite the implementation with `Implemented: <commit hash> or <citation> — <one-line summary>`. This is the terminal state for decisions whose realisation is verifiable. `_i_` does not assert that the implementation still exists: when it is later removed and no decision overrode it, the body gains a `Retired:` line and the marker does not move, so the marker alone cannot tell a live implementation from a retired one. |
 | `_d_` | Deferred: the user explicitly pushed the decision out (to v1.x, to a future workbench, etc.). The file body MUST cite the deferral target and name who ruled, in the form `## Inline State Tracking` spells. |
 | `_s_` | Superseded: a later decision has overridden this one. The file body MUST cite the superseding decision file: `Superseded by: <citation> — <reason>`. |
@@ -425,7 +424,7 @@ This applies to:
 
 **Before writing, list what is already there.** One `ls` over the open (`_o_`) record names in every `$SCAN_ISSUES` store. Names only, never bodies: a costlier check gets skipped. A hit is a slug naming the same file or the same mechanism as yours. On a hit, append one line at the end of that record: `Also seen: YYMMDD-HHMM by <agent> — <one clause>`. No second file, no marker moves. **In doubt, write the new record**: a duplicate costs one merge, an unfiled defect costs the defect. This step never ends with nothing written.
 
-**NEVER put issues or decisions inside plan documents, review documents, analyses, code comments, chat output, history logs, or any other location.** Embedded items get lost. Each item is a separate file in its own store.
+**NEVER put issues or decisions inside plan documents, review documents, analyses, code comments, chat output, or any other location.** Embedded items get lost. Each item is a separate file in its own store.
 
 **An issue states the defect, the evidence path, and the acceptance test — then stops.** Later passes re-read every record many times; narrative past the close-condition is recurring cost. Counts in it follow `rules/critical-stance.md` §5.
 
@@ -455,7 +454,7 @@ Two of that helper's exit codes are opposite instructions to you. **Exit 1** is 
 
 **A helper that is not installed is a third branch and neither of those two.** `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the session, so a helper added between releases is absent there and a bare call is exit 127, which is none of the codes above. When the guard fails, **file with the person half absent as exit 4 does, and report that attribution was dropped because the helper was missing.** The record looks like exit 4's and the reason does not: exit 4 means no identity was owed, this means one was owed and could not be read. Do not halt, or an install one release behind stops every filing in the project.
 
-**Which record kinds owe the field:** every kind whose template carries the line, and those are defects and decisions (the two formats above), review files (`rules/review-contract.md`, where it is a mandated header field) and session histories (`## History Logging`). Binding decision: `260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2).
+**Which record kinds owe the field:** every kind whose template carries the line, and those are defects and decisions (the two formats above), and review files (`rules/review-contract.md`, where it is a mandated header field). Binding decision: `260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2).
 
 **One precondition:** a person uses the same git identity on every machine. Registering the second checkout in `shared/checkouts/` lifts it for `bin/fusion-events presence`, which joins the two identities and counts that person once. It stands for `/fusion:next`, whose claim comparison reads the identity as written rather than through the registry, so the second machine is refused that person's own Circle. That residual is deliberate: a comparison through a pulled file would answer differently across a fetch. Register the checkout, and take the Circle back through the override the refusal already offers.
 
@@ -517,24 +516,24 @@ create or edit any file under `rules/`. `bin/fusion-rules` emits it to no agent:
 agent whose routine work includes writing normative rule text is the `curator`, and
 `agents/curator.md` reaches this definition by citing it at Setup rather than by emission.
 
-## History Logging
+## Session history
 
-Every session writes a history entry to `$OUT_HISTORY/YYMMDD-HHMM-<topic>.md` describing what was done. Update the entry's status line to `Complete` as the final step of the session. If interrupted before this, completion state is lost.
+**The history store is closed to writes. No agent writes a session log, and there is no
+`$OUT_HISTORY` key to write one with.** A run's account of itself is its report to whoever
+dispatched it; a commit's account of itself is its commit message; and anything that has to
+outlive either is a record in one of the stores that still takes writes — a defect, a decision,
+a plan, a review or an analysis.
 
-**History file format:**
+**The existing corpus is kept, not deleted.** Every `history/` directory in this workbench and in
+`archive/` stays where it is and stays readable. A citation of a history file that already exists
+resolves exactly as it did (`## Filename Patterns`, the markerless form `YYMMDD-HHMM-<topic>.md`),
+so the resolution lines already written into records remain true. What no longer happens is a new
+file arriving in one of those directories.
 
-```markdown
-# <one-line title: what this session did>
-
-**Status:** In progress | Complete
-**Filed by:** <agent name or "user">, <person>
-
-<what was asked, what was done, what was verified>
-```
-
-`**Filed by:**` is the field `### Who filed it` governs, halt and both file-anyway branches included. An `**Agent:**` line does not satisfy it, and that substitution is how the field goes missing.
-
-The history log is the only durable record of a session. The in-memory task list does not persist. Always update history before finishing.
+**Coverage past the cut is nil, and a reader is told so rather than shown a zero.** A pass that
+digests the corpus — `/fusion:cadence` is the one that does — states in its own output that the
+session-log record ends at the cut, so an empty recent stretch reads as a store that closed and
+never as a quiet week.
 
 ## Security
 

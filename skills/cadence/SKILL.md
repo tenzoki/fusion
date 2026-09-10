@@ -79,9 +79,15 @@ Collect every available source. For each source record, per entry: a **date**, t
 
 | Code | Source | Where |
 |------|--------|-------|
-| `h` | fusion session histories | every directory in `$SCAN_HISTORY` (workbench-relative — prefix with `$WORKBENCH`); every writer's, unfiltered |
+| `h` | fusion session histories — a **frozen** corpus, see below | every directory in `$SCAN_HISTORY` (workbench-relative — prefix with `$WORKBENCH`); every writer's, unfiltered |
 | `a` | shared activity log | `activity-log-$CO.md` — check **both** the project root and `$WORKBENCH` |
 | `g` | git commit days | `git log` (only if `.git` is present) — a day's commits form **one** unit, not one each |
+
+**The `h` source is frozen: nothing writes a session log any more**
+(`rules/fusion-workbench-conventions.md` `## Session history`), so its newest file is the last
+there will be, and coverage past that cut is nil. **Say so** in `**Sources scanned:**` and in
+`## Notes`, naming the cut date, so a window with no `h` unit reads as a closed store rather than
+a quiet week. `a` and `g` still cover every window in full.
 
 **Substitute the resolver values before you run anything below.** `WORKBENCH`, `OUT_MEMO` and
 `SCAN_HISTORY` are resolver keys from step 0, not shell variables. Nothing exports them, and the
@@ -200,7 +206,7 @@ Structure:
 **Covers:** every session history in the workbench, whoever wrote it — <e.g. "2 writers: Kai Stalmann <ks@qantr.com>, Jo Blow <jo@example.com>" / "1 writer: …" / "1 writer, 3 units unattributed">
 **Yesterday window:** <yday_start> → <today><!-- append " (Fri–Sun collapsed)" when today is Monday -->
 **Recent window:** <week_start> → <today> (7 days)
-**Sources scanned:** <e.g. session histories (14 files across 2 stores), git (37 commits on 12 days = 12 units), activity log: none>
+**Sources scanned:** <e.g. session histories: frozen corpus, 14 files across 2 stores, nothing after 2026-09-10; git (37 commits on 12 days = 12 units); activity log: none>
 **Session flow (7d, this checkout only):** <e.g. 1.1 gate answers/Turn · first dispatch median 6 min · dispatches median 4 min, max 14 — or "no event data">
 
 ## Topics — yesterday
@@ -233,6 +239,7 @@ _No theme recurs across two or more sessions yet._
 
 ## Notes
 
+- **Always:** name the `h` cut date and state that no session log covers anything after it.
 - <caveats: which history stores were scanned and whether a Circle was active, undated files fallen back to mtime, where the activity log was found, anything ambiguous>
 ```
 

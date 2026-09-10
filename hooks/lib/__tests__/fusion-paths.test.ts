@@ -117,7 +117,6 @@ describe("bin/fusion-paths", () => {
 
       expect(p.CIRCLE).toBe(`circles/${CIRCLE_NAME}`);
       expect(p.OUT_PLAN).toBe(`circles/${CIRCLE_NAME}/planning`);
-      expect(p.OUT_HISTORY).toBe(`circles/${CIRCLE_NAME}/history`);
       expect(p.OUT_ISSUE).toBe(`circles/${CIRCLE_NAME}/issues`);
       expect(p.OUT_DECISION).toBe(`circles/${CIRCLE_NAME}/decisions`);
     });
@@ -141,7 +140,6 @@ describe("bin/fusion-paths", () => {
         "SCAN_PLANS",
         "SCAN_ISSUES",
         "SCAN_DECISIONS",
-        "SCAN_HISTORY",
         "SCAN_REVIEWS",
         "SCAN_ANALYSES",
       ]) {
@@ -175,7 +173,6 @@ describe("bin/fusion-paths", () => {
 
       expect(p.CIRCLE).toBeUndefined();
       expect(p.OUT_PLAN).toBe("shared/planning");
-      expect(p.OUT_HISTORY).toBe("shared/history");
       expect(p.OUT_ISSUE).toBe("shared/issues");
       expect(p.OUT_DECISION).toBe("shared/decisions");
     });
@@ -212,7 +209,6 @@ describe("bin/fusion-paths", () => {
       expect(r.status).toBe(0);
       const p = parse(r.stdout);
       expect(p.OUT_PLAN).toBe(`circles/${OTHER}/planning`);
-      expect(p.OUT_HISTORY).toBe(`circles/${OTHER}/history`);
       expect(p.OUT_ISSUE).toBe(`circles/${OTHER}/issues`);
       expect(p.OUT_DECISION).toBe(`circles/${OTHER}/decisions`);
     });
@@ -239,7 +235,6 @@ describe("bin/fusion-paths", () => {
         "SCAN_PLANS",
         "SCAN_ISSUES",
         "SCAN_DECISIONS",
-        "SCAN_HISTORY",
         "SCAN_REVIEWS",
         "SCAN_ANALYSES",
       ]) {
@@ -563,16 +558,26 @@ describe("bin/fusion-paths", () => {
       expect(p.SCAN_CIRCLES).toBe("circles");
     });
 
-    it("gives every agent WORKBENCH and at least one key", () => {
+    it("gives every agent WORKBENCH, and every workbench writer at least one key", () => {
+      // `editor` is the one agent that names no key, and that is its contract
+      // rather than a gap: everything it produces is project-side, and its
+      // last workbench write — a session log — went with the history store on
+      // 2026-09-10. It is listed here rather than filtered silently, so an
+      // agent that loses its last key by accident still fails.
+      const NO_KEY = ["editor"];
       for (const agent of AGENTS) {
         const r = run(project, agent);
         expect(r.status, `${agent} must resolve`).toBe(0);
         const p = parse(r.stdout);
         expect(p.WORKBENCH, `${agent} must get WORKBENCH`).toBeDefined();
-        expect(
-          Object.keys(p).length,
-          `${agent} must get more than WORKBENCH alone`,
-        ).toBeGreaterThan(1);
+        if (NO_KEY.includes(agent)) {
+          expect(Object.keys(p), `${agent} writes nothing in the workbench`).toEqual(["WORKBENCH"]);
+        } else {
+          expect(
+            Object.keys(p).length,
+            `${agent} must get more than WORKBENCH alone`,
+          ).toBeGreaterThan(1);
+        }
       }
     });
 
@@ -648,6 +653,22 @@ describe("bin/fusion-paths", () => {
       expect(parse(run(project, "reconciler").stdout).OUT_DECISION).toBe(
         `circles/${CIRCLE_NAME}/decisions`,
       );
+    });
+
+    it("emits no history key to any agent — the store is closed to writes", () => {
+      // The history store closed on 2026-09-10: no agent prompt names
+      // `$OUT_HISTORY` or `$SCAN_HISTORY`, so the resolver values neither for
+      // an agent. The corpus itself is kept and stays readable; what ended is
+      // the writing. `/fusion:cadence` still receives SCAN_HISTORY, because it
+      // digests that frozen corpus and says so in its own output.
+      // Asserted over every agent rather than one, so re-adding a history-log
+      // step to a prompt fails here rather than quietly re-opening the store.
+      for (const name of AGENTS) {
+        const p = parse(run(project, name).stdout);
+        expect(p.OUT_HISTORY, `${name} must get no OUT_HISTORY`).toBeUndefined();
+        expect(p.SCAN_HISTORY, `${name} must get no SCAN_HISTORY`).toBeUndefined();
+      }
+      expect(parse(run(project, "cadence").stdout).SCAN_HISTORY).toBe("shared/history");
     });
 
     it("emits no investigation key to anyone — the kind lost both of them", () => {

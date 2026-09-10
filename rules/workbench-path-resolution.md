@@ -52,7 +52,7 @@ In the Value column, `A → B` means: `A` when a Circle is in scope, `B` when no
 | `WORKBENCH` | Absolute path to `fusion-workbench/` | Always emitted. Resolved via `bin/fusion-workbench-root`. |
 | `CIRCLE` | `circles/<stamp>-<slug>` | The active Circle directory. Absent when no Circle is active. Never the `<circle-dir>` target — see *The second argument* above. |
 | `OUT_PLAN` | `<circle>/planning` → `shared/planning` | Spec and plan writes. |
-| `OUT_HISTORY` | `<circle>/history` → `shared/history` | Session history writes. |
+| `OUT_HISTORY` | `<circle>/history` → `shared/history` | **Legacy: the history store is closed to writes** (`rules/fusion-workbench-conventions.md` `## Session history`). No agent names it. The arm survives only while the last skill bodies naming it do, and goes with them. |
 | `OUT_ISSUE` | `<circle>/issues` → `shared/issues` | Defect filing. |
 | `OUT_DECISION` | `<circle>/decisions` → `shared/decisions` | Decision-record filing. |
 | `OUT_REVIEW` | `<circle>/reviews` → `shared/reviews` | codereview / ontoreview writes. |
@@ -65,7 +65,7 @@ In the Value column, `A → B` means: `A` when a Circle is in scope, `B` when no
 | `SCAN_PLANS` | `<circle>/planning shared/planning` | Read/search targets. |
 | `SCAN_ISSUES` | `<circle>/issues shared/issues` | |
 | `SCAN_DECISIONS` | `<circle>/decisions shared/decisions` | |
-| `SCAN_HISTORY` | `<circle>/history shared/history` | |
+| `SCAN_HISTORY` | `<circle>/history shared/history` | The frozen corpus. `/fusion:cadence` is the consumer this is emitted for; a reader of it says so rather than reporting an empty stretch as a quiet week. |
 | `SCAN_REVIEWS` | `<circle>/reviews shared/reviews` | |
 | `SCAN_ANALYSES` | `<circle>/analyses shared/analyses` | |
 | `SCAN_CONSULT` | `shared/consult` | Read counterpart of `OUT_CONSULT`. Shared-only — see invariant 2. |

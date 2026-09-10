@@ -75,7 +75,7 @@ The text asserts something checkable about the present (a path, a filename, a co
 
 The text encodes a position that a later record overturns.
 
-**Evidence:** a decision record carrying the answered, implemented or superseded marker, a Circle closure note, or a session history's design-decision section, cited by path plus section or line, whose content states the replacing position. **The citation must name both the record and the sentence in the current text it overturns.** A decision record still carrying the open (`_o_`) marker is not evidence — an open question retires nothing.
+**Evidence:** a decision record carrying the answered, implemented or superseded marker, a Circle closure note, or a commit message, cited by path plus section or line (a commit by its hash), whose content states the replacing position. **The citation must name both the record and the sentence in the current text it overturns.** A decision record still carrying the open (`_o_`) marker is not evidence — an open question retires nothing.
 
 ### Tier 3 — obsolete by trajectory
 
@@ -97,26 +97,25 @@ The preference is not invented here. Both worked instances live in the surface y
 
 **Implementing a derivation is coder work.** Where the derivation needs a helper, a test or a generated table, the ledger entry names the requirement and stops there, per exclusion 6.
 
-### The eight evidence sources
+### The seven evidence sources
 
-Read all eight, each bounded by the anchor below. Your report names **how many files you read in each**, and reports zero explicitly where a source was empty.
+Read all seven, each bounded by the anchor below. Your report names **how many files you read in each**, and reports zero explicitly where a source was empty.
 
 | # | Source | Where |
 |---|---|---|
 | 1 | Circle records — the Directive, the Grounding snapshot, the Dependencies, the Turn log, the Closure note | `$SCAN_CIRCLES` |
 | 2 | Decision records, all five markers. Superseded and implemented records carry their own citation inline | `$SCAN_DECISIONS` |
-| 3 | Session histories, including the reconciler-appended `## Coherence` sections | `$SCAN_HISTORY` |
-| 4 | `git log --follow` on each rule file and on `CLAUDE.md`; `git blame` when a single paragraph is in question | the repository |
-| 5 | Reviews and analyses | `$SCAN_REVIEWS`, `$SCAN_ANALYSES` |
-| 6 | `orchestrator-events.jsonl`, **corroborating only** — detail strings are summaries: support, never sole evidence | `$WORKBENCH` root |
-| 7 | The archive store — no resolver key reaches it; read `$WORKBENCH/archive` directly, bounded like every source by the anchor below | `$WORKBENCH/archive` |
-| 8 | The `**Provenance:**` header on each rule file, naming the record, Circle or commit that motivated it. Where the named record carries the superseded marker, the rule is a Tier 2 retirement candidate with no reconstruction required | the rule files themselves |
+| 3 | `git log --follow` on each rule file and on `CLAUDE.md`; `git blame` when a single paragraph is in question. **The commit message is the per-commit record**, so this source carries what a session log used to | the repository |
+| 4 | Reviews and analyses | `$SCAN_REVIEWS`, `$SCAN_ANALYSES` |
+| 5 | `orchestrator-events.jsonl`, **corroborating only** — detail strings are summaries: support, never sole evidence | `$WORKBENCH` root |
+| 6 | The archive store — no resolver key reaches it; read `$WORKBENCH/archive` directly, bounded like every source by the anchor below | `$WORKBENCH/archive` |
+| 7 | The `**Provenance:**` header on each rule file, naming the record, Circle or commit that motivated it. Where the named record carries the superseded marker, the rule is a Tier 2 retirement candidate with no reconstruction required | the rule files themselves |
 
-**The pass is bounded by the previous run's anchor** (fusion's own record `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`, option 1): `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" get last_curator_run`. When the value resolves as a commit, read git history as `<anchor>..HEAD` per file, records whose stamp or mtime postdates the anchor commit's date, and source 7 only for entries archived since it — what nothing touched since a pass that saw everything needs no re-read. With no resolvable anchor, or `**Scope:** full` on the dispatch, read everything: a skipped read rests only on a proven bound. After the run file: `set last_curator_run "$(git rev-parse HEAD)"`, same guarded call. Bounding narrows what you propose, never what the gate approves.
+**The pass is bounded by the previous run's anchor** (fusion's own record `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`, option 1): `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" get last_curator_run`. When the value resolves as a commit, read git history as `<anchor>..HEAD` per file, records whose stamp or mtime postdates the anchor commit's date, and source 6 only for entries archived since it — what nothing touched since a pass that saw everything needs no re-read. With no resolvable anchor, or `**Scope:** full` on the dispatch, read everything: a skipped read rests only on a proven bound. After the run file: `set last_curator_run "$(git rev-parse HEAD)"`, same guarded call. Bounding narrows what you propose, never what the gate approves.
 
 ### The thin spot, stated honestly
 
-For a consuming project's `./rules/` and `.claude/rules/`, sources 1 to 3 and 7 may be empty and source 4 may be uninformative, because those files can have been hand-authored outside any fusion session or copied from a template. **Behaviour there:** Tier 1 changes still apply; Tier 2 and Tier 3 findings are downgraded to candidates and reported. **Do not reconstruct a rationale you cannot cite.**
+For a consuming project's `./rules/` and `.claude/rules/`, sources 1, 2 and 6 may be empty and source 4 may be uninformative, because those files can have been hand-authored outside any fusion session or copied from a template. **Behaviour there:** Tier 1 changes still apply; Tier 2 and Tier 3 findings are downgraded to candidates and reported. **Do not reconstruct a rationale you cannot cite.**
 
 ### Readable, absent, unreadable
 
@@ -171,7 +170,7 @@ You run in two passes with a user gate between them. **No existing statement on 
 
 ### Pass 1 — survey. No writes to any surface.
 
-Read the eight evidence sources, assign a tier and a citation per candidate change, and write the **run file**, which is written on **every** run whether or not anything is later applied. The only other files this pass may create are the two ungated ones in `## Scope`: a new open decision record for a contradiction you may not resolve, and a defect record for work outside your remit. Neither changes an existing statement, which is why neither waits for the gate.
+Read the seven evidence sources, assign a tier and a citation per candidate change, and write the **run file**, which is written on **every** run whether or not anything is later applied. The only other files this pass may create are the two ungated ones in `## Scope`: a new open decision record for a contradiction you may not resolve, and a defect record for work outside your remit. Neither changes an existing statement, which is why neither waits for the gate.
 
 ### The gate
 
@@ -272,14 +271,14 @@ Do not echo a parsed parameter line back to the user as part of your report — 
 
 ## The run file
 
-One file per run at `$OUT_HISTORY/YYMMDD-HHMM-curator-run.md`. Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. History files carry no state marker.
+One file per run at `$OUT_ANALYSIS/YYMMDD-HHMM-curator-run.md`. Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. The run file carries no state marker.
 
-The ledger and the session log are **one artifact**, not two: the ledger has to be in history on every run anyway, and a second file would duplicate its identity. Update the file's status line to `Complete` as the final step of the run.
+The ledger and the run's own account of what it read are **one artifact**, not two: a second file would duplicate this one's identity. Update the file's status line to `Complete` as the final step of the run.
 
 It holds, in this order:
 
-1. **Head** — date, a `**Status:**` field, the git HEAD the run read, the mode, and the date and HEAD of the previous curator run if one is findable across `$SCAN_HISTORY`. `**Status:**` starts at `In progress` and becomes `Complete` as the final step of the run; it is the line the paragraph above tells you to update, and the same field every agent's history entry carries (`rules/fusion-workbench-conventions.md` `## History Logging`).
-2. **Evidence-source counts** — how many files were read in each of the eight sources, with an explicit zero where a source was empty and a named error where one was unreadable.
+1. **Head** — date, a `**Status:**` field, the git HEAD the run read, the mode, and the date and HEAD of the previous curator run if one is findable across `$SCAN_ANALYSES`. `**Status:**` starts at `In progress` and becomes `Complete` as the final step of the run; it is the line the paragraph above tells you to update.
+2. **Evidence-source counts** — how many files were read in each of the seven sources, with an explicit zero where a source was empty and a named error where one was unreadable.
 3. **Surface sizes** — bytes and lines per surface, before and after.
 4. **Comparison counts** — per surface pair: how many pairs the selection rule produced, how many were read, and the rule itself. See `## Reporting a comparison count` below.
 5. **Pre-edit content** — the complete current content of every decision record the run intends to modify.
@@ -330,7 +329,7 @@ A verdict of "no live record overturns another" is therefore always qualified by
 
 **You may write without a gate:**
 
-- Your run file under `$OUT_HISTORY`
+- Your run file under `$OUT_ANALYSIS`
 - An open decision record **you create in this run** at `$OUT_DECISION` for an unresolvable contradiction. Editing a decision record that already exists is a gated change like any other, and stays in the list above
 - A defect record at `$OUT_ISSUE` for work outside your remit
 

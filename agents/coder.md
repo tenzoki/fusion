@@ -65,12 +65,11 @@ Apply the rules loaded in Setup step 2. The defaults below hold even when no pro
 2. **Locate** the source root — where `go.mod`, `package.json`, `Cargo.toml`, or equivalent lives. May be the project root or a subfolder; defer to CLAUDE.md.
 3. **Implement** following the plan strictly — no improvisation
 4. **Verify** — run the project's build and test command **to completion** and read the exit code it returns. Wait for it. Do not start writing the report while the run is still in flight. If the run cannot finish (it times out, it is interrupted, it needs something you do not have), that failure to finish *is* your verification result and you report it as one.
-5. **Log** to `$OUT_HISTORY` what you implemented — **update status to "Complete" as final step** (if interrupted before this, the completion state is lost)
-6. **Report** in the shape below. There is no shorter form.
+5. **Report** in the shape below. There is no shorter form. Your report is the only record of the run — nothing is written to the workbench about it, so anything you leave out is lost.
 
 ### Report shape
 
-Four fields, in this order. The contract is authored here and in `agents/ontocoder.md` `### Report shape`, pinned by `hooks/lib/__tests__/executor-verification-report-lint.test.ts`; it extends the four-bullet report `agents/bugfixer.md` Phase 6 carries, replacing its free-text verification result with the locked line below — one shape, so the orchestrator reads every executor's report the same way.
+Three fields, in this order. The contract is authored here and in `agents/ontocoder.md` `### Report shape`, pinned by `hooks/lib/__tests__/executor-verification-report-lint.test.ts`; it extends the report `agents/bugfixer.md` Phase 6 carries, replacing its free-text verification result with the locked line below — one shape, so the orchestrator reads every executor's report the same way.
 
 1. **Files changed** — every file you modified, absolute paths.
 2. **Verification** — one line, in exactly one of these three forms and no fourth:
@@ -78,18 +77,16 @@ Four fields, in this order. The contract is authored here and in `agents/ontocod
    - `Verification: <exact command> — did not finish: <what stopped it>` — you started it and it never returned a code.
    - `Verification: none — <why not>` — you ran nothing. Write those words; the field is never left out.
 3. **Result** — `done` or `blocked`, and field 2 decides which, not you. `done` requires the first form **with `exit 0`**. A non-zero exit, a run that did not finish, and `none` are each `blocked`, and you use that word. "Done" is a claim about an exit code you read, never about your editing being finished.
-4. **History** — the path to your log under `$OUT_HISTORY`.
 
 Report a failing exit code exactly as it came back. Do not narrow the command until it passes, and do not drop the field: a report with no verification line is an incomplete report, and the orchestrator will not commit on one (`agents/orchestrator.md` Step 3a step 5).
 
 ### Resuming Interrupted Sessions
 
-The in-memory task list does not persist across sessions. When asked to resume or verify prior work:
-1. Read the latest history log under `$SCAN_HISTORY` and the relevant plan under `$SCAN_PLANS`
+No session state persists across sessions. When asked to resume or verify prior work:
+1. Read the relevant plan under `$SCAN_PLANS` and the git log over the range in question — the commit messages are the record of what landed
 2. Run build, tests, and type checks to confirm green state
 3. Spot-check key changes from the plan against actual code (grep for function names, patterns, new files)
-4. Update the history log if it was left in draft/incomplete state
-5. Report verified status to user
+4. Report verified status to user
 
 ## Codebase Location
 

@@ -1,5 +1,5 @@
 ---
-description: The message step of /fusion:cleanup (its Step 6 half, reachable alone as `/fusion:cleanup --only forum`), kept as its own body rather than a command. Composes a short note for whoever pulls this work next, carrying the commit range, the session history file and the records this session filed, and writes it into the workbench's message store.
+description: The message step of /fusion:cleanup (its Step 6 half, reachable alone as `/fusion:cleanup --only forum`), kept as its own body rather than a command. Composes a short note for whoever pulls this work next, carrying the commit range and the records this session filed, and writes it into the workbench's message store.
 allowed-tools: [Bash, Read, Write, AskUserQuestion]
 ---
 
@@ -28,9 +28,9 @@ The entry is **twenty lines in the file**, in this order and no other:
 4. one blank line,
 5. at most **nine** lines of pointer block, in the project's artifact language.
 
-The pointer block carries the commit range (the session's `git_head_at_start`, to `HEAD`), the basename of this session's history file, this session's filed records as **storeless wildcard citations** in the form `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines, and one sentence on what the other side need not redo.
+The pointer block carries the commit range (the session's start anchor, to `HEAD`), this session's filed records as **storeless wildcard citations** in the form `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines, and one sentence on what the other side need not redo.
 
-**The first two of those come from `session.git_head_at_start` and `session.history_file` in `fusion-workbench/agentstate.yaml`, and a caller that deletes that file hands them in instead** — `/fusion:cleanup` Step 1 captures both, five steps before this one runs and before its own item 4 removes the file. **An element whose value is unread is left out of the block** and named in Step 6's report: no empty range, no bare `to HEAD`, no invented anchor. Outside an orchestrator session the file never existed and both are ordinarily absent, which is a shape the entry is still worth writing in — the records it cites are what the other side reads it for.
+**The range's start anchor is handed in by the caller and read from no file** — no session state file and no session history file exists to hold it (`rules/fusion-workbench-conventions.md` `## Session history`), so a caller that holds the session's starting commit passes it and a caller that does not passes nothing. **An element whose value is unread is left out of the block** and named in Step 6's report: no empty range, no bare `to HEAD`, no invented anchor. Outside an orchestrator session the anchor is ordinarily absent, which is a shape the entry is still worth writing in — the records it cites are what the other side reads it for.
 
 **The person's part reads plainly to somebody who never saw this session.** No state marker, no fusion noun, no agent name as the subject of a sentence, no bare identifier. That obligation is authored here rather than cited: `rules/user-facing-output.md` `## Vocabulary` exempts workbench records, and a message is one.
 

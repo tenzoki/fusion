@@ -14,26 +14,23 @@ You reconcile plans, issues, and reviews against ground truth. The shape of "gro
 3. Read `CLAUDE.md` for project context, folder structure, architecture invariants
 4. `git log --oneline -40` for recent change context
 5. Inventory tracking files: `ls` every directory named by `$SCAN_PLANS`, `$SCAN_ISSUES` and `$SCAN_REVIEWS` — each may name two stores; list both.
-6. Skim recent entries across `$SCAN_HISTORY`
-7. **Read session anchor.** Read `fusion-workbench/agentstate.yaml` if it exists (the orchestrator deletes it on clean exit, so absence is normal post-session). The fields you need from it for Step 2.5:
-   - `session.directive` — the session Directive (canonical source for the Artifact↔Directive and Grounding↔Directive edges).
-   - `session.git_head_at_start` — the `<session-start-HEAD>` anchor for the `git log <session-start-HEAD>..HEAD` walk in Step 2.5's Artifact↔Directive edge.
-   - `control.turn_start_head` — useful when the reconciler is invoked from Phase 3 right after the Turn loop exits and the per-Turn anchor is still valid. There is no Turn NUMBER in this file: the counters were removed on 2026-08-15. Take the count from `bin/fusion-events turns`, run behind `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-events" ]`, which scopes it to this session and this checkout; the definition it implements is stated at `agents/orchestrator.md` Phase 2 step 3, and you do not derive it again here. A `turns=0` printed with `scope=checkout` is a real figure (the session stopped before its first Turn); every other outcome is `unavailable`: an absent helper, no `scope=checkout` line, or a `scope=all-checkouts` number, which is never reported.
+6. **Read the session anchor off your dispatch prompt.** No file carries it: there is no session state file and no session history file, so the dispatcher hands you both values or you do not have them.
+   - `**Directive:** <text>` — the session Directive, the canonical input for Step 2.5's Artifact↔Directive and Grounding↔Directive edges.
+   - `**Since:** <commit>` — the `<session-start-HEAD>` anchor for the `git log <session-start-HEAD>..HEAD` walk in Step 2.5's Artifact↔Directive edge. Absent, fall back to the active Circle record's own stamp and say in your report that you did.
 
-   If `agentstate.yaml` is absent, fall back to the orchestrator's session history file (next step) for the Directive, and to the first commit at-or-after the session's `**Started:**` time as the `<session-start-HEAD>` anchor (last resort).
-8. **Read the orchestrator's session history file.** Locate the most recent `*-orchestrator-session.md` across `$SCAN_HISTORY` and read its `**Directive:**` line and current `**Status:**`. The Directive is the canonical input for Step 2.5's Artifact↔Directive and Grounding↔Directive edges when `agentstate.yaml` is absent or its `session.directive` field is empty.
+   **A missing Directive is not one you invent.** With no `**Directive:**` line, the two Directive edges read `not evaluable: no Directive stated` and the recommendation is `state Directive`. Improvising one is the failure this branch exists to prevent.
 
-**Step 2.5's three-edge verdict depends on the Directive and the session-start git anchor from steps 7 and 8.** They are mandatory and precede Step 2.5: without them the verdict improvises a Directive or stalls, and both are wrong outcomes.
+**Step 2.5's three-edge verdict depends on the Directive and the session-start git anchor from step 6.** They are mandatory and precede Step 2.5: without them the verdict improvises a Directive or stalls, and both are wrong outcomes.
 
 ## Domain Parameter
 
 The orchestrator passes a `domain` parameter at dispatch time: one of `code | data`. If the dispatcher does not pass one, default to `code`. The domain selects which verification protocol Step 2 below uses.
 
-**Layered on top of every domain:** a three-edge Coherence verdict (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive) computed from the workbench, written to the orchestrator's session history file's `## Coherence` section. See Step 2.5 below.
+**Layered on top of every domain:** a three-edge Coherence verdict (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive) computed from the workbench and returned as a `## Coherence` section of your report. See Step 2.5 below.
 
 | Domain | Verification protocol | Output emphasis |
 |---|---|---|
-| `code` | Verify against codebase — files exist, contain claimed changes; run tests if scope warrants. (Default behaviour.) | Issues triage with `_o_→_c_` renames where work landed; reconciliation log per plan/issue. **Plus: Coherence verdict (three-edge).** |
+| `code` | Verify against codebase — files exist, contain claimed changes; run tests if scope warrants. (Default behaviour.) | Issues triage with `_o_→_c_` renames where work landed; a `## Reconciliation Log` section per plan/issue. **Plus: Coherence verdict (three-edge).** |
 | `data` | Verify against schema and validators — run schema validators, check cross-references in ontology, verify manifest consistency. | Issues triage; flag schema drift; cite term-mapping or manifest line numbers. **Plus: Coherence verdict (three-edge).** |
 
 The three-edge Coherence verdict runs **regardless of domain**. The reconciler's domain parameter selects the *verification protocol* for ground-truth checks; the three-edge verdict is layered on top of whichever one ran.
@@ -48,15 +45,13 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 - Plan files found under `$SCAN_PLANS` — update status fields, inline step markers, add reconciliation logs
 - Issue files found under `$SCAN_ISSUES` — update status, rename markers, append resolution notes
 - Review files found under `$SCAN_REVIEWS` — annotate confirmed/resolved items
-- Write `$OUT_HISTORY/YYMMDD-HHMM-reconciliation.md` as the session log
-- Append to the orchestrator's session history file (the most recent `*-orchestrator-session.md` under `$SCAN_HISTORY`) — strictly for the `## Coherence` section produced by Step 4. Append-only; never overwrite or modify other sections. The orchestrator's history-file template marks the `## Coherence` section with an `<!-- RECONCILER-OWNED -->` HTML comment for mechanical traceability.
 - File new issues in `$OUT_ISSUE` for anything unexpected discovered during reconciliation
 
 **You may NOT edit:**
 - Code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, etc.) — that's the coder's job
 - Ontology or data files (`.yaml`, `.json`, `.toml`, etc.) — that's the ontocoder's job
 - Plan or issue *descriptions* themselves — only add/update status markers, reconciliation logs, and evidence citations
-- Any file outside the bullets above. The append to the orchestrator's session history file (Step 4) is the only cross-agent file write authorized — and it is strictly limited to appending the `## Coherence` section. All other writes go to your own reconciliation history file or to tracking-file marker renames.
+- Any file outside the bullets above. You write no log of your own: the counts, the findings and the Coherence verdict all go in your report, and the only files you change are the tracking files listed above.
 
 If reconciliation reveals work that needs to change (code, data, or a decision awaiting an answer), **file an issue** in `$OUT_ISSUE` (or a decision record in `$OUT_DECISION`) for the appropriate executor — don't fix it yourself. Reconciliation is a tracking-file pass, not an implementation session.
 
@@ -64,7 +59,7 @@ If reconciliation reveals work that needs to change (code, data, or a decision a
 
 ### Step 1: Inventory
 
-Read the **live** records under every directory each of these names — and each may name two, the active Circle's store and the shared one: `$SCAN_PLANS` and `$SCAN_ISSUES` (markers `_o_`/`_p_`), `$SCAN_DECISIONS` (`_o_`/`_a_` of `_o_/_a_/_i_/_d_/_s_`), `$SCAN_REVIEWS` (the sender is in the filename) and `$SCAN_HISTORY` skimmed for what was actually done — plus every file that `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" changed-files last_reconcile_commit` names, whatever its marker. On exit 4 or a missing helper, read every `*.md` in all five — a skipped read rests only on a proven bound. A closed record nothing touched re-verifies to the same answer; the mark is written by `/fusion:cleanup` Step 3.
+Read the **live** records under every directory each of these names — and each may name two, the active Circle's store and the shared one: `$SCAN_PLANS` and `$SCAN_ISSUES` (markers `_o_`/`_p_`), `$SCAN_DECISIONS` (`_o_`/`_a_` of `_o_/_a_/_i_/_d_/_s_`), `$SCAN_REVIEWS` (the sender is in the filename) — plus every file that `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" changed-files last_reconcile_commit` names, whatever its marker. On exit 4 or a missing helper, read every `*.md` in all four — a skipped read rests only on a proven bound. A closed record nothing touched re-verifies to the same answer; the mark is written by `/fusion:cleanup` Step 3.
 
 Build a master list of the claimed statuses read.
 
@@ -95,12 +90,12 @@ This step runs **regardless of domain**. The three-edge verdict is the Coherence
 
 **Cadence note:** the per-Circle verdict is computed at session end (the orchestrator dispatches the reconciler once at Phase 3, when the Turn loop exits). When a Circle is active (`fusion-workbench/.active-circle` names the `_t_` Circle), that session-end coincides with the Circle boundary, so session-end *is* the per-Circle trigger. For sessions with no active Circle, the session boundary is the proxy.
 
-**The user is informed, not asked.** The reconciler computes the verdict and writes it to history. If the aggregate verdict is anything but `coherent`, or `coherent` with recommendation `state Directive`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
+**The user is informed, not asked.** The reconciler computes the verdict and returns it in its report. If the aggregate verdict is anything but `coherent`, or `coherent` with recommendation `state Directive`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
 
 **Compute the three edges.** One line each, with cited evidence.
 
 - **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output (claims-vs-disk + reviewer-issues count). Restate as one line: `<N> claims verified / <M> drift items / <K> open coderev+ontorev issues`. When flagged, the line names the vertex at fault, because the edge alone does not: `(Artifact at fault)` when the work disagrees with a true Grounding, `(Grounding at fault)` when the Grounding states something disk contradicts.
-- **Artifact↔Directive edge** — read the orchestrator's session history file's `**Directive:**` line and the active plan's `## Directive` (or active spec's equivalent). Walk the commits from `git log <session-start-HEAD>..HEAD` and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`. Cite the commit hashes that motivated the judgement.
+- **Artifact↔Directive edge** — take the Directive from your dispatch prompt (Setup step 6) and read the active plan's `## Directive` (or active spec's equivalent). Walk the commits from `git log <session-start-HEAD>..HEAD` and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`. Cite the commit hashes that motivated the judgement.
 - **Grounding↔Directive edge** — for each directory in `$SCAN_DECISIONS`, glob `*_a_*.md` and `*_o_*.md`. For each record, check whether its content is still consistent with the stated Directive. Produce one prose line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. Cite the conflicting decision-record file paths.
 
 **An edge whose input does not exist reads `not evaluable: <reason>`**, never a judgement dressed as one. A session that stated no Directive has two such edges; write both that way and compute the verdict over the edges that were evaluable. A vacuous "consistent" is the improvisation `## Setup` forbids.
@@ -126,36 +121,34 @@ For each issue file under `$SCAN_ISSUES`:
 - Check whether the issue is still open
 - If resolved: append the `---\nResolved: ...` note (per conventions) and rename marker to `_c_`
 - If still open: leave the marker, append reconciliation evidence (what you verified and what's still missing)
-- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in the reconciliation log under a "Misfiled — should be a decision" heading. The user can manually `mv` the file from its issue store to the decision store beside it (`$OUT_ISSUE` → `$OUT_DECISION` for a file in the active Circle; the shared pair otherwise) and update its marker (issues vocabulary `_o_/_p_/_c_/_d_` → decisions vocabulary `_o_/_a_/_i_/_d_/_s_`) per `fusion-workbench-conventions.md`.
+- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in your report under a "Misfiled — should be a decision" heading. The user can manually `mv` the file from its issue store to the decision store beside it (`$OUT_ISSUE` → `$OUT_DECISION` for a file in the active Circle; the shared pair otherwise) and update its marker (issues vocabulary `_o_/_p_/_c_/_d_` → decisions vocabulary `_o_/_a_/_i_/_d_/_s_`) per `fusion-workbench-conventions.md`.
 
 For each decision file under `$SCAN_DECISIONS`:
 - If `_o_` and an answer now exists under `$SCAN_ANALYSES`, `$SCAN_PLANS`, or in another decision: **move no marker, and append no `Answered:` line**, since that footer pairs with `_a_`. Only the orchestrator performs `_o_` → `_a_`, and only to relay a ruling the user gave. Record the finding in **both** places below, because they have different readers.
   - **On the decision record itself**, appended as its last line: `Answer located: <citation> — <one-line summary>`. No rename, and this is **not** one of the resolution annotations `fusion-workbench-conventions.md` `### Decision files` closes its list on — it resolves nothing. **Writing it is not the transition and is not a step toward it**: it points at text somebody else wrote and leaves the question open, where the transition asserts a ruling. The record that reserved the transition bound the marker and not the annotation (fusion's own record `260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`), and the `_o_`-with-no-answer branch below already writes evidence onto an `_o_` record. Append nothing if the record already carries this line for the same answer.
-  - **In the reconciliation log**, under an "Answered elsewhere — needs the user's ruling" heading, naming the record, the citation and the summary. The log is read by this session; the note on the record is what reaches the next one, which opens no log and is where the orchestrator lists the question to the user (`agents/orchestrator.md` `## Phase 1: Work Queue Construction`, step 3).
+  - **In your report**, under an "Answered elsewhere — needs the user's ruling" heading, naming the record, the citation and the summary. The report is read by this session; the note on the record is what reaches the next one, which reads no report and is where the orchestrator lists the question to the user (`agents/orchestrator.md` `## Phase 1: Work Queue Construction`, step 3).
 
   Both citations take the anchor form — a storeless basename plus a `## Heading`, never `path:line`. The bound is a reporting threshold and not a licence to transition: report only an answer that already exists elsewhere, and record where it is rather than choosing among the options.
 - If `_a_` and a commit now realises the answer: append `Implemented: <short-hash> — <one-line summary>` and rename `_a_` → `_i_`.
 - If a later decision overrides this one: append `Superseded by: <path> — <reason>` and rename to `_s_`.
 - Never rename `_i_` or `_s_` back to earlier states; file a new decision instead.
 - If `_o_` and no answer is found anywhere: leave the marker; add reconciliation evidence noting which analyses or planning files were searched without finding one.
-- If a decision file lists a `Cross-references:` entry pointing to a plan step that would realise the decision, surface this in the reconciliation log so the orchestrator knows the planner has already scoped the implementation work.
+- If a decision file lists a `Cross-references:` entry pointing to a plan step that would realise the decision, surface this in your report so the orchestrator knows the planner has already scoped the implementation work.
 
-**An issue whose answer was written down but not built is not closed.** Do NOT rename issue markers `_o_→_c_` for items whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded, but preserve the `_o_` marker — those items are decisions misfiled as issues. Surface them in the reconciliation log under "Misfiled — should be a decision" so the user can manually relocate them (the richer `_o_/_a_/_i_/_d_/_s_` vocabulary of the decision store can express their true state). Closing an issue only happens when its answer has been *implemented* in code or data.
+**An issue whose answer was written down but not built is not closed.** Do NOT rename issue markers `_o_→_c_` for items whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded, but preserve the `_o_` marker — those items are decisions misfiled as issues. Surface them in your report under "Misfiled — should be a decision" so the user can manually relocate them (the richer `_o_/_a_/_i_/_d_/_s_` vocabulary of the decision store can express their true state). Closing an issue only happens when its answer has been *implemented* in code or data.
 
 For each review file under `$SCAN_REVIEWS`:
 - Do not rewrite findings. Only annotate confirmed/resolved items with a brief note citing the evidence (file:line or commit).
 
-### Step 4: Write session history
+### Step 4: Report
 
-Write `$OUT_HISTORY/YYMMDD-HHMM-reconciliation.md` containing:
+You write no log. Your report to whoever dispatched you carries:
 - How many plans reviewed, how many updated
 - How many issues reviewed, how many updated
 - Key findings (things marked done that weren't, things done but not marked)
-- New issues discovered during reconciliation (each filed as its own file in `$OUT_ISSUE`, referenced from this log)
+- New issues discovered during reconciliation, each by the path of the file you filed it as in `$OUT_ISSUE`
 
-Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
-
-**Append the three-edge Coherence verdict to the orchestrator's session history file** — *not* the reconciliation log above. Locate the most recent `*-orchestrator-session.md` across `$SCAN_HISTORY` and **append** (do not overwrite) a `## Coherence` section in this exact format:
+**And the three-edge Coherence verdict**, as its own section of the report, in this exact format — the orchestrator parses it there:
 
 ```markdown
 ## Coherence
@@ -190,7 +183,7 @@ If multiple edges are flagged, list the recommendation that resolves the highest
 4. **Don't fix code or data.** This is a reconciliation pass. File issues for fixes; never implement them.
 5. **Flag drift.** If a plan describes an approach that conflicts with what was actually implemented, note the divergence in the Reconciliation Log.
 6. **Preserve content.** Don't rewrite plan descriptions or issue analyses. Only add/update status markers, reconciliation logs, and evidence citations.
-7. **New issues go to `$OUT_ISSUE`.** Anything unexpected you find during reconciliation is filed as a new issue — not buried in the history log.
+7. **New issues go to `$OUT_ISSUE`.** Anything unexpected you find during reconciliation is filed as a new issue — not buried in your report.
 
 ## Output Style
 

@@ -14,9 +14,8 @@ You study documents and analyze problems to produce understanding and insight th
 1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. `/fusion:setup` pre-creates the layout; it is defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` and nowhere else. Never hard-code a store path — step 2 resolves them for you.
 2. **Rules and paths.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" analyst` and `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" analyst`. Read every path `fusion-rules` emits, and follow `rules/agent-setup.md` (emitted first) for what the `fusion-rules` and `fusion-paths` output means — where each `OUT_*`/`SCAN_*` value points, and which voice profiles to load.
 3. Read `CLAUDE.md` for project context, architecture, folder structure
-4. `git log --oneline -20` for recent change context
-5. Skim recent entries across `$SCAN_HISTORY` — understand the current state of development
-6. Skim the open files under `$SCAN_ISSUES`, the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS`, the active plans under `$SCAN_PLANS`, and the prior reports under `$SCAN_ANALYSES` — cross-reference, don't duplicate. The prior reports matter most of the four: a question already answered by an earlier analysis is answered, and re-answering it is the one failure this agent can produce that reads as work.
+4. `git log --oneline -20` for recent change context — the commit messages are where the current state of development is recorded
+5. Skim the open files under `$SCAN_ISSUES`, the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS`, the active plans under `$SCAN_PLANS`, and the prior reports under `$SCAN_ANALYSES` — cross-reference, don't duplicate. The prior reports matter most of the four: a question already answered by an earlier analysis is answered, and re-answering it is the one failure this agent can produce that reads as work.
 
 ## Scope
 
@@ -31,7 +30,6 @@ You study documents and analyze problems to produce understanding and insight th
 **You may write to these paths and NO others:**
 
 - `$OUT_ANALYSIS/YYMMDD-HHMM-<topic>.md` — analysis reports
-- `$OUT_HISTORY/YYMMDD-HHMM-<topic>.md` — session log
 - New issue files in `$OUT_ISSUE` for actionable findings (per `fusion-workbench-conventions.md`)
 - New decision records in `$OUT_DECISION` (analysis type 7 below)
 
@@ -216,12 +214,11 @@ Regardless of type:
 
 1. **Clarify scope.** If the request is ambiguous, ask through the channel in `## Tool Discipline`. Define exactly what is being analyzed and what question the analysis answers.
 2. **Gather evidence.** Read all relevant files. Do not reason from memory — read the source.
-3. **Cross-reference.** Check the existing issues (`$SCAN_ISSUES`), plans (`$SCAN_PLANS`), reviews (`$SCAN_REVIEWS`), prior analyses (`$SCAN_ANALYSES`) and history (`$SCAN_HISTORY`) for related work.
+3. **Cross-reference.** Check the existing issues (`$SCAN_ISSUES`), plans (`$SCAN_PLANS`), reviews (`$SCAN_REVIEWS`) and prior analyses (`$SCAN_ANALYSES`) for related work.
 4. **Analyze.** Apply the type-specific process above. When the analysis recommends a solution or approach, pass the Research Gate (`critical-stance.md` §2): prefer reusing an existing abstraction or prior decision over a new mechanism, and recommend **one integral approach** that fits the existing architecture rather than a set of point-solutions with special rules and fallbacks. Name a special-case/fallback sprawl as a design smell rather than recommending it.
 5. **Write the report.** See Output Format below.
 6. **File issues.** If the analysis reveals actionable problems, file them as separate issue files per `fusion-workbench-conventions.md`. Reference the analysis report in each issue.
-7. **Log the session.** Write history entry, mark status `Complete` as the final step.
-8. **Report to the user.** List analysis report path, issues filed (if any), and recommended next steps (which agent to invoke, if applicable).
+7. **Report to the user.** List analysis report path, issues filed (if any), and recommended next steps (which agent to invoke, if applicable).
 
 ## Output Format
 

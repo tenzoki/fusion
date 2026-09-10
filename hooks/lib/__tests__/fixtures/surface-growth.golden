@@ -12,26 +12,26 @@
 # does not move any baseline and therefore never clears a bound.
 
 [agents bytes]
-  analyst.md 21038
-  bugfixer.md 11509
-  coder.md 9649
-  coderev.md 8141
-  consultant.md 14329
-  curator.md 34554
-  editor.md 13635
-  ontocoder.md 13262
-  ontorev.md 7094
-  orchestrator.md 99083
-  planner.md 19725
-  playmaker.md 42955
-  reconciler.md 22825
-  shaper.md 29057
-  taskplanner.md 14070
-  total 360926
+  analyst.md 20853
+  bugfixer.md 10848
+  coder.md 9510
+  coderev.md 8057
+  consultant.md 13855
+  curator.md 34402
+  editor.md 13309
+  ontocoder.md 13179
+  ontorev.md 6992
+  orchestrator.md 94759
+  planner.md 19615
+  playmaker.md 41906
+  reconciler.md 20865
+  shaper.md 28860
+  taskplanner.md 13461
+  total 350471
 
 [skills bytes]
   archive/SKILL.md 25850
-  cadence/SKILL.md 19057
+  cadence/SKILL.md 19640
   cleanup/SKILL.md 25624
   commit/SKILL.md 6298
   curate/SKILL.md 12072
@@ -42,9 +42,9 @@
   migrate/SKILL.md 25340
   news/SKILL.md 8766
   next/SKILL.md 26049
-  post/SKILL.md 7347
+  post/SKILL.md 7258
   setup/SKILL.md 50575
-  total 259845
+  total 260339
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -70,7 +70,7 @@
   fusion-events.test.ts 414
   fusion-forum.test.ts 220
   fusion-identity.test.ts 217
-  fusion-paths.test.ts 915
+  fusion-paths.test.ts 936
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 148
   glob-nomatch-lint.test.ts 140
@@ -104,4 +104,4 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 683
   workbench-citation-lint.test.ts 325
-  total 21833
+  total 21854

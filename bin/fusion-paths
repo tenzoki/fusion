@@ -60,6 +60,13 @@
 #     Circle otherwise.
 #   - No Circle in scope → every OUT_* points into shared/. This is not an
 #     error state: work outside Circles is routine and has a defined home.
+#   - OUT_HISTORY and SCAN_HISTORY are LEGACY. The history store is closed to
+#     writes (rules/fusion-workbench-conventions.md "## Session history"): no
+#     agent prompt names either key, the existing corpus stays on disk and stays
+#     readable, and SCAN_HISTORY is emitted for /fusion:cadence, which digests
+#     that frozen corpus. Both arms stay valued only while a shipped prompt
+#     still names them — removing an arm a prompt names is exit 4, not silence,
+#     which is why the arm outlives the last write rather than preceding it.
 #   - OUT_CONSULT / OUT_MEMO / OUT_BACKLOG / OUT_FORUM are unconditionally
 #     shared. None of these kinds arises from executing a Directive, so none
 #     can originate in a Circle — and the two that stay shared under a
@@ -134,8 +141,7 @@
 # What derivation gives up: over-emission — a key emitted that no prompt names
 # — becomes structurally impossible, and with it the signal it carried. That
 # signal was real but misfiled. When a declared set held a key the prompt never
-# used, the finding was usually "this prompt is missing a step" (coderev and
-# ontorev have no history-log step though 13 of 15 agents do; planner names
+# used, the finding was usually "this prompt is missing a step" (planner names
 # issue entries with no path), not "this key is spare". A prompt gap is found
 # by reading the prompt. It was only visible here by accident, as the diff
 # between a human's belief about a prompt and the prompt's text — and it cost

@@ -94,48 +94,11 @@ This is the core of your work. Be thorough. Follow the evidence.
 
 ### Phase 6: Report
 
-17. **Log to history.** Write `$OUT_HISTORY/YYMMDD-HHMM-bugfix-<topic>.md` with the format below. Update status to `Complete` as the final step.
-18. **Report to the user (or orchestrator):**
-    - Root cause (one sentence)
-    - Files changed (list)
-    - Verification result (pass/fail)
-    - Path to the history file
-
-## History Log Format
-
-```markdown
-# Bugfix: <short description>
-
-**Date:** YYYY-MM-DD HH:MM
-**Status:** Complete | Failed (if unable to fix)
-**Trigger:** User report | Orchestrator test failure | Issue file
-
-## Error
-
-<Exact error message or symptom as received>
-
-## Root Cause
-
-<File:line, what is wrong, why it produces the error. Cite evidence.>
-
-## Fix
-
-<What was changed, in which files, and why this resolves the root cause.>
-
-| File | Change |
-|------|--------|
-| `path/to/file.ext:line` | <description of change> |
-
-## Verification
-
-- [ ] Original error resolved
-- [ ] Full test suite passes
-- [ ] No regressions introduced
-
-## Unrelated Issues Found
-
-<List any issues filed to $OUT_ISSUE during investigation, or "None">
-```
+17. **Report to the user (or orchestrator).** The report is the record of the run — nothing else is written, so anything you leave out of it is lost:
+    - Root cause (one sentence, citing `file:line`)
+    - Files changed (list, absolute paths)
+    - Verification result (the exact command and its exit code)
+    - Any unrelated defect you found and filed to `$OUT_ISSUE`, by path, or "None"
 
 ## When Invoked by the Orchestrator
 

@@ -16,7 +16,7 @@ tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusi
 - FIRST execute every step in the Setup section, in order, starting with Step 0.
 - ONLY after Setup is fully complete do you act on the user's request.
 
-This applies regardless of what the user asks — even "get an overview", "hello", or a one-line question. Setup always runs first. If you skip Setup, the session has no workspace, no history, and no monitor.
+This applies regardless of what the user asks — even "get an overview", "hello", or a one-line question. Setup always runs first. If you skip Setup, the session has no workspace and no monitor.
 
 ---
 
@@ -66,9 +66,9 @@ Always re-copy the monitor from the installed plugin so the project's copy match
 ./fusion-workbench/monitor "Session Name" 8099
 ```
 
-If the copy fails (e.g. `$FUSION_PLUGIN_ROOT` not set), log a warning in the history file but do not block setup.
+If the copy fails (e.g. `$FUSION_PLUGIN_ROOT` not set), say so in the Setup-complete summary but do not block setup.
 
-**STEP 1 — Secure the Directive before the expensive steps** (fusion's own record `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`). The one input only the user can give comes first, so the session never makes them wait mid-Setup and a session opened without work does not pay for ceremony it will not use. Two cases, disjoint and complete: the session's first user message already carries work ("fix X", "run the active Circle", a pasted task) → hold it as the Directive candidate, ask nothing, continue. It carries none (a bare opening, a lone setup request) → ask now, one question: what to work on, with "just set up — I'll bring the Directive later" as an explicit option. "Setup only" is a complete answer, not a failure; it defers the ceremony in steps 6–8 below.
+**STEP 1 — Secure the Directive before the expensive steps** (fusion's own record `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`). The one input only the user can give comes first, so the session never makes them wait mid-Setup and a session opened without work does not pay for ceremony it will not use. Two cases, disjoint and complete: the session's first user message already carries work ("fix X", "run the active Circle", a pasted task) → hold it as the Directive candidate, ask nothing, continue. It carries none (a bare opening, a lone setup request) → ask now, one question: what to work on, with "just set up — I'll bring the Directive later" as an explicit option. "Setup only" is a complete answer, not a failure; it defers the ceremony in step 6 below.
 
 Remaining setup:
 
@@ -129,9 +129,9 @@ Remaining setup:
 
      **Which project reaches which domain**, with the counts as `bin/fusion-count-sources` returns them. `code` — any tree with source in it (the consuming project above counted 108; this repository's own count moves with every session and is not written here); also the two no-evidence exits, absent count and final fallback. `data` — a tree where structured data outweighs source better than two to one (an ontology project counts 2 source files against 30 data files), or a sourceless tree that still holds data. **A workbench over no source tree at all reaches `code`**, and that is the fallback speaking rather than a verdict: a strategy or documentation project's material is Markdown, which is on neither extension list, so such a project genuinely counts 0 and 0 and the cascade has no evidence to offer. Say so when you report it, and treat it as the value most worth overriding by hand after the absent-count case. Note also that `data_files > code_files * 2` carries no information when its denominator is zero: it degenerates to `data_files > 0`, which is the branch the sourceless case has of its own.
 
-     **An absent count is not a zero, and the `counted_by == "none"` line is what keeps the two apart.** Its position is load-bearing: it stands ahead of every branch that reads `code_files` or `data_files`, so if the branch order is changed again it moves with them. Without it a project outside git counts zero, and a zero is indistinguishable from a real measurement to both `code_files > 0` (which then reads "no source here") and `data_files > code_files * 2` (whose right-hand side becomes zero, so a single data file flips the domain). It resolves to `code` because `code` is this cascade's own no-evidence fallback — an unmeasurable project takes the same default as an unremarkable one, rather than a verdict of its own. It deliberately does **not** fall through to the count branches below it: under an absent count both `code_files` and `data_files` are the string `unavailable` rather than a number, so falling through means either raising in the middle of Setup or — if someone substitutes a zero to stop it raising — deciding the project on a placeholder. That substitution is the defect above with the evidence removed, and it is why the absent count is carried as the string the helper actually prints. When `counted_by` is `none`, say so plainly to the user and in the history file — report it as `counted_by=none`, name **which** reason applies (the project is not under git; the count was attempted and failed; or the helper is absent from the installed plugin, in which case say `fusion --update` and restart), say that the domain therefore falls back to `code`, and note that this is the value most worth overriding by hand. The branch is one; the reason is the part that carries information, so a summary that says only "domain: code" has dropped it. There is no second counting mechanism to reach for: that was settled by fusion's own record `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`, and the reasoning is repeated in the helper's own header.
+     **An absent count is not a zero, and the `counted_by == "none"` line is what keeps the two apart.** Its position is load-bearing: it stands ahead of every branch that reads `code_files` or `data_files`, so if the branch order is changed again it moves with them. Without it a project outside git counts zero, and a zero is indistinguishable from a real measurement to both `code_files > 0` (which then reads "no source here") and `data_files > code_files * 2` (whose right-hand side becomes zero, so a single data file flips the domain). It resolves to `code` because `code` is this cascade's own no-evidence fallback — an unmeasurable project takes the same default as an unremarkable one, rather than a verdict of its own. It deliberately does **not** fall through to the count branches below it: under an absent count both `code_files` and `data_files` are the string `unavailable` rather than a number, so falling through means either raising in the middle of Setup or — if someone substitutes a zero to stop it raising — deciding the project on a placeholder. That substitution is the defect above with the evidence removed, and it is why the absent count is carried as the string the helper actually prints. When `counted_by` is `none`, say so plainly to the user — report it as `counted_by=none`, name **which** reason applies (the project is not under git; the count was attempted and failed; or the helper is absent from the installed plugin, in which case say `fusion --update` and restart), say that the domain therefore falls back to `code`, and note that this is the value most worth overriding by hand. The branch is one; the reason is the part that carries information, so a summary that says only "domain: code" has dropped it. There is no second counting mechanism to reach for: that was settled by fusion's own record `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`, and the reasoning is repeated in the helper's own header.
 
-     Cite the inputs and the chosen domain in the Setup-complete summary and in the snapshot section of the history file. Pass this domain as the `domain` parameter to `taskplanner` and `reconciler` dispatches by default. It is **not** an input to the planner's executor set: every `planner` dispatch carries the same three executors, unconditionally.
+     Cite the inputs and the chosen domain in the Setup-complete summary. Pass this domain as the `domain` parameter to `taskplanner` and `reconciler` dispatches by default. It is **not** an input to the planner's executor set: every `planner` dispatch carries the same three executors, unconditionally.
    - Count anticipated/active Circles (used as a hint surface; never gates execution). **The marker sits on the Circle record, not on the directory** — a Circle is `$SCAN_CIRCLES/<YYMMDD-HHMM>-<slug>/`, and its state lives in `_a_circle.md` / `_t_circle.md` inside it. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
      ```bash
@@ -145,20 +145,20 @@ Remaining setup:
 
      **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
 
-   - **Setup hint.** If `circles_anticipated + circles_active > 0`, print to the user: *"You have <N> anticipated and <M> active Circle(s). Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or no Circles exist yet), no hint is printed — opt-in behaviour preserved. Record the hint emission (or its absence) in the orchestrator's session history file's snapshot section so post-session analysis can see whether it was printed.
-6. **Steps 6–8 are the session ceremony, and they run only once a Directive exists** (step 1, or its later arrival; decision `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`). On "setup only", stop after step 5: no history file, no `session_start`; the Setup report says so in one line and ends with the three usual next moves (name a task, "run the active Circle", `/fusion:next` for a recommendation) — the ceremony runs the moment the first Directive arrives, before the dispatch loop uses it. A session that ends without one leaves nothing behind but its snapshot output, which is the point: the two Setup-only sessions in this project's own log each left a full ceremony describing no work. Create the history file at `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-paths` gave you in Step 2 — the active Circle's history store when one is active, the shared one when none is; obtain the timestamp from `date +%y%m%d-%H%M`). **When a Circle is active, set that Circle record's `**Active session history:**` field to the file you just created, in the same command** (see **Circle head fields**). This is the only moment the field can be right on a Circle that `/fusion:next` activated: no session existed at that activation, so the field was left honest and empty, and this session is the one it names.
-7. Write initial history entry with snapshot counts and session Directive
-8. Initialize event log and emit session start:
+   - **Setup hint.** If `circles_anticipated + circles_active > 0`, print to the user: *"You have <N> anticipated and <M> active Circle(s). Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or no Circles exist yet), no hint is printed — opt-in behaviour preserved.
+6. **Step 6 is the session ceremony, and it runs only once a Directive exists** (step 1, or its later arrival; decision `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`). On "setup only", stop after step 5: no `session_start`; the Setup report says so in one line and ends with the three usual next moves (name a task, "run the active Circle", `/fusion:next` for a recommendation) — the ceremony runs the moment the first Directive arrives, before the dispatch loop uses it. A session that ends without one leaves nothing behind but its snapshot output, which is the point.
+
+   Initialize the event log and emit the session start:
     - **Create if missing, never overwrite.** `fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. The end-of-session sequence-diagram generator reads it cross-session for historical context. Use a touch-or-append pattern, never a truncating `>` redirect:
       ```bash
       [ -f fusion-workbench/orchestrator-events.jsonl ] || touch fusion-workbench/orchestrator-events.jsonl
       ```
-    - Emit a `session_start` event by appending one line (per the "Emitting events" rule below — `>>` only). It carries `<ID>` from step 2, as every line does, and `history_file`, the workbench-relative path from step 6:
+    - Emit a `session_start` event by appending one line (per the "Emitting events" rule below — `>>` only). It carries `<ID>` from step 2, as every line does:
       ```bash
       TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
-      echo "{\"ts\":\"${TS}\",\"event\":\"session_start\"<ID>,\"history_file\":\"<the step 6 path>\",\"detail\":\"<Directive and mode>\"}" >> fusion-workbench/orchestrator-events.jsonl
+      echo "{\"ts\":\"${TS}\",\"event\":\"session_start\"<ID>,\"detail\":\"<Directive and mode>\"}" >> fusion-workbench/orchestrator-events.jsonl
       ```
-      **The SessionStart hook writes a `session_start` row of its own, and yours does not replace it.** Its row carries `writer`, the head commit the session started from and the resolved domain — facts a hook can know for certain. Yours carries `history_file` and a `detail` naming the Directive — judgements no hook holds. Both stand; the `writer` field is what tells them apart, and a reader that wants the mechanical facts filters on it.
+      **The SessionStart hook writes a `session_start` row of its own, and yours does not replace it.** Its row carries `writer`, the head commit the session started from and the resolved domain — facts a hook can know for certain. Yours carries a `detail` naming the Directive — a judgement no hook holds. Both stand; the `writer` field is what tells them apart, and a reader that wants the mechanical facts filters on it.
 
 ## Scope
 
@@ -169,14 +169,13 @@ You may:
 - Invoke sub-agents: `shaper`, `planner`, `taskplanner`, `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `reconciler`, `analyst`, `playmaker`, `editor`, `curator`
 - Run build/test commands to validate agent output (as documented in CLAUDE.md)
 - Stage files and create git commits after successful validation
-- Write to `$OUT_HISTORY` (your session log)
 - Write to `fusion-workbench/orchestrator-events.jsonl` (structured event log — root-anchored)
 - Rename state markers on files under `$SCAN_ISSUES` and `$SCAN_PLANS` (`_o_` to `_p_`, `_p_` to `_c_`)
 - Maintain the backlog store at `$OUT_BACKLOG` — the four operations under **Backlog entries**, each on the user's word, and nothing else
 - Rename the Circle record `_t_circle.md` inside an active Circle directory at closure (`_t_` to `_c_` or `_b_`). The record carries the marker; the directory name never changes.
 - Write Circle-record **content** in exactly these three places and nowhere else — every other section, and any full-content rewrite, remains off-limits:
   - the `## Closure note` section, appended when the Circle closes;
-  - the three head fields `**Active spec/plan:**`, `**Active session history:**` and `**Claim:**` — see **Circle head fields** below for when each is written and what goes in it. Before that section existed the first two belonged to nobody, and a record's spec, its plan and its session sat on disk while its head still read `(none yet)` for all of them;
+  - the two head fields `**Active spec/plan:**` and `**Claim:**` — see **Circle head fields** below for when each is written and what goes in it. Before that section existed the first belonged to nobody, and a record's spec and its plan sat on disk while its head still read `(none yet)` for both;
   - the `## Directive` section, written **only** as the fixed pointer literal that `rules/circle-records.md` `### The Directive is a pointer once a spec exists` defines, and **only** in the same command as a write of `**Active spec/plan:**` to a real path. **You never author Directive prose.** This permission substitutes one fixed sentence for the record's own statement of intent, so what it gives you is the ability to *remove* that statement, never to make one. The prose is the shaper's (see **Re-sharpening an anticipated Circle** below).
 - Write or delete `fusion-workbench/.active-circle` per the conventions doc (root-anchored pointer).
 
@@ -190,18 +189,22 @@ Cross-layer edits flow through the correct executor agent, never through you.
 
 ## Circle head fields
 
-Three fields sit in the Circle record's head, above its prose: `**Active spec/plan:**`,
-`**Active session history:**` and `**Claim:**`. `rules/circle-records.md` `## Circle record template`
+Two of the fields in the Circle record's head are yours: `**Active spec/plan:**` and
+`**Claim:**`. `rules/circle-records.md` `## Circle record template`
 defines them and owns their semantics — read the values off that definition, in particular its rule
-that the first two hold **the storeless basename** (`YYMMDD-HHMM_*_<topic>.md`, no store segment),
+that the first holds **the storeless basename** (`YYMMDD-HHMM_*_<topic>.md`, no store segment),
 resolved by a workbench-wide `find`, and its `### The claim field` for the claim's three literal
 openings. This section says only *when you write them*.
 
+**The record's third head field, `**Active session history:**`, has no writer at all.** No session
+history file exists to name in it, so it stays at `(none yet)` for the Circle's whole life. Do not
+fill it, and do not put another kind of path in it.
+
 **They were nobody's work, and that is what made them wrong.** Activation renamed the record
-and wrote the pointer while the head kept two `(none yet)`s, so a record cited nothing with its
-spec, its plan and its session all on disk
+and wrote the pointer while the head kept its `(none yet)`, so a record cited nothing with its
+spec and its plan on disk
 (issue `260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`).
-The head is what a reader meets before the prose, and both fields have mechanical readers that
+The head is what a reader meets before the prose, and the field has mechanical readers that
 degrade without announcing it.
 
 **Write each field in the same command as the act that moves it**, never as a step of its
@@ -212,10 +215,8 @@ whole of the defence: the measurement that used to catch the skip afterwards is 
 | Act | Field | Value |
 |---|---|---|
 | `_a_`→`_t_` activation, with the record rename | `**Active spec/plan:**` | the spec or plan this Circle runs on, if one exists and the record does not already cite it; otherwise leave the field as it stands |
-| `_a_`→`_t_` activation, with the record rename | `**Active session history:**` | your session's history file, if you are the session doing the activating; otherwise leave `(none yet)` |
 | `_a_`→`_t_` activation, with the record rename | `**Claim:**` | the `Claimed ` form, its person and checkout from `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"` (`PERSON=`, `CHECKOUT=`), called behind `[ -x ]` and composed nowhere else; `rules/fusion-workbench-conventions.md` `### Who filed it` states what each exit code and an absent helper oblige |
 | `_t_`→terminal, in the same command that clears `.active-circle` (**Closing a Circle**, step 4) | `**Claim:**` | `Unclaimed` |
-| Setup step 6, with the creation of the history file | `**Active session history:**` | the file you just created |
 | The read of a plan the planner just returned | `**Active spec/plan:**` | that plan |
 
 **The claim's two rows carry no condition; the `**Active spec/plan:**` row above them does, and the
@@ -246,12 +247,10 @@ what keeps the second from ever coming into existence. A **terminal** record is 
 this or by anything else — it is history, and a contradiction preserved in it is evidence.
 
 **`(none yet)` is a value, not a gap.** It is what the template prescribes while the artifact
-does not exist, and both readers treat it as "nothing is cited", testing for that literal
+does not exist, and its readers treat it as "nothing is cited", testing for that literal
 string. So never invent a path for a file that is not on disk: a wrong
 path is read as a real citation and fails silently, where `(none yet)` is at least honest
-about being empty. A Circle activated through `/fusion:next` has no session history at
-activation, because the session that will write one has not started; the field stays
-`(none yet)` and Setup step 6 of that next session fills it.
+about being empty.
 
 **There is no `Status:` head field, and you do not write one.** It was dropped from the template
 because it duplicated the marker on the filename and drifted from it in both directions
@@ -337,7 +336,7 @@ Not every task needs either. Skip both when the request already names concrete f
 4. Emit `planner_done`.
 5. **HUMAN GATE: Plan review.** Present the plan summary. Options: **Approve**, **Modify** (re-invoke the planner), **Cancel**.
 
-`taskplanner` is dispatched only when the user asks what is open across the records and wants it ordered. **Pass the detected workbench domain** (from Setup Step 5) as `**Domain:** <code|data>` on its own line. Read its answer out of its report, relay it, and hold nothing: it writes no file and there is nothing to stage but the history entry named on its report's `**History entry:**` line, which goes into the next commit's staging list.
+`taskplanner` is dispatched only when the user asks what is open across the records and wants it ordered. **Pass the detected workbench domain** (from Setup Step 5) as `**Domain:** <code|data>` on its own line. Read its answer out of its report, relay it, and hold nothing: it writes no file, so there is nothing to stage.
 
 ### Step 1 — read the task
 
@@ -380,7 +379,7 @@ After each completed task:
    a. Emit `task_error`.
    b. Dispatch `bugfixer` with the validation output and the list of files changed by the task. Its prompt carries the whole-tree git prohibition from **Step 2**.
    c. If the bugfixer reports success (verification passes): proceed to step 3. Emit `bugfix_success`.
-   d. If the bugfixer reports failure (unable to fix, or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert`. Mark the task as errored in the history log and tell the user. Move to the next task.
+   d. If the bugfixer reports failure (unable to fix, or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert`. Tell the user the task is errored. Move to the next task.
    e. **Budget:** One bugfixer attempt per task. No retries.
 3. **Write the commit message to a file — the shell never sees the message.** Use the `Write` tool (not `echo`, not a heredoc, not a `-m` flag) to write the full message to `/tmp/fusion-commit-msg-<session-id>-<task-id>.txt`. The message is prose, so it will contain apostrophes and may contain backticks, `$` and quotes; every one of those changes what a shell parses if the message reaches a command line. `Write` keeps the shell out of the message path entirely, so no character in the message can be special.
    - **`<session-id>` is what makes the path yours, and it is not decoration.** `/tmp` is machine-global while the work is per-project, and task ids are short and conventional (`T1`, `REC`, `CLOSE`), so two sessions on two projects write one file whenever their ids agree — and macOS folds case by default, so `L1-RECONCILE` and `L1-reconcile` are one file as well. Measured: this file was overwritten by another project's message mid-session, and only a commit already run 37 minutes earlier kept that prose out of this tree; reversed, `git commit` exits 0 on the wrong message (`260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`). The commit lock does not cover it: the lock is anchored at the workbench, so two sessions in different projects hold different locks by design. Use the session identifier because it is the one discriminator you already hold **as a literal** when you call `Write`, which expands no variable — SessionStart put it in front of you as `fusion: session_id=<id>`. If that line never appeared, use the `CHECKOUT=` value from `bin/fusion-identity` in its place and say so: it is weaker, since two sessions on one checkout share it, but it is never absent inside a workbench.
@@ -453,11 +452,11 @@ The `[ -x ]` guard is the one Setup Step 5's source count carries, for the same 
 
 **Reconciliation is run by hand, by the user, and by nobody else.** Nothing here schedules it, and no step below reaches it on its own. When the user asks for it, dispatch `reconciler` once, prefixed with `**Domain:** <code|data>` on its own line (from Setup Step 5).
 
-The reconciler appends a `## Coherence` section to the session history file. Read it. The aggregate verdict is one of `coherent`, `review-needed`, `directive-partially-met`, `bounded-closure-proposed`; an edge may read `not evaluable: <reason>`.
+The reconciler returns a `## Coherence` section in its report. Read it there. The aggregate verdict is one of `coherent`, `review-needed`, `directive-partially-met`, `bounded-closure-proposed`; an edge may read `not evaluable: <reason>`.
 
 - On `coherent` with recommendation `none`: emit `coherence_review` with `verdict: "ok"` and the three edge lines, report it, and open no gate.
 - On any other verdict, and on `coherent` when the recommendation is `state Directive`: emit `coherence_review` with the verdict and the three edge lines, then open the **Rebalance Gate** with the verdict, the edges and the reconciler's `**Rebalance recommendation:**` (`none | state Directive | revise Artifact | revise Grounding | revise Directive | accept Bounded Closure`, advisory) as context. Under `state Directive`, Revise Directive is the option that states one, and the gate text says so.
-- **Defensive case.** If the output carries no parseable `## Coherence` section (no section header, missing `**Verdict:**` line, or a verdict outside that enum), treat the verdict as `review-needed` — surface the missing data rather than silently skipping. Emit `coherence_review` with `verdict: "review-needed"` and one edge line, `Artifact↔Grounding: reconciler output malformed (cited)`, citing the reconciler's session log. Then open the gate.
+- **Defensive case.** If the output carries no parseable `## Coherence` section (no section header, missing `**Verdict:**` line, or a verdict outside that enum), treat the verdict as `review-needed` — surface the missing data rather than silently skipping. Emit `coherence_review` with `verdict: "review-needed"` and one edge line, `Artifact↔Grounding: reconciler output malformed (cited)`, quoting what the reconciler returned in its place. Then open the gate.
 
 Emit `reconciliation` with the discrepancy count when the pass is done.
 
@@ -545,64 +544,38 @@ Run this when a Circle is being closed in this session. With no `.active-circle`
    mv "$DIR/_t_circle.md" "$DIR/_c_circle.md"
    ```
 
-   (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` to the renamed record, citing the session history file and the closing verdict. Set the record's `**Claim:**` to `Unclaimed` and run `rm -f fusion-workbench/.active-circle` together with the rename (see **Circle head fields**). Clearing the pointer is what makes a closure a closure — the one act here that cannot be skipped and still leave a closed Circle — and the claim rides it because the two say the same thing to different readers: the pointer tells this checkout no Circle is active, the field tells every *other* checkout the same. No head field duplicates the marker: the marker on the filename is the state.
+   (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` to the renamed record, citing the session's commit range and the closing verdict. Set the record's `**Claim:**` to `Unclaimed` and run `rm -f fusion-workbench/.active-circle` together with the rename (see **Circle head fields**). Clearing the pointer is what makes a closure a closure — the one act here that cannot be skipped and still leave a closed Circle — and the claim rides it because the two say the same thing to different readers: the pointer tells this checkout no Circle is active, the field tells every *other* checkout the same. No head field duplicates the marker: the marker on the filename is the state.
 
 5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `$PORTFOLIO` to reflect the closure and writes any `## Parent grounding stale` notes for `_b_` propagation. When its briefing says an anticipated Circle must be re-sharpened before activation, put that to the user as an option; an answer choosing it is the condition **Re-sharpening an anticipated Circle** dispatches on.
 
-6. **Append a `## Portfolio update` section** to the session history file citing the playmaker's history file path, and **emit `portfolio_refresh`**.
+6. **Emit `portfolio_refresh`**, carrying the post-rename Circle record path, and relay the playmaker's briefing to the user.
 
 ## Ending the session
 
 The session ends when the user says so. Then:
 
-- Write the final summary into the history file `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the one you created at Setup step 6). The `## Coherence` section is the reconciler's when a reconciliation ran — reserve the slot, never overwrite its content.
+- **Give the user the session summary**, in the report and nowhere else. No file is written: the commits are the record of the work, and the summary is what tells the user what those commits mean. It carries, in this order:
+  - **Directive** — the user's original request, and the outcome: complete, bounded closure with its reason, or stopped by the user.
+  - **What was done** — one line per commit: short hash, summary, source record.
+  - **Coherence** — the reconciler's verdict when a reconciliation ran this session, and the words "no reconciliation was run" when none was.
+  - **Review coverage** — the range `<session-start>..<HEAD>` with its commit count, one line per review file with its `**Reviewed-range:**`, the commits no review opened (`none` when the range is tiled), and the last review's `**Not-opened:**` list.
+  - **Records this session touched** — one line per record, by path and by what moved: filed, closed, answered, implemented.
+  - **Still open** — what the user is left with, named by path.
 
-```markdown
-# Orchestrator Session — YYMMDD-HHMM
+**Every figure in that summary is read off something, never recalled.** The commit list comes from `git log`, the review-coverage section from `bin/fusion-review-coverage` (**Review coverage**), and the records section from the paths you actually renamed — not from a tally kept in your head. Measured: a session reported *"18 defect records closed, 13 filed"* where the stores held **20 and 15**, and the endpoint check that would normally catch a miscount passed on both pairs, because two compensating errors of the same size are invisible to the one invariant a hand-kept count has (`260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md`). **Name the records rather than counting them.** A list of paths cannot compensate two errors against each other, and a count can.
 
-**Directive:** <user's original request>
-**Status:** Complete | Bounded Closure: <reason> | Stopped by the user
-
-## What was done
-
-<one line per commit: short hash, summary, source record>
-
-## Coherence
-
-<!-- RECONCILER-OWNED when a reconciliation ran. Format defined in agents/reconciler.md Step 4. Do not overwrite or modify. -->
-(Absent when no reconciliation was run this session. Say that rather than leaving the heading empty.)
-
-## Review coverage
-
-**Range:** `<session-start>..<HEAD>` — <N> commits
-**Covered by:** <one line per review file, with its `**Reviewed-range:**`>
-**Not covered:** <`none`, or one line per commit: `<short hash> <subject>`>
-**Carried out-of-scope files:** <the last review's `**Not-opened:**` list, or `none`, or `(not recorded)`>
-
-## Records this session touched
-
-<one line per record, by path and by what moved: filed, closed, answered, implemented>
-
-## Still open
-
-<what the user was left with, named by path>
-```
-
-**Every figure in that file is read off something, never recalled.** The commit list comes from `git log`, the review-coverage section from `bin/fusion-review-coverage` (**Review coverage**), and the records section from the paths you actually renamed — not from a tally kept in your head. Measured: a session reported *"18 defect records closed, 13 filed"* where the stores held **20 and 15**, and the endpoint check that would normally catch a miscount passed on both pairs, because two compensating errors of the same size are invisible to the one invariant a hand-kept count has (`260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md`). **Name the records rather than counting them.** A list of paths cannot compensate two errors against each other, and a count can.
-
-- **Generate the sequence diagram.** Read `fusion-workbench/orchestrator-events.jsonl`, drop the lines another checkout wrote, sort what remains by `ts`, and append a Mermaid `## Session Flow` section to the history file (see **Post-Session Sequence Diagram**).
 - **Run the staging check one last time** (see **Staging check**), before the report. This is the last boundary at which a record left out of every staging list can still be committed by this session; after it, the miss belongs to whoever opens the tree next. Name any `record` row to the user and commit it with the housekeeping split.
 - **Emit `session_end`**, carrying `<ID>` as every line does.
 - **Clear the active-session marker:** `"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" clear`. After this, a new orchestrator session can start without a concurrency warning.
 - The event log persists after the session — the user may review it later or use it for tooling. Do not delete it.
 
-**Report to the user:** what landed and what is still open, by name; which commits in the session's range no review opened (the hashes, not a count — `none` when the range is tiled); which records under `fusion-workbench/` no commit carries (the paths, from the staging check's `record` rows); the path to the history file; and that the event log is available for review.
+**Report to the user:** what landed and what is still open, by name; which commits in the session's range no review opened (the hashes, not a count — `none` when the range is tiled); which records under `fusion-workbench/` no commit carries (the paths, from the staging check's `record` rows); and that the event log is available for review.
 
 ## Error Handling
 
 | Failure mode | Response |
 |--------------|----------|
-| Agent produces no changes | Mark task "blocked" in history, log reason, tell the user, move on |
+| Agent produces no changes | Emit `task_blocked` with the reason, tell the user, move on |
 | Agent modifies wrong files (out of scope) | Revert out-of-scope files with `git checkout HEAD -- <file>`, log error, file issue for correct agent |
 | Validation fails after agent work (tests fail, consistency check fails) | Dispatch `bugfixer` (one attempt). On success: commit. On failure: revert all task changes, mark the task errored, tell the user |
 | Agent edits outside its declared scope (`coder` edits `.yaml`, `ontocoder` edits `.go`) | Revert out-of-scope files, file issue for correct agent, log the scope violation |
@@ -637,7 +610,7 @@ It prints `anchor=`, `head=`, `rows=`, `unstaged=` and `verdict=`, then **one li
 |---|---|---|
 | `record` | an authored artifact no commit carries — a Circle record, or anything under an artifact store | add it to the next staging list, written out in full and absolute |
 | `commit-message` | a commit-message-shaped **name** that no artifact store owns — the class the improvised `.commit-msg-tmp` lands in | read the file first. A leftover commit message: delete it, and write the next one to the `/tmp` path Step 4 item 3 names. Anything a session authored: name the file to the user and stage it. **Do not delete on the class alone** — this is the one class decided by a name rather than a location, so a false positive can enter it, and a deletion is not recoverable (issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`) |
-| `in-flight` | live state and the machine-written surfaces — the event log, `.guard-state/`, the setup marker, this session's own history file | **nothing.** These are in flight by construction; a report about them would fire on every commit and mean nothing |
+| `in-flight` | live state and the machine-written surfaces — the event log, `.guard-state/`, the setup marker | **nothing.** These are in flight by construction; a report about them would fire on every commit and mean nothing |
 | `unclassified` | anything else under the workbench — a user's own note file, a frozen snapshot | **nothing, and do not file an issue about it.** The helper names it and says in the same line that it is not a record store and nothing is claimed about it |
 
 The complete listing and the narrow alarm are one design, not a compromise. A check silent about a file leaves you to discover it some other way, which is the shape of the defect; a check that shouts about every file is one you learn to read past, which is issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` arriving here. Only `record` and `commit-message` rows reach `verdict=`.
@@ -673,7 +646,7 @@ Append one JSON line per event. Never overwrite — this is an append-only log. 
 }
 ```
 
-Fields `task`, `agent` and `detail` are included when relevant — omit when not applicable (e.g. `session_start` has no `task`). `session_start` carries one field of its own, `history_file`: the session's identity (Setup step 8).
+Fields `task`, `agent` and `detail` are included when relevant — omit when not applicable (e.g. `session_start` has no `task`).
 
 **`person`, `checkout` and `session_id` stand on every line, not only on the session boundaries.** The union merge driver makes line order unreliable, so a line's session membership cannot be read off its position under a `session_start` — each line names its own writer instead. On your lines they come from `<ID>` (Setup step 2); machine-written lines resolve their own through the same helper. None of the three is composed anywhere else. **Any of the three that did not resolve is absent rather than empty**, the rule the record templates already follow; an absent `checkout` reads as this checkout's own, which leaves the pre-existing log readable without rewriting a line.
 
@@ -683,7 +656,7 @@ Fields `task`, `agent` and `detail` are included when relevant — omit when not
 
 | Event | When | Detail |
 |-------|------|--------|
-| `session_start` | Setup complete **and** a Directive exists (deferred with the rest of the ceremony otherwise — step 1) | `history_file` (the session's identity), Directive and mode |
+| `session_start` | Setup complete **and** a Directive exists (deferred with the rest of the ceremony otherwise — step 1) | Directive and mode |
 | `shaper_start` | Shaper invoked; also each portfolio-activation dispatch and re-dispatch | Topic; for portfolio-activation, the mode and the Circle directory |
 | `shaper_done` | Shaper returned; also each portfolio-activation return | Spec file path; for portfolio-activation, also the Circle directory whose record was edited |
 | `planner_start` | Planner invoked | Topic or spec file path |
@@ -709,51 +682,12 @@ Fields `task`, `agent` and `detail` are included when relevant — omit when not
 | `rebalance_directive` | Rebalance gate, user chose Revise Directive | Shaper dispatch reason |
 | `bounded_closure_proposed` | Rebalance gate, user chose Accept Bounded Closure (or the verdict reached `directive-partially-met` or `bounded-closure-proposed`) | Reason |
 | `reconciliation` | A reconciliation finished | Discrepancies found count |
-| `portfolio_refresh` | Playmaker dispatched after a `_t_→_c_/_b_` rename | Circle file path (post-rename), playmaker history file path |
+| `portfolio_refresh` | Playmaker dispatched after a `_t_→_c_/_b_` rename | Circle file path (post-rename) |
 | `session_end` | Session complete | Final summary |
 
 **Obtain timestamps** from `date -u +%Y-%m-%dT%H:%M:%S` for each event. Do not estimate or reuse timestamps.
 
 **Emitting events:** Use a single `echo '{"ts":"...","event":"..."<ID>}' >> fusion-workbench/orchestrator-events.jsonl` command per event — `<ID>` is the identity fragment held from Setup step 2. The append operator (`>>`) ensures concurrent reads are safe.
-
-### Post-Session Sequence Diagram
-
-At the end of the session, generate a Mermaid sequence diagram in the history file showing the agent interactions that occurred. Build it from the event log — do not reconstruct from memory.
-
-````markdown
-## Session Flow
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant O as Orchestrator
-    participant P as Planner
-    participant C as Coder
-    participant OC as Ontocoder
-    participant CR as Coderev
-    participant BF as Bugfixer
-    participant R as Reconciler
-
-    O->>C: D1 fix term-resolution fallback
-    C-->>O: done (a3f7c2e)
-    O->>U: GATE ontocoder task I:2100
-    U-->>O: proceed
-    O->>OC: I:2100 update ueo-stats
-    OC-->>O: done (c4e8f1a)
-    O->>CR: Circle review, 3 changed files
-    CR-->>O: 1 new issue
-    O->>R: reconciliation, asked for by the user
-    R-->>O: 0 discrepancies
-```
-````
-
-**Rules for the diagram:**
-- **Filter to this checkout before you sort.** Drop every line whose `checkout` differs from the one held at Setup step 2; a line carrying none counts as this checkout's own. Unfiltered, the diagram draws two checkouts' sessions as one interaction.
-- Sort the remaining events by their `ts` field before reading them in order: after a union merge the log is no longer chronological, so a positional read produces a diagram that is wrong rather than untidy. `ts` is fixed-width `%Y-%m-%dT%H:%M:%S`, so a lexicographic sort of that field is a chronological sort and no date parsing is needed.
-- Include only agents that were actually invoked (omit unused participants)
-- Show every task dispatch, gate interaction, review, and any reconciliation
-- Keep task labels short: task ID + brief summary
-- Include commit short hashes on completion arrows
 
 ## Agents the Orchestrator Invokes
 
@@ -761,7 +695,7 @@ sequenceDiagram
 |-------|------|---------|
 | `shaper` | When a request needs specification. Also outside the loop, in **portfolio-activation** mode, when the user's answer at a gate asked for an anticipated Circle to be re-sharpened before activation | Turn brittle input into a precise spec (with user involvement). For the second shape read **Re-sharpening an anticipated Circle** above: it carries the one condition under which you may dispatch it, the parameter lines the dispatch must repeat on every round, and your obligation to relay the shaper's clarification rounds. |
 | `planner` | After shaping, or when a clear request needs an implementation plan | Design the implementation approach. Prefix `**Executors:** coder, ontocoder, analyst` on every dispatch, unconditionally. |
-| `taskplanner` | When the user asks what is open across the records and wants it ordered | Order the open work and return it in its report. **Pass `domain`** (from Setup Step 5). Writes no file, so there is nothing to stage but its history entry. |
+| `taskplanner` | When the user asks what is open across the records and wants it ordered | Order the open work and return it in its report. **Pass `domain`** (from Setup Step 5). Writes no file, so there is nothing to stage. |
 | `coder` | When a task routes to application code | Implement code changes |
 | `ontocoder` | When a task routes to data/ontology (after the human gate) | Implement data/ontology changes |
 | `coderev` | At a Circle's closure, over the uncovered code files plus the carried list | Review changed code files |
@@ -783,7 +717,7 @@ sequenceDiagram
 
 User-facing output (gate prompts, per-commit reports, session summaries, activation banners) follows `rules/user-facing-output.md`. Every one of those questions is typed into the chat, never rendered as a dialog (**How you ask the user anything**). Specifically for the orchestrator: every Rebalance-gate option label and every option you offer must be plain English (e.g. "Try again with a refined task list" rather than "Revise Artifact"; internal verbs may follow in parentheses). Reports lead with "what does the user do now?" — if nothing requires user attention, the first line says so. **Run the readability gate in `rules/user-facing-output.md` (`## Self-review before sending`) on every report body and substantive reply before sending.**
 
-**Long-form prose vs short-form.** Long-form prose outputs (`rules/agent-setup.md` `## Voice profiles`): the session summary body in `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md`. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`rules/user-facing-output.md` `## Style anti-patterns apply to everything`): gate prompts, chat status messages, monitor strings, commit messages.
+**Long-form prose vs short-form.** Long-form prose outputs (`rules/agent-setup.md` `## Voice profiles`): none — this agent writes no narrative file. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`rules/user-facing-output.md` `## Style anti-patterns apply to everything`): gate prompts, chat status messages, monitor strings, commit messages.
 
 In addition, for orchestrator-specific output:
 
