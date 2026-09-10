@@ -2,23 +2,15 @@
  * Citation form at write time — `lib/citation-form.ts` and the tracker trigger
  * that runs it (issue `260906-0115_*_three-agents-in-one-session-wrote-a-citation-the-always-on-rule-forbids-and-only-a-later-gate-caught-it.md`).
  *
- * WHAT IS ACTUALLY UNDER TEST, and it is not the grammar. The grammar is
- * `lib/citation-scan.ts` and has its own suites; nothing here re-asserts what a
- * token parses to. What is asserted is the three decisions this measurement
- * makes ON TOP of that grammar, because each of them is a place the mechanism
- * could become noise instead of a report:
+ * WHAT IS ACTUALLY UNDER TEST, and it is not the grammar. Nothing here
+ * re-asserts what a token parses to. What is asserted is the three decisions
+ * the module makes on top of the scanner — which file, which lines, which
+ * verdict — each stated with its reasoning in that module's own header.
  *
- *   1. WHICH FILE. A `.md` under the workbench, outside the frozen stores.
- *   2. WHICH LINES. The lines THIS tool call wrote, so an edit is never told
- *      about a violation somebody else left in the same file.
- *   3. WHICH VERDICT. `store-prefixed` and `stale-marker`, never `dangling`,
- *      and never a hit the grammar marked as somebody's exhibit.
- *
- * THE FIXTURES ARE STORE-PREFIXED CITATIONS ON PURPOSE, which is exactly what
- * this repository's own `fusion.json` says test files are for: `hooks/lib/
- * __tests__/*.ts` is deliberately absent from `citations.extraPaths` because
- * the record names in it are exhibits rather than pointers. A fixture here
- * names nothing.
+ * THE FIXTURES ARE STORE-PREFIXED CITATIONS ON PURPOSE, for the reason this
+ * repository's `fusion.json` gives in the `citations` entry's `_note` for
+ * leaving `hooks/lib/__tests__/*.ts` out of `extraPaths`. A fixture here names
+ * nothing.
  */
 
 import { describe, expect, it } from "vitest";

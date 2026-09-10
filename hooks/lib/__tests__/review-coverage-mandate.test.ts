@@ -5,12 +5,10 @@
  *
  * ## The defect
  *
- * Sixteen commits landed in `18b6094..ed87d87`; two `coderev` passes ran whose
- * ranges did not tile the session's range, and seven code-bearing commits
- * reached a pushed release tag unopened. The data to tile it was on disk and
- * unreadable — ten review files stating their scope in four spellings, two of
- * them ending `-to-head`. The full account, including why there is no cleverer
- * parse (`rules/critical-stance.md` §4), is the filed issue:
+ * Seven code-bearing commits in one session's range reached a pushed release
+ * tag unopened, and the data to tile the range was on disk and unreadable. The
+ * full account, including why there is no cleverer parse
+ * (`rules/critical-stance.md` §4), is the filed issue:
  * `archive/260829-1110-safe-cleanup-tier-1/shared/issues/260810-1205_c_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`.
  * Hence a mandate, and hence this gate on the mandate.
  *

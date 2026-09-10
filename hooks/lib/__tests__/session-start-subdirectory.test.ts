@@ -20,8 +20,8 @@
  *
  * There is no fourth case. A root BELOW cwd cannot be returned, and the two
  * extra cases below (a two-level subdirectory, and the plugin's own repository)
- * are not new branches — they are case 3 under conditions that were previously
- * documented as failing silently.
+ * are case 3 under the conditions `CLAUDE.md`'s SessionStart row describes, not
+ * new branches.
  *
  * ## The one assumption, stated because a test should not carry a silent one
  *

@@ -4,11 +4,10 @@ import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
-// Playmaker backlog-mandate lint. Binding record
-// `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`,
-// option 3: ONE AGENT CARRIES TWO MANDATES THAT DIFFER BY DISPATCH PATH, and
-// that statement has to stay true on two surfaces at once (`agents/playmaker.md`
-// and the marker table). The five cases are the `describe` titles below.
+// Playmaker backlog-mandate lint. The mandate, its binding record and the
+// marker/writer/gate table are authored in `rules/backlog-entries.md`; what this
+// gate adds is that the statement stays true on two surfaces at once. The five
+// cases are the `describe` titles below.
 //
 // WHY CASE 5 EXISTS, and it is the whole design of this file. The failure mode
 // of a lint like this is passing VACUOUSLY: a case greps for a phrase, the
@@ -23,10 +22,8 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 //       one is the drift, and it fails.
 //   (b) Every extractor returns null rather than an empty result, and `must()`
 //       turns a null into a failure that names this file and says to update the
-//       parser. A rewording that moves a section, drops the bullet form, or
-//       renames the heading therefore fails LOUDLY instead of passing by
-//       absence. That trade — a lint that must follow phrasing changes — is the
-//       same one `derivable-enumerations-lint.test.ts` documents in its header.
+//       parser, so a rewording fails LOUDLY instead of passing by absence. The
+//       trade that buys is documented in `derivable-enumerations-lint.test.ts`.
 //
 // Case 3 carries its own mutation proof for the same reason: the detector is run
 // over the real pre-change wording before it is run over the shipped prompt.

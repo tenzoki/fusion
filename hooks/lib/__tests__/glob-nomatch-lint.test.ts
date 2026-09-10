@@ -6,20 +6,12 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 // ---------------------------------------------------------------------------
 // Glob no-match lint gate (plan step 6, issue 260717-1903).
 //
-// The Bash tool runs zsh 5.9 with `nomatch` on by default. Under zsh an
-// unmatched glob is a FATAL error raised during argument expansion — it kills
-// the script before any `[ -e "$f" ] || continue` guard inside the loop body
-// can fire. The dotglob idiom `dir/.[!.]*` (include-dotfiles-except-`.`/`..`)
-// is the single most frequent and most silent trigger: it matches nothing in
-// the common case (a directory with no dotfiles) and so aborts the whole block.
-// Under bash the same glob expands to its literal string and the guard skips
-// it — which is why these loops passed when a human re-ran them under bash.
-//
-// The fix (steps 1-5) replaced every vulnerable `for f in <glob>` loop with a
-// `find -mindepth 1 -maxdepth 1 | while read` loop, which never expands a glob
-// and so cannot abort. After that fix, `.[!.]*` appears NOWHERE in a fenced
-// shell block in the tree, so this gate starts and stays green with zero
-// exemptions.
+// Why an unmatched glob under zsh kills a script before any in-loop guard can
+// fire, and why the `.[!.]*` dotglob is the most silent trigger, is stated in
+// issue 260717-1903. The fix replaced every vulnerable `for f in <glob>` loop
+// with a `find -mindepth 1 -maxdepth 1 | while read` loop, so `.[!.]*` appears
+// NOWHERE in a fenced shell block in the tree and this gate starts and stays
+// green with zero exemptions.
 //
 // Scope is deliberately NARROW (plan "Guardrail" section): it targets the raw
 // `.[!.]*` dotglob inside fenced ```bash / ```sh blocks only. It does not try

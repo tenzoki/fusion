@@ -6,29 +6,19 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // ---------------------------------------------------------------------------
 // Executor verification-report lint (issue 260805-0629).
 //
-// The defect: `agents/coder.md` told the executor to test, and separately to
-// report, and nothing bound the two. The test step had no completion condition
-// and the report had no field for its outcome, so an agent that started a long
-// check and reported while it was still running violated nothing written down.
-// `agents/ontocoder.md` carried the same gap; `agents/orchestrator.md` Step 3a
-// step 5 checked scope only and read "done" at face value. Measured cost in a
-// consuming session: about forty minutes of wall clock across two dispatches.
-//
-// The fix is a report SHAPE with nowhere to put a missing verification: the
-// `Verification:` field admits exactly three forms — an exit code, a run that
-// did not finish, or `none` — and the `Result` field is DERIVED from it, so the
-// word "done" is a claim about an exit code rather than about editing being
-// finished. The receiving end reads that field before it reads anything else.
+// The defect and its measured cost are in issue 260805-0629. The report SHAPE
+// that answers it — the three admitted `Verification:` forms and the `Result`
+// field derived from them — is authored in `agents/coder.md` `### Report shape`
+// and mirrored in `agents/ontocoder.md`.
 //
 // What this gate is, honestly (rules/critical-stance.md §2, §4): it checks the
 // CONTRACT IS PRESENT IN THE PROMPTS, not that any run obeyed it. A prompt
-// instruction is overridable under task pressure — this project has a worked
-// case of a "MUST" in the orchestrator prompt losing to the urgency of a user
-// request. Nothing here executes at dispatch time and nothing can. What the
-// gate does buy is that the contract cannot quietly leave the three prompts, or
-// drift into two divergent shapes across the two executors, without `npm test`
-// saying so. The enforcement is the orchestrator reading the field; this is the
-// gate that keeps the field defined for it to read.
+// instruction is overridable under task pressure, nothing here executes at
+// dispatch time, and nothing can. What the gate does buy is that the contract
+// cannot quietly leave the three prompts, or drift into two divergent shapes
+// across the two executors, without `npm test` saying so. The enforcement is
+// the orchestrator reading the field; this is the gate that keeps the field
+// defined for it to read.
 //
 // A guard, not a fixer: it reads and asserts, it never rewrites a prompt.
 // ---------------------------------------------------------------------------

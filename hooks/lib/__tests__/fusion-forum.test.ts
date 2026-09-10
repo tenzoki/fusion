@@ -10,11 +10,11 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // calls it. Under test is the interface its header names: the exit table, the `state=` vocabulary, and the three
 // `note=` degradations, the only places the answer moves while the exit code does not.
 //
-// EVERY FIXTURE PATH IS PHYSICAL (`realpathSync`), because the script strips the git toplevel off the workbench with
-// both sides taken as `pwd -P`, and on macOS `mktemp -d` returns a `/var/…` symlink onto a `/private/var/…` tree:
-// built on the unresolved path, a fixture would take the workbench-outside-repo branch by accident. And NO NETWORK
-// CALL IS MADE: every remote is a local path, the delta is proven by the author clone pushing into one, and the
-// single fetch failure names a path that does not exist.
+// EVERY FIXTURE PATH IS PHYSICAL (`realpathSync`): the script takes both sides as `pwd -P`, and a fixture built on
+// the unresolved path would take the workbench-outside-repo branch by accident — the macOS symlink trap
+// `helpers/guard-harness.ts` documents, met from another side. And NO NETWORK CALL IS MADE: every remote is a local
+// path, the delta is proven by the author clone pushing into one, and the single fetch failure names a path that
+// does not exist.
 
 const script = join(pluginRoot, "bin", "fusion-forum");
 const STORE = "shared/forum";

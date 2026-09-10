@@ -32,14 +32,11 @@ import { fileURLToPath } from "node:url";
 //
 // ## What it does, and the order it does it in
 //
-// A compile is a function of source, configuration and compiler version. The
-// first two are committed; the compiler version is the only free variable, and
-// the answering decision names it as the thing that would redden the suite for
-// no defect. So the first case asserts the toolchain IS the pinned one and
-// says, on failure, that this is not an artifact defect — without it a wrong
-// compiler reddened the artifact case, whose remedy is `npm run build`, and
-// following it committed a `dist` built by the unpinned compiler
-// (`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-artifact-case-of-the-dist-gate-carries-no-toolchain-guard-so-a-mismatch-reddens-it-with-the-wrong-remedy.md`).
+// A compile is a function of source, configuration and compiler version, and
+// only the third is free — which is why the first case asserts the toolchain IS
+// the pinned one and says, on failure, that this is not an artifact defect. What
+// a missing toolchain guard cost is in
+// `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-artifact-case-of-the-dist-gate-carries-no-toolchain-guard-so-a-mismatch-reddens-it-with-the-wrong-remedy.md`.
 // The three cases are a CHAIN of preconditions, each a `beforeAll` field:
 // toolchain, then extraction, then compile. The pin is `package.json`
 // `devDependencies.typescript`, an EXACT version; `package-lock.json` is

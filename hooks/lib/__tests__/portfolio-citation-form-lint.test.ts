@@ -6,27 +6,15 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // ---------------------------------------------------------------------------
 // Portfolio citation-form lint gate.
 //
-// `portfolio.md` is regenerated in full by playmaker on every run, so the path
-// citations inside it are written fresh each time from the examples in
-// `agents/playmaker.md`. A citation that spells its target's state marker out
-// (`260510-0930_o_token-format.md`) dies at that target's first transition, and
-// a hand correction does not survive the next run — the generator writes the
-// same form back. The rule and its reasoning are authored once, in
-// `rules/circle-records.md` `## Citation form in the portfolio`; this gate holds
-// the generating prompt to it, because an example that contradicts a rule is
-// what a run actually follows.
-//
-// Measured cause: five citations in one consuming project's generated portfolio,
-// two pointing at nothing on the day of filing and a third two hours later
-// (`shared/issues/260810-1730_*_die-erzeugung-von-portfolio-md-…`). The wildcard
-// form itself is ratified in `260806-0015_*_zitierform-fuer-workbench-records`.
+// The rule, the regeneration argument behind it, the pointer-versus-statement
+// test, the binding decision and the measured cause are authored once, in
+// `rules/circle-records.md` `### Citation form in the portfolio`. This gate
+// holds the generating prompt to that rule, because an example contradicting a
+// rule is what a run actually follows.
 //
 // **The pattern encodes the distinction the rule makes.** It requires a
 // `YYMMDD-HHMM` stamp in front of the marker, so it fires only on a *pointer to
-// a file* and never on the *naming of a marker* — `_a_ → _t_`, `_t_circle.md`,
-// `## Recently closed (_c_ / _b_)` and the marker table all pass untouched.
-// Starring those would delete the statement they make, which is the exact
-// mistake a broader pattern would provoke on the next correction pass.
+// a file* and never on the *naming of a marker*, which passes untouched.
 //
 // **Why the file set is one file.** Elsewhere in the shipped text a stamped
 // literal marker is legitimate and is the statement being made:

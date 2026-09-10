@@ -7,12 +7,10 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // Deliverable-language lint (issue 260811-1732; decision
 // `260807-2131_*_which-language-governs-a-customer-deliverable.md`, option 3).
 //
-// The defect: `agents/editor.md` read a project-wide declaration to decide a
-// customer deliverable's language, and a wrong default is not an error but a
-// FINISHED document in the wrong language, found by the customer. The fix has
-// no default: the dispatch names the language and the editor halts otherwise.
-// A fallback can only return by the prompt naming one of the two project
-// declarations, so the first case asserts those tokens are absent.
+// The defect and the no-default fix are stated in that decision and in
+// `CLAUDE.md`'s dispatch-parameters bullet. A fallback can only return by the
+// prompt naming one of the two project declarations, so the first case asserts
+// those tokens are absent.
 //
 // Honestly (rules/critical-stance.md §2, §4): this checks the CONTRACT IS IN
 // THE PROMPT and cannot check that a dispatched run halted. What it buys is

@@ -9,11 +9,10 @@
  * gate `workbench-citation-lint.test.ts` still excludes the same stores; the
  * two corpora differ on purpose.
  *
- * And since 2026-09-01 the VERDICT is scoped where the corpus is not: only a
- * row in a file somebody still edits moves it, while every row is printed
- * either way (`citation-check.ts` `## The verdict scope`). The scratch project
- * below carries one violation in an open issue and one in a swept archive
- * copy, so the two halves of that split are exercised on every run.
+ * And the VERDICT is scoped where the corpus is not (`citation-check.ts`
+ * `## The verdict scope`). The scratch project below carries one violation in an
+ * open issue and one in a swept archive copy, so the two halves of that split
+ * are exercised on every run.
  */
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";

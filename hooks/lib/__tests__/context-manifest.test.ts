@@ -8,16 +8,12 @@ import { agentNames, pluginRoot } from "./helpers/citation-scan.js";
 // ---------------------------------------------------------------------------
 // Context-manifest tests (Circle B).
 //
-// `bin/fusion-rules` gained an optional topic argument and an optional read of
-// a consuming project's `./rules/context-manifest.yaml`. This suite drives the
-// real script through child_process — the same thing an agent's Setup does, and
-// the same pattern `fusion-paths.test.ts` / `path-literal-lint.test.ts` use.
-//
-// The load-bearing guarantee is HYG-NO-REGRESS: with no manifest and no topic,
-// the output is BYTE-IDENTICAL to the pre-change helper for every agent. The
-// baseline for that assertion is the helper's own no-manifest output captured
-// from a clean cwd (the plugin ships no manifest), so the test is self-checking:
-// it compares the helper against itself run in a directory with no manifest.
+// The mechanism and its load-bearing guarantee, HYG-NO-REGRESS, are authored in
+// `rules/context-manifest.md`. This suite drives the real script through
+// child_process — the same thing an agent's Setup does. The baseline for the
+// no-regress assertion is the helper's own no-manifest output captured from a
+// clean cwd (the plugin ships no manifest), so the test is self-checking: it
+// compares the helper against itself run in a directory with no manifest.
 // ---------------------------------------------------------------------------
 
 const fusionRules = join(pluginRoot, "bin", "fusion-rules");

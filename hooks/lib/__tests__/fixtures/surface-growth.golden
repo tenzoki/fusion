@@ -48,64 +48,64 @@
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
-  bound-agent-set.test.ts 96
-  citation-form.test.ts 384
+  bound-agent-set.test.ts 89
+  citation-form.test.ts 376
   citation-grammar-boundaries.test.ts 179
   citation-sweep.test.ts 527
   commit-message-path.test.ts 385
-  committed-dist.test.ts 331
+  committed-dist.test.ts 328
   config.test.ts 860
-  context-manifest.test.ts 472
+  context-manifest.test.ts 468
   declared-citation-paths.test.ts 70
-  deliverable-language-lint.test.ts 138
-  derivable-enumerations-lint.test.ts 453
+  deliverable-language-lint.test.ts 136
+  derivable-enumerations-lint.test.ts 449
   dispatch-bound-lint.test.ts 245
   dispatch-bytes.test.ts 223
   domain-cascade-order-lint.test.ts 232
-  domain-cascade.test.ts 911
-  executor-verification-report-lint.test.ts 217
-  fenced-code-exemption.test.ts 224
-  fusion-checkout-name.test.ts 177
-  fusion-citation-check.test.ts 285
-  fusion-commit-lock.test.ts 452
-  fusion-count-sources.test.ts 442
+  domain-cascade.test.ts 888
+  executor-verification-report-lint.test.ts 207
+  fenced-code-exemption.test.ts 206
+  fusion-checkout-name.test.ts 174
+  fusion-citation-check.test.ts 284
+  fusion-commit-lock.test.ts 422
+  fusion-count-sources.test.ts 413
   fusion-events.test.ts 475
   fusion-forum.test.ts 220
-  fusion-identity.test.ts 220
-  fusion-paths.test.ts 918
-  fusion-prose-metric.test.ts 174
+  fusion-identity.test.ts 217
+  fusion-paths.test.ts 896
+  fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 80
-  glob-nomatch-lint.test.ts 148
+  glob-nomatch-lint.test.ts 140
   guard-bash-integration.test.ts 334
   guard-project-config-integration.test.ts 240
   guard-state-shape.test.ts 351
   helpers/citation-scan.ts 56
   helpers/growth-bound.ts 171
-  helpers/guard-harness.ts 1085
+  helpers/guard-harness.ts 1075
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 614
-  hooks-wiring.test.ts 187
+  hooks-wiring.test.ts 180
   identity-mint-notice.test.ts 118
-  legacy-halt-clearing.test.ts 210
-  marker-format-lint.test.ts 171
+  legacy-halt-clearing.test.ts 208
+  marker-format-lint.test.ts 168
   monitor-warnings-panel.test.ts 1222
-  path-literal-lint.test.ts 339
+  path-literal-lint.test.ts 333
   paths.test.ts 31
   plan-stopping-section-lint.test.ts 261
-  playmaker-backlog-mandate-lint.test.ts 357
-  portfolio-citation-form-lint.test.ts 170
-  provenance-header-lint.test.ts 445
-  record-counts-measurement.test.ts 486
+  playmaker-backlog-mandate-lint.test.ts 354
+  portfolio-citation-form-lint.test.ts 158
+  provenance-header-lint.test.ts 434
+  record-counts-measurement.test.ts 483
   reference-resolution-lint.test.ts 990
-  review-coverage-mandate.test.ts 344
+  review-coverage-mandate.test.ts 342
   review-coverage.test.ts 814
   rules-emission-golden.test.ts 1332
-  rules-voice-profile.test.ts 323
+  rules-voice-profile.test.ts 319
   sentence-identifier-containment.test.ts 472
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 680
   surface-growth-bound.test.ts 685
-  turn-budget-lint.test.ts 523
+  turn-budget-lint.test.ts 512
   workbench-citation-lint.test.ts 325
-  total 23251
+  total 23001

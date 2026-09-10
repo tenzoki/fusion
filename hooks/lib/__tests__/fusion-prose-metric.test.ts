@@ -6,10 +6,9 @@ import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 
 // bin/fusion-prose-metric is a bash script whose OWN HEADER is the authoritative
-// documentation of what it does, so these tests drive the real script and pin
-// what that header states rather than what the awk under it does: the em-dash
-// count, the prose word count, the four regions that are not prose, the
-// narrowing to U+2014, and the exit-code table.
+// documentation of what it does — the counts, the four regions that are not
+// prose, the narrowing to U+2014 and the exit table, summarised again in
+// `CLAUDE.md`'s Layout row. These tests pin what it states, not what the awk says.
 //
 // THE CASE THE PROGRAM EXISTS FOR is that a file's exhibits of the em-dash fault
 // are not instances of it; that divergence is pinned against a synthetic fixture

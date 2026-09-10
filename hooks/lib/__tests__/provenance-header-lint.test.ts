@@ -36,17 +36,12 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // `marker-format-lint`) exempt skills that must name a retired form in order to
 // migrate away from it; nothing analogous exists for a rule file.
 //
-// The check is presence-only. It reads no value, resolves no cited path, and
-// takes no dependency on the workbench directory — a header citing a record that
-// was later moved, archived, or never existed at all still passes. What stops a
-// hollow header is review, not this gate.
-//
-// Position is what makes the check mean anything, and the ten-line window is
-// what enforces position: `rules/fusion-workbench-conventions.md` documents this
-// very convention and therefore carries the string `Provenance:` deep in its
-// body. A keyword-anywhere gate would pass that file on its own documentation
-// instead of on its header. The last describe block asserts that distinction
-// directly.
+// The check is presence-only, per that rule's `What the gate checks, and what
+// it does not`. Position is what makes it mean anything, and the window is what
+// enforces position: `rules/fusion-workbench-conventions.md` documents this very
+// convention and so carries the string `Provenance:` deep in its body, where a
+// keyword-anywhere gate would pass it on its own documentation instead of on its
+// header. The last describe block asserts that distinction directly.
 //
 // This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
 // asserts, it never rewrites a rule file.
@@ -54,16 +49,10 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 
 
 // The position rule as a single named constant: a header counts only if it sits
-// within this many lines of the file's start. Ten was sized against the
-// pre-header corpus, where the longest opening blockquote ran to line 8 in
-// `context-manifest.md`, so a header placed after that lede would have landed on
-// line 10 and still counted. Every rule file now carries its header at line 3
-// instead, above the lede, which pushed that same blockquote down to lines 5-10.
-// So the current bound is: the window ends exactly where the corpus's longest
-// lede now ends, and the after-the-lede placement no longer fits inside it (in
-// that file a header below the lede would sit at line 12). Widening the window
-// would let a header drift out of a reader's first glance; the fix for a file
-// that cannot fit is to put the header above the lede, as all ten now do.
+// within this many lines of the file's start. How ten was sized, why the
+// remaining margin is zero, and why the fix for a long lede is to move the
+// header above it rather than widen the window are in
+// `rules/rule-file-provenance.md`, under the canonical-placement paragraph.
 //
 // CHANGING THIS NUMBER BREAKS TESTS ON PURPOSE. The behavioural tests read the
 // constant (a fixture at `HEADER_WINDOW + 1` is the boundary wherever the

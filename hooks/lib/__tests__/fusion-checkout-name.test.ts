@@ -12,15 +12,12 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // grammar (`**Key:** value`, first occurrence wins, an absent field absent
 // rather than empty). The header states both; this file asserts them.
 //
-// THE PROPERTY WORTH MORE THAN THE REST: a refresh rewrites the git identity
-// and the stamp and NOTHING ELSE. The alias and the person are a human's claim,
-// and a helper that re-derived them would silently undo the one question
-// `/fusion:setup` asks per checkout.
+// THE PROPERTY WORTH MORE THAN THE REST is the one the header's `register`
+// entry states: a refresh rewrites the git identity and the stamp and NOTHING
+// ELSE, because the alias and the person are a human's claim.
 //
-// NO WORKER FIELD IS TESTED because none exists: decision
-// `260904-1058_*_does-a-registry-entry-carry-hostname-account-name-and-folder-path.md`,
-// option 1 — nothing here publishes a hostname, an account name or a folder
-// path, and every value below is obviously synthetic for the same reason.
+// NO WORKER FIELD IS TESTED because none exists (`CLAUDE.md`'s Layout row, and
+// the decision it cites), so every value below is obviously synthetic.
 
 const script = join(pluginRoot, "bin", "fusion-checkout-name");
 const tmpRoots: string[] = [];

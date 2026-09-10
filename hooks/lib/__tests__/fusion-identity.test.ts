@@ -13,12 +13,9 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // six codes are exercised below, exit 1 by both of its ways in. The script's own header states that table;
 // this file asserts it rather than restating it.
 //
-// THE TWO PROPERTIES WORTH MORE THAN THE REST: exit 1 DOMINATES (an unset git
-// identity stops the run before the checkout half is touched, so nothing is
-// printed and no `.checkout-id` is minted), and exit 4 is NOT a halt (outside a
-// git work tree no identity is owed; binding record
-// `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
-// option 2). A third, the never-overwrite of a malformed identifier, is the
+// THE TWO PROPERTIES WORTH MORE THAN THE REST are the two the header and
+// `CLAUDE.md`'s Layout row both single out: exit 1 DOMINATES, and exit 4 is NOT
+// a halt. A third, the never-overwrite of a malformed identifier, is the
 // mint-once property seen from the succeeding side (issue 260824-1538).
 //
 // DELIBERATELY NOT TESTED: the concurrent mint. The write is a noclobber

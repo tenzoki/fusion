@@ -25,16 +25,12 @@ import {
 //
 // `agents/orchestrator.md` Setup Step 5 picks a workbench's domain from an
 // if/elif chain over two counts and one string, and that domain is passed as
-// the default to `taskplanner` and `reconciler`. It selects the reconciler's
-// ground-truth protocol and the queue's priority axis, so a wrong verdict on a
-// project full of source is not a cosmetic misfiling.
+// the default to `taskplanner` and `reconciler`. What rides on the verdict and
+// why the branch ORDER is the substance are stated there.
 //
-// The gate that stood here measured branch LAYOUT — whether a line mentioned
-// `code_files`. Four edits reinstating the defect it guards passed it (issue
-// 260810-0503): a decoy `elif code_files < 0` above a restored pre-fix order, an
-// inverted `code_files == 0` in the `> 0` slot, a dead `code_files > 100000`,
-// and the token present only in a trailing comment. All four are driven below
-// and all four now fail.
+// The gate that stood here measured branch LAYOUT, and four edits reinstating
+// the defect it guards passed it — the four are enumerated in issue
+// 260810-0503; all four are driven below and all four now fail.
 //
 // This file asserts verdicts. `hooks/lib/domain-cascade.ts` parses the cascade
 // out of the prompt and runs it, so the thing under test IS the prompt's own
@@ -42,12 +38,9 @@ import {
 // (`domain-cascade-order-lint.test.ts`) is kept as a second, narrower gate on
 // the documented branch ORDER; this one is primary.
 //
-// That the interpreter is not a copy was once written up as "there is no second
-// copy of the decision to drift from the first". There was one:
-// `skills/cleanup/SKILL.md` stated the cascade in prose, in the pre-fix order,
-// and no gate read it (issue 260810-1918). Both gates read one file. The last
-// describe block below is what closed that — it reads every consumer, and it is
-// the only reason the claim is worth anything.
+// The last describe block below is why "no second copy to drift from" is worth
+// anything: there was one, and no gate read it (issue 260810-1918; the story is
+// in `README-hooks.md`'s `lib/domain-cascade.ts` row).
 //
 // Four properties are asserted, and they catch different things:
 //   1. VERDICTS for the projects commit 2910cf6 measured. Catches any edit that
@@ -72,12 +65,10 @@ const promptCascade = () => parseCascade(promptText());
  * The cascade's whole input surface: two file counts and the string that says
  * whether they were measured at all.
  *
- * The consuming project where the defect was caught carried 122 commits, three
- * open decisions against one open defect record and two analyses, and those
- * four numbers are what used to override its 108 source files. They are no
- * longer inputs — the branches that read them went with the two domains they
- * decided — so the profile that produced the defect is now unrepresentable
- * rather than merely outvoted. What remains asserted below is the tree.
+ * The workbench-artifact counts that used to override a project's source count
+ * — the defect `agents/orchestrator.md` Setup Step 5 records — are no longer
+ * inputs at all, so that profile is unrepresentable rather than merely
+ * outvoted. What remains asserted below is the tree.
  */
 const counted = (over: Partial<Counts>): Counts => ({
   counted_by: "git-ls-files",
@@ -98,14 +89,10 @@ interface Scenario {
 }
 
 /**
- * Commit 2910cf6 measured five projects and named a sixth: "Cargo 0 to 27, Go 0
- * to 19, frontend 50 to 11, here 4 to 88, KRK 0 to 108" (old walk to git
- * ls-files) and, for the ratio branch, "An ontology tree (2/30) trips it; this
- * repository (88/21) and KRK (108/11) do not."
- *
- * So both sides were measured for three of them and only the code side for
- * Cargo, Go and frontend. Those three get their own sweep further down rather
- * than an invented data count.
+ * The counts come from commit 2910cf6, which measured five projects and named a
+ * sixth; its message carries the figures. Both sides were measured for three of
+ * them and only the code side for Cargo, Go and frontend, so those three get
+ * their own sweep further down rather than an invented data count.
  */
 const scenarios: Scenario[] = [
   {
@@ -268,16 +255,12 @@ describe("orchestrator Setup Step 5 — the cascade, executed", () => {
     // End to end: the helper the prompt calls, feeding the cascade the prompt
     // states. A change to either side that breaks the pair fails here.
     //
-    // The helper has two documented outcomes and this asserts a property of
-    // BOTH, because which one it gives is a fact about the tree, not about the
-    // code. Exit 2 with `counted_by=none` is "no count was taken" — its own
-    // header calls that a real answer — and it is what an `install.sh` unpack,
-    // a `git archive` export, a Docker COPY that drops `.git`, or a CI image
-    // with no `git` binary produces. Asserting exit 0 asserted a git checkout,
-    // so the suite failed in any tree without one and blamed the helper
-    // (issue 260810-1918). Both branches end at domain `code` here, by
-    // different routes: a counted tree because it holds source, an uncounted
-    // one because the absent-count branch is the cascade's no-evidence exit.
+    // The helper has two documented outcomes — its own header spells them, and
+    // why `counted_by=none` is a real answer rather than an error — and this
+    // asserts a property of BOTH, because which one it gives is a fact about
+    // the tree. Asserting exit 0 asserted a git checkout, so the suite failed in
+    // any tree without one and blamed the helper (issue 260810-1918). Both
+    // branches end at domain `code`, by different routes.
     const run = spawnSync(join(pluginRoot, "bin", "fusion-count-sources"), [pluginRoot], {
       encoding: "utf-8",
     });
@@ -466,18 +449,16 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
 // Reach: exactly one consumer states the cascade (issue 260810-1918).
 //
 // Everything above measures the definition. This measures how far the gate
-// reaches. Two earlier rounds got that wrong, in the same place both times, by
-// standing a claim beside a sound gate that was broader than the gate (issue
-// 260810-2110). So the sentence is gone: `REACH` in `hooks/lib/domain-cascade.ts`
-// holds the file set, what is caught, what is missed and what is not scanned,
-// each line carrying probes this file runs. The `README-hooks.md` paragraph is
-// rendered from the same object and compared byte-for-byte. A claim that
-// outruns the gate now fails here rather than being found by the next reviewer.
+// reaches, and it states nothing about that reach: `REACH` in
+// `hooks/lib/domain-cascade.ts` holds the file set, what is caught, what is
+// missed and what is not scanned, each line carrying probes this file runs, and
+// `README-hooks.md` `### How far the domain-cascade reach gate reaches` is
+// rendered from the same object and compared byte-for-byte. Why the prose is
+// generated rather than written is stated in that section (issue 260810-2110).
 //
-// The file set is the CONSUMER set and it carries no exemptions, deliberately.
-// `path-literal-lint.test.ts` scans agents and skills and exempts `setup` and
-// `migrate` because their subject IS the layout; nothing makes a second home for
-// this decision legitimate, so nothing is exempt here.
+// The file set is the CONSUMER set and carries no exemptions, deliberately —
+// unlike `path-literal-lint.test.ts`, which exempts the two skills whose
+// subject IS the layout.
 //
 // Two shapes are detected, because two are representable: a fenced block that
 // would actually run (`cascadeBlocks`) and a prose sentence that a reader
@@ -768,13 +749,9 @@ describe("the reach gate catches the copy it was written for", () => {
 });
 
 // ---------------------------------------------------------------------------
-// The reach CLAIM, measured (issues 260810-2110).
-//
-// Two commits in a row shipped a prose claim about this gate that was broader
-// than the gate. The repair is not a wider regex, it is that the claim stopped
-// being prose: `REACH` holds it, every line carries probes, and the three
-// describes below run them. A widening that closes a hole fails here until the
-// hole leaves the list; a narrowing that opens one fails here too.
+// The reach CLAIM, measured. The repair the header above cites is what the
+// three describes below run: a widening that closes a hole fails here until the
+// hole leaves `REACH`; a narrowing that opens one fails here too.
 // ---------------------------------------------------------------------------
 
 describe("the reach claim is asserted, not written", () => {

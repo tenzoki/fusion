@@ -9,18 +9,12 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // script through child_process against throwaway project fixtures — the same
 // way the orchestrator's Setup Step 5 calls it.
 //
-// What the fixtures are for: the mechanism this helper replaced was a `find`
-// walk bounded to "top-level + 1 subdir deep". Every fixture below is a layout
-// that walk returned zero (or nonsense) for, so each case is a regression test
-// against a real reported defect, not a hypothetical.
-// Decision: shared/decisions/260809-1731_*_how-should-the-domain-heuristic-
-// count-a-projects-source-files.md.
-//
-// The failure fixtures are the second half of the same contract. What the
-// caller consumes is `counted_by`, so a count that failed must never leave the
-// helper wearing `counted_by=git-ls-files`; the two cases below drive a broken
-// git and a broken filter and assert the helper does not claim to have counted.
-// Issue: shared/issues/260810-0459_*_fusion-count-sources-reports-a-measured-
+// What the fixtures are for: each is a layout the `find` walk this helper
+// replaced returned zero or nonsense for. The mechanism and why there is no
+// fallback are in the script's own header and in
+// shared/decisions/260809-1731_*_how-should-the-domain-heuristic-
+// count-a-projects-source-files.md; the failure fixtures pin
+// shared/issues/260810-0459_*_fusion-count-sources-reports-a-measured-
 // zero-when-git-fails-which-its-own-header-forbids.md.
 const script = join(pluginRoot, "bin", "fusion-count-sources");
 
@@ -70,43 +64,20 @@ function run(cwd: string, ...args: string[]): Counts {
 
 /**
  * The extension alternations, read out of the script rather than copied into
- * this file. A copy would drift the moment somebody adds a language — which the
- * script's header explicitly invites ("Adding a language is one word in
- * CODE_EXT") — and the coverage test below would keep passing while covering
- * less. Read from the source, it covers whatever the source currently lists.
+ * this file, because a copy drifts the moment somebody adds a language — which
+ * the script's header explicitly invites ("Adding a language is one word in
+ * CODE_EXT").
  *
- * Reading has its own drift, one step quieter, and it arrives in two shapes.
- * A line given a trailing comment or wrapped stops matching the regex and
- * contributes nothing, so every line that DECLARES the variable must also parse
- * — a line that declares it and does not match is the parse breaking, not the
- * script shrinking. The floors this replaced (>50, >15) only caught a parse
- * matching nothing: `CODE_EXT`'s eleven lines average 5.5 extensions, so two
- * could fall out under a floor of 50 while the test kept asserting coverage over
- * the smaller set. Issue: shared/issues/260810-0749_*_the-extension-parse-
- * guards-against-matching-nothing-but-not-against-matching-less.md.
- *
- * The second shape is why the line count is not the whole guard. The
- * continuation prefix is optional in the regex, so a line rewritten to
- * `CODE_EXT="${CODE_EXT}|c|h|…"` still matches — and captures `${CODE_EXT}` as
- * an extension. The line count is unchanged and the list is longer, not shorter,
- * so neither a floor nor a line-count assertion sees it. Every token therefore
- * has to look like an extension.
- *
- * The third shape is why the two patterns below are not the same pattern. The
- * filter has to be WIDER than the match, or a line the match cannot see is not
- * seen by the filter either and drops out silently — which is the first shape
- * again, one anchor further in. `  CODE_EXT=` (indented) and `CODE_EXT+=` are
- * both valid bash computing the identical value, so the script keeps shipping
- * every extension while a filter anchored like the match asserts coverage over
- * a smaller set. Widened, such a line lands in `declared` and then throws
- * "declared but not parsed". Issue: shared/issues/260810-0939_*_the-declared-
+ * Reading has three drift shapes of its own, and they are why every `VAR=` line
+ * must parse, why every token must LOOK like an extension, and why the filter
+ * is deliberately wider than the match. Each is stated with its measurement in
+ * shared/issues/260810-0749_*_the-extension-parse-
+ * guards-against-matching-nothing-but-not-against-matching-less.md (and its
+ * Resolved note, for the `${CODE_EXT}` rewrite that grows the list instead of
+ * shrinking it) and shared/issues/260810-0939_*_the-declared-
  * but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-
- * cover-less.md.
- *
- * What the filter must NOT catch is a line deleted outright: the script then
- * really does ship fewer extensions and covering fewer is correct. That is the
- * whole difference between this guard and the floors it replaced, and it is
- * pinned in the test below.
+ * cover-less.md. What the filter must NOT catch is a line deleted outright, and
+ * that boundary is pinned in the test below rather than argued here.
  *
  * `src` is a parameter so the guard itself is testable against a mutated source.
  */

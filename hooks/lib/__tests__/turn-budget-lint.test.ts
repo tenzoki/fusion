@@ -6,23 +6,12 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // ---------------------------------------------------------------------------
 // Turn-budget lint (issue 260811-1712).
 //
-// The defect: the orchestrator's Phase-2 Turn budget was PROSE. `5` was written
-// into `agents/orchestrator.md` in seven places and four spellings, one of which
-// already called the number a "default" while no source could override it, so
-// the word was false. The seven sites and their spellings are enumerated in the
-// filed issue,
-// `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`,
-// and are not restated here.
-//
-// The fix makes the budget a configured value: `orchestrator.maxTurns`, merged
-// per leaf by `hooks/lib/config.ts` from the project's `fusion.json` and the
-// built-in `DEFAULTS`; read once per
-// session by `bin/fusion-turn-budget` at Setup, on a resume exactly as on a
-// fresh session, and held for that session only. It was also persisted, as
-// `progress.max_turns` in `agentstate.yaml`, until 2026-08-15 — that copy went
-// with the six other hand-maintained counters in the same block, on the ground
-// that a configured ceiling is not session state and a second source is the
-// very defect this gate exists over.
+// The defect — the Phase-2 Turn budget as PROSE, `5` in seven places and four
+// spellings — and the configured value that replaced it are stated in
+// `CLAUDE.md`'s `bin/fusion-turn-budget` Layout row; the seven sites are
+// enumerated in the filed issue,
+// `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`.
+// Neither is restated here.
 //
 // What this gate pins is the part that would otherwise be undone: that no bare
 // Turn-budget literal comes BACK into the prompt. Seven copies of one fact did

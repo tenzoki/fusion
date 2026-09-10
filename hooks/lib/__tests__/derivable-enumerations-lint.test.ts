@@ -8,13 +8,9 @@ import { agentNames, pluginRoot } from "./helpers/citation-scan.js";
 // nachziehen, plan step 15).
 //
 // The shipped documentation carries several enumerations whose ground truth is
-// the tree itself — the skill roster, the agent count, the always-on rule
-// list, the conditional emission sets, the hooks/lib file table, the
-// path-literal lint's DEFINITION_SITES echo in CLAUDE.md, and the bin/ helper
-// roster in CLAUDE.md's Layout table. Each went stale at least once (the review
-// measured a skill list missing `seed-from-plane` and a lib table missing three
-// modules). This gate re-derives each enumeration from the tree and diffs it
-// against the documented claim.
+// the tree itself; which ones, and the staleness that motivated each, are
+// listed in that plan step. This gate re-derives each from the tree and diffs
+// it against the documented claim.
 //
 // THE BOUNDARY, stated plainly (the plan warns against overreach): only
 // enumerations that are MECHANICALLY derivable are checked. Deliberately out

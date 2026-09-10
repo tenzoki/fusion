@@ -6,13 +6,10 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 // ---------------------------------------------------------------------------
 // Marker-format lint gate (plan step 6 / Phase 5).
 //
-// State markers in filenames use the underscore form (`_o_`, `_t_circle.md`,
-// `260716-1847_o_topic.md`), NOT the older bracket form (`[o]`, `[t]-circle.md`).
-// The delimiter changed because `[` and `]` are shell-glob metacharacters: a
-// marker written into a glob is silently a character class, which hit five sites
-// in one session. Only the delimiter changed — the nine marker letters
-// (o a t c i b s d p), their meanings, the transitions, and the sort order are
-// all unchanged.
+// State markers in filenames use the underscore form (`_o_`, `_t_circle.md`),
+// NOT the older bracket form (`[o]`, `[t]-circle.md`). Why the delimiter
+// changed, and what it cost before it did, is authored in
+// `rules/fusion-workbench-conventions.md` `## Marker globs`.
 //
 // This gate keeps the bracket form from creeping back: it fails `npm test` if a
 // single-marker-letter bracket token `\[[oatcibspd]\]` appears in `agents/*.md`

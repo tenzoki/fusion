@@ -307,20 +307,15 @@ describe("bin/fusion-paths", () => {
 
   describe("the backlog keys", () => {
     // OUT_BACKLOG and SCAN_BACKLOG are the third unconditionally-shared kind,
-    // beside consultations and memos. A backlog entry PRECEDES
-    // every Directive by construction, so there is no Circle it could belong
-    // to — which is why the target argument does not move it either. That last
-    // case is new: it is the first key set to meet a <circle-dir> target, and
-    // "unconditionally shared" now has two conditions to survive rather than
-    // one.
+    // beside consultations and memos. Why a backlog entry can belong to no
+    // Circle is stated in `rules/fusion-workbench-conventions.md`
+    // `## Backlog entries`; here it means the `<circle-dir>` target does not
+    // move the keys either, so "unconditionally shared" has two conditions to
+    // survive rather than one.
     //
-    // The staged-fixture cases below drive a prompt written here through a
-    // copy of the script, so they exercise the derivation path itself rather
-    // than whatever a shipped prompt happens to name today. That was once the
-    // only way to reach OUT_BACKLOG at all: no shipped prompt named it,
-    // because no agent wrote into the store. `agents/playmaker.md` names it
-    // now, and the shipped-prompt cases at the end of the block are where each
-    // consumer's actual key set is pinned.
+    // The staged-fixture cases below exercise the derivation path itself (see
+    // the block above `stage()`); the shipped-prompt cases at the end are where
+    // each consumer's actual key set is pinned.
     const OTHER = "260812-1720-circle-first-placement";
 
     beforeEach(() => {
@@ -392,31 +387,18 @@ describe("bin/fusion-paths", () => {
     });
 
     it("gives playmaker both keys, and says nothing about how the write is bounded", () => {
-      // The first shipped consumer to hold both. The playmaker reads the whole
-      // store and maintains it, and two of the four maintenance operations
-      // create files — a split writes one entry per idea, a merge writes the
-      // consolidated one — which needs a resolved write target.
+      // The first shipped consumer to hold both. Nothing in the resolver moved
+      // to bring the write key across: a consumer's key set is one grep over
+      // its own prompt (`rules/workbench-path-resolution.md`), so naming
+      // `$OUT_BACKLOG` in `agents/playmaker.md` is the whole of the change, and
+      // that derivation is what this case proves.
       //
-      // This case asserted the opposite until the playmaker took the store
-      // over: SCAN_BACKLOG present, OUT_BACKLOG absent, and the argument was
-      // that the missing key made the "writes no entry" prohibition mechanical
-      // rather than merely stated. That prohibition is gone and the asymmetry
-      // with it. Nothing in the resolver moved to bring the key across: a
-      // consumer's key set is one grep over its own prompt, so naming
-      // `$OUT_BACKLOG` in `agents/playmaker.md` is the whole of the change.
-      // That derivation is what this case proves.
-      //
-      // It is also all it proves, and the difference matters now in a way it
-      // did not before. What bounds the playmaker today is prose: it reshapes
-      // ideas already in the store and originates none, and its four
-      // operations (split, merge, close, defer) run only under a user
-      // confirmation the run holds. Those bounds live in
-      // `rules/fusion-workbench-conventions.md` `## Backlog entries` and in
-      // `agents/playmaker.md` `## Two mandates, by dispatch path`. No
-      // assertion here reaches them — a sibling lint checks that they are
-      // STATED on both surfaces, and nothing in this suite checks that a run
-      // obeys them. Read a green result as "the key is granted", never as "the
-      // write is bounded".
+      // It is also ALL it proves. What bounds the playmaker is prose, authored
+      // in `rules/fusion-workbench-conventions.md` `## Backlog entries` and
+      // `agents/playmaker.md` `## Two mandates, by dispatch path`; no assertion
+      // here reaches it, and `playmaker-backlog-mandate-lint.test.ts` checks
+      // only that it is STATED. Read a green result as "the key is granted",
+      // never as "the write is bounded".
       const p = parse(run(project, "playmaker").stdout);
       expect(p.SCAN_BACKLOG).toBe("shared/backlog");
       expect(p.OUT_BACKLOG).toBe("shared/backlog");
@@ -685,10 +667,8 @@ describe("bin/fusion-paths", () => {
   // a scratch bin/ makes the scratch project its plugin root and the fixtures
   // its prompts. This is the derivation path itself, not a simulation of it.
   //
-  // The previous versions of these tests patched a `KEYS="…"` literal in the
-  // script's source. That anchor is gone with the declared sets — and a
-  // fixture prompt is the better lever anyway: it injects the fault where a
-  // real fault would now originate, in a prompt.
+  // A fixture prompt is the right lever: it injects the fault where a real
+  // fault would now originate, in a prompt.
   function stage(): string {
     const bin = join(project, "bin");
     mkdirSync(bin, { recursive: true });
@@ -855,11 +835,9 @@ describe("bin/fusion-paths", () => {
   });
 
   describe("plugin-repo preference (decision 260806-0015, option c)", () => {
-    // Inside the fusion plugin's own source repo (bin/fusion-plugin-cwd: a
-    // .claude-plugin/plugin.json at cwd naming "fusion"), prompts resolve
-    // from the WORK TREE, not from the script's install location — the
-    // installed copy's prompts can be sessions stale against the ones being
-    // edited. The prompt files are the only plugin-root-relative resources
+    // The work-tree preference, its criterion and its exact bound are stated in
+    // `CLAUDE.md`'s `bin/fusion-plugin-cwd` Layout row and its Rules-loading
+    // convention. The prompt files are the only plugin-root-relative resources
     // this script reads, so the preference is one assignment; these tests pin
     // both its presence and its bound.
 

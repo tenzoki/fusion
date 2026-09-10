@@ -9,10 +9,10 @@ import { dirname, resolve, join } from "node:path";
 // The voice-profile emission — which language variant of each stylometric
 // profile family `bin/fusion-rules` hands an agent at Setup.
 //
-// Two declarations in `CLAUDE.md` name two languages (`rules/fusion-workbench-
-// conventions.md` `## Project language`): `**Language:**` for what the user
-// reads in the terminal, `**Artifact language:**` for what persists as a file,
-// and each profile family resolves from the surface it governs.
+// Which declaration governs which family, and every fallback in the chain, is
+// authored in `rules/fusion-workbench-conventions.md` `## Project language` and
+// summarised in `CLAUDE.md`'s stylometric-profiles bullet. Nothing here
+// restates it.
 //
 // THE ORDER THIS FILE WAS BUILT IN IS LOAD-BEARING. The backwards-compatibility
 // case below was written and run GREEN against the unmodified script, before a
@@ -23,18 +23,14 @@ import { dirname, resolve, join } from "node:path";
 //
 // It drives the real `bin/fusion-rules` through `child_process` in a temp
 // project, the seam the golden suite established, under the same two
-// environment disciplines: `FUSION_PLUGIN_ROOT` forced to THIS repository
-// (`rules-emission-golden.test.ts:52-56`), and every temp cwd asserted to carry
-// no `.claude-plugin/plugin.json` (`rules-emission-golden.test.ts:625-645`).
-// The emitted profile paths are relative (`./fusion-workbench/stilwerk/...`),
-// and that leading `./` is the discriminator that picks them out without
-// filtering by name.
+// environment disciplines that suite documents in `rules-emission-golden.test.ts`:
+// `FUSION_PLUGIN_ROOT` forced to THIS repository, and every temp cwd asserted
+// to carry no `.claude-plugin/plugin.json`. The emitted profile paths are
+// relative (`./fusion-workbench/stilwerk/...`), and that leading `./` is the
+// discriminator that picks them out without filtering by name.
 //
-// Untestable by construction: the language an agent actually writes in. These
-// tests prove which profile path is emitted, not that an agent obeyed it
-// (`rules/critical-stance.md` §4). No source-shape assertion: the contract is
-// the emission, and a test that reads the source fails for edits that break
-// nothing.
+// Untestable by construction: the language an agent actually writes in
+// (`rules/critical-stance.md` §4).
 // ---------------------------------------------------------------------------
 
 const here = dirname(fileURLToPath(import.meta.url));

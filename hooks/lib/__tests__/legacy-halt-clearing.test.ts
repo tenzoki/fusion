@@ -5,11 +5,9 @@
  * ## What this file is, and why it was re-pointed rather than deleted
  *
  * It was written on 2026-08-12, when the protected-path half of the guard was
- * removed, and its subject then was that a halt raised by the vanished mechanism
- * still loaded, still blocked at CHECK 1, and still cleared through
- * `clear-halt.js`. Every one of those three is now false: the halt check, the
- * consecutive-block counter, `lib/escalation.ts` and `clear-halt.ts` all went
- * with the guard's last verdict on 2026-08-16.
+ * removed, and its subject then was a halt that still loaded, still blocked and
+ * still cleared. All three are now false; `CLAUDE.md`'s header dates each
+ * removal.
  *
  * The file stays because its subject is a MIGRATION and not a mechanism. A
  * consuming project can upgrade across this release carrying `haltActive: true`

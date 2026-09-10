@@ -7,19 +7,12 @@ import { BOUND_AGENTS } from "../events-query.js";
 // ---------------------------------------------------------------------------
 // The bound-agent set, pinned across the two places it exists.
 //
-// `bin/fusion-rules` decides which agents are TOLD about a stopping time: its
-// `IS_BOUND_AGENT=1` case arm is what emits `rules/bounded-dispatch.md`.
-// `BOUND_AGENTS` in `hooks/lib/events-query.ts` decides which agents the
-// `dispatches` reading MEASURES. Neither can read the other: the script is
-// shell and the module is a pure function that runs no subprocess. So the two
-// are separate copies of one set, and this gate is what stops a name being
-// added to one side alone — a name in the script but not the constant is an
-// agent that is bounded and never measured; the reverse is an agent measured
-// against a bound it was never given, which reports `longer` on a dispatch that
-// was never asked to stop.
-//
-// Modelled on `review-coverage-mandate.test.ts`, which pins `REVIEW_SENDERS`
-// against the same script's `IS_REVIEWER_AGENT` arm.
+// The two copies — the `IS_BOUND_AGENT` case arm in `bin/fusion-rules` and
+// `BOUND_AGENTS` in `hooks/lib/events-query.ts` — and why they cannot read each
+// other are stated in that constant's own doc comment. This is the gate it
+// names. What each side's absence costs: a name in the script alone is an agent
+// bounded and never measured; in the constant alone, an agent measured against
+// a bound it was never given.
 //
 // WHAT THIS DOES NOT CHECK: that a dispatch actually carried a `**Stop by:**`
 // line, or that the agent read it. Nothing here runs at dispatch time.

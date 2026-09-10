@@ -11,16 +11,13 @@ import { extractBashBlock } from "./helpers/prompt-blocks.js";
 // stores, and this gate runs the measurement rather than reading it
 // (`agents/orchestrator.md` `### The record counts are computed, not tallied`).
 //
-// The block replaced a hand-kept tally (`shared/issues/260810-1205_*`) and then
-// shipped with faults of its own, each found only by extracting and running it:
-// `260811-1406_*`, `260811-1407_*`, `260811-1412_*`, `260811-1610_*`,
-// `260811-1616_*`, `260811-2149_*`. So this gate does three things, in the
-// order the faults came: it RUNS the block, in both shells, over throwaway
-// workbenches whose record stores it built; it runs it in a shell that was
-// given NOTHING, which is the shell an agent actually gets; and it reads the
-// section's prose for the one claim that is about a machine rather than the
-// code. The controls run the block AS IT SHIPPED, read out of git, and show it
-// failing both ways over the same fixtures.
+// What the block replaced is named in that section. It then shipped with faults
+// of its own, each found only by extracting and running it: `260811-1406_*`,
+// `260811-1407_*`, `260811-1412_*`, `260811-1610_*`, `260811-1616_*`,
+// `260811-2149_*`. So this gate runs the block, in both shells and in a shell
+// given NOTHING, over throwaway workbenches whose record stores it built, and
+// reads the section's prose for the one claim that is about a machine rather
+// than the code. The controls run the block AS IT SHIPPED, read out of git.
 //
 // What this is not (`rules/critical-stance.md` §3): proof that a session runs
 // the block. It proves the block, run as written, counts what is on the disk.

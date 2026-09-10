@@ -36,21 +36,14 @@ describe("hooks.json wiring — guard reaches Bash", () => {
   // omitted Bash, so the policy that then read shell commands never ran in
   // production even though its unit tests passed.
   //
-  // Nothing reads a command any more, and the fingerprint that justified this
-  // wiring after the classifier — the BEFORE-picture of the protected paths,
-  // taken here and compared in `tracker.ts` — went with the protected-path half
-  // on 2026-08-12. THE REASON THAT HOLDS NOW is the configuration diagnostic
-  // loop: `guard.ts` emits one `guard_advisory` per problem the loader hands
-  // back, on every guarded call, and Bash is most of a session's guarded calls
-  // (`hooks/guard.ts` — the Bash branch states the same thing at the site).
-  //
-  // That matters more than it did. Since the configuration file was renamed,
-  // the retired-file diagnostic IS the whole of the v10 migration for a
-  // consuming project (`lib/config.ts`, the retirement section), and this
-  // matcher is how it reaches one. Drop Bash from here and a project carrying a
-  // stale `fusion-guard.json` hears about it on write-tool calls alone, which
-  // is where a silently unapplied Turn budget comes from. These two assertions
-  // are what stop that edit.
+  // Nothing reads a command any more. THE REASON THAT HOLDS NOW is the
+  // configuration diagnostic loop, stated in `CLAUDE.md`'s `hooks/` Layout row
+  // and at the site in `hooks/guard.ts`'s Bash branch: one `guard_advisory` per
+  // problem the loader hands back, on every guarded call, and Bash is most of a
+  // session's guarded calls. Drop Bash from here and a project carrying a stale
+  // `fusion-guard.json` hears about it on write-tool calls alone — which is
+  // where a silently unapplied Turn budget comes from. These two assertions are
+  // what stop that edit.
   it("routes Bash tool calls to guard.js via PreToolUse", () => {
     const preToolUse = loadHooks().hooks.PreToolUse ?? [];
     const guardEntry = preToolUse.find((entry) =>

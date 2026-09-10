@@ -9,15 +9,10 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // tests drive the real script through child_process against a throwaway
 // workbench fixture, following the precedent of fusion-paths.test.ts.
 //
-// Motivating defect (issue 260805-1839, holder-less lock directory): a lock
-// directory WITHOUT a holder file — holder died between `mkdir` and the holder
-// write, or the directory was created some other way — recorded no PID and no
-// acquired_at, so `is_stale_lock` could never call it stale and `acquire`
-// blocked forever with the non-actionable message "waiting for commit lock
-// held by ?...". The fix ages a holder-less directory on its own mtime against
-// the same 60-second threshold. These tests pin the fix and the two behaviours
-// around it (a young holder-less directory still blocks; a normal
-// acquire/release cycle is untouched).
+// Motivating defect: issue 260805-1839, the holder-less lock directory. What
+// the state is and how it is aged out are stated in `rules/commit-lock.md`
+// `### Mechanism` and its `### Failure modes` table; these tests pin the fix
+// and the two behaviours around it.
 const script = join(pluginRoot, "bin", "fusion-commit-lock");
 
 // The script's own constant. Tests never wait it out — the stale cases
@@ -65,22 +60,14 @@ function backdate(path: string, seconds: number): void {
 /* ------------------------------------------------------------------ *
  * Waiting on the lock's own output instead of on a clock
  *
- * Every case below that watches a blocking `acquire` used to give it a fixed
- * budget — a 3 s `spawnSync` timeout whose SIGTERM was read as "it is still
- * blocking", or a poll deadline sized against an injected `sleep`. All of them
- * assumed the machine would get through a bash startup, a workbench-root
- * resolution and a `mkdir` inside a few seconds. Under the parallel-executor
- * pattern this project runs on it does not: the noclobber case failed in all
- * four loaded runs of
- * `shared/issues/260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`,
- * and in six of six here with two concurrent suites in one checkout.
+ * Why the fixed budgets these helpers replaced failed under parallel load and
+ * passed in isolation: `shared/issues/260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`
+ * and the fix log `260815-1133-coder-hooks-suite-concurrency-safety.md`.
  *
- * What replaces the budget is the script's own first-fail message. It is
- * printed exactly once, it names the holder, and once printed it stays in the
- * accumulated stderr — a monotone condition, so a slow machine only takes
- * longer to reach it rather than missing it. The only deadline left is the
- * vitest case timeout, which is a deadlock guard rather than an assumption
- * about how fast the lock is.
+ * What replaces the budget is the script's own first-fail message: printed
+ * exactly once, and once printed it stays in the accumulated stderr — a
+ * monotone condition, so a slow machine only takes longer to reach it. The only
+ * deadline left is the vitest case timeout.
  * ------------------------------------------------------------------ */
 
 /** A blocking `acquire` under observation: its stderr so far, and its process. */
@@ -236,11 +223,10 @@ describe("fusion-commit-lock: holder-less lock directory", () => {
 });
 
 describe("fusion-commit-lock: the holder write is noclobber (issue 260806-1030, reaped slow creator)", () => {
-  // The race the noclobber write closes: a creator suspended between `mkdir`
-  // and the holder write for >= 60s gets reaped by the holder-less aging; on
-  // resume, a plain `>` would silently overwrite the reaping waiter's fresh
-  // holder and BOTH parties would believe they hold the lock. With `set -C`
-  // the late write fails and the creator treats the acquisition as lost.
+  // The race the noclobber write closes is stated in `rules/commit-lock.md`
+  // `### Mechanism` and its `Crash (or long suspension) between mkdir and the
+  // holder write` failure mode; issue 260806-1030 is the half where a reap
+  // pulls the lock from under a living slow acquirer.
   //
   // The suspension is simulated by driving a patched COPY of the real script
   // with an injected pause between `mkdir` and the holder write — the same
@@ -248,25 +234,10 @@ describe("fusion-commit-lock: the holder write is noclobber (issue 260806-1030, 
   // asserted, so a reshaped script fails loudly here instead of testing the
   // wrong seam.
   //
-  // ## Why the pause is a gate and not a `sleep`
-  //
-  // It was `sleep 4`, and the case then had to CATCH the creator inside a
-  // four-second window by polling every 100 ms. That is a wall-clock
-  // assumption about a state that disappears on its own, and under the
-  // parallel-executor pattern this project runs on it is false: the case failed
-  // in all four loaded runs recorded in
-  // `shared/issues/260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`
-  // and in six of six full runs here with two concurrent suites in one
-  // checkout, always as "the creator never created a holder-less lock
-  // directory". A vitest worker starved of CPU misses a four-second window the
-  // same way a slow creator does, and the assertion cannot tell the two apart.
-  //
-  // The creator now parks indefinitely on a file that does not exist yet, and
-  // announces its arrival by creating another. The holder-less state therefore
-  // PERSISTS until this case ends it, so a loaded machine only takes longer to
-  // observe it. Every wait below ends on an event — a file appearing, a line
-  // reaching stderr, a process exiting — and the only clock left is the vitest
-  // case timeout.
+  // The pause is a gate and not a `sleep`: the creator parks indefinitely on a
+  // file that does not exist yet and announces its arrival by creating another,
+  // so the holder-less state PERSISTS until this case ends it. Why a
+  // four-second window was wrong is the block at the head of this file.
 
   it(
     "a creator reaped between mkdir and its holder write loses the acquisition instead of overwriting the waiter's holder",
@@ -372,18 +343,17 @@ describe("fusion-commit-lock: stale holder file (the pre-existing reap path)", (
 });
 
 /* ------------------------------------------------------------------ *
- * The machine-written `commit` row (v10.8.0; `rules/commit-lock.md`
- * `## The lock writes the commit event`). A row lands only when HEAD moved
- * under `with` AND the row can be scoped to a session — `FUSION_SESSION_ID` is
- * exported, or `agentstate.yaml` exists. That second condition is a
- * DISJUNCTION, matching `eventRowsAdmitted` in
- * `hooks/lib/orchestrator-events.ts`, and it used to be the state file alone;
- * the cases below take both arms and the neither-arm case, so a future edit
- * that collapses it back to one term fails here. Identity and session id come
- * from the SessionStart exports. The dispatch-side rows
- * (`task_start`/`task_done`) are asserted in `guard-state-shape.test.ts` since
- * the gate widened; `shared/issues/260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md` recorded that they had
- * nothing but wiring asserts before that.
+ * The machine-written `commit` row (v10.8.0), whose conditions and fields are
+ * stated in `rules/commit-lock.md` `### The lock writes the commit event`. One
+ * of them is sharper here than there: the session scoping is a DISJUNCTION —
+ * `FUSION_SESSION_ID` exported, or `agentstate.yaml` present — matching
+ * `eventRowsAdmitted` in `hooks/lib/orchestrator-events.ts`, and it used to be
+ * the state file alone; the cases below take both arms and the neither-arm
+ * case, so a future edit that collapses it back to one term fails here. The
+ * dispatch-side rows (`task_start`/`task_done`) are asserted in
+ * `guard-state-shape.test.ts` since the gate widened;
+ * `shared/issues/260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md`
+ * recorded that they had nothing but wiring asserts before that.
  * ------------------------------------------------------------------ */
 
 const EVENT_LOG = "fusion-workbench/orchestrator-events.jsonl";

@@ -6,22 +6,16 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 // ---------------------------------------------------------------------------
 // Path-literal lint gate (plan step 8 / P-8).
 //
-// After the Circle-container conversion, the workbench store paths are defined
-// in exactly one executable place — `bin/fusion-paths` — and described in one
-// prose place — `rules/fusion-workbench-conventions.md`. Every agent prompt and
-// skill body must resolve its write/read targets through `fusion-paths`
-// ($OUT_* / $SCAN_* values) and must NOT name an artifact-type folder as a path
-// literal. This gate keeps that true: it fails `npm test` if a type-folder path
-// literal survives in `agents/*.md` or `skills/*/SKILL.md` outside the two
-// skills that legitimately name the pre-v4 layout.
+// The rule this enforces — store paths resolved through `bin/fusion-paths` and
+// never written as a literal in a prompt — and this gate's own place in it are
+// stated in `CLAUDE.md`'s last `## Where to look when something breaks` row,
+// down to `DEFINITION_SITES` and why that list grants nothing. It fails
+// `npm test` if a type-folder path literal survives in `agents/*.md` or
+// `skills/*/SKILL.md` outside the two skills that legitimately name the pre-v4
+// layout, and it reads no file that DEFINES a store. Widen the file set and
+// those must become explicit exemptions.
 //
-// This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
-// asserts, it never rewrites a prompt.
-//
-// The gate reads only `agents/` and `skills/`, never the files that DEFINE the
-// stores; those are enumerated in `DEFINITION_SITES` below so that a new
-// definition site is decided rather than inherited by passing a gate that
-// never looked. Widen the file set and they must become explicit exemptions.
+// This is a guard, not a fixer (rules/critical-stance.md §2).
 // ---------------------------------------------------------------------------
 
 

@@ -1,13 +1,7 @@
 // ---------------------------------------------------------------------------
 // The fenced-code-block exemption of the citation scanner.
 //
-// WHY THIS EXISTS. `scanCitationTokens` judged every line on its own until
-// 2026-08-20: the only multi-line construct it recognised was the blockquote,
-// and that recognition is a test of one character at the start of one line. A
-// verbatim transcript — the shape a record uses when its whole content is that
-// some OTHER file spells a citation wrongly — therefore read as a pile of
-// broken citations, and the record that reported a defect became a violation
-// itself. See the answer at the foot of
+// WHY THIS EXISTS: the answer at the foot of
 // `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`,
 // which chose rewriting those records over an allowlist and named the fenced
 // block as the one place a verbatim citation may still stand.
@@ -16,23 +10,13 @@
 // its content is the easy half. That a fence STOPS exempting — at its closing
 // marker, and at the end of a file it never closed — is the half that decides
 // whether this is a gate or a switch, so the unclosed-fence negative control
-// below is not a completeness test but the load-bearing one.
+// below is the load-bearing case rather than a completeness one.
 //
-// WHAT THE FENCE STOPPED COVERING ON 2026-09-05. Its premise is "do not look
-// this token up", so it reaches the verdicts a lookup decides and not
-// `store-prefixed`, which `SHAPE_DECIDED_KINDS` settles from the token's shape
-// before anything is read off disk (issue
-// 260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md).
-// The cost is stated rather than hidden: a record whose subject is that some
-// other file carries a store segment can no longer fence the whole token, and
-// names the segment in words instead. That is the remedy the gate's own failure
-// message now spells. What the fence still buys such a token is that NOTHING
-// REWRITES IT: the reason rides along with the verdict and `citation-sweep.ts`
-// skips every hit that carries one.
-//
-// The scanner's own doc comment on `fencedContentLines` carries the CommonMark
-// citation, the three omissions and the one deliberate departure. This file
-// tests behaviour and does not restate the reasoning.
+// The reasoning is next door and is not restated here. `fencedContentLines` in
+// `lib/citation-scan.ts` carries the CommonMark citation, the three omissions
+// and the deliberate unclosed-fence departure; `RECORD_EXAMPLE_FILES` in the
+// same file carries what the fence stopped covering on 2026-09-05 and why the
+// premise reaches a lookup verdict but never `store-prefixed`.
 // ---------------------------------------------------------------------------
 
 import { describe, it, expect } from "vitest";
@@ -47,10 +31,8 @@ import {
 /**
  * A citation that matches nothing on disk, so "judged" is unambiguous, and
  * STORELESS on purpose: its verdict is `dangling`, which a lookup decides, so
- * the fence has something to silence. A store-prefixed spelling is decided from
- * its shape, which the fence's premise does not reach, so it is judged — and
- * keeps the fence as its reason, which is what stops the sweep rewriting it.
- * The cases at the foot of this file hold the two apart.
+ * the fence has something to silence. The cases at the foot of this file hold
+ * that apart from the shape-decided verdict the fence does not reach.
  */
 const DEAD = "990101-0101_o_no-such-record.md";
 

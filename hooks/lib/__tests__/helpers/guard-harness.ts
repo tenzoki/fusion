@@ -648,22 +648,12 @@ interface HookInput {
  * strip costs nothing, and the cost of being wrong is a suite that is green on
  * two machines while only one of them is checking anything.
  *
- * `FUSION_ALLOW_RULES_WRITE` was a PERMISSION: it gated the rules-write
- * exemption, so an exported copy would have voided the flag-unset half of every
- * criterion that exemption was meant to prove. The exemption was deleted with
- * the protected-path half of the guard on 2026-08-12. Two more permission
- * variables stood beside it and gated the git branch policy; they went when it
- * did, which is the precedent for taking this one out — and the difference is
- * that they were removed while the list still had a live entry to justify
- * itself by.
- *
- * `CDPATH` is not a permission and was stripped for a stronger reason: it moved
- * a verdict in the DENYING direction, because a bare-word `cd` became unknowable
- * to the mutation classifier's working-directory model, and it is a variable
- * real people really do export from a shell profile. Left in place it denied
- * commands on one developer's machine that allowed on everyone else's. The
- * classifier and its directory model are gone, so nothing reads `CDPATH` today
- * either.
+ * `FUSION_ALLOW_RULES_WRITE` gated the rules-write exemption and `CDPATH` moved
+ * a verdict in the DENYING direction through the mutation classifier's
+ * working-directory model. `CLAUDE.md`'s header records when each mechanism
+ * went (the branch policy on 260809, the protected-path half with this
+ * exemption on 260812) and the precedent that removing a permission variable
+ * belongs with the live entry that justified the list.
  */
 const STRIPPED_ENV_VARS = ["FUSION_ALLOW_RULES_WRITE", "CDPATH"] as const;
 
