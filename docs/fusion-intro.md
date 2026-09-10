@@ -1,6 +1,6 @@
 # Fusion in Kürze — eine kompakte Einführung
 
-Fusion ist ein Claude-Code-Plugin, das eine Arbeitssitzung als Team von 15 spezialisierten Agenten fährt: ein Orchestrator verteilt, Coder, Reviewer, Planer und Analysten arbeiten, und der Mensch entscheidet an den Stellen, die zählen. Koordination läuft über Dateien im Projekt (`fusion-workbench/`), nicht über gemeinsamen Speicher. Diese Seite ist der Schnelleinstieg. Die Tiefe steht in `docs/philosophy.md` (warum), `docs/working-model.md` (wie eine Sitzung abläuft) und `README.md` (Installation, Konfiguration).
+Fusion ist ein Claude-Code-Plugin, das eine Arbeitssitzung als Team von elf spezialisierten Agenten fährt: ein Orchestrator verteilt, Coder, Reviewer, Planer und Analysten arbeiten, und der Mensch entscheidet an den Stellen, die zählen. Koordination läuft über Dateien im Projekt (`fusion-workbench/`), nicht über gemeinsamen Speicher. Diese Seite ist der Schnelleinstieg. Die Tiefe steht in `docs/philosophy.md` (warum), `docs/working-model.md` (wie eine Sitzung abläuft) und `README.md` (Installation, Konfiguration).
 
 ## 1. Installation, Start, Setup
 
@@ -60,17 +60,21 @@ Der Help-Skill liest die ausgelieferten Docs und zitiert sie mit Pfad, statt aus
 3. `/fusion:cadence`: was habe ich zuletzt getan. Braucht keinen laufenden Orchestrator, nur die Sitzung und die Workbench.
 4. Arbeiten: dem Orchestrator sagen, was man will.
 5. Ideen unterwegs mit `/fusion:memo` ablegen, ohne die laufende Arbeit zu stören.
-6. Fertig: `/fusion:cleanup`. Man kann weggehen; eine Frage wartet auf die Rückkehr.
+6. Fertig: `/fusion:cleanup` — committen und pushen, sonst nichts. Aufräumen, Reconcile, Aktivitätslog, `CLAUDE.md` und die Nachricht an das nächste Checkout sind je ein eigenes Kommando.
 
 ### Direktmodus: einfach sagen, was man will
 
-Dem laufenden Orchestrator die Aufgabe nennen („implementiere den Plan in planning und reviewe ihn“, „fix den fehlschlagenden Test im Parser“). Der Orchestrator klärt den Umfang, baut eine Arbeitsliste (`taskplanner`) und läuft die **Turn-Schleife**. Ist die Anfrage vage, geht sie erst durch den `shaper` (ergibt eine Spec, mit **Spec-Gate**), dann durch den `planner` (ergibt einen Plan, mit **Plan-Gate**). Ist sie klar, wird der Shaper übersprungen.
+Dem laufenden Orchestrator die Aufgabe nennen („implementiere den Plan in planning und reviewe ihn“, „fix den fehlschlagenden Test im Parser“). Der Orchestrator klärt den Umfang und arbeitet eine Aufgabe nach der anderen ab. Ist die Anfrage vage, geht sie erst durch den `shaper` (ergibt eine Spec, mit **Spec-Gate**), dann durch den `planner` (ergibt einen Plan, mit **Plan-Gate**). Ist sie klar, wird der Shaper übersprungen.
 
-### Turn
+### Die Dispatch-Schleife
 
-Ein Turn ist ein Batch von Tasks. Pro Turn: Ausführer werden dispatcht (`coder` für Code, `ontocoder` für Daten/Ontologie), die Arbeit wird committet (unter dem Commit-Lock), und am Ende steht der **Kohärenz-Check** mit drei Fragen: passt die Arbeit noch zu den Annahmen (Grounding), führt sie zum Ziel (Directive), ist das Ziel noch erreichbar? Alles gut: eine Statuszeile, weiter. Etwas driftet: das **Rebalance-Gate** öffnet mit vier Optionen (Arbeit nachbessern, Ziel ändern, Annahmen ändern, begrenzt abschließen).
+Fünf Schritte, je Aufgabe wiederholt: Aufgabe lesen, dispatchen (`coder` für Code, `ontocoder` für Daten/Ontologie), die Rückgabe lesen, committen (unter dem Commit-Lock), berichten und fragen, was als Nächstes kommt. **Es gibt keine Warteschlange und keinen Zähler:** genau eine Aufgabe ist unterwegs, und die nächste kommt von dir, aus dem Plan oder Issue, an dem die Sitzung arbeitet, oder aus dem, was die letzte Rückgabe aufgedeckt hat. Begrenzt wird die Schleife von dem Menschen, der nach jedem Commit antwortet, und von sonst nichts. Bis v11 lief die Arbeit stattdessen in **Turns** — Batches von Tasks, mit einem automatischen Kohärenz-Check am Ende jedes Turns und einem Turn-Budget in `fusion.json`; beides ist am 2026-09-10 entfallen.
 
-Die Zahl der Turns pro Sitzung ist das einzige Setting in `fusion.json`: `{"orchestrator": {"maxTurns": <n>}}`.
+### Kohärenz-Check und Rebalance-Gate
+
+Von selbst prüft nichts mehr die Kohärenz. Was bleibt, ist die **Reconciliation, um die du bittest** (`/fusion:reconcile`): der `reconciler` gleicht die Tracking-Dateien mit dem Code ab und liefert ein Verdikt aus drei Fragen — passt die Arbeit noch zu den Annahmen (Grounding), führt sie zum Ziel (Directive), ist das Ziel noch erreichbar? Ist das Verdikt nicht `coherent`, öffnet das **Rebalance-Gate** mit vier Optionen (Arbeit nachbessern, Ziel ändern, Annahmen ändern, begrenzt abschließen). Das ist sein einziger Auslöser: wer keine Reconciliation anstößt, sieht das Gate nie.
+
+In `fusion.json` steht genau ein aktives Setting: `citations.extraPaths`, die Nicht-Markdown-Dateien, in denen dieses Projekt Record-Zitate führt. `orchestrator.maxTurns` und `orchestrator.dispatchMinutes` sind zurückgezogen; ein Projekt, das eines davon noch deklariert, bekommt je eine Advisory pro Tool-Call.
 
 ### Gates
 
@@ -116,17 +120,19 @@ Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen,
 /fusion:cleanup
 ```
 
-Eine Pipeline aus acht Schritten: Issues für offene Tasks anlegen, die eigentliche Arbeit in sinnvollen Splits committen und pushen, reconcilen, archivieren (Tier 1, ohne Rückfrage), Aktivitätslog schreiben, `CLAUDE.md` mit dem `curator` abgleichen (das eine Gate; es steht absichtlich zuletzt, damit ein unbeaufsichtigter Lauf alles andere fertigstellt), die Housekeeping-Artefakte committen und pushen, Bericht. Optionen: `--dry-run`, `--no-push`, `--only <steps>`, `--skip <steps>`. Einzelne Schritte allein: `--only archive`, `--only log-activity`, `--only claude-md`, `--only forum`.
+**Committen und pushen, sonst nichts** — in sinnvollen Splits, unter dem Commit-Lock. Es dispatcht keinen Agenten, legt keine Issues an, archiviert nichts, schreibt kein Aktivitätslog und fasst keine normative Fläche an. Optionen: `--dry-run`, `--no-push`.
+
+Bis v11 war das eine Pipeline aus acht Schritten mit einem Gate. Die übrigen Schritte sind jetzt je ein eigenes Kommando, das man tippt, wenn man es will: `/fusion:reconcile`, `/fusion:archive`, `/fusion:log-activity`, `/fusion:curate`, `/fusion:post` (Abschnitt 10).
 
 ## 6. Zeitkosten und Aufräumarbeiten
 
 **Was Zeit kostet:**
 
 - **Erster Setup-Lauf in einem Projekt:** legt die Workbench an, kopiert Assets, erzeugt Identität und Marker. Spätere Setups sind idempotent (bestehende Profile werden nicht überschrieben; der Marker wird nur bei Versionswechsel neu geschrieben).
-- **Erstes `/fusion:cleanup` in einem Checkout:** ohne Anker in `fusion-workbench/.cadence-anchors` läuft der Reconciler über die ganze Workbench. Ab dem zweiten Lauf ist Cleanup inkrementell (v10.8.1): der Reconciler wird übersprungen, wenn seit dem letzten Lauf nichts im Tracking-Korpus geändert wurde, und der Curator prüft nur die Evidenz seit seinem letzten Durchgang (`--full` erzwingt den vollen Lauf).
+- **Erstes `/fusion:reconcile` in einem Checkout:** ohne Anker in `fusion-workbench/.cadence-anchors` läuft der Reconciler über die ganze Workbench. Ab dem zweiten Lauf liest er nur die Delta seit seiner letzten Marke; `--force` erzwingt den vollen Lauf. `/fusion:cleanup` selbst dispatcht niemanden mehr und kostet nur, was Commit und Push kosten.
 - **Die Regel-Last pro Dispatch:** jeder Agent lädt bei seinem Setup den immer geladenen Regelsatz plus das Chat-Stilprofil des Projekts (`bin/fusion-rules <agent>`), aktuell rund 66 KB für einen Coder-Dispatch. Das ist der Preis, den man bei jedem Sub-Agenten zahlt; darum sind Regeln bewusst knapp und teils nur an die Agenten emittiert, die sie brauchen.
 - **Review beim Item-Abschluss:** ein Durchlauf über alle nicht abgedeckten Commits; bei einem Item über mehrere Sitzungen entsprechend länger.
-- **Curator-Gate in Cleanup:** wartet auf eine Antwort; alles davor läuft ohne Aufsicht durch.
+- **Curator-Gate in `/fusion:curate`:** wartet auf eine Antwort; der Survey-Lauf davor läuft ohne Aufsicht durch.
 
 **Aufräumarbeiten, die dazugehören:**
 
@@ -208,6 +214,11 @@ Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung fes
 |---|---|
 | `/fusion:setup` | Einmal pro Projekt die Workbench anlegen; danach führt der Orchestrator Setup selbst aus |
 | `/fusion:cleanup` | Sitzungsende: committen und pushen, sonst nichts |
+| `/fusion:reconcile` | Tracking-Dateien gegen den Code abgleichen; liefert das Coherence-Verdikt |
+| `/fusion:archive` | Terminale Artefakte nach `archive/` verschieben |
+| `/fusion:log-activity` | Das Aktivitätslog dieses Checkouts schreiben |
+| `/fusion:curate` | `CLAUDE.md` und die Regeldateien abgleichen — das eine Gate |
+| `/fusion:post` | Eine Nachricht für das nächste Checkout hinterlassen |
 | `/fusion:cadence` | Was ist passiert (gestern, 7 Tage, wiederkehrend) |
 | `/fusion:news` | Was ein anderes Checkout hinterlassen hat, gelesen vor dem Pull |
 | `/fusion:memo` | Memo, Aufgabe oder Idee ablegen |

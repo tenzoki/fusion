@@ -295,7 +295,18 @@ esac
 # User-facing-agent flag — the agents whose output the user reads DIRECTLY:
 # the orchestrator (gates, status, chat), consultant (replies), shaper
 # (clarification rounds), editor (deliverable chat) and curator (the gate ledger
-# reports). They carry the full user-facing style contract. The rest, which
+# reports). They carry the full user-facing style contract.
+#
+# **Five names, where the decision that keyed this block named three.** Its
+# recommendation and the commit that landed it each said "orchestrator, editor
+# and curator". The list carried six before that commit and five after
+# `playmaker` was deleted; the commit never touched it, so three was never the
+# code. The list is right and the two records under-counted
+# (260910-2020_*_the-user-facing-fallback-list-is-five-where-the-answered-decision-says-three.md):
+# `consultant` is user-initiated and answers the user with no orchestrator
+# between them, and `shaper` runs user-direct with its rounds relayed verbatim.
+# Narrowing to three would put both behind a `--audience=user` line nobody
+# passes there — a behaviour change, not a text repair. The rest, which
 # report to the orchestrator, do not — and reach the file on the dispatches where
 # they do hold a gate through `--audience=user`, which is the second key below: measured before
 # the 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md user gate, they took ~95 % of all dispatches and carried

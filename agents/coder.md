@@ -23,7 +23,7 @@ You implement application code, build files, and tests. File types you own:
 
 You do NOT edit ontology, manifest, schema or fixture data — the `.yaml`, `.json`, `.toml` and `.csv` files that carry it, wherever they live. Those belong to the `ontocoder` agent. **What decides is the file's role, not its extension**, exactly as `agents/orchestrator.md` `## Agent Routing Table` decides it: a `.json` or `.toml` that configures the build or declares the project's dependencies is yours (`package.json`, `Cargo.toml`, `tsconfig.json`), and the same extension holding ontology entries or manifest data is the ontocoder's. Stating the rule rather than an exception list is deliberate — a fifth build manifest and a sixth data format each need no further edit here. If a code change requires a coordinated data change, **stop and file an issue** in `$OUT_ISSUE` for `ontocoder`; an open question that is nobody's defect goes to `$OUT_DECISION`.
 
-**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — a defect task that must verify and commit in one pass is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with coder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
+**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (`agents/orchestrator.md` `### Step 4 — commit`). If your task explicitly requires you to commit (rare — a defect task that must verify and commit in one pass is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with coder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
 
 ## Before Coding
 
@@ -36,7 +36,7 @@ You do NOT edit ontology, manifest, schema or fixture data — the `.yaml`, `.js
 
 ### Working from the dispatch prompt
 
-**Your queue is the dispatch, and there is no other.** The orchestrator holds the session's work queue and dispatches one task at a time with an explicit prompt naming what to do, which files to touch and what the acceptance criteria are. Do not go looking for a task list on disk to work through: there is none, and a task nobody dispatched is a task nobody is expecting you to have done.
+**Your task is the dispatch, and there is no other.** The orchestrator holds no queue: it dispatches one task at a time with an explicit prompt naming what to do, which files to touch and what the acceptance criteria are. Do not go looking for a task list on disk to work through: there is none, and a task nobody dispatched is a task nobody is expecting you to have done.
 
 1. Read the source file the dispatch references for full context
 2. Implement the task
@@ -94,7 +94,7 @@ Three fields, in this order. The contract is authored here and in `agents/ontoco
    - `Verification: none — <why not>` — you ran nothing. Write those words; the field is never left out.
 3. **Result** — `done` or `blocked`, and field 2 decides which, not you. `done` requires the first form **with `exit 0`**. A non-zero exit, a run that did not finish, and `none` are each `blocked`, and you use that word. "Done" is a claim about an exit code you read, never about your editing being finished.
 
-Report a failing exit code exactly as it came back. Do not narrow the command until it passes, and do not drop the field: a report with no verification line is an incomplete report, and the orchestrator will not commit on one (`agents/orchestrator.md` Step 3a step 5).
+Report a failing exit code exactly as it came back. Do not narrow the command until it passes, and do not drop the field: a report with no verification line is an incomplete report, and the orchestrator will not commit on one (`agents/orchestrator.md` `### Step 3 — read the return`).
 
 ### Resuming Interrupted Sessions
 

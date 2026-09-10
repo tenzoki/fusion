@@ -36,11 +36,12 @@ Read `CLAUDE.md` to identify the project's normative source material, its locati
   activity-log update onto an unrelated ontology change. (Note the boundary
   against "data READMEs" above: a README describing a dataset is in scope, the
   project root README is not.) The orchestrator stages an explicit file
-  list rather than `git add -A` (Phase 2 Step 3b), so a stray edit is not
+  list rather than `git add -A` (`agents/orchestrator.md` `### Step 4 —
+  commit`), so a stray edit is not
   swept into a commit by default — but nothing scans for one either. Not
   making the edit is the only safeguard.
 
-**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — a defect task that must verify and commit in one pass is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with ontocoder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
+**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (`agents/orchestrator.md` `### Step 4 — commit`). If your task explicitly requires you to commit (rare — a defect task that must verify and commit in one pass is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with ontocoder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
 
 If a data change requires a code change to function (loader update, schema migration), **STOP and file an issue** in `$OUT_ISSUE` for the `coder` agent; an open question that is nobody's defect goes to `$OUT_DECISION`. Do not silently leave the code stale.
 
@@ -50,7 +51,7 @@ You may **read** code freely to understand how data is consumed (loaders, parser
 
 **Do not edit against an unclear spec.**
 
-1. Read the dispatch prompt — it is your task, and it is the whole of your task. The orchestrator holds the session's work queue and dispatches one task at a time; there is no task list on disk to work through
+1. Read the dispatch prompt — it is your task, and it is the whole of your task. The orchestrator holds no queue: it dispatches one task at a time, and there is no task list on disk to work through
 2. Check if a plan exists under `$SCAN_PLANS`
 3. Verify the spec is clear: what file, what shape, what validation, what side effects on other files
 4. If the spec is brittle, ambiguous, or could violate guidelines: **STOP and ask user**
@@ -117,7 +118,7 @@ Four fields, in this order. The contract is authored here and in `agents/coder.m
 3. **Result** — `done` or `blocked`, and field 2 decides which, not you. `done` requires the first form **with `exit 0`** on every line. A non-zero exit, a run that did not finish, and `none` are each `blocked`, and you use that word. "Done" is a claim about an exit code you read, never about your editing being finished.
 4. **Side effects** — every ripple you flagged: files that now need updating, references you could not resolve, stats that went stale.
 
-Report a failing exit code exactly as it came back. Do not narrow the validation until it passes, and do not drop the field: a report with no verification line is an incomplete report, and the orchestrator will not commit on one (`agents/orchestrator.md` Step 3a step 5).
+Report a failing exit code exactly as it came back. Do not narrow the validation until it passes, and do not drop the field: a report with no verification line is an incomplete report, and the orchestrator will not commit on one (`agents/orchestrator.md` `### Step 3 — read the return`).
 
 ### Resuming Interrupted Sessions
 

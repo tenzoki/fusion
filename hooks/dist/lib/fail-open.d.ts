@@ -137,8 +137,9 @@ export declare function answer(tag: string, verdict: () => void, ...reports: Arr
 export declare function failOpen(tag: string, err: unknown, verdict: () => void, emit?: () => void): void;
 /**
  * Exit 0, silently, when the program's reader closed stdout before a write
- * landed. One shape across the four reporting CLIs (events-query,
- * review-coverage, staging-drift, turn-budget): each writes its figures with a
+ * landed. One shape across the reporting CLIs (events-query,
+ * review-coverage, staging-drift, and turn-budget until it was removed on
+ * 2026-09-10): each writes its figures with a
  * bare `process.stdout.write` and registered no error handler, so a reader
  * that failed or exited first turned the write into an unhandled `'error'`
  * event — a node stack trace from a helper whose contract is that stderr

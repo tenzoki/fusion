@@ -106,17 +106,17 @@ Fusion is deliberately not autonomous. It stops and hands you the decision at de
 
 At each gate you get plain choices: proceed, skip for later, defer, or modify the instruction.
 
-**The per-Turn Coherence check.** Work runs in **Turns** — one Turn is a batch of tasks. At the end of each Turn, fusion checks three questions about what just landed — and since v10.16 it *asks* you only when one of them looks off; a clean check is a status line, not a question:
+**The Coherence check.** Work runs one task at a time; after each one the orchestrator reports and asks what is next. Nothing checks coherence on a schedule any more — the automatic per-batch check went on 2026-09-10 with the Turn loop it rode. What is left is a **reconciliation you ask for**, which reads three questions about what has landed:
 
 1. **Grounding** — does the work still match the assumptions it was built on?
 2. **Directive** — does it move toward the stated goal?
 3. **Reachability** — is that goal still reachable, given what we've learned?
 
-If all three hold, the work continues. If something is off, fusion opens the Rebalance gate rather than pushing ahead.
+If all three hold, the work continues. If something is off, fusion opens the Rebalance gate rather than pushing ahead. That gate has this one trigger and no other: run no reconciliation and it never opens.
 
 **The Rebalance gate.** When coherence breaks, you choose among four moves — in plain terms:
 
-- **Revise the work** — the goal and assumptions are fine; the output isn't there yet. Run another Turn.
+- **Revise the work** — the goal and assumptions are fine; the output isn't there yet. Run another execution pass.
 - **Revise the goal** — the destination was wrong. Re-shape the Directive.
 - **Revise the assumptions** — the basis was wrong. Record a new decision (the Grounding changes).
 - **Accept a bounded stop** — the goal isn't reachable as stated; what was learned along the way is the result, and the session ends acknowledging that.
@@ -134,7 +134,7 @@ While the gates govern *decisions*, a **hook layer** watches *file writes*. It r
 
 **Nothing blocks a write, and nothing can.** Four mechanisms once did or once warned, and all four are gone, each on its own measurement: a **protected path** list until 2026-08-12, whose files were put back if they changed by any route; **churn**, a per-file edit count that only ever warned, until 2026-08-15; and on 2026-08-16 the **decision-governed deny** at high sensitivity together with the **halt** it escalated to after three consecutive blocks. A halt flag left in an older project's state file is inert, and `/fusion:setup` offers to delete it. See [`README-hooks.md`](../README-hooks.md) for what each was and the figures that removed it.
 
-The one thing left to configure is not the guard: `orchestrator.maxTurns`, in your project's `fusion.json`. See the README's [Configuration](../README.md#configuration).
+The one thing left to configure is not the guard either: `citations.extraPaths`, in your project's `fusion.json`, which names the non-Markdown files fusion's citation helpers should read. See the README's [Configuration](../README.md#configuration).
 
 ## 5. Two worked walkthroughs
 
@@ -146,15 +146,15 @@ Two paths reach the same place and cross different machinery. The first is one c
 2. The **orchestrator** resolves the scope: this is code work, one clear outcome.
 3. The request is specific enough, so the **shaper** is skipped. The **planner** produces a plan — a middleware step, a config step, a test step.
 4. **PLAN GATE** — you review the three steps and approve.
-5. **Turn 1 begins.** The **coder** edits the middleware. Each write passes through the **hook layer**, which allows it and records a row naming the tool and the file, so the monitor shows the edit as it happens. The coder edits it twice more while iterating, and nothing stands in the way.
+5. **The first task is dispatched.** The **coder** edits the middleware. Each write passes through the **hook layer**, which allows it and records a row naming the tool and the file, so the monitor shows the edit as it happens. The coder edits it twice more while iterating, and nothing stands in the way.
 6. The coverage read notes what a review will eventually tile — the **reviewer** itself runs once per work item, at its close, scoped to every commit no review has covered.
 7. The orchestrator **commits** the work (holding the commit lock so parallel agents don't collide on the git index).
-8. **Per-Turn Coherence check** — the three questions pass: the work matches the assumptions, moves toward the goal, and the goal is still reachable. You see one status line; the Turn continues without asking.
-9. Turn 2 handles the tests the same way. The queue is now empty.
+8. The orchestrator **reports what landed and asks what is next**. Nothing checks coherence here unless you ask for a reconciliation.
+9. You say to go on. The test step is dispatched the same way, and nothing is left in the plan.
 10. **Reconciliation, if you ask for it** — the `reconciler` verifies the tracking files against the actual code and returns its three-edge Coherence verdict. Nothing schedules this; it runs when you say so.
 11. The item's `**Status:**` moves to **done**, its `**Claim:**` stays naming who did the work, a closure note is appended citing the commit range, and the orchestrator **reports** what landed.
 
-Had step 8 shown the work drifting — say the coder had started refactoring an unrelated module — the Coherence check would have flagged it and opened the **Rebalance gate** for you to steer.
+Had the work been drifting at step 8 — say the coder had started refactoring an unrelated module — a reconciliation asked for there would have flagged it and opened the **Rebalance gate** for you to steer. Nobody is flagged for you: asking is the trigger.
 
 ### 5b. From an idea to a claimed work item
 

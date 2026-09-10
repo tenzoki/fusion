@@ -2,7 +2,7 @@
 
 Fusion is a multi-agent orchestration framework for Claude Code. Instead of one assistant doing everything, it runs a session as a team of small, tightly-scoped agents that coordinate through files on disk, with a human at the decisions that matter.
 
-The problem it solves is context. An LLM's working context is the bottleneck: the more a single agent has to hold at once — the plan, the code, the ontology, the review criteria, the history — the more it drifts. Fusion splits the work across many narrow agents, each running against a focused prompt with only the context it needs, and puts a review pass and a coherence check behind every Turn so drift is caught while the session can still steer.
+The problem it solves is context. An LLM's working context is the bottleneck: the more a single agent has to hold at once — the plan, the code, the ontology, the review criteria, the history — the more it drifts. Fusion splits the work across many narrow agents, each running against a focused prompt with only the context it needs, and puts a review pass and a coherence check behind the work so drift is caught while the session can still steer.
 
 This doc explains *why* fusion is shaped the way it is and *how* a session runs behind the scenes. For hands-on install and usage, see `README.md`.
 
@@ -24,15 +24,15 @@ Each removal is written up with its figures rather than quietly dropped, and the
 
 ## How a session runs
 
-The **orchestrator** is the only agent that dispatches others. It drives a session through phases: **resolve scope** → **build the work queue** → a **Turn loop** of execute-then-review → **final reconciliation** → **report**. Sub-agents do focused work and return; everything they produce travels as files, so nothing is lost between dispatches.
+The **orchestrator** is the only agent that dispatches others. It runs a five-step loop, once per task: **read the task** → **dispatch it** → **read what comes back** → **commit it** → **say where things stand, and ask what is next**. There is no queue and no phase count: one task is in flight at a time, and the next one comes from you, from the plan or issue the session is working through, or from what the last return uncovered. Sub-agents do focused work and return; everything they produce travels as files, so nothing is lost between dispatches.
 
-**How it decides it's done.** At the end of each Turn, and once more when a unit of work wraps up, the orchestrator checks three consistency questions:
+**How it decides it's done.** When you ask for a reconciliation, and again when a unit of work wraps up, three consistency questions are checked:
 
 - **Grounding** — does the work match what we said we were building on?
 - **Directive** — does it move toward the stated outcome?
 - **Reachability** — is that outcome still reachable given what we've learned?
 
-If all three hold, the work continues or closes cleanly. If something is off, the orchestrator opens the **Rebalance gate** and hands the choice to the user: revise the work (another Turn), revise the goal, revise the assumptions it was built on, or accept a bounded stop — the goal is judged unreachable, and what was learned along the way is the result.
+If all three hold, the work continues or closes cleanly. If something is off, the orchestrator opens the **Rebalance gate** and hands the choice to the user: revise the work (another execution pass), revise the goal, revise the assumptions it was built on, or accept a bounded stop — the goal is judged unreachable, and what was learned along the way is the result.
 
 That last option matters because the **Directive is revisable** — a stated outcome that can change mid-work when the assumptions turn out wrong or the world moves, not a fixed target to push against until it breaks.
 
@@ -41,7 +41,7 @@ A unit of work is a **work item**: one file, carrying its Directive and its stat
 ## What fusion is not
 
 - **Not autonomous.** Fusion stops and asks before destructive operations, ontology changes, ambiguous tasks, and structural decisions. Human-in-the-loop, deliberately.
-- **Not a replacement for human review.** The `coderev` / `ontorev` agents review *during* execution; the human still owns the final merge.
+- **Not a replacement for human review.** The `reviewer` agent reviews what a unit of work landed, at its close; the human still owns the final merge.
 - **Not project-specific.** Every agent is project-agnostic. Domain knowledge lives in the consuming project's `./rules/` (fusion-agent rules) and `.claude/rules/` (project-wide rules) — the plugin ships nobody's assumptions.
 
 ## Where to read more

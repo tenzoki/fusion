@@ -45,7 +45,7 @@ The `with` form is canonical; explicit `acquire`/`release` exists for control-fl
 
 ### Who acquires
 
-- **Orchestrator** at Phase 2 Step 3b — staging and committing in the held command.
+- **Orchestrator** at `agents/orchestrator.md` `### Step 4 — commit` — staging and committing in the held command.
 - **Coder / ontocoder / bugfixer** ONLY if they commit directly (rare; default is the orchestrator commits on their behalf).
 - **`/fusion:commit` and `/fusion:cleanup`** — the two skills that commit; each wraps every stage+commit pair in `with <skillname> --` (tags `commit`, `cleanup`). Skills are never served by `bin/fusion-rules`; their bodies carry the instruction and cite this section directly.
 - **Other agents** — never commit, never need the lock.
@@ -71,7 +71,7 @@ This protocol closed the cross-agent staging-race defect — parallel agents' st
 
 ## Two measured defects behind this procedure
 
-Two instructions in the orchestrator's Step 3b read as preferences and are not. Each is
+Two instructions in `agents/orchestrator.md` `### Step 4 — commit` read as preferences and are not. Each is
 the residue of a defect measured in this repository, and each is recorded here rather
 than in the prompt because the prompt is charged to every dispatch and this file is not.
 

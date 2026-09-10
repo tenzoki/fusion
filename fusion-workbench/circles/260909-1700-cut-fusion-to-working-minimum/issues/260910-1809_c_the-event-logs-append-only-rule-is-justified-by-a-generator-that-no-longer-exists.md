@@ -20,3 +20,16 @@ brought to the truth and are the model for the repair: `rules/workbench-tracking
 generator as a third reader that "stood here until 2026-09-10" and went with the history store, and
 `README-agents.md` says the same of the diagram and the dashboard file together. The prompt is the
 one surface still asserting it in the present tense, and it is the one charged to every dispatch.
+
+---
+Resolved: `agents/orchestrator.md` Setup step 6 now gives a reason that is true. The clause
+naming the sequence-diagram generator is replaced by the three facts that make the rule more
+load-bearing than it was: the log is the only cross-session trace fusion keeps, since the
+history store is closed to writes and the session state file is gone; `bin/fusion-events` and
+the monitor both read it back across sessions; and where the workbench is tracked, the union
+merge leaves other checkouts' lines in it, so a truncation destroys work that is neither this
+session's nor this checkout's.
+
+No shipped surface names the generator as a live reader. `grep -rn 'sequence-diagram\|sequence diagram' agents/ rules/ skills/ docs/ README*.md CLAUDE.md`
+returns only the two surfaces the reconciliation named as already correct — `rules/workbench-tracking.md`
+and `README-agents.md` — each stating it as gone.

@@ -29,3 +29,21 @@ the whole of this record**: `README-hooks.md` still says a dispatch "writes noth
 `.guard-state/`", while `ABSENT_SESSION_ID_ADVISORY` in `hooks/lib/orchestrator-events.ts` still
 emits one `guard_advisory` when a dispatch payload carries no session identifier. A reader debugging
 that row still has no route from the document to the condition.
+
+---
+Resolved: the second clause — the only one left, per the 260910-2020 reconciliation — is
+answered. `README-hooks.md`'s sub-agent-dispatch paragraph no longer claims a dispatch writes
+nothing under `.guard-state/`. It now says the ordinary path writes nothing there, names the
+one condition that breaks it (a payload carrying no session identifier), says what the hook
+does instead of dropping the row in silence (one `guard_advisory` appended to
+`.guard-state/events.jsonl`, naming the condition and what became of the row), and names
+`ABSENT_SESSION_ID_ADVISORY` in `hooks/lib/orchestrator-events.ts` as its stable prefix — so a
+reader debugging that row has a route from the document to the code that emits it.
+
+The first clause is answered by being unreachable and is deliberately not re-imposed: step C1
+(`6357ebfc`) dropped the `existsSync` arm, so there is no disjunction to describe and no
+`eventRowsAdmitted` to name. All three passages the record originally listed already describe
+the surviving single-term gate correctly.
+
+`npm test` stays green — `derivable-enumerations-lint` holds the `hooks/lib` table in set
+equality with `hooks/lib/*.ts` and no module moved here, only row text.

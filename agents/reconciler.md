@@ -90,7 +90,7 @@ This step runs **regardless of domain**. The three-edge verdict is the Coherence
 
 **Cadence note:** there is no automatic trigger and no schedule. The orchestrator dispatches you when the user asks for a reconciliation and never otherwise (`agents/orchestrator.md` `## Reconciliation, and the one gate it opens`), so the verdict's cadence is the user's. What the verdict is *about* is the work in scope: the item this checkout claimed when there is one, and the session's own commit range when there is not.
 
-**The user is informed, not asked.** The reconciler computes the verdict and returns it in its report. If the aggregate verdict is anything but `coherent`, or `coherent` with recommendation `state Directive`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
+**The user is informed, not asked.** The reconciler computes the verdict and returns it in its report. If the aggregate verdict is anything but `coherent`, or `coherent` with recommendation `state Directive`, the orchestrator (not the reconciler) opens the Rebalance gate after consuming this verdict (`agents/orchestrator.md` `## Reconciliation, and the one gate it opens`). The reconciler does not present `AskUserQuestion`.
 
 **Compute the three edges.** One line each, with cited evidence.
 

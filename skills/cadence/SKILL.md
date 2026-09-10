@@ -181,7 +181,7 @@ Across **all** log units (full history, not just the window), count each theme's
 
 ### 7b. Session-flow metrics — how the sessions felt, measured
 
-From this checkout's own event lines (drop rows whose `checkout` differs from `.checkout-id`), over the 7-day window: **gate answers per Turn** (`gate_response`/`turn_start`), **time to first dispatch** (`session_start` → first `task_start`, median), **dispatch duration** (`task_start`/`task_done` pairs by `task` id, median and max). An absent input is reported absent, never as 0. This is the one section that is not project-wide (see Scope), so its report line says so rather than leaving the reader to assume the whole document shares one scope.
+From this checkout's own event lines (drop rows whose `checkout` differs from `.checkout-id`), over the 7-day window: **gate answers per session** (`gate_response`/`session_start`; the per-Turn reading went with `turn_start`, which nothing emits any more), **time to first dispatch** (`session_start` → first `task_start`, median), **dispatch duration** (`task_start`/`task_done` pairs by `task` id, median and max). An absent input is reported absent, never as 0. This is the one section that is not project-wide (see Scope), so its report line says so rather than leaving the reader to assume the whole document shares one scope.
 
 ### 8. Write the report
 
@@ -207,7 +207,7 @@ Structure:
 **Yesterday window:** <yday_start> → <today><!-- append " (Fri–Sun collapsed)" when today is Monday -->
 **Recent window:** <week_start> → <today> (7 days)
 **Sources scanned:** <e.g. session histories: frozen corpus, 14 files across 2 stores, nothing after 2026-09-10; git (37 commits on 12 days = 12 units); activity log: none>
-**Session flow (7d, this checkout only):** <e.g. 1.1 gate answers/Turn · first dispatch median 6 min · dispatches median 4 min, max 14 — or "no event data">
+**Session flow (7d, this checkout only):** <e.g. 1.1 gate answers/session · first dispatch median 6 min · dispatches median 4 min, max 14 — or "no event data">
 
 ## Topics — yesterday
 

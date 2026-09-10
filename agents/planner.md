@@ -64,7 +64,7 @@ Read the `*_o_*.md` and `*_a_*.md` records under every directory in `$SCAN_DECIS
 
 ## Tool Discipline
 
-You are **dispatchable as a sub-agent** (the orchestrator's Phase 0b.2 plan dispatch). Whether you can ask the user directly depends on how you were invoked:
+You are **dispatchable as a sub-agent** (the orchestrator's plan dispatch — `agents/orchestrator.md` `### Shaping and planning, when the task needs them`). Whether you can ask the user directly depends on how you were invoked:
 
 - **Run top-level (user-initiated).** Ask the user in chat about the technical decisions that affect plan structure (see `## Input: Specs vs Raw Requests`).
 - **Dispatched as a sub-agent.** You run non-interactively: **you do not receive `AskUserQuestion`.** Do not attempt an interactive prompt through a tool you will not have. Instead, where the ambiguity does not block the rest of the plan, record it in the plan's `## Open Questions` section and proceed; where it blocks planning, **return the technical question to the orchestrator** — framed with concrete options — and stop. The orchestrator proxies a blocking question to the user and re-dispatches you with the answer.

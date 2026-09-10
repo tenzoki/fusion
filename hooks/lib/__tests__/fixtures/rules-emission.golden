@@ -30,23 +30,23 @@
   agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
-  user-facing-output.md 10883
-  total 80039
+  user-facing-output.md 10877
+  total 80033
 
 [curator]
   agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
-  user-facing-output.md 10883
-  total 80039
+  user-facing-output.md 10877
+  total 80033
 
 [editor]
   agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
-  user-facing-output.md 10883
+  user-facing-output.md 10877
   project-language.md 5754
-  total 85793
+  total 85787
 
 [ontocoder]
   agent-setup.md 4202
@@ -58,10 +58,10 @@
   agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
-  user-facing-output.md 10883
+  user-facing-output.md 10877
   decision-record-examples.md 4952
-  commit-lock.md 8305
-  total 93296
+  commit-lock.md 8360
+  total 93345
 
 [planner]
   agent-setup.md 4202
@@ -89,7 +89,7 @@
   agent-setup.md 4202
   fusion-workbench-conventions.md 54580
   critical-stance.md 10374
-  user-facing-output.md 10883
+  user-facing-output.md 10877
   decision-record-examples.md 4952
   design-diagrams.md 5285
-  total 90276
+  total 90270

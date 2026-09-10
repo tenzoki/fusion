@@ -42,7 +42,7 @@ The reply answers the question that was asked; what you noticed on the way is fi
 **Chat carries no fusion-internal term, glossed or not.** A gloss legalises the term and leaves the sentence unreadable. Name the thing in the reader's project. Binds chat, gates, `AskUserQuestion` text and summaries; **not** workbench records (defects, decisions, history, reviews), where the internal names are correct.
 
 - **No marker, machine token or commit type.** Not `_o_`, `_t_`, `review-needed`, `T1 chore:`. Write what is true: "still open", "needs a second look", "Task 1 bumped the version".
-- **No fusion noun.** Not Circle, Directive, Grounding, Turn, Gate, Artifact, Verdict, queue. Write the thing: this piece of work, your goal, why you wanted it, this pass, the question below, the file, the work list.
+- **No fusion noun.** Not Circle, Directive, Grounding, Gate, Artifact, Verdict, queue. Write the thing: this piece of work, your goal, why you wanted it, this pass, the question below, the file, the work list.
 - **No agent name as a sentence subject.** "Three notes cite a commit that does not exist", not "the reconciler reported that ...".
 - **No ID or abbreviation without its plain summary** (project codes need one expansion or a pointer; CLI/API/YAML are fine).
 - **One name per thing, one formulation per claim.** Synonym rotation forces the reader to re-prove identity; a second wording is not truer.

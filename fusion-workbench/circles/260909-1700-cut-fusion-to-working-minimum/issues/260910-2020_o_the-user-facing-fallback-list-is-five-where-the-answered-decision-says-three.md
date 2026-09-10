@@ -31,3 +31,30 @@ is a change with a measurable effect and belongs to a step; the second is a text
 **Acceptance.** `grep -n 'IS_USER_FACING_AGENT=1' bin/fusion-rules` and the decision record's
 `Implemented:` line name the same set, whichever set that is, and the reason any name beyond the
 ruled three is on the list is written where the list is.
+
+---
+
+Partial (260910, coder, the stale-text pass): **half done, and the record stays open.**
+
+**Which of the two is the error: the records.** The evidence this record already assembled
+settles it without a new measurement — the list carried six at `7dde04a6`, six at `abf569b8`
+(C7's own commit, which never touched it) and five after C8 deleted `playmaker`, so the
+three-name reading was never what the code did. Narrowing to three is not a text repair: it
+would put `consultant` and `shaper` behind a `--audience=user` line nobody passes on their
+live paths. `consultant` is user-initiated only and answers the user in chat with no
+orchestrator between them; `shaper` runs user-direct and its clarification rounds are relayed
+to the user verbatim. Both are user-facing by nature, which is exactly the criterion the block
+is keyed on, and both would lose the style contract on every dispatch that does not remember
+to ask for it.
+
+**Done:** the reason any name beyond the ruled three is on the list is now written where the
+list is — the comment above the `case` in `bin/fusion-rules` names all five, says the records
+under-counted, and says why narrowing would be a behaviour change.
+
+**Not done, and why:** the acceptance also requires the decision record's `Implemented:` line
+to name the same set. That record is
+`260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md`,
+and this pass was dispatched with a standing constraint against editing any workbench record
+except the four it was closing. Annotating it is one edit — the `Implemented:` line and the
+`## Recommendation` paragraph both say "orchestrator, editor and curator" and both want a
+clause saying five, and why — and it belongs to whoever holds that permission.
