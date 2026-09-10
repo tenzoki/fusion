@@ -262,7 +262,7 @@ cd hooks && npm run build && cd .. \
 
 **Not caught.** Each line is asserted to still be a miss, so closing one of these turns the suite red until this list is corrected:
 
-- A domain name written as a plain word, with no markup around it. This is the plainest second copy anyone would write and it is NOT caught. Matching bare words was measured over the scanned set and rejected on cost, because both surviving domain names are ordinary English words in these files and `code files` is both a domain name and an input phrase. Measured cost of matching bare words, across the scanned set and outside the definition site: 12 lines of honest prose selected on single lines, 12 with the continuation window. The suite re-measures both numbers.
+- A domain name written as a plain word, with no markup around it. This is the plainest second copy anyone would write and it is NOT caught. Matching bare words was measured over the scanned set and rejected on cost, because both surviving domain names are ordinary English words in these files and `code files` is both a domain name and an input phrase. Measured cost of matching bare words, across the scanned set and outside the definition site: 11 lines of honest prose selected on single lines, 11 with the continuation window. The suite re-measures both numbers.
 - A paraphrase spread across the rows of a table, or across three or more wrapped lines. A table row and a list item each open a block and are never joined to the line above them, and the window is two lines wide.
 - A paraphrase naming no input. It names no evidence, so it restates less than the cascade decides.
 - A paraphrase naming its inputs in words the prose list does not carry. The list is a fixed set of spellings, not a synonym set.

@@ -1,12 +1,12 @@
 ---
-description: The archive step of /fusion:cleanup (reachable alone as `/fusion:cleanup --only archive`), kept as its own body rather than a command. Archives completed/aged fusion-workbench artifacts by safety tier (tier-1/tier-2/tier-3) or natural-language description: survey, propose, confirm, then move into the workbench's archive store.
+description: Archives completed/aged fusion-workbench artifacts by safety tier (tier-1/tier-2/tier-3) or natural-language description: survey, propose, confirm, then move into the workbench's archive store.
 argument-hint: tier-1 | tier-2 | tier-3 | <natural-language description>
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
 
 # Archive
 
-Move a curated set of workbench artifacts out of the live workbench and into a timestamped archive subfolder. Archives are local, on-disk snapshots — moved, not copied — so the live workbench stays focused.
+The user invoked `/fusion:archive`. Move a curated set of workbench artifacts out of the live workbench and into a timestamped archive subfolder. Archives are local, on-disk snapshots — moved, not copied — so the live workbench stays focused. **That is the whole of it**: this body runs no other pass and triggers none.
 
 **Whether git preserves the bytes is the project's decision, not this skill's.** fusion ships no `.gitignore` rule for the workbench, so a consuming project's workbench may be tracked, ignored, or neither (`rules/workbench-tracking.md`). Only where the project tracks it does a past commit still hold what a move relocated. Where it does not, the archive folder is the **only** copy of every artifact this skill moves: Step 7's collision guard prevents an overwrite, and nothing after that prevents a loss. **This skill reads `rules/workbench-tracking.md` at Step 1** — that file is the authoring home of the record-versus-live-state split, and what it classifies as a record is what this skill must preserve rather than discard when it decides what to archive.
 
@@ -86,7 +86,7 @@ Authored in `rules/fusion-workbench-conventions.md` `## State Markers — issues
 These are non-negotiable defaults. The user can override them at the `refine` step in natural-language mode, but the tier modes treat them as hard guardrails.
 
 1. **Reserved — never archive.** The root-anchored surfaces, because their consumers read them at fixed paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`):
-   - `$WORKBENCH/agentstate.yaml`, `$WORKBENCH/orchestrator-live.md`, `$WORKBENCH/orchestrator-events.jsonl`
+   - `$WORKBENCH/orchestrator-events.jsonl`
    - `$WORKBENCH/$PORTFOLIO`
    - `$WORKBENCH/.guard-state/` **apart from `events.jsonl`** — the throttle stores in there each describe *now* and are rewritten in place. An `escalation.json` may still be sitting there in a project set up under an older fusion; it is inert at this version, nothing rewrites it, and `/fusion:setup` is what offers to delete it — archiving it is not this skill's call either way. The append-only `events.jsonl` beside them is not a state file and has its own case; see *Rolling the guard event log* below.
    - `$WORKBENCH/.commit-lock/`, `$WORKBENCH/.session-marker`, `$WORKBENCH/.active-circle`, `$WORKBENCH/.fusion-setup`
@@ -198,13 +198,13 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    - Anything dropped by the safety filters, with a one-line summary; terminal Circles excluded for open records are named individually with their `open_in` count.
    - In natural-language mode, list `[ACTIVE]`-flagged hits explicitly.
 
-6. **Confirm via `AskUserQuestion` — except inside the full cleanup pipeline.** A tier-1 run performed as Step 4 of a full `/fusion:cleanup` skips this step: that pipeline declares tier-1 safe-by-construction and autonomous, and its Step 6 gate is the run's one stop — two prompts for one wrap-up was the two bodies' contradiction. On a targeted run (`--only archive`, or this skill invoked by name) the user came to archive, so ask — in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`), option labels included:
+6. **Confirm via `AskUserQuestion`.** The user came here to archive, and this body moves nothing until they say so — every run asks, whatever the mode and whatever the tier. Ask in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`), option labels included:
 
    - **Archive** — archive exactly this list
    - **Change scope** — drop or add items, change tier, change threshold
    - **Cancel** — abort, change nothing
 
-   Where asked, move nothing until the user picks the first.
+   Move nothing until the user picks the first.
 
 7. **Archive on confirmation.**
    - `mkdir -p "$WORKBENCH/archive/<YYMMDD-HHMM>-<slug>/"`

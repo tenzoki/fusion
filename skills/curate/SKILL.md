@@ -1,11 +1,15 @@
 ---
-description: The CLAUDE.md step of /fusion:cleanup (reachable alone as `/fusion:cleanup --only claude-md`), kept as its own body rather than a command. Reconciles the project's three normative surfaces — its decision records, its own rule files, and CLAUDE.md — against its recorded history: dispatches the curator to survey, puts the change ledger to the user at a gate, then dispatches it again to apply only what was approved.
+description: Reconciles the project's three normative surfaces — its decision records, its own rule files, and CLAUDE.md — against its recorded history: dispatches the curator to survey, puts the change ledger to the user at a gate, then dispatches it again to apply only what was approved.
 allowed-tools: [Bash, Read, AskUserQuestion, Agent(fusion:curator)]
 ---
 
 # Fusion — curate (reconcile the normative surfaces)
 
-This is the `CLAUDE.md` step of `/fusion:cleanup` (its Step 6, the pipeline's last before housekeeping), and the procedure below is what that step reads and performs inline. It is not one of fusion's three commands; the caller that runs it holds the gate. Whatever runs it, this body is the user-facing surface for the `curator` agent. It dispatches the agent to **survey**, reads the run file the agent wrote, holds the **gate** itself, and dispatches the agent a second time to **apply** only the entries the user approved.
+The user invoked `/fusion:curate`. This is the user-facing surface for the `curator` agent, and the one path to `CLAUDE.md`. It dispatches the agent to **survey**, reads the run file the agent wrote, holds the **gate** itself, and dispatches the agent a second time to **apply** only the entries the user approved.
+
+**It performs this procedure and no other.** No pass runs before it or after it, and nothing here commits: the curator's edits are working-tree edits, and `/fusion:cleanup` is what commits them when the user runs it.
+
+Takes one optional argument, `--full` — the unbounded evidence pass, passed through to the survey dispatch in Step 2.
 
 **This skill writes nothing.** The two dispatches are the only writes in the whole operation, and only the second one reaches a normative surface. Rejecting everything at the gate leaves all three surfaces byte-identical and still leaves the run file on disk.
 
@@ -19,7 +23,7 @@ This is the `CLAUDE.md` step of `/fusion:cleanup` (its Step 6, the pipeline's la
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" curate
 ```
 
-Hold the emitted values (`WORKBENCH`, `OUT_HISTORY`). `$WORKBENCH` is absolute; every other value is workbench-relative. Never guess a path when the resolver fails — read the exit code, it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
+Hold the emitted values (`WORKBENCH`, `OUT_ANALYSIS`). `$WORKBENCH` is absolute; every other value is workbench-relative. Never guess a path when the resolver fails — read the exit code, it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
 
 - **Exit 1** — no workbench above `pwd`. Halt: `/fusion:setup` must run once at the project root. Do NOT bootstrap a workbench from here — setup is the single point of workbench creation.
 
@@ -35,7 +39,7 @@ Prompt body:
 **Mode:** survey
 ```
 
-Add `**Scope:** full` on its own line only when the caller passed `--full` — the unbounded evidence pass (decision `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`). `survey` is the agent's default; passing it anyway is deliberate — the dispatch says which pass it wants. The agent resolves its own paths at its Setup, reads its evidence sources bounded by its anchor, and writes the run file. It writes to no normative surface in this pass. Wait for it.
+Add `**Scope:** full` on its own line when the user passed `--full` — the unbounded evidence pass (decision `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`). `survey` is the agent's default; passing it anyway is deliberate — the dispatch says which pass it wants. The agent resolves its own paths at its Setup, reads its evidence sources bounded by its anchor, and writes the run file. It writes to no normative surface in this pass. Wait for it.
 
 ## Step 3 — Read what the survey returned
 
@@ -49,7 +53,7 @@ Then read the run file itself with the `Read` tool, at `$WORKBENCH/<run-file pat
 
 **Two conditions halt here, and neither is repaired from this skill.** Report what was found, name the run file path as the agent gave it, and dispatch nothing further:
 
-- The reported path does not start with the `$OUT_HISTORY` value from Step 1. A ledger this skill would relay into an apply dispatch has to be a run file in the history store; a path pointing anywhere else is not one, and guessing which file was meant would hand the apply pass a document nobody wrote.
+- The reported path does not start with the `$OUT_ANALYSIS` value from Step 1. A ledger this skill would relay into an apply dispatch has to be a run file where the agent writes one (`agents/curator.md` `## The run file`); a path pointing anywhere else is not one, and guessing which file was meant would hand the apply pass a document nobody wrote.
 - The file is not there, or cannot be read.
 
 **A survey that proposes nothing is a complete result.** When every group count is zero, say so in one line, name the run file, and stop — no gate, no second dispatch. That is the ordinary outcome on a project whose surfaces are current.
@@ -113,8 +117,8 @@ If an approved entry has no outcome line at all, say which one plainly. That, an
 - The skill **judges nothing**. It does not open a rule file, a decision record or `CLAUDE.md` to check a proposal, and it forms no view about whether an entry is right. The evidence the user judges is in the ledger, and the agent put it there.
 - The skill **dispatches only `fusion:curator`**, twice at most.
 - The skill **commits nothing**, and neither does the agent. The working-tree edits are left for the user or the orchestrator to commit.
-- Safe to invoke during an active orchestrator session in the sense that it starts nothing: it runs no Turn, activates no Circle and touches no session state. The apply pass does edit files an active session may also be editing, so it is worth running at a quiet point rather than mid-Turn.
-- The caller holds the gate, and there is no path where nothing does. `/fusion:cleanup` Step 6 runs this procedure and puts the ledger to the user itself; an orchestrator that dispatches the curator mid-session proxies the same question (`agents/orchestrator.md`). A caller that cannot ask the user runs the survey pass and stops.
+- Safe to invoke during an active orchestrator session in the sense that it starts nothing: it activates no Circle and touches no session state. The apply pass does edit files an active session may also be editing, so it is worth running at a quiet point.
+- **The gate is never absent.** This body holds it. An orchestrator that dispatches the curator mid-session proxies the same question instead (`agents/orchestrator.md`); a caller that cannot ask the user runs the survey pass and stops.
 
 ## Tone
 

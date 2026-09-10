@@ -835,7 +835,7 @@ export const REACH = {
                 "Detect the workbench domain: data if the data files outnumber the source files, " +
                     "else code.",
             ],
-            cost: { widening: "matching bare words", singleLine: 12, withWindow: 12 },
+            cost: { widening: "matching bare words", singleLine: 11, withWindow: 11 },
         },
         {
             claim: "A paraphrase spread across the rows of a table, or across three or more wrapped lines. " +

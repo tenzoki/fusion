@@ -30,22 +30,23 @@
   total 350471
 
 [skills bytes]
-  archive/SKILL.md 25850
+  archive/SKILL.md 25489
   cadence/SKILL.md 19640
   check/SKILL.md 33241
-  cleanup/SKILL.md 25624
+  cleanup/SKILL.md 6496
   commit/SKILL.md 6298
-  curate/SKILL.md 12072
+  curate/SKILL.md 11972
   direct/SKILL.md 10231
   help/SKILL.md 16671
-  log-activity/SKILL.md 13629
+  log-activity/SKILL.md 13608
   memo/SKILL.md 12336
   migrate/SKILL.md 25340
   news/SKILL.md 8766
   next/SKILL.md 26041
-  post/SKILL.md 7258
+  post/SKILL.md 6301
+  reconcile/SKILL.md 6581
   setup/SKILL.md 17332
-  total 260329
+  total 246343
 
 [hook-tests lines]
   archive-filter-key.test.ts 40

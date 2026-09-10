@@ -1,11 +1,11 @@
 ---
-description: The activity-log step of /fusion:cleanup (reachable alone as `/fusion:cleanup --only log-activity`), kept as its own body rather than a command. Scans project activity and generates or updates the activity log.
+description: Scans every project activity source — git and the whole workbench tree — and generates or updates this checkout's activity log.
 allowed-tools: [Bash, Read, Glob, Grep, Write, Edit]
 ---
 
 # Log Activity Command
 
-This is the activity-log step of `/fusion:cleanup` (its Step 6), and the procedure below is what that step reads and performs inline. Scan all project activity sources and create or update the activity log file in the project root.
+The user invoked `/fusion:log-activity`. Scan all project activity sources and create or update the activity log file in the project root. **That is the whole of it**: this body runs no other pass and triggers none, and it commits nothing — the log it writes is left in the working tree.
 
 ## Process
 
