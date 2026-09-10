@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # monitor — HTML-based orchestrator monitor
 # Serves a live dashboard. The dashboard and session panels render from
-# orchestrator-events.jsonl and fall back to orchestrator-live.md and
-# agentstate.yaml; the event and warning panels read
-# orchestrator-events.jsonl and .guard-state/events.jsonl.
+# orchestrator-events.jsonl and from nothing else; the event and warning panels
+# read orchestrator-events.jsonl and .guard-state/events.jsonl.
 # Usage: ./monitor <name> <port> [-d workbench_dir] [-n events] [-i interval_sec]
 
 set -euo pipefail
@@ -141,9 +140,7 @@ try:
 except (AttributeError, OSError):
     pass
 
-LIVE_MD = os.path.join(BASE_DIR, "orchestrator-live.md")
 EVENTS_JSONL = os.path.join(BASE_DIR, "orchestrator-events.jsonl")
-STATE_YAML = os.path.join(BASE_DIR, "agentstate.yaml")
 GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
 # This checkout's own identifier. Read, never written: see _read_checkout_id().
 CHECKOUT_ID_FILE = os.path.join(BASE_DIR, ".checkout-id")
@@ -371,7 +368,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .status-dot.setup { background: var(--cyan); animation: pulse 2s infinite; }
   .status-dot.done { background: var(--fg3); }
   .status-dot.error { background: var(--red); }
-  /* Warnings panel — guard alerts shown below the orchestrator-live block */
+  /* Warnings panel — guard alerts shown below the dashboard block */
   .warnings-section { margin-top: 24px; }
   .warnings-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -1125,7 +1122,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
         }
         if (!data.exists) {
           document.getElementById('dashboard-content').innerHTML =
-            '<div class="no-file">Waiting for orchestrator-live.md...<span>File will appear when the orchestrator starts</span></div>';
+            '<div class="no-file">Waiting for a session<span>The event log carries no session_start row for this checkout yet</span></div>';
         }
         var evHtml = '';
         var evContent = document.getElementById('events-content');
@@ -1162,7 +1159,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
           if (lastState !== '__missing__') {
             lastState = '__missing__';
             document.getElementById('state-content').innerHTML =
-              '<div class="no-file">No active session<span>agentstate.yaml does not exist (created when orchestrator starts, deleted on clean exit)</span></div>';
+              '<div class="no-file">No active session<span>No hook-written session_start row for this checkout is in the event log</span></div>';
           }
         }
       })
@@ -1281,10 +1278,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         except Exception:
             return None
 
-    # Map the orchestrator's most recent event to a UI mode. Markdown markers
-    # in orchestrator-live.md are inconsistent across sessions ("## Current"
-    # vs "## Status", with-marker vs free text), but the events log is
-    # structured and append-only — the most recent event reliably tells us
+    # Map the orchestrator's most recent event to a UI mode. The events log is
+    # structured and append-only, so the most recent event reliably tells us
     # what the orchestrator is doing right now. Any event not in this map
     # leaves mode unset and falls back to the age-based logic.
     LAST_EVENT_TO_MODE = {
@@ -1521,8 +1516,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             list. An empty list standing where a queue used to be would claim a
             state that is not being read.
 
-        Returns None when the log yields no session of ours at all, which is
-        what keeps orchestrator-live.md as the fallback for this panel."""
+        Returns None when the log yields no session of ours at all, and the
+        panel then reports that it has nothing to render. There is no fallback
+        behind it: `orchestrator-live.md` went with the Turn loop."""
         row = self._hook_session_start(events)
         session = row.get("session_id") if row else None
         if session is None:
@@ -1582,8 +1578,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         """The state panel's YAML, from the newest hook-written session_start.
 
         The five fields that row carries are what agentstate.yaml's `session:`
-        block held that anything read. Returns None with no such row, which is
-        what keeps agentstate.yaml as this panel's fallback."""
+        block held that anything read. Returns None with no such row, and the
+        panel then reports that it has nothing to render; the file it used to
+        fall back to went with the Turn loop."""
         row = self._hook_session_start(events)
         if row is None:
             return None
@@ -1605,14 +1602,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
             scoped = self._scoped_events()
             events = scoped[-MAX_EVENTS:]
 
-            # The log first, the file behind it. B4 is additive: the file is
-            # still written and still read, and step C1 is what removes it.
+            # The log and nothing behind it. `orchestrator-live.md` was the
+            # fallback until 2026-09-10 and went with the Turn loop that wrote
+            # it; a fallback to a file nothing writes renders an empty panel
+            # that looks like a read.
             content = self._derive_dashboard(scoped)
-            if content is not None:
-                exists, age = True, self._file_age(EVENTS_JSONL)
-            else:
-                content, exists = self._read_file(LIVE_MD)
-                age = self._file_age(LIVE_MD)
+            exists = content is not None
+            age = self._file_age(EVENTS_JSONL)
 
             resp = json.dumps({
                 "dashboard": content,
@@ -1631,8 +1627,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._headers()
             content = self._derive_state(self._scoped_events())
             exists = content is not None
-            if not exists:
-                content, exists = self._read_file(STATE_YAML)
             resp = json.dumps({
                 "content": content,
                 "exists": exists,

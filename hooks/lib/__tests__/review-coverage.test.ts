@@ -101,25 +101,23 @@ function commit(root: string, name: string): string {
 }
 
 /**
- * `agentstate.yaml` in the shape `agents/orchestrator.md` documents.
+ * The session anchor, in the one shape that carries it: a hook-written
+ * `session_start` row in the event log.
  *
- * Deliberately the real nesting: the reader is a flat first-match scan, and a
- * flattened fixture would pass while the real file failed.
+ * `agentstate.yaml` carried it until 2026-09-10 and this helper wrote that
+ * file. The file went with the Turn loop, so the row is the whole source and a
+ * fixture that wrote the file would be measuring nothing.
  */
 function writeState(root: string, headAtStart: string): void {
   writeFileSync(
-    resolve(root, "fusion-workbench", "agentstate.yaml"),
-    [
-      "# fusion-workbench session state — for resumption after restart",
-      "session:",
-      '  directive: "close the open findings"',
-      '  mode: "all"',
-      `  git_head_at_start: "${headAtStart}"`,
-      "",
-      "control:",
-      `  turn_start_head: "${headAtStart}"`,
-      "",
-    ].join("\n"),
+    resolve(root, "fusion-workbench", "orchestrator-events.jsonl"),
+    JSON.stringify({
+      ts: "2026-09-10T05:00:00",
+      event: "session_start",
+      writer: "session-start-hook",
+      session_id: "s-anchor",
+      git_head_at_start: headAtStart,
+    }) + "\n",
     "utf-8",
   );
 }
@@ -412,13 +410,13 @@ describe("review coverage: a range it cannot pin", () => {
     () => {
       withRepo((p) => {
         commit(p.root, "one");
-        // No agentstate.yaml: there is no session, so there is no range. That is
-        // a different fact from a range with nothing uncovered in it.
+        // No `session_start` row: there is no session, so there is no range.
+        // That is a different fact from a range with nothing uncovered in it.
         const out = runCli(p.root);
         expect(out.status, out.stderr).toBe(0);
         const k = keys(out.stdout);
         expect(k.verdict).toBe("unchecked");
-        expect(k.why).toContain("agentstate.yaml is absent");
+        expect(k.why).toContain("no hook-written `session_start` row");
       });
     },
     CASE_TIMEOUT,
@@ -832,36 +830,17 @@ describe("review coverage: where the default anchor comes from", () => {
   });
 
   it(
-    "prefers the hook-written row's head over the one agentstate.yaml records",
-    () => {
-      withRepo((p) => {
-        // The two disagree, and only the log's answer covers the whole range:
-        // a stale state file is the failure mode the log exists to end.
-        const start = head(p.root);
-        const mid = commit(p.root, "mid");
-        commit(p.root, "late");
-        writeState(p.root, mid);
-        writeLog(p.root, [hookRow("2026-09-10T05:00:00", start)]);
-
-        const k = keys(runCli(p.root).stdout);
-        expect(k.since).toBe(start);
-        expect(k.commits).toBe("2");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "falls back to agentstate.yaml when no row is the hook's own",
+    "reads the hook's own row and not the model's row for the same session",
     () => {
       withRepo((p) => {
         const start = head(p.root);
         commit(p.root, "one");
-        writeState(p.root, start);
-        // The model writes a `session_start` of its own for the same session
-        // and it carries no mechanical facts, so `writer` is what must decide.
+        // The model writes a `session_start` of its own and it carries no
+        // mechanical facts, so `writer` is what must decide. Ordered newest
+        // last, so a reader that ignored `writer` would take the model's.
         writeLog(p.root, [
-          { ts: "2026-09-10T05:00:00", event: "session_start", session_id: "s", git_head_at_start: "deadbee" },
+          hookRow("2026-09-10T05:00:00", start),
+          { ts: "2026-09-10T06:00:00", event: "session_start", session_id: "s", git_head_at_start: "deadbee" },
         ]);
 
         const k = keys(runCli(p.root).stdout);
@@ -895,13 +874,15 @@ describe("review coverage: where the default anchor comes from", () => {
   );
 
   it(
-    "says both sources are absent rather than naming only the file",
+    "names the one source rather than a list of them",
     () => {
       withRepo((p) => {
         commit(p.root, "one");
         const out = runCli(p.root);
         expect(out.stdout).toContain("no hook-written `session_start` row");
-        expect(out.stdout).toContain("agentstate.yaml is absent");
+        // `agentstate.yaml` was the fallback under it until 2026-09-10. The
+        // sentence must not go on naming a file nothing writes.
+        expect(out.stdout).not.toContain("agentstate.yaml");
       });
     },
     CASE_TIMEOUT,

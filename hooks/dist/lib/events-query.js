@@ -16,7 +16,7 @@
  * checkout that wrote it, so membership is **read off the line**. This module
  * is the readings that follow from that, and nothing else.
  *
- * Two of the three are identity-scoped, `measurePresence` and `countTurns`.
+ * One of the two is identity-scoped, `measurePresence`.
  * `measureDispatchDurations` deliberately is not: a bound dispatch made from
  * another checkout is still a bound dispatch, so it reads every line and calls
  * `isOurs` nowhere.
@@ -289,69 +289,6 @@ export function renderParty(p, aliasOf) {
         .map(flattenField)
         .join("\t");
 }
-/**
- * The Turn count of the session whose history file is `historyFile`.
- *
- * It replaces five sites that each derived the figure for themselves, and the two
- * quantities in that are different numbers rather than one: two literal whole-file
- * `grep -c turn_start` blocks, which counted every checkout's Turns and every
- * previous session's, and three prose derivations naming a window after this
- * session's `session_start`. All five now read this one implementation. It also
- * replaces the proposed repair of counting after the **last** `session_start`, which is
- * positional and does not survive the union merge
- * (`260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`).
- *
- * The window is a **timestamp inside one checkout's own lines**, which is
- * genuine chronology: scope by checkout, sort by `ts`, take the first
- * `session_start` naming this history file, count `turn_start` from its stamp
- * on. `turns=0` is a real figure and reaches the ok branch.
- *
- * A `turn_start` with no readable `ts` cannot be placed against that anchor, so
- * it is not counted. It comes back as `unstamped` rather than vanishing, so a
- * count that is short by a line is a count that says it is short by a line.
- */
-export function countTurns(text, historyFile, checkout) {
-    const { lines, malformed } = parseLog(text);
-    const scoped = lines
-        .filter((l) => isOurs(l, checkout))
-        .map((line, i) => ({ line, i, ms: parseTs(line.ts) }));
-    // Stable on the original order, so two lines sharing a stamp keep the order
-    // they were appended in. A line with no readable stamp sorts oldest, which is
-    // the rule `bin/monitor` `_read_warnings` already applies to the guard log.
-    scoped.sort((a, b) => {
-        const am = a.ms ?? Number.NEGATIVE_INFINITY;
-        const bm = b.ms ?? Number.NEGATIVE_INFINITY;
-        return am !== bm ? am - bm : a.i - b.i;
-    });
-    const anchor = scoped.find((e) => e.line.event === "session_start" && e.line.history_file === historyFile);
-    if (anchor === undefined) {
-        return { ok: false, why: "no-session-start", historyFile, malformed };
-    }
-    if (anchor.ms === null) {
-        return { ok: false, why: "anchor-without-timestamp", historyFile, malformed };
-    }
-    let turns = 0;
-    let unstamped = 0;
-    for (const e of scoped) {
-        if (e.line.event !== "turn_start")
-            continue;
-        if (e.ms === null) {
-            unstamped++;
-            continue;
-        }
-        if (e.ms < anchor.ms)
-            continue;
-        turns++;
-    }
-    return {
-        ok: true,
-        turns,
-        unstamped,
-        historyFile,
-        since: anchor.line.ts,
-        malformed,
-    };
-}
 /* ------------------------------------------------------------------ *
  * dispatches, the reading of how long a dispatch ran
  * ------------------------------------------------------------------ */
@@ -488,9 +425,8 @@ export function measureDispatchDurations(text, opts) {
             longerThanThreshold++;
         rows.push({ agent, task, ts, minutes, outcome: longer ? "longer" : "within" });
     }
-    // Oldest first, stable on the order the lines were read in, which is the rule
-    // `countTurns` already applies. Two rows sharing a stamp keep their file
-    // order rather than swapping between runs.
+    // Oldest first, stable on the order the lines were read in. Two rows sharing
+    // a stamp keep their file order rather than swapping between runs.
     rows.sort((a, b) => (parseTs(a.ts) ?? 0) - (parseTs(b.ts) ?? 0));
     return {
         rows,

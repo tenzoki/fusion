@@ -23,7 +23,7 @@ import { findWorkbenchRoot } from "../workbench-root.js";
 //
 // ## What it resolves, and what that leaves this file measuring
 //
-// `orchestrator.maxTurns`, and `citations.extraPaths` since 2026-08-31. Six
+// `orchestrator.dispatchMinutes`, and `citations.extraPaths` since 2026-08-31. Six
 // former leaves were guard settings and went with the guard's verdict on
 // 2026-08-16, taking the plugin's own `config.json` middle layer with them; the
 // six are named in `CLAUDE.md`'s `fusion.json` Layout row, which also names the
@@ -37,9 +37,9 @@ import { findWorkbenchRoot } from "../workbench-root.js";
 //   2. VALIDATION — an unusable value is dropped, NAMED, and then inherits, so
 //      that a dropped key, an omitted key and an unwritten file are three
 //      spellings of one behaviour (decision `260804-1630`).
-//   3. RETIREMENT, at the two scopes the loader now announces: a whole FILE at
-//      the project root that is no longer read, and a top-level KEY inside the
-//      file that is.
+//   3. RETIREMENT, at the three scopes the loader announces: a whole FILE at
+//      the project root that is no longer read, a top-level KEY inside the file
+//      that is, and a LEAF inside a container that is still read.
 //
 // What it no longer measures is WHICH LAYER a value came from. With two layers
 // and one of them in code, "inherited from the plugin" and "fell through to
@@ -131,13 +131,13 @@ afterEach(() => {
 
 describe("merge — per leaf: project, then DEFAULTS", () => {
   it("takes a declared leaf exactly as written", () => {
-    expect(load(projectWith({ orchestrator: { maxTurns: 12 } })).orchestrator.maxTurns).toBe(12);
+    expect(load(projectWith({ orchestrator: { dispatchMinutes: 12 } })).orchestrator.dispatchMinutes).toBe(12);
   });
 
   it("falls through to DEFAULTS when the project says nothing", () => {
     const config = load(projectWith({ _comment: "a project that configures nothing" }));
 
-    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.orchestrator.dispatchMinutes).toBe(20);
     expect(config.diagnostics).toEqual([]);
   });
 
@@ -148,7 +148,7 @@ describe("merge — per leaf: project, then DEFAULTS", () => {
     // orchestrator with no budget at all.
     const config = load(projectWith({ orchestrator: {} }));
 
-    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.orchestrator.dispatchMinutes).toBe(20);
     expect(config.diagnostics).toEqual([]);
   });
 
@@ -157,11 +157,11 @@ describe("merge — per leaf: project, then DEFAULTS", () => {
     // it — it is absent, not wrong, so it inherits and it is diagnosed nowhere.
     for (const value of [
       { orchestrator: null },
-      { orchestrator: { maxTurns: null } },
+      { orchestrator: { dispatchMinutes: null } },
       "null",
     ]) {
       const config = load(projectWith(value));
-      expect(config.orchestrator.maxTurns).toBe(5);
+      expect(config.orchestrator.dispatchMinutes).toBe(20);
       expect(config.diagnostics).toEqual([]);
     }
   });
@@ -169,7 +169,7 @@ describe("merge — per leaf: project, then DEFAULTS", () => {
   it("resolves DEFAULTS with no project root at all", () => {
     const config = load(null);
 
-    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.orchestrator.dispatchMinutes).toBe(20);
     expect(config.diagnostics).toEqual([]);
   });
 
@@ -180,7 +180,7 @@ describe("merge — per leaf: project, then DEFAULTS", () => {
     // correctly-behaving project.
     const config = load(tmp());
 
-    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.orchestrator.dispatchMinutes).toBe(20);
     expect(config.diagnostics).toEqual([]);
   });
 });
@@ -204,14 +204,14 @@ describe("a value that cannot be used is dropped, named, and inherited past", ()
     ["a string", "many", "not a number at all"],
     ["a number's spelling", "5", "a string that looks like the answer"],
   ])("drops %s and inherits the default", (_name, value, _why) => {
-    const config = load(projectWith({ orchestrator: { maxTurns: value } }));
+    const config = load(projectWith({ orchestrator: { dispatchMinutes: value } }));
 
     // Drop, NAME, inherit — and the naming is not cosmetic. A budget silently
     // replaced by the default is a project running a bound it did not choose and
     // believes it did.
-    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.orchestrator.dispatchMinutes).toBe(20);
     expect(config.diagnostics).toHaveLength(1);
-    expect(config.diagnostics[0]).toContain("orchestrator.maxTurns");
+    expect(config.diagnostics[0]).toContain("orchestrator.dispatchMinutes");
     expect(config.diagnostics[0]).toContain("a whole number of 1 or more");
   });
 
@@ -221,9 +221,9 @@ describe("a value that cannot be used is dropped, named, and inherited past", ()
     // first argued for `escalation.blocksBeforeHalt` (issue 260804-1606), whose
     // `0` halted on the first denied call; that setting went with the counter on
     // 2026-08-16 and the argument transferred intact.
-    const config = load(projectWith({ orchestrator: { maxTurns: 999999 } }));
+    const config = load(projectWith({ orchestrator: { dispatchMinutes: 999999 } }));
 
-    expect(config.orchestrator.maxTurns).toBe(999999);
+    expect(config.orchestrator.dispatchMinutes).toBe(999999);
     expect(config.diagnostics).toEqual([]);
   });
 
@@ -234,7 +234,7 @@ describe("a value that cannot be used is dropped, named, and inherited past", ()
   ])("drops a container declared as %s, and says which key", (_name, value) => {
     const config = load(projectWith({ orchestrator: value }));
 
-    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.orchestrator.dispatchMinutes).toBe(20);
     expect(config.diagnostics).toHaveLength(1);
     expect(config.diagnostics[0]).toContain('"orchestrator" must be a JSON object');
   });
@@ -247,17 +247,17 @@ describe("a value that cannot be used is dropped, named, and inherited past", ()
       projectWith({
         _what: "why this file exists",
         _override: "how the merge works",
-        orchestrator: { maxTurns: 9, _note: "and here too" },
+        orchestrator: { dispatchMinutes: 9, _note: "and here too" },
       }),
     );
 
-    expect(config.orchestrator.maxTurns).toBe(9);
+    expect(config.orchestrator.dispatchMinutes).toBe(9);
     expect(config.diagnostics).toEqual([]);
   });
 
   it("makes a dropped key, an omitted key and an unwritten file identical", () => {
     // The three spellings of "absent", demonstrably the same thing.
-    const dropped = load(projectWith({ orchestrator: { maxTurns: 0 } }));
+    const dropped = load(projectWith({ orchestrator: { dispatchMinutes: 0 } }));
     const omitted = load(projectWith({ _comment: "nothing declared" }));
     const never = load(tmp());
 
@@ -320,7 +320,7 @@ describe("citations.extraPaths — the array and its elements are one check", ()
   });
 
   it("gives a project that declares nothing the corpus it already has", () => {
-    const config = load(projectWith({ orchestrator: { maxTurns: 9 } }));
+    const config = load(projectWith({ orchestrator: { dispatchMinutes: 9 } }));
 
     expect(config.citations.extraPaths).toEqual([]);
     expect(config.diagnostics).toEqual([]);
@@ -420,17 +420,17 @@ describe("a retired top-level key is named, not carried through in silence", () 
     // configuration was dropped" would go and rewrite a setting that is being
     // honoured.
     const config = load(
-      projectWith({ guard: { enabled: false }, orchestrator: { maxTurns: 12 } }),
+      projectWith({ guard: { enabled: false }, orchestrator: { dispatchMinutes: 12 } }),
     );
 
-    expect(config.orchestrator.maxTurns).toBe(12);
+    expect(config.orchestrator.dispatchMinutes).toBe(12);
     expect(config.diagnostics).toHaveLength(1);
     expect(config.diagnostics[0]).toContain("the rest of this file is unaffected");
   });
 
   it("says nothing to a project that never declared one", () => {
     // The ordinary project, which is every project fusion sets up from here on.
-    expect(load(projectWith({ orchestrator: { maxTurns: 9 } })).diagnostics).toEqual([]);
+    expect(load(projectWith({ orchestrator: { dispatchMinutes: 9 } })).diagnostics).toEqual([]);
   });
 });
 
@@ -444,11 +444,16 @@ describe("a retired top-level key is named, not carried through in silence", () 
 // project that runs Setup at all.
 //
 // The failure it exists to prevent is silent and specific: a project that
-// carried `{"orchestrator":{"maxTurns":12}}` in `fusion-guard.json` and does
-// nothing drops to the built-in default without a word. So the sentence is
-// asserted phrase by phrase rather than by a substring on the filename — a
-// shortening into a bare "this file moved" would pass a filename check and lose
-// the migration.
+// carried a setting in `fusion-guard.json` and does nothing drops to the
+// built-in default without a word. So the sentence is asserted phrase by phrase
+// rather than by a substring on the filename — a shortening into a bare "this
+// file moved" would pass a filename check and lose the migration.
+//
+// It named `orchestrator.maxTurns` as the setting to copy across until
+// 2026-09-10. That setting is retired everywhere now, so the sentence says
+// there is nothing to copy for it and points any OTHER setting at the live
+// file. The phrase-by-phrase assertion is what makes that a deliberate rewrite
+// rather than a drift.
 // ---------------------------------------------------------------------------
 
 describe("a retired FILE is named, with the migration it needs", () => {
@@ -457,13 +462,13 @@ describe("a retired FILE is named, with the migration it needs", () => {
     const root = live === undefined ? tmp() : projectWith(live);
     writeFileSync(
       resolve(root, RETIRED_CONFIG),
-      '{"orchestrator": {"maxTurns": 12}, "guard": {"enabled": true}}\n',
+      '{"orchestrator": {"dispatchMinutes": 12}, "guard": {"enabled": true}}\n',
       "utf-8",
     );
     return root;
   }
 
-  it("names the file, the key to copy, the destination and the order", () => {
+  it("names the file, the destination, the retired key and the order", () => {
     const root = withRetiredFile();
     const { diagnostics } = load(root);
 
@@ -473,12 +478,15 @@ describe("a retired FILE is named, with the migration it needs", () => {
     // The file, by absolute path: a developer may have several roots open.
     expect(detail).toContain(resolve(root, RETIRED_CONFIG));
     expect(detail).toContain("is no longer read");
-    // The setting that survives the move, and where it goes.
-    expect(detail).toContain("orchestrator.maxTurns");
+    // Where a setting that DOES survive goes.
     expect(detail).toContain(PROJECT_CONFIG_FILENAME);
+    // The one key a reader most plausibly has in that file, named with what
+    // happened to it — so nobody copies a Turn budget into a file that also
+    // will not read it.
+    expect(detail).toContain("orchestrator.maxTurns");
+    expect(detail).toContain("nothing to copy");
     // The ORDER, and the consequence of getting it wrong. Deleting first loses
-    // the value the sentence just told the reader to keep.
-    expect(detail).toContain("first");
+    // any value the sentence just told the reader to keep.
     expect(detail).toContain("Then delete this file");
   });
 
@@ -486,21 +494,21 @@ describe("a retired FILE is named, with the migration it needs", () => {
     // `existsSync` is the whole check, and deliberately: reading the file in
     // order to decide what to say about not reading it would be the
     // contradiction it is. So a leftover file that is not even JSON produces the
-    // same single notice, and its `maxTurns` reaches nothing.
+    // same single notice, and nothing in it reaches the effective config.
     const root = tmp();
     writeFileSync(resolve(root, RETIRED_CONFIG), "{ not json at all", "utf-8");
 
     const config = load(root);
     expect(config.diagnostics).toHaveLength(1);
     expect(config.diagnostics[0]).toContain(RETIRED_CONFIG);
-    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.orchestrator.dispatchMinutes).toBe(20);
   });
 
   it("does not let the retired file's budget reach the effective config", () => {
     // The silent loss this whole channel exists to make loud, asserted as the
     // loss it is: the project's declared 12 is in the file nothing reads, and
     // the resolved budget is fusion's own default.
-    expect(load(withRetiredFile()).orchestrator.maxTurns).toBe(5);
+    expect(load(withRetiredFile()).orchestrator.dispatchMinutes).toBe(20);
   });
 
   it("is reported ahead of a complaint about the file that IS read", () => {
@@ -508,20 +516,56 @@ describe("a retired FILE is named, with the migration it needs", () => {
     // wrong about; a dropped key inside the file that IS read is a finer
     // complaint and reads after it. A project meeting both at once is exactly
     // the project mid-migration.
-    const { diagnostics } = load(withRetiredFile({ orchestrator: { maxTurns: 0 } }));
+    const { diagnostics } = load(withRetiredFile({ orchestrator: { dispatchMinutes: 0 } }));
 
     expect(diagnostics).toHaveLength(2);
     expect(diagnostics[0]).toContain(RETIRED_CONFIG);
-    expect(diagnostics[1]).toContain("orchestrator.maxTurns");
+    expect(diagnostics[1]).toContain("orchestrator.dispatchMinutes");
     expect(diagnostics[1]).toContain("a whole number of 1 or more");
   });
 
   it("says nothing to a project that never had one, and none at all with no root", () => {
-    expect(load(projectWith({ orchestrator: { maxTurns: 9 } })).diagnostics).toEqual([]);
+    expect(load(projectWith({ orchestrator: { dispatchMinutes: 9 } })).diagnostics).toEqual([]);
     // With no project root there is nowhere to probe, and the loop is skipped
     // rather than probing the working directory — which in THIS repository would
     // find whatever the developer happens to have lying around.
     expect(load(null).diagnostics).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Retirement at the third scope: a LEAF inside a container that is still read.
+//
+// `RETIRED_TOP_LEVEL_KEYS` cannot express this — it retires a whole container —
+// and `orchestrator` is still read for `dispatchMinutes`. Without the leaf
+// table, `orchestrator.maxTurns` would fall through the leaf walk's unknown-key
+// branch and be carried in exactly the silence the family exists to prevent.
+// ---------------------------------------------------------------------------
+
+describe("a retired LEAF inside a live container is named", () => {
+  it("names the leaf and says the setting is not read", () => {
+    const config = load(projectWith({ orchestrator: { maxTurns: 12 } }));
+
+    expect(config.diagnostics).toHaveLength(1);
+    expect(config.diagnostics[0]).toContain("orchestrator.maxTurns");
+    expect(config.diagnostics[0]).toContain("no longer exists");
+    expect(config.diagnostics[0]).toContain("The key was ignored");
+  });
+
+  it("leaves the live leaf beside it working", () => {
+    // The container is still read. A retired leaf must not cost the sibling
+    // that shares its object, which is what a container-scoped retirement
+    // would have done.
+    const config = load(projectWith({ orchestrator: { maxTurns: 12, dispatchMinutes: 9 } }));
+
+    expect(config.orchestrator.dispatchMinutes).toBe(9);
+    expect(config.diagnostics).toHaveLength(1);
+  });
+
+  it("says it once per load, whatever the value", () => {
+    for (const value of [12, 0, "many", []]) {
+      expect(load(projectWith({ orchestrator: { maxTurns: value } })).diagnostics).toHaveLength(1);
+    }
   });
 });
 
@@ -537,7 +581,7 @@ describe("diagnostics — a dropped source is named, never silent", () => {
     expect(config.diagnostics).toHaveLength(1);
     expect(config.diagnostics[0]).toContain(resolve(root, PROJECT_CONFIG_FILENAME));
     expect(config.diagnostics[0]).toContain("not valid JSON");
-    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.orchestrator.dispatchMinutes).toBe(20);
   });
 
   it("reports JSON that parses but is not an object", () => {
@@ -546,7 +590,7 @@ describe("diagnostics — a dropped source is named, never silent", () => {
 
       expect(config.diagnostics).toHaveLength(1);
       expect(config.diagnostics[0]).toContain("not a JSON object");
-      expect(config.orchestrator.maxTurns).toBe(5);
+      expect(config.orchestrator.dispatchMinutes).toBe(20);
     }
   });
 });
@@ -557,15 +601,15 @@ describe("the cache is keyed on the resolved source", () => {
     // answer forever, so the second load below would have carried the first
     // project's budget. One process, many roots, is exactly what a vitest file
     // is.
-    const a = loadConfig({ projectRoot: projectWith({ orchestrator: { maxTurns: 7 } }) });
-    const b = loadConfig({ projectRoot: projectWith({ orchestrator: { maxTurns: 11 } }) });
+    const a = loadConfig({ projectRoot: projectWith({ orchestrator: { dispatchMinutes: 7 } }) });
+    const b = loadConfig({ projectRoot: projectWith({ orchestrator: { dispatchMinutes: 11 } }) });
 
-    expect(a.orchestrator.maxTurns).toBe(7);
-    expect(b.orchestrator.maxTurns).toBe(11);
+    expect(a.orchestrator.dispatchMinutes).toBe(7);
+    expect(b.orchestrator.dispatchMinutes).toBe(11);
   });
 
   it("a repeat load with the SAME root hits the memo", () => {
-    const sources = { projectRoot: projectWith({ orchestrator: { maxTurns: 7 } }) };
+    const sources = { projectRoot: projectWith({ orchestrator: { dispatchMinutes: 7 } }) };
 
     expect(loadConfig(sources)).toBe(loadConfig(sources));
   });
@@ -585,16 +629,16 @@ describe("the cache is keyed on the resolved source", () => {
     const sources = { projectRoot: root };
 
     // No file yet, so DEFAULTS stands.
-    expect(loadConfig(sources).orchestrator.maxTurns).toBe(5);
+    expect(loadConfig(sources).orchestrator.dispatchMinutes).toBe(20);
 
     writeFileSync(
       resolve(root, PROJECT_CONFIG_FILENAME),
-      JSON.stringify({ orchestrator: { maxTurns: 33 } }),
+      JSON.stringify({ orchestrator: { dispatchMinutes: 33 } }),
       "utf-8",
     );
     resetConfigCache();
 
-    expect(loadConfig(sources).orchestrator.maxTurns).toBe(33);
+    expect(loadConfig(sources).orchestrator.dispatchMinutes).toBe(33);
   });
 });
 
@@ -838,7 +882,7 @@ describe("an explicit null project root is honoured, not filled in", () => {
     writeFileSync(resolve(root, "fusion-workbench", ".fusion-setup"), "{}", "utf-8");
     writeFileSync(
       resolve(root, PROJECT_CONFIG_FILENAME),
-      JSON.stringify({ orchestrator: { maxTurns: 42 } }),
+      JSON.stringify({ orchestrator: { dispatchMinutes: 42 } }),
       "utf-8",
     );
 
@@ -849,10 +893,10 @@ describe("an explicit null project root is honoured, not filled in", () => {
       // witnessing anything fails here rather than passing vacuously.
       expect(findWorkbenchRoot()).not.toBeNull();
       resetConfigCache();
-      expect(loadConfig().orchestrator.maxTurns).toBe(42);
+      expect(loadConfig().orchestrator.dispatchMinutes).toBe(42);
 
       resetConfigCache();
-      expect(loadConfig({ projectRoot: null }).orchestrator.maxTurns).toBe(5);
+      expect(loadConfig({ projectRoot: null }).orchestrator.dispatchMinutes).toBe(20);
     } finally {
       process.chdir(before);
     }

@@ -46,9 +46,9 @@
  * the same reason the rows above do — its subject is what a hook writes when a
  * state file is NOT there. `lib/orchestrator-events.ts` used to gate every
  * machine dispatch row on `fusion-workbench/agentstate.yaml` existing, which
- * made the gate orchestrator-scoped; it is now that file OR a session identifier
- * on the payload, which makes it project-scoped, and the file arm is kept so the
- * widening removed nothing.
+ * made the gate orchestrator-scoped. It widened to that file OR a session
+ * identifier on the payload; the file went with the Turn loop on 2026-09-10,
+ * and the identifier is now the whole gate, which is project-scoped.
  *
  * What makes these cases `.guard-state/` cases rather than event-log cases is
  * the second half of the change. A payload with no identifier is no longer a
@@ -69,7 +69,6 @@ import {
   guardStateEntries,
   openCoverageGap,
   openCoverageWindowWithNoGap,
-  openOrchestratorSession,
   readEvents,
   readOrchestratorEvents,
   runDispatch,
@@ -259,16 +258,16 @@ function absentIdAdvisories(root: string): string[] {
     .filter((detail) => detail.includes(ABSENT_SESSION_ID_ADVISORY));
 }
 
-describe("the dispatch row is gated on a session, not on agentstate.yaml", () => {
+describe("the dispatch row is gated on the payload's session identifier alone", () => {
   it(
-    "writes the row with NO agentstate.yaml, on the payload's session identifier",
+    "writes the row on the identifier, with no state file anywhere",
     () => {
       withProject(({ root }) => {
         expect(existsSync(resolve(root, AGENTSTATE))).toBe(false);
         runDispatch(root, { ...DISPATCH, sessionId: "sid-project-scoped" });
 
         const rows = dispatchRows(root);
-        expect(rows, "the widened gate admitted nothing").toHaveLength(1);
+        expect(rows, "the gate admitted nothing").toHaveLength(1);
         expect(rows[0]).toMatchObject({
           event: "task_start",
           task: DISPATCH.toolUseId,
@@ -290,52 +289,30 @@ describe("the dispatch row is gated on a session, not on agentstate.yaml", () =>
   );
 
   it(
-    "still writes the row on agentstate.yaml alone, which is what it always did",
+    "writes nothing on a leftover agentstate.yaml, which no longer admits a row",
     () => {
-      // The regression half. The widening added a term and removed none, so a
-      // payload the OLD gate admitted must still be admitted — and this is the
-      // case that fails if a future edit turns the disjunction into the new
-      // term standing on its own.
+      // The other half of the removal, and the case that fails if the second
+      // arm ever comes back. A project carrying the file from before the cut
+      // must not have its dispatches admitted on the strength of it.
       withProject(({ root }) => {
-        openOrchestratorSession(root);
-        runDispatch(root, { ...DISPATCH, sessionId: "sid-in-flight" });
-        expect(dispatchRows(root)).toHaveLength(1);
-        expect(absentIdAdvisories(root)).toEqual([]);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "writes the row with session_id ABSENT when only agentstate.yaml admits it",
-    () => {
-      withProject(({ root }) => {
-        openOrchestratorSession(root);
+        writeFileSync(resolve(root, AGENTSTATE), "session:\n  domain: code\n", "utf-8");
         runDispatch(root, DISPATCH);
 
-        const rows = dispatchRows(root);
-        expect(rows).toHaveLength(1);
-        expect(Object.keys(rows[0]), "session_id was written empty").not.toContain("session_id");
-        expect(rows[0]).toMatchObject({ task: DISPATCH.toolUseId, agent: "coder" });
-
-        // Absent, and SAID so. The row on its own cannot distinguish a payload
-        // that carried no identifier from a schema that never had the field.
-        const advisories = absentIdAdvisories(root);
-        expect(advisories, "the absent identifier went unreported").toHaveLength(1);
-        expect(advisories[0]).toContain("session_id absent");
+        expect(readOrchestratorEvents(root)).toEqual([]);
+        expect(absentIdAdvisories(root), "the dropped row was never reported").toHaveLength(1);
       });
     },
     CASE_TIMEOUT,
   );
 
   it(
-    "reports rather than drops when NEITHER arm of the gate holds",
+    "reports rather than drops when the payload names no session",
     () => {
       withProject(({ root }) => {
         expect(existsSync(resolve(root, AGENTSTATE))).toBe(false);
         runDispatch(root, DISPATCH);
 
-        // No row: neither term is satisfied, so nothing scopes it.
+        // No row: nothing scopes it.
         expect(readOrchestratorEvents(root)).toEqual([]);
 
         // But not a silent drop. Exactly one advisory, naming the condition and

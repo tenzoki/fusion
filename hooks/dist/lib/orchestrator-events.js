@@ -28,9 +28,8 @@
  *     session. See `## The session_start row` at the foot of this module for
  *     what it carries, why the model's own row is not replaced by it, and what
  *     tells the two apart. It is the one machine row that does NOT pass the
- *     gate below: at SessionStart `agentstate.yaml` does not exist yet, and the
- *     identifier is that row's dedup key rather than a descriptive field, so it
- *     is required outright.
+ *     gate below: the identifier is that row's dedup key rather than a
+ *     descriptive field, so it is required outright.
  *
  * Everything else semantic — `turn_start`, gates, reviews — stays
  * model-written: those rows carry judgements (a Directive, a verdict, a Turn's
@@ -42,56 +41,50 @@
  *
  * ## The gate: a workbench root, and a session the row can be scoped to
  *
- * A dispatch row is written when `findWorkbenchRoot()` found a root AND either
- * of two terms holds: the hook payload carries a session identifier, or
- * `fusion-workbench/agentstate.yaml` exists. `eventRowsAdmitted` is the
- * predicate and `orchestratorSessionInFlight` is the second term, kept intact
- * as one arm of the disjunction — every call admitted before the widening is
- * still admitted, and this module removed nothing to gain the first term.
+ * A dispatch row is written when `findWorkbenchRoot()` found a root AND the
+ * hook payload carries a session identifier. `eventRowsAdmitted` is the
+ * predicate, and one term is the whole of it.
  *
- * ## Why it widened: from orchestrator-scoped to project-scoped
+ * ## Why the gate is project-scoped
  *
- * The `agentstate.yaml` term made the gate ORCHESTRATOR-scoped. That file
- * exists exactly while an orchestrator session is running (Setup writes it, a
- * clean close deletes it), so a dispatch outside that window — a plain Claude
- * session in the same project using its own subagents — wrote nothing here and
- * the log stayed what its name says it is.
+ * It had a second term until 2026-09-10: `fusion-workbench/agentstate.yaml`
+ * exists. That file was Setup's own bookkeeping, written by the model at the
+ * start of an orchestrator session and deleted at a clean close, so the term
+ * made the gate ORCHESTRATOR-scoped — a dispatch outside that window, from a
+ * plain Claude session in the same project, wrote nothing here.
  *
- * That reading is being retired at its source. The state file is the Turn
- * loop's bookkeeping, the Turn loop is going, and a gate keyed on a file that
- * will not exist admits nothing at all. The identifier term replaces the
- * inference with the thing it was inferring: a session identifier plus a
+ * The Turn loop that kept the file went with the cut, so the term was keyed on
+ * a file nothing writes any more and admitted nothing at all. What remains is
+ * the thing the file was ever evidence for: a session identifier plus a
  * workbench root IS a Claude Code session running inside a fusion project, read
  * off the payload rather than deduced from a file's existence.
  *
- * So the gate is PROJECT-scoped now, and the consequence is the point rather
- * than a cost to apologise for. A plain session's dispatches land in the log
- * whether or not an orchestrator is running — which the old gate already
- * admitted for the window it could not exclude, and stated as its residual.
- * Every row carries its own `session_id`, so scoping is the READER's job:
- * `bin/fusion-events` already reads this log by the identity on each line
- * rather than by a line's position in it, and after the widening that is the
- * only correct way to read it.
+ * The consequence is the point rather than a cost to apologise for. A plain
+ * session's dispatches land in the log whether or not an orchestrator is
+ * running — which the old gate already admitted for the window it could not
+ * exclude, and stated as its residual. Every row carries its own `session_id`,
+ * so scoping is the READER's job: `bin/fusion-events` already reads this log by
+ * the identity on each line rather than by a line's position in it, and that is
+ * the only correct way to read it.
  *
  * ## An absent identifier is reported, never silently dropped
  *
  * With a root found and no identifier on the payload, one `guard_advisory`
  * naming the condition goes to `.guard-state/events.jsonl` — the same log the
  * configuration diagnostics use and the monitor's panel renders. The row itself
- * then follows the disjunction: written with `session_id` ABSENT when
- * `agentstate.yaml` still admits it, per this module's absent-rather-than-empty
- * rule, and not written at all when nothing does. Either way a reader of the
- * guard log can tell that a row was owed and what was missing. A bare `return`
- * could tell them neither, which is how the model-written rows came to stand on
- * zero session identifiers without anything noticing.
+ * itself is then not written at all, because nothing else admits it. Either
+ * way a reader of the guard log can tell that a row was owed and what was
+ * missing. A bare `return` could tell them neither, which is how the
+ * model-written rows came to stand on zero session identifiers without anything
+ * noticing.
  *
  * The advisory is emitted once per emission call, and only where a row was
  * actually owed: `recordDispatchLaunch` parks a mapping entry rather than
  * writing a row, so it takes the gate and stays silent — `emitSubagentStop`
  * raises the advisory when that parked dispatch's row finally comes due.
- * `heartbeatSessionMarker` keeps the narrow `orchestratorSessionInFlight` gate
- * unwidened and unadvised, because its subject is the orchestrator's own
- * session marker rather than a row in this log.
+ * `heartbeatSessionMarker` keeps its own narrow gate — the marker's existence —
+ * and stays unadvised, because its subject is the orchestrator's own session
+ * marker rather than a row in this log.
  *
  * ## What a task_start row measures
  *
@@ -147,15 +140,6 @@ export function utcStamp(now = new Date()) {
     return now.toISOString().slice(0, 19);
 }
 /**
- * An orchestrator session is in flight iff Setup's state file exists.
- *
- * No longer the gate on its own — see `## The gate` — but still one arm of it,
- * and still the whole gate for the session-marker heartbeat below.
- */
-export function orchestratorSessionInFlight(root) {
-    return existsSync(resolve(root, "fusion-workbench", "agentstate.yaml"));
-}
-/**
  * The session identifier off a hook payload: absent rather than empty.
  *
  * Every hook this module serves declares `session_id` as `unknown`, because a
@@ -174,8 +158,8 @@ export function payloadSessionId(input) {
  * the disjunction satisfied — see `## The gate` in the header for both terms,
  * why the second one is kept, and why the first one was added.
  */
-export function eventRowsAdmitted(root, sessionId) {
-    return sessionId !== undefined || orchestratorSessionInFlight(root);
+export function eventRowsAdmitted(_root, sessionId) {
+    return sessionId !== undefined;
 }
 /**
  * The advisory an absent session identifier earns, as a stable prefix a reader
@@ -209,26 +193,26 @@ function adviseAbsentSessionId(rowKind, written) {
  * prompt mandate — one more act on a path that already had ~12, and skipped
  * exactly when the session was busiest. Now every PostToolUse call refreshes
  * the marker's mtime, self-rate-limited on that same mtime (at most once per
- * 60 s), and only while BOTH marker and `agentstate.yaml` exist — the marker
- * so a session that never wrote one (a plain, non-orchestrator session) never
- * masquerades as one, the state file so a cleared session stays cleared.
+ * 60 s), and only while the marker exists — so a session that never wrote one
+ * (a plain, non-orchestrator session) never masquerades as one, and a cleared
+ * session stays cleared, `clear` having deleted the marker itself. A second
+ * conjunct, `agentstate.yaml` exists, stood beside it until 2026-09-10 and went
+ * with the file: a term nothing writes any more admits nothing.
  * Residual, stated: a plain session's tool calls DURING a live orchestrator
  * session also refresh the marker; the `running` verdict that produces at
  * Setup Step 0c is then true anyway. Never creates, never deletes — writing
  * and clearing stay `bin/fusion-session-mark`'s.
  *
- * It keeps `orchestratorSessionInFlight` UNWIDENED where the row emitters now
- * take `eventRowsAdmitted`, and the reason is that its subject is different:
- * the marker records that an ORCHESTRATOR is running against this project, and
- * a plain session refreshing it on the strength of having a session identifier
- * would make Setup Step 0c's `running` verdict a statement about the wrong
- * thing.
+ * It deliberately does NOT take `eventRowsAdmitted`, and the reason is that its
+ * subject is different: the marker records that an ORCHESTRATOR is running
+ * against this project, and a plain session refreshing it on the strength of
+ * having a session identifier would make Setup Step 0c's `running` verdict a
+ * statement about the wrong thing. The marker's own existence is what keeps the
+ * two apart.
  */
 export function heartbeatSessionMarker(root) {
     const marker = resolve(root, "fusion-workbench", ".session-marker");
     if (!existsSync(marker))
-        return;
-    if (!orchestratorSessionInFlight(root))
         return;
     const age = Date.now() - statSync(marker).mtimeMs;
     if (age < 60_000)

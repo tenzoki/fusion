@@ -4,7 +4,6 @@
 #
 # Usage:
 #   fusion-events presence [--days N]      who else has been here (default 7)
-#   fusion-events turns                    this session's Turn count
 #   fusion-events dispatches [--minutes N] [--since YYYY-MM-DD]
 #                                          how long each dispatch of a bound
 #                                          agent ran, since the bound landed
@@ -23,11 +22,6 @@
 #     party=person<TAB>Jane Roe <jane@example.com><TAB>4f21ab90<TAB>2026-08-24T09:12:00<TAB>260824-0530-record-attribution-and-circle-claim<TAB>amber-harbor
 #     party=checkout<TAB>Kai Stalmann <ks@qantr.com><TAB>9c30ee11<TAB>2026-08-25T07:40:00<TAB>shared<TAB>-
 #
-#   turns
-#     turns=3
-#     history_file=circles/<stamp>-<slug>/history/<stamp>-orchestrator-session.md
-#     scope=checkout
-#
 #   dispatches
 #     threshold_minutes=20
 #     threshold_source=configured
@@ -41,43 +35,19 @@
 #     limit=no-session-invisible<TAB><one sentence>
 #     dispatch=coder<TAB>toolu_01H3L9xg<TAB>2026-09-08T16:00:55<TAB>24.3<TAB>longer
 #
-# **Three counts are on stderr and never on stdout**: lines of the log that were
-# not a JSON object at all, `turn_start` lines that named a Turn and could not
-# say when, and dispatches carrying no readable stamp on one of their two rows.
-# None is a figure taken from the log; each says how far the log fell short of
-# letting one be taken. A `turns` count that is short by an unstamped line says
-# it is short by an unstamped line rather than passing for whole.
+# **Two counts are on stderr and never on stdout**: lines of the log that were
+# not a JSON object at all, and dispatches carrying no readable stamp on one of
+# their two rows. Neither is a figure taken from the log; each says how far the
+# log fell short of letting one be taken.
 #
 # ---------------------------------------------------------------------------
-# The `scope=` key, which both subcommands print and neither counts
+# The `scope=` key, which presence prints and does not count
 #
 # It is the figure's own disclaimer, in the shape of a figure's key.
 #
 # **`scope=pulled`** on presence is a constant: presence reflects only what this
 # checkout has pulled, so a session another person started since the last fetch
 # is invisible here and is not absence.
-#
-# **`scope=` on turns is not a constant.** It says what the count was taken
-# over. `checkout` is the ordinary case, this checkout's own lines. It reads
-# `all-checkouts` when the checkout identifier did not resolve, because then
-# every line in the merged file is counted — the exact pre-C4 behaviour, kept
-# deliberately as the stated degradation, and now named on stdout instead of on
-# stderr alone.
-#
-# The key exists rather than a sixth exit code, and that is the whole of the
-# choice. The widening used to be announced on stderr while stdout carried a
-# number and the exit was 0; a caller instructed never to fall back to the
-# whole-file count could not tell that this helper just had, because a prompt
-# reads stdout and an exit code and captures no stderr. **The exit stays 0**:
-# the count was taken, over a scope the key names, so a caller that ignores the
-# key behaves exactly as it did before the key existed. A caller that must not
-# accept a widened count reads the key and treats `all-checkouts` as
-# unavailable. Record:
-# `260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-checkout-is-unresolved-and-stdout-says-nothing.md`.
-#
-# `scope=` is printed **last**, so the two lines a caller was written against
-# stay where they were, and it is printed on the exit-4 branch too, where the
-# count could not be taken but the scope the search ran over still was.
 #
 # ---------------------------------------------------------------------------
 # The `party=` line
@@ -172,11 +142,11 @@
 # overrides it and takes YYYY-MM-DD; anything else is a usage error rather than
 # an empty reading that looks like an answer.
 #
-# **This subcommand is deliberately not identity-scoped.** The other two are,
+# **This subcommand is deliberately not identity-scoped.** The other one is,
 # and this one is not: a bound dispatch made from another checkout is still a
 # bound dispatch, and scoping to one checkout would hide exactly what a reader
 # of a merged log is looking for. The identity is still exported below, because
-# one script serves all three subcommands.
+# one script serves both subcommands.
 #
 # It is a reading and a gate on nothing. Nothing runs it automatically.
 #
@@ -185,9 +155,7 @@
 # bin/fusion-rules; 3 and 4 are this helper's own and mean something different
 # per subcommand.
 #
-#   0  measured. `other_people=0` and `turns=0` are real answers and reach this
-#      code, and so does a `turns` count taken over `scope=all-checkouts`: the
-#      figure was taken, and the key says what it was taken over.
+#   0  measured. `other_people=0` is a real answer and reaches this code.
 #      dispatches: the figures are printed, `counted=0` included. A log holding
 #      no dispatch since the cutoff is a real answer about the project.
 #   1  usage error. For dispatches that includes a `--since` that is not
@@ -196,8 +164,6 @@
 #   3  presence: no line can be classified, so no count is printed. Two causes,
 #      both named on stderr — this checkout could not be identified, or the log
 #      could not be read.
-#      turns: there is no session to scope to. Three causes, named on stderr —
-#      no agentstate.yaml, no `session.history_file` in it, or no log.
 #      dispatches: the log is absent or will not open, named on stderr. It is
 #      the only cause here, since this reading needs no identity and no session
 #      state. **An empty log is not this code**: it is a real zero and reaches 0.
@@ -217,12 +183,6 @@
 #      checkout, because without the reading person none of them can be told
 #      from one of the reader's own. One key, two denotations, and the exit code
 #      is which.
-#      turns: the count could not be taken. `history_file=` and `scope=` are
-#      printed and `turns=` is not. **A finding, not a zero.** Two causes, both
-#      named on stderr: no `session_start` among the counted lines names that
-#      history file, or the one that does carries no readable `ts`, so no window
-#      can be opened. They share what the caller does, which is why one code
-#      carries both — the same reasoning 3 gives below.
 #      dispatches never returns 4: it takes no identity and opens no session
 #      state, so neither half of what 4 reports about can be missing.
 #   5  the plugin's compiled hooks are missing, so nothing could be asked.
@@ -234,7 +194,7 @@
 # caller does, so the cause is on stderr and the code is one number.
 #
 # **A broken install is 5 here and 3 in the sibling helpers.** Each of
-# bin/fusion-turn-budget, bin/fusion-review-coverage and bin/fusion-staging-drift
+# bin/fusion-review-coverage and bin/fusion-staging-drift
 # spends its 3 on it, for the reason their headers give: "there is nothing to check"
 # is an answer about the project, and a broken install must never be reported as
 # one. That reasoning is why the code moved rather than the principle — here 3
@@ -310,16 +270,6 @@
 # (`260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`).
 # So membership is read off the line instead of inferred from its neighbours,
 # and this is the two readings that follow.
-#
-# `turns` also replaces five sites that each derived the figure for themselves, and
-# the two quantities in that are different numbers rather than one. Two were literal
-# whole-file `grep -c turn_start` blocks, which counted every checkout's Turns and
-# every previous session's. Three were prose derivations naming a window after this
-# session's `session_start`, which is positional and does not survive the union
-# merge. All five now read this one implementation. It reports
-# `unavailable` to its callers through exit 3 and 4 rather than through a
-# smaller number, because the defect being repaired is exactly a count that
-# looked like an answer.
 #
 # The work is hooks/dist/events-query.js, resolved relative to this script
 # rather than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree

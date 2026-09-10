@@ -128,8 +128,6 @@ default_pathspec() {
   printf '%s\n' \
     'fusion-workbench/' \
     ':!fusion-workbench/orchestrator-events.jsonl' \
-    ':!fusion-workbench/orchestrator-live.md' \
-    ':!fusion-workbench/agentstate.yaml' \
     ':!fusion-workbench/portfolio.md' \
     ':!fusion-workbench/monitor' \
     ':!fusion-workbench/stilwerk' \

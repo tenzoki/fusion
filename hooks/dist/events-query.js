@@ -10,16 +10,13 @@
  *
  * ## What this file is for, given that the computation is elsewhere
  *
- * Three things the pure module deliberately does not do, and each is why the
+ * Two things the pure module deliberately does not do, and each is why the
  * split exists at all:
  *
  *   1. **It opens the log.** `findWorkbenchRoot` locates the workbench, exactly
  *      as `review-coverage.ts` and `staging-drift.ts` do, and the log is read
  *      at its one fixed root-relative path.
- *   2. **It reads `session.history_file`.** Through `lib/state-file.ts`, the
- *      shared flat read of `agentstate.yaml`, so `turns` cannot be pointed at a
- *      session that is not this one and there is no second reader of that file.
- *   3. **It receives the identity rather than obtaining it.** `PERSON` and
+ *   2. **It receives the identity rather than obtaining it.** `PERSON` and
  *      `CHECKOUT` arrive in the environment from `bin/fusion-identity`, which
  *      the wrapper runs. Identity is obtained in exactly one place in the tree,
  *      and that place is not here. What *is* here is the one translation of
@@ -45,15 +42,13 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { BOUND_AGENTS, countTurns, measureDispatchDurations, measurePresence, renderDispatch, renderParty, } from "./lib/events-query.js";
+import { BOUND_AGENTS, measureDispatchDurations, measurePresence, renderDispatch, renderParty, } from "./lib/events-query.js";
 import { loadConfig } from "./lib/config.js";
-import { readStateFile, stateField } from "./lib/state-file.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 // The reader may close stdout first; see exitZeroOnStdoutEpipe.
 exitZeroOnStdoutEpipe();
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 const USAGE = "usage: fusion-events presence [--days N]\n" + //
-    "       fusion-events turns\n" +
     "       fusion-events dispatches [--minutes N] [--since YYYY-MM-DD]";
 /** The log, at the one root-relative path every consumer reads it at. */
 const LOG_REL = "fusion-workbench/orchestrator-events.jsonl";
@@ -222,20 +217,6 @@ function noteMalformed(n) {
     if (n > 0)
         say(`${n} line(s) of the log were not a JSON object and were skipped.`);
 }
-/**
- * `turn_start` lines that named a Turn and could not say when.
- *
- * Named separately from `malformed`, because they are well-formed objects and
- * the two are different facts. Both are on stderr rather than stdout: stdout
- * carries the figures, and these two say how far the log fell short of letting
- * them be taken.
- */
-function noteUnstamped(n) {
-    if (n > 0) {
-        say(`${n} turn_start line(s) carry no readable ts and are not in the count, which is ` +
-            "therefore short by that many Turns.");
-    }
-}
 /* ------------------------------------------------------------------ *
  * presence
  * ------------------------------------------------------------------ */
@@ -300,66 +281,6 @@ function presence(root, days) {
         }
         return 4;
     }
-    return 0;
-}
-/* ------------------------------------------------------------------ *
- * turns
- * ------------------------------------------------------------------ */
-function turns(root) {
-    const { identity, status } = readIdentity();
-    // What the count was taken over, on stdout in the shape the rest of the
-    // output uses. Without it the widening below was announced on stderr alone,
-    // while stdout carried a number and the exit was 0 — so a prompt told to
-    // "never fall back to the whole-file count" could not tell that the helper
-    // just had. Record:
-    // circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/
-    //   260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-
-    //   checkout-is-unresolved-and-stdout-says-nothing.md
-    const scope = identity.checkout === null ? "all-checkouts" : "checkout";
-    if (identity.checkout === null) {
-        // Not a failure here, and deliberately not one: keeping every line is the
-        // exact pre-C4 behaviour, which is the stated degradation rather than a
-        // fallback. It is said out loud so the figure is never quietly wider than
-        // it looks.
-        if (status.note !== "")
-            say(status.note);
-        say("this checkout could not be identified, so every line is counted, as before C4. " +
-            "stdout carries scope=all-checkouts.");
-    }
-    const state = readStateFile(root);
-    if (!state.ok) {
-        say(state.missing
-            ? "fusion-workbench/agentstate.yaml does not exist, so there is no session to scope to."
-            : "fusion-workbench/agentstate.yaml exists but cannot be read.");
-        return 3;
-    }
-    const historyFile = stateField(state.text, "history_file");
-    if (historyFile === "") {
-        say("agentstate.yaml carries no session.history_file, so there is no session to scope to.");
-        return 3;
-    }
-    const text = readLog(root);
-    if (text === null) {
-        say("there is no session to scope to.");
-        return 3;
-    }
-    const result = countTurns(text, historyFile, identity.checkout);
-    noteMalformed(result.malformed);
-    if (!result.ok) {
-        // Printed, because it was measured: the session is named, and the scope the
-        // search ran over is named, even though the count could not be taken.
-        process.stdout.write(`history_file=${result.historyFile}\nscope=${scope}\n`);
-        say(result.why === "no-session-start"
-            ? "no session_start in this checkout's lines names that history file. That is a " +
-                "finding, not a count of zero: the session may have emitted nothing at all."
-            : "the session_start naming that history file carries no readable ts, so no window " +
-                "can be opened. That is a finding, not a count of zero.");
-        return 4;
-    }
-    noteUnstamped(result.unstamped);
-    // `scope` is last so the two lines a caller was written against stay where
-    // they were: a reader that ignores the key reads exactly what it read before.
-    process.stdout.write(`turns=${result.turns}\nhistory_file=${result.historyFile}\nscope=${scope}\n`);
     return 0;
 }
 /* ------------------------------------------------------------------ *
@@ -464,7 +385,7 @@ function main(argv) {
         process.stderr.write(`${USAGE}\n`);
         return 1;
     }
-    if (sub !== "presence" && sub !== "turns" && sub !== "dispatches") {
+    if (sub !== "presence" && sub !== "dispatches") {
         say(`unknown subcommand ${JSON.stringify(sub)}`);
         process.stderr.write(`${USAGE}\n`);
         return 1;
@@ -539,8 +460,6 @@ function main(argv) {
     }
     if (sub === "presence")
         return presence(root, days);
-    if (sub === "turns")
-        return turns(root);
     return dispatches(root, minutes, since);
 }
 process.exitCode = main(process.argv.slice(2));

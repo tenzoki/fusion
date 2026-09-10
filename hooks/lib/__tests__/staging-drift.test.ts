@@ -352,10 +352,6 @@ describe("staging drift: what it reports without raising an alarm", () => {
           '{"ts":"2026-08-11T01:00:00","event":"session_start"}\n{"ts":"2026-08-11T02:00:00","event":"turn_start"}\n',
         );
         write(project.root, "fusion-workbench/.fusion-setup", '{"harness":true,"v":2}\n');
-        // Still in-flight, and B4 deliberately left it so: the event log becoming
-        // the other readers' first source changes nothing about what this list
-        // may call a fault.
-        write(project.root, "fusion-workbench/agentstate.yaml", WORKBENCH_FILES["fusion-workbench/agentstate.yaml"] + '  domain: "code"\n');
         // Class R3 of `rules/workbench-tracking.md` is a pair, and both halves
         // are written by /fusion:setup. `.asset-provenance` fell through to
         // `unclassified` while its sibling was named.
@@ -365,11 +361,6 @@ describe("staging drift: what it reports without raising an alarm", () => {
         // run, so a staging list carrying it carries a briefing the next run
         // overwrites. It was a `record` here until that day.
         write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
-        write(
-          project.root,
-          "fusion-workbench/shared/history/260811-0100-orchestrator.md",
-          "**Directive:** close the findings\n\n## Per-Turn Log\n",
-        );
 
         const res = runStagingDrift(project.root);
         const k = keys(res.stdout);
@@ -377,14 +368,9 @@ describe("staging drift: what it reports without raising an alarm", () => {
 
         for (const path of [
           "orchestrator-events.jsonl",
-          // Still in-flight, and B4 deliberately left it so: the event log
-          // becoming the readers' first source changes nothing about what the
-          // staging list is allowed to call a fault.
-          "agentstate.yaml",
           ".fusion-setup",
           ".asset-provenance",
           "portfolio.md",
-          "shared/history/260811-0100-orchestrator.md",
         ]) {
           const line = row(res.stdout, path);
           expect(line, `${path} must be reported, never dropped`).toBeDefined();
@@ -398,12 +384,14 @@ describe("staging drift: what it reports without raising an alarm", () => {
   );
 
   it(
-    "reads a record under a store as a fault, but this session's own history file beside it as in flight",
+    "reads every history file under a store as a record, the session's own included",
     () => {
+      // Until 2026-09-10 the session's own history file was in flight, told
+      // apart by `session.history_file` in `agentstate.yaml`. That file went
+      // with the Turn loop and no machine-written row carries the basename, so
+      // the distinction is unreadable and both files are records. The direction
+      // is the safe one: a record over-reports rather than staying quiet.
       withWorkbench((project) => {
-        // Both live under the same store. The only thing telling them apart is
-        // `session.history_file` in agentstate.yaml — a recorded fact, not a
-        // guess from the filename.
         write(
           project.root,
           "fusion-workbench/shared/history/260811-0100-orchestrator.md",
@@ -416,13 +404,10 @@ describe("staging drift: what it reports without raising an alarm", () => {
         );
 
         const res = runStagingDrift(project.root);
-        expect(keys(res.stdout).unstaged).toBe("1");
-        expect(row(res.stdout, "shared/history/260811-0100-orchestrator.md")).toMatch(
-          /^ {2}in-flight/,
-        );
-        expect(row(res.stdout, "shared/history/260811-0300-coder.md")).toMatch(
-          /^ {2}record\s+\?\? .*UNSTAGED/,
-        );
+        expect(keys(res.stdout).unstaged).toBe("2");
+        for (const f of ["260811-0100-orchestrator.md", "260811-0300-coder.md"]) {
+          expect(row(res.stdout, `shared/history/${f}`)).toMatch(/^ {2}record/);
+        }
       });
     },
     CASE_TIMEOUT,

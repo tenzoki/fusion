@@ -127,9 +127,8 @@
 import { basename, resolve, relative, sep } from "node:path";
 import { git } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
-import { readStateFile, stateField } from "./state-file.js";
 /* ------------------------------------------------------------------ *
- * Layout — root-anchored, exactly as `lib/state-file.ts` reads it
+ * Layout — root-anchored
  * ------------------------------------------------------------------ */
 const WB = "fusion-workbench";
 /**
@@ -439,13 +438,13 @@ export function measureStagingDrift(root) {
     if (statusOut === null) {
         return EMPTY(root, `git status could not read ${WB}`);
     }
-    // The session's own history file, workbench-relative, from the one surface
-    // that records it. Absent state file, absent field and unreadable file all
-    // collapse to "" — which classifies nothing and is the safe direction: the
-    // history file is then read as an ordinary record, which over-reports rather
-    // than staying quiet.
-    const state = readStateFile(root);
-    const sessionHistory = state.ok ? stateField(state.text, "history_file") : "";
+    // The session's own history file, workbench-relative. `agentstate.yaml` was
+    // the one surface that recorded it, and it went with the Turn loop on
+    // 2026-09-10; no machine-written row carries the basename. So this is "" and
+    // classifies nothing, which is the direction the read already collapsed to
+    // whenever the file was absent: the history file is then read as an ordinary
+    // record, which over-reports rather than staying quiet.
+    const sessionHistory = "";
     const rows = [];
     for (const line of statusOut.split("\n")) {
         if (line.length < 4)

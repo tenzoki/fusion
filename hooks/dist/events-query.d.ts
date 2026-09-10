@@ -10,16 +10,13 @@
  *
  * ## What this file is for, given that the computation is elsewhere
  *
- * Three things the pure module deliberately does not do, and each is why the
+ * Two things the pure module deliberately does not do, and each is why the
  * split exists at all:
  *
  *   1. **It opens the log.** `findWorkbenchRoot` locates the workbench, exactly
  *      as `review-coverage.ts` and `staging-drift.ts` do, and the log is read
  *      at its one fixed root-relative path.
- *   2. **It reads `session.history_file`.** Through `lib/state-file.ts`, the
- *      shared flat read of `agentstate.yaml`, so `turns` cannot be pointed at a
- *      session that is not this one and there is no second reader of that file.
- *   3. **It receives the identity rather than obtaining it.** `PERSON` and
+ *   2. **It receives the identity rather than obtaining it.** `PERSON` and
  *      `CHECKOUT` arrive in the environment from `bin/fusion-identity`, which
  *      the wrapper runs. Identity is obtained in exactly one place in the tree,
  *      and that place is not here. What *is* here is the one translation of

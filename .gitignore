@@ -37,7 +37,6 @@ bin/*
 !bin/fusion-count-sources
 !bin/fusion-review-coverage
 !bin/fusion-staging-drift
-!bin/fusion-turn-budget
 !bin/fusion-prose-metric
 !bin/fusion-identity
 !bin/fusion-session-domain

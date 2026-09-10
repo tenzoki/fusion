@@ -19,14 +19,17 @@
  *
  * ## The settings
  *
- * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2
- * loop. No hook reads it — `bin/fusion-turn-budget` does, once per Setup, and
- * the orchestrator carries the answer from there.
+ * `orchestrator.dispatchMinutes` is the stopping time, in minutes, that the
+ * orchestrator asks of a bound agent's dispatch. No hook reads it; Setup does,
+ * once per session, and the orchestrator carries the answer from there.
  *
- * The budget had been prose in `agents/orchestrator.md`, written out as `5` in
- * seven places and four spellings, with one of them already calling it a
- * "default" — a word that was false, because no source could override it
- * (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
+ * `orchestrator.maxTurns` stood beside it as the Turn budget of the
+ * orchestrator's Phase-2 loop, and went with that loop on 2026-09-10. It is
+ * retired as a LEAF, in `RETIRED_LEAF_KEYS` below, because its container is
+ * still read. The budget had been prose in `agents/orchestrator.md`, written
+ * out as `5` in seven places and four spellings, with one of them already
+ * calling it a "default" — a word that was false, because no source could
+ * override it (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
  *
  * `citations.extraPaths` is the project's own list of the NON-MARKDOWN files
  * that carry record citations, written as glob patterns.
@@ -48,8 +51,9 @@
  * deliberately not here.
  *
  * EVERY DEFAULT ABOVE IS DEFINED ONCE, in `DEFAULTS` below. A project that
- * wants a different budget declares `{"orchestrator":{"maxTurns":12}}` in its
- * own `fusion.json` and the leaf walk does the rest.
+ * wants a different stopping time declares
+ * `{"orchestrator":{"dispatchMinutes":30}}` in its own `fusion.json` and the
+ * leaf walk does the rest.
  *
  * ## Merge: PER LEAF, across both layers
  *
@@ -107,8 +111,8 @@
  * named, once per guarded tool call, until it comes out of the project's tree.
  *
  * That notion started at one scope, the leaf (`guard.protectedPaths`, retired
- * 2026-08-12). This release needs two more, so it is ONE TABLE FAMILY rather
- * than a second mechanism:
+ * 2026-08-12). It is ONE TABLE FAMILY at three scopes rather than three
+ * mechanisms:
  *
  *   - `RETIRED_PROJECT_FILES` — a whole FILE at the project root that fusion no
  *     longer reads. Today: `fusion-guard.json`, replaced by `fusion.json`.
@@ -116,28 +120,28 @@
  *     Today: `guard`, `decisions`, `escalation` and `churn`, which is what a
  *     project sees if it copies its old file across rather than starting from
  *     the template.
+ *   - `RETIRED_LEAF_KEYS` — a LEAF inside a container that is still read.
+ *     Today: `orchestrator.maxTurns`, whose container still holds
+ *     `dispatchMinutes`.
  *
- * The leaf-scoped table has no members after this release and is gone with
- * them: `guard.protectedPaths` now sits inside a retired container, so the
- * container's own diagnostic names it. Reinstate the table if a leaf inside a
- * LIVE container is ever retired; that is the case it was written for and the
- * case that does not exist right now.
+ * The leaf-scoped table stood empty between 2026-08-16 and 2026-09-10, with a
+ * note saying to reinstate it "if a leaf inside a LIVE container is ever
+ * retired". That is exactly what the Turn budget's removal is.
  *
  * THE RETIRED-FILE DIAGNOSTIC IS THE WHOLE OF THE v10 MIGRATION, and it is
  * written that way on purpose. `/fusion:setup` MOVING THE BUDGET was the
  * alternative and the user chose against it (`260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`, option 1), on the
  * ground that this channel runs on every guarded tool call while Setup runs
- * once per session and only for a project that runs Setup at all. That names
- * which channel CARRIES the migration; it is not the complete list of places
- * the text is heard. `bin/fusion-turn-budget` puts every diagnostic this loader
- * returns on stderr, and the orchestrator repeats all of them in its
- * Setup-complete summary (`agents/orchestrator.md` Setup Step 2). Setup still
- * writes nothing and reads no old file. A project that carried
- * `{"orchestrator":{"maxTurns":12}}` and does nothing would otherwise drop to
- * the built-in default without a word, which is the exact class of silent loss
- * every diagnostic in this module exists to prevent. So the text names the key,
- * names the destination file and says to copy the value across BEFORE deleting
- * anything. Do not shorten it into a bare "this file moved".
+ * once per session and only for a project that runs Setup at all.
+ *
+ * What that text says changed on 2026-09-10 and why it exists did not. It used
+ * to name `orchestrator.maxTurns`, name the destination file and say to copy
+ * the value across BEFORE deleting anything, because a project that carried
+ * `{"orchestrator":{"maxTurns":12}}` and did nothing would otherwise drop to
+ * the built-in default without a word. There is no default to drop to now: the
+ * setting is retired everywhere, so the text says there is nothing to copy for
+ * it rather than sending a reader to write it into a file that also will not
+ * read it. Do not shorten either version into a bare "this file moved".
  *
  * ## Diagnostics rather than silence
  *
@@ -166,16 +170,10 @@ export declare const PROJECT_CONFIG_FILENAME = "fusion.json";
  * answerable only if the settings are a nameable subset.
  */
 export interface GuardSettings {
-    /**
-     * The orchestrator's Phase-2 Turn budget. Read by `bin/fusion-turn-budget`
-     * at Setup, not by any hook.
-     */
     orchestrator: {
-        maxTurns: number;
         /**
          * The requested stopping time, in minutes, that the orchestrator hands to a
-         * bound agent's dispatch. Read by `bin/fusion-turn-budget` at Setup, not by
-         * any hook.
+         * bound agent's dispatch. Read at Setup, not by any hook.
          */
         dispatchMinutes: number;
     };

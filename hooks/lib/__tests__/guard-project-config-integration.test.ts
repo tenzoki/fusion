@@ -126,7 +126,7 @@ describe("an unparseable project configuration is reported, not swallowed", () =
       // The settled property (issues 260707-0750 and 260707-0751), pinned
       // where it actually applies. The case above bounds the departure; this
       // one bounds the bound.
-      withConfiguredProject({ orchestrator: { maxTurns: 9 } }, ({ root }) => {
+      withConfiguredProject({ orchestrator: { dispatchMinutes: 9 } }, ({ root }) => {
         expect(runBash(root, "ls -la").decision).toBeUndefined();
         expect(guardStateWritten(root)).toBe(false);
       });
@@ -194,7 +194,7 @@ describe("a retired key reaches the user, on every guarded call", () => {
           guard: { categoryPaths: {} },
           decisions: [{ id: "D-1", category: "api", statement: "…" }],
           escalation: { blocksBeforeHalt: 7 },
-          orchestrator: { maxTurns: 9 },
+          orchestrator: { dispatchMinutes: 9 },
         },
         ({ root }) => {
           expect(runWrite(root, resolve(root, PAYLOAD)).decision).toBeUndefined();

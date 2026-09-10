@@ -117,15 +117,14 @@ import { resolve } from "node:path";
 import { git } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 import { newestHookSessionStart } from "./orchestrator-events.js";
-import { readStateFile, stateField } from "./state-file.js";
 
 /* ------------------------------------------------------------------ *
- * Layout — root-anchored, exactly as `lib/state-file.ts` reads it
+ * Layout — root-anchored
  * ------------------------------------------------------------------ */
 
 /**
- * The root-anchored surfaces, named literally, for the reason
- * `lib/state-file.ts` gives at the same place: `rules/fusion-workbench-conventions.md`
+ * The root-anchored surfaces, named literally:
+ * `rules/fusion-workbench-conventions.md`
  * `## fusion-workbench Layout` puts these at fixed root-relative paths precisely
  * because the hooks and the `bin/` helpers read them there and none of them has
  * a fallback. `reviews` is the constant `bin/fusion-paths` resolves
@@ -135,7 +134,6 @@ import { readStateFile, stateField } from "./state-file.js";
  * still covers commits this session landed.
  */
 const WB = "fusion-workbench";
-const STATE_REL = `${WB}/agentstate.yaml`;
 const SHARED_REVIEWS_REL = `${WB}/shared/reviews`;
 const CIRCLES_REL = `${WB}/circles`;
 
@@ -450,37 +448,26 @@ function expand(root: string, from: string, to: string): Set<string> | null {
 }
 
 /**
- * The session anchor, from the event log first and `agentstate.yaml` second.
+ * The session anchor, from the event log and from nowhere else.
  *
- * The log is preferred because it is machine-written: the hook records
- * `git_head_at_start` at SessionStart and cannot forget, where the state file
- * is the model's own bookkeeping and this module's header already says what it
- * costs when that bookkeeping is stale. The file stays as the fallback for as
- * long as it exists — every row this reader wants is absent from a session
- * whose installed hook predates the writer, and from every session already on
- * disk.
+ * The hook records `git_head_at_start` at SessionStart and cannot forget, which
+ * is why this is the one source. `agentstate.yaml` was the fallback under it
+ * until 2026-09-10 — the model's own bookkeeping, and this module's header
+ * already says what it cost when that bookkeeping was stale. The file went with
+ * the Turn loop that maintained it, so a fallback to it would be a read of
+ * something nothing writes.
+ *
+ * The residual is exact and stated: a session whose installed hook predates the
+ * writer, and every session already on disk when the writer landed, carry no
+ * such row, and this reports no anchor for them rather than inventing one.
  */
 export function sessionAnchor(root: string): { since: string; why: string } {
   const row = newestHookSessionStart(root);
   if (row?.git_head_at_start) return { since: row.git_head_at_start, why: "" };
-
-  // The read goes through `lib/state-file.ts`, which owns the flat
-  // `agentstate.yaml` read. It used to be a second copy of the same six lines
-  // here; a third copy in `lib/staging-drift.ts` is what made one shared reader
-  // the cheaper option. The phrasing stays local, because only this caller
-  // knows what the anchor is FOR.
-  const read = readStateFile(root);
-  if (!read.ok) {
-    return read.missing
-      ? {
-          since: "",
-          why: `no hook-written \`session_start\` row for this checkout, and ${STATE_REL} is absent — no session in progress to measure a range for`,
-        }
-      : { since: "", why: `${STATE_REL} is unreadable` };
-  }
-  const value = stateField(read.text, "git_head_at_start");
-  if (value === "") return { since: "", why: "session.git_head_at_start is unset" };
-  return { since: value, why: "" };
+  return {
+    since: "",
+    why: "no hook-written `session_start` row for this checkout — no session in progress to measure a range for",
+  };
 }
 
 /* ------------------------------------------------------------------ *
@@ -504,9 +491,8 @@ const EMPTY = (root: string, why: string): CoverageReport => ({
  * Tile the review files' declared ranges against a commit range.
  *
  * `since` defaults to the session's own anchor, resolved by `sessionAnchor`
- * above: the newest hook-written `session_start` row for this checkout, and
- * `agentstate.yaml`'s `session.git_head_at_start` while that file exists. Both
- * are already recorded for other purposes, so this needs no field of its own.
+ * above: the newest hook-written `session_start` row for this checkout. It is
+ * already recorded for another purpose, so this needs no field of its own.
  * `head` defaults to `HEAD`.
  *
  * Reviews are bounded to those modified at or after the anchor commit's own

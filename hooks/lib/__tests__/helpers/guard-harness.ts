@@ -45,6 +45,7 @@
 
 import { spawnSync } from "node:child_process";
 import {
+  appendFileSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -481,23 +482,18 @@ export const REVIEW_PAYLOAD = "fusion-workbench/shared/reviews/260815-1200-coder
  *
  * ## What it writes, and why so little
  *
- * A two-line `agentstate.yaml` and three commits past its anchor. Only
- * `session.git_head_at_start` is read — it is the session window the coverage
- * range is measured over — and the three commits are what no review's declared
- * range covers. The fuller state file in `review-coverage.test.ts` exists
- * because that suite asserts on the rest of the report.
+ * One hook-written `session_start` row and three commits past its anchor. Only
+ * `git_head_at_start` is read — it is the session window the coverage range is
+ * measured over — and the three commits are what no review's declared range
+ * covers. It wrote a two-line `agentstate.yaml` until 2026-09-10; that file
+ * went with the Turn loop, and the row is where the anchor lives now.
  *
  * Requires `git: true` on the project: the range is `git rev-list` over the
  * anchor, and without a repository the report comes back with a `why` and the
  * tracker says nothing at all.
  */
 export function openCoverageGap(root: string): void {
-  const head = git(root, "rev-parse", "--short", "HEAD");
-  writeFileSync(
-    resolve(root, "fusion-workbench", "agentstate.yaml"),
-    ["session:", `  git_head_at_start: "${head}"`, ""].join("\n"),
-    "utf-8",
-  );
+  writeSessionAnchor(root);
   for (const n of [1, 2, 3]) {
     writeFileSync(resolve(root, `work-${n}.txt`), `work ${n}\n`, "utf-8");
     git(root, "add", `work-${n}.txt`);
@@ -516,10 +512,27 @@ export function openCoverageGap(root: string): void {
  * BEFORE the load, and a case asserting the load survived would prove nothing.
  */
 export function openCoverageWindowWithNoGap(root: string): void {
+  writeSessionAnchor(root);
+}
+
+/**
+ * The session anchor at HEAD, as the one surface that carries it: a
+ * hook-written `session_start` row appended to the event log.
+ *
+ * Appended rather than written, because a case may already have rows in the log
+ * and the reader takes the newest of its own checkout's.
+ */
+function writeSessionAnchor(root: string): void {
   const head = git(root, "rev-parse", "--short", "HEAD");
-  writeFileSync(
-    resolve(root, "fusion-workbench", "agentstate.yaml"),
-    ["session:", `  git_head_at_start: "${head}"`, ""].join("\n"),
+  appendFileSync(
+    resolve(root, "fusion-workbench", "orchestrator-events.jsonl"),
+    JSON.stringify({
+      ts: "2026-09-10T05:00:00",
+      event: "session_start",
+      writer: "session-start-hook",
+      session_id: "guard-harness",
+      git_head_at_start: head,
+    }) + "\n",
     "utf-8",
   );
 }
@@ -807,23 +820,6 @@ export function runDispatch(
       ...(payload.toolUseId !== undefined && { tool_use_id: payload.toolUseId }),
     },
     overrides,
-  );
-}
-
-/**
- * Put an orchestrator session in flight — the gate's second arm, on its own.
- *
- * Deliberately not `openCoverageWindowWithNoGap`, which writes the same file
- * with a session anchor in it and requires `git: true` to produce one. A case
- * about the gate wants the file's EXISTENCE and nothing else, and coupling it
- * to a git repository would make the two cases that need no repository pay for
- * one.
- */
-export function openOrchestratorSession(root: string): void {
-  writeFileSync(
-    resolve(root, "fusion-workbench", "agentstate.yaml"),
-    "session:\n  domain: code\n",
-    "utf-8",
   );
 }
 

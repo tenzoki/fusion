@@ -204,7 +204,7 @@ describe("the write path allows and records, for all four write tools", () => {
           expect(runWrite(root, resolve(root, "notes.txt")).decision).toBeUndefined();
           expect(readEvents(root).map((e) => e.event)).toEqual(["guard_allow"]);
         },
-        { files: configFiles({ orchestrator: { maxTurns: 9 } }) },
+        { files: configFiles({ orchestrator: { dispatchMinutes: 9 } }) },
       );
     },
     CASE_TIMEOUT,

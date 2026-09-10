@@ -391,7 +391,6 @@ const TEST_LINE_BASELINE: Record<string, number> = {
   "playmaker-backlog-mandate-lint.test.ts": 357,
   "portfolio-citation-form-lint.test.ts": 170,
   "provenance-header-lint.test.ts": 448,
-  "record-counts-measurement.test.ts": 486,
   "reference-resolution-lint.test.ts": 1004,
   "review-coverage-mandate.test.ts": 353,
   "review-coverage.test.ts": 818,
@@ -401,7 +400,6 @@ const TEST_LINE_BASELINE: Record<string, number> = {
   "session-start-subdirectory.test.ts": 159,
   "staging-drift.test.ts": 673,
   "surface-growth-bound.test.ts": 608,
-  "turn-budget-lint.test.ts": 525,
   "workbench-citation-lint.test.ts": 325,
 };
 

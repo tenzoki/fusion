@@ -5,14 +5,15 @@
 # Usage:
 #   fusion-review-coverage [--since <ref>] [--head <ref>]
 #
-# `--since` defaults to the session's own anchor, resolved from two sources in
-# order: the `git_head_at_start` on the newest hook-written `session_start` row
-# for this checkout in fusion-workbench/orchestrator-events.jsonl, and
-# `session.git_head_at_start` in fusion-workbench/agentstate.yaml while that
-# file exists. The log is preferred because it is machine-written and cannot go
-# stale; the file is the fallback for every session whose installed hook
-# predates the writer. Either way it is an anchor rather than a tally, which is
-# why it survived the removal of that file's counters on 2026-08-15.
+# `--since` defaults to the session's own anchor, resolved from one source: the
+# `git_head_at_start` on the newest hook-written `session_start` row for this
+# checkout in fusion-workbench/orchestrator-events.jsonl. It is machine-written
+# and cannot go stale. `session.git_head_at_start` in
+# fusion-workbench/agentstate.yaml was the fallback under it until 2026-09-10
+# and went with that file; a session whose installed hook predates the row
+# writer now reports no anchor rather than reading one from a file nothing
+# writes. Either way it is an anchor rather than a tally, which is why it
+# survived the removal of that file's counters on 2026-08-15.
 # `--head` defaults to HEAD.
 #
 # Output on stdout, one KEY=value per line, then one line per uncovered commit

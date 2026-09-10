@@ -54,7 +54,7 @@
   citation-sweep.test.ts 527
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
-  config.test.ts 860
+  config.test.ts 904
   context-manifest.test.ts 468
   declared-citation-paths.test.ts 70
   deliverable-language-lint.test.ts 136
@@ -69,7 +69,7 @@
   fusion-citation-check.test.ts 284
   fusion-commit-lock.test.ts 422
   fusion-count-sources.test.ts 413
-  fusion-events.test.ts 475
+  fusion-events.test.ts 414
   fusion-forum.test.ts 220
   fusion-identity.test.ts 217
   fusion-paths.test.ts 896
@@ -78,10 +78,10 @@
   glob-nomatch-lint.test.ts 140
   guard-bash-integration.test.ts 334
   guard-project-config-integration.test.ts 240
-  guard-state-shape.test.ts 351
+  guard-state-shape.test.ts 328
   helpers/citation-scan.ts 56
   helpers/growth-bound.ts 171
-  helpers/guard-harness.ts 1075
+  helpers/guard-harness.ts 1071
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 614
   hooks-wiring.test.ts 180
@@ -95,17 +95,15 @@
   playmaker-backlog-mandate-lint.test.ts 354
   portfolio-citation-form-lint.test.ts 158
   provenance-header-lint.test.ts 434
-  record-counts-measurement.test.ts 483
   reference-resolution-lint.test.ts 990
   review-coverage-mandate.test.ts 342
-  review-coverage.test.ts 909
+  review-coverage.test.ts 890
   rules-emission-golden.test.ts 1332
   rules-voice-profile.test.ts 319
   sentence-identifier-containment.test.ts 472
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 688
-  surface-growth-bound.test.ts 685
-  turn-budget-lint.test.ts 512
+  staging-drift.test.ts 673
+  surface-growth-bound.test.ts 683
   workbench-citation-lint.test.ts 325
-  total 23172
+  total 22097

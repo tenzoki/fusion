@@ -186,55 +186,6 @@ const HF = "circles/260825-2023-x/history/s.md";
 const S = (o: Row): Row => ({ event: "session_start", history_file: HF, ...o });
 const T = (o: Row): Row => ({ event: "turn_start", ...o });
 
-describe("countTurns scopes the count to one session inside this checkout", () => {
-  it("counts from the anchor's stamp on, leaving an earlier session's turn out", () => {
-    const r = countTurns(
-      log(T({ ts: "2026-08-25T08:00:00" }), S({ ts: "2026-08-25T09:00:00" }), T({ ts: "2026-08-25T09:30:00" }), T({ ts: "2026-08-25T10:00:00", checkout: ME })),
-      HF,
-      ME,
-    );
-    expect(r).toMatchObject({ ok: true, turns: 2, unstamped: 0, since: "2026-08-25T09:00:00" });
-  });
-
-  it("drops another checkout's turns and keeps a turn that names no checkout", () => {
-    const r = countTurns(
-      log(S({ ts: "2026-08-25T09:00:00", checkout: ME }), T({ ts: "2026-08-25T09:10:00", checkout: "4f21ab90" }), T({ ts: "2026-08-25T09:20:00" })),
-      HF,
-      ME,
-    );
-    expect(r).toMatchObject({ ok: true, turns: 1 });
-  });
-
-  it("keeps every checkout's lines when the reading checkout is unknown, which is the pre-C4 reading exactly", () => {
-    const r = countTurns(log(S({ ts: "2026-08-25T09:00:00", checkout: "4f21ab90" }), T({ ts: "2026-08-25T09:10:00", checkout: "4f21ab90" })), HF, null);
-    expect(r).toMatchObject({ ok: true, turns: 1 });
-  });
-
-  it("reports turns=0 through the ok branch, so a session on its first Turn is not a finding", () => {
-    expect(countTurns(log(S({ ts: "2026-08-25T09:00:00" })), HF, ME)).toMatchObject({ ok: true, turns: 0 });
-  });
-
-  it("returns a turn with no readable stamp as unstamped rather than counting it or losing it", () => {
-    const r = countTurns(log(S({ ts: "2026-08-25T09:00:00" }), T({}), T({ ts: "bogus" }), T({ ts: "2026-08-25T09:10:00" })), HF, ME);
-    expect(r).toMatchObject({ ok: true, turns: 1, unstamped: 2, malformed: 0 });
-  });
-
-  it("keeps malformed and unstamped apart, because they are two different facts about the log", () => {
-    const r = countTurns(log("nonsense", S({ ts: "2026-08-25T09:00:00" }), T({})), HF, ME);
-    expect(r).toMatchObject({ ok: true, turns: 0, unstamped: 1, malformed: 1 });
-  });
-
-  it("says no session_start named this history file rather than reporting zero turns", () => {
-    const r = countTurns(log(S({ ts: "2026-08-25T09:00:00", history_file: "shared/history/other.md" }), T({ ts: "2026-08-25T09:10:00" })), HF, ME);
-    expect(r).toMatchObject({ ok: false, why: "no-session-start", historyFile: HF });
-  });
-
-  it("says the anchor carried no timestamp rather than counting from a moment it does not know", () => {
-    const r = countTurns(log(S({}), T({ ts: "2026-08-25T09:10:00" })), HF, ME);
-    expect(r).toMatchObject({ ok: false, why: "anchor-without-timestamp" });
-  });
-});
-
 /* --- The entry point, as `bin/fusion-events` runs it ----------------------- */
 
 const entry = join(pluginRoot, "hooks", "dist", "events-query.js");
@@ -248,15 +199,12 @@ const LOG = log(
   { event: "turn_start", ts: "2026-08-25T10:00:00", checkout: ME },
   { event: "turn_start", ts: "2026-08-25T10:30:00", checkout: "4f21ab90" },
 );
-const STATE = "session:\n  history_file: h.md\n";
-
-function workbench(state: string | null = STATE, text: string = LOG): string {
+function workbench(text: string = LOG): string {
   const dir = mkdtempSync(join(tmpdir(), "fusion-events-"));
   tmpRoots.push(dir);
   mkdirSync(join(dir, "fusion-workbench"));
   writeFileSync(join(dir, "fusion-workbench", ".fusion-setup"), "{}\n");
   writeFileSync(join(dir, "fusion-workbench", "orchestrator-events.jsonl"), text);
-  if (state !== null) writeFileSync(join(dir, "fusion-workbench", "agentstate.yaml"), state);
   return dir;
 }
 
@@ -274,17 +222,13 @@ function cli(dir: string, env: Record<string, string>, bin = process.execPath, .
 }
 
 describe("the entry point: scope=, the identity split, and the missing-state exits", () => {
-  it("turns prints scope=checkout and counts this checkout's turns alone", () => {
+  it("rejects `turns`, which went with the Turn loop, as an unknown subcommand", () => {
+    // Not merely absent: a caller that still asks for it must be told, and the
+    // usage line it gets back must not offer it.
     const r = cli(workbench(), ident(0, { person: KAI, checkout: ME }), process.execPath, "turns");
-    expect(r.status, r.stderr).toBe(0);
-    expect(r.stdout).toBe("turns=1\nhistory_file=h.md\nscope=checkout\n");
-  });
-
-  it("turns with no checkout counts every line, says so on stderr, and stdout carries scope=all-checkouts", () => {
-    const r = cli(workbench(), ident(3), process.execPath, "turns");
-    expect(r.status, r.stderr).toBe(0);
-    expect(r.stdout).toBe("turns=2\nhistory_file=h.md\nscope=all-checkouts\n");
-    expect(r.stderr).toContain("scope=all-checkouts");
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain("unknown subcommand");
+    expect(r.stderr).not.toContain("fusion-events turns");
   });
 
   it("presence at identity exit 3 and exit 4 both exit 4 with other_people absent, and their stderr differs", () => {
@@ -299,16 +243,8 @@ describe("the entry point: scope=, the identity split, and the missing-state exi
     expect(unread.stderr).not.toBe(unowed.stderr);
   });
 
-  it("turns exits 3 with empty stdout when agentstate.yaml is missing or names no history_file", () => {
-    for (const state of [null, "session:\n"]) {
-      const r = cli(workbench(state), ident(0, { person: KAI, checkout: ME }), process.execPath, "turns");
-      expect(r.status).toBe(3);
-      expect(r.stdout).toBe("");
-    }
-  });
-
   it("presence reads FUSION_EVENTS_ROSTER, so one person's two identities count once", () => {
-    const dir = workbench(STATE, log(start({ person: KAI2, checkout: "9c30ee11", ts: "2026-08-25T07:40:00" })));
+    const dir = workbench(log(start({ person: KAI2, checkout: "9c30ee11", ts: "2026-08-25T07:40:00" })));
     const roster = `entries=2\nentry=${ME}\tmine\tKai\t${KAI}\nentry=9c30ee11\tamber-harbor\tKai\t${KAI2}\n`;
     const me = ident(0, { person: KAI, checkout: ME });
     const args = [process.execPath, "presence", "--days", "3650"] as const;
@@ -322,9 +258,12 @@ describe("the entry point: scope=, the identity split, and the missing-state exi
   });
 
   it("bin/fusion-events hands the SessionStart identity export through untouched", () => {
-    const r = cli(workbench(), { FUSION_PERSON: KAI, FUSION_CHECKOUT: ME }, wrapper, "turns");
+    const r = cli(workbench(), { FUSION_PERSON: KAI, FUSION_CHECKOUT: ME }, wrapper, "presence", "--days", "3650");
     expect(r.status, r.stderr).toBe(0);
-    expect(r.stdout).toBe("turns=1\nhistory_file=h.md\nscope=checkout\n");
+    // The identity reached the reading: our own `session_start` is not counted
+    // as another party, which is the one thing an unforwarded identity breaks.
+    expect(r.stdout).toContain("other_people=0");
+    expect(r.stdout).toContain("other_checkouts=0");
   });
 });
 
@@ -462,7 +401,7 @@ describe("the entry point puts the three limit= qualifications on stdout", () =>
   const LIMIT_KEYS = ["dispatcher-unknown", "threshold-is-todays", "no-session-invisible"];
 
   it("all three are on stdout, beside the figures, and on stderr none of them is", () => {
-    const dir = workbench(STATE, log(sess(), ...dispatch("t1", { end: "2026-09-08T09:10:00" })));
+    const dir = workbench(log(sess(), ...dispatch("t1", { end: "2026-09-08T09:10:00" })));
     const r = cli(dir, ident(0, { person: KAI, checkout: ME }), process.execPath, "dispatches");
     expect(r.status, r.stderr).toBe(0);
     for (const key of LIMIT_KEYS) {

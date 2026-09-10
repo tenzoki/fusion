@@ -19,14 +19,17 @@
  *
  * ## The settings
  *
- * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2
- * loop. No hook reads it — `bin/fusion-turn-budget` does, once per Setup, and
- * the orchestrator carries the answer from there.
+ * `orchestrator.dispatchMinutes` is the stopping time, in minutes, that the
+ * orchestrator asks of a bound agent's dispatch. No hook reads it; Setup does,
+ * once per session, and the orchestrator carries the answer from there.
  *
- * The budget had been prose in `agents/orchestrator.md`, written out as `5` in
- * seven places and four spellings, with one of them already calling it a
- * "default" — a word that was false, because no source could override it
- * (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
+ * `orchestrator.maxTurns` stood beside it as the Turn budget of the
+ * orchestrator's Phase-2 loop, and went with that loop on 2026-09-10. It is
+ * retired as a LEAF, in `RETIRED_LEAF_KEYS` below, because its container is
+ * still read. The budget had been prose in `agents/orchestrator.md`, written
+ * out as `5` in seven places and four spellings, with one of them already
+ * calling it a "default" — a word that was false, because no source could
+ * override it (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
  *
  * `citations.extraPaths` is the project's own list of the NON-MARKDOWN files
  * that carry record citations, written as glob patterns.
@@ -48,8 +51,9 @@
  * deliberately not here.
  *
  * EVERY DEFAULT ABOVE IS DEFINED ONCE, in `DEFAULTS` below. A project that
- * wants a different budget declares `{"orchestrator":{"maxTurns":12}}` in its
- * own `fusion.json` and the leaf walk does the rest.
+ * wants a different stopping time declares
+ * `{"orchestrator":{"dispatchMinutes":30}}` in its own `fusion.json` and the
+ * leaf walk does the rest.
  *
  * ## Merge: PER LEAF, across both layers
  *
@@ -107,8 +111,8 @@
  * named, once per guarded tool call, until it comes out of the project's tree.
  *
  * That notion started at one scope, the leaf (`guard.protectedPaths`, retired
- * 2026-08-12). This release needs two more, so it is ONE TABLE FAMILY rather
- * than a second mechanism:
+ * 2026-08-12). It is ONE TABLE FAMILY at three scopes rather than three
+ * mechanisms:
  *
  *   - `RETIRED_PROJECT_FILES` — a whole FILE at the project root that fusion no
  *     longer reads. Today: `fusion-guard.json`, replaced by `fusion.json`.
@@ -116,28 +120,28 @@
  *     Today: `guard`, `decisions`, `escalation` and `churn`, which is what a
  *     project sees if it copies its old file across rather than starting from
  *     the template.
+ *   - `RETIRED_LEAF_KEYS` — a LEAF inside a container that is still read.
+ *     Today: `orchestrator.maxTurns`, whose container still holds
+ *     `dispatchMinutes`.
  *
- * The leaf-scoped table has no members after this release and is gone with
- * them: `guard.protectedPaths` now sits inside a retired container, so the
- * container's own diagnostic names it. Reinstate the table if a leaf inside a
- * LIVE container is ever retired; that is the case it was written for and the
- * case that does not exist right now.
+ * The leaf-scoped table stood empty between 2026-08-16 and 2026-09-10, with a
+ * note saying to reinstate it "if a leaf inside a LIVE container is ever
+ * retired". That is exactly what the Turn budget's removal is.
  *
  * THE RETIRED-FILE DIAGNOSTIC IS THE WHOLE OF THE v10 MIGRATION, and it is
  * written that way on purpose. `/fusion:setup` MOVING THE BUDGET was the
  * alternative and the user chose against it (`260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`, option 1), on the
  * ground that this channel runs on every guarded tool call while Setup runs
- * once per session and only for a project that runs Setup at all. That names
- * which channel CARRIES the migration; it is not the complete list of places
- * the text is heard. `bin/fusion-turn-budget` puts every diagnostic this loader
- * returns on stderr, and the orchestrator repeats all of them in its
- * Setup-complete summary (`agents/orchestrator.md` Setup Step 2). Setup still
- * writes nothing and reads no old file. A project that carried
- * `{"orchestrator":{"maxTurns":12}}` and does nothing would otherwise drop to
- * the built-in default without a word, which is the exact class of silent loss
- * every diagnostic in this module exists to prevent. So the text names the key,
- * names the destination file and says to copy the value across BEFORE deleting
- * anything. Do not shorten it into a bare "this file moved".
+ * once per session and only for a project that runs Setup at all.
+ *
+ * What that text says changed on 2026-09-10 and why it exists did not. It used
+ * to name `orchestrator.maxTurns`, name the destination file and say to copy
+ * the value across BEFORE deleting anything, because a project that carried
+ * `{"orchestrator":{"maxTurns":12}}` and did nothing would otherwise drop to
+ * the built-in default without a word. There is no default to drop to now: the
+ * setting is retired everywhere, so the text says there is nothing to copy for
+ * it rather than sending a reader to write it into a file that also will not
+ * read it. Do not shorten either version into a bare "this file moved".
  *
  * ## Diagnostics rather than silence
  *
@@ -161,12 +165,7 @@ import { findWorkbenchRoot } from "./workbench-root.js";
 /** The project-level configuration file, at the project root, git-tracked. */
 export const PROJECT_CONFIG_FILENAME = "fusion.json";
 const DEFAULTS = {
-    // THE TURN BUDGET'S ONE DEFINITION. Not restated in any shipped JSON file,
-    // and not in `agents/orchestrator.md` — the prompt reads it through
-    // `bin/fusion-turn-budget` at Setup and names the resolved value everywhere
-    // it used to write a number. See the module docstring.
     orchestrator: {
-        maxTurns: 5,
         // THE DISPATCH BOUND'S ONE DEFINITION, and the measurement it rests on.
         // Both sentences stand here, because either one alone reads as an arbitrary
         // round figure.
@@ -320,7 +319,6 @@ function explainArrayOfNonEmptyStrings(value) {
  */
 const CONTAINER_LEAF_RULES = {
     orchestrator: {
-        maxTurns: { explain: explainPositiveInteger },
         dispatchMinutes: { explain: explainPositiveInteger },
     },
     citations: {
@@ -341,7 +339,7 @@ const CONTAINER_LEAF_RULES = {
  * still be carrying it.
  */
 const RETIRED_PROJECT_FILES = {
-    "fusion-guard.json": `fusion removed the guard settings this file configured. The setting it carried that was never the guard's, "orchestrator.maxTurns", now lives in ${PROJECT_CONFIG_FILENAME} at the project root. If this file sets a Turn budget, copy {"orchestrator": {"maxTurns": <n>}} into ${PROJECT_CONFIG_FILENAME} first: a budget left here is not read, and the orchestrator falls back to fusion's built-in default without saying so. Then delete this file to stop this advisory.`,
+    "fusion-guard.json": `fusion removed the guard settings this file configured, and every setting that outlived them now lives in ${PROJECT_CONFIG_FILENAME} at the project root. Nothing in this file is read. If it sets "orchestrator.maxTurns", that setting no longer exists anywhere — the Turn loop it bounded was removed — so there is nothing to copy across for it; any other setting belongs in ${PROJECT_CONFIG_FILENAME}. Then delete this file to stop this advisory.`,
 };
 /**
  * Top-level keys this loader ONCE READ and no longer does, with the reason a
@@ -365,6 +363,24 @@ const RETIRED_TOP_LEVEL_KEYS = {
     // copy of the plugin's old `hooks/config.json` carried the block, so a
     // project may well still declare it (issue 260815-1247_*_the-churn-leaves-were-removed-without-a-retirement-entry-and-the-retirement-table-could-not-have-held-one.md).
     churn: "the per-file churn heatmap and its warning thresholds were removed on 2026-08-15.",
+};
+/**
+ * LEAVES inside a live container that this loader ONCE READ and no longer does,
+ * keyed `<container>.<leaf>`, with the reason a project still declaring one
+ * needs to hear.
+ *
+ * The third member of the retirement family, and the one the module docstring
+ * said to reinstate "if a leaf inside a LIVE container is ever retired". That
+ * case arrived on 2026-09-10: `orchestrator` is still a read container, holding
+ * `dispatchMinutes`, while `orchestrator.maxTurns` went with the Turn loop it
+ * bounded. `RETIRED_TOP_LEVEL_KEYS` cannot express that — it retires a whole
+ * container — and leaving the leaf unnamed would put it in the silence an
+ * unknown key gets, which is the one outcome the family exists to prevent.
+ *
+ * The value completes the sentence "… is no longer read — ___".
+ */
+const RETIRED_LEAF_KEYS = {
+    "orchestrator.maxTurns": "the orchestrator's Phase-2 Turn loop was removed on 2026-09-10, and with it the budget that bounded it. The setting is not read, here or anywhere, and there is no replacement to move it to.",
 };
 /** A type name for a diagnostic, short enough to read in a dashboard row. */
 function describeValue(value) {
@@ -424,6 +440,15 @@ function validateLayer(parsed, source) {
         for (const [leafKey, leafValue] of Object.entries(value)) {
             if (leafValue === null || leafValue === undefined)
                 continue;
+            // A RETIRED leaf inside a live container. Checked before the type rule,
+            // for the reason the container check above gives one scope up: a retired
+            // leaf has no type to be right or wrong about, and a project that
+            // declared it needs the retirement sentence rather than a validation one.
+            const retiredLeaf = RETIRED_LEAF_KEYS[`${key}.${leafKey}`];
+            if (retiredLeaf !== undefined) {
+                diagnostics.push(`fusion configuration at ${source}: "${key}.${leafKey}" no longer exists — ${retiredLeaf} The key was ignored; the rest of this file is unaffected. Delete it to stop this advisory.`);
+                continue;
+            }
             const rule = leafRules[leafKey];
             const failure = rule === undefined ? null : rule.explain(leafValue);
             if (failure === null) {
@@ -483,7 +508,6 @@ export function loadConfig(sources) {
     const pickCitations = (key) => project.raw.citations?.[key] ?? DEFAULTS.citations[key];
     const value = {
         orchestrator: {
-            maxTurns: pickOrchestrator("maxTurns"),
             dispatchMinutes: pickOrchestrator("dispatchMinutes"),
         },
         citations: {

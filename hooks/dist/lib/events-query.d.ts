@@ -16,7 +16,7 @@
  * checkout that wrote it, so membership is **read off the line**. This module
  * is the readings that follow from that, and nothing else.
  *
- * Two of the three are identity-scoped, `measurePresence` and `countTurns`.
+ * One of the two is identity-scoped, `measurePresence`.
  * `measureDispatchDurations` deliberately is not: a bound dispatch made from
  * another checkout is still a bound dispatch, so it reads every line and calls
  * `isOurs` nowhere.
@@ -219,59 +219,6 @@ export declare function measurePresence(text: string, identity: ReadingIdentity,
  * rendered before the registry existed.
  */
 export declare function renderParty(p: Party, aliasOf: (hex: string) => string | null): string;
-export type TurnsResult = {
-    malformed: number;
-} & ({
-    ok: true;
-    turns: number;
-    /**
-     * `turn_start` lines carrying no readable `ts`. They cannot be placed
-     * against the anchor, so they are not in `turns` — and they are returned
-     * rather than dropped, per `parseLog`'s rule above: a skipped line that
-     * nobody counts is the silent under-report this module exists to remove.
-     *
-     * Kept apart from `malformed`, which counts lines that were not a JSON
-     * object at all. These are well-formed objects that named a Turn and
-     * could not say when, and the two are different facts about the log.
-     */
-    unstamped: number;
-    historyFile: string;
-    since: string;
-}
-/**
- * A finding, not a zero. Issue
- * `260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`
- * measured a session whose Turn-2 boundary events never reached the log, and
- * a session that emitted nothing must not read the same as a session on its
- * first Turn.
- */
- | {
-    ok: false;
-    why: "no-session-start" | "anchor-without-timestamp";
-    historyFile: string;
-});
-/**
- * The Turn count of the session whose history file is `historyFile`.
- *
- * It replaces five sites that each derived the figure for themselves, and the two
- * quantities in that are different numbers rather than one: two literal whole-file
- * `grep -c turn_start` blocks, which counted every checkout's Turns and every
- * previous session's, and three prose derivations naming a window after this
- * session's `session_start`. All five now read this one implementation. It also
- * replaces the proposed repair of counting after the **last** `session_start`, which is
- * positional and does not survive the union merge
- * (`260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`).
- *
- * The window is a **timestamp inside one checkout's own lines**, which is
- * genuine chronology: scope by checkout, sort by `ts`, take the first
- * `session_start` naming this history file, count `turn_start` from its stamp
- * on. `turns=0` is a real figure and reaches the ok branch.
- *
- * A `turn_start` with no readable `ts` cannot be placed against that anchor, so
- * it is not counted. It comes back as `unstamped` rather than vanishing, so a
- * count that is short by a line is a count that says it is short by a line.
- */
-export declare function countTurns(text: string, historyFile: string, checkout: string | null): TurnsResult;
 /**
  * The seven agents whose dispatches carry a stopping time.
  *
