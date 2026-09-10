@@ -185,7 +185,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
    - Dependencies: B2 (the row must be written before it can carry fields)
    - Verification: measure the added cost and state it. `hyperfine` or ten timed dispatches, cold cache and warm, reported in the commit message; the acceptance criterion is that the warm path performs no subprocess, provable by `strace`-free means — assert in a test that the second call with an unchanged mtime spawns nothing, by counting `execFileSync` calls through a stub. Separately: a dispatch whose prompt carries a `**Work-item:**` line writes `work_item` carrying that basename, and one whose prompt carries none writes no `work_item` key at all — asserted on the emitted JSON, not on a rendered string.
 
-7. **B4: the four readers prefer the row and fall back to the file**
+7. [DONE] **B4: the four readers prefer the row and fall back to the file**
    - Executor: `coder`
    - Files: `bin/fusion-review-coverage`, `hooks/lib/review-coverage.ts`, `bin/fusion-session-domain`, `hooks/lib/domain-cascade.ts`, `bin/fusion-staging-drift`, `hooks/lib/staging-drift.ts`, `bin/monitor`
    - Changes: `--since` with no argument resolves `git_head_at_start` from the newest hook-written `session_start` row for this checkout, falling back to `agentstate.yaml` while it exists. `bin/fusion-session-domain` gains `source=event-log` ahead of `source=agentstate` ahead of `source=default`; its no-workbench exit 3 is unchanged. `bin/fusion-staging-drift` keeps classifying `agentstate.yaml` as in-flight and gains nothing here.

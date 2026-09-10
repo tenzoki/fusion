@@ -116,6 +116,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { git } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
+import { newestHookSessionStart } from "./orchestrator-events.js";
 import { readStateFile, stateField } from "./state-file.js";
 
 /* ------------------------------------------------------------------ *
@@ -448,8 +449,21 @@ function expand(root: string, from: string, to: string): Set<string> | null {
   return new Set(out.split("\n").map((l) => l.trim()).filter((l) => l !== ""));
 }
 
-/** The session anchor `agentstate.yaml` records, or "" with nothing recorded. */
+/**
+ * The session anchor, from the event log first and `agentstate.yaml` second.
+ *
+ * The log is preferred because it is machine-written: the hook records
+ * `git_head_at_start` at SessionStart and cannot forget, where the state file
+ * is the model's own bookkeeping and this module's header already says what it
+ * costs when that bookkeeping is stale. The file stays as the fallback for as
+ * long as it exists — every row this reader wants is absent from a session
+ * whose installed hook predates the writer, and from every session already on
+ * disk.
+ */
 export function sessionAnchor(root: string): { since: string; why: string } {
+  const row = newestHookSessionStart(root);
+  if (row?.git_head_at_start) return { since: row.git_head_at_start, why: "" };
+
   // The read goes through `lib/state-file.ts`, which owns the flat
   // `agentstate.yaml` read. It used to be a second copy of the same six lines
   // here; a third copy in `lib/staging-drift.ts` is what made one shared reader
@@ -458,7 +472,10 @@ export function sessionAnchor(root: string): { since: string; why: string } {
   const read = readStateFile(root);
   if (!read.ok) {
     return read.missing
-      ? { since: "", why: `${STATE_REL} is absent — no session in progress to measure a range for` }
+      ? {
+          since: "",
+          why: `no hook-written \`session_start\` row for this checkout, and ${STATE_REL} is absent — no session in progress to measure a range for`,
+        }
       : { since: "", why: `${STATE_REL} is unreadable` };
   }
   const value = stateField(read.text, "git_head_at_start");
@@ -486,9 +503,11 @@ const EMPTY = (root: string, why: string): CoverageReport => ({
 /**
  * Tile the review files' declared ranges against a commit range.
  *
- * `since` defaults to `agentstate.yaml`'s `session.git_head_at_start` — the
- * session's own anchor, already recorded for the drift check and for Step 3c's
- * `git diff`, so this needs no field of its own. `head` defaults to `HEAD`.
+ * `since` defaults to the session's own anchor, resolved by `sessionAnchor`
+ * above: the newest hook-written `session_start` row for this checkout, and
+ * `agentstate.yaml`'s `session.git_head_at_start` while that file exists. Both
+ * are already recorded for other purposes, so this needs no field of its own.
+ * `head` defaults to `HEAD`.
  *
  * Reviews are bounded to those modified at or after the anchor commit's own
  * commit date, because a review file cannot name a hash that did not exist when

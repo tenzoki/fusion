@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # monitor — HTML-based orchestrator monitor
-# Serves a live dashboard for orchestrator-live.md, agentstate.yaml,
-# orchestrator-events.jsonl and .guard-state/events.jsonl
+# Serves a live dashboard. The dashboard and session panels render from
+# orchestrator-events.jsonl and fall back to orchestrator-live.md and
+# agentstate.yaml; the event and warning panels read
+# orchestrator-events.jsonl and .guard-state/events.jsonl.
 # Usage: ./monitor <name> <port> [-d workbench_dir] [-n events] [-i interval_sec]
 
 set -euo pipefail
@@ -148,6 +150,21 @@ CHECKOUT_ID_FILE = os.path.join(BASE_DIR, ".checkout-id")
 # The checkout registry: one entry file per checkout, named after its
 # identifier. Read, never written: see _read_checkout_label().
 CHECKOUT_STORE_DIR = os.path.join(BASE_DIR, "shared", "checkouts")
+
+# The `writer` value on every session_start row the SessionStart hook writes.
+# One spelling, and it is hooks/lib/orchestrator-events.ts's SESSION_START_WRITER:
+# the model writes a session_start row of its own for the same session and this
+# is the only field that tells the two apart.
+SESSION_START_WRITER = "session-start-hook"
+
+
+def _hhmm(ts):
+    """The HH:MM of an event timestamp, or None. The emit convention writes a
+    fixed-width UTC stamp with no `Z`, so this slices rather than parses — the
+    parsing trap that costs every other consumer a TZ offset is not entered."""
+    if not isinstance(ts, str) or len(ts) < 16:
+        return None
+    return ts[11:16]
 
 # Guard events surfaced as sticky rows in the warnings panel. Three kinds
 # qualify, and the distinction is what the panel is for:
@@ -1442,6 +1459,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
         # every line ever parsed, in file order, at O(new bytes) per poll.
         # The identity filter stays per-request on top of it, so a checkout id
         # that appears or changes mid-session is honoured on the next poll.
+        return self._scoped_events()[-MAX_EVENTS:]
+
+    def _scoped_events(self):
+        """Every row in the log that belongs to this checkout, oldest first.
+
+        The identity filter and the sort of _read_events, without its window.
+        Split out because the dashboard panel below has to see a task_start
+        that the last MAX_EVENTS no longer holds: a dispatch that has been
+        running for a hundred events is exactly the one the panel most needs to
+        name, and truncating first would render it as idle."""
         mine = self._read_checkout_id()
         events = []
         for ev in _EVENTS_TAIL.rows():
@@ -1451,7 +1478,122 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     continue
             events.append(ev)
         events.sort(key=lambda e: (e.get("ts") or "") if isinstance(e, dict) else "")
-        return events[-MAX_EVENTS:]
+        return events
+
+    def _hook_session_start(self, events):
+        """The newest hook-written session_start row among `events`, or None.
+
+        `writer` is what tells it from the model's own session_start row for the
+        same session: the model's carries the Directive and the history file and
+        NOT the mechanical facts this panel renders, so a reader wanting the head
+        commit or the domain must not read it (hooks/lib/orchestrator-events.ts,
+        `## The session_start row`). `events` is already checkout-scoped and
+        ts-sorted by _scoped_events, so the last match is the newest."""
+        found = None
+        for ev in events:
+            if not isinstance(ev, dict):
+                continue
+            if ev.get("event") == "session_start" and ev.get("writer") == SESSION_START_WRITER:
+                found = ev
+        return found
+
+    def _derive_dashboard(self, events):
+        """The dashboard panel's markdown, derived from the event log.
+
+        What it renders, and why each part is what it is (fusion plan step B4,
+        under decision 260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md):
+
+          - THE RUNNING TASK is the newest task_start whose `task` identifier has
+            no matching task_done. The pairing is by identifier rather than by
+            position, because a dispatch that outlives several later ones is the
+            normal case and the newest row is not the running one.
+          - THE WORK ITEM is that row's `work_item`, the basename the dispatch
+            prompt named. Where the dispatch named none the panel says so in a
+            line of its own: an empty slot would read as a lost value rather
+            than as an absent one.
+          - THE COUNTERS are counts over this same log, scoped to the session
+            identifier: dispatches from paired rows, commits from `commit` rows.
+            There is NO error counter. `task_error` is model-written and the
+            step after this one removes the procedure that emits it, so a zero
+            there would be a figure nobody takes.
+          - NOTHING RENDERS UNDER UP NEXT. No session-scoped pending set is read
+            by anything here, so the panel says that in one line and shows no
+            list. An empty list standing where a queue used to be would claim a
+            state that is not being read.
+
+        Returns None when the log yields no session of ours at all, which is
+        what keeps orchestrator-live.md as the fallback for this panel."""
+        row = self._hook_session_start(events)
+        session = row.get("session_id") if row else None
+        if session is None:
+            for ev in events:
+                if isinstance(ev, dict) and ev.get("session_id"):
+                    session = ev.get("session_id")
+        if session is None:
+            return None
+
+        def ours(ev):
+            return isinstance(ev, dict) and ev.get("session_id") == session
+
+        starts, done, commits = {}, set(), 0
+        for ev in events:
+            if not ours(ev):
+                continue
+            kind = ev.get("event")
+            if kind == "task_start" and ev.get("task"):
+                starts[ev["task"]] = ev
+            elif kind == "task_done" and ev.get("task"):
+                done.add(ev["task"])
+            elif kind == "commit":
+                commits += 1
+        running = None
+        for task, ev in starts.items():
+            if task in done:
+                continue
+            if running is None or (ev.get("ts") or "") >= (running.get("ts") or ""):
+                running = ev
+
+        domain = (row or {}).get("domain") or "unrecorded"
+        started = _hhmm((row or {}).get("ts")) or "unrecorded"
+        out = [
+            "# Orchestrator — Live",
+            "",
+            "**Dispatches:** %d | **Commits:** %d" % (len(done), commits),
+            "**Started:** %s | **Domain:** %s | **Session:** %s" % (started, domain, session[:8]),
+            "",
+            "## Current",
+        ]
+        if running is None:
+            out.append("  (no dispatch is running — every task_start in this session is paired)")
+        else:
+            out.append("  [RUNNING] %s -> %s" % (
+                running.get("agent") or "?", running.get("detail") or "(no detail)"))
+            item = running.get("work_item")
+            out.append("  Work item: %s" % item if item
+                       else "  Work item: the dispatch named none.")
+        out += [
+            "",
+            "## Up Next",
+            "  (nothing is read here — no pending set exists to render)",
+        ]
+        return "\n".join(out) + "\n"
+
+    def _derive_state(self, events):
+        """The state panel's YAML, from the newest hook-written session_start.
+
+        The five fields that row carries are what agentstate.yaml's `session:`
+        block held that anything read. Returns None with no such row, which is
+        what keeps agentstate.yaml as this panel's fallback."""
+        row = self._hook_session_start(events)
+        if row is None:
+            return None
+        lines = ["# from orchestrator-events.jsonl — the hook-written session_start row", "session:"]
+        for key in ("session_id", "git_head_at_start", "domain", "person", "checkout"):
+            if row.get(key):
+                lines.append('  %s: "%s"' % (key, row[key]))
+        if row.get("ts"):
+            lines.append('  started: "%s"' % row["ts"])
+        return "\n".join(lines) + "\n"
 
     def do_GET(self):
         if self.path == "/":
@@ -1460,10 +1602,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         elif self.path == "/api/dashboard":
             self._headers()
-            content, exists = self._read_file(LIVE_MD)
-            age = self._file_age(LIVE_MD)
+            scoped = self._scoped_events()
+            events = scoped[-MAX_EVENTS:]
 
-            events = self._read_events()
+            # The log first, the file behind it. B4 is additive: the file is
+            # still written and still read, and step C1 is what removes it.
+            content = self._derive_dashboard(scoped)
+            if content is not None:
+                exists, age = True, self._file_age(EVENTS_JSONL)
+            else:
+                content, exists = self._read_file(LIVE_MD)
+                age = self._file_age(LIVE_MD)
 
             resp = json.dumps({
                 "dashboard": content,
@@ -1480,7 +1629,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         elif self.path == "/api/state":
             self._headers()
-            content, exists = self._read_file(STATE_YAML)
+            content = self._derive_state(self._scoped_events())
+            exists = content is not None
+            if not exists:
+                content, exists = self._read_file(STATE_YAML)
             resp = json.dumps({
                 "content": content,
                 "exists": exists,

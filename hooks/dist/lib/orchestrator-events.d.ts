@@ -277,3 +277,35 @@ export declare function sessionStartAlreadyWritten(root: string, sessionId: stri
  * subprocesses behind it are never spawned for a row that will not be written.
  */
 export declare function emitSessionStartEvent(root: string, input: SessionStartHookInput, resolveFacts: () => SessionStartFacts): SessionStartEventRow | null;
+/**
+ * This checkout's identifier, read from `fusion-workbench/.checkout-id`.
+ *
+ * A plain read and never a mint: minting belongs to `bin/fusion-identity`, and
+ * a reader that created workbench state would be a defect of its own. Absent,
+ * unreadable or empty is `undefined`, which the caller below reads as "keep
+ * every row" — the same degradation `bin/fusion-events` and `bin/monitor`
+ * already take, and for the same reason: no row written before C4 carries the
+ * field, so an unresolved identifier must read as this checkout's own.
+ */
+export declare function readCheckoutId(root: string): string | undefined;
+/**
+ * The newest hook-written `session_start` row for this checkout, or `null`.
+ *
+ * Three things decide a row, and each is the answer to a measured defect:
+ *
+ *   - `writer === SESSION_START_WRITER`. The model writes a `session_start`
+ *     row of its own for the same session, carrying the Directive and the
+ *     history file and NOT the mechanical facts; a reader wanting the head
+ *     commit or the domain must not read it. That is why the field exists.
+ *   - the `checkout` field, where the row carries one and this checkout is
+ *     resolvable. The log carries `merge=union`, so after a pull it holds
+ *     another checkout's block with no ordering against ours
+ *     (260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md).
+ *   - newest by `ts`, which the emit convention writes fixed-width and UTC, so
+ *     lexical order IS chronological order. File order decides a tie, which is
+ *     the same reason ordering alone cannot be trusted: a later line wins.
+ *
+ * An unreadable log, an unparseable line and a missing field are each skipped
+ * rather than thrown: every caller here has a file to fall back to.
+ */
+export declare function newestHookSessionStart(root: string): SessionStartEventRow | null;

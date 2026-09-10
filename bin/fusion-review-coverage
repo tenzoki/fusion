@@ -5,11 +5,15 @@
 # Usage:
 #   fusion-review-coverage [--since <ref>] [--head <ref>]
 #
-# `--since` defaults to `session.git_head_at_start` in
-# fusion-workbench/agentstate.yaml — the session's own anchor, already recorded
-# for Step 3c's `git diff`, so review coverage needs no field of its own. It is
-# an anchor rather than a tally, which is why it survived the removal of that
-# file's counters on 2026-08-15. `--head` defaults to HEAD.
+# `--since` defaults to the session's own anchor, resolved from two sources in
+# order: the `git_head_at_start` on the newest hook-written `session_start` row
+# for this checkout in fusion-workbench/orchestrator-events.jsonl, and
+# `session.git_head_at_start` in fusion-workbench/agentstate.yaml while that
+# file exists. The log is preferred because it is machine-written and cannot go
+# stale; the file is the fallback for every session whose installed hook
+# predates the writer. Either way it is an anchor rather than a tally, which is
+# why it survived the removal of that file's counters on 2026-08-15.
+# `--head` defaults to HEAD.
 #
 # Output on stdout, one KEY=value per line, then one line per uncovered commit
 # and one per review considered:

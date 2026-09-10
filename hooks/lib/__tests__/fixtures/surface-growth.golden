@@ -74,7 +74,7 @@
   fusion-identity.test.ts 217
   fusion-paths.test.ts 896
   fusion-prose-metric.test.ts 173
-  fusion-session-domain.test.ts 80
+  fusion-session-domain.test.ts 148
   glob-nomatch-lint.test.ts 140
   guard-bash-integration.test.ts 334
   guard-project-config-integration.test.ts 240
@@ -98,14 +98,14 @@
   record-counts-measurement.test.ts 483
   reference-resolution-lint.test.ts 990
   review-coverage-mandate.test.ts 342
-  review-coverage.test.ts 814
+  review-coverage.test.ts 909
   rules-emission-golden.test.ts 1332
   rules-voice-profile.test.ts 319
   sentence-identifier-containment.test.ts 472
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 680
+  staging-drift.test.ts 688
   surface-growth-bound.test.ts 685
   turn-budget-lint.test.ts 512
   workbench-citation-lint.test.ts 325
-  total 23001
+  total 23172

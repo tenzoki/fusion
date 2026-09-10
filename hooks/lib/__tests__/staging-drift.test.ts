@@ -352,6 +352,10 @@ describe("staging drift: what it reports without raising an alarm", () => {
           '{"ts":"2026-08-11T01:00:00","event":"session_start"}\n{"ts":"2026-08-11T02:00:00","event":"turn_start"}\n',
         );
         write(project.root, "fusion-workbench/.fusion-setup", '{"harness":true,"v":2}\n');
+        // Still in-flight, and B4 deliberately left it so: the event log becoming
+        // the other readers' first source changes nothing about what this list
+        // may call a fault.
+        write(project.root, "fusion-workbench/agentstate.yaml", WORKBENCH_FILES["fusion-workbench/agentstate.yaml"] + '  domain: "code"\n');
         // Class R3 of `rules/workbench-tracking.md` is a pair, and both halves
         // are written by /fusion:setup. `.asset-provenance` fell through to
         // `unclassified` while its sibling was named.
@@ -373,6 +377,10 @@ describe("staging drift: what it reports without raising an alarm", () => {
 
         for (const path of [
           "orchestrator-events.jsonl",
+          // Still in-flight, and B4 deliberately left it so: the event log
+          // becoming the readers' first source changes nothing about what the
+          // staging list is allowed to call a fault.
+          "agentstate.yaml",
           ".fusion-setup",
           ".asset-provenance",
           "portfolio.md",

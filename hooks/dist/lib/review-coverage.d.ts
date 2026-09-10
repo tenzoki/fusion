@@ -264,7 +264,17 @@ export interface NotOpened {
  * made it actionable, and a file list is acted on.
  */
 export declare function parseNotOpened(value: string | null): NotOpened;
-/** The session anchor `agentstate.yaml` records, or "" with nothing recorded. */
+/**
+ * The session anchor, from the event log first and `agentstate.yaml` second.
+ *
+ * The log is preferred because it is machine-written: the hook records
+ * `git_head_at_start` at SessionStart and cannot forget, where the state file
+ * is the model's own bookkeeping and this module's header already says what it
+ * costs when that bookkeeping is stale. The file stays as the fallback for as
+ * long as it exists — every row this reader wants is absent from a session
+ * whose installed hook predates the writer, and from every session already on
+ * disk.
+ */
 export declare function sessionAnchor(root: string): {
     since: string;
     why: string;
@@ -272,9 +282,11 @@ export declare function sessionAnchor(root: string): {
 /**
  * Tile the review files' declared ranges against a commit range.
  *
- * `since` defaults to `agentstate.yaml`'s `session.git_head_at_start` — the
- * session's own anchor, already recorded for the drift check and for Step 3c's
- * `git diff`, so this needs no field of its own. `head` defaults to `HEAD`.
+ * `since` defaults to the session's own anchor, resolved by `sessionAnchor`
+ * above: the newest hook-written `session_start` row for this checkout, and
+ * `agentstate.yaml`'s `session.git_head_at_start` while that file exists. Both
+ * are already recorded for other purposes, so this needs no field of its own.
+ * `head` defaults to `HEAD`.
  *
  * Reviews are bounded to those modified at or after the anchor commit's own
  * commit date, because a review file cannot name a hash that did not exist when

@@ -812,3 +812,98 @@ describe("review coverage: an uninterpretable **Not-opened:** value", () => {
     CASE_TIMEOUT,
   );
 });
+
+describe("review coverage: where the default anchor comes from", () => {
+  /** One hook-written `session_start` row, plus whatever `extra` rows follow. */
+  function writeLog(root: string, rows: Record<string, unknown>[]): void {
+    writeFileSync(
+      resolve(root, "fusion-workbench", "orchestrator-events.jsonl"),
+      rows.map((r) => JSON.stringify(r)).join("\n") + "\n",
+      "utf-8",
+    );
+  }
+  const hookRow = (ts: string, headAtStart: string, checkout?: string) => ({
+    ts,
+    event: "session_start",
+    writer: "session-start-hook",
+    ...(checkout === undefined ? {} : { checkout }),
+    session_id: `s-${ts}`,
+    git_head_at_start: headAtStart,
+  });
+
+  it(
+    "prefers the hook-written row's head over the one agentstate.yaml records",
+    () => {
+      withRepo((p) => {
+        // The two disagree, and only the log's answer covers the whole range:
+        // a stale state file is the failure mode the log exists to end.
+        const start = head(p.root);
+        const mid = commit(p.root, "mid");
+        commit(p.root, "late");
+        writeState(p.root, mid);
+        writeLog(p.root, [hookRow("2026-09-10T05:00:00", start)]);
+
+        const k = keys(runCli(p.root).stdout);
+        expect(k.since).toBe(start);
+        expect(k.commits).toBe("2");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "falls back to agentstate.yaml when no row is the hook's own",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        commit(p.root, "one");
+        writeState(p.root, start);
+        // The model writes a `session_start` of its own for the same session
+        // and it carries no mechanical facts, so `writer` is what must decide.
+        writeLog(p.root, [
+          { ts: "2026-09-10T05:00:00", event: "session_start", session_id: "s", git_head_at_start: "deadbee" },
+        ]);
+
+        const k = keys(runCli(p.root).stdout);
+        expect(k.since, "the model's own row was read as the hook's").toBe(start);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reads its own checkout's newest row, not another checkout's block",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        const mine = commit(p.root, "mine");
+        commit(p.root, "after");
+        writeFileSync(resolve(p.root, "fusion-workbench", ".checkout-id"), "5e8248d7\n", "utf-8");
+        // A `merge=union` pull leaves the two blocks interleaved with no
+        // ordering between them, so the newest row in the FILE is a stranger's.
+        writeLog(p.root, [
+          hookRow("2026-09-10T05:00:00", mine, "5e8248d7"),
+          hookRow("2026-09-10T09:00:00", start, "ffffffff"),
+        ]);
+
+        const k = keys(runCli(p.root).stdout);
+        expect(k.since, "another checkout's anchor was adopted as ours").toBe(mine);
+        expect(k.commits).toBe("1");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "says both sources are absent rather than naming only the file",
+    () => {
+      withRepo((p) => {
+        commit(p.root, "one");
+        const out = runCli(p.root);
+        expect(out.stdout).toContain("no hook-written `session_start` row");
+        expect(out.stdout).toContain("agentstate.yaml is absent");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});

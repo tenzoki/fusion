@@ -13,18 +13,31 @@
 # `bin/fusion-paths` uses, always both and always in this order:
 #
 #   domain=code                  # code | data
-#   source=agentstate            # or `default`; a caller prints `helper-missing`
+#   source=event-log             # or `agentstate` or `default`; a caller
+#                                # prints `helper-missing`
 #
-#   domain  the value of `session.domain` in fusion-workbench/agentstate.yaml
-#           when that file exists and the key holds `code` or `data`; `code`
-#           otherwise.
-#   source  `agentstate` when the value was read from the file; `default` when
-#           it was not, so a caller that must report a fallback rather than
-#           apply it silently has the fact on its own line. A `default` is
-#           never silent: one line on stderr says why. A third value,
-#           `helper-missing`, is never printed here: it is what each call site
-#           prints on its `[ -x ]` miss, when this program is not installed at
-#           all, so the same line reports that case too.
+#   domain  `code` or `data`, resolved from three sources in this order and
+#           defaulted to `code` when none of them answers.
+#   source  WHICH of the three answered, so a caller that must report a
+#           fallback rather than apply it silently has the fact on its own line:
+#
+#             event-log   the `domain` on the newest hook-written
+#                         `session_start` row for this checkout in
+#                         fusion-workbench/orchestrator-events.jsonl. Preferred
+#                         because it is machine-written at SessionStart and
+#                         cannot go stale, and because it is what survives the
+#                         removal of the state file.
+#             agentstate  `session.domain` in fusion-workbench/agentstate.yaml.
+#                         The fallback while that file exists — every session
+#                         whose installed hook predates the row's writer has no
+#                         row to read.
+#             default     neither answered. Never silent: one line on stderr
+#                         says which of the two was absent, unset or holding a
+#                         value that is neither `code` nor `data`.
+#
+#           A fourth value, `helper-missing`, is never printed here: it is what
+#           each call site prints on its `[ -x ]` miss, when this program is not
+#           installed at all, so the same line reports that case too.
 #
 # Exit codes:
 #   0  both lines printed. A fallback is still a 0: the caller decides what a
@@ -35,7 +48,7 @@
 #      session for the domain to be the domain of, and `domain=code` here
 #      would be a made-up answer about a project that has not run setup.
 #
-# The read is deliberately narrow, and its true bound is this: the FIRST
+# The agentstate read is deliberately narrow, and its true bound is this: the FIRST
 # `domain:` key sitting exactly two spaces deep, in whichever top-level block
 # holds it, with the value double-quoted or bare. Only `session:` carries one today
 # (`agents/orchestrator.md` `## Persistent State File`), so the read is the session's;
@@ -67,6 +80,46 @@ if [ -z "$root" ]; then
   exit 3
 fi
 
+# The event log first. Three filters decide a row and each answers a measured
+# defect: `writer` tells the hook's row from the model's own `session_start` for
+# the same session, which carries no domain; `checkout` drops another
+# checkout's block, which a `merge=union` pull leaves interleaved with ours
+# (260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md);
+# and `sort | tail -1` takes the newest, correct on the whole line because the
+# emit convention puts a fixed-width UTC `ts` first, so lexical order IS
+# chronological order. A row carrying no `checkout` reads as ours, which is what
+# keeps every row written before that field existed readable.
+log="$root/fusion-workbench/orchestrator-events.jsonl"
+idfile="$root/fusion-workbench/.checkout-id"
+mine=''
+if [ -f "$idfile" ]; then
+  mine="$(tr -d '[:space:]' < "$idfile" || true)"
+fi
+
+domain=''
+if [ -f "$log" ]; then
+  domain="$(awk -v mine="$mine" '
+    index($0, "\"event\":\"session_start\"") == 0 { next }
+    index($0, "\"writer\":\"session-start-hook\"") == 0 { next }
+    {
+      c = ""
+      i = index($0, "\"checkout\":\"")
+      if (i > 0) { r = substr($0, i + 12); c = substr(r, 1, index(r, "\"") - 1) }
+      if (mine != "" && c != "" && c != mine) next
+      print
+    }' "$log" 2>/dev/null | sort | tail -1 |
+    sed -nE 's/.*"domain":"([^"]*)".*/\1/p' || true)"
+fi
+
+case "$domain" in
+  code|data)
+    printf 'domain=%s\nsource=event-log\n' "$domain"
+    exit 0
+    ;;
+esac
+log_why="carries no hook-written session_start row with a domain for this checkout"
+[ -f "$log" ] || log_why="does not exist"
+
 state="$root/fusion-workbench/agentstate.yaml"
 domain=''
 if [ -f "$state" ]; then
@@ -80,6 +133,7 @@ case "$domain" in
     printf 'domain=%s\nsource=agentstate\n' "$domain"
     ;;
   *)
+    echo "fusion-session-domain: $log $log_why." >&2
     if [ ! -f "$state" ]; then
       echo "fusion-session-domain: $state does not exist; domain defaulted to code." >&2
     elif [ -z "$domain" ]; then
