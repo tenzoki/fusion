@@ -38,3 +38,6 @@ Option 1, and the naming debt named rather than paid.
 The rename buys a word and costs a one-way mass move plus grammar work, inside a work item whose measured subject is cutting cost. Nothing about the restoration requires it, and the container ruling asked for the container back rather than for a rename. The one real objection — that the always-on surface would carry a word for a removed concept — is answered in one clause of the layout tree, at a cost of a few dozen bytes on a floor where this plan is already measuring every addition.
 
 Deferring it is not the same as ignoring it. This is filed so that whoever meets `circles/` next finds the question already asked, and so that a later cleanup with a quiet tree can take option 2 as one commit instead of rediscovering it under pressure.
+
+---
+Answered: 260910-0900-orchestrator-session.md `## Ruling on the container store's name` — option 1, the store keeps the directory name `circles/` and the naming debt is named rather than paid. The rename's cost is one-way and measured (1414 files, a citation class that stops matching with no rewrite available, four helpers and the monitor carrying the literal) and nothing in the container ruling required it; the one objection is answered by the clause step S1 wrote into the layout tree. Ruled by user, Kai Stalmann <ks@qantr.com>.

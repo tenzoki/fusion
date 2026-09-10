@@ -130,3 +130,33 @@ back, because a placement decision exists again; the resolver needs a per-work b
 `skills/migrate/SKILL.md` has to be rewritten before D1 runs, since the body as written
 flattens twenty-six containers into the shared stores. D1 is not reversible by a forward
 commit, which is why the question was asked before it rather than after.
+
+## Ruling on the container store's name
+
+Put to the user while step S2 ran, on the question the planner filed rather than settled:
+the container is back but the directory those containers sit in is still called
+`circles/`, and nothing else in the restored design carries that word.
+
+The question was put after correcting a sloppier statement of my own. I had told the user
+the concept was gone, which overstates it: what came back is the container, and what stayed
+removed is the six-state lifecycle on the record, the ranking layer and the closure verdict.
+A work item with a directory is the bundling without the ceremony around it, so the word
+survives in exactly one place, the path.
+
+**The user ruled option 1: the store keeps the name, and the naming debt is named rather
+than paid.** The costs that decided it are the planner's measurement, not an estimate: a
+rename moves 1414 tracked files in this repository alone, stops the `circles/<dir>` citation
+form matching the pattern that classifies it with no rewrite available for the tokens that
+already exist, carries the literal into four `bin/` helpers and the monitor, and is one-way
+in the same sense the flattening was — irreversible once records cite the new path. All of
+that inside a work item whose measured subject is cutting cost, and none of it required by
+the container ruling, which asked for the container and not for a rename.
+
+The one real objection stands and is answered where a reader meets it: a reader who finds
+`circles/` asks whether the ranking layer is back, and one clause in the layout tree says it
+is not. Step S1 already wrote that clause and cited the open record; this ruling is what the
+citation now resolves to.
+
+Deferring was offered as a third option and declined in favour of settling it. The record
+stays available to a later cleanup that wants option 2 with a quiet tree, which is what its
+own recommendation asks for.
