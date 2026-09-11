@@ -63,3 +63,6 @@ that cost.
 None. The trade is between a figure a reader can trust and a cost paid by projects that get nothing
 back, and that is the user's to make. What the shaper can state is that option 1 makes the readiness
 figure unfalsifiable, which is the property the whole Circle exists to give it.
+
+---
+Answered: 260911-1916-re-grounding-three-open-decisions.md `### F3. The template record` — ratified as it stands, which is that report's option 2a. The field is permitted rather than mandated and is absent when there is nothing to say, never present and empty. This was not a fresh choice: the state landed at `76d833be` on 2026-09-10 with no record behind it, so the act here is a ratification of an implemented state and the gate said so. The record's own options 2 and 3 were unchoosable. Option 2 partitions on two node kinds and one remains; option 3 requires a written `(none)` literal that three shipped surfaces each forbid. The con is accepted with the answer and is not mitigated: an absent field and a genuinely prerequisite-free item are indistinguishable, so the helper's readiness figure is optimistic by construction and no reader can tell by how much. The helper's own output is to say so rather than leave the reader to infer it; ruled by user, Kai Stalmann <ks@qantr.com>.
