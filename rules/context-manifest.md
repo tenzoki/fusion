@@ -108,25 +108,43 @@ The topic is **not** a per-invocation user argument in the standard flow. It is
    tokens in the item's own filename: the basename with the `YYMMDD-HHMM-` stamp
    stripped and the `.md` suffix dropped, split on `-`. An item
    `YYMMDD-HHMM-ontology-refactor.md` yields `{ontology, refactor}`, matching any
-   unit tagged `ontology` or `refactor`.
+   unit tagged `ontology` or `refactor`. A work item is a directory whose record
+   carries the directory's own name, so that basename is the container's name too
+   and a reader can derive the topic from either.
 4. **Nothing claimed by this checkout** — `resolvedTopics` is empty; only
    `[always]` units match.
 
-**The claimed item is found by the checkout, not by the store's order.** An item
-qualifies when its `**Status:**` reads `claimed` **and** its `**Claim:**` names
-this checkout's eight hex characters, compared for equality the way
-`rules/fusion-workbench-conventions.md` `## Backlog entries — work items` defines
-it. Both halves are tested: a `claimed` status with no claim beside it names no
-holder, and a claim left standing on a `done` item names a holder who has
-finished. An item another checkout claimed is not this checkout's topic. When the
-checkout identifier cannot be read at all, no topic resolves — the comparison has
-no left-hand side, and guessing one would hand an agent another checkout's rules.
+**Which item is claimed is not decided here, and this file does not define it.**
+`bin/fusion-rules` asks `bin/fusion-claimed-item`, which is the single
+implementation of that criterion and the one `bin/fusion-paths` calls from the
+same Setup step for its own reason; the criterion itself — the `**Status:**` and
+`**Claim:**` fields, and the refusal to pick when two items are claimed — is the *Contract*
+subsection of `rules/fusion-workbench-conventions.md` `## Path Resolution`, over the grammar
+`rules/fusion-workbench-conventions.md` `## Backlog entries — work items` defines. This
+paragraph carried a second statement of
+that scan until 2026-09-11. Two statements of one criterion drift, and the drift
+is invisible because each reads plausibly on its own, which is the same reason the
+helper exists at all.
 
-**This source replaced the active Circle when the Circle container was cut**, and
-the shape of the answer changed with it. A Circle was a pointer file: one read,
-and every session in the checkout saw the same topic. A claim is a field on an
-item and it names a checkout, so what is resolved is "what is *this checkout*
-working on".
+**What is topic-specific, and therefore stays here, is the degradation.** Every
+non-zero from that helper resolves **no** topic and lets the emission carry on,
+where `bin/fusion-paths` stops the caller on 1 and refuses on 3. The asymmetry is
+the cost of being wrong: a topic buys optional manifest units, so a missing one
+costs an agent a few files it then does not read, while a path decides where an
+artifact is written and a wrong one files a plan into another item's container in
+silence. In particular `bin/fusion-claimed-item`'s exit 3 is **not** re-raised as
+`bin/fusion-rules`' own exit 3, which means a malformed manifest and nothing else
+(the exit-code table at the end of this file): read an exit 3 against the helper
+that returned it.
+
+**A claim is a field, not a pointer, and that is what the topic is derived from.**
+The active Circle was this source until the Circle container was cut, and it was a
+pointer file: one read, and every session in the checkout saw the same topic. The
+per-work-item container came back on 2026-09-11 and the pointer did not. So what
+resolves is "what is *this checkout* working on": an item another checkout claimed
+is not this checkout's topic, and when the checkout identifier cannot be read at
+all, no topic resolves rather than a guessed one, because guessing would hand an
+agent another checkout's rules.
 
 Units tagged `[always]` are emitted regardless of the resolved topics (as long as
 the agent matches), so a project's per-agent always-on rules survive every path.

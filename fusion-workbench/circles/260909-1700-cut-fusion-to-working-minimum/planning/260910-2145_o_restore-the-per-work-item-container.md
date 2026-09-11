@@ -103,7 +103,7 @@ Four bounds can go red. Measured at `0c793392` plus the concurrent `coder`'s unc
    - Dependencies: S2
    - Verification: `bin/fusion-rules <agent>` output is byte-identical to `0c793392` for every agent with no manifest present; with a manifest and one claimed item the same units are emitted as before the change; `context-manifest.test.ts` green.
 
-5. **S5: the three satellite rule files follow**
+5. [DONE] **S5: the three satellite rule files follow**
    - Executor: `ontocoder`
    - Files: `rules/workbench-path-resolution.md`, `rules/workbench-tracking.md`, `rules/context-manifest.md`
    - Changes: the key table regains the second argument and the container-versus-shared reading of each key. `.active-circle` leaves class L, since nothing writes or reads it; `circles/` stays class R1 and the entry says why the container travels while a claim is the per-checkout half. The manifest's topic-source paragraph names the shared helper rather than restating the scan.

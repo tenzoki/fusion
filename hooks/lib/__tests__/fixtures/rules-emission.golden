@@ -59,24 +59,24 @@
   fusion-workbench-conventions.md 60133
   critical-stance.md 10374
   user-facing-output.md 10877
-  decision-record-examples.md 4952
-  commit-lock.md 8360
-  total 99062
+  decision-record-examples.md 4971
+  commit-lock.md 8363
+  total 99084
 
 [planner]
   agent-setup.md 4366
   fusion-workbench-conventions.md 60133
   critical-stance.md 10374
-  decision-record-examples.md 4952
+  decision-record-examples.md 4971
   design-diagrams.md 5285
-  total 85110
+  total 85129
 
 [reconciler]
   agent-setup.md 4366
   fusion-workbench-conventions.md 60133
   critical-stance.md 10374
-  decision-record-examples.md 4952
-  total 79825
+  decision-record-examples.md 4971
+  total 79844
 
 [reviewer]
   agent-setup.md 4366
@@ -90,6 +90,6 @@
   fusion-workbench-conventions.md 60133
   critical-stance.md 10374
   user-facing-output.md 10877
-  decision-record-examples.md 4952
+  decision-record-examples.md 4971
   design-diagrams.md 5285
-  total 95987
+  total 96006

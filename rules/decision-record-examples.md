@@ -10,7 +10,7 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 
 **Initial state (filed by shaper after the user said "we'll need to pick a vector store, but not now"):**
 
-`260501-1430_o_vector-store-pick.md`, filed in the shared decision store because no Circle is active:
+`260501-1430_o_vector-store-pick.md`, filed in the shared decision store because this checkout has claimed no work item:
 
 ```markdown
 # Which vector store for v1?
