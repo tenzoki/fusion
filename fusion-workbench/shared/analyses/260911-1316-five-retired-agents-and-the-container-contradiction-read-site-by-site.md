@@ -394,8 +394,8 @@ None. This dispatch was scoped to analysis, and both defects already have record
 
 ## Sources
 
-- `fusion-workbench/shared/issues/260910-2146_p_five-deleted-agents-are-still-named-as-live-in-twelve-shipped-files.md`
-- `fusion-workbench/shared/issues/260911-1258_p_four-shipped-documents-say-the-container-store-went-at-v11-while-the-conventions-define-it-as-live.md`
+- `260910-2146_*_five-deleted-agents-are-still-named-as-live-in-twelve-shipped-files.md`
+- `260911-1258_*_four-shipped-documents-say-the-container-store-went-at-v11-while-the-conventions-define-it-as-live.md`
 - `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, `## Origin Rule`, `## Backlog entries — work items`, `## Filename Patterns`
 - `README-hooks.md` `### Growth bounds on the shipped text`, `#### The 2026-09-11 raises, and the reduction read on 2026-10-10`
 - `hooks/lib/__tests__/surface-growth-bound.test.ts:327-433` (baselines and head-room), `hooks/lib/__tests__/fixtures/surface-growth.golden`

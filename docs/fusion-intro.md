@@ -93,7 +93,7 @@ Ein Work Item ist eine abgegrenzte Arbeitseinheit, definiert durch **Directive**
 
 Kleine Projekte brauchen den Backlog kaum: eine Anfrage an den Orchestrator ohne Item läuft einfach ohne, und die Artefakte landen in ihrem jeweiligen Store.
 
-Bis v11 war die Arbeitseinheit ein *Circle*: ein Verzeichnis unter `circles/` mit eigenem Record, sechs Markern und einer eigenen Kopie jedes Stores. Diese Schicht ist entfallen; `/fusion:migrate` wandelt eine Workbench um, die sie noch hat.
+Bis v11 hieß die Arbeitseinheit *Circle*: ein Verzeichnis unter `circles/` mit eigenem Record, sechs Zustandsmarkern, einer eigenen Kopie jedes Stores und einer Rangfolge darüber. Entfallen sind die sechs Zustände und die Rangfolge, nicht das Verzeichnis: der Container bleibt und trägt jetzt das Work Item. `/fusion:migrate` wandelt eine Workbench um, die noch einen lebenden Circle-Record hat.
 
 ### Backlog, Memo und der Weg zur Arbeit
 
@@ -108,7 +108,7 @@ Item-Pfad an den shaper           er liest es als Anfrage und schreibt kein Byte
 
 ### Issues und Decisions
 
-Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen, `_p_` in Arbeit, `_c_` geschlossen, `_d_` verschoben). „Entscheiden und festhalten“ ist eine **Decision** (`decisions/`, Marker `_o_` offen, `_a_` beantwortet, `_i_` umgesetzt, `_d_` verschoben, `_s_` abgelöst). Reviewer (`coderev`, `ontorev`) legen ihre Befunde als Issues ab; der Orchestrator legt bei Sitzungsende Issues für offene Tasks an.
+Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen, `_p_` in Arbeit, `_c_` geschlossen, `_d_` verschoben). „Entscheiden und festhalten“ ist eine **Decision** (`decisions/`, Marker `_o_` offen, `_a_` beantwortet, `_i_` umgesetzt, `_d_` verschoben, `_s_` abgelöst). Der Reviewer legt seine Befunde als Issues ab; der Orchestrator legt bei Sitzungsende Issues für offene Tasks an.
 
 ## 5. Abschluss von Arbeitseinheit und Sitzung
 
@@ -137,27 +137,27 @@ Bis v11 war das eine Pipeline aus acht Schritten mit einem Gate. Die übrigen Sc
 **Aufräumarbeiten, die dazugehören:**
 
 - **Archivierung:** `/fusion:archive` verschiebt terminale Work Items und terminale Marker aus `shared/` nach `fusion-workbench/archive/` und rollt das Guard-Event-Log unter datiertem Namen dorthin. Tier 2 nimmt gealterte Reviews dazu, Tier 3 gealterte History (Standardalter 14 Tage, z. B. `tier-3 21d`). Archivieren verschiebt, löscht nie.
-- **`/fusion:cadence`:** liest Aktivitätslog, Session-Histories und git und schreibt eine Übersicht (gestern, letzte 7 Tage, wiederkehrende Themen) nach `shared/memos/cadence-<checkout>.md`. Wer das zugrundeliegende Log frisch will, lässt vorher `/fusion:cleanup --only log-activity` laufen.
+- **`/fusion:cadence`:** liest Aktivitätslog, Session-Histories und git und schreibt eine Übersicht (gestern, letzte 7 Tage, wiederkehrende Themen) nach `shared/memos/cadence-<checkout>.md`. Wer das zugrundeliegende Log frisch will, lässt vorher `/fusion:log-activity` laufen.
 
 Ein Hinweis zur Einordnung, als Beobachtung und nicht als Messung dieses Dokuments: die Buchhaltung (Setup, Reconcile, Reviews, Cleanup) macht einen großen Teil der Sitzungszeit aus. Die inkrementellen Mechanismen seit v10.8.1 sind die Antwort darauf.
 
-## 7. Die Workbench: eine Art, ein Store
+## 7. Die Workbench: eine Art, zwei mögliche Stores
 
 ```
 fusion-workbench/
-├── shared/
-│   ├── backlog/                # die Work Items selbst, eine Datei je Item
+├── circles/                      # ein Verzeichnis je Work Item
+│   └── <stamp>-<slug>/           # der Record des Items, dazu was das Item erzeugt hat
+│       ├── <stamp>-<slug>.md
+│       └── planning/ issues/ decisions/ reviews/ analyses/ history/
+├── shared/                       # dieselben Arten, für Arbeit ohne Item
 │   ├── planning/ issues/ decisions/ reviews/ analyses/
-│   ├── history/                # seit v11 schreibgesperrt, lesbar bleibt es
-│   ├── investigations/ consult/ memos/ forum/ checkouts/
-├── archive/                    # Ziel der Archivierung
-├── stilwerk/                   # die vier Stilprofile (projektlokal editierbar)
-└── orchestrator-events.jsonl, .guard-state/, .commit-lock/,
-    .session-marker, .checkout-id, .cadence-anchors, .fusion-setup,
-    .asset-provenance, monitor
+│   ├── history/ investigations/ consult/ memos/ forum/ checkouts/
+├── archive/  stilwerk/  monitor
+└── (Zustand am Wurzelverzeichnis: orchestrator-events.jsonl, .guard-state/,
+     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors)
 ```
 
-**Es gibt keine Ablageentscheidung mehr:** eine Art hat genau einen Store, also folgt der Ort eines Artefakts daraus, was es ist. Querbezüge werden zitiert, nicht durch Ablage abgebildet. Agenten schreiben keine Pfade fest; sie lösen sie zur Laufzeit über `bin/fusion-paths <agent>` auf. Bis v11 stand hier ein Verzeichnis je Arbeitseinheit unter `circles/` mit einer eigenen Kopie jedes Stores und einer Origin Rule, die entschied, welche Kopie gemeint war; `/fusion:migrate` wandelt eine Workbench um, die das noch hat.
+**Die Herkunftsregel trifft die Ablageentscheidung:** ein Artefakt gehört zu dem Work Item, aus dessen Direktive es entstanden ist, und nach `shared/`, wenn kein Item im Zugriff ist. Querbezüge werden zitiert, nicht durch Ablage abgebildet. Agenten schreiben keine Pfade fest; sie lösen sie zur Laufzeit über `bin/fusion-paths <agent>` auf — das nennt den Container des Items, das dieser Checkout geclaimt hat, sonst den gemeinsamen Store. Mit v11 entfallen sind der sechszustandsbehaftete Circle-Record und die Rangfolge darüber, nicht der Container; `/fusion:migrate` wandelt eine Workbench um, die noch einen lebenden Circle-Record hat.
 
 ## 8. Mehrere Personen, gemeinsame Workbench, und die Rolle von git
 

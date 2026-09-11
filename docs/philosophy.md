@@ -36,7 +36,7 @@ If all three hold, the work continues or closes cleanly. If something is off, th
 
 That last option matters because the **Directive is revisable** — a stated outcome that can change mid-work when the assumptions turn out wrong or the world moves, not a fixed target to push against until it breaks.
 
-A unit of work is a **work item**: one file, carrying its Directive and its state, in the project's backlog. Most sessions never need one — you tell the orchestrator a task and it runs it. When you have several units of future work, you file each as an item and claim one by hand. Nothing ranks them: a ranking agent and its command did until v11, when both were removed. `README.md` owns the operational detail.
+A unit of work is a **work item**: one directory in the project's backlog, holding the record that carries its Directive and its state, and everything the item produces. Most sessions never need one — you tell the orchestrator a task and it runs it. When you have several units of future work, you file each as an item and claim one by hand. Nothing ranks them: a ranking agent and its command did until v11, when both were removed. `README.md` owns the operational detail.
 
 ## What fusion is not
 

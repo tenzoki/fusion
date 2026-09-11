@@ -237,22 +237,23 @@ Slash commands are independent of sub-agent routing — invoke them from the par
 
 Every agent writes to `fusion-workbench/` and never to its own scratchpad — a sub-agent's context window does not survive the parent session, and even within a session the agents share no memory with each other.
 
-**One kind, one store, and every store is under `shared/`.** Agents do not hard-code these paths — they resolve their write and scan targets through `bin/fusion-paths <name>` at Setup (alongside `bin/fusion-rules`), and there is no placement decision left to make: where an artifact goes follows from what it is.
+**One kind, two candidate stores: a work item's own container, and `shared/` for work belonging to no item.** Agents do not hard-code these paths — they resolve their write and scan targets through `bin/fusion-paths <name>` at Setup (alongside `bin/fusion-rules`), and the Origin Rule makes the one placement decision there is: an artifact belongs to the work item whose directive caused it to come into existence, and to the shared store when no item is in scope. Cross-cutting relevance is cited, never copied.
 
 ```
 fusion-workbench/
-└── shared/
-    ├── planning/  issues/  decisions/  reviews/  analyses/
-    ├── backlog/                # the work items themselves, one file per item
-    ├── history/                # write-frozen since v11 — the corpus stays readable
-    ├── investigations/         # write-frozen since the investigator fold
-    ├── consult/                # consultant reports
-    ├── memos/                  # personal memo logs and task lists
-    ├── forum/                  # messages left for another checkout
-    └── checkouts/              # one entry per checkout
+├── circles/                      # one directory per work item
+│   └── <stamp>-<slug>/           # the item's record, plus what the item produced
+│       ├── <stamp>-<slug>.md
+│       └── planning/ issues/ decisions/ reviews/ analyses/ history/
+├── shared/                       # the same kinds, for work belonging to no item
+│   ├── planning/ issues/ decisions/ reviews/ analyses/
+│   ├── history/ investigations/ consult/ memos/ forum/ checkouts/
+├── archive/  stilwerk/  monitor
+└── (root-anchored state: orchestrator-events.jsonl, .guard-state/,
+     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors)
 ```
 
-A per-unit-of-work container stood under `circles/` from v4 until v11, each directory holding its own copy of every store, with an Origin Rule to decide which copy an artifact belonged to. `/fusion:migrate` converts such a workbench: each Circle becomes one work item and its stores empty into the shared ones.
+Each work item keeps its own container under `circles/`, holding the item's record and its own copy of every store; `shared/` holds the same kinds for everything no item owns. What v11 removed was the six-state Circle record and the ranking layer over it — the container and the Origin Rule that places into it both stand. `/fusion:migrate` converts a workbench that still holds a live Circle *record*, not one that has containers: the record becomes the item record of the container it already sits in.
 
 The layout, the work-item grammar, the operative half of the `bin/fusion-paths` resolution contract, the issue/planning and decision state markers, marker globs, and inline progress tracking are all defined once in `fusion-workbench-conventions.md` (auto-loaded from the plugin's `rules/` directory). Its header table names the topics that have their own authoring homes next door — the resolver's key table (`workbench-path-resolution.md`), rule-file provenance (`rule-file-provenance.md`), the commit lock (`commit-lock.md`), which workbench entries a tracked workbench tracks (`workbench-tracking.md`), and the language cascade's reasoning (`project-language.md`) — each emitted only to the agents that apply it, which for three of them (`workbench-path-resolution.md`, `rule-file-provenance.md`, `workbench-tracking.md`) means no agent at all: those are reached by citation rather than by emission. Every agent confirms the rule is in context during Setup so the conventions are uniform.
 

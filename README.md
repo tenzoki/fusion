@@ -100,7 +100,7 @@ Start the orchestrator and give it a task:
 fusion                                   # or: claude --agent fusion:orchestrator
 ```
 
-Then, in the chat, state what you want — for example *"implement the plan in planning, then review it"* or *"fix the failing test in the parser."* The orchestrator resolves the scope and runs a **dispatch loop**: one task at a time — read it, dispatch an executor (coder, ontocoder), read what comes back, commit it, and tell you where things stand before taking the next one. No queue is built and no count bounds the loop; you do, by saying what is next. The reviewers (coderev, ontorev) run **once per Circle, at its close**, scoped by the coverage tiling so nothing slips between sessions. A reconciliation checks the tracking files when you ask for it (`/fusion:reconcile`), and on anything but a clean verdict it opens the **Rebalance gate**.
+Then, in the chat, state what you want — for example *"implement the plan in planning, then review it"* or *"fix the failing test in the parser."* The orchestrator resolves the scope and runs a **dispatch loop**: one task at a time — read it, dispatch an executor (coder, ontocoder), read what comes back, commit it, and tell you where things stand before taking the next one. No queue is built and no count bounds the loop; you do, by saying what is next. The reviewer runs **once per work item, at its close**, scoped by the coverage tiling so nothing slips between sessions. A reconciliation checks the tracking files when you ask for it (`/fusion:reconcile`), and on anything but a clean verdict it opens the **Rebalance gate**.
 
 You'll hit **gates** — points where the orchestrator stops and asks — before ontology changes, destructive operations, and ambiguous decisions. That's the design; answering them is how you steer.
 
@@ -141,20 +141,23 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 
 ## fusion-workbench
 
-`fusion-workbench/` at the project root is the shared workspace for all agents. **One kind, one store**, and every store lives under `shared/`; session and hook state stays at the root.
+`fusion-workbench/` at the project root is the shared workspace for all agents. **One kind, two candidate stores**: a work item's own container under `circles/`, and `shared/` for work belonging to no item. Session and hook state stays at the root.
 
 ```
 fusion-workbench/
-├── shared/
-│   ├── backlog/              # the work items themselves — one file per unit of work
-│   ├── planning/  issues/  decisions/  reviews/  analyses/
-│   ├── history/              # write-frozen since v11; the corpus stays readable
-│   ├── investigations/  consult/  memos/  forum/  checkouts/
+├── circles/                      # one directory per work item
+│   └── <stamp>-<slug>/           # the item's record, plus what the item produced
+│       ├── <stamp>-<slug>.md
+│       └── planning/ issues/ decisions/ reviews/ analyses/ history/
+├── shared/                       # the same kinds, for work belonging to no item
+│   ├── planning/ issues/ decisions/ reviews/ analyses/
+│   ├── history/ investigations/ consult/ memos/ forum/ checkouts/
+├── archive/  stilwerk/  monitor
 └── (root-anchored state: orchestrator-events.jsonl, .guard-state/,
-     .commit-lock/, .session-marker, .checkout-id, monitor)
+     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors)
 ```
 
-**There is no placement decision to make**: a kind has one store, so where an artifact goes follows from what it is, and cross-cutting relevance is cited rather than copied. Agents never hard-code these paths — they resolve write and scan targets through `bin/fusion-paths` at Setup. A per-unit-of-work container under `circles/` stood here from v4 until v11; `/fusion:migrate` converts a workbench that still has one.
+**The Origin Rule makes the placement decision**: an artifact belongs to the work item whose directive caused it to come into existence, and to `shared/` when no item is in scope. Cross-cutting relevance is cited rather than copied. Agents never hard-code these paths — they resolve write and scan targets through `bin/fusion-paths` at Setup, which names the container of the item this checkout has claimed, or the shared store when it holds none. What v11 removed here was the six-state Circle record and the ranking layer over it, not the container; `/fusion:migrate` converts a workbench that still holds a live Circle record.
 
 **State markers** (encoded as `_x_` in filenames):
 
@@ -164,4 +167,4 @@ fusion-workbench/
 
 Rule of thumb: file in `issues/` when the resolution is "go fix it," in `decisions/` when it's "decide and record," and as a work item under `circles/` when it is a job somebody is going to do. The full layout, the work-item grammar and the issue, planning and decision marker transitions live in [`rules/fusion-workbench-conventions.md`](rules/fusion-workbench-conventions.md).
 
-Three surfaces open the workbench for you directly: `/fusion:memo` appends personal notes to `shared/memos/` and files each idea as its own work-item directory under `circles/`, the activity-log step of `/fusion:cleanup` scans commits and the workbench into a per-day activity log at the project root, and `/fusion:cadence` reads that log together with the session histories and git to write a digest of what you have actually been working on — topics since yesterday, topics of the last seven days, and the themes that keep recurring ranked by how many sessions they show up in. The digest lands next to the memos as `cadence-<checkout>.md` and is overwritten on each run; it summarizes the activity log rather than replacing it, so run `/fusion:cleanup --only log-activity` first when you want the underlying record fresh.
+Three surfaces open the workbench for you directly: `/fusion:memo` appends personal notes to `shared/memos/` and files each idea as its own work-item directory under `circles/`, `/fusion:log-activity` scans commits and the workbench into a per-day activity log at the project root, and `/fusion:cadence` reads that log together with the session histories and git to write a digest of what you have actually been working on — topics since yesterday, topics of the last seven days, and the themes that keep recurring ranked by how many sessions they show up in. The digest lands next to the memos as `cadence-<checkout>.md` and is overwritten on each run; it summarizes the activity log rather than replacing it, so run `/fusion:log-activity` first when you want the underlying record fresh.

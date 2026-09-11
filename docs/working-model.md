@@ -49,7 +49,7 @@ A **work item** is one bounded unit of work: something somebody is going to do, 
 
 **A request you hand the orchestrator needs no item at all.** Most sessions are one task told to the orchestrator directly; the backlog is what you reach for when you have several units of future work whose order is not obvious. Where a session *is* working a claimed item, its basename rides every dispatch, which is what lets the monitor say what this session is doing.
 
-**A per-unit-of-work container stood here from v4 until v11.** Each unit was a directory under `circles/`, carrying a six-marker record and its own copy of every store, ranked by a portfolio agent and activated through a per-checkout pointer file that never travelled between checkouts. `/fusion:migrate` converts a workbench that still has one: each directory becomes one item, its artifacts empty into the shared stores.
+**What v11 removed here was the record, not the container.** Until then the unit in that directory was a *Circle*, carrying a six-marker record, ranked by a portfolio agent and activated through a per-checkout pointer file that never travelled between checkouts. The six markers, the ranking and the pointer are gone. The directory and its own copy of every store stand, and the record inside it is the work item's. `/fusion:migrate` converts a workbench that still holds a live Circle record: the record becomes the item record, in the container it already sits in.
 
 **The idea-to-work path**, from filing to claiming:
 
