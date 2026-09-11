@@ -426,8 +426,8 @@ const TEST_LINE_BASELINE: Record<string, number> = {
 
 /** See `## Where each head-room comes from`. Derived per surface, never shared. */
 const AGENT_HEAD_ROOM = 18_000;
-/** 20 000 derived, plus the 2026-09-11 raise logged in `README-hooks.md`. */
-const SKILL_HEAD_ROOM = 20_866;
+/** 20 000 derived, plus the two 2026-09-11 raises logged in `README-hooks.md`. */
+const SKILL_HEAD_ROOM = 21_911;
 /** 2 500 derived, plus what is left of the same day's raise after its reduction. */
 const TEST_LINE_HEAD_ROOM = 2_595;
 
