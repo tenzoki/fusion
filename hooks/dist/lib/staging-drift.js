@@ -13,17 +13,23 @@
  * `.commit-msg-tmp`, sat at the workbench root holding the last commit's
  * message, because the message was written there instead of under `/tmp`.
  *
- * The queue file itself is gone — the persisted `tasklist.md` and the whole
- * apparatus that read it left the plugin on 2026-08-15. The history entry
- * beside it did not go: it is still written, still dispatched for outside the
- * Turn loop, and still a `record` here. The defect this module answers is the
- * class, not the one file, and the class outlived its worked case.
+ * Both files of that worked case have since lost their writer. The persisted
+ * `tasklist.md` and the whole apparatus that read it left the plugin on
+ * 2026-08-15; the history entry beside it stopped being written when
+ * `rules/fusion-workbench-conventions.md` `## Session history` closed the
+ * history store to writes — no agent writes a session log, and there is no
+ * `$OUT_HISTORY` key to write one with. What was kept is the corpus, so
+ * `history` is still a store in `STORES` below and a file already sitting in
+ * one of those directories is still a `record` here. None of that touches the
+ * defect. What this module answers is the **class** — an authored workbench
+ * file that no staging list names — and the class outlived both of the files
+ * it was first found on.
  *
  * ## Why the staging rule did not catch it, and what that implies
  *
- * `agents/orchestrator.md` Step 3b step 4 installs a **shape**: every path
- * passed to `git add` is one you wrote out yourself — no `-A`, no `-u`, no
- * directory argument, no glob. That shape was installed after the opposite
+ * `agents/orchestrator.md` `### Step 4 — commit`, item 4, installs a **shape**:
+ * every path passed to `git add` is one you wrote out yourself — no `-A`, no
+ * `-u`, no directory argument, no glob. That shape was installed after the opposite
  * defect (a `git add -u` over a directory staged three deletions whose renamed
  * successors were untracked, `f38f37d`), and it is right: it makes over-staging
  * impossible.
@@ -43,10 +49,11 @@
  * command's text to notice a commit. Both would be wrong, and for reasons this
  * codebase has already paid for:
  *
- *   - **Every tool call would cry wolf.** An unstaged record *mid-Turn* is the
- *     normal and correct state: a coder writes an issue file, and Step 3b
- *     stages it minutes later. A check that fires on its commonest path is one
- *     its reader learns to ignore (issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`, and
+ *   - **Every tool call would cry wolf.** An unstaged record *while the work
+ *     is still in flight* is the normal and correct state: a coder writes an
+ *     issue file, and the commit that carries it stages it minutes later. A
+ *     check that fires on its commonest path is one its reader learns to
+ *     ignore (issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`, and
  *     `lib/review-coverage.ts` deciding the same question the same way).
  *   - **Reading the command would be the classifier again.** Deciding from a
  *     shell string whether it will move HEAD is the undecidable question the
@@ -72,7 +79,8 @@
  * So every entry is classified and every entry is printed, with the reason:
  *
  *   - `commit-message` — a file whose name says it holds a commit message AND
- *     that no artifact store owns. A fault of its own kind: Step 3b prescribes
+ *     that no artifact store owns. A fault of its own kind: item 3 of
+ *     `agents/orchestrator.md` `### Step 4 — commit` prescribes
  *     `/tmp/fusion-commit-msg-<session-id>-<task-id>.txt` because `/tmp` is
  *     swept and the workbench is not, and `.commit-msg-tmp` is what improvising
  *     instead leaves behind. The session half is a separate defect's answer
@@ -143,8 +151,9 @@ const THROTTLE_FILE = "staging-drift.json";
  */
 const GIT_STATUS_TIMEOUT_MS = 10_000;
 /**
- * The path Step 3b prescribes for a commit message, named here so the sentence
- * this module hands back can quote it rather than describe it.
+ * The path `agents/orchestrator.md` `### Step 4 — commit` prescribes for a
+ * commit message, named here so the sentence this module hands back can quote
+ * it rather than describe it.
  *
  * `commit-message-path.test.ts` asserts this constant and
  * `agents/orchestrator.md` still agree, so a prompt that moves the path fails
@@ -402,7 +411,7 @@ export function classify(rel, sessionHistory) {
     if (hasCommitMessageName(rel)) {
         return {
             klass: "commit-message",
-            why: "a commit-message-shaped name that no artifact store owns — Step 3b prescribes " +
+            why: "a commit-message-shaped name that no artifact store owns — the orchestrator's commit step prescribes " +
                 PRESCRIBED_MESSAGE_PATH,
         };
     }
@@ -461,7 +470,7 @@ export function measureStagingDrift(root) {
         const code = line.slice(0, 2);
         // A rename is `R  <old> -> <new>`. The new name is the one on disk and the
         // one a staging list would have to carry; the old one is reported with it,
-        // because Step 3b's own rule is that a rename is two paths.
+        // because `### Step 4 — commit` item 4 states that a rename is two paths.
         const paths = line
             .slice(3)
             .split(" -> ")
@@ -560,7 +569,7 @@ export function renderStagingRow(r) {
  * a directory-wide `git add -u`: it staged the deletions of records that had
  * just been renamed, whose successors were untracked, and so took three of them
  * out of HEAD — `f38f37d`, which agrees with the account at the head of this
- * file and with `agents/orchestrator.md` Step 3b. The acceptance for this issue
+ * file and with `agents/orchestrator.md` `### Step 4 — commit`. The acceptance for this issue
  * makes the staging shape a constraint rather than a nicety, so the sentence
  * carries it.
  */
@@ -578,16 +587,18 @@ export function stagingSentence(report) {
     if (messages.length > 0) {
         parts.push(`A commit-message-shaped file that no artifact store owns is sitting in the workbench: ` +
             `${messages.map((r) => r.path).join(", ")}. ` +
-            `Step 3b writes the message to ${PRESCRIBED_MESSAGE_PATH} — /tmp is swept and the workbench is not, ` +
+            `The orchestrator's commit step writes the message to ${PRESCRIBED_MESSAGE_PATH} — /tmp is swept ` +
+            `and the workbench is not, ` +
             "and the workbench is the tree git status reports on. Read the file before you act on it: if it is a " +
             "leftover commit message, delete it and write the next one to the prescribed path; if it is something " +
             "a session authored, name it to the user and stage it instead. This class is decided by the file's " +
             "NAME once every store has declined to claim it, so a false positive can enter it, and deleting an " +
             "authored file on a name match is not recoverable.");
     }
-    parts.push("If you are the orchestrator, add these paths — written out in full, absolute — to the next Step 3b " +
+    parts.push("If you are the orchestrator, add these paths — written out in full, absolute — to the next commit's " +
         "staging list, and commit a queue rebuild at Phase 1 where the dispatch that produced it happened. " +
-        "Do NOT reach for `git add -A`, `-u`, a directory argument or a glob: the shape at Step 3b step 4 is what " +
+        "Do NOT reach for `git add -A`, `-u`, a directory argument or a glob: the shape at `### Step 4 — commit` " +
+        "item 4 is what " +
         "makes over-staging impossible, it is not what failed here, and each way of loosening it fails on its own " +
         "— `-A`, a directory argument and a quoted pathspec glob are the over-staging that shape prevents; `-u` " +
         "stages a renamed record's deletion and adds nothing in its place, taking that record out of HEAD; an " +
