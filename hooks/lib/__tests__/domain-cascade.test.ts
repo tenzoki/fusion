@@ -25,8 +25,8 @@ import {
 //
 // `agents/orchestrator.md` Setup Step 5 picks a workbench's domain from an
 // if/elif chain over two counts and one string, and that domain is passed as
-// the default to `taskplanner` and `reconciler`. What rides on the verdict and
-// why the branch ORDER is the substance are stated there.
+// the default to `reconciler`, its one consumer at HEAD. What rides on the
+// verdict and why the branch ORDER is the substance are stated there.
 //
 // The gate that stood here measured branch LAYOUT, and four edits reinstating
 // the defect it guards passed it — the four are enumerated in issue

@@ -357,9 +357,9 @@ describe("staging drift: what it reports without raising an alarm", () => {
         // `unclassified` while its sibling was named.
         write(project.root, "fusion-workbench/.asset-provenance", "monitor sha256:abc\n");
         // `portfolio.md` joined them on 2026-08-23: class L of
-        // `rules/workbench-tracking.md`, regenerated in full by every playmaker
-        // run, so a staging list carrying it carries a briefing the next run
-        // overwrites. It was a `record` here until that day.
+        // `rules/workbench-tracking.md`, regenerated in full by the ranking pass
+        // that wrote it, until v11 removed both, so a staging list carrying it
+        // carried a briefing the next run overwrote. It was a `record` until then.
         write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
 
         const res = runStagingDrift(project.root);

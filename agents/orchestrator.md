@@ -555,9 +555,9 @@ Fields `task`, `agent` and `detail` are included when relevant — omit when not
 | `task_start` | **Machine-written** (dispatch hook, PreToolUse) | Dispatch description, the byte measurements, and `work_item` when the prompt named one; `task` = tool-use id |
 | `task_done` | **Machine-written** (dispatch hook, PostToolUse) | Dispatch description; `task` = tool-use id |
 | `task_error` | Validation failed or agent error | Error description |
-| `bugfix_start` | Bugfixer dispatched for a failed task | Task ID, validation output summary |
-| `bugfix_success` | Bugfixer resolved the validation failure | Root cause summary |
-| `bugfix_failure` | Bugfixer could not resolve the failure | Reason |
+| `bugfix_start` | **Nothing at HEAD emits this**, and the row stays because logs written before v11 carry it: Step 4's self-healing branch emits `task_error` at that moment (2a) and no second row | Task ID, validation output summary, on the rows already written |
+| `bugfix_success` | The re-dispatched executor resolved the validation failure (Step 4, 2c) | Root cause summary |
+| `bugfix_failure` | The re-dispatched executor could not resolve the failure (Step 4, 2d) | Reason |
 | `task_blocked` | Agent produced no changes | Reason |
 | `task_skipped` | User chose Skip at a gate | — |
 | `task_deferred` | User chose Defer at a gate | — |

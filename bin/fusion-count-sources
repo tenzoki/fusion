@@ -142,7 +142,7 @@ CODE_EXT="$CODE_EXT|hs|ml|mli|jl|r"
 CODE_EXT="$CODE_EXT|sh|bash|zsh|sql"
 
 # Structured data, manifests, schemas, and the RDF/ontology family — the
-# project shapes the `data` domain and the ontocoder/ontorev agents exist for.
+# project shapes the `ontocoder` agent exists for.
 DATA_EXT="yaml|yml|json|jsonl|ndjson|toml|csv|tsv|xml"
 DATA_EXT="$DATA_EXT|xsd|avsc"
 DATA_EXT="$DATA_EXT|ttl|owl|rdf|jsonld|nt|n3|nq|trig"

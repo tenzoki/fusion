@@ -14,11 +14,10 @@
  * message, because the message was written there instead of under `/tmp`.
  *
  * The queue file itself is gone — the persisted `tasklist.md` and the whole
- * apparatus that read it left the plugin on 2026-08-15, and `taskplanner` now
- * returns its queue in a report. The history entry beside it did not go: it is
- * still written, still dispatched for outside the Turn loop, and still a
- * `record` here. The defect this module answers is the class, not the one
- * file, and the class outlived its worked case.
+ * apparatus that read it left the plugin on 2026-08-15. The history entry
+ * beside it did not go: it is still written, still dispatched for outside the
+ * Turn loop, and still a `record` here. The defect this module answers is the
+ * class, not the one file, and the class outlived its worked case.
  *
  * ## Why the staging rule did not catch it, and what that implies
  *

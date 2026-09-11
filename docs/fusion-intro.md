@@ -108,7 +108,7 @@ Item-Pfad an den shaper           er liest es als Anfrage und schreibt kein Byte
 
 ### Issues und Decisions
 
-Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen, `_p_` in Arbeit, `_c_` geschlossen, `_d_` verschoben). „Entscheiden und festhalten“ ist eine **Decision** (`decisions/`, Marker `_o_` offen, `_a_` beantwortet, `_i_` umgesetzt, `_d_` verschoben, `_s_` abgelöst). Der Reviewer legt seine Befunde als Issues ab; der Orchestrator legt bei Sitzungsende Issues für offene Tasks an.
+Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen, `_p_` in Arbeit, `_c_` geschlossen, `_d_` verschoben). „Entscheiden und festhalten“ ist eine **Decision** (`decisions/`, Marker `_o_` offen, `_a_` beantwortet, `_i_` umgesetzt, `_d_` verschoben, `_s_` abgelöst). Der Reviewer legt seine Befunde als Issues ab; bei Sitzungsende legt niemand welche an. Was eine Sitzung offen lässt, gehört in die Commit-Nachricht oder in einen Record, den du selbst schreibst.
 
 ## 5. Abschluss von Arbeitseinheit und Sitzung
 
