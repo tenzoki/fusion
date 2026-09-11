@@ -433,8 +433,10 @@ Four surfaces of this plugin have a **failing** bound on how much they may grow,
 |---|---|---|---|
 | the always-on rule set every agent loads | bytes | 12 000 | `hooks/lib/__tests__/rules-emission-golden.test.ts` |
 | `agents/*.md` | bytes | 18 000 | `hooks/lib/__tests__/surface-growth-bound.test.ts` |
-| `skills/*/SKILL.md` | bytes | 20 000 | `hooks/lib/__tests__/surface-growth-bound.test.ts` |
-| the hook test suite | lines | 2 500 | `hooks/lib/__tests__/surface-growth-bound.test.ts` |
+| `skills/*/SKILL.md` | bytes | 20 866 | `hooks/lib/__tests__/surface-growth-bound.test.ts` |
+| the hook test suite | lines | 2 595 | `hooks/lib/__tests__/surface-growth-bound.test.ts` |
+
+**The last two figures are not the derived ones.** `skills/` was derived at 20 000 and the hook tests at 2 500, and both were raised on 2026-09-11 under a ruling that also fixed the date the raise is read back. What each raise bought, what is left of it, and what restoring the derived figure costs are in `#### The 2026-09-11 raises, and the reduction read on 2026-10-10` at the end of this section.
 
 **The four budgets are independent.** One instrument computes all of them — `hooks/lib/__tests__/helpers/growth-bound.ts`, which takes the baseline map and the head-room as arguments so no surface can see another's numbers — but there is no shared pool. Growth in `agents/` cannot be paid for by shrinkage in `skills/`, and a single surface crossing its own bound fails the suite alone. Role-specific rule text is the one thing that still only **reports**: it is bought by the agents that need it, while every byte of the always-on set is charged to every dispatch.
 
@@ -448,6 +450,27 @@ cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-
 ```
 
 **What no bound covers.** The hook-test surface counts every `.ts` file in the suite's own tree at any depth (`hooks/lib/__tests__/**.ts`) — a recursive walk rather than a list of directories, so a test file in a new subdirectory is measured on the day it arrives; the three `.mjs` files under `hooks/` — the build script, the test runner and the vitest configuration — are hook scripts rather than tests and fall outside every surface. Nothing bounds them, and nothing bounds `hooks/*.ts`, `hooks/lib/*.ts`, `bin/`, `docs/` or the READMEs either. That is a statement of coverage, not a justification: those surfaces were not measured, and arming a bound on a corpus nobody measured is the one thing the instrument's own rule forbids.
+
+#### The 2026-09-11 raises, and the reduction read on 2026-10-10
+
+Two of the four head-room figures above were raised on 2026-09-11, and this is the one place that says so. **Neither baseline moved.** A baseline records what each file weighed when its surface was last settled; head-room records how much the surface may grow from there. These raises move the second and leave the first exactly where it stood, so every byte and every line added under them still counts as growth above an unmoved floor. That is what makes the reduction a reading rather than a promise: the surplus is the sum of the raises, and putting the derived figures back is the whole of it.
+
+| Constant | Derived | Raise still standing | Restoring the derived figure means cutting |
+|---|---|---|---|
+| `SKILL_HEAD_ROOM` | 20 000 bytes | +866 | `skills/*/SKILL.md` to at most 222 397 bytes (floor 202 397 + 20 000) |
+| `TEST_LINE_HEAD_ROOM` | 2 500 lines | +95 | `hooks/lib/__tests__/**.ts` to at most 21 728 lines (floor 19 228 + 2 500) |
+
+The raise on the hook tests was +154 lines on the day and 59 of it has since been given back, which the paragraph on this section's own move explains. The two floors are the sums of `SKILL_BASELINE` and `TEST_LINE_BASELINE` in `hooks/lib/__tests__/surface-growth-bound.test.ts`, so a restore target moves only when a baseline moves. What the two surfaces measure *today* is in `hooks/lib/__tests__/fixtures/surface-growth.golden`, blocks `[skills bytes]` and `[hook-tests lines]`, and is not copied here: on 2026-09-11 they stood at 223 263 bytes and 21 823 lines, both exactly at budget, so the next byte of a skill body and the next line of a hook test each turn the suite red.
+
+**Nothing else was raised.** The always-on rule core and `agents/*.md` each absorbed their spend inside head-room that already existed, and so did the per-dispatch-path bound in `hooks/lib/__tests__/rules-emission-golden.test.ts`, which is a fifth failing bound this section's table does not list and which stands at zero head-room by construction. So the reading has these two figures to restore and no others.
+
+**Why a raise at all**, when the standing answer to a red bound is a cut. The user ruled it on 2026-09-10: `260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md`, option 2, the budgets raised as far as the work needs and a reduction attempted afterwards. The work is the eleven-step restoration planned in `260910-2145_*_restore-the-per-work-item-container.md`. A cut was looked for first and was not available in full: what the hook suite holds is reasoned prose with a claim per paragraph, and funding one step's cases by deleting another step's reasoning is the trade the 2026-08-05 decision already refused. On `skills/` a cut *was* taken and is not the whole of it. Step S6's first draft measured 223 277 bytes and was tightened to 223 000 out of its own new prose, and 263 bytes went back on when the two rewritten walks were run against the live store and refuted a claim both prompts had made, that a legacy marked record carries no `**Status:**` at all.
+
+**What each raise bought.** The 866 bytes went to step S6: the two depth-1 walks over the work-item store becoming two-level walks that reach a container's record in either of the two forms the store now holds, the whole-container archive move, and the repair of a paragraph that told the archive body every `SCAN_*` names exactly one directory, which the restored resolution contract had made false. The 154 lines went in two parts, 118 for step S9's citation corpus and the grammar learning the second container-record form, and 36 for writing the `skills/` raise down, which costs hook-test lines on a surface that had none left. Each of the three moves names its own before-and-after figure in the commit that made it.
+
+**The ruling's residual stands and is not argued away here:** the instrument stops measuring during exactly the work it exists to measure, and this project has one instance on record of that shape lasting thirteen days. What bounds it is that every raise names itself with the figure before and after, and that the reduction is read on **2026-10-10**, the date step C6's deferred measurement already carries, so one reading answers both.
+
+**One reduction has already been taken, and it is what put this section here.** The raise log stood in the header comment of `hooks/lib/__tests__/surface-growth-bound.test.ts` until 2026-09-11, where it cost the hook-test surface the lines it was written in and had already drifted on its own headline figure, stating the `skills/` overage as 866 twice and as 603 once. Moving it into this README costs no bounded surface anything, because the READMEs are on no bound, and it leaves one account of the figures instead of two. `TEST_LINE_HEAD_ROOM` came back down with it, 2 654 to 2 595, spent to the line as the raise was: the reduction gives back budget, not working room, and the surface is at zero margin either way. That is a reduction and not a raise, and the table above already reads net of it.
 
 ### Rebuilding after TS changes
 

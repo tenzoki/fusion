@@ -145,7 +145,7 @@ Four bounds can go red. Measured at `0c793392` plus the concurrent `coder`'s unc
     - Dependencies: S3, S9
     - Verification: `bin/fusion-paths planner` with no argument resolves `OUT_PLAN` to `circles/260909-1700-cut-fusion-to-working-minimum/planning`; `bin/fusion-claimed-item` prints exactly one item; `npm test` green, `workbench-citation-lint` included; `find fusion-workbench/circles -type f | wc -l` is 1414 plus whatever this session filed, and `git status` shows two renames and no deletions under `circles/`.
 
-11. **S11: re-measure the four bounds and state the result**
+11. [DONE] **S11: re-measure the four bounds and state the result**
     - Executor: `coder`
     - Files: none. The step writes a measurement into the closing commit message.
     - Changes: run the two bound tests and report, per surface, what this work spent: the always-on core delta, the per-path delta for the tightest of the eleven, the `skills/` net, and the hook-test line net. Name any step that had to be funded by a cut and say what was cut.

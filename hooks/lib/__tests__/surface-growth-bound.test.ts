@@ -242,80 +242,19 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // only the surfaces a merge put over; copying a merged figure into a baseline
 // that is passing is the silent raise, whatever produced the tree.
 //
-// ## The head-room raise, 2026-09-11 — the hook tests, under a ruling
+// ## The head-room raises, 2026-09-11 — logged in `README-hooks.md`
 //
-// NOT A RE-BASELINING EVENT, and it is written here rather than beside the three
-// above because it is a different act on a different number. A baseline says what
-// each file weighed when the surface was last settled; head-room says how much
-// the surface may grow from there. This step moves the second and leaves the
-// first exactly where it stands, so every line added under the raise is still
-// counted as growth above an unmoved floor. That is what makes the reduction
-// below a reading rather than a promise: the surplus is the sum of the raises,
-// and putting 2 500 back is the whole of it.
-//
-// THE RAISE: `TEST_LINE_HEAD_ROOM` 2 500 -> 2 618, +118 lines, spent in full by
-// step S9 of `260910-2145_*_restore-the-per-work-item-container.md` — the
-// citation corpus and the grammar learning the second container-record form, and
-// this section. Before: 21 728 lines of budget (floor 19 228 + 2 500), 21 806
-// measured with S9's cases written, 78 over. After: the budget is the measured
-// figure and the head-room is spent to the line.
-//
-// WHY A RAISE AT ALL, when the standing answer to a red bound is a cut and this
-// file says so four times. The user ruled it on 2026-09-10:
-// `260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md`,
-// option 2 — the budgets are raised as far as needed for the container
-// restoration, and a reduction is attempted afterwards. A cut was looked for
-// first and not taken: what this suite holds at 21 728 lines is reasoned prose
-// with a claim per paragraph, and funding one step's cases by deleting another
-// step's reasoning is the trade decision 260805-1559 already refused.
-//
-// THE RULING'S RESIDUAL STANDS AND IS NOT ARGUED AWAY HERE: the instrument stops
-// measuring during exactly the work it exists to measure, and this project has
-// one instance on record of that shape lasting thirteen days. What bounds it is
-// that every raise names itself with the figure before and after — this section
-// — and that the reduction is read on 2026-10-10.
-//
-// NO MARGIN WAS TAKEN. The figure is the measured overage and not a round number
-// with room in it: the ruling chose "as needed" over "a fixed amount decided
-// now" because a figure nothing predicts is invented rather than measured. The
-// next line added to this surface still goes red, which is the instrument
-// working rather than a raise to be topped up quietly.
-//
-// ## The head-room raise, 2026-09-11 — `skills/`, under the same ruling
-//
-// SAME ACT, SECOND SURFACE, AND THE TWO BUDGETS STAY INDEPENDENT. This raise
-// moves `SKILL_HEAD_ROOM` and nothing else; the skill baseline does not move, so
-// every byte added under it is still growth above an unmoved floor, and the
-// 2026-10-10 reduction reads the sum of both raises rather than one of them.
-//
-// THE RAISE: `SKILL_HEAD_ROOM` 20 000 -> 20 866, +866 bytes, spent in full by
-// step S6 of `260910-2145_*_restore-the-per-work-item-container.md` — the two
-// depth-1 walks over the item store becoming two-level walks that reach a
-// container's record in either of the two forms the store now holds, the
-// whole-container archive move, and the repair of a Step 1 paragraph that told
-// the archive body every `SCAN_*` names exactly one directory, which the restored
-// resolution contract had made false. Before: 222 397 bytes of budget
-// (floor 202 397 + 20 000), 223 263 measured with S6 written, 866 over. After:
-// the budget is the measured figure and the head-room is spent to the byte.
-//
-// A CUT WAS TAKEN FIRST AND IS NOT THE WHOLE OF IT. S6's first draft measured
-// 223 277 and was tightened to 223 000 — 277 bytes out of its own new prose, not
-// out of somebody else's — and 263 went back on when the walks were run against
-// the live store and refuted a claim both prompts had made, that a legacy marked
-// record carries no `**Status:**` at all: 11 of this store's 24 carry one, in the
-// older state vocabulary. What was left alone is the class the S9 note names — a
-// skill body receives no rule emission, so a rule restated there is its only copy.
-//
-// NO MARGIN WAS TAKEN, for the reason the section above gives: 603 is the
-// measured overage, and the next byte added to `skills/` goes red.
-//
-// AND THIS SECTION PAYS FOR ITSELF OUT OF THE OTHER SURFACE. Writing a `skills/`
-// raise down costs hook-test LINES, which stood at zero head-room after S9, so
-// `TEST_LINE_HEAD_ROOM` goes 2 618 -> 2 654, +36 lines: 28 for the section above
-// and 8 for this paragraph, spent to the line like S9's. The two budgets do not
-// fund each other — each moved by its own measured overage — and the point of
-// naming it here is that a raise whose own documentation is unaffordable is a
-// raise that would be taken silently.
+// NOT A RE-BASELINING EVENT, and deliberately not logged here.
+// `SKILL_HEAD_ROOM` went 20 000 -> 20 866 and `TEST_LINE_HEAD_ROOM`
+// 2 500 -> 2 654 under a user ruling for the container restoration. Both moved
+// head-room and left every baseline exactly where it stood, so each byte and
+// line added under them is still growth above an unmoved floor. The ruling, what
+// each raise bought, the cut looked for first, the residual it leaves and the
+// figures the 2026-10-10 reduction restores are authored under `README-hooks.md`
+// `### Growth bounds on the shipped text`, in ONE place, because the two-section
+// copy that stood here had already drifted on its own headline figure. The move
+// is itself a reduction of this surface, and the constant came back down with
+// it: `TEST_LINE_HEAD_ROOM` 2 654 -> 2 595, spent to the line as the raise was.
 //
 // ## What no bound covers
 //
@@ -487,9 +426,10 @@ const TEST_LINE_BASELINE: Record<string, number> = {
 
 /** See `## Where each head-room comes from`. Derived per surface, never shared. */
 const AGENT_HEAD_ROOM = 18_000;
+/** 20 000 derived, plus the 2026-09-11 raise logged in `README-hooks.md`. */
 const SKILL_HEAD_ROOM = 20_866;
-/** 2 500 derived, plus the two named raises in `## The head-room raise, 2026-09-11`. */
-const TEST_LINE_HEAD_ROOM = 2_654;
+/** 2 500 derived, plus what is left of the same day's raise after its reduction. */
+const TEST_LINE_HEAD_ROOM = 2_595;
 
 const SURFACES: Surface[] = [
   {

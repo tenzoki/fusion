@@ -89,7 +89,7 @@
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
-  reference-resolution-lint.test.ts 1000
+  reference-resolution-lint.test.ts 1001
   review-coverage-mandate.test.ts 368
   review-coverage.test.ts 890
   rules-emission-golden.test.ts 1406
@@ -98,6 +98,6 @@
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 673
-  surface-growth-bound.test.ts 766
+  surface-growth-bound.test.ts 706
   workbench-citation-lint.test.ts 352
-  total 21882
+  total 21823
