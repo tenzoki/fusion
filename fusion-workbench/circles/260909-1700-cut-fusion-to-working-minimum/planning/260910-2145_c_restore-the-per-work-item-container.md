@@ -1,7 +1,7 @@
 # Implementation Plan: restore the per-work-item container
 
 **Date:** 2026-09-10
-**Status:** Draft
+**Status:** Complete
 **Spec:** none. Planned against the answered ruling `260910-2133_*_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md` (option 1, ruled by the user) and the reasoning in `260910-0900-orchestrator-session.md` `## Ruling on the container`.
 **Decidability:** The load-bearing question is *which container does this consumer's write belong in*, asked once per Setup. The recommended mechanism reads two inputs: this checkout's eight hex characters from `bin/fusion-identity`, and the set of item records carrying `**Status:** claimed`. It is decidable from those inputs **if and only if** the claim relation is a partial function from checkout to item, at most one claimed item per this checkout. Nothing in the store enforces that, and two claimed items is a state the store can reach, so the resolver may not assume it. **The mechanism therefore changes rather than the answer being approximated:** ambiguity is detected and refused with a new exit 3 naming both files, never resolved by picking one. With that refusal in place the question is total over every input, including the two cases that look alike and are not, a checkout identifier that cannot be read inside a git work tree (unknown, exit 3) against a project that is not a git work tree at all (no claim can exist, so `shared/` is the true answer, exit 0).
 
