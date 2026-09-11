@@ -90,7 +90,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 
 Two repos involved: the **plugin** (this repo, `tenzoki/fusion`) and the **marketplace** (`tenzoki/claude-plugins`).
 
-**The marketplace working clone is at `/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins`** (note the nested directory — the outer one is not the repo). That is the clone the release steps below mean. It is a development checkout, not the cache clone `/plugin install` reads: see the note after step 6, which is a separate copy and may not exist at all. At v6.0.0 it did not, so a release can complete correctly while `/plugin install` still serves the previous version locally.
+**The marketplace working clone is at `/Users/k1/Projects/productive/claude-plugins`.** That is the clone the release steps below mean. It is a development checkout, not the cache clone `/plugin install` reads: see the note after step 6, which is a separate copy and may not exist at all. At v6.0.0 it did not, so a release can complete correctly while `/plugin install` still serves the previous version locally.
 
 Every release:
 

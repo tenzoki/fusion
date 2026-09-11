@@ -32,7 +32,7 @@
   cleanup/SKILL.md 6496
   commit/SKILL.md 6298
   curate/SKILL.md 11863
-  help/SKILL.md 16621
+  help/SKILL.md 16336
   log-activity/SKILL.md 13273
   memo/SKILL.md 12888
   migrate/SKILL.md 40271
@@ -40,7 +40,7 @@
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19425
-  total 224136
+  total 223851
 
 [hook-tests lines]
   archive-filter-key.test.ts 40

@@ -18,3 +18,8 @@ A reader following `## Release process` from cold reaches a missing directory at
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 
 Filed rather than fixed in the release commit: correcting it is an edit to `CLAUDE.md`, which is a shared component of all eleven dispatch paths and a normative surface this project changes through the curator's gated pass on evidence. The evidence is above; the pass is not this one. This record replaced a first version of itself filed minutes earlier, which described two clones and was overtaken by the deletion before it was ever committed.
+
+---
+Resolved: `CLAUDE.md` `## Release process` names `/Users/k1/Projects/productive/claude-plugins`, which exists, carries the remote `git@github.com:tenzoki/claude-plugins.git` and stood at `fusion 11.0.0` when this was verified. The nested-directory parenthesis described the deleted layout and went with it; the cache-clone paragraph is untouched and still correct, the cache clone being absent too. Corrected directly rather than through the curator's gated pass this record's own filing note invoked: the user asked for the correction in those terms while the release it blocks was being prepared. The edit shrinks `CLAUDE.md` by 92 bytes, so all eleven dispatch paths gained margin rather than spending any; the tightest, `reviewer`, went from 499 to 591 bytes.
+
+This record's second acceptance clause is not met and is not made moot: the section still names one clone as "the" clone rather than saying which is authoritative if more than one is ever expected again. Only one exists, so nothing is ambiguous today.
