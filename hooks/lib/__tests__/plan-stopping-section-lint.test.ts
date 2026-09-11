@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// The stopping-section gate — a live plan must carry `## Where this Circle stops`,
+// The stopping-section gate — a live plan must carry `## Where this work stops`,
 // filled.
 //
 // WHY THIS EXISTS. `agents/planner.md` has carried the section in the plan
@@ -31,7 +31,7 @@
 // THE CORPUS IS LIVE PLANS: `_o_` and `_p_` from the issues/planning marker
 // vocabulary authored in `rules/fusion-workbench-conventions.md`; `_c_` and `_d_`
 // are out, and so are shaper specs, whose format has no such section. The mandate
-// serves a step that runs BEFORE a Circle closes, so the window in which the
+// serves a step that runs BEFORE the work closes, so the window in which the
 // section must exist is exactly the window in which the plan is live.
 // WHAT THIS DOES NOT COVER, stated rather than discovered. At HEAD the live
 // corpus is EMPTY: 0 files, and the corpus assertion passes vacuously. It is a
@@ -50,7 +50,7 @@ import { join } from "node:path";
 import { fencedContentLines, workbenchRoot, WORKBENCH_PRESENT } from "./helpers/citation-scan.ts";
 
 /** The heading, verbatim from `agents/planner.md:131`. */
-const SECTION = "## Where this Circle stops";
+const SECTION = "## Where this work stops";
 
 /**
  * The issues/planning markers that mean "this plan is still live work". `_c_`
@@ -140,7 +140,7 @@ const REMEDY: Record<Exclude<Verdict, "ok">, string> = {
     `'${SECTION}' still holds only its angle-bracket placeholder\n` +
     `    -> replace the '<...>' with the plan's own clauses. agents/planner.md:160 states the section is\n` +
     `       mandatory and is never left as the placeholder; the orchestrator reads these clauses back to\n` +
-    `       the user before the Circle closes (agents/orchestrator.md:866), and a placeholder gives it\n` +
+    `       the user before the work closes (agents/orchestrator.md:866), and a placeholder gives it\n` +
     `       nothing to read.`,
 };
 
@@ -184,7 +184,7 @@ function livePlans(): { rel: string; text: string }[] {
   return out;
 }
 
-describe("stopping-section lint: every live plan carries a filled '## Where this Circle stops'", () => {
+describe("stopping-section lint: every live plan carries a filled '## Where this work stops'", () => {
   it.skipIf(!WORKBENCH_PRESENT)("passes over the live planning corpus", () => {
     const violations: Violation[] = [];
     for (const { rel, text } of livePlans()) {
@@ -203,7 +203,7 @@ describe("stopping-section lint: the mechanism", () => {
     ["# Implementation Plan: x", "", "## Implementation Steps", "", "1. do it", "", SECTION, "", body, "", "## Data Structures", "", "none"].join("\n");
 
   it("a filled section passes", () => {
-    expect(checkStoppingSection(withSection("This Circle stops when the gate is green."))).toBe("ok");
+    expect(checkStoppingSection(withSection("This work stops when the gate is green."))).toBe("ok");
   });
 
   it("a missing section is 'absent'", () => {
@@ -217,9 +217,9 @@ describe("stopping-section lint: the mechanism", () => {
 
   it("the shipped placeholder is 'placeholder', on one line or reflowed", () => {
     const shipped =
-      "<The conditions under which this Circle is finished, and any precondition a later act — a release, a tag, a closure — must satisfy first. One clause per condition, each answerable yes or no.>";
+      "<The conditions under which this work is finished, and any precondition a later act — a release, a tag, a closure — must satisfy first. One clause per condition, each answerable yes or no.>";
     expect(checkStoppingSection(withSection(shipped))).toBe("placeholder");
-    expect(checkStoppingSection(withSection("<The conditions under which this\nCircle is finished.>"))).toBe("placeholder");
+    expect(checkStoppingSection(withSection("<The conditions under which this\nwork is finished.>"))).toBe("placeholder");
   });
 
   it("a placeholder alongside a real clause passes — substance is not judged", () => {

@@ -331,8 +331,9 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
     - Dependencies: C9, and the whole of session 3 landed and installed
     - Verification: the survey is read and confirmed before a file moves. **If any artifact has no shared store that can hold it, or if the citation gate cannot be brought green in the same change, the migration stops and returns to the user.** After the move, `find fusion-workbench -type f | wc -l` is unchanged and `git status` shows renames only.
 
-19. **D2: retire the two Circle citation statuses and bring the gate green**
+19. [DONE] **D2: retire the two Circle citation statuses and bring the gate green**
     - **[Superseded 260911-0645 by the container ruling.** `260910-2133_*_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md` restores the container, so the two citation kinds this step removes are live and step S9 of `260910-2145_*_restore-the-per-work-item-container.md` widened one of them to read both record forms. What survives of D2 is the heading rename and its lint, paired as they always were. Do not remove `circle-record` or `circle-dir`.]**
+    - **Surviving half landed 260911.** The heading rename reached the six shipped surfaces and the four live plans; the lint's `SECTION` constant and the heading `agents/planner.md` writes are both `## Where this work stops`. `docs/upgrading-to-v10-3.md` was a seventh shipped file the step's file list missed — its `## Where to read more` anchor into `agents/planner.md` is a live pointer the reference-resolution gate resolves, and it was renamed with a note of the v10.3 name beside it, in the pattern the neighbouring bullet already uses. The two citation kinds were left in place per the supersession above.
     - Executor: `coder`
     - Files: `hooks/lib/citation-scan.ts`, `hooks/lib/citation-corpus.ts`, `hooks/lib/__tests__/workbench-citation-lint.test.ts`, `citation-grammar-boundaries.test.ts`, `citation-sweep.test.ts`, `portfolio-citation-form-lint.test.ts` (deleted), `plan-stopping-section-lint.test.ts`
     - Changes: remove `circle-record` and `circle-dir` from `CitationKind`, from `SHAPE_DECIDED_KINDS` and from the two patterns; remove `circleDirs()` and its archive indexing. Rename the mandated plan heading from `## Where this Circle stops` to `## Where this work stops` and update the lint, which judges presence only.
@@ -353,7 +354,7 @@ Neither record is realised yet. Each transitions to `_i_` when the step that car
     - Dependencies: D3, C8
     - Verification: `claude plugin validate .` passes; the eight-role smoke test passes for each of the eight; **[Reconciled 260910-2020: the roster is eleven, not eight. C8 landed one merge of four (`2a785ba2`) and the other three stopped on their budget, which is C8's own instruction. The smoke test covers eleven roles: orchestrator, coder, ontocoder, planner, shaper, analyst, consultant, reviewer, reconciler, editor, curator.]** `bin/fusion-review-coverage --since <previous tag>` is run and its result stated in the release commit, per the release process; `wc -c CLAUDE.md` is reported against 93 432 and against the C8 bound, which must be green.
 
-## Where this Circle stops
+## Where this work stops
 
 - Every gate C1 removes was read for its firing rate before it was deleted, and every gate over half its stated population was returned to the user rather than removed.
 - The C8 per-path bound is armed at the fifteen pre-cut totals, passes its three replays, and is green on every surviving path at the release commit.

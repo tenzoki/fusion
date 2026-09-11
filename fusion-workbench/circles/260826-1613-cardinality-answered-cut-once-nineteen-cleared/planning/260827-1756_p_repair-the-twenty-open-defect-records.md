@@ -319,7 +319,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
 
 24. [DONE] **Close every record in the same commit as its fix**, `Resolved:` line then rename, per `rules/fusion-workbench-conventions.md` `## Inline State Tracking`; a record closed by a decision cites the record's `## Answer` as the resolution. Where a record's closure renames a file that shipped text cites with a spelled marker (`hooks-wiring.test.ts:75` is the one instance found), the citation is starred in that commit.
 
-## Where this Circle stops
+## Where this work stops
 
 - Each of the twenty records in `## Current State` carries `_c_` with a `Resolved:` line citing a commit, an analysis, or a decision's `## Answer`.
 - The one cut has landed in one commit that names its analysis, and no baseline map in `surface-growth-bound.test.ts` or `rules-emission-golden.test.ts` moved in this Circle.

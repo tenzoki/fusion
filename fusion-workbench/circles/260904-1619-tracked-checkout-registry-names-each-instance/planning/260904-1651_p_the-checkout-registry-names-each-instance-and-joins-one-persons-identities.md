@@ -243,7 +243,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
     - Acceptance: four recorded outcomes, each naming what was observed. A failure here is a defect filed against the step that produced it, not a reopening of the Circle's design.
     - Dependencies: 14
 
-## Where this Circle stops
+## Where this work stops
 
 - Every consumer the Directive names resolves the hex for display, and none of them writes an alias into a record, into `orchestrator-events.jsonl`, or into any comparison.
 - `bin/fusion-events presence` counts two registered git identities of one person as one person, and over a workbench with no registry entries it prints exactly what it prints at HEAD `8437e365`.
@@ -327,7 +327,7 @@ The property every test set has to hold, and the one worth naming because it is 
 1. **Corrected.** Three `Implemented:` lines written at step 14 cited `4ff9d2e0` in their bodies, which is no object in this repository — the pre-amend hash of `e9c14bdf`. Corrected in all three shared decision records, each carrying its own reconciliation note. Step 14's acceptance ("each `Implemented:` line names a commit that exists") held for the leading hash of every line and failed for a hash inside three of them.
 2. **Not corrected — a plan description is outside a reconciliation pass.** Step 7's Changes and Acceptance still state two branches for the monitor header, while the built behaviour is three. `260904-2140_*_step-7-states-two-branches-for-the-monitor-header-that-contradict-each-other.md` records the divergence, endorses the built reading against the Directive's no-migration constraint, and states its acceptance as a correction to *this* step's text. That acceptance is unmet: step 13's verification pass read a specification that does not match what was built. The record stays `_o_` correctly.
 
-**Where this Circle stops — clause by clause.**
+**Where this work stops — clause by clause.**
 
 | Clause | Holds | Evidence |
 |---|---|---|

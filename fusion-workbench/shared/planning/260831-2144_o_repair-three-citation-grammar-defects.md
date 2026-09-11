@@ -230,7 +230,7 @@ ls fusion-workbench/shared/issues/260831-21{19,20,21}_c_*.md   # expect: three f
 cd hooks && npm test                                            # expect: exit 0, green
 ```
 
-## Where this Circle stops
+## Where this work stops
 
 No Circle is active, so these are the conditions under which this plan's own work is finished.
 
@@ -330,7 +330,7 @@ pass; the third stays `_o_` because its step is unbuilt, and the head-field deci
 `.claude-plugin/plugin.json` reads `10.23.0`, bumped several times by other work since this plan was
 written, so the step's version obligation is satisfied incidentally rather than performed.
 
-**Against `## Where this Circle stops`, condition by condition.**
+**Against `## Where this work stops`, condition by condition.**
 
 1. `dangling=301`, not the 299 the plan predicts. **Not a fault of either step**: the corpus grew from
    2 416 files to 2 521 between the plan and HEAD, and 2 837 tokens with it, so the figure the plan
