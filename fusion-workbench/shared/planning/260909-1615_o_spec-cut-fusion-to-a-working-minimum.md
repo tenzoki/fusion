@@ -484,3 +484,13 @@ document is what the work was measured against, and `## What the cut costs and w
 already states the outcome in advance ("the honest outcome is that the roster stays larger than
 eight"). What the eleven-role result changes is not this text but session 4's D4 verification, which
 is annotated in the plan.
+
+## Reconciliation Log
+
+**260911-1418 (reconciler, checkout 5e8248d7), at HEAD `9ceb5cc7`.** Marker left at `_o_` and `**Status:**` left unedited. Evidence and reasoning below.
+
+**What is closed.** The implementing plan `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md` is `_c_` and Complete; the work item that ran on both is `**Status:** done` with its claim kept, closed at `e55be39e`. Two of that plan's nine stopping clauses did not hold and neither is outstanding work: clause 6 asked for a migration confirmation that the container ruling cancelled, and clause 8 asked for four baselines to move under re-baselining event 1, which the user's 260911 ruling forbids for a cut-only piece of work. Both are recorded in the closing commit message rather than left to be re-derived.
+
+**Why the marker is not moved to `_c_`.** This document's `## Directive` says eight agent roles and the tree has eleven; `## What the cut costs and what it risks` predicted that outcome and the tail of this file records it against `07961552`. Renaming to `_c_` would assert that the Directive stated here was met. The spec is what the work was measured against, and it is more useful as an unmet Directive on record than as a closed one. Moving it is a user's call, not a reconciliation's.
+
+**Verified against the tree at HEAD, all of it green.** `ls agents/*.md` returns eleven; `cd hooks && npm test` exits 0 at 54 files and 920 tests; the three bounded surfaces sit inside their own head-room, `agents/` by 61 153 bytes, `skills/` by 172, the hook tests by one line. Nothing in this file's acceptance text was found false against the tree beyond the eleven-versus-eight it already states about itself.

@@ -67,6 +67,43 @@ no longer exists: that file now opens by naming `reviewer` as the one agent it i
 (`rules/review-contract.md:6`). The record's first kind was therefore tested against a site
 that was repaired before this reading began.
 
+### 1a. Before re-running the count: `coderev` is a substring of `codereview`
+
+So is `ontorev` of `ontoreview`. Those two are the review *folder* names retired on
+2026-08-15, still named in migration and layout prose, so a pattern without word boundaries
+counts 20 hits that are not agent names. Every figure above was taken with `\b`. The same
+sweep without it returns 181, and the twenty sit here:
+
+| File | Folder-name hits |
+|---|---|
+| `skills/migrate/SKILL.md` | 5 |
+| `hooks/lib/__tests__/path-literal-lint.test.ts` | 5 |
+| `rules/fusion-workbench-conventions.md` | 4 |
+| `README-agents.md` | 2 |
+| `skills/setup/SKILL.md` | 2 |
+| `hooks/lib/citation-scan.ts` | 1 |
+| `hooks/lib/staging-drift.ts` | 1 |
+
+**Why the wrong figure is convincing.** 181 − 161 = 20, and 20 is also the combined count of
+`docs/upgrading-to-v11.md` (13) and `hooks/lib/__tests__/fixtures/dispatch-path.baseline` (7),
+the unique two-file subset of this corpus that sums to 20. Both are already inside the 161 and
+already in the kind C table of section 6. So the boundary-less count arrives with a ready-made
+explanation of itself: it looks exactly like a smaller reading that missed those two files. The
+explanation survives a spot check of them and fails only a reconciliation file by file across
+all 36. A spot check is not enough here; the per-file reconciliation is what settles it.
+
+**A second trap compounds the first.** `grep` in these sessions is a shell function wrapping
+ugrep, whose `-c -o` counts occurrences where `/usr/bin/grep -c` counts lines. A measurement
+that names `grep` therefore does not say which program ran. Pin `/usr/bin/grep` wherever the
+count is the finding, or count with `-o | wc -l`, which means the same under both.
+
+**What it cost.** One correct reading was declared wrong, the declaration accepted, reversed,
+and reversed again: four passes over one number, and a defect record filed against a correct
+report. The hazard is filed as
+`260911-1511_*_coderev-is-a-substring-of-codereview-so-a-sweep-without-word-boundaries-counts-two-retired-folder-names-as-agents.md`;
+`260911-1422_*_the-retired-agent-readings-population-is-161-where-the-corpus-it-declares-holds-181.md`
+is closed as not a defect.
+
 ### 2. The record's three-way split does not hold, and it fails in two independent ways
 
 The record proposes: (1) a text that *addresses* a deleted agent, (2) a text that *cites* one

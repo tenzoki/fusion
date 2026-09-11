@@ -156,3 +156,21 @@ and `-v10-4.md` each open by telling the reader nothing in their project is rewr
 the first release since v9 where that is false. Shipping it with the migration not running and no
 note saying so hands a mid-work consuming project a workbench that silently files everything outside
 its container. Review coverage is advisory here and is not the reason; this is.
+
+---
+
+## Reconciliation annotation, 260911-1418 (reconciler, checkout 5e8248d7), at HEAD `9ceb5cc7`
+
+Findings only. No finding text above is edited.
+
+| finding | record | state | evidence |
+|---|---|---|---|
+| A | `260911-1126_*_neither-setup-nor-migrate-detects-a-live-circle-record-so-the-v11-conversion-never-runs.md` | closed, and the owed regression landed | `c08230fa` for the fix, `9ceb5cc7` for `hooks/lib/__tests__/live-circle-record-detection.test.ts` at 77 lines, five assertions over two scratch trees; suite green |
+| B | `260911-1127_*_v11-is-at-version-in-the-manifest-and-named-on-none-of-the-three-upgrade-surfaces.md` | closed | `docs/upgrading-to-v11.md` exists; `README.md:28` carries the v11 paragraph; `skills/help/SKILL.md` `### 4. Update` carries v11, v10.26 and v10.25 at `:96`, `:98`, `:100`; the `FUSION_REF=tags/v11.0.0` example stands in `README.md:26` and `install.sh:27` |
+| C | `260911-1128_*_four-user-facing-documents-place-a-work-item-in-shared-backlog-as-a-flat-file.md` | closed | the acceptance grep for `shared/backlog` over `docs/`, `README.md` and `README-agents.md` returns nothing at HEAD; `docs/working-model.md:11` and `docs/fusion-intro.md:85` now name the container and say directory |
+| D | `260911-1129_*_one-bullet-in-readme-agents-lists-circle-records-md-as-a-live-emission-and-as-removed.md` | closed | `grep -c 'circle-records' README-agents.md` returns 1 |
+| E | `260911-1130_*_claude-mds-skill-bullet-says-three-directories-have-left-and-next-is-the-fourth.md` | closed | the `CLAUDE.md` skill bullet names four departed directories with `next` among them and states no cardinality |
+
+**The tag question this review closes on is answered.** A is fixed and `c08230fa` is an ancestor of the `v11.0.0` tag, so the tagged tree does not carry the silent migration failure. What the tag does not carry is the nine commits after it, this review's own C, D and E repairs included.
+
+**One finding of this range is still open and is not one of A to E:** `260911-1339_*_staging-drift-still-classifies-a-pointer-a-rule-says-nothing-creates-and-names-a-turn-boundary-trigger-it-does-not-have.md`, plus three records filed by this reconciliation and listed on it.
