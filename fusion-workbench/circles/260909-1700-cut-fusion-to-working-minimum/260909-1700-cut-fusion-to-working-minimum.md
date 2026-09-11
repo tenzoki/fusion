@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** claimed
+**Status:** done
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260909-1702
 **Depends-on:** 260908-2018-prerequisites-confirmed-once-order-computed.md
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
@@ -111,3 +111,49 @@ Binding artifacts, cited rather than copied per the Origin Rule:
 
 - Turn 1 (session 260909-1331): commits `a1ecf86e`..`08e81db3`; session 1 of the plan's four ran to the end of its queue, steps A1, A2 and A3 each landing one commit (`86e06783`, `303488a8`, `e8dbeb74`); no Coherence verdict, because the session was interrupted after the last task and before the per-Turn check ran; resumed by session b47820a4 on 260909-2304, which found the queue empty and went to reconciliation; session history: 260909-1331-orchestrator-session.md
 - Turn 2 (session 260909-1331, resumed as b47820a4): commits `983c3cbb`..`34cd5bc2`; session 2 of the plan ran to the end of its queue, B1 `0160c449`, B2 `e257782d`, B3 `9c4dbdbb`, B4 `34cd5bc2`, and with them two unplanned steps R1 and R2 (`9c4dbdbb`, `c925fd9d`) that cut 497 lines of duplicated comment prose to buy the head-room B3 and B4 needed and the plan had not budgeted for; one ruled step, pulling the Turn-budget removal forward out of C1, was dispatched and returned unexecuted once its premise was measured false, and goes back to C1; Coherence verdict `ok` on all three edges; circuit breaker `net-negative progress` reported and not blocking, the queue having converged in the same Turn; session history: 260909-1331-orchestrator-session.md
+
+---
+
+## Closure, 260911
+
+**Done.** Released as `v11.0.0`, tagged at `7662f881` and pushed, with the marketplace entry in the
+same release. Commit range of the closing session `57753e4b..9c2d8fcf`, ten commits; the whole of the
+work spans `v10.26.0..9c2d8fcf`.
+
+**The plan's nine stopping clauses were read back to the user at closure. Seven hold. Two do not, and
+both are the plan being older than a later ruling rather than work left undone.**
+
+Clause 6 required the workbench migration to have been confirmed before a file moved. It is moot: D1
+was **cancelled**, not deferred, by the container ruling
+`260910-2133_*_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md`. No file
+moved, so there was nothing to confirm. What replaced it is step S10 of
+`260910-2145_*_restore-the-per-work-item-container.md`, an in-place conversion of two live records.
+
+Clause 8 required the four surface baselines to move once under event 1, each naming this cut, with
+the always-on rule bound retired in the same commit. **No baseline moved.** The user ruled on
+260911 that a cut-only piece of work never re-baselines
+(`260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`, option 1, implemented in
+`b90590fc`), which forbids exactly what the clause asks for. The always-on core bound was retired
+alone in `a5bb2a63`, on a measurement the plan did not have: the per-dispatch-path bound charges each
+core byte to all eleven paths at zero head-room and binds 2 455 bytes earlier, so it already refuses
+everything the retired bound refused. One head-room raise was taken, on `skills/`, 20 866 to 21 911
+bytes with every floor untouched, and it is logged in `README-hooks.md`.
+
+**Review coverage.** `v10.26.0..HEAD` was 67 commits with all 67 unopened by any review. The closing
+pass `260911-1132-reviewer-v11-closing-pass.md` tiles the range to `uncovered=0`. It named two
+findings as tag blockers and both were repaired before the tag: the upgrade path could not detect a
+live Circle record (`260911-1126`, closed), and v11 was named on none of the three upgrade surfaces
+(`260911-1127`, closed). 154 files in scope went unopened and are enumerated in that review's
+`**Not-opened:**` field.
+
+**What this item leaves open**, by name rather than by count:
+
+- `260911-1233_*_the-release-procedures-marketplace-clone-path-names-a-directory-that-no-longer-exists.md`
+- `260911-1128_*_four-user-facing-documents-place-a-work-item-in-shared-backlog-as-a-flat-file.md`
+- `260911-1129_*_one-bullet-in-readme-agents-lists-circle-records-md-as-a-live-emission-and-as-removed.md`
+- the regression test for the migration detection, owed and not written: the hook-test surface had 78
+  lines of margin and the test needs about 95, and no constant was edited to force it
+- `260910-2146_*_five-deleted-agents-are-still-named-as-live-in-twelve-shipped-files.md`, in the
+  shared store: the thirteen rule files are cleared, 151 mentions remain across prompts, skills, docs
+  and the READMEs, and most of those are correct history
+

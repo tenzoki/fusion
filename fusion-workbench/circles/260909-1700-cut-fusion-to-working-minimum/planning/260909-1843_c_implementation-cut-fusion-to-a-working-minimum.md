@@ -1,7 +1,7 @@
 # Implementation Plan: cut fusion to a working minimum
 
 **Date:** 2026-09-09
-**Status:** In Progress (session 3 of 4 complete: C0 to C9, plus C1b and C2b added at user rulings; session 4 is D1 to D4)
+**Status:** Complete (all four sessions closed 260911. D1 carries a cancellation note rather than a [DONE] marker, deliberately: the container ruling cancelled it and it did not happen. D2 and D3 each carry the half a later ruling superseded.)
 **Spec:** `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`, C1 to C9. Later rulings bind and one supersedes the spec's text: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3) and the two records this plan files, `260909-1843_*_which-sentinel-replaces-the-state-files-existence-as-the-gate-on-machine-written-rows.md` and `260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md`.
 **Amended:** 2026-09-09, against the two answers at gate G1. `260909-1700_*_does-the-live-dashboard-file-survive-a-session-with-no-turns.md`: the dashboard file does not survive and its information does, which added one field to step B3, one renderer to step B4, one check to step C0, and turned C1's re-sourcing into a removal. `260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md`: report only, which resolved step C6's conditional to a stdout verdict. No step was renumbered and no session boundary moved.
 
