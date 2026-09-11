@@ -8,7 +8,7 @@ For *why* fusion is built this way, see [`docs/philosophy.md`](philosophy.md). F
 
 A **work item** is one bounded unit of work: something somebody is going to do, or has decided not to. It is defined by three things: a **Directive** (the outcome you're aiming for), its **Grounding** (what you know going in — the assumptions and facts the work builds on), and its **Artifact** (what the work produces). When those three hold together, the item is done.
 
-**One file per item, and no marker on the filename.** An item lives at `fusion-workbench/shared/backlog/<timestamp>-<slug>.md`, and its state is a head field inside it:
+**One directory per item, and no marker on either name.** An item lives at `fusion-workbench/circles/<stamp>-<slug>/`, and its record is the file of the directory's own name inside it, `circles/<stamp>-<slug>/<stamp>-<slug>.md`; everything the item produces lands in the same directory. One record per item rather than one list file, because two checkouts filing work at the same time then merge with no conflict. The item's state is a head field in that record:
 
 ```markdown
 # split the manifest loader from the validator
@@ -160,7 +160,7 @@ Had the work been drifting at step 8 — say the coder had started refactoring a
 
 The same store, at a slower speed. Nothing here is executed, nothing is committed, and the steps can sit weeks apart.
 
-1. **You file the item.** Mid-session you notice something worth doing later and type `/fusion:memo idea: split the manifest loader from the validator`. A new file appears at `shared/backlog/<stamp>-split-manifest-loader-from-validator.md` — a title, one paragraph, `**Status:** open`, no marker on the name. That is all that happens: the memo skill files items and never reads the store back, so nothing ranks or reshapes what you just wrote.
+1. **You file the item.** Mid-session you notice something worth doing later and type `/fusion:memo idea: split the manifest loader from the validator`. A new directory appears at `circles/<stamp>-split-manifest-loader-from-validator/`, holding one record of the same name — a title, one paragraph, `**Status:** open`, no marker on either. That is all that happens: the memo skill files items and never reads the store back, so nothing ranks or reshapes what you just wrote.
 2. **Nothing ranks it.** A `playmaker` agent did until v11, and no replacement was built: an order over the store is yours to hold. What a helper may do is *report* an order over the `**Depends-on:**` edges you confirmed, with cycles named — and you override that report wherever you want to.
 3. **You read the store.** The items stand side by side on disk with their statuses in their heads. An item holding several jobs wants **splitting first**, because everything downstream takes an item whole — a spec written from a dozen observations covers one of them and leaves the rest unread. Splitting is one of the orchestrator's operations and needs your word for that item.
 4. **You claim it.** The orchestrator sets `**Status:** claimed` and writes `**Claim:** <your checkout> — <you>, <stamp>`, on your say-so and in one edit. From that moment the session holds the item's basename and puts it on every dispatch, so the monitor can say what this session is doing.

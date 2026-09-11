@@ -82,14 +82,14 @@ Fusion ist absichtlich nicht autonom. Es hält an und fragt vor: Spec-Freigabe, 
 
 ### Work Item
 
-Ein Work Item ist eine abgegrenzte Arbeitseinheit, definiert durch **Directive** (Ziel), **Grounding** (Annahmen) und **Artifact** (Ergebnis). Es ist *eine Datei*, `fusion-workbench/shared/backlog/<stamp>-<slug>.md`, **ohne Marker im Dateinamen**. Der Zustand steht als Kopffeld `**Status:**` in der Datei:
+Ein Work Item ist eine abgegrenzte Arbeitseinheit, definiert durch **Directive** (Ziel), **Grounding** (Annahmen) und **Artifact** (Ergebnis). Es ist *ein Verzeichnis*, `fusion-workbench/circles/<stamp>-<slug>/`, mit einem Record gleichen Namens darin, `circles/<stamp>-<slug>/<stamp>-<slug>.md`, **ohne Marker an beiden Namen**. Alles, was das Item hervorbringt, liegt im selben Verzeichnis. Der Zustand steht als Kopffeld `**Status:**` im Record:
 
 - `open` — niemand arbeitet daran
 - `claimed` — ein Checkout arbeitet gerade daran; `**Claim:**` nennt welcher
 - `done` — die Arbeit ist gelandet; der Claim bleibt stehen und nennt, wer sie getan hat
 - `dropped` — nicht mehr aktuell; der Text sagt warum
 
-`done` und `dropped` sind terminal; ein abgeschlossenes Item wird nie wieder geöffnet, sondern durch ein neues ersetzt, das es zitiert. Zwei Entwurfsentscheidungen tragen den Rest: eine Datei je Item statt einer Listendatei, damit zwei Checkouts konfliktfrei mergen; und der Zustand im Feld statt im Namen, damit ein Zustandswechsel die Datei ändert statt sie umzubenennen und jede Zitierung ein Leben lang gültig bleibt.
+`done` und `dropped` sind terminal; ein abgeschlossenes Item wird nie wieder geöffnet, sondern durch ein neues ersetzt, das es zitiert. Zwei Entwurfsentscheidungen tragen den Rest: ein Record je Item statt einer Listendatei, damit zwei Checkouts konfliktfrei mergen; und der Zustand im Feld statt im Namen, damit ein Zustandswechsel den Record ändert statt ihn umzubenennen und jede Zitierung ein Leben lang gültig bleibt.
 
 Kleine Projekte brauchen den Backlog kaum: eine Anfrage an den Orchestrator ohne Item läuft einfach ohne, und die Artefakte landen in ihrem jeweiligen Store.
 
@@ -104,7 +104,7 @@ Orchestrator claimed es           Status: open → claimed, Claim: <dein Checkou
 Item-Pfad an den shaper           er liest es als Anfrage und schreibt kein Byte hinein
 ```
 
-`/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<checkout>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<checkout>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigene Datei in `shared/backlog/`). Kein Agent legt ein Work Item an; das ist Sache des Menschen. Der Orchestrator pflegt den Store — claimen, freigeben, abschließen, verwerfen, teilen, zusammenlegen — und zwar je Operation und je Item nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
+`/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<checkout>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<checkout>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigenes Verzeichnis unter `circles/`). Kein Agent legt ein Work Item an; das ist Sache des Menschen. Der Orchestrator pflegt den Store — claimen, freigeben, abschließen, verwerfen, teilen, zusammenlegen — und zwar je Operation und je Item nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
 
 ### Issues und Decisions
 

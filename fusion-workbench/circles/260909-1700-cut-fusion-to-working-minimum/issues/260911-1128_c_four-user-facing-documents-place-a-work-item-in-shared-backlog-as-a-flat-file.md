@@ -42,3 +42,6 @@ carry.
 rather than file, or the resolver names `shared/backlog` again. A grep for `shared/backlog` over
 `docs/`, `README.md` and `README-agents.md` returns only sentences whose subject is that the store
 moved.
+
+---
+Resolved: the six sites in `docs/working-model.md`, `docs/fusion-intro.md`, `README.md` and `README-agents.md` now name `circles/<stamp>-<slug>/<stamp>-<slug>.md` and say directory rather than file; `docs/working-model.md`'s lead-in and `docs/fusion-intro.md`'s rationale sentence were rewritten so the merge-without-conflict reason attaches to the record rather than to the item. The acceptance grep over `docs/`, `README.md` and `README-agents.md` returns nothing. The two stranded entries under `fusion-workbench/shared/backlog/` were left untouched: they are `260910-2020_*_the-two-existing-backlog-entries-keep-the-retired-marker-form-that-d1-migrates-into.md`'s to carry.

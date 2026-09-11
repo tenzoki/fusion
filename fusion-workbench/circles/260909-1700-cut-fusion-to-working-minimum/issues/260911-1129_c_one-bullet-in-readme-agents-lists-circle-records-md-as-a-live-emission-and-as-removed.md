@@ -27,3 +27,6 @@ The second half is the correction and it is 500 characters downstream of the err
 
 **Acceptance.** The entry is out of the enumeration; the removal sentence, which is correct as it
 stands, is what is left. `grep -c 'circle-records' README-agents.md` returns 1.
+
+---
+Resolved: the `circle-records.md` entry is out of the Conditional enumeration in `README-agents.md`; the removal sentence in the same bullet's second half stands unedited. `grep -c 'circle-records' README-agents.md` returns 1.
