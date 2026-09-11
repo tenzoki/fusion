@@ -82,6 +82,7 @@
   hooks-wiring.test.ts 180
   identity-mint-notice.test.ts 118
   legacy-halt-clearing.test.ts 213
+  live-circle-record-detection.test.ts 77
   marker-format-lint.test.ts 168
   monitor-warnings-panel.test.ts 1222
   path-literal-lint.test.ts 332
@@ -100,4 +101,4 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 706
   workbench-citation-lint.test.ts 352
-  total 21745
+  total 21822
