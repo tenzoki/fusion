@@ -75,7 +75,7 @@
   guard-project-config-integration.test.ts 240
   guard-state-shape.test.ts 328
   helpers/citation-scan.ts 56
-  helpers/growth-bound.ts 171
+  helpers/growth-bound.ts 167
   helpers/guard-harness.ts 1071
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 614
@@ -89,7 +89,7 @@
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
-  reference-resolution-lint.test.ts 1001
+  reference-resolution-lint.test.ts 1002
   review-coverage-mandate.test.ts 368
   review-coverage.test.ts 890
   rules-emission-golden.test.ts 1406
@@ -100,4 +100,4 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 706
   workbench-citation-lint.test.ts 352
-  total 21823
+  total 21820

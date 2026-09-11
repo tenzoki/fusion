@@ -1,105 +1,101 @@
 // ---------------------------------------------------------------------------
 // The growth instrument — one budget mechanism, several bounded surfaces.
 //
-// WHY THIS FILE EXISTS. `rules-emission-golden.test.ts` armed a failing bound
-// over the always-on rule corpus on 2026-08-14. On 2026-08-15 the same bound was
-// extended to three more surfaces — `agents/*.md`, `skills/*/SKILL.md` and the
-// hook test lines — and the arithmetic they share was lifted here rather than
-// copied. On 2026-09-09 a fifth arrived in the same file the first one lives in:
-// the per-dispatch-path total — an agent's prompt plus the rules emitted to it
-// plus `CLAUDE.md` — armed at zero head-room. One budget mechanism, five
-// surfaces, five INDEPENDENT budgets: growth in one surface can never be paid
-// for by shrinkage in another, because each surface calls `growth()` with its own
-// baseline map and its own head-room and asserts on its own result.
+// WHY THIS FILE EXISTS. Five bounded surfaces run the same arithmetic, and it
+// was lifted here rather than copied. The budgets are INDEPENDENT — growth in
+// one can never be paid for by shrinkage in another — and `growth()` below is
+// where that is enforced rather than promised.
 //
-// WHY IT SITS UNDER `__tests__/helpers/` AND NOT IN `hooks/lib/`. Two reasons,
-// and either is sufficient. `derivable-enumerations-lint.test.ts` holds
-// `README-hooks.md`'s `hooks/lib` table in exact set equality with
-// `hooks/lib/*.ts`, so a module at the top of `lib/` needs a documented row in
-// the same commit — and a test helper is not a hook module and does not belong
-// in that table. And `hooks/tsconfig.json` excludes `lib/__tests__`, so nothing
-// here compiles into `hooks/dist/` and the build's orphan prune never sees it.
+// DO NOT MOVE IT UP INTO `hooks/lib/`. Two gates make that wrong, and
+// `README-hooks.md` names them where it names this file.
 //
 // WHAT IT DOES NOT DECIDE. Not the baselines, not the head-room figures, not the
-// failure text. Each of those is a property of the surface it bounds and is
-// declared in the test file that bounds it, next to the measurement that derived
-// it. This file holds the arithmetic and the rule below, and nothing else.
+// failure text: each belongs to the surface it bounds and is declared in the
+// test file that bounds it, beside the measurement that derived it. This file
+// holds the arithmetic and the rule below, and nothing else.
 //
 // ## Re-baselining: the three events at which a baseline moves
 //
-// A baseline map is the reference a bound measures growth from: what each file
-// weighed at the moment the surface was last settled. It is hand-edited, and it
-// moves at the three kinds of moment named below and at no other.
+// A bound is `floor + headRoom`, AND THE TWO HALVES MOVE ON DIFFERENT RULES. The
+// floor is the baseline map — what each file weighed when its surface was last
+// settled, the mark growth is measured FROM — hand-edited at the three events
+// below and at NO OTHER; the heading is a count, meant literally. Head-room is
+// how much a surface may then grow, and raising it is a named event too, set out
+// after the three, but IT IS NOT A FOURTH WAY TO MOVE A FLOOR: a moved floor
+// forgets the growth beneath it, a raised head-room leaves every byte counted.
 //
 //   1. AFTER A CLEANUP. Somebody has done the cut the bound asked for. Then, and
 //      only then, copy the per-file sizes out of the regenerated golden into the
 //      baseline map and say in a comment which cut produced them.
 //
+//      READ LITERALLY — "it cut, so it may re-baseline what it cut" — THIS EVENT
+//      IS THE SILENT RAISE ARRIVING THROUGH THE DOOR THE RULE LEFT OPEN, and the
+//      user REFUSED that reading on 2026-09-11: A CUT-ONLY PIECE OF WORK NEVER
+//      RE-BASELINES, whatever it cut, and its head-room is what the cut leaves.
+//      The floor stays fixed, so how much a surface has grown since it was last
+//      settled stays answerable, and no size of cut absolves growth nobody
+//      removed. THE REFUSAL IS A MEASUREMENT, NOT A CAUTION: taken over the four
+//      surfaces at `e6703d51`, re-baselining is not one move with one sign.
+//      Three would have GAINED margin nobody earned, while `agents/` — the
+//      surface that had cut furthest below its floor — would have LOST that
+//      shrink, falling from 61 378 to 18 000. A rule keyed on whether you cut
+//      gives the wrong answer on the surface that cut most, which is what makes
+//      the literal reading indefensible rather than merely risky; all four
+//      figures are in `README-hooks.md`. What it does fire on is a cleanup that
+//      SETTLES a surface, copying in what may be a floor that FELL (2026-08-17).
+//
 //   2. AT AN ARMING. A measurement that used to report starts blocking, and the
 //      corpus it is armed on is already past the head-room the new gate would
 //      enforce. Arming at the old baseline would ship a permanently red suite,
-//      which is a suite nobody reads. This has happened three times: on
-//      2026-08-14 for the always-on rule core (`rules-emission-golden.test.ts`),
-//      on 2026-08-15 for the three surfaces in `surface-growth-bound.test.ts`,
-//      and on 2026-09-09 for the per-dispatch-path total, whose arming is the
-//      one deliberately taken BEFORE the cut it bounds rather than at it — a
-//      baseline armed at a cut absolves the cut.
+//      which is a suite nobody reads. AN ARMING TAKEN AT A CUT ABSOLVES THE CUT,
+//      so it is taken before one. The armings are logged in `README-hooks.md`.
 //
-//      THE FIFTH SURFACE HAS A GAP IN THIS RULE AND IT IS NAMED, NOT CLOSED.
-//      Two of its three components — `CLAUDE.md` and the project-side rules —
-//      belong to the consuming project, and none of the three events covers a
-//      project that legitimately needs a larger `CLAUDE.md`. No fourth event was
-//      added for it: inside this repository the addition is offset against
-//      another component of the same paths, and outside it the question does not
-//      arise, because the consuming-project carrier reports and never refuses.
+//      THE FIFTH SURFACE HAS A GAP IN THIS RULE AND IT IS NAMED, NOT CLOSED: two
+//      of its three components belong to the consuming project, and no event
+//      here covers a project that legitimately needs a larger `CLAUDE.md`. The
+//      dispatch bound's own failure text says so, and says what offsets what.
 //
-//   3. AT A MERGE OF TWO LINES THAT WERE EACH INSIDE THE BOUND. What this
-//      instrument measures is addition per line of development. A merge adds
-//      two lines' growth to one baseline at once, so two histories that were
-//      each measured and each passed can join into one that is over — by a sum
-//      neither of them wrote and no cut answers. Then, and only then, the
-//      baseline moves to the MERGED figure, and the entry names the merge
-//      commit and BOTH PARENT FIGURES it reconciles, the way a cleanup names
-//      its cut and an arming names its gate.
+//   3. AT A MERGE OF TWO LINES THAT WERE EACH INSIDE THE BOUND. This instrument
+//      measures addition per line of development, and a merge adds two lines'
+//      growth to one baseline at once, so two histories that were each measured
+//      and each passed can join into one that is over by a sum neither wrote and
+//      no cut answers. Then, and only then, the baseline moves to the MERGED
+//      figure, and the entry names the merge commit and BOTH PARENT FIGURES.
 //
 //      THE CONDITION IS MEASURED, NEVER ASSUMED: each parent was inside the
-//      bound at its own head, measured there and written down here beside the
-//      merged figure, so a later reader can check that neither was over. A
-//      merge whose parents were not each inside is A CUT AS BEFORE — event 1
-//      and nothing else — because the line that was already over is over on
-//      growth somebody made, and joining it to another line did not change
-//      that. Nor does this event reach anything but the merged tree's own
-//      figure: growth that arrived with the merge commit's conflict
-//      resolution, and every edit made on top of it, is measured FROM the new
-//      baseline like any other addition. That is why the number copied in is
-//      the merged tree's and not the one the re-baselining commit leaves
-//      behind.
+//      bound at its own head, measured there and written down beside the merged
+//      figure, so a later reader can check that neither was over. A merge whose
+//      parents were not each inside is A CUT AS BEFORE — event 1 and nothing
+//      else — because the line already over is over on growth somebody made.
+//      Nor does the event reach past the merged tree's own figure: the conflict
+//      resolution, and every edit on top of it, is measured from the new mark.
 //
-//      AND IT IS NOT THE THIRD EVENT THAT WAS ALREADY REFUSED. A Circle that
-//      needs room to do its work asked for one on 2026-08-22 and did not get it
-//      (`260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`,
-//      option 1: the room was cut first). The two are not the same request. That
-//      one asks to be absolved of growth somebody is about to choose to make;
-//      this one reconciles two figures that were each already measured and each
-//      already passed.
+// AND BESIDE THE THREE, ONE NAMED EVENT THAT MOVES NO BASELINE AT ALL: THE
+// HEAD-ROOM RAISE. When a ruling lets work land that a bound would otherwise
+// stop, raise `headRoom` and leave every baseline untouched. It preserves
+// exactly what event 1's refusal preserves — the floor still the last settled
+// mark, the growth above it still charged, the surface's growth since it was
+// settled still readable — while letting the work land. The entry names the
+// raise WITH THE FIGURE BEFORE AND AFTER and DATES THE REDUCTION at which the
+// derived figure is read back; both are logged in `README-hooks.md`, not here.
 //
-// Between those, the baseline stays where it is — a reference that followed the
-// measurement would measure nothing. And no one of the three is the SILENT RAISE
-// this section exists to prevent, for one reason: each is written down. A cleanup
-// names the cut; an arming names the gate it armed and reproduces, AS TEXT, what
-// the re-baseline absolved; a merge names its commit and both parent figures —
-// so the request the instrument had been making survives the number moving.
-// Editing a baseline to make a failing bound pass, with no cut, no arming, no
-// merge and no log entry, is none of these and is the thing this file is asking
-// you not to do.
+// IT IS ALSO HOW THE REQUEST REFUSED ON 2026-08-22 CAME BACK: that one asked to
+// be absolved of growth somebody was about to choose to make, while this one
+// asks for room and leaves every byte of that growth on the books.
 //
-// The governing record for the arming form is
-// `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`
-// (option 1, answered by the user on 2026-08-14). For the merge form it is
-// `260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md`
-// (option 2, answered by the user on 2026-09-05), with the measurement that
-// raised it in
-// `260905-1755_*_the-merge-puts-two-surface-growth-budgets-over-while-neither-line-was-over-on-its-own.md`.
+// NONE OF THE FOUR IS THE SILENT RAISE THIS SECTION EXISTS TO PREVENT, for one
+// reason: each names itself, in the terms its own paragraph sets. Between them
+// neither number moves — a reference that followed the measurement would measure
+// nothing. Editing either one to make a failing bound pass, with no event behind
+// it and no log entry, is what this file is asking you not to do.
+//
+// TWO RESIDUALS, STATED RATHER THAN HIDDEN. Nothing detects a raised head-room
+// any more than a raised baseline — the 2026-09-11 raises are visible only
+// because each wrote itself down. And this rule cost lines on a surface standing
+// at exactly zero margin, so its own implementation met the condition it governs.
+//
+// The governing records for all four events, and the undetected-raise question,
+// are listed in `README-hooks.md` beside the logs.
 // ---------------------------------------------------------------------------
 
 /**
@@ -130,7 +126,7 @@ export interface Growth {
   floor: number;
   /** total - floor. Negative when the set shrank. */
   delta: number;
-  /** floor + budget — the point past which the set is over. */
+  /** floor + head-room — the point past which the set is over. */
   budget: number;
   /** True only when the set has spent its whole head-room. */
   over: boolean;
