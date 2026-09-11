@@ -38,3 +38,5 @@ the same question one marker over).
 vocabulary the two entries carry, or the conventions state that pre-v11 backlog entries keep their
 marker form and how a reader tells them from work items. After D1, one `ls` of the store shows one
 grammar, or shows two and the text says which is which.
+
+Also seen: 260911-1131 by reviewer — the store moved again after this was filed: `bin/fusion-paths:387` now values `OUT_BACKLOG`/`SCAN_BACKLOG` as `circles`, so `shared/backlog/` has no resolver key at all and the two entries are unread by any consumer rather than merely in the wrong grammar.

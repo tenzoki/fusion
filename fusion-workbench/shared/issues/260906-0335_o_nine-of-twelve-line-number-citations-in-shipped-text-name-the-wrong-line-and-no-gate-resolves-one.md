@@ -67,3 +67,5 @@ suite for whoever edits a cited file. This record states the defect and does not
 (the closure note that named the first instance);
 `260905-1228_*_does-a-resolution-line-cite-path-line-or-a-heading-anchor.md`
 (the same question answered for a record's resolution line, where the anchor form won).
+
+Also seen: 260911-1131 by reviewer — `README-agents.md` was outside the measured surface and carries six more in its `## Dispatch parameters` table: `agents/orchestrator.md:434` and `:485` for claims at `:229`/`:588` and `:202`/`:594`, `agents/orchestrator.md:1321` in a file of 613 lines, `agents/reviewer.md:15` on a blank line for a Setup call at `:24`, `agents/reconciler.md:28-30`/`:41-43` for a parse at `:40`, and `agents/shaper.md:70` for a parameter bound the line does not state.
