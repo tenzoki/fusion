@@ -148,8 +148,16 @@
  *   record          -> `<stamp>_*_<slug>...`  the store segment is dropped and
  *                                             a literal marker becomes `_*_`;
  *                                             a token with no marker keeps its tail
- *   circle-record   -> `<stamp>-<slug>`       the bare Circle-directory name
- *   circle-dir      -> `<stamp>-<slug>`       the same
+ *   circle-record   -> `<stamp>-<slug>`       the bare container name, when the
+ *                                             token is the `_x_circle.md` form
+ *                   -> `<stamp>-<slug>.md`    the record's own basename, when it
+ *                                             is the item form named after its
+ *                                             container — the two forms name
+ *                                             different things and rewriting
+ *                                             both to the directory would turn
+ *                                             a pointer at a record into one at
+ *                                             a directory
+ *   circle-dir      -> `<stamp>-<slug>`       the bare container name
  *   bare-record     -> `_*_` at the marker    only when the marker is literal; a
  *                                             truncated citation (`<stamp>_o_`,
  *                                             `<stamp>_d`) is one token and is
@@ -536,8 +544,14 @@ function candidateFor(hit) {
         }
         case "circle-record":
         case "circle-dir": {
-            const m = /circles\/([0-9]{6}-[0-9]{4}-[a-z0-9-]+)/.exec(t);
-            return m === null ? null : m[1];
+            const DIR = "[0-9]{6}-[0-9]{4}-[a-z0-9-]+";
+            const m = new RegExp(`circles\\/(${DIR})(?:\\/(${DIR}))?`).exec(t);
+            if (m === null)
+                return null;
+            // The second group is set only for the item form, where the grammar's own
+            // backreference has already proved the two names equal; the equality is
+            // re-asserted here rather than assumed, so this stays readable alone.
+            return m[2] === m[1] ? `${m[1]}.md` : m[1];
         }
         case "bare-record":
             return /^[0-9]{6}-[0-9]{4}_[a-z]_/.test(t) ? t.replace(/_[a-z]_/, "_*_") : null;

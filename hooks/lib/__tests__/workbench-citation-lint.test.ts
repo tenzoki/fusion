@@ -15,6 +15,7 @@ import {
 import {
   CIRCLE_RECORD_RE,
   FROZEN_PREFIXES,
+  ITEM_RECORD_RE,
   LIVE_DECISION_RE,
   isLiveRecord,
 } from "../citation-corpus.js";
@@ -186,7 +187,16 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
     // (`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`).
     expect(inCorpus("portfolio.md"), "the corpus predicate admits portfolio.md").toBe(true);
     const has = (re: RegExp) => all.some((r) => re.test(r) && rels.has(r));
-    expect(has(CIRCLE_RECORD_RE), "at least one Circle record is selected").toBe(true);
+    // EITHER RECORD FORM SATISFIES IT, and the disjunction is not a softening:
+    // the container store holds both for good — only a live record is converted
+    // to its container's name — so a tree carrying one form and not the other is
+    // a tree this kind is still fully present in. Naming one form would make the
+    // assertion fail on a workbench whose containers all happen to be converted,
+    // which is a shape this project has not reached and a consuming one may.
+    expect(
+      has(CIRCLE_RECORD_RE) || has(ITEM_RECORD_RE),
+      "no container record of either form is selected",
+    ).toBe(true);
     expect(has(LIVE_DECISION_RE), "at least one live decision is selected").toBe(true);
     const tmp = mkdtempSync(join(tmpdir(), "citation-corpus-"));
     const open = "shared/issues/260101-0000_o_x.md";
@@ -209,6 +219,23 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
     const states = new Set(records.map((r) => /_([atcbsd])_circle\.md$/.exec(r)![1]));
     expect(states.size, "the tree carries Circle records in more than one state").toBeGreaterThan(1);
     expect(records.filter((r) => !rels.has(r))).toEqual([]);
+  });
+
+  it("takes a container's record under its own name, and nothing else beside it", () => {
+    // The second record form, put to the PREDICATE rather than to the tree: the
+    // conversion of this workbench's two live records is the NEXT step, and this
+    // clause lands first so that conversion has a gate that can see it. Measured
+    // here, it admits zero files on disk — the `LIVE_PLAN_RE` precedent.
+    expect(inCorpus("circles/260101-0000-x/260101-0000-x.md")).toBe(true);
+    // The structural equality is the whole discriminator. A stray file inside a
+    // container, and one container naming another container's record, are each
+    // outside — which is what stops the second clause from being an exemption
+    // that widens the corpus until the marked clause's refusals fall through it.
+    expect(inCorpus("circles/260101-0000-x/notes.md")).toBe(false);
+    expect(inCorpus("circles/260101-0000-x/260101-0000-y.md")).toBe(false);
+    for (const p of FROZEN_PREFIXES) {
+      expect(inCorpus(`${p}b/circles/260101-0000-x/260101-0000-x.md`), p).toBe(false);
+    }
   });
 
   it("excludes every frozen store, whatever a swept file's marker says", () => {

@@ -45,7 +45,7 @@
 [hook-tests lines]
   archive-filter-key.test.ts 40
   citation-form.test.ts 376
-  citation-grammar-boundaries.test.ts 179
+  citation-grammar-boundaries.test.ts 230
   citation-sweep.test.ts 527
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
@@ -98,6 +98,6 @@
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 673
-  surface-growth-bound.test.ts 690
-  workbench-citation-lint.test.ts 325
-  total 21728
+  surface-growth-bound.test.ts 730
+  workbench-citation-lint.test.ts 352
+  total 21846

@@ -148,8 +148,16 @@
  *   record          -> `<stamp>_*_<slug>...`  the store segment is dropped and
  *                                             a literal marker becomes `_*_`;
  *                                             a token with no marker keeps its tail
- *   circle-record   -> `<stamp>-<slug>`       the bare Circle-directory name
- *   circle-dir      -> `<stamp>-<slug>`       the same
+ *   circle-record   -> `<stamp>-<slug>`       the bare container name, when the
+ *                                             token is the `_x_circle.md` form
+ *                   -> `<stamp>-<slug>.md`    the record's own basename, when it
+ *                                             is the item form named after its
+ *                                             container — the two forms name
+ *                                             different things and rewriting
+ *                                             both to the directory would turn
+ *                                             a pointer at a record into one at
+ *                                             a directory
+ *   circle-dir      -> `<stamp>-<slug>`       the bare container name
  *   bare-record     -> `_*_` at the marker    only when the marker is literal; a
  *                                             truncated citation (`<stamp>_o_`,
  *                                             `<stamp>_d`) is one token and is

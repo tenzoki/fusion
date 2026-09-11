@@ -24,15 +24,19 @@ const SWEEP = "260817-1907-safe-cleanup-scoped";
 const SWEPT = "260810-1200-swept-circle";
 const LIVE = "260820-0900-live-circle";
 const RECORD = "260819-1645_o_what-defines-the-corpus.md";
+/** A container holding its record under its own name — the second record form. */
+const ITEM = "260910-2145-restore-the-container";
 
-/** A workbench with one record, one live Circle, and one Circle inside one sweep. */
+/** A workbench with one record, one live Circle, one item, and one Circle in a sweep. */
 function scratch(): string {
   const wb = join(realpathSync(mkdtempSync(join(tmpdir(), "grammar-"))), "fusion-workbench");
   mkdirSync(join(wb, "shared", "history"), { recursive: true });
   mkdirSync(join(wb, "circles", LIVE), { recursive: true });
+  mkdirSync(join(wb, "circles", ITEM), { recursive: true });
   mkdirSync(join(wb, "archive", SWEEP, "circles", SWEPT), { recursive: true });
   writeFileSync(join(wb, ".fusion-setup"), "{}");
   writeFileSync(join(wb, "shared", "history", RECORD), "x");
+  writeFileSync(join(wb, "circles", ITEM, `${ITEM}.md`), "an item record");
   return wb;
 }
 
@@ -175,5 +179,52 @@ describe("a citation the writer qualified as another project's is exempt, not da
   it("exempts a qualified token that names a record sitting in THIS workbench", () => {
     const [hit] = toks(wb, `see foreign:elsewhere:${RECORD}`);
     expect([hit.status, hit.reason]).toEqual(["exempt", "foreign-record"]);
+  });
+});
+
+describe("both container record forms are read, and neither widens into the other", () => {
+  // The store holds two record forms for good: only a LIVE record is ever
+  // converted to its container's name, so the 24 terminal `_x_circle.md` records
+  // stay as they are (`260910-2145_*_restore-the-per-work-item-container.md`
+  // step S9). These cases are the two halves of that — each form resolves in its
+  // storeless spelling and is reported in its store-prefixed one — plus the
+  // controls that say the widening is a structural equality and not a net.
+  const wb = scratch();
+
+  it("resolves an item record by its own basename, and a container by its bare name", () => {
+    expect(toks(wb, `the item ${ITEM}.md is claimed`).map((h) => [h.kind, h.status, ...h.matches])).toEqual([
+      ["stamp-name", "resolved", `circles/${ITEM}/${ITEM}.md`],
+    ]);
+    expect(toks(wb, `the Circle ${LIVE} is open`).map((h) => [h.kind, h.status, ...h.matches])).toEqual([
+      ["stamp-name", "resolved", `circles/${LIVE}`],
+    ]);
+  });
+
+  it("still dangles on a record no container holds — the widening resolves nothing new", () => {
+    // `LIVE` is a pre-restoration container with no record of its own name. If
+    // the second form were an exemption rather than a structural equality, this
+    // is the citation it would swallow.
+    expect(toks(wb, `see ${LIVE}.md for it`).map((h) => [h.status, h.matches])).toEqual([["dangling", []]]);
+  });
+
+  it("reports the store-prefixed spelling of each form, with the fix each form takes", () => {
+    // `_x_circle.md` is the same basename in every container, so only the
+    // directory can be looked up; an item record's basename is unique and is
+    // itself the citation. One `fix` for both would respell a pointer at a
+    // record into a pointer at a directory.
+    const item = toks(wb, `see circles/${ITEM}/${ITEM}.md here`);
+    expect(item.map((h) => [h.token, h.kind, h.status])).toEqual([
+      [`circles/${ITEM}/${ITEM}.md`, "circle-record", "store-prefixed"],
+    ]);
+    expect(item[0].fix).toContain(`'${ITEM}.md'`);
+    expect(toks(wb, `see circles/${LIVE}/_t_circle.md here`)[0].fix).toContain(`'${LIVE}'`);
+  });
+
+  it("reads no other file in a container as that container's record", () => {
+    // The backreference, put to the one input that separates it from a wildcard
+    // over a container's contents. Both lines are store-prefixed spellings a
+    // widened pattern would claim; neither names a record.
+    expect(toks(wb, `see circles/${ITEM}/notes.md here`)).toEqual([]);
+    expect(toks(wb, `see circles/${ITEM}/${LIVE}.md here`)).toEqual([]);
   });
 });

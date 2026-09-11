@@ -242,6 +242,45 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // only the surfaces a merge put over; copying a merged figure into a baseline
 // that is passing is the silent raise, whatever produced the tree.
 //
+// ## The head-room raise, 2026-09-11 — the hook tests, under a ruling
+//
+// NOT A RE-BASELINING EVENT, and it is written here rather than beside the three
+// above because it is a different act on a different number. A baseline says what
+// each file weighed when the surface was last settled; head-room says how much
+// the surface may grow from there. This step moves the second and leaves the
+// first exactly where it stands, so every line added under the raise is still
+// counted as growth above an unmoved floor. That is what makes the reduction
+// below a reading rather than a promise: the surplus is the sum of the raises,
+// and putting 2 500 back is the whole of it.
+//
+// THE RAISE: `TEST_LINE_HEAD_ROOM` 2 500 -> 2 618, +118 lines, spent in full by
+// step S9 of `260910-2145_*_restore-the-per-work-item-container.md` — the
+// citation corpus and the grammar learning the second container-record form, and
+// this section. Before: 21 728 lines of budget (floor 19 228 + 2 500), 21 806
+// measured with S9's cases written, 78 over. After: the budget is the measured
+// figure and the head-room is spent to the line.
+//
+// WHY A RAISE AT ALL, when the standing answer to a red bound is a cut and this
+// file says so four times. The user ruled it on 2026-09-10:
+// `260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md`,
+// option 2 — the budgets are raised as far as needed for the container
+// restoration, and a reduction is attempted afterwards. A cut was looked for
+// first and not taken: what this suite holds at 21 728 lines is reasoned prose
+// with a claim per paragraph, and funding one step's cases by deleting another
+// step's reasoning is the trade decision 260805-1559 already refused.
+//
+// THE RULING'S RESIDUAL STANDS AND IS NOT ARGUED AWAY HERE: the instrument stops
+// measuring during exactly the work it exists to measure, and this project has
+// one instance on record of that shape lasting thirteen days. What bounds it is
+// that every raise names itself with the figure before and after — this section
+// — and that the reduction is read on 2026-10-10.
+//
+// NO MARGIN WAS TAKEN. The figure is the measured overage and not a round number
+// with room in it: the ruling chose "as needed" over "a fixed amount decided
+// now" because a figure nothing predicts is invented rather than measured. The
+// next line added to this surface still goes red, which is the instrument
+// working rather than a raise to be topped up quietly.
+//
 // ## What no bound covers
 //
 // Authored under that heading in `README-hooks.md`, and claimed by no step here.
@@ -413,7 +452,8 @@ const TEST_LINE_BASELINE: Record<string, number> = {
 /** See `## Where each head-room comes from`. Derived per surface, never shared. */
 const AGENT_HEAD_ROOM = 18_000;
 const SKILL_HEAD_ROOM = 20_000;
-const TEST_LINE_HEAD_ROOM = 2_500;
+/** 2 500 derived, plus the named raise in `## The head-room raise, 2026-09-11`. */
+const TEST_LINE_HEAD_ROOM = 2_618;
 
 const SURFACES: Surface[] = [
   {

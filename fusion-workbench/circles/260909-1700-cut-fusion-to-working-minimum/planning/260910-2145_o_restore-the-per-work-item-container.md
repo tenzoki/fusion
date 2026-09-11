@@ -131,7 +131,7 @@ Four bounds can go red. Measured at `0c793392` plus the concurrent `coder`'s unc
    - Dependencies: S1, S7
    - Verification: run against a scratch pre-v4 workbench, the result is the container layout with live records converted and terminal ones untouched; run twice, the second run reports nothing to do. Net bytes under `skills/` fall, and the figure is stated in the commit message because it is what funds S6 and S7.
 
-9. **S9: the citation corpus and grammar carry both record forms**
+9. [DONE] **S9: the citation corpus and grammar carry both record forms**
    - Executor: `coder`
    - Files: `hooks/lib/citation-corpus.ts`, `hooks/lib/citation-scan.ts`, `hooks/lib/__tests__/workbench-citation-lint.test.ts`
    - Changes: the corpus predicate keeps `CIRCLE_RECORD_RE` for the legacy marked form and gains the unmarked item-record form `circles/<dir>/<dir>.md`, so a live item record is judged and the 23 distinct legacy citations keep resolving. The `circle-record` and `circle-dir` citation kinds stay; D2's plan to remove them is superseded by the ruling and that supersession is written into the commit message rather than left for D2 to discover. The lint's non-vacuity assertion is widened to accept either form.

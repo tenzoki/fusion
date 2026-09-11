@@ -90,6 +90,48 @@
 /** `circles/<dir>/_<marker>_circle.md` — a Circle record in ANY state. */
 export const CIRCLE_RECORD_RE = /^circles\/[^/]+\/_[atcbsd]_circle\.md$/;
 
+/**
+ * `circles/<dir>/<dir>.md` — a WORK-ITEM record: the file named after its own
+ * container. The second record form the container store holds, and the one a
+ * container filed since the restoration carries
+ * (`260910-2145_*_restore-the-per-work-item-container.md` step S9, under the
+ * ruling `260910-2133_*_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md`).
+ *
+ * BOTH FORMS STAND IN ONE TREE PERMANENTLY, BY DESIGN AND NOT IN TRANSITION.
+ * The migration converts a record only while it is LIVE; a terminal one is not
+ * touched, because `rules/fusion-workbench-conventions.md`
+ * `## Terminal states are history` forbids editing it back and because renaming
+ * it would break every citation that names it. In this workbench that is 24
+ * marked records against 2 converted ones, and the ratio only ever moves one
+ * way. So the predicate carries two clauses for as long as the store exists,
+ * and neither is a migration step waiting to be deleted.
+ *
+ * THE DISCRIMINATOR IS A STRUCTURAL EQUALITY, NOT A WILDCARD OVER A CONTAINER.
+ * The backreference is the whole of it: the basename, minus `.md`, must BE the
+ * name of the directory holding it. `circles/<dir>/notes.md` is outside,
+ * `circles/<other>/<dir>.md` is outside, and every path under a container's
+ * `planning/`, `issues/` or `decisions/` is outside and stays judged by the
+ * clause for its own kind. One path per container is admitted and there is no
+ * input for which this clause admits more than the marked clause refused —
+ * which is what stops the second form from being an EXEMPTION that widens the
+ * net until a real defect falls through it.
+ *
+ * IT ADMITS A RECORD IN EVERY STATE, for the same reason `CIRCLE_RECORD_RE`
+ * does and not by carelessness. An item carries its state in the `**Status:**`
+ * head field rather than in its name, so no path predicate can read it; the
+ * only alternative would be to open the file, which would make a pure function
+ * of a path impure to buy a filter the marked form never had. A done item's
+ * record is still read and still cited from, exactly as a `_c_` Circle's is.
+ *
+ * MEASURED WHEN IT WAS WRITTEN: it admits ZERO files in this tree, because the
+ * conversion of the two live records is the NEXT step and this one lands first
+ * so that the conversion has a gate that can see it. That is the `LIVE_PLAN_RE`
+ * precedent — a clause armed for the records somebody is about to write — and
+ * the same note is owed here, because a clause measured at zero is a clause a
+ * later reader will otherwise assume was measured at something.
+ */
+export const ITEM_RECORD_RE = /^circles\/([^/]+)\/\1\.md$/;
+
 /** An issue carrying `_o_`, in a Circle's store or in `shared/`. */
 export const OPEN_ISSUE_RE = /(?:^|\/)issues\/[0-9]{6}-[0-9]{4}_o_[^/]+\.md$/;
 
@@ -176,6 +218,7 @@ export function isLiveRecord(rel: string): boolean {
   if (rel === PORTFOLIO) return true;
   return (
     CIRCLE_RECORD_RE.test(rel) ||
+    ITEM_RECORD_RE.test(rel) ||
     OPEN_ISSUE_RE.test(rel) ||
     LIVE_DECISION_RE.test(rel) ||
     LIVE_PLAN_RE.test(rel)

@@ -34,8 +34,9 @@
 //
 //   THE THREE STORE-PREFIXED SHAPES ARE DETECTED AND NEVER RESOLVED. A record
 //   behind a store segment (`shared/<store>/…`, `circles/<dir>/<store>/…`,
-//   `<dir>/<store>/…`, `record`), a Circle's own record
-//   `circles/<dir>/_x_circle.md` (`circle-record`) and a Circle directory
+//   `<dir>/<store>/…`, `record`), a container's own record — either form,
+//   `circles/<dir>/_x_circle.md` or `circles/<dir>/<dir>.md` (`circle-record`)
+//   — and a container directory
 //   `circles/<dir>` (`circle-dir`) each get the status `store-prefixed`, a
 //   violation whose `fix` spells the storeless form. The segment is what an
 //   archive sweep moves, so a citation carrying it dies at the sweep; the
@@ -351,7 +352,7 @@ const REC_RE = new RegExp(LEFT_ANCHOR +
     `(${STORES})\\/` +
     `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?${REC_TAIL.cls})` + // `.` admits ASCII `...`
     REC_TAIL.stop, "g");
-// A Circle's OWN record, `circles/<dir>/_x_circle.md`. It gets its own pattern
+// A container's OWN record, in either form. It gets its own pattern
 // rather than a widening of `REC_RE` because the two basenames have nothing in
 // common: a store record is `<stamp>_<marker>_<slug>.md` and `REC_RE`'s tail is
 // anchored on that stamp, while a Circle record carries no stamp and no slug at
@@ -373,10 +374,24 @@ const REC_RE = new RegExp(LEFT_ANCHOR +
 // no longer refuses, and the pattern would report a `circles/<dir>/_x_circle`
 // token where it reports none today, one a rewriter would splice under a `.mdx`
 // it never covered.
+//
+// IT READS BOTH RECORD FORMS, and the second alternative is a BACKREFERENCE
+// rather than a second shape. A container filed since the restoration holds its
+// record under the container's OWN name, `circles/<dir>/<dir>.md`, and a
+// pre-restoration container holds `_x_circle.md`; both stand in one tree for
+// good, because only a live record is ever converted
+// (`260910-2145_*_restore-the-per-work-item-container.md` step S9). Written as
+// `\1` the alternative admits exactly one path per container and cannot widen:
+// `circles/<dir>/notes.md` matches nothing here, and neither does a container
+// naming ANOTHER container's record. Before this, the store-prefixed spelling
+// of an item record produced NO TOKEN AT ALL — no pattern claimed it and the
+// stamp patterns refuse a `/` in front of a stamp — which is the same silent
+// class as the sentence-stop defect two paragraphs up, and one class worse than
+// a reported violation.
 const CIRCLE_REC_RE = new RegExp(LEFT_ANCHOR +
     ROOTING +
     `circles\\/(${CIRCLE_DIR})\\/` +
-    "(_[a-zA-Z*]_circle(?:\\.md)?)(?!\\.md)" +
+    "(_[a-zA-Z*]_circle|\\1)(?:\\.md)?(?!\\.md)" +
     NAME_END, "g");
 // Bare record citation — the `_` right after the stamp is required, or every
 // plain timestamp and Circle-directory name would fire. What follows the `_` is
@@ -944,9 +959,17 @@ export function createScanner(workbenchRoot) {
             }
             CIRCLE_REC_RE.lastIndex = 0;
             while ((m = CIRCLE_REC_RE.exec(text)) !== null) {
-                const [full, dir] = m;
+                const [full, dir, base] = m;
                 const idx = m.index;
-                consider(idx, full, "circle-record", () => storePrefixed("circles/", dir));
+                // The two record forms take DIFFERENT storeless spellings, and the
+                // backreference is what tells them apart. A Circle record's own basename
+                // is `_x_circle.md` in every container, so nothing but the directory
+                // name can be looked up; an item record's basename is unique across the
+                // workbench and IS the citation, per `## Filename Patterns`'
+                // markerless-artifact form. Spelling both as the directory would quietly
+                // turn a citation of the RECORD into a citation of the DIRECTORY.
+                const storeless = base === dir ? `${dir}.md` : dir;
+                consider(idx, full, "circle-record", () => storePrefixed("circles/", storeless));
             }
             BARE_RE.lastIndex = 0;
             while ((m = BARE_RE.exec(text)) !== null) {
