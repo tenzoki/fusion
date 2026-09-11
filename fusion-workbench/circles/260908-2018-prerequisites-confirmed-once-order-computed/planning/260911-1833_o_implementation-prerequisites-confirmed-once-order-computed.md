@@ -96,13 +96,13 @@ Coherence self-check, run before this was finalised. Thirteen nodes, fifteen edg
 
 **G1 and G2 are gates, not steps, and carry no Executor.** Putting a question to the user is nobody's dispatch: `coder`, `ontocoder` and `analyst` each run non-interactively and none of them holds `AskUserQuestion`. The orchestrator proxies both. They are numbered so the blocked steps can name them.
 
-1. **A1: re-ground the three inherited decisions against the tree at HEAD**
+1. [DONE] **A1: re-ground the three inherited decisions against the tree at HEAD**
    - Executor: `analyst`
    - Files: writes `$OUT_ANALYSIS/YYMMDD-HHMM-re-grounding-three-open-decisions.md`; reads the three records in this item's decision store, `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, `skills/archive/SKILL.md` filter 2, the two work-item records, and the git history of the removed surfaces each record argues over
    - Changes: for each of the three records, state which of its options are still writable against the current tree and which are not, and why; restate the live question in the current vocabulary. For the relation-type record, the specific finding to test is that the field has no verb slot, so its option 2 as written has no carrier. For the closed-prerequisite record, restate the three target states against `open | claimed | done | dropped` plus the archive, and carry forward the finding already in the spec that `skills/archive/SKILL.md` protects a live dependent's prerequisite and not a `done` one. For the template record, state what the work-item grammar has already foreclosed. **Edit none of the three records and move no marker**: the report is the input the gate reads, and the answer is what transitions them.
    - Dependencies: none
 
-2. **D1: the candidate-edge survey, which decides whether the proposal pass is built at all**
+2. [DONE] **D1: the candidate-edge survey, which decides whether the proposal pass is built at all**
    - Executor: `analyst`
    - Files: writes `$OUT_ANALYSIS/YYMMDD-HHMM-candidate-prerequisite-edges.md`; reads the work items under `$SCAN_BACKLOG` and the records each one cites
    - Changes: propose each candidate prerequisite edge between two work items as one row carrying the dependent item, the item the entry would name, an evidence tier saying whether the relation was quoted or inferred, and the sentence it was read from. Write into no work item and propose no edge whose dependent is `done` or `dropped`. Report the count as the headline, because that count is what the first stopping condition turns on. **This is deliberately not a curator dispatch**: the curator's remit does not yet cover a work item as a subject, and dispatching it against a subject its own prompt excludes would be asking an agent to act outside its stated scope. The spec's point stands either way, which is that the count is obtainable before any prompt byte moves.
