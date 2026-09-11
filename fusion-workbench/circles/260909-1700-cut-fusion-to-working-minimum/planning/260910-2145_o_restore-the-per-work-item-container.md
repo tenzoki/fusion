@@ -124,7 +124,7 @@ Four bounds can go red. Measured at `0c793392` plus the concurrent `coder`'s unc
    - Dependencies: S1
    - Verification: `/fusion:setup` run against this workbench, with its 26 containers, completes rather than refusing; run against a scratch pre-v4 workbench it still refuses and still routes to `/fusion:migrate`.
 
-8. **S8: `skills/migrate/SKILL.md` stops flattening**
+8. [DONE] **S8: `skills/migrate/SKILL.md` stops flattening**
    - Executor: `coder`
    - Files: `skills/migrate/SKILL.md`
    - Changes: Step 4b is deleted and replaced by an in-place conversion. A container stays where it is and its stores are not emptied. Its record is converted **only when the record is live** (`_a_` or `_t_`): renamed from `_<m>_circle.md` to `<directory name>.md` and re-headed with `**Domain:**`, `**Status:**` (`_a_`→`open`, `_t_`→`claimed` when the record's own claim opens `Claimed `, else `open`), `**Claim:**`, `**Depends-on:**` and `**Filed by:**`, body carried verbatim from `## Directive` down. **A terminal record is not touched at all**, which is `## Terminal states are history` and also what keeps its citations resolving. `.active-circle` is deleted, as it already is. The survey, the per-container status proposal and the deferred-status question all survive, with the population narrowed to live records. Everything above Step 4b is unchanged: those passes move a workbench toward the container layout, which is what the ruling wants.
