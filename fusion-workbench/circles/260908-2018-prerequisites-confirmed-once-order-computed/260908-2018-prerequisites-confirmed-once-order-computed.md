@@ -2,10 +2,8 @@
 
 ---
 **Domain:** code
+**Status:** open
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Unclaimed
-**Active spec/plan:** (none yet)
-**Active session history:** (none yet)
 
 ---
 

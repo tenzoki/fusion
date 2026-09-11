@@ -2,12 +2,25 @@
 
 ---
 **Domain:** code
+**Status:** claimed
+**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260909-1702
+**Depends-on:** 260908-2018-prerequisites-confirmed-once-order-computed.md
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Claimed 260909-1702: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
-**Active spec/plan:** 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md (the plan in execution); 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md (the spec it was planned from, and the one that states the Directive)
-**Active session history:** 260910-0900-orchestrator-session.md
 
 ---
+
+**Two head fields of the Circle record have no counterpart in the work-item format, so they are
+carried here as prose rather than dropped or invented into the head.** The item grammar defines
+exactly `**Domain:**`, `**Status:**`, `**Claim:**`, `**Depends-on:**` and `**Filed by:**`
+(`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`), and none of them names
+the artifact the work runs on. That gap is filed and open:
+`260910-2011_*_a-work-item-has-no-field-for-the-plan-it-runs-on-so-the-closure-step-lost-its-source.md`.
+The two values as this record carried them, verbatim:
+
+- Active spec/plan: 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md (the plan in execution); 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md (the spec it was planned from, and the one that states the Directive)
+- Active session history: 260910-0900-orchestrator-session.md
+
+`## Directive` below says "See `**Active spec/plan:**` above". It is these two lines it means.
 
 ## Directive
 
