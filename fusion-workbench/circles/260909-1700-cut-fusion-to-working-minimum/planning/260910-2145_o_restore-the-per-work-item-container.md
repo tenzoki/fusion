@@ -110,7 +110,7 @@ Four bounds can go red. Measured at `0c793392` plus the concurrent `coder`'s unc
    - Dependencies: S3
    - Verification: `provenance-header-lint`, `reference-resolution-lint` and `path-literal-lint` green. Zero dispatch-byte cost: none of the three is emitted to an agent, which `rules-emission-golden` confirms by not moving.
 
-6. **S6: the six depth-1 globs become depth-2, and two prompts regain a target parameter**
+6. [DONE] **S6: the six depth-1 globs become depth-2, and two prompts regain a target parameter**
    - Executor: `coder`
    - Files: `agents/orchestrator.md`, `agents/shaper.md`, `agents/curator.md`, `agents/planner.md`, `skills/memo/SKILL.md`, `skills/archive/SKILL.md`, `README-agents.md`
    - Changes: every `find "$WORKBENCH/$SCAN_BACKLOG" -mindepth 1 -maxdepth 1 -name '*.md'` becomes a depth-2 walk that takes each container's own record. `skills/memo/SKILL.md` creates `circles/<stamp>-<slug>/` and writes the record inside it. `skills/archive/SKILL.md` archives a terminal item's **whole container**, not the record alone, which is what stops an archive sweep separating a unit of work from its artifacts. `agents/planner.md` and `agents/shaper.md` regain a dispatch parameter naming a container to write into, spelled `**Item:** <directory-name>` and passed as the resolver's second argument; the paragraph in `agents/planner.md` saying the old `**Circle:**` parameter is gone is replaced by the new one. `README-agents.md` `## Dispatch parameters` gains the two rows, since it is the roster's single authoring home.
@@ -138,7 +138,7 @@ Four bounds can go red. Measured at `0c793392` plus the concurrent `coder`'s unc
    - Dependencies: S1
    - Verification: `npx vitest run lib/__tests__/workbench-citation-lint.test.ts` green over the live tree; `bin/fusion-citation-check` still reports `verdict=clean` with `dangling` no higher than the 301 measured at `0c793392`.
 
-10. **S10: this workbench's two live records become item records**
+10. [DONE] **S10: this workbench's two live records become item records**
     - Executor: `ontocoder`
     - Files: the live record inside each of the two live containers, `260909-1700-cut-fusion-to-working-minimum` (marker `_t_`) and `260908-2018-prerequisites-confirmed-once-order-computed` (marker `_a_`); the two files in the workbench's `shared/backlog/`; the workbench's `.active-circle`
     - Changes: each record is renamed to its own container's directory name, suffix `.md`, and re-headed. The `_t_` one takes `**Status:** claimed` and a `**Claim:**` naming this checkout's eight hex from `bin/fusion-identity`; the `_a_` one takes `**Status:** open` and no claim field. **The other 24 records are not touched**, and nothing under any container moves. The `_p_` file in `shared/backlog/` becomes a container with its record inside; the `_c_` one is terminal and is left where it is for the archive pass to take. `.active-circle` is deleted. Every citation of the two converted records is corrected in the same commit.

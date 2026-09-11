@@ -281,6 +281,42 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // next line added to this surface still goes red, which is the instrument
 // working rather than a raise to be topped up quietly.
 //
+// ## The head-room raise, 2026-09-11 — `skills/`, under the same ruling
+//
+// SAME ACT, SECOND SURFACE, AND THE TWO BUDGETS STAY INDEPENDENT. This raise
+// moves `SKILL_HEAD_ROOM` and nothing else; the skill baseline does not move, so
+// every byte added under it is still growth above an unmoved floor, and the
+// 2026-10-10 reduction reads the sum of both raises rather than one of them.
+//
+// THE RAISE: `SKILL_HEAD_ROOM` 20 000 -> 20 866, +866 bytes, spent in full by
+// step S6 of `260910-2145_*_restore-the-per-work-item-container.md` — the two
+// depth-1 walks over the item store becoming two-level walks that reach a
+// container's record in either of the two forms the store now holds, the
+// whole-container archive move, and the repair of a Step 1 paragraph that told
+// the archive body every `SCAN_*` names exactly one directory, which the restored
+// resolution contract had made false. Before: 222 397 bytes of budget
+// (floor 202 397 + 20 000), 223 263 measured with S6 written, 866 over. After:
+// the budget is the measured figure and the head-room is spent to the byte.
+//
+// A CUT WAS TAKEN FIRST AND IS NOT THE WHOLE OF IT. S6's first draft measured
+// 223 277 and was tightened to 223 000 — 277 bytes out of its own new prose, not
+// out of somebody else's — and 263 went back on when the walks were run against
+// the live store and refuted a claim both prompts had made, that a legacy marked
+// record carries no `**Status:**` at all: 11 of this store's 24 carry one, in the
+// older state vocabulary. What was left alone is the class the S9 note names — a
+// skill body receives no rule emission, so a rule restated there is its only copy.
+//
+// NO MARGIN WAS TAKEN, for the reason the section above gives: 603 is the
+// measured overage, and the next byte added to `skills/` goes red.
+//
+// AND THIS SECTION PAYS FOR ITSELF OUT OF THE OTHER SURFACE. Writing a `skills/`
+// raise down costs hook-test LINES, which stood at zero head-room after S9, so
+// `TEST_LINE_HEAD_ROOM` goes 2 618 -> 2 654, +36 lines: 28 for the section above
+// and 8 for this paragraph, spent to the line like S9's. The two budgets do not
+// fund each other — each moved by its own measured overage — and the point of
+// naming it here is that a raise whose own documentation is unaffordable is a
+// raise that would be taken silently.
+//
 // ## What no bound covers
 //
 // Authored under that heading in `README-hooks.md`, and claimed by no step here.
@@ -451,9 +487,9 @@ const TEST_LINE_BASELINE: Record<string, number> = {
 
 /** See `## Where each head-room comes from`. Derived per surface, never shared. */
 const AGENT_HEAD_ROOM = 18_000;
-const SKILL_HEAD_ROOM = 20_000;
-/** 2 500 derived, plus the named raise in `## The head-room raise, 2026-09-11`. */
-const TEST_LINE_HEAD_ROOM = 2_618;
+const SKILL_HEAD_ROOM = 20_866;
+/** 2 500 derived, plus the two named raises in `## The head-room raise, 2026-09-11`. */
+const TEST_LINE_HEAD_ROOM = 2_654;
 
 const SURFACES: Surface[] = [
   {

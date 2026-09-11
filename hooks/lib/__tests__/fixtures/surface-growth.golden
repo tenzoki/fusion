@@ -15,18 +15,18 @@
   analyst.md 21032
   coder.md 12165
   consultant.md 13855
-  curator.md 34360
+  curator.md 34529
   editor.md 13309
   ontocoder.md 15875
-  orchestrator.md 84348
-  planner.md 19111
+  orchestrator.md 86034
+  planner.md 19365
   reconciler.md 21171
   reviewer.md 12837
-  shaper.md 15784
-  total 263847
+  shaper.md 17017
+  total 267189
 
 [skills bytes]
-  archive/SKILL.md 22224
+  archive/SKILL.md 24432
   cadence/SKILL.md 19727
   check/SKILL.md 31244
   cleanup/SKILL.md 6496
@@ -34,13 +34,13 @@
   curate/SKILL.md 11863
   help/SKILL.md 16792
   log-activity/SKILL.md 13273
-  memo/SKILL.md 12446
+  memo/SKILL.md 12888
   migrate/SKILL.md 40047
   news/SKILL.md 8766
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 18605
-  total 220613
+  total 223263
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -98,6 +98,6 @@
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 673
-  surface-growth-bound.test.ts 730
+  surface-growth-bound.test.ts 766
   workbench-citation-lint.test.ts 352
-  total 21846
+  total 21882

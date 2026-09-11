@@ -103,7 +103,7 @@ Read all seven, each bounded by the anchor below. Your report names **how many f
 
 | # | Source | Where |
 |---|---|---|
-| 1 | Work items — the Directive, the dependency field, the status and the closure note a finished or dropped item carries | `$SCAN_BACKLOG` |
+| 1 | Work items — the Directive, the dependency field, the status and the closure note a finished or dropped item carries. One **directory** per item under the store, the record inside it under the directory's own name, or under the container's marked name where the item predates that form | `$SCAN_BACKLOG` |
 | 2 | Decision records, all five markers. Superseded and implemented records carry their own citation inline | `$SCAN_DECISIONS` |
 | 3 | `git log --follow` on each rule file and on `CLAUDE.md`; `git blame` when a single paragraph is in question. **The commit message is the per-commit record**, so this source carries what a session log used to | the repository |
 | 4 | Reviews and analyses | `$SCAN_REVIEWS`, `$SCAN_ANALYSES` |

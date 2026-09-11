@@ -32,7 +32,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
 - Memo file: `$WORKBENCH/$OUT_MEMO/memos-$CO.md`
 - Task file: `$WORKBENCH/$OUT_MEMO/tasks-$CO.md`
-- Backlog entry: a new file per idea in `$WORKBENCH/$OUT_BACKLOG`, never an append
+- Backlog entry: a new container per idea in `$WORKBENCH/$OUT_BACKLOG`, never an append
 - Either file may be hand-edited later; work items are project-wide, not per checkout.
 - `$CO` is the `CHECKOUT=` line of `I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true`, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
 
@@ -105,9 +105,9 @@ If several tasks are captured at once (e.g. "the open tasks"), append one checkb
 
 ### Work item
 
-**Created, not appended.** One new file per idea at `$WORKBENCH/$OUT_BACKLOG/<YYMMDD-HHMM>-<topic>.md`: the stamp from `date +%y%m%d-%H%M` (`rules/fusion-workbench-conventions.md` `## Timestamps` — never guess it), and `<topic>` a kebab-case slug of the title, lowercased, articles dropped, six words at most. **There is no marker on the filename** — an item's state is its `**Status:**` head field, which is `open` at creation and always here; this skill writes no other status and changes none.
+**Created, not appended, and an item is a directory.** One new container per idea at `$WORKBENCH/$OUT_BACKLOG/<YYMMDD-HHMM>-<topic>/`, holding one record under the container's own name: `<YYMMDD-HHMM>-<topic>/<YYMMDD-HHMM>-<topic>.md`. The stamp comes from `date +%y%m%d-%H%M` (`rules/fusion-workbench-conventions.md` `## Timestamps` — never guess it), and `<topic>` is a kebab-case slug of the title, lowercased, articles dropped, six words at most. **There is no marker on either name** — an item's state is its `**Status:**` head field, which is `open` at creation and always here; this skill writes no other status and changes none. Create the container and the record and stop there: the per-kind subdirectories an item's own work fills are made on first write, not at filing, so a freshly filed item is one directory holding one file.
 
-If the path you derived already exists, neither overwrite nor append: pick a `<topic>` that tells the two ideas apart, and say in your report that you did.
+If the container you derived already exists, neither overwrite nor append: pick a `<topic>` that tells the two ideas apart, and say in your report that you did.
 
 The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` defines the kind, its four statuses and this floor:
 
@@ -132,17 +132,17 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 
 1. Resolve `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` per Step 0.
 2. Resolve `$CO`; adopt a legacy `-$USER` name.
-3. Ensure the target directory exists (`mkdir -p`): `$WORKBENCH/$OUT_MEMO` for a memo or a task, `$WORKBENCH/$OUT_BACKLOG` for an idea.
+3. Ensure the target directory exists (`mkdir -p`): `$WORKBENCH/$OUT_MEMO` for a memo or a task, `$WORKBENCH/$OUT_BACKLOG/<YYMMDD-HHMM>-<topic>` — the item's own container — for an idea.
 4. Resolve the invocation mode from the argument.
 5. **Decide memo, task or idea** per "Memo, task or idea — which target"; this picks the target.
-6. Memo or task: read the target file if it exists; if not, create it with its header (above). Item: there is no file to read — derive the stamp and the `<topic>` slug and check only that the path is free.
+6. Memo or task: read the target file if it exists; if not, create it with its header (above). Item: there is no file to read — derive the stamp and the `<topic>` slug and check only that the container is free.
 7. For mode 1 (literal):
    - Memo: the argument up to the first newline or colon becomes the topic; the remainder becomes the body. If only one blob was given, generate a short topic from the first line (≤ 60 chars).
    - Task: strip any `task:`/`todo:`/`aufgabe:` keyword; the remainder is the task text.
    - Idea: strip any `idea:`/`idee:`/`backlog:` keyword; the first line (or a short line you derive from it) becomes the title, the remainder the paragraph. If the capture holds two unrelated ideas, file two items and say so.
 8. For mode 2 (conversational ref): identify the referenced content in the recent context, extract it verbatim. Memo: use a short topic like "Options for X discussed in session". Task: one checkbox line per discrete todo. Idea: one item per idea, the user's own words in the paragraph.
 9. For mode 3 (empty): ask the user for kind, topic, and content.
-10. Write. Memo and task: append to the end of the target file, do not reorder existing entries, and do not edit prior ones unless the user explicitly says "update the last memo", "tick that task", or similar. Idea: **create** the new item file. Never append to an existing item and never edit one.
+10. Write. Memo and task: append to the end of the target file, do not reorder existing entries, and do not edit prior ones unless the user explicitly says "update the last memo", "tick that task", or similar. Idea: **create** the item's container and the record inside it. Never append to an existing item and never edit one.
 11. Report to the user: which target, the path, and the topic or task text. For a memo or task, the line count of the file after the append. For an idea, that it is a new item at `**Status:** open`, and where in the backlog store it landed.
 
 ## Guardrails
