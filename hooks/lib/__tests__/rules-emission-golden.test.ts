@@ -51,7 +51,7 @@ import { agentNames } from "./helpers/citation-scan.js";
 // older rule set, and a test that inherited it would measure the install. The
 // same hazard in the other direction is stated in `config.test.ts`'s header.
 //
-// WHAT IS ASSERTED, AND WHAT IS ONLY REPORTED. Five things, and each is
+// WHAT IS ASSERTED, AND WHAT IS ONLY REPORTED. Four things, and each is
 // documented where it is declared rather than twice — read the doc comment on
 // the constant named beside it.
 //
@@ -64,30 +64,42 @@ import { agentNames } from "./helpers/citation-scan.js";
 //   HARD — the JUSTIFICATION DUTY (`RELEASE_CAP`). A prose obligation about an
 //      AUDIENCE decision; it never asks anyone to cut text.
 //   HARD — the DRIFT CEILING (`DRIFT_CEILING`), the far blocking number.
-//   HARD — the UNIVERSAL-CORE GROWTH BOUND (`GROWTH_BUDGET`), the near one,
-//      armed 2026-08-14 over the text every agent loads.
-//   REPORTED, NEVER FAILING — the same budget over each role's EXTRAS, the files
-//      it loads that not every agent loads.
+//   REPORTED, NEVER FAILING — `GROWTH_BUDGET` over each role's EXTRAS, the files
+//      it loads that not every agent loads. Nothing in this describe block
+//      measures the universal core any more; see the retirement below.
 //
-//      The two read ONE `growth()` over ONE `RULE_BASELINE`, called with two
-//      DISJOINT file sets — the universal core, and each role's extras — so every
-//      byte the fleet loads is measured by exactly one of them and the gate and
-//      the report cannot disagree about a byte. `README-hooks.md`
-//      `### Growth bounds on the shipped text` states the same split for a user.
+// THE UNIVERSAL-CORE GROWTH BOUND WAS RETIRED ON 2026-09-11, AND THIS IS THE
+// ARGUMENT THAT MADE IT SAFE. From its arming on 2026-08-14 it FAILED the suite
+// when the files every agent loads grew more than `GROWTH_BUDGET` past their
+// baseline. It is gone because THE DISPATCH-PATH BOUND at the foot of this file
+// dominates it. That bound counts every universal-core byte inside the `rules
+// emitted to <a>` component of all eleven paths, at ZERO head-room, so one core
+// byte is charged eleven times there and once here, and whichever bound has less
+// margin binds first. Measured at `9ff123c5`: the core stood at 74 873 bytes
+// against a budget of 77 498, 2 625 of margin, while the tightest path,
+// `reviewer`, stood at 188 842 against a baseline of 189 012 — 170 bytes. 170 is
+// less than 2 625, so every core addition the retired bound would have refused
+// is already refused by the per-path bound, and 2 455 bytes earlier. Retiring it
+// opened no window; it removed a second, weaker assertion over bytes that are
+// bounded harder two hundred lines down. The defect that asked for this carries
+// the other half of the same argument — the core bound could see neither
+// `CLAUDE.md` nor a conditionally emitted rule file, and the per-path bound
+// measures both:
+// `260909-1346_*_the-rule-growth-bound-covers-the-core-while-the-hottest-path-grew-29-percent-back.md`.
+// Its failure text and the two synthetic cases that proved that text went with
+// it; what `growth()` itself does is proved on synthetic sizes in
+// `surface-growth-bound.test.ts`.
 //
-// WHY THE BUDGET REPORTS AND THE CORE BLOCKS. Both halves of that history are
-// told once, in `surface-growth-bound.test.ts`'s `WHY THIS FILE EXISTS`: the
-// 2026-08-05 conversion of the ratchet into a report (decision 260805-1559,
-// a ratchet makes the first finding-driven addition unlandable), and the
-// measurement that took half of it back on 2026-08-14 (the largest deletion in
-// this project's history back above its pre-deletion peak in days —
-// `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
-// — so the binding constraint is the RATE of addition). What is local here is
-// the LINE the two halves are split along: a byte of core text is charged to
-// every dispatch in the fleet and no agent can decline it, so the core blocks;
-// role-specific text is bought by the agents that need it, so it reports. The
-// arming is capability C10 of Circle `circles/260801-1244-curator`, and its own
-// entry is the last one in the cut log above `RULE_BASELINE`.
+// WHY THE BUDGET ONLY REPORTS. Told once, in `surface-growth-bound.test.ts`'s
+// `WHY THIS FILE EXISTS`: the 2026-08-05 conversion of the ratchet into a report
+// (decision 260805-1559, a ratchet makes the first finding-driven addition
+// unlandable), and the measurement that took half of it back on 2026-08-14 — the
+// largest deletion in this project's history back above its pre-deletion peak in
+// days,
+// `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`,
+// so the binding constraint is the RATE of addition. That half is what the
+// retirement above hands to the per-path bound. Role-specific text has only ever
+// reported: it is bought by the agents that need it.
 //
 // WHERE THE THRESHOLD COMES FROM. It was measured, not guessed: `git log` over
 // `rules/` was replayed commit by commit from 2026-05-04 to 2026-08-05, re-running
@@ -140,11 +152,12 @@ import { agentNames } from "./helpers/citation-scan.js";
 // the rule in `helpers/growth-bound.ts` `## Re-baselining`, the user-facing
 // statement in `README-hooks.md` `### Growth bounds on the shipped text`.
 //
-// WHAT IS LOCAL TO THIS FILE. `RULE_BASELINE` is the reference BOTH measurements
-// read — the report measures a role's extras from it, the hard bound measures the
-// universal core from it — and the CUT LOG above it is where this surface's own
-// events are recorded, including the 2026-08-14 arming entry that is the only
-// non-cut in it. Event 3 (a merge) has not reached this surface.
+// WHAT IS LOCAL TO THIS FILE. `RULE_BASELINE` is the reference the role report
+// measures a role's extras from, and the CUT LOG above it is where this surface's
+// own events are recorded, including the 2026-08-14 arming entry that is the only
+// non-cut in it and whose gate is now retired. Event 3 (a merge) has not reached
+// this surface. The core entries stay in the map: they are what the arming cost,
+// and dropping one would read as a shrink nobody made.
 // ---------------------------------------------------------------------------
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -192,7 +205,10 @@ const RELEASE_CAP = 105_354;
  * `WHERE THE THRESHOLD COMES FROM` in the header for the measurement and the four
  * properties this figure was picked for.
  *
- * Exceeding it fails NOTHING. It prints a report naming the files that grew.
+ * Exceeding it fails NOTHING, and since the universal-core bound was retired on
+ * 2026-09-11 that is true of every call site: it prints a report naming the files
+ * that grew. The head-room figure is unmoved by the retirement, which removed an
+ * assertion and not a number.
  */
 const GROWTH_BUDGET = 12_000;
 
@@ -512,48 +528,15 @@ function roleKey(extras: string[]): string {
  * local to this file is WHICH file sets it is called with, and with what
  * baseline and head-room.
  *
- * ONE function over ONE `RULE_BASELINE`, called with two DISJOINT file sets —
- * the universal core, which the hard bound measures, and a role's extras, which
- * the report measures — so the two can never disagree about a byte and no byte
- * is measured twice or missed. `floor` is `RULE_BASELINE` summed over the same
- * files; a file with no baseline entry contributes 0, so its whole current size
- * reads as growth, which is correct: nobody granted it a budget.
+ * ONE call site is left, the role report, and it is handed a role's EXTRAS: the
+ * files that role loads that not every agent loads. The universal core is the
+ * complement of that set and is measured by the dispatch-path bound instead, so
+ * between the two nothing the fleet loads is missed. `floor` is `RULE_BASELINE`
+ * summed over the same files; a file with no baseline entry contributes 0, so its
+ * whole current size reads as growth, which is correct: nobody granted it a budget.
  */
 const ruleGrowth = (files: { rel: string; size: number }[]): Growth =>
   growth(files, RULE_BASELINE, GROWTH_BUDGET);
-
-/**
- * The hard bound's failure text. Factored out of the assertion so the unit tests
- * at the bottom of this file can prove it names the file that grew, without any
- * rule file having to be edited to produce a failure.
- */
-function hardBoundMessage(g: Growth): string {
-  return [
-    "",
-    `The ALWAYS-ON rule set — the text every agent loads on every dispatch — has ` +
-      `grown ${fmt(g.delta)} bytes past its baseline, which is ` +
-      `${fmt(g.total - g.budget)} beyond the ${fmt(GROWTH_BUDGET)} of head-room it ` +
-      `gets (${fmt(g.total)} emitted, budget ${fmt(g.budget)} = floor ` +
-      `${fmt(g.floor)} + ${fmt(GROWTH_BUDGET)}).`,
-    "grown since the baseline was last set:",
-    ...grownLines(g),
-    "",
-    "This is the one budget that FAILS instead of reporting, because every byte of " +
-      "it is charged to every dispatch in the fleet and no agent can opt out. Cut " +
-      "the text where the growth is, then regenerate the golden with:",
-    "",
-    "  cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts",
-    "",
-    "Regenerating does NOT clear this: the golden records what the files weigh, " +
-      "RULE_BASELINE records what they are allowed to weigh from. RULE_BASELINE " +
-      "moves at exactly the three events named in `## Re-baselining: the three " +
-      "events at which a baseline moves` in helpers/growth-bound.ts — after a " +
-      "cleanup, at a one-time arming written into the cut log, or at a merge of two " +
-      "lines that were each inside this bound. Editing it to make this " +
-      "assertion pass is none of them.",
-    "",
-  ].join("\n");
-}
 
 /**
  * What this emission weighed at the last re-baseline: the baseline sizes of
@@ -824,27 +807,6 @@ describe("rules emission golden", () => {
     ).toEqual([]);
   });
 
-  it("holds the always-on rule set — what every agent loads — inside its budget", () => {
-    // THE HARD BOUND, armed 2026-08-14 (capability C10 of
-    // `circles/260801-1244-curator`). It measures the UNIVERSAL CORE and nothing
-    // else: the files the intersection above proves every agent loads. Growth
-    // here is charged to every dispatch in the fleet and no agent can decline
-    // it, which is the whole reason this one fails where the role report only
-    // prints. The disjoint other half is the test below.
-    //
-    // Every agent emits the same core files at the same sizes — that is what
-    // makes them the core — so one agent's emission carries the whole set.
-    const coreFiles = measured.get(agents[0])!.files.filter((f) => core.has(f.rel));
-    expect(
-      coreFiles.length,
-      "The universal core is empty, so this bound would pass on a measurement of " +
-        "nothing. The role-coverage test above says why that can happen.",
-    ).toBe(core.size);
-
-    const g = ruleGrowth(coreFiles);
-    expect(g.over, hardBoundMessage(g)).toBe(false);
-  });
-
   it("reports, without failing, when a role's own rule text is due for a cleanup", () => {
     // The report this file was built for, narrowed on 2026-08-14 to each role's
     // EXTRAS — the files it loads that not every agent loads. The core moved to
@@ -1061,44 +1023,6 @@ describe("the audience argument", () => {
       expect(r.stdout, "a refused call emitted a partial rule set").toBe("");
       expect(r.stderr).toContain(needle);
     }
-  });
-});
-
-// ---------------------------------------------------------------------------
-// growth(), proved on synthetic file sets.
-//
-// The behaviours the hard bound and the report both rest on, exercised on
-// INVENTED byte counts against the real RULE_BASELINE. Nothing here reads or
-// edits a rule file: proving that growth fails would otherwise mean bloating an
-// always-on rule to see the gate fire, which is the one experiment this file
-// exists to make unnecessary.
-// ---------------------------------------------------------------------------
-describe("growth(), on synthetic file sets", () => {
-  /** Three real core files, each at exactly its baseline: zero growth by construction. */
-  const CORE = ["agent-setup.md", "fusion-workbench-conventions.md", "critical-stance.md"];
-  /** One real role-specific file — the disjoint half the hard bound must not see. */
-  const EXTRA = "commit-lock.md";
-
-  const at = (rels: string[]) => rels.map((rel) => ({ rel, size: RULE_BASELINE[rel] }));
-
-  it("keeps growth in a role-specific file out of the universal-core measurement", () => {
-    // The disjointness the two gates rest on: the same overshoot that fires the
-    // report cannot reach the hard bound, because the hard bound is never called
-    // with that file.
-    const extras = [{ rel: EXTRA, size: RULE_BASELINE[EXTRA] + 2 * GROWTH_BUDGET }];
-    expect(ruleGrowth(extras).over, "role-specific growth should reach the report").toBe(true);
-    expect(ruleGrowth(at(CORE)).over, "and should not reach the hard bound").toBe(false);
-  });
-
-  it("names the file that grew, and the way out, in the hard bound's message", () => {
-    const files = at(CORE);
-    files[1].size += GROWTH_BUDGET + 500;
-    const msg = hardBoundMessage(ruleGrowth(files));
-    expect(msg).toContain(CORE[1]);
-    expect(msg).toContain(`+${fmt(GROWTH_BUDGET + 500)}`);
-    expect(msg).toContain("UPDATE_RULES_GOLDEN=1");
-    expect(msg).toContain("## Re-baselining: the three events at which a baseline moves");
-    expect(msg).toContain("helpers/growth-bound.ts");
   });
 });
 

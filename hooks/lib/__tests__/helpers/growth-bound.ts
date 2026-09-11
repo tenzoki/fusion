@@ -1,8 +1,9 @@
 // ---------------------------------------------------------------------------
 // The growth instrument — one budget mechanism, several bounded surfaces.
 //
-// WHY THIS FILE EXISTS. Five bounded surfaces run the same arithmetic, and it
-// was lifted here rather than copied. The budgets are INDEPENDENT — growth in
+// WHY THIS FILE EXISTS. Four bounded surfaces and one reporting measurement run
+// the same arithmetic — five bounded until the universal-core bound was retired
+// on 2026-09-11, leaving its role report — and it was lifted here, not copied. The budgets are INDEPENDENT — growth in
 // one can never be paid for by shrinkage in another — and `growth()` below is
 // where that is enforced rather than promised.
 //
@@ -50,10 +51,10 @@
 //      which is a suite nobody reads. AN ARMING TAKEN AT A CUT ABSOLVES THE CUT,
 //      so it is taken before one. The armings are logged in `README-hooks.md`.
 //
-//      THE FIFTH SURFACE HAS A GAP IN THIS RULE AND IT IS NAMED, NOT CLOSED: two
-//      of its three components belong to the consuming project, and no event
-//      here covers a project that legitimately needs a larger `CLAUDE.md`. The
-//      dispatch bound's own failure text says so, and says what offsets what.
+//      THE DISPATCH-PATH SURFACE HAS A GAP IN THIS RULE AND IT IS NAMED, NOT
+//      CLOSED: two of its three components belong to the consuming project, and
+//      no event here covers a project that legitimately needs a larger
+//      `CLAUDE.md`. That bound's own failure text says so, and what offsets what.
 //
 //   3. AT A MERGE OF TWO LINES THAT WERE EACH INSIDE THE BOUND. This instrument
 //      measures addition per line of development, and a merge adds two lines'
@@ -100,8 +101,8 @@
 
 /**
  * One file's contribution to a surface, in whatever unit that surface is
- * measured in. `size` is deliberately unit-neutral: four of the five bounded
- * surfaces count bytes and one counts lines, and the arithmetic is the same.
+ * measured in. `size` is deliberately unit-neutral: one of the bounded surfaces
+ * counts lines and the rest count bytes, and the arithmetic is the same.
  */
 export interface Sized {
   /** The file's path, relative to the surface's own root. Also the baseline key. */
