@@ -41,12 +41,6 @@ Option 1. It is the only one of the three that cannot absolve growth under any i
 
 Plan `260822-1154` proceeds on option 1 and states the arithmetic in its `## Current State`, so C0 is not blocked on this record. What the record settles is whether the next cut-only Circle has to re-derive it.
 
----
-Answered:
-Implemented:
-Deferred:
-Superseded by:
-Retired:
 
 ---
 **Reconciliation 260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — marker unchanged at
@@ -91,3 +85,10 @@ The neighbouring question this record already carries at its foot — whether a 
 detectable by anything other than a human reading a diff — is also still unanswered, and the third
 event makes it larger rather than smaller: there are now three doorways and still nothing asserting
 that a fourth was not used.
+
+---
+Answered: 260910-0900-orchestrator-session.md `## Ruling on re-baselining after a cut` — option 1, and the head-room raise is written into the rule as a named event beside it. A cut-only piece of work never re-baselines: the floor stays where it is, so the surface's growth since it was last settled stays answerable, and no size of cut can absolve growth nobody removed. What today added, and what none of the three options contained, is a fourth response to a full surface: raise the head-room rather than the floor, name the raise with the figure before and after, and date the reduction. It keeps option 1's virtue, the floor unmoved and the growth still visible above it, while letting the work land, and it was exercised three times on 2026-09-11 with 59 of the lines already given back. Ruled by user, Kai Stalmann <ks@qantr.com>.
+
+**Two things the ruling does not settle, recorded so they are not read as settled.** Nothing detects a raised head-room any more than a raised baseline — the three raises of 2026-09-11 are visible only because each wrote itself down by hand, which is this record's own neighbouring question arriving one level up. And the rule text that carries this answer costs lines on a surface standing at zero margin, which is the question answering itself in the least convenient way.
+
+**One measurement the answer rests on, taken 2026-09-11 at `e6703d51`.** Re-baselining is not one move with one sign. Of the four surfaces, three would gain margin nobody earned — the always-on core 2 625 to 12 000, `skills/` 0 to 20 866, the hook tests 0 to 2 595 — while `agents/` would fall from 61 378 to 18 000, a surface that shrank far below its floor having its shrink taken away. A rule keyed on "did you cut" gives the wrong answer on the surface that cut most, which is the sharpest argument against reading event 1 literally.

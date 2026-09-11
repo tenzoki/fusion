@@ -186,3 +186,40 @@ answers both questions.
 
 Filed as `260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md`,
 answered in the same act.
+
+## Ruling on re-baselining after a cut
+
+Put to the user on 2026-09-11, on a record open since 2026-08-22 that two reconciliation
+passes had confirmed nobody ever answered, and which the cut of the last two days walked
+past twice without settling.
+
+**The user ruled option 1, with an addition.** A cut-only piece of work never re-baselines:
+the floor stays fixed, so "how much has this surface grown since it was last settled"
+remains answerable, and no size of cut can absolve growth nobody removed. Beside it, the
+practice this afternoon invented is written into the rule as a named event: raise the
+head-room rather than the floor, name the raise with the figure before and after, and date
+the reduction.
+
+That fourth response is not in the record's three options, and it is the thing today
+produced that the record could not have anticipated. It keeps what option 1 is for — the
+floor unmoved, the growth still readable above it — while letting work land, which is what
+option 3 was reaching for and bought by forgetting. It was exercised three times and 59 of
+the lines have already come back, not as a promise but in the commit that took them.
+
+Two things the ruling does not settle, recorded as residuals rather than folded away.
+Nothing detects a raised head-room any more than a raised baseline; the three raises are
+visible only because each wrote itself down, and that is this record's own neighbouring
+question arriving one level up. And the rule text carrying this answer costs lines on a
+surface standing at exactly zero margin, so the answer's own implementation meets the
+condition it was written to govern.
+
+The measurement the answer rests on was taken at `e6703d51` and is what makes the literal
+reading indefensible rather than merely risky: re-baselining is not one move with one sign.
+Three surfaces would gain margin nobody earned, and `agents/` would fall from 61 378 to
+18 000 — the surface that cut most would have its shrink taken away. A rule keyed on
+whether you cut gives the wrong answer on the surface that cut.
+
+One constraint of the record was already overtaken and is noted rather than relied on: it
+argued inside two re-baselining events because a third had been rejected, and the user
+declared a third on 2026-09-05 for merged branches. Declaring a fourth was therefore not
+barred on principle.
