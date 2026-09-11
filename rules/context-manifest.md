@@ -50,7 +50,7 @@ can parse it with `awk` and no YAML runtime dependency.
 # ./rules/context-manifest.yaml   (in the consuming project, not the plugin)
 units:
   - path: .claude/rules/ONTO-ENG-RULES.md   # a rule file  (exactly one of path|skill)
-    agents: [ontocoder, ontorev, planner]   # or [*] for every agent
+    agents: [ontocoder, reviewer, planner]  # or [*] for every agent
     topics: [ontology]                       # or [always] to load regardless of topic
     note: "UEOF/UIF engineering rules"       # optional, ignored by the helper
 
@@ -60,7 +60,7 @@ units:
     note: "on-demand framework body-of-knowledge"
 
   - path: .claude/rules/CODING-HYGIENE.md
-    agents: [coder, coderev, bugfixer, planner]
+    agents: [coder, reviewer, planner]
     topics: [always]                          # loaded for these agents on every topic
 ```
 

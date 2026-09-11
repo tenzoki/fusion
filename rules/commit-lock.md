@@ -46,13 +46,13 @@ The `with` form is canonical; explicit `acquire`/`release` exists for control-fl
 ### Who acquires
 
 - **Orchestrator** at `agents/orchestrator.md` `### Step 4 — commit` — staging and committing in the held command.
-- **Coder / ontocoder / bugfixer** ONLY if they commit directly (rare; default is the orchestrator commits on their behalf).
+- **Coder / ontocoder** ONLY if they commit directly (rare; default is the orchestrator commits on their behalf).
 - **`/fusion:commit` and `/fusion:cleanup`** — the two skills that commit; each wraps every stage+commit pair in `with <skillname> --` (tags `commit`, `cleanup`). Skills are never served by `bin/fusion-rules`; their bodies carry the instruction and cite this section directly.
 - **Other agents** — never commit, never need the lock.
 
 ### Tag conventions
 
-Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, `coder`, `ontocoder`, `bugfixer`) or the committing skill's name (`commit`, `cleanup`).
+Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, `coder`, `ontocoder`) or the committing skill's name (`commit`, `cleanup`).
 
 ### Failure modes
 

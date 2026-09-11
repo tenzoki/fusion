@@ -34,3 +34,6 @@ a second copy of the list's length.
 **Acceptance.** The sentence names four and names `next`, or it drops the numeral and names the
 members. Either way `/fusion:next` stays unwritten, so the lint stays green for the reason it
 already is.
+
+---
+Resolved: the bullet names four departed directories with `next` among them, cited to `2a785ba2`, and the "Neither name" clause that carried a cardinality of two over the list is gone with it. Applied as candidates L02 and L03 of the curator run `260911-1218-curator-run.md`, ruled by user, Kai Stalmann <ks@qantr.com>.

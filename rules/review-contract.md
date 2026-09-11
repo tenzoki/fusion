@@ -4,13 +4,13 @@
 
 **This document is the single authoring home** of what a review file contains: the mandated
 header fields, the per-topic working files, and the final consolidated review. `bin/fusion-rules`
-emits it to `coderev` and `ontorev`, the two agents that write review files, and to no other agent.
-Neither prompt carries a competing definition. Each names its own domain-specific analysis steps and
-its own sender segment, and cites this file for everything below.
+emits it to `reviewer`, the one agent that writes review files, and to no other agent. That prompt
+carries no competing definition: it names its own domain-specific analysis steps and its own sender
+segment, and cites this file for everything below.
 
-Two names are used throughout. `<sender>` is your own agent name, `coderev` or `ontorev`.
-`$OUT_REVIEW` is the review store `bin/fusion-paths` resolved for you at Setup; both senders write
-into the same one, which is why the sender segment is mandatory in every filename.
+Two names are used throughout. `<sender>` is your own agent name, `reviewer`. `$OUT_REVIEW` is the
+review store `bin/fusion-paths` resolved for you at Setup; the retired senders wrote into the same
+one, which is why the sender segment is mandatory in every filename.
 
 You write no separate session-history entry. Your review file under `$OUT_REVIEW` is the session's
 durable record, and a history log would only duplicate it.

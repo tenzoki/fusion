@@ -71,8 +71,8 @@ roots and would otherwise emit it twice:
   should respect (the dev-rule bodies, indices, policies). These are the same
   rules a developer running plain Claude Code in the repo would want.
 - **`./rules/<file>.md`** — fusion-agent-specific rules that have no meaning
-  outside a fusion-agent context (capture layouts, taskplanner priority
-  overrides, and `context-manifest.yaml` itself).
+  outside a fusion-agent context (review priority overrides, and
+  `context-manifest.yaml` itself).
 
 Delete the redundant copy. The manifest then tags whichever home survives.
 
@@ -109,7 +109,7 @@ This is the <project> repo: <one-paragraph identity>.
 | Topic | Where the detail lives | Loaded for |
 |---|---|---|
 | architecture   | .claude/rules/ARCHITECTURE-RULES.md | code agents |
-| ontology       | .claude/rules/ONTO-ENG-RULES.md     | ontocoder, ontorev, planner |
+| ontology       | .claude/rules/ONTO-ENG-RULES.md     | ontocoder, reviewer, planner |
 | llm-pipeline   | .claude/rules/READER-ABSTRACTION-RULES.md | coder, planner |
 | unite-framework| Skill: unite-bok-sc-skill (on demand) | all agents |
 ```
@@ -118,10 +118,10 @@ This is the <project> repo: <one-paragraph identity>.
 # ./rules/context-manifest.yaml
 units:
   - path: .claude/rules/ARCHITECTURE-RULES.md
-    agents: [coder, coderev, bugfixer, planner]
+    agents: [coder, reviewer, planner]
     topics: [always]                      # architecture binds every code edit
   - path: .claude/rules/ONTO-ENG-RULES.md
-    agents: [ontocoder, ontorev, planner]
+    agents: [ontocoder, reviewer, planner]
     topics: [ontology]
   - path: .claude/rules/READER-ABSTRACTION-RULES.md
     agents: [coder, planner]

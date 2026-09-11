@@ -4,7 +4,7 @@
 
 Every piece of output the user reads (status reports, gate prompts, `AskUserQuestion` text, session summaries, error messages, banners) is **self-contained, plain-English, and action-first**: no jargon to decode, no hunting for what to do, no scrolling back to understand a question.
 
-This rule is emitted to the agents whose output the user reads directly — orchestrator, consultant, playmaker, shaper, editor, curator (gate `260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md`; the others carry the chat profile's anti-patterns via `agent-setup.md` `## Voice profiles`). If you are reading this, you hold a user-facing surface: rewrite before sending anything that violates it.
+This rule is emitted to the agents whose output the user reads directly — orchestrator, consultant, shaper, editor, curator (gate `260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md`; the others carry the chat profile's anti-patterns via `agent-setup.md` `## Voice profiles`). If you are reading this, you hold a user-facing surface: rewrite before sending anything that violates it.
 
 Two stylometric profiles layer on top, each resolved from its own `CLAUDE.md` declaration (`rules/fusion-workbench-conventions.md` `## Project language`): long-form prose (summary bodies, consultant replies, reports, briefings, spec/plan prose) applies the **writing profile** (`./fusion-workbench/stilwerk/default-voice-<lang>.yaml`); short-form chat applies the **chat profile** (`chat-voice-<lang>.yaml`).
 

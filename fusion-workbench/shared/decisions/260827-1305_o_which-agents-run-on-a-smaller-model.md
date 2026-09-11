@@ -9,13 +9,14 @@
 
 ## Question
 
-All 14 sub-agents inherit the session's model. The mechanism for per-agent tiering exists and is measured; the cost lever is the largest one left that no byte-cut touches. Which roles, if any, move — and on what evidence?
+All sub-agents inherit the session's model (`ls agents/*.md` less the orchestrator). The mechanism for per-agent tiering exists and is measured; the cost lever is the largest one left that no byte-cut touches. Which roles, if any, move — and on what evidence?
 
 ## Candidates, ordered by how mechanical the role's judgement is
 
 1. **reconciler** — verifies claimed record states against ground truth with grep/read/git; since 10.13.0 its inventory is live-scope only. The most checklist-shaped role.
-2. **taskplanner** — orders records into a queue by declared priority axes.
-3. **coderev** — since 10.14.0 one dispatch per Circle; a quality drop here costs the most, so it moves last if at all.
+2. **reviewer** — one dispatch per unit of work; a quality drop here costs the most, so it moves last if at all.
+
+Two further candidates this record named, `taskplanner` and `coderev`, no longer exist: the first was deleted at v11 and the second merged into `reviewer`.
 
 ## The measurement this needs (why this record is filed open)
 
@@ -30,7 +31,7 @@ Not another probe: live evidence. After a few sessions on ≥ v10.15.0, run one 
 ---
 **Reconciliation 260905-2015 (reconciler, HEAD `5b84b13a`) — marker unchanged at `_o_`, no answer on
 disk.** No agent prompt carries a `model:` frontmatter key: `grep -l '^model:' agents/*.md` is empty,
-so all 14 sub-agents still inherit the session's model and no tiering has been tried. The live evidence
+so every sub-agent still inherits the session's model and no tiering has been tried. The live evidence
 this record asks for — two candidate runs against the same workbench state, verified from the
 transcripts — does not exist anywhere in the tree. No `Answer located:` line.
 

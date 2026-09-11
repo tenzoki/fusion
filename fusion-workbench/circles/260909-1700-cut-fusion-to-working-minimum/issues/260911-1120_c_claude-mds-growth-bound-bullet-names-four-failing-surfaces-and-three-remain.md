@@ -16,3 +16,6 @@ That assertion is false at HEAD. The universal-core growth bound was retired in 
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 
 Filed at the commit that retires the bound, so the false statement cannot outlive the session that produced it. `rules/critical-stance.md` §5 is what makes this a defect rather than staleness: the bullet asserts a count beside a list, and the list moved.
+
+---
+Resolved: the bullet no longer states a cardinality, names no constant and carries no worked example of its own. It points at the one table in `README-hooks.md` `### Growth bounds on the shipped text` and says in as many words not to copy a figure out of it, because every figure has moved. It also names for the first time the bound that actually binds this file, `hooks/lib/__tests__/fixtures/dispatch-path.baseline` at zero head-room across all eleven dispatch paths, which is the sizing constraint the record said made the repair a decision rather than a correction. Applied as candidate L01 of the curator run `260911-1218-curator-run.md`, ruled by user, Kai Stalmann <ks@qantr.com>. The repair ran net negative as the record required: `CLAUDE.md` fell 91 613 to 91 369 bytes and every path gained margin, the tightest from 170 to 499.
