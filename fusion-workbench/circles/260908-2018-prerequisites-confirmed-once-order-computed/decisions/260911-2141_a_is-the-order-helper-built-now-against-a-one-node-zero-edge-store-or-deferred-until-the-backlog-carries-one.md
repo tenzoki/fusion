@@ -93,3 +93,6 @@ What makes option 3 safe rather than a quiet drop is the trigger, and it is the 
 rule on with the option: a line in the work item's own record naming the count of live items at which
 the question is re-read, so the next person to open the item meets it. The candidate survey already
 asked for exactly this and its request is unaddressed at the moment of writing.
+
+---
+Answered: 260911-2141_*_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.md `## Options` — option 1, build it whole: the library, the entry point, the `bin/` wrapper, the fixture test and the documentation rows. The recommendation in this record was option 3 and was not taken. Both of option 1's stated costs are accepted and neither is waived: a removal of at least 60 bytes from the `reviewer` dispatch path has to be found and argued before the Layout row may be written, and the hook-test cut of 139 to 219 lines remains a precondition of the helper's own test. The reasoning the gate gave for building rather than deferring is the one this record's option 1 states: the design is done and paid, and a deferral costs a re-reading of a spec, a plan and three rulings later; ruled by user, Kai Stalmann <ks@qantr.com>.
