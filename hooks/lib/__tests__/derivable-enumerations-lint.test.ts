@@ -371,7 +371,7 @@ describe("enumeration lint: CLAUDE.md's echo of the path-literal lint's DEFINITI
   });
 });
 
-// --- 7. the bin/ helper roster in CLAUDE.md's Layout table -------------------
+// --- 7. the bin/ helper roster in README-hooks.md ---------------------------
 
 /** Every bin/ helper: a regular file directly under bin/. No extension filter —
  *  the helpers are extensionless executables (plus the compiled `monitor`), so
@@ -383,10 +383,10 @@ function binHelpers(): string[] {
     .sort();
 }
 
-describe("enumeration lint: the bin/ helper roster in CLAUDE.md's Layout table", () => {
-  // A closed enumeration in both directions: CLAUDE.md's Layout table is where
-  // a reader looks up what a helper is for, and a helper with no row is
-  // invisible there (five were, until the Circle that added this check).
+describe("enumeration lint: the bin/ helper roster in README-hooks.md", () => {
+  // A closed enumeration in both directions: the roster is where a reader looks up what a helper is for,
+  // and a helper with no row is invisible there (five were, until the Circle that added this check). It
+  // moved off CLAUDE.md's Layout table on 2026-09-12, off all eleven dispatch paths with it, and this check followed it: 260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md
   //
   // NOT checked here, deliberately: the workbench's tracked-file count. The
   // Layout row for `fusion-workbench/` used to carry one ("612 files since
@@ -396,7 +396,7 @@ describe("enumeration lint: the bin/ helper roster in CLAUDE.md's Layout table",
   // CLAUDE.md so that one becomes possible.
   const helpers = binHelpers();
 
-  /** The documented claim: Layout rows opening `| `bin/<name>` |`. Anchored to
+  /** The documented claim: roster rows opening `| `bin/<name>` |`. Anchored to
    *  the table's row shape, like every other parser in this file — a reshaped
    *  table makes this find nothing and the non-vacuity assertion below fails
    *  loudly. Update the parser then; never soften it into a fuzzy match. */
@@ -409,18 +409,18 @@ describe("enumeration lint: the bin/ helper roster in CLAUDE.md's Layout table",
     const documented = new Set(rows);
     for (const f of files) {
       if (!documented.has(f)) {
-        problems.push(`bin/${f} exists but CLAUDE.md's Layout table has no row for it`);
+        problems.push(`bin/${f} exists but README-hooks.md's roster has no row for it`);
       }
     }
     for (const r of documented) {
       if (!files.includes(r)) {
-        problems.push(`CLAUDE.md's Layout table has a row for bin/${r} but that file does not exist`);
+        problems.push(`README-hooks.md's roster has a row for bin/${r} but that file does not exist`);
       }
     }
     const seen = new Map<string, number>();
     for (const r of rows) seen.set(r, (seen.get(r) ?? 0) + 1);
     for (const [name, n] of seen) {
-      if (n > 1) problems.push(`CLAUDE.md's Layout table has ${n} rows for bin/${name}`);
+      if (n > 1) problems.push(`README-hooks.md's roster has ${n} rows for bin/${name}`);
     }
     return problems;
   }
@@ -429,21 +429,21 @@ describe("enumeration lint: the bin/ helper roster in CLAUDE.md's Layout table",
     expect(helpers.length).toBeGreaterThan(5);
   });
 
-  it("every bin/ helper has a Layout row, and no row names a file that does not exist", () => {
-    const rows = documentedRows(read("CLAUDE.md"));
+  it("every bin/ helper has a roster row, and no row names a file that does not exist", () => {
+    const rows = documentedRows(read("README-hooks.md"));
     expect(
       rows.length,
-      "no `| `bin/…` |` Layout rows found — CLAUDE.md's Layout table was reshaped; update the parser",
+      "no `| `bin/…` |` rows found — README-hooks.md's roster was reshaped; update the parser",
     ).toBeGreaterThan(0);
-    expect(drift(helpers, rows), "the bin/ roster has drifted from CLAUDE.md's Layout table").toEqual([]);
+    expect(drift(helpers, rows), "the bin/ roster has drifted from README-hooks.md").toEqual([]);
   });
 
   it("mutation check: a scratch helper would be reported", () => {
     // toContain, not toEqual: with a REAL drift present the corpus test above
     // already fails, and this fixture should not fail a second time over it.
-    const problems = drift([...helpers, "fusion-scratch-helper"], documentedRows(read("CLAUDE.md")));
+    const problems = drift([...helpers, "fusion-scratch-helper"], documentedRows(read("README-hooks.md")));
     expect(problems).toContain(
-      "bin/fusion-scratch-helper exists but CLAUDE.md's Layout table has no row for it",
+      "bin/fusion-scratch-helper exists but README-hooks.md's roster has no row for it",
     );
   });
 });
