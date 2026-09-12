@@ -100,7 +100,7 @@ Worked example. A coder implementing the item in scope finds a broken test in th
 Two corollaries follow:
 
 1. **Unknown origin means `shared/`.** When an artifact's affiliation was never recorded and cannot be reconstructed, it is by definition not attributable to a directive, so it belongs in `shared/`. This is what makes migrating a workbench that never had containers a mechanical move rather than an act of interpretation.
-2. **Reach is cited, never placed.** If one item's decision binds a later item, the later item references it by basename in its `**Depends-on:**` or `**Cross-references:**` header. Do not copy it, do not move it, do not file a duplicate in `shared/`. One record, one location, many citations.
+2. **Reach is cited, never placed.** If one item's decision binds a later item, the later item references it by basename in its `**Cross-references:**` header. Do not copy it, do not move it, do not file a duplicate in `shared/`. One record, one location, many citations.
 
 ## Path Resolution (Pfadauflösung)
 
@@ -188,6 +188,7 @@ One file per item rather than one list file, because two checkouts adding work a
 **Status:** open | claimed | done | dropped
 **Claim:** <8 hex> — <person>, YYMMDD-HHMM
 **Depends-on:** <basename>, <basename>
+**Cross-references:** <basename>, <basename>
 **Filed by:** user, <person>
 
 ---
@@ -197,7 +198,7 @@ One file per item rather than one list file, because two checkouts adding work a
 <One paragraph: what this item aims for, and how a reader would know it was reached.>
 ```
 
-`**Claim:**` and `**Depends-on:**` are **absent** when there is nothing to say, never present and empty. Every other field is always written.
+`**Claim:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** when there is nothing to say, never present and empty. Every other field is always written.
 
 **`**Status:**` takes four values and there is no fifth.**
 
@@ -217,6 +218,8 @@ It is none of the three marker vocabularies this project already carries, and th
 **A takeover overwrites the field.** The item ends up naming one holder, which is what a reader and a helper both need; who held it before is in the commit that took it, which is where this project keeps the per-change record (`## Record filing`). The collision is detected and not prevented: two checkouts that both pull, both see no claim and both claim will conflict on that one line at the next merge, and the one who loses the race picks another item. Nothing here reserves an item ahead of the write, and no field value changes that.
 
 **`**Depends-on:**` is a comma-separated list of item basenames** (`YYMMDD-HHMM-<slug>.md`, the same form a citation of the item takes). It carries only edges the user has confirmed. A helper may read the whole store and **report** an order over those edges, with cycles named; that report is a report, and the user overrides it wherever he wants to. No agent asserts a ranking, and there is no marker for one. Binding decision: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3).
+
+**An entry there asserts one relation and one only: the named item must reach `done` or `dropped` before this item may start.** Both terminal values, because neither is a node and nothing here distinguishes them. Every other citation an item carries — a record it rests on, a decision that binds it, work it merely touches — goes in `**Cross-references:**`, which orders nothing. The distinction is which of the two fields a basename sits in, never a verb inside the value. Binding decisions: `260908-2018_*_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md` and, for the node set the terminal values come from, `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`.
 
 **Two bounds, and only the first survived the cut.** **No agent originates a work item**: the user files, by hand or through `/fusion:memo`; a defect an agent finds is an issue, a choice point a decision record. The second bound, that the backlog is not the work queue, is gone with the queue it distinguished the store from.
 
