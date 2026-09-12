@@ -63,10 +63,6 @@ import {
 } from "./helpers/guard-harness.js";
 import type { Project } from "./helpers/guard-harness.js";
 
-/* ------------------------------------------------------------------ *
- * Fixtures
- * ------------------------------------------------------------------ */
-
 /**
  * A workbench holding one committed record of each kind the classifier has an
  * opinion about, so a case can DIRTY one and watch the class come back rather
@@ -182,10 +178,6 @@ function keys(stdout: string): Record<string, string> {
 function row(stdout: string, path: string): string | undefined {
   return stdout.split("\n").find((l) => l.startsWith("  ") && l.includes(` ${path}`));
 }
-
-/* ------------------------------------------------------------------ *
- * 1. The measured defect, reproduced
- * ------------------------------------------------------------------ */
 
 describe("staging drift: the defect it was built for", () => {
   it(
@@ -306,10 +298,6 @@ describe("staging drift: the defect it was built for", () => {
     CASE_TIMEOUT,
   );
 });
-
-/* ------------------------------------------------------------------ *
- * 2. It does not cry wolf
- * ------------------------------------------------------------------ */
 
 describe("staging drift: what it reports without raising an alarm", () => {
   it(
@@ -494,10 +482,6 @@ describe("staging drift: what it reports without raising an alarm", () => {
   );
 });
 
-/* ------------------------------------------------------------------ *
- * 3. The trigger
- * ------------------------------------------------------------------ */
-
 describe("staging drift: the trigger is HEAD moving", () => {
   it(
     "says nothing while a record sits unstaged mid-Turn — the normal and correct state",
@@ -601,10 +585,6 @@ describe("staging drift: the trigger is HEAD moving", () => {
     CASE_TIMEOUT,
   );
 });
-
-/* ------------------------------------------------------------------ *
- * 4. Where it runs, and what it leaves behind
- * ------------------------------------------------------------------ */
 
 describe("staging drift: anchoring and side effects", () => {
   it(

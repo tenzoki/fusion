@@ -95,10 +95,6 @@ function readState(root: string, rel: string): Record<string, unknown> | null {
   return JSON.parse(readFileSync(abs, "utf-8")) as Record<string, unknown>;
 }
 
-/* ------------------------------------------------------------------ *
- * The coverage fixture
- * ------------------------------------------------------------------ */
-
 /**
  * A project with an uncovered commit range, with the throttle record seeded
  * verbatim.
@@ -231,10 +227,6 @@ describe("a well-formed state file is carried forward, not emptied", () => {
     CASE_TIMEOUT,
   );
 });
-
-/* ------------------------------------------------------------------ *
- * The dispatch gate — see the second subject in this file's header
- * ------------------------------------------------------------------ */
 
 const AGENTSTATE = "fusion-workbench/agentstate.yaml";
 

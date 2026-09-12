@@ -135,7 +135,7 @@ Coherence self-check, run before this was finalised. Six nodes inside the work a
 
 **G1 — the user reads the ledger and approves it row by row.** The gate is per row rather than per report because the rows are not alike: a `duplicate` row gives up nothing, a `superseded` row gives up something already gone, a `prose` row gives up documentation, and each is a different price. The orchestrator puts the ledger's total and its three marks first, then the rows in yield order, and asks which are approved. Approving none is a valid answer and routes to S4.
 
-3. **S3: apply exactly the approved rows**
+3. [DONE] **S3: apply exactly the approved rows**
    - Executor: `coder`
    - Files: the test files named in the approved rows; `hooks/lib/__tests__/surface-growth-bound.test.ts` (the `TEST_LINE_BASELINE` map, **entry removals only**, for any file deleted whole); `hooks/lib/__tests__/fixtures/surface-growth.golden`
    - Changes: apply the approved rows and **nothing else**: no row the gate did not approve, no adjacent tidy-up, no assertion removed that no row names. For each file deleted whole, drop its `TEST_LINE_BASELINE` entry in the same commit, or `carries no baseline entry for a file that is gone` fails. **No other edit to that file:** `TEST_LINE_HEAD_ROOM` does not move, no baseline value changes, no head-room constant changes, and no comment in `## Re-baselining` or the arming logs is touched. Regenerate the golden with `cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts`, read the diff, then run again without the flag; a regeneration run is deliberately never green. Then `cd hooks && npm test`.

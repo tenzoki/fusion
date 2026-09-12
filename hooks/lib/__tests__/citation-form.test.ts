@@ -27,10 +27,6 @@ import {
 } from "../citation-form.js";
 import { CASE_TIMEOUT, readEvents, runToolCall, withProject } from "./helpers/guard-harness.js";
 
-/* ------------------------------------------------------------------ *
- * A throwaway workbench with two records to resolve against
- * ------------------------------------------------------------------ */
-
 /** The seeded records. One closed issue and one history note, and nothing else. */
 const CLOSED_ISSUE = "shared/issues/260901-1200_c_a-closed-issue.md";
 const HISTORY_NOTE = "shared/history/260901-1300-coder-a-history-note.md";
@@ -71,10 +67,6 @@ function judgeWrite(root: string, text: string, rel = "shared/issues/260906-1200
   return report;
 }
 
-/* ------------------------------------------------------------------ *
- * 1. Which file
- * ------------------------------------------------------------------ */
-
 describe("the trigger's file test", () => {
   const root = "/p";
   const wb = "/p/fusion-workbench";
@@ -109,10 +101,6 @@ describe("the trigger's file test", () => {
     expect(workbenchRecordPath(root, `${wb}/.migration-v2-backup/a.md`)).toBeNull();
   });
 });
-
-/* ------------------------------------------------------------------ *
- * 2. Which lines
- * ------------------------------------------------------------------ */
 
 describe("the report is scoped to what this call wrote", () => {
   const TEXT = ["one", "two", "three", "four"].join("\n");
@@ -188,10 +176,6 @@ describe("the report is scoped to what this call wrote", () => {
     });
   });
 });
-
-/* ------------------------------------------------------------------ *
- * 3. Which verdict
- * ------------------------------------------------------------------ */
 
 describe("which verdicts reach the writer", () => {
   it("reports a store-prefixed citation, with the token and the storeless fix", () => {
@@ -276,10 +260,6 @@ describe("which verdicts reach the writer", () => {
   });
 });
 
-/* ------------------------------------------------------------------ *
- * The throttle
- * ------------------------------------------------------------------ */
-
 describe("the throttle", () => {
   it("reads back what was written, and reads absence as never-reported", () => {
     withScratch(({ root }) => {
@@ -299,10 +279,6 @@ describe("the throttle", () => {
     });
   });
 });
-
-/* ------------------------------------------------------------------ *
- * End to end, through the real hook
- * ------------------------------------------------------------------ */
 
 /** The context sentence the tracker handed back to the model, or "". */
 function context(post: { hookSpecificOutput?: { additionalContext?: string } }): string {

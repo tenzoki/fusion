@@ -65,10 +65,6 @@ const withPluginRepo = <T,>(fn: (p: Project) => T): T =>
  */
 const COVERAGE_SPOKE = "widen the next dispatch's scope";
 
-/* ------------------------------------------------------------------ *
- * Fixtures
- * ------------------------------------------------------------------ */
-
 /** Same identity discipline as the harness's own `initGitRepo`. */
 function git(root: string, ...args: string[]): string {
   const run = spawnSync("git", args, {
@@ -206,10 +202,6 @@ function trackerSays(project: Project, relPath: string): string | null {
 const coverageEvents = (root: string) =>
   readEvents(root).filter((e) => e.event === "review_coverage");
 
-/* ------------------------------------------------------------------ *
- * 1. The tiling
- * ------------------------------------------------------------------ */
-
 describe("review coverage: the tiling", () => {
   it(
     "names the hole between two passes, commit by commit",
@@ -319,10 +311,6 @@ describe("review coverage: the tiling", () => {
     CASE_TIMEOUT,
   );
 });
-
-/* ------------------------------------------------------------------ *
- * 2. Ranges it refuses, and refuses out loud
- * ------------------------------------------------------------------ */
 
 describe("review coverage: a range it cannot pin", () => {
   it(
@@ -456,10 +444,6 @@ describe("review coverage: a range it cannot pin", () => {
   );
 });
 
-/* ------------------------------------------------------------------ *
- * 3. The carried out-of-scope list
- * ------------------------------------------------------------------ */
-
 describe("review coverage: the declared out-of-scope list", () => {
   it(
     "carries the newest review's **Not-opened:** files",
@@ -541,10 +525,6 @@ describe("review coverage: the declared out-of-scope list", () => {
     CASE_TIMEOUT,
   );
 });
-
-/* ------------------------------------------------------------------ *
- * 4. Reaching the model, on one trigger and no other
- * ------------------------------------------------------------------ */
 
 describe("review coverage: what the hook says, and when", () => {
   it(
@@ -687,10 +667,6 @@ describe("review coverage: what the hook says, and when", () => {
   );
 });
 
-/* ------------------------------------------------------------------ *
- * 7. The header block, and whose files are in it
- * ------------------------------------------------------------------ */
-
 describe("review coverage: the header block ends at the first `##` heading", () => {
   it(
     "reads no field out of the prose below it",
@@ -778,10 +754,6 @@ describe("review coverage: whose files it measures", () => {
     CASE_TIMEOUT,
   );
 });
-
-/* ------------------------------------------------------------------ *
- * 8. A statement that could not be parsed is text, never a scope
- * ------------------------------------------------------------------ */
 
 describe("review coverage: an uninterpretable **Not-opened:** value", () => {
   it(

@@ -74,10 +74,6 @@ import type { CitationHit } from "../citation-scan.js";
 
 const trackerPath = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "tracker.ts");
 
-/* ---------------------------------------------------------------- *
- * Extraction and the relation
- * ---------------------------------------------------------------- */
-
 interface Ident {
   id: string;
   kind: string;
@@ -138,10 +134,6 @@ function containmentMessage(
     "uncovered branch is for, and they pass here because the input supplied them.",
   ].join("\n");
 }
-
-/* ---------------------------------------------------------------- *
- * The registry: every builder, every branch
- * ---------------------------------------------------------------- */
 
 // Synthetic values, chosen so a collision with a real fusion identifier is not
 // possible: stamps in year 99, hashes no object in this repository has.
@@ -281,10 +273,6 @@ const REGISTRY: Record<string, { run: (input: never) => string; branches: Branch
   },
 };
 
-/* ---------------------------------------------------------------- *
- * The gate
- * ---------------------------------------------------------------- */
-
 describe("hook sentences carry only the identifiers their input supplied", () => {
   for (const [name, reg] of Object.entries(REGISTRY)) {
     for (const b of reg.branches) {
@@ -321,10 +309,6 @@ describe("hook sentences carry only the identifiers their input supplied", () =>
     expect(foreign(out, input)).toEqual([]);
   });
 });
-
-/* ---------------------------------------------------------------- *
- * Completeness: does the registry name every builder that ships?
- * ---------------------------------------------------------------- */
 
 /** A named-import block, `type` prefix and all: `import { a, b as c } from "…"`. */
 const IMPORT_BLOCK = /import\s*(?:type\s*)?\{([^}]*)\}\s*from/g;

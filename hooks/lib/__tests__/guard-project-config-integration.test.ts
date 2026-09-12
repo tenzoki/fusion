@@ -77,10 +77,6 @@ const advisories = (root: string): string[] =>
     .filter((e) => e.event === "guard_advisory")
     .map((e) => e.detail ?? "");
 
-/* ------------------------------------------------------------------ *
- * A configuration that does not parse
- * ------------------------------------------------------------------ */
-
 describe("an unparseable project configuration is reported, not swallowed", () => {
   it(
     "emits one advisory naming the file and the fault, and still allows",
@@ -147,10 +143,6 @@ describe("an unparseable project configuration is reported, not swallowed", () =
     CASE_TIMEOUT,
   );
 });
-
-/* ------------------------------------------------------------------ *
- * A configuration that declares a retired key
- * ------------------------------------------------------------------ */
 
 describe("a retired key reaches the user, on every guarded call", () => {
   it(

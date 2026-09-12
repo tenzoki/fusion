@@ -83,10 +83,6 @@ const contract = () => read("rules", "review-contract.md");
 
 const orchestrator = () => read("agents", "orchestrator.md");
 
-/* ------------------------------------------------------------------ *
- * The assertions, each taking its input, so a control can drive them
- * ------------------------------------------------------------------ */
-
 /** Every line of a prompt that is a `**Field:** …` header line for `field`. */
 function fieldLines(text: string, field: string): string[] {
   return text
@@ -137,10 +133,6 @@ function consumerGaps(text: string): string[] {
   }
   return gaps;
 }
-
-/* ------------------------------------------------------------------ *
- * 1. The mandate is in both reviewer prompts
- * ------------------------------------------------------------------ */
 
 describe("review-coverage mandate: the producers", () => {
   it(`${CONTRACT} mandates both fields, in the spellings the parser reads`, () => {
@@ -208,10 +200,6 @@ describe("review-coverage mandate: the producers", () => {
     ).not.toEqual([]);
   });
 });
-
-/* ------------------------------------------------------------------ *
- * 2. The parser reads what the prompts show — the two sides, bound
- * ------------------------------------------------------------------ */
 
 describe("review-coverage mandate: the contract's own lines, through the real parser", () => {
   it(`every filled **Reviewed-range:** line in ${CONTRACT} parses`, () => {
@@ -301,10 +289,6 @@ describe("review-coverage mandate: the contract's own lines, through the real pa
     expect(parsed.recorded).toBe(true);
   });
 });
-
-/* ------------------------------------------------------------------ *
- * 3. The consumer still consumes it
- * ------------------------------------------------------------------ */
 
 describe("review-coverage mandate: the consumer", () => {
   it("agents/orchestrator.md runs the helper and acts on both of its answers", () => {

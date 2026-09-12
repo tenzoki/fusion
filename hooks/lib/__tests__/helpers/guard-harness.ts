@@ -92,10 +92,6 @@ export const TEST_DIST =
     ? resolve(process.env.FUSION_TEST_DIST)
     : resolve(HOOKS_DIR, "dist");
 
-/* ------------------------------------------------------------------ *
- * Guard entry point
- * ------------------------------------------------------------------ */
-
 export interface GuardEntry {
   bin: string;
   args: string[];
@@ -212,10 +208,6 @@ function hookEntry(
     label: `tsx ${name}.ts`,
   };
 }
-
-/* ------------------------------------------------------------------ *
- * Throwaway project roots
- * ------------------------------------------------------------------ */
 
 export interface Project {
   /** The project root, guaranteed to equal its own realpath. */
@@ -627,10 +619,6 @@ export function configFiles(value: object | string): Record<string, string> {
   return { [PROJECT_CONFIG]: projectConfig(value) };
 }
 
-/* ------------------------------------------------------------------ *
- * Running the hook
- * ------------------------------------------------------------------ */
-
 export interface GuardResult {
   /** `"block"` when denied; absent when allowed (the guard emits a bare `{}`). */
   decision?: string;
@@ -823,10 +811,6 @@ export function runDispatch(
   );
 }
 
-/* ------------------------------------------------------------------ *
- * The PostToolUse side
- * ------------------------------------------------------------------ */
-
 /** What `tracker.ts` wrote to stdout. */
 export interface TrackerResult {
   hookSpecificOutput?: {
@@ -911,10 +895,6 @@ export function runToolCall(
   return { pre, post };
 }
 
-/* ------------------------------------------------------------------ *
- * The SessionStart side
- * ------------------------------------------------------------------ */
-
 /** What `session-start.ts` wrote to stdout. */
 export interface SessionStartResult {
   hookSpecificOutput?: {
@@ -969,10 +949,6 @@ export function runSessionStart(dir: string): SessionStartResult {
     );
   }
 }
-
-/* ------------------------------------------------------------------ *
- * Reading back what the guard wrote
- * ------------------------------------------------------------------ */
 
 export interface EscalationSnapshot {
   haltActive: boolean;
