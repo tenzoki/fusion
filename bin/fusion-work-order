@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# fusion-work-order — the order the work-item store imposes on itself.
+#
+# Usage:
+#   fusion-work-order
+#
+# Takes no arguments. Output on stdout, one KEY=value per line, then one row per
+# item in the computed order, prerequisites first, then the cycle and unresolved
+# rows:
+#
+#   anchor=workbench-root
+#   items=7
+#   edges=5
+#   unresolved-edges=2
+#   cycles=1
+#   ready=3
+#   roots=3
+#   no-depends-on-field=4
+#   verdict=cyclic
+#   note=4 items carry no `**Depends-on:**` field …
+#      1      0       2  ready    <item-a>
+#      2      1       0  blocked  <item-b>
+#   cycle=<item-c>, <item-d>
+#   unresolved=<item-b> wants <item-e>.md
+#
+# The item row is five fixed columns — order, depth, blocks, readiness,
+# container name. `ready=` counts the items with no unmet prerequisite and
+# `roots=` the items at depth 0, where the order starts; the two are equal in an
+# acyclic store and differ only where a cycle sits at depth 0.
+#
+# A node is a work item whose `**Status:**` is `open` or `claimed`. A `done` or
+# `dropped` item is outside the graph, its outgoing entries unread, and an entry
+# naming one is reported as unresolved like an entry naming nothing at all.
+# `archive/**` is never opened. The computation is hooks/lib/work-graph.ts and
+# its header is the authoritative account of all of that.
+#
+# `note=` IS MANDATORY WHENEVER `no-depends-on-field=` IS ABOVE ZERO, and it is
+# a user's ruling rather than a courtesy. The field is permitted rather than
+# mandated and is absent when there is nothing to say, so an absent field and a
+# genuinely prerequisite-free item are indistinguishable; the con was accepted
+# at the gate on the condition that this program say so rather than leave a
+# reader to infer it
+# (`260908-2018_*_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md`,
+# the `Answered:` line). The line kind is bin/fusion-forum's: a degradation that
+# changed the answer, stated rather than hidden.
+#
+# Exit codes:
+#   0  the check ran. `verdict=` says what it found. A cycle is NOT a non-zero
+#      exit, and `verdict=empty` is a real answer that reaches 0 like the other
+#      two.
+#   1  usage error.
+#   2  no fusion workbench above the working directory; nothing to compute.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "there are no live work items" is an answer about the
+#      project, and a broken install must never be reported as one.
+#
+# ---------------------------------------------------------------------------
+# Why this exists, and what it deliberately does not do
+#
+# `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md`
+# (option 3) allows a helper to READ the store and REPORT an order, and stops
+# there: no agent asserts a ranking, no marker records one, and the user
+# overrides any figure here at will. The portfolio layer that used to rank work
+# went at v11 and this is not its return.
+#
+# It reports and it gates nothing. No exit code carries the verdict, and no
+# test, hook or pipeline step runs this program — the stdout-verdict rule every
+# other reporting helper in this directory carries, none of them promoted to a
+# gate.
+#
+# It writes nothing. No cache, no index, no marker, no record: the order is
+# recomputed per run and discarded, so two runs over an unchanged store print
+# the same bytes and neither leaves anything behind for the next one to trust.
+#
+# The work is hooks/dist/order.js, resolved relative to this script rather than
+# through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run their
+# own build. node is already a hard requirement: the plugin's hooks are node
+# programs.
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/order.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-work-order: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

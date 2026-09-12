@@ -48,6 +48,7 @@ bin/*
 !bin/fusion-forum
 !bin/fusion-plan-size
 !bin/fusion-claimed-item
+!bin/fusion-work-order
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
