@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `260906-0416_*_a-project-may-widen-the-citation-corpus-and-never-narrow-it-so-an-exhibit-has-no-declarable-form.md` (the gap) · `260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md` (the repair whose measured rejection option 1 reverses) · `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md` (the verdict-scope precedent)
+**Cross-references:** `260906-0416_*_a-project-may-widen-the-citation-corpus-and-never-narrow-it-so-an-exhibit-has-no-declarable-form.md` (the gap) · `260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md` (the repair whose measured rejection option 1 reverses) · `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md` (the verdict-scope precedent) · `260912-1614-the-citation-verdict-is-unreachable-where-an-exhibit-sits-in-an-edited-file.md` (the analysis that added option 4)
 
 ---
 
@@ -48,6 +48,36 @@ declarable. Leaving it there is a decision by default.
      transcript, which is the one artefact whose value is that it is verbatim. This option
      answers them by telling them their records are wrong.
 
+4. **Only a row somebody may repair moves the verdict.** `verdict=violations` when the edited
+   rows that carry no exemption `reason` are above zero, rather than when `edited-violations` is.
+   Every row stays printed, every figure stays as it is, and `unrewritable-violations` becomes the
+   half the verdict subtracts instead of a figure beside it.
+   - Pros: it completes a criterion this project already chose rather than adding one.
+     `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md` named the
+     criterion "nobody will repair it" and rejected its own option 2 for taking 65 rows where the
+     criterion took 256; the live-file predicate it chose instead leaves the rows that are edited
+     AND unrewritable uncovered, and those are exactly the ones the reporting project is standing
+     on. No configuration surface, which is option 2's whole cost. It touches neither the mask nor
+     the corpus nor the sweep, so the 2026-09-05 measurement that option 1 would reverse stands
+     untouched. Both counters and the per-row column already exist, so the change is which of two
+     numbers the verdict reads. And it is the only one of the four the reporting project asked
+     for: they have the criterion running in a local Makefile, which proves it implementable and
+     proves every consuming project otherwise rebuilds it.
+   - Cons: it turns a red gate green in a consuming project, which the constraint below forbids
+     doing SILENTLY. It needs a release that names it and an upgrade note; it cannot ride in
+     unannounced. A genuine violation inside a fence in a live file stops moving the verdict: it
+     stays printed, stays in `store-prefixed` and `unrewritable-violations`, and fusion's own
+     blocking gate goes on failing on it, so the teaching file's coverage survives here and is
+     lost only for a consuming project wiring on `verdict=` alone. And `unrewritable` is the
+     presence of an exemption reason, not a finding that repair is impossible: a writer who
+     fences a token they could have named in words gets a verdict that no longer objects.
+
+**The cut, and why it was incomplete.** Options 1 to 3 cut on one dimension, how a project may
+declare an exhibit. Option 4 is on the other dimension, which rows move the verdict, the one
+`260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md` established and
+this record cited as precedent without carrying an option on it. The two dimensions are
+independent: any of options 1 to 3 can be taken with or without option 4.
+
 ## Constraints
 
 Whatever is chosen must not reach the sweep's rewriting behaviour: an exhibit must stay
@@ -68,3 +98,24 @@ The residual to accept with option 2, stated rather than discovered later: a pro
 a genuine violation by calling it an exhibit, and nothing mechanical distinguishes the two. That
 is the same residual the `foreign:` qualifier carries — a claim the writer makes rather than a
 fact a gate checks — and it was accepted there on the same reasoning.
+
+## Addendum 2026-09-12 — option 4 added
+
+The recommendation above predates option 4 and was written when the cut carried three. It is left
+standing rather than rewritten, because changing a recommendation is not this addendum's to do.
+
+What the second report from the same consuming project adds, verified against this tree: the
+narrowing is `ff52dd4a` of 2026-09-05, four days after v10.22.0, shipped in v10.23.0, which matches
+their account. `verdict=` reads `edited-violations` and nothing else, as `hooks/citation-check.ts`
+states in its own header. And fusion's own repository cannot observe the failure mode: measured on
+2026-09-12 it reads `edited-violations=0`, `unrewritable-violations=401`, `verdict=clean`, so every
+unrepairable row here already sits in a file the live-file predicate excludes. That is why the
+first round produced a diagnostic figure instead of a repair.
+
+The analyst's assessment is option 4, with options 2 and 4 not exclusive: option 4 makes the
+verdict reachable for a project whose exhibits sit in live records, and option 2 answers the
+separate asymmetry that a project can widen the corpus and never narrow it
+(`260906-0416_*_a-project-may-widen-the-citation-corpus-and-never-narrow-it-so-an-exhibit-has-no-declarable-form.md`).
+Neither settles the other.
+
+**Filed by:** analyst, Kai Stalmann <ks@qantr.com>, checkout 5e8248d7
