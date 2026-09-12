@@ -143,7 +143,7 @@ WB=./fusion-workbench; D="<the container, workbench-relative>"; B="$(basename "$
 **Domain:** <the record's **Domain:**, or `code` where it carried none>
 **Status:** <the status the survey proposed, or the one the user named instead>
 **Claim:** <carried from the record's **Claim:** — see below>
-**Depends-on:** <one `<dirname>.md` per converted container — see below>
+**Cross-references:** <one `<dirname>.md` per converted container — see below>
 **Filed by:** <the record's **Filed by:**, verbatim>
 
 ---
@@ -151,10 +151,10 @@ WB=./fusion-workbench; D="<the container, workbench-relative>"; B="$(basename "$
 
 Then **the record's own body, verbatim, from `## Directive` down.** Every section it carried stays: the Grounding snapshot, the Dependencies, any Turn log, any closure note. The item grammar's head fields are a floor, not a ceiling, and a closure note is the only surviving statement of how that work ended — dropping it to reach a tidier file would destroy evidence to gain nothing.
 
-Four fields need care:
+The head fields need care:
 
 - **`**Claim:**` is carried only when the record's own claim opens with `Claimed `**, and it is rewritten to the item form: the eight-hex checkout first, then the person, then the stamp (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`). `Unclaimed`, an absent field, or the partial-identity form (`Claimed …, identity partial: …`) all mean **the field is absent from the item** — a claim that names no checkout keys nothing. Never compose a checkout identifier here, and never substitute this checkout's own: the record is being converted, not claimed.
-- **`**Depends-on:**` may name only a record that exists.** The record's `## Dependencies` section held Circle **directory** names, and a converted container's record is `<dirname>.md`. Keep the entries naming a container **this pass also converted**, comma-separated. Drop `(none)`, drop prose, drop any entry naming no such directory, and drop any naming a container whose record stayed terminal — that record is still `_<m>_circle.md`, so an entry pointing at `<dirname>.md` there resolves to nothing, and a citation that resolves to nothing degrades without announcing it (`HYG-NO-SILENT-FAIL`). Say in the report which entries you dropped and why. The field is **absent** when nothing survives — never present and empty.
+- **`**Depends-on:**` is never written**: a conversion cannot confirm a prerequisite, and an entry there asserts one the user confirmed. The record's `## Dependencies` section held Circle **directory** names, and a converted container's record is `<dirname>.md`. Every entry naming a container **this pass also converted** goes to `**Cross-references:**`, comma-separated, which orders nothing; every other entry names no such record and is dropped, because a citation that resolves to nothing degrades without announcing it (`HYG-NO-SILENT-FAIL`). Say in the report which you dropped and why. `**Cross-references:**` is **absent** when nothing survives — never present and empty.
 - **`**Domain:**` and `**Filed by:**` are copied, never derived.** A record carrying no `**Filed by:**` — they predate the field — gets the line the conventions' `### Who filed it` prescribes for an unattributable record rather than a guess.
 - **There is no `**Status:**` to copy.** The Circle stated its state in the filename marker, which is why the survey had to propose one; the record's own `**Status:**` head field, where a pre-260815 record still carries one, is **not** read — it is exactly the field that drifted from the marker and was dropped for it. Carry it down into the body untouched with the rest of the prose, and take the status from the marker.
 

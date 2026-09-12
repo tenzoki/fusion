@@ -124,7 +124,7 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 <one paragraph: what the idea is, and why it might matter>
 ```
 
-`**Domain:**` is optional and belongs there only when the user's own content supplies it. `**Claim:**` and `**Depends-on:**` are **absent** at filing, never present and empty: nothing is claimed at the moment of filing, and a dependency is an edge the user confirms later. Do not invent any of the three, and do not add an Options, Constraints or Recommendation section: those make a decision record, and the rule above records what filing at that cost produced.
+`**Domain:**` is optional and belongs there only when the user's own content supplies it. `**Claim:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** at filing, never present and empty: nothing is claimed at the moment of filing, and a dependency or a cross-reference is the user's to add later. Do not invent any of them, and do not add an Options, Constraints or Recommendation section: those make a decision record, and the rule above records what filing at that cost produced.
 
 **One job per item, and two jobs are two files.** Not tidiness: everything downstream takes an item whole, so a spec written from a multi-job item covers one of them and leaves the rest unread. Splitting while filing costs one extra file; splitting later costs a pass over the store and a user confirmation.
 
