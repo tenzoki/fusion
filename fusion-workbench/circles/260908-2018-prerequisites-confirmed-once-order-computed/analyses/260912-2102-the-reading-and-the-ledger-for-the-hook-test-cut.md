@@ -3,7 +3,7 @@
 **Date:** 2026-09-12 21:02
 **Type:** Gap
 **Status:** Complete
-**Requested by:** orchestrator, step S2 of `260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md`
+**Requested by:** orchestrator, step S2 of `260912-2045_*_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md`
 
 ## The total, before anything else
 
