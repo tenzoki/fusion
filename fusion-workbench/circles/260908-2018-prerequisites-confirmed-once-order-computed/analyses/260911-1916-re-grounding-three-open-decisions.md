@@ -168,7 +168,7 @@ Routing: the gate is the orchestrator's to proxy; steps B1, B3 and C1 of the pla
 
 ## Filed Issues
 
-- `260911-1916_o_the-origin-rule-names-a-work-item-cross-references-header-the-item-template-does-not-define.md` — the Origin Rule's second corollary tells a writer to cite a binding record in a work item's `**Depends-on:**` or `**Cross-references:**` header, and the work-item template in the same file defines five fields, none of them `**Cross-references:**`. It bears on option 1b above, which would give the non-blocking citation a home.
+- `260911-1916_*_the-origin-rule-names-a-work-item-cross-references-header-the-item-template-does-not-define.md` — the Origin Rule's second corollary tells a writer to cite a binding record in a work item's `**Depends-on:**` or `**Cross-references:**` header, and the work-item template in the same file defines five fields, none of them `**Cross-references:**`. It bears on option 1b above, which would give the non-blocking citation a home.
 
 ## Sources
 

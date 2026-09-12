@@ -75,8 +75,8 @@ work items. A helper computing over the store reads two nodes, and a survey over
 different statement from a survey over 26. This report makes the smaller statement.
 
 **Two further files could be mistaken for work items and are not.**
-`fusion-workbench/shared/backlog/` holds `260814-1733_c_bounded-executor-dispatches.md` and
-`260814-1733_p_attach-the-rule-to-the-act.md`, flat files in the pre-container backlog form carrying
+`fusion-workbench/shared/backlog/` holds `260814-1733_*_bounded-executor-dispatches.md` and
+`260814-1733_*_attach-the-rule-to-the-act.md`, flat files in the pre-container backlog form carrying
 issue-vocabulary markers rather than a status field. They fail the container test, so no helper reads
 them and neither can be an endpoint. That the flat form still appears in user-facing text is already
 filed, at
@@ -252,15 +252,15 @@ Filing a fifth record restating any of them would be the duplication the analyst
 
 ## Sources
 
-- `fusion-workbench/circles/260908-2018-prerequisites-confirmed-once-order-computed/260908-2018-prerequisites-confirmed-once-order-computed.md`, head fields and `## Dependencies`
-- `fusion-workbench/circles/260909-1700-cut-fusion-to-working-minimum/260909-1700-cut-fusion-to-working-minimum.md`, head field line 7 and `## Dependencies` lines 85 and 93
+- `260908-2018-prerequisites-confirmed-once-order-computed.md`, head fields and `## Dependencies`
+- `260909-1700-cut-fusion-to-working-minimum.md`, head field line 7 and `## Dependencies` lines 85 and 93
 - `260909-1808_*_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md`, `## What must change` item 4, `## Options` option 1, `## Recommendation`
 - `260911-1528_*_spec-prerequisites-confirmed-once-order-computed.md`, head `**Source:**`, `## What changed under the original shaping`, `### C1`, `## Stops when`
 - `260911-1833_*_implementation-prerequisites-confirmed-once-order-computed.md`, `## Current State` and step D1
 - `260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md`
 - `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`
 - `hooks/lib/citation-corpus.ts`, `ITEM_RECORD_RE`
-- `fusion-workbench/shared/backlog/260814-1733_c_bounded-executor-dispatches.md` and `260814-1733_p_attach-the-rule-to-the-act.md`
+- `260814-1733_*_bounded-executor-dispatches.md` and `260814-1733_*_attach-the-rule-to-the-act.md`
 - The `## Dependencies` section of each of the 24 terminal Circle records under `fusion-workbench/circles/`
 
 ## Open Questions
