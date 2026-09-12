@@ -101,3 +101,8 @@ real cost and should be measured before the work is scheduled, not estimated her
 
 Whether it runs before, after, or instead of the 60-byte removal inside the ordering work is a
 separate question and is deliberately not answered in this record.
+
+---
+Answered: 260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md `## Options` — option 1: the roster moves to `README-hooks.md`, `CLAUDE.md` keeps one pointer line, and the enumeration lint is retargeted at the new home so it stays closed in both directions. Sequenced ahead of the order helper by the same ruling, so the helper's Layout row lands in the new home and the 60-byte deficit on the `reviewer` path never has to be paid.
+
+The citation churn this record named as the real cost was measured before scheduling rather than estimated, which is what the record asked for. `grep -rn "Layout table"` over the tree at `ae172380`, excluding `node_modules` and `archive/`, returns exactly one shipped-code site, `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`, which is the file being retargeted anyway. No agent prompt, no rule file, no skill body, no README and no `bin/` helper cites the table. Every other hit is a workbench record, and all but four carry a terminal marker or sit in a closed store, so they are history and are not edited back (`rules/fusion-workbench-conventions.md` `## Terminal states are history`). The four live ones are this item's own plan and this record, one `_o_` issue and one `_p_` plan in other containers. The churn is therefore roughly one code site and four records, against the "there are many" the record's own option 1 warned of; ruled by user, Kai Stalmann <ks@qantr.com>.
