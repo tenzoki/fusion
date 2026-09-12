@@ -115,13 +115,13 @@ Coherence self-check, run before this was finalised. Six nodes inside the work a
 
 **G1 is a gate, not a step, and carries no Executor.** `coder`, `ontocoder` and `analyst` all run non-interactively and none holds `AskUserQuestion`. The orchestrator proxies it.
 
-1. **S1: compute the yield per candidate and bound the reading list**
+1. [DONE] **S1: compute the yield per candidate and bound the reading list**
    - Executor: `coder`
    - Files: none; this step writes no file and reports. It may use a throwaway script under the session scratch directory.
    - Changes: re-derive, from the tree and from `TEST_LINE_BASELINE`, the three figures in `## Current State` (`total`, `floor`, `margin`) and a per-file table carrying current lines, baseline entry, whole-file yield (`size − baseline + 1`) and non-code line count (comment plus blank). Report, as figures: the Class A roster with its sum, the Class B eligible roster ordered by yield, and the Class C reservoir per file. **Report any disagreement with `## Current State` as a disagreement rather than silently substituting**: those figures were taken at 2026-09-12 20:45 and the tree may have moved. Exclude nothing from the table; exclusion is S2's judgement and the gate's, not a filter applied before either of them can see it. Do not edit a test, do not touch a baseline, do not commit.
    - Dependencies: none
 
-2. **S2: the reading, and the ledger it produces**
+2. [IN PROGRESS] **S2: the reading, and the ledger it produces**
    - Executor: `analyst`
    - Files: writes one analysis report to its own `$OUT_ANALYSIS`. Reads `hooks/lib/__tests__/**/*.ts`, S1's table, `README-hooks.md` `### Three gates that can fail the suite over text nobody compiled`, `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining`, and the two records named below.
    - Changes: a ledger with one row per candidate, and **every row carries all five of these or it is not a row**: (a) the file and, for a Class C row, the line range; (b) what it asserts, in the terms of the behaviour it holds, not the API it calls; (c) whether anything else in the suite asserts the same thing, cited `file:line`, or the plain statement that nothing does; (d) **what would reach a release unnoticed if it went**: the guarantee, named as a failure that would ship; (e) the measured yield from S1's table. A row's verdict is one of `duplicate` (another test asserts it, cited), `superseded` (its subject no longer exists), `prose` (a Class C trim removing no assertion), or `load-bearing` (it stays). Only the first three enter the ledger's total.
