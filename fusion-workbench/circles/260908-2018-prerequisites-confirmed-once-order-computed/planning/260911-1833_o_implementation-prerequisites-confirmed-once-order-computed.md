@@ -194,7 +194,7 @@ Coherence self-check, run before this was finalised. Twelve nodes, thirteen edge
    - Changes: one `README-hooks.md` row for `order.ts` and one for `lib/work-graph.ts`, both mandatory, the second gated by `derivable-enumerations-lint.test.ts` section 5 in both directions. In `docs/working-model.md`, beside the paragraph B4 amended, name the command and say the figures are a report the user overrides at will. Neither file is on a dispatch path or in a bounded surface, so C4 competes with nothing. `/fusion:help` is deliberately not touched: the skills surface holds 457 bytes and C4's criterion is one documented command, which these two files satisfy. The helper's roster row is in C2, in this same file's `### The bin/ helper roster`.
    - Dependencies: C2
 
-10. **M1: measure the surfaces and run the suite**
+10. [DONE] **M1: measure the surfaces and run the suite**
     - Executor: `coder`
     - Files: none; this step writes no file and reports
     - Changes: run `npm test` in `hooks/` and report it green. Then take, and report as figures rather than as a claim that nothing broke: the three surface totals against their budgets, and all eleven dispatch-path totals against their baseline rows, by the method `hooks/lib/__tests__/fixtures/dispatch-path.baseline` documents. **Where phase C ran**, also run `bin/fusion-work-order` at the project root, take `git status` before and after, report both, and run it twice and compare the bytes. Where phase C did not run, M1 covers the B-phase surfaces alone and says so, and the acceptance test's parts 1 and 3 are recorded as not run rather than as passed.
