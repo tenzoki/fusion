@@ -18,6 +18,7 @@ A **work item** is one bounded unit of work: something somebody is going to do, 
 **Status:** claimed
 **Claim:** 3f9a1c07 — Ada Lovelace <ada@example.com>, 260910-1145
 **Depends-on:** 260901-1030-extract-the-schema-reader.md
+**Cross-references:** 260828-1610-loader-conventions.md
 **Filed by:** user, Ada Lovelace <ada@example.com>
 ---
 
@@ -39,7 +40,7 @@ A **work item** is one bounded unit of work: something somebody is going to do, 
 
 **`claimed` names a checkout, and that is what stops two people doing one job.** The value compared is the eight hex characters `bin/fusion-identity` prints for this checkout, never the person beside them — two checkouts of one person carry one git identity, so the person alone cannot answer whose claim this is. A takeover overwrites the field; who held it before is in the commit that took it. The collision is detected and not prevented: two checkouts that both pull, both see no claim and both claim will conflict on that one line at the next merge, and whoever loses the race picks another item.
 
-**`**Depends-on:**` carries edges you confirmed**, as a comma-separated list of item basenames. A helper may read the store and *report* an order over those edges; that report is a report, and you override it wherever you want to. No agent asserts a ranking.
+**`**Depends-on:**` carries edges you confirmed**, as a comma-separated list of item basenames, and an entry asserts one relation and no other: the named item must reach `done` or `dropped` before this one may start. Every other citation the item carries (a record it rests on, a decision that binds it, work it merely touches) goes in `**Cross-references:**`, which orders nothing. A helper may read the store and *report* an order over the `**Depends-on:**` edges; that report is a report, and you override it wherever you want to. No agent asserts a ranking.
 
 ### How an item comes into existence
 

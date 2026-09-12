@@ -155,14 +155,14 @@ Coherence self-check, run before this was finalised. Twelve nodes, thirteen edge
    - **Measure first, write second.** Take the `reviewer` path total before the edit (`bin/fusion-rules reviewer` from the repository root, prompt plus every emitted path plus `CLAUDE.md`), subtract from the `reviewer` row in `hooks/lib/__tests__/fixtures/dispatch-path.baseline`, and report what the edit spends and what it leaves. **The figure that is left is an input to gate G3** and must be in the step's report as a number, because G3 cannot be put to the user without it. The helper's roster row is **not** in this step: it belongs to the helper, and the helper is gated.
    - Dependencies: G1
 
-4. **B3: the two skill bodies learn the grammar, and the migration stops guessing**
+4. [IN PROGRESS] **B3: the two skill bodies learn the grammar, and the migration stops guessing**
    - Executor: `coder`
    - Files: `skills/migrate/SKILL.md`, the `**Depends-on:**` bullet at the record-conversion step; `skills/memo/SKILL.md`, the filing template and the sentence at line 127
    - Changes: in `/fusion:migrate`, replace the conversion rule rather than extending it. A conversion cannot confirm a prerequisite, so it writes **nothing** into `**Depends-on:**` and routes every name that survives the existing resolvability test into `**Cross-references:**` instead, absent when nothing survives. That one rule retires the keep-if-resolvable, drop-prose, drop-terminal-target apparatus the 730-byte bullet carries today, so the edit may take bytes off this surface rather than adding them. In `/fusion:memo`, add the field to the filing template's absent-at-filing sentence. **The cardinality in that sentence moves**: it reads "do not invent any of the three" and the three become four, which is the kind of prose count `rules/critical-stance.md` §5 is about.
    - Both files are charged to the **skills** surface, 457 bytes at `ae172380`, a different budget from B1's that buys nothing from it. One step rather than two because one budget measured once beats two executors each guessing what the other spent. Measure the surface before and after and report both.
    - Dependencies: G1, B1 (the definition B3's two bodies point at)
 
-5. **B4: the working model's own account of the item head**
+5. [DONE] **B4: the working model's own account of the item head**
    - Executor: `coder`
    - Files: `docs/working-model.md`, the head-field example around line 18 and the `**Depends-on:**` paragraph at line 42
    - Changes: add the field to the worked example and say in one clause what each of the two fields asserts, so a reader meets the same grammar `rules/fusion-workbench-conventions.md` defines. The document is on no dispatch path and in no bounded surface, so this step competes with nothing. It is separate from B3 because it is unbounded: mixing an unmeasured file into a step whose whole discipline is a byte measurement blurs the measurement.
