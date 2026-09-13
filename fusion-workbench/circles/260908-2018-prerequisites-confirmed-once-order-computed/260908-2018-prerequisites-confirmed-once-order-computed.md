@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** claimed
+**Status:** done
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260911-1526
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 
@@ -180,3 +180,42 @@ store are unchanged, including
 recommendation is therefore the one the previous block made and this run does not restate: a
 re-sharpen through the shaper's portfolio-activation mode before the marker moves, which would now
 also re-anchor the snapshot to a commit that resolves.
+
+---
+
+## Closure — 260913-0851, done
+
+Range `1208ceb6..c2a12973`, 26 commits, all of them this checkout's.
+
+**What was built.** The prerequisite relation is a confirmed assertion in a work item's head, and
+`bin/fusion-work-order` computes depth, transitive blocking count, topological order, readiness and
+cycles from it on demand, storing none of them. `hooks/lib/work-graph.ts` holds the computation,
+`hooks/order.ts` and the wrapper make it readable, and `work-graph.test.ts` proves it on a fixture
+carrying the cases the live store cannot show. The conventions state for the first time what an
+entry asserts, and `**Cross-references:**` is now a defined item head field for citations that are
+not ordering edges.
+
+**What the directive asked for and did not get.** The proposal pass. The candidate survey returned
+one edge against a stopping threshold of three, one being the corpus maximum rather than a thin
+reading, so phase D was not built and the curator change did not happen. The directive's "a model
+proposes each edge with its evidence tier and its reason" is therefore unrealised, and the record
+that would have governed it is deferred rather than answered.
+
+**Two things that were not in the directive and outweigh parts of it.** The `bin/` helper roster
+left `CLAUDE.md` for a file on no dispatch path, which took 28 548 bytes off all eleven paths; that
+began as a 60-byte blockage inside this work and became its own decision, with a work item filed for
+the wider principle. And the hook test surface was cut by 144 lines of section dividers to pay for
+the fixture test, after a reading that found no whole file removable.
+
+**Stop conditions.** Twelve clauses across two plans were read back. Eleven held. Clause 6 did not:
+four decision records whose answers the plan had assumed were still open at closure. All four were
+ruled before this note was written, which is why they are not carried forward as a gap.
+
+**What closes open.** Six issues from the closing review, one of them high and this work's own
+doing: `**Cross-references:**` has two consumers still reading only the old field, and one is the
+archive skill's safety filter, so a `done` item cited only in a live item's new field is archivable.
+The entry the migration wrote onto `260909-1700-cut-fusion-to-working-minimum.md` may now be struck
+under the ruling taken at closure, and has not been. `roots=` carries a definition this work chose
+rather than inherited.
+
+**Coverage.** The range was uncovered until this pass and is now tiled by one review.

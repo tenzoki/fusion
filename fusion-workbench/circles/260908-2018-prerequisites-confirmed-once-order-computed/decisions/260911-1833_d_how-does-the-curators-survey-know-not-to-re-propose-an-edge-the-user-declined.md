@@ -99,3 +99,6 @@ field on the apply dispatch naming the groups that were on offer. If the user ju
 for a criterion one subject asked for, option 4 is the honest fallback and is preferable to option 2,
 because a silent suppression of an unasked question is the failure mode this project's own defect
 records keep meeting.
+
+---
+Deferred: the session that builds the curator's proposal pass — the pass was not built, because the candidate survey returned one edge against a stopping threshold of three, so there is no survey to suppress a declined edge for and no run file to read a prior outcome from. The question returns unchanged when the store carries enough items to make the pass worth building, and the plan that builds it inherits this record as an input rather than rediscovering the gap. Nothing about the answer depends on the wait: the defect it names, that the run file's four outcome values cannot separate an edge the user refused from one he never saw, is a property of the vocabulary and not of the corpus; ruled by user, Kai Stalmann <ks@qantr.com>.

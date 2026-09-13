@@ -65,3 +65,6 @@ plan's first step writes the sentence and measures the surface, and the plan car
 as its named branches rather than discovering them. That is not a deferral of this question: it is
 an answer that says the input needed to choose between 2 and 3 does not exist yet and is cheap to
 obtain.
+
+---
+Retired: the v11 agent cut, which removed `agents/playmaker.md` outright — the question asked what pays for a change to a ranking prompt that no longer exists, so its subject is gone and no answer to it can be written. **The marker is not moved**, by the user's ruling: the record stands open as the evidence that the question was asked and became unanswerable, rather than being dressed as a decision somebody took. What survives the retirement is the constraint underneath it, that a change to a bounded surface is paid for by a removal on the same surface, and that is stated where it binds rather than here. The 698 bytes the title names are themselves stale twice over: the surface held 61 153 after the cut, and the tighter bound moved to the dispatch paths; ruled by user, Kai Stalmann <ks@qantr.com>.

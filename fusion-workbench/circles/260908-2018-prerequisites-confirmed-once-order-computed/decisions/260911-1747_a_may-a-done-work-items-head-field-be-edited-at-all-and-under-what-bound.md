@@ -97,3 +97,6 @@ is not. If a `done` item's edges are read, options 1 and 4 leave the store's onl
 they are not read, the case is documentary and options 2 and 3 buy nothing worth a change to the
 terminal rule. One record on disk is affected today, which is small enough that the cost of the
 answer is almost entirely the precedent rather than the edit.
+
+---
+Answered: 260913-0824-reviewer-prerequisites-confirmed-once-order-computed.md `## Findings` — a machine-readable head field is data rather than narrative, so a terminal item's `**Depends-on:**` and `**Cross-references:**` may be corrected where the value is factually wrong. `## Terminal states are history` continues to govern everything else in such a record: the body, the status, the claim and every prose statement stay exactly as they are, because those record what was thought at the time and a correction there would erase rather than repair. The distinction the ruling turns on is that a field a program parses has a truth value independent of when it was written, while a sentence does not. Immediate consequence, not carried out here: the entry the migration wrote onto `260909-1700-cut-fusion-to-working-minimum.md` is such a value and may now be struck; ruled by user, Kai Stalmann <ks@qantr.com>.
