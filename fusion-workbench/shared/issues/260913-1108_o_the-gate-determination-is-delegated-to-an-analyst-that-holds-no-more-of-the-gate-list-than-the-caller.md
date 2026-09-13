@@ -1,0 +1,19 @@
+The nested-dispatch gate mechanic delegates a determination to an analyst that holds no more of the gate list than the caller does, and names no actor for the dispatch
+
+---
+`rules/fusion-workbench-conventions.md:232` tells a dispatched agent to halt on a gate condition and have an analyst determine whether one is present. Three parts of that instruction are not followable as written.
+
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+
+**The rule.** `rules/fusion-workbench-conventions.md:232`: "**A human gate fires in the orchestrator's own loop, and a nested dispatch never reaches one** (`agents/orchestrator.md` `## Human Gate Rules` holds the conditions). So an agent that may be approaching a gate condition **halts and does not proceed**. An `analyst` determines whether one is present: no condition, and the work goes on; a condition, and it travels up to the orchestrator, where the user answers as before."
+
+**(a) The trigger names a list nobody in scope holds.** The gate conditions live only in `agents/orchestrator.md` `## Human Gate Rules` (lines 359–393). `bin/fusion-rules <any-agent>` emits no agent prompt — verified by running it for `coder`, `analyst` and `reviewer`, each of which returns four or six rule paths and no `agents/*.md`. So the agent asked to recognise "may be approaching a gate condition" has neither the list nor an instruction to fetch it. The concrete case: `Task involves ontocoder` is a gate condition, and under the new positive rule a `coder` may dispatch `ontocoder` directly — the exact path the gate exists to intercept, taken by an agent that was never shown the condition.
+
+**(b) The delegate is in the same position as the delegator.** `agents/analyst.md` carries nine analysis types (`## Analysis Types`, lines 47–210 of that file) and none is a gate-condition determination; its `## Output Format` produces a full analysis report for what is a yes/no finding. The analyst receives the same always-on corpus as the caller and no gate table either. So the delegation does not obtain the missing input; it moves the same blind question one dispatch further, at the analyst path's pinned cost of 198 789 bytes (`hooks/lib/__tests__/fixtures/dispatch-path.baseline`, `[analyst]` total).
+
+**(c) The actor is unnamed and the two readings differ in behaviour.** "halts and does not proceed" and "An `analyst` determines" are consecutive sentences with no subject joining them. Reading one: the agent returns to its dispatcher, which dispatches the analyst — then "the work goes on" means a re-dispatch. Reading two: the agent dispatches the analyst itself and resumes on a `no` — then it did not halt. Nothing in the text picks one, and `agents/analyst.md` does not know it may be called for this.
+
+**A fourth thing, stated as inference rather than measured:** an analyst dispatched to make this determination is itself a nested dispatch and is bound by the same sentence, so nothing in the rule terminates the regress.
+
+**Acceptance test.** A dispatched agent can answer, from the text it is given at Setup, all three of: which conditions are gate conditions, who dispatches the analyst, and what it does with a `no`. Either the gate conditions reach a non-orchestrator agent (a rule file `bin/fusion-rules` emits, or an instruction to read the prompt through `$FUSION_PLUGIN_ROOT`), or the mechanic changes to one whose inputs the dispatched agent has. Any added always-on bytes are charged to all eleven dispatch paths at zero head-room (`hooks/lib/__tests__/dispatch-bytes.test.ts`).
