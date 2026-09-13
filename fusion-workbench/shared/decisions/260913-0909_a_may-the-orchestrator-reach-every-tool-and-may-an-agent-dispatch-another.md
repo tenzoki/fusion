@@ -120,3 +120,14 @@ implemented rather than after. The grant and the ban are separable and the grant
 it blocks a consuming project today, its fix is a deletion, and it settles an older record on the
 way. The ban is not urgent, because dropping it changes no behaviour that is not already possible;
 what it changes is whether the project admits it.
+
+---
+Answered: 260913-0909_*_may-the-orchestrator-reach-every-tool-and-may-an-agent-dispatch-another.md `## Options` — option 1 for the grant and option 4 for the ban, with the open point answered first and answered in a form the record did not carry.
+
+**The grant.** The `tools:` line goes. The orchestrator inherits the session's tools like every other agent, so every MCP server, `ToolSearch`, `WebSearch` and every future tool is reachable without an enumeration anybody maintains. The two exclusions the `Agent(...)` list carried, the consultant and the no-recursion rule, fall back to prose, which the ruling accepts as the price: they were never enforced on the other ten agents either.
+
+**The ban.** Dropped. The four prose sentences go and the rule is stated once, positively: an agent may dispatch another operative agent. The bound that matters is untouched and is restated with it: **no agent originates a work item**, the route being `/fusion:memo idee` so an idea reaches the backlog and is planned. The token cost is accepted knowingly, each dispatch path carrying between 152 400 and 253 696 bytes before the task text.
+
+**The gate, and this is a fourth shape none of the three in this record proposed.** The user's first proposal was that a consultant or analyst decide the gate, and it was refused: a gate is the point at which a human consents, it has no mechanism by design, and an agent deciding it leaves a `gate_response` in the log with nobody having been asked. What the proposal does carry is the other half. **Whether a gate condition is present is a determination; what the gate answers is a decision.** So a nested agent that may be approaching a gate condition halts and an analyst determines whether one is present. No condition, and the work proceeds. A condition, and it travels up to the orchestrator, where the user answers as before. The determination is delegable because it is a finding about the task; the answer is not, because it is consent.
+
+Two things this settles as side effects: the `AskUserQuestion` grant disappears with the line, which is what `260824-2013_*_does-the-orchestrators-tools-grant-of-askuserquestion-go-now-that-the-orchestrator-may-not-call-it.md` asks about; and the consultant's exclusion becomes prose on the same footing as every other agent's; ruled by user, Kai Stalmann <ks@qantr.com>.
