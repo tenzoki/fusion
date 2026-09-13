@@ -24,7 +24,7 @@ Each removal is written up with its figures rather than quietly dropped, and the
 
 ## How a session runs
 
-The **orchestrator** is the only agent that dispatches others. It runs a five-step loop, once per task: **read the task** → **dispatch it** → **read what comes back** → **commit it** → **say where things stand, and ask what is next**. There is no queue and no phase count: one task is in flight at a time, and the next one comes from you, from the plan or issue the session is working through, or from what the last return uncovered. Sub-agents do focused work and return; everything they produce travels as files, so nothing is lost between dispatches.
+The **orchestrator** is the session's dispatcher — not the only agent that may dispatch one, but the one that runs the loop. It runs a five-step loop, once per task: **read the task** → **dispatch it** → **read what comes back** → **commit it** → **say where things stand, and ask what is next**. There is no queue and no phase count: one task is in flight at a time, and the next one comes from you, from the plan or issue the session is working through, or from what the last return uncovered. Sub-agents do focused work and return; everything they produce travels as files, so nothing is lost between dispatches.
 
 **How it decides it's done.** When you ask for a reconciliation, and again when a unit of work wraps up, three consistency questions are checked:
 

@@ -231,7 +231,7 @@ It is none of the three marker vocabularies this project already carries, and th
 
 **A human gate fires in the orchestrator's own loop, and a nested dispatch never reaches one** (`agents/orchestrator.md` `## Human Gate Rules` holds the conditions). So an agent that may be approaching a gate condition **halts and does not proceed**. An `analyst` determines whether one is present: no condition, and the work goes on; a condition, and it travels up to the orchestrator, where the user answers as before.
 
-**Whether a gate condition is present is a determination; what the gate answers is a decision.** The determination is delegable, because it is a finding about the task. The answer is not, because it is consent — **no agent writes a `gate_response` event, and no agent answers a gate on the user's behalf.** Binding decision: `260913-0909_*_may-the-orchestrator-reach-every-tool-and-may-an-agent-dispatch-another.md`.
+**Whether a gate condition is present is a determination; what the gate answers is a decision.** The determination is delegable, because it is a finding about the task. The answer is not, because it is consent — **no agent answers a gate on the user's behalf, and no agent writes a `gate_response` for an answer nobody gave.** The party that put the gate to the user records the answer it received, and that party is the orchestrator; nobody else writes the event. Binding decision: `260913-0909_*_may-the-orchestrator-reach-every-tool-and-may-an-agent-dispatch-another.md`.
 
 ## Timestamps
 
