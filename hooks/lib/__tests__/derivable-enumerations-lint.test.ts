@@ -137,7 +137,7 @@ describe("enumeration lint: agent counts stated as closed numbers", () => {
   const CLAIMS: { rel: string; re: RegExp; expected: number; what: string }[] = [
     { rel: "CLAUDE.md", re: /\b(\d+) specialized agents\b/g, expected: n, what: "specialized-agents count" },
     { rel: "CLAUDE.md", re: /\bThe (\d+) agent prompts\b/g, expected: n, what: "agent-prompts count" },
-    { rel: "CLAUDE.md", re: /\bthe other (\d+) inherit\b/g, expected: n - 1, what: "non-orchestrator count" },
+    { rel: "CLAUDE.md", re: /\ball (\d+) inherit\b/g, expected: n, what: "inheriting-agents count" }, // was "the other N inherit", n - 1, until the orchestrator's `tools:` line went on 2026-09-13 and nothing stood outside the claim; parser updated rather than dropped, per the failure text below
     { rel: "README.md", re: /\b(\d+) specialized agents\b/g, expected: n, what: "specialized-agents count" },
     { rel: "README-agents.md", re: /\bof the (\d+) prompts\b/g, expected: n, what: "prompt count" },
   ];

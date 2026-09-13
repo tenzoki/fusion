@@ -82,7 +82,7 @@ Sub-agents run in their own context window with the role prompt loaded. They do 
 
 ### Inheritance model
 
-With one exception, each agent declares only `name` and `description` in its frontmatter; the `tools:` and `model:` fields are deliberately omitted. The exception is the `orchestrator`, which declares a `tools:` allowlist (the namespaced sub-agent dispatches plus its permitted tools) — it is the only agent that dispatches, so it is the only agent whose tool set is pinned. For the rest:
+Each agent declares only `name` and `description` in its frontmatter; the `tools:` and `model:` fields are deliberately omitted, and since 260913 there is no exception. The `orchestrator` carried a `tools:` allowlist until then; it was deleted so the top-level dispatcher reaches every MCP server and every future tool without an enumeration anybody maintains, and its two exclusions (the consultant, and no recursion) are now prose in `agents/orchestrator.md` like every other agent's scope. So, for all eleven:
 
 - **Tools** — inherited from the parent session. Every sub-agent gets the same tool set the parent Claude Code invocation has. Per-path write restrictions (e.g. "reviewer never writes source") are enforced by the prose rules inside each agent prompt.
 - **Model** — inherited from the parent session. Whichever model is driving the Claude Code session drives the sub-agent too.
@@ -261,7 +261,7 @@ The layout, the work-item grammar, the operative half of the `bin/fusion-paths` 
 
 - **No agent modifies its own definition file.** Updates to `agents/*.md` are made by the user or via a normal code change — never by the agent itself.
 - **No agent edits files outside its declared scope.** Cross-layer findings flow through the `issues/` store, not direct edits. Scope is enforced by prose in each agent prompt.
-- **Only the orchestrator dispatches other agents.** All other agents are leaf nodes — they do their work and return. The orchestrator is the sole coordinator. It never recurses (no self-invocation), and it never invokes `consultant` (user-initiated only).
+- **An agent may dispatch another operative agent.** The orchestrator is the ordinary coordinator, and the rest usually return rather than fan out, but nothing forbids a nested dispatch and nothing enforces one either way (`rules/fusion-workbench-conventions.md` `## Dispatching another agent`, which also carries what a nested dispatch must do about a human gate). The orchestrator itself never recurses and never invokes `consultant` (user-initiated only), both now prose. **No agent originates a work item** — that bound is untouched.
 - **Issues live in the `issues/` store, never embedded in plans, reviews, or chat output.** This is enforced in `fusion-workbench-conventions.md` and applies to every agent.
 - **Timestamps come from the system clock** (`date +%y%m%d-%H%M`), never from estimation. All tracking filenames carry an `YYMMDD-HHMM` prefix.
 - **`.secret` files are never read.** If an agent needs a secret, it asks the user for an environment variable.
