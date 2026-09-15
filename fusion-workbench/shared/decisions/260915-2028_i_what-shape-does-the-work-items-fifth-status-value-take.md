@@ -49,3 +49,6 @@ Option 3 is option 1 with a worse word and is rejected on the collision alone. O
 
 ---
 Answered: `260915-2028_*_a-fifth-status-value-for-work-items.md` `## Approach` — option 1: `paused`, live, `**Claim:**` cleared, blocking its dependents, the body naming what it waits for and never a date. Ruled at the plan gate, where the four sub-answers were put together with the plan that implements them; the user approved the plan as it stood, with step 3's hook-test line budget left as the one point to return on. Option 3 was rejected on the word: `_d_`, deferred, is terminal in all three surviving marker vocabularies, which is the opposite of what this value means; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 55be2491 — `paused` in the conventions' work-item grammar with its transitions, claim-absent row and body obligation; admitted to the node set in `hooks/lib/work-graph.ts` with `Readiness` gaining a third value; the Pause operation in `agents/orchestrator.md`; the archive dependency scan widened; pinned in `hooks/lib/__tests__/work-graph.test.ts`. Corrected at d2fdd1b6, where the transition sentence stopped contradicting itself. Released as v11.3.0.
