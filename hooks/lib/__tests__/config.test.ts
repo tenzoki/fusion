@@ -1,21 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import {
-  copyFileSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  loadConfig,
-  resetConfigCache,
-  PROJECT_CONFIG_FILENAME,
-  type GuardConfig,
-} from "../config.js";
+import { loadConfig, resetConfigCache, PROJECT_CONFIG_FILENAME, type GuardConfig } from "../config.js";
 import { findWorkbenchRoot } from "../workbench-root.js";
 
 // ---------------------------------------------------------------------------

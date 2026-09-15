@@ -86,10 +86,11 @@ Ein Work Item ist eine abgegrenzte Arbeitseinheit, definiert durch **Directive**
 
 - `open` — niemand arbeitet daran
 - `claimed` — ein Checkout arbeitet gerade daran; `**Claim:**` nennt welcher
+- `paused` — bewusst zurückgestellt, nicht aufgegeben, soll wiederkommen; der Claim wird geräumt, und der Text sagt, worauf gewartet wird
 - `done` — die Arbeit ist gelandet; der Claim bleibt stehen und nennt, wer sie getan hat
 - `dropped` — nicht mehr aktuell; der Text sagt warum
 
-`done` und `dropped` sind terminal; ein abgeschlossenes Item wird nie wieder geöffnet, sondern durch ein neues ersetzt, das es zitiert. Zwei Entwurfsentscheidungen tragen den Rest: ein Record je Item statt einer Listendatei, damit zwei Checkouts konfliktfrei mergen; und der Zustand im Feld statt im Namen, damit ein Zustandswechsel den Record ändert statt ihn umzubenennen und jede Zitierung ein Leben lang gültig bleibt.
+`done` und `dropped` sind terminal; ein abgeschlossenes Item wird nie wieder geöffnet, sondern durch ein neues ersetzt, das es zitiert. `paused` ist der einzige lebende Wert, aus dem ein Item zurückkehrt: Fortsetzen ist ein gewöhnlicher Claim. Zwei Entwurfsentscheidungen tragen den Rest: ein Record je Item statt einer Listendatei, damit zwei Checkouts konfliktfrei mergen; und der Zustand im Feld statt im Namen, damit ein Zustandswechsel den Record ändert statt ihn umzubenennen und jede Zitierung ein Leben lang gültig bleibt.
 
 Kleine Projekte brauchen den Backlog kaum: eine Anfrage an den Orchestrator ohne Item läuft einfach ohne, und die Artefakte landen in ihrem jeweiligen Store.
 

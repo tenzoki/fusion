@@ -73,7 +73,7 @@ These are non-negotiable defaults. The user can override them at the `refine` st
 2. **Active markers — never archive in tier modes:**
    - `_o_` (open) and `_p_` (in-progress) defects and plans — live work.
    - `_d_` defects and plans — *deferred ≠ done*; the user may want to revisit. Terminal, but excluded by default.
-   - Work items whose `**Status:**` is `open` or `claimed` — live work by the field's own definition, and a `claimed` item is somebody's in-flight job.
+   - Work items whose `**Status:**` is `open`, `claimed` or `paused` — live work by the field's own definition: a `claimed` item is somebody's in-flight job, and a `paused` one is set aside deliberately and expected back.
    - `_a_` decisions — answer recorded but not yet realised in code/data. Archiving breaks decision↔implementation traceability. Promote to `_i_` when implementation lands; do not bulk-archive `_a_`.
    - A `done` or `dropped` work item that any live record still cites, and any item another live item names in its `**Depends-on:**` field: moving it takes the target of a pointer out of every store its consumers scan. Filter 3 covers the citing corpus; this clause covers the dependency field, which is a citation a grep over prose would miss.
 
@@ -138,15 +138,15 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
    find "$WORKBENCH/$SCAN_BACKLOG" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | while IFS= read -r d; do b="$(basename "$d")"; f="$d/$b.md"; [ -f "$f" ] || f="$(find "$d" -mindepth 1 -maxdepth 1 -type f -name '_?_circle.md' 2>/dev/null | head -n 1)"; [ -f "$f" ] || continue; st="$(sed -n 's/^\*\*Status:\*\*[[:space:]]*//p' "$f" | head -n 1)"; case "$st" in done|dropped) printf '%s\t%s\n' "$st" "$b" ;; esac; done
    ```
 
-   **The fallback in that loop is the store's two record forms, not a defect.** A migrated workbench keeps its terminal records under their old marked name, because a terminal record is history and is not edited back (`rules/fusion-workbench-conventions.md` `## Terminal states are history`), so the walk reaches every container either way. Such a record's `**Status:**` is absent, or written in the older state vocabulary its marker belongs to (`closed`, `bounded`, `anticipated`, `active`) — never one of the four. It is **not selected**, it is **not a fault**, and legacy containers are reported once as a count rather than one line each. The workbench-state fault is narrower than it reads, and only this form reaches it: a record in the **item** form, `<container>/<container>.md`, whose `**Status:**` is missing or outside the four. Report that one, exclude it, do not guess which state was meant.
+   **The fallback in that loop is the store's two record forms, not a defect.** A migrated workbench keeps its terminal records under their old marked name, because a terminal record is history and is not edited back (`rules/fusion-workbench-conventions.md` `## Terminal states are history`), so the walk reaches every container either way. Such a record's `**Status:**` is absent, or written in the older state vocabulary its marker belongs to (`closed`, `bounded`, `anticipated`, `active`) — never one of the five. It is **not selected**, it is **not a fault**, and legacy containers are reported once as a count rather than one line each. The workbench-state fault is narrower than it reads, and only this form reaches it: a record in the **item** form, `<container>/<container>.md`, whose `**Status:**` is missing or outside the five. Report that one, exclude it, do not guess which state was meant.
 
    **Then check the dependency field** (filter 2's last clause). An item named in a live item's `**Depends-on:**` is excluded in every tier, listed with the item that names it, and left in place. The same walk, because the bare `"$WORKBENCH/$SCAN_BACKLOG"/*.md` this once used matches nothing now and aborts the command under zsh (Step 1's split rule):
 
    ```bash
-   find "$WORKBENCH/$SCAN_BACKLOG" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | while IFS= read -r d; do f="$d/$(basename "$d").md"; [ -f "$f" ] || continue; st="$(sed -n 's/^\*\*Status:\*\*[[:space:]]*//p' "$f" | head -n 1)"; case "$st" in open|claimed) sed -n 's/^\*\*Depends-on:\*\*[[:space:]]*//p' "$f" | head -n 1 | tr ',' '\n' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//' ;; esac; done | sort -u
+   find "$WORKBENCH/$SCAN_BACKLOG" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | while IFS= read -r d; do f="$d/$(basename "$d").md"; [ -f "$f" ] || continue; st="$(sed -n 's/^\*\*Status:\*\*[[:space:]]*//p' "$f" | head -n 1)"; case "$st" in open|claimed|paused) sed -n 's/^\*\*Depends-on:\*\*[[:space:]]*//p' "$f" | head -n 1 | tr ',' '\n' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//' ;; esac; done | sort -u
    ```
 
-   That one needs no marked-record fallback and deliberately carries none: a marked record has no `**Status:**`, so it can never be `open` or `claimed`, and reaching for it would add a read whose every answer is discarded.
+   That one needs no marked-record fallback and deliberately carries none: a marked record has no `**Status:**`, so it can never be `open`, `claimed` or `paused`, and reaching for it would add a read whose every answer is discarded.
 
    Natural-language mode flags such an item `[ACTIVE]` instead, so the user can override at `refine`.
 
@@ -245,7 +245,7 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
 ## Guardrails
 
 - **Move, do not copy.** The point is to shrink the live workbench. If the user wants a copy without removal, ask via `AskUserQuestion` before doing it.
-- **Never archive a live work item.** `open` and `claimed` are live by the field's own definition; only `done` and `dropped` are archive-class, and only when nothing live still points at them.
+- **Never archive a live work item.** `open`, `claimed` and `paused` are live by the field's own definition; only `done` and `dropped` are archive-class, and only when nothing live still points at them.
 - **Never delete the archive folder.** This skill only creates and adds.
 - **Never touch git.** No `git add`, no `git commit`. The user decides whether to commit the archive.
 - **Never modify content of what's being archived.** Move only; do not rewrite, reformat, or "tidy".

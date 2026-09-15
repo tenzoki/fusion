@@ -21,17 +21,26 @@
  *   verdict=cyclic
  *   note=4 items carry no `**Depends-on:**` field …
  *      1      0       2  ready    <item-a>
- *      2      1       0  blocked  <item-b>
+ *      2      0       1  paused   <item-f>
+ *      3      1       0  blocked  <item-b>
  *   cycle=<item-c>, <item-d>
  *   unresolved=<item-b> wants <item-e>.md
  *
  * The item row is five fixed columns — order, depth, blocks, readiness,
- * container name — in the indented shape `bin/fusion-plan-size` prints.
+ * container name — in the indented shape `bin/fusion-plan-size` prints. The
+ * readiness column reads `ready`, `blocked` or `paused`: the third is the
+ * item's own `**Status:**` and overrides the other two whatever its out-edges,
+ * because `ready` invites a reader to pick the item up and a paused item is one
+ * somebody has set down. Its `depth` and `blocks` stay computed like any node's,
+ * which is what puts "this paused item is blocking three others" in front of
+ * a reader.
  *
  * `ready=` counts the items with no unmet prerequisite; `roots=` counts the
- * items at depth 0, where the order starts. The two are equal in an acyclic
- * store and differ only where a cycle sits at depth 0, since a cycle's member
- * has a prerequisite inside its own component and is never `ready`.
+ * items at depth 0, where the order starts. A paused item never counts in
+ * `ready=`, and `roots=` still counts it at depth 0, which is correct. The two
+ * are equal in an acyclic store with no paused item in it, and differ where a
+ * cycle sits at depth 0 — a cycle's member has a prerequisite inside its own
+ * component and is never `ready` — or where a paused item does.
  *
  * ## The `note=` line is mandatory, and it is a user's ruling rather than a
  * ## courtesy

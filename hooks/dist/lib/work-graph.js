@@ -21,7 +21,13 @@
  *
  * ## The graph spans live work items only, and two kinds of record are outside it
  *
- * A NODE IS A WORK-ITEM RECORD WHOSE `**Status:**` IS `open` OR `claimed`.
+ * A NODE IS A WORK-ITEM RECORD WHOSE `**Status:**` IS LIVE — `open`, `claimed`
+ * or `paused`. The node set is the live half of the status partition and was
+ * never the enumeration `{open, claimed}`: that was the complete list of the
+ * live values on the day this module was written, and `paused` joined it on
+ * 2026-09-15 (`260915-2028_*_what-shape-does-the-work-items-fifth-status-value-take.md`,
+ * option 1). The test stays an ALLOWLIST, so a record whose `**Status:**` is
+ * unreadable or garbage is outside the node set rather than admitted to it.
  * `done` and `dropped` are terminal, and a terminal item is not a node: its
  * outgoing entries are never read, and an entry naming it resolves to nothing
  * and is reported as a dangle. That is the user's ruling at gate G1, recorded in
@@ -200,7 +206,9 @@ export function computeWorkGraph(root) {
             }
             const head = headBlock(text);
             const status = headField(head, "Status");
-            if (status !== "open" && status !== "claimed")
+            // An allowlist of the live values, not a denylist of the terminal ones:
+            // an unreadable or garbage status states no live work and stays outside.
+            if (status !== "open" && status !== "claimed" && status !== "paused")
                 continue;
             const raw = headField(head, "Depends-on");
             if (raw === null)
@@ -336,7 +344,11 @@ export function computeWorkGraph(root) {
                 order,
                 depth: depth[c],
                 blocks: blocks[c],
-                readiness: out[i].length === 0 ? "ready" : "blocked",
+                readiness: nodes[i].status === "paused"
+                    ? "paused"
+                    : out[i].length === 0
+                        ? "ready"
+                        : "blocked",
             });
         }
     }

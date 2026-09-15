@@ -140,13 +140,13 @@ Remaining setup:
 
      `find` drives both levels so an empty or absent store yields no input — no unmatched glob to abort under zsh, no unexpanded pattern to miscount. One line per item: the **container's** name, status, claim. The container's name is the item's identifier from here on — it is what a `**Work-item:**` line carries and what an `**Item:**` parameter names — and the record is `<container>/<container>.md`.
 
-     **Two record forms live in that store at once, which is what the fallback in the loop is for.** A workbench carried over from the Circle layout keeps its terminal records under their old marked name, because a terminal record is history and is not edited back (`rules/fusion-workbench-conventions.md` `## Terminal states are history`). So the walk takes the container's own `<container>.md` where it exists and the container's marked record otherwise, and a store holding both is the ordinary case rather than a defect. A marked record's `**Status:**` is either absent or written in the older state vocabulary its marker belongs to — measured over this repository's own store, 13 of 24 carry none and 11 read `closed`, `bounded`, `anticipated` or `active`. Neither case is any of the four item values, so such a record is never this checkout's claimed item and is never counted `open`, and neither case is a fault to report.
+     **Two record forms live in that store at once, which is what the fallback in the loop is for.** A workbench carried over from the Circle layout keeps its terminal records under their old marked name, because a terminal record is history and is not edited back (`rules/fusion-workbench-conventions.md` `## Terminal states are history`). So the walk takes the container's own `<container>.md` where it exists and the container's marked record otherwise, and a store holding both is the ordinary case rather than a defect. A marked record's `**Status:**` is either absent or written in the older state vocabulary its marker belongs to — measured over this repository's own store, 13 of 24 carry none and 11 read `closed`, `bounded`, `anticipated` or `active`. Neither case is any of the five item values, so such a record is never this checkout's claimed item and is never counted `open`, and neither case is a fault to report.
 
      The assertion in front is the conventions file's empty-key rule (`## Path Resolution` → *Where the call belongs*) at a read site: an unsubstituted pair makes the `find` read `find "/" -mindepth 1 …`, and *nothing* is then indistinguishable from an empty backlog. A read that could not be taken is reported as a fusion bug, never as a zero.
 
    - **The claimed item, and what you do with it.** An item is **this session's** when its status is `claimed` and its claim's first field equals `$FUSION_CHECKOUT` — equality on the eight hex characters, never on the person beside them, because two checkouts of one person carry one git identity. Hold that container name for the whole session: it is what every dispatch's `**Work-item:** <container name>` line carries (**Step 2**), and it is the value a `planner` or `shaper` dispatch passes as `**Item:**` when it must write into an item this checkout does not hold. **At most one, and none is an ordinary state.** If no item is claimed by this checkout, the session names none and every dispatch omits the line — never a placeholder. If two are, say so to the user and ask which this session is working; a checkout holding two claims is a fault in the store, not a choice for you to make.
 
-   - **Setup hint.** Print one line: how many items are `open`, and the claimed item's container name or that this checkout holds none. Continue Setup without waiting for a response. An empty store prints nothing — opt-in behaviour preserved.
+   - **Setup hint.** Print one line: how many items are `open`, how many are `paused` when any are, and the claimed item's container name or that this checkout holds none. A count nobody prints is a pile of set-aside work nobody sees again; with none paused the clause is omitted rather than written as a zero. Continue Setup without waiting for a response. An empty store prints nothing — opt-in behaviour preserved.
 6. **Step 6 is the session ceremony, and it runs only once a Directive exists** (step 1, or its later arrival; decision `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`). On "setup only", stop after step 5: no `session_start`; the Setup report says so in one line and ends with the two usual next moves (name a task, or claim a work item) — the ceremony runs the moment the first Directive arrives, before the dispatch loop uses it. A session that ends without one leaves nothing behind but its snapshot output, which is the point.
 
    Initialize the event log and emit the session start:
@@ -374,7 +374,7 @@ The orchestrator **must stop and ask the user** before proceeding when any of th
 | Task would modify files outside the project tree | Safety |
 | A hand-run reconciliation returned anything but `coherent`, or `coherent` with recommendation `state Directive` | Aggregate Coherence not achieved, the Directive stopped short, judged unreachable, or never stated |
 | A work item is about to close and its plan carries a stop-conditions section | The clauses bind nobody mechanically; a human answering them is the whole of the enforcement |
-| A work item is to be claimed, released, finished, dropped, split or merged | The store's maintenance is confirmed operation by operation |
+| A work item is to be claimed, released, paused, finished, dropped, split or merged | The store's maintenance is confirmed operation by operation |
 
 **Interaction pattern at a gate:**
 
@@ -395,7 +395,7 @@ Two gates in sequence, each inside the three-option cap of `rules/user-facing-ou
 
 ## Work items
 
-A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its four `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You never file one**: filing is the user's act, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
+A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You never file one**: filing is the user's act, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
 
 What you may do, at the user's word and with no dispatch, is maintain the store at `$OUT_BACKLOG`, reading it at `$SCAN_BACKLOG`.
 
@@ -403,10 +403,13 @@ What you may do, at the user's word and with no dispatch, is maintain the store 
 |---|---|
 | **Claim** | `**Status:**` to `claimed` and a `**Claim:**` naming this checkout — see below |
 | **Release** | the claim goes and `**Status:**` returns to `open`; nobody is working on it |
+| **Pause** | `**Status:**` to `paused`, the `**Claim:**` cleared, the body saying what it is waiting for |
 | **Finish** | `**Status:**` to `done`, the claim staying to name who did the work |
 | **Drop** | `**Status:**` to `dropped`, the body saying why, citing the item that replaced it or the reason |
 | **Split** | one item's several jobs become several items; the original is `dropped`, citing its successors |
 | **Merge** | several statements of one job become one item; the others are `dropped`, citing the survivor |
+
+**Resuming a paused item is Claim**, an ordinary one with no takeover to weigh, because the field a takeover would contend for is absent; a pause lifted with nobody taking the item up sets `open`.
 
 **Each is confirmed for that operation, on that item, before a byte moves.** A confirmation the user gave for one operation is not a confirmation for the next; ask again. None of them adds a job to the store, which is why the no-agent-files bound survives them: the text a merge writes consolidates items already filed.
 

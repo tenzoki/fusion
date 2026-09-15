@@ -21,7 +21,13 @@
  *
  * ## The graph spans live work items only, and two kinds of record are outside it
  *
- * A NODE IS A WORK-ITEM RECORD WHOSE `**Status:**` IS `open` OR `claimed`.
+ * A NODE IS A WORK-ITEM RECORD WHOSE `**Status:**` IS LIVE — `open`, `claimed`
+ * or `paused`. The node set is the live half of the status partition and was
+ * never the enumeration `{open, claimed}`: that was the complete list of the
+ * live values on the day this module was written, and `paused` joined it on
+ * 2026-09-15 (`260915-2028_*_what-shape-does-the-work-items-fifth-status-value-take.md`,
+ * option 1). The test stays an ALLOWLIST, so a record whose `**Status:**` is
+ * unreadable or garbage is outside the node set rather than admitted to it.
  * `done` and `dropped` are terminal, and a terminal item is not a node: its
  * outgoing entries are never read, and an entry naming it resolves to nothing
  * and is reported as a dangle. That is the user's ruling at gate G1, recorded in
@@ -72,16 +78,22 @@
  * was accepted at a user gate rather than designed away, and the caller is
  * obliged to say so whenever the count is above zero.
  */
-/** The two live values of `**Status:**`. `done` and `dropped` are not nodes. */
-export type ItemStatus = "open" | "claimed";
+/** The live values of `**Status:**`. `done` and `dropped` are not nodes. */
+export type ItemStatus = "open" | "claimed" | "paused";
 /**
- * Two-valued and derived, never configured. Every node is non-terminal, so
+ * Three-valued and derived, never configured. Every node is non-terminal, so
  * every resolved out-edge is an unmet prerequisite and a node is `ready`
- * exactly when it has none. A third value for a node whose own status is closed
- * would be an unreachable branch: the ruling puts such items outside the node
- * set.
+ * exactly when it has none.
+ *
+ * `paused` is the node's own status and overrides both of the derived values,
+ * because `ready` is an invitation to pick the item up and that status exists
+ * to withdraw the invitation. Until 2026-09-15 this comment said a third value
+ * would be an unreachable branch, and that was TRUE of the node set it was
+ * written against: every live value then was pickable. What changed is the node
+ * set, not the reasoning — `paused` is live but unpickable, which is a case the
+ * two derived values cannot express.
  */
-export type Readiness = "ready" | "blocked";
+export type Readiness = "ready" | "blocked" | "paused";
 export interface WorkItemNode {
     /** The container directory name, `YYMMDD-HHMM-<slug>`. */
     dir: string;

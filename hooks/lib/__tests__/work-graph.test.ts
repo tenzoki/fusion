@@ -6,9 +6,10 @@
  * The live store is two nodes and no edges, which passes under several wrong
  * implementations. This fixture is the smallest store that does not: a chain
  * whose topological order is NOT its basename order, a fan-out, a two-member
- * cycle, an entry naming nothing, and a `done` item carrying an outgoing entry.
+ * cycle, an entry naming nothing, a `done` item carrying an outgoing entry, and
+ * a `paused` item with a dependent.
  *
- * That last one is what the G1 ruling turns on and what the real store cannot
+ * The `done` item is what the G1 ruling turns on and what the real store cannot
  * show: a terminal item is not a node, its own entries go unread, and an entry
  * naming IT dangles like any other unresolved name.
  *
@@ -56,6 +57,10 @@ const FIXTURE: Record<string, [string, string[] | null]> = {
   "260101-0009-closed": ["done", ["260101-0002-base.md"]],
   // Depends on that terminal item, which therefore resolves to nothing.
   "260101-0010-after-done": ["open", ["260101-0009-closed.md"]],
+  // Paused: live, so a node, and unlike the terminal item its own entry IS
+  // read. It names that terminal item, so it dangles and adds no edge.
+  "260101-0013-paused": ["paused", ["260101-0009-closed.md"]],
+  "260101-0014-after-paused": ["open", ["260101-0013-paused.md"]],
 };
 
 const ARCHIVED = "260101-0012-archived";
@@ -98,6 +103,8 @@ const EXPECTED: [string, number, number, string][] = [
   ["260101-0007-cyc-b", 0, 1, "blocked"],
   ["260101-0008-dangle", 0, 0, "ready"],
   ["260101-0010-after-done", 0, 0, "ready"],
+  ["260101-0013-paused", 0, 1, "paused"],
+  ["260101-0014-after-paused", 1, 0, "blocked"],
 ];
 
 describe("computeWorkGraph over a fixture store", () => {
@@ -105,8 +112,8 @@ describe("computeWorkGraph over a fixture store", () => {
     expect(report.rows.map((r) => [r.dir, r.depth, r.blocks, r.readiness])).toEqual(EXPECTED);
     expect(report.rows.map((r) => r.order)).toEqual(EXPECTED.map((_, i) => i + 1));
     // `mid` sorts first and is emitted second: the order is the graph's, not the name's.
-    expect(report.items).toBe(9);
-    expect(report.edges).toBe(6);
+    expect(report.items).toBe(11);
+    expect(report.edges).toBe(7);
     expect(report.noDependsOnField).toBe(1);
     expect(report.verdict).toBe("cyclic");
   });
@@ -121,13 +128,18 @@ describe("computeWorkGraph over a fixture store", () => {
     expect(report.unresolvedEdges).toEqual([
       { from: "260101-0008-dangle", entry: "260101-9999-never-filed.md" },
       { from: "260101-0010-after-done", entry: "260101-0009-closed.md" },
+      { from: "260101-0013-paused", entry: "260101-0009-closed.md" },
     ]);
+    // `after-paused` is absent above, and that absence is the case: a paused
+    // item is a NODE, so the entry naming it resolves. Before it joined the
+    // node set that entry dangled and its dependent printed `ready` — a false
+    // invitation on the one figure a reader picks work off.
   });
 
   it("puts a terminal item outside the graph, its outgoing entry unread", () => {
     expect(report.rows.map((r) => r.dir)).not.toContain("260101-0009-closed");
     // `closed` names `base` as a prerequisite. If that entry were read, `base`
-    // would block five items rather than four and the edge count would be seven.
+    // would block five items rather than four and the edge count would be eight.
     expect(report.rows[0].blocks).toBe(4);
     expect(report.rows.find((r) => r.dir === "260101-0006-cyc-a")?.status).toBe("claimed");
   });

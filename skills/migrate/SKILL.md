@@ -85,7 +85,7 @@ WB=./fusion-workbench; LIVE=0; TERMINAL=0; DEFERRED=0; NOTES=0; CONFLICTS=0; whi
 
 **There is no row for `_c_`, `_b_`, `_s_` or `_d_`, and that absence is the design.** All four are terminal, and a terminal record is evidence of work that ended: `rules/fusion-workbench-conventions.md` `## Terminal states are history` forbids editing one back into a live shape, no consumer reads a terminal container's state, and renaming the file would break every citation that names it in exchange for nothing.
 
-**So the deferred question is no longer forced, and it is not answered here either.** With the conversion narrowed to live records a `_d_` record keeps its marker and its meaning. Whether `**Status:**` should gain a fifth value for "not now" is filed as `260910-2011_*_the-deferred-state-has-no-value-in-the-work-items-status-set.md` and stands open; this skill neither settles it nor pre-empts it. Each `_d_` container is named in the survey and in the report.
+**The deferred question is answered, and the answer changes nothing here.** `**Status:**` has gained a fifth value, `paused`, and a `_d_` record still does not convert to it: it is terminal in its own vocabulary, which the paragraph above settles. So work in a `_d_` container does not come back by itself — wanting it back means filing a new item, setting it `paused`, and citing the container. Each `_d_` container is named in the survey and the report, so a user has something to do about it.
 
 ## Step 3 — Ask before moving
 
@@ -102,7 +102,7 @@ Use `AskUserQuestion`. Write the prompt in the project's language per the `**Lan
 > **Option "Change a status"**: Say which record should take a different status before anything moves.
 > **Option "Cancel"**: Leaves the workbench exactly as it is. `/fusion:setup` then keeps refusing to start until the workbench is converted. You can call `/fusion:migrate` again at any time.
 
-**When `DEFERRED>0`, say so in the question**, above the options: *"N container(s) hold a record that was deferred rather than finished. They are terminal, so nothing is written for them and the record keeps its marker. Whether a work item should be able to say 'not now' at all is an open question this migration does not answer."* It is a statement, not a choice — there is nothing here for the user to decide, and offering one would settle a filed question at a confirmation prompt.
+**When `DEFERRED>0`, say so in the question**, above the options: *"N container(s) hold a record that was deferred rather than finished. They are terminal, so nothing is written for them and the record keeps its marker. To pick one up again, file a new work item, set it `paused`, and cite the container."* It is a statement, not a choice — nothing here is the user's to decide at a confirmation prompt.
 
 For `MODE=plain`, replace the `git mv` sentence with the honest one: *"This workbench is not under version control, so moving uses `mv`. The conversion appears in no diff and cannot be taken back with `git revert`."*
 
@@ -192,7 +192,7 @@ Report the tail counters (`moved`, `collisions`, `mv-fallbacks`, `ignored`) and,
 - **`collisions>0`** — some artifacts stayed put. Name them. It means a real name collision, a refused pair of flat Circle files, or a container holding two records, and each needs the user's decision. `/fusion:setup` will still refuse to start until they are resolved and `/fusion:migrate` has been run again.
 - **`ignored>0`** — informational. Those files are staying put by design and will never move.
 - **`TERMINAL` and `NOTES`** — say the counts in one line each. A terminal record was left exactly as it stands, and a container holding no record was left alone.
-- **Any `_d_` container** — name it, and say that it keeps its marker and takes no status. Whether a work item can say "not now" at all is open (`260910-2011_*_the-deferred-state-has-no-value-in-the-work-items-status-set.md`), and this migration left the question exactly where it found it.
+- **Any `_d_` container** — name it, and say that it keeps its marker and takes no status. Deferred work is picked up again by filing a new item, setting it `paused` and citing the container; the terminal record is not edited back.
 
 For `MODE=plain`, remind the user that the move is not in any diff, so a `git revert` is not available if they want to retreat.
 

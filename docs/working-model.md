@@ -28,20 +28,21 @@ A **work item** is one bounded unit of work: something somebody is going to do, 
 …
 ```
 
-`**Status:**` takes four values and there is no fifth:
+`**Status:**` takes five values and there is no sixth:
 
 - **open** — nobody is working on it.
 - **claimed** — a checkout is working on it now, and `**Claim:**` names which.
+- **paused** — set aside deliberately, not abandoned, expected back. The claim is cleared, and the body says what it is waiting for.
 - **done** — the work landed. The claim stays, naming who did it.
 - **dropped** — no longer live; the body says why, citing the item that replaced it or the reason.
 
-`done` and `dropped` are terminal. If work needs to continue, you file a new item that cites the old one.
+`done` and `dropped` are terminal. If work needs to continue, you file a new item that cites the old one. `paused` is the one live value an item comes back from, and it comes back by being claimed.
 
 **Two design choices are worth knowing, because everything else follows from them.** One file per item rather than one list file, so two checkouts adding work at the same time merge with no conflict. And the state in a field rather than in the filename, so a state change edits the file instead of renaming it and every citation of an item stays valid for the item's whole life.
 
 **`claimed` names a checkout, and that is what stops two people doing one job.** The value compared is the eight hex characters `bin/fusion-identity` prints for this checkout, never the person beside them — two checkouts of one person carry one git identity, so the person alone cannot answer whose claim this is. A takeover overwrites the field; who held it before is in the commit that took it. The collision is detected and not prevented: two checkouts that both pull, both see no claim and both claim will conflict on that one line at the next merge, and whoever loses the race picks another item.
 
-**`**Depends-on:**` carries edges you confirmed**, as a comma-separated list of item basenames, and an entry asserts one relation and no other: the named item must reach `done` or `dropped` before this one may start. Every other citation the item carries (a record it rests on, a decision that binds it, work it merely touches) goes in `**Cross-references:**`, which orders nothing. A helper may read the store and *report* an order over the `**Depends-on:**` edges; that report is a report, and you override it wherever you want to. The helper is `bin/fusion-work-order`, and everything it prints — which items are ready, how deep each one sits, what each blocks, the entries that name no item and any cycle — is that report and nothing more. No agent asserts a ranking.
+**`**Depends-on:**` carries edges you confirmed**, as a comma-separated list of item basenames, and an entry asserts one relation and no other: the named item must reach `done` or `dropped` before this one may start. A `paused` target has reached neither, so the entry stays live and a paused item blocks every item naming it. Every other citation the item carries (a record it rests on, a decision that binds it, work it merely touches) goes in `**Cross-references:**`, which orders nothing. A helper may read the store and *report* an order over the `**Depends-on:**` edges; that report is a report, and you override it wherever you want to. The helper is `bin/fusion-work-order`, and everything it prints — which items are ready, how deep each one sits, what each blocks, the entries that name no item and any cycle — is that report and nothing more. No agent asserts a ranking.
 
 **`**Active spec/plan:**` names what the work runs on** — the spec or plan in force, as a storeless basename — and it is absent until one exists. Whoever makes a spec or plan the one this item runs on writes the field in the same act; no pass maintains it afterwards, because a field somebody else is supposed to keep up to date is a field that drifts. It has two readers: you, looking at the item and seeing what it is being built from, and the closure step, which reads that plan's `## Where this work stops` back to you clause by clause when the item finishes.
 
