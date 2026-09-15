@@ -6,7 +6,7 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 
 # Fusion — cleanup (commit and push)
 
-The user invoked `/fusion:cleanup`. **Closing a session is committing and pushing what the session produced, and that is the whole of this body.** No agent is dispatched here. No tracking file is reconciled, no artifact is archived, no activity log is regenerated, no normative surface is touched and no message is left for another checkout.
+The user invoked `/fusion:cleanup`. **Closing a session is committing and pushing what the session produced, and that is the whole of this body.** No agent is dispatched here.
 
 **Each of those is its own command now, invoked by name when the user wants it** — `/fusion:reconcile`, `/fusion:archive`, `/fusion:log-activity`, `/fusion:curate`, `/fusion:post`. This body runs none of them, reads none of their procedures, and offers none of them at the end. A user who wants one types it.
 
@@ -74,11 +74,13 @@ For each split, in order:
 
    The message reaches `git` as `-F <msg-file>` and never as a command-line argument, so an apostrophe in it cannot end a quoted string.
 
+**Then commit the event log alone.** Each split appended a `commit` row to `fusion-workbench/orchestrator-events.jsonl`, so the log is dirty again. Stage that one absolute path, message file as above, and commit it in its own `with cleanup --` acquisition: a held region whose only path is the log emits no row (`rules/commit-lock.md` `### The lock writes the commit event`), so this commit settles the log rather than regenerating it. Skip it when no split committed.
+
 Under `--dry-run`, print the splits and their draft messages and stop here.
 
 ## Step 3 — Push
 
-When the working tree is clean and `--no-push` was not given: plain `git push`. If the branch has no upstream, `git push -u origin <branch>`. If the push is rejected, stop and report the error — do not force, and do not rebase on the user's behalf.
+Unless `--no-push` was given: plain `git push`; `git push -u origin <branch>` when the branch has no upstream. **The precondition is not a clean tree** — `.fusion-setup` and this checkout's `shared/checkouts/<id>.md` are live state a session dirties and no split names (`rules/workbench-tracking.md`) — it is that every split committed and the log was settled above.
 
 ## Step 4 — Report
 
@@ -89,8 +91,3 @@ Action-first, per `rules/user-facing-output.md`:
 - Anything left uncommitted, and why — a file you could not place in a split is named, not swept in.
 
 If a guardrail stopped the run, that is the first line. Otherwise the first line says the session's work is committed.
-
-## Notes for the assistant
-
-- This body commits and pushes. The guardrails above are not optional.
-- Do not offer to run a sibling command at the end, and do not run one. The user knows their names.

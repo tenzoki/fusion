@@ -52,7 +52,6 @@ When the user invokes `/fusion:commit`, help them commit their changes with a we
    - `docs`: Documentation only
    - `test`: Adding or updating tests
    - `chore`: Maintenance, dependencies, config
-   - `style`: Formatting, whitespace
 
    Subject line:
    - Imperative mood ("Add feature" not "Added feature")
@@ -131,33 +130,17 @@ before the skill started) does the bare form apply:
 "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- git commit -F <msg-file>
 ```
 
+**Then commit the event log alone.** The commit just landed appended a `commit`
+row to `fusion-workbench/orchestrator-events.jsonl`. Stage that one absolute
+path in a second `with commit --` acquisition: a held region whose only path
+is the log emits no row
+(`rules/commit-lock.md` `### The lock writes the commit event`), so it settles
+the log rather than regenerating it.
+
 ### 7. Show result
 
 - Display commit hash
 - Show `git log -1 --oneline`
-
-## Examples
-
-**Single file fix:**
-```
-fix(auth): handle expired token gracefully
-
-Previously, expired tokens caused a crash. Now returns 401 with
-clear error message.
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
-**Multiple file feature:**
-```
-feat(api): add user search endpoint
-
-- GET /api/users/search with query parameters
-- Supports filtering by name, email, role
-- Includes pagination
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
 
 ## Flags
 
@@ -166,7 +149,5 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Safety
 
-- Never force push
 - Never commit sensitive files (.env, credentials)
-- Always show message for approval before committing
 - If amending, warn user about implications

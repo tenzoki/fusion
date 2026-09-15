@@ -29,10 +29,10 @@
   archive/SKILL.md 24432
   cadence/SKILL.md 19727
   check/SKILL.md 31244
-  cleanup/SKILL.md 6496
-  commit/SKILL.md 6298
+  cleanup/SKILL.md 6720
+  commit/SKILL.md 6113
   curate/SKILL.md 11863
-  help/SKILL.md 16715
+  help/SKILL.md 16702
   log-activity/SKILL.md 13273
   memo/SKILL.md 12921
   migrate/SKILL.md 40234
@@ -40,7 +40,7 @@
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19425
-  total 224226
+  total 224252
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -62,7 +62,7 @@
   fusion-checkout-name.test.ts 174
   fusion-citation-check.test.ts 284
   fusion-claimed-item.test.ts 192
-  fusion-commit-lock.test.ts 422
+  fusion-commit-lock.test.ts 446
   fusion-count-sources.test.ts 413
   fusion-events.test.ts 414
   fusion-forum.test.ts 220
@@ -90,7 +90,7 @@
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
-  reference-resolution-lint.test.ts 1003
+  reference-resolution-lint.test.ts 979
   review-coverage-mandate.test.ts 352
   review-coverage.test.ts 862
   rules-emission-golden.test.ts 1330

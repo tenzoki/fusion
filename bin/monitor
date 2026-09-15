@@ -1510,7 +1510,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
             identifier: dispatches from paired rows, commits from `commit` rows.
             There is NO error counter. `task_error` is model-written and the
             step after this one removes the procedure that emits it, so a zero
-            there would be a figure nobody takes.
+            there would be a figure nobody takes. AND COMMITS READS LOW AGAINST
+            `git log` BY DESIGN: a commit carrying nothing but the event log
+            writes no row, so that committing it settles the tree instead of
+            regenerating it — `rules/commit-lock.md`
+            `### The lock writes the commit event`.
           - NOTHING RENDERS UNDER UP NEXT. No session-scoped pending set is read
             by anything here, so the panel says that in one line and shows no
             list. An empty list standing where a queue used to be would claim a

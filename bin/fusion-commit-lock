@@ -295,8 +295,8 @@ do_release() {
 # session is the honest degradation.
 # A third condition sits beside those two since the ruling recorded in
 # `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md`:
-# a commit whose only path is the event log itself emits nothing, so the tree
-# settles — see commit_is_log_only below.
+# a held region that landed nothing but the event log, and landed no merge,
+# emits nothing, so the tree settles — see commit_is_log_only below.
 # Identity is env-first (the SessionStart export), else one run of the sibling
 # `fusion-identity` — the single implementation of the criterion. An
 # unresolved half is an absent key, never an empty one. Schema and reasoning:
@@ -307,25 +307,47 @@ json_escape() {
   printf '%s' "$1" | tr -d '\000-\037' | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
 
-# True when the commit that just landed carries the event log and nothing else.
-# Such a commit regenerates exactly the dirt it committed, so emitting for it
-# means no sequence of commits ever ends with a clean tree; skipping it makes
-# committing terminate. Ruled in
+# True when everything that landed in the held region is the event log and
+# nothing else. Such a commit regenerates exactly the dirt it committed, so
+# emitting for it means no sequence of commits ever ends with a clean tree;
+# skipping it makes committing terminate. Ruled in
 # `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md`
 # (option 2), which also states the residual: the log can no longer say when the
 # log itself was committed.
 #
 # The question is asked of the repository AFTER the fact and is never predicted
-# from the wrapped command's text. Two things it must get right beyond that.
-# `git show --name-only` prints paths relative to the git TOPLEVEL while this
-# function runs from the workbench root; `--show-prefix` is that offset (empty at
-# the toplevel, `sub/` below it), computed rather than assumed.
-# And a commit with no listed path is not a log-only commit: a merge lists none
-# under `--name-only`, an empty commit lists none either, and both still emit.
+# from the wrapped command's text. Three things it must get right beyond that,
+# and the first two were defects the skip shipped with.
+#
+# IT IS ASKED OF THE RANGE, NOT OF THE TIP. The caller decides a commit landed
+# by comparing the pre-command HEAD with the post-command one, so the same
+# region is what is asked about here: a wrapped command landing a code commit
+# and then a log-only one is owed its row, and reading HEAD alone lost it
+# (`260915-1845_*_the-log-only-predicate-reads-head-alone-so-a-wrapped-command-landing-two-commits-can-lose-its-row.md`).
+# `before` is empty only when HEAD did not exist, and that root commit has no
+# range to ask about, so it is asked of itself.
+#
+# A MERGE LANDED IN THE REGION ALWAYS EMITS, whatever its diff lists. Under the
+# `merge=union` driver the workbench's own `.gitattributes` sets, the ordinary
+# cross-checkout log merge differs from both parents on the log alone and read
+# as log-only, so the merge that carried a colleague's work wrote no row
+# (`260915-1844_*_a-union-merged-log-merge-is-read-as-log-only-so-three-shipped-statements-about-merges-are-false.md`).
+# The check is scoped to the range for the same reason the diff is: a merge
+# already in history when the command started is not one this command landed.
+#
+# AND THE PATHS ARE TOPLEVEL-RELATIVE while this function runs from the
+# workbench root; `--show-prefix` is that offset (empty at the toplevel, `sub/`
+# below it), computed rather than assumed. A region listing no path at all is
+# not log-only either: an empty commit lists none, and it still emits.
 commit_is_log_only() {
-  local prefix names
+  local before="$1" prefix names
+  [ -z "$(git rev-list --merges -1 "${before:+${before}..}HEAD" 2>/dev/null)" ] || return 1
   prefix="$(git rev-parse --show-prefix 2>/dev/null || true)"
-  names="$(git show --name-only --format= HEAD 2>/dev/null | sed '/^$/d')"
+  if [ -n "$before" ]; then
+    names="$(git diff --name-only "$before" HEAD 2>/dev/null | sed '/^$/d')"
+  else
+    names="$(git show --name-only --format= HEAD 2>/dev/null | sed '/^$/d')"
+  fi
   [ -n "$names" ] || return 1
   [ "$names" = "${prefix}${EVENT_LOG_REL}" ]
 }
@@ -336,7 +358,7 @@ emit_commit_event() {
   head="$(git rev-parse --short HEAD 2>/dev/null || true)"
   [ -n "$head" ] || return 0
   [ "$head" = "$before" ] && return 0
-  commit_is_log_only && return 0
+  commit_is_log_only "$before" && return 0
   subject="$(git log -1 --pretty=%s 2>/dev/null || true)"
   person="${FUSION_PERSON:-}"
   checkout="${FUSION_CHECKOUT:-}"

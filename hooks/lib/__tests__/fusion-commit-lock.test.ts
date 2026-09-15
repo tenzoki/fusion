@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
-import { chmodSync, closeSync, copyFileSync, existsSync, mkdtempSync, mkdirSync, openSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { appendFileSync, chmodSync, closeSync, copyFileSync, existsSync, mkdtempSync, mkdirSync, openSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
@@ -319,8 +319,9 @@ describe("fusion-commit-lock: stale holder file (the pre-existing reap path)", (
  * are pinned here. The session scoping is `FUSION_SESSION_ID` ALONE — it was a
  * disjunction with `agentstate.yaml` present until that file went on 2026-09-10,
  * and the case that took the second arm went with it. The log-only skip is the
- * ruling in
- * `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md`.
+ * ruling in `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md`,
+ * asked of the held RANGE (`260915-1845_*_the-log-only-predicate-reads-head-alone-so-a-wrapped-command-landing-two-commits-can-lose-its-row.md`)
+ * and never of a merge (`260915-1844_*_a-union-merged-log-merge-is-read-as-log-only-so-three-shipped-statements-about-merges-are-false.md`).
  * The dispatch-side rows (`task_start`/`task_done`) are asserted in
  * `guard-state-shape.test.ts` since the gate widened;
  * `shared/issues/260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md`
@@ -352,8 +353,7 @@ const porcelain = (...pathspec: string[]) => git(["status", "--porcelain", ...pa
 describe("fusion-commit-lock: the machine-written commit row", () => {
   it("appends one commit row carrying hash, subject, identity and session id when HEAD moved in a session", () => {
     gitRepo();
-    const r = commitUnderLock();
-    expect(r.status, r.stderr).toBe(0);
+    const r = commitUnderLock(); expect(r.status, r.stderr).toBe(0);
     expect(rows()).toHaveLength(1);
     const head = git(["rev-parse", "--short", "HEAD"]).stdout.trim();
     expect(rows()[0]).toMatchObject({ event: "commit", person: IDENTITY_ENV.FUSION_PERSON, checkout: "5e8248d7", session_id: "sid-1", detail: `${head} landed` });
@@ -366,37 +366,61 @@ describe("fusion-commit-lock: the machine-written commit row", () => {
     expect(existsSync(join(projectRoot, EVENT_LOG))).toBe(false);
   });
 
-  // The log-only skip in BOTH geometries. Below the toplevel `git show
-  // --name-only` prints `sub/fusion-workbench/...` while the emitter appends to
-  // `fusion-workbench/...` relative to the workbench root it runs in, so a
-  // comparison that ignored that offset would emit there.
+  // The log-only skip in BOTH geometries. Below the toplevel the diff prints
+  // `sub/fusion-workbench/...` while the emitter appends to `fusion-workbench/...`
+  // relative to the workbench root it runs in; ignoring that offset would emit there.
   for (const sub of ["", "sub"]) {
     it(`writes no row when the landed commit's only path is the event log${sub && ", below the git toplevel"}, so the tree settles`, () => {
       const root = gitRepo(sub);
-      // Emitting for such a commit would re-dirty the tracked log it just
-      // carried, leaving no sequence of commits that ends clean.
+      // Emitting would re-dirty the tracked log the commit just carried, leaving no sequence of commits that ends clean.
       expect(runIn(root, ["with", "coder", "--", "git", "commit", "-q", "--allow-empty", "-m", "landed"], IDENTITY_ENV).status).toBe(0);
       expect(rows(root)).toHaveLength(1);
       expect(porcelain()).not.toBe("");
-      const r = commitLogOnly(root);
-      expect(r.status, r.stderr).toBe(0);
+      const r = commitLogOnly(root); expect(r.status, r.stderr).toBe(0);
       expect(rows(root), "the log-only commit emitted a row of its own").toHaveLength(1);
       expect(porcelain(), "committing the log did not settle the tree").toBe("");
     });
   }
 
-  it("writes the row for a merge, which lists no path at all, and for the log plus another path", () => {
-    // Listing nothing is not "the only path is the log": a merge lists nothing
-    // under `--name-only`, and so does the empty commit every other case here
-    // commits.
+  // A merge landed in the held region emits whatever its diff lists (issue
+  // 260915-1844): a combined diff carries every path differing from ALL parents,
+  // which for a log merge — union-driven, or resolved by hand — is the log alone.
+  for (const [how, attrs, cmd] of [
+    ["union-merged", `${EVENT_LOG} merge=union\n`, ["git", "merge", "-q", "--no-ff", "-m", "merge", "side"]],
+    ["conflicted and resolved only in the log", "", ["sh", "-c", `git merge -q --no-ff -m merge side || { printf '{\"seed\":0}\\n{\"seed\":2}\\n{\"seed\":1}\\n' > ${EVENT_LOG} && git add -- ${EVENT_LOG} && git commit -q --no-edit; }`]],
+  ] as [string, string, string[]][]) {
+    it(`writes the row for a log merge ${how}, whose combined diff lists the log alone`, () => {
+      gitRepo(); if (attrs) writeFileSync(join(projectRoot, ".gitattributes"), attrs);
+      writeFileSync(join(projectRoot, EVENT_LOG), '{"seed":0}\n'); git(["add", "-A"]); git(["commit", "-qm", "seed"]);
+      const from = git(["rev-parse", "--abbrev-ref", "HEAD"]).stdout.trim();
+      git(["checkout", "-qb", "side"]); appendFileSync(join(projectRoot, EVENT_LOG), '{"seed":1}\n'); git(["commit", "-qam", "side"]);
+      git(["checkout", "-q", from]); appendFileSync(join(projectRoot, EVENT_LOG), '{"seed":2}\n'); git(["commit", "-qam", "main"]);
+      expect(run(["with", "coder", "--", ...cmd], IDENTITY_ENV).status).toBe(0);
+      // Asserted, or a merge listing nothing would pass for the wrong reason.
+      expect(git(["rev-list", "--merges", "-1", "HEAD"]).stdout.trim(), "the fixture landed no merge").not.toBe("");
+      expect(git(["show", "--name-only", "--format=", "HEAD"]).stdout.trim(), "the fixture's merge does not list the log alone").toBe(EVENT_LOG);
+      expect(rows().filter((r) => r.event === "commit"), "the merge wrote no row").toHaveLength(1);
+    });
+  }
+
+  it("writes the row when the held region landed a code commit and then a log-only one", () => {
+    // The caller decides a commit landed over `before..HEAD`, so the skip asks
+    // the same range; HEAD alone lost the row this region is owed (260915-1845).
+    gitRepo();
+    expect(commitUnderLock().status).toBe(0);
+    writeFileSync(join(projectRoot, "code.txt"), "x\n");
+    expect(run(["with", "coder", "--", "sh", "-c", `git add code.txt && git commit -qm a && git add -- ${EVENT_LOG} && git commit -qm b`], IDENTITY_ENV).status).toBe(0);
+    expect(rows(), "the region's non-log commit was owed a row").toHaveLength(2);
+  });
+
+  it("writes the row for a region listing no path at all, and for the log plus another path", () => {
+    // Listing nothing is not "the only path is the log": the empty commit every
+    // other case here commits lists nothing, and a disjoint merge lists nothing
+    // either — though a merge now emits because a merge landed, as above.
     gitRepo();
     const base = git(["rev-parse", "--abbrev-ref", "HEAD"]).stdout.trim();
-    git(["checkout", "-qb", "side"]);
-    writeFileSync(join(projectRoot, "side.txt"), "s\n");
-    git(["add", "-A"]); git(["commit", "-qm", "side"]);
-    git(["checkout", "-q", base]);
-    writeFileSync(join(projectRoot, "base.txt"), "b\n");
-    git(["add", "-A"]); git(["commit", "-qm", "base"]);
+    git(["checkout", "-qb", "side"]); writeFileSync(join(projectRoot, "side.txt"), "s\n"); git(["add", "-A"]); git(["commit", "-qm", "side"]);
+    git(["checkout", "-q", base]); writeFileSync(join(projectRoot, "base.txt"), "b\n"); git(["add", "-A"]); git(["commit", "-qm", "base"]);
     expect(run(["with", "coder", "--", "git", "merge", "-q", "--no-ff", "-m", "merge", "side"], IDENTITY_ENV).status).toBe(0);
     expect(git(["rev-list", "--merges", "-1", "HEAD"]).stdout.trim(), "no merge commit was created").not.toBe("");
     expect(rows()).toHaveLength(1);
