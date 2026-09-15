@@ -18,12 +18,12 @@
   curator.md 34454
   editor.md 13156
   ontocoder.md 15875
-  orchestrator.md 86719
+  orchestrator.md 88354
   planner.md 19153
   reconciler.md 21171
   reviewer.md 12837
   shaper.md 17017
-  total 267128
+  total 268763
 
 [skills bytes]
   archive/SKILL.md 24432
@@ -34,13 +34,13 @@
   curate/SKILL.md 11863
   help/SKILL.md 16702
   log-activity/SKILL.md 13273
-  memo/SKILL.md 12921
-  migrate/SKILL.md 40234
+  memo/SKILL.md 12974
+  migrate/SKILL.md 39925
   news/SKILL.md 8766
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19425
-  total 224252
+  total 223996
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -90,7 +90,7 @@
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
-  reference-resolution-lint.test.ts 979
+  reference-resolution-lint.test.ts 978
   review-coverage-mandate.test.ts 352
   review-coverage.test.ts 862
   rules-emission-golden.test.ts 1330
@@ -102,4 +102,4 @@
   surface-growth-bound.test.ts 706
   work-graph.test.ts 144
   workbench-citation-lint.test.ts 352
-  total 21823
+  total 21822

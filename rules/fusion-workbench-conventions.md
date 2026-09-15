@@ -187,6 +187,7 @@ One file per item rather than one list file, because two checkouts adding work a
 **Domain:** code | data
 **Status:** open | claimed | done | dropped
 **Claim:** <8 hex> — <person>, YYMMDD-HHMM
+**Active spec/plan:** <storeless basename of the spec or plan in force>
 **Depends-on:** <basename>, <basename>
 **Cross-references:** <basename>, <basename>
 **Filed by:** user, <person>
@@ -198,7 +199,7 @@ One file per item rather than one list file, because two checkouts adding work a
 <One paragraph: what this item aims for, and how a reader would know it was reached.>
 ```
 
-`**Claim:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** when there is nothing to say, never present and empty. Every other field is always written.
+`**Claim:**`, `**Active spec/plan:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** when there is nothing to say, never present and empty. Every other field is always written.
 
 **`**Status:**` takes four values and there is no fifth.**
 
@@ -220,6 +221,8 @@ It is none of the three marker vocabularies this project already carries, and th
 **`**Depends-on:**` is a comma-separated list of item basenames** (`YYMMDD-HHMM-<slug>.md`, the same form a citation of the item takes). It carries only edges the user has confirmed. A helper may read the whole store and **report** an order over those edges, with cycles named; that report is a report, and the user overrides it wherever he wants to. No agent asserts a ranking, and there is no marker for one. Binding decision: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3).
 
 **An entry there asserts one relation and one only: the named item must reach `done` or `dropped` before this item may start.** Both terminal values, because neither is a node and nothing here distinguishes them. Every other citation an item carries — a record it rests on, a decision that binds it, work it merely touches — goes in `**Cross-references:**`, which orders nothing. The distinction is which of the two fields a basename sits in, never a verb inside the value. Binding decisions: `260908-2018_*_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md` and, for the node set the terminal values come from, `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`.
+
+**`**Active spec/plan:**` names the artifact the work runs on**, as one or more storeless basenames with the marker wildcarded (`## Filename Patterns`), comma-separated where a spec and the plan drawn from it both stand; a short qualifying clause beside a basename is allowed, and is what lets one field say which of the two is which. **The write rides the act**: whoever makes a spec or plan the one this work runs on writes the field in the same command, and no pass maintains it afterwards — a field a separate bookkeeping step owns is a field that drifts from what the work is actually running on. Absent means no artifact yet, and a reader takes that as the statement it is. Its second reader is the closure step, which reads the plan whose `## Where this work stops` it puts back to the user clause by clause; absent, that step has only the plan the session happens to be holding, which nothing persists. **It keeps the Circle head field's name deliberately**: `active` qualifies the spec in force and not the item, whose state is `**Status:**`, and the name is what lets every record and every pointer citing the field keep resolving across the conversion. Binding record: `260910-2011_*_a-work-item-has-no-field-for-the-plan-it-runs-on-so-the-closure-step-lost-its-source.md`.
 
 **Two bounds, and only the first survived the cut.** **No agent originates a work item**: the user files, by hand or through `/fusion:memo`; a defect an agent finds is an issue, a choice point a decision record. The second bound, that the backlog is not the work queue, is gone with the queue it distinguished the store from.
 

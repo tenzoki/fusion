@@ -54,8 +54,20 @@ If it prints a path, run:
 /fusion:migrate
 ```
 
-then `/fusion:setup` once afterwards. The migration surveys first, shows you what it will move, and
-asks before moving anything.
+then `/fusion:setup` once afterwards. The migration surveys first, shows you what it will do, and
+asks before it does any of it.
+
+**One part of it is not a move, and the survey says so before you confirm.** Every other step
+relocates a file; converting a live record also **renames that record and rewrites its head block
+where it stands**. The record takes its container's own name and its state moves from the filename
+marker into a `**Status:**` field. `**Active spec/plan:**` survives under its own name — the work
+item carries that field too — so a `## Directive` that reads "See `**Active spec/plan:**` above"
+still resolves and is not rewritten. `**Active session history:**` has no item field, the history
+store having closed to writes, and it is carried rather than dropped: into `**Cross-references:**`
+where it names a plain basename, otherwise verbatim into the body. Nothing the record stated is
+lost, and its own prose from `## Directive` down is carried across unchanged. If your workbench is
+tracked by git the whole pass is one reviewable diff and `git revert` takes it back; if it is
+untracked or gitignored, the migration says so in the question and there is no undo.
 
 **What happens if you skip it.** A work item's record is now named after its container and carries
 no marker. While a record is still called `_t_circle.md`, the resolver that answers *which work item
@@ -141,8 +153,9 @@ Each line says what this release did to something and stops there. A later relea
 it, so read this as a record of v11 rather than as a promise.
 
 - **Your existing records.** No issue, decision, plan, review, analysis or history file was
-  rewritten, renamed or moved by this release. The migration in check 1 moves files, and it is the
-  only thing that does — it asks first, and it never touches a terminal record.
+  rewritten, renamed or moved by this release. The migration in check 1 moves files and, for a live
+  Circle record only, renames and re-heads that one file — it asks first, shows both before it
+  starts, and it never touches a terminal record.
 - **Your existing session histories.** The store is closed to new writes, not deleted. Everything
   already in it stays readable, and a citation pointing at one still resolves.
 - **The hook layer.** It still observes every write-tool call and every `Bash` call, allows all of
