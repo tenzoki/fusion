@@ -101,3 +101,5 @@ addendum's "in the same words" overstates it: the prior Circle's plan reads "The
 full and this plan does not restate it." Same substance, two independent wordings — which is the stronger
 observation for option 2, since it shows two planner runs reaching the same refusal without a shared
 phrase to copy. Nothing else in the addendum needs correcting.
+
+Also seen: 260915-1922 by analyst — re-reached from a consuming project's record; all three options here edit machinery the v11 cut removed, so the question is moot as posed.

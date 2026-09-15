@@ -15,3 +15,5 @@ The migration drops two head fields unannounced and leaves the Directive that po
 **What S10 did instead**, as one possible answer rather than the answer: carried both values verbatim into the body as a short block above `## Directive`, stating that the format defines no field for them and citing the open record. The pointer sentence then still resolves.
 
 **Acceptance.** The migration either carries the two fields somewhere a reader can find them, or drops them and says so in the survey the user confirms. A record whose Directive is the pointer literal is not left naming a field that is gone — either the pointer is rewritten in the same pass, or the field it names survives. Whichever, the body says which, and `260910-2011_*` is cited so the two records are read together.
+
+Also seen: 260915-1922 by analyst — a consuming project met the same fork; the pointer literal cites the field, and 14 records in this workbench carry it.
