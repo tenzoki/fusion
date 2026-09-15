@@ -110,3 +110,6 @@ this one, and nothing here bears on it.
 
 ---
 Answered: `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md` `## Options` — option 2: the lock emits no row when the landed commit's only path is `fusion-workbench/orchestrator-events.jsonl`, so a single log-only commit settles the tree and committing terminates. The residual is accepted as stated: the log can no longer say when the log itself was committed; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 8d4bbe07 — `commit_is_log_only()` added to `bin/fusion-commit-lock` between the HEAD comparison and the write; `rules/commit-lock.md` `### The lock writes the commit event` rewritten to the new behaviour; both geometries covered in `hooks/lib/__tests__/fusion-commit-lock.test.ts`.
