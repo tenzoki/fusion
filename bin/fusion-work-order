@@ -19,18 +19,26 @@
 #   verdict=cyclic
 #   note=4 items carry no `**Depends-on:**` field …
 #      1      0       2  ready    <item-a>
-#      2      1       0  blocked  <item-b>
+#      2      0       1  paused   <item-f>
+#      3      1       0  blocked  <item-b>
 #   cycle=<item-c>, <item-d>
 #   unresolved=<item-b> wants <item-e>.md
 #
 # The item row is five fixed columns — order, depth, blocks, readiness,
-# container name. `ready=` counts the items with no unmet prerequisite and
-# `roots=` the items at depth 0, where the order starts; the two are equal in an
-# acyclic store and differ only where a cycle sits at depth 0.
+# container name. The readiness column reads `ready`, `blocked` or `paused`: the
+# third is the item's own `**Status:**` and overrides the other two whatever its
+# out-edges, because `ready` invites a reader to pick the item up and a paused
+# item is one somebody has set down. Its `depth` and `blocks` stay computed like
+# any node's. `ready=` counts the items with no unmet prerequisite and `roots=`
+# the items at depth 0, where the order starts; a paused item never counts in
+# `ready=` and still counts at depth 0, so the two are equal in an acyclic store
+# with no paused item in it and differ where a cycle sits at depth 0 or where a
+# paused item does.
 #
-# A node is a work item whose `**Status:**` is `open` or `claimed`. A `done` or
-# `dropped` item is outside the graph, its outgoing entries unread, and an entry
-# naming one is reported as unresolved like an entry naming nothing at all.
+# A node is a work item whose `**Status:**` is `open`, `claimed` or `paused`. A
+# `done` or `dropped` item is outside the graph, its outgoing entries unread,
+# and an entry naming one is reported as unresolved like an entry naming
+# nothing at all.
 # `archive/**` is never opened. The computation is hooks/lib/work-graph.ts and
 # its header is the authoritative account of all of that.
 #

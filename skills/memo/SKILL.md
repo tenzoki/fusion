@@ -109,7 +109,7 @@ If several tasks are captured at once (e.g. "the open tasks"), append one checkb
 
 If the container you derived already exists, neither overwrite nor append: pick a `<topic>` that tells the two ideas apart, and say in your report that you did.
 
-The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` defines the kind, its four statuses and this floor:
+The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` defines the kind, its statuses and this floor:
 
 ```markdown
 # <one-line idea title>
