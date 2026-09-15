@@ -107,3 +107,6 @@ whose purpose is to be the record after a clone.
 
 Whether the lock should emit anything at all for a housekeeping commit is a wider question than
 this one, and nothing here bears on it.
+
+---
+Answered: `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md` `## Options` — option 2: the lock emits no row when the landed commit's only path is `fusion-workbench/orchestrator-events.jsonl`, so a single log-only commit settles the tree and committing terminates. The residual is accepted as stated: the log can no longer say when the log itself was committed; ruled by user, Kai Stalmann <ks@qantr.com>.

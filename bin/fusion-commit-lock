@@ -75,6 +75,10 @@ resolve_root() {
 
 LOCK_DIR="fusion-workbench/.commit-lock"
 HOLDER_FILE="${LOCK_DIR}/holder"
+# The machine-written event log, relative to the workbench root (this script's
+# working directory once `with` has cd'd). Not relative to the git toplevel: the
+# two need not be the same directory, and commit_is_log_only computes the offset.
+EVENT_LOG_REL="fusion-workbench/orchestrator-events.jsonl"
 STALE_AFTER_SECONDS=60
 
 now_utc() {
@@ -289,6 +293,10 @@ do_release() {
 # until 2026-09-10 and went with that file; that module's header carries why. No advisory is written here — this script is not a
 # hook and has no `.guard-state/` writer, and a bare `commit` row with no
 # session is the honest degradation.
+# A third condition sits beside those two since the ruling recorded in
+# `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md`:
+# a commit whose only path is the event log itself emits nothing, so the tree
+# settles — see commit_is_log_only below.
 # Identity is env-first (the SessionStart export), else one run of the sibling
 # `fusion-identity` — the single implementation of the criterion. An
 # unresolved half is an absent key, never an empty one. Schema and reasoning:
@@ -299,12 +307,36 @@ json_escape() {
   printf '%s' "$1" | tr -d '\000-\037' | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
 
+# True when the commit that just landed carries the event log and nothing else.
+# Such a commit regenerates exactly the dirt it committed, so emitting for it
+# means no sequence of commits ever ends with a clean tree; skipping it makes
+# committing terminate. Ruled in
+# `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md`
+# (option 2), which also states the residual: the log can no longer say when the
+# log itself was committed.
+#
+# The question is asked of the repository AFTER the fact and is never predicted
+# from the wrapped command's text. Two things it must get right beyond that.
+# `git show --name-only` prints paths relative to the git TOPLEVEL while this
+# function runs from the workbench root; `--show-prefix` is that offset (empty at
+# the toplevel, `sub/` below it), computed rather than assumed.
+# And a commit with no listed path is not a log-only commit: a merge lists none
+# under `--name-only`, an empty commit lists none either, and both still emit.
+commit_is_log_only() {
+  local prefix names
+  prefix="$(git rev-parse --show-prefix 2>/dev/null || true)"
+  names="$(git show --name-only --format= HEAD 2>/dev/null | sed '/^$/d')"
+  [ -n "$names" ] || return 1
+  [ "$names" = "${prefix}${EVENT_LOG_REL}" ]
+}
+
 emit_commit_event() {
   local before="$1" head subject person checkout sid id_out line
   [ -n "${FUSION_SESSION_ID:-}" ] || return 0
   head="$(git rev-parse --short HEAD 2>/dev/null || true)"
   [ -n "$head" ] || return 0
   [ "$head" = "$before" ] && return 0
+  commit_is_log_only && return 0
   subject="$(git log -1 --pretty=%s 2>/dev/null || true)"
   person="${FUSION_PERSON:-}"
   checkout="${FUSION_CHECKOUT:-}"
@@ -319,7 +351,7 @@ emit_commit_event() {
   [ -n "$checkout" ] && line="${line},\"checkout\":\"$(json_escape "$checkout")\""
   [ -n "$sid" ] && line="${line},\"session_id\":\"$(json_escape "$sid")\""
   line="${line},\"detail\":\"$(json_escape "$head $subject")\"}"
-  printf '%s\n' "$line" >> fusion-workbench/orchestrator-events.jsonl
+  printf '%s\n' "$line" >> "$EVENT_LOG_REL"
   return 0
 }
 

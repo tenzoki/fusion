@@ -5,18 +5,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 
-// bin/fusion-commit-lock is a bash script; there is no importable module. The
-// tests drive the real script through child_process against a throwaway
-// workbench fixture, following the precedent of fusion-paths.test.ts.
-//
-// Motivating defect: issue 260805-1839, the holder-less lock directory. What
-// the state is and how it is aged out are stated in `rules/commit-lock.md`
-// `### Mechanism` and its `### Failure modes` table; these tests pin the fix
-// and the two behaviours around it.
+// bin/fusion-commit-lock is a bash script; there is no importable module, so
+// these tests drive the real script through child_process against a throwaway
+// workbench fixture, as fusion-paths.test.ts does. Motivating defect: issue
+// 260805-1839, the holder-less lock directory, whose state and aging are stated
+// in `rules/commit-lock.md` `### Mechanism` and its `### Failure modes` table.
 const script = join(pluginRoot, "bin", "fusion-commit-lock");
 
-// The script's own constant. Tests never wait it out — the stale cases
-// backdate mtimes instead — but assertions on messages reference it.
+// The script's own constant; the stale cases backdate mtimes rather than wait.
 const STALE_AFTER_SECONDS = 60;
 
 let projectRoot: string;
@@ -33,23 +29,23 @@ interface RunResult {
 
 /** Run fusion-commit-lock in the fixture project, for the subcommands that
  *  return immediately. Never throws. spawnSync (not execFileSync) so stderr is
- *  captured on SUCCESS too — the stale-reap notice is printed on stderr by a
- *  run that then exits 0. A blocking `acquire` never goes through here: it uses
- *  `spawnAcquire` and `until` below, which watch what the script says instead
- *  of how long it has been saying nothing. */
+ *  captured on SUCCESS too — the stale-reap notice is printed by a run that then
+ *  exits 0. A blocking `acquire` uses `spawnAcquire` and `until` below instead,
+ *  which watch what the script says, not how long it has been silent. */
 function run(args: string[], env: Record<string, string> = {}): RunResult {
+  return runIn(projectRoot, args, env);
+}
+
+/** `run` from a directory that is not the fixture root — what separates the
+ *  workbench root from the git toplevel. */
+function runIn(cwd: string, args: string[], env: Record<string, string> = {}): RunResult {
   const r = spawnSync(script, args, {
-    cwd: projectRoot,
+    cwd,
     encoding: "utf-8",
     stdio: ["ignore", "pipe", "pipe"],
     env: { ...process.env, ...env },
   });
-  return {
-    status: r.status ?? -1,
-    signal: r.signal ?? null,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? "",
-  };
+  return { status: r.status ?? -1, signal: r.signal ?? null, stdout: r.stdout ?? "", stderr: r.stderr ?? "" };
 }
 
 function backdate(path: string, seconds: number): void {
@@ -57,26 +53,17 @@ function backdate(path: string, seconds: number): void {
   utimesSync(path, then, then);
 }
 
-/* ------------------------------------------------------------------ *
- * Waiting on the lock's own output instead of on a clock
- *
- * Why the fixed budgets these helpers replaced failed under parallel load and
- * passed in isolation: `shared/issues/260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`
- * and the fix log `260815-1133-coder-hooks-suite-concurrency-safety.md`.
- *
- * What replaces the budget is the script's own first-fail message: printed
- * exactly once, and once printed it stays in the accumulated stderr — a
- * monotone condition, so a slow machine only takes longer to reach it. The only
- * deadline left is the vitest case timeout.
- * ------------------------------------------------------------------ */
+/* Waiting on the lock's own output instead of on a clock. Why the fixed budgets
+ * these helpers replaced failed under parallel load and passed in isolation:
+ * `shared/issues/260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`
+ * and the fix log `260815-1133-coder-hooks-suite-concurrency-safety.md`. What
+ * replaces the budget is the script's own first-fail message: printed exactly
+ * once, and once printed it stays in the accumulated stderr — a monotone
+ * condition, so a slow machine only takes longer to reach it. The only deadline
+ * left is the vitest case timeout. */
 
 /** A blocking `acquire` under observation: its stderr so far, and its process. */
-interface Blocking {
-  proc: ChildProcess;
-  stderr: () => string;
-}
-
-function spawnAcquire(bin: string, tag: string, env: Record<string, string> = {}): Blocking {
+function spawnAcquire(bin: string, tag: string, env: Record<string, string> = {}): { proc: ChildProcess; stderr: () => string } {
   let stderr = "";
   const proc = spawn(bin, ["acquire", tag], {
     cwd: projectRoot,
@@ -90,14 +77,10 @@ function spawnAcquire(bin: string, tag: string, env: Record<string, string> = {}
 
 const tick = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-
-/**
- * Wait until `cond` holds, or until the process being observed exits. No inner
- * budget: `cond` is monotone in every caller, so the wait ends on an event and
- * not on a clock. `proc` is the liveness half — a creator that died can never
- * satisfy the condition, and waiting out the case timeout for it would hide the
- * real failure behind a generic timeout message.
- */
+/** Wait until `cond` holds, or until the observed process exits. No inner
+ *  budget: `cond` is monotone in every caller, so the wait ends on an event and
+ *  not on a clock. `proc` is the liveness half — a dead creator never satisfies
+ *  `cond`, and waiting out the case timeout would hide the real failure. */
 async function until(cond: () => boolean, proc?: ChildProcess): Promise<boolean> {
   for (;;) {
     if (cond()) return true;
@@ -106,15 +89,11 @@ async function until(cond: () => boolean, proc?: ChildProcess): Promise<boolean>
   }
 }
 
-/**
- * Run the script to completion without a `spawnSync` timeout in front of it.
- *
- * The cases that reach a stale lock and reap it are expected to finish, so a
- * timeout there was never an assertion — it was a guard against a hung worker,
- * sized by guess. Awaiting the exit puts that guard where it belongs, on the
- * vitest case timeout, which cannot be starved by the same load that starves
- * the script.
- */
+/** Run the script to completion with no `spawnSync` timeout in front of it. The
+ *  cases that reap a stale lock are expected to finish, so a timeout there was
+ *  never an assertion — only a guard against a hung worker, sized by guess.
+ *  Awaiting the exit leaves that guard to the vitest case timeout, which the
+ *  load that starves the script cannot starve. */
 function runAsync(args: string[]): Promise<RunResult> {
   return new Promise((res) => {
     let stdout = "";
@@ -225,19 +204,14 @@ describe("fusion-commit-lock: holder-less lock directory", () => {
 describe("fusion-commit-lock: the holder write is noclobber (issue 260806-1030, reaped slow creator)", () => {
   // The race the noclobber write closes is stated in `rules/commit-lock.md`
   // `### Mechanism` and its `Crash (or long suspension) between mkdir and the
-  // holder write` failure mode; issue 260806-1030 is the half where a reap
-  // pulls the lock from under a living slow acquirer.
-  //
-  // The suspension is simulated by driving a patched COPY of the real script
-  // with an injected pause between `mkdir` and the holder write — the same
-  // reproduction the review used to demonstrate the race. The patch anchor is
-  // asserted, so a reshaped script fails loudly here instead of testing the
-  // wrong seam.
-  //
-  // The pause is a gate and not a `sleep`: the creator parks indefinitely on a
-  // file that does not exist yet and announces its arrival by creating another,
-  // so the holder-less state PERSISTS until this case ends it. Why a
-  // four-second window was wrong is the block at the head of this file.
+  // holder write` failure mode; issue 260806-1030 is the half where a reap pulls
+  // the lock from under a living slow acquirer. The suspension is simulated by
+  // driving a patched COPY of the real script with an injected pause between
+  // `mkdir` and the holder write — the review's own reproduction. The patch
+  // anchor is asserted, so a reshaped script fails loudly instead of testing the
+  // wrong seam, and the pause is a GATE rather than a `sleep`: the creator parks
+  // on a file that does not exist yet and announces its arrival by creating
+  // another, so the holder-less state persists until this case ends it.
 
   it(
     "a creator reaped between mkdir and its holder write loses the acquisition instead of overwriting the waiter's holder",
@@ -269,9 +243,8 @@ describe("fusion-commit-lock: the holder write is noclobber (issue 260806-1030, 
 
       const creator = spawnAcquire(patchedScript, "creator", { FUSION_TEST_HOLDER_WRITE_GATE: gate });
       try {
-        // 1. The creator mkdirs, then parks before its holder write — and says
-        //    so. The state it is parked in does not expire, so this wait cannot
-        //    lose a race; it can only fail if the creator never got there.
+        // 1. The creator mkdirs, then parks before its holder write and says so.
+        //    That state does not expire, so the wait cannot lose a race.
         expect(
           await until(() => existsSync(parked), creator.proc),
           `the creator never parked between mkdir and its holder write; stderr so far:\n${creator.stderr()}`,
@@ -288,10 +261,9 @@ describe("fusion-commit-lock: the holder write is noclobber (issue 260806-1030, 
         expect(waiter.stderr).toContain("stale lock detected");
         expect(readFileSync(holderFile, "utf-8")).toMatch(/^tag: waiter$/m);
 
-        // 4. The creator is let go. Its noclobber holder write fails against
-        //    the waiter's holder, and it re-enters the poll loop as a plain
-        //    waiter — observable as the first-fail message naming the real
-        //    holder, which is printed once and then stays in the buffer.
+        // 4. The creator is let go. Its noclobber holder write fails against the
+        //    waiter's holder and it re-enters the poll loop as a plain waiter —
+        //    observable as the first-fail message, printed once and then kept.
         closeSync(openSync(gate, "w"));
         expect(
           await until(() => creator.stderr().includes("waiting for commit lock held by waiter"), creator.proc),
@@ -342,75 +314,103 @@ describe("fusion-commit-lock: stale holder file (the pre-existing reap path)", (
   });
 });
 
-/* ------------------------------------------------------------------ *
- * The machine-written `commit` row (v10.8.0), whose conditions and fields are
- * stated in `rules/commit-lock.md` `### The lock writes the commit event`. One
- * of them is sharper here than there: the session scoping is a DISJUNCTION —
- * `FUSION_SESSION_ID` exported, or `agentstate.yaml` present — matching
- * `eventRowsAdmitted` in `hooks/lib/orchestrator-events.ts`, and it used to be
- * the state file alone; the cases below take both arms and the neither-arm
- * case, so a future edit that collapses it back to one term fails here. The
- * dispatch-side rows (`task_start`/`task_done`) are asserted in
+/* The machine-written `commit` row (v10.8.0), whose conditions and fields are
+ * stated in `rules/commit-lock.md` `### The lock writes the commit event`. Two
+ * are pinned here. The session scoping is `FUSION_SESSION_ID` ALONE — it was a
+ * disjunction with `agentstate.yaml` present until that file went on 2026-09-10,
+ * and the case that took the second arm went with it. The log-only skip is the
+ * ruling in
+ * `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md`.
+ * The dispatch-side rows (`task_start`/`task_done`) are asserted in
  * `guard-state-shape.test.ts` since the gate widened;
  * `shared/issues/260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md`
- * recorded that they had nothing but wiring asserts before that.
- * ------------------------------------------------------------------ */
+ * recorded that they had nothing but wiring asserts before that. */
 
 const EVENT_LOG = "fusion-workbench/orchestrator-events.jsonl";
 /** Global and system git config cut off, so a signing hook here never runs. */
 const GIT_ENV = { GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_SYSTEM: "/dev/null", GIT_CONFIG_NOSYSTEM: "1" };
 const IDENTITY_ENV = { ...GIT_ENV, FUSION_PERSON: "Test Person <t@example.com>", FUSION_CHECKOUT: "5e8248d7", FUSION_SESSION_ID: "sid-1" };
 
-function gitRepo(): void {
-  const env = { ...process.env, ...GIT_ENV };
-  spawnSync("git", ["init", "-q"], { cwd: projectRoot, env });
-  spawnSync("git", ["config", "user.name", "Test Person"], { cwd: projectRoot, env });
-  spawnSync("git", ["config", "user.email", "t@example.com"], { cwd: projectRoot, env });
-  spawnSync("git", ["commit", "-q", "--allow-empty", "-m", "root"], { cwd: projectRoot, env });
+const git = (args: string[]) => spawnSync("git", args, { cwd: projectRoot, encoding: "utf-8", env: { ...process.env, ...GIT_ENV } });
+/** A repo whose root commit TRACKS the workbench marker rather than being empty,
+ *  so a log-only commit can leave `git status` wholly clean — the property the
+ *  skip exists for, which an untracked fixture file would hide. `sub` puts the
+ *  workbench BELOW the git toplevel and returns that root. */
+function gitRepo(sub = ""): string {
+  const root = join(projectRoot, sub);
+  if (sub) mkdirSync(join(root, "fusion-workbench"), { recursive: true });
+  if (sub) writeFileSync(join(root, "fusion-workbench", ".fusion-setup"), '{"test":true}\n');
+  for (const a of [["init", "-q"], ["config", "user.name", "Test Person"], ["config", "user.email", "t@example.com"], ["add", "-A"], ["commit", "-q", "-m", "root"]]) git(a);
+  return root;
 }
-const inFlight = () => writeFileSync(join(projectRoot, "fusion-workbench", "agentstate.yaml"), "session:\n");
 const commitUnderLock = () => run(["with", "coder", "--", "git", "commit", "-q", "--allow-empty", "-m", "landed"], IDENTITY_ENV);
+/** Stage the event log and NOTHING else, from `cwd`, under the lock. */
+const commitLogOnly = (cwd: string) => runIn(cwd, ["with", "coder", "--", "sh", "-c", `git add -- ${EVENT_LOG} && git commit -q -m "the log"`], IDENTITY_ENV);
+const rows = (root = projectRoot) => readFileSync(join(root, EVENT_LOG), "utf-8").trim().split("\n").map((l) => JSON.parse(l));
+const porcelain = (...pathspec: string[]) => git(["status", "--porcelain", ...pathspec]).stdout.trim();
 
 describe("fusion-commit-lock: the machine-written commit row", () => {
   it("appends one commit row carrying hash, subject, identity and session id when HEAD moved in a session", () => {
     gitRepo();
-    inFlight();
     const r = commitUnderLock();
     expect(r.status, r.stderr).toBe(0);
-    const rows = readFileSync(join(projectRoot, EVENT_LOG), "utf-8").trim().split("\n").map((l) => JSON.parse(l));
-    expect(rows).toHaveLength(1);
-    const head = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: projectRoot, encoding: "utf-8" }).stdout.trim();
-    expect(rows[0]).toMatchObject({ event: "commit", person: IDENTITY_ENV.FUSION_PERSON, checkout: "5e8248d7", session_id: "sid-1", detail: `${head} landed` });
-    expect(rows[0].ts).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
+    expect(rows()).toHaveLength(1);
+    const head = git(["rev-parse", "--short", "HEAD"]).stdout.trim();
+    expect(rows()[0]).toMatchObject({ event: "commit", person: IDENTITY_ENV.FUSION_PERSON, checkout: "5e8248d7", session_id: "sid-1", detail: `${head} landed` });
+    expect(rows()[0].ts).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
   });
 
   it("writes no row when the wrapped command left HEAD where it was", () => {
     gitRepo();
-    inFlight();
     expect(run(["with", "coder", "--", "git", "status", "--short"], IDENTITY_ENV).status).toBe(0);
     expect(existsSync(join(projectRoot, EVENT_LOG))).toBe(false);
   });
 
-  it("writes the row on the session identifier alone, with no agentstate.yaml", () => {
-    // The first arm of the gate, on its own. This is the case that keeps the
-    // commit row being written once the Turn loop's state file goes, and it
-    // fails if the disjunction is ever narrowed back to the file.
+  // The log-only skip in BOTH geometries. Below the toplevel `git show
+  // --name-only` prints `sub/fusion-workbench/...` while the emitter appends to
+  // `fusion-workbench/...` relative to the workbench root it runs in, so a
+  // comparison that ignored that offset would emit there.
+  for (const sub of ["", "sub"]) {
+    it(`writes no row when the landed commit's only path is the event log${sub && ", below the git toplevel"}, so the tree settles`, () => {
+      const root = gitRepo(sub);
+      // Emitting for such a commit would re-dirty the tracked log it just
+      // carried, leaving no sequence of commits that ends clean.
+      expect(runIn(root, ["with", "coder", "--", "git", "commit", "-q", "--allow-empty", "-m", "landed"], IDENTITY_ENV).status).toBe(0);
+      expect(rows(root)).toHaveLength(1);
+      expect(porcelain()).not.toBe("");
+      const r = commitLogOnly(root);
+      expect(r.status, r.stderr).toBe(0);
+      expect(rows(root), "the log-only commit emitted a row of its own").toHaveLength(1);
+      expect(porcelain(), "committing the log did not settle the tree").toBe("");
+    });
+  }
+
+  it("writes the row for a merge, which lists no path at all, and for the log plus another path", () => {
+    // Listing nothing is not "the only path is the log": a merge lists nothing
+    // under `--name-only`, and so does the empty commit every other case here
+    // commits.
     gitRepo();
-    const r = commitUnderLock();
-    expect(r.status, r.stderr).toBe(0);
-    expect(existsSync(join(projectRoot, "fusion-workbench", "agentstate.yaml"))).toBe(false);
-    const rows = readFileSync(join(projectRoot, EVENT_LOG), "utf-8").trim().split("\n").map((l) => JSON.parse(l));
-    expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ event: "commit", session_id: "sid-1" });
+    const base = git(["rev-parse", "--abbrev-ref", "HEAD"]).stdout.trim();
+    git(["checkout", "-qb", "side"]);
+    writeFileSync(join(projectRoot, "side.txt"), "s\n");
+    git(["add", "-A"]); git(["commit", "-qm", "side"]);
+    git(["checkout", "-q", base]);
+    writeFileSync(join(projectRoot, "base.txt"), "b\n");
+    git(["add", "-A"]); git(["commit", "-qm", "base"]);
+    expect(run(["with", "coder", "--", "git", "merge", "-q", "--no-ff", "-m", "merge", "side"], IDENTITY_ENV).status).toBe(0);
+    expect(git(["rev-list", "--merges", "-1", "HEAD"]).stdout.trim(), "no merge commit was created").not.toBe("");
+    expect(rows()).toHaveLength(1);
+    writeFileSync(join(projectRoot, "code.txt"), "x\n");
+    expect(run(["with", "coder", "--", "sh", "-c", "git add -A && git commit -q -m mixed"], IDENTITY_ENV).status).toBe(0);
+    expect(rows(), "a commit carrying the log AND another path is not log-only").toHaveLength(2);
   });
 
-  it("writes no row when NEITHER arm of the gate holds, even though a commit landed", () => {
+  it("writes no row when the session identifier is unset, even though a commit landed", () => {
     // `run` merges `process.env`, and a developer running this suite inside a
-    // fusion session HAS `FUSION_SESSION_ID` exported by the SessionStart hook.
-    // Left alone, this case would pass on a bare shell and assert nothing on
-    // the machine most likely to run it — the same failure `STRIPPED_ENV_VARS`
-    // in helpers/guard-harness.ts exists to prevent. The empty string is the
-    // strip: the script tests `[ -n "${FUSION_SESSION_ID:-}" ]`.
+    // fusion session HAS `FUSION_SESSION_ID` exported by SessionStart. Left
+    // alone this case would assert nothing on the machine most likely to run it
+    // — the failure `STRIPPED_ENV_VARS` in helpers/guard-harness.ts prevents too.
+    // The empty string is the strip: the script tests `[ -n "${FUSION_SESSION_ID:-}" ]`.
     gitRepo();
     const r = run(
       ["with", "coder", "--", "git", "commit", "-q", "--allow-empty", "-m", "landed"],
