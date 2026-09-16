@@ -1,11 +1,11 @@
 ---
-description: Run fusion's ten periodic installation checks — the shipped assets, the project's own files, the git settings, this checkout's identity and where it stands. Optional --only <selector> runs exactly one.
+description: Run fusion's eleven periodic installation checks — the shipped assets, the project's own files, the git settings, this checkout's identity and where it stands. Optional --only <selector> runs exactly one.
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
 
 # Periodic checks
 
-These ten checks ran at the top of every session until the ramp-up was cut. **None of them is a fact about this session**, and each answers the same way for days at a time. `fusion-workbench/.fusion-setup` therefore records, per selector, the date the check last ran and the plugin version it ran against; `/fusion:setup` asks for a selector again only when the version differs or that date is more than 30 days old, and runs it by reading this body.
+These eleven checks ran at the top of every session until the ramp-up was cut. **None of them is a fact about this session**, and each answers the same way for days at a time. `fusion-workbench/.fusion-setup` therefore records, per selector, the date the check last ran and the plugin version it ran against; `/fusion:setup` asks for a selector again only when the version differs or that date is more than 30 days old, and runs it by reading this body.
 
 **Run them all, or run one.** `/fusion:check` runs every selector below; `--only <selector>` runs exactly one. A selector this run does not perform keeps whatever the marker already records for it, so a `--only` run never claims coverage it did not take.
 
@@ -21,6 +21,7 @@ These ten checks ran at the top of every session until the ramp-up was cut. **No
 | `gitignore` | a tracked workbench's `.gitignore` against the four-class partition |
 | `upstream` | how far this checkout is behind what it last saw of the remote |
 | `leftovers` | files written by mechanisms fusion no longer ships |
+| `claude-md` | where `CLAUDE.md` carries its weight |
 
 **Nothing here blocks anything.** `permissions` asks one question on a normal run; `assets`, `identity` and `leftovers` each ask at most one when they find something to ask about. Everything else reports and continues. Report what every selector you ran had to say, then run the stamp at the end.
 
@@ -329,6 +330,15 @@ rm -f ./fusion-workbench/.guard-state/escalation.json ./fusion-workbench/.guard-
 "Keep them" is the other: nothing is written, the run continues, and the offer comes back the next time this selector runs.
 
 **Name the effect exactly, and claim nothing beyond it.** Deleting the files removes leftovers. It does not clear a halt, unblock writes or restore write access, because at this version nothing is blocked and nothing was taken away. Report it in those terms: which files were deleted and nothing about what is allowed changed, or the files were left in place.
+
+## claude-md — where `CLAUDE.md` carries its weight
+
+```bash
+H="$FUSION_PLUGIN_ROOT/bin/fusion-claude-md-weight"
+if [ -x "$H" ]; then "$H"; else echo "claude-md=unread"; fi
+```
+
+Report what it printed and nothing past it. `clean` and `absent` are one line, **not a warning**; on `weighed`, the rows marked `over` and `/fusion:curate` as what acts on them. It writes nothing and never fails the session. `unread` — this install lacks the helper: the check was **not taken**, which is not the same as a clean file. The rest: that helper's header.
 
 ## Stamp what you ran
 

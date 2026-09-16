@@ -142,7 +142,7 @@ flowchart TD
    - Endpoint: the helper exists, is executable, and satisfies the five contract clauses above against this repository's own `CLAUDE.md` and against a scratch root with no `CLAUDE.md`.
    - Dependencies: step 1 (the threshold's framing cites the criterion).
 
-4. **C4b — the selector in the skill body**
+4. [DONE] **C4b — the selector in the skill body**
    - Executor: `coder`
    - Files: `skills/check/SKILL.md`, `README-agents.md`
    - Changes: one row in the selector table; one `## claude-md — ...` section carrying the heading, one fenced call to the helper, and the reporting rule (report what it prints; a clean file is one line and is not a warning; it writes nothing; it never fails the session; name `/fusion:curate`). **Carry a miss branch** for the session in which the helper does not yet exist in `$FUSION_PLUGIN_ROOT`, on the `presence=unread` precedent already in that body. Then bring every statement of how many checks `/fusion:check` performs to eleven: the frontmatter `description`, the body's opening sentence, and the `README-agents.md` row — which enumerates the ten by name and gains the eleventh, so the count stays derived rather than asserted.
