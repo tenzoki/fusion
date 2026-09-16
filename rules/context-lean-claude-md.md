@@ -210,6 +210,16 @@ that answers the topic question.
   constraint that shapes edits?* → **on-demand**, as a `skill` unit: a pointer,
   never a body.
 
+**A passage is judged whole, and part of it is enough.** The question is asked of
+the passage, and it is answered yes when **any** part of the passage is needed
+every session — not only when all of it is. So a passage can stay on the strength
+of a couple of lines inside it, and everything else it holds stays with them. A
+passage that stays therefore carries text no session needs, and that is a cost
+the test accepts rather than a case to split further: the cut that would save
+those bytes is a cut below the passage, and Step 1 fixed the passage as the unit
+precisely so that two readers stop cutting in different places. The remainder is
+what the unit costs, and it is cheaper than two answers that cannot be compared.
+
 When in doubt, prefer on-demand: a rule that turns out to be needed more widely
 is cheap to re-tag `[always]`; an always-on block that is rarely relevant is a
 standing tax on every session.
@@ -242,18 +252,23 @@ Both are real, taken from the `CLAUDE.md` of fusion's own repository — the fir
 as that file stands, the second as it stood before the move it describes was
 carried out.
 
-**It stays: the language declaration.** The file carries the line
-`**Language:** de`, and beside it `**Artifact language:** en`. It stays for a
-mechanical reason rather than a matter of taste, and *What stays always-on* above
-already gives it: the rule-discovery helper named there reads both lines at the
-start of **every** dispatch, to resolve which voice profile the agent it is
-setting up will write in. There is no work for which that is irrelevant — a
-release, a defect fix and a documentation pass need it identically. Step 2's
-first question is answered yes, so the passage is always-on and no pointer
-replaces it.
+**It stays: the preamble.** Counted as Step 1 says, that file divides at `## `,
+so its preamble — everything above the first `## ` — is one passage: seven lines
+and 414 bytes, holding the document title, the two language declarations
+`**Language:** de` and `**Artifact language:** en`, and one paragraph saying what
+the repository is. The declarations are 43 of those bytes, and they are why the
+passage stays, for a mechanical reason rather than a matter of taste: the
+rule-discovery helper named under *What stays always-on* above reads both lines
+out of `CLAUDE.md` at the start of **every** dispatch, to resolve which voice
+profiles the agent it is setting up will write in. There is no work for which
+that is irrelevant — a release, a defect fix and a documentation pass need it
+identically. Step 2's first question is answered yes of the passage on the
+strength of those two lines, the title and the identity paragraph stay with them,
+and no pointer replaces any of it.
 
-**It moved: the release procedure.** The same file carried a section on how a
-release is cut — bump the manifest version, bump the marketplace entry, tag the
+**It moved: the release procedure.** The same file carried a `## ` section on how
+a release is cut — a passage in its own right at the level that file divided at,
+then as now — bump the manifest version, bump the marketplace entry, tag the
 commit, refresh the pinned example. Every line of it was correct and none of it
 optional. But it binds only where the work at hand *is* a release: a session
 fixing a defect in a hook loaded all 10 372 bytes of it, paid for them, and read

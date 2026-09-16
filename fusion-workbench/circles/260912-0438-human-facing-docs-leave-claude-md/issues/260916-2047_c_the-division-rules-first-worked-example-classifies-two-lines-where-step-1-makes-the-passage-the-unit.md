@@ -41,3 +41,29 @@ Found while bringing the second example up to date under
 `260916-1732_*_the-division-rules-worked-example-describes-a-claude-md-section-that-has-since-moved.md`,
 whose acceptance test covers currency and not the unit. Reported rather than folded into that fix,
 because the answer changes what the section teaches rather than what it reports.
+
+---
+Resolved: this record's option 1 taken together with the property its option 2 names, as one change,
+because neither is complete alone. Raising the example to the preamble without stating the property
+leaves a reader asking how a passage stays for the sake of two lines inside it; stating the property
+without the example is an abstraction with nothing under it.
+
+`### Step 2` now says that a passage is judged whole and the question is answered yes when **any**
+part of it is needed every session, so a passage can stay on the strength of a couple of lines and
+everything else it holds stays with them. It says in the same place what that costs and why the cost
+is accepted: a passage that stays carries text no session needs, and the cut that would save those
+bytes is a cut below the passage, which is exactly what Step 1 fixed the unit to prevent. The
+executor checked before writing that nothing in the section already said this — Step 1 asserts the
+unit but says nothing about judging it on part of its content — so the record missed nothing.
+
+The first example is now the preamble: measured at HEAD, `CLAUDE.md` carries one `#` and six `##`, so
+it divides at `##`, and everything above the first one is seven lines and 414 bytes holding the
+title, both language declarations and the identity paragraph. The declarations are 43 of those bytes,
+which puts the new property in view rather than in the abstract — the passage stays for a tenth of
+itself. The evidence was verified rather than taken: `bin/fusion-rules` reads both declarations out
+of `CLAUDE.md` unconditionally at the start of every dispatch, above the emission of the chat profile
+every agent receives.
+
+The second example was checked against the same test and held. At `72911b86^` the file divided at
+`##` as it does now, so the release procedure was a passage in its own right; one clause was added
+making that visible instead of inferable.
