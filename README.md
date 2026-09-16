@@ -23,7 +23,7 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v11.4.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v11.4.1` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
 
 **Upgrading from v11.0, v11.1, v11.2 or v11.3?** v11.4 removes one command. The name `log-activity` stops resolving: `/fusion:cadence` now writes the activity log itself and then digests it, so one command does both and the log is never stale. Type `/fusion:cadence` where you typed the old one. Two things change in the digest you get back: recurring themes are ranked by how many distinct **days** a theme appears in rather than how many sessions, and the `**Covers:**` line is gone, because the merged command reads the record it wrote rather than the session-history files, so who wrote them is no longer an input — the digest names no writers, in any window. `/fusion:cadence` now halts when there is no workbench above your working directory instead of writing a log into whatever directory you happened to stand in. Nothing in your project is rewritten and there is nothing to migrate; an existing `activity-log-<checkout>.md` is refreshed in place. `docs/upgrading-to-v11-4.md` is the note.
 
