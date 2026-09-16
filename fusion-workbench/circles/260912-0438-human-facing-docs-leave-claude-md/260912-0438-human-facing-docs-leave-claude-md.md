@@ -1,7 +1,9 @@
 # Human-directed documentation leaves `CLAUDE.md`, which keeps only what a session needs
 
 ---
-**Status:** open
+**Status:** claimed
+**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260916-1129
+**Active spec/plan:** 260916-1058_*_spec-human-facing-docs-leave-claude-md.md (spec), 260916-1126_*_implementation-human-facing-docs-leave-claude-md.md (plan drawn from it)
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 ---
 
