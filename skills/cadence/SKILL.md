@@ -39,6 +39,7 @@ date +"%Y-%m-%d %H:%M"
 ```
 
 - `$CO` is that run's `CHECKOUT=`, never `$USER`; both files are keyed by it.
+- **No `CHECKOUT=` line, no write.** Exit 3, exit 5 and the `[ -x ]` miss branch each leave `$CO` empty, and none of them means the workbench is absent. Halt and name which one: an empty key writes `activity-log-.md` and `cadence-.md`, the one pair of names every checkout would share.
 - **Adopt a legacy `-$USER` log.** Rename `activity-log-$USER.md` onto `activity-log-$CO.md` when this checkout's `$USER` is its suffix and nothing stands at the new name, and report the rename; in every other case leave the file and name it in the report. Merge nothing, delete nothing. Those are the conditions `rules/fusion-workbench-conventions.md` `## Filename Patterns` sets for the other personal logs, and cadence writes this log now, so cadence adopts it.
 - `$CO_LABEL` is the `alias=` line the second call prints. Exit 3 with nothing on stdout is an unregistered checkout and the ordinary case; a missing helper is the `[ -x ]` branch. On either, `$CO_LABEL` is the hex `$CO` itself. Never substitute a name.
 - Today's date comes from `date`, never from your own sense of "now" — your internal clock runs in UTC and will be off by the local offset.
@@ -128,6 +129,11 @@ The file is `activity-log-$CO.md` in the project root.
 ## Daily Log
 
 <!-- per-day sections, CHRONOLOGICAL: only the arc bullets are newest-first -->
+
+## Total commits
+
+<!-- `git log --since=<earliest-date> --oneline | wc -l`, written as
+     `<N> git commits since project start (<earliest date>).` -->
 ```
 
 **Per-day entry**, plus one arc bullet for the same day:
@@ -140,7 +146,7 @@ The file is `activity-log-$CO.md` in the project root.
 | HH:MM | <description> | g |
 ```
 
-**On refresh:** insert genuinely new days chronologically into `## Daily Log` and prepend each new arc bullet at the top of `## High-level arc`. For `$SINCE` itself, **replace** its daily entry and its arc bullet in place — never a second entry or a second bullet for one date. Update the per-week rows either way, and refresh the end-of-file `## Total commits` section, whose count is `git log --since=<earliest-date> --oneline | wc -l`, reading `<N> git commits since project start (<earliest date>).`
+**On refresh:** insert genuinely new days chronologically into `## Daily Log` and prepend each new arc bullet at the top of `## High-level arc`. For `$SINCE` itself, **replace** its daily entry and its arc bullet in place — never a second entry or a second bullet for one date. Update the per-week rows either way, and refresh the end-of-file `## Total commits` section by the command in the create template above.
 
 ### 6. The per-week table — mandatory, atomic with each day
 

@@ -60,7 +60,7 @@ Der Help-Skill liest die ausgelieferten Docs und zitiert sie mit Pfad, statt aus
 3. `/fusion:cadence`: was habe ich zuletzt getan. Braucht keinen laufenden Orchestrator, nur die Sitzung und die Workbench.
 4. Arbeiten: dem Orchestrator sagen, was man will.
 5. Ideen unterwegs mit `/fusion:memo` ablegen, ohne die laufende Arbeit zu stören.
-6. Fertig: `/fusion:cleanup` — committen und pushen, sonst nichts. Aufräumen, Reconcile, Aktivitätslog, `CLAUDE.md` und die Nachricht an das nächste Checkout sind je ein eigenes Kommando.
+6. Fertig: `/fusion:cleanup` — committen und pushen, sonst nichts. Aufräumen, Reconcile, `CLAUDE.md` und die Nachricht an das nächste Checkout sind je ein eigenes Kommando; das Aktivitätslog ist in `/fusion:cadence` aufgegangen.
 
 ### Direktmodus: einfach sagen, was man will
 

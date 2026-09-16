@@ -1,7 +1,7 @@
 # Implementation Plan: merge `/fusion:log-activity` into `/fusion:cadence`
 
 **Date:** 2026-09-15
-**Status:** In Progress
+**Status:** Complete — steps S1 through S8 done. Released as 11.4.0.
 **Spec:** none — planned from the orchestrator's dispatch, carrying the user's ruling
 **Decidability:** The load-bearing question is whether **one body can carry both procedures inside the `skills/` surface's remaining budget**. It is **not decidable from the inputs planning has**: a prose body's finished size is not computable from the two bodies it replaces, and every size in this plan below S1 is an estimate. The mechanism is therefore **measurement, not prediction** — S1 writes the body, `stat -f%z` reports it against a ceiling this plan derives exactly (19 427 bytes), and S1 **stops and reports** if it overshoots rather than improvising an offset, editing a head-room constant, or cutting an unrelated body. Every other question this plan answers *is* decidable from the tree and was measured before it was written; each such figure carries the command that produced it.
 
@@ -130,7 +130,7 @@ Steps run in order. S1 and S2 must land in **one commit**: the surface bound and
    - Files: `docs/upgrading-to-v11-4.md` (new), `skills/help/SKILL.md`, `README.md`
    - Changes: a command stops resolving and the user who types it gets an unknown-command error with no pointer, so he is owed a sentence. Write a short `docs/upgrading-to-v11-4.md` on the model of `docs/upgrading-to-v10-3.md` — `/fusion:log-activity` is gone, `/fusion:cadence` writes the log and then digests it, **nothing in your project needs changing**, and the digest's churn column now counts days. Add the release's paragraph to `skills/help/SKILL.md` `### 4. Update`, relabelling the ones below it and dropping the oldest, per the release process in `CLAUDE.md`; that swap is net-neutral on the bounded surface by construction and must be measured, not assumed. Point `README.md` `## Install` at the new note. `docs/` is bounded by nothing, so the note's length is free.
    - Dependencies: S6
-8. **Close the record trail**
+8. [DONE] **Close the record trail**
    - Executor: `analyst`
    - Files: `$OUT_DECISION/260915-2309_o_does-the-activity-log-keep-its-own-command-or-become-the-first-half-of-cadence.md`, `$OUT_ISSUE/260908-1612_o_log-activity-calls-itself-cleanups-step-6-and-it-is-step-5.md`
    - Changes: the decision record is **already filed** by this planning run (see `## Open Questions`), so this step does not create it. After S1–S7 commit, append the `Implemented:` annotation naming the commit and rename `_a_` → `_i_` per `rules/fusion-workbench-conventions.md` `## Inline State Tracking`. **The `_o_` → `_a_` transition is not this step's and not any agent's**: the orchestrator writes that line and the user rules it, per `260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`. Separately, close `260908-1612_*_…`: its acceptance test is *"`skills/log-activity/SKILL.md`'s opening paragraph names Step 5, and no two skill bodies claim the same cleanup step number"*, and both clauses hold vacuously once the file is gone — append `Resolved:` naming the deletion and rename to `_c_`.
@@ -145,6 +145,31 @@ Steps run in order. S1 and S2 must land in **one commit**: the surface bound and
 - The decision record cited above stands at `_i_` with its commit named, and `260908-1612_*_…` stands at `_c_`.
 - **Precondition on any release carrying this work:** `docs/upgrading-to-v11-4.md` exists and `skills/help/SKILL.md` `### 4. Update` names this release, before the tag is pushed — the release process in `CLAUDE.md` step 0 already requires the second, and this work adds the first.
 - **Precondition on the tag:** the open defect `260915-2145_*_the-v11-upgrade-note-is-maintained-as-live-in-one-commit-of-this-range-and-frozen-in-the-other.md` is either answered or explicitly carried, in the release commit or the session log. S6 touches `docs/upgrading-to-v11.md` and therefore takes a position on it; the position must be visible rather than implied.
+
+**Annotation, 260916 — the clauses above are left exactly as written; this says which of them the
+ruling overtook.** The plan is terminal, so nothing in it is edited; two of its acceptance clauses
+became false after it was written, and a reader who consults this section alone is told the
+opposite of what shipped.
+
+- **The 19 427-byte ceiling on `skills/cadence/SKILL.md` was superseded by a head-room raise.** The
+  user ruled on 2026-09-16, shown the measurement and the two alternatives (cut live substance out
+  of a skill body, or abandon the merge), that `SKILL_HEAD_ROOM` rise 21 911 -> 24 911, +3 000. The
+  merged body shipped at 21 901 bytes. The commit message states the ceiling and the two parent
+  sizes but never the finished figure, so the clause's "and that figure stated in the commit
+  message" is unmet as well.
+- **"No head-room constant was edited" is false on its first half**, by that same ruling. Its second
+  half holds: the only baseline map entry that moved is the dropped `log-activity/SKILL.md` line.
+
+**Where the real figures live.** The raise, its before-and-after and the date its reduction is read
+are in `README-hooks.md` `#### The head-room raises, and the reduction read on 2026-10-10`. What the
+surface measures at any later moment is in `hooks/lib/__tests__/fixtures/surface-growth.golden`,
+block `[skills bytes]` — not in this plan and not in that README, both of which state a figure as of
+a named commit.
+
+**One omission rather than a falsehood.** S1's `Delete:` list names four things and not the
+`**Covers:**` line, which the merge also removed. The cost is recorded where a reader looks for what
+a ruling gave up — `260915-2309_*_does-the-activity-log-keep-its-own-command-or-become-the-first-half-of-cadence.md`
+`## What the answer gives up` — rather than by rewriting a terminal plan.
 
 ## Data Structures
 

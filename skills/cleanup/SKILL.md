@@ -1,5 +1,5 @@
 ---
-description: Close the session by committing and pushing its work in meaningful splits, under the project's commit lock. Nothing else — reconciling, archiving, the activity log, the CLAUDE.md pass and the message to the next checkout are each their own command.
+description: Close the session by committing and pushing its work in meaningful splits, under the project's commit lock. Nothing else — reconciling, archiving, the CLAUDE.md pass and the note to the next checkout are each their own command, and the activity log is part of /fusion:cadence.
 argument-hint: "[--dry-run] [--no-push]"
 allowed-tools: [Bash, Read, Write, Glob, Grep]
 ---

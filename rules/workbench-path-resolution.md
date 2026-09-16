@@ -21,7 +21,7 @@ cites only the conventions file.
 
 ## The name namespace
 
-`<name>` is an **agent** (`agents/<name>.md`) or a **skill** (`skills/<name>/SKILL.md`). The two share one flat namespace, and **every consumer asks under its own name**: `fusion-paths coder`, `fusion-paths memo`, `fusion-paths log-activity`.
+`<name>` is an **agent** (`agents/<name>.md`) or a **skill** (`skills/<name>/SKILL.md`). The two share one flat namespace, and **every consumer asks under its own name**: `fusion-paths coder`, `fusion-paths memo`, `fusion-paths cadence`.
 
 A skill is its own consumer, not a guest in an agent's key set. The alternative — a skill resolving under whichever agent hosts its session — does not work, and not marginally: `/fusion:cadence` writes its digest to `$OUT_MEMO` and reads `$SCAN_HISTORY`, and no agent's prompt names `$OUT_MEMO` at all — a memo is written for the user, not for an agent. There is no agent name that resolves that skill's write. Making one work would mean adding the key to an agent whose prompt performs no such write, which breaks the rule under *Emission is per-consumer* below and turns a key set into "whatever some skill in this session might want".
 

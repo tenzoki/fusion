@@ -37,9 +37,13 @@ churn is the number of distinct **days** a theme appears in. The column header s
 report's `## Notes` says the unit changed, so a number that moved does not have to be inferred. A
 theme still needs a churn of 2 or more to count as recurring, and each one still carries its span.
 
-**The `**Covers:**` line is gone.** It named the distinct writers of the session histories in the
-seven-day window. The session-history store has been closed to new writes since v11, so that line
-described a frozen corpus and, on a workbench set up after v11, nothing at all. Every other
+**The `**Covers:**` line is gone, and the digest now names no writers at all.** It named the distinct
+writers of the session histories in the seven-day window, collected by opening each history file's
+`**Filed by:**` header. The merged command scans the tree once for filenames and timestamps, writes
+the activity log from that, and digests the log — it never opens a history header for its writer, so
+the line has no input whatever the window holds. (The store being closed to writes since v11 does
+not by itself empty it: a window of the last seven days still reaches files written before the cut.)
+Every other
 identity rule is unchanged: the digest is the project's, not a person's, and the `-<checkout>`
 suffix still names the checkout that ran the command rather than the author of the work inside it.
 

@@ -68,6 +68,13 @@ a command nobody types is a body that still costs bytes on a bounded surface.
   session-history file, a day-section, or a git-commit day). Two of those three were already
   day-grained and the third is a frozen store, so the loss is bounded — but the column's meaning
   changes from "sessions" to "days" and the report must say so.
+- **The `**Covers:**` line, and with it any writer attribution at all.** The digest named the
+  distinct writers of the session histories in the seven-day window, collected by opening each
+  history file's `**Filed by:**` header. The one-scan design sees filenames and timestamps, so the
+  writer half has no path into the digest — in every window, not only an empty one. Added here on
+  260916: the cost was missed at filing, and the three shipped surfaces that announced the removal
+  gave a frozen-store reason that is neither true at the cut nor the operative one
+  (`260916-0735_*_three-shipped-surfaces-give-the-covers-line-a-reason-that-is-not-the-one-that-removed-it.md`).
 
 ## Recommendation
 
@@ -78,3 +85,6 @@ the failure the change exists to remove.
 
 ---
 Answered: `260915-2309_*_merge-log-activity-into-cadence.md` `## Approach` — option 1, merge: `/fusion:cadence` writes the activity log and then digests it, always fresh, and `/fusion:log-activity` stops existing. The user put it as "nobody wants to call two commands for that", and chose it over a refresh switch and over a staleness heuristic on being shown both. Two costs were accepted with it once the byte ceiling forced a redesign rather than a concatenation: the recurring-themes column counts days instead of sessions, and the no-workbench mode goes, the merged command halting where the old one wrote an unsuffixed log; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 9d5b1e80 — `/fusion:cadence` writes the activity log then digests it; `skills/log-activity/` deleted with its baseline entry; the frozen-store exclusion, the legacy-name adoption and the no-workbench halt carried into the merged body; `SKILL_HEAD_ROOM` raised 21 911 to 24 911 on the user's ruling, logged in `README-hooks.md`. Shipped as v11.4.0.
