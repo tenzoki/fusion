@@ -66,36 +66,12 @@ describe("enumeration lint: the skill roster", () => {
     expect(dirs.length).toBeGreaterThan(10);
   });
 
-  function claudeMdDrift(skills: string[], text: string): string[] {
-    const mentioned = new Set(tokens(text));
-    const problems: string[] = [];
-    for (const s of skills) {
-      if (!mentioned.has(s)) {
-        problems.push(`skills/${s}/ exists but CLAUDE.md never mentions /fusion:${s}`);
-      }
-    }
-    for (const t of mentioned) {
-      if (!skills.includes(t)) {
-        problems.push(`CLAUDE.md mentions /fusion:${t} but skills/${t}/SKILL.md does not exist`);
-      }
-    }
-    return problems;
-  }
-
-  it("CLAUDE.md's skill list covers every skill directory, and cites no phantom skill", () => {
-    // CLAUDE.md's own line declares "that listing is the authoritative set" —
-    // a closed enumeration, so both directions are checked over the whole file.
-    expect(claudeMdDrift(dirs, read("CLAUDE.md"))).toEqual([]);
-  });
-
-  it("mutation check: a scratch skill directory would be reported", () => {
-    // toContain, not toEqual: with a REAL drift present the corpus test above
-    // already fails, and this fixture should not fail a second time over it.
-    const drift = claudeMdDrift([...dirs, "scratch-skill"], read("CLAUDE.md"));
-    expect(drift).toContain(
-      "skills/scratch-skill/ exists but CLAUDE.md never mentions /fusion:scratch-skill",
-    );
-  });
+  // RETIRED 2026-09-16: a `claudeMdDrift()` here asserted over CLAUDE.md the
+  // closed enumeration that "README-agents' skill table has exactly one row per
+  // skill directory" below already asserts in both directions, and the open-set
+  // half over CLAUDE.md is carried by "no shipped doc cites a phantom skill",
+  // whose surface list names that file. The roster passage leaves CLAUDE.md in
+  // step 8 of `260916-1126_*_implementation-human-facing-docs-leave-claude-md.md`.
 
   it("README-agents' skill table has exactly one row per skill directory", () => {
     const rows = [

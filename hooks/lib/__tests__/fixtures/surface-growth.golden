@@ -52,7 +52,7 @@
   context-manifest.test.ts 518
   declared-citation-paths.test.ts 70
   deliverable-language-lint.test.ts 136
-  derivable-enumerations-lint.test.ts 449
+  derivable-enumerations-lint.test.ts 425
   dispatch-bytes.test.ts 223
   domain-cascade-order-lint.test.ts 232
   domain-cascade.test.ts 888
@@ -101,4 +101,4 @@
   surface-growth-bound.test.ts 709
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 21814
+  total 21790
