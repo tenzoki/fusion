@@ -9,7 +9,7 @@ The active agent MUST be `fusion:orchestrator`. This skill inlines the whole of 
 
 **Setup is two prerequisites and three short steps.** Step 0 creates the workspace and writes the marker; Step 0d puts the voice profiles in place. Nothing fusion does works without those two, so they run every time.
 
-**Everything else that used to run here is a periodic check.** Ten of them, each a fact about the *installation* rather than about this session. They live in `/fusion:check`; Step 0 says which are due and Step 1 runs those.
+**Everything else that used to run here is a periodic check**, each a fact about the *installation* rather than about this session. They live in `/fusion:check`; Step 0 says which are due and Step 1 runs those.
 
 ## CRITICAL — Setup is the ONLY place a workbench is created
 
@@ -83,7 +83,7 @@ V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -1
 command -v node >/dev/null 2>&1 || { [ -f "$M" ] && grep -qF "\"plugin_version\":\"$V\"" "$M" || printf '{"setup_at":"%s","plugin_version":"%s","checks":{}}\n' "$(date -u +%Y-%m-%dT%H:%M:%S)" "$V" > "$M"; echo "checks_due=unread (no node on PATH)"; exit 0; }
 node -e '
 const fs = require("fs"); const [m, v] = process.argv.slice(1);
-const SEL = ["monitor","concurrency","assets","config","permissions","gitattributes","identity","gitignore","upstream","leftovers"];
+const SEL = ["monitor","concurrency","assets","config","permissions","gitattributes","identity","gitignore","upstream","leftovers","claude-md"];
 let o = null; try { o = JSON.parse(fs.readFileSync(m, "utf8")); } catch {}
 if (typeof o !== "object" || o === null) o = {};
 const before = JSON.stringify(o);

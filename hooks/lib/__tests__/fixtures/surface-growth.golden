@@ -15,7 +15,7 @@
   analyst.md 21032
   coder.md 12165
   consultant.md 13549
-  curator.md 39201
+  curator.md 43748
   editor.md 13156
   ontocoder.md 15875
   orchestrator.md 88843
@@ -23,7 +23,7 @@
   reconciler.md 21171
   reviewer.md 12837
   shaper.md 17017
-  total 273999
+  total 278546
 
 [skills bytes]
   archive/SKILL.md 24473
@@ -38,8 +38,8 @@
   news/SKILL.md 8766
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
-  setup/SKILL.md 19425
-  total 213678
+  setup/SKILL.md 19424
+  total 213677
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
