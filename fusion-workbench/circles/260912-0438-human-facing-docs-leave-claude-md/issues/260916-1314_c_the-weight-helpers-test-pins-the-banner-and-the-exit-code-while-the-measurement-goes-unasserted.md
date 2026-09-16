@@ -44,3 +44,21 @@ why.
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
 Cross-references: `260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md` (the same shape, on the same surface, and the surface stands at zero margin again).
+
+---
+Resolved: four cases added to `hooks/lib/__tests__/claude-md-weight.test.ts`, +77 lines, funded by a
+head-room raise the user ruled on a measured figure. One fixture serves six clauses and is stated as
+arithmetic rather than transcribed — a preamble of 11 bytes over 3 lines, a section of 36 over 5
+carrying a fenced line that looks like a heading, a section of 48 over 2, totalling 95 over 10 — so
+the rows-sum-to-the-file property falls out of two cases instead of needing a third.
+
+Each case is proved by mutation rather than asserted: reversing the row sort, printing only
+over-threshold rows, making the second pass fence-blind, cutting at the shallowest level seen at all
+rather than twice, deleting the heading-level line, dropping the no-trailing-newline correction, and
+dropping the threshold's digit check. All seven failed exactly the case that claims them, and the
+helper was restored byte-identical afterwards. The last of the seven is the clause this record showed
+was pinned only by an assertion true under its own inversion.
+
+The per-clause fixture shape was measured at roughly 25 lines dearer in duplicated scaffolding and
+buys sharper failure messages only. The record's escape hatch — a record naming which clauses stay
+unpinned — was not taken, because the user funded the assertions instead.

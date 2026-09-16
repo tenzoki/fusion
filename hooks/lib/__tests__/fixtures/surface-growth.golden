@@ -46,14 +46,14 @@
   citation-form.test.ts 352
   citation-grammar-boundaries.test.ts 230
   citation-sweep.test.ts 527
-  claude-md-weight.test.ts 131
+  claude-md-weight.test.ts 208
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
   config.test.ts 942
   context-manifest.test.ts 518
   declared-citation-paths.test.ts 70
   deliverable-language-lint.test.ts 136
-  derivable-enumerations-lint.test.ts 425
+  derivable-enumerations-lint.test.ts 476
   dispatch-bytes.test.ts 223
   domain-cascade-order-lint.test.ts 232
   domain-cascade.test.ts 888
@@ -102,4 +102,4 @@
   surface-growth-bound.test.ts 709
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 21921
+  total 22049

@@ -48,3 +48,20 @@ something other than a reviewer reading both files.
 ---
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>
 Cross-references: `260916-1310_*_the-eleventh-check-is-absent-from-setups-due-list-so-nothing-ever-makes-it-due.md` (the record whose acceptance test admits this one).
+
+---
+Resolved: the gate was built after all, +28 lines in
+`hooks/lib/__tests__/derivable-enumerations-lint.test.ts`, funded by the ruled head-room raise. This
+record was filed as the why-not, on a surface that then had no lines to give; the user funded the
+lines, so the alternative its sibling offered is taken rather than explained.
+
+The selector table in `skills/check/SKILL.md` and `const SEL` in `skills/setup/SKILL.md` are each
+parsed to a set and asserted equal. **Set equality, not order** — the table's order is a reading
+order and `SEL`'s a reporting order, and neither is contractual, so pinning order would fail on an
+edit that breaks nothing. Falsified in both directions: dropping a selector from `SEL` fails, and
+adding a table row that `SEL` does not carry fails.
+
+The deeper fix this record names — deriving `SEL` from the table so the roster is stated once — is
+still unaffordable and the reason is measured rather than assumed: `skills/` stands at 213 676
+against a budget of 213 679, three bytes, against that fix's measured 350. It would need a raise on
+a second surface, which was not asked for and not taken.

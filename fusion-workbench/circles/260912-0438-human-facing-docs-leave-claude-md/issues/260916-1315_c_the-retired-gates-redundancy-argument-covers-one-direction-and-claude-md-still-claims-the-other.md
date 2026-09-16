@@ -38,3 +38,23 @@ sentence stops claiming it — and whichever lands, the two agree in the same co
 
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+
+---
+Resolved: a gate holds the closed direction again, +23 lines in
+`hooks/lib/__tests__/derivable-enumerations-lint.test.ts`, funded by the ruled head-room raise.
+
+**This record's premise had moved and the obvious repair would have asserted something false.** The
+claim sentence left `CLAUDE.md` at `72911b86`, and that file now names 2 of the 13 skills, so
+restoring the closed enumeration over it would fail on a file that no longer promises completeness.
+The sentence sits in `README-agents.md` and still claims a gate holds the direction. The gate is
+therefore anchored to the **claim sentence**, located across the shipped-document set, requiring
+exactly one carrier and requiring that carrier's line to name every skill directory. Rewording it
+fails loudly with instructions rather than passing vacuously.
+
+The table check does not cover it, proved rather than argued: dropping one skill from the bullet
+while leaving the table complete failed only the new gate, one failure and not two.
+
+Hard-coding the destination filename was measured at 15 lines against 23. The 8 lines of difference
+are what stop the gate being outrun by the next move of the passage, which is precisely the failure
+that produced this record, so they were spent deliberately. The shipped-document set was hoisted so
+the phantom-skill check reuses it, net +1.

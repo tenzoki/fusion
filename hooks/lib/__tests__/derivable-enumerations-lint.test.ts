@@ -48,6 +48,11 @@ function skillDirs(): string[] {
     .sort();
 }
 
+/** The shipped prose surfaces that name skills: the four top-level docs and docs/. */
+const SHIPPED_DOCS = ["README.md", "README-agents.md", "README-hooks.md", "CLAUDE.md"].concat(
+  readdirSync(join(pluginRoot, "docs")).filter((f) => f.endsWith(".md")).map((f) => `docs/${f}`),
+);
+
 function libFiles(): string[] {
   return readdirSync(join(pluginRoot, "hooks", "lib"))
     .filter((f) => f.endsWith(".ts"))
@@ -66,12 +71,34 @@ describe("enumeration lint: the skill roster", () => {
     expect(dirs.length).toBeGreaterThan(10);
   });
 
-  // RETIRED 2026-09-16: a `claudeMdDrift()` here asserted over CLAUDE.md the
-  // closed enumeration that "README-agents' skill table has exactly one row per
-  // skill directory" below already asserts in both directions, and the open-set
-  // half over CLAUDE.md is carried by "no shipped doc cites a phantom skill",
-  // whose surface list names that file. The roster passage leaves CLAUDE.md in
-  // step 8 of `260916-1126_*_implementation-human-facing-docs-leave-claude-md.md`.
+  // RESTORED 2026-09-16, half of it. A `claudeMdDrift()` here asserted both
+  // directions over CLAUDE.md and was retired as redundant; the open-set half
+  // genuinely was, by "no shipped doc cites a phantom skill" below, whose
+  // surface list names every doc. THE CLOSED HALF WAS NOT, and the retirement
+  // comment's reason — that the table check below asserts it in both directions
+  // — is about a different sentence in a different place. The roster passage
+  // has since left CLAUDE.md for README-agents.md (`72911b86`), where it still
+  // says a gate holds the closed direction, so what is restored is a gate over
+  // THE SENTENCE THAT CLAIMS IT rather than over the file that used to carry it.
+  // Issue 260916-1315.
+  it("the sentence claiming every skill body is named there does name every one", () => {
+    // Anchored to the claim, not to a file: the passage moved once already and
+    // the gate did not follow it. It is also not the table check below — that
+    // gates the table, and this bullet drifted on its own once, naming no `post`
+    // while the table was complete (260908-1814).
+    const claim = /asserts the match in the other direction too/;
+    const carriers = SHIPPED_DOCS.filter((rel) => claim.test(read(rel)));
+    expect(
+      carriers,
+      "no shipped doc claims the closed direction over its own skill list — if the " +
+        "sentence was reworded, update this parser; if it was dropped, retire this check with it",
+    ).toHaveLength(1);
+    const line = read(carriers[0]).split("\n").find((l) => claim.test(l))!;
+    expect(
+      [...new Set(tokens(line))].sort(),
+      `${carriers[0]}'s roster sentence claims to name every skill body, and does not`,
+    ).toEqual(dirs);
+  });
 
   it("README-agents' skill table has exactly one row per skill directory", () => {
     const rows = [
@@ -88,17 +115,41 @@ describe("enumeration lint: the skill roster", () => {
   it("no shipped doc cites a phantom skill", () => {
     // Open-set direction only: prose may name any subset, but every name must
     // resolve to a real skill.
-    const surfaces = ["README.md", "README-agents.md", "README-hooks.md", "CLAUDE.md"];
-    for (const f of readdirSync(join(pluginRoot, "docs"))) {
-      if (f.endsWith(".md")) surfaces.push(`docs/${f}`);
-    }
     const phantom: string[] = [];
-    for (const rel of surfaces) {
+    for (const rel of SHIPPED_DOCS) {
       for (const t of tokens(read(rel))) {
         if (!dirs.includes(t)) phantom.push(`${rel} cites /fusion:${t}`);
       }
     }
     expect(phantom, "citations of skills that do not exist").toEqual([]);
+  });
+});
+
+// --- 1b. the /fusion:check selector roster ----------------------------------
+
+describe("enumeration lint: the /fusion:check selector roster", () => {
+  // The roster is stated twice: its authoring home is the selector table in
+  // `skills/check/SKILL.md`, and `SEL` in `skills/setup/SKILL.md` is a second
+  // copy that decides which checks Setup reports due. The two drifted in one
+  // commit (`c9d4013d`) with a green suite, and the eleventh selector was
+  // invisible to Setup until a reviewer read both files (260916-1310). This is
+  // fix 2 of 260916-1323, which the cheaper fix could not afford at the time.
+  //
+  // Set equality, not order: the table's order is a reading order and `SEL`'s is
+  // a reporting order, and neither is contractual, so a reorder is not a defect.
+  it("Setup's SEL array holds exactly the selectors the check table documents", () => {
+    const table = [...read("skills/check/SKILL.md").matchAll(/^\| `([a-z-]+)` \| /gm)].map((m) => m[1]);
+    expect(
+      table.length,
+      "no selector rows found — `skills/check/SKILL.md`'s table was reshaped; update the parser",
+    ).toBeGreaterThan(5);
+    const sel = read("skills/setup/SKILL.md").match(/const SEL = \[([^\]]*)\]/);
+    expect(sel, "`skills/setup/SKILL.md` no longer declares `const SEL = [...]` — update the parser").not.toBeNull();
+    expect(
+      [...sel![1].matchAll(/"([a-z-]+)"/g)].map((m) => m[1]).sort(),
+      "Setup's SEL has drifted from the selector table: a selector missing here is a check " +
+        "Setup never reports due, and one only here is a check that can never run",
+    ).toEqual([...table].sort());
   });
 });
 

@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
-// `bin/fusion-claude-md-weight` — its five contract clauses, and the only test
-// that reads it.
+// `bin/fusion-claude-md-weight` — its contract clauses, its arithmetic, and
+// the only test that reads it.
 //
 // WHAT THIS PINS, and the two things it must never become. The helper REPORTS:
 // it writes nothing and it gates nothing, so two of the assertions below are the
@@ -127,5 +127,82 @@ describe("claude-md-weight: it reports, and never gates", () => {
     expect(closing[1]).toMatch(/^Act on a finding with \/fusion:curate: /);
     // The rows carry sizes and the threshold mark, and no word about topic.
     expect(out.filter((l) => /^ {2}(over|under) /.test(l)).join("\n")).not.toMatch(/topic/i);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The division, and the figures it produces — the half this file did not reach
+// until 2026-09-16. The nine cases above assert exit statuses, banner regexes
+// and line counts, and NOT ONE of them reads a figure the helper computed, so
+// the sort could be reversed, the under-threshold rows dropped, `heading-level=`
+// deleted and the trailing-newline correction broken with all nine still green
+// (issue 260916-1314, which ran each of those mutations against a copy).
+//
+// The fixture is stated as arithmetic rather than transcribed from a run: every
+// line costs its own bytes plus its newline, so the expected rows below are
+// derived and a reader can check them without running anything.
+// ---------------------------------------------------------------------------
+
+/** 11 bytes over 3 lines: `# Doc` 6, the blank line 1, `pre` 4. */
+const PREAMBLE = "# Doc\n\npre\n";
+/** 36 bytes over 5 lines, and the fence is the point: the `##` inside it is not
+ *  a heading, so this stays ONE section instead of splitting into two. */
+const SMALL = "## Small\n```\n## not a heading\n```\ns\n";
+/** 48 bytes over 2 lines: `## Big` 7, then forty `y` and a newline. */
+const BIG = `## Big\n${"y".repeat(40)}\n`;
+/** 95 bytes over 10 lines. `#` appears once and `##` twice, so the cut is at
+ *  level 2 and everything above the first `##` is the `(preamble)` row. */
+const DIVIDED = PREAMBLE + SMALL + BIG;
+
+/** The report's rows as fields — mark, bytes, lines, heading — in printed order. */
+function rows(stdout: string): (string | number)[][] {
+  return lines(stdout)
+    .map((l) => l.match(/^ {2}(over|under) +(\d+) +(\d+) {2}(.*)$/))
+    .filter((m): m is RegExpMatchArray => m !== null)
+    .map((m) => [m[1], Number(m[2]), Number(m[3]), m[4]]);
+}
+
+describe("claude-md-weight: the division, and the figures it reports", () => {
+  it("every section is a row, largest first, marked against the threshold", () => {
+    // One assertion, six mutations: reversing the sort moves the rows; printing
+    // only the over-threshold rows drops two; reading the fenced `##` as a
+    // heading adds a fourth row and re-cuts `## Small`; cutting at the
+    // shallowest level seen at all rather than the shallowest seen twice
+    // collapses the file to one row; losing the preamble row drops the last;
+    // and any error in the per-section arithmetic moves a figure.
+    expect(rows(run("--root", scratchRoot(DIVIDED), "--threshold", "40").stdout)).toEqual([
+      ["over", 48, 2, "## Big"],
+      ["under", 36, 5, "## Small"],
+      ["under", 11, 3, "(preamble)"],
+    ]);
+  });
+
+  it("the head figures are the file itself, at the level the rows were cut at", () => {
+    // 95 = 11 + 36 + 48 and 10 = 3 + 5 + 2, so this case and the one above
+    // together pin what the helper's header promises and neither states alone:
+    // the rows sum to the file. `headings=2` counts the two `##` and not the
+    // preamble, which is why there is one more row than that number.
+    const out = lines(run("--root", scratchRoot(DIVIDED), "--threshold", "40").stdout);
+    const head = Object.fromEntries(out.filter((l) => /^[a-z-]+=/.test(l)).map((l) => l.split("=")));
+    expect(head).toMatchObject({ bytes: "95", lines: "10", headings: "2", "heading-level": "2", over: "1" });
+  });
+
+  it("a file with no trailing newline is one byte lighter, in the row that ends it", () => {
+    // The helper's most delicate arithmetic, and no other fixture reaches it:
+    // the last record has no newline to count, and the correction lands on the
+    // section holding that record rather than on the total alone.
+    const out = run("--root", scratchRoot(DIVIDED.slice(0, -1)), "--threshold", "40").stdout;
+    expect(rows(out)[0]).toEqual(["over", 47, 2, "## Big"]);
+    expect(out).toContain("bytes=94");
+  });
+
+  it("a --threshold that is not a number is a misuse, and nothing is weighed under it", () => {
+    // The exit-code case above cannot carry this, because every path here exits
+    // 0 and the assertion holds under its own inversion. Without the digit check
+    // the awk compares `$1 > "not-a-number"` as strings, every row loses, and
+    // the helper reports a clean file it never weighed.
+    const r = run("--root", scratchRoot(DIVIDED), "--threshold", "not-a-number");
+    expect(r.stderr).toContain("--threshold takes digits");
+    expect(r.stdout).toBe("");
   });
 });
