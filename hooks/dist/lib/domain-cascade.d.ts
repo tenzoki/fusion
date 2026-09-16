@@ -216,6 +216,10 @@ export declare const REACH: {
         readonly note: string;
     }, {
         readonly glob: "CLAUDE.md";
+        readonly measured: "clean";
+        readonly note: string;
+    }, {
+        readonly glob: "README-agents.md";
         readonly measured: "fires";
         readonly note: string;
     }, {

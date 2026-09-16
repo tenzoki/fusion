@@ -1021,13 +1021,26 @@ export const REACH = {
     },
     {
       glob: "CLAUDE.md",
-      measured: "fires",
+      measured: "clean",
       note:
         "A consumer by the same contract that puts `rules/` in the file set, and it is not " +
-        "scanned. It measured clean until the retired domain names joined the detector on " +
-        "2026-08-24; its agent-roster line, which names the two retired values beside the " +
-        "two live ones and the words the input list carries, now selects. That is the one " +
-        "measured cost of the widening, and it falls outside the scanned set.",
+        "scanned. That reason stands; the measurement moved. It measured clean until the " +
+        "retired domain names joined the detector on 2026-08-24, then fired on one line — its " +
+        "agent-roster line, which names the two retired values beside the two live ones and " +
+        "the words the input list carries. That line left this file for `README-agents.md` on " +
+        "2026-09-16, so the file measures clean again and the widening's one measured cost is " +
+        "the entry below rather than this one. Re-measured, not re-baselined: the line is " +
+        "unchanged and is still outside the scanned set.",
+    },
+    {
+      glob: "README-agents.md",
+      measured: "fires",
+      note:
+        "Where the agent-roster line went, and the entry above is the only reason this one " +
+        "exists: the one measured cost of the 2026-08-24 widening is a property of that line, " +
+        "not of the file holding it, so it is declared wherever the line is rather than " +
+        "dropped when the line moves. Not scanned, and not a consumer — it is the reference " +
+        "documentation for the prompts that are.",
     },
     {
       glob: "README-hooks.md",

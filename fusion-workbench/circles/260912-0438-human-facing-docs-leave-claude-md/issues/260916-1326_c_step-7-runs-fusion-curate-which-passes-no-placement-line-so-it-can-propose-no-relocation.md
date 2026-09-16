@@ -34,3 +34,15 @@ produces instead.
 Found while reading the repair's return against the plan, before the 11.5.0 tag. Nothing is broken
 in the tree: the parameter, its default and its documentation agree with each other. What disagrees
 is a plan step written before the parameter existed.
+
+---
+Resolved: option 2, and step 7 ran. The orchestrator dispatched the curator directly with
+`**Mode:** survey` and `**Placement:** on` rather than through `/fusion:curate`, which is what the
+roster row already describes as the way a placement run is asked for, and costs nothing shipped.
+Option 1 was refused on measurement: the skill-body surface stood at 3 bytes after the relocation,
+and giving the command a way to ask for placement needs more than that. The opt-in default is
+unchanged and was never in question. The acceptance test is met — the run file
+`260916-1612-curator-run.md` carries a placement classification for all seven top-level sections and
+a ledger of 22 relocation entries, all 22 approved and applied. The plan step now records the
+dispatch form it was actually run with, so a later reader does not follow the command back into the
+same gap.

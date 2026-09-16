@@ -107,13 +107,13 @@ describe("enumeration lint: the skill roster", () => {
 describe("enumeration lint: agent counts stated as closed numbers", () => {
   const n = agentNames().length;
 
-  // The digit-claim patterns the surfaces carry today. `expected` is derived,
-  // never written literally, so the check follows the tree when an agent is
-  // added or removed.
+  // The digit-claim patterns the surfaces carry today. `expected` is derived, never written literally, so the
+  // check follows the tree when an agent is added or removed. RETARGETED 2026-09-16: the first and third rows read
+  // `README-agents.md` because their sentences moved there whole — the listing bullet and the `agents/*.md` layout row left `CLAUDE.md` in step 8 of `260916-1126_*_implementation-human-facing-docs-leave-claude-md.md`, and the parser follows the passage rather than dropping the check, exactly as the failure text below instructs. NEITHER ROW WAS DROPPED AS A DUPLICATE, and that was checked against the file before either was retargeted: `README.md`'s "N specialized agents" row gates a different file, and `README-agents.md`'s "of the N prompts" row gates a different sentence in the same file, so dropping either retarget would leave the digit that moved gated by nothing. No `rel`/`re` pair is repeated, so no claim is asserted twice.
   const CLAIMS: { rel: string; re: RegExp; expected: number; what: string }[] = [
-    { rel: "CLAUDE.md", re: /\b(\d+) specialized agents\b/g, expected: n, what: "specialized-agents count" },
-    { rel: "CLAUDE.md", re: /\bThe (\d+) agent prompts\b/g, expected: n, what: "agent-prompts count" },
-    { rel: "CLAUDE.md", re: /\ball (\d+) inherit\b/g, expected: n, what: "inheriting-agents count" }, // was "the other N inherit", n - 1, until the orchestrator's `tools:` line went on 2026-09-13 and nothing stood outside the claim; parser updated rather than dropped, per the failure text below
+    { rel: "README-agents.md", re: /\b(\d+) specialized agents\b/g, expected: n, what: "specialized-agents count" }, // was CLAUDE.md until the listing bullet moved
+    { rel: "CLAUDE.md", re: /\bThe (\d+) agent prompts\b/g, expected: n, what: "agent-prompts count" }, // stayed: the Layout row's pointer sentence still carries the digit
+    { rel: "README-agents.md", re: /\ball (\d+) inherit\b/g, expected: n, what: "inheriting-agents count" }, // was "the other N inherit", n - 1, until the orchestrator's `tools:` line went on 2026-09-13 and nothing stood outside the claim; parser updated rather than dropped, per the failure text below — and retargeted off CLAUDE.md the same way when the sentence carrying it moved
     { rel: "README.md", re: /\b(\d+) specialized agents\b/g, expected: n, what: "specialized-agents count" },
     { rel: "README-agents.md", re: /\bof the (\d+) prompts\b/g, expected: n, what: "prompt count" },
   ];
@@ -320,28 +320,28 @@ describe("enumeration lint: the hooks/lib file table in README-hooks.md", () => 
   });
 });
 
-// --- 6. DEFINITION_SITES echoed in CLAUDE.md --------------------------------
+// --- 6. DEFINITION_SITES echoed in README-hooks.md --------------------------
 
-describe("enumeration lint: CLAUDE.md's echo of the path-literal lint's DEFINITION_SITES", () => {
-  it("every declared definition site is named where CLAUDE.md describes the list", () => {
+describe("enumeration lint: README-hooks.md's echo of the path-literal lint's DEFINITION_SITES", () => {
+  it("every declared definition site is named where README-hooks.md describes the list", () => {
     const src = read("hooks/lib/__tests__/path-literal-lint.test.ts");
     const arr = src.match(/const DEFINITION_SITES = \[([\s\S]*?)\];/);
     expect(arr, "path-literal-lint.test.ts no longer declares DEFINITION_SITES — update both lints").not.toBeNull();
     const sites = [...arr![1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
     expect(sites.length).toBeGreaterThan(2);
 
-    const claude = read("CLAUDE.md");
+    const host = read("README-hooks.md"); // RETARGETED 2026-09-16: the description lives in the troubleshooting table, which moved whole out of `CLAUDE.md` in step 8 of `260916-1126_*_implementation-human-facing-docs-leave-claude-md.md`. The gate follows the passage to its new home rather than being dropped; nothing here is weakened, only re-pointed.
     expect(
-      claude.includes("DEFINITION_SITES"),
-      "CLAUDE.md no longer mentions DEFINITION_SITES — if the description moved, update this check",
+      host.includes("DEFINITION_SITES"),
+      "README-hooks.md no longer mentions DEFINITION_SITES — if the description moved, update this check",
     ).toBe(true);
     const missing = sites.filter((s) => {
       const base = s.split("/").pop()!;
-      return !claude.includes(base);
+      return !host.includes(base);
     });
     expect(
       missing,
-      `CLAUDE.md describes DEFINITION_SITES but no longer names: ${missing.join(", ")} — ` +
+      `README-hooks.md describes DEFINITION_SITES but no longer names: ${missing.join(", ")} — ` +
         `its description drifted from the test's declared list`,
     ).toEqual([]);
   });
