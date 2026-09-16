@@ -40,3 +40,20 @@ a reason that holds at HEAD.
 
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+
+---
+Resolved: four sites in `hooks/lib/__tests__/config.test.ts` corrected, all line-neutral. The
+`PROJECT_SET_KEYS` doc comment and the drift case's not-compared comment now say what is true —
+`citations` is the one top-level key this repository's copy declares. Two further sites had to move
+with them: `findTopLevelKey`'s worked example named `orchestrator` for a scan that no longer looks
+for it, and the five synthetic cut-helper cases drove `cutTopLevelEntry` through a key that had left
+the file. Both were retargeted to `citations`, so all five still run both branches.
+
+The question this record raised, answered from the code rather than from the comment: the member
+rested on nothing as an exemption. `cutTopLevelEntry(copyText, "orchestrator")` returned its input
+unchanged, because `fusion.json` lost the container in `e6a0dc67`, and its one live consumer was the
+five synthetic cases, which needed a key on the list and had no other reason to pick that one. It was
+removed rather than left standing, since a member nothing exempts is a standing permission to declare
+an advisory-earning container unseen. That removal goes past this record's own acceptance test, which
+asked only for the two false statements; it was reported rather than made silently, and it is named
+in the commit.

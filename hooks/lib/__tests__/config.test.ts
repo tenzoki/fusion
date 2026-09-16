@@ -700,13 +700,13 @@ function projectSeededWithTemplate(): string {
  * The top-level containers of `fusion.json` this repository's own copy may
  * differ from the template on, which the drift check below cuts out of both
  * sides before comparing. `citations` is documented for a project to set
- * (`templates/fusion.json`, `_citations`). `orchestrator` is NOT: both of its
- * leaves are retired, and it stays on this list only because this repository's
- * copy still declares `maxTurns` — cut so the comparison holds every shared
- * documentation note byte for byte instead of failing on that one line. The ONE
- * place either exemption is stated.
+ * (`templates/fusion.json`, `_citations`), and it is the ONLY member.
+ * `orchestrator` was the second until 2026-09-16: both of its leaves are
+ * retired, this repository deleted the container from its own copy in
+ * `e6a0dc67`, and a member no file declares is a standing permission to declare
+ * it unseen. The ONE place the exemption is stated.
  */
-const PROJECT_SET_KEYS = ["orchestrator", "citations"] as const;
+const PROJECT_SET_KEYS = ["citations"] as const;
 
 /** Index just past the closing quote of the JSON string starting at `start`. */
 function endOfString(text: string, start: number): number {
@@ -730,8 +730,8 @@ function nextNonSpace(text: string, from: number): number {
 /**
  * Index of the opening quote of `key` where it is used as a TOP-LEVEL key, or
  * -1. The scan tracks string and nesting state, so the key's name occurring
- * inside one of the documentation notes — `_retired` names `orchestrator`
- * three times — is not mistaken for a declaration of it.
+ * inside one of the documentation notes — `_override` spells `"citations"` in
+ * its own worked example — is not mistaken for a declaration of it.
  */
 function findTopLevelKey(text: string, key: string): number {
   const token = JSON.stringify(key);
@@ -818,13 +818,13 @@ function withoutProjectSetKeys(text: string): string {
 describe("the drift check's cut helper, on every entry position", () => {
   // Synthetic inputs, so both branches of `cutTopLevelEntry` run whatever
   // shape the two real files take (issue 260814-2128).
-  const V = '{ "maxTurns": 5 }';
+  const V = '{ "extraPaths": ["a/*.go"] }';
   const cases: [string, string, string][] = [
-    ["first", `{\n  "orchestrator": ${V},\n  "a": 1\n}`, `{\n  "a": 1\n}`],
-    ["middle", `{\n  "a": 1,\n  "orchestrator": ${V},\n  "b": 2\n}`, `{\n  "a": 1,\n  "b": 2\n}`],
-    ["last", `{\n  "a": 1,\n  "orchestrator": ${V}\n}`, `{\n  "a": 1\n}`],
-    ["only", `{\n  "orchestrator": ${V}\n}`, `{\n}`],
-    ["in a string value, left alone", `{\n  "_n": "the orchestrator key",\n  "a": 1\n}`, `{\n  "_n": "the orchestrator key",\n  "a": 1\n}`],
+    ["first", `{\n  "citations": ${V},\n  "a": 1\n}`, `{\n  "a": 1\n}`],
+    ["middle", `{\n  "a": 1,\n  "citations": ${V},\n  "b": 2\n}`, `{\n  "a": 1,\n  "b": 2\n}`],
+    ["last", `{\n  "a": 1,\n  "citations": ${V}\n}`, `{\n  "a": 1\n}`],
+    ["only", `{\n  "citations": ${V}\n}`, `{\n}`],
+    ["in a string value, left alone", `{\n  "_n": "the citations key",\n  "a": 1\n}`, `{\n  "_n": "the citations key",\n  "a": 1\n}`],
   ];
   for (const [label, input, expected] of cases) {
     it(`cuts the ${label} entry exactly`, () => {
@@ -881,9 +881,9 @@ describe("the seeded template declares inheritance and declares nothing", () => 
     // container this repository's own copy declares. `templates/fusion.json`'s
     // own `_citations` note tells every project that this file is the only place
     // to declare its citation-bearing paths, and this repository is such a
-    // project; its copy also still carries `"orchestrator": {"maxTurns": N}`,
-    // which is now a retired leaf it has not yet deleted. Byte identity cannot
-    // tell either apart from accidental drift — a documented change and a stray
+    // project. `citations` is the one top-level key its copy declares and the
+    // one member of PROJECT_SET_KEYS. Byte identity cannot tell a documented
+    // declaration apart from accidental drift — a documented change and a stray
     // edit are the same bytes — so the check keeps the question it CAN decide
     // and drops the one it cannot. Issue 260814-2022, option 1.
     const templateText = readFileSync(TEMPLATE, "utf-8");

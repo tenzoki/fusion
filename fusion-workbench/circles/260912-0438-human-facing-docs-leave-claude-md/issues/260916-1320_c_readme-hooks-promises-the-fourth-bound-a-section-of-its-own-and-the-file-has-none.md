@@ -35,3 +35,17 @@ citation gate resolves.
 
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+
+---
+Resolved: the pointers were corrected rather than the section written, and the choice was made on
+where the content lives. `hooks/lib/__tests__/rules-emission-golden.test.ts` carries a long banner on
+the dispatch-path bound — what it measures, why it is not the core bound, the thirteen-day replay,
+why its head-room is zero, why the baseline is a fixture — and `fixtures/dispatch-path.baseline`
+carries its own header with the eleven rows and the arming provenance. A README section would have
+been a second home for figures that move, which is the failure this very section's last paragraph
+records about the head-room raise log. So `### Growth bounds on the shipped text` now names both
+authoring sites and states that it neither restates them nor lists the bound in its table, because
+it measures a rate of growth while that bound measures the level one dispatch reads. The stale
+"below" is gone; the two later mentions already named the test file and needed nothing. The two new
+path tokens moved the reference-resolution pin 1603 to 1605, attributed by in-place swap with no
+residual and no interaction, appended to the existing comment line.

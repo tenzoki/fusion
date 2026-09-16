@@ -29,3 +29,12 @@ stating a figure.
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
 Cross-references: `260916-0734_*_the-head-room-raise-log-states-a-surface-total-and-two-margins-that-no-committed-tree-holds.md` (the same section, the same class, cleared in this range).
+
+---
+Resolved: `README-hooks.md`, the second `TEST_LINE_HEAD_ROOM` raise entry, now reads 81 stripped
+lines and 48 over rather than 84 and 51, and carries the decomposition inline — 131 total, 23 blank,
+24 opening `//`, 3 block-comment lines — so the figure is derived where it stands instead of
+asserted. That is `rules/critical-stance.md` §5 applied to the correction itself, which is the same
+norm the miscount broke. The figures were re-derived against the committed file rather than copied
+out of this record, on the principle that a correction repeating an unchecked number is the defect
+a second time.

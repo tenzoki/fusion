@@ -134,9 +134,14 @@ export declare const OPEN_ISSUE_RE: RegExp;
 /** A decision carrying `_o_` or `_a_` — Grounding-Stand, per the wide reading. */
 export declare const LIVE_DECISION_RE: RegExp;
 /**
- * The portfolio briefing, at the workbench root. Class L since 2026-08-23, so
- * it is present in the checkout that generated one and in no other; the
- * predicate admits it either way and a walk judges it only where it exists.
+ * The portfolio briefing, at the workbench root. **Nothing writes one at this
+ * version**: the Circle portfolio and the `playmaker` that ranked it went at
+ * v11. The constant stays because a `portfolio.md` left in a checkout from
+ * before that removal is still a live record where it sits, and admitting a
+ * filename nothing produces costs nothing. Class L since 2026-08-23, so it was
+ * never carried by git and was present in the generating checkout and in no
+ * other; the predicate admits it either way and a walk judges it only where it
+ * exists.
  */
 export declare const PORTFOLIO = "portfolio.md";
 /**

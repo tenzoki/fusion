@@ -34,3 +34,12 @@ one at this version and why the constant stays, in the form its sibling in
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
 Cross-references: `260910-2146_*_five-deleted-agents-are-still-named-as-live-in-twelve-shipped-files.md` (the same sweep, one instance below its file set).
+
+---
+Resolved: the `PORTFOLIO` doc comment in `hooks/lib/citation-corpus.ts` now leads with the fact —
+nothing writes a portfolio briefing at this version, the Circle portfolio and the `playmaker` that
+ranked it went at v11 — and then says why the constant stays: a `portfolio.md` left in a checkout
+from before the removal is still a live record where it sits, so the gate judging it there is
+correct rather than leftover. Same shape as the sibling comment in `hooks/lib/staging-drift.ts`.
+`isLiveRecord` is untouched; this was a comment defect and the behaviour behind it is right, which
+was checked rather than assumed. `npm run build` ran, so the compiled copy moved with the source.
