@@ -37,3 +37,16 @@ that path in every dispatch it composes.
 Found while reviewing step 2's return. The executor's report described its own wording as "the
 placement criterion your emitted rules state"; the file does not say that, and the looser phrasing
 it did write is what left the gap visible rather than false.
+
+---
+Resolved: option 2. `agents/curator.md` now cites `$FUSION_PLUGIN_ROOT/rules/context-lean-claude-md.md`
+`## How to tell "always-on" from "on-demand"` at the site of the relocation instruction, and says in the
+same sentence that `bin/fusion-rules` emits it to no agent, so the curator opens it rather than assuming
+Setup already loaded it. The section anchor rather than the file alone, because that heading is the
+criterion; the file's other sections are the manifest convention. Options 1 and 3 were both refused on
+measurement rather than taste: emitting the rule charges 12 612 bytes to every curator dispatch whether
+or not the run judges placement, and the skill-body surface had 2 bytes of room. Cost: +355 bytes on
+`agents/curator.md`, leaving 49 666 under the `agents/` bound and 24 086 on the `curator` dispatch path;
+the reference-resolution pin moved to `{ paths: 1570, anchors: 242, stampBare: 11 }`, appended to the
+existing `BASELINE` comment line so the hook-test line surface stayed put, and the delta was attributed
+to this one sentence by restoring HEAD's file in place with every other change standing.

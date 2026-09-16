@@ -340,6 +340,8 @@ One block per proposed change:
 
 **A relocation carries no evidence tier.** The value `relocation` on the tier line says that the entry has none; it does not name a fourth tier, and you never invent one. The three tiers grade evidence that a statement is **false**, and a relocation makes no claim about truth — the passage is as true at the destination as it was at the source, and what is being judged is where it belongs. Putting a placement judgement on a scale built for a falsity judgement would be a category error, so the citation line of a relocation names the placement criterion the passage was judged against and the destination it is going to, never evidence that something is false.
 
+**The criterion is authored in `$FUSION_PLUGIN_ROOT/rules/context-lean-claude-md.md` `## How to tell "always-on" from "on-demand"`, and `bin/fusion-rules` emits it to no agent** — it is not in the set you read at Setup step 2, so open it from the plugin root before you judge a placement. The prefix is load-bearing for the reason Setup step 5 states.
+
 Ids are `L01` upward, assigned by the survey pass and written into the file, so per-entry approval survives a gate prompt that never shows the ledger.
 
 **A candidate carries the same shape** with `candidate` in place of the consequence group, plus one line saying why it is a candidate (no citation, an unreadable source, an open defect contradicting it, or a Tier 3 finding that cannot name a stop-date and a successor). **A candidate is never offered for approval and is never applied.**
