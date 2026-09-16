@@ -78,17 +78,19 @@
 # ---------------------------------------------------------------------------
 # How the file is divided
 #
-# By ONE heading level, picked once for the whole file: the shallowest level
-# with at least two headings, falling back to the shallowest present where no
-# level has two. That is what skips a document title — an H1 that appears once —
-# without naming it as a special case. The fallback is coarse by construction: a
-# file whose every heading is unique divides at its first one, so it can come
-# back as a single row. `heading-level=` is printed for exactly that reason, so
-# the reader sees which level the rows were cut at instead of inferring it.
-# A section is a heading plus everything under it up to the next heading of
-# that same level, which is the unit
-# `rules/context-lean-claude-md.md` `### Step 1 — divide the file by heading, before judging anything`
-# fixes before anything is judged. Lines inside a ``` fence are not headings.
+# By ONE heading level, picked once for the whole file. THE RULE THAT PICKS IT
+# IS NOT RESTATED HERE, and a second statement of it here would be the defect
+# this header used to carry: it is authored in
+# `rules/context-lean-claude-md.md` `### Step 1 — divide the file by heading, before judging anything`,
+# and this program implements that section. Read it there before changing the
+# awk below, and if code and rule ever disagree the rule is right.
+#
+# In implementation terms: a first pass counts headings per level, outside ```
+# fences; the second cuts at the shallowest level the first pass saw twice,
+# falling back to the shallowest it saw at all. `heading-level=` is printed so
+# the reader sees which level the rows were cut at instead of inferring it, and
+# everything above the first heading of that level is the `(preamble)` row,
+# which is why the rows sum to the file.
 #
 # The root is the working directory unless `--root` names another. Deliberately
 # NOT the workbench root the other helpers walk up to: this program has to

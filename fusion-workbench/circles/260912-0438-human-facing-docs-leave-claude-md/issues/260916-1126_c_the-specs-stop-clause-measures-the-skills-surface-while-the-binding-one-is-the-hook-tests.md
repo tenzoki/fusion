@@ -10,3 +10,16 @@ Consequence: C4's check cannot ship with a test, and C5's parser retargets canno
 ---
 **Filed by:** planner, Kai Stalmann <ks@qantr.com>
 Cross-references: 260916-1126_*_implementation-human-facing-docs-leave-claude-md.md (which carries the missing stop clause), 260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md (the same surface, an earlier instance).
+
+---
+Resolved: `## Stops when` in `260916-1058_*_spec-human-facing-docs-leave-claude-md.md` gains a bullet
+naming the hook-test line surface as the binding one, with its figure stamped to the commit it was
+measured at — at `git:e8b455d0`, 21 921 lines against a budget of 21 921, floor 19 228 plus head-room
+2 693, no margin. The stamp is not decoration: that margin read 9, then 33, then 0 in the course of
+one day, so an unstamped number there is false within the hour.
+
+The bullet says what happened rather than repairing a prediction. The work met this bound as a stop,
+the shortfall was measured at 98 lines rather than estimated, and the user ruled the head-room raise
+2 595 to 2 693 over hunting a cut of that size elsewhere or shipping the helper untested. A spec
+amended after the fact is worth more as the record of what actually bound the work. Nothing else in
+the spec was touched.

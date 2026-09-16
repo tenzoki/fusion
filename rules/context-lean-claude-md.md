@@ -145,16 +145,45 @@ and so that neither of them needs to open an agent prompt to do it.
 
 ### Step 1 — divide the file by heading, before judging anything
 
-Split the file at its headings. Use `## ` where that is the file's top heading
-level, `### ` where the file's headings start one level deeper: pick the file's
-top level once, and use that one level for the whole file. A heading, together
-with everything under it up to the next heading of the same level, is **one
-passage**. The passage is the unit you classify — not a sentence lifted out of
-one, and not two sections merged because they read as related.
+Split the file at its headings, by **one heading level, picked once for the
+whole file**. Pick that level by counting, not by naming it:
+
+1. Count the headings at each level — `# `, `## `, `### ` and deeper — ignoring
+   any line inside a fenced code block, which is code and not a heading.
+2. Take the **shallowest level that has at least two headings**. The whole file
+   divides at that level.
+3. Where no level has two, take the **shallowest level present at all**. A file
+   whose every heading is unique then divides at its first heading and can come
+   back as a single passage. That fallback is coarse by construction, and it
+   still gives every reader the same division.
+
+A heading at the chosen level, together with everything under it up to the next
+heading of that same level, is **one passage**. Whatever stands above the first
+heading of that level is a passage too — the file's **preamble** — so the
+passages sum to the file with nothing left over.
+
+Counting is what settles the two cases that naming "the file's top level" gets
+wrong. A file opening with a single `# ` document title has no second `# `, so
+as soon as any deeper level carries two headings the count passes that title
+over — with no special case for document titles — and leaves it, and whatever
+follows it, in the preamble. fusion's own `CLAUDE.md` is that file and divides
+at `## `. A file carrying one `## ` and three `### ` divides at `### `, which
+is the unit its reader actually works in, where "the top level" would hand back
+one passage holding the whole file.
+
+The passage is the unit you classify — not a sentence lifted out of one, and
+not two sections merged because they read as related.
 
 Fixing the unit first is what makes the answer repeatable. Two readers who
 divide a file differently are not disagreeing about the criterion; they are
 answering different questions, and their two answers cannot be compared at all.
+
+**This section is where that division is authored, and what applies it restates
+none of it.** `bin/fusion-claude-md-weight` implements exactly the rule above
+and prints the level it picked as `heading-level=`, so a reader sees which level
+the rows were cut at instead of inferring it; `agents/curator.md` classifies
+placement per passage as divided here. Change the division in one of those and
+it is a defect there, not a second answer.
 
 **The heading settles the division. It does not settle the judgement.** Whether
 a passage is bound to a topic is a property of the work a reader is doing, not a
