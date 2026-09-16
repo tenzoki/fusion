@@ -150,13 +150,14 @@ flowchart TD
    - Endpoint: `/fusion:check --only claude-md` runs the helper and reports; `npm test` is green, the `skills/` surface inside its budget.
    - Dependencies: step 3.
 
-5. **C4c — the helper's test, and what pays for its lines**
+5. [DONE] **C4c — the helper's test, and what pays for its lines**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/claude-md-weight.test.ts` (new)
    - Changes: cases for the five contract clauses of step 3, each against a scratch root rather than this repository's own `CLAUDE.md`, on the separation `plan-size.test.ts` and `plan-stopping-section-lint.test.ts` both make.
    - **The line budget is nine.** A new file with no baseline entry contributes its whole size as growth. What pays: the lines step 6 frees by retiring two `CLAUDE.md`-specific assertions in `derivable-enumerations-lint.test.ts`, estimated at about 31 lines and **measured at the step, not trusted from here**. If the measured free lines plus the nine do not cover the test, **stop and ask for a head-room raise on `hook-tests`**, naming the shortfall. Do not cut reasoning out of another test file to pay for this one, and do not edit `TEST_LINE_HEAD_ROOM` or any baseline.
    - Endpoint: the five clauses are pinned by a test, and `npm test` is green with the `hook-tests` surface inside its budget — or the step stopped at the gate above with the shortfall named.
    - Dependencies: step 3, and ordered after step 6's cut is measured.
+   - **Landed 2026-09-16 at the gate this step names, and the gate fired.** The budget was 33 lines, not the nine projected here: step 6's first bullet had already landed and freed 24, not the 31 estimated. The test is 131 lines, so the shortfall was 98. It was measured rather than estimated — the file was written in full and run green before anything was asked for — and it does not close by compression: stripped of every comment and blank line it is still 84 lines, which is 51 over. The executor stopped and named the shortfall, as this step told it to. **The user ruled the head-room raise**, shown that figure and the two alternatives (hunt a 98-line cut elsewhere first, or land `bin/fusion-claude-md-weight` untested): `TEST_LINE_HEAD_ROOM` 2 595 -> 2 693, spent to the line, no baseline moved. The account is in `README-hooks.md` `### Growth bounds on the shipped text`, the single authoring home for these raises; the constant carries one line naming the event and no second copy. The reference-resolution pin moved 1560 -> 1565, all five owed by `README-hooks.md`, re-approved on the existing `BASELINE` line. The surface now stands at zero margin, so the next line added anywhere in the suite turns the suite red.
 
 6. [IN PROGRESS] **C5 — every gate that reads `CLAUDE.md` follows its text or the text stays**
    - Executor: `coder`
