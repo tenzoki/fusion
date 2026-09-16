@@ -152,10 +152,13 @@ export declare const PORTFOLIO = "portfolio.md";
  * that ran that migration, and a blocking gate over a rollback copy has no
  * honest remedy. The pair is authored in `rules/fusion-workbench-conventions.md`
  * ("Two legacy stores are absent from this tree on purpose"), and
- * `skills/log-activity/SKILL.md:89` is the precedent this list follows.
+ * `skills/cadence/SKILL.md` `### 3. Scan git and the workbench tree — once` is
+ * the precedent this list follows — cited by section rather than by line,
+ * because a line number is exactly what rotted here when the activity-log body
+ * that held the list merged into that one.
  *
  * IT TAKES THREE OF THAT PRECEDENT'S FOUR ENTRIES. `stilwerk/` is on the
- * activity-log's list under that skill's own criterion — configuration rather
+ * activity scan's list under that body's own criterion — configuration rather
  * than activity. It is not a frozen copy of records: it holds fixed-name voice
  * profiles, no `.md` at all, and no path under it can match a predicate here.
  * Carrying it would be an exclusion with no reason of this predicate's own.

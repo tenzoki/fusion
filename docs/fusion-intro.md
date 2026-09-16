@@ -123,7 +123,7 @@ Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen,
 
 **Committen und pushen, sonst nichts** — in sinnvollen Splits, unter dem Commit-Lock. Es dispatcht keinen Agenten, legt keine Issues an, archiviert nichts, schreibt kein Aktivitätslog und fasst keine normative Fläche an. Optionen: `--dry-run`, `--no-push`.
 
-Bis v11 war das eine Pipeline aus acht Schritten mit einem Gate. Die übrigen Schritte sind jetzt je ein eigenes Kommando, das man tippt, wenn man es will: `/fusion:reconcile`, `/fusion:archive`, `/fusion:log-activity`, `/fusion:curate`, `/fusion:post` (Abschnitt 10).
+Bis v11 war das eine Pipeline aus acht Schritten mit einem Gate. Die übrigen Schritte sind jetzt je ein eigenes Kommando, das man tippt, wenn man es will: `/fusion:reconcile`, `/fusion:archive`, `/fusion:curate`, `/fusion:post` (Abschnitt 10). Das Aktivitätslog gehört seit v11.4 zu `/fusion:cadence`.
 
 ## 6. Zeitkosten und Aufräumarbeiten
 
@@ -138,7 +138,7 @@ Bis v11 war das eine Pipeline aus acht Schritten mit einem Gate. Die übrigen Sc
 **Aufräumarbeiten, die dazugehören:**
 
 - **Archivierung:** `/fusion:archive` verschiebt terminale Work Items und terminale Marker aus `shared/` nach `fusion-workbench/archive/` und rollt das Guard-Event-Log unter datiertem Namen dorthin. Tier 2 nimmt gealterte Reviews dazu, Tier 3 gealterte History (Standardalter 14 Tage, z. B. `tier-3 21d`). Archivieren verschiebt, löscht nie.
-- **`/fusion:cadence`:** liest Aktivitätslog, Session-Histories und git und schreibt eine Übersicht (gestern, letzte 7 Tage, wiederkehrende Themen) nach `shared/memos/cadence-<checkout>.md`. Wer das zugrundeliegende Log frisch will, lässt vorher `/fusion:log-activity` laufen.
+- **`/fusion:cadence`:** schreibt zuerst das Aktivitätslog dieses Checkouts aus git und dem ganzen Workbench-Baum, liest es dann zurück und schreibt eine Übersicht (gestern, letzte 7 Tage, wiederkehrende Themen nach Anzahl der Tage) nach `shared/memos/cadence-<checkout>.md`. Das Log ist damit immer frisch; ein Vorlauf entfällt.
 
 Ein Hinweis zur Einordnung, als Beobachtung und nicht als Messung dieses Dokuments: die Buchhaltung (Setup, Reconcile, Reviews, Cleanup) macht einen großen Teil der Sitzungszeit aus. Die inkrementellen Mechanismen seit v10.8.1 sind die Antwort darauf.
 
@@ -217,10 +217,9 @@ Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung fes
 | `/fusion:cleanup` | Sitzungsende: committen und pushen, sonst nichts |
 | `/fusion:reconcile` | Tracking-Dateien gegen den Code abgleichen; liefert das Coherence-Verdikt |
 | `/fusion:archive` | Terminale Artefakte nach `archive/` verschieben |
-| `/fusion:log-activity` | Das Aktivitätslog dieses Checkouts schreiben |
 | `/fusion:curate` | `CLAUDE.md` und die Regeldateien abgleichen — das eine Gate |
 | `/fusion:post` | Eine Nachricht für das nächste Checkout hinterlassen |
-| `/fusion:cadence` | Was ist passiert (gestern, 7 Tage, wiederkehrend) |
+| `/fusion:cadence` | Aktivitätslog schreiben und daraus: was ist passiert (gestern, 7 Tage, wiederkehrend) |
 | `/fusion:news` | Was ein anderes Checkout hinterlassen hat, gelesen vor dem Pull |
 | `/fusion:memo` | Memo, Aufgabe oder Idee ablegen |
 | `/fusion:help [topic]` | Selbstauskunft |

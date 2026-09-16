@@ -1,40 +1,36 @@
 ---
-description: Digest the project's session logs, activity log, and git history into ranked lists of recent and recurring topics. Use when the user asks "what have I been working on", "what did I do yesterday", "what are the recurring themes", or "show my cadence".
+description: Write this checkout's activity log from git and the whole workbench tree, then digest it into ranked lists of recent and recurring topics. Use when the user asks "what have I been working on", "what did I do yesterday", "what are the recurring themes", or "show my cadence".
 argument-hint: ""
-allowed-tools: [Bash, Read, Write]
+allowed-tools: [Bash, Read, Glob, Grep, Write, Edit]
 ---
 
-# /fusion:cadence — analyse logs and report the work cadence
+# /fusion:cadence — log the activity, then report the cadence
 
-When the user invokes `/fusion:cadence`, read the project's log sources, identify the topics worked on, and write a digest with **three ranked lists** to `cadence-$CO.md` in the workbench's memo store:
+Two halves in one pass, and the second reads what the first wrote.
 
-1. **Topics since yesterday** — what was touched from yesterday up to now. On a Monday, "yesterday" is a Sunday, so this collapses Friday + Saturday + Sunday into one bucket (the weekend's last working stretch).
-2. **Topics of the last 7 days** — what the recent work has been about.
-3. **Recurring themes by churn** — the themes that keep reappearing across the whole history, ranked by how many distinct sessions they show up in.
+**A. The record.** Scan git and the whole workbench tree; create or refresh `activity-log-$CO.md` in the **project root**, where `rules/fusion-workbench-conventions.md` `## Filename Patterns` puts it and where it stays.
 
-**Scope — a project digest, saved per checkout.** The three lists cover every session history in reach, whoever wrote it. The `-$CO` in the filename names the checkout that ran the digest, not the author of the work inside it, so two checkouts of one project produce two files holding the same project. Do not filter the gathering step by author. One section is not project-wide, step 7b's session-flow metrics, which read this checkout's own event lines; the report labels that line and names the writers the rest of it covers.
+**B. The digest.** Read that record back and write `cadence-$CO.md` to `$OUT_MEMO` with **three ranked lists**: topics **since yesterday** (on a Monday "yesterday" is a Sunday, so Fri + Sat + Sun collapse into one bucket), topics of the **last 7 days**, and **recurring themes by churn** over the whole history.
 
-This is an **analysis** skill: you read the logs and identify topics by understanding them, not by keyword-matching. A topic is a short, human-readable theme label you assign (for example "workbench layout restructure", "Plane bridge seeding", "guard blocker on skills"). Two log entries about the same thing in different words are the **same** topic — collapse them.
+**The churn column counts days, not sessions.** It counted sessions while cadence gathered its own sources; it now ranks over the record's `## High-level arc`, one themed line per day. Write "days" in the column header and say so in `## Notes`, rather than leaving a reader who remembers the old unit to infer the change from a number that moved.
+
+**Scope — a project record and a project digest, saved per checkout.** Both cover every writer's work. The `-$CO` suffix names the checkout that ran the command, not the author of the work inside, so two checkouts of one project produce two files holding the same project; do not filter by author. Step 8b's metrics are the one section that is not project-wide, and the report labels that line.
 
 ## Process
 
-### 0. Resolve the workbench and the stores
+### 0. Workbench, stores, keys
 
-Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero, halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path, so every later step anchors at the project root.
+Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. **If it exits non-zero, halt** and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* There is no workbench-less mode; a git-only log written into whatever directory the user happened to stand in is what this halt gives up.
 
-Then resolve this skill's stores:
+Otherwise `cd` to the printed path, so every later step anchors at the project root, and resolve the stores:
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" cadence
 ```
 
-Read `WORKBENCH` (absolute), `OUT_MEMO` (where the report goes) and `SCAN_HISTORY` (where the session histories are read from) out of the output. `fusion-paths` takes the name of the consumer asking, and a skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`); this file's key set is read out of this file, which is why naming `$OUT_MEMO` and `$SCAN_HISTORY` here is what makes the resolver emit them.
+Read `WORKBENCH` (absolute), `OUT_MEMO` (where the digest goes) and `SCAN_HISTORY` (which directory holds session histories). `fusion-paths` reads a consumer's key set out of its own prompt and a skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`), so naming the three keys here is what makes the resolver emit them. On a non-zero exit read the code (full table at that heading → Exit codes): **exit 1** — no workbench above `pwd`, halt as above; **exit 4** — a bug in `fusion-paths` rather than in the user's workbench, so report it and send them nowhere in it to repair anything.
 
-On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
-
-- **Exit 1** — no workbench above `pwd`. Tell the user to run `/fusion:setup` at the project root first.
-
-### 1. Date and checkout
+### 1. This checkout
 
 ```bash
 I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true
@@ -42,59 +38,42 @@ N="$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name"; [ -x "$N" ] && "$N" resolve "$
 date +"%Y-%m-%d %H:%M"
 ```
 
-- `$CO` is that run's `CHECKOUT=`, never `$USER`; rename a legacy `-$USER` file onto it, per `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
+- `$CO` is that run's `CHECKOUT=`, never `$USER`; both files are keyed by it.
+- **Adopt a legacy `-$USER` log.** Rename `activity-log-$USER.md` onto `activity-log-$CO.md` when this checkout's `$USER` is its suffix and nothing stands at the new name, and report the rename; in every other case leave the file and name it in the report. Merge nothing, delete nothing. Those are the conditions `rules/fusion-workbench-conventions.md` `## Filename Patterns` sets for the other personal logs, and cadence writes this log now, so cadence adopts it.
 - `$CO_LABEL` is the `alias=` line the second call prints. Exit 3 with nothing on stdout is an unregistered checkout and the ordinary case; a missing helper is the `[ -x ]` branch. On either, `$CO_LABEL` is the hex `$CO` itself. Never substitute a name.
-- Today's date (from `date`, never from your own sense of "now" — your internal clock runs in UTC and will be off by the local offset) anchors the 7-day window.
+- Today's date comes from `date`, never from your own sense of "now" — your internal clock runs in UTC and will be off by the local offset.
 
-### 2. Compute the time windows
+### 2. The two windows and the high-water mark
 
-Two windows anchor the recent lists. Compute both with `date` — never in your head.
+Compute all of it with `date` and `grep`, never in your head.
 
 ```bash
-today=$(date +%Y-%m-%d)                                    # window end (now / "until currently")
-dow=$(date +%u)                                            # today's weekday: 1=Mon … 7=Sun
-
-# 7-day window start
+today=$(date +%Y-%m-%d)
+dow=$(date +%u)                                            # 1=Mon … 7=Sun
 week_start=$(date -v-7d +%Y-%m-%d 2>/dev/null || date -d '7 days ago' +%Y-%m-%d)
-
-# "yesterday" window start. Yesterday is a Sunday exactly when today is Monday (dow=1);
-# in that one case reach back to Friday so Fri+Sat+Sun collapse into a single bucket.
-if [ "$dow" -eq 1 ]; then back=3; else back=1; fi          # Mon → back to Fri, else → yesterday
+# Yesterday is a Sunday exactly when today is Monday (dow=1); in that one case
+# reach back to Friday so Fri+Sat+Sun collapse into a single bucket.
+if [ "$dow" -eq 1 ]; then back=3; else back=1; fi
 yday_start=$(date -v-"${back}"d +%Y-%m-%d 2>/dev/null || date -d "${back} days ago" +%Y-%m-%d)
-
 [ "$back" -eq 3 ] && weekend="yes (Fri–Sun)" || weekend="no"
-echo "today=$today  week_start=$week_start  yday_start=$yday_start  weekend_collapsed=$weekend"
+# The newest date already logged. Empty when no log exists yet.
+SINCE="$(grep -oE '^## [0-9]{4}-[0-9]{2}-[0-9]{2}' "activity-log-$CO.md" 2>/dev/null | sort | tail -1 | cut -c4-)"
+echo "today=$today week_start=$week_start yday_start=$yday_start weekend=$weekend since=${SINCE:-none}"
 ```
 
-- **Recent (7-day) window:** `[week_start, today]` inclusive.
-- **Yesterday window:** `[yday_start, today]` inclusive — "the day before, up to now". When today is Monday, `yday_start` is the preceding **Friday**, so Friday, Saturday and Sunday are reported together. Otherwise `yday_start` is plain yesterday.
+Use the printed values literally: **recent window** `[week_start, today]` and **yesterday window** `[yday_start, today]`, both inclusive.
 
-Use the printed values literally.
+**`$SINCE` bounds the scan, and that grep is the whole read of it** — do not read the log into context to find it. The dates to process are **every date after `$SINCE` with activity, plus `$SINCE` itself**: a mid-day run may have logged that date incomplete, and skipping it on its existing header silently drops the rest of that day's work. Every logged date older than `$SINCE` is complete and MUST NOT be re-processed. An empty `$SINCE` means there is no log yet: build it over every date that has activity.
 
-### 3. Gather the log sources
+### 3. Scan git and the workbench tree — once
 
-Collect every available source. For each source record, per entry: a **date**, the **text** to read for topics, and a **source code** (legend below).
+Collect timestamped items; record a timestamp, a topic, and a **source code** for each. The code names the artifact's *kind*, and the kind is the basename of the directory the file sits in.
 
-**Source legend:**
+**Codes:** `g` git commits · `h` session history · `p` specs and plans · `i` issues · `d` decisions · `r` reviews · `a` analyses · `n` investigations · `t` consultations · `b` backlog entries · `w` workbench root-level files. `o` (ontology reviews) and `c` (code reviews) are **retired but still readable**, from days logged before v4 when the review kinds had a directory each: leave those rows alone, write `r` for new ones, and when a log's own legend predates v4 add the `r` row while keeping `o` and `c` listed as historic — deleting them strands the rows using them.
 
-| Code | Source | Where |
-|------|--------|-------|
-| `h` | fusion session histories — a **frozen** corpus, see below | every directory in `$SCAN_HISTORY` (workbench-relative — prefix with `$WORKBENCH`); every writer's, unfiltered |
-| `a` | shared activity log | `activity-log-$CO.md` — check **both** the project root and `$WORKBENCH` |
-| `g` | git commit days | `git log` (only if `.git` is present) — a day's commits form **one** unit, not one each |
+**a) Git commits** (`g`): `git log --format="%ai|%s" --since="${SINCE:-30 days ago}"`, parsed for date, time and subject. `$SINCE` bounds the read and covers a log stale for over 30 days, which a fixed window missed.
 
-**The `h` source is frozen: nothing writes a session log any more**
-(`rules/fusion-workbench-conventions.md` `## Session history`), so its newest file is the last
-there will be, and coverage past that cut is nil. **Say so** in `**Sources scanned:**` and in
-`## Notes`, naming the cut date, so a window with no `h` unit reads as a closed store rather than
-a quiet week. `a` and `g` still cover every window in full.
-
-**Substitute the resolver values before you run anything below.** `WORKBENCH`, `OUT_MEMO` and
-`SCAN_HISTORY` are resolver keys from step 0, not shell variables. Nothing exports them, and the
-Bash tool starts a fresh shell for every call, so write their values into every block literally.
-
-Run this assertion first, before the gather block. A key you forgot to substitute expands to the
-empty string, which is exactly what the assertion is looking for:
+**b) The workbench tree** (every other code) — one scan, not a walk of an enumerated list of stores:
 
 ```bash
 empty=
@@ -102,90 +81,119 @@ empty=
 [ -n "$OUT_MEMO" ]     || empty="$empty OUT_MEMO"
 [ -n "$SCAN_HISTORY" ] || empty="$empty SCAN_HISTORY"
 [ -z "$empty" ] || { echo "fusion bug: cadence resolver key empty or unset:$empty" >&2; exit 1; }
-echo "keys resolved: WORKBENCH=$WORKBENCH  OUT_MEMO=$OUT_MEMO  SCAN_HISTORY=$SCAN_HISTORY"
+# macOS/BSD find+ls; on GNU coreutils replace `ls -l -T` with `ls -l --full-time`
+# (BSD `-T` prints full timestamps; GNU `-T` expects a tabsize argument and errors)
+find "$WORKBENCH" -type f -name '*.md' -not -path '*/archive/*' -not -path '*/stashes/*' -not -path '*/stilwerk/*' -not -path '*/.migration-v2-backup/*' ${SINCE:+-newermt "$SINCE"} -exec ls -l -T {} +
 ```
 
-**A non-zero exit here stops the skill.** Report it to the user as a fusion bug, name the key the
-message names, and write **no digest at all** — not even an empty one. An empty *directory* is
-legitimate: a fresh workbench has no history yet, and that still earns a normal digest saying the
-week was quiet. An empty *key* never is. A digest built on an unresolved key asserts a quiet week
-that nothing ever checked, and the reader cannot tell the two apart.
+**Substitute the resolver values before you run anything above.** They are step-0 keys, not shell variables: nothing exports them and the Bash tool starts a fresh shell per call, so write their values into every block literally. The assertion is looking for exactly the key you forgot, which expands to the empty string. **A non-zero exit there stops the skill:** report it as a fusion bug, name the key the message names, and write **neither file**. An empty *directory* is legitimate and still earns a normal run saying the week was quiet; an empty *key* never is, because a run built on one asserts a quiet week that nothing ever checked and the reader cannot tell the two apart.
+
+- **Derive each item's code from its containing directory's basename**, per the legend. A file directly in the workbench root is `w`; a file in the directory `$SCAN_HISTORY` names is `h`.
+- Parse filenames for embedded stamps (e.g. `260408-1523-topic.md` means April 8, 15:23) and read headers for date metadata where they carry it; fall back to mtime when the filename has no stamp. `-newermt` is behaviour-preserving: an older mtime can only feed dates step 2 already closed.
+
+**Scan the tree; do not enumerate the stores.** The record's job is *all* activity, and an enumeration would under-report the day someone adds a store — where a missing source looks exactly like a quiet day. **The four excluded paths are not optional and must not be dropped**; `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` names this body as one of the two consumers holding them. They carry moved, frozen or configured content rather than activity: archived and stashed files would re-report their original days at their move date, and a v2-migration backup carries copies with the originals' timestamps, so old working days would appear a second time.
+
+### 4. Group by date, and name each day
+
+- Group every item by calendar date and sort within the date by timestamp.
+- **Start and end hour:** the earliest and latest timestamps of that date. An end time between 00:00 and 05:00 is an extension of the previous day — add 24, so 11:00 to 02:30 the next morning is `[11-26.5]`.
+- **Inactive days:** a date between the earliest logged date and today with **no** activity from any source still gets a header `## YYYY-MM-DD (Day) [—]` and no time table, which is what keeps step 6's per-week aggregation continuous.
+- **Name each day with a theme label**, inferred from its substance — commit subjects, file topics, issue and plan titles. The whole digest rests on this labelling, so do it once and properly: **reuse the same label every time the theme recurs**, keep it concrete (name the thing, not a bucket: "activity-log relocation", not "housekeeping"), and understand the day rather than keyword-matching it, so that two days about one thing in different words carry the **same** label. The label becomes the day's arc line in step 5 and the whole of the churn ranking in step 8.
+
+### 5. Write or refresh the activity log
+
+The file is `activity-log-$CO.md` in the project root.
+
+**On create**, the header and these sections in this order:
+
+```markdown
+# Activity Log — <$CO_LABEL>
+
+**Project:** <project name from CLAUDE.md, else the directory name>
+**Started:** <earliest date found>
+
+## Source Legend
+
+<!-- the step-3 codes, as | Code | Source | rows -->
+
+## High-level arc
+
+<!-- one bullet per logged day, NEWEST FIRST:
+     - **MM-DD Day** [start-end] — the step-4 theme label -->
+
+## Active Hours per Week
+
+<!-- step 6, newest week first -->
+
+## Daily Log
+
+<!-- per-day sections, CHRONOLOGICAL: only the arc bullets are newest-first -->
+```
+
+**Per-day entry**, plus one arc bullet for the same day:
+
+```markdown
+## YYYY-MM-DD (Day) [startHr-endHr]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| HH:MM | <description> | g |
+```
+
+**On refresh:** insert genuinely new days chronologically into `## Daily Log` and prepend each new arc bullet at the top of `## High-level arc`. For `$SINCE` itself, **replace** its daily entry and its arc bullet in place — never a second entry or a second bullet for one date. Update the per-week rows either way, and refresh the end-of-file `## Total commits` section, whose count is `git log --since=<earliest-date> --oneline | wc -l`, reading `<N> git commits since project start (<earliest date>).`
+
+### 6. The per-week table — mandatory, atomic with each day
+
+For every day added or refreshed, update the row for its ISO week (Mon–Sun) in `## Active Hours per Week`: insert if absent, recompute both columns if present.
+
+```markdown
+| Week of (Mon) | Days active | Avg active hours/day |
+|---------------|-------------|----------------------|
+| YYYY-MM-DD    | N           | H.H                  |
+```
+
+- **Week label:** the `YYYY-MM-DD` of that week's Monday. **Ordering:** newest first. **Placement:** between `## High-level arc` and `## Daily Log`.
+- **Days active:** days with a parseable `[start-end]`, not `[—]`. A degenerate `[H-H]` (e.g. `[22-22]`) DOES count as active though its elapsed hours are 0.
+- **Avg active hours/day:** sum of hours ÷ days active, one decimal; `n/a` when days active is 0. **Hours:** `[A-B]` → B − A, or B + 24 − A when B < A (cross-midnight).
+- **The inactive marker is the em-dash U+2014, `—`.** Not a hyphen `-`, en-dash `–`, horizontal bar `―` or double hyphen `--`; those are not matched as inactive and skew `Days active`.
+- **Atomicity:** the daily entry and its per-week row land in the same write. Either both or neither.
+
+**Verify before the digest** — every distinct ISO week with a daily entry has exactly one row. One line per command, no backslash-newline continuations:
 
 ```bash
-# session histories — $SCAN_HISTORY is SPACE-SEPARATED and may name TWO stores.
-# `find` tolerates missing dirs and is glob-safe under zsh (a plain `ls a/*.md b/*.md`
-# aborts when one glob misses). Split via command substitution, not a bare
-# `for d in $SCAN_HISTORY`: zsh does not word-split an unquoted parameter expansion,
-# but both bash and zsh field-split an unquoted command substitution. Store paths
-# never contain whitespace, so the split is safe.
-for d in $(printf '%s\n' "$SCAN_HISTORY"); do find "$WORKBENCH/$d" -maxdepth 1 -name '*.md' 2>/dev/null; done
-
-# activity log — TWO possible locations (project root, and the workbench)
-for f in "activity-log-$CO.md" "$WORKBENCH/activity-log-$CO.md"; do [ -f "$f" ] && echo "$f"; done
-
-# git commits with ISO dates (skip if not a git repo).
-# Collect them per commit here; step 4 groups them by date into one unit per day.
-git log --date=short --pretty='%ad %h %s' 2>/dev/null
+daily=$(grep -c "^## 2[0-9]\{3\}-" activity-log-$CO.md)
+rows=$(grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2} +\|" activity-log-$CO.md)
+weeks=$(grep -oE "^## [0-9]{4}-[0-9]{2}-[0-9]{2}" activity-log-$CO.md | cut -c4- | python3 -c 'import sys,datetime; print(len({datetime.date.fromisoformat(l.strip()).isocalendar()[:2] for l in sys.stdin if l.strip()}))')
+echo "$daily daily entries, $rows week rows, $weeks distinct ISO weeks"
+[ "$weeks" = "$rows" ] || echo "MISMATCH: $weeks distinct ISO weeks vs $rows week rows"
 ```
 
-**`$SCAN_HISTORY` names one directory** — one kind, one store (`rules/fusion-workbench-conventions.md` `## Path Resolution` → "Two invariants", invariant 2) — and reading it is reading the whole frozen corpus. A history file older than the cut may sit in the archive store instead; that is a move, not a second live store, and this body does not follow it.
+One `python3` process for all the headers, and the grep guarantees the format. A missing week row — or a row with no matching daily entry — is fixed before the digest is written, not reported.
 
-The log lives in the project root; the workbench copy is the fallback for projects that moved it. Note in the final report which sources were found and which were absent.
+### 7. Drop the tooling topics
 
-**Record each history's writer.** A session history's header carries `**Filed by:** <agent>, <Name <email>>` (`rules/fusion-workbench-conventions.md` `### Who filed it`); the person half is the writer. Collect the distinct writers across the 7-day window's history units — that list is what the report's `**Covers:**` line names, and it is the only place an identity enters the three lists. A history with no person half is `unattributed`, never yours by default: nothing in the file says who wrote it, so nothing may assume it.
+The labels are assigned; the digest ranks them. First, **exclude tooling and meta topics — they are not work.** fusion's own bookkeeping is not a topic the user works *on*; they work *through* the tool. Drop such topics from **every** list, the churn ranking included, and do not let them surface because they recur often: their churn is high precisely because the tooling runs every session, which is noise. Drop, for example:
 
-### 4. Date each log unit
-
-Each **log unit** is one dated thing: one session-history file, one `## YYYY-MM-DD` day-section in the activity log, or one **git-commit day** (all of that date's commits taken together as a single unit, never one unit per commit).
-
-That keeps the three sources on the same grain: a history file is one session, an activity-log day-section is one day, and a git-commit day is one day. If git counted per commit it would run finer than the other two and silently dominate every ranking below, because it is normally the highest-volume source.
-
-Derive a unit's date in this order:
-
-1. **Filename date token** on session-history files: `260731-2208-orchestrator-session.md` → `2026-07-31`. The leading `YYMMDD` expands to `20YY-MM-DD`; `HHMM` follows it.
-2. **`## YYYY-MM-DD` headers** inside the activity log — one unit per day-section.
-3. **Commit date** for git units (the `%ad` field above). The date *is* the unit: group every commit sharing a date into one unit and read them together in step 5.
-4. **Fallback:** if a file has no parseable date token, read its mtime: `date -r <file> +%Y-%m-%d`. Record every such fallback in the report's Notes section rather than guessing a date.
-
-### 5. Extract topics per log unit
-
-Read each log unit and identify the one or few topics it is about. Assign each a short theme label. Be consistent: reuse the **same** label every time the same theme recurs, so the churn count in step 7 is meaningful. Keep labels concrete — name the thing, not a vague bucket ("activity-log relocation", not "housekeeping").
-
-For large histories, read enough of each file to identify its themes; you do not need every line, but do not judge a file by its title alone.
-
-**Exclude tooling/meta topics — they are not work.** fusion's own internal bookkeeping is not a topic the user works *on*; they work *through* the tool. Drop such topics from **every** list — the yesterday list, the 7-day list, and the churn ranking. Do not let them surface even when they recur often (their churn is high precisely because the tooling runs every session — that is noise, not a theme). Drop, for example:
-
-- session / orchestrator **setup**, "awaiting scope/directive", Phase-0 scaffolding
-- **workbench tracking & housekeeping**, history logging, dashboards / live status, event logs
+- session or orchestrator **setup**, "awaiting scope/directive", Phase-0 scaffolding
+- **workbench tracking and housekeeping**, history logging, dashboards, live status, event logs
 - **reconciliation**, archiving, and the activity-log or cadence runs themselves
 - compliance-**guard** toggling, and commit / push / release *mechanics* as such
 
-Keep the **substance** of what was decided, built, analysed, or written — even when the subject is the tooling itself. In a plugin-development repo, "design the portfolio ranking" or "cadence churn metric" are real work topics; "workbench tracking & housekeeping" is not. In an end-user project, the user's own domain work is the signal and all fusion machinery is noise. The test: would the user name this as something they worked on? If not, drop it.
+Keep the **substance** of what was decided, built, analysed or written, even when the subject is the tooling itself: in a plugin-development repo "cadence churn metric" is real work and "workbench tracking and housekeeping" is not, while in an end-user project the domain work is the signal and all fusion machinery is noise. The test: would the user name this as something they worked on? The labels stay in the record; this filter applies to the digest.
 
-### 6. Build the recent lists — yesterday, then last 7 days
+### 8. The three lists
 
-Build two lists the same way, differing only by their window. For each: filter to the log units whose date falls in the window, collect the **distinct** topics, note where each appeared (source codes + dates), and order by how active the topic was (most log units first, counted as step 4 defines a unit, so a day of commits counts once however many commits it holds). State plainly when a window is empty.
+Each **day-section** of the log is one unit, and the unit is a day: the record is day-grained, which is why the lists are.
 
-- **Yesterday list** — window `[yday_start, today]`. The most recent, finest-grained view: what was touched since yesterday — or, when today is Monday, since Friday — right up to now. A topic worked on today belongs here too.
-- **Last-7-days list** — window `[week_start, today]`. The broader recent view.
+**Yesterday** (`[yday_start, today]`) and **last 7 days** (`[week_start, today]`) are built the same way, differing only by window: take the day-sections inside it, collect the **distinct** labels, read each section's table for the source codes and dates the label showed up under, and order by how many day-sections carry it. The yesterday window is a subset of the 7-day one, so overlap is expected. State plainly when a window is empty.
 
-The yesterday window is a subset of the 7-day one; overlapping topics are expected — the first list zooms in.
+**Recurring themes by churn** reads `## High-level arc`, not the day-sections: the arc is one labelled line per day across the whole history and small enough to read entire, which is what makes a full-history ranking affordable where re-reading the record is not. Count each theme's **churn = the number of distinct days it appears in**, rank descending, include only churn **≥ 2** (a theme seen on one day is not recurring — leave it to the recent lists), and record each theme's **span**, earliest → latest date, which separates a long thread from a short burst of equal count.
 
-### 7. Build the third list — recurring themes by churn
+### 8b. Session-flow metrics — how the sessions felt, measured
 
-Across **all** log units (full history, not just the window), count each theme's **churn = the number of distinct sessions it appears in**. A "session" is one **log unit** exactly as step 4 defines it (ten commits in one afternoon are one unit, not ten); count each unit once per theme.
+From this checkout's own event lines (drop rows whose `checkout` differs from `.checkout-id`), over the 7-day window: **gate answers per session** (`gate_response`/`session_start`; the per-Turn reading went with `turn_start`, which nothing emits any more), **time to first dispatch** (`session_start` → first `task_start`, median), **dispatch duration** (`task_start`/`task_done` pairs by `task` id, median and max). An absent input is reported absent, never as 0. This is the one section that is not project-wide (see Scope), so its report line says so rather than leaving the reader to assume one scope for the whole document.
 
-- Rank themes by churn, descending.
-- Include only themes with churn **≥ 2** (a theme seen in a single session is not recurring — leave those for the recent lists, not here).
-- For each theme record its **span**: earliest → latest date it appears. Span separates a long-running thread from a short burst of equal count.
-
-### 7b. Session-flow metrics — how the sessions felt, measured
-
-From this checkout's own event lines (drop rows whose `checkout` differs from `.checkout-id`), over the 7-day window: **gate answers per session** (`gate_response`/`session_start`; the per-Turn reading went with `turn_start`, which nothing emits any more), **time to first dispatch** (`session_start` → first `task_start`, median), **dispatch duration** (`task_start`/`task_done` pairs by `task` id, median and max). An absent input is reported absent, never as 0. This is the one section that is not project-wide (see Scope), so its report line says so rather than leaving the reader to assume the whole document shares one scope.
-
-### 8. Write the report
-
-The report goes to `$WORKBENCH/$OUT_MEMO/cadence-$CO.md`.
+### 9. Write the digest
 
 ```bash
 [ -n "$WORKBENCH" ] && [ -n "$OUT_MEMO" ] || { echo "fusion bug: WORKBENCH or OUT_MEMO empty — refusing to write the digest" >&2; exit 1; }
@@ -194,77 +202,66 @@ mkdir -p "$WORKBENCH/$OUT_MEMO"
 
 Step 3's assertion repeats because each Bash call is its own shell; without it an empty pair turns the `mkdir` into `mkdir -p "/"` and the digest lands at `/cadence-$CO.md`. A non-zero exit stops the skill, reported as a fusion bug.
 
-**Overwrite each run — a fresh snapshot, not an append log** (unlike `/fusion:memo`'s files in the same store). Cadence keeps no history of its own runs.
-
-Structure:
+The digest goes to `$WORKBENCH/$OUT_MEMO/cadence-$CO.md` and is **overwritten each run** — a fresh snapshot, not an append log (unlike `/fusion:memo`'s files in the same store). Cadence keeps no history of its own runs; the activity log is that history.
 
 ```markdown
 # Cadence — project digest
 
 **Generated:** <YYYY-MM-DD HH:MM, from `date`>
 **Digested by:** <$CO_LABEL> — the checkout that ran this, not the author of the work below
-**Covers:** every session history in the workbench, whoever wrote it — <e.g. "2 writers: Kai Stalmann <ks@qantr.com>, Jo Blow <jo@example.com>" / "1 writer: …" / "1 writer, 3 units unattributed">
-**Yesterday window:** <yday_start> → <today><!-- append " (Fri–Sun collapsed)" when today is Monday -->
+**Yesterday window:** <yday_start> → <today><!-- append " (Fri–Sun collapsed)" on a Monday -->
 **Recent window:** <week_start> → <today> (7 days)
-**Sources scanned:** <e.g. session histories: frozen corpus, 14 files across 2 stores, nothing after 2026-09-10; git (37 commits on 12 days = 12 units); activity log: none>
+**Activity log:** <path> — <n new days logged, m refreshed / "already current">
+**Sources scanned:** <e.g. git (37 commits on 12 days); workbench tree (84 files, codes h p i d r); session histories: frozen corpus, nothing after 2026-09-10>
 **Session flow (7d, this checkout only):** <e.g. 1.1 gate answers/session · first dispatch median 6 min · dispatches median 4 min, max 14 — or "no event data">
 
 ## Topics — yesterday
 
-<!-- window [yday_start, today]. When today is Monday, render the heading as "## Topics — yesterday (Fri–Sun)" -->
+<!-- on a Monday, render the heading as "## Topics — yesterday (Fri–Sun)" -->
 
-- **<topic>** — <where it showed up: source codes + dates, one line>
-- **<topic>** — ...
+- **<topic>** — <source codes + dates, one line>
 
-<!-- if the window is empty: -->
-_No activity since <yday_start>._
+<!-- empty window: --> _No activity since <yday_start>._
 
 ## Topics — last 7 days
 
-- **<topic>** — <where it showed up: source codes + dates, one line>
-- **<topic>** — ...
+- **<topic>** — <source codes + dates, one line>
 
-<!-- if the window is empty: -->
-_No activity logged in the last 7 days (most recent log unit: <date>)._
+<!-- empty window: --> _No activity logged in the last 7 days (most recent day-section: <date>)._
 
-## Recurring themes — by churn (distinct sessions)
+## Recurring themes — by churn (distinct days)
 
-| Rank | Theme | Sessions | Span (first → last) | Sources |
-|------|-------|----------|---------------------|---------|
+| Rank | Theme | Days | Span (first → last) | Sources |
+|------|-------|------|---------------------|---------|
 | 1 | <theme> | <n> | <first> → <last> | <codes> |
-| 2 | ... | | | |
 
-<!-- if nothing recurs ≥2: -->
-_No theme recurs across two or more sessions yet._
+<!-- nothing recurs on two days: --> _No theme recurs across two or more days yet._
 
 ## Notes
 
-- **Always:** name the `h` cut date and state that no session log covers anything after it.
-- <caveats: which sources were scanned, undated files fallen back to mtime, where the activity log was found, anything ambiguous>
+- **Always:** the churn column counts **days**, one per `## High-level arc` line, not sessions.
+- **Always:** name the session-history cut date and state that no session log covers anything after it.
+- <caveats: undated files fallen back to mtime, a legacy log adopted, anything ambiguous>
 ```
 
-### 9. Report to the user
+### 10. Report to the user
 
-In chat, give the headline: the top 2–3 recent topics and the top 2–3 recurring themes, plus the path to the written file. Keep it short; the file holds the detail.
+Lead with the digest — the top 2–3 recent topics and the top 2–3 recurring themes — then the two paths written. The record half is a trailing detail and owes numbers rather than an "OK": new days logged, whether `$SINCE` was re-scanned and what it gained, the date range covered, total items found, the current commit total, any legacy-name rename, and step 6's three counts as `<N> daily entries`, `<W> per-week rows`, `<W'> distinct ISO weeks`. Do not collapse those three to "matches" — the user should be able to spot-check without re-running the greps.
 
-Output follows `rules/user-facing-output.md` plus the chat profile for the project's language (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`; the language comes from the `**Language:**` line in `CLAUDE.md`). For this skill specifically: lead with the topics, not with what was scanned. The source inventory is a trailing detail.
+Output follows `rules/user-facing-output.md` plus the chat profile for the project's language (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`; the language comes from the `**Language:**` line in `CLAUDE.md`).
 
 ## Graceful degradation
 
-- **An empty history store:** say so and carry the analysis on git and the activity log alone. Not a warning — the store has been closed to writes since v11, so an old corpus and no corpus are both ordinary.
-- **No activity log:** note "activity log: none" in the sources line; the session histories and git carry the analysis.
-- **Not a git repo:** skip the `g` source silently; note it in the sources line.
-- **Nothing datable in the window:** still write the file, with the empty-window note in the affected list.
-- **Ambiguous or missing dates:** fall back to mtime (step 4.4) and record the fallback in Notes rather than guessing.
+- **Not a git repo:** skip the `g` source silently and note it in the sources line.
+- **A closed or empty store:** carry on. The session-history store has been closed to writes since v11 (`rules/fusion-workbench-conventions.md` `## Session history`), so an old corpus and no corpus are both ordinary — say which in `**Sources scanned:**`, naming the cut date, so a window with no `h` item reads as a closed store rather than a quiet week. Git and the rest of the tree still cover every window in full.
+- **Nothing datable in a window:** still write both files, with the empty-window note in the affected list.
+- **Ambiguous or missing dates:** fall back to mtime (step 3) and record it in `## Notes` rather than guessing a date.
 
-**An empty resolver key is not degradation.** Every case above still writes a digest. `WORKBENCH`,
-`OUT_MEMO` or `SCAN_HISTORY` resolving to nothing is a fusion bug instead: the step-3 assertion
-stops the skill, names the key, and no digest is written. That is the one condition under which
-this skill produces no file.
+**Neither halt is degradation.** No workbench stops the command at step 0 and an empty resolver key stops it at step 3; those two are the only conditions under which this command writes nothing at all, and every case above still writes both files.
 
 ## What this skill is NOT
 
-- It does not modify the source logs or the activity log — read-only on all inputs, writes only `cadence-$CO.md` in `$OUT_MEMO`.
-- It is not the activity-log step of `/fusion:cleanup`. That step maintains the dated raw activity record; cadence is a higher-level digest built on top of it (and on the session histories and git). Run `/fusion:cleanup --only log-activity` first if you want the activity log fresh before a cadence pass.
+- It is **not** read-only. It writes `activity-log-$CO.md` in the project root and `cadence-$CO.md` in `$OUT_MEMO`, and it adopts a legacy `-$USER` activity log onto the checkout name. It modifies no other source.
+- It commits nothing — both files are left in the working tree.
 - It files no issues and no decisions. A cadence run is a read of the past, not a queue of work.
-- It is **not** a personal digest and does not group or rank by author. The three lists are the project's; the only identities in the document are the `**Covers:**` line and step 7b's own-checkout metrics.
+- It is **not** a personal digest and does not group or rank by author. The three lists are the project's; the only identity in the document is step 8b's own-checkout metrics.

@@ -101,7 +101,7 @@ triggering no other:
 |---|---|
 | `/fusion:reconcile` | one reconciler pass over the tracking files |
 | `/fusion:archive` | moves aged artifacts into the archive store — it now asks on every run |
-| `/fusion:log-activity` | regenerates this checkout's activity log |
+| `log-activity` | regenerates this checkout's activity log — the command was merged into `/fusion:cadence` at v11.4 and the name no longer resolves |
 | `/fusion:curate` | the gated `CLAUDE.md` and rule-file pass |
 | `/fusion:post` | the note for whoever pulls this work next |
 

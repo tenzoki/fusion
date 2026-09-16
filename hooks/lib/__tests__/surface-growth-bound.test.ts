@@ -242,7 +242,7 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // only the surfaces a merge put over; copying a merged figure into a baseline
 // that is passing is the silent raise, whatever produced the tree.
 //
-// ## The head-room raises, 2026-09-11 — logged in `README-hooks.md`
+// ## The head-room raises, 2026-09-11 and 2026-09-16 — logged in `README-hooks.md`
 //
 // NOT A RE-BASELINING EVENT, and deliberately not logged here.
 // `SKILL_HEAD_ROOM` went 20 000 -> 20 866 and `TEST_LINE_HEAD_ROOM`
@@ -355,7 +355,10 @@ const SKILL_BASELINE: Record<string, number> = {
   // tree no longer holds inflates the surface's floor by its whole size and
   // grants that much head-room nobody decided to grant.
   "help/SKILL.md": 16919,
-  "log-activity/SKILL.md": 13629,
+  // `log-activity/SKILL.md` (13 629) stood here until 2026-09-16 and went with
+  // the body, whose two procedures merged into `/fusion:cadence`. DROPPED
+  // rather than zeroed, for the reason five lines above: an entry nothing is
+  // measured against inflates the floor by its whole size.
   "memo/SKILL.md": 12336,
   "migrate/SKILL.md": 26620,
   "setup/SKILL.md": 47236,
@@ -426,8 +429,8 @@ const TEST_LINE_BASELINE: Record<string, number> = {
 
 /** See `## Where each head-room comes from`. Derived per surface, never shared. */
 const AGENT_HEAD_ROOM = 18_000;
-/** 20 000 derived, plus the two 2026-09-11 raises logged in `README-hooks.md`. */
-const SKILL_HEAD_ROOM = 21_911;
+/** 20 000 derived, plus the 2026-09-11 and 2026-09-16 raises, logged in `README-hooks.md`. */
+const SKILL_HEAD_ROOM = 24_911;
 /** 2 500 derived, plus what is left of the same day's raise after its reduction. */
 const TEST_LINE_HEAD_ROOM = 2_595;
 

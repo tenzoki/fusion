@@ -14,3 +14,6 @@ log-activity calls itself cleanup's Step 6 and it is Step 5
 **Origin.** Found while reading the three existing cleanup step bodies as precedents for a fourth, during the planning of `260908-1410-cut-skills-surface-add-post-body`. That Circle touches no row in `skills/log-activity/SKILL.md`, so the defect was found next to the work rather than caused by it.
 
 **Acceptance test.** `skills/log-activity/SKILL.md`'s opening paragraph names Step 5, and no two skill bodies claim the same cleanup step number.
+
+---
+Resolved: moot by removal, not by correction. The file whose opening paragraph carried the wrong number, `skills/log-activity/SKILL.md`, was deleted when the command merged into `/fusion:cadence`, so the first acceptance clause has no subject left. The second holds vacuously and for a second reason: the numbered cleanup pipeline the drift was measured against was itself retired on 260910, so no body claims a step number any more. Binding record: `260915-2309_*_does-the-activity-log-keep-its-own-command-or-become-the-first-half-of-cadence.md`.

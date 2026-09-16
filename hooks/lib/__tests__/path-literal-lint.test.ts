@@ -185,8 +185,8 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
     ["a dispatch line naming a document kind", "names the target — a path to a planning/analysis document, or a set of them."],
     ["taskplanner.md:171", "- How many plans/issues/reviews scanned"],
     ["taskplanner.md:71", "Skip files with terminal markers — issues/planning `[c]`/`[d]` — entirely."],
-    ["log-activity legend", "defects go in issues, decisions record open questions, analyses study."],
-    ["log-activity legend, backlog row", "| b | backlog entries |"],
+    ["cadence legend", "defects go in issues, decisions record open questions, analyses study."],
+    ["cadence legend, backlog row", "| b | backlog entries |"],
     ["help layout sentence", "one directory per unit of work under circles/, plus a shared/ store."],
   ];
 

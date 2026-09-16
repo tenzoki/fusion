@@ -463,17 +463,6 @@ describe("bin/fusion-paths", () => {
       });
     }
 
-    it("gives log-activity WORKBENCH alone — it names no key", () => {
-      // The skill that broke the agent-only namespace: it reads consultations
-      // and investigations, and the investigation kind has no key at all since
-      // the investigator fold, so no agent argument ever resolved it. It scans the
-      // tree from WORKBENCH instead — and asking under its own name is what
-      // makes that legible rather than a borrowed argument that "selects
-      // nothing".
-      const p = parse(run(project, "log-activity").stdout);
-      expect(Object.keys(p)).toEqual(["WORKBENCH"]);
-    });
-
     it("gives memo OUT_MEMO under its own name — no agent prompt writes memos", () => {
       // OUT_MEMO used to hang off the orchestrator, whose prompt never writes
       // a memo. The key now sits with its only writer.

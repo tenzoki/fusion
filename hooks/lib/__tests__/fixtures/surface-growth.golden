@@ -26,21 +26,20 @@
   total 269252
 
 [skills bytes]
-  archive/SKILL.md 24529
-  cadence/SKILL.md 19727
+  archive/SKILL.md 24421
+  cadence/SKILL.md 21901
   check/SKILL.md 31244
-  cleanup/SKILL.md 6720
+  cleanup/SKILL.md 6740
   commit/SKILL.md 6113
   curate/SKILL.md 11863
-  help/SKILL.md 16971
-  log-activity/SKILL.md 13273
+  help/SKILL.md 16588
   memo/SKILL.md 12969
-  migrate/SKILL.md 39820
+  migrate/SKILL.md 39735
   news/SKILL.md 8766
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19425
-  total 224252
+  total 212597
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -67,7 +66,7 @@
   fusion-events.test.ts 414
   fusion-forum.test.ts 220
   fusion-identity.test.ts 217
-  fusion-paths.test.ts 774
+  fusion-paths.test.ts 763
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
   glob-nomatch-lint.test.ts 140
@@ -99,7 +98,7 @@
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 653
-  surface-growth-bound.test.ts 706
+  surface-growth-bound.test.ts 709
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 21822
+  total 21814
