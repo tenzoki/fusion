@@ -115,7 +115,7 @@ flowchart TD
    - Endpoint: the file states the unit, the pointer form, two worked classifications and the move-not-delete rule. That is a state the file occupies and a reader can check by reading it.
    - Dependencies: none. This file is emitted to no agent, so it is free on every bound.
 
-2. **C3 — relocation becomes a change type the curator understands**
+2. [DONE] **C3 — relocation becomes a change type the curator understands**
    - Executor: `coder`
    - Files: `agents/curator.md`
    - Changes, all inside the existing sections rather than a new one:

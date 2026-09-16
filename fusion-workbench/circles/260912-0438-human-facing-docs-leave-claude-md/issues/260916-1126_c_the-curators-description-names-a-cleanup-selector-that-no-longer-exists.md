@@ -10,3 +10,5 @@ The description is the text a dispatcher reads when choosing an agent, so it nam
 ---
 **Filed by:** planner, Kai Stalmann <ks@qantr.com>
 Found while planning `260916-1126_*_implementation-human-facing-docs-leave-claude-md.md`; step 2 of that plan edits this file and carries the fix.
+---
+Resolved: `agents/curator.md`'s frontmatter `description` now ends "or via `/fusion:curate`". `grep -c 'only claude-md' agents/curator.md` returns 0. Landed with step 2 of `260916-1126_*_implementation-human-facing-docs-leave-claude-md.md`, which edits the same file.
