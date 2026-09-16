@@ -238,7 +238,9 @@ with the text removed.
 
 ### Two worked classifications
 
-Both are real, taken from the `CLAUDE.md` of fusion's own repository.
+Both are real, taken from the `CLAUDE.md` of fusion's own repository — the first
+as that file stands, the second as it stood before the move it describes was
+carried out.
 
 **It stays: the language declaration.** The file carries the line
 `**Language:** de`, and beside it `**Artifact language:** en`. It stays for a
@@ -250,14 +252,17 @@ release, a defect fix and a documentation pass need it identically. Step 2's
 first question is answered yes, so the passage is always-on and no pointer
 replaces it.
 
-**It moves: the release procedure.** The same file carries a section on how a
+**It moved: the release procedure.** The same file carried a section on how a
 release is cut — bump the manifest version, bump the marketplace entry, tag the
-commit, refresh the pinned example. Every line of it is correct and none of it is
+commit, refresh the pinned example. Every line of it was correct and none of it
 optional. But it binds only where the work at hand *is* a release: a session
-fixing a defect in a hook loads that section, pays for it, and never reads it.
-Step 2's second question is answered yes, with topic `releasing`. The passage
-moves to the file that already carries this project's maintainer procedures, and
-a pointer line naming the topic and that file stands where the section was.
+fixing a defect in a hook loaded all 10 372 bytes of it, paid for them, and read
+none. Step 2's second question is answered yes, with topic `releasing`, and the
+passage duly went: commit `72911b86` lifted it into the file that already carried
+this project's maintainer procedures, `README-agents.md` `## Releasing`, beside
+the procedure for adding an agent. The heading stayed behind in `CLAUDE.md` with
+one sentence under it naming that file and that section — Step 3's pointer, 261
+bytes where 10 372 had been.
 
 The difference between the two is not importance, and reading it as importance is
 the commonest way to get this test wrong. The release procedure is not less

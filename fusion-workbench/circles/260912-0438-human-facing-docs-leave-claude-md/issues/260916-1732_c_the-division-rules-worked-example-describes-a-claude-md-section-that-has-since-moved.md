@@ -32,3 +32,24 @@ Found while rewriting Step 1's division rule under
 `260916-1316_*_three-surfaces-state-the-heading-division-rule-and-two-of-them-answer-differently-on-fusions-own-claude-md.md`,
 whose acceptance test covers the rule's wording and not its examples' currency. Reported rather than
 fixed for that reason.
+
+---
+Resolved: option 1. The release-procedure example in `rules/context-lean-claude-md.md` `### Step 1` is
+now written as a move that happened, citing `72911b86` as what performed it, and the section says up
+front that the first example is that file as it stands and the second as it stood before the move it
+describes. The example is stronger for it: the section teaches a reader to recognise a passage that
+should move, and it now shows one that did, with the evidence beside it. The criterion sentence stays
+in the present tense, because a release procedure binds only where the work is a release whoever's
+file it sits in; only the account of this one passage is past.
+
+The commit was read rather than taken from this record or from the dispatch, and both descriptions
+turned out to be half of it: `72911b86` performed both halves at once. The `## Release process`
+heading **stayed** in `CLAUDE.md` with one sentence under it — 261 bytes where 10 372 had been — and
+the body went to `README-agents.md` `## Releasing`, beside the procedure for adding an agent, taking
+the installer subsection inside its span with it. Both figures in the new wording are derived.
+
+The first example was checked rather than believed and holds: `CLAUDE.md` carries both language
+declarations and `bin/fusion-rules` reads both on every dispatch to pick the voice profile.
+
+A different defect was found in that same example and filed rather than folded in:
+`260916-2047_*_the-division-rules-first-worked-example-classifies-two-lines-where-step-1-makes-the-passage-the-unit.md`.
