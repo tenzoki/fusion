@@ -139,14 +139,118 @@ reader can scan in seconds.
 
 ## How to tell "always-on" from "on-demand"
 
-Ask, of each block currently in `CLAUDE.md`:
+This is the test. A person applies it, one passage at a time, to one file. It is
+written so that two people applying it to the same file reach the same answer,
+and so that neither of them needs to open an agent prompt to do it.
 
-- *Does every agent need this on every session, whatever the work?* → always-on.
-- *Does it only matter when the work is about topic T?* → a manifest unit tagged
-  `[T]`, for the agents that touch T.
-- *Is it look-up reference an agent consults occasionally, not a constraint that
-  shapes edits?* → a `skill` unit (pointer, not body).
+### Step 1 — divide the file by heading, before judging anything
+
+Split the file at its headings. Use `## ` where that is the file's top heading
+level, `### ` where the file's headings start one level deeper: pick the file's
+top level once, and use that one level for the whole file. A heading, together
+with everything under it up to the next heading of the same level, is **one
+passage**. The passage is the unit you classify — not a sentence lifted out of
+one, and not two sections merged because they read as related.
+
+Fixing the unit first is what makes the answer repeatable. Two readers who
+divide a file differently are not disagreeing about the criterion; they are
+answering different questions, and their two answers cannot be compared at all.
+
+**The heading settles the division. It does not settle the judgement.** Whether
+a passage is bound to a topic is a property of the work a reader is doing, not a
+property of the text. No command reads it off the file: the same section is
+topic-bound for one reader and always-on for the next, and both can be right.
+What a tool *can* measure is weight — which headings the file's bytes sit under,
+so you know which passages are worth looking at first — and that measurement is
+worth having. It renders no verdict. The verdict is a person's, and where the
+pass runs through fusion's curator, a person confirms it at a gate before any
+text moves.
+
+That limit was established by measurement while this section was being written,
+not assumed. Anyone tempted to automate the test should build the thing that
+reports weight and names whose the judgement is, and should not build the thing
+that answers the topic question.
+
+### Step 2 — ask one question of each passage
+
+- *Does every agent need this on every session, whatever the work?* → **always-on**.
+  It stays where it is.
+- *Does it matter only when the work is about topic T?* → **on-demand**. It
+  leaves, as a manifest unit tagged `[T]`, for the agents that touch T.
+- *Is it look-up reference an agent consults occasionally, rather than a
+  constraint that shapes edits?* → **on-demand**, as a `skill` unit: a pointer,
+  never a body.
 
 When in doubt, prefer on-demand: a rule that turns out to be needed more widely
 is cheap to re-tag `[always]`; an always-on block that is rarely relevant is a
 standing tax on every session.
+
+### Step 3 — what a passage that fails the test becomes
+
+It does not simply vanish from the file. What stands where it stood is **one
+pointer line, naming the topic and the file that now holds the detail**:
+
+```md
+- **<topic>** — <what it covers, one clause>. Detail: `<path/to/file>` `<## Section>`.
+```
+
+All three parts carry weight. The **topic** is the word a reader searches for and
+the word the manifest tags that unit with, so the same name has to appear in both
+places. The **file** is where the passage is now readable in full; a pointer to a
+file that does not yet carry the text is worse than the passage it replaced,
+which is why the destination is written before the source is cut. The
+**section** is optional, and earns its place only where the destination file is
+big enough that naming it saves a search.
+
+Collect the pointer lines into the one table described under *What stays
+always-on* above, rather than leaving each one stranded where its section used to
+be. The table is what a reader scans; a scatter of orphan lines is the old file
+with the text removed.
+
+### Two worked classifications
+
+Both are real, taken from the `CLAUDE.md` of fusion's own repository.
+
+**It stays: the language declaration.** The file carries the line
+`**Language:** de`, and beside it `**Artifact language:** en`. It stays for a
+mechanical reason rather than a matter of taste, and *What stays always-on* above
+already gives it: the rule-discovery helper named there reads both lines at the
+start of **every** dispatch, to resolve which voice profile the agent it is
+setting up will write in. There is no work for which that is irrelevant — a
+release, a defect fix and a documentation pass need it identically. Step 2's
+first question is answered yes, so the passage is always-on and no pointer
+replaces it.
+
+**It moves: the release procedure.** The same file carries a section on how a
+release is cut — bump the manifest version, bump the marketplace entry, tag the
+commit, refresh the pinned example. Every line of it is correct and none of it is
+optional. But it binds only where the work at hand *is* a release: a session
+fixing a defect in a hook loads that section, pays for it, and never reads it.
+Step 2's second question is answered yes, with topic `releasing`. The passage
+moves to the file that already carries this project's maintainer procedures, and
+a pointer line naming the topic and that file stands where the section was.
+
+The difference between the two is not importance, and reading it as importance is
+the commonest way to get this test wrong. The release procedure is not less
+important than the language line. It is *bound to a topic*, and the language line
+is not.
+
+### A passage moves; it is not deleted
+
+Relocation is the default and removal is not an option the test offers. A passage
+that fails the test fails it about **placement**: what was established is that
+the text is bound to a topic, not that the text is wrong. Deleting it answers a
+question nobody asked, and it throws away the thing the file was best at —
+somebody wrote that paragraph because a failure mode was not obvious, and moving
+it behind a pointer keeps it while deleting it does not.
+
+There is exactly one exception. A passage may be deleted rather than moved where
+**a record in the project's workbench already carries the same account** — a
+decision record, an issue, or a work-item record that states the same thing in at
+least as much detail — and where **that record is named at the point the move is
+recorded**: in the ledger entry, where the pass ran through `/fusion:curate`, or
+in the commit message, where the cut was made by hand. A deletion whose record is
+not named is not this exception. It is a loss, and no later reader can tell the
+two apart.
+
+Binding decision: `260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md`.
