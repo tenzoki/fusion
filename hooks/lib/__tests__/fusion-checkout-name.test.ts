@@ -32,6 +32,10 @@ function gitEnv(home: string): Record<string, string> {
   return { HOME: home, GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_SYSTEM: "/dev/null", GIT_CONFIG_NOSYSTEM: "1" };
 }
 
+/** One git call inside a fixture, with those same three layers cut off. */
+const git = (dir: string, ...a: string[]) =>
+  spawnSync("git", a, { cwd: dir, encoding: "utf-8", env: { ...process.env, ...gitEnv(dir) } });
+
 interface Fixture { dir: string; store: string }
 
 function fixture(): Fixture {
@@ -39,10 +43,7 @@ function fixture(): Fixture {
   tmpRoots.push(dir);
   mkdirSync(join(dir, "fusion-workbench"), { recursive: true });
   writeFileSync(join(dir, "fusion-workbench", ".fusion-setup"), "{}\n");
-  const env = { ...process.env, ...gitEnv(dir) };
-  spawnSync("git", ["init", "-q"], { cwd: dir, env });
-  spawnSync("git", ["config", "user.name", "Ada Example"], { cwd: dir, env });
-  spawnSync("git", ["config", "user.email", "ada@example.invalid"], { cwd: dir, env });
+  for (const a of [["init", "-q"], ["config", "user.name", "Ada Example"], ["config", "user.email", "ada@example.invalid"]]) git(dir, ...a);
   return { dir, store: join(dir, "fusion-workbench", "shared", "checkouts") };
 }
 
@@ -95,7 +96,7 @@ describe("bin/fusion-checkout-name", () => {
     const f = fixture();
     run(f, "register", "--alias", "amber-harbor", "--person", "Ada E.");
     const hex = ownHex(f);
-    spawnSync("git", ["config", "user.email", "moved@example.invalid"], { cwd: f.dir, env: { ...process.env, ...gitEnv(f.dir) } });
+    git(f.dir, "config", "user.email", "moved@example.invalid");
     const r = run(f, "register");
     expect(r.status, r.stderr).toBe(0);
     expect(r.value("action")).toBe("refreshed");
@@ -115,6 +116,24 @@ describe("bin/fusion-checkout-name", () => {
       .toEqual(["amber-harbor", "Ada E.", "Ada Example <ada@example.invalid>"]);
     const miss = run(f, "resolve", "00000000");
     expect([miss.status, miss.stdout]).toEqual([3, ""]);
+  });
+
+  it("resolve --at names a writer whose registration reached a commit and not this tree", () => {
+    const f = fixture();
+    run(f, "register", "--alias", "amber-harbor", "--person", "Ada E.");
+    const hex = ownHex(f);
+    git(f.dir, "add", "-A");
+    git(f.dir, "commit", "-qm", "registered");
+    const at = git(f.dir, "rev-parse", "HEAD").stdout.trim();
+    rmSync(join(f.store, `${hex}.md`));
+    // The shape a fetched-but-unpulled ref has, and the one `/fusion:news` read
+    // as "never registered" until 260916: the working tree answers 3 and the
+    // commit the message body came from answers with the name.
+    const seen = run(f, "resolve", hex, "--at", at);
+    expect([run(f, "resolve", hex).status, seen.status, seen.value("alias")], seen.stderr).toEqual([3, 0, "amber-harbor"]);
+    // 3 stays an answer ABOUT the registry at that commit; 6 is the absence of
+    // one, so a failure to look is never rendered as "never registered".
+    expect([run(f, "resolve", "00000000", "--at", at).status, run(f, "resolve", hex, "--at", "nosuchref").status]).toEqual([3, 6]);
   });
 
   it("roster over an empty store prints entries=0 and exits 0", () => {
@@ -158,7 +177,7 @@ describe("bin/fusion-checkout-name", () => {
   it("exit 4: register with no git identity, carrying fusion-identity's own reason", () => {
     const f = fixture();
     // That helper exits 1 and prints no CHECKOUT=, which reaches this program as its own 4.
-    for (const k of ["user.name", "user.email"]) spawnSync("git", ["config", "--unset", k], { cwd: f.dir, env: { ...process.env, ...gitEnv(f.dir) } });
+    for (const k of ["user.name", "user.email"]) git(f.dir, "config", "--unset", k);
     const r = run(f, "register");
     expect([r.status, r.stdout]).toEqual([4, ""]);
     expect(r.stderr).toContain("user.name and user.email are not set");

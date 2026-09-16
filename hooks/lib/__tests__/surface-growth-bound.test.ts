@@ -431,8 +431,8 @@ const TEST_LINE_BASELINE: Record<string, number> = {
 const AGENT_HEAD_ROOM = 18_000;
 /** 20 000 derived, plus the 2026-09-11 and 2026-09-16 raises, logged in `README-hooks.md`. */
 const SKILL_HEAD_ROOM = 24_911;
-/** 2 500 derived, plus the 2026-09-11 raise and the two on 2026-09-16, logged in `README-hooks.md`. */
-const TEST_LINE_HEAD_ROOM = 2_821;
+/** 2 500 derived, plus the 2026-09-11 raise and the three on 2026-09-16, logged in `README-hooks.md`. */
+const TEST_LINE_HEAD_ROOM = 2_840;
 
 const SURFACES: Surface[] = [
   {

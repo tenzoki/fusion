@@ -10,7 +10,7 @@
 #
 # ## Usage
 #
-#   fusion-checkout-name resolve <8hex>
+#   fusion-checkout-name resolve <8hex> [--at <commit>]
 #   fusion-checkout-name roster
 #   fusion-checkout-name suggest [<8hex>]
 #   fusion-checkout-name register [--alias A] [--person P]
@@ -24,6 +24,12 @@
 #                    nothing on stdout when no entry exists for that hex, which
 #                    is the ordinary case for every checkout that has not
 #                    registered and is not a fault.
+#     --at <commit>  Read the entry as it stood at that commit instead of in
+#                    the working tree — `git show <commit>:<path>`, no checkout
+#                    and no merge. Exit 3 then means "no entry AT THAT COMMIT",
+#                    and a commit or a repository the store cannot be located
+#                    in is exit 6, never 3. See "Reading the registry at a
+#                    commit" below.
 #   roster           Prints `entries=<n>`, then one `entry=` line per entry,
 #                    TAB-separated: hex, alias, person, git identity. Fields
 #                    are flattened the way `renderParty` in
@@ -65,6 +71,12 @@
 #      located. Raised by `resolve`, `roster`, `register` and a bare `suggest`
 #      — every subcommand except `suggest <8hex>`, which is arithmetic over its
 #      argument and needs no workbench at all.
+#   6  `resolve --at` only: the registry could not be READ at that commit —
+#      this is not a git work tree, the workbench is not inside the repository,
+#      or the commit does not resolve here. Nothing on stdout. It is a separate
+#      number from 3 on purpose: 3 is an answer about the registry and 6 is the
+#      absence of one, and collapsing them would let a failure to look be
+#      rendered as "this checkout never registered".
 #
 # Nothing here halts a caller. `[ -x ]` at every call site is the third branch,
 # per `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:
@@ -238,6 +250,38 @@
 # compared by equality on the eight hex characters alone
 # (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`),
 # and this program is not an input to that comparison either.
+#
+# ## Reading the registry at a commit
+#
+# `--at <commit>` exists because a caller can hold a tree this checkout has not
+# merged. `/fusion:news` reads a message out of a fetched ref and then names
+# who wrote it, and until 260916 it took the two halves from two different
+# trees: the body from the fetched commit, the name from the working tree. A
+# checkout that registered in a commit the reader had fetched and not pulled
+# was therefore rendered as one that never registered — false at the moment it
+# was printed, since the registration sat in the very commit the body came from
+# (`260916-2105_*_the-news-skill-reads-an-entry-from-a-fetched-ref-and-names-its-writer-from-the-working-tree.md`).
+#
+# The store travels in git (class R1, `rules/workbench-tracking.md` `## The
+# four classes`), so the entry is there to be read; what was missing was a way
+# to say WHICH tree. With the flag the render is pinned by the same commit the
+# body is, instead of by whenever the reader last pulled.
+#
+# **This does not weaken the bound above, it serves it.** That bound forbids a
+# COMPARISON reading this store, because an entry is a pulled file and would
+# answer differently across a fetch. A render pinned to a commit stops being a
+# pulled file in exactly that sense: the same commit gives the same name on
+# every machine and after every pull. Rendering is what the section above
+# routes through `resolve` deliberately, and this moves rendering toward the
+# property the section protects.
+#
+# The path into the commit is derived here — the workbench's location relative
+# to `git rev-parse --show-toplevel`, both sides physical (`pwd -P`), so a
+# symlinked temporary directory is not mistaken for a workbench outside the
+# repository. `bin/fusion-forum` derives the same coordinate for its own store
+# and reports its own exit 7 on it. The two are four lines of `git rev-parse`
+# idiom rather than a shared abstraction, and each program keeps its own store
+# path: `shared/checkouts` is spelled in this file and nowhere else.
 
 set -eu
 
@@ -246,7 +290,7 @@ here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 usage() {
   cat >&2 <<'USAGE'
-usage: fusion-checkout-name resolve <8hex>
+usage: fusion-checkout-name resolve <8hex> [--at <commit>]
        fusion-checkout-name roster
        fusion-checkout-name suggest [<8hex>]
        fusion-checkout-name register [--alias A] [--person P]
@@ -279,7 +323,39 @@ resolve_root() {
   # STORE_REL is relative to `fusion-workbench/`, which is what `register`
   # prints; STORE is the absolute path this program reads and writes.
   STORE_REL="shared/checkouts"
-  STORE="$root/fusion-workbench/$STORE_REL"
+  WORKBENCH="$root/fusion-workbench"
+  STORE="$WORKBENCH/$STORE_REL"
+}
+
+# The entry as it stood at <commit>, materialised in a temp file so the grammar
+# reader below parses it exactly as it parses a working-tree file. Sets
+# TMP_ENTRY. Returns 3 when the commit's tree carries no entry for that hex and
+# 6 when the registry could not be read at that commit at all — see "Reading
+# the registry at a commit" above for why those are two numbers.
+TMP_ENTRY=""
+entry_at() {
+  local commit="$1" hex="$2" top gitroot wbphys rel
+  top="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -z "$top" ]; then
+    printf '%s: not inside a git work tree, so no commit can be read.\n' "$self" >&2
+    return 6
+  fi
+  gitroot="$(cd "$top" && pwd -P)"
+  wbphys="$(cd "$WORKBENCH" 2>/dev/null && pwd -P)" || wbphys="$WORKBENCH"
+  rel="${wbphys#"$gitroot"/}"
+  case "$rel" in
+    /*)
+      printf '%s: the workbench is not inside this repository, so no path into %s can be derived.\n' "$self" "$commit" >&2
+      return 6
+      ;;
+  esac
+  if ! git rev-parse -q --verify "${commit}^{commit}" >/dev/null 2>&1; then
+    printf '%s: %s does not resolve to a commit in this repository.\n' "$self" "$commit" >&2
+    return 6
+  fi
+  TMP_ENTRY="$(mktemp)"
+  trap 'rm -f "$TMP_ENTRY"' EXIT
+  git show "$commit:$rel/$STORE_REL/$hex.md" > "$TMP_ENTRY" 2>/dev/null || return 3
 }
 
 # This checkout's own hex, and the git identity read in the same call. Absent
@@ -359,8 +435,21 @@ case "$cmd" in
   resolve)
     hex="${1:-}"
     is_hex "$hex" || die_usage "resolve takes one 8-hex-character identifier"
+    shift
+    at=''
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+        --at) [ "$#" -ge 2 ] || die_usage "--at takes a value"; at="$2"; shift 2 ;;
+        *) die_usage "unknown option '$1'" ;;
+      esac
+    done
     resolve_root || exit 5
-    entry="$STORE/$hex.md"
+    if [ -n "$at" ]; then
+      entry_at "$at" "$hex" || exit $?
+      entry="$TMP_ENTRY"
+    else
+      entry="$STORE/$hex.md"
+    fi
     [ -f "$entry" ] || exit 3
     for pair in "alias:Alias" "person:Person" "git_identity:Git identity"; do
       value="$(get_field "$entry" "${pair#*:}")"

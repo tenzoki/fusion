@@ -86,18 +86,18 @@ Iterate the `entry=` lines from Step 2, in the order they were printed, which is
 "$FUSION_PLUGIN_ROOT/bin/fusion-forum" show "$HEAD" "$ENTRY"
 ```
 
-`$HEAD` is the `head=` value from Step 2, passed back verbatim, which pins every render to the exact tree the delta was computed against. Show the person's part as it was written: do not summarise it, translate it, reorder it or answer it inside the render.
+`$HEAD` is the `head=` value from Step 2, passed back verbatim, and both calls here take it, so body and name are read at one tree. Show the person's part as it was written: do not summarise it, translate it, reorder it or answer it inside the render.
 
 Name the writer. The identifier is the filename's third dash-separated field:
 
 ```bash
 HEX="$(basename "$ENTRY" | cut -d- -f3)"
 if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name" ]; then
-  "$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name" resolve "$HEX" || echo "unregistered=$HEX"
+  "$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name" resolve "$HEX" --at "$HEAD" || echo "unregistered=$HEX"
 fi
 ```
 
-Exit 3 means no entry exists for that hex, which is the ordinary case for a checkout that never registered and is not a fault. **Render the hex itself then**, exactly as every other display site does; the fallback and the reason for it are in `bin/fusion-checkout-name`'s header.
+Exit 3 means the registry carries no entry for that hex at `$HEAD`, exit 6 that it could not be read there; neither is a fault. **Render the hex itself then**, exactly as every other display site does; the reason is in `bin/fusion-checkout-name`'s header.
 
 ## Step 5: advance the mark
 

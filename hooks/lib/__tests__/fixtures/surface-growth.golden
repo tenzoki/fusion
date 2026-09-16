@@ -35,11 +35,11 @@
   help/SKILL.md 16626
   memo/SKILL.md 12969
   migrate/SKILL.md 39735
-  news/SKILL.md 8766
+  news/SKILL.md 8749
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19424
-  total 213676
+  total 213659
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -59,7 +59,7 @@
   domain-cascade.test.ts 888
   executor-verification-report-lint.test.ts 238
   fenced-code-exemption.test.ts 206
-  fusion-checkout-name.test.ts 174
+  fusion-checkout-name.test.ts 193
   fusion-citation-check.test.ts 284
   fusion-claimed-item.test.ts 192
   fusion-commit-lock.test.ts 446
@@ -102,4 +102,4 @@
   surface-growth-bound.test.ts 709
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22049
+  total 22068
