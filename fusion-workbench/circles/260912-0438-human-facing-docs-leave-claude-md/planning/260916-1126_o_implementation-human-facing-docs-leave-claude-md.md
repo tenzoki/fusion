@@ -129,7 +129,7 @@ flowchart TD
    - Endpoint: the prompt states relocation as a change type with its ledger shape, its preserve-list permission, its blast-radius treatment and its out-of-remit refusal. Measured: `agents/` stays under 328 567 and the `curator` dispatch path under 227 066; both have room measured in `## Current State`.
    - Dependencies: step 1 (the prompt cites the criterion the rule now states).
 
-3. **C4a — the measurement, in a `bin/` helper**
+3. [DONE] **C4a — the measurement, in a `bin/` helper**
    - Executor: `coder`
    - Files: `bin/fusion-claude-md-weight` (new, executable, self-contained POSIX shell), `README-hooks.md` `### The bin/ helper roster`
    - Changes: the helper reads `CLAUDE.md` from the project root, divides it by top-level heading, and prints one row per section — heading, bytes, lines — plus the file total and the preamble. It prints the **reporting threshold it used** and marks the sections above it. It renders **no verdict about topic**. Contract:

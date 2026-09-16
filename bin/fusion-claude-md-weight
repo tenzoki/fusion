@@ -1,0 +1,224 @@
+#!/bin/sh
+# fusion-claude-md-weight — where a project's CLAUDE.md carries its weight.
+#
+# Usage:
+#   fusion-claude-md-weight [--root <dir>] [--threshold <bytes>]
+#
+# It reads CLAUDE.md at the root, divides it by heading, and prints what each
+# section weighs. It writes nothing, it decides nothing, and it exits 0 whatever
+# it finds.
+#
+# Three output shapes, and no fourth:
+#
+#   claude-md=absent root=/tmp/scratch threshold=4000 writes=none
+#
+#   claude-md=clean root=/p bytes=1840 lines=48 headings=5 threshold=4000 over=0 writes=none
+#
+#   claude-md=weighed
+#   root=/p
+#   file=CLAUDE.md
+#   bytes=62505
+#   lines=130
+#   headings=6
+#   heading-level=2
+#   threshold=4000
+#   over=5
+#   writes=none
+#     over     16906     25  ## Layout
+#     under     3074     11  (preamble)
+#   Topic is not decidable here: …
+#   Act on a finding with /fusion:curate: …
+#
+# Rows are largest first, and every section is printed — `over` and `under` is
+# how the threshold is marked. The preamble above the first heading is a row of
+# its own, so the rows sum to the file; it is not counted in `headings=`, which
+# is why there is one more row than that number wherever a preamble exists.
+#
+# ---------------------------------------------------------------------------
+# The threshold: 4000 bytes, a REPORTING CUT-OFF and not a target
+#
+# It decides what the report MENTIONS. It never decides what must move, and
+# nothing here says a file has a size it should reach: the spec this was built
+# from decided against a target size and forbids enforcing one on a project.
+# `--threshold <bytes>` re-reads the same file at any other number, which is
+# something a cut-off can afford and a target could not.
+#
+# It is a CHOSEN value and not a measured one, like the ceiling in
+# bin/fusion-plan-size, and here is what it was chosen against.
+#
+#   - It has to be silent on a file already shaped the way the convention asks:
+#     an identity paragraph, the language declarations, a few always-on rules
+#     and a pointer table, whose every section sits well under a kilobyte. An
+#     ABSOLUTE cut-off is silent there by construction. A share of the file
+#     would not be — some section of every file is its largest — and a check
+#     that fires on its commonest path is one a reader learns to skip.
+#   - It has to name few enough rows that the report is worth reading. Against
+#     fusion's own CLAUDE.md, 62 505 bytes over six headings and a preamble at
+#     `git:92cd2491`, 4000 marks five and stays silent on the two smallest: the
+#     3 074-byte preamble and a 202-byte section.
+#
+# ---------------------------------------------------------------------------
+# What it deliberately does NOT do
+#
+# It renders NO verdict about whether a section is bound to a topic. That
+# question is not decidable from anything this program can read: a topic is a
+# property of the work a reader is doing, not of the text, and the same heading
+# classifies differently for two readers with no command to settle it. So the
+# mechanism was changed rather than approximated — it answers the question its
+# inputs reach, which is where the file carries its weight, and leaves the
+# judgement to the reader who applies the criterion in
+# `rules/context-lean-claude-md.md` `## How to tell "always-on" from "on-demand"`.
+# Ruled at `260916-1126_*_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md`, option 1.
+#
+# Do not add a heuristic that guesses at topics here — no keyword list, no
+# "a section citing a path is delegating", no score. Each would be an
+# approximation of a question that admits none, and the report's whole value is
+# that every figure in it is decided rather than guessed.
+#
+# ---------------------------------------------------------------------------
+# How the file is divided
+#
+# By ONE heading level, picked once for the whole file: the shallowest level
+# with at least two headings, falling back to the shallowest present where no
+# level has two. That is what skips a document title — an H1 that appears once —
+# without naming it as a special case. The fallback is coarse by construction: a
+# file whose every heading is unique divides at its first one, so it can come
+# back as a single row. `heading-level=` is printed for exactly that reason, so
+# the reader sees which level the rows were cut at instead of inferring it.
+# A section is a heading plus everything under it up to the next heading of
+# that same level, which is the unit
+# `rules/context-lean-claude-md.md` `### Step 1 — divide the file by heading, before judging anything`
+# fixes before anything is judged. Lines inside a ``` fence are not headings.
+#
+# The root is the working directory unless `--root` names another. Deliberately
+# NOT the workbench root the other helpers walk up to: this program has to
+# answer for a directory with no workbench and no CLAUDE.md, and that answer is
+# a stated zero rather than an error.
+#
+# Exit codes:
+#   0  always, on every path — a finding, a clean file, no file at all, and a
+#      misuse alike. It reports, and a reporting check that hands its verdict to
+#      an exit code teaches its reader to ignore that code
+#      (bin/fusion-review-coverage gives the same reason). A misused invocation
+#      says so on stderr and prints no report; everything else prints one.
+
+set -eu
+LC_ALL=C
+export LC_ALL
+
+THRESHOLD=4000
+ROOT=.
+
+bail() {
+  echo "fusion-claude-md-weight: $1" >&2
+  echo "usage: fusion-claude-md-weight [--root <dir>] [--threshold <bytes>]" >&2
+  exit 0
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --root)
+      [ $# -ge 2 ] || bail "--root needs a directory"
+      ROOT=$2
+      shift 2
+      ;;
+    --threshold)
+      [ $# -ge 2 ] || bail "--threshold needs a size in bytes"
+      case "$2" in
+        '' | *[!0-9]*) bail "--threshold takes digits, got '$2'" ;;
+      esac
+      THRESHOLD=$2
+      shift 2
+      ;;
+    -h | --help)
+      echo "usage: fusion-claude-md-weight [--root <dir>] [--threshold <bytes>]"
+      echo "Reports where a project's CLAUDE.md carries its weight. Writes nothing."
+      exit 0
+      ;;
+    *)
+      bail "unknown argument '$1'"
+      ;;
+  esac
+done
+
+if root_abs=$(cd "$ROOT" 2>/dev/null && pwd); then
+  :
+else
+  root_abs=$ROOT
+fi
+file=$root_abs/CLAUDE.md
+
+if [ ! -f "$file" ] || [ ! -r "$file" ]; then
+  echo "claude-md=absent root=$root_abs threshold=$THRESHOLD writes=none"
+  exit 0
+fi
+
+# Command substitution strips trailing newlines, so an empty capture of the last
+# byte means that byte was one. An empty file lands here as "no trailing
+# newline" and awk never reaches the correction, which only fires on a record.
+if [ -z "$(tail -c 1 "$file")" ]; then trailnl=1; else trailnl=0; fi
+
+out=$(awk -v trailnl="$trailnl" '
+  FNR == NR {
+    if ($0 ~ /^```/) { fence = 1 - fence; next }
+    if (!fence && match($0, /^#+ /)) { n = RLENGTH - 1; if (n <= 6) cnt[n]++ }
+    next
+  }
+  FNR == 1 {
+    lvl = 0
+    for (i = 1; i <= 6; i++) if (cnt[i] >= 2) { lvl = i; break }
+    if (lvl == 0) for (i = 1; i <= 6; i++) if (cnt[i] >= 1) { lvl = i; break }
+    fence = 0; nsec = 0; cur = 0
+    head[0] = "(preamble)"; b[0] = 0; l[0] = 0
+  }
+  {
+    if ($0 ~ /^```/) fence = 1 - fence
+    else if (!fence && lvl > 0 && match($0, /^#+ /) && RLENGTH - 1 == lvl) {
+      nsec++; cur = nsec; head[cur] = $0; b[cur] = 0; l[cur] = 0
+    }
+    b[cur] += length($0) + 1
+    l[cur] += 1
+  }
+  END {
+    if (!trailnl && l[cur] > 0) b[cur] -= 1
+    tb = 0; tl = 0
+    for (i = 0; i <= nsec; i++) { tb += b[i]; tl += l[i] }
+    printf "#SUMMARY\t%d\t%d\t%d\t%d\n", tb, tl, nsec, lvl
+    for (i = 0; i <= nsec; i++) {
+      if (i == 0 && l[0] == 0) continue
+      printf "%d\t%d\t%s\n", b[i], l[i], head[i]
+    }
+  }
+' "$file" "$file")
+
+summary=$(printf '%s\n' "$out" | sed -n '1p')
+# -k3 breaks a tie on the heading text, so two sections of equal size come back
+# in the same order from every sort implementation.
+rows=$(printf '%s\n' "$out" | sed '1d' | sort -k1,1nr -k3)
+
+bytes=$(printf '%s' "$summary" | cut -f2)
+lines=$(printf '%s' "$summary" | cut -f3)
+headings=$(printf '%s' "$summary" | cut -f4)
+level=$(printf '%s' "$summary" | cut -f5)
+over=$(printf '%s\n' "$rows" | awk -F'\t' -v t="$THRESHOLD" '$1 > t' | grep -c . || true)
+
+if [ "$over" -eq 0 ]; then
+  echo "claude-md=clean root=$root_abs bytes=$bytes lines=$lines headings=$headings threshold=$THRESHOLD over=0 writes=none"
+  exit 0
+fi
+
+echo "claude-md=weighed"
+echo "root=$root_abs"
+echo "file=CLAUDE.md"
+echo "bytes=$bytes"
+echo "lines=$lines"
+echo "headings=$headings"
+echo "heading-level=$level"
+echo "threshold=$THRESHOLD"
+echo "over=$over"
+echo "writes=none"
+printf '%s\n' "$rows" | awk -F'\t' -v t="$THRESHOLD" '
+  { printf "  %-5s %8d %6d  %s\n", ($1 > t ? "over" : "under"), $1, $2, $3 }'
+echo "Topic is not decidable here: whether a section is bound to a topic is the reader's judgement, not this helper's."
+echo "Act on a finding with /fusion:curate: it is the tool that writes CLAUDE.md, and this helper never does."
+exit 0

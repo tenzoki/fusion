@@ -49,6 +49,7 @@ bin/*
 !bin/fusion-plan-size
 !bin/fusion-claimed-item
 !bin/fusion-work-order
+!bin/fusion-claude-md-weight
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
