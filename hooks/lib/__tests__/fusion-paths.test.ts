@@ -209,27 +209,23 @@ describe("bin/fusion-paths", () => {
       expect(parse(run(project, "orchestrator").stdout).SCAN_BACKLOG).toBe("circles");
     });
 
-    it("resolves OUT_DISCUSSION to the item's own store, and hands nobody a way back", () => {
+    it("resolves OUT_DISCUSSION to the item's own store, in both scopes", () => {
       // The parameterised key-set block below already asserts for `discuss`,
       // as for every consumer, that the emitted set equals the set its prompt
       // names, in both directions. What no case there can say is what the one
       // new key RESOLVES to, which is the only genuinely new contract the
       // discussions store brings — so that is what these two lines pin.
+      // The kind has a write key and no read key by ruling, not oversight: the
+      // spec's `## Out of Scope` bars any pass that reads past discussions in
+      // this version, so adding `$SCAN_DISCUSSIONS` reverses that ruling rather
+      // than filling a gap. Change it first, in
+      // `260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`. The
+      // absence needs no pin: the key has no `value_for()` arm and no `ORDER`
+      // entry, so a prompt naming it exits 4 and the block below fails first.
       expect(parse(run(project, "discuss").stdout).OUT_DISCUSSION).toBe("shared/discussions");
       claimAlpha();
       expect(parse(run(project, "discuss").stdout).OUT_DISCUSSION)
         .toBe("circles/260910-1000-alpha/discussions");
-
-      // INVERTED, and deliberately so: this asserts a key's ABSENCE. No prompt
-      // names `$SCAN_DISCUSSIONS`, because the spec's `## Out of Scope` rules
-      // out any pass that reads past discussions in this version, and a key
-      // set restates the prompts. Turning this into a positive assertion — or
-      // adding the resolver arm that would make one pass — reverses that
-      // ruling rather than fixing an oversight here. The ruling is what to
-      // change first, in `260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`.
-      for (const name of [...AGENTS, ...SKILLS]) {
-        expect(parse(run(project, name).stdout).SCAN_DISCUSSIONS, name).toBeUndefined();
-      }
     });
 
     it("takes the second argument over the claim", () => {

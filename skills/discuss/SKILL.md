@@ -39,9 +39,9 @@ Those three are the whole switch set. There is no switch for resuming: within on
 
 ## Step 3 — The register is the record file
 
-One structure carries the whole state of a discussion: it is the payload of every dispatch, it is what the stopping rule is evaluated against, it is what `--infer` prints, and at the end it is the record. **That structure is the file on disk.** There is no second file, no pointer file, and no state held only in the model.
+One structure carries the whole state of a discussion: it is the payload of every dispatch, what the stopping rule is evaluated against, what `--infer` prints, and at the end the record. **That structure is the file on disk.** There is no second file, no pointer file, and no state held only in the model.
 
-So a round is three acts: read the file, build the dispatch from it, rewrite it whole. `--infer` reads the same bytes. The stopping check reads the same bytes. Killing the session after round three then leaves a record carrying three rounds by construction, rather than by your having remembered to project hidden state onto disk.
+So a round is three acts: read the file, build the dispatch from it, rewrite it whole. `--infer` and the stopping check read the same bytes. Killing the session after round three then leaves a record carrying three rounds by construction, not by your having remembered to project hidden state onto disk.
 
 **The four claim sections carry the verdict.** The section an entry block sits in *is* its verdict, which is why no block carries a verdict field: written twice, the two copies have somewhere to drift. Every claim appears in exactly one of the four sections.
 
@@ -90,7 +90,7 @@ $WORKBENCH/$OUT_DISCUSSION/<STAMP>_o_<topic>.md
 
 `<topic>` is a kebab-case slug of the one-line topic, lowercase, articles dropped, six words at most. The marker is `_o_` while the discussion is open and `_c_` once it closes, the issues-and-planning vocabulary with no other state in between.
 
-**Write it before round one's result reaches the chat**, carrying every head field it will ever carry, an empty register and `**Rounds:** 0`. A record that appears only after a round is one an interrupted session loses, which is the whole reason the register lives on disk.
+**Write it before round one's result reaches the chat**, carrying every head field it will ever carry, an empty register, `**Rounds:** 0` and `**Outcome:** still running`. A record that appears only after a round is one an interrupted session loses.
 
 The template, with the entry block of Step 3 inside every claim section:
 
@@ -103,7 +103,7 @@ The template, with the entry block of Step 3 inside every claim section:
 **Partners:** <first partner> and consultant
 **Rounds:** <count actually run>
 **Ceiling:** <the ceiling in force, and each extension>
-**Outcome:** converged | did not converge after <N> rounds | nothing to check
+**Outcome:** still running | converged | did not converge after <N> rounds | nothing to check
 **Cross-references:** <basenames>
 
 ---
@@ -133,7 +133,7 @@ The template, with the entry block of Step 3 inside every claim section:
 <Qualified, and binding nothing. Written at `--close`.>
 ```
 
-`**Filed by:**` names you and the person; `**Partners:**` names you and the consultant, so the record says who held which position. `**Cross-references:**` carries storeless wildcard citations in the form `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines.
+`**Partners:**` names you and the consultant, so the record says who held which position. `**Cross-references:**` carries storeless wildcard citations in the form `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines.
 
 ## Step 5 — A round
 
@@ -150,10 +150,11 @@ Then four blocks, in this order:
 3. **The return contract.** One verdict per entry, from the three classes: a citation for checked and for refuted, the missing input for undecidable. It may advance claims of its own, which enter at a verdict in the same round.
 4. **The symmetry statement.** A claim that holds up is a complete and cost-free result, and nothing in this dispatch or in the record rewards a refutation over a confirmation.
 
-**Two instructions close the dispatch, and both are stated rather than left to be inferred:**
+**These instructions close the dispatch, and each is stated rather than left to be inferred:**
 
 - **Write no file.** The consultant's own prompt gives it a consultation-report mode and a store to write into; during a discussion it writes nothing at all.
 - **You have no `AskUserQuestion`.** It runs non-interactively as a sub-agent, so a question it cannot resolve is an undecidable verdict naming the missing input — the third class doing the job it exists for.
+- **Do not acknowledge and wait.** Your prompt's startup procedure assumes a session you hold directly. There is no second turn: the verdicts come back in this one.
 
 Wait for it. When it returns, fold the verdicts into the register: move each entry into the section its verdict names, set `**Last moved:**` on every entry whose verdict changed, add the claims the consultant advanced, and record your own concessions and any open dissent. Then **rewrite the whole file** from the register and set `**Rounds:**` to the count now run. The rewrite happens every round and before the stopping check, never after it.
 
@@ -171,7 +172,7 @@ A before B means a discussion that converges on round eight is recorded as conve
 
 **The user may extend the ceiling** by a number of rounds he names. Ask only where the ceiling fired, never assume an extension, and write each extension and the ceiling it produced into `**Ceiling:**`.
 
-`**Rounds:**` carries the count actually run, in every case including the two stops above. The point of recording it is measurement: the count tells the project later what these discussions really cost, instead of leaving it to recollection.
+`**Rounds:**` carries the count actually run, in every case including the two stops above. The point of recording it is measurement: the count tells the project later what these discussions really cost.
 
 ## Step 7 — `--infer`
 
@@ -179,7 +180,7 @@ Prints the register's current conclusions in the chat and **leaves the discussio
 
 ## Step 8 — `--close`
 
-Write the recommendation into `## Recommendation`, set `**Outcome:**` to the one the stopping rule produced, and rename the marker `_o_` → `_c_`. **Nothing else.** Only the marker changes; the stamp and the topic stay exactly as they were. Use `git mv` where the file is tracked, `mv` otherwise.
+Write the recommendation into `## Recommendation`, replace `**Outcome:** still running` with the one the stopping rule produced, and rename the marker `_o_` → `_c_`. **Nothing else.** Only the marker changes; the stamp and the topic stay exactly as they were. Use `git mv` where the file is tracked, `mv` otherwise.
 
 **The recommendation is qualified and says in its own text that it binds nothing.** A decision record may rest on this discussion; the discussion itself decides nothing. The closed state is terminal, so taking the subject up again means beginning a new discussion that cites this one.
 
@@ -193,7 +194,7 @@ Commit nothing. Tell the user in one line that the record is uncommitted.
 
 ## Boundaries
 
-- **Writes one file**, the record, and rewrites it once per round. No second file, no pointer file, no session-state file.
+- **Writes one file**, the record, and rewrites it once per round.
 - **Dispatches `fusion:consultant`** and nothing else, once per round. No other agent, no sub-dispatch of its own.
 - **Commits nothing** and pushes nothing.
 - **Decides nothing.** The record holds what was disputed, what survived, what was given up and a recommendation that binds nothing.

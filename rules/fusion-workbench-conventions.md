@@ -309,10 +309,10 @@ Defect, spec/plan and discussion files carry a state marker: `YYMMDD-HHMM_S_<top
 | `_c_` | Closed: resolved, or user decided to close. Stays `_c_` when a later commit or record reverses the reasoning in its `Resolved:` note; the body gains a `Revised by:` line instead (see `## Inline State Tracking`). |
 | `_d_` | Deferred: user decided, or agent proposed and user confirmed |
 
-**Rules:**
+**Rules** (`_p_` and `_d_` only where the kind's `## Filename Patterns` row allows them):
 - Every new file starts as `_o_`.
 - When an agent begins work: rename `_o_` → `_p_`.
-- When work is done: rename `_p_` → `_c_`.
+- When work is done: rename to `_c_`.
 - When the user defers: rename to `_d_`.
 - State change = `mv` (rename). Only the marker changes; `YYMMDD-HHMM` and `<topic>` stay the same.
 
@@ -358,13 +358,13 @@ The second form is preferred wherever the task is counting or enumerating: it re
 
 `find` needs no special handling: `find "$WORKBENCH" -name '*_o_*.md'` is correct as written. The underscore is not a metacharacter to `find`'s `-name` matcher any more than it is to the shell.
 
-This applies to every marker in both vocabularies (`_o_`, `_p_`, `_c_`, `_d_` on issues and plans; `_o_`, `_a_`, `_i_`, `_s_`, `_d_` on decisions) anywhere a filename carrying one is matched by a glob, in any agent prompt or skill body. A work item carries no marker at all, so none of this reaches it: enumerate the store with `*.md` and read `**Status:**` out of the file.
+This applies to every marker in both vocabularies (`_o_`, `_p_`, `_c_`, `_d_` on issues, plans and discussions; `_o_`, `_a_`, `_i_`, `_s_`, `_d_` on decisions) anywhere a filename carrying one is matched by a glob, in any agent prompt or skill body. A work item carries no marker at all, so none of this reaches it: enumerate the store with `*.md` and read `**Status:**` out of the file.
 
 **And a record that states something *about* a citation names file and line, or fences the verbatim form.** A pointer and a statement about one are the same characters, and no reader (human or gate) can tell them apart; star a pointer and leave the letter on a marker that is being *named*, which leaves the second spelling an address that dies at its target's next transition. So do not spell it: name the citing line (`260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md:24`) and let the reader open it. A fenced code block is the exception, for where the spelling itself is the datum (a verbatim transcript), and the fence covers the verdicts a **lookup** decides: inside one the gate stops asking whether the record exists, resolves to more than one, or has moved to another marker. It does not cover **`store-prefixed`**, which is read off the token's shape before anything is looked up, so a store segment inside a fence is still reported (`git:ff52dd4a`). The fence does keep the sweep off it, so an exhibit is never machine-rewritten; where the store has to be named, name it in words rather than spelling it into the token. Binding: `260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`.
 
 ## Terminal states are history
 
-`_c_` and `_d_` on an issue or a plan, `_i_`, `_s_` and `_d_` on a decision, `done` and `dropped` on a work item: these are **terminal**, and a rename or an edit back to a live state is disallowed. Where continuation is needed, file a new record that cites the terminal one.
+`_c_` and `_d_` on an issue or a plan, `_c_` on a discussion, `_i_`, `_s_` and `_d_` on a decision, `done` and `dropped` on a work item: these are **terminal**, and a rename or an edit back to a live state is disallowed. Where continuation is needed, file a new record that cites the terminal one.
 
 **A terminal record is read as evidence and never reconciled in place.** No step mark, ticked criterion or header change is written into it after the transition, and an unticked box there is not outstanding work. This is what makes a reconciliation pass' scan finite: it opens the live records, and a terminal one tells it nothing it may act on. Binding decision: `260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` (option 5).
 

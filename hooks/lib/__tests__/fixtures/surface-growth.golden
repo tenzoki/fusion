@@ -18,12 +18,12 @@
   curator.md 44558
   editor.md 13156
   ontocoder.md 15875
-  orchestrator.md 88651
+  orchestrator.md 89188
   planner.md 19153
   reconciler.md 21171
   reviewer.md 12837
   shaper.md 17017
-  total 279047
+  total 279584
 
 [skills bytes]
   archive/SKILL.md 24473
@@ -32,7 +32,7 @@
   cleanup/SKILL.md 6768
   commit/SKILL.md 6113
   curate/SKILL.md 11863
-  discuss/SKILL.md 14350
+  discuss/SKILL.md 14346
   help/SKILL.md 16626
   memo/SKILL.md 12969
   migrate/SKILL.md 39735
@@ -40,7 +40,7 @@
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19424
-  total 228028
+  total 228024
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -68,7 +68,7 @@
   fusion-events.test.ts 414
   fusion-forum.test.ts 220
   fusion-identity.test.ts 217
-  fusion-paths.test.ts 741
+  fusion-paths.test.ts 737
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
   glob-nomatch-lint.test.ts 140
@@ -103,4 +103,4 @@
   surface-growth-bound.test.ts 709
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22046
+  total 22042

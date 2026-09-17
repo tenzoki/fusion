@@ -358,3 +358,9 @@ flowchart TD
 ---
 
 **Cross-references:** `260916-1050-neues-discuss-feature.md`, `260917-1115_*_the-claude-md-cut-banked-85-kb-of-slack-into-a-bound-whose-header-says-head-room-is-zero.md`, `260917-1115_*_the-dispatch-path-bounds-prose-counts-fifteen-paths-against-a-fixture-holding-eleven-rows.md`, `260913-0909_*_may-the-orchestrator-reach-every-tool-and-may-an-agent-dispatch-another.md`, `260913-1108_*_the-positive-dispatch-rule-turns-on-an-undefined-word-and-leaves-both-exclusions-bound-to-the-orchestrator-alone.md`, `260909-1634_*_how-should-the-skill-surface-be-cut-once-the-agent-and-ceremony-cut-has-landed.md`, `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
+
+---
+
+## Corrections after approval
+
+- **C6, the `**Outcome:**` head field.** The value set in C6's file format above is terminal-only, while C6's own acceptance criterion puts the record on disk from round one "carrying every head field it will ever carry". Between `--begin` and `--close` the field therefore had no legal value, and the three listed partition only the ways a discussion finishes. The implementation adds a fourth, `still running`, written at `--begin` and replaced at `--close` by the one the stopping rule produced; the four are disjoint and complete over the states a record can be in. Filed as `260917-1559_*_the-outcome-head-field-is-mandatory-at-begin-and-its-value-set-has-no-member-for-a-running-discussion.md`, fixed in `skills/discuss/SKILL.md`. The spec body above is left as approved.
