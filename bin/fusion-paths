@@ -371,6 +371,7 @@ value_for() {
     OUT_DECISION)                 printf '%s' "$OUT_BASE/decisions" ;;
     OUT_REVIEW)                   printf '%s' "$OUT_BASE/reviews" ;;
     OUT_ANALYSIS)                 printf '%s' "$OUT_BASE/analyses" ;;
+    OUT_DISCUSSION)               printf '%s' "$OUT_BASE/discussions" ;;
     SCAN_PLANS)                   scan_value "planning" ;;
     SCAN_HISTORY)                 scan_value "history" ;;
     SCAN_ISSUES)                  scan_value "issues" ;;
@@ -385,11 +386,16 @@ value_for() {
     # The container store itself, whole. An item's record lives inside its own
     # container, so the pair names circles/ and never one directory in it.
     OUT_BACKLOG|SCAN_BACKLOG)     printf '%s' "circles" ;;
-    # Two kinds have a write key and no read key, and it is the same criterion
-    # both times: a key set restates the prompts, so a key no prompt names
-    # restates nothing. Nothing reads memos — a memo is written for the user.
-    # And SCAN_CONSULT lost its last consumer on 2026-09-10, when the archive
-    # skill's shared-store derivation went; the store and its reports stay.
+    # Three kinds have a write key and no read key, and it is the same
+    # criterion every time: a key set restates the prompts, so a key no prompt
+    # names restates nothing. Nothing reads memos — a memo is written for the
+    # user. SCAN_CONSULT lost its last consumer on 2026-09-10, when the archive
+    # skill's shared-store derivation went; the store and its reports stay. And
+    # no prompt reads past discussions in this version: a discussion's record is
+    # the register of its own rounds, addressed by its own path, and nothing
+    # searches the store across items. So the discussions kind has no read key
+    # at all — not a retired one, as consult has, but one never defined, and
+    # defining it would emit a key no consumer names.
     OUT_MEMO)                     printf '%s' "shared/memos" ;;
     *)
       # Reached when a key is in ORDER but has no value here — the second half
@@ -408,7 +414,7 @@ value_for() {
 # 5. Emit. Canonical order, filtered by the derived key set.
 # ---------------------------------------------------------------------------
 ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
-       OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_FORUM
+       OUT_DISCUSSION OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_FORUM
        SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
        SCAN_ANALYSES SCAN_BACKLOG SCAN_FORUM"
 
