@@ -1,7 +1,9 @@
 # Neues discuss Feature
 
 ---
-**Status:** open
+**Status:** claimed
+**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260917-1111
+**Active spec/plan:** `260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md` (spec), `260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md` (the plan drawn from it)
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 ---
 
