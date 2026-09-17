@@ -1,7 +1,7 @@
 # Neues discuss Feature
 
 ---
-**Status:** claimed
+**Status:** done
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260917-1111
 **Active spec/plan:** `260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md` (spec), `260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md` (the plan drawn from it)
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
@@ -29,3 +29,38 @@ Noch offen
 
 - Ob die Ablage außerhalb der Werkbank (research/, logbook/) schon in die erste Fassung kommt. Sie kann nicht vom Auflöser kommen, also Argument oder Kopffeld, und die Zitatprüfung reicht dort nicht hin.
 - Ob der erste Agent immer der gerade laufende ist, oder ob /fusion:discuss ihn benennen darf.
+
+---
+
+## Closure, 260917-1652
+
+Landed over `13ac4194..9af8ee5a`, six commits of this checkout's own plus one from a
+parallel session. `/fusion:discuss` exists: the command, the `discussions/` store it writes
+into, the resolver key that finds it, and the release of the consultant so the orchestrator
+may take him as the second discussion partner.
+
+The directive's eight numbered points are realised, its two open questions were ruled by the
+user on 260917 — storage stays inside the workbench for this version, and the first partner
+is always the running agent — and two further questions the directive did not know it had
+were ruled with them: the hook-test line bound it never named, and how much of each round
+reaches the chat.
+
+Both bounded surfaces were paid the way the user insisted: search for a cut first, record
+what the search found. The hook-test surface yielded a real cut of 45 lines and took no
+raise, leaving 26 lines of margin where it had stood at exactly zero. The skill surface
+yielded none, measured rather than asserted, and took a raise of exactly 14 349 bytes
+against an unmoved baseline. Both outcomes are in the log beside the seven before them.
+
+The one review pass this work gets ran over `9084eed6..f7cd6d04` and found that the
+mechanical half had landed and the substantive half had not: the consultant's dispatch ban
+survived in five places beyond the three the spec named, because the acceptance criterion
+asked for no sentence *excluding* him and a positive enumeration that omits him is not one.
+All seven findings are closed.
+
+Left open, and named rather than quietly carried: four defect records under this item, of
+which the load-bearing one is that 85 KB of the dispatch bound's apparent slack is a cut's
+own savings banked into a bound whose header says head-room is zero. The skill surface now
+stands at 4 bytes of margin, and five bodies carry no baseline entry at all — a question
+about the floor rather than the head-room, which nothing measures and which this work did
+not answer. Two commits reach HEAD unreviewed, `9af8ee5a` and `5e6a6be8`, and one file,
+`skills/cadence/SKILL.md`, is carried forward as opened only at its changed line.
