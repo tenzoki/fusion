@@ -33,14 +33,14 @@
   commit/SKILL.md 6113
   curate/SKILL.md 11863
   discuss/SKILL.md 14346
-  help/SKILL.md 16626
+  help/SKILL.md 16456
   memo/SKILL.md 12969
   migrate/SKILL.md 39735
   news/SKILL.md 8749
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19424
-  total 228024
+  total 227854
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
