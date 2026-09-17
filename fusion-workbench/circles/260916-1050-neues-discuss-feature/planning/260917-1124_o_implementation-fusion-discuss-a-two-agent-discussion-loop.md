@@ -1,7 +1,7 @@
 # Implementation Plan: `/fusion:discuss` — a two-agent discussion loop with a claim register
 
 **Date:** 2026-09-17
-**Status:** Draft
+**Status:** Complete
 **Spec:** `260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`, approved by the user at 11:27 on 2026-09-17
 **Decidability:** The load-bearing question is whether the loop's stop is decidable from the register alone. It is. Condition A reads two properties of the register (does any entry carry the undecidable verdict; did this round produce a refutation that was not there before) and condition B reads a counter. Both are total, because every entry is written carrying a verdict in the round it enters and the register is read only after a round. One field is *not* a settled fact when it is written, and the design keeps it out of the stop: `contested` means "neither partner has conceded as of this round", a per-round reading a later round may clear. A rule that asked "has anyone conceded for good" would be undecidable at every round but the last, the deciding input being a future round. C4 avoids that question rather than approximating it, by making the verdict the second partner's finding and `contested` a flag the stopping rule never reads. No change of mechanism is needed.
 
@@ -192,28 +192,28 @@ Every step names exactly one executor from the active set. The routing criterion
 
 ### Commit B — the command arrives
 
-8. **The skill body**
+8. [DONE] **The skill body**
    - Executor: `coder`
    - Files: `skills/discuss/SKILL.md` (new)
    - Changes: the whole command. Frontmatter carries `description`, `argument-hint: "[--begin <reference>] [--infer] [--close]"` and `allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion, Agent(fusion:consultant)]` — namespaced, or the dispatch does not resolve. The body carries: step 1, resolve `$OUT_DISCUSSION` through `bin/fusion-paths discuss` and halt on a non-zero exit with the code read against the conventions' table; the three switches and their no-switch default; the one-open-discussion rule and what `--begin` asks when one is open; the entry-block shape from answer 1 above and the record template from C6's `## File format`, corrected per answer 1; the dispatch to the consultant from answer 2; the stopping rule from C5 with condition A evaluated before condition B and the empty-register clause; the one-line-per-round chat output and the final summary. The string `--continue` appears nowhere. No store path literal appears anywhere: the body names `$OUT_DISCUSSION` and nothing else, which is also what makes the resolver emit the key.
    - Dependencies: A1 (the key must resolve), A2 (the kind must be defined)
    - Acceptance: `bin/fusion-paths discuss` prints `OUT_DISCUSSION=shared/discussions` with nothing claimed. `grep -c -- --continue skills/discuss/SKILL.md` is 0. `path-literal-lint.test.ts` passes over the new body. The body's byte size is measured and reported, since it is step B11's input. The two roster gates are **expected red** at the end of this step; B9 clears them.
 
-9. **README-agents' two roster surfaces**
+9. [DONE] **README-agents' two roster surfaces**
    - Executor: `coder`
    - Files: `README-agents.md`
    - Changes: two edits in two places, both gated separately. Add the table row in the exact shape the parser reads, `| \`/fusion:discuss\` | \`skills/discuss/SKILL.md\` | <what it does> |`. And add `/fusion:discuss` to the roster bullet in the plugin-structure section, the single line carrying the claim "asserts the match in the other direction too", where it belongs among the situational commands rather than among the three that are the ordinary session surface.
    - Dependencies: B8 (the directory must exist, or the gates fail in the other direction)
    - Acceptance: `derivable-enumerations-lint.test.ts` is green on both roster checks. `README-agents.md` is on no bounded surface, so the bytes cost nothing.
 
-10. **The new test case**
+10. [DONE] **The new test case**
     - Executor: `coder`
     - Files: `hooks/lib/__tests__/fusion-paths.test.ts`
     - Changes: one `it` inside the existing claimed-item `describe`, asserting the three properties in answer 6. The third assertion is inverted and carries a comment saying so, naming what a later reader would be reversing if they "fixed" it: the spec's `## Out of Scope` ruling that no pass reads past discussions in this version. Write it in full and run it green **before** anything is asked for on the head-room, which is the precedent every previous raise entry sets.
     - Dependencies: B8 (the skill's key set must resolve)
     - Acceptance: the case passes. The hook-test surface's new line count is measured exactly and reported, which is step B11's second input. The surface is **expected red** on `TEST_LINE_HEAD_ROOM` at the end of this step.
 
-11. **The cut search, on both bounded surfaces**
+11. [DONE] **The cut search, on both bounded surfaces**
     - Executor: `analyst`
     - Files: writes one analysis to `$OUT_ANALYSIS`; reads `hooks/lib/__tests__/**/*.ts` and `skills/*/SKILL.md`; changes nothing
     - Changes: two searches with one method and a stated outcome, not a formality. For each surface, the analysis must (a) state the exact shortfall measured off the working tree at that moment, (b) enumerate the candidates it opened and say for each whether removing it loses a real regression guard, and (c) return one of two verdicts per surface: *a cut exists, here it is, it is N lines or N bytes*, or *no cut exists, and here is the measurement that says so*.
@@ -225,14 +225,14 @@ Every step names exactly one executor from the active set. The routing criterion
     - Dependencies: B8 and B10 (both shortfalls must be measured against artifacts that exist and run green, not projected)
     - Acceptance: the analysis names a figure, not an adjective, for each surface, and each verdict is one of the two forms above. It opens the named candidate first and either confirms it by taking the four pins out on a scratch branch and running the suite green, or says which of the subsumption claims above fails and why. Where it says no cut exists, it says so the way the previous entries do: stripped of every comment and blank line the addition is still N lines, so deleting all of its reasoning leaves the surface N over and buys nothing. **The likely outcome on the hook-test surface is a cut rather than a raise**, since 46 lines is larger than any reasonable measurement of B10's case, and the analysis should treat a contrary result as a finding worth explaining rather than as a routine shortfall.
 
-12. **Apply the outcome, and write both log entries**
+12. [DONE] **Apply the outcome, and write both log entries**
     - Executor: `coder`
     - Files: `hooks/lib/__tests__/surface-growth-bound.test.ts` (constants only), `README-hooks.md`, plus whatever files B11 named for a cut
     - Changes: for each surface, take the branch B11 returned. Where a cut exists, **take the cut and raise nothing**, and write the cut into the log all the same, because a search that found something is as much a part of the account as one that did not. Where none exists, raise that surface's head-room constant by exactly the measured shortfall and no more. On the hook-test surface the expected branch is the cut, and taking it leaves the surface with margin above zero for the first time in four raises, which the log entry states as a figure at the landing commit. Then write one entry per raise into `README-hooks.md` `### The head-room raises, and the reduction read on 2026-10-10`, matching the seven entries before it: the constant, the date, the figure before and the figure after, `+N`, the sentence that no baseline moved with it, the running total above the derived figure and the table update that follows from it, who ruled and when, what it bought, **what the search for a cut found**, and what is left of it. **No baseline map and no baseline fixture is edited by this step**, which is the constraint the whole of commit B is arranged around.
     - Dependencies: B11
     - Acceptance: `git diff` shows no change to `SKILL_BASELINE`, `TEST_LINE_BASELINE`, `AGENT_BASELINE`, `RULE_BASELINE` or `hooks/lib/__tests__/fixtures/dispatch-path.baseline`. Each raise's entry carries all four mandated facts. The table in `### Growth bounds on the shipped text` and the standing-raise column both read net of the change. If the finished body cannot be written inside the raise the user grants for `skills/`, the work stops under `## Where this work stops` rather than taking a second raise.
 
-13. **Regenerate the surface golden and land commit B**
+13. [DONE] **Regenerate the surface golden and land commit B**
     - Executor: `coder`
     - Files: `hooks/lib/__tests__/fixtures/surface-growth.golden` (regenerated, not hand-edited)
     - Changes: `cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts`, review the diff, re-run. Report the margin each of the two surfaces stands at after the landing, as a figure read at the landing commit rather than mid-way, which is the correction `260916-0734_*_the-head-room-raise-log-states-a-surface-total-and-two-margins-that-no-committed-tree-holds.md` was filed for.

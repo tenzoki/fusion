@@ -153,19 +153,6 @@ describe("bin/fusion-paths", () => {
       expect(after.stdout).toBe(before);
     });
 
-    it("emits no CIRCLE key, and no key naming the retired container", () => {
-      // CIRCLE named which Circle was active; OUT_CIRCLE, SCAN_CIRCLES and
-      // PORTFOLIO named the container and the ranking file. All four went with
-      // the layer and NONE came back with the container — OUT_BACKLOG names
-      // the container store, so no consumer had to learn a new key name.
-      for (const name of [...AGENTS, ...SKILLS]) {
-        const p = parse(run(project, name).stdout);
-        for (const key of ["CIRCLE", "OUT_CIRCLE", "SCAN_CIRCLES", "PORTFOLIO"]) {
-          expect(p[key], `${name} must get no ${key}`).toBeUndefined();
-        }
-      }
-    });
-
     it("is not an error state to hold no item — that answer is exit 0 and silent", () => {
       // And silent on stderr too: `bin/fusion-claimed-item` says "not a git
       // work tree" on a clean answer, and that reason is kept back rather than
@@ -220,6 +207,29 @@ describe("bin/fusion-paths", () => {
       expect(p.SCAN_PLANS.split(" ")).toHaveLength(2);
       // The container store itself is not per-item, and stays whole.
       expect(parse(run(project, "orchestrator").stdout).SCAN_BACKLOG).toBe("circles");
+    });
+
+    it("resolves OUT_DISCUSSION to the item's own store, and hands nobody a way back", () => {
+      // The parameterised key-set block below already asserts for `discuss`,
+      // as for every consumer, that the emitted set equals the set its prompt
+      // names, in both directions. What no case there can say is what the one
+      // new key RESOLVES to, which is the only genuinely new contract the
+      // discussions store brings — so that is what these two lines pin.
+      expect(parse(run(project, "discuss").stdout).OUT_DISCUSSION).toBe("shared/discussions");
+      claimAlpha();
+      expect(parse(run(project, "discuss").stdout).OUT_DISCUSSION)
+        .toBe("circles/260910-1000-alpha/discussions");
+
+      // INVERTED, and deliberately so: this asserts a key's ABSENCE. No prompt
+      // names `$SCAN_DISCUSSIONS`, because the spec's `## Out of Scope` rules
+      // out any pass that reads past discussions in this version, and a key
+      // set restates the prompts. Turning this into a positive assertion — or
+      // adding the resolver arm that would make one pass — reverses that
+      // ruling rather than fixing an oversight here. The ruling is what to
+      // change first, in `260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`.
+      for (const name of [...AGENTS, ...SKILLS]) {
+        expect(parse(run(project, name).stdout).SCAN_DISCUSSIONS, name).toBeUndefined();
+      }
     });
 
     it("takes the second argument over the claim", () => {
@@ -426,6 +436,7 @@ describe("bin/fusion-paths", () => {
       expect(parse(run(project, "analyst").stdout).OUT_ANALYSIS).toBe("shared/analyses");
       expect(parse(run(project, "reviewer").stdout).OUT_REVIEW).toBe("shared/reviews");
       expect(parse(run(project, "orchestrator").stdout).OUT_BACKLOG).toBe("circles");
+      expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consult");
     });
 
     it("emits no key it cannot resolve", () => {
@@ -492,39 +503,6 @@ describe("bin/fusion-paths", () => {
         expect(p.SCAN_HISTORY, `${name} must get no SCAN_HISTORY`).toBeUndefined();
       }
       expect(parse(run(project, "cadence").stdout).SCAN_HISTORY).toBe("shared/history");
-    });
-
-    it("emits no investigation key to anyone — the kind lost both of them", () => {
-      // OUT_INVESTIGATION and SCAN_INVESTIGATIONS were retired on 2026-08-15
-      // with `agents/investigator.md` and `agents/conceptrev.md`, the last two
-      // prompts naming either. `shared/investigations/` still exists and still
-      // holds reports; the KEYS went because a key set restates the prompts
-      // and these restated nothing. Asserted over every consumer rather than
-      // one, so re-adding an arm without a prompt to name it fails here.
-      for (const name of [...AGENTS, ...SKILLS]) {
-        const p = parse(run(project, name).stdout);
-        expect(p.OUT_INVESTIGATION, `${name} must get no OUT_INVESTIGATION`).toBeUndefined();
-        expect(p.SCAN_INVESTIGATIONS, `${name} must get no SCAN_INVESTIGATIONS`).toBeUndefined();
-      }
-    });
-
-    it("emits no SCAN_CONSULT to anyone — the kind lost its read key", () => {
-      // The same retirement the investigation keys took, and by the same
-      // criterion: a key set restates the prompts, so a key no prompt names
-      // restates nothing. `shared/consult/` still exists and `OUT_CONSULT`
-      // still resolves for the consultant that writes there — the store's
-      // survival was never the argument for the key's. A prompt that names it
-      // again exits 4 against the ORDER check, loudly and reversibly.
-      for (const name of [...AGENTS, ...SKILLS]) {
-        expect(parse(run(project, name).stdout).SCAN_CONSULT, name).toBeUndefined();
-      }
-      expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consult");
-    });
-
-    it("emits no SCAN_MEMOS to anyone — nothing reads memos", () => {
-      for (const agent of ["orchestrator", "curator", "consultant", "analyst"]) {
-        expect(parse(run(project, agent).stdout).SCAN_MEMOS).toBeUndefined();
-      }
     });
   });
 
