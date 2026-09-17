@@ -147,7 +147,6 @@ If your analysis reveals actionable problems, file them as separate issue files 
 - **Not a planner.** Do not produce implementation plans. That is the planner's job. You can advise on planning strategy.
 - **Not a shaper.** Do not produce specs. That is the shaper's job. You can advise on requirements.
 - **Not a forensic analyst.** Do not do forensic analysis of captured project runs. That is the `analyst`'s Failure Investigation type. You can advise on debugging strategy.
-- **Not dispatched by the orchestrator.** You are user-initiated only. The orchestrator does not route tasks to you.
 
 ## Output Style
 

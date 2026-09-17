@@ -70,7 +70,7 @@ Use the printed values literally: **recent window** `[week_start, today]` and **
 
 Collect timestamped items; record a timestamp, a topic, and a **source code** for each. The code names the artifact's *kind*, and the kind is the basename of the directory the file sits in.
 
-**Codes:** `g` git commits · `h` session history · `p` specs and plans · `i` issues · `d` decisions · `r` reviews · `a` analyses · `n` investigations · `t` consultations · `b` backlog entries · `w` workbench root-level files. `o` (ontology reviews) and `c` (code reviews) are **retired but still readable**, from days logged before v4 when the review kinds had a directory each: leave those rows alone, write `r` for new ones, and when a log's own legend predates v4 add the `r` row while keeping `o` and `c` listed as historic — deleting them strands the rows using them.
+**Codes:** `g` git commits · `h` session history · `p` specs and plans · `i` issues · `d` decisions · `s` discussions · `r` reviews · `a` analyses · `n` investigations · `t` consultations · `b` backlog entries · `w` workbench root-level files. `o` (ontology reviews) and `c` (code reviews) are **retired but still readable**, from days logged before v4 when the review kinds had a directory each: leave those rows alone, write `r` for new ones, and when a log's own legend predates v4 add the `r` row while keeping `o` and `c` listed as historic — deleting them strands the rows using them.
 
 **a) Git commits** (`g`): `git log --format="%ai|%s" --since="${SINCE:-30 days ago}"`, parsed for date, time and subject. `$SINCE` bounds the read and covers a log stale for over 30 days, which a fixed window missed.
 

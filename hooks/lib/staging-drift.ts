@@ -245,6 +245,7 @@ const STORES = [
   "consult",
   "memos",
   "backlog",
+  "discussions",
 ];
 
 /**

@@ -235,6 +235,7 @@ const STORES = [
     "consult",
     "memos",
     "backlog",
+    "discussions",
 ];
 /**
  * The root-anchored records: a file at the workbench root that a person authored

@@ -14,20 +14,20 @@
 [agents bytes]
   analyst.md 21032
   coder.md 12165
-  consultant.md 13549
+  consultant.md 13432
   curator.md 44558
   editor.md 13156
   ontocoder.md 15875
-  orchestrator.md 88843
+  orchestrator.md 88651
   planner.md 19153
   reconciler.md 21171
   reviewer.md 12837
   shaper.md 17017
-  total 279356
+  total 279047
 
 [skills bytes]
   archive/SKILL.md 24473
-  cadence/SKILL.md 22252
+  cadence/SKILL.md 22271
   check/SKILL.md 31855
   cleanup/SKILL.md 6768
   commit/SKILL.md 6113
@@ -39,7 +39,7 @@
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19424
-  total 213659
+  total 213678
 
 [hook-tests lines]
   archive-filter-key.test.ts 40

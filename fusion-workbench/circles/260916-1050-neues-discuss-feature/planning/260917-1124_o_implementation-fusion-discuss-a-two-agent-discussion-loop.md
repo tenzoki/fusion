@@ -147,35 +147,35 @@ Every step names exactly one executor from the active set. The routing criterion
    - Dependencies: none
    - Acceptance: `bin/fusion-paths orchestrator` is unchanged, since no prompt names the key yet. The full suite is green. `grep -c SCAN_DISCUSSIONS bin/fusion-paths` is 0.
 
-2. **The conventions learn the kind**
+2. [DONE] **The conventions learn the kind**
    - Executor: `ontocoder`
    - Files: `rules/fusion-workbench-conventions.md`
    - Changes: three sections. In `## fusion-workbench Layout`, add `discussions/` to the container block and to the `shared/` block of the tree. In `## Filename Patterns`, add a row: kind "Discussion", written to `$OUT_DISCUSSION`, pattern `YYMMDD-HHMM_S_<topic>.md`, state marker "yes (issues/planning vocabulary, `_o_` and `_c_` only)". In `## Record filing`, add a row to the kind-and-store table: filed when a bounded discussion was run, whatever it concluded. State in the `## Filename Patterns` row's vicinity that this is the one marker-carrying kind written while unfinished, since `## State Markers — issues and planning` otherwise implies a marker moves only when somebody decides something.
    - Dependencies: none
    - Acceptance: the tree blocks and the two tables each name `discussions` exactly once. The file is charged to all eleven dispatch paths, so step A7 measures it. The full suite is green.
 
-3. **The key table**
+3. [DONE] **The key table**
    - Executor: `ontocoder`
    - Files: `rules/workbench-path-resolution.md`
    - Changes: one row in the key table, `OUT_DISCUSSION` with no read key and the value `<scope>/discussions`, with the note saying why there is no `SCAN_DISCUSSIONS`: a key set restates the prompts, and no prompt reads past discussions in this version. That is the same criterion the `OUT_MEMO` row already states, so the note cites it rather than re-arguing it.
    - Dependencies: A2 (this table restates the conventions' rows, so the conventions settle the wording first)
    - Acceptance: the row's value column matches `value_for()` in `bin/fusion-paths` exactly. The full suite is green.
 
-4. **The three hook store lists**
+4. [DONE] **The three hook store lists**
    - Executor: `coder`
    - Files: `hooks/lib/citation-scan.ts`, `hooks/lib/staging-drift.ts`, `hooks/lib/__tests__/path-literal-lint.test.ts`
    - Changes: add `discussions` to the `STORES` alternation in `citation-scan.ts`, to the `STORES` array in `staging-drift.ts`, and to `TYPE_FOLDERS` in `path-literal-lint.test.ts`. The comment on `staging-drift.ts`'s list says it is `TYPE_FOLDERS` minus the three retired review folders; that relation stays true and needs no edit. Add a clause to `citation-scan.ts` noting that the store's entry is for citations *of* a discussion record written elsewhere, since nothing reads citations written inside one.
    - Dependencies: none
    - Acceptance: `path-literal-lint.test.ts` now fails on a `discussions/` path literal in any agent or non-exempt skill body, provable by splicing one into a scratch copy. No existing citation in the tree changes verdict, provable by running `bin/fusion-citation-sweep` or `bin/fusion-citation-check` before and after and comparing the counts. The full suite is green, and the hook-test surface is unchanged in lines or grows by the comment lines this step adds, which must be counted into step B11's arithmetic if it grows.
 
-5. **The activity log's letter code**
+5. [DONE] **The activity log's letter code**
    - Executor: `ontocoder`
    - Files: `skills/cadence/SKILL.md`
    - Changes: add `· \`s\` discussions` to the codes list in step 3, and the matching row to the legend table the digest writes. Nothing else: the code derivation rule in that body already reads a code from the containing directory's basename, so the store needs no special handling in the scan.
    - Dependencies: A2 (the code derives from a store the layout defines)
    - Acceptance: the codes list and the legend table agree. This edit grows a skill body, so its byte cost is counted into step B11's `skills/` arithmetic. The full suite is green.
 
-6. **The three dispatch-ban sentences go**
+6. [DONE] **The three dispatch-ban sentences go**
    - Executor: `coder`
    - Files: `agents/consultant.md`, `agents/orchestrator.md`
    - Changes: delete the `Not dispatched by the orchestrator` bullet from `agents/consultant.md`'s `## What the Consultant is NOT`. In `agents/orchestrator.md`, delete the `consultant` bullet from the `Never invokes` list, leaving the `orchestrator` recursion bullet and the introductory sentence that now governs one entry rather than two. In the sub-agent list, delete the clause "and `consultant` is not among them (**Never invokes** below)". **Do not add `consultant` to the orchestrator's routing table.** The routing table answers which executor a *task* goes to, and the consultant is not an executor; what this change enables is the orchestrator dispatching the consultant as the first partner when the user invokes `/fusion:discuss` in an orchestrator session. Adding a tenth routing row would move a cardinality this plan has no reason to move and would put a claim in the prompt that C3 does not make.
@@ -183,7 +183,7 @@ Every step names exactly one executor from the active set. The routing criterion
    - Dependencies: none
    - Acceptance: `grep -n "user-initiated only" agents/consultant.md agents/orchestrator.md` returns nothing. The word "nine" beside the sub-agent list still names nine agents, enumerated. The full suite is green, and both files shrank, which trips no bound.
 
-7. **Re-measure the dispatch bound and land commit A**
+7. [DONE] **Re-measure the dispatch bound and land commit A**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/fixtures/rules-emission.golden` (regenerated, not hand-edited)
    - Changes: regenerate with `cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts`, which rewrites the fixture and then fails on purpose; review the diff and re-run. Then report, per path, the total against its baseline row, so the eleven figures are on record at the landing commit rather than carried from this plan. **No baseline and no head-room constant is touched by this step.**

@@ -21,9 +21,29 @@
  *
  * ## What the predicate does NOT cover, and the judgement made instead
  *
- * TWO CLASSES OF FILE REACH THE REPORTER AND NOT THE GATE, and neither has a
- * marker to read. Both were named as costs in the answering decision and are
- * settled here rather than deferred.
+ * THE CRITERION UNDER EVERY EXCLUSION IN THIS SECTION: A RECORD KIND ENTERS THE
+ * CITATION CORPUS WHEN A PERSON WRITES IT AND STOPS. A KIND THAT A MECHANISM
+ * REWRITES IS OUT, WHATEVER MARKER IT CARRIES. The corpus is the stretch in
+ * which a person is the one writing the file. Inside it a repair is a correction
+ * its writer would have made, and it survives, because nothing but a person will
+ * touch the file again. Outside it a repair is either a falsification or futile,
+ * and which of the two does not matter here — the file is out either way. A
+ * MARKER IS HOW THE PREDICATE READS THAT STRETCH, NOT WHY A KIND IS IN IT: where
+ * the two part, the criterion decides and the marker does not. It is written as
+ * a criterion rather than as a fact about any one kind so that the next kind
+ * somebody adds has a test to apply instead of this reasoning to re-derive.
+ *
+ * REVISIT IT when a kind a mechanism writes acquires a state after which the
+ * mechanism is finished and a person owns the file: that state satisfies the
+ * criterion, earns a clause of its own, and moves nothing else written here. The
+ * cost of leaving it as it stands is that a dangling citation inside a
+ * mechanism-written file is caught by no gate and shows only as a printed row,
+ * so a run of the reporter is where the evidence for revisiting comes from.
+ *
+ * TWO CLASSES OF FILE REACH THE REPORTER AND NOT THE GATE WITH NO MARKER TO
+ * READ — which is what bounds the pair at two, the marked kind below being the
+ * third such file and not a third such class. Both were named as costs in the
+ * answering decision and are settled here rather than deferred.
  *
  * THE MARKER-LESS RECORD KINDS — `history/`, `analyses/`, `reviews/`,
  * `consult/`, `memos/`, `investigations/`. They carry no state marker at all,
@@ -34,12 +54,14 @@
  * (`rules/fusion-workbench-conventions.md`); a review names the range it
  * opened; an analysis is a measurement dated to a commit. Correcting a
  * citation inside one falsifies the record rather than repairing it, which is
- * exactly the reason `archive/` is out. The measurement behind the answering
- * decision counted them among the rows nobody repairs — 191 of 312, more than
- * the frozen stores contribute — so this is where most of the scoping happens.
- * `isLiveRecord` returns false for them by falling through, not by naming
- * them: there is no clause here to delete if that judgement is ever revisited,
- * only a clause to add.
+ * exactly the reason `archive/` is out. That is the criterion above with its
+ * stretch collapsed to nothing: the person writes and stops in one act, so there
+ * is no window in which a repair would be a repair. The measurement behind the
+ * answering decision counted them among the rows nobody repairs — 191 of 312,
+ * more than the frozen stores contribute — so this is where most of the scoping
+ * happens. `isLiveRecord` returns false for them by falling through, not by
+ * naming them: there is no clause here to delete if that judgement is ever
+ * revisited, only a clause to add.
  *
  * THE SURFACES OUTSIDE THE WORKBENCH — `CLAUDE.md`, `rules/*.md`,
  * `.claude/rules/*.md`, `docs/**`, and every path a project declared in
@@ -48,6 +70,26 @@
  * source. **They move the verdict**, and this predicate is not asked about
  * them at all — it takes a WORKBENCH-RELATIVE path, and `citation-check.ts`
  * scopes a non-workbench file in without consulting it.
+ *
+ * AND ONE KIND IS OUT WITH A MARKER IN ITS NAME, which is the case the criterion
+ * was written for and the one no clause below announces. The `discussions/`
+ * store holds a record that is on disk before its first round has a result,
+ * rewritten whole at every round after that, and finalised at the close. No
+ * mechanism here admits it and none is wanted: `isLiveRecord` returns false for
+ * its open state and its closed one alike by falling through, exactly as it does
+ * for the marker-less kinds, and this paragraph is the whole of the answer.
+ * MEASURED BEFORE IT WAS WRITTEN: the predicate already answered false for both
+ * states, against live issue, decision and plan paths that answered true in the
+ * same run, so nothing was added to the code and nothing is owed to it.
+ *
+ * The closed state needs no argument, being terminal exactly as a closed plan
+ * and a closed issue are. The open one is the mirror of the marker-less
+ * judgement above: those are out because repairing them falsifies the record,
+ * this is out because repairing it is futile. The next round overwrites the
+ * file, so a hand repair buys nothing, and a blocking gate over it would fire on
+ * a state the design REQUIRES the file to pass through rather than on a defect
+ * somebody left behind. The reporter still prints every row it finds in one, so
+ * the cost is visible to whoever runs the checker and is simply not blocking.
  *
  * ## The corpus itself
  *

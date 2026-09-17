@@ -39,3 +39,6 @@ The discussion record carries a marker and is not like the kinds that do. It is 
 Option 2, and the criterion to state is **not** "discussions are out". It is: **a record kind enters the citation corpus when a person writes it and stops. A kind that a mechanism rewrites is out, whatever marker it carries.** That reading keeps every existing clause exactly as it stands, explains the markerless exclusions the header already argues for on the same ground, and gives the next kind a test that does not require re-deriving this reasoning.
 
 The cost worth naming plainly: dangling citations inside discussion records go uncaught by any gate, and only `bin/fusion-citation-check`'s printed rows show them. That is the same hole the corpus header already records for records that walk out of scope at a terminal transition. It is a cost of a recomputed corpus and not a defect in this answer.
+
+---
+Answered: `260917-1124_*_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md` `## Recommendation` — option 2, and the criterion binds every future record kind: a kind enters the citation corpus when a person writes it and stops, and a kind a mechanism rewrites is out, whatever marker it carries; ruled by user, Kai Stalmann <ks@qantr.com>.

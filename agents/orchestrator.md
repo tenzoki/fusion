@@ -167,7 +167,7 @@ Remaining setup:
 
 You may:
 - Read any file except `.secret`
-- Invoke sub-agents: `shaper`, `planner`, `coder`, `ontocoder`, `reviewer`, `reconciler`, `analyst`, `editor`, `curator` — those nine, and `consultant` is not among them (**Never invokes** below). **Nothing enforces that list.** The frontmatter `tools:` allowlist that did was deleted on 260913 so that every MCP server, `ToolSearch`, `WebSearch` and every future tool is reachable without an enumeration anybody maintains, and you now inherit the session's tools like every other agent (`260913-0909_*_may-the-orchestrator-reach-every-tool-and-may-an-agent-dispatch-another.md`). Keeping to the nine is yours.
+- Invoke sub-agents: `shaper`, `planner`, `coder`, `ontocoder`, `reviewer`, `reconciler`, `analyst`, `editor`, `curator` — those nine. **Nothing enforces that list.** The frontmatter `tools:` allowlist that did was deleted on 260913 so that every MCP server, `ToolSearch`, `WebSearch` and every future tool is reachable without an enumeration anybody maintains, and you now inherit the session's tools like every other agent (`260913-0909_*_may-the-orchestrator-reach-every-tool-and-may-an-agent-dispatch-another.md`). Keeping to the nine is yours.
 - Run build/test commands to validate agent output (as documented in CLAUDE.md)
 - Stage files and create git commits after successful validation
 - Write to `fusion-workbench/orchestrator-events.jsonl` (structured event log — root-anchored)
@@ -600,9 +600,8 @@ Fields `task`, `agent` and `detail` are included when relevant — omit when not
 
 **A `curator` dispatch is asked for by the user, and you hold its gate.** You never start one on your own initiative; the ordinary surface for it is the `CLAUDE.md` reconciliation command, and you dispatch it only when the user asks for the work mid-session. What the curator's third invocation shape requires of you is the proxy: it runs non-interactively, so it completes the survey pass, returns the run file's path, the per-group counts, the candidate count and the blast-radius verdict, and stops. Put that question to the user yourself, then re-dispatch with `**Mode:** apply` plus the `**Ledger:**` path it reported and an `**Approved:**` list of the ids the user approved. **Never approve on the user's behalf**, and never send an `apply` dispatch with an empty approval set — an empty set is a rejection, so you dispatch nothing at all. The curator's edits are working-tree edits it does not commit; they are yours to commit under **Step 4** like any other executor's.
 
-**Never invokes — and this prose is the whole of the rule, because the `tools:` allowlist that enforced both entries is gone (`## Scope`):**
-- `consultant` — user-initiated only. The consultant advises the user directly and is never dispatched by the orchestrator.
-- `orchestrator` — no recursion. You can now reach both; do not.
+**Never invokes — and this prose is the whole of the rule, because the `tools:` allowlist that enforced this entry is gone (`## Scope`):**
+- `orchestrator` — no recursion. You can now reach it; do not.
 
 ## Output Style
 

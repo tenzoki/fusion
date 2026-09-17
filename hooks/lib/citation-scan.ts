@@ -248,8 +248,14 @@ export function isPlaceholder(token: string): boolean {
 
 // --- the citation grammar ---------------------------------------------------
 
+/**
+ * The store segments a store-prefixed citation may carry. `discussions` is here
+ * for citations OF a discussion record, written in some other record; nothing
+ * reads the citations written INSIDE one, because a discussion record is
+ * machine-rewritten every round and so is no live record to `isLiveRecord()`.
+ */
 const STORES =
-  "planning|issues|decisions|history|reviews|analyses|investigations|consult|memos|backlog";
+  "planning|issues|decisions|history|reviews|analyses|investigations|consult|memos|backlog|discussions";
 
 /**
  * The words the marker slot may carry besides one letter: the agent names the

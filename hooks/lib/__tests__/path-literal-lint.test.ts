@@ -43,7 +43,7 @@ const TYPE_FOLDERS = [
   "investigations",
   "memos",
   "backlog",
-  "forum",
+  "forum", "discussions",
   "codereview",
   "ontoreview",
   "conceptreview",

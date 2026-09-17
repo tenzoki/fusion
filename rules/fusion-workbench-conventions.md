@@ -30,6 +30,7 @@ fusion-workbench/
 │       ├── planning/
 │       ├── issues/
 │       ├── decisions/
+│       ├── discussions/
 │       ├── reviews/
 │       ├── analyses/
 │       └── history/                   # write-frozen — see ## Session history
@@ -37,6 +38,7 @@ fusion-workbench/
 │   ├── planning/                      # specs and plans
 │   ├── issues/
 │   ├── decisions/
+│   ├── discussions/
 │   ├── analyses/
 │   ├── reviews/                       # codereview + ontoreview, merged
 │   ├── investigations/                # write-frozen — see below
@@ -268,12 +270,15 @@ Patterns attach to the **kind of artifact**, and the kind decides the store too.
 | Spec / plan | `$OUT_PLAN` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Defect | `$OUT_ISSUE` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Decision record | `$OUT_DECISION` | `YYMMDD-HHMM_S_<topic>.md` | yes (decisions vocabulary, richer set) |
+| Discussion | `$OUT_DISCUSSION` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary, `_o_` and `_c_` only) |
 | Review (code / onto) | `$OUT_REVIEW` | `YYMMDD-HHMM-<sender>-<topic>.md` | no |
 | Analysis | `$OUT_ANALYSIS` | `YYMMDD-HHMM-<topic>.md` | no |
 | Consultation | `$OUT_CONSULT` | `YYMMDD-HHMM-<topic>.md` | no |
 | Memo | `$OUT_MEMO` | `memos-<checkout>.md` / `tasks-<checkout>.md` | no |
 | Forum entry | `$OUT_FORUM` | `YYMMDD-HHMM-<checkout>-<slug>.md` | no |
 | Cadence digest | `$OUT_MEMO` | `cadence-<checkout>.md` | no |
+
+**Of the kinds above, a discussion is the only one whose record is written unfinished**: it is on disk from round one, and its marker moves at the close rather than when somebody decides something. So read an `_o_` discussion as interrupted, not as pending.
 
 `<sender>` on a review file is `reviewer`. It is mandatory, and the document header repeats it. Older files carry the senders it replaced: `coderev` and `ontorev`, merged into `reviewer` at v11, and `conceptrev`, retired with its agent on 2026-08-15.
 
@@ -295,7 +300,7 @@ The two kinds sharing `$OUT_MEMO` differ in write semantics: the memo and task f
 
 ## State Markers — issues and planning
 
-Defect files and spec/plan files carry a state marker: `YYMMDD-HHMM_S_<topic>.md`.
+Defect, spec/plan and discussion files carry a state marker: `YYMMDD-HHMM_S_<topic>.md`.
 
 | Marker | Meaning |
 |--------|---------|
@@ -456,8 +461,9 @@ A record file is written when the change carries something the diff and its mess
 | plan | `$OUT_PLAN` | work spans more than one dispatch, so an instruction must outlive the dispatch that received it |
 | review | `$OUT_REVIEW` | a review pass was run and found something |
 | analysis | `$OUT_ANALYSIS` | a question was studied and answered without changing anything |
+| discussion | `$OUT_DISCUSSION` | a bounded discussion was run, whatever it concluded |
 
-**The split is over statements, not over events**, which is what makes it disjoint: one statement falls in exactly one row, while one event may raise several. A review pass that finds a defect owes both a review and an issue, which is two answers rather than one filed twice; two files carrying the *same* statement is the duplication to refuse. The sixth branch completes the split and is the common one: no condition held, so nothing is filed. Binding: `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md` `### C5`.
+**The split is over statements, not over events**, which is what makes it disjoint: one statement falls in exactly one row, while one event may raise several. A review pass that finds a defect owes both a review and an issue, which is two answers rather than one filed twice; two files carrying the *same* statement is the duplication to refuse. The seventh branch completes the split and is the common one: no condition held, so nothing is filed. Binding: `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md` `### C5`.
 
 **Where it goes** is resolved for you by `bin/fusion-paths`, and there is no judgment left in it: the resolver applied `## Origin Rule` once at Setup, and a store whose key it did not emit for you is a kind you do not write. **Reach is cited, never copied.** Where a record binds work filed elsewhere, the citing record names it by basename in its `**Cross-references:**` header. Do not copy it, do not move it, do not file a duplicate: one record, one location, many citations.
 

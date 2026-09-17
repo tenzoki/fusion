@@ -106,6 +106,7 @@ and each says why it has no second candidate.
 | `OUT_DECISION` | `SCAN_DECISIONS` | `<scope>/decisions` | Decision-record filing. |
 | `OUT_REVIEW` | `SCAN_REVIEWS` | `<scope>/reviews` | Review writes, both review domains. |
 | `OUT_ANALYSIS` | `SCAN_ANALYSES` | `<scope>/analyses` | Analysis writes. |
+| `OUT_DISCUSSION` | — | `<scope>/discussions` | Discussion-record writes. No read key, for the reason the `OUT_MEMO` row gives: no prompt reads past discussions in this version, so nothing would name a `SCAN_DISCUSSIONS`. Never defined rather than retired. |
 | `OUT_CONSULT` | — | `shared/consult` | Literal: a consultation answers to nobody's directive, so no container holds one. `SCAN_CONSULT` was retired on 2026-09-10 with its last consumer; the store and its reports stay. |
 | `OUT_BACKLOG` | `SCAN_BACKLOG` | `circles` | Literal, and it is the container store itself rather than a directory inside one container. A work item's record lives in its own container (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`), so the pair names the store whole and a consumer walks it at depth 2. |
 | `OUT_FORUM` | `SCAN_FORUM` | `shared/forum` | Literal: a message is addressed to another checkout, not to a unit of work. |
@@ -140,13 +141,16 @@ Circle container was cut, and the two that named `circles/` show the criterion s
 that store's return: the directory is written to again, under `OUT_BACKLOG`, and the retired
 keys stayed retired because no prompt names them.
 
-**Two kinds have a write key and no read key**, and it is this criterion applied to one
-half of a pair. Nothing reads memos: a memo is written for the user, so a `SCAN_MEMOS`
+**Three kinds have a write key and no read key** — memos, consultations and discussions —
+and it is this criterion applied to one half of a pair. Nothing reads memos: a memo is written for the user, so a `SCAN_MEMOS`
 would be a key no prompt has ever named. `SCAN_CONSULT` did have consumers and lost them —
 `playmaker` read every store and went at v11, and `/fusion:archive` then named the key in
 one sentence about deriving a shared store out of a two-valued `SCAN_*`, a derivation that
-went with the second value. A key is emitted when a prompt reads or writes the kind, not
-because the symmetry of the table would look better with it.
+went with the second value. `SCAN_DISCUSSIONS` reaches the same place by a third route: it
+was never defined at all, because a discussion's record is the register of its own rounds
+and is addressed by its own path, so no prompt searches the store across items. A key is
+emitted when a prompt reads or writes the kind, not because the symmetry of the table would
+look better with it.
 
 ## Emission is per-consumer, and derived from the prompt
 
