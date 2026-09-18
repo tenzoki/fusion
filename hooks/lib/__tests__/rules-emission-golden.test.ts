@@ -809,8 +809,8 @@ describe("rules emission golden", () => {
 
   it("reports, without failing, when a role's own rule text is due for a cleanup", () => {
     // The report this file was built for, narrowed on 2026-08-14 to each role's
-    // EXTRAS — the files it loads that not every agent loads. The core moved to
-    // the hard bound above, so the two sets are disjoint and every byte the
+    // EXTRAS — the files it loads that not every agent loads. The core went to
+    // its own bound, retired 2026-09-11 (header), so the two sets are disjoint and every byte the
     // fleet loads is measured exactly once. Role-specific growth still only
     // reports: it is bought by the agents that need it, and the ratchet this
     // file gave up in 2026-08-05 is what blocking it again would be.
@@ -1029,8 +1029,8 @@ describe("the audience argument", () => {
 // ---------------------------------------------------------------------------
 // THE DISPATCH-PATH BOUND — everything one dispatch loads, per path, zero-sum.
 //
-// WHAT IT MEASURES AND WHY IT IS NOT THE BOUND ABOVE. The hard bound above
-// measures the UNIVERSAL CORE: the rule files every agent loads. That is a
+// WHAT IT MEASURES AND WHY IT DISPLACED THE BOUND ABOVE. The bound retired on
+// 2026-09-11 measured the UNIVERSAL CORE: the rule files every agent loads. That was a
 // floor, and a floor is blind to two thirds of what a dispatch actually reads.
 // Over the thirteen days from 2026-08-27 to 2026-09-09 the coder path rose
 // 154 440 -> 188 256 bytes, 21.9 percent, and the core bound was green on every
@@ -1041,8 +1041,8 @@ describe("the audience argument", () => {
 // this bound exists.
 //
 // So the quantity here is the PER-PATH TOTAL: the agent's own prompt, plus every
-// path `bin/fusion-rules` emits for it, plus `CLAUDE.md`. Fifteen paths, fifteen
-// independent baselines, and HEAD-ROOM ZERO — an addition of N bytes to any
+// path `bin/fusion-rules` emits for it, plus `CLAUDE.md`. One path per agent, each
+// with its own baseline, and HEAD-ROOM ZERO — an addition of N bytes to any
 // component requires a removal of at least N from the same path's total. It is
 // not a budget and must not be read as one.
 //
@@ -1072,10 +1072,10 @@ const dispatchBaselinePath = join(here, "fixtures", "dispatch-path.baseline");
 /**
  * ZERO, and it is the point. Every other surface in this project gets head-room
  * above its baseline because those bounds measure the RATE of addition. This one
- * measures the LEVEL: the fifteen rows are what the fleet stood at before the cut
- * that this instrument was built to keep, so any head-room at all is head-room
- * the cut created and would immediately be spent, which is what the thirteen days
- * after 2026-08-27 measured.
+ * measures the LEVEL: a row is set at the event that wrote it (the arming, or the
+ * one merge the fixture records) and never follows the cut this instrument was
+ * built to keep down, so any head-room at all is head-room the cut created and
+ * would immediately be spent, which is what the thirteen days after 2026-08-27 measured.
  */
 const DISPATCH_HEAD_ROOM = 0;
 
@@ -1153,7 +1153,7 @@ function dispatchBoundMessage(over: { agent: string; g: Growth }[]): string {
   }
   lines.push(
     "CLAUDE.md and the always-on rule files are SHARED COMPONENTS: each is counted " +
-      "in every path's total, so N bytes added to one of them puts all fifteen paths " +
+      `in every path's total, so N bytes added to one of them puts all ${agentNames().length} paths ` +
       "N over at once. A shared component's addition must be offset ONCE IN A SHARED " +
       "COMPONENT, or ONCE PER PATH — in each path's own prompt, or in the " +
       "conditionally emitted rules only that path receives. There is no third way to " +
@@ -1270,7 +1270,7 @@ describe("the dispatch-path bound, on synthetic component sizes", () => {
 
   it("fails every path when a shared always-on rule file grows", () => {
     // An always-on file is inside the `rules emitted to <a>` aggregate of every
-    // path, so growth in it lands on all fifteen at once.
+    // path, so growth in it lands on every one of them at once.
     expect(overOf((a) => bump(atBaseline(a), rulesRel(a), 1))).toEqual(agents);
   });
 
@@ -1305,7 +1305,7 @@ describe("the dispatch-path bound, on synthetic component sizes", () => {
   it("offsets a shared component's addition once per path, and nowhere else", () => {
     // The way out the failure text names: N bytes added to CLAUDE.md, N taken
     // out of each path's own prompt. Offsetting only one path leaves the other
-    // fourteen over, which is what makes the rule per-path rather than a fleet
+    // paths over, which is what makes the rule per-path rather than a fleet
     // average.
     const grow = (a: string) => bump(atBaseline(a), "CLAUDE.md", 200);
     expect(overOf((a) => bump(grow(a), promptRel(a), -200))).toEqual([]);

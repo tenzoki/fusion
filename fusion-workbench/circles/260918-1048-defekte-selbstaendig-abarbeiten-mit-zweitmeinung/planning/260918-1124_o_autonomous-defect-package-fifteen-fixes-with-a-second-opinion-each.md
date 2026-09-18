@@ -178,7 +178,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
    - **Second opinion:** consultant
    - Dependencies: none
 
-9. **Derive the dispatch-path count in the golden test instead of writing "fifteen"**
+9. [DONE] **Derive the dispatch-path count in the golden test instead of writing "fifteen"**
    - Executor: `coder`
    - Record: `260917-1115_*_the-dispatch-path-bounds-prose-counts-fifteen-paths-against-a-fixture-holding-eleven-rows.md`, in the issues store of the container `260916-1050-neues-discuss-feature`
    - Survey reason (group 2, row 22): "Four `fifteen` and the present-tense 'measures the UNIVERSAL CORE' survive in `hooks/lib/__tests__/rules-emission-golden.test.ts` (`:1033`, `:1044`, `:1075`, `:1156`, `:1273`) against eleven fixture rows; word replacement inside existing lines and `agentNames().length` in the failure string is line-neutral."

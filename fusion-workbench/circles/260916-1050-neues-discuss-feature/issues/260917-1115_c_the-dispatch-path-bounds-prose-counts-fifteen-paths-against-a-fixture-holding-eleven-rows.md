@@ -40,3 +40,6 @@ present tense, about the always-on rule bound that was retired on 2026-09-11; th
 and cannot fail, so no hard bound stands above it. Verified at `f0aa5b77` against
 `README-hooks.md` `### Growth bounds on the shipped text`, which records the retirement. Line-neutral
 to fix, like the counts.
+
+---
+Resolved: no spelled-out count of dispatch paths survives in `hooks/lib/__tests__/rules-emission-golden.test.ts`: the failure message derives the figure from `agentNames().length`, the banner says one path per agent, the level paragraph says a row is set at the event that wrote it (the arming, or the one merge the fixture records) and never follows the cut down, which is true for the `reviewer` row too, and the two present-tense claims that a hard core bound stands above (the banner and the extras test) now say that bound was retired 2026-09-11. In-place line replacement; the file stays at 1 330 lines. The fixture's own "fifteen rows below" is data a test asserts against and is filed for the data executor as `260918-1250_*_the-dispatch-path-baseline-fixture-says-fifteen-rows-below-while-it-holds-eleven.md`. Concept accepted by a consultant read with changes; fixed in the commit that carries this line.
