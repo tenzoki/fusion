@@ -2,8 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** claimed
-**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260918-0712
+**Status:** open
 **Active spec/plan:** 260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md (the spec), 260918-0712_*_implementation-depends-on-edges-proposed-and-confirmed.md (the plan drawn from it, and the one carrying the stopping section)
 **Depends-on:** 260918-0706-strike-unconfirmed-depends-on-entry.md
 **Cross-references:** 260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md, 260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md, 260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md
@@ -49,3 +48,28 @@ required — a work item carrying two colliding dependencies must be split — a
 spec's three-candidate-edge stopping condition in the same breath, as a rule this project
 wrote itself that forbids building the very feature that would produce the edges it demands.
 
+
+---
+Released 260918-1042, on the user's word, by the checkout that built it. **The item stays open
+because the job is not finished, not because it stalled.** What it asked for is shipped: a run
+over the store proposes edges, the gate is the user's, and confirmed entries reach the field.
+That went out as `v11.7.0` and, with the two rulings that followed, as `v11.8.0`.
+
+What the next party takes on, all three of them the user's to settle rather than anyone's to
+implement:
+
+- **The yield has no upper bound.** Nothing in the prompt limits how many proposals one run can
+  put at the gate. What holds it today is a seven-item store and the legacy-status exclusion, and
+  neither scales. Open at `260918-0824_*_the-container-hop-voided-the-only-stated-mitigation-for-flooding-the-gate.md`.
+- **A fresh survey is owed.** The only ledger a run has ever produced is
+  `260918-0738-curator-run.md`, written against text that has since been repaired five times. Its
+  two entries are not judgeable as they stand: both lack the per-endpoint provenance the current
+  text requires, and one is labelled for a group the current text would route differently. The run
+  writes nothing, so it costs a dispatch and no risk.
+- **The acceptance's last quarter is unmet by construction.** Three of its four halves hold. The
+  fourth asks for an order over more than one node, and the store holds one live item, so it is
+  reachable only once the backlog grows — which is the user's act and nobody else's.
+
+Two open decisions carry the rest: whether a proposal may point at an item whose text it never
+read is answered and implemented, and so is how a rejection is remembered. Neither is a blocker
+for whoever picks this up.
