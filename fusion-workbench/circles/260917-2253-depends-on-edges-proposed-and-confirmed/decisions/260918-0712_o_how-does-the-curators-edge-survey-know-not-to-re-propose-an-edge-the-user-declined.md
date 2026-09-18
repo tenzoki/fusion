@@ -74,9 +74,11 @@ in the words that record used, condensed. Option 5 is new and is what the plan b
 5. **Suppress on the outcome line, not on a new value.** The survey reads every prior curator run
    file across the whole workbench, unbounded by the evidence anchor, and for each edge entry it
    finds:
+   - consequence group `candidate` — **re-proposed, always**, whatever outcome line it carries
+     (see `## The candidate case` below);
    - `applied` — suppressed (and suppressed anyway, because the field now carries the basename);
-   - `skipped` — **suppressed**: an outcome line exists, so a gate was put and answered, and the
-     entry's group was on offer and not taken;
+   - `skipped`, in a group the gate offers — **suppressed**: an outcome line exists, so a gate was
+     put and answered, and the entry's group was on offer and not taken;
    - `stale` or `failed` — **re-proposed**: the user approved it and the write did not land;
    - **no outcome line at all** — **re-proposed**: no apply dispatch ran, so no gate was answered.
    - Pros: it delivers option 1's separation with option 2's cost — one added instruction in the
@@ -89,6 +91,41 @@ in the words that record used, condensed. Option 5 is new and is what the plan b
      real case in which a refusal is not remembered. Closing it means dispatching the apply pass
      on a rejection purely to record the answer, which contradicts
      `skills/curate/SKILL.md` `## Step 6` ("dispatch nothing at all") and is not proposed here.
+   - **Option 5 is a reopening, not a novelty.** The 2026-09-11 record rejected suppressing on
+     `skipped` on an explicit premise — that `skipped` conflates the refused with the never-seen.
+     Option 5 reopens that premise on evidence that record did not have: the gate offers every
+     non-empty group, and an outcome line exists only after an answered gate. It is option 2's
+     mechanism with option 1's discrimination, reached by showing the premise false rather than by
+     disagreeing with the conclusion drawn from it.
+
+## The candidate case, which the four earlier options do not cover
+
+A **candidate** ledger entry is never offered for approval: `agents/curator.md` `## Evidence tiers`
+says so, and the gate names candidates as text saying they are not on offer. But
+`### Pass 2 — apply` appends an outcome **per entry**, so a candidate edge entry can carry
+`skipped` without ever having been put to anybody.
+
+**Consequence for options 2 and 5 alike:** suppressing on `skipped` would suppress a question the
+user never saw — exactly the failure the 2026-09-11 record rejected option 2 for, arriving through
+a door that record did not check. The route is ordinary rather than exotic: an unreadable cited
+record downgrades a finding to a candidate under
+`agents/curator.md` `### The thin spot, stated honestly`.
+
+Two remedies, and the user picks:
+
+- **(a) Option 5 gains a fourth branch — a candidate entry is re-proposed rather than suppressed.**
+  The suppression key reads the consequence group beside the outcome line. Narrow: it touches only
+  the edge subject and changes nothing the other three subjects see. **This is what the plan
+  implements**, so that the pass is not built around a known hole.
+- **(b) The run file stops writing an outcome on entries that were never on offer.** Cleaner in
+  principle — an outcome line then means exactly "the gate answered this", for every subject — and
+  it touches all four, which is why the plan did not take it unilaterally.
+
+**Whether a candidate carries an outcome line at all is the question under both.** Under (a) it
+may, and the group line disambiguates. Under (b) it may not, and then "no outcome line" has two
+causes — no gate answered, and never offered. Both lead to the same decision, re-propose, so the
+suppression logic needs no further split; a *reader* still wants them apart, and the entry's own
+`candidate` group line is what tells them apart under either remedy.
 
 ## Constraints
 
@@ -114,7 +151,9 @@ spec, and none of them moved.
 
 ## Recommendation
 
-**Option 5**, which is what the plan implements, and the user's ruling is what settles it.
+**Option 5 with remedy (a)**, which is what the plan implements, and the user's ruling settles it.
+Two things are being asked at once and either can be answered against the plan: the mechanism
+(options 1 to 5) and the candidate case (remedies (a) and (b)).
 
 The reasoning is the finding at the head of this record: option 1 is the right *behaviour* and
 the wrong *mechanism*, because the separation it pays a shared vocabulary for is already carried

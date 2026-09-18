@@ -4,7 +4,7 @@
 **Domain:** code
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 **Partners:** orchestrator and consultant
-**Rounds:** 3
+**Rounds:** 4
 **Ceiling:** 8
 **Outcome:** still running
 **Cross-references:** 260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md, 260917-2253-depends-on-edges-proposed-and-confirmed.md, 260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md, 260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md, 260911-1915-candidate-prerequisite-edges.md
@@ -105,6 +105,18 @@ discussion checks the load-bearing claims of that spec before a plan is drawn fr
 - **Entered:** round 3
 - **Evidence:** Strike the entry and close the two defects; correct the spec on everything these three rounds moved, including replacing the survey trigger with the arithmetic bound; file the re-run question as a new decision record citing the deferred one and put it to the user; put the route question to the user with the split named beside the three routes already listed; and do not run the by-hand survey.
 
+### H2 (factual half) — The node-set rule does not reach `**Cross-references:**`, so only the dependent must be live.
+
+- **Advanced by:** planner, relayed by first partner
+- **Entered:** round 4
+- **Evidence:** `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` puts the ordering assertion on `**Depends-on:**` alone and says `**Cross-references:**` orders nothing, citing the node-set decision for the ordering field's terminal values only. The decision's own `Answered:` line speaks throughout of the graph, nodes, edges and `bin/fusion-work-order`, and reaches the citation field nowhere. Dependent live, target any work item.
+
+### H3 — Three pinned baselines go red on the prompt edits, and re-approving them is legitimate rather than a way around a gate.
+
+- **Advanced by:** planner, relayed by first partner
+- **Entered:** round 4
+- **Evidence:** `reference-resolution-lint.test.ts` pins its three counts as exact equality and says in its own text that re-approval is the expected response and that widening the assertion back into a floor is not. `rules-emission.golden` pins the conventions file's byte size in all eleven blocks. The dispatch-path baseline is **not** touched: its head-room bounds the sum rather than each component, and a shrink never trips it — verified by running rather than reading, the curator path holding 77 097 bytes of slack. One further pin stands on a file the plan edits, an exact section count on `## Project language`, and the planned edit does not reach it.
+
 ## What fell
 
 ### C3 — A new skill body is arithmetically impossible, and editing an existing `SKILL.md` is charged against the same 174 bytes, so neither is available without a cut in `skills/`.
@@ -170,6 +182,40 @@ discussion checks the load-bearing claims of that spec before a plan is drawn fr
 - **Last moved:** round 3
 - **Evidence:** Refuted. The survey's result is arithmetic rather than observation: candidate edges are bounded above by the ordered pairs among live nodes, and with one live node the bound is zero. The 2026-09-11 survey makes that argument about itself, calling its own single candidate "the largest number this corpus can produce". Running it now reads prose to reach a number the store's shape already fixes.
 - **Conceded:** first partner, round 3 — the cheap substitute is to record the bound rather than the survey: the live-node count, the ceiling it implies, the threshold of three, and the count at which a prose survey first becomes worth running, written into the spec's stopping section beside the existing measurement.
+
+### H1 — The re-run record's option 1 is degenerate, so option 5 replaces it.
+
+- **Advanced by:** planner, relayed by first partner
+- **Entered:** round 4
+- **Last moved:** round 4
+- **Evidence:** Refuted on the co-extension, by a class neither record considered. A **candidate** ledger entry is never offered for approval and the gate names candidates as text saying they are not on offer, yet the apply pass appends an outcome per entry and an unapproved entry takes `skipped`. So a candidate edge entry is `skipped` without its group ever having been offered: under option 1 it is not `declined`, and under option 5 it is suppressed forever and silently — which is the failure the 2026-09-11 record rejected option 2 for, arriving through a door option 5 left open. The live route is an unreadable cited record downgrading a finding to a candidate, reachable because the corpus resolves citations into the archive store. What holds, and is conceded: on the two cases the 2026-09-11 record actually named, both are `skipped` and both are `declined`, so option 1 buys no separation there. Option 5 is also not novel — it revives a premise that record explicitly rejected, which is legitimate on new evidence and must be recorded as a reopening rather than presented as a fifth option.
+- **Conceded:** first partner, round 4 — option 5 needs a fourth branch, that a candidate entry is re-proposed rather than suppressed, or the run file must stop writing `skipped` on entries never on offer. Both remedies and the case go into the open decision record before the user rules.
+
+### H2 (consequence) — The first run's non-empty yield changes what this session can hand the user and partly undoes the zero-yield finding.
+
+- **Advanced by:** first partner
+- **Entered:** round 4
+- **Last moved:** round 4
+- **Evidence:** Refuted by measurement. The live item's container names four other work items; its head already cites two. Both remaining ones appear in exactly one file, the spec this session wrote for this feature, and the one-hop corpus does not rescue them because the head's other cited records name no work item outside their own container. So the entire first-run citation yield is text this session authored for this pass, and the round-1 objection to a self-authored fixture lands on it unchanged.
+- **Conceded:** first partner, round 4 — the yield is 2 rather than 0 and that is worth saying, but so is what it is: the first run exercises the plumbing on this session's own spec and exercises the judgement half not at all.
+
+### H4 (arithmetic) — The cut returns about 85 bytes against the parameter's 133.
+
+- **Advanced by:** planner, relayed by first partner
+- **Entered:** round 4
+- **Last moved:** round 4
+- **Evidence:** The duplication and the defect in both copies are exact, and the head-room figure is exact. The arithmetic is not. The enumeration is 59 bytes, two copies are 118, and the shortest usable pointer naming a file and a heading is 34 bytes, so replacing both returns 50. Reaching 85 needs the surrounding framing cut as well and one pointer rather than two, which is a larger edit than the stated operation. The bound rather than the estimate: a minimal parameter edit near 150 bytes fits in 174 unaided, and the measurement after writing is what settles it.
+- **Conceded:** first partner, round 4 — the figure is stated as 50 or the larger edit is described, and neither "roughly 85" nor an estimate reaches a commit message as though it were derived.
+
+### H5 — The plan is sound enough to execute as written.
+
+- **Advanced by:** first partner
+- **Entered:** round 4
+- **Last moved:** round 4
+- **Evidence:** Refuted on three defects and one cardinality. The classification split is not disjoint: branch 2 is defined as the case where the words do not state the ordering and branch 3's condition explicitly includes an ordering whose direction the words do not fix, so every branch-2 input satisfies branch 3, and the section's own claim that an ambiguity can never become a guessed ordering is contradicted two paragraphs above it. The `**Decidability:**` line says the pass never predicts the relation type, which branch 2 does. And the survey pass advances the curator's anchor on writing its run file, so a gate-free survey run leaves the anchor at HEAD and the user's first real run reads nothing predating it and silently returns nothing — a bound the plan states for the suppression read and drops for the corpus read, under its own sentence that both omissions are defects waiting to happen. The cardinality: three terminal records cited in the head, not four, one of the four carrying the open marker.
+- **Conceded:** first partner, round 4 — all four corrected before step 1 is drafted. The split recuts on direction rather than on source of evidence, which collapses two branches into one and makes the decidability line true. The edge corpus is ruled unanchored, because a dependency relation is a standing fact rather than a change event, and an edges-only run advances no anchor.
+
+**What the round found sound and did not reopen:** the stopping section carries no yield or candidate-count threshold, so the struck rule returns by no door; the store figures reproduce by running the helper; the four-row byte table reproduces exactly; and the zero-prerequisite-proposal statement is correct and correctly stated three times.
 
 ## What could not be decided
 
