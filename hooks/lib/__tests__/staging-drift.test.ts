@@ -1,31 +1,14 @@
 /**
  * Staging drift — the measurement, run against real project roots.
  *
- * ## What this suite is for
- *
- * `lib/staging-drift.ts` answers issue `260811-0114`, whose account is the filed
- * record and is told again in `commit-message-path.test.ts`'s header: the
- * staging rule at `agents/orchestrator.md` `### Step 4 — commit` item 4 is a shape — every
- * path passed to `git add` is one you wrote out yourself — and a file nobody
- * names is a file nobody commits. The shape is right and stays; what was missing
- * is a measurement of the result.
- *
- * `commit-message-path.test.ts` checks
- * that the prompts carry the contract. They read text and can prove nothing
- * about behaviour. Every case here spawns a real subprocess against a real
- * throwaway project with a real git repository, and asserts on what came back —
- * the same discipline `review-coverage.test.ts` states at the same place, for
- * the same reason (`isFusionPluginCwd()` caches per process, so an in-process
- * stand-down assertion would pass vacuously).
+ * Every case here spawns a real subprocess against a real throwaway project:
+ * the subject is a working directory, a workbench root above it and a git
+ * repository around both (`helpers/guard-harness.ts` says why, at its harness).
  *
  * ## The properties under test
  *
  * 1. **It reproduces the measured defect.** A modified root record, an
  *    untracked history entry and a `.commit-msg-tmp` are three faults, named.
- *    The root record the defect was measured on was the work queue's
- *    `tasklist.md`, which left the plugin on 2026-08-15; a Circle record stands
- *    in its place, the record class still decided by location rather than by a
- *    store segment. The class is what was under test, not the name.
  * 1b. **It classifies by location before it classifies by name.** An authored
  *    record whose topic slug says "commit message" is a `record` — the control
  *    this suite lacked, and the defect it let through (issue `260811-1141`).
@@ -87,11 +70,7 @@ const WORKBENCH_FILES: Record<string, string> = {
   ].join("\n"),
 };
 
-/**
- * The record a case dirties when it wants a fault that no artifact store owns.
- * It was `portfolio.md` until 2026-08-23, when that file became live state
- * (`rules/workbench-tracking.md` class L) and `ROOT_RECORDS` emptied.
- */
+/** The record a case dirties when it wants a fault that no artifact store owns. */
 const CIRCLE_RECORD = "circles/260811-0100-close-the-findings/_t_circle.md";
 
 const withWorkbench = <T,>(fn: (p: Project) => T): T =>
@@ -405,11 +384,8 @@ describe("staging drift: what it reports without raising an alarm", () => {
     "reads a backlog entry as a record, not as the user note it used to be",
     () => {
       withWorkbench((project) => {
-        // `shared/backlog/` is a declared store since the Circle-first plan, so
-        // an entry left uncommitted is an unstaged RECORD — the model is told
-        // to stage it. Before the store existed the same bytes sat in
-        // `shared/backlogs/` and came back `unclassified`, with nothing
-        // claimed about them, which is what naming a store buys.
+        // `shared/backlog/` is a declared store, so an entry left uncommitted is
+        // an unstaged RECORD — the model is told to stage it.
         write(
           project.root,
           "fusion-workbench/shared/backlog/260811-0826_o_observations.md",
@@ -421,6 +397,30 @@ describe("staging drift: what it reports without raising an alarm", () => {
         const line = row(res.stdout, "shared/backlog/260811-0826_o_observations.md");
         expect(line).toMatch(/^ {2}record\s+\?\? .*UNSTAGED/);
         expect(line).toContain("backlog store");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reads a work item's own record as a record, and claims nothing about a sibling no store owns",
+    () => {
+      withWorkbench((project) => {
+        // The v11 unit of work is `circles/<item>/<item>.md`: the same name twice
+        // and no store segment, so it fell through to `unclassified` and an
+        // uncommitted item never reached the verdict (issue 260911-1421_*_a-work-items-own-record-classifies-as-unclassified-so-staging-drift-claims-nothing-about-the-unit-of-work.md).
+        const item = "circles/260811-0200-file-the-idea";
+        write(project.root, `fusion-workbench/${item}/260811-0200-file-the-idea.md`, "# Idea\n");
+        write(project.root, `fusion-workbench/${item}/other.md`, "a note\n");
+
+        const res = runStagingDrift(project.root);
+        expect(keys(res.stdout).unstaged).toBe("1");
+        const record = row(res.stdout, `${item}/260811-0200-file-the-idea.md`);
+        expect(record).toMatch(/^ {2}record\s+\?\? .*UNSTAGED/);
+        expect(record).toContain("a work item's own record");
+        const other = row(res.stdout, `${item}/other.md`);
+        expect(other).toMatch(/^ {2}unclassified/);
+        expect(other).toContain("nothing is claimed about it");
       });
     },
     CASE_TIMEOUT,

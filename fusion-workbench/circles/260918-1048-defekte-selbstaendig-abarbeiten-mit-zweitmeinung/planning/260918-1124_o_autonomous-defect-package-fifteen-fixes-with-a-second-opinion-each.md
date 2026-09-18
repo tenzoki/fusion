@@ -238,7 +238,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
     - **Second opinion:** consultant
     - Dependencies: none
 
-14. **Classify a work item's own record as a record**
+14. [DONE] **Classify a work item's own record as a record**
     - Executor: `coder`
     - Record: `260911-1421_*_a-work-items-own-record-classifies-as-unclassified-so-staging-drift-claims-nothing-about-the-unit-of-work.md`, in the shared store's issues directory
     - Survey reason (group 3, row 21): "`classify()` still has only the `_circle.md` branch at `hooks/lib/staging-drift.ts:461` and `STORES` still lists `backlog` at `:247`; adding the item-record branch with a pinned test is decidable from the record's own four-path measurement."

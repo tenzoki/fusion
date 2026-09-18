@@ -89,7 +89,8 @@
  *     only. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
  *     message", and told the model to delete it (issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`).
- *   - `record` — an authored artifact: a legacy Circle's `*_circle.md` (a
+ *   - `record` — an authored artifact: a work item's own record
+ *     (`circles/<item>/<item>.md`), a legacy Circle's `*_circle.md` (a
  *     terminal record `/fusion:migrate` never touches, so a converted workbench
  *     can still hold one), or anything under an artifact store. These are what
  *     a staging list is supposed to name.
@@ -461,6 +462,11 @@ export function classify(rel: string, sessionHistory: string): { klass: EntryCla
   }
   if (segments[0] === "circles" && name.endsWith("_circle.md")) {
     return { klass: "record", why: "a Circle record" };
+  }
+  // The unit of work: `circles/<item>/<item>.md`, the same name twice and no
+  // store segment (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`).
+  if (segments[0] === "circles" && segments.length === 3 && segments[2] === `${segments[1]}.md`) {
+    return { klass: "record", why: "a work item's own record" };
   }
   for (const store of STORES) {
     if (segments.includes(store)) {
