@@ -15,7 +15,7 @@
   analyst.md 21032
   coder.md 12165
   consultant.md 13432
-  curator.md 75076
+  curator.md 76852
   editor.md 13156
   ontocoder.md 15875
   orchestrator.md 89188
@@ -23,7 +23,7 @@
   reconciler.md 21171
   reviewer.md 12837
   shaper.md 17017
-  total 310102
+  total 311878
 
 [skills bytes]
   archive/SKILL.md 24473
@@ -31,7 +31,7 @@
   check/SKILL.md 31855
   cleanup/SKILL.md 6768
   commit/SKILL.md 6113
-  curate/SKILL.md 12010
+  curate/SKILL.md 12017
   discuss/SKILL.md 14346
   help/SKILL.md 16452
   memo/SKILL.md 12969
@@ -40,7 +40,7 @@
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19424
-  total 227997
+  total 228004
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -58,6 +58,7 @@
   dispatch-bytes.test.ts 223
   domain-cascade-order-lint.test.ts 232
   domain-cascade.test.ts 888
+  edge-answers.test.ts 190
   executor-verification-report-lint.test.ts 238
   fenced-code-exemption.test.ts 206
   fusion-checkout-name.test.ts 193
@@ -100,7 +101,7 @@
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 653
-  surface-growth-bound.test.ts 709
+  surface-growth-bound.test.ts 723
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22042
+  total 22246

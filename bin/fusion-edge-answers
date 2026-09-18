@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# fusion-edge-answers — what prior curator runs already asked the user about a
+# work-item edge.
+#
+# Usage:
+#   fusion-edge-answers
+#
+# Takes no arguments. Output on stdout, one KEY=value per line, then one row per
+# answered pair:
+#
+#   anchor=workbench-root
+#   run-files=15
+#   edge-entries=2
+#   pairs=2
+#   unreadable=0
+#   verdict=answers
+#   none        <dependent>.md -> <target>.md  into Cross-references
+#
+# The row is four fixed columns — the outcome value, the dependent, the target,
+# the field the edge would be written into. The outcome column carries one of
+# the five values `agents/curator.md` `## The run file` authors — `applied`,
+# `skipped`, `not-offered`, `stale`, `failed` — or one of two that are not
+# outcome values at all: `none`, the entry carries no outcome row, and
+# `unreadable`, its row carries no vocabulary word. Both say no answer was read.
+#
+# WHAT IT IS FOR. `agents/curator.md` `### The suppression read` must not
+# re-propose an edge the user already answered, and the record of those answers
+# is every curator run file in the workbench: 975 220 bytes over 15 files on
+# fusion's own tree at 2026-09-18, of which exactly ONE carries an edge entry,
+# each run adding 60 to 170 KB. This program reads that corpus so an agent does
+# not have to
+# (`260918-0712_*_how-does-the-curators-edge-survey-know-not-to-re-propose-an-edge-the-user-declined.md`,
+# the `Answered:` block's last paragraph).
+#
+# WHAT IT DOES NOT PRINT, AND THAT ABSENCE IS THE RULING. Not the entry's
+# consequence group. The suppression key reads the outcome value alone, because
+# `not-offered` names the entry the gate never put; a key that read the group
+# line beside the outcome line would be the drifting second copy the ruling
+# removed. And not the decision: which of the seven values suppresses and which
+# re-proposes is authored in `### The suppression read` and nowhere here. This
+# program reports and gates nothing — no exit code carries the verdict, the
+# stdout-verdict rule every other reporting helper in this directory carries.
+#
+# THE CORPUS IS EVERY RUN FILE, WITH NOTHING EXCLUDED — not bounded by the
+# curator's evidence anchor, not resolved through $SCAN_ANALYSES, and `archive/`
+# read like the live tree. A run file records a refusal whatever its age,
+# whichever item was claimed when it was written, and whether or not its
+# container has since been archived; a bound that drops one drops it silently.
+#
+# THE OUTCOME PARSE IS A HEURISTIC OVER FREE PROSE and the library header states
+# it exactly. Its one property a caller must know: it fails toward `none`, so an
+# unrecognised shape costs a re-proposal and never a silent suppression.
+#
+# Exit codes:
+#   0  the read ran. `verdict=` says what it found. `verdict=empty` is a real
+#      answer that reaches 0 — no edge was ever proposed in this workbench.
+#   1  usage error.
+#   2  no fusion workbench above the working directory; nothing to read.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "no edge was ever proposed here" is an answer about
+#      the project, and a broken install must never be reported as one.
+#
+# The work is hooks/dist/edge-answers.js, resolved relative to this script rather
+# than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run
+# their own build. node is already a hard requirement: the plugin's hooks are
+# node programs.
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/edge-answers.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-edge-answers: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

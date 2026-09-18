@@ -431,8 +431,22 @@ const TEST_LINE_BASELINE: Record<string, number> = {
 const AGENT_HEAD_ROOM = 18_000;
 /** 20 000 derived, plus the two 2026-09-11 raises and the two on 2026-09-16 and 2026-09-17, logged in `README-hooks.md`. */
 const SKILL_HEAD_ROOM = 39_260;
-/** 2 500 derived, plus the 2026-09-11 raise and the three on 2026-09-16, logged in `README-hooks.md`. */
-const TEST_LINE_HEAD_ROOM = 2_840;
+/**
+ * 2 500 derived, plus the 2026-09-11 raise and the three on 2026-09-16, logged
+ * in `README-hooks.md` — and a ninth raise of +190 on 2026-09-18, justified
+ * here rather than there because a raise nobody can trace is what this bound
+ * exists to prevent.
+ *
+ * WHO, WHEN, FOR WHAT. Kai Stalmann authorised it on 2026-09-18, in the
+ * dispatch that built `bin/fusion-edge-answers` under the ruling on
+ * `260918-0712_*_how-does-the-curators-edge-survey-know-not-to-re-propose-an-edge-the-user-declined.md`,
+ * and for that helper's test file alone: `edge-answers.test.ts` is 190 lines and
+ * the raise is 190, so the ten lines this comment adds still come out of the 26
+ * this surface had before. No cut was looked for, because the user named the
+ * raise as the remedy and the authorisation reaches nothing else — the same
+ * dispatch left `AGENT_HEAD_ROOM` and `SKILL_HEAD_ROOM` unraised and said so.
+ */
+const TEST_LINE_HEAD_ROOM = 3_030;
 
 const SURFACES: Surface[] = [
   {

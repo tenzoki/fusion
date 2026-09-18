@@ -241,21 +241,21 @@ The unit test 2 judges is a **reading**: one supportable interpretation of one s
 
 **Neither route above converts a relation and neither drops one.** A relation the ordering field cannot carry goes to the field defined widely enough to receive it — `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, "work it merely touches" — as a proposal the user confirms, and a reading this pass may not propose is reported rather than swallowed. **The dependent is live in every outcome that produces an entry**, which is what keeps the write bound honest, and it is checked again at apply time rather than only here (`### Pass 2 — apply`).
 
-### The suppression read, and the candidate row first
+### The suppression read
 
-Read every prior curator run file across `$WORKBENCH`, **unbounded by the evidence anchor and not through `$SCAN_ANALYSES`**. Both bounds are measured facts rather than caution: the anchor bounds the evidence pass by commit and date, and `**Scope:** full` is what a user runs after a decline; and `$SCAN_ANALYSES` resolves to the claimed item's container plus the shared store, so a run file written while a different item was claimed sits outside it and its refusals vanish silently.
+**A helper reads the corpus, not you**: `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-edge-answers" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-edge-answers"`. It walks every prior curator run file across `$WORKBENCH` and prints one row per proposed edge — the outcome value, the dependent, the target, the field — which is the whole of what the key below needs. The corpus is the reason: 971 958 bytes over 14 run files on fusion's own tree at 2026-09-18, of which exactly one carries an edge entry, and each run adds 60 to 170 KB. **Where the helper is absent**, which an installed copy one release behind this repository is (`260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`), report that in the run file's suppression read and in the survey report and **suppress nothing** — reading that corpus by hand is what the helper exists to refuse, and a question asked twice costs less than a refusal forgotten.
 
-For each edge entry a prior run file carries, the key reads the **consequence group beside the outcome line**:
+The helper carries this pass's two bounds and states them itself: **unbounded by the evidence anchor and not resolved through `$SCAN_ANALYSES`**. Both are measured facts rather than caution — the anchor bounds the evidence pass by commit and date, and `**Scope:** full` is what a user runs after a decline; and `$SCAN_ANALYSES` resolves to the claimed item's container plus the shared store, so a run file written while a different item was claimed sits outside it and its refusals vanish silently.
+
+**The key reads the outcome value and nothing standing beside it** — which is the ruling on `260918-0712_*_how-does-the-curators-edge-survey-know-not-to-re-propose-an-edge-the-user-declined.md`, and why the entry's consequence group is neither a column the helper prints nor a row below. The five values are stated once, in `## The run file`, with the invariant that makes them sufficient on their own:
 
 | Prior entry | This run |
 |---|---|
-| consequence group `candidate` | **re-proposed, always** — a candidate is never offered for approval, so whatever outcome line it carries records no answer |
 | `applied` | suppressed — and suppressed anyway, the field now carries the basename |
-| `skipped`, in a group the gate offers | **suppressed** — an outcome line exists, so a gate was put and answered, and this entry's group was on offer and not taken |
+| `skipped` | **suppressed** — an outcome line exists, so a gate was put and answered, and this entry was on offer and not taken |
+| `not-offered` | **re-proposed** — the gate never put this entry, so there is no answer here to respect |
 | `stale`, `failed` | **re-proposed** — the user approved it and the write did not land |
-| no outcome line at all | **re-proposed** — no apply dispatch ran, so no gate was ever answered |
-
-**The candidate row is read first, and it is not a rounding case.** `## Evidence tiers` makes a candidate an entry never offered for approval, yet `### Pass 2 — apply` appends an outcome per entry — so a candidate edge entry can carry `skipped` without having been put to anybody, and suppressing on that suppresses a question the user never saw. The general question, whether an entry the gate never offered should carry an outcome line at all, reaches all four subjects and is open: `260918-0712_*_how-does-the-curators-edge-survey-know-not-to-re-propose-an-edge-the-user-declined.md`, which carries forward `260911-1833_*_how-does-the-curators-survey-know-not-to-re-propose-an-edge-the-user-declined.md`.
+| `none`, `unreadable` | **re-proposed** — the helper's two ways of saying no answer was read: no outcome line at all, so no apply dispatch ran and no gate was ever answered; and an outcome line it could not resolve to one value |
 
 **Where the prose under a confirmed edge later changes, or the target's status does, report the change and propose nothing.** Revising or retracting a confirmed edge stays the user's act either way. The status half is live rather than hypothetical: a confirmed ordering edge whose target has since reached a terminal value is a dangle by the node-set ruling, `bin/fusion-work-order` already prints it as `unresolved-edges=1`, and the edge survey reports what the helper found and stops there.
 
@@ -336,7 +336,7 @@ Then, and only then, the write and its comparison:
 
 **Why the exception is narrow, and why it stays narrow.** The unit the user approved is one basename, not a line: the dependent, the target and the field all come from the ledger untouched, so re-reading the line in order to append to it decides nothing about *what* to propose, which is the whole of what "never re-derive a proposal in this pass" forbids. Widen the exception past these two fields and it would start deciding that.
 
-Then append the outcome per entry to the same run file: `applied`, `skipped` (not approved), `stale`, or `failed` with the reason. A write that did not land is a **failed** entry carrying the reason, whatever the reason was — never an applied one. A partial apply that claims completion is the failure to avoid.
+Then append the outcome per entry to the same run file, one value from the vocabulary `## The run file` authors: `applied`, `skipped` (offered and not approved), `not-offered` (the gate never put it — **every candidate, in all four subjects**, because `## Evidence tiers` never offers one), `stale`, or `failed` with the reason. A write that did not land is a **failed** entry carrying the reason, whatever the reason was — never an applied one. A partial apply that claims completion is the failure to avoid.
 
 Working-tree edits only. You never commit.
 
@@ -412,15 +412,17 @@ The ledger and the run's own account of what it read are **one artifact**, not t
 
 It holds, in this order:
 
-1. **Head** — date, a `**Status:**` field, the git HEAD the run read, the mode, and the date and HEAD of the previous curator run if one is findable. **A prior curator run file is found one way in this prompt and this is it**: across `$WORKBENCH`, never through `$SCAN_ANALYSES`, which resolves to the claimed item's container plus the shared store and so misses every run file written while a different item was claimed, which on fusion's own tree is all but two of them. `### The suppression read, and the candidate row first` reads the same corpus by the same rule and states the measurement. `**Status:**` starts at `In progress` and becomes `Complete` as the final step of the run; it is the line the paragraph above tells you to update.
+1. **Head** — date, a `**Status:**` field, the git HEAD the run read, the mode, and the date and HEAD of the previous curator run if one is findable. **A prior curator run file is found one way in this prompt and this is it**: across `$WORKBENCH`, never through `$SCAN_ANALYSES`, which resolves to the claimed item's container plus the shared store and so misses every run file written while a different item was claimed, which on fusion's own tree is all but two of them. `### The suppression read` reads the same corpus by the same rule, through `bin/fusion-edge-answers`, and states the measurement. `**Status:**` starts at `In progress` and becomes `Complete` as the final step of the run; it is the line the paragraph above tells you to update.
 2. **Evidence-source counts** — how many files were read in each of the seven sources, with an explicit zero where a source was empty and a named error where one was unreadable.
 3. **Surface sizes** — bytes and lines per surface, before and after.
 4. **Placement classification** — written only on a `**Placement:** on` run that proposed at least one relocation, and omitted entirely otherwise. One line per **passage** of the surface a passage is leaving — the passage as Step 1 of the placement criterion divides it, by one heading level picked once for the whole file, which is not always its top one, and with whatever stands above the first heading of that level counting as a passage of its own: the heading, its bytes, the verdict *stays* or *moves*, and for *moves* the destination. It is the reasoning behind the relocation entries, kept in the one artifact that holds the run rather than in a commit message no later run can read.
-5. **Work-item edges** — written only on an `**Edges:** on` run and omitted entirely otherwise, parallel to the placement classification beside it. It carries the corpus statement (which live items were read, and what was read for each), the residue one line per sentence with the record it came from, and the suppression read: which prior run files were read, which entries were suppressed, and on which outcome.
+5. **Work-item edges** — written only on an `**Edges:** on` run and omitted entirely otherwise, parallel to the placement classification beside it. It carries the corpus statement (which live items were read, and what was read for each), the residue one line per sentence with the record it came from, and the suppression read: what `bin/fusion-edge-answers` reported, which entries were suppressed and on which outcome value — or, where that helper was absent, that it was and that nothing was suppressed.
 6. **Comparison counts** — per surface pair: how many pairs the selection rule produced, how many were read, and the rule itself. See `## Reporting a comparison count` below.
 7. **Pre-edit content** — the complete current content of every decision record the run intends to modify.
 8. **The ledger** — one block per proposed change, in the schema below.
-9. **Outcomes** — after an apply pass, one line per entry: `applied`, `skipped`, `stale` or `failed` with the reason.
+9. **Outcomes** — after an apply pass, one line per entry, carrying one of five values: `applied`, `skipped`, `not-offered`, `stale` or `failed` with the reason.
+
+**The five are disjoint and complete, and no one of them rests on a neighbouring line.** An outcome line present means this gate was answered; no outcome line at all means no gate was answered; `not-offered` means the entry was never put, which every candidate is and in all four subjects. Read the value and nothing beside it — the entry's consequence group is not part of it, and a fact a reader can only assemble by holding two lines together is a fact that drifts. That is what this project removed the decision record's `Status:` head field for, 39 of 94 records having carried a head their own filename denied (`260918-0712_*_how-does-the-curators-edge-survey-know-not-to-re-propose-an-edge-the-user-declined.md`).
 
 ### Ledger entry schema
 
@@ -465,7 +467,7 @@ One block per proposed change:
 
 Ids are `L01` upward, assigned by the survey pass and written into the file, so per-entry approval survives a gate prompt that never shows the ledger.
 
-**A candidate carries the same shape** with `candidate` in place of the consequence group, plus one line saying why it is a candidate (no citation, an unreadable source, an open defect contradicting it, or a Tier 3 finding that cannot name a stop-date and a successor). **A candidate is never offered for approval and is never applied.**
+**A candidate carries the same shape** with `candidate` in place of the consequence group, plus one line saying why it is a candidate (no citation, an unreadable source, an open defect contradicting it, or a Tier 3 finding that cannot name a stop-date and a successor). **A candidate is never offered for approval and is never applied**, and an apply pass writes `not-offered` on it — the one outcome that says so in its own word rather than through the group line beside it.
 
 ## Reporting a comparison count
 

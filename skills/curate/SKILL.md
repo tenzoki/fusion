@@ -100,7 +100,7 @@ The apply pass re-reads from disk before touching anything, so an entry whose fi
 
 ## Step 7 — Report what happened
 
-Read the run file again with the `Read` tool. The apply pass appended one outcome line per entry: `applied`, `skipped`, `stale`, or `failed` with a reason.
+Read the run file again with the `Read` tool. The apply pass appended one outcome line per entry, in the vocabulary `agents/curator.md` `## The run file` authors.
 
 Report, in this order:
 
