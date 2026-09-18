@@ -190,7 +190,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
    - **Second opinion:** consultant
    - Dependencies: none (after step 8 by preference: same file)
 
-10. **Stamp the sweep's head-field counts with the tree each was counted at**
+10. [DONE] **Stamp the sweep's head-field counts with the tree each was counted at**
     - Executor: `coder`
     - Record: `260829-1812_*_the-sweep-header-states-the-head-field-count-as-42-and-38-in-one-file-and-the-issue-it-cites-says-29.md`, in the issues store of the container `260828-2342-citation-form-drops-store-segment`
     - Survey reason (group 1, row 6): "`hooks/citation-sweep.ts:56` says 42 and `:129` says 38, `hooks/lib/citation-scan.ts:127` says 42, none stamped with the tree it counts; the fix is comment text only."

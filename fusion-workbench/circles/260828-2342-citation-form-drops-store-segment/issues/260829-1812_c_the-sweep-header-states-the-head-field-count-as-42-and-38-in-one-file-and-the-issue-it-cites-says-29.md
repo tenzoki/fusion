@@ -9,3 +9,6 @@ The sweep header states the head-field count as 42 and as 38 in one file, and th
 ## Acceptance
 
 - One figure, or each figure stamped with what it counts (committed tree at `e9f2ed0b` versus working tree before `3276b1e1`), in both headers; `bin/fusion-citation-sweep`'s own header carries no number and needs none.
+
+---
+Resolved: both headers now carry one figure, 42 head fields and 239 chained tails, each stamped as the repair pass's own count over the working tree before `3276b1e1`, with one clause saying the cited issue's title reads 29 and 181 because it counted the committed tree at `e9f2ed0b` with narrower greps. The 38 had no measured provenance anywhere (`git log -S` reaches only the commit that introduced it, whose own history record says 42) and is replaced rather than stamped. Comment text only; `hooks/dist/` rebuilt for the three files that carry the comments. Concept accepted by a consultant read with one word changed; fixed in the commit that carries this line.

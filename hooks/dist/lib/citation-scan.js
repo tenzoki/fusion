@@ -125,7 +125,9 @@
 //   history record's `**Date:** 260801-1355` names the minute the record was
 //   written; the sweep read it as a bare stamp, found the record itself by
 //   prefix, and rewrote 42 such lines (seven labels, `**Date:**` the most
-//   frequent) into self-citations (issue
+//   frequent; the repair pass's count over the working tree before `3276b1e1`,
+//   whereas the issue's title says 29 for `**Date:**` alone on the committed
+//   tree at `e9f2ed0b`) into self-citations (issue
 //   260829-1346_*_the-committed-sweep-rewrote-29-date-head-fields-into-filenames-and-left-181-chained-tails-in-the-tree.md).
 //   Such a token is reported `exempt` with the reason `head-field`. The
 //   exemption is exactly that narrow: a head field whose value carries a marker

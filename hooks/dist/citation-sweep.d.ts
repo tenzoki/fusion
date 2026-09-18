@@ -53,8 +53,10 @@
  * ## The three guards on a writing mode
  *
  * A sweep over a workbench touches every record in it, and fusion's own first
- * run rewrote 42 head fields and left 239 chained tails before a repair Turn
- * (issues
+ * run rewrote 42 head fields and left 239 chained tails before a repair Turn,
+ * both figures that repair pass's own count over the working tree before
+ * `3276b1e1`; the first issue below says 29 and 181 in its title because it
+ * counted the committed tree at `e9f2ed0b` with narrower greps (issues
  * `260829-1346_*_the-committed-sweep-rewrote-29-date-head-fields-into-filenames-and-left-181-chained-tails-in-the-tree.md`
  * and
  * `260829-1347_*_the-grammars-marker-slot-is-one-letter-while-24-indexed-artifacts-carry-a-word-there-and-the-stamp-bare-rewrite-checks-no-boundary.md`).
@@ -126,8 +128,9 @@
  *       stamp names a minute, not a file; the rule that expanded a uniquely
  *       matching one into that file's basename acted on the class the
  *       scanner's own `partition()` refuses to judge, and it produced every
- *       corrupted token the v10.20.0 sweep left in fusion's workbench: 38 head
- *       fields (`**Date:**`, `**Started:**`, `**Stamp:**`, ...) turned into
+ *       corrupted token the v10.20.0 sweep left in fusion's workbench: the 42
+ *       head fields (`**Date:**`, `**Started:**`, `**Stamp:**`, ...; the count
+ *       above, over the working tree before `3276b1e1`) turned into
  *       self-citations, and every chained tail the repair pass counts. The
  *       grammar refuses the shapes that fed it, and the rule is gone rather
  *       than bounded: with it, `--dry-run` over a swept tree could not reach
