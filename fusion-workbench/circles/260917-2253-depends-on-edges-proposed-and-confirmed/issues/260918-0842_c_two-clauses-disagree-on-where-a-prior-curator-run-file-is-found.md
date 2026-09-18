@@ -34,3 +34,7 @@ Two of the fourteen sit inside `$SCAN_ANALYSES`; the other twelve sit in `shared
 ## Acceptance test
 
 `agents/curator.md` names one discovery rule for prior curator run files, and `## The run file`'s head field uses it.
+
+Resolved: the stale clause was brought onto the measured rule, not the other way round. `agents/curator.md` `## The run file`, item 1 no longer resolves the previous run through `$SCAN_ANALYSES`. It now reads: "**A prior curator run file is found one way in this prompt and this is it**: across `$WORKBENCH`, never through `$SCAN_ANALYSES`, which resolves to the claimed item's container plus the shared store and so misses every run file written while a different item was claimed, which on fusion's own tree is all but two of them. `### The suppression read, and the candidate row first` reads the same corpus by the same rule and states the measurement."
+
+`### The suppression read` is unchanged — it was the correct clause of the two and it carries the measurement. What moved is the head field, which is the clause the record names. The split was re-derived at the working tree rather than copied: `git ls-files ':(top)fusion-workbench/**/*curator-run*'` returns 15 today, of which 2 sit inside the resolved `$SCAN_ANALYSES` value; the figure is written as "all but two" rather than as a pair of counts, so the sentence does not go stale the next time a run file lands. Acceptance test met: one discovery rule for prior curator run files, and the head field uses it.

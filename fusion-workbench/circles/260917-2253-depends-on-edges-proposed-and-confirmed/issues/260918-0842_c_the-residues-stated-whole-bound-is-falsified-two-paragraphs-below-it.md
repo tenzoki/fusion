@@ -29,3 +29,9 @@ The run file's work-item-edge section "carries … the residue one line per sent
 ## Acceptance test
 
 Residue has one definition in `agents/curator.md`, and both the `(empty, yes)` table row and the dependent-is-the-other-item bullet fall under it without an exception clause.
+
+Resolved: the bound was widened to the truth rather than dropped, because what it buys is the property the narrow sentence was written for — that residue is stated rather than left to a run's taste. `agents/curator.md` `### The classification, cut on direction` now reads: "**Residue has one definition, and it is stated rather than left to a run's taste: an ordering reading this pass may not propose as an entry.** Two cases fall under it and there is no third — the other end is not a work item, which is the `empty, yes` row above, or the dependent is not the corpus owner, which is the third bullet below. Neither is an exception to the other."
+
+So the enumeration is still closed ("there is no third"), which is what stops a run's taste deciding what residue is, and it is now closed over both cases the procedure routes there instead of over one of them. The sentence that made the first run's count of six unreadable — residue as "a relation to something" — is still refused in the same paragraph.
+
+The third bullet was also brought onto the defined term: "**Dependent anything but the corpus owner** → **residue**", with the case the old singular wording did not name written in — a reading whose two ends are both other items, which a sentence in one item's corpus about two others produces. Acceptance test met: one definition, both routes falling under it, no exception clause. The consequence the record names is now reachable — a run reports the dependent-is-not-the-corpus-owner readings that `260918-0828_*_may-the-edge-pass-propose-an-edge-whose-dependent-is-not-the-corpus-owner.md` needs visible to be answerable.

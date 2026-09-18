@@ -39,3 +39,9 @@ The exclusion rule itself survives: "a record whose status is not one of the fiv
 ## Acceptance test
 
 The sentence either names the four states that occur (one of the four legacy values, or no `**Status:**` line) or derives the figure from a command, and the survey-side case set matches precondition 2's.
+
+Resolved: `agents/curator.md` `### The corpus, and the live/terminal bound` no longer states the four legacy values as the case set. It now reads: 24 of the 31 containers are pre-grammar Circle containers, all 24 terminal — "**Eleven of them carry a legacy value — `closed`, `active`, `bounded` or `anticipated` — and the other thirteen carry no `**Status:**` line at all**, which `hooks/lib/work-graph.ts` states as the Circle record's design rather than a fault."
+
+The two halves of the prompt now name one case set: "So the case set on this side is precondition 2's, in `### Pass 2 — apply`: a work-item value, a legacy one, or no line, and the absent line is the majority of the legacy containers rather than a corner." The exclusion rule itself is unchanged and still excludes an absent line vacuously, which the sentence now says out loud instead of leaving to the reader.
+
+All three figures re-derived at the working tree rather than carried over: 31 containers, 7 work items, 24 Circle containers, 11 carrying a `**Status:**` line and 13 carrying none; the 11 values are exactly the four named, with the parenthetical suffixes three of them already had. Acceptance test met on its first branch — the sentence names the states that occur, and the survey-side case set matches precondition 2's.

@@ -31,7 +31,7 @@ Plus one release-process item that is not a defect in the range.
 
 The bullet is new in this range; the relocation bullet beside it carries no equivalent `**Placement:** on` precondition, so the pattern is not inherited. The clause also buys nothing: `### Pass 2 — apply`'s three preconditions already gate the write, and the second of them is the liveness check.
 
-Issue: `260918-0842_o_the-scope-table-forbids-the-write-the-apply-dispatch-is-sent-to-make.md`.
+Issue: `260918-0842_*_the-scope-table-forbids-the-write-the-apply-dispatch-is-sent-to-make.md`.
 
 ## High
 
@@ -41,19 +41,19 @@ Issue: `260918-0842_o_the-scope-table-forbids-the-write-the-apply-dispatch-is-se
 
 Reachable today: the live item's record cites `260909-1020_*_…`, `260911-1747_*_…` and `260911-0715_*_…`, which resolve into `260908-2018-prerequisites-confirmed-once-order-computed` (`done`) and `260909-1700-cut-fusion-to-working-minimum` (`done`). A citation sentence in any of them produces an entry on a terminal item, which `### The corpus` ("a live work item's head and nowhere else"), `### The classification` ("The dependent is live in every outcome that produces an entry") and `## Scope` all forbid. Precondition 2 catches it after the gate, so nothing corrupts — what is spent is the user's judgement on a proposal that can never apply.
 
-Distinct from `260918-0825` (near endpoint as a proxy for aboutness) and `260918-0828` (the ordering cell's dependent). Issue: `260918-0842_o_a-citation-entry-lands-on-a-terminal-item-whenever-the-sentence-came-from-a-cited-record.md`.
+Distinct from `260918-0825` (near endpoint as a proxy for aboutness) and `260918-0828` (the ordering cell's dependent). Issue: `260918-0842_*_a-citation-entry-lands-on-a-terminal-item-whenever-the-sentence-came-from-a-cited-record.md`.
 
 ### H2 — residue's whole bound is falsified in the same section
 
 "Residue is an ordering whose other end is not a work item, and nothing else" is followed two paragraphs later by "**Dependent the other item** → **residue**", where both ends are work items by the cell's own definition. A run obeying the exhaustive sentence drops exactly the readings `260918-0828` needs reported to be answerable. Both sentences arrived in `8ff67839`.
 
-Issue: `260918-0842_o_the-residues-stated-whole-bound-is-falsified-two-paragraphs-below-it.md`.
+Issue: `260918-0842_*_the-residues-stated-whole-bound-is-falsified-two-paragraphs-below-it.md`.
 
 ### H3 — the post-write compare claims a class it cannot see
 
 `### Pass 2 — apply` lists "a doubled comma, a lost space, a trailing separator and a duplicated field line" as the class the byte-for-byte compare catches. The first three are differences inside the line it re-reads; the fourth is a second line elsewhere in the head block, which a single-line comparison cannot see. `hooks/lib/work-graph.ts` `headField()` returns the first match and drops the rest with no diagnostic, so a duplicated field line makes the user-confirmed edge vanish from `bin/fusion-work-order` silently — the exact failure `260815-1943` filed the compare against. The absent-field write, which is the path that produces a duplicate rather than inheriting one, is the majority path: four of seven records carry no `**Cross-references:**` line and six carry no `**Depends-on:**` line (verified).
 
-Issue: `260918-0842_o_the-post-write-compare-cannot-see-a-duplicated-field-line-and-the-order-helper-swallows-one.md`.
+Issue: `260918-0842_*_the-post-write-compare-cannot-see-a-duplicated-field-line-and-the-order-helper-swallows-one.md`.
 
 ## Medium
 
@@ -61,19 +61,19 @@ Issue: `260918-0842_o_the-post-write-compare-cannot-see-a-duplicated-field-line-
 
 `### The corpus`: "24 of the 31 containers … reading `closed`, `active`, `bounded` or `anticipated`, all 24 terminal". 31 and 24 verify. The enumeration does not: 13 of the 24 carry no `**Status:**` line at all, and `hooks/lib/work-graph.ts`'s header states that a Circle record has none by design. `260918-0827-adversarial-read-of-the-first-edge-run.md` §4 already counted "1 no status line" in its subset. `### Pass 2 — apply` precondition 2 names four states including the absent line; the survey-side rule names three. `rules/critical-stance.md` §5.
 
-Issue: `260918-0842_o_thirteen-of-the-twenty-four-legacy-containers-carry-no-status-line-and-the-prompt-enumerates-four-values.md`.
+Issue: `260918-0842_*_thirteen-of-the-twenty-four-legacy-containers-carry-no-status-line-and-the-prompt-enumerates-four-values.md`.
 
 ### M2 — two clauses disagree on where a prior run file is found
 
 `### The suppression read` (new) reads run files "across `$WORKBENCH`, … **not through `$SCAN_ANALYSES`**" and states the measured reason. `## The run file` item 1 still resolves the previous run "across `$SCAN_ANALYSES`" for the same corpus. Twelve of the fourteen run files in the tracked tree sit outside it.
 
-Issue: `260918-0842_o_two-clauses-disagree-on-where-a-prior-curator-run-file-is-found.md`.
+Issue: `260918-0842_*_two-clauses-disagree-on-where-a-prior-curator-run-file-is-found.md`.
 
 ### M3 — the skill over-promises the before-text re-read, and one bullet names a staleness test with no stale outcome
 
 `skills/curate/SKILL.md` Step 6 tells the user every approved entry's before-text is re-read and compared; the edge exception gives that comparison up for the two edge groups by design. And `### Pass 2 — apply`'s first bullet after the preconditions — "Staleness is judged on this entry's own basename" — names a test whose two outcomes the next bullet supplies as `applied` and *write*, neither of them `stale`. Staleness is in fact decided by the three preconditions above it. The bullet is a leftover of the pre-`260918-0821` shape.
 
-Issue: `260918-0842_o_the-skill-promises-a-before-text-re-read-the-edge-exception-gives-up.md`.
+Issue: `260918-0842_*_the-skill-promises-a-before-text-re-read-the-edge-exception-gives-up.md`.
 
 ## Low — reported, not filed
 

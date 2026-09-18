@@ -36,8 +36,12 @@ The one live item's record cites three records that resolve into other container
 
 ```
 $ git ls-files ':(top)fusion-workbench/**/260909-1020_?_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md'
-fusion-workbench/circles/260908-2018-prerequisites-confirmed-once-order-computed/issues/260909-1020_o_…
 ```
+
+One path comes back, and where it sits is the whole finding: the record is in the defect store
+**inside the container of `260908-2018-prerequisites-confirmed-once-order-computed.md`**, which is
+`done`. The path is named in words rather than spelled, because a spelled store segment is read as
+a citation by its shape alone and no fence exempts it.
 
 `260908-2018-prerequisites-confirmed-once-order-computed` is `**Status:** done`. Any sentence in that issue naming another work item by basename is `(non-empty, no)`, and the table puts a `**Cross-references:**` entry on a terminal item. The other two citations resolve the same way, into `260908-2018` and into `260909-1700-cut-fusion-to-working-minimum`, both `done`.
 
@@ -50,3 +54,9 @@ The damage is bounded but real: precondition 2 of `### Pass 2 — apply` catches
 ## Acceptance test
 
 Take a sentence out of `260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md` naming a work item other than `260908-2018`. Run it through `### The classification, cut on direction` as written. The outcome is either an entry on a live item or a stated non-entry — never an entry on `260908-2018`.
+
+Resolved: the word is fixed, not the instance. `agents/curator.md` `### The corpus, and the live/terminal bound` now defines the term once, immediately under the corpus definition that produced the ambiguity: **the live item is the corpus owner, here and in every clause below, and the term has no second referent.** The sentence says why the second reading was available and why it is wrong — the corpus spans containers, the cited records sit in other items' directories and routinely terminal ones, and the owner does not move with the file: a sentence read out of a cited record is a sentence in *this* item's corpus, and the item owning the container that record sits in is a target like any other.
+
+Two dependent clauses were then brought onto that referent. The near-endpoint rule no longer reads the dependent off a directory — "**The far endpoint is fixed by the sentence and the near one by whose corpus carried it**. The dependent is the corpus owner" — which keeps the `container` provenance label honest (it still marks the endpoint a user checks first) while removing the reading that put it on a terminal item. And the `(non-empty, no)` table row now spells the referent out where it asserts the dependency by definition: "the live item whose corpus this is, never the container the sentence's file sits in".
+
+The three clauses that forbade the outcome are now true rather than contradicted: the write bound ("a live work item's head and nowhere else"), the classification's "the dependent is live in every outcome that produces an entry", and `## Scope`. The completeness argument for the ordering cell — "the corpus owner is live by construction" — is true under the defined term rather than under one of two readings of it. Acceptance test met: a sentence in `260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md` naming a work item other than its own container's now yields an entry on the **live** item whose corpus carried it, and never one on `260908-2018-prerequisites-confirmed-once-order-computed.md`.
