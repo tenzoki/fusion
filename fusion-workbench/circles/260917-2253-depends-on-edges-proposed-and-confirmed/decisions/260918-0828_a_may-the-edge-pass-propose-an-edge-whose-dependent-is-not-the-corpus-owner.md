@@ -84,3 +84,14 @@ None offered. `speculation:` option 2 looks like the smaller step, but the yield
 `260918-0824_*_the-container-hop-voided-the-only-stated-mitigation-for-flooding-the-gate.md` is
 unresolved and it is that question, not this one, that decides whether widening the corpus is
 affordable. Ruling this before that would be answering in the wrong order.
+
+---
+Answered: option 1 — the dependent is always the item whose corpus carried the sentence, and a reading that fixes a direction onto another item stays residue; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+**The ruling rests on a count, and the count is zero.** Over the only corpus a run has ever crossed, the case option 2 opens has no instances. The six residue entries of `260918-0738-curator-run.md` each fail on something else: the other end is a plan, an analysis, a decision, a history entry, a foreign record or a legacy container, and not one of them is "the sentence names both work items and the direction points at the other". One live node is a thin base and this is not a proof; what it establishes is that option 2 would today trade a rule against a frequency nobody has measured.
+
+**Two corrections to this record's own option text, which the ruling turned up.** Option 2's stated pro, that it catches the orderings where cross-item orderings are actually recorded, belongs to option 3: that class is the shared decision store, which option 2 does not reach, and the 27-of-70 measurement in `## Question` is filed under the F4 half for that reason. And option 2 does not cover the case that motivated the question in this session at all — in the split of 2026-09-18 the sentence names only `260909-1700-cut-fusion-to-working-minimum.md`, while the item that should have been the dependent appears nowhere in it, and a rule choosing the dependent among the items a sentence *names* cannot reach one it does not name. That case is fixed by the corrected acceptance line in `260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md` `## Capabilities`, landed at `d1f6b65d`.
+
+**Against it stands a price the ruling accepts rather than denies.** Under option 1 the write bound stays one sentence: this subject writes into a live work item's head and nowhere else. `agents/*.md` holds 18 407 bytes against its budget of 328 567, and this one prompt grew by roughly 10 000 in the session that wrote the subject.
+
+**The trigger, in place of a coupling.** The orchestrator proposed making option 2 conditional on the rejection-memory question being answered first. Ruled against: at zero instances the coupling decides nothing. Instead — **option 2 is decided when the residue report first actually shows this case, and not before.** The residue is written on every run and names the record each sentence came from, so the trigger is read rather than predicted. Moving from option 1 to option 2 stays open at all times and costs nothing until then.
