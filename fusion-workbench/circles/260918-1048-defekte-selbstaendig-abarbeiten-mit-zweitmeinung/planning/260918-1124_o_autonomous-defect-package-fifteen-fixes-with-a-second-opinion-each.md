@@ -94,7 +94,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
    - **Second opinion:** consultant
    - Dependencies: none
 
-2. **Name `CLAUDE.md` where the relocated growth-bounds bullet says "this file"**
+2. [DONE] **Name `CLAUDE.md` where the relocated growth-bounds bullet says "this file"**
    - Executor: `coder`
    - Record: `260916-2205_*_the-relocated-growth-bounds-bullet-says-the-zero-head-room-bound-reaches-this-file-and-at-its-new-home-that-is-false.md`, in the issues store of the container `260912-0438-human-facing-docs-leave-claude-md`
    - Survey reason (group 2, row 14): "`README-hooks.md:517` still says the zero-head-room bound 'reaches this file' and 'into this file' two lines after `:515` says nothing bounds the READMEs; naming `CLAUDE.md` explicitly is one edit on an unbounded file."

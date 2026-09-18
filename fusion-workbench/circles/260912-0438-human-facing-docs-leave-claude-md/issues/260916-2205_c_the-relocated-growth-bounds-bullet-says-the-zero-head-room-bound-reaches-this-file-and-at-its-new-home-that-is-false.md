@@ -27,3 +27,6 @@ The same passage also points at itself: *"Which surfaces are bounded … is one 
 **Acceptance test.** No sentence in `README-hooks.md` `### Growth bounds on the shipped text` claims a bound over the file it sits in, and the dispatch-path warning names `CLAUDE.md` explicitly rather than by deixis. A reader who greps that section for `this file` finds no claim that contradicts `README-hooks.md:512`.
 
 **Cross-references:** 260916-1612-curator-run.md, 260916-1126_*_implementation-human-facing-docs-leave-claude-md.md
+
+---
+Resolved: the bullet at `README-hooks.md` `### Growth bounds on the shipped text` names `CLAUDE.md` as the file the zero-head-room dispatch-path bound reaches, its section citation now reads as the address a pointer cites, and "into this file" reads "into the pointer"; the path and anchor token census of the line is unchanged, so the reference lint's pinned baseline does not move. One `this file` remains in the section, the true possessive in the paragraph on why the instrument sits under `helpers/`, so the plan's `grep -c` acceptance is met at 1, not 0. Concept accepted by a consultant read with two wording changes; fixed in the commit that carries this line.
