@@ -58,3 +58,6 @@ first and only finding.
 3. `skills/migrate/SKILL.md` either filters a converted entry by relation type as well as by
    resolvability, or states in its own text that it converts an unconfirmed relation and names who
    confirms it afterwards.
+
+---
+Resolved: the entry is struck. Criterion 3 had already landed — `skills/migrate/SKILL.md` `## Step 4` now never writes `**Depends-on:**` at all and routes a converted name to `**Cross-references:**`, reporting what it dropped — leaving the strike as the last open criterion. Criteria 1 and 2 are met together by removing the one line: every `**Depends-on:**` entry in the store is now one a user confirmed, because the store now holds exactly one such entry, written at `260918-0706` on the user's word as the prerequisite of the split that created it. Authorised by `260911-1747_*_may-a-done-work-items-head-field-be-edited-at-all-and-under-what-bound.md`, which moved to implemented on the same change.

@@ -2,9 +2,9 @@
 
 ---
 **Domain:** code
-**Status:** claimed
-**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260917-2253
+**Status:** open
 **Active spec/plan:** 260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md (the spec; no plan yet)
+**Depends-on:** 260918-0706-strike-unconfirmed-depends-on-entry.md
 **Cross-references:** 260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md, 260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md, 260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 ---
@@ -39,3 +39,12 @@ three.
 A reader knows this was reached when a run over the store as it stands proposes edges, the
 user confirms them, the confirmed edges stand in the field, and `bin/fusion-work-order`
 computes an order over more than one node from them.
+
+---
+Split 260918-0706. The correction half left as
+`260918-0706-strike-unconfirmed-depends-on-entry.md`, which this item now names as its
+prerequisite: two jobs with different blockers, one of them none. The user ruled the split
+required — a work item carrying two colliding dependencies must be split — and struck the
+spec's three-candidate-edge stopping condition in the same breath, as a rule this project
+wrote itself that forbids building the very feature that would produce the edges it demands.
+

@@ -4,7 +4,6 @@
 **Domain:** code
 **Status:** done
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260909-1702
-**Depends-on:** 260908-2018-prerequisites-confirmed-once-order-computed.md
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 
 ---
