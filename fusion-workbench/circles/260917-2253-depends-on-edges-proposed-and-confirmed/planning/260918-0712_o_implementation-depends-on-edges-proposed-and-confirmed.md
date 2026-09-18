@@ -422,10 +422,19 @@ and the reverse.
      residue and suppression read; `bin/fusion-work-order` and
      `fusion-cadence-anchor get last_curator_run` print what they printed before; and each
      proposal's citation opens to the sentence it names.
-   - Expected result, stated in advance so a surprise is visible: **zero `**Depends-on:**`
-     proposals**, the live node set being one item; **two `**Cross-references:**` proposals**, the
-     two items named in `## Current State`. A `**Depends-on:**` proposal today means the
-     live/terminal bound was implemented wrongly — a failure of this step, not a bonus.
+   - Expected result, stated in advance so a surprise is visible — **re-derived at HEAD on
+     2026-09-18, because the figure first written here no longer holds.** The
+     `**Depends-on:**` half is unchanged: **zero `**Depends-on:**` proposals**, the live node set
+     being one item, and a `**Depends-on:**` proposal today still means the live/terminal bound
+     was implemented wrongly — a failure of this step, not a bonus. The citation half read **two
+     `**Cross-references:**` proposals**, the two items named in `## Current State`, and that was
+     derived before the container hop landed at `git:8fad8ead`. With the hop, the citations
+     standing in this item's corpus reach **five** work items, **two of which the field already
+     carries**, so the derivable statement is an upper bound of **three new
+     `**Cross-references:**` targets** rather than an exact two. A run returning fewer declined
+     readings rather than failed; a run returning a target outside those five is the surprise
+     this line exists to make visible. Measurement and the count it comes from:
+     `260918-0824_*_the-container-hop-voided-the-only-stated-mitigation-for-flooding-the-gate.md`.
    - Dependencies: step 5.
 
 8. **An adversarial read of what the first run proposed**
@@ -534,7 +543,7 @@ comes from the user's first real run, over prose somebody else wrote.
 | Risk | Mitigation |
 |------|------------|
 | A wrong ordering is proposed and confirmed unchecked | Every entry carries the sentence and the record, so checking is one file open, and the tier says whether the words fixed the direction or the pass did. **A mitigation, not a fix** — an `inferred` ordering is a prediction, and the gate is the only thing between it and a record. |
-| The pass floods the gate with citation proposals | The cross-reference arm proposes only for a relation read between **two work items** — not for the decision, analysis and plan records an item cites, which have their own checkers. |
+| The pass floods the gate with citation proposals | **This mitigation is false at HEAD and is struck rather than restated.** It read: the cross-reference arm proposes only for a relation read between two work items, not for the decision, analysis and plan records an item cites. The container hop landed at `git:8fad8ead` and makes a cited record identify the item whose container holds it, so those records *do* become endpoints and the sentence is its own negation. No replacement mitigation is claimed: measured, what bounds the yield on this workbench is the legacy-status exclusion and a store holding seven items, and neither scales. The gate is the bound, and it is the only one. `260918-0824_*_the-container-hop-voided-the-only-stated-mitigation-for-flooding-the-gate.md`. |
 | The suppression read misses a refusal | Both bounds are stated in step 1 — unbounded by the anchor, and across `$WORKBENCH` rather than `$SCAN_ANALYSES` — each derived from how those keys actually resolve. |
 | The full-rejection case is not remembered | Named, not hidden: the skill dispatches nothing on a full rejection, so no outcome line exists and the next run re-asks. It errs toward re-asking. Carried in the decision record as option 5's residual. |
 | The skill surface's 174 bytes are exceeded | Step 2 returns **50** bytes against a 133-byte addition: net +83, leaving 91. Step 6 reports what landed; a red bound is answered with a further cut, never a baseline edit. |
