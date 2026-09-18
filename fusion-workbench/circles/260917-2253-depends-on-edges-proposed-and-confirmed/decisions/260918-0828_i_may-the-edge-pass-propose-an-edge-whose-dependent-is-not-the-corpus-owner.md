@@ -95,3 +95,6 @@ Answered: option 1 — the dependent is always the item whose corpus carried the
 **Against it stands a price the ruling accepts rather than denies.** Under option 1 the write bound stays one sentence: this subject writes into a live work item's head and nowhere else. `agents/*.md` holds 18 407 bytes against its budget of 328 567, and this one prompt grew by roughly 10 000 in the session that wrote the subject.
 
 **The trigger, in place of a coupling.** The orchestrator proposed making option 2 conditional on the rejection-memory question being answered first. Ruled against: at zero instances the coupling decides nothing. Instead — **option 2 is decided when the residue report first actually shows this case, and not before.** The residue is written on every run and names the record each sentence came from, so the trigger is read rather than predicted. Moving from option 1 to option 2 stays open at all times and costs nothing until then.
+
+---
+Implemented: c49d4d74 — `agents/curator.md` `### The classification, cut on direction` states the rule instead of the question: the residue branch is permanent rather than pending, it names both sub-cases so the four outcomes stay complete, and it carries the trigger for reconsidering the widening. The bullet is 58 bytes shorter than the one it replaces.
