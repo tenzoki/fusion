@@ -55,7 +55,7 @@ discussion checks the load-bearing claims of that spec before a plan is drawn fr
 - **Advanced by:** first partner
 - **Entered:** round 1
 - **Last moved:** round 1
-- **Evidence:** `260911-1747_a_may-a-done-work-items-head-field-be-edited-at-all-and-under-what-bound.md` reads that the entry "may now be struck; ruled by user, Kai Stalmann". Stronger than the claim stated: the consultant read both defects' acceptance tests and found the strike is the **last remaining criterion in each**. Every other criterion already landed, `skills/migrate/SKILL.md:162` now reading "`**Depends-on:**` is never written". Two defects close for one line removed.
+- **Evidence:** `260911-1747_*_may-a-done-work-items-head-field-be-edited-at-all-and-under-what-bound.md` reads that the entry "may now be struck; ruled by user, Kai Stalmann". Stronger than the claim stated: the consultant read both defects' acceptance tests and found the strike is the **last remaining criterion in each**. Every other criterion already landed, `skills/migrate/SKILL.md:162` now reading "`**Depends-on:**` is never written". Two defects close for one line removed.
 
 ### D1 — The zero yield is over-determined and does not rest on the node-set rule the dispatch put in question.
 
@@ -156,7 +156,7 @@ discussion checks the load-bearing claims of that spec before a plan is drawn fr
 - **Advanced by:** first partner
 - **Entered:** round 2
 - **Last moved:** round 2
-- **Evidence:** Refuted three ways on the user's own record. The `Deferred:` line of `260911-1833_d_how-does-the-curators-survey-know-not-to-re-propose-an-edge-the-user-declined.md` sets the condition for returning to the question as "when the store carries enough items to make the pass worth building", and the store carries one live item. The fallback's own stated con is that it makes the second run cost the same as the first, "which is what the first stopping condition in the spec already says is not worth invoking", so the package pays that stop's cost twice. And the spec's `## Stops when` bullet 2 unlocks the fallback only where the user judges the vocabulary widening too much for one subject, a judgement the user has not made; the record's own recommendation is option 1.
+- **Evidence:** Refuted three ways on the user's own record. The `Deferred:` line of `260911-1833_*_how-does-the-curators-survey-know-not-to-re-propose-an-edge-the-user-declined.md` sets the condition for returning to the question as "when the store carries enough items to make the pass worth building", and the store carries one live item. The fallback's own stated con is that it makes the second run cost the same as the first, "which is what the first stopping condition in the spec already says is not worth invoking", so the package pays that stop's cost twice. And the spec's `## Stops when` bullet 2 unlocks the fallback only where the user judges the vocabulary widening too much for one subject, a judgement the user has not made; the record's own recommendation is option 1.
 - **Conceded:** first partner, round 2 — what survives is the instinct that the re-run question is ripe. The same `Deferred:` line says nothing about the answer depends on the wait, because the defect is a property of the vocabulary and not of the corpus, so it can be answered now without building anything.
 
 ### E5 — No route produces an order over more than one node without the user filing at least two further work items.

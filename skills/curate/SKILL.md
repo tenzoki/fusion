@@ -9,7 +9,7 @@ The user invoked `/fusion:curate`. This is the user-facing surface for the `cura
 
 **It performs this procedure and no other.** No pass runs before it or after it, and nothing here commits: the curator's edits are working-tree edits, and `/fusion:cleanup` is what commits them when the user runs it.
 
-Takes one optional argument, `--full` — the unbounded evidence pass, passed through to the survey dispatch in Step 2.
+Takes two optional arguments, `--full` (the unbounded evidence pass) and `--edges` (the work-item edge subject), passed through to the survey dispatch in Step 2.
 
 **This skill writes nothing.** The two dispatches are the only writes in the whole operation, and only the second one reaches a normative surface. Rejecting everything at the gate leaves all three surfaces byte-identical and still leaves the run file on disk.
 
@@ -39,14 +39,14 @@ Prompt body:
 **Mode:** survey
 ```
 
-Add `**Scope:** full` on its own line when the user passed `--full` — the unbounded evidence pass (decision `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`). `survey` is the agent's default; passing it anyway is deliberate — the dispatch says which pass it wants. The agent resolves its own paths at its Setup, reads its evidence sources bounded by its anchor, and writes the run file. It writes to no normative surface in this pass. Wait for it.
+Add `**Scope:** full` on its own line when the user passed `--full` — the unbounded evidence pass (decision `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`). Add `**Edges:** on` when the user passed `--edges` (`agents/curator.md` `## Dispatch parameters`). The apply dispatch takes no such line. `survey` is the agent's default; passing it anyway is deliberate — the dispatch says which pass it wants. The agent resolves its own paths at its Setup, reads its evidence sources bounded by its anchor, and writes the run file. It writes to no normative surface in this pass. Wait for it.
 
 ## Step 3 — Read what the survey returned
 
 The agent's report carries three things this skill needs, and they are the gate question it could not put itself:
 
 1. **The run file's path**, workbench-relative.
-2. **The count per consequence group** — constraint removals, tier-3, tier-2, tier-1, consolidations — plus the number of candidates, which are never offered for approval.
+2. **The count per consequence group** (`agents/curator.md` `### The gate`) plus the number of candidates, which are never offered for approval.
 3. **The blast-radius verdict** — whether proposed deletions exceed 20 percent of any single surface's bytes.
 
 Then read the run file itself with the `Read` tool, at `$WORKBENCH/<run-file path>`. It carries the entry ids, which per-entry approval needs, and the outcomes section this skill reports from in Step 7.
@@ -70,7 +70,7 @@ When the verdict is that no surface crossed the threshold, skip this step entire
 
 One `AskUserQuestion`. Keep it inside the eight-line cap in `rules/user-facing-output.md`, including the option list.
 
-**The prompt never contains the ledger.** It names the run file's path, the count per consequence group with the groups in most-consequential-first order (constraint removals, tier-3, tier-2, tier-1, consolidations), the count of candidates as text that says they are not on offer, and the blast-radius verdict in one clause. Constraint removals appear first in what the user sees, never last.
+**The prompt never contains the ledger.** It names the run file's path, the count per consequence group in the most-consequential-first order `agents/curator.md` `### The gate` sets, the count of candidates as text that says they are not on offer, and the blast-radius verdict in one clause. Constraint removals appear first in what the user sees, never last.
 
 Three options:
 
