@@ -2,8 +2,9 @@
 
 ---
 **Domain:** code
-**Status:** open
-**Active spec/plan:** 260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md (the spec; no plan yet)
+**Status:** claimed
+**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260918-0712
+**Active spec/plan:** 260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md (the spec), 260918-0712_*_implementation-depends-on-edges-proposed-and-confirmed.md (the plan drawn from it, and the one carrying the stopping section)
 **Depends-on:** 260918-0706-strike-unconfirmed-depends-on-entry.md
 **Cross-references:** 260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md, 260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md, 260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
