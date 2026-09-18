@@ -120,22 +120,33 @@ this contradicts that. The field carries one. C3 below says what the pass does w
 
 ### C1: the store's one live edge is corrected before the pass proposes anything
 
-**Description:** The single `**Depends-on:**` value in the store is a relation nobody confirmed and the
-field does not carry. It is struck, with the reason recorded, so that the first run of the proposal pass
-reads a graph that is exact or empty rather than plausible. Two open defect records close on that strike.
+**DONE, AND NOT THIS ITEM'S WORK ANY MORE.** C1 was split out on 2026-09-18 as
+`260918-0706-strike-unconfirmed-depends-on-entry.md`, which carried it out and reached `done`; the strike
+landed at commit `2a9cd013`. The criteria below are ticked as that item met them, and they are history
+rather than outstanding work.
+
+**This correction rides the split rather than following it**, and that placement is the point. Left
+unticked, C1 reads as live work whose first criterion names
+`260909-1700-cut-fusion-to-working-minimum.md`, and the edge survey reads exactly that sentence and
+proposes the relation again on every run — it did so once already, as entry `L10` of
+`260918-0738-curator-run.md`, where the proposal was sound in form and rested on a criterion that had
+already been met elsewhere. Until a declined edge is remembered, which is open at
+`260918-0712_*_how-does-the-curators-edge-survey-know-not-to-re-propose-an-edge-the-user-declined.md`,
+a stale acceptance line costs a re-presentation on every pass. One corrected line costs less than the
+first of them.
 
 **Acceptance criteria:**
 
-- [ ] `260909-1700-cut-fusion-to-working-minimum.md` carries no `**Depends-on:**` field, and the change
+- [DONE] `260909-1700-cut-fusion-to-working-minimum.md` carries no `**Depends-on:**` field, and the change
       is one line removed with nothing else in that record touched.
-- [ ] The reason is recorded where a later reader meets it, naming the answered decision that authorises
+- [DONE] The reason is recorded where a later reader meets it, naming the answered decision that authorises
       editing a terminal item's machine-readable head field.
-- [ ] Every `**Depends-on:**` entry in the store is one the user confirmed, checkable by reading the
+- [DONE] Every `**Depends-on:**` entry in the store is one the user confirmed, checkable by reading the
       work-item records.
-- [ ] `260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md`
+- [DONE] `260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md`
       and `260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md`
       each carry a `Resolved:` note and close.
-- [ ] `bin/fusion-work-order` reports the same figures before and after, because the entry it names is a
+- [DONE] `bin/fusion-work-order` reports the same figures before and after, because the entry it names is a
       terminal item's and was never read.
 
 **Decisions made:**
