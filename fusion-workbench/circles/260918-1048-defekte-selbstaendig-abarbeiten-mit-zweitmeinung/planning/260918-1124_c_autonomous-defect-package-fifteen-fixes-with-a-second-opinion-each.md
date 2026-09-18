@@ -1,7 +1,7 @@
 # Implementation Plan: autonomous defect package, fifteen fixes with a second opinion each
 
 **Date:** 2026-09-18
-**Status:** Draft
+**Status:** Complete
 **Spec:** none — planned from the work item's `## Directive` (`260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md`) and the three defect surveys in this item's analyses store (`260918-1112-defect-survey-group-1.md`, `260918-1112-defect-survey-group-2.md`, `260918-1109-defect-survey-group-3.md`)
 **Decidability:** The load-bearing question is whether each selected defect is still present at HEAD and closable by one bounded edit whose acceptance is a command the executor can run. It is decidable from the inputs the steps have: every step's presence claim was measured by a survey at HEAD `f14506554f6a7bdbf3f1b1b5500e217b1cd04b90`, and every acceptance below is a `grep`, a `wc`, a helper call or the suite, each with a stated expected result. One input is not decidable from the plan: whether the second opinion accepts a concept. That question is not approximated; it is handed to the stop rule in `## Where this work stops` (three rejections in a row end the package), which is the directive's own mechanism for it.
 **Domain:** code
