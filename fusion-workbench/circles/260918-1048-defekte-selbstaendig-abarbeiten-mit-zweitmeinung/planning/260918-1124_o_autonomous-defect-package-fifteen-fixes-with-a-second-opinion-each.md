@@ -106,7 +106,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
    - **Second opinion:** consultant
    - Dependencies: none
 
-3. **Stop the dispatch-parameters bullet in `README-agents.md` from pointing at itself**
+3. [DONE] **Stop the dispatch-parameters bullet in `README-agents.md` from pointing at itself**
    - Executor: `coder`
    - Record: `260916-2206_*_the-relocated-dispatch-parameters-bullet-names-its-own-section-as-the-roster-it-must-not-restate.md`, in the issues store of the container `260912-0438-human-facing-docs-leave-claude-md`
    - Survey reason (group 2, row 15): "`README-agents.md:80` still sends the reader of `## Dispatch parameters` to `README-agents.md` `## Dispatch parameters` and says 'do not restate it here'; stating the two facts without the argument is one bullet edit."
