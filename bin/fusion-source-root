@@ -22,9 +22,11 @@
 #   2  there is no root to print: FUSION_PLUGIN_ROOT is unset or empty AND the
 #      working directory is not the plugin's own repository, so there is
 #      nothing to fall to. Nothing on stdout, the reason on stderr. A caller
-#      reports the root as UNRESOLVED and reads NOTHING through it — an empty
-#      value resolves every citation from `/`, which finds nothing and says
-#      nothing about why.
+#      reports the root as UNRESOLVED, reads NOTHING through it, and writes
+#      NOTHING in its place from memory — an empty value resolves every
+#      citation from `/`, which finds nothing and says nothing about why, and
+#      a file the caller could not open is one it does not improvise; what it
+#      says instead, and where, is each caller's own.
 #
 # ---------------------------------------------------------------------------
 # Why this is one helper and not a line in each skill body

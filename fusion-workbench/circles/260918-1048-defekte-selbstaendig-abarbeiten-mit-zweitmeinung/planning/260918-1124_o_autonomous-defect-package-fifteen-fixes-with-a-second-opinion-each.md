@@ -154,7 +154,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
    - **Second opinion:** consultant
    - Dependencies: none
 
-7. **Put the do-not-improvise instruction into `bin/fusion-source-root`'s exit-2 paragraph**
+7. [DONE] **Put the do-not-improvise instruction into `bin/fusion-source-root`'s exit-2 paragraph**
    - Executor: `coder`
    - Record: `260908-1855_*_the-source-root-cut-left-two-of-four-bodies-without-the-do-not-improvise-instruction.md`, in the issues store of the container `260908-1410-cut-skills-surface-add-post-body`
    - Survey reason (group 1, row 33): "`skills/next/` is gone (`2a785ba2`) and `skills/cleanup/SKILL.md` no longer reads the source root, but `skills/setup/SKILL.md:147` still stops at 'nothing here reads through it', and the record's own recommended home, the exit-2 paragraph of `bin/fusion-source-root:25-27`, still says only 'reads NOTHING through it'."
