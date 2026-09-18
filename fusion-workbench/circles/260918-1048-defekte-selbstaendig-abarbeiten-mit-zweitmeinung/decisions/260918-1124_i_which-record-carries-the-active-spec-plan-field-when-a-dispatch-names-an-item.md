@@ -29,3 +29,9 @@
 ## Recommendation
 
 Option 1. The parameter already decides where the artifact goes; deriving the field's destination from a second input is the defect. The one-line write into an unheld item's head is the same class of write the `**Claim:**` takeover already makes, and the conventions accept that collision at the merge rather than preventing it.
+
+---
+Answered: 260918-1352_*_which-record-carries-active-spec-plan-under-item.md `## Recommendation` — option 1: the field is written onto the record the dispatch wrote into, the `**Item:**` value's record where the dispatch carried one and the claimed item's otherwise, in two clauses of `agents/orchestrator.md` (the write rule and Setup step 5's sentence on what `**Item:**` carries), with the held-path fallback kept only for the case with neither; the discussion converged after 2 rounds with no open dissent; ruled by orchestrator, Kai Stalmann <ks@qantr.com>, under the directive of `260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md`.
+
+---
+Implemented: 260915-2142_*_the-active-spec-plan-write-rule-keys-on-the-claimed-item-while-the-item-parameter-sends-a-plan-elsewhere.md `Resolved:` — the two clauses of `agents/orchestrator.md` land in the commit that carries this line, the same commit that closes that defect.

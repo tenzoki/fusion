@@ -250,7 +250,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
     - **Second opinion:** consultant
     - Dependencies: step 13 (same file; the dead row and the stale prose go before a branch is added beside them)
 
-15. **Write `**Active spec/plan:**` onto the record the dispatch wrote into**
+15. [DONE] **Write `**Active spec/plan:**` onto the record the dispatch wrote into**
     - Executor: `coder`
     - Record: `260915-2142_*_the-active-spec-plan-write-rule-keys-on-the-claimed-item-while-the-item-parameter-sends-a-plan-elsewhere.md`, in the shared store's issues directory
     - Survey reason (group 3, row 27): "`agents/orchestrator.md:217` still keys the field write on the claimed item while `:147` sends `**Item:**` dispatches into an unclaimed one; the acceptance names two prompt-text resolutions, both decidable."
