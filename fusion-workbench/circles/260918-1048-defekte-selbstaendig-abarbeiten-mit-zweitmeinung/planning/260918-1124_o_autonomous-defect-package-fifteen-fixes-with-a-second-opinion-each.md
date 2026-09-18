@@ -130,7 +130,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
    - **Second opinion:** consultant
    - Dependencies: none (after step 3 by preference: same file)
 
-5. **State the per-line read of the event logs once, and use it in every shipped `jq` example**
+5. [DONE] **State the per-line read of the event logs once, and use it in every shipped `jq` example**
    - Executor: `coder`
    - Record: `260909-2215_*_four-truncated-lines-make-a-streaming-jq-read-of-the-event-log-stop-at-forty-percent.md`, in the shared store's issues directory
    - Survey reason (group 3, row 15): "Two shipped surfaces still recommend a streaming read (`README-agents.md:170` 'or `jq` for queries', `README-hooks.md:453`, `:459` `| jq .`) and neither states the per-line convention `hooks/lib/events-query.ts:121` implements; a docs edit closes it."

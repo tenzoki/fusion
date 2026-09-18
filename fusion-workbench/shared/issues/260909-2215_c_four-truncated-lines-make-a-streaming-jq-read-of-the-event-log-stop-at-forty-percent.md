@@ -11,3 +11,6 @@ fusion's own reader is correct and reports the shortfall: `bin/fusion-events pre
 Reconciliation (260909-2107, reconciler): still open — this defect is against a consuming project's
 log format and fusion's own reading convention, not against this repository's tree, so nothing at
 HEAD `08e81db3` closes it. Correctly carries `_o_`.
+
+---
+Resolved: both shipped `jq` reads of an event log now use the per-line form `jq -R 'fromjson? // empty'`: the event-log row in `README-agents.md` `### Orchestrator observability` states the convention once and why (two of the orchestrator log's writers are shell appends; a streaming `jq .` stops at the first malformed line with the rows it had, so a count off its stdout is silently short; `bin/fusion-events` is the reader that counts the skipped lines), and `README-hooks.md` `### Viewing the event log` uses the same form for the hook-written log and points at that row, saying the hook log has one writer function and carries the habit rather than the same exposure. The reference lint's pin moves 1676/288 to 1679/289 for the three path tokens and one anchor the new text carries, with its re-approval entry. The torn lines in the consuming project's log are not repaired by this and were never the defect. Concept accepted by a consultant read with changes; fixed in the commit that carries this line.

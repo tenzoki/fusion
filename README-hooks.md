@@ -450,14 +450,16 @@ The migration this section used to describe is over. A halt raised by the old me
 ### Viewing the event log
 
 ```bash
-cat fusion-workbench/.guard-state/events.jsonl | jq .
+jq -R 'fromjson? // empty' fusion-workbench/.guard-state/events.jsonl
 ```
 
 Or tail it in a second terminal during a session:
 
 ```bash
-tail -f fusion-workbench/.guard-state/events.jsonl | jq .
+tail -f fusion-workbench/.guard-state/events.jsonl | jq -R 'fromjson? // empty'
 ```
+
+Per line, not `jq .` over the stream: this log is written by one function, `emitEvent` in `hooks/lib/events.ts`, in a single append per row, so a torn line takes a crash mid-write, but the orchestrator's log has shell writers and the two are read with one habit. The convention and its reason are stated once, in the event-log row of `README-agents.md` `### Orchestrator observability`.
 
 ### Running tests
 
