@@ -4,6 +4,7 @@
 **Domain:** code
 **Status:** claimed
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260918-1102
+**Active spec/plan:** 260918-1124_*_autonomous-defect-package-fifteen-fixes-with-a-second-opinion-each.md (the plan; no spec, planned from the directive)
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 ---
 
