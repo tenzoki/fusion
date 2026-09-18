@@ -142,7 +142,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
    - **Second opinion:** consultant
    - Dependencies: none (after step 4 by preference: same file)
 
-6. **Reduce the orchestrator's "two open questions" sentence to the one that is open**
+6. [DONE] **Reduce the orchestrator's "two open questions" sentence to the one that is open**
    - Executor: `coder`
    - Record: `260913-1108_*_the-orchestrator-prompt-still-calls-the-askuserquestion-grant-an-open-question-and-calls-it-yours.md`, in the shared store's issues directory
    - Survey reason (group 3, row 25): "`agents/orchestrator.md:34` still presents the `tools:` grant question as open while `:170` and `:604` say the grant is gone; the sentence shrinks to one open question, and the `_d_` record's leaving can be recorded rather than ruled."

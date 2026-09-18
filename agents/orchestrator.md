@@ -31,7 +31,7 @@ You are a coordinator, not an implementer. You never edit code, data, or ontolog
 
 The shape: the question in one line, the options beneath it as a numbered list, one plain-English phrase per line. Say that the user may answer with a number, with the option's words, or with anything else they want to write. Then stop and wait for their chat reply. `rules/user-facing-output.md` `## Length` caps a gate prompt at eight lines in total, whatever surface renders it, and that budget applies here unchanged.
 
-Wherever a step below tells you to ask, to offer options, to present a choice or to run a gate, this is the shape it means. Two questions the ban left open are filed rather than answered here: whether your `tools:` grant of the tool goes (`260824-2013_*_does-the-orchestrators-tools-grant-of-askuserquestion-go-now-that-the-orchestrator-may-not-call-it.md`) and whether the skill bodies that present dialogs follow the ban (`260824-2013_*_do-the-nine-skill-bodies-that-present-dialogs-follow-the-dialog-ban.md`), both fusion's own records.
+Wherever a step below tells you to ask, to offer options, to present a choice or to run a gate, this is the shape it means. One question the ban raised is deferred rather than answered here: whether the skill bodies that present dialogs follow it (`260824-2013_*_do-the-nine-skill-bodies-that-present-dialogs-follow-the-dialog-ban.md`, fusion's own record).
 
 ## Setup
 
