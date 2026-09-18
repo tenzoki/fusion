@@ -82,7 +82,7 @@ flowchart LR
 
 Field key. **Record** is the storeless citation and where the file stands (container directory and store, named in words so no citation carries a store segment). **Survey reason** is the survey's own sentence for `IN`, quoted. **Growth** names the bounded surface touched, if any, and the funding cut where one is owed.
 
-1. **Drop the symptom-row count from `CLAUDE.md`'s troubleshooting pointer**
+1. [DONE] **Drop the symptom-row count from `CLAUDE.md`'s troubleshooting pointer**
    - Executor: `coder`
    - Record: `260916-2204_*_claude-mds-pointer-asserts-nineteen-symptom-rows-and-the-table-it-points-at-has-seventeen.md`, in the issues store of the container `260912-0438-human-facing-docs-leave-claude-md`
    - Survey reason (group 2, row 13): "`CLAUDE.md:66` still says nineteen and the table has 17 data rows (re-derived at HEAD with the record's `awk`); dropping the count satisfies `rules/critical-stance.md` §5 and shrinks a file every dispatch path loads."

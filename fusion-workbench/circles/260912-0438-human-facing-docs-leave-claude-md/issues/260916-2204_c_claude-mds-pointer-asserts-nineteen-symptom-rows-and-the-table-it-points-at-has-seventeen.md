@@ -26,3 +26,6 @@ It is a bare cardinality beside a list that is not in the same file, which is th
 **Acceptance test.** The digit in `CLAUDE.md`'s troubleshooting pointer equals the data-row count of `README-hooks.md` `## Where to look when something breaks`, or the sentence stops stating a count. Whichever lands, re-derive it with the command above rather than reading a figure out of a record.
 
 **Cross-references:** 260916-1058_*_spec-human-facing-docs-leave-claude-md.md, 260916-1612-curator-run.md
+
+---
+Resolved: the word `nineteen` is deleted from the pointer in `CLAUDE.md` `## Where to look when something breaks`, so the sentence states no count and the table in `README-hooks.md` stays the single source; re-derived at the fix with the record's own pipeline (17 data rows). Concept accepted by a consultant read; fixed in the commit that carries this line, `CLAUDE.md` at 8 105 bytes.

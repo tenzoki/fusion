@@ -63,4 +63,4 @@ Use `claude --plugin-dir /path/to/this/repo` to load directly from disk — no i
 
 ## Where to look when something breaks
 
-The nineteen symptom rows — what each failure looks like and what causes it — are in `README-hooks.md` `## Where to look when something breaks`.
+The symptom rows — what each failure looks like and what causes it — are in `README-hooks.md` `## Where to look when something breaks`.
