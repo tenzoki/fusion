@@ -118,7 +118,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
    - **Second opinion:** consultant
    - Dependencies: none
 
-4. **Retarget the skills row's anchor to a heading `README-agents.md` has**
+4. [DONE] **Retarget the skills row's anchor to a heading `README-agents.md` has**
    - Executor: `coder`
    - Record: `260916-2207_*_the-relocated-skills-row-points-at-a-what-this-is-section-that-its-new-file-does-not-have.md`, in the issues store of the container `260912-0438-human-facing-docs-leave-claude-md`
    - Survey reason (group 2, row 16): "`README-agents.md:200` still names `## What this is`, which the file lacks, while the enumeration sits under `README-agents.md:241` `### skills/ — one file per slash command`; retargeting the anchor is one edit and `reference-resolution-lint` verifies it."

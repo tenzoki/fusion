@@ -23,3 +23,6 @@ The claim "enumerated once" is separately loose and was loose before the move â€
 **Acceptance test.** `README-agents.md:199` names a heading that exists in the file it points at, and that heading's section carries the enumeration it claims. Verified by resolving the token against `grep '^#\{1,4\} '` over the named file.
 
 **Cross-references:** 260916-1612-curator-run.md, 260908-1814_*_the-layout-rows-skill-split-still-reads-three-and-three-and-omits-post.md
+
+---
+Resolved: the row at `README-agents.md` `## Plugin structure` now says the division is enumerated under the `skills/` section heading below, the same pointer form `CLAUDE.md` uses for that section, and "drifted from that section twice" keeps its antecedent. "Once" is dropped because the section states the division twice. No path token is added, so the reference lint reads nothing here and its pin does not move; the other `## What this is` mention in the file points at `CLAUDE.md`, which still has the heading, and stays. The collateral that this mention tells a new agent's author to register the name in a bullet that no longer names any agent is filed as `260918-1206_*_the-new-agent-registration-step-points-at-a-claude-md-listing-bullet-that-no-longer-names-any-agent.md`. Concept accepted by a consultant read with changes; fixed in the commit that carries this line.
