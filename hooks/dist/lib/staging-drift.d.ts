@@ -89,9 +89,10 @@
  *     only. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
  *     message", and told the model to delete it (issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`).
- *   - `record` — an authored artifact: a Circle's `*_circle.md`, or anything
- *     under an artifact store. These are what a staging list is supposed to
- *     name.
+ *   - `record` — an authored artifact: a legacy Circle's `*_circle.md` (a
+ *     terminal record `/fusion:migrate` never touches, so a converted workbench
+ *     can still hold one), or anything under an artifact store. These are what
+ *     a staging list is supposed to name.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
  *     R2 and R3, plus the session's own history file. Never a fault.
@@ -110,8 +111,8 @@
  *
  * Only `record` and `commit-message` rows that are not fully staged enter the
  * verdict, the signature, and the sentence handed to the model. The CLI prints
- * all four classes, because the Turn-boundary read is deliberate and a
- * deliberate read should be complete.
+ * all four classes, because the CLI's read is taken on purpose — at a commit
+ * and at the session's end — and a deliberate read should be complete.
  *
  * ## What it does NOT do
  *
@@ -127,9 +128,10 @@
  *
  *   1. `hooks/tracker.ts` — the PostToolUse hook, on the HEAD-moved trigger.
  *   2. `hooks/staging-drift.ts` → `bin/fusion-staging-drift` — the CLI, read by
- *      `agents/orchestrator.md` at Phase 1 (after a queue rebuild is committed),
- *      at Step 3e (in the same command as the `turn_end` emission), and at
- *      Cleanup.
+ *      `agents/orchestrator.md` `## Staging check` at its two points:
+ *      `agents/orchestrator.md` `### Step 4 — commit` item 7, in the same
+ *      command as the `git diff --cached --name-only` read, and
+ *      `agents/orchestrator.md` `## Ending the session`, before the report.
  */
 /**
  * The path `agents/orchestrator.md` `### Step 4 — commit` prescribes for a
@@ -243,7 +245,7 @@ export interface StagingReport {
  *
  * ## What the scoping gives up, stated rather than glossed
  *
- * A commit message genuinely written into `shared/issues/` or a Circle's
+ * A commit message genuinely written into `shared/issues/` or a work item's
  * `planning/` is no longer read as a message file. It comes back as an unstaged
  * `record`: the model is told to stage it, not to delete it, so the leftover
  * enters a commit instead of being swept, and the sentence naming

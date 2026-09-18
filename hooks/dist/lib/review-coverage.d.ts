@@ -101,8 +101,8 @@
  *      obligation that arrives rather than a footnote in a file nobody reopens.
  *
  * It is **not** on an every-tool-call path, and the difference is not an
- * oversight. An uncovered range mid-Turn is the *normal and correct* state —
- * the review pass runs once per Circle, at closure — so a per-call report would
+ * oversight. An uncovered range mid-session is the *normal and correct* state —
+ * the review pass runs once per work item, at its closure — so a per-call report would
  * fire on the commonest path, and a check that cries wolf on its commonest path
  * teaches its reader to ignore it. That is issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` arriving one
  * level up, and it is why this measurement's verdict is a line of output rather

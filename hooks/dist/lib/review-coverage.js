@@ -101,8 +101,8 @@
  *      obligation that arrives rather than a footnote in a file nobody reopens.
  *
  * It is **not** on an every-tool-call path, and the difference is not an
- * oversight. An uncovered range mid-Turn is the *normal and correct* state —
- * the review pass runs once per Circle, at closure — so a per-call report would
+ * oversight. An uncovered range mid-session is the *normal and correct* state —
+ * the review pass runs once per work item, at its closure — so a per-call report would
  * fire on the commonest path, and a check that cries wolf on its commonest path
  * teaches its reader to ignore it. That is issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` arriving one
  * level up, and it is why this measurement's verdict is a line of output rather
@@ -126,10 +126,10 @@ import { newestHookSessionStart } from "./orchestrator-events.js";
  * `## fusion-workbench Layout` puts these at fixed root-relative paths precisely
  * because the hooks and the `bin/` helpers read them there and none of them has
  * a fallback. `reviews` is the constant `bin/fusion-paths` resolves
- * `SCAN_REVIEWS` to under both bases; the Circle *inside* `circles/` is not
- * constant, which is why every Circle is enumerated rather than looked up
- * through `.active-circle` — a review filed before the active Circle existed
- * still covers commits this session landed.
+ * `SCAN_REVIEWS` to under both bases; the container *inside* `circles/` is not
+ * constant, which is why every container is enumerated rather than looked up
+ * through a pointer — `.active-circle` is retired and nothing writes it — and
+ * a review filed under another item still covers commits this session landed.
  */
 const WB = "fusion-workbench";
 const SHARED_REVIEWS_REL = `${WB}/shared/reviews`;
@@ -591,7 +591,7 @@ export function coverageSentence(report) {
     if (report.carried.length > 0) {
         parts.push(`The last review declared it did not open ${report.carried.join(", ")}` +
             (report.carriedFrom === null ? "" : ` (${report.carriedFrom})`) +
-            ". That list is the next review dispatch's scope, added to its own Turn's changed files — not a footnote.");
+            ". That list is the next review dispatch's scope, added to the uncovered files the dispatch is already scoped over — not a footnote.");
     }
     if (parts.length === 0)
         return "";

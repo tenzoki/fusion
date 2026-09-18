@@ -7,9 +7,9 @@
  * (issue `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`) and for why the trigger is a measured HEAD rather than
  * a `Bash` command's text.
  *
- * Called through `bin/fusion-staging-drift` by `agents/orchestrator.md` at
- * Phase 1 (after a queue rebuild is committed), at Step 3e in the same command
- * as the `turn_end` emission, and at Cleanup — plus anyone at a terminal who
+ * Called through `bin/fusion-staging-drift` by `agents/orchestrator.md`
+ * `## Staging check` at its two points, `### Step 4 — commit` item 7 and
+ * `## Ending the session` before the report — plus anyone at a terminal who
  * wants to know what the workbench is holding that no commit carries.
  *
  * Output, one `KEY=value` per line in the shape `bin/fusion-review-coverage`
@@ -25,8 +25,8 @@
  *     in-flight       M orchestrator-events.jsonl  (append-only — …)
  *     unclassified   ?? stilwerk/chat-voice-de.yaml  (not a record store …)
  *
- * **Every entry is printed, in all four classes.** The Turn-boundary read is
- * deliberate, and a deliberate read should be complete: a file this check is
+ * **Every entry is printed, in all four classes.** The read is taken on purpose,
+ * at a commit and at the session's end, and a deliberate read should be complete: a file this check is
  * silent about is a file the reader has to discover some other way, which is
  * the shape of the defect it answers. Only `record` and `commit-message` rows
  * carry `UNSTAGED` and only those reach `verdict=`, so a complete listing costs
@@ -41,7 +41,7 @@
  * **Finding an unstaged record is not an error exit**, for the reason
  * `bin/fusion-review-coverage` gives at the same place (issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`): a
  * check that hands its verdict to an exit code teaches its reader to ignore
- * that code, and a Turn that legitimately ends with a record still in flight
+ * that code, and a commit step that legitimately leaves a record still in flight
  * would then be reporting failure where nothing is wrong. The verdict is a line
  * of output, where a reader can see which row produced it.
  */

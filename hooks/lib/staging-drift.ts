@@ -89,9 +89,10 @@
  *     only. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
  *     message", and told the model to delete it (issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`).
- *   - `record` — an authored artifact: a Circle's `*_circle.md`, or anything
- *     under an artifact store. These are what a staging list is supposed to
- *     name.
+ *   - `record` — an authored artifact: a legacy Circle's `*_circle.md` (a
+ *     terminal record `/fusion:migrate` never touches, so a converted workbench
+ *     can still hold one), or anything under an artifact store. These are what
+ *     a staging list is supposed to name.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
  *     R2 and R3, plus the session's own history file. Never a fault.
@@ -110,8 +111,8 @@
  *
  * Only `record` and `commit-message` rows that are not fully staged enter the
  * verdict, the signature, and the sentence handed to the model. The CLI prints
- * all four classes, because the Turn-boundary read is deliberate and a
- * deliberate read should be complete.
+ * all four classes, because the CLI's read is taken on purpose — at a commit
+ * and at the session's end — and a deliberate read should be complete.
  *
  * ## What it does NOT do
  *
@@ -127,9 +128,10 @@
  *
  *   1. `hooks/tracker.ts` — the PostToolUse hook, on the HEAD-moved trigger.
  *   2. `hooks/staging-drift.ts` → `bin/fusion-staging-drift` — the CLI, read by
- *      `agents/orchestrator.md` at Phase 1 (after a queue rebuild is committed),
- *      at Step 3e (in the same command as the `turn_end` emission), and at
- *      Cleanup.
+ *      `agents/orchestrator.md` `## Staging check` at its two points:
+ *      `agents/orchestrator.md` `### Step 4 — commit` item 7, in the same
+ *      command as the `git diff --cached --name-only` read, and
+ *      `agents/orchestrator.md` `## Ending the session`, before the report.
  */
 
 import { basename, resolve, relative, sep } from "node:path";
@@ -180,7 +182,7 @@ export const PRESCRIBED_MESSAGE_PATH =
  * `.gitignore` applies exactly that split, so in a project that follows it they
  * never reach `git status` at all. They are listed anyway because whether the
  * workbench is tracked, and how, is the project's decision — a consumer that
- * tracks `.active-circle` must not be told on every commit that it forgot to
+ * tracks `.session-marker` must not be told on every commit that it forgot to
  * stage it.
  *
  * **Two entries are held past the layout that named them, deliberately.**
@@ -211,7 +213,6 @@ const LIVE_STATE: { path: string; why: string }[] = [
   { path: "agentstate.yaml", why: "the retired session state file — nothing writes it; a leftover copy is not a record" },
   { path: "orchestrator-live.md", why: "the retired dashboard file — nothing writes it; a leftover copy is not a record" },
   { path: ".session-marker", why: "the orchestrator heartbeat — mtime is the signal" },
-  { path: ".active-circle", why: "the active-Circle pointer — one line, rewritten on activation" },
   { path: "monitor", why: "a verbatim copy of bin/monitor, re-created by /fusion:setup" },
   { path: "portfolio.md", why: "the portfolio briefing — regenerated in full by the ranking pass that wrote it, until v11 removed both" },
   { path: "orchestrator-events.jsonl", why: "append-only — written by every event emission, in flight all session" },
@@ -227,7 +228,7 @@ const LIVE_PREFIXES: { prefix: string; why: string }[] = [
 
 /**
  * The artifact stores. A path with one of these as a segment holds authored
- * records, whether it sits under a Circle or under `shared/`.
+ * records, whether it sits under a work item's container or under `shared/`.
  *
  * This is the same set `hooks/lib/__tests__/path-literal-lint.test.ts` calls
  * `TYPE_FOLDERS`, minus the three retired pre-v4 review folders — a converted
@@ -419,7 +420,7 @@ function unquote(raw: string): string {
  *
  * ## What the scoping gives up, stated rather than glossed
  *
- * A commit message genuinely written into `shared/issues/` or a Circle's
+ * A commit message genuinely written into `shared/issues/` or a work item's
  * `planning/` is no longer read as a message file. It comes back as an unstaged
  * `record`: the model is told to stage it, not to delete it, so the leftover
  * enters a commit instead of being swept, and the sentence naming
@@ -697,7 +698,7 @@ export function stagingSentence(report: StagingReport): string {
 
   parts.push(
     "If you are the orchestrator, add these paths — written out in full, absolute — to the next commit's " +
-      "staging list, and commit a queue rebuild at Phase 1 where the dispatch that produced it happened. " +
+      "staging list. " +
       "Do NOT reach for `git add -A`, `-u`, a directory argument or a glob: the shape at `### Step 4 — commit` " +
       "item 4 is what " +
       "makes over-staging impossible, it is not what failed here, and each way of loosening it fails on its own " +

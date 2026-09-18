@@ -226,7 +226,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
     - **Second opinion:** consultant
     - Dependencies: none
 
-13. **Remove the `.active-circle` classification row and correct the stale trigger prose in staging-drift**
+13. [DONE] **Remove the `.active-circle` classification row and correct the stale trigger prose in staging-drift**
     - Executor: `coder`
     - Record: `260911-1339_*_staging-drift-still-classifies-a-pointer-a-rule-says-nothing-creates-and-names-a-turn-boundary-trigger-it-does-not-have.md`, in the shared store's issues directory
     - Survey reason (group 3, row 20): "Every site stands: the dead `.active-circle` row at `hooks/lib/staging-drift.ts:214`, the Turn/Phase 1/Step 3e/`turn_end` prose at `:113`, `:130-131`, `:700`, `hooks/staging-drift.ts:11-12`, `:28`, `hooks/lib/review-coverage.ts:134`; removing a row that can never match and correcting comments is the stated defect, not a rebuild."
