@@ -202,7 +202,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
     - **Second opinion:** consultant
     - Dependencies: none
 
-11. **Replace the seven surviving `Step 3b` addresses with the step the prompt has**
+11. [DONE] **Replace the seven surviving `Step 3b` addresses with the step the prompt has**
     - Executor: `coder`
     - Record: `260911-1423_*_the-dead-step-3b-address-survives-in-seven-places-outside-the-file-its-repair-covered.md`, in the shared store's issues directory
     - Survey reason (group 3, row 22): "`/usr/bin/grep -rn 'Step 3b' hooks agents skills rules` at HEAD returns the same seven sites (`hooks/tracker.ts:395`, `commit-message-path.test.ts:136`, `:155`, `:160`, `:189`, `:222`, `staging-drift.test.ts:8`) plus `hooks/dist/tracker.js`; the repair is label text."

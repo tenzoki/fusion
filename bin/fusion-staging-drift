@@ -43,7 +43,7 @@
 # tree alone, where an ordinary `git checkout -- fusion-workbench/` would have
 # taken them.
 #
-# The staging rule at agents/orchestrator.md Step 3b step 4 is a SHAPE: every
+# The staging rule at agents/orchestrator.md Step 4 item 4 is a SHAPE: every
 # path passed to `git add` is one you wrote out yourself. That makes
 # over-staging impossible and under-staging invisible — a file nobody names is a
 # file nobody commits, and the rebuild ran forty-three minutes before the range's

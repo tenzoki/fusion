@@ -133,8 +133,8 @@ function workbenchMessagePaths(text: string): string[] {
 /**
  * The one workbench-internal commit-message path a shipped prompt may name.
  *
- * Two lines name it, both as the defect: `agents/orchestrator.md` in Step 3b's
- * reason for `/tmp`, and `skills/commit/SKILL.md` in the shorter form of the
+ * Two lines name it, both as the defect: `agents/orchestrator.md` under `### Step 4 — commit`,
+ * item 3's reason for `/tmp`, and `skills/commit/SKILL.md` in the shorter form of the
  * same sentence. Every other workbench-internal commit-message path is an
  * offence, with no reading of the prose around it.
  *
@@ -152,12 +152,12 @@ function workbenchMessagePaths(text: string): string[] {
 const NAMEABLE_LEFTOVER = "fusion-workbench/.commit-msg-tmp";
 
 describe("commit-message path: the prescription is pinned", () => {
-  it("Step 3b step 3 names a /tmp path, and step 5 reads the same one", () => {
+  it("`agents/orchestrator.md` `### Step 4 — commit` item 3 names a /tmp path, and item 5 reads the same one", () => {
     const text = orchestrator();
     const paths = tmpPaths(text).filter((p) => p.includes("commit-msg"));
     expect(
       paths.length,
-      "agents/orchestrator.md names no /tmp commit-message path — Step 3b step 3 was reworded; update this parser or restore the path",
+      "agents/orchestrator.md names no /tmp commit-message path — `### Step 4 — commit` item 3 was reworded; update this parser or restore the path",
     ).toBeGreaterThan(0);
 
     // The message must reach git as `-F <that path>`, not as a `-m` argument:
@@ -186,7 +186,7 @@ describe("commit-message path: the prescription is pinned", () => {
     ).toEqual([]);
   });
 
-  it("Step 3b states WHY the path is per-session, not merely that it is", () => {
+  it("`agents/orchestrator.md` `### Step 4 — commit` item 3 states WHY the path is per-session, not merely that it is", () => {
     // Same reasoning as the `/tmp` justification below: a prescription with no
     // reason is one an agent improvises around. The two facts that decide this
     // one are that `/tmp` is shared machine-wide and that the task id is not a
@@ -219,7 +219,7 @@ describe("commit-message path: the prescription is pinned", () => {
     ).toBe(true);
   });
 
-  it("Step 3b states WHY the location is /tmp, not merely that it is", () => {
+  it("`agents/orchestrator.md` `### Step 4 — commit` item 3 states WHY the location is /tmp, not merely that it is", () => {
     // A prescription with no reason is one an agent improvises around, which is
     // exactly what happened. The two facts that decide it: /tmp is swept, and
     // the workbench is the tree git status reports on.

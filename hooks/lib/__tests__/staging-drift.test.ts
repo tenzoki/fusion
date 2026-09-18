@@ -5,7 +5,7 @@
  *
  * `lib/staging-drift.ts` answers issue `260811-0114`, whose account is the filed
  * record and is told again in `commit-message-path.test.ts`'s header: the
- * staging rule at `agents/orchestrator.md` Step 3b step 4 is a shape — every
+ * staging rule at `agents/orchestrator.md` `### Step 4 — commit` item 4 is a shape — every
  * path passed to `git add` is one you wrote out yourself — and a file nobody
  * names is a file nobody commits. The shape is right and stays; what was missing
  * is a measurement of the result.
