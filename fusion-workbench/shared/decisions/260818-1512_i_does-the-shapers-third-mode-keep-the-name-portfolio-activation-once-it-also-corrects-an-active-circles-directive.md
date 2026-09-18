@@ -115,3 +115,6 @@ for the section heading in any case.
 The `**Status:** open` head field is left exactly as it stands, per
 `260818-2212_*_should-the-decision-records-status-field-exist-at-all-...`: a record written before
 the field left the template keeps it.
+
+---
+Retired: `260909-1700-cut-fusion-to-working-minimum.md` — the mode is gone, so the name it kept names nothing. `portfolio-activation` appears at none of the fourteen sites this record enumerated, and `agents/shaper.md` `## Two invocation modes` now carries user-direct and task clarification only.

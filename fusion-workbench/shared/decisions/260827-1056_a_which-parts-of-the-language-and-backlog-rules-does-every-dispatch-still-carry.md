@@ -18,3 +18,6 @@
 **The user's condition, verbatim in substance:** the language core paragraph must carry **four** things, not three — the two declaration lines, the fallback chain, the four-surface assignment, **and the conditional exempt group "what a project ships onward is English"**. If that fourth falls into the full text, this very repository breaks: the curator writes into `rules/` and `CLAUDE.md`, and under `**Language:** de` it would no longer hold the rule that shipped text stays English. That is where a real regression is expected, so the clause stays on the floor.
 
 The backlog core keeps: what an entry is, where it lives, the marker reading, minimum content, and both bounds (no agent files; the backlog is not the work queue). The operations table, its gates and the binding-decision list move with the maintainer.
+
+---
+Retired: `260909-1700-cut-fusion-to-working-minimum.md`, commits `2a785ba2` and `76d833be` — the backlog half only. `agents/playmaker.md` and `rules/backlog-entries.md` were both deleted, so the full backlog rule has no audience and the work-item grammar sits on the always-on floor for every agent in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`. The language half stands unchanged: `bin/fusion-rules` still emits `rules/project-language.md` to the editor alone and names this record for the reason.

@@ -79,3 +79,6 @@ this record asked — who writes `_p_` — has exactly one answer on disk, and t
 enforces it (the prompt token, the resolver key, the conventions table) is intact. What the
 survivor shows is that the surface *count* in the Circle's Directive was five and the real count
 was at least six, which is that Circle's acceptance problem and not this record's.
+
+---
+Retired: `260909-1700-cut-fusion-to-working-minimum.md`, commit `2a785ba2` — the writer this record settled on no longer exists. `agents/playmaker.md` was deleted, `bin/fusion-paths` emits `OUT_BACKLOG=circles` rather than `shared/backlog`, and the mandate lint that pinned both surfaces went with them, so the question of who writes the marker has no holder on disk.

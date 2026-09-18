@@ -14,3 +14,6 @@ The pipeline's one gate (the `CLAUDE.md` ledger) stood at Step 5 of 8, and the s
 ## Answer (260827, user)
 
 **Last.** The activity-log pass moves to Step 5 and the `CLAUDE.md` reconciliation to Step 6, directly before the housekeeping commits: Steps 1–5 run straight through unattended, the user answers the one ledger question whenever they return, and apply plus Step 7 follow. Selector names (`log-activity`, `claude-md`) and every guardrail are unchanged; `--skip claude-md` still runs gateless end to end. One consequence stated in the skill: the curator's applied edits land after the log was written, entering it on the next run's refresh of its newest day — a day's log is never final until the day is.
+
+---
+Retired: commits `115be68d` and `9d5b1e80` — `/fusion:cleanup` is Steps 0 to 4 and commits and pushes only, so the Step 5, Step 6 and Step 7 this answer placed name nothing. The `CLAUDE.md` pass left for `/fusion:curate` and the activity log became the first half of `/fusion:cadence` (`260915-2309_*_does-the-activity-log-keep-its-own-command-or-become-the-first-half-of-cadence.md`), and `--skip claude-md` is now an error rather than a gateless run.

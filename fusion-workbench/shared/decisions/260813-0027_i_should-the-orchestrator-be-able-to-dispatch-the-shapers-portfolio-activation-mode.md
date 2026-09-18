@@ -187,3 +187,6 @@ the net-negative `circuit_breaker`, both at 12:42:06; the reconciler's `review-n
 written at 14:57, one hour and forty-four minutes after the gate, and could not have triggered it.
 Filed as
 `260814-1850_*_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`.
+
+---
+Retired: `260909-1700-cut-fusion-to-working-minimum.md` — the permission has no mode to grant. The shaper's record-editing modes went with the unit-of-work record they edited, `agents/shaper.md` `## Two invocation modes` carries the two that remain, and `portfolio-activation` appears nowhere under `agents/`, `skills/`, `rules/`, `bin/` or `CLAUDE.md`.

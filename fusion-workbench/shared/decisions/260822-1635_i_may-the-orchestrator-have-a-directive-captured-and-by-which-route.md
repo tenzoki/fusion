@@ -137,4 +137,4 @@ Untouched as the answer required, verified by an empty diff: `agents/shaper.md` 
 needed nothing, both being about agents while this is a skill.
 Deferred:
 Superseded by:
-Retired:
+Retired: `260909-1700-cut-fusion-to-working-minimum.md`, commit `07961552` — the route is gone. `skills/direct/SKILL.md` was deleted and `agents/orchestrator.md` carries no `## Capturing a Directive as an anticipated Circle` section, so Form A has no skill to invoke and no prompt text left to state the bound.
