@@ -27,3 +27,6 @@ since moved, in a file nobody re-reads because its assertions pass.
 
 **Acceptance.** The citation names the count the helper actually defines, and the two statements
 in this file agree with each other.
+
+---
+Resolved: the three sites in `hooks/lib/__tests__/rules-emission-golden.test.ts` that said two events now say three, the full-heading citation matches the helper's current spelling (`## Re-baselining: the three events at which a baseline moves`), and the failure message that said the section was "above" now names `helpers/growth-bound.ts`, where it has lived since the move. Word replacement inside existing lines; the file stays at 1 330 lines. Concept accepted by a consultant read; fixed in the commit that carries this line.

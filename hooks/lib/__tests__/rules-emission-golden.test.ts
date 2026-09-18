@@ -232,8 +232,8 @@ const DRIFT_CEILING = 145_144;
  * numbers summed over the files that role actually loads, so the floor and the
  * per-file breakdown in the report are one fact rather than two that can disagree.
  *
- * Hand-edited, and only at one of the two events in `## Re-baselining: the two
- * events at which the baseline moves`. A
+ * Hand-edited, and only at one of the three events in `## Re-baselining: the three
+ * events at which a baseline moves`. A
  * file the emission carries but this map does not (a newly added always-on rule)
  * counts as growth in full, which is correct: nobody granted it a budget. A file
  * this map carries that the emission dropped is simply not measured.
@@ -487,7 +487,7 @@ const ROLES: Record<string, Role> = {
    * what the role EMITS and not what it stands on, and a newly added always-on
    * file has no baseline entry, contributes 0 to the floor and counts as growth
    * in full against the hard bound instead. Two things can move a floor — a
-   * re-baseline at one of the two events in `## Re-baselining`, and an audience
+   * re-baseline at one of the three events in `## Re-baselining`, and an audience
    * change in `bin/fusion-rules` that hands this role another already-baselined
    * file. What the next core-file edit meets is the hard bound at
    * +GROWTH_BUDGET, not this cap.
@@ -690,8 +690,8 @@ describe("rules emission golden", () => {
         `measurement. This failure is deliberate — it stops a regeneration run from ` +
         `ever being green. Now: (1) read the fixture diff and confirm every change is ` +
         `one you intended, (2) re-run without UPDATE_RULES_GOLDEN. RULE_BASELINE ` +
-        `does NOT move with the golden: it is re-cut only at the two events in ` +
-        `\`## Re-baselining\` above, so a regeneration records growth and never ` +
+        `does NOT move with the golden: it is re-cut only at the three events in ` +
+        `\`## Re-baselining\` in \`helpers/growth-bound.ts\`, so a regeneration records growth and never ` +
         `absolves it.`,
     ).toBe(false);
   });

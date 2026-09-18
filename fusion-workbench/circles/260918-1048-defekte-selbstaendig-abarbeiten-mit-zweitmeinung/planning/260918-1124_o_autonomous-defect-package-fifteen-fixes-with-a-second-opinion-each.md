@@ -166,7 +166,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
    - **Second opinion:** consultant
    - Dependencies: none
 
-8. **Make the golden test's re-baselining citation say three events**
+8. [DONE] **Make the golden test's re-baselining citation say three events**
    - Executor: `coder`
    - Record: `260908-0104_*_a-doc-comment-cites-two-re-baselining-events-while-the-helper-defines-three.md`, in the shared store's issues directory
    - Survey reason (group 3, row 2): "Still present: `hooks/lib/__tests__/rules-emission-golden.test.ts:235`, `:490`, `:693-694` say 'two events' while `helpers/growth-bound.ts:18` and the same file's `:1162-1163` say three; a word swap in comments and one message string closes it."
