@@ -214,7 +214,7 @@ Field key. **Record** is the storeless citation and where the file stands (conta
     - **Second opinion:** consultant
     - Dependencies: none
 
-12. **Gate the second "agent prompts" digit in `README-agents.md`**
+12. [DONE] **Gate the second "agent prompts" digit in `README-agents.md`**
     - Executor: `coder`
     - Record: `260916-2211_*_the-agent-prompts-digit-now-stands-in-two-files-and-the-claims-parser-gates-one-of-them.md`, in the issues store of the container `260912-0438-human-facing-docs-leave-claude-md`
     - Survey reason (group 2, row 20): "`hooks/lib/__tests__/derivable-enumerations-lint.test.ts:166` still gates the phrase in `CLAUDE.md` only while `README-agents.md:49` carries a second live occurrence; one array entry, one line, inside the 12 left."

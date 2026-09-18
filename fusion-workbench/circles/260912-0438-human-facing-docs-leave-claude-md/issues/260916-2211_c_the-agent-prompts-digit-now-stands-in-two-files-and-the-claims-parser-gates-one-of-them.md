@@ -22,3 +22,6 @@ Before the move the phrase existed once, in `CLAUDE.md`, gated. The relocation c
 **Acceptance test.** Deleting an `agents/*.md` file and running the suite fails on `README-agents.md`'s *agent-prompts* claim as well as on its *inheriting-agents* claim.
 
 **Cross-references:** 260916-1315_*_the-retired-gates-redundancy-argument-covers-one-direction-and-claude-md-still-claims-the-other.md
+
+---
+Resolved: `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` carries a sixth `CLAIMS` row gating `The (N) agent prompts` in `README-agents.md`; the `CLAUDE.md` row stays, since the two gate different sentences in different files. Rehearsed: with one `agents/*.md` moved aside the suite fails on both of `README-agents.md`'s claims, the agent-prompts one and the inheriting-agents one, and the file is restored by the trap. The added line is funded by a three-line comment in the same file cut to two, whose dropped sentence the header's boundary note already carries, so the file stays at 476 lines and the surface-growth golden is untouched. Concept accepted by a consultant read with changes; fixed in the commit that carries this line.

@@ -167,6 +167,7 @@ describe("enumeration lint: agent counts stated as closed numbers", () => {
     { rel: "README-agents.md", re: /\ball (\d+) inherit\b/g, expected: n, what: "inheriting-agents count" }, // was "the other N inherit", n - 1, until the orchestrator's `tools:` line went on 2026-09-13 and nothing stood outside the claim; parser updated rather than dropped, per the failure text below — and retargeted off CLAUDE.md the same way when the sentence carrying it moved
     { rel: "README.md", re: /\b(\d+) specialized agents\b/g, expected: n, what: "specialized-agents count" },
     { rel: "README-agents.md", re: /\bof the (\d+) prompts\b/g, expected: n, what: "prompt count" },
+    { rel: "README-agents.md", re: /\bThe (\d+) agent prompts\b/g, expected: n, what: "agent-prompts count" }, // the moved Layout row carried this digit too, and no row followed it when the third row was retargeted (260916-2211_*_the-agent-prompts-digit-now-stands-in-two-files-and-the-claims-parser-gates-one-of-them.md)
   ];
 
   for (const c of CLAIMS) {
@@ -329,9 +330,8 @@ describe("enumeration lint: the conditional emission sets", () => {
   });
 
   it("README-agents co-mentions each conditional rule file with its full derived agent set", () => {
-    // Co-mention on ONE line is the checkable half (see the boundary note in
-    // the header): an agent added to the script's set but absent from the doc
-    // line fails here; a doc line naming extra agents does not.
+    // Co-mention on ONE line is the checkable half; the header's boundary note
+    // says which half is not, and why.
     const lines = read("README-agents.md").split("\n");
     const problems: string[] = [];
     for (const e of emissions) {
