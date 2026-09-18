@@ -185,7 +185,13 @@ You run it **only on a dispatch carrying `**Edges:** on`** (`## Dispatch paramet
 
 ### The corpus, and the live/terminal bound
 
-For each **live** work item under `$SCAN_BACKLOG` — `**Status:**` one of `open`, `claimed`, `paused` — read the item record, every file inside that item's own container directory, and every record it cites, resolved by the one workbench-wide lookup `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines. Nothing outside `$WORKBENCH` is read. A cited record resolving into the archive store is read as evidence exactly as evidence source 6 already reads it, and is never written.
+For each **live** work item under `$SCAN_BACKLOG` — `**Status:**` one of `open`, `claimed`, `paused` — read the item record, every file inside that item's own container directory, and every record **the item record** cites, resolved by the one workbench-wide lookup `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines. Nothing outside `$WORKBENCH` is read. A cited record resolving into the archive store is read as evidence exactly as evidence source 6 already reads it, and is never written.
+
+**The emphasised words settle a referent that had two readings** — the item record, or everything in the container — which on the first run of this subject was 5 further files against some 30 (`260918-0738-curator-run.md` `## 3a`). The narrow one is meant, and it costs nothing: a citation standing in a container file still identifies an endpoint under the hop below, which *resolves* the citation without reading the record it names.
+
+**A record whose status is not one of the five work-item values is not a work item here** — not a dependent, not a target, and not residue for failing to be one. It is excluded by this rule rather than by failing an allowlist, because a legacy vocabulary is the ordinary case and not a fault: 24 of the 31 containers in fusion's own workbench are pre-grammar Circle containers reading `closed`, `active`, `bounded` or `anticipated`, all 24 terminal (`260917-2258_*_spec-depends-on-edges-zero-yield.md`, claim D1). `active` and `bounded` read as live in English, which is exactly why the exclusion is stated rather than left to arithmetic. The five values are `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and there is no sixth.
+
+**A citation of a record identifies the work item whose container holds it.** Both relations the first run proposed were reached that way, and a reader who took the unauthorised hop as forbidden would have returned one proposal instead of two. The lookup returns a path and a container is a work item's directory by construction, so the hop is a resolution rather than an inference. **It is one hop and there is no second:** a record resolving into a container identifies that container's item, and nothing the record or the item cites in turn. Name the consequence honestly — it takes the candidate sources on a corpus like the first run's from 4 work-item basenames to some 30 record citations, which is the gate-flooding the plan's risk row names, and the one-hop bound plus the pre-test in `### The classification` are what hold it.
 
 **The live-only bound belongs to the ordering edge, not to the citation.** The two target fields take it differently:
 
@@ -203,7 +209,7 @@ The dependent is live either way, which is what keeps the write bound honest: **
 
 Read the corpus one sentence at a time. A sentence asserting no relation between the item whose corpus carried it and **another work item** is not a candidate at all: it produces neither an entry nor residue, and that is what keeps the residue bounded. For every sentence that does assert one, **two tests in this order**, and no candidate falls outside them or into two:
 
-1. **Are both endpoints identified — this item and one other work item?** No → **residue**: propose nothing, and report the sentence in the run file with the record it came from.
+1. **Are both endpoints identified — this item and one other work item**, by basename or by the container hop `### The corpus, and the live/terminal bound` authorises? No → **residue**: propose nothing, and report the sentence in the run file with the record it came from.
 2. **Does it fix an ordering direction — the target reaching a finished state before the dependent may start?** Yes → a `**Depends-on:**` entry on the dependent. No → a `**Cross-references:**` entry on the dependent.
 
 The unit test 2 judges is a **reading**: one supportable interpretation of one sentence binding the two items. One sentence may carry more than one reading, and each is its own ledger entry. Where a sentence asserts a conflict *and* the workbench records its resolution, both readings stand — two entries, and the ordering one quotes both sides.
@@ -213,6 +219,8 @@ The unit test 2 judges is a **reading**: one supportable interpretation of one s
 **An `inferred` ordering is a prediction, and this prompt says so rather than denying it.** What keeps it harmless is that it is labelled, carries the sentence it rests on, and is inert until the user rules: nothing reaches a work item before the gate, and a rejection leaves every work item byte-identical.
 
 **Test 2's *no* arm routes; it never converts and never drops.** A relation the ordering field cannot carry goes to the field defined widely enough to receive it — `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, "work it merely touches" — as a proposal the user confirms.
+
+**Test 2's *yes* arm on a terminal target routes the same way**, and the branch says so here rather than leaving it to be derived two sections apart. The live/terminal bound forbids the `**Depends-on:**` entry outright — the target is outside the graph, so the entry would propose a dangle — and the relation then goes to `**Cross-references:**`, whose own bound admits any work item as target. The dependent is live in both arms, so no reading of either produces a write into a terminal item.
 
 ### The suppression read, and the candidate row first
 
@@ -230,7 +238,7 @@ For each edge entry a prior run file carries, the key reads the **consequence gr
 
 **The candidate row is read first, and it is not a rounding case.** `## Evidence tiers` makes a candidate an entry never offered for approval, yet `### Pass 2 — apply` appends an outcome per entry — so a candidate edge entry can carry `skipped` without having been put to anybody, and suppressing on that suppresses a question the user never saw. The general question, whether an entry the gate never offered should carry an outcome line at all, reaches all four subjects and is open: `260918-0712_*_how-does-the-curators-edge-survey-know-not-to-re-propose-an-edge-the-user-declined.md`, which carries forward `260911-1833_*_how-does-the-curators-survey-know-not-to-re-propose-an-edge-the-user-declined.md`.
 
-**Where the prose under a confirmed edge later changes, report the change and propose nothing.** Revising or retracting a confirmed edge stays the user's act.
+**Where the prose under a confirmed edge later changes, or the target's status does, report the change and propose nothing.** Revising or retracting a confirmed edge stays the user's act either way. The status half is live rather than hypothetical: a confirmed ordering edge whose target has since reached a terminal value is a dangle by the node-set ruling, `bin/fusion-work-order` already prints it as `unresolved-edges=1`, and the edge survey reports what the helper found and stops there.
 
 ## The two passes and the gate
 
@@ -291,7 +299,14 @@ Before applying an entry, **re-read its before-text from disk**. Where disk and 
 
 The order carries the safety of the whole change. A pointer to a file that does not yet carry the passage is worse than the passage it replaced, so the destination is verified before the source is cut, and a relocation that stops halfway leaves the passage at the source rather than nowhere.
 
-**An approved edge entry is an ordinary one-region replacement** on one line of the dependent's head, so it takes the path above and no relocation-style second write: the staleness re-read, the write and the byte-for-byte post-write compare apply to it unchanged.
+**An approved edge entry writes one basename into a shared line, and is the one exception this pass carries.** Every other entry owns its region, so its before-text is the whole of what it claims. `**Depends-on:**` and `**Cross-references:**` are single comma-separated lines, and every edge into one is its own independently approvable entry — so applying the first falsifies the second's before-text, and a whole-line staleness check marks an entry the user approved `stale`. That fired on the first run of this subject at a yield of two. For those two fields on a work item, and for no other field on any surface:
+
+- **Staleness is judged on this entry's own basename**, absent or present in the list on disk — never on the whole line matching the ledger's Before.
+- **Applying appends that basename** to the line as found, preserving every basename already there. It is an append, not a line replacement.
+- **A basename already present is `applied` with nothing written**, not `stale`: the field already carries what the user approved.
+- **The post-write compare reads the line back** and requires this entry's basename plus every basename the line carried before the write. That is the byte-for-byte check in the only form this shape admits.
+
+**Why the exception is narrow, and why it stays narrow.** The unit the user approved is one basename, not a line: the dependent, the target and the field all come from the ledger untouched, so re-reading the line in order to append to it decides nothing about *what* to propose, which is the whole of what "never re-derive a proposal in this pass" forbids. Widen the exception past these two fields and it would start deciding that.
 
 Then append the outcome per entry to the same run file: `applied`, `skipped` (not approved), `stale`, or `failed` with the reason. A write that did not land is a **failed** entry carrying the reason, whatever the reason was — never an applied one. A partial apply that claims completion is the failure to avoid.
 
@@ -410,7 +425,9 @@ One block per proposed change:
 
 **The criterion is authored in `$FUSION_PLUGIN_ROOT/rules/context-lean-claude-md.md` `## How to tell "always-on" from "on-demand"`, and `bin/fusion-rules` emits it to no agent** — it is not in the set you read at Setup step 2, so open it from the plugin root before you judge a placement. The prefix is load-bearing for the reason Setup step 5 states. Its Step 1 also fixes the **unit** you judge — the passage the run file's placement classification reports one line per — and that file is where the division is authored: you divide by it and never restate it.
 
-**An edge entry fills that shape like this.** **Surface** is `work item head field` and **File** is the dependent's record path. **Before** is the field line as it stands on disk, or `(absent)`; **After** is the line the record must carry — an ordinary one-region replacement, so the staleness re-read, the post-write compare and the outcome line apply unchanged. **Constraint removed** reads `none`, because an edge removes none. The **Edge** line names the two basenames and which of the two fields the entry writes.
+**An edge entry fills that shape like this.** **Surface** is `work item head field`. **Before** is the field line as it stands on disk, or `(absent)`; **After** is that line with this entry's basename added — the write is an append and the staleness test is per basename, for the reason `### Pass 2 — apply` gives, so After is not a region another entry may overwrite. **Constraint removed** reads `none`, because an edge removes none. The **Edge** line names the two basenames and which of the two fields the entry writes.
+
+**File** is the dependent's **storeless basename**, never a workbench path. A path there spells a store segment, which `rules/fusion-workbench-conventions.md` `## Filename Patterns` reports as a citation violation, and writing the run file trips that gate on every edge entry otherwise. The field loses nothing by it: it is not a pointer a reader resolves but the handle the apply pass opens, and the one workbench-wide lookup turns a basename into the path to open. Where the full path is wanted as a shell argument it is already on the `**Revert path:**` line.
 
 **On an edge entry the tier grades how the relation was read, and never whether a statement is false** — the shape the relocation paragraph above already uses. `quoted` says the words themselves fixed what the split turned on; `inferred` says you fixed it from what the two items' artifacts and directives do. The three numbered tiers grade evidence that a text is wrong where it stands, an edge entry claims nothing of the kind, and `## The fourth subject — work-item edges` is where the distinction is authored.
 
