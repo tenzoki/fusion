@@ -1,0 +1,13 @@
+The Scope bullet says "the operations under Work items ... and nothing else" and then permits a filing the operations table does not list
+---
+`agents/orchestrator.md:175` reads: "Maintain the work items at `$OUT_BACKLOG` — the operations under **Work items**, each on the user's word, and nothing else. **You file one only when the user instructs it**, the user's words as its Directive; you never author one from your own findings." The table under `## Work items` (`agents/orchestrator.md:402-410`) lists Claim, Release, Pause, Finish, Drop, Split and Merge. Filing is not a row, so the first sentence excludes what the second permits. Before `b30ec2ea` the pair was coherent ("and nothing else. **You never file one**"); the narrowing ruled in `260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md` added the permission without adding the operation. Two consequences follow: `agents/orchestrator.md:414` ("Each is confirmed for that operation, on that item, before a byte moves") reaches the table's rows only, so whether a filing needs a confirmation beyond the instruction itself is stated nowhere in the prompt; and the shape the orchestrator writes is reachable only through the citation of `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` at `:398`, where the memo skill spells the same floor for its own route (`skills/memo/SKILL.md:106-127`).
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+
+**Severity:** Low. The second sentence is explicit, so an agent reading the bullet files when instructed; what is wrong is that the prompt's own scope list contradicts it, at the line the commit edited.
+
+**Evidence path.** `git show b30ec2ea -- agents/orchestrator.md` (hunks at `:175`, `:398`, `:414`); the table at `:402-410` is unchanged in that commit and carries no filing row.
+
+**Fix direction.** Either add a **File** row to the table at `:402-410` ("a new item at `open`, the user's words as the Directive, `**Filed by:** user`; the instruction is the confirmation, none is asked again") and let `:175` and `:414` keep their wording, or reword `:175` so "nothing else" no longer covers filing ("the operations under **Work items** and, on the user's instruction, a filing"). Either edit is charged to `AGENT_BASELINE` head-room in `hooks/lib/__tests__/surface-growth-bound.test.ts`; regenerate `hooks/lib/__tests__/fixtures/surface-growth.golden`.
+
+**Acceptance.** `agents/orchestrator.md` `## Scope` and `## Work items` name the same set of store operations, filing among them; the confirmation sentence at `:414` states what a filing needs; `npx vitest run lib/__tests__/surface-growth-bound.test.ts` is green.

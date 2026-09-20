@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** claimed
+**Status:** done
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260918-1102
 **Active spec/plan:** 260918-1124_*_autonomous-defect-package-fifteen-fixes-with-a-second-opinion-each.md (the plan; no spec, planned from the directive)
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
@@ -21,3 +21,6 @@ Entscheiden und Buch führen. Alles, was die Lösung selbst betrifft, entscheide
 Abbruch. Hör auf, wenn die Liste durch ist, oder wenn die Zweitmeinung drei Konzepte hintereinander zurückweist. Das zweite heißt, dass die Auswahl falsch war, und dann ist Weiterarbeiten teurer als Warten.
 
 Fertig heißt. Alles lokal verbucht in nachvollziehbaren Schritten, nichts gepusht. Lass /fusion:cleanup nicht laufen, das pusht. Zum Schluss ein Bericht mit vier Teilen: was behoben ist, was übersprungen wurde und warum, jede nicht-triviale Entscheidung mit einem Satz Begründung, und die Liste dessen, was auf deine Rückkehr wartet.
+
+---
+Closed 260920-2222: done. Commit range `1aeb3679..b30ec2ea`; the plan `260918-1124_*_autonomous-defect-package-fifteen-fixes-with-a-second-opinion-each.md` is complete at 15 of 15 steps, each defect closed with one commit. The range is tiled by two reviews, `260918-1409-reviewer-closing-pass-over-the-fifteen-defect-fixes.md` (`1aeb3679..f7545a4c`) and `260920-2216-reviewer-closing-pass-over-the-narrowed-work-item-bound.md` (`f7545a4c..b30ec2ea`), both with `**Not-opened:** none`. All eight clauses of `## Where this work stops` hold, confirmed by the user at the closing gate. Left behind for follow-on work: the seven defects the first review filed, taken up by `260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md`; the two text defects the second review filed, `260920-2216_*_the-scope-bullet-says-the-work-item-operations-and-nothing-else-then-permits-a-filing-the-operations-table-does-not-list.md` and `260920-2217_*_the-who-filed-it-enumeration-omits-the-work-item-whose-template-carries-filed-by-and-now-has-a-second-writer.md`; and the eighteen records the plan lists under `## Already resolved at HEAD`, whose marker moves wait on a closing pass. Ruled by user, Kai Stalmann <ks@qantr.com>.

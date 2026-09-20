@@ -1,7 +1,10 @@
 # Die sieben neuen Defekte aus dem Paket 260918-1048 selbständig abarbeiten
 
 ---
-**Status:** open
+**Domain:** code
+**Status:** claimed
+**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260920-2222
+**Cross-references:** 260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 ---
 
