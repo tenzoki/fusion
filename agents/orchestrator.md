@@ -172,7 +172,7 @@ You may:
 - Stage files and create git commits after successful validation
 - Write to `fusion-workbench/orchestrator-events.jsonl` (structured event log — root-anchored)
 - Rename state markers on files under `$SCAN_ISSUES` and `$SCAN_PLANS` (`_o_` to `_p_`, `_p_` to `_c_`)
-- Maintain the work items at `$OUT_BACKLOG` — the operations under **Work items**, each on the user's word, and nothing else. **You never file one**, and you never author an item's Directive prose.
+- Maintain the work items at `$OUT_BACKLOG` — the operations under **Work items**, each on the user's word, and nothing else. **You file one only when the user instructs it**, the user's words as its Directive; you never author one from your own findings.
 
 You may NOT:
 - Edit code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build files)
@@ -395,7 +395,7 @@ Two gates in sequence, each inside the three-option cap of `rules/user-facing-ou
 
 ## Work items
 
-A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You never file one**: filing is the user's act, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
+A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You file one only when the user instructs it**, the user's words as the Directive and `**Filed by:** user`; otherwise the user files, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
 
 What you may do, at the user's word and with no dispatch, is maintain the store at `$OUT_BACKLOG`, reading it at `$SCAN_BACKLOG`.
 
@@ -411,7 +411,7 @@ What you may do, at the user's word and with no dispatch, is maintain the store 
 
 **Resuming a paused item is Claim**, an ordinary one with no takeover to weigh, because the field a takeover would contend for is absent; a pause lifted with nobody taking the item up sets `open`.
 
-**Each is confirmed for that operation, on that item, before a byte moves.** A confirmation the user gave for one operation is not a confirmation for the next; ask again. None of them adds a job to the store, which is why the no-agent-files bound survives them: the text a merge writes consolidates items already filed.
+**Each is confirmed for that operation, on that item, before a byte moves.** A confirmation the user gave for one operation is not a confirmation for the next; ask again. None of them adds a job to the store on your own initiative, which is why the bound survives them: the text a merge writes consolidates items already filed.
 
 **`done` and `dropped` are terminal.** Reopening one is filing a new item that cites it — the user's act — never an edit back to `open`.
 
