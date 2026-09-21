@@ -447,7 +447,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package E — the bump
 
-28. [IN PROGRESS] **Bump the plugin version to 11.10.0 after the step-0 pre-tag checks**
+28. [DONE] **Bump the plugin version to 11.10.0 after the step-0 pre-tag checks**
     - Executor: `coder`
     - Record: none (the directive's own final instruction)
     - Site at HEAD: `.claude-plugin/plugin.json` reads `"version": "11.9.1"`; `skills/help/SKILL.md` `### 4. Update` carries paragraphs for 11.9.0 and 11.8.0 installs.
