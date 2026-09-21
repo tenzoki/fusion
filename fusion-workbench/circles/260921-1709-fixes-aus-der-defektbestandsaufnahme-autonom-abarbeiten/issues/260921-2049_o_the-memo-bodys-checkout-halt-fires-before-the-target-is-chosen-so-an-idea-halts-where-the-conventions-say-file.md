@@ -1,0 +1,13 @@
+The memo body's checkout halt fires before the target is chosen, so an idea halts where the conventions say file
+---
+`skills/memo/SKILL.md` line 38 (added at `d0ab9fae`), "**No `CHECKOUT=` line, no write.** Exit 3, exit 5 and the `[ -x ]` miss branch each leave `$CO` empty … Halt and name which one", sits under `## Where each kind goes` and is applied at `## Process` step 2 ("Resolve `$CO`"), three steps before step 5 decides memo, task or idea. The idea route writes a work item, which needs no `$CO` and which `rules/fusion-workbench-conventions.md` `### Who filed it` says to file normally on `bin/fusion-identity` exit 5 and on a missing helper. So `/fusion:memo idea: …` in a tree that is not a git work tree, or under an install that lacks the helper, halts where the binding rule says file.
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+
+**The two rules.** `rules/fusion-workbench-conventions.md` `## Filename Patterns`: "A writer of one of these four files halts and reports when no `CHECKOUT=` line is printed" — the four keyed logs, of which the memo body writes two (`memos-<checkout>.md`, `tasks-<checkout>.md`). `### Who filed it`: exit 4 and exit 5 "file normally, with the person half absent rather than empty"; a missing helper: "file with the person half absent as exit 4 does, and report that attribution was dropped … Do not halt, or an install one release behind stops every filing in the project". A work item is one of the kinds that owes `**Filed by:**` (same section, "Which record kinds owe the field"), and the memo body's third target is a work item (`## Where each kind goes`, "Backlog entry: a new container per idea").
+
+**The site.** The new bullet is worded "no write", and `## Process` orders it: step 2 resolves `$CO` (and now halts on an empty one), step 5 picks the target. The halt reason it gives, "an empty key writes `memos-.md` and `tasks-.md`", names the two keyed files and not the item, so the bullet's own justification is narrower than its wording.
+
+**Fix direction.** Scope the halt to the two keyed targets: "No `CHECKOUT=` line, no keyed write" and, in `## Process`, move the halt into step 6's memo-or-task branch (or state at step 2 that an empty `$CO` halts only when step 5 picks a memo or a task; an idea proceeds under `### Who filed it`). About +40 bytes on `skills/`, which had 770 bytes of head-room at `3d02c7fd` before steps 5 to 7 and 28 landed; the bound test reports the exact figure.
+
+**Acceptance.** The memo body says, in one place, that an empty `$CO` halts a memo or a task and never an idea; `grep -c 'no keyed write\|never an idea' skills/memo/SKILL.md` prints at least `1`; `cd hooks && npm test` exits 0.
