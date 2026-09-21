@@ -51,9 +51,9 @@
  *
  * ## Which verdicts, and the one that is deliberately left out
  *
- * `REPORTED_STATUSES` is `store-prefixed` and `stale-marker`, and NOT
- * `dangling`, which the gate treats as a violation exactly like the other two.
- * The split is by what the verdict is decided FROM:
+ * `REPORTED_STATUSES` is `store-prefixed`, `stale-marker` and `spelled-marker`,
+ * and NOT `dangling`, which the gate treats as a violation exactly like the
+ * first two. The split is by what the verdict is decided FROM:
  *
  *   - `store-prefixed` is settled by the token's own shape, before anything is
  *     looked up (`SHAPE_DECIDED_KINDS` in the scanner). A fixture, a real
@@ -62,6 +62,14 @@
  *   - `stale-marker` is decided by a lookup that FOUND the record under a
  *     different marker. The record exists, the fix is the wildcard, and no
  *     invented name reaches this branch.
+ *   - `spelled-marker` is decided by a lookup that FOUND the record under the
+ *     very marker the token spells: the pointer holds today and dies at the
+ *     record's next transition. No invented name reaches it either, and it is
+ *     the class that produced every violation of one measured session while
+ *     this set was silent on it (issue
+ *     `260908-0027_*_the-write-time-citation-check-is-silent-on-the-class-that-produced-every-violation-of-this-session.md`).
+ *     The gate and the checker count it as RESOLVED — the sweep already
+ *     computes its rewrite — so only the writer, at the write, hears of it.
  *   - `dangling` is decided by a lookup that found NOTHING, and "nothing on
  *     disk matches" is what a dead pointer, a probe fixture quoted in prose, a
  *     foreign record written without its qualifier and a record somebody is

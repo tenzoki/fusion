@@ -1002,10 +1002,23 @@ export function createScanner(workbenchRoot) {
                 const idx = m.index;
                 consider(idx, full, "bare-record", () => {
                     const hit = findRecord(stamp + rest);
-                    if (hit.length > 0)
-                        return found(hit);
                     // `_o_` on a whole or truncated citation, `_o` on one cut inside the slot
                     const markerM = rest.match(/^_([a-z])(?:_|$)/);
+                    if (hit.length === 1 && markerM) {
+                        // The lookup FOUND the record under the letter the token spells, so
+                        // the pointer holds today and dies at the record's next transition;
+                        // the write-time hook reports it, the gate and the checker count it
+                        // as resolved (`partition`, `scanRecordCitations`). Issue
+                        // 260908-0027_*_the-write-time-citation-check-is-silent-on-the-class-that-produced-every-violation-of-this-session.md.
+                        return {
+                            status: "spelled-marker",
+                            matches: hit.map(pathOf),
+                            problem: `spells the marker '_${markerM[1]}_', which the record's next transition invalidates`,
+                            fix: "cite the marker position as '_*_'",
+                        };
+                    }
+                    if (hit.length > 0)
+                        return found(hit);
                     if (markerM) {
                         const wild = findRecord(storelessBase(stamp, rest));
                         if (wild.length > 0) {
@@ -1092,7 +1105,7 @@ export function createScanner(workbenchRoot) {
         for (const h of scanCitationTokens(rel, lines)) {
             if (!GATE_KINDS.includes(h.kind))
                 continue;
-            if (h.status === "resolved" || h.status === "ambiguous")
+            if (h.status === "resolved" || h.status === "spelled-marker" || h.status === "ambiguous")
                 resolved++;
             else if (h.status === "stale-marker" || h.status === "store-prefixed" || h.status === "dangling") {
                 violations.push({
@@ -1274,7 +1287,9 @@ export function partition(hits) {
     const unjudged = (h) => h.status === "exempt" || h.status === "unresolved-no-workbench";
     const undecidable = (h) => !unjudged(h) && (h.kind === "stamp-bare" || h.status === "ambiguous");
     return {
-        resolved: hits.filter((h) => !unjudged(h) && !undecidable(h) && h.status === "resolved"),
+        // `spelled-marker` lands here too: the pointer resolves today, and the
+        // write-time hook is the one reader that interrupts on it.
+        resolved: hits.filter((h) => !unjudged(h) && !undecidable(h) && (h.status === "resolved" || h.status === "spelled-marker")),
         // `store-prefixed` lands here: it is a violation the gate reports, and the
         // baseline's three lists have no fourth. A caller that wants it apart
         // filters on the status.

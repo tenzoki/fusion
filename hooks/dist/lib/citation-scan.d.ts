@@ -172,6 +172,8 @@ export type CitationStatus =
  | "ambiguous"
 /** the record exists, under a different marker */
  | "stale-marker"
+/** resolved, and spells the record's CURRENT marker letter — the record's next transition turns it stale */
+ | "spelled-marker"
 /** the citation carries a store segment; never resolved, `fix` spells the storeless form */
  | "store-prefixed"
 /** nothing on disk matches */

@@ -335,7 +335,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-19. [IN PROGRESS] **Report a citation that spells the record's current marker at write time** (row 11)
+19. [DONE] **Report a citation that spells the record's current marker at write time** (row 11)
     - Executor: `coder`
     - Record: `260908-0027_*_the-write-time-citation-check-is-silent-on-the-class-that-produced-every-violation-of-this-session.md`
     - Site at HEAD: `hooks/lib/citation-scan.ts:1150-1152`: `findRecord(stamp + rest)` matches the literal marker, so the test file's `CLOSED_ISSUE` fixture cited with its own current marker letter spelled out returns `found(hit)`, status `resolved`; the `markerM` branch at `:1154` runs only when nothing was found. `hooks/lib/citation-form.ts:168` `REPORTED_STATUSES = ["store-prefixed", "stale-marker"]`. `hooks/lib/__tests__/citation-form.test.ts` `describe("which verdicts reach the writer")` has cases for both reported statuses, for `dangling` (silent) and for the wildcard form (silent), and none for this class; its fixtures are `CLOSED_ISSUE`, `STALE_MARKER`, `STORELESS`.

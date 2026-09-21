@@ -35,6 +35,7 @@ const HISTORY_NOTE = "shared/history/260901-1300-coder-a-history-note.md";
 const STORE_PREFIXED = `shared/history/260901-1300-coder-a-history-note.md`;
 /** The closed issue cited under the marker it no longer carries. */
 const STALE_MARKER = "260901-1200_o_a-closed-issue.md";
+const CURRENT_MARKER = "260901-1200_c_a-closed-issue.md"; // the closed issue under the marker it carries TODAY
 /** A name no seeded record carries, and no future one will. */
 const NOWHERE = "260812-2116_o_a-name-this-workbench-never-held.md";
 /** The correct spelling of the closed issue. */
@@ -194,6 +195,13 @@ describe("which verdicts reach the writer", () => {
       const report = judgeWrite(root, `# probe\n\nanswered by ${STALE_MARKER}\n`);
       expect(report.violations.map((v) => v.status)).toEqual(["stale-marker"]);
       expect(citationFormSentence(report)).toContain("_*_");
+    });
+  });
+
+  it("reports a citation spelling the record's current marker (260908-0027), with the wildcard fix", () => {
+    withScratch(({ root }) => {
+      const report = judgeWrite(root, `# probe\n\nStep 2 of ${CURRENT_MARKER}\n`); // resolves today, dies at the next transition
+      expect([report.violations.map((v) => v.status), citationFormSentence(report).includes("_*_")]).toEqual([["spelled-marker"], true]);
     });
   });
 
