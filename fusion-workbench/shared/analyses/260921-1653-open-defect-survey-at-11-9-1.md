@@ -85,7 +85,7 @@ flowchart LR
     r12 -->|instance of| r7
     r30 -->|instance of| r7
     r7 -->|mechanism| r8
-    d1(["260906-0035_o_ git budget"])
+    d1(["260906-0035_*_ git budget"])
     r8 -->|blocked on| d1
   end
   subgraph cit["citation grammar (5)"]
@@ -94,8 +94,8 @@ flowchart LR
     r5["5 head-field identifier"]
     r10["10 exhibit declaration"]
     r11["11 marker-spelled silent"]
-    d2(["260831-2142_o_ head-field property"])
-    d3(["260906-0416_o_ exhibit declaration"])
+    d2(["260831-2142_*_ head-field property"])
+    d3(["260906-0416_*_ exhibit declaration"])
     r5 -->|blocked on| d2
     r10 -->|blocked on| d3
   end
@@ -184,7 +184,7 @@ Coherence check: four subgraphs, one shared sink (`bound`), no cycles; every edg
 
 The store is not stale in the way a 33-count suggests: 26 of the 33 describe something the tree still does, and the six closable ones are closable by a `Resolved:` line each, no code. What the survey does show is where the open work actually sits.
 
-Five records are one phenomenon. Rows 6, 7, 12 and 30 are four observations of the suite reddening under load, and row 8 is the mechanism three of the four diagnoses point at. They have been accumulating since 260905 and every one of them says the same thing: a green run is not acceptance. Nothing closes them but the ten-pair experiment, and that experiment is pointless before `260906-0035_o_` rules on the git budget, because a widened budget changes the result. That ruling is the single highest-leverage open decision in the store: it unblocks five records.
+Five records are one phenomenon. Rows 6, 7, 12 and 30 are four observations of the suite reddening under load, and row 8 is the mechanism three of the four diagnoses point at. They have been accumulating since 260905 and every one of them says the same thing: a green run is not acceptance. Nothing closes them but the ten-pair experiment, and that experiment is pointless before `260906-0035_*_` rules on the git budget, because a widened budget changes the result. That ruling is the single highest-leverage open decision in the store: it unblocks five records.
 
 Five fixes compete for 14 lines. Rows 1, 11, 20, 32 and 33 each add a test case, and the hook-test surface has 14 lines of head-room at HEAD. The record at row 1 has been waiting on exactly this since 260827. A cut on that surface precedes any of them, and the growth-bound rule says the way out is a cut, never a baseline edit.
 
@@ -197,7 +197,7 @@ The classification exposed one drift in progress: `docs/upgrading-to-v11.md` gai
 ## Recommendations
 
 1. **Orchestrator, no dispatch:** close rows 2, 13, 15, 16, 17, 18 and 22 with the `Resolved:` sentence each row's evidence column gives (row 13 as obsolete: the marketplace passed the tag). Put to the user first whether rows 15–18 and 22 close as "fixed" or "erratum recorded, nothing further possible"; the marker move is the same.
-2. **User, one ruling:** `260906-0035_o_` (git budget, retry). Then one coder dispatch to `hooks/lib/git.ts` and the ten-pair experiment from row 7, which closes rows 6, 7, 8, 12, 30 together or narrows them to the single-output-slot lead in row 12.
+2. **User, one ruling:** `260906-0035_*_` (git budget, retry). Then one coder dispatch to `hooks/lib/git.ts` and the ten-pair experiment from row 7, which closes rows 6, 7, 8, 12, 30 together or narrows them to the single-output-slot lead in row 12.
 3. **One coder dispatch, package:** rows 9 (the citation only), 21, 26, 28, 29, 31, 32-text, 24, 25, 14. All text or a shell message; no test lines; three land on `skills/` inside 770 bytes.
 4. **One cut on the hook-test surface before** rows 1, 11, 20, 33 and the lint half of 9. Whoever cuts names the lines; the five fixes then land in one dispatch.
 5. **Analyst or orchestrator, four decision records to file** where the issue asks for one and none exists: row 3 (the fixture exemption's keying property), row 19 (a work-item field on the session row), row 23 (how the gate list reaches a dispatched agent), row 27 (the upgrade note's stance). Row 32's gate half can ride row 27's record or its own.
