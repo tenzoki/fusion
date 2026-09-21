@@ -317,11 +317,14 @@ The layout, the work-item grammar, the operative half of the `bin/fusion-paths` 
 3. Setup must confirm that `fusion-workbench-conventions.md` and any other relevant rule files from the plugin's `rules/` directory are present in context (discovered by running `bin/fusion-rules <agent-name>` at Setup — nothing is auto-loaded).
 4. Declare what the agent may read and what it may write — be explicit and exclusive.
 5. Register the agent in:
-   - The agent listing bullet under `## What this is` in `CLAUDE.md` — it names every agent and states the count
-   - The `## Layout` table in `CLAUDE.md` — its `agents/*.md` row states how many prompts ship
-   - The agent table at the top of this README
+   - The agent table under `README-agents.md` `## The agents` — one row per agent
+   - The "N specialized agents" bullet under the same heading — it names every agent and states the count
+   - The `agents/*.md` bullet under the same heading — "The N agent prompts" and "all N inherit"
+   - The always-on core bullet under `README-agents.md` `## Plugin structure` — "every one of the N prompts"
+   - The `agents/*.md` row under `CLAUDE.md` `## Layout` — "The N agent prompts"
+   - The opening paragraph of `README.md` `# fusion` — "N specialized agents"
 
-   `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` checks the **digit counts** in the two `CLAUDE.md` surfaces against `agents/*.md` — the listing bullet's "N specialized agents", and the Layout row's "The N agent prompts" and "the other N inherit" — so an agent added without bumping them fails the test suite. It checks no **names**: nothing enumerates the agents named in the listing bullet, and nothing checks this README's own agent table row by row, so an agent whose name reaches none of the three surfaces still passes as long as the counts agree. The registration is yours to get right; the gate only holds the counts to the tree.
+   `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` checks the **digit counts** against `agents/*.md`, one row of its `CLAIMS` array per phrase listed above. An agent added without bumping every one of them fails the test suite; a phrase reworded until its row no longer matches fails it too, and the failure text says to update the parser rather than drop the check. It checks no **names**: nothing enumerates the agents named in the specialized-agents bullet, and nothing checks the agent table row by row, so an agent whose name reaches none of the surfaces above still passes as long as the counts agree. The registration is yours to get right; the gate only holds the counts to the tree.
 
 ## Releasing
 

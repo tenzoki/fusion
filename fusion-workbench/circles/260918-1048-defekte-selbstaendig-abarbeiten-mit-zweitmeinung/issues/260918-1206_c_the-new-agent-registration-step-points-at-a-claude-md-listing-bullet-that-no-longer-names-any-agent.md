@@ -17,3 +17,6 @@ The new-agent registration step points at a CLAUDE.md listing bullet that no lon
 **Acceptance**
 
 `grep -n 'What this is' README-agents.md` returns no line; step 5 of `## Adding a new agent` names `README-agents.md` `## The agents` as the surface that carries the names and the "specialized agents" count; and the paragraph under it attributes each gated phrase to the file `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` reads it from.
+
+---
+Resolved: step 5 of `README-agents.md` `## Adding a new agent` names the six count-gated surfaces as they stand, each by a heading its file has (`README-agents.md` `## The agents` three times, `README-agents.md` `## Plugin structure`, `CLAUDE.md` `## Layout`, `README.md` `# fusion`), and the paragraph under it says what `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` checks (the digit of every phrase listed, one `CLAIMS` row each) and what it does not (no name, no table row). The plan's list gained the `## Plugin structure` bullet, whose digit the `CLAIMS` array gates too. The reference-resolution pin is re-approved at the measured figures 1681/294/11, the HEAD copy of the file resolving 1680/290/11. Concept accepted by a consultant read, with the file-by-file attribution sentence cut because the bullets already name every file. Fixed in the commit that carries this line.

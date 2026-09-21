@@ -113,7 +113,7 @@ Field key. **Record** is the storeless citation and where the file stands, in wo
    - **Second opinion:** consultant
    - Dependencies: none
 
-3. **Point the new-agent registration step at the surfaces that carry the names and the gated digits**
+3. [DONE] **Point the new-agent registration step at the surfaces that carry the names and the gated digits**
    - Executor: `coder`
    - Record: `260918-1206_*_the-new-agent-registration-step-points-at-a-claude-md-listing-bullet-that-no-longer-names-any-agent.md`, in the issues store of the container `260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung`
    - Present at HEAD: `grep -n 'What this is' README-agents.md` prints line 320 (step 5's first bullet); `CLAUDE.md:12` names no agent; the names and "11 specialized agents" stand at `README-agents.md:47` under `## The agents`; `derivable-enumerations-lint.test.ts:164-170` gates six phrases, four in `README-agents.md`, one in `CLAUDE.md`, one in `README.md`.
