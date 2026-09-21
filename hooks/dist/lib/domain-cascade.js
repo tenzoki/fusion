@@ -865,7 +865,7 @@ export const REACH = {
         {
             glob: "docs/*.md",
             measured: "clean",
-            note: "Left out on a measured cost that has since expired. `docs/philosophy.md:19` said what " +
+            note: "Left out on a measured cost that has since expired. A line in `docs/philosophy.md` said what " +
                 "each of four domains PRIORITISED, in a line shape-identical to a paraphrase, and " +
                 "scanning `docs/` meant either that false positive or an exemption list. With two " +
                 "domains the line names no count and the directory now measures clean, so the reason " +

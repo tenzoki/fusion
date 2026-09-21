@@ -140,7 +140,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package B — text and message fixes, one commit per record
 
-3. **Rewrite the two remaining line-number citations in shipped text as anchors and prose** (row 9, text half; the record closes at step 20 with its lint half)
+3. [DONE] **Rewrite the two remaining line-number citations in shipped text as anchors and prose** (row 9, text half; the record closes at step 20 with its lint half)
    - Executor: `coder`
    - Record: `260906-0335_*_nine-of-twelve-line-number-citations-in-shipped-text-name-the-wrong-line-and-no-gate-resolves-one.md` (closed at step 20)
    - Site at HEAD: `grep -rnoE '`[A-Za-z0-9_./-]+\.(md|ts|sh|json|mjs):[0-9]+(-[0-9]+)?`' agents skills rules README*.md CLAUDE.md docs` prints three hits: `rules/fusion-workbench-conventions.md:68` twice (`skills/setup/SKILL.md:49`) and `README-hooks.md:292` (`docs/philosophy.md:19`). Line 49 of `skills/setup/SKILL.md` is the Probe 2 bullet; the claim the conventions make (two live trees, refuses permanently, routes to a migration with nothing to do) is the Probe 3 bullet at line 50.
@@ -152,7 +152,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-4. **Make the style rule name the unit of work by something the design has** (row 21)
+4. [IN PROGRESS] **Make the style rule name the unit of work by something the design has** (row 21)
    - Executor: `coder`
    - Record: `260911-0752_*_the-user-facing-style-rule-bans-a-noun-in-one-line-and-requires-it-in-another.md`
    - Site at HEAD: `rules/user-facing-output.md:45` "**No fusion noun.** Not Circle, …"; `:60` "**Every `AskUserQuestion` is self-contained**: Circle name, path or task title inside the question text".
@@ -164,7 +164,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-5. **Say in the migrate body that the conventions do not admit a container holding two records** (row 26)
+5. [IN PROGRESS] **Say in the migrate body that the conventions do not admit a container holding two records** (row 26)
    - Executor: `coder`
    - Record: `260915-2144_*_a-compressed-sentence-in-migrate-now-says-the-conventions-admit-the-shape-they-forbid.md`
    - Site at HEAD: `skills/migrate/SKILL.md:183` "… producing one container holding two records and therefore no defined state, which the conventions admit and no consumer handles."
@@ -176,7 +176,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-6. **Restore the truncated guardrail citation in the archive body** (row 28)
+6. [IN PROGRESS] **Restore the truncated guardrail citation in the archive body** (row 28)
    - Executor: `coder`
    - Record: `260916-0830_*_a-guardrail-citation-is-truncated-so-no-gate-reads-it-and-no-reader-resolves-it.md`
    - Site at HEAD: `skills/archive/SKILL.md:258` ends "(fusion's own record `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…`)"; line 112 carries the full basename, `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`.
@@ -188,7 +188,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-7. **Give the memo body the empty-checkout halt at the point it composes a filename** (row 29)
+7. [IN PROGRESS] **Give the memo body the empty-checkout halt at the point it composes a filename** (row 29)
    - Executor: `coder`
    - Record: `260916-0831_*_the-memo-body-does-not-carry-the-empty-checkout-clause-the-conventions-now-bind-it-by.md`
    - Site at HEAD: `skills/memo/SKILL.md:37` "`$CO` is the `CHECKOUT=` line of …, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`." No halt clause (`grep -in 'halt\|exit 3\|exit 5\|no line' skills/memo/SKILL.md` prints nothing). The wording to copy is `skills/cadence/SKILL.md:42`.
@@ -200,7 +200,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-8. **Cut the holder-naming section down to the bound it still carries** (row 31)
+8. [IN PROGRESS] **Cut the holder-naming section down to the bound it still carries** (row 31)
    - Executor: `coder`
    - Record: `260916-2144_*_the-holder-naming-section-documents-a-command-a-consumer-and-a-field-shape-that-are-all-gone.md`
    - Site at HEAD: `bin/fusion-checkout-name:225-245`, the section `## Naming a holder, and why the name never enters a comparison`: "`/fusion:next` Step 6.1 is the worked case: it reads the claim's `<person>, checkout <id>` … renders `held by <person> on <alias>`". `skills/next/` is absent from `ls -1 skills/`; no shipped file carries `held by`; the claim's shape is `**Claim:** <8 hex> — <person>, YYMMDD-HHMM`.
@@ -212,7 +212,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-9. **Name only a command that exists in the domain-cascade remediation text** (row 32, text half; the record closes at step 21 with its gate half)
+9. [IN PROGRESS] **Name only a command that exists in the domain-cascade remediation text** (row 32, text half; the record closes at step 21 with its gate half)
    - Executor: `coder`
    - Record: `260916-2145_*_a-gates-remediation-text-names-two-commands-that-do-not-exist-and-no-gate-resolves-a-command-token.md` (closed at step 21)
    - Site at HEAD: `hooks/lib/__tests__/domain-cascade.test.ts:519-520` "run bin/fusion-session-domain (the route /fusion:next,\n       /fusion:direct and /fusion:reconcile take), or take it from a".
