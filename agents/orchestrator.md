@@ -464,6 +464,7 @@ The session ends when the user says so. Then:
 
 - **Run the staging check one last time** (see **Staging check**), before the report. This is the last boundary at which a record left out of every staging list can still be committed by this session; after it, the miss belongs to whoever opens the tree next. Name any `record` row to the user and commit it with the housekeeping split.
 - **Emit `session_end`**, carrying `<ID>` as every line does.
+- **Commit that row, alone, under the lock.** Write a `chore(events): …` message with `Write` to `/tmp/fusion-commit-msg-<session-id>-SESSION-END.txt` as Step 4 item 3 says, then `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with orchestrator -- bash -c 'git reset -q && git add <absolute path to fusion-workbench/orchestrator-events.jsonl> && git commit -F /tmp/fusion-commit-msg-<session-id>-SESSION-END.txt'`. The held region's only path is the log, so the lock writes no `commit` row (`rules/commit-lock.md` `### The lock writes the commit event`) and `git status --short` is empty at the end of a session ended in chat. Without it, the row the previous bullet appended is the one line every such session left dirty (`260921-1349_*_the-session-end-row-is-written-after-the-last-commit-and-no-ending-step-commits-it.md`).
 - **Clear the active-session marker:** `"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" clear`. After this, a new orchestrator session can start without a concurrency warning.
 - The event log persists after the session — the user may review it later or use it for tooling. Do not delete it.
 

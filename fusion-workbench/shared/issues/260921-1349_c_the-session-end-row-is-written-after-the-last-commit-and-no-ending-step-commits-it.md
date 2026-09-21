@@ -8,3 +8,5 @@ Acceptance: `## Ending the session` gains, after "Emit `session_end`" and before
 ---
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 **Cross-references:** 260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md, 260830-1843_*_how-does-the-commit-lock-stop-leaving-the-tree-it-just-committed-dirty.md
+---
+Resolved: `agents/orchestrator.md` `## Ending the session` gains one bullet between the `session_end` emit and the marker clear: the log is committed alone under `fusion-commit-lock with orchestrator`, which writes no `commit` row for a log-only region, so the tree is clean at the end of a session ended in chat. Goldens re-approved (`surface-growth.golden`, `reference-resolution-lint.test.ts` BASELINE 1687/308/11); `npm test` 958 passed.
