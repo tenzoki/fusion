@@ -224,22 +224,22 @@
 #
 # ## Naming a holder, and why the name never enters a comparison
 #
-# A site that refuses because another checkout holds something renders that
-# holder through `resolve` and through nothing else. `/fusion:next` Step 6.1 is
-# the worked case: it reads the claim's `<person>, checkout <id>`, calls
-# `resolve <id>` behind the usual `[ -x ]`, and renders
+# A site that renders another checkout's holder reads the hex off the claim
+# (`**Claim:** <8 hex> — <person>, YYMMDD-HHMM`, the record template in
+# `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`),
+# calls `resolve <hex>` behind the usual `[ -x ]`, and renders the `person=`
+# and `alias=` lines it gets, each absent when the entry lacks it: an absent
+# field stays absent here as everywhere else. Exit 3, a missing helper, and a
+# claim carrying no hex each render what the claim alone carries. There is no
+# third rendering, and no alias is ever substituted for a lookup that did not
+# answer.
 #
-#   held by <person> on <alias>
-#
-# from the `person=` and `alias=` lines, preferring `person=` over the claim's
-# own person, which is the same human as some earlier session spelled them.
-# Where the entry carries one of the two and not the other, the rendered line
-# carries the one it has: an absent field stays absent here as everywhere else.
-#
-# Exit 3, a missing helper, and a claim carrying no hex each render exactly
-# what that site rendered before this program existed, composed from the claim
-# alone. There is no third rendering, and no alias is ever substituted for a
-# lookup that did not answer.
+# No site that refuses on another checkout's claim ships today. What does
+# ship is four `resolve` callers, three passing this checkout's own hex
+# (`skills/cadence/SKILL.md`, `skills/check/SKILL.md`, the SessionStart
+# command in `hooks/hooks.json`) and one passing a foreign hex for a message
+# byline (`skills/news/SKILL.md`); none of them refuses anything, so the rule
+# above binds the site that would.
 #
 # **The comparison behind the refusal is untouched by any of this, and no
 # caller may route one through `resolve`.** It runs on the hex and on the

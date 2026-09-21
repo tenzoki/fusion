@@ -200,7 +200,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-8. [IN PROGRESS] **Cut the holder-naming section down to the bound it still carries** (row 31)
+8. [DONE] **Cut the holder-naming section down to the bound it still carries** (row 31)
    - Executor: `coder`
    - Record: `260916-2144_*_the-holder-naming-section-documents-a-command-a-consumer-and-a-field-shape-that-are-all-gone.md`
    - Site at HEAD: `bin/fusion-checkout-name:225-245`, the section `## Naming a holder, and why the name never enters a comparison`: "`/fusion:next` Step 6.1 is the worked case: it reads the claim's `<person>, checkout <id>` … renders `held by <person> on <alias>`". `skills/next/` is absent from `ls -1 skills/`; no shipped file carries `held by`; the claim's shape is `**Claim:** <8 hex> — <person>, YYMMDD-HHMM`.
