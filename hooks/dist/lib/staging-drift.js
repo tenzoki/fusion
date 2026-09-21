@@ -171,22 +171,12 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<tas
  * which is the property to check when the layout gains a root-anchored entry.
  *
  * **Class L**, the entries that stay in the checkout they were written in:
- * `.session-marker` through `portfolio.md` below. This repository's own
+ * `.session-marker` and `monitor` below. This repository's own
  * `.gitignore` applies exactly that split, so in a project that follows it they
  * never reach `git status` at all. They are listed anyway because whether the
  * workbench is tracked, and how, is the project's decision — a consumer that
  * tracks `.session-marker` must not be told on every commit that it forgot to
  * stage it.
- *
- * **Two entries are held past the layout that named them, deliberately.**
- * `agentstate.yaml` and `orchestrator-live.md` left the layout tree and class L
- * on 2026-09-10 when nothing wrote either any more, so this list is class L in
- * full PLUS those two. Dropping them would move an upgrading project's leftover
- * copies from `in-flight`, where nothing is claimed about them and nothing is
- * reported, to `record`, where the report says a commit forgot to carry them —
- * a defect report about two files the project is meant to delete. They cost
- * nothing while no writer creates them, and they leave with the last workbench
- * that carries one.
  *
  * **Class R2 and class R3** are the opposite case and the more interesting one:
  * they are TRACKED by that same split, and they are still not a task's records.
@@ -203,11 +193,8 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<tas
  * `260830-1845_*_staging-drift-does-not-name-asset-provenance-as-live-state-while-its-sibling-marker-is.md`).
  */
 const LIVE_STATE = [
-    { path: "agentstate.yaml", why: "the retired session state file — nothing writes it; a leftover copy is not a record" },
-    { path: "orchestrator-live.md", why: "the retired dashboard file — nothing writes it; a leftover copy is not a record" },
     { path: ".session-marker", why: "the orchestrator heartbeat — mtime is the signal" },
     { path: "monitor", why: "a verbatim copy of bin/monitor, re-created by /fusion:setup" },
-    { path: "portfolio.md", why: "the portfolio briefing — regenerated in full by the ranking pass that wrote it, until v11 removed both" },
     { path: "orchestrator-events.jsonl", why: "append-only — written by every event emission, in flight all session" },
     { path: ".fusion-setup", why: "the setup marker — written by /fusion:setup" },
     { path: ".asset-provenance", why: "the asset provenance record — written by /fusion:setup" },

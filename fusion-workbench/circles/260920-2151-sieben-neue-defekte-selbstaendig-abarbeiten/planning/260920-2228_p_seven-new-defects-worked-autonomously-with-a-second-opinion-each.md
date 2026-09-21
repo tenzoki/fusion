@@ -152,7 +152,7 @@ Field key. **Record** is the storeless citation and where the file stands, in wo
    - **Second opinion:** consultant
    - Dependencies: none
 
-6. **Settle whether `LIVE_STATE` keeps rows for retired surfaces, then make the comment true**
+6. [DONE] **Settle whether `LIVE_STATE` keeps rows for retired surfaces, then make the comment true**
    - Executor: `coder`
    - Record: `260918-1335_*_the-live-state-comment-keeps-two-retired-rows-for-a-consequence-classify-cannot-produce.md`, in the issues store of the container `260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung`
    - Present at HEAD: `grep -n 'const ROOT_RECORDS' hooks/lib/staging-drift.ts` prints line 270 with an empty array; the "Two entries are held" paragraph sits at line 189; `node -e 'import("./hooks/dist/lib/staging-drift.js").then(m=>console.log(JSON.stringify(m.classify("some-root-leftover.md",""))))'` prints `klass` `unclassified`, and the same call on `agentstate.yaml` prints `in-flight`.

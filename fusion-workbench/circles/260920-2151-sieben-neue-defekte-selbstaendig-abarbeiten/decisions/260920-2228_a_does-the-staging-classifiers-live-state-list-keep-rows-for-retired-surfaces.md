@@ -35,3 +35,6 @@ Two defects sit in one comment block, and both come down to one question: what i
 ## Recommendation
 
 Option 1. The comment's own argument for keeping the rows is false, and once it is corrected nothing supports two membership criteria except a `why` string on a file nobody should have. The measurable property (list equals rule) is worth more than the hint, and it is the property the comment already claims to hold.
+
+---
+Answered: 260921-0742_*_does-live-state-keep-rows-for-retired-surfaces.md `## Recommendation` — option 1: `LIVE_STATE` plus `LIVE_PREFIXES` is exactly the classes `rules/workbench-tracking.md` `## The four classes` names; the three retired rows and the paragraph keeping them leave (step 6), the two missing class L rows are added and the "in full" sentence made true (step 7), and the `portfolio.md` leftover hint goes to `docs/upgrading-to-v11.md` `### 5` as a follow-on edit outside this package; ruled by orchestrator, Kai Stalmann <ks@qantr.com>, under the work item's directive (`260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md`: decide everything about the solution yourself), after a four-round discussion that converged.

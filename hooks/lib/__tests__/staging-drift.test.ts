@@ -323,10 +323,6 @@ describe("staging drift: what it reports without raising an alarm", () => {
         // are written by /fusion:setup. `.asset-provenance` fell through to
         // `unclassified` while its sibling was named.
         write(project.root, "fusion-workbench/.asset-provenance", "monitor sha256:abc\n");
-        // `portfolio.md` joined them on 2026-08-23: class L of
-        // `rules/workbench-tracking.md`, regenerated in full by the ranking pass
-        // that wrote it, until v11 removed both, so a staging list carrying it
-        // carried a briefing the next run overwrote. It was a `record` until then.
         write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
 
         const res = runStagingDrift(project.root);
@@ -337,13 +333,11 @@ describe("staging drift: what it reports without raising an alarm", () => {
           "orchestrator-events.jsonl",
           ".fusion-setup",
           ".asset-provenance",
-          "portfolio.md",
         ]) {
           const line = row(res.stdout, path);
           expect(line, `${path} must be reported, never dropped`).toBeDefined();
           expect(line).toMatch(/^ {2}in-flight/);
         }
-        expect(row(res.stdout, "portfolio.md")).toContain("until v11 removed both");
         expect(row(res.stdout, ".asset-provenance")).toContain("/fusion:setup");
       });
     },
