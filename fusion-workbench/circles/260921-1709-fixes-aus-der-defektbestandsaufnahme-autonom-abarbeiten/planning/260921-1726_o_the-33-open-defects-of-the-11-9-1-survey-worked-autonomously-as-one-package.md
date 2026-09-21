@@ -248,7 +248,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 10
 
-12. [IN PROGRESS] **State what a second plan does to `**Active spec/plan:**`** (row 25)
+12. [DONE] **State what a second plan does to `**Active spec/plan:**`** (row 25)
     - Executor: `coder`
     - Record: `260915-2143_*_the-active-spec-plan-field-is-append-only-and-nothing-says-what-a-second-plan-does-to-it.md`
     - Site at HEAD: `agents/orchestrator.md:217` "… beside any value already there — a spec and the plan drawn from it both stand, each with a short clause saying which"; `:441` "where it names a spec and a plan both, the one carrying `## Where this work stops`"; `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` "comma-separated where a spec and the plan drawn from it both stand".
