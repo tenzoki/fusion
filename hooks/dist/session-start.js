@@ -137,7 +137,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { countsFromHelperOutput, domainFor } from "./lib/domain-cascade.js";
 import { failOpen } from "./lib/fail-open.js";
-import { git } from "./lib/git.js";
+import { git, GIT_TIMED_OUT } from "./lib/git.js";
 import { emitSessionStartEvent, } from "./lib/orchestrator-events.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 /**
@@ -177,10 +177,19 @@ function pluginRoot() {
         return fromEnv;
     return resolve(dirname(fileURLToPath(import.meta.url)), "..");
 }
-/** The head commit, or `undefined` when git would not say. */
+/**
+ * The head commit, or `undefined` when git would not say.
+ *
+ * A timeout takes the same `undefined`, and the residual is stated rather
+ * than papered over: a session whose HEAD read timed out twice carries no
+ * anchor for its whole duration, and every later coverage report then says
+ * "no hook-written `session_start` row" — the wrong sentence for a row that
+ * exists without the field. Inventing a hash would be worse; the absence is
+ * at least visible.
+ */
 function gitHeadAtStart(root) {
     const out = git(root, ["rev-parse", "HEAD"]);
-    return out === null || out.trim() === "" ? undefined : out.trim();
+    return out === null || out === GIT_TIMED_OUT || out.trim() === "" ? undefined : out.trim();
 }
 /**
  * The session's domain, by the cascade in `agents/orchestrator.md`.

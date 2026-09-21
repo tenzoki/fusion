@@ -225,7 +225,7 @@
 
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { isAbsolute, join, relative, sep } from "node:path";
-import { git } from "./git.js";
+import { git, GIT_TIMED_OUT } from "./git.js";
 
 // --- shared with the gate's other two classes -------------------------------
 
@@ -1405,7 +1405,10 @@ export function declaredCitationFiles(
     unavailable: false,
   };
   if (patterns.length === 0) return out;
-  if (git(projectRoot, ["rev-parse", "--show-toplevel"]) === null) {
+  // A timeout takes the same `unavailable` as a decline: either way no listing
+  // was obtained, and this shape already means "not a count of none".
+  const toplevel = git(projectRoot, ["rev-parse", "--show-toplevel"]);
+  if (toplevel === null || toplevel === GIT_TIMED_OUT) {
     out.unavailable = true;
     return out;
   }
@@ -1421,8 +1424,13 @@ export function declaredCitationFiles(
       continue;
     }
     const listed = git(projectRoot, ["ls-files", "-z", "--", `:(glob)${pattern}`]);
-    if (listed === null) {
-      out.refused.push({ pattern, why: "git declined the pathspec" });
+    if (listed === null || listed === GIT_TIMED_OUT) {
+      // The `refused` shape is kept for both; the reason is not, because a
+      // pattern git never got to judge was not declined.
+      out.refused.push({
+        pattern,
+        why: listed === null ? "git declined the pathspec" : "git timed out listing the pathspec",
+      });
       continue;
     }
     const rels = listed.split("\0").filter((p) => p.length > 0);

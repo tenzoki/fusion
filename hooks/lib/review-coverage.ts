@@ -117,7 +117,7 @@
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve } from "node:path";
-import { git } from "./git.js";
+import { git, GIT_TIMED_OUT } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 import { newestHookSessionStart } from "./orchestrator-events.js";
 
@@ -439,10 +439,14 @@ function reviewFiles(root: string): { abs: string; rel: string; name: string; mt
   return out;
 }
 
-/** The window's commits, newest first. Null when the range does not resolve. */
-function windowCommits(root: string, since: string, head: string): Commit[] | null {
+/**
+ * The window's commits, newest first. Null when the range does not resolve;
+ * the timeout symbol passed through, because the caller owes it a different
+ * sentence from the one a decline gets.
+ */
+function windowCommits(root: string, since: string, head: string): Commit[] | null | typeof GIT_TIMED_OUT {
   const out = git(root, ["log", "--format=%H%x00%h%x00%s", `${since}..${head}`]);
-  if (out === null) return null;
+  if (out === null || out === GIT_TIMED_OUT) return out;
   const commits: Commit[] = [];
   for (const line of out.split("\n")) {
     if (line.trim() === "") continue;
@@ -453,10 +457,15 @@ function windowCommits(root: string, since: string, head: string): Commit[] | nu
   return commits;
 }
 
-/** Full hashes in `from..to`. Null when either endpoint does not resolve here. */
-function expand(root: string, from: string, to: string): Set<string> | null {
+/**
+ * Full hashes in `from..to`. Null when either endpoint does not resolve here;
+ * the timeout symbol passed through, since the row the caller writes for a
+ * decline names a cause ("a hash that no longer resolves") that a slow git
+ * never established.
+ */
+function expand(root: string, from: string, to: string): Set<string> | null | typeof GIT_TIMED_OUT {
   const out = git(root, ["rev-list", `${from}..${to}`]);
-  if (out === null) return null;
+  if (out === null || out === GIT_TIMED_OUT) return out;
   return new Set(out.split("\n").map((l) => l.trim()).filter((l) => l !== ""));
 }
 
@@ -529,15 +538,20 @@ export function measureReviewCoverage(
   }
 
   const commits = windowCommits(root, since, head);
+  if (commits === GIT_TIMED_OUT) {
+    return EMPTY(root, `git timed out listing ${since}..${head}`);
+  }
   if (commits === null) {
     return EMPTY(root, `git could not list ${since}..${head}`);
   }
 
   // The bound on which review files are considered. A failure to read the
   // anchor's date is not a reason to drop the measurement — it widens the bound
-  // to everything, which over-includes rather than under-reports.
+  // to everything, which over-includes rather than under-reports. A timeout
+  // takes the same widening: the date is a bound, not a claim.
   const anchorDate = git(root, ["show", "-s", "--format=%ct", since]);
-  const floorMs = anchorDate === null ? 0 : Number.parseInt(anchorDate.trim(), 10) * 1000;
+  const floorMs =
+    anchorDate === null || anchorDate === GIT_TIMED_OUT ? 0 : Number.parseInt(anchorDate.trim(), 10) * 1000;
   const floor = Number.isFinite(floorMs) ? floorMs : 0;
 
   const inWindow = new Set(commits.map((c) => c.full));
@@ -596,7 +610,7 @@ export function measureReviewCoverage(
     }
 
     const set = expand(root, from, to);
-    if (set === null) {
+    if (set === null || set === GIT_TIMED_OUT) {
       reviews.push({
         path: f.rel,
         range: `${from}..${to}`,
@@ -604,7 +618,10 @@ export function measureReviewCoverage(
         notOpenedRecorded: recorded,
         notOpenedRaw: raw,
         covers: 0,
-        why: `git could not list ${from}..${to} — a hash that no longer resolves here`,
+        why:
+          set === null
+            ? `git could not list ${from}..${to} — a hash that no longer resolves here`
+            : `git timed out listing ${from}..${to}`,
       });
       continue;
     }

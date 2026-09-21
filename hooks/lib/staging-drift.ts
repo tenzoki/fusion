@@ -136,7 +136,7 @@
  */
 
 import { basename, resolve, relative, sep } from "node:path";
-import { git } from "./git.js";
+import { git, GIT_TIMED_OUT, GIT_TIMEOUT_MS } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 
 /* ------------------------------------------------------------------ *
@@ -156,8 +156,11 @@ const THROTTLE_FILE = "staging-drift.json";
  * this family that walks a working tree rather than reading refs, so it gets
  * twice the default budget `lib/git.ts` sets. The two `rev-parse` calls here
  * take the default, because they are ref reads like every other caller's.
+ * It doubled from 10 000 when the default doubled from 5 000, for the reason
+ * stated at `GIT_TIMEOUT_MS`: the default was measured to sit inside the
+ * loaded tail, and this budget is defined as a ratio to it.
  */
-const GIT_STATUS_TIMEOUT_MS = 10_000;
+const GIT_STATUS_TIMEOUT_MS = 20_000;
 
 /**
  * The path `agents/orchestrator.md` `### Step 4 — commit` prescribes for a
@@ -527,7 +530,12 @@ const EMPTY = (root: string, why: string): StagingReport => ({
 export function measureStagingDrift(root: string): StagingReport {
   const wbAbs = resolve(root, WB);
 
+  // A timeout gets its own sentence, because the `null` sentence below states
+  // a fact about the repository that a slow git never established.
   const toplevelOut = git(root, ["rev-parse", "--show-toplevel"]);
+  if (toplevelOut === GIT_TIMED_OUT) {
+    return EMPTY(root, `git timed out twice at ${GIT_TIMEOUT_MS} ms reading the toplevel`);
+  }
   if (toplevelOut === null) {
     return EMPTY(root, `${root} is not inside a git repository — nothing is staged or unstaged here`);
   }
@@ -538,6 +546,9 @@ export function measureStagingDrift(root: string): StagingReport {
     ["status", "--porcelain", "--untracked-files=all", "--", wbAbs],
     GIT_STATUS_TIMEOUT_MS,
   );
+  if (statusOut === GIT_TIMED_OUT) {
+    return EMPTY(root, `git timed out twice at ${GIT_STATUS_TIMEOUT_MS} ms reading the status of ${WB}`);
+  }
   if (statusOut === null) {
     return EMPTY(root, `git status could not read ${WB}`);
   }
@@ -621,10 +632,17 @@ export function writeStagingState(root: string, state: StagingState): void {
   saveGuardState(THROTTLE_FILE, state, root);
 }
 
-/** HEAD right now, or "" when git will not say (no repository, no commits yet). */
+/**
+ * HEAD right now, or "" when git will not say (no repository, no commits yet).
+ *
+ * A timeout takes the same "" on purpose: the caller guards its throttle
+ * write on a non-empty head, so a HEAD that could not be read overwrites
+ * nothing and the next call compares against the real previous value. It
+ * widens toward silence, which is the direction "" already meant here.
+ */
 export function currentHead(root: string): string {
   const out = git(root, ["rev-parse", "HEAD"]);
-  return out === null ? "" : out.trim();
+  return out === null || out === GIT_TIMED_OUT ? "" : out.trim();
 }
 
 /**

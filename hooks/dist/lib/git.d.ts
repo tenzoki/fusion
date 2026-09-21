@@ -20,11 +20,15 @@
  *    resolved a workbench root, and a hook's `process.cwd()` is whatever
  *    directory the session happens to sit in — which is the wrong repository as
  *    readily as the right one.
- * 2. **stderr is discarded and every failure is `null`.** A hook that printed
+ * 2. **stderr is discarded and every decline is `null`.** A hook that printed
  *    git's complaints would put them in the model's transcript on a path the
  *    model cannot act on. `null` means "git would not say", and each caller
  *    turns that into its own sentence — a hash that no longer resolves after a
- *    rebase is not drift and must not be reported as one.
+ *    rebase is not drift and must not be reported as one. The one failure
+ *    that is NOT `null` is a timeout, which is `GIT_TIMED_OUT`: git was not
+ *    asked and did not decline, it was slow, and a caller that rendered that
+ *    as a decline would be stating a fact about the repository it never
+ *    learned (`260906-0035_*_the-git-helper-reports-a-timeout-as-not-a-repository-in-every-consuming-project.md`).
  * 3. **A timeout is mandatory.** These run inside a PostToolUse hook, on the
  *    tool call's own latency budget. A git invocation that hangs would hang
  *    every tool call in the session.
@@ -42,20 +46,42 @@
  * decides whether a new measurement is a sibling at all.
  */
 /**
- * The default budget: enough for a local `git rev-list`, `git log`, `git show`
- * or `git rev-parse` on any repository this will meet.
+ * The default budget, per attempt: enough for a local `git rev-list`,
+ * `git log`, `git show` or `git rev-parse` on any repository this will meet.
+ *
+ * Drawn from a measurement rather than from habit. `git log` on a six-commit
+ * repository took 23 ms with nothing else running and up to 7 580 ms with two
+ * test suites running, over 600 loaded samples with no spawn ever failing
+ * (`260906-0026-what-shared-state-the-hook-suite-reaches.md`, finding 2). The
+ * previous 5 000 ms sat inside that tail, so ordinary contention crossed it;
+ * this one clears the measured maximum with margin. Together with the retry
+ * below it realises option 1 of
+ * `260906-0035_*_what-should-the-git-helpers-budget-be-and-is-a-timeout-retried.md`.
  *
  * A call that walks the working tree rather than reading refs — `git status`
  * over a whole workbench is the only one in this family — passes its own,
  * larger budget and says why at the call site.
  */
-export declare const GIT_TIMEOUT_MS = 5000;
+export declare const GIT_TIMEOUT_MS = 10000;
 /**
- * Run git in `root` and return its stdout, or `null` when it would not answer.
+ * The value `git()` returns when both attempts ran out of budget. A symbol
+ * rather than a second sentinel string or `undefined`, so no caller can
+ * mistake it for output and the compiler enumerates every site that has to
+ * handle it.
+ */
+export declare const GIT_TIMED_OUT: unique symbol;
+export type GitResult = string | null | typeof GIT_TIMED_OUT;
+/**
+ * Run git in `root` and return its stdout, `null` when it would not answer,
+ * or `GIT_TIMED_OUT` when it ran out of budget twice.
  *
  * `null` covers every way git can decline — not a repository, a ref that does
- * not resolve, a non-zero exit, the timeout — because no caller in this family
+ * not resolve, a non-zero exit — because no caller in this family
  * distinguishes them: each one turns "git would not say" into a report that
- * claims nothing rather than into a fault.
+ * claims nothing rather than into a fault. The timeout is the one exception:
+ * the measurement above shows contention spikes rather than hangs, so a first
+ * timeout is retried once under the same budget, and only a second one is
+ * reported, as the symbol. At most two attempts; the worst case is twice the
+ * budget, which the decision cited above names and accepts.
  */
-export declare function git(root: string, args: string[], timeoutMs?: number): string | null;
+export declare function git(root: string, args: string[], timeoutMs?: number): GitResult;

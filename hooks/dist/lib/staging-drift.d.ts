@@ -336,7 +336,14 @@ interface StagingState {
 export declare function readStagingState(root: string): StagingState;
 /** Write the throttle record. `reported: ""` clears it, so a later miss speaks again. */
 export declare function writeStagingState(root: string, state: StagingState): void;
-/** HEAD right now, or "" when git will not say (no repository, no commits yet). */
+/**
+ * HEAD right now, or "" when git will not say (no repository, no commits yet).
+ *
+ * A timeout takes the same "" on purpose: the caller guards its throttle
+ * write on a non-empty head, so a HEAD that could not be read overwrites
+ * nothing and the next call compares against the real previous value. It
+ * widens toward silence, which is the direction "" already meant here.
+ */
 export declare function currentHead(root: string): string;
 /**
  * Whether HEAD moved since the previous tool call — the trigger, in one place.
