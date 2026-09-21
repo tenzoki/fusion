@@ -30,3 +30,6 @@ finished.
 **Acceptance.** Either the four version surfaces and the marketplace agree for every tag that
 exists, or the release process states which tags are allowed to be partial and how a reader tells
 one from an unfinished release.
+
+---
+Resolved: obsolete for its instance, and its residual written into the process. The marketplace entry this record measured at `10.24.0` reads `11.9.1` (`/Users/k1/Projects/productive/claude-plugins/.claude-plugin/marketplace.json`, that clone's HEAD `57ab4e3 chore(fusion): bump to 11.9.1`); `install.sh` and `README.md` both pin `v11.9.1`; the tag `v10.24.1` still exists and never will be entered, and the gap closed at 10.25.0 as the record foresaw. The acceptance's second branch is taken: `README-agents.md` `## Releasing` step 5 now states, in the commit that carries this line, that a tag cut from anything but `main` is partial by definition and is not entered in the marketplace, which is how a reader tells `v10.24.1` from an unfinished release. Survey `260921-1653-open-defect-survey-at-11-9-1.md` row 13. Plan `260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md` step 27.

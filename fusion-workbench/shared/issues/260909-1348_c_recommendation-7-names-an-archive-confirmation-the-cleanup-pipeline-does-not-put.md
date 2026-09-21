@@ -11,3 +11,6 @@ So half of the recommendation's named target does not exist on the path it is ai
 ---
 **Filed by:** analyst, Kai Stalmann <ks@qantr.com>
 Verified in `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md` (Corrected, item C6). Paths: `skills/archive/SKILL.md:201`, `skills/cleanup/SKILL.md` Step 4, at pin `a1ecf86e`.
+
+---
+Resolved: erratum recorded. The analysis this corrects, `260909-1047-size-versus-bookkeeping-across-three-projects.md`, is write-once and stands unchanged; the correction is on disk as `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md` item C6, and the analysis's consumer `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md` cites that verification. Nothing in the tree can move further, so the record closes on the erratum rather than on a fix. Survey `260921-1653-open-defect-survey-at-11-9-1.md` row 17. Plan `260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md` step 27, closed in the commit that carries this line.

@@ -11,3 +11,6 @@ The report's defence of the measure — "Since the dates come from filename stam
 ---
 **Filed by:** analyst, Kai Stalmann <ks@qantr.com>
 Verified in `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md` (Overreach, item O1). Command: `git ls-tree -r --name-only 0cc2214c2` filtered to `fusion-workbench/**/*.md`, basenames not matching `^\d{6}-\d{4}` and matching `^(\d{4})-(\d{4})[-_]`, bucketed by the leading MM.
+
+---
+Resolved: erratum recorded. The analysis this corrects, `260909-1047-size-versus-bookkeeping-across-three-projects.md`, is write-once and stands unchanged; the correction is on disk as `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md` item O1, and the analysis's consumer `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md` cites that verification. Nothing in the tree can move further, so the record closes on the erratum rather than on a fix. Survey `260921-1653-open-defect-survey-at-11-9-1.md` row 16. Plan `260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md` step 27, closed in the commit that carries this line.

@@ -341,7 +341,7 @@ Every release:
 2. `git -C <marketplace> pull --rebase origin main` (it can drift if edited from elsewhere)
 3. Bump fusion's `version` in `<marketplace>/.claude-plugin/marketplace.json`
 4. Commit and push **both** repos
-5. **Tag the fusion release** on the commit you just pushed: `git tag -a v<version> -m "fusion v<version>" && git push origin v<version>`. The tag is what `install.sh`'s `FUSION_REF=tags/v<version>` pinning resolves against — skip it and the documented pin is unusable for that version. (Tagging started at v5.5.0; `v5.5.0` was applied retroactively to its release commit.)
+5. **Tag the fusion release** on the commit you just pushed: `git tag -a v<version> -m "fusion v<version>" && git push origin v<version>`. The tag is what `install.sh`'s `FUSION_REF=tags/v<version>` pinning resolves against — skip it and the documented pin is unusable for that version. (Tagging started at v5.5.0; `v5.5.0` was applied retroactively to its release commit.) A tag cut from anything but `main` is partial by definition and is not entered in the marketplace: it reaches only the surfaces whoever cut it touched, and `v10.24.1` is one such tag, never an unfinished release (`260908-0920_*_v10-24-1-is-tagged-and-was-never-entered-in-the-marketplace.md`).
 6. To pick up the new version locally:
    ```bash
    git -C ~/.claude/plugins/marketplaces/tenzoki-plugins pull origin main

@@ -434,7 +434,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package D — closures
 
-27. **Close the six already-fixed and the one obsolete record on the survey's evidence**
+27. [DONE] **Close the six already-fixed and the one obsolete record on the survey's evidence**
     - Executor: `coder`
     - Records: `260828-0044_*_thirty-four-of-sixty-two-records-filed-on-260827-carry-no-person-half-after-the-reach-was-settled.md` (fixed: 329 of 330 `2609*` records under `issues/`, `decisions/`, `reviews/` carry the person half, the history kind closed at `0ec15cb9`); `260911-1511_*_coderev-is-a-substring-of-codereview-so-a-sweep-without-word-boundaries-counts-two-retired-folder-names-as-agents.md` (fixed: the convention stands in `260911-1316-five-retired-agents-and-the-container-contradiction-read-site-by-site.md` beside its figures; the other half is a habit no file holds); `260909-1345_*_the-size-analysis-understates-the-always-on-peak-and-the-august-cut.md`, `260909-1347_*_the-eightfold-bookkeeping-rise-excludes-337-legacy-stamped-records-from-the-two-anchor-months.md`, `260909-1348_*_recommendation-7-names-an-archive-confirmation-the-cleanup-pipeline-does-not-put.md`, `260909-1349_*_finding-17s-setup-pointer-claims-name-the-wrong-agents.md` (errata: the analysis is write-once and unchanged; the correction is `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md` items C1, C2, O1, C6, C7, cited by the analysis's consumer `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`; nothing in the tree can move further, and the `Resolved:` line says so in those words rather than "fixed"); `260908-0920_*_v10-24-1-is-tagged-and-was-never-entered-in-the-marketplace.md` (obsolete: the marketplace reads `11.9.1`, `install.sh` and `README.md` pin `v11.9.1`, the tag `v10.24.1` exists and never will be entered, as the record itself foresaw; its residual, which tags may be partial, is one sentence the `Resolved:` line adds to `README-agents.md` `## Releasing` step 5 in this same commit: a tag cut from anything but `main` is partial by definition and is not entered).
     - Files: the seven records; `README-agents.md` (`## Releasing` step 5, one sentence)
@@ -447,7 +447,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package E — the bump
 
-28. **Bump the plugin version to 11.10.0 after the step-0 pre-tag checks**
+28. [IN PROGRESS] **Bump the plugin version to 11.10.0 after the step-0 pre-tag checks**
     - Executor: `coder`
     - Record: none (the directive's own final instruction)
     - Site at HEAD: `.claude-plugin/plugin.json` reads `"version": "11.9.1"`; `skills/help/SKILL.md` `### 4. Update` carries paragraphs for 11.9.0 and 11.8.0 installs.
