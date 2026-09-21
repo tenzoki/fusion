@@ -237,7 +237,7 @@ Not every task needs either. Skip both when the request already names concrete f
 
 1. **Read the source.** Open the plan step, the issue record, or the user's own words in full. A task you have only summarised is a task you have already narrowed.
 2. **Route it** per the **Agent Routing Table**.
-3. **Human gate check.** If the task meets any condition in **Human Gate Rules**, emit `gate_hit`, put the gate to the user, and emit `gate_response` with their decision. On Skip: emit `task_skipped` and move on. On Defer: rename the source marker to `_d_` and emit `task_deferred`. Under `**Mode:** autonomous`, the clause in **Human Gate Rules** says which conditions the field answers and which still stop.
+3. **Human gate check.** If the task meets any condition in **Human Gate Rules**, emit `gate_hit`, put the gate to the user, and emit `gate_response` with their decision. On Skip: emit `task_skipped` and move on. On Defer: rename the source marker to `_d_` and emit `task_deferred`. Under `**Mode:** autonomous`, the clause in **Human Gate Rules** sorts the conditions into three sets: answered by the field, file-and-skip with no question put, and ask as written.
 4. **Mark the source.** Rename the source file's state marker `_o_` → `_p_`, or mark the plan step `[IN PROGRESS]`.
 
 ### Step 2 — dispatch
@@ -376,7 +376,7 @@ The orchestrator **must stop and ask the user** before proceeding when any of th
 | A work item is about to close and its plan carries a stop-conditions section | The clauses bind nobody mechanically; a human answering them is the whole of the enforcement |
 | A work item is to be claimed, released, paused, finished, dropped, split or merged | The store's maintenance is confirmed operation by operation |
 
-**`**Mode:** autonomous` on the item an operation targets answers these conditions and no other** (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`): *Planner produced a plan* (the claimed item's field); the claim and the finish of that item under the work-item row; and *A work item is about to close and its plan carries a stop-conditions section*, where the field answers that closure proceeds unasked and nothing else: the clauses are not put, not judged, and every one is carried into the closure note verbatim with none marked as failing. A field on one item never rules on another item's state. Every other row stops as written, and these the field never reaches: *Task involves `ontocoder`*, *Structural ontology changes*, *Destructive operations*, *Ambiguous task instruction* — there you file an `_o_` decision at `$OUT_DECISION`, emit `task_skipped` and go on. An answered gate still emits `gate_hit` and a `gate_response` whose detail is `<decision> — answered by **Mode:** autonomous on <container>`; under `260909-2305_*_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md` such a row is not a return to the user, and that text is what lets a grep exclude it.
+**`**Mode:** autonomous` on the item an operation targets sorts these rows into three disjoint sets** (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`). **Answered rows** emit `gate_hit` and a `gate_response`: *Planner produced a plan*, answered `Approve` off the claimed item's field, detail `Approve — answered by **Mode:** autonomous on <container>`; under the work-item row, the claim of that item and its finish once its plan is complete (every step `[DONE]`; with a step still open, including one the field skipped and left an open decision, the finish asks as before), detail `proceed — answered by **Mode:** autonomous on <container>`, while the row's other operations (release, pause, drop, split, merge) ask as written; and *A work item is about to close and its plan carries a stop-conditions section*, where closure proceeds unasked, the clauses are not put and not judged, every one is carried into the closure note verbatim with none marked as failing, and the log takes the per-clause shape `## Closing a work item` step 3 spells (its fixed `gate_hit` reason, then one `clause N: not put — answered by **Mode:** autonomous on <container>` per clause). A field on one item never rules on another item's state. Under `260909-2305_*_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md` an answered row is not a return to the user, and the "answered by **Mode:**" text is what lets a grep exclude it. **File-and-skip rows** the field does not answer, and under it no question is put either: *Task involves `ontocoder`*, *Structural ontology changes*, *Destructive operations*, *Ambiguous task instruction*. There you emit `gate_hit` and no `gate_response`, because nobody answered; file an `_o_` decision at `$OUT_DECISION` carrying the question the gate would have put; emit `task_skipped`; go on. **Every other row** (the spec, the flagged step, files outside the tree, the reconciliation verdict) stops and asks as written, field or no field.
 
 **Interaction pattern at a gate:**
 
@@ -397,13 +397,13 @@ Two gates in sequence, each inside the three-option cap of `rules/user-facing-ou
 
 ## Work items
 
-A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You file one only when the user instructs it**, the user's words as the Directive and `**Filed by:** user`; otherwise the user files, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
+A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You file one only when the user instructs it**, the user's words as the Directive, `**Filed by:** user`, and `**Mode:** autonomous` when the user asked for it; otherwise the user files, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
 
 What you may do, at the user's word and with no dispatch, is maintain the store at `$OUT_BACKLOG`, reading it at `$SCAN_BACKLOG`.
 
 | Operation | What it does |
 |---|---|
-| **Claim** | `**Status:**` to `claimed` and a `**Claim:**` naming this checkout — see below |
+| **Claim** | `**Status:**` to `claimed`, a `**Claim:**` naming this checkout — see below — and `**Mode:** autonomous` when the user asked for it |
 | **Release** | the claim goes and `**Status:**` returns to `open`; nobody is working on it |
 | **Pause** | `**Status:**` to `paused`, the `**Claim:**` cleared, the body saying what it is waiting for |
 | **Finish** | `**Status:**` to `done`, the claim staying to name who did the work |
@@ -413,7 +413,7 @@ What you may do, at the user's word and with no dispatch, is maintain the store 
 
 **Resuming a paused item is Claim**, an ordinary one with no takeover to weigh, because the field a takeover would contend for is absent; a pause lifted with nobody taking the item up sets `open`.
 
-**Each is confirmed for that operation, on that item, before a byte moves.** Under `**Mode:** autonomous` the claim and the finish of that item are confirmed by the field (**Human Gate Rules**); every other operation asks as before. A confirmation the user gave for one operation is not a confirmation for the next; ask again. None of them adds a job to the store on your own initiative, which is why the bound survives them: the text a merge writes consolidates items already filed.
+**Each is confirmed for that operation, on that item, before a byte moves.** Under `**Mode:** autonomous` the claim of that item, and its finish once its plan is complete, are confirmed by the field (**Human Gate Rules**); every other operation asks as before. A confirmation the user gave for one operation is not a confirmation for the next; ask again. None of them adds a job to the store on your own initiative, which is why the bound survives them: the text a merge writes consolidates items already filed.
 
 **`done` and `dropped` are terminal.** Reopening one is filing a new item that cites it — the user's act — never an edit back to `open`.
 
@@ -565,9 +565,9 @@ Fields `task`, `agent` and `detail` are included when relevant — omit when not
 | `bugfix_success` | The re-dispatched executor resolved the validation failure (Step 4, 2c) | Root cause summary |
 | `bugfix_failure` | The re-dispatched executor could not resolve the failure (Step 4, 2d) | Reason |
 | `task_blocked` | Agent produced no changes | Reason |
-| `task_skipped` | User chose Skip at a gate | — |
+| `task_skipped` | User chose Skip at a gate; under `**Mode:** autonomous` also the four file-and-skip rows of **Human Gate Rules**, after a `gate_hit` written alone | — |
 | `task_deferred` | User chose Defer at a gate | — |
-| `gate_hit` | Human gate triggered | Gate reason; the stop-conditions gate writes the fixed string `Circle stop conditions` |
+| `gate_hit` | Human gate triggered | Gate reason; the stop-conditions gate writes the fixed string `Circle stop conditions`; under `**Mode:** autonomous` the four file-and-skip rows of **Human Gate Rules** write this row alone, no `gate_response`, followed by `task_skipped` |
 | `gate_response` | User responded to a gate | Decision (proceed/skip/defer/modify); the stop-conditions gate writes `holds`/`does not hold`, one per clause; a gate `**Mode:** autonomous` answers writes `<decision> — answered by **Mode:** autonomous on <container>`, the stop-conditions one `clause N: not put — …`, one per clause |
 | `commit` | **Machine-written** (`fusion-commit-lock with`, on a landed HEAD) | Short hash, message summary |
 | `revert` | Files reverted after error | File list, reason |

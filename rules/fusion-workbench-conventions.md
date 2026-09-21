@@ -204,7 +204,7 @@ One file per item rather than one list file, because two checkouts adding work a
 
 `**Claim:**`, `**Mode:**`, `**Active spec/plan:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** when there is nothing to say, never present and empty. Every other field is always written.
 
-**`**Mode:** autonomous` is the user's standing answer to the gates about the solution**; absent is the ordinary mode. It stands on the user's word: an agent writes it only when the user says so — by hand, through `/fusion:memo`, or by the orchestrator in the same command as a claim the user confirmed — and never from the directive's prose. Which gate conditions it answers, and which it never does, is `agents/orchestrator.md` `## Human Gate Rules`; a `gate_response` citing it records an answer the user gave, so `## Dispatching another agent` holds.
+**`**Mode:** autonomous` is the user's standing answer to the gates about the solution**; absent is the ordinary mode. It stands on the user's word and is written only on it: by the user by hand, by `/fusion:memo` from the user's own words, or by the orchestrator in the same command as a filing or a claim the user asked for — never from the directive's prose. Which gate conditions it answers, and which it never does, is `agents/orchestrator.md` `## Human Gate Rules`; a `gate_response` citing it records an answer the user gave, so `## Dispatching another agent` holds.
 
 **`**Status:**` takes five values and there is no sixth.** The first three are live; the last two are terminal.
 

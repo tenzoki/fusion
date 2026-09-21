@@ -1,0 +1,13 @@
+The `**Mode:**` ownership sentence attaches "by hand" to an agent write and names no orchestrator filing route
+---
+`rules/fusion-workbench-conventions.md` `## Backlog entries — work items` (line 207 at `8ef78ffc`): "an agent writes it only when the user says so — by hand, through `/fusion:memo`, or by the orchestrator in the same command as a claim the user confirmed". "By hand" is the user writing with no agent, so it is not a case of "an agent writes it"; the list copies the shape of the filing sentence at line 235 ("the user files, by hand, through `/fusion:memo`, or by instructing the orchestrator") onto a subject it does not fit. The orchestrator route names a claim only: `260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md` lets the orchestrator file an item at the user's word, and a user who says "file this and work it without asking" has said so at the filing, which the list does not cover. On the orchestrator's side, `agents/orchestrator.md` `## Work items` line 400 (the filing sentence) and line 406 (the Claim row) write Directive, `**Filed by:**`, status and claim, and no mode, so the one orchestrator route the rule names is absent from the orchestrator's own operation table.
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+**Cross-references:** 260921-0842_*_how-does-a-work-item-tell-the-orchestrator-to-work-it-without-asking.md, 260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md, 260921-1035-reviewer-mode-autonomous-field-against-its-decision.md
+
+Severity: Low. Scope: `rules/fusion-workbench-conventions.md` line 207 (every dispatch path, zero-sum bound) and `agents/orchestrator.md` lines 400 and 406.
+
+Acceptance: the rule's sentence has a subject its three routes fit ("it is written only on the user's word: by the user by hand, by `/fusion:memo`, or by the orchestrator in the same command as a filing or a claim the user asked for"); the orchestrator's filing sentence and Claim row name the field among what they write when the user asked for it. `cd hooks && npm test` green; a byte added on the conventions file is funded by a cut on the same path or a re-baselining event.
+
+---
+Resolved: `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` now reads "written only on it: by the user by hand, by `/fusion:memo` from the user's own words, or by the orchestrator in the same command as a filing or a claim the user asked for"; the orchestrator's filing sentence and Claim row name `**Mode:** autonomous` among what they write when the user asked for it. Fixed in the commit that carries this line; concept accepted by a consultant read.

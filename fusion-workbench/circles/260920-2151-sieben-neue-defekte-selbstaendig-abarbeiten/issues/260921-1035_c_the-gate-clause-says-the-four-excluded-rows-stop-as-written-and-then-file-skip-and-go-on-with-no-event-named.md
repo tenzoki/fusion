@@ -1,0 +1,15 @@
+The gate clause says the four excluded rows "stop as written" and then "file, skip and go on", and names no event for that path
+---
+`agents/orchestrator.md` `## Human Gate Rules`, the `**Mode:** autonomous` paragraph (line 379 at `8ef78ffc`): "Every other row stops as written, and these the field never reaches: *Task involves `ontocoder`*, *Structural ontology changes*, *Destructive operations*, *Ambiguous task instruction* — there you file an `_o_` decision at `$OUT_DECISION`, emit `task_skipped` and go on." The section's preamble (line 363) defines a stop as "stop and ask the user", so the sentence says of the four rows both that the user is asked and that the orchestrator files a decision, skips and goes on. The decision `260921-0842_*_how-does-a-work-item-tell-the-orchestrator-to-work-it-without-asking.md` `## Constraints` and both directives (`260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md` `## Directive`: "Dort legst du den Beschluss offen an, überspringst den Defekt und machst weiter") mean the second, with no question put. A reader taking the first reproduces the stops `260921-0657_*_no-shipped-text-lets-a-directive-pre-answer-the-solution-gates-so-an-autonomous-package-stops-three-times-before-its-first-fix.md` was filed on.
+
+The event pair on that path is unstated. `### Step 1 — read the task` item 3 (line 240) mandates `gate_hit` and a `gate_response` on every condition met; `rules/fusion-workbench-conventions.md` `## Dispatching another agent` forbids a `gate_response` for an answer nobody gave, and file-and-skip is one. The clause says neither whether `gate_hit` is written alone nor whether nothing is written, and the `gate_hit` row of `### Structured Event Log` does not name the case.
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+**Cross-references:** 260921-0842_*_how-does-a-work-item-tell-the-orchestrator-to-work-it-without-asking.md, 260921-1035-reviewer-mode-autonomous-field-against-its-decision.md
+
+Severity: High. Scope: `agents/orchestrator.md` only; the conventions rule delegates the gate conditions to this section and is right to.
+
+Acceptance: the clause states for the four rows under the field, in separate sentences, that no question is put, which events are written (`gate_hit` and no `gate_response`, or none), then the `_o_` decision, `task_skipped` and go on; "stops as written" is left to the rows the field does not name; the `gate_hit` or `gate_response` row of the event table carries the same statement. `cd hooks && npm test` green; the surface-growth golden re-approved if the byte count moves.
+
+---
+Resolved: `agents/orchestrator.md` `## Human Gate Rules` now states three disjoint sets; the four file-and-skip rows put no question under the field, emit `gate_hit` and no `gate_response`, file the `_o_` decision, emit `task_skipped` and go on; the `gate_hit` and `task_skipped` rows of the event table and `### Step 1` item 3 carry the same statement. Fixed in the commit that carries this line; concept accepted by a consultant read.
