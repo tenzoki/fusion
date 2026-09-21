@@ -126,7 +126,7 @@ Field key. **Record** is the storeless citation and where the file stands, in wo
    - **Second opinion:** consultant
    - Dependencies: none
 
-4. **Retire the three parameters the dispatch-parameters intro still bounds, and cite the table's prompt sites by anchor**
+4. [DONE] **Retire the three parameters the dispatch-parameters intro still bounds, and cite the table's prompt sites by anchor**
    - Executor: `coder`
    - Record: `260918-1410_*_the-dispatch-parameters-section-describes-three-retired-parameters-as-live-and-five-of-its-line-citations-are-stale.md`, in the issues store of the container `260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung`
    - Present at HEAD: `grep -nE 'agents/[a-z]+\.md:[0-9]' README-agents.md` prints lines 53, 57, 59, 63 and 70; line 53 still bounds `**Draft:**`, `**Answers:**` and `**Initiated by:**` in the present tense while line 72 retires them; `agents/orchestrator.md` has 617 lines, so `:1321` at line 63 is past its end. The anchors the rewrite needs exist: `agents/reconciler.md` `### Parameter parsing` (line 38), `agents/orchestrator.md` `### Shaping and planning, when the task needs them` (213) and `## Agent Routing Table` (185, the `**Deliverable language:**` prefix rule sits at 201 inside it), `agents/planner.md` `## Parameter parsing` (46), `agents/editor.md` `## Deliverable language — named in the dispatch, or you halt` (18), and `## Setup` in each of `analyst`, `coder`, `ontocoder`, `planner`, `reconciler`, `reviewer`.
