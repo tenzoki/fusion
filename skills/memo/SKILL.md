@@ -35,6 +35,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 - Backlog entry: a new container per idea in `$WORKBENCH/$OUT_BACKLOG`, never an append
 - Either file may be hand-edited later; work items are project-wide, not per checkout.
 - `$CO` is the `CHECKOUT=` line of `I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true`, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
+- **No `CHECKOUT=` line, no write.** Exit 3, exit 5 and the `[ -x ]` miss branch each leave `$CO` empty, and none means the workbench is absent. Halt and name which one: an empty key writes `memos-.md` and `tasks-.md`, the one pair of names every checkout would share.
 
 If the memo store or one of its two files does not exist, create it. When creating a file for the first time, write only its header and nothing else:
 

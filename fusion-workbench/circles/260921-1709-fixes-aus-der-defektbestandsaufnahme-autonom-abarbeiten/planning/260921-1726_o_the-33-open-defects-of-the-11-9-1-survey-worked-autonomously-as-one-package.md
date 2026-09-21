@@ -188,7 +188,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-7. [IN PROGRESS] **Give the memo body the empty-checkout halt at the point it composes a filename** (row 29)
+7. [DONE] **Give the memo body the empty-checkout halt at the point it composes a filename** (row 29)
    - Executor: `coder`
    - Record: `260916-0831_*_the-memo-body-does-not-carry-the-empty-checkout-clause-the-conventions-now-bind-it-by.md`
    - Site at HEAD: `skills/memo/SKILL.md:37` "`$CO` is the `CHECKOUT=` line of …, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`." No halt clause (`grep -in 'halt\|exit 3\|exit 5\|no line' skills/memo/SKILL.md` prints nothing). The wording to copy is `skills/cadence/SKILL.md:42`.
