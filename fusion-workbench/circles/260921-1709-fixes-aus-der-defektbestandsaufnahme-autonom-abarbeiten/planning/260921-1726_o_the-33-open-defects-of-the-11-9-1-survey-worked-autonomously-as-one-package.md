@@ -284,7 +284,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-15. [IN PROGRESS] **State the fabricated-name bound in the scanner's header and close on it** (row 3)
+15. [DONE] **State the fabricated-name bound in the scanner's header and close on it** (row 3)
     - Executor: `coder`
     - Record: `260830-2235_*_the-fabricated-name-exemption-keys-on-the-literal-foo-so-every-realistic-probe-fixture-is-read-as-a-real-citation.md`; working answer per `260921-1718_*_which-decidable-property-if-any-exempts-a-realistic-probe-fixture-from-the-citation-gate.md` option 1
     - Site at HEAD: `hooks/lib/citation-scan.ts:511-527`, `FABRICATED_NAME` and its docstring; the header's exemption list; `hooks/lib/citation-form.ts:65-75` already names the record as the reason `dangling` is not reported at write time.

@@ -32,3 +32,6 @@
 ## Recommendation
 
 Option 1. The rule the writer needs already stands in the always-on corpus, and the two mechanisms that work, the fence and the file-and-line restatement, are unchanged; what the defect asks for beyond that is a gate that reads intent, which §4 rules out. The residual is stated rather than hidden: a writer who quotes a fixture unfenced meets a `dangling` row at the next scan, repairs it once, and the row is the instruction the record says is invisible at write time. If the user wants a mechanism instead, option 2 is the one that costs the least and it is written up here so the choice is on the table with its price.
+
+---
+Working answer (plan 260921-1726): option 1 — no new exemption; the `FABRICATED_NAME` docstring in `hooks/lib/citation-scan.ts` states the bound, the fence and file-and-line restatement stay the two mechanisms, and the defect closes on it; implemented in the commit that carries this line.

@@ -475,6 +475,23 @@ export const RETIRED_LAYOUT_FILES = {
  * (260901-0318_*_the-fabricated-name-exemption-hides-sixteen-store-prefixed-citations-in-this-repositorys-own-workbench.md).
  * A three-letter substring inside a corpus of hyphenated slugs will keep
  * finding new English words; a word test can only ever find the placeholder.
+ *
+ * And `foo` is the ONE placeholder this grammar reads: it is the one decidable
+ * placeholder, since a token either carries that word or it does not. A fixture
+ * written to look like a record — a real-looking stamp and slug, quoted in
+ * running prose so that a probe exercises the grammar seriously — is judged
+ * like a record and reported `dangling` until the writer fences the verbatim
+ * form or restates it as a sentence naming file and line
+ * (`rules/fusion-workbench-conventions.md` `## Marker globs`, which already
+ * binds every agent to that). No wider list is admitted here: a second
+ * placeholder word is the substring thicket one level up, and an exemption
+ * keyed on the surrounding words reads intent, which no token decides. The
+ * residual is stated rather than hidden — a writer who quotes a fixture
+ * unfenced meets the `dangling` row at the next scan and repairs it once.
+ * Decision
+ * 260921-1718_*_which-decidable-property-if-any-exempts-a-realistic-probe-fixture-from-the-citation-gate.md
+ * (option 1), closing
+ * 260830-2235_*_the-fabricated-name-exemption-keys-on-the-literal-foo-so-every-realistic-probe-fixture-is-read-as-a-real-citation.md.
  */
 const FABRICATED_NAME = /(?:^|[^A-Za-z0-9])foo(?:[^A-Za-z0-9]|$)/;
 /**
