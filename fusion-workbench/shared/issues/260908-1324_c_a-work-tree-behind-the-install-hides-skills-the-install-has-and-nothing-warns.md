@@ -41,3 +41,6 @@ which is again the opposite direction. Neither fires here.
 point where the information is still cheap, or the resolver's exit-2 message names the work-tree
 preference as a possible cause. Whichever is chosen, `git pull` and `fusion --update` are
 distinguishable from the message alone.
+
+---
+Resolved: both exit-2 messages of `bin/fusion-paths` end with a clause composed once by `unknown_name_note`: the root that was searched and, when that root is this repository's work tree (`$PLUGIN_ROOT` equals `$PWD`), that it was resolved from the work tree rather than the install, that a name the install has and the tree lacks means the tree is behind (`git pull`), and that the reverse case is `fusion --update`. Outside the repo the clause names the install root and neither remedy. The two remedies are distinguishable from the message alone. Probed with the work-tree script: inside the repo the message carries "work tree", "git pull" and "fusion --update" and exits 2; from a scratch directory it names the install root and exits 2; `bash -n` exits 0. Plan `260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md` step 13, fixed in the commit that carries this line.

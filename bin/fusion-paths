@@ -198,6 +198,22 @@ if "$SCRIPT_DIR/fusion-plugin-cwd"; then
   PLUGIN_ROOT="$PWD"
 fi
 
+# The clause both unknown-name messages end with: which root was searched and,
+# when that root is this repository's work tree, which remedy fits which
+# direction. The preference above hides two opposite faults behind one
+# message: a work tree BEHIND the install lacks a name the install has (fixed
+# by `git pull`, and `fusion --update` does nothing for it), and a stale
+# install lacks one the tree has (the reverse). Composed once so the two sites
+# cannot drift apart. Issue
+# 260908-1324_*_a-work-tree-behind-the-install-hides-skills-the-install-has-and-nothing-warns.md.
+unknown_name_note() {
+  if [ "$PLUGIN_ROOT" = "$PWD" ]; then
+    printf '%s' "Searched $PLUGIN_ROOT, resolved from this repository's work tree rather than the install; a name the install has and this tree lacks means the tree is behind — \`git pull\`; the reverse case is \`fusion --update\`."
+  else
+    printf '%s' "Searched the install at $PLUGIN_ROOT."
+  fi
+}
+
 # Names are flat lowercase slugs. The guard is a safety property, not a style
 # rule: the name is interpolated into a path below, so anything with a slash or
 # a dot segment could read a file outside agents/ and skills/.
@@ -209,7 +225,7 @@ fi
 # run it.
 case "$NAME" in
   *[![:lower:][:digit:]-]*)
-    echo "fusion-paths: unknown name '$NAME'. A name is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md), and is a lowercase slug." >&2
+    echo "fusion-paths: unknown name '$NAME'. A name is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md), and is a lowercase slug. $(unknown_name_note)" >&2
     exit 2
     ;;
 esac
@@ -230,7 +246,7 @@ elif [ -f "$AGENT_PROMPT" ]; then
 elif [ -f "$SKILL_PROMPT" ]; then
   PROMPT="$SKILL_PROMPT"
 else
-  echo "fusion-paths: unknown name '$NAME'. Expected an agent (agents/$NAME.md) or a skill (skills/$NAME/SKILL.md)." >&2
+  echo "fusion-paths: unknown name '$NAME'. Expected an agent (agents/$NAME.md) or a skill (skills/$NAME/SKILL.md). $(unknown_name_note)" >&2
   exit 2
 fi
 

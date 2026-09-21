@@ -260,7 +260,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-13. [IN PROGRESS] **Let the resolver's unknown-name message name the work-tree preference and the two remedies** (row 14)
+13. [DONE] **Let the resolver's unknown-name message name the work-tree preference and the two remedies** (row 14)
     - Executor: `coder`
     - Record: `260908-1324_*_a-work-tree-behind-the-install-hides-skills-the-install-has-and-nothing-warns.md`
     - Site at HEAD: `bin/fusion-paths:212` and `:233`, the two exit-2 messages, name the agent/skill shape and not which root was searched; `:197-199` set `PLUGIN_ROOT="$PWD"` when `bin/fusion-plugin-cwd` says the cwd is the plugin repo.
