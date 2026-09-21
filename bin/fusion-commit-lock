@@ -297,6 +297,25 @@ do_release() {
 # `260912-2041_*_should-the-commit-lock-skip-its-row-when-the-commit-carries-nothing-but-the-log.md`:
 # a held region that landed nothing but the event log, and landed no merge,
 # emits nothing, so the tree settles — see commit_is_log_only below.
+# A fourth condition since 2026-09-21: HEAD must be a commit OBJECT CREATED in
+# the held region, read as a committer date (`%ct`) at or after the second the
+# region began (`region_start`, taken beside `head_before` after the acquire).
+# HEAD moving is not enough: a `git reset --hard <ref>` inside the region moves
+# it onto an object somebody committed hours earlier, and the lock wrote a row
+# naming a commit this session never made
+# (`260918-0834_*_the-lock-reads-any-head-movement-as-a-landed-commit-so-a-reset-inside-the-held-region-writes-a-row.md`).
+# Measured in a scratch repository: `git commit --amend` and `git cherry-pick`
+# each land a fresh committer date and keep their row (an amend creates a new
+# object); a reset, a checkout and a fast-forward onto older commits land on an
+# old date and write none; `git commit --date` sets the author date only.
+# `-ge`, not `-gt`: a commit ordinarily lands in the very second the region
+# began. Two residuals, accepted and not patched: a created commit whose
+# committer date is set before the region (`GIT_COMMITTER_DATE`, or a rebase
+# with `--committer-date-is-author-date`) writes no row; a fast-forward or reset
+# onto commits another party committed after the region began — or whose clock
+# runs ahead — writes a false row, but one naming a commit made during the
+# region, narrower than the class measured above. The reflog is not read: it
+# would need an allow-list of the actions that create a commit, which grows.
 # Identity is env-first (the SessionStart export), else one run of the sibling
 # `fusion-identity` — the single implementation of the criterion. An
 # unresolved half is an absent key, never an empty one. Schema and reasoning:
@@ -353,11 +372,13 @@ commit_is_log_only() {
 }
 
 emit_commit_event() {
-  local before="$1" head subject person checkout sid id_out line
+  local before="$1" region_start="$2" head committed subject person checkout sid id_out line
   [ -n "${FUSION_SESSION_ID:-}" ] || return 0
   head="$(git rev-parse --short HEAD 2>/dev/null || true)"
   [ -n "$head" ] || return 0
   [ "$head" = "$before" ] && return 0
+  committed="$(git show -s --format=%ct HEAD 2>/dev/null || true)"
+  { [ -n "$committed" ] && [ "$committed" -ge "$region_start" ]; } || return 0
   commit_is_log_only "$before" && return 0
   subject="$(git log -1 --pretty=%s 2>/dev/null || true)"
   person="${FUSION_PERSON:-}"
@@ -429,12 +450,13 @@ case "$cmd" in
     trap 'do_release 2>/dev/null || true' EXIT INT TERM
     echo "fusion-commit-lock: acquired commit lock as ${tag}; running: $*" >&2
     head_before="$(git rev-parse --short HEAD 2>/dev/null || true)"
+    region_start="$(date +%s)"
     rc=0
     "$@" || rc=$?
     # The machine-written commit row, while the lock is still held — see
     # emit_commit_event above for every condition it checks before writing.
     if [ "$rc" -eq 0 ]; then
-      emit_commit_event "$head_before" 2>/dev/null || true
+      emit_commit_event "$head_before" "$region_start" 2>/dev/null || true
     fi
     # Release explicitly so we can print the message; the trap will be a
     # no-op since the lock is already gone (do_release returns non-zero

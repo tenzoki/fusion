@@ -366,6 +366,14 @@ describe("fusion-commit-lock: the machine-written commit row", () => {
     expect(existsSync(join(projectRoot, EVENT_LOG))).toBe(false);
   });
 
+  it("writes no row when the command moved HEAD onto a commit that already existed, as a reset does (260918-0834)", () => {
+    gitRepo(); // the targets are dated before the region, or a same-second root would read as created in it
+    const old = (m: string) => spawnSync("git", ["commit", "-q", "--allow-empty", "-m", m], { cwd: projectRoot, env: { ...process.env, ...GIT_ENV, GIT_COMMITTER_DATE: "2020-01-01T00:00:00Z" } });
+    old("a"); old("b");
+    expect(run(["with", "coder", "--", "git", "reset", "--hard", "HEAD~1"], IDENTITY_ENV).status).toBe(0);
+    expect(existsSync(join(projectRoot, EVENT_LOG)), "a reset onto an older commit wrote a row").toBe(false);
+  });
+
   // The log-only skip in BOTH geometries. Below the toplevel the diff prints
   // `sub/fusion-workbench/...` while the emitter appends to `fusion-workbench/...`
   // relative to the workbench root it runs in; ignoring that offset would emit there.

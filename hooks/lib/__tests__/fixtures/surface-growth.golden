@@ -64,7 +64,7 @@
   fusion-checkout-name.test.ts 193
   fusion-citation-check.test.ts 284
   fusion-claimed-item.test.ts 192
-  fusion-commit-lock.test.ts 446
+  fusion-commit-lock.test.ts 454
   fusion-count-sources.test.ts 413
   fusion-events.test.ts 414
   fusion-forum.test.ts 220
@@ -104,4 +104,4 @@
   surface-growth-bound.test.ts 577
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22098
+  total 22106

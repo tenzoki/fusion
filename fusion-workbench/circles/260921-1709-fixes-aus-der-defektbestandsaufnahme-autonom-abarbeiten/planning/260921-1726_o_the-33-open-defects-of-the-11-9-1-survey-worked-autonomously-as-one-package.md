@@ -323,7 +323,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: step 2 (the suite is trusted alone again)
 
-18. [IN PROGRESS] **Make the lock write a commit row only for a commit object created in the held region** (row 33)
+18. [DONE] **Make the lock write a commit row only for a commit object created in the held region** (row 33)
     - Executor: `coder`
     - Record: `260918-0834_*_the-lock-reads-any-head-movement-as-a-landed-commit-so-a-reset-inside-the-held-region-writes-a-row.md`
     - Site at HEAD: `bin/fusion-commit-lock` `emit_commit_event`: `[ "$head" = "$before" ] && return 0` then `commit_is_log_only "$before" && return 0`; the `with` branch captures `head_before` after `do_acquire`; nothing reads a region start or the reflog. `hooks/lib/__tests__/fusion-commit-lock.test.ts` `describe("fusion-commit-lock: the machine-written commit row")` has no reset case; its five-line model is the case "writes no row when the wrapped command left HEAD where it was".
