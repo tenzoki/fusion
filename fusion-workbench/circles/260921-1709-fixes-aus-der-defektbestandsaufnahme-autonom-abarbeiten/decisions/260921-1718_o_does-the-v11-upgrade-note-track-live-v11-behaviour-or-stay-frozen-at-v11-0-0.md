@@ -28,3 +28,6 @@
 ## Recommendation
 
 Option 1. A note read at upgrade time is read against the version being installed, and that version is the latest v11.x, not v11.0.0; the tree has already been maintained that way three times. The obligation it adds is written into `README-agents.md` `## Releasing` step 0 beside the help-topic one, which is the list a release runs.
+
+---
+Working answer (plan 260921-1726): option 1 — live; the note says so under its title, its `**Status:**` sentence names the five values with `paused`, and `README-agents.md` `## Releasing` step 0 carries the obligation that a release changing what the note describes edits it in the same commit; implemented in the commit that carries this line.

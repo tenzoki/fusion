@@ -2,7 +2,7 @@
 
 v11 is a cut, and the deepest one fusion has made. Five agent names stop resolving, two slash
 commands are gone, the Turn loop and the session state file are gone, and the Circle — the unit of
-work since v3 — is replaced by something simpler. Most of that never reaches your project.
+work since v3 — is replaced by something simpler. Most of that never reaches your project. This note describes v11 as it stands at the latest v11.x release, not as it stood at `v11.0.0`: a release that changes something the note describes edits the note in the same commit, so what you read here is what the version you are installing does.
 
 **One thing does, and it is why this note is not like the v10 ones.** Every note since v9 opens by
 telling you that nothing in your project is rewritten and there is nothing to migrate. **That is
@@ -14,7 +14,7 @@ it and takes a minute.
 Upgrading itself is the ordinary update: `fusion --update`, or the uninstall/install/reload
 sequence on the marketplace path, and then restart the session once. A session reads its agent,
 skill and helper roster at start and never re-reads it, so nothing below exists until you do. The
-release is tagged `v11.0.0`, and `FUSION_REF=tags/v11.0.0` pins exactly this version.
+release is tagged `v11.0.0`, and `FUSION_REF=tags/v11.0.0` pins exactly that first version; a later `v11.x` tag pins the same way.
 
 ## What left
 
@@ -22,7 +22,7 @@ release is tagged `v11.0.0`, and `FUSION_REF=tags/v11.0.0` pins exactly this ver
 |---|---|
 | The agents `taskplanner`, `playmaker` and `bugfixer` | Nothing. Each went with the subject it served: the per-session work queue, the Circle portfolio, and the phase procedure that held one self-healing attempt. The bugfixer's diagnose-before-you-edit contract survives inside `coder` and `ontocoder`, which now do their own diagnosis. |
 | The agents `coderev` and `ontorev` | One `reviewer`, which takes a `**Review domain:** <code or data>` line on its dispatch. |
-| The Circle — a directory with a six-state marker record and a portfolio layer over it | The **work item**: one file per unit of work, no marker on its filename, its state a `**Status:**` head field taking `open`, `claimed`, `done` or `dropped`, and its holder a `**Claim:**` field naming a checkout. |
+| The Circle — a directory with a six-state marker record and a portfolio layer over it | The **work item**: one file per unit of work, no marker on its filename, its state a `**Status:**` head field taking `open`, `claimed`, `paused` (set aside, expected back), `done` or `dropped`, and its holder a `**Claim:**` field naming a checkout. |
 | The Turn loop and the Turn budget that bounded it | Nothing. A session runs to its natural end. |
 | `agentstate.yaml`, `orchestrator-live.md` and `.active-circle` at your workbench root | Nothing reads them. The event log beside them is what the monitor and the helpers read, and it is unchanged. |
 | The end-of-session pipeline behind `/fusion:cleanup` | Five commands you type when you want them. |

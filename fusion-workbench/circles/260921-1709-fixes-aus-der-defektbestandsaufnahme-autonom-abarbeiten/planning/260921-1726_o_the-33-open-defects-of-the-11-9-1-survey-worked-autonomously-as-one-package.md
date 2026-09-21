@@ -272,7 +272,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-14. [IN PROGRESS] **Declare the v11 upgrade note live, and make it true** (row 27)
+14. [DONE] **Declare the v11 upgrade note live, and make it true** (row 27)
     - Executor: `coder`
     - Record: `260915-2145_*_the-v11-upgrade-note-is-maintained-as-live-in-one-commit-of-this-range-and-frozen-in-the-other.md`; working answer per `260921-1718_*_does-the-v11-upgrade-note-track-live-v11-behaviour-or-stay-frozen-at-v11-0-0.md` option 1
     - Site at HEAD: `docs/upgrading-to-v11.md:25` "taking `open`, `claimed`, `done` or `dropped`" (four; the set is five with `paused`); `:17` "The release is tagged `v11.0.0`"; the file was edited on the live side by `950a606e`, `9d5b1e80`, `4d692c57`; `README-agents.md` `## Releasing` step 0 carries the help-topic obligation and no upgrade-note one.
