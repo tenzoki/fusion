@@ -20,3 +20,7 @@ Evidence, `skills/archive/SKILL.md`:
 The inline re-resolution at `:159` has the same shape (`FUSION_SRC="${FUSION_PLUGIN_ROOT:-}"`, then a guarded call) and falls to `""` the same way.
 
 **Acceptance test:** the body either cites `bin/fusion-source-root`'s header (exit-2 paragraph) for the `UNRESOLVED` branch and the do-not-improvise rule, or carries the rule itself; and an unset `FUSION_PLUGIN_ROOT`, or a helper exit 2, does not reach `cat` at `:36` — the block reports the root as `UNRESOLVED` and the run does not read through an empty value.
+
+---
+
+Resolved: Step 1's block now has the three branches of the news body (helper present, helper missing with the install copy as fallback, `FUSION_PLUGIN_ROOT` unset with `FUSION_SRC=""`); the read is guarded on a non-empty root and an existing file, and reports the root as `UNRESOLVED` or the file as not read otherwise; the sentence after the block cites `bin/fusion-source-root`'s header (exit 2) for the do-not-improvise rule. The inline re-resolution at the later step was already guarded and is untouched. Funded by two cuts of restated prose in the same file, net shrink. Concept accepted by a consultant read. Fixed in the commit that carries this line.

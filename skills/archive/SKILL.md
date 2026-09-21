@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 
 The user invoked `/fusion:archive`. Move a curated set of workbench artifacts out of the live workbench and into a timestamped archive subfolder. Archives are local, on-disk snapshots — moved, not copied — so the live workbench stays focused. **That is the whole of it**: this body runs no other pass and triggers none.
 
-**Whether git preserves the bytes is the project's decision, not this skill's.** fusion ships no `.gitignore` rule for the workbench, so a consuming project's workbench may be tracked, ignored, or neither (`rules/workbench-tracking.md`). Only where the project tracks it does a past commit still hold what a move relocated. Where it does not, the archive folder is the **only** copy of every artifact this skill moves: Step 7's collision guard prevents an overwrite, and nothing after that prevents a loss. **This skill reads `rules/workbench-tracking.md` at Step 1** — that file is the authoring home of the record-versus-live-state split, and what it classifies as a record is what this skill must preserve rather than discard when it decides what to archive.
+**Whether git preserves the bytes is the project's decision, not this skill's.** fusion ships no `.gitignore` rule for the workbench, so a consuming project's workbench may be tracked, ignored, or neither (`rules/workbench-tracking.md`). Only where the project tracks it does a past commit still hold what a move relocated. Where it does not, the archive folder is the **only** copy of every artifact this skill moves: Step 7's collision guard prevents an overwrite, and nothing after that prevents a loss.
 
 ## Where archives go
 
@@ -29,14 +29,20 @@ The user invoked `/fusion:archive`. Move a curated set of workbench artifacts ou
 # The rule this skill is the named consumer of. No emission reaches a skill, so read it here.
 if [ -x "${FUSION_PLUGIN_ROOT:-}/bin/fusion-source-root" ]; then
   FUSION_SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
-else
+elif [ -n "${FUSION_PLUGIN_ROOT:-}" ]; then
   echo "fusion: no bin/fusion-source-root in the installed plugin at $FUSION_PLUGIN_ROOT — the source root falls back to that install copy" >&2
   FUSION_SRC="$FUSION_PLUGIN_ROOT"
+else
+  FUSION_SRC=""
 fi
-cat "$FUSION_SRC/rules/workbench-tracking.md"
+if [ -n "$FUSION_SRC" ] && [ -f "$FUSION_SRC/rules/workbench-tracking.md" ]; then
+  cat "$FUSION_SRC/rules/workbench-tracking.md"
+else
+  echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)} — rules/workbench-tracking.md not read"
+fi
 ```
 
-**Read that file in full before Step 2**, the way an agent reads every path `fusion-rules` emits: its record-versus-live-state split is what decides which workbench entries this skill must preserve rather than discard. If the resolved root does not hold the file, say so and continue — the tier tables below still apply, but the classification behind them is then unread.
+**Read that file in full before Step 2**, the way an agent reads every path `fusion-rules` emits: its record-versus-live-state split is what decides which workbench entries this skill must preserve rather than discard. If the block prints `UNRESOLVED` or the file as not read, say so and continue — the tier tables below still apply, but the classification behind them is then unread and is not written from memory (`bin/fusion-source-root`'s header, exit 2).
 
 Hold the emitted `KEY=value` values for the rest of the skill. `$WORKBENCH` is absolute; everything else is workbench-relative. On a non-zero exit from `fusion-paths`, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
 
@@ -201,7 +207,7 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
      fi
      ```
 
-     `mv` then truncate, never copy then truncate: the move is what guarantees no line exists in two places. `emitEvent` (`hooks/lib/events.ts`) opens, appends and closes on every call rather than holding the file open, so nothing keeps writing into the moved inode; an event emitted in the microseconds between the two commands lands in the **archived** log, where it is still readable. `: > "$EV"` re-creates the live log at once, and `emitEvent` would re-create it on its next write anyway. `bin/monitor`'s warnings panel treats an absent file and an empty one identically — `_read_warnings` returns no rows for either — so no ordering of these two commands can break the dashboard, and the panel simply refills as new events arrive.
+     `mv` then truncate, never copy then truncate: the move is what guarantees no line exists in two places. `emitEvent` (`hooks/lib/events.ts`) opens, appends and closes on every call rather than holding the file open, so nothing keeps writing into the moved inode; an event emitted in the microseconds between the two commands lands in the **archived** log, where it is still readable. `: > "$EV"` re-creates the live log at once, and `emitEvent` would re-create it on its next write anyway.
 
    - Write the manifest (next step).
 

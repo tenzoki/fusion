@@ -139,7 +139,7 @@ Field key. **Record** is the storeless citation and where the file stands, in wo
    - **Second opinion:** consultant
    - Dependencies: none (after step 3 by preference: same file)
 
-5. **Give the archive body an `UNRESOLVED` branch, guard the read, and cite the do-not-improvise rule**
+5. [DONE] **Give the archive body an `UNRESOLVED` branch, guard the read, and cite the do-not-improvise rule**
    - Executor: `coder`
    - Record: `260918-1234_*_the-archive-body-reads-a-rule-through-the-source-root-with-no-unresolved-branch-and-no-do-not-improvise-rule.md`, in the issues store of the container `260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung`
    - Present at HEAD: `sed -n 30,36p skills/archive/SKILL.md` shows the two-branch block whose else branch assigns `FUSION_SRC="$FUSION_PLUGIN_ROOT"` and the unguarded `cat "$FUSION_SRC/rules/workbench-tracking.md"`; line 39 stops at "unread". The inline re-resolution at line 159 is already guarded (`[ -n "$FUSION_SRC" ] || echo "filter 3 skipped …"`, and the loop tests `[ -n "$FUSION_SRC" ]`), so the record's remark on it describes the shape and not a defect; the step leaves it alone and the `Resolved:` line says so. The shape to copy is `skills/news/SKILL.md:25-36`: three branches, `FUSION_SRC=""` on the last, an `UNRESOLVED` report line, and a sentence citing the helper's header.
