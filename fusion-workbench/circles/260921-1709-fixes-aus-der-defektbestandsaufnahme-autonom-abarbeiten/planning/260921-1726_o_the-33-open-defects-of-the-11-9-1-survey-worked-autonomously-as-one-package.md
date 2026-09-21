@@ -396,7 +396,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-24. [IN PROGRESS] **Classify an unresolvable head-field identifier `undecidable` rather than `dangling`** (row 5)
+24. [DONE] **Classify an unresolvable head-field identifier `undecidable` rather than `dangling`** (row 5)
     - Executor: `coder`
     - Record: `260831-2121_*_the-head-field-exemption-reads-only-a-bare-stamp-so-a-name-shaped-identifier-in-a-head-field-is-judged.md`; working answer per `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md`, the fourth direction narrowed as `## Working answers` states
     - Site at HEAD: `hooks/lib/citation-scan.ts:1084` `kind === "stamp-bare" && isHeadFieldValue(...)` is the whole head-field exemption; `:1192-1227` the `STAMP_RE` branch returns `dangling` for a `stamp-name` token nothing matches; `CitationStatus` (`:857-871`) has no `undecidable` member, `partition()` (`:1505-1524`) builds the `undecidable` bucket from `stamp-bare` and `ambiguous`. `grep -rn IDENTIFIER_HEAD_FIELDS hooks/` prints nothing.

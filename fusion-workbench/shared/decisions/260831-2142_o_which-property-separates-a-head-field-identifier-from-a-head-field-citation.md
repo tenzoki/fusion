@@ -142,3 +142,6 @@ This is the only one of the nine open decisions that **blocks a plan step**: ste
 pass. The defect it answers,
 `260831-2121_*_the-head-field-exemption-reads-only-a-bare-stamp-so-a-name-shaped-identifier-in-a-head-field-is-judged.md`,
 is therefore blocked on a user ruling and not on executor work.
+
+---
+Working answer (plan 260921-1726): the fourth direction, narrowed by option 3's shape test — in a head field, a `.md`-less `stamp-name` resolving to nothing is `undecidable`, not `dangling`, while a value carrying `.md` or a marker slot stays judged; implemented in the commit that carries this line

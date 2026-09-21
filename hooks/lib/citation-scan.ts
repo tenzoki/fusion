@@ -134,6 +134,27 @@
 //   or a name (`**Active spec/plan:** <stamp>_*_<slug>.md`) is a citation the
 //   orchestrator resolves, and stays one.
 //
+//   A HEAD FIELD WHOSE WHOLE VALUE IS A `.md`-LESS STAMP-NAME THAT RESOLVES TO
+//   NOTHING IS `undecidable`, since 2026-09-21. `**Bus session:**
+//   <stamp>-<identifier>` (the retired bus protocol's field, 20 rows in one
+//   consuming project) is an identifier that names no record and never will,
+//   or a citation whose record moved, and the text cannot say which: the
+//   property that separates the two is not the token's kind, not the field's
+//   label (26 labels in this tree, one of them carrying both kinds under one
+//   name) and not the resolution result alone. So the token is neither resolved
+//   nor a violation; it is printed under `--undecidable`, which is what that
+//   class already means everywhere else in this grammar. The split is on the
+//   token's own shape: a `stamp-name` carrying `.md` (`**Session:**
+//   <stamp>-orchestrator-session.md`) or any value carrying a marker slot
+//   (`**Active spec/plan:** <stamp>_*_<slug>.md`) is a citation and stays
+//   judged, so a dead one still dangles. The cost, accepted rather
+//   than hidden: a dead `.md`-less pointer in a head field (a legacy
+//   `**Circle:** <dir>` line naming a directory that went) is no longer a
+//   violation. Working answer under decision
+//   260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md
+//   (its fourth direction), closing
+//   260831-2121_*_the-head-field-exemption-reads-only-a-bare-stamp-so-a-name-shaped-identifier-in-a-head-field-is-judged.md.
+//
 //   A FABRICATED PLACEHOLDER NAME IS EXEMPT, AND THE TEST IS A WORD TEST.
 //   The exemption asks whether the token's slug carries the placeholder as one
 //   of its own words, delimited by anything that is not a letter or a digit;
@@ -884,6 +905,8 @@ export type CitationStatus =
   | "store-prefixed"
   /** nothing on disk matches */
   | "dangling"
+  /** a head-field value naming no record: an identifier, or a moved citation — neither resolved nor a violation */
+  | "undecidable"
   /** a parser exemption fired; the token was never resolved */
   | "exempt"
   /** no workbench to resolve against (fresh clone) */
@@ -1062,10 +1085,15 @@ export function createScanner(workbenchRoot: string): Scanner {
       const { line, text } = lines[li];
       const blockquoted = /^\s*>/.test(text);
       const covered: [number, number][] = [];
-      const consider = (idx: number, token: string, kind: CitationKind, check: () => Verdict) => {
+      // `check` receives whether the token is the whole value of a `**Field:**`
+      // head line: read once here, used by the `head-field` exemption below and
+      // by the `STAMP_RE` branch's `undecidable` verdict (the header's head-field
+      // paragraphs).
+      const consider = (idx: number, token: string, kind: CitationKind, check: (headField: boolean) => Verdict) => {
         if (covered.some(([s, e]) => idx >= s && idx < e)) return;
         covered.push([idx, idx + token.length]);
         const before = text.slice(0, idx);
+        const headField = isHeadFieldValue(before, text.slice(idx + token.length));
         const reason = layoutExempt
           ? "retired-layout-file"
           : fileExempt
@@ -1100,7 +1128,7 @@ export function createScanner(workbenchRoot: string): Scanner {
                         : // a bare stamp that is the whole value of a `**Field:**`
                           // head line is the minute the record was written, not a
                           // pointer (the `**Date:**` case in the header)
-                          kind === "stamp-bare" && isHeadFieldValue(before, text.slice(idx + token.length))
+                          kind === "stamp-bare" && headField
                           ? "head-field"
                           : null;
         // An exemption whose premise is "do not look this token up" cannot
@@ -1119,7 +1147,7 @@ export function createScanner(workbenchRoot: string): Scanner {
           hits.push({ file: rel, line, col: idx, token, kind, status: "unresolved-no-workbench", matches: [] });
           return;
         }
-        hits.push({ file: rel, line, col: idx, token, kind, ...check(), ...(reason ? { reason } : {}) });
+        hits.push({ file: rel, line, col: idx, token, kind, ...check(headField), ...(reason ? { reason } : {}) });
       };
 
       const found = (m: WorkbenchEntry[]): Verdict => ({
@@ -1225,7 +1253,7 @@ export function createScanner(workbenchRoot: string): Scanner {
       while ((m = STAMP_RE.exec(text)) !== null) {
         const [full, stamp, dashed, md] = m;
         const idx = m.index;
-        consider(idx, full, dashed ? "stamp-name" : "stamp-bare", () => {
+        consider(idx, full, dashed ? "stamp-name" : "stamp-bare", (headField) => {
           const at = dashed && !md ? circleDirs().get(full) : undefined;
           if (at) return { status: at.length === 1 ? "resolved" : "ambiguous", matches: at };
           const named = md
@@ -1237,6 +1265,17 @@ export function createScanner(workbenchRoot: string): Scanner {
                   : [...circleDirs().entries()].filter(([d]) => d.startsWith(full)).flatMap(([, p]) => p)),
               ];
           if (named.length === 0) {
+            // The header's second head-field paragraph: an identifier, or a
+            // moved citation, and the text cannot say which.
+            if (dashed && !md && headField) {
+              return {
+                status: "undecidable",
+                matches: [],
+                problem:
+                  "a head-field value naming no record: an identifier, or a citation whose record moved; " +
+                  "the text cannot say which",
+              };
+            }
             return {
               status: "dangling",
               matches: [],
@@ -1267,7 +1306,8 @@ export function createScanner(workbenchRoot: string): Scanner {
    * when the gate asked `hit.length > 0` — the gate's question is whether the
    * citation finds anything, and widening it to "finds exactly one" is a
    * different gate, not a fix to this one. A bare timestamp is neither: the gate
-   * never saw one and still does not.
+   * never saw one and still does not. Nor is an `undecidable` head-field value:
+   * it matches neither list below, so it is neither counted nor reported.
    */
   function scanRecordCitations(
     rel: string,
@@ -1540,13 +1580,15 @@ export function markdownFilesUnder(root: string): { rel: string; abs: string }[]
  * the accident that one artifact was written in that minute, and it silently
  * becomes ambiguous the moment a second one is. The question it fails is not
  * "does this exist" but "which of these is meant", and no mechanism reading
- * that token can answer it.
+ * that token can answer it. A head-field value naming no record lands here by
+ * STATUS (`undecidable`): the question it fails is "identifier or moved
+ * pointer", which the text cannot answer either.
  */
 export function partition(hits: CitationHit[]) {
   const unjudged = (h: CitationHit) =>
     h.status === "exempt" || h.status === "unresolved-no-workbench";
   const undecidable = (h: CitationHit) =>
-    !unjudged(h) && (h.kind === "stamp-bare" || h.status === "ambiguous");
+    !unjudged(h) && (h.kind === "stamp-bare" || h.status === "ambiguous" || h.status === "undecidable");
   return {
     // `spelled-marker` lands here too: the pointer resolves today, and the
     // write-time hook is the one reader that interrupts on it.

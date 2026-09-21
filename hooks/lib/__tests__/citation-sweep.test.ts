@@ -88,6 +88,16 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     );
   }, CASE_TIMEOUT);
 
+  // issue 260831-2121_*_the-head-field-exemption-reads-only-a-bare-stamp-so-a-name-shaped-identifier-in-a-head-field-is-judged.md
+  it("classifies a head-field identifier undecidable, and a head-field .md citation dangling", () => {
+    const wb = scratch();
+    const lines = ["**Bus session:** 260722-1943-some-identifier", "**Active spec/plan:** 260722-1943_*_a-plan-nobody-filed.md"]
+      .map((text, i) => ({ line: i + 1, text }));
+    const hits = createScanner(wb).scanCitationTokens("shared/history/260505-0505-coder-log.md", lines);
+    rmSync(wb, { recursive: true, force: true });
+    expect(hits.map((h) => [h.kind, h.status, h.fix])).toEqual([["stamp-name", "undecidable", undefined], ["bare-record", "dangling", expect.any(String)]]);
+  });
+
   // issue 260901-0322_*_the-sweeps-residual-list-is-sorted-by-line-number-across-every-file-not-in-file-order.md
   it("groups the residual by file in corpus order rather than by line across the corpus", () => {
     const wb = scratch();

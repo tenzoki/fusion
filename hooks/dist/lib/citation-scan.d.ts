@@ -178,6 +178,8 @@ export type CitationStatus =
  | "store-prefixed"
 /** nothing on disk matches */
  | "dangling"
+/** a head-field value naming no record: an identifier, or a moved citation — neither resolved nor a violation */
+ | "undecidable"
 /** a parser exemption fired; the token was never resolved */
  | "exempt"
 /** no workbench to resolve against (fresh clone) */
@@ -371,7 +373,9 @@ export declare function markdownFilesUnder(root: string): {
  * the accident that one artifact was written in that minute, and it silently
  * becomes ambiguous the moment a second one is. The question it fails is not
  * "does this exist" but "which of these is meant", and no mechanism reading
- * that token can answer it.
+ * that token can answer it. A head-field value naming no record lands here by
+ * STATUS (`undecidable`): the question it fails is "identifier or moved
+ * pointer", which the text cannot answer either.
  */
 export declare function partition(hits: CitationHit[]): {
     resolved: CitationHit[];

@@ -179,8 +179,10 @@
  * `judged` is every token the gate reads (`GATE_KINDS`, resolved or not);
  * `dangling` counts `dangling` and `stale-marker` together, the two ways a
  * pointer fails to find its record; `store-prefixed` is the spelling the
- * storeless form retired; `undecidable` is the bare stamps and the ambiguous
- * tokens, which no reader of the token can settle and which reach no verdict.
+ * storeless form retired; `undecidable` is the bare stamps, the ambiguous
+ * tokens and, since 2026-09-21, the head-field values naming no record
+ * (status `undecidable`: an identifier, or a citation whose record moved),
+ * which no reader of the token can settle and which reach no verdict.
  * `verdict=violations` when `edited-violations` > 0 — which is the scoped half
  * of dangling + store-prefixed, not their whole; see `## The verdict scope`.
  * `--undecidable` adds one row per undecidable token after the violations.
