@@ -72,7 +72,7 @@ Wrapped anchors: only a match spanning the seam counts, so a whole-line match is
 
 ### 10. `Resolved:` lines — 31 of 33 closed records read, all consistent with the diff
 
-Every `Resolved:` line read (the eleven the dispatch asked a sample of, and twenty more) names a change the diff carries at the commit it cites, or states honestly that it closes on a re-measurement or an erratum. The rolled growth-bound log in `260921-1855-surface-growth-bound-arming-and-re-baseline-log-2026-08-15-to-2026-09-05.md` is verbatim except the four store-segment citations its preamble says it wildcarded. The one known-stale sentence the roll left in `README-hooks.md` is already `260921-1855_o_readme-hooks-says-the-two-re-baselines-are-logged-in-full-in-the-growth-bound-test-header-after-the-log-rolled-out.md`, open in this container, and shipped inside the 11.10.0 bump; not refiled.
+Every `Resolved:` line read (the eleven the dispatch asked a sample of, and twenty more) names a change the diff carries at the commit it cites, or states honestly that it closes on a re-measurement or an erratum. The rolled growth-bound log in `260921-1855-surface-growth-bound-arming-and-re-baseline-log-2026-08-15-to-2026-09-05.md` is verbatim except the four store-segment citations its preamble says it wildcarded. The one known-stale sentence the roll left in `README-hooks.md` is already `260921-1855_*_readme-hooks-says-the-two-re-baselines-are-logged-in-full-in-the-growth-bound-test-header-after-the-log-rolled-out.md`, open in this container, and shipped inside the 11.10.0 bump; not refiled.
 
 ## Cross-cutting observations
 
