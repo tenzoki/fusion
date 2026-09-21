@@ -408,7 +408,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17; step 23 by preference (same file, same `consider()` block)
 
-25. [IN PROGRESS] **Let presence read the work item off the party's latest dispatch row** (row 19)
+25. [DONE] **Let presence read the work item off the party's latest dispatch row** (row 19)
     - Executor: `coder`
     - Record: `260910-2144_*_presence-cannot-name-what-another-checkout-is-working-on-because-no-event-row-carries-it-any-more.md`; working answer per `260921-1718_*_where-does-presence-read-what-another-checkout-is-working-on-now-that-no-session-row-carries-it.md` option 1
     - Site at HEAD: `hooks/lib/events-query.ts:307-331` builds parties from `session_start` lines only and sets `circle: circleOf(line.history_file)`; `EventLine` (`:89-118`) parses no `work_item`; `hooks/lib/orchestrator-events.ts:506-516` writes `work_item` on every `task_start` row that carries a `**Work-item:**` line; `bin/fusion-events:65-70` states that every line renders `unknown` since 2026-09-10.

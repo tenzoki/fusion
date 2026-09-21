@@ -19,7 +19,12 @@
  * One of the two is identity-scoped, `measurePresence`.
  * `measureDispatchDurations` deliberately is not: a dispatch made from another
  * checkout is still a dispatch, so it reads every line and calls `isOurs`
- * nowhere.
+ * nowhere. Since 2026-09-21 presence reads what a party is on off its latest
+ * `task_start` row's `work_item`, which the guard writes on every dispatch that
+ * names a `**Work-item:**`; the pre-cut `history_file` is the fallback, and
+ * `none on record` the statement where neither exists (decision
+ * `260921-1718_*_where-does-presence-read-what-another-checkout-is-working-on-now-that-no-session-row-carries-it.md`,
+ * option 1).
  *
  * ## Why it is a pure function
  *
@@ -81,6 +86,7 @@ const STRING_FIELDS = [
     "agent",
     "task",
     "session_id",
+    "work_item",
 ];
 /**
  * Parse the log text. A line that is not a JSON object is counted and skipped:
@@ -135,6 +141,12 @@ export function parseTs(ts) {
  * The Circle a session ran on, read off `history_file` and off no field of its
  * own. A workbench-relative path beginning `circles/` names its Circle in the
  * second segment; any other path is shared work; an absent field is `unknown`.
+ *
+ * Only a pre-cut `session_start` carries the field: the history store closed
+ * at `0ec15cb9`. Since 2026-09-21 `measurePresence` calls this only where the
+ * field is present, and reads a party's work item off its `task_start` rows
+ * otherwise, so `unknown` is now the answer for a malformed `circles/` path
+ * alone.
  */
 export function circleOf(historyFile) {
     if (typeof historyFile !== "string" || historyFile === "")
@@ -205,7 +217,28 @@ export function measurePresence(text, identity, opts) {
         if (held === undefined || ms >= held.ms)
             seen.set(key, { line, ms });
     }
-    const parties = [...seen.values()].map(({ line }) => ({
+    // What each party is on, off its latest `task_start` in the window that
+    // names a work item. Both rows carry the same identity fields, so the key
+    // matches the pass above byte for byte; a dispatch older than the party's
+    // latest `session_start` still counts, because a claim lives on the item
+    // and not on the session, and a party that restarted and has not dispatched
+    // yet is most likely still on it. This pass creates no party: a checkout
+    // whose sessions all fell below the floor has no line to attach to.
+    const onWhat = new Map();
+    for (const line of lines) {
+        if (line.event !== "task_start" || line.work_item === undefined)
+            continue;
+        if (isOurs(line, identity.checkout))
+            continue;
+        const ms = parseTs(line.ts);
+        if (ms === null || ms < floor)
+            continue;
+        const key = `${line.person ?? ""}${KEY_SEP}${line.checkout}`;
+        const held = onWhat.get(key);
+        if (held === undefined || ms >= held.ms)
+            onWhat.set(key, { item: line.work_item, ms });
+    }
+    const parties = [...seen.entries()].map(([key, { line }]) => ({
         kind: me === null
             ? "unknown"
             : canon(line.person) === me
@@ -216,7 +249,10 @@ export function measurePresence(text, identity, opts) {
         // ours and never reaches here.
         checkout: line.checkout,
         ts: line.ts,
-        circle: circleOf(line.history_file),
+        // Three branches, disjoint and complete: a dispatch named an item; no
+        // dispatch, but a pre-cut session row named a history file; neither.
+        circle: onWhat.get(key)?.item ??
+            (line.history_file !== undefined ? circleOf(line.history_file) : "none on record"),
     }));
     // Most recent first, then by the whole key the map is built on — the
     // checkout and the person both — so the order is total and a test can assert

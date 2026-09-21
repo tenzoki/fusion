@@ -32,3 +32,6 @@
 ## Recommendation
 
 Option 1. The fact is already on disk, written by a hook with identity, on every dispatch; reading it costs one pass over the rows presence already parses. The defect's acceptance, "names what another checkout is working on for rows written after the cut, or the helper's own output states that it cannot and why", is met on the first branch for every party that has dispatched, and on the second for one that has not (`none on record` is a statement, `unknown` was not). Option 3 is the right answer to a different question, "who holds what", which `bin/fusion-work-order` and the claim itself already answer.
+
+---
+Working answer (plan 260921-1726): option 1 — presence reads the party's latest `task_start` row's `work_item`, falls back to a pre-cut `history_file`, and states `none on record` where neither exists; implemented in the commit that carries this line

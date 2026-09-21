@@ -19,7 +19,12 @@
  * One of the two is identity-scoped, `measurePresence`.
  * `measureDispatchDurations` deliberately is not: a dispatch made from another
  * checkout is still a dispatch, so it reads every line and calls `isOurs`
- * nowhere.
+ * nowhere. Since 2026-09-21 presence reads what a party is on off its latest
+ * `task_start` row's `work_item`, which the guard writes on every dispatch that
+ * names a `**Work-item:**`; the pre-cut `history_file` is the fallback, and
+ * `none on record` the statement where neither exists (decision
+ * `260921-1718_*_where-does-presence-read-what-another-checkout-is-working-on-now-that-no-session-row-carries-it.md`,
+ * option 1).
  *
  * ## Why it is a pure function
  *
@@ -93,6 +98,8 @@ export interface EventLine {
     task?: string;
     /** The Claude Code session, on `session_start` and on every dispatch row. */
     session_id?: string;
+    /** The work item a dispatch ran under, on `task_start` (the `**Work-item:**` line's basename). */
+    work_item?: string;
 }
 export interface ParsedLog {
     lines: EventLine[];
@@ -118,6 +125,12 @@ export declare function parseTs(ts: string | undefined): number | null;
  * The Circle a session ran on, read off `history_file` and off no field of its
  * own. A workbench-relative path beginning `circles/` names its Circle in the
  * second segment; any other path is shared work; an absent field is `unknown`.
+ *
+ * Only a pre-cut `session_start` carries the field: the history store closed
+ * at `0ec15cb9`. Since 2026-09-21 `measurePresence` calls this only where the
+ * field is present, and reads a party's work item off its `task_start` rows
+ * otherwise, so `unknown` is now the answer for a malformed `circles/` path
+ * alone.
  */
 export declare function circleOf(historyFile: string | undefined): string;
 /**
@@ -149,6 +162,12 @@ export interface Party {
     checkout: string;
     /** The raw `ts` as written, never a reformatting of it. */
     ts: string;
+    /**
+     * What the party is on: the `work_item` of its latest `task_start` in the
+     * window, else the Circle off a pre-cut `session_start`'s `history_file`,
+     * else `none on record`. The name is the field's history; the value is the
+     * work item wherever one was dispatched.
+     */
     circle: string;
 }
 export interface PresenceReport {

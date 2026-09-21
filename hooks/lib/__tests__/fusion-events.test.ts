@@ -90,6 +90,14 @@ describe("presence, the figures and the order", () => {
     expect(r.parties.map((p) => p.circle)).toEqual(["shared", "260824-0530-x"]);
   });
 
+  it("names the work item off the party's latest task_start, else says none on record (260910-2144_*_presence-cannot-name-what-another-checkout-is-working-on-because-no-event-row-carries-it-any-more.md)", () => {
+    const r = measured(presence(log(
+      start({ person: JANE, checkout: "4f21ab90", ts: "2026-08-24T09:12:00" }),
+      { event: "task_start", person: JANE, checkout: "4f21ab90", ts: "2026-08-24T09:30:00", work_item: "260824-0530-x" },
+      start({ person: KAI, checkout: "9c30ee11", ts: "2026-08-25T07:40:00" }))));
+    expect(r.parties.map((p) => p.circle)).toEqual(["none on record", "260824-0530-x"]);
+  });
+
   it("widens otherCheckouts to every other checkout and prints no people count when the reading person is unreadable", () => {
     const r = measured(presence(many, { person: null, checkout: ME }));
     expect(r.otherPeople).toBeNull();
