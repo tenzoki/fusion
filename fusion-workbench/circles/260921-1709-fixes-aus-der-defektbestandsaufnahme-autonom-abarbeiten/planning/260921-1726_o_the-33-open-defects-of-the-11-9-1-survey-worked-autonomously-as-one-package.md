@@ -347,7 +347,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-20. [IN PROGRESS] **Read a citation wrapped across two lines, refuse a line-number citation, and state the count** (rows 20 and 9, lint half)
+20. [DONE] **Read a citation wrapped across two lines, refuse a line-number citation, and state the count** (rows 20 and 9, lint half)
     - Executor: `coder`
     - Records: `260911-0752_*_a-citation-wrapped-across-a-line-break-is-checked-by-neither-class-and-fails-silently.md`; `260906-0335_*_nine-of-twelve-line-number-citations-in-shipped-text-name-the-wrong-line-and-no-gate-resolves-one.md` (its text half is step 3)
     - Site at HEAD: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `scanHeadingAnchors` (lines 390 to 432) runs `ANCHOR_RE` per `{ line, text }` and joins nothing; `scanPluginPaths` (303 to 362) resolves a path token and never looks at what follows it. The conventions already mandate anchors and forbid line numbers in living text (`rules/fusion-workbench-conventions.md` `## Filename Patterns`).
