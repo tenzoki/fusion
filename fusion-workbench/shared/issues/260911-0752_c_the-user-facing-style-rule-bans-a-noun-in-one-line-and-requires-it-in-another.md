@@ -12,3 +12,6 @@ The user-facing style rule bans a noun in one line and requires it in another
 **Why an agent cannot resolve it by reading harder.** The two lines are both imperative and both unqualified, so an agent that obeys one disobeys the other, and which one it picks is a matter of reading order rather than judgement. That is the shape `rules/critical-stance.md` §4 calls a question cut wrong.
 
 **Acceptance.** The file says one thing about naming the unit of work in user-facing text. Whichever way it goes, the instruction names something the current design has — a work item's own title, its directory name, or the user's own words for the job — and the vocabulary ban either covers it or exempts it explicitly.
+
+---
+Resolved: `rules/user-facing-output.md` `## Questions and gates` now asks for "the work item's title or the user's own words for the job, the path, or the task title" inside every question; the vocabulary ban at `## Vocabulary` is untouched and covers the line. Plan `260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md` step 4, fixed in the commit that carries this line.

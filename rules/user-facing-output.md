@@ -57,7 +57,7 @@ Same binding as `## Vocabulary`: chat, gates, `AskUserQuestion` text and summari
 ## Questions and gates
 
 - **A response moment is either a question or an explicit "nothing to decide"** — output that is neither reads as a demand the user cannot locate.
-- **Every `AskUserQuestion` is self-contained**: Circle name, path or task title inside the question text; the user is reading scrollback.
+- **Every `AskUserQuestion` is self-contained**: the work item's title or the user's own words for the job, the path, or the task title inside the question text; the user is reading scrollback.
 - **Options in plain English**, internal verbs in parentheses for traceability: "Try again with a refined task list (Revise Artifact)".
 - **An option names the thing it decides, not the kind of thing**: "the record still promises a restart that was never built", not "the record promises a constraint that no longer exists". Same length, no licence for longer options.
 - **Mark the recommended default** when one choice is far likelier than the rest.

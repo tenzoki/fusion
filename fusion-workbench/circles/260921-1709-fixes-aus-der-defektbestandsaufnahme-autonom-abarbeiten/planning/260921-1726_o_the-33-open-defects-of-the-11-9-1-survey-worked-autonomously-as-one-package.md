@@ -152,7 +152,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-4. [IN PROGRESS] **Make the style rule name the unit of work by something the design has** (row 21)
+4. [DONE] **Make the style rule name the unit of work by something the design has** (row 21)
    - Executor: `coder`
    - Record: `260911-0752_*_the-user-facing-style-rule-bans-a-noun-in-one-line-and-requires-it-in-another.md`
    - Site at HEAD: `rules/user-facing-output.md:45` "**No fusion noun.** Not Circle, …"; `:60` "**Every `AskUserQuestion` is self-contained**: Circle name, path or task title inside the question text".
