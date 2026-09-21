@@ -20,3 +20,6 @@ At HEAD:
 **Scope.** `skills/*/SKILL.md` is a bounded surface at 320 B of margin as of `55be2491`, so the repair has to be near-neutral. "which the conventions admit no such shape for" or "a shape the conventions do not admit and no consumer handles" both fit inside a few bytes of the current text.
 
 **Acceptance.** The bullet states that the conventions do **not** admit a container holding two records, in a form no reader can take the other way, and `skills/` stays inside its bound.
+
+---
+Resolved: the bullet in `skills/migrate/SKILL.md` now reads "producing one container holding two records and therefore no defined state, a shape the conventions do not admit and no consumer handles", the second reading of the record's own scope note, +9 bytes on `skills/`. Plan `260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md` step 5, fixed in the commit that carries this line.

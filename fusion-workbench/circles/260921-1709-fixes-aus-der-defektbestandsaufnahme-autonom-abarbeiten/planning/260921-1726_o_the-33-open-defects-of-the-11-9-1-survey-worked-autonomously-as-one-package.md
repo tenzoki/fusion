@@ -164,7 +164,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-5. [IN PROGRESS] **Say in the migrate body that the conventions do not admit a container holding two records** (row 26)
+5. [DONE] **Say in the migrate body that the conventions do not admit a container holding two records** (row 26)
    - Executor: `coder`
    - Record: `260915-2144_*_a-compressed-sentence-in-migrate-now-says-the-conventions-admit-the-shape-they-forbid.md`
    - Site at HEAD: `skills/migrate/SKILL.md:183` "… producing one container holding two records and therefore no defined state, which the conventions admit and no consumer handles."
