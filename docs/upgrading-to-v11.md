@@ -131,9 +131,10 @@ and the advisory fusion prints about it now says so too.
 
 Neither is load-bearing; both are tidiness.
 
-Three entries at your workbench root are now unread leftovers, and you can delete them:
-`agentstate.yaml`, `orchestrator-live.md` and `.active-circle`. Leaving them costs nothing except
-the next reader's confusion.
+The entries at your workbench root that are now unread leftovers, and that you can delete, are
+`agentstate.yaml`, `orchestrator-live.md`, `.active-circle` and `portfolio.md`. The last was written
+by the ranking pass that went at v11; a copy left behind classifies `unclassified` in the staging
+report and is read by nothing. Leaving them costs nothing except the next reader's confusion.
 
 And the heading a plan uses to say where its own work stops was renamed with the noun the unit of
 work lost. It now reads, verbatim:

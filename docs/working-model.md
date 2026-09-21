@@ -17,6 +17,7 @@ A **work item** is one bounded unit of work: something somebody is going to do, 
 **Domain:** code
 **Status:** claimed
 **Claim:** 3f9a1c07 — Ada Lovelace <ada@example.com>, 260910-1145
+**Mode:** autonomous
 **Active spec/plan:** 260905-0910_*_implementation-split-the-manifest-loader.md
 **Depends-on:** 260901-1030-extract-the-schema-reader.md
 **Cross-references:** 260828-1610-loader-conventions.md
@@ -45,6 +46,8 @@ A **work item** is one bounded unit of work: something somebody is going to do, 
 **`**Depends-on:**` carries edges you confirmed**, as a comma-separated list of item basenames, and an entry asserts one relation and no other: the named item must reach `done` or `dropped` before this one may start. A `paused` target has reached neither, so the entry stays live and a paused item blocks every item naming it. Every other citation the item carries (a record it rests on, a decision that binds it, work it merely touches) goes in `**Cross-references:**`, which orders nothing. A helper may read the store and *report* an order over the `**Depends-on:**` edges; that report is a report, and you override it wherever you want to. The helper is `$FUSION_PLUGIN_ROOT/bin/fusion-work-order`, and everything it prints — which items are ready, how deep each one sits, what each blocks, the entries that name no item and any cycle — is that report and nothing more. No agent asserts a ranking.
 
 **`**Active spec/plan:**` names what the work runs on** — the spec or plan in force, as a storeless basename — and it is absent until one exists. Whoever makes a spec or plan the one this item runs on writes the field in the same act; no pass maintains it afterwards, because a field somebody else is supposed to keep up to date is a field that drifts. It has two readers: you, looking at the item and seeing what it is being built from, and the closure step, which reads that plan's `## Where this work stops` back to you clause by clause when the item finishes.
+
+**`**Mode:** autonomous` is your standing answer to the gates about the solution**, and absent is the ordinary mode. It stands on your word and is written only on it: by you by hand, by `/fusion:memo` from your own words, or by the orchestrator in the same command as a filing or a claim you asked for. It is never inferred from the Directive's prose, however plainly that prose says "just do it". Which gates it answers, and which it never does, is section 3 below; the field on one item never rules on another item's state.
 
 ### How an item comes into existence
 
@@ -99,17 +102,17 @@ The spec and the plan are the contract. Every later check — "is this work stil
 
 ## 3. The gates
 
-Fusion is deliberately not autonomous. It stops and hands you the decision at defined points.
+Fusion stops and hands you the decision at defined points. A work item carrying `**Mode:** autonomous` (section 1) answers the stops that are about the *solution* of that item, and no other: the plan review, the item's claim and its finish, and the read of its plan's stop conditions at closure. The stops that are about the project rather than the solution are never answered by the field.
 
 **Human gates — fusion stops and asks before:**
 
-- reviewing a produced **spec** (approve what gets built),
-- reviewing a produced **plan** (approve how it gets built),
+- reviewing a produced **spec** (approve what gets built) — asked as written, field or no field,
+- reviewing a produced **plan** (approve how it gets built) — answered `Approve` by the field,
 - any **ontology or structured-data change** (every `ontocoder` task, and especially structural changes to entities, relations, or schemas),
 - **destructive operations** — deleting files, removing features, dropping data,
 - an **ambiguous task** where scope or acceptance criteria can't be pinned down.
 
-At each gate you get plain choices: proceed, skip for later, defer, or modify the instruction.
+At each gate you get plain choices: proceed, skip for later, defer, or modify the instruction. Under `**Mode:** autonomous` the ontology, destructive-operation and ambiguous-task gates put no question at all: the orchestrator files an open decision carrying the question the gate would have asked, skips the task, and goes on. You answer the decision record afterwards, and the log records that nobody answered the gate.
 
 **The Coherence check.** Work runs one task at a time; after each one the orchestrator reports and asks what is next. Nothing checks coherence on a schedule any more — the automatic per-batch check went on 2026-09-10 with the Turn loop it rode. What is left is a **reconciliation you ask for**, which reads three questions about what has landed:
 

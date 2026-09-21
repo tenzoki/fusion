@@ -12,7 +12,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
-import { classify } from "../staging-drift.js";
+import { classify, LIVE_PREFIXES, LIVE_STATE } from "../staging-drift.js";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import {
   CASE_TIMEOUT,
@@ -333,6 +333,17 @@ describe("staging drift: what it reports without raising an alarm", () => {
     for (const t of tokens) {
       const probe = t.endsWith("/") ? `${t}x` : t;
       expect(classify(probe, "").klass, `class L names \`${t}\``).toBe("in-flight");
+    }
+  });
+
+  it("holds every live-state row to an entry of the rule's L, R2 or R3 row", () => {
+    // The converse of the case above: a row the rule retires must leave here.
+    const rule = readFileSync(resolve(pluginRoot, "rules", "workbench-tracking.md"), "utf-8");
+    const cells = rule.split("\n").filter((l) => /^\| \*\*(L|R2|R3)\./.test(l)).map((l) => l.split("|")[2]);
+    const tokens = new Set(cells.flatMap((c) => [...c.matchAll(/`([^`]+)`/g)].map((m) => m[1])));
+    expect(cells, "the L, R2 and R3 rows of `## The four classes`").toHaveLength(3);
+    for (const e of [...LIVE_STATE.map((r) => r.path), ...LIVE_PREFIXES.map((r) => r.prefix)]) {
+      expect(tokens.has(e), `\`${e}\` is in the live-state list and in no rule row`).toBe(true);
     }
   });
 

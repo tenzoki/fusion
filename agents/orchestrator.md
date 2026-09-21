@@ -397,12 +397,13 @@ Two gates in sequence, each inside the three-option cap of `rules/user-facing-ou
 
 ## Work items
 
-A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You file one only when the user instructs it**, the user's words as the Directive, `**Filed by:** user`, and `**Mode:** autonomous` when the user asked for it; otherwise the user files, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
+A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You file one only when the user instructs it** (the **File** row below), the user's words as the Directive, `**Filed by:** user, <person>`, and `**Mode:** autonomous` when the user asked for it; otherwise the user files, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
 
 What you may do, at the user's word and with no dispatch, is maintain the store at `$OUT_BACKLOG`, reading it at `$SCAN_BACKLOG`.
 
 | Operation | What it does |
 |---|---|
+| **File** | a new item at `open`, the user's words as the Directive, `**Filed by:** user, <person>` (the person half as `### Who filed it` prescribes), and `**Mode:** autonomous` when the user asked for it; the instruction is the confirmation, none is asked again |
 | **Claim** | `**Status:**` to `claimed`, a `**Claim:**` naming this checkout — see below — and `**Mode:** autonomous` when the user asked for it |
 | **Release** | the claim goes and `**Status:**` returns to `open`; nobody is working on it |
 | **Pause** | `**Status:**` to `paused`, the `**Claim:**` cleared, the body saying what it is waiting for |
@@ -413,7 +414,7 @@ What you may do, at the user's word and with no dispatch, is maintain the store 
 
 **Resuming a paused item is Claim**, an ordinary one with no takeover to weigh, because the field a takeover would contend for is absent; a pause lifted with nobody taking the item up sets `open`.
 
-**Each is confirmed for that operation, on that item, before a byte moves.** Under `**Mode:** autonomous` the claim of that item, and its finish once its plan is complete, are confirmed by the field (**Human Gate Rules**); every other operation asks as before. A confirmation the user gave for one operation is not a confirmation for the next; ask again. None of them adds a job to the store on your own initiative, which is why the bound survives them: the text a merge writes consolidates items already filed.
+**Each is confirmed for that operation, on that item, before a byte moves**, a filing by the instruction that asked for it. Under `**Mode:** autonomous` the claim of that item, and its finish once its plan is complete, are confirmed by the field (**Human Gate Rules**); every other operation asks as before. A confirmation the user gave for one operation is not a confirmation for the next; ask again. None of them adds a job to the store on your own initiative, which is why the bound survives them: the text a merge writes consolidates items already filed.
 
 **`done` and `dropped` are terminal.** Reopening one is filing a new item that cites it — the user's act — never an edit back to `open`.
 

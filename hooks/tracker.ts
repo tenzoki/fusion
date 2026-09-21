@@ -316,7 +316,8 @@ function respond(additionalContext?: string): void {
  * and that is deliberate rather than an omission.
  *
  * An uncovered commit range mid-Turn is the **normal and correct** state —
- * the review pass runs once per Circle, at its closure (Phase 4 step 2a) — so an every-call
+ * the review pass runs once per work item, at its closure (`agents/orchestrator.md`
+ * `## Closing a work item` step 2) — so an every-call
  * cadence here would report a fault on the commonest path, and a check that
  * cries wolf on its commonest path teaches its reader to ignore it. That is
  * issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` arriving one level up. The measurement that DID hold the

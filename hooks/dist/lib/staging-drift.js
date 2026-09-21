@@ -171,12 +171,18 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<tas
  * name and nothing else, so a retired surface leaves here when it leaves the
  * rule (decision
  * `260920-2228_*_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md`).
- * `staging-drift.test.ts` reads the class L row and probes each token, so an
- * entry that reaches the rule without reaching here fails `npm test`.
+ * `staging-drift.test.ts` holds the two directions separately, and neither
+ * reaches further than it says: one case reads the class L row alone and
+ * probes each token through `classify()`, so a class L entry that reaches the
+ * rule without reaching here fails `npm test` (an R2 or R3 entry added to the
+ * rule alone does not); the other reads the L, R2 and R3 rows and asserts every
+ * `path` and `prefix` below is a token of one of them, so a row that outlives
+ * its rule entry fails `npm test`. The two constants are exported for that
+ * second case and consumed by nothing else.
  *
  * **Class L**, the entries that stay in the checkout they were written in: the
- * files here and the directories in `LIVE_PREFIXES`, named by the rule's own
- * row rather than repeated. This repository's own
+ * first four files here, `.session-marker` through `monitor`, and the
+ * directories in `LIVE_PREFIXES`. This repository's own
  * `.gitignore` applies exactly that split, so in a project that follows it they
  * never reach `git status` at all. They are listed anyway because whether the
  * workbench is tracked, and how, is the project's decision — a consumer that
@@ -197,17 +203,20 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<tas
  * under the heading that claims nothing about it (issue
  * `260830-1845_*_staging-drift-does-not-name-asset-provenance-as-live-state-while-its-sibling-marker-is.md`).
  */
-const LIVE_STATE = [
+export const LIVE_STATE = [
+    // class L
     { path: ".session-marker", why: "the orchestrator heartbeat — mtime is the signal" },
     { path: ".checkout-id", why: "this checkout's identifier — minted once by bin/fusion-identity, never travels" },
     { path: ".cadence-anchors", why: "the per-checkout cadence marks — written by bin/fusion-cadence-anchor" },
     { path: "monitor", why: "a verbatim copy of bin/monitor, re-created by /fusion:setup" },
+    // class R2
     { path: "orchestrator-events.jsonl", why: "append-only — written by every event emission, in flight all session" },
+    // class R3
     { path: ".fusion-setup", why: "the setup marker — written by /fusion:setup" },
     { path: ".asset-provenance", why: "the asset provenance record — written by /fusion:setup" },
 ];
-/** Live-state directories, by workbench-relative prefix. */
-const LIVE_PREFIXES = [
+/** Live-state directories, by workbench-relative prefix; all class L. */
+export const LIVE_PREFIXES = [
     { prefix: ".guard-state/", why: "hook state — written by every guarded tool call" },
     { prefix: ".commit-lock/", why: "the commit lock — held and released around every commit" },
 ];

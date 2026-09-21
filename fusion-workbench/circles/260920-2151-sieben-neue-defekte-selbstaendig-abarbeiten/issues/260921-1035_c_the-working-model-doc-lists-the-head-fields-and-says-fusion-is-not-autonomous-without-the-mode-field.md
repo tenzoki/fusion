@@ -8,3 +8,6 @@ The working-model doc lists the head fields and says fusion is not autonomous, w
 Severity: Low. Scope: `docs/working-model.md`, off every dispatch path.
 
 Acceptance: the head-field walk-through names `**Mode:** autonomous`, what it answers and who writes it; `## 3. The gates` says which of its bullets the field can answer and which never. No golden moves.
+
+---
+Resolved: fixed in the commit that carries this line.

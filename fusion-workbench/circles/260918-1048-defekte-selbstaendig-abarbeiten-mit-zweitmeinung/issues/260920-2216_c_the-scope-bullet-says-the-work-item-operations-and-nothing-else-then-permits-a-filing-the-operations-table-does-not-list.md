@@ -11,3 +11,6 @@ The Scope bullet says "the operations under Work items ... and nothing else" and
 **Fix direction.** Either add a **File** row to the table at `:402-410` ("a new item at `open`, the user's words as the Directive, `**Filed by:** user`; the instruction is the confirmation, none is asked again") and let `:175` and `:414` keep their wording, or reword `:175` so "nothing else" no longer covers filing ("the operations under **Work items** and, on the user's instruction, a filing"). Either edit is charged to `AGENT_BASELINE` head-room in `hooks/lib/__tests__/surface-growth-bound.test.ts`; regenerate `hooks/lib/__tests__/fixtures/surface-growth.golden`.
 
 **Acceptance.** `agents/orchestrator.md` `## Scope` and `## Work items` name the same set of store operations, filing among them; the confirmation sentence at `:414` states what a filing needs; `npx vitest run lib/__tests__/surface-growth-bound.test.ts` is green.
+
+---
+Resolved: fixed in the commit that carries this line.

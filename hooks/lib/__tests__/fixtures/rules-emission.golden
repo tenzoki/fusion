@@ -15,81 +15,81 @@
 
 [analyst]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
   design-diagrams.md 5270
-  total 86355
+  total 86604
 
 [coder]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
-  total 81085
+  total 81334
 
 [consultant]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
   user-facing-output.md 10866
-  total 91951
+  total 92200
 
 [curator]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
   user-facing-output.md 10866
-  total 91951
+  total 92200
 
 [editor]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
   user-facing-output.md 10866
   project-language.md 5754
-  total 97705
+  total 97954
 
 [ontocoder]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
-  total 81085
+  total 81334
 
 [orchestrator]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
   user-facing-output.md 10866
   decision-record-examples.md 4971
   commit-lock.md 10610
-  total 107532
+  total 107781
 
 [planner]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
   decision-record-examples.md 4971
   design-diagrams.md 5270
-  total 91326
+  total 91575
 
 [reconciler]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
   decision-record-examples.md 4971
-  total 86056
+  total 86305
 
 [reviewer]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
   review-contract.md 6801
-  total 87886
+  total 88135
 
 [shaper]
   agent-setup.md 4366
-  fusion-workbench-conventions.md 66369
+  fusion-workbench-conventions.md 66618
   critical-stance.md 10350
   user-facing-output.md 10866
   decision-record-examples.md 4971
   design-diagrams.md 5270
-  total 102192
+  total 102441

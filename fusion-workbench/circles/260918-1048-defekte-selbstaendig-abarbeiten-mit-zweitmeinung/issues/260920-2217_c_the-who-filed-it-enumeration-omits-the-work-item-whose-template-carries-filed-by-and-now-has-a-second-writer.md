@@ -11,3 +11,6 @@ The `### Who filed it` enumeration omits the work item, whose template carries `
 **Fix direction.** Add the work item to the enumeration at `:500` ("defects and decisions, review files, and work items, whose grammar is `## Backlog entries — work items`"), and have `agents/orchestrator.md:398` say `**Filed by:** user, <person>` with the person half read as `### Who filed it` prescribes, which is the form `:195` and the memo skill already write. The conventions edit is charged to the always-on floor; regenerate `hooks/lib/__tests__/fixtures/rules-emission.golden`. The decision record is not to be edited: an `_i_` record that predates a kind says nothing false about it.
 
 **Acceptance.** `grep -n 'those are defects and decisions' rules/fusion-workbench-conventions.md` returns a line that also names work items; `agents/orchestrator.md` `## Work items` names the person half of the field it writes; `npx vitest run lib/__tests__/rules-emission-golden.test.ts lib/__tests__/surface-growth-bound.test.ts lib/__tests__/reference-resolution-lint.test.ts` is green.
+
+---
+Resolved: fixed in the commit that carries this line.

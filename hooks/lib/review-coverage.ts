@@ -92,8 +92,10 @@
  * ## Its callers, and the one it deliberately is not on
  *
  *   1. `hooks/review-coverage.ts` → `bin/fusion-review-coverage` — the CLI,
- *      read by `agents/orchestrator.md` at Step 3c (the dispatch scope) and at
- *      Phase 4 (the session summary).
+ *      read by `agents/orchestrator.md` at `## Review coverage` (the closing
+ *      review's dispatch scope), at `## Closing a work item` step 2 (the same
+ *      read before the review is routed) and at `## Ending the session` (the
+ *      summary's review-coverage section).
  *   2. `hooks/tracker.ts` — the PostToolUse hook, on the narrow trigger of a
  *      **review file landing under a reviews store**. That is the moment the
  *      answer is actionable, because the next dispatch's scope is being decided

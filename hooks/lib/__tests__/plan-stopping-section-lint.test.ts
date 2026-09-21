@@ -17,14 +17,14 @@
 // here rather than worked around. Nothing below judges whether a clause is
 // good, complete, answerable, or true. A plan satisfies this gate with one
 // clause of any quality. Whether the clauses hold is what the human is asked at
-// Phase 4, and that question is not moved here.
+// `## Closing a work item` step 3, and that question is not moved here.
 //
 // WHAT COUNTS AS FILLED, and why the placeholder is judged too. The mandate has
 // two halves — the section is present, and it is never left as the angle-bracket
 // placeholder — and the second half is still a question of presence, of a body
 // rather than of a heading. A heading over the shipped `<...>` is exactly the
 // invisible-at-approval failure the defect describes: it reads as a filled format
-// to a skimming eye and gives Phase 4 nothing to read back. So `absent`, `empty`
+// to a skimming eye and gives that closing step nothing to read back. So `absent`, `empty`
 // and `placeholder` are three named failures, each with its own remedy in the
 // message. A placeholder PLUS a real clause passes — that is substance.
 //

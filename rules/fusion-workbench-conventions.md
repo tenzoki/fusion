@@ -52,14 +52,14 @@ fusion-workbench/
 ├── monitor                            # dashboard binary, copied at setup
 ├── .fusion-setup                      # setup marker (JSON: timestamp + plugin version)
 ├── .asset-provenance                  # what setup copied, checksummed at the moment of copying
-├── .checkout-id                       # this checkout's identifier, minted once by bin/fusion-identity
+├── .checkout-id                       # bin/fusion-identity (minted once), hooks/lib/staging-drift.ts
 │
 │   # ── Root-anchored. The hooks, the monitor and the bin/ helpers read these ──
 │   # ── HERE, at fixed root-relative paths. Do not move them.               ──
 ├── orchestrator-events.jsonl           # bin/monitor, bin/fusion-events (hooks/events-query.ts), hooks/lib/orchestrator-events.ts, bin/fusion-commit-lock, hooks/lib/staging-drift.ts
 ├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts, hooks/lib/staging-drift.ts
 ├── .commit-lock/                       # bin/fusion-commit-lock, hooks/lib/staging-drift.ts (created and removed per commit)
-├── .cadence-anchors                    # bin/fusion-cadence-anchor
+├── .cadence-anchors                    # bin/fusion-cadence-anchor, hooks/lib/staging-drift.ts
 └── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
 ```
 
@@ -500,7 +500,7 @@ Two of that helper's exit codes are opposite instructions to you. **Exit 1** is 
 
 **A helper that is not installed is a third branch and neither of those two.** `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the session, so a helper added between releases is absent there and a bare call is exit 127, which is none of the codes above. When the guard fails, **file with the person half absent as exit 4 does, and report that attribution was dropped because the helper was missing.** The record looks like exit 4's and the reason does not: exit 4 means no identity was owed, this means one was owed and could not be read. Do not halt, or an install one release behind stops every filing in the project.
 
-**Which record kinds owe the field:** every kind whose template carries the line, and those are defects and decisions (the two formats above), and review files (`rules/review-contract.md`, where it is a mandated header field). Binding decision: `260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2).
+**Which record kinds owe the field:** every kind whose template carries the line, and those are defects and decisions (the two formats above), review files (`rules/review-contract.md`, where it is a mandated header field), and work items (`## Backlog entries — work items`), whose person half is the user's, `**Filed by:** user, <person>`, whichever route wrote it: the user by hand, `/fusion:memo`, or the orchestrator on the user's instruction. Binding decision: `260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2).
 
 **One precondition:** a person uses the same git identity on every machine. Registering the second checkout in `shared/checkouts/` lifts it for `bin/fusion-events presence`, which joins the two identities and counts that person once. It does not reach a work item's `**Claim:**`, which compares on the checkout identifier alone and so reads a person's second machine as another party. That residual is deliberate: a comparison through a pulled file would answer differently across a fetch, and the claim's whole job is to be read the same way in every checkout.
 

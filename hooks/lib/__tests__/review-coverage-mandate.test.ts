@@ -25,8 +25,9 @@
  *      `lib/review-coverage.ts` cannot read fails here, at `npm test`, rather
  *      than at a session whose coverage silently computes to nothing.
  *   3. It asserts the CONSUMER still consumes it — `agents/orchestrator.md`
- *      Step 3c widening the dispatch scope by the carried list, Phase 4 naming
- *      the gap commit by commit, and both call points naming the helper.
+ *      `## Review coverage` widening the dispatch scope by the carried list,
+ *      `## Ending the session` naming the gap commit by commit, and both call
+ *      points naming the helper.
  *
  * ## What it is not (`rules/critical-stance.md` §3)
  *

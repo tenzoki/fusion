@@ -18,12 +18,12 @@
   curator.md 76852
   editor.md 13156
   ontocoder.md 15875
-  orchestrator.md 93129
+  orchestrator.md 93478
   planner.md 19153
   reconciler.md 21171
   reviewer.md 12837
   shaper.md 17017
-  total 315819
+  total 316168
 
 [skills bytes]
   archive/SKILL.md 24328
@@ -93,15 +93,15 @@
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
   reference-resolution-lint.test.ts 978
-  review-coverage-mandate.test.ts 352
+  review-coverage-mandate.test.ts 353
   review-coverage.test.ts 862
   rules-emission-golden.test.ts 1330
   rules-voice-profile.test.ts 319
   sentence-identifier-containment.test.ts 456
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 639
+  staging-drift.test.ts 650
   surface-growth-bound.test.ts 723
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22232
+  total 22244

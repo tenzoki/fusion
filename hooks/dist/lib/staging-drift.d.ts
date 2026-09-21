@@ -146,6 +146,54 @@
  */
 export declare const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<task-id>.txt";
 /**
+ * The live-state surfaces, by exact workbench-relative name. Together with
+ * `LIVE_PREFIXES` below, the list is exactly class L, class R2 and class R3 of
+ * `rules/workbench-tracking.md` `## The four classes`: every entry those rows
+ * name and nothing else, so a retired surface leaves here when it leaves the
+ * rule (decision
+ * `260920-2228_*_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md`).
+ * `staging-drift.test.ts` holds the two directions separately, and neither
+ * reaches further than it says: one case reads the class L row alone and
+ * probes each token through `classify()`, so a class L entry that reaches the
+ * rule without reaching here fails `npm test` (an R2 or R3 entry added to the
+ * rule alone does not); the other reads the L, R2 and R3 rows and asserts every
+ * `path` and `prefix` below is a token of one of them, so a row that outlives
+ * its rule entry fails `npm test`. The two constants are exported for that
+ * second case and consumed by nothing else.
+ *
+ * **Class L**, the entries that stay in the checkout they were written in: the
+ * first four files here, `.session-marker` through `monitor`, and the
+ * directories in `LIVE_PREFIXES`. This repository's own
+ * `.gitignore` applies exactly that split, so in a project that follows it they
+ * never reach `git status` at all. They are listed anyway because whether the
+ * workbench is tracked, and how, is the project's decision — a consumer that
+ * tracks `.session-marker` must not be told on every commit that it forgot to
+ * stage it.
+ *
+ * **Class R2 and class R3** are the opposite case and the more interesting one:
+ * they are TRACKED by that same split, and they are still not a task's records.
+ * `orchestrator-events.jsonl` is the whole of R2, appended to by every event
+ * emission. `.fusion-setup` and `.asset-provenance` are the whole of R3, both
+ * written by `/fusion:setup` in each checkout — one rule, one class, one reason,
+ * so they classify together. Each is in flight for the whole session by
+ * construction, so a per-commit report about them would fire every time and mean
+ * nothing.
+ *
+ * `.asset-provenance` was missing here while its class-R3 sibling was named,
+ * and fell through to `unclassified` — a machine-written setup artifact printed
+ * under the heading that claims nothing about it (issue
+ * `260830-1845_*_staging-drift-does-not-name-asset-provenance-as-live-state-while-its-sibling-marker-is.md`).
+ */
+export declare const LIVE_STATE: {
+    path: string;
+    why: string;
+}[];
+/** Live-state directories, by workbench-relative prefix; all class L. */
+export declare const LIVE_PREFIXES: {
+    prefix: string;
+    why: string;
+}[];
+/**
  * Whether a workbench-relative path's **filename** is commit-message-shaped.
  *
  * This is `COMMIT_MESSAGE` applied to the basename and nothing else — no
