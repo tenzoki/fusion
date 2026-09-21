@@ -23,7 +23,7 @@ import {
 // Reference-resolution lint gate (Circle 260805-2005-textschicht-gegen-code-
 // nachziehen, plan step 14 — the review's "cheapest structural investment").
 //
-// The plugin's shipped text surfaces cite three kinds of targets, and all three
+// The plugin's shipped text surfaces cite four kinds of targets, and all four
 // have gone stale in measured numbers. This gate resolves every reference it
 // can read mechanically and fails on a dangling one:
 //
@@ -52,6 +52,7 @@ import {
 //       The parser lives in `./helpers/citation-scan.ts`, because a second
 //       caller runs the same grammar over the workbench itself
 //       (`workbench-citation-lint.test.ts`); its header carries the grammar.
+//   (d) slash commands — `/fusion:<name>` must name `skills/<name>/SKILL.md` or a RETIRED_COMMANDS key (issue 260916-2145); existence only, no count.
 //
 // THE WORKBENCH BOUND: class (c) resolves against THIS repo's own
 // `fusion-workbench/` tree, because the records the shipped texts cite are
@@ -449,6 +450,21 @@ function scanHeadingAnchors(
 // (c)). Imported here rather than defined: `scanRecordCitations`, and, for the
 // fixtures below, `workbenchIndex`, `circleDirs` and `RECORD_EXAMPLE_FILES`.
 
+// --- class (d): slash-command tokens ----------------------------------------
+// `/fusion:<name>` must name `skills/<name>/SKILL.md` or a key here: a retired name a shipped text still mentions, with what
+// removed it. Guarded twice below like EXAMPLE_PATHS, so a fresh pointer to a retired name stays red unless a mention already keeps
+// its key. No resolved figure by design (existence, not a count); the name opens on a letter, so the placeholder never matches (issue 260916-2145).
+const RETIRED_COMMANDS: Record<string, string> = {
+  direct: "deleted 07961552 (v11); agents/shaper.md names it as removed",
+  "migrate-workbench-v2": "retired at v2.6.0 (40ca86db); the conventions name it as retired",
+};
+const COMMAND_RE = /(?<![A-Za-z0-9_])\/fusion:([a-z][a-z0-9-]*)/g;
+function scanCommands(rel: string, lines: { line: number; text: string }[]): Violation[] {
+  return lines.flatMap(({ line, text }) => [...text.matchAll(COMMAND_RE)]
+    .filter((m) => !(m[1] in RETIRED_COMMANDS) && !existsSync(join(pluginRoot, "skills", m[1], "SKILL.md")))
+    .map((m) => ({ file: rel, line, token: m[0], problem: "names a slash command with no skills/<name>/SKILL.md", fix: "name a command that exists, or add the name to RETIRED_COMMANDS with what removed it" })));
+}
+
 // --- the gate ---------------------------------------------------------------
 
 // How many references each class resolved, pinned to a committed number rather
@@ -500,7 +516,7 @@ function runAll() {
     const a = f.recordsOnly ? none : scanPluginPaths(f.rel, lines);
     const b = f.recordsOnly ? none : scanHeadingAnchors(f.rel, lines, byBase);
     const c = scanRecordCitations(f.rel, lines);
-    all.push(...a.violations, ...b.violations, ...c.violations);
+    all.push(...a.violations, ...b.violations, ...c.violations, ...(f.recordsOnly ? [] : scanCommands(f.rel, lines)));
     counts.paths += a.resolved;
     counts.anchors += b.resolved;
     counts.records += c.resolved;
@@ -551,6 +567,16 @@ describe("reference-resolution lint: every reference in the shipped text resolve
       });
     }
     expect(found, "a record stamp shares a line with a $SCAN_ key:\n" + found.join("\n")).toEqual([]);
+  });
+
+  it("every RETIRED_COMMANDS entry is retired: none names a skills/ directory", () => {
+    const live = Object.keys(RETIRED_COMMANDS).filter((n) => existsSync(join(pluginRoot, "skills", n, "SKILL.md")));
+    expect(live, `${live.join(", ")} exists under skills/, so its entry would swallow a live pointer; drop it`).toEqual([]);
+  });
+
+  it("every RETIRED_COMMANDS entry is still cited as /fusion:<name> on this class's lines — no dead weight", () => {
+    const dead = Object.keys(RETIRED_COMMANDS).filter((n) => !surface().some((f) => !f.recordsOnly && scannedLines(f).some(({ text }) => [...text.matchAll(COMMAND_RE)].some((m) => m[1] === n))));
+    expect(dead, `${dead.join(", ")} is exempted but no longer cited anywhere — drop the entry`).toEqual([]);
   });
 });
 

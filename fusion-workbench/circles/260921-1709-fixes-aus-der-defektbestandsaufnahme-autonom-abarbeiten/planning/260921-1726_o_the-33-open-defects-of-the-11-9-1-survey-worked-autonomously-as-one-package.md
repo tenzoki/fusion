@@ -359,7 +359,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: step 17
 
-21. **Pin the slash-command class, with an enumerated retired set** (row 32, gate half)
+21. [DONE] **Pin the slash-command class, with an enumerated retired set** (row 32, gate half)
     - Executor: `coder`
     - Record: `260916-2145_*_a-gates-remediation-text-names-two-commands-that-do-not-exist-and-no-gate-resolves-a-command-token.md` (its text half is step 9); working answer per `260921-1718_*_does-a-slash-command-token-in-shipped-text-become-a-pinned-class-and-what-exempts-a-historical-mention.md` option 1
     - Site at HEAD: over the lint's surface, `/fusion:<name>` tokens naming no `skills/<name>/` directory: `bin/fusion-checkout-name:228` (`next`, repaired at step 8), `agents/shaper.md:55` (`direct`, named as removed), `rules/fusion-workbench-conventions.md:68` and `hooks/lib/citation-corpus.ts:202` (`migrate-workbench-v2`, named as retired); `activity-log-k1.md` and two test files are outside the surface. `ls -1 skills/` prints fourteen directories.
@@ -371,7 +371,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17; step 8 (the one live pointer in `bin/` is gone) and step 9
 
-22. **Pin the dispatch row's identity, the absent-key rule and the heartbeat's refresh and negatives** (row 1)
+22. [IN PROGRESS] **Pin the dispatch row's identity, the absent-key rule and the heartbeat's refresh and negatives** (row 1)
     - Executor: `coder`
     - Record: `260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md`
     - Site at HEAD: `hooks/lib/__tests__/guard-state-shape.test.ts:253-319` asserts `event`, `task`, `agent`, `session_id`, `detail` on a `task_start` row and nothing about `person`/`checkout`; `grep -rln heartbeatSessionMarker hooks/lib/__tests__/` prints nothing. `heartbeatSessionMarker` (`hooks/lib/orchestrator-events.ts:233-240`) refreshes `fusion-workbench/.session-marker`'s mtime when the marker exists and is at least 60 s old, never creates one, and is called from `hooks/tracker.ts` only. The harness (`helpers/guard-harness.ts`) offers `runDispatch(root, payload, overrides)` and `runTracker(root, toolName, toolInput, overrides)`; `overrides` is an env map, so `FUSION_PERSON` and `FUSION_CHECKOUT` can be set per case. The `agentstate.yaml` gate case of the original list is moot (`6357ebfc`).
@@ -383,7 +383,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: step 17
 
-23. **Read a storeless bracket-marked citation as a marker spelling** (row 4)
+23. [IN PROGRESS] **Read a storeless bracket-marked citation as a marker spelling** (row 4)
     - Executor: `coder`
     - Record: `260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md`; working answer per `260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md` option 1
     - Site at HEAD: `hooks/lib/citation-scan.ts:443-446` `BARE_RE` requires `(?:${MARKER_SLOT}|_)` after the stamp; `:468-469` `STAMP_RE`'s lookahead refuses `[`; `:164-190` the header's not-read-on-purpose paragraph; `:1153-1167` the `markerM` branch reads `_x_` only and `storelessBase()` (`:752-754`) rewrites `_x_` only. The sweep's `CHAINED_RE` already handles a bracket tail.
