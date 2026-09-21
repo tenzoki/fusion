@@ -57,3 +57,6 @@ alone (35 of 35 green). Three things this adds:
   deadline hypothesis above rather than new evidence for it.
 
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>
+
+---
+Resolved: an observation of the mechanism `91515fd5` repaired. Both assertions named here, and the `hook-fail-open` one appended later, sit on a subprocess's output after a git call, and `verdict=unchecked` where `clean` was expected is what `hooks/lib/git.ts` produced when a timed-out call was rendered as a decline; the helper now returns a distinct timeout, retried once, under a budget drawn from the measured tail, and the deadline it names as the open question is the one `260906-0035_*_what-should-the-git-helpers-budget-be-and-is-a-timeout-retried.md` answers by working answer. The six-run acceptance is subsumed by the ten-pair experiment at `73c11cfd`, 0 red of 20, recorded on `260905-2356_*_the-hook-suite-is-not-isolated-from-a-second-copy-of-itself-and-fails-at-forty-percent-under-one.md`. The single-slot lead that record's `Also seen:` line drew from this shape is refuted by reading: `hooks/tracker.ts` joins the coverage, staging and citation sentences with a space, so the staging sentence standing where the coverage one was expected is a coverage measurement that timed out and named no gap, not two reporters contending for one slot.

@@ -47,3 +47,6 @@ unchanged tree, and passed 22 of 22 three times when run alone, which is the iso
 this record describes, now with the tree held byte-identical across the runs. That removes the
 honest limit stated above: the earlier evidence could not rule out the tree having changed, and
 this evidence can.
+
+---
+Resolved: an observation of the mechanism `91515fd5` repaired. The case's `expected '0' to be '1'` and the `verdict=unchecked` its siblings showed are what `measureReviewCoverage` returned when `hooks/lib/git.ts` rendered a timed-out `git log` as a decline under load; the helper now tells the two apart and retries a timeout once under a budget drawn from the measured tail. The rate this record asked for first was measured as its successor prescribes: ten pairs of concurrent `npm test` at `73c11cfd`, 0 red of 20, recorded on `260905-2356_*_the-hook-suite-is-not-isolated-from-a-second-copy-of-itself-and-fails-at-forty-percent-under-one.md`, which also states what that figure certifies and what it does not.

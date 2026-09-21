@@ -71,3 +71,6 @@ default at `ea17e354` and the monitor's port prediction at `d2323105` — and th
 the only one that ships. So the suite is now quieter about the very fault this decision governs,
 which raises rather than lowers the cost of leaving it open: the instrument that reported the
 production budget has been partly damped while the budget itself is unchanged.
+
+---
+Working answer (plan 260921-1726): option 1 — the helper distinguishes a timeout from a decline, retries a timeout once under the same budget, and the budget is 10 000 ms per attempt (the status read 20 000), chosen from the measured tail of 7 580 ms with margin rather than from habit; implemented at `91515fd5`, the ten-pair acceptance read 0 red of 20 at `73c11cfd`. The marker does not move: the user rules with the implementation in front of them.

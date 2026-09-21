@@ -113,7 +113,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package A — the load block
 
-1. [IN PROGRESS] **Make the git helper distinguish a timeout from a decline, retry a timeout once, and budget it from the measured tail**
+1. [DONE] **Make the git helper distinguish a timeout from a decline, retry a timeout once, and budget it from the measured tail**
    - Executor: `coder`
    - Record: `260906-0035_*_the-git-helper-reports-a-timeout-as-not-a-repository-in-every-consuming-project.md` (closed at step 2, not here: its acceptance is the experiment); working answer per `260906-0035_*_what-should-the-git-helpers-budget-be-and-is-a-timeout-retried.md` option 1
    - Site at HEAD: `hooks/lib/git.ts` `export const GIT_TIMEOUT_MS = 5_000;` and `git()` returning `string | null` from one `try { execFileSync(...) } catch { return null; }`; its docstring enumerates the four conditions the `null` collapses. Callers: `hooks/lib/staging-drift.ts` (`rev-parse --show-toplevel`, `status --porcelain` under `GIT_STATUS_TIMEOUT_MS = 10_000`, `rev-parse HEAD` in `currentHead`), `hooks/lib/review-coverage.ts` (`log`, `rev-list`, `show -s --format=%ct`), `hooks/lib/citation-scan.ts` (`rev-parse --show-toplevel`, `ls-files`, both inside `declaredCitationFiles()`, off the hook path). On this Node a timeout throws `err.code === "ETIMEDOUT"`, `err.signal === "SIGTERM"` (probed: `node -e 'try{require("child_process").execFileSync("sleep",["2"],{timeout:100,stdio:["ignore","pipe","ignore"]})}catch(e){console.log(e.code,e.signal)}'` prints `ETIMEDOUT SIGTERM`).
@@ -126,7 +126,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** consultant
    - Dependencies: none
 
-2. [IN PROGRESS] **Run the ten-pair experiment at step 1's commit, and close the five load records on what it reads**
+2. [DONE] **Run the ten-pair experiment at step 1's commit, and close the five load records on what it reads**
    - Executor: `coder`
    - Records: `260906-0035_*_the-git-helper-reports-a-timeout-as-not-a-repository-in-every-consuming-project.md`, `260905-2356_*_the-hook-suite-is-not-isolated-from-a-second-copy-of-itself-and-fails-at-forty-percent-under-one.md`, `260905-2134_*_review-coverage-test-fails-in-a-full-suite-run-and-passes-in-isolation.md`, `260908-0032_*_two-hook-tests-are-load-sensitive-and-fail-only-in-the-parallel-full-run.md`, `260916-1943_*_guard-state-shape-fails-three-cases-under-suite-load-and-passes-in-isolation.md`
    - Site at HEAD: `260905-2356_*`'s acceptance is ten pairs of concurrent `npm test` runs at one commit, counting red runs out of twenty; the other four close on it by their own text (`260905-2356_*` `## What this record replaces`, `260908-0032_*`'s six-run acceptance is subsumed, `260916-1943_*` asks for a deliberate reproduction). Nothing has run it since `ea17e354`.

@@ -34,3 +34,6 @@ shares, or a record states what was measured and why it is not worth isolating.
 Reported by the executor that took the head-room raise, which named it rather than narrowing its
 command to get a pass. Filed in the shared store rather than in the work item's, per the origin rule:
 it did not arise from that item's directive, it was found beside it.
+
+---
+Resolved: an observation of the mechanism `91515fd5` repaired, and the reproduction this record asks for was run deliberately. The missing review-coverage sentence is what the tracker emits when `measureReviewCoverage` returns empty, which `hooks/lib/git.ts` caused whenever a loaded `git log` crossed its 5 000 ms budget and was rendered as a decline; the helper now returns a distinct timeout, retried once, under 10 000 ms per attempt drawn from the measured tail. Reproduction: ten pairs of concurrent `cd hooks && npm test` at `73c11cfd`, 0 red of 20, `guard-state-shape.test.ts` green in all twenty, recorded on `260905-2356_*_the-hook-suite-is-not-isolated-from-a-second-copy-of-itself-and-fails-at-forty-percent-under-one.md`, which states what the figure certifies.
