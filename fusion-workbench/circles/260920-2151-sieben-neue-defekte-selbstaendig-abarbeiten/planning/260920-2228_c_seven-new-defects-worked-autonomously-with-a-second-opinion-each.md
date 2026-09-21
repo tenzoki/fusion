@@ -1,7 +1,7 @@
 # Implementation Plan: seven new defects, worked autonomously with a second opinion each, then a version bump
 
 **Date:** 2026-09-20
-**Status:** In progress
+**Status:** Complete
 **Spec:** none — planned from the work item's `## Directive` (`260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md`), on the model of `260918-1124_*_autonomous-defect-package-fifteen-fixes-with-a-second-opinion-each.md`
 **Decidability:** The load-bearing question is whether each of the seven defects is still present at HEAD `80bebc96` and closable by one bounded edit whose acceptance is a command the executor can run. It is decidable from the inputs the steps have: every presence claim below was measured by this plan against the tree at that commit (the command and its output are quoted per step), and every acceptance is a `grep`, a `wc`, a `node -e` probe or the suite, each with a stated expected result. Two inputs are not decidable from the plan. Whether the second opinion accepts a concept is handed to the stop rule in `## Where this work stops`, the directive's own mechanism. Whether the retired rows in `LIVE_STATE` go or stay is a choice binding two steps and every later retirement, so it is filed as `260920-2228_*_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md` and answered by the discussion step 6 runs over it, not approximated here.
 **Domain:** code
@@ -178,7 +178,7 @@ Field key. **Record** is the storeless citation and where the file stands, in wo
    - **Second opinion:** consultant
    - Dependencies: step 6 (same file and same comment block; the membership rule it settles is what this step's "in full" sentence states)
 
-8. **Bump the plugin version**
+8. [DONE] **Bump the plugin version**
    - Executor: `coder`
    - Record: none (the directive's own final instruction, "Versionsnummer am Ende erhöhen")
    - Present at HEAD: `.claude-plugin/plugin.json` reads `"version": "11.8.0"`; the last bump was the 11.8.0 release commit `5cd86276`.
