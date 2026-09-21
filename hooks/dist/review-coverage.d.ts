@@ -9,9 +9,12 @@
  * the review prompts before anything could read them.
  *
  * Called through `bin/fusion-review-coverage` by `agents/orchestrator.md` at
- * Step 3c (to widen the next review dispatch's scope) and at Phase 4 (to state
- * the session's coverage), and by anyone at a terminal who wants to know which
- * commits no reviewer has opened.
+ * `## Review coverage` (the read before the closing review's dispatch is
+ * written: `carried=` and the `uncovered` lines set that review's scope), at
+ * `## Closing a work item` step 2 (the same read, once more, before the review
+ * is routed), at `## Ending the session` (the summary's review-coverage section
+ * is read off this output, never recalled), and by anyone at a terminal who
+ * wants to know which commits no reviewer has opened.
  *
  * Output, one `KEY=value` per line in the shape `bin/fusion-paths` uses, then
  * one line per uncovered commit and one per review considered:

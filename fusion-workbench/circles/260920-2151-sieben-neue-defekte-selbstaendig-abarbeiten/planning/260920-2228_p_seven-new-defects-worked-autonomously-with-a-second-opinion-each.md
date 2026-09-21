@@ -100,7 +100,7 @@ Field key. **Record** is the storeless citation and where the file stands, in wo
    - **Second opinion:** consultant
    - Dependencies: none
 
-2. **Name the callers the orchestrator prompt has in the review-coverage wrapper's header**
+2. [DONE] **Name the callers the orchestrator prompt has in the review-coverage wrapper's header**
    - Executor: `coder`
    - Record: `260918-1334_*_the-review-coverage-cli-header-names-step-3c-and-phase-4-which-the-orchestrator-prompt-does-not-have.md`, in the issues store of the container `260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung`
    - Present at HEAD: `grep -n 'Step 3c\|Phase 4' hooks/review-coverage.ts` prints line 12; `grep -c 'Step 3c\|Phase 4' agents/orchestrator.md` prints `0`; `grep -n '^## Review coverage\|^## Closing a work item' agents/orchestrator.md` prints 322 and 422.
