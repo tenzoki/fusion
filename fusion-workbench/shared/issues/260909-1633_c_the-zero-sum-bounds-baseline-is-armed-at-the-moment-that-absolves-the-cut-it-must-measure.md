@@ -54,3 +54,6 @@ distinguishes nothing.
 ## State
 
 `_o_` open. Blocks C8, and blocks C7's stop condition, which is unsound until C8's baseline moves.
+
+---
+Resolved: The bound was armed before the cut rather than at its landing: `hooks/lib/__tests__/dispatch-bytes.test.ts` and `fixtures/dispatch-path.baseline` were added at `303488a8` with the pre-cut totals, so the baseline measures the cut it was meant to measure. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

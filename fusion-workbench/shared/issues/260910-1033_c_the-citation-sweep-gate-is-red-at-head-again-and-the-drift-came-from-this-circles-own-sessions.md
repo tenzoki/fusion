@@ -38,3 +38,6 @@ call wrote. It blocks nothing. What went is the pre-push read: `/fusion:cleanup`
 push, and `grep -rn 'citation-check\|citation-sweep\|npm test' skills/*/SKILL.md` now matches only
 a release note in the help body. So at `07961552` nothing between writing a record and pushing it
 runs the gate, and the only thing that speaks at all speaks at the keystroke.
+
+---
+Resolved: The gate was repaired at `e6a0dc67` and measured green at `07961552`; the record's own note of 260910-2020 states the second clause about what runs the gate before a push. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

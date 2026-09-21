@@ -41,3 +41,6 @@ Reconciliation 2026-09-08: verified against the tree at `de94102f` and still ope
 
 ---
 Reconciliation 2026-09-08: confirmed on the tree. `"$FUSION_PLUGIN_ROOT"/bin/fusion-rules reconciler` emitted four rule paths and no `bounded-dispatch.md`, while the work tree's `bin/fusion-rules reconciler` emits it. This reconciler dispatch is the sixth of the session to reach an executor without the rule attached by Setup, and it read the file only because the dispatch prompt named it. The marker stays `_o_`.
+
+---
+Resolved: `rules/bounded-dispatch.md` was retired at `1e367195`, so there is no bounded-dispatch rule for Setup to attach and the gap it describes has no subject. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

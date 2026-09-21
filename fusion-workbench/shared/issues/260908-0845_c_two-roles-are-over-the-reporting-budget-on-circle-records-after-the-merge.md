@@ -27,3 +27,6 @@ this session, so the tree has little room left to absorb further growth anywhere
 **Acceptance.** Either both roles are inside the reporting budget on `rules/circle-records.md`, or
 a decision record states why the budget should not bind them and the report is expected to name
 them.
+
+---
+Resolved: Neither `rules/circle-records.md` nor `agents/playmaker.md` exists at HEAD (deleted at `76d833be` and `2a785ba2`), so the budget the two roles exceeded and the rule that set it are both gone. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

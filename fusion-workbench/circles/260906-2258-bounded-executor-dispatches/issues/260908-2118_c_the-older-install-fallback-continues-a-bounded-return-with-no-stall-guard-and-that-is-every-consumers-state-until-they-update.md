@@ -61,3 +61,6 @@ fewer bytes than the guard does.
 
 `agents/orchestrator.md` only. The five in-file continuation sites all cite the rule
 correctly and are unaffected; this is the one path that runs without it.
+
+---
+Resolved: The bounded return and its older-install fallback were removed at `1e367195`; `agents/orchestrator.md` at HEAD carries no bounded-return sentence at all. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

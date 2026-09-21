@@ -17,3 +17,6 @@ Step 12 of the plan added `--only forum` to the help selector list on the readin
 Both edits are a clause each and neither touches a byte budget that matters — Step 8 gains one bullet, help item 6 gains three words in a sentence it already has.
 
 **Acceptance test:** `skills/cleanup/SKILL.md` `## Step 8 — Report` carries a line saying whether a message was written, its path, or why not; `skills/help/SKILL.md`'s pipeline sentence names the message pass among the steps it lists.
+
+---
+Resolved: Cleanup has carried no message pass since `115be68d`; `skills/help/SKILL.md` now describes cleanup as commit and push only and names `/fusion:post` as the separate command for the note, so the enumeration is no longer missing a pass. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

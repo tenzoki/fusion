@@ -76,3 +76,6 @@ when `BOUND_CONTEXT` is widened.
 
 `hooks/lib/__tests__/bound-agent-set.test.ts` only. Neither `BOUND_AGENTS`,
 `bin/fusion-rules` nor the rule file is wrong; the gate over them is weaker than it reads.
+
+---
+Resolved: The gate in question, `hooks/lib/__tests__/bound-agent-set.test.ts`, was deleted at `1e367195` together with the rule and unit table it guarded. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

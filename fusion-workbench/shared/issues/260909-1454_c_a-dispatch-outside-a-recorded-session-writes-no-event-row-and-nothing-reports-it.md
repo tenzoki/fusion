@@ -49,3 +49,6 @@ Either a mechanism reports the condition at the first dispatch after a session c
 `agents/orchestrator.md` names the boundary explicitly and the miss is accepted as a
 prompt-level obligation with its rate stated. A third measured instance of commits landing
 outside a recorded session reopens this whichever way it went.
+
+---
+Resolved: `hooks/lib/orchestrator-events.ts` dropped the `agentstate.yaml` term from its gate on 260910, so a dispatch row is admitted whenever a workbench root and a session identifier exist, inside or outside an orchestrator session. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

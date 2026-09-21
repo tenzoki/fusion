@@ -17,3 +17,6 @@ The same sentence's second consumer claim was already present before the sweep; 
 - Either `agents/playmaker.md` reads `**Active spec/plan:**` and says how it resolves the basename, or `rules/circle-records.md:240` names the orchestrator's resume alone.
 
 Reconciled: 260829-1805, reconciler. Still open at `a60d1fea`: `rules/circle-records.md:240` still names playmaker among the resolvers of the head field; `grep -c "Active spec/plan" agents/playmaker.md` is 0. No commit since `e9f2ed0b` touches either file for this.
+
+---
+Resolved: Both sides of the mismatch are gone: `rules/circle-records.md` was deleted at `76d833be` and `agents/playmaker.md` at `2a785ba2`, so neither the sentence nor the prompt it misdescribed exists at HEAD. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

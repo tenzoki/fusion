@@ -44,3 +44,6 @@ an edit above the line moves it silently and no gate resolves `path:N` — which
 citations came to name other text while `:54-55` stayed in the file it named and still slipped. **The defect
 is untouched and the marker stays `_o_`**: two of five combinations are still undefined and the selector
 table still does not state the coupling.
+
+---
+Resolved: `/fusion:cleanup` has been commit and push only since `115be68d`, so the selector step the two names shared no longer exists in the cleanup body. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

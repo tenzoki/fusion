@@ -85,3 +85,6 @@ contract in `agents/coder.md` and `agents/ontocoder.md` that
 `executor-verification-report-lint.test.ts` pins. `bugfixer` inherits the same shape via
 its Phase 6 report, so the Step 3b self-healing site at
 `rules/bounded-dispatch.md:122` is reached by this too.
+
+---
+Resolved: The bounded return was removed at `1e367195` with the rule that defined it, so the four-statement return that left the verification result nowhere no longer exists. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

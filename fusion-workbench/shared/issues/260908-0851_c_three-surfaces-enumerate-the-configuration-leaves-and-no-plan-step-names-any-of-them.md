@@ -21,3 +21,6 @@ This is filed **shared** rather than into either Circle: the leaf originates in 
 `rules/critical-stance.md` §5: each of the three states a cardinality in prose without enumerating or deriving it, which is exactly the drift the norm was written from.
 
 **Acceptance test:** no shipped surface states the number of configuration leaves without naming them; `docs/fusion-intro.md:73` no longer says `einzige`.
+
+---
+Resolved: The configuration collapsed to one active leaf, `citations.extraPaths`: `hooks/lib/config.ts` resolves only that key, and `skills/help/SKILL.md`, `docs/working-model.md` and `docs/fusion-intro.md` each name only that leaf, so the three enumerations no longer carry leaves no step accounts for. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

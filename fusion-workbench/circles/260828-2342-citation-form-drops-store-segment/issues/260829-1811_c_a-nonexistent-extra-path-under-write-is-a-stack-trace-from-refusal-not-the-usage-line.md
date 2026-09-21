@@ -10,3 +10,6 @@ A nonexistent extra `<path>` under `--write` is an uncaught ENOENT stack trace f
 
 - The existence check on extra paths runs before `refusal()` (in `parse()` is the natural place), so a missing path is the usage error in every mode.
 - One test case in `citation-sweep.test.ts`: `--write --yes <missing path>` exits 1 with the `does not exist` line and no stack trace.
+
+---
+Resolved: `hooks/citation-sweep.ts` now checks every extra path with `existsSync` and answers a missing one with `usage()` before `refusal()` is ever reached, so a nonexistent path is the usage line and not a stack trace. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

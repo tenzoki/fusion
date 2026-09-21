@@ -45,3 +45,6 @@ than a shaping detail.
 ## State
 
 `_o_` open. Blocks planning of C7 and of C3's `CLAUDE.md` command.
+
+---
+Resolved: The merge the record warned about did not land as specified: the closed cut plan's C8 and C3 steps kept `agents/curator.md` and `agents/reconciler.md`, both present at HEAD, so no analyst row forbids the writes the `CLAUDE.md` gate requires. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

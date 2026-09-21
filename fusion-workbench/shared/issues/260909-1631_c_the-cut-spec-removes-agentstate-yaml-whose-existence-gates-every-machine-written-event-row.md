@@ -47,3 +47,6 @@ puts it on the ramp-up path C2 is clearing, so the two capabilities have to answ
 
 `_o_` open. Belongs to the spec revision, not to the code. No code change is warranted until the
 spec says what replaces the sentinel.
+
+---
+Resolved: The decision `260909-1843_*_which-sentinel-replaces-the-state-files-existence-as-the-gate-on-machine-written-rows.md` answered the question and is implemented: the gate in `hooks/lib/orchestrator-events.ts` keys on the workbench root and the session identifier, and the closed cut plan names the transition. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.

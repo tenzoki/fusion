@@ -38,3 +38,6 @@ Reconciled 260908-0027 (reconciler, HEAD `9d99b19d`): still open. Both sentences
 the `description` in `skills/cleanup/SKILL.md`'s frontmatter — while the body has run the activity
 log first since `4c421f29`, which physically reordered the two sections. So the drift widened rather
 than closed in this session: the pipeline moved and the two descriptions did not.
+
+---
+Resolved: The multi-step cleanup pipeline whose order the two descriptions reversed went on 260910; `skills/cleanup/SKILL.md` and `README-agents.md` both describe cleanup as commit and push only, so there is no run order left to disagree about. — closed by a closing pass on 260921 over the plan's "Already resolved at HEAD" list, the evidence re-verified at HEAD in the commit that carries this line.
