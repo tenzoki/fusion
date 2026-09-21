@@ -224,7 +224,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-10. **Drop "operative" and state the two dispatch exclusions as project-wide** (row 24)
+10. [DONE] **Drop "operative" and state the two dispatch exclusions as project-wide** (row 24)
     - Executor: `coder`
     - Record: `260913-1108_*_the-positive-dispatch-rule-turns-on-an-undefined-word-and-leaves-both-exclusions-bound-to-the-orchestrator-alone.md`
     - Site at HEAD: "operative agent" at `rules/fusion-workbench-conventions.md` `## Dispatching another agent` (first paragraph), `README-agents.md:45` and `:300`; nowhere defined (`grep -rn "operative agent" CLAUDE.md README*.md agents rules docs skills hooks/lib` prints those three). The exclusions live at `agents/orchestrator.md:608-609` only ("Never invokes … `orchestrator` — no recursion"); the consultant-side line the record cited is gone.
@@ -236,7 +236,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none (before step 11 by necessity: same paragraph)
 
-11. **Replace the analyst delegation with a read of the gate list by the dispatching agent** (row 23)
+11. [IN PROGRESS] **Replace the analyst delegation with a read of the gate list by the dispatching agent** (row 23)
     - Executor: `coder`
     - Record: `260913-1108_*_the-gate-determination-is-delegated-to-an-analyst-that-holds-no-more-of-the-gate-list-than-the-caller.md`; working answer per `260921-1718_*_how-does-a-dispatched-agent-learn-the-gate-conditions-before-it-dispatches-another-agent.md` option 1
     - Site at HEAD: `rules/fusion-workbench-conventions.md` `## Dispatching another agent`, second paragraph: "So an agent that may be approaching a gate condition **halts and does not proceed**. An `analyst` determines whether one is present: no condition, and the work goes on; a condition, and it travels up to the orchestrator, where the user answers as before." `bin/fusion-rules <any agent>` emits no `agents/*.md`; `agents/analyst.md` carries no gate-determination type. `README-agents.md:45` and `:300` restate the halt.
@@ -248,7 +248,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 10
 
-12. **State what a second plan does to `**Active spec/plan:**`** (row 25)
+12. [IN PROGRESS] **State what a second plan does to `**Active spec/plan:**`** (row 25)
     - Executor: `coder`
     - Record: `260915-2143_*_the-active-spec-plan-field-is-append-only-and-nothing-says-what-a-second-plan-does-to-it.md`
     - Site at HEAD: `agents/orchestrator.md:217` "… beside any value already there — a spec and the plan drawn from it both stand, each with a short clause saying which"; `:441` "where it names a spec and a plan both, the one carrying `## Where this work stops`"; `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` "comma-separated where a spec and the plan drawn from it both stand".
@@ -260,7 +260,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-13. **Let the resolver's unknown-name message name the work-tree preference and the two remedies** (row 14)
+13. [IN PROGRESS] **Let the resolver's unknown-name message name the work-tree preference and the two remedies** (row 14)
     - Executor: `coder`
     - Record: `260908-1324_*_a-work-tree-behind-the-install-hides-skills-the-install-has-and-nothing-warns.md`
     - Site at HEAD: `bin/fusion-paths:212` and `:233`, the two exit-2 messages, name the agent/skill shape and not which root was searched; `:197-199` set `PLUGIN_ROOT="$PWD"` when `bin/fusion-plugin-cwd` says the cwd is the plugin repo.
@@ -272,7 +272,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-14. **Declare the v11 upgrade note live, and make it true** (row 27)
+14. [IN PROGRESS] **Declare the v11 upgrade note live, and make it true** (row 27)
     - Executor: `coder`
     - Record: `260915-2145_*_the-v11-upgrade-note-is-maintained-as-live-in-one-commit-of-this-range-and-frozen-in-the-other.md`; working answer per `260921-1718_*_does-the-v11-upgrade-note-track-live-v11-behaviour-or-stay-frozen-at-v11-0-0.md` option 1
     - Site at HEAD: `docs/upgrading-to-v11.md:25` "taking `open`, `claimed`, `done` or `dropped`" (four; the set is five with `paused`); `:17` "The release is tagged `v11.0.0`"; the file was edited on the live side by `950a606e`, `9d5b1e80`, `4d692c57`; `README-agents.md` `## Releasing` step 0 carries the help-topic obligation and no upgrade-note one.
@@ -284,7 +284,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-15. **State the fabricated-name bound in the scanner's header and close on it** (row 3)
+15. [IN PROGRESS] **State the fabricated-name bound in the scanner's header and close on it** (row 3)
     - Executor: `coder`
     - Record: `260830-2235_*_the-fabricated-name-exemption-keys-on-the-literal-foo-so-every-realistic-probe-fixture-is-read-as-a-real-citation.md`; working answer per `260921-1718_*_which-decidable-property-if-any-exempts-a-realistic-probe-fixture-from-the-citation-gate.md` option 1
     - Site at HEAD: `hooks/lib/citation-scan.ts:511-527`, `FABRICATED_NAME` and its docstring; the header's exemption list; `hooks/lib/citation-form.ts:65-75` already names the record as the reason `dangling` is not reported at write time.
@@ -296,7 +296,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-16. **Fix the side finding: the vitest config's store-prefixed citation, and put `.mjs` in the corpus**
+16. [IN PROGRESS] **Fix the side finding: the vitest config's store-prefixed citation, and put `.mjs` in the corpus**
     - Executor: `coder`
     - Record: `260921-1718_*_the-vitest-config-cites-a-decision-with-its-store-segment-in-a-file-no-citation-corpus-reads.md` (this container's issues store, filed by this plan)
     - Site at HEAD: `hooks/vitest.config.mjs:43` cites the fork-cap decision with the shared decision store's segment in front of it; `fusion.json` `citations.extraPaths` is `["bin/*", "hooks/*.ts", "hooks/lib/*.ts"]`.

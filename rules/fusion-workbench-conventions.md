@@ -238,7 +238,7 @@ It is none of the three marker vocabularies this project carries, and the differ
 
 ## Dispatching another agent
 
-**An agent may dispatch another operative agent.** Nothing forbids it and nothing enforces a ban, so a pass that needs to fan out, fans out. It leaves the bound that matters untouched, and that bound is `## Backlog entries — work items` above: no agent originates one on its own initiative.
+**An agent may dispatch another agent.** Nothing forbids it and nothing enforces a ban, so a pass that needs to fan out, fans out. Two bounds hold for every agent, not for the orchestrator alone: the `consultant` is no executor, so no task is routed to it, and an agent dispatches it only for a second opinion on a concept or, through `/fusion:discuss`, as the second discussion partner; the `orchestrator` is dispatched by no agent at all. The dispatch leaves the bound that matters untouched, and that bound is `## Backlog entries — work items` above: no agent originates one on its own initiative.
 
 **A human gate fires in the orchestrator's own loop, and a nested dispatch never reaches one** (`agents/orchestrator.md` `## Human Gate Rules` holds the conditions). So an agent that may be approaching a gate condition **halts and does not proceed**. An `analyst` determines whether one is present: no condition, and the work goes on; a condition, and it travels up to the orchestrator, where the user answers as before.
 
