@@ -75,7 +75,7 @@
   glob-nomatch-lint.test.ts 140
   guard-bash-integration.test.ts 334
   guard-project-config-integration.test.ts 232
-  guard-state-shape.test.ts 320
+  guard-state-shape.test.ts 343
   helpers/citation-scan.ts 56
   helpers/growth-bound.ts 168
   helpers/guard-harness.ts 1047
@@ -104,4 +104,4 @@
   surface-growth-bound.test.ts 577
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22152
+  total 22175

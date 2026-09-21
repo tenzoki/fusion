@@ -371,7 +371,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17; step 8 (the one live pointer in `bin/` is gone) and step 9
 
-22. [IN PROGRESS] **Pin the dispatch row's identity, the absent-key rule and the heartbeat's refresh and negatives** (row 1)
+22. [DONE] **Pin the dispatch row's identity, the absent-key rule and the heartbeat's refresh and negatives** (row 1)
     - Executor: `coder`
     - Record: `260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md`
     - Site at HEAD: `hooks/lib/__tests__/guard-state-shape.test.ts:253-319` asserts `event`, `task`, `agent`, `session_id`, `detail` on a `task_start` row and nothing about `person`/`checkout`; `grep -rln heartbeatSessionMarker hooks/lib/__tests__/` prints nothing. `heartbeatSessionMarker` (`hooks/lib/orchestrator-events.ts:233-240`) refreshes `fusion-workbench/.session-marker`'s mtime when the marker exists and is at least 60 s old, never creates one, and is called from `hooks/tracker.ts` only. The harness (`helpers/guard-harness.ts`) offers `runDispatch(root, payload, overrides)` and `runTracker(root, toolName, toolInput, overrides)`; `overrides` is an env map, so `FUSION_PERSON` and `FUSION_CHECKOUT` can be set per case. The `agentstate.yaml` gate case of the original list is moot (`6357ebfc`).

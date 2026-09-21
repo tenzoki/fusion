@@ -60,7 +60,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, utimesSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import {
   CASE_TIMEOUT,
@@ -73,6 +73,7 @@ import {
   readOrchestratorEvents,
   runDispatch,
   runToolCall,
+  runTracker,
   withProject,
   type Project,
 } from "./helpers/guard-harness.js";
@@ -256,7 +257,8 @@ describe("the dispatch row is gated on the payload's session identifier alone", 
     () => {
       withProject(({ root }) => {
         expect(existsSync(resolve(root, AGENTSTATE))).toBe(false);
-        runDispatch(root, { ...DISPATCH, sessionId: "sid-project-scoped" });
+        // The shell's SessionStart export blanked, so `bin/fusion-identity` decides; the scratch root is no git tree, so it owes no half, and each half is an ABSENT key, never an empty one.
+        runDispatch(root, { ...DISPATCH, sessionId: "sid-project-scoped" }, { FUSION_PERSON: "", FUSION_CHECKOUT: "" });
 
         const rows = dispatchRows(root);
         expect(rows, "the gate admitted nothing").toHaveLength(1);
@@ -267,6 +269,8 @@ describe("the dispatch row is gated on the payload's session identifier alone", 
           session_id: "sid-project-scoped",
           detail: DISPATCH.description,
         });
+        expect(Object.keys(rows[0])).not.toContain("person");
+        expect(Object.keys(rows[0])).not.toContain("checkout");
 
         // What the ordinary dispatch path writes under `.guard-state/` is the
         // byte measurement's two memo files and NOTHING else — in particular no
@@ -279,6 +283,25 @@ describe("the dispatch row is gated on the payload's session identifier alone", 
     },
     CASE_TIMEOUT,
   );
+
+  it("carries the identity pair the SessionStart export names", () => {
+    withProject(({ root }) => {
+      runDispatch(root, { ...DISPATCH, sessionId: "sid-1" }, { FUSION_PERSON: "Test Person <t@example.com>", FUSION_CHECKOUT: "5e8248d7" });
+      expect(dispatchRows(root)[0]).toMatchObject({ person: "Test Person <t@example.com>", checkout: "5e8248d7" });
+    });
+  }, CASE_TIMEOUT);
+
+  it("the heartbeat refreshes a session marker older than 60 s, keeps a younger one's mtime, and creates none", () => {
+    withProject(({ root }) => {
+      const marker = resolve(root, "fusion-workbench", ".session-marker");
+      const call = () => runTracker(root, "Bash", { command: "true" });
+      call(); expect(existsSync(marker), "no marker means no marker afterwards").toBe(false);
+      writeFileSync(marker, "", "utf-8"); const young = statSync(marker).mtimeMs; call();
+      expect(statSync(marker).mtimeMs, "younger than 60 s: untouched").toBe(young);
+      const old = new Date(Date.now() - 120_000); utimesSync(marker, old, old); call();
+      expect(statSync(marker).mtimeMs, "aged past 60 s: refreshed").toBeGreaterThan(old.getTime());
+    });
+  }, CASE_TIMEOUT);
 
   it(
     "writes nothing on a leftover agentstate.yaml, which no longer admits a row",
