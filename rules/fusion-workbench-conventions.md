@@ -189,6 +189,7 @@ One file per item rather than one list file, because two checkouts adding work a
 **Domain:** code | data
 **Status:** open | claimed | paused | done | dropped
 **Claim:** <8 hex> — <person>, YYMMDD-HHMM
+**Mode:** autonomous
 **Active spec/plan:** <storeless basename of the spec or plan in force>
 **Depends-on:** <basename>, <basename>
 **Cross-references:** <basename>, <basename>
@@ -201,7 +202,9 @@ One file per item rather than one list file, because two checkouts adding work a
 <One paragraph: what this item aims for, and how a reader would know it was reached.>
 ```
 
-`**Claim:**`, `**Active spec/plan:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** when there is nothing to say, never present and empty. Every other field is always written.
+`**Claim:**`, `**Mode:**`, `**Active spec/plan:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** when there is nothing to say, never present and empty. Every other field is always written.
+
+**`**Mode:** autonomous` is the user's standing answer to the gates about the solution**; absent is the ordinary mode. It stands on the user's word: an agent writes it only when the user says so — by hand, through `/fusion:memo`, or by the orchestrator in the same command as a claim the user confirmed — and never from the directive's prose. Which gate conditions it answers, and which it never does, is `agents/orchestrator.md` `## Human Gate Rules`; a `gate_response` citing it records an answer the user gave, so `## Dispatching another agent` holds.
 
 **`**Status:**` takes five values and there is no sixth.** The first three are live; the last two are terminal.
 
@@ -213,7 +216,7 @@ One file per item rather than one list file, because two checkouts adding work a
 | `done` | the work landed | stays, naming the checkout that did it |
 | `dropped` | no longer live; the body says why, citing the item that replaced it or the reason | stays if one stood |
 
-It is none of the three marker vocabularies this project already carries, and the differences are the reason. `claimed` is the value none of them has, and it is the one this store exists to carry: it says *which checkout*, which is what stops two people doing one job. Nothing here splits "answered" from "realised" the way a decision's `_a_` and `_i_` do, because an item has no such seam: it is done when the work landed. And `dropped` covers in one value what an issue's `_c_` and `_d_` and the six-marker Circle vocabulary's `_c_`, `_b_`, `_s_` and `_d_` distinguished by marker, because the body says which of them happened and the marker never did more than abbreviate it. The Circle vocabulary's remaining distinction, closed-coherent against bounded closure, rested on a Coherence verdict that no longer exists. **That argument reaches only the ways of *finishing*, and it keeps all of them**: `paused` is not one, so nothing is added back there.
+It is none of the three marker vocabularies this project carries, and the differences are the reason. `claimed` is the value none of them has, and it is the one this store exists to carry: it says *which checkout*, which is what stops two people doing one job. Nothing here splits "answered" from "realised" the way a decision's `_a_` and `_i_` do, because an item has no such seam: it is done when the work landed. `dropped` covers in one value what an issue's `_c_` and `_d_` split by marker; the body says which.
 
 **`paused` is entered from `open` or `claimed` and left to `open`, `claimed` or `dropped`**, and it is the one live value an item returns from. `done` is the value no edge joins to `paused` in either direction: work that landed passed through somebody working on it, which is `claimed`. Pausing writes the reason and clears `**Claim:**`; resuming is a plain Claim. **A paused item's body says *what* it is waiting for** and never a date, because nothing checks a date; where the thing waited on is another work item, that statement is a `**Depends-on:**` entry rather than prose.
 
@@ -229,7 +232,7 @@ It is none of the three marker vocabularies this project already carries, and th
 
 **`**Active spec/plan:**` names the artifact the work runs on**, as one or more storeless basenames with the marker wildcarded (`## Filename Patterns`), comma-separated where a spec and the plan drawn from it both stand; a short qualifying clause beside a basename is allowed, and is what lets one field say which of the two is which. **The write rides the act**: whoever makes a spec or plan the one this work runs on writes the field in the same command, and no pass maintains it afterwards — a field a separate bookkeeping step owns is a field that drifts from what the work is actually running on. Absent means no artifact yet, and a reader takes that as the statement it is. Its second reader is the closure step, which reads the plan whose `## Where this work stops` it puts back to the user clause by clause; absent, that step has only the plan the session happens to be holding, which nothing persists. **It keeps the Circle head field's name deliberately**: `active` qualifies the spec in force and not the item, whose state is `**Status:**`, and the name is what lets every record and every pointer citing the field keep resolving across the conversion. Binding record: `260910-2011_*_a-work-item-has-no-field-for-the-plan-it-runs-on-so-the-closure-step-lost-its-source.md`.
 
-**Two bounds, and only the first survived the cut.** **No agent originates a work item on its own initiative**: the user files, by hand, through `/fusion:memo`, or by instructing the orchestrator, whose write then carries the user's words as the Directive and `**Filed by:** user` (`260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md`); a defect an agent finds is still an issue, a choice point a decision record. The second bound, that the backlog is not the work queue, is gone with the queue it distinguished the store from.
+**No agent originates a work item on its own initiative**: the user files, by hand, through `/fusion:memo`, or by instructing the orchestrator, whose write then carries the user's words as the Directive and `**Filed by:** user` (`260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md`); a defect an agent finds is still an issue, a choice point a decision record.
 
 **Maintenance is the orchestrator's, at the user's word, with no agent dispatch.** Splitting one item's work across several, merging several statements of one job into one, and moving an item to `done` or `dropped` are edits somebody performs once the user has said so; the user is confirming each one anyway, and dispatching an agent to perform a confirmed edit costs a dispatch to save nothing. None of the operations adds work to the store, which is what keeps the no-agent-originates bound intact across them: the text a merge writes consolidates items already filed.
 

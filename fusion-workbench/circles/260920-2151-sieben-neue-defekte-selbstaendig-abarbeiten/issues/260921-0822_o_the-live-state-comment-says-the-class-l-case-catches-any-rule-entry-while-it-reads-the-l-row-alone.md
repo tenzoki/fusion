@@ -1,0 +1,12 @@
+The LIVE_STATE comment says the class L case catches any rule entry that misses the list, while the case reads the L row alone
+---
+`hooks/lib/staging-drift.ts:176-183` states the list is "exactly class L, class R2 and class R3" of `rules/workbench-tracking.md` and then guarantees: "`staging-drift.test.ts` reads the class L row and probes each token, so an entry that reaches the rule without reaching here fails `npm test`". The case (`hooks/lib/__tests__/staging-drift.test.ts:326-337`) parses the one line starting `| **L.` and nothing else. An entry added to the R2 or R3 row of the rule without a `LIVE_STATE` row passes the suite, so the guarantee holds for one of the three classes the sentence before it names. The same block's next paragraph (`:185-187`) says class L is "the files here and the directories in `LIVE_PREFIXES`", while three of the seven files "here" are R2 and R3 (`orchestrator-events.jsonl`, `.fusion-setup`, `.asset-provenance`, `:213-215`).
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+**Cross-references:** `260918-1409_*_the-live-state-list-claims-class-l-in-full-while-two-class-l-entries-classify-as-unclassified.md` (the fix that wrote the sentence), `260921-0807_*_the-class-l-case-pins-rule-into-list-and-nothing-pins-list-into-rule.md` (the converse direction; this record is the forward direction's reach over R2 and R3, which that record names in its evidence and not in its acceptance)
+
+**Route:** `coder` — a TypeScript doc comment, one test case, and the rebuilt `hooks/dist/lib/staging-drift.js`.
+
+**Evidence, at `9c7101aa`.** `sed -n 182,183p hooks/lib/staging-drift.ts` prints the guarantee; `grep -n 'startsWith("| \*\*' hooks/lib/__tests__/staging-drift.test.ts` prints one line, the `L.` prefix. The R2 and R3 rows (`rules/workbench-tracking.md` `## The four classes`, the lines starting `| **R2.` and `| **R3.`) carry one and two backticked tokens respectively, in the same cell shape the case already parses.
+
+**Acceptance.** Either the case reads the three rows (`L.`, `R2.`, `R3.`) through the same parser and probes every token, so the comment's sentence becomes true as written, or the sentence at `:182-183` names class L alone; and the paragraph at `:185-187` says which of the files in `LIVE_STATE` are class L (the four `.session-marker` through `monitor`) rather than "the files here". `hooks/dist/lib/staging-drift.js` rebuilt; `cd hooks && npm test` exits 0, any test growth funded inside the hook-test bound.

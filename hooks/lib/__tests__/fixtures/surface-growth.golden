@@ -18,12 +18,12 @@
   curator.md 76852
   editor.md 13156
   ontocoder.md 15875
-  orchestrator.md 89393
+  orchestrator.md 91881
   planner.md 19153
   reconciler.md 21171
   reviewer.md 12837
   shaper.md 17017
-  total 312083
+  total 314571
 
 [skills bytes]
   archive/SKILL.md 24328
@@ -34,13 +34,13 @@
   curate/SKILL.md 12017
   discuss/SKILL.md 14346
   help/SKILL.md 16474
-  memo/SKILL.md 12969
+  memo/SKILL.md 12998
   migrate/SKILL.md 39735
   news/SKILL.md 8749
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19424
-  total 227881
+  total 227910
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
