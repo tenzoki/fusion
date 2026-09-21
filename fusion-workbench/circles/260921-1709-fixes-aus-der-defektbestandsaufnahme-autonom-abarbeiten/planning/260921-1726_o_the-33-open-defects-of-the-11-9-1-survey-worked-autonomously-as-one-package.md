@@ -236,7 +236,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none (before step 11 by necessity: same paragraph)
 
-11. [IN PROGRESS] **Replace the analyst delegation with a read of the gate list by the dispatching agent** (row 23)
+11. [DONE] **Replace the analyst delegation with a read of the gate list by the dispatching agent** (row 23)
     - Executor: `coder`
     - Record: `260913-1108_*_the-gate-determination-is-delegated-to-an-analyst-that-holds-no-more-of-the-gate-list-than-the-caller.md`; working answer per `260921-1718_*_how-does-a-dispatched-agent-learn-the-gate-conditions-before-it-dispatches-another-agent.md` option 1
     - Site at HEAD: `rules/fusion-workbench-conventions.md` `## Dispatching another agent`, second paragraph: "So an agent that may be approaching a gate condition **halts and does not proceed**. An `analyst` determines whether one is present: no condition, and the work goes on; a condition, and it travels up to the orchestrator, where the user answers as before." `bin/fusion-rules <any agent>` emits no `agents/*.md`; `agents/analyst.md` carries no gate-determination type. `README-agents.md:45` and `:300` restate the halt.
