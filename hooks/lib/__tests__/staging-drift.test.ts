@@ -1,40 +1,19 @@
 /**
  * Staging drift — the measurement, run against real project roots.
  *
- * Every case here spawns a real subprocess against a real throwaway project:
+ * Every case but one spawns a real subprocess against a real throwaway project:
  * the subject is a working directory, a workbench root above it and a git
  * repository around both (`helpers/guard-harness.ts` says why, at its harness).
- *
- * ## The properties under test
- *
- * 1. **It reproduces the measured defect.** A modified root record, an
- *    untracked history entry and a `.commit-msg-tmp` are three faults, named.
- * 1b. **It classifies by location before it classifies by name.** An authored
- *    record whose topic slug says "commit message" is a `record` — the control
- *    this suite lacked, and the defect it let through (issue `260811-1141`).
- * 2. **It does not cry wolf.** The live example is `stilwerk/`, the voice
- *    profiles `/fusion:setup` copies in: hand-edited configuration that must be
- *    REPORTED and must not be a fault. The same for the machine-written
- *    surfaces and for this session's own history file. Why `shared/backlogs/`
- *    stopped being one is the `unclassified` entry in `lib/staging-drift.ts`'s
- *    own header.
- * 3. **The trigger is HEAD moving, read from the repository.** The tracker is
- *    silent while a record sits unstaged mid-Turn — the normal state — and
- *    speaks on the tool call that committed.
- * 4. **It reports once per miss, and again when the miss grows.**
- * 5. **It does not stand down in fusion's own repository**, where the defect
- *    was measured.
- * 6. **It changes nothing.** No path is staged, no commit is made, no workbench
- *    record is written — the acceptance forbids solving this by widening
- *    `git add`, and a mechanism that staged on its own behalf would be exactly
- *    that from the other side.
+ * The exception is the class L case below, which calls `classify()` directly.
  */
 
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
+import { classify } from "../staging-drift.js";
+import { pluginRoot } from "./helpers/citation-scan.js";
 import {
   CASE_TIMEOUT,
   childEnv,
@@ -343,6 +322,19 @@ describe("staging drift: what it reports without raising an alarm", () => {
     },
     CASE_TIMEOUT,
   );
+
+  it("holds the live-state lists to the tracking rule's class L row, in full", () => {
+    // Every backticked token of that row's Entries cell is an entry the rule
+    // places in class L; a trailing `/` marks a directory, probed by a child.
+    const rule = readFileSync(resolve(pluginRoot, "rules", "workbench-tracking.md"), "utf-8");
+    const cell = rule.split("\n").find((l) => l.startsWith("| **L."))?.split("|")[2] ?? "";
+    const tokens = [...cell.matchAll(/`([^`]+)`/g)].map((m) => m[1]);
+    expect(tokens, "the class L row of `## The four classes`").not.toEqual([]);
+    for (const t of tokens) {
+      const probe = t.endsWith("/") ? `${t}x` : t;
+      expect(classify(probe, "").klass, `class L names \`${t}\``).toBe("in-flight");
+    }
+  });
 
   it(
     "reads every history file under a store as a record, the session's own included",

@@ -165,13 +165,18 @@ const GIT_STATUS_TIMEOUT_MS = 10_000;
  */
 export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<task-id>.txt";
 /**
- * The live-state surfaces, by exact workbench-relative name. The list is read
- * off `rules/workbench-tracking.md` `## The four classes`, and it holds two of
- * that partition's classes in full rather than a selection of their members —
- * which is the property to check when the layout gains a root-anchored entry.
+ * The live-state surfaces, by exact workbench-relative name. Together with
+ * `LIVE_PREFIXES` below, the list is exactly class L, class R2 and class R3 of
+ * `rules/workbench-tracking.md` `## The four classes`: every entry those rows
+ * name and nothing else, so a retired surface leaves here when it leaves the
+ * rule (decision
+ * `260920-2228_*_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md`).
+ * `staging-drift.test.ts` reads the class L row and probes each token, so an
+ * entry that reaches the rule without reaching here fails `npm test`.
  *
- * **Class L**, the entries that stay in the checkout they were written in:
- * `.session-marker` and `monitor` below. This repository's own
+ * **Class L**, the entries that stay in the checkout they were written in: the
+ * files here and the directories in `LIVE_PREFIXES`, named by the rule's own
+ * row rather than repeated. This repository's own
  * `.gitignore` applies exactly that split, so in a project that follows it they
  * never reach `git status` at all. They are listed anyway because whether the
  * workbench is tracked, and how, is the project's decision — a consumer that
@@ -194,6 +199,8 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<tas
  */
 const LIVE_STATE = [
     { path: ".session-marker", why: "the orchestrator heartbeat — mtime is the signal" },
+    { path: ".checkout-id", why: "this checkout's identifier — minted once by bin/fusion-identity, never travels" },
+    { path: ".cadence-anchors", why: "the per-checkout cadence marks — written by bin/fusion-cadence-anchor" },
     { path: "monitor", why: "a verbatim copy of bin/monitor, re-created by /fusion:setup" },
     { path: "orchestrator-events.jsonl", why: "append-only — written by every event emission, in flight all session" },
     { path: ".fusion-setup", why: "the setup marker — written by /fusion:setup" },
@@ -230,10 +237,12 @@ const STORES = [
  * The root-anchored records: a file at the workbench root that a person authored
  * and a staging list therefore has to name.
  *
- * **Empty, deliberately.** Its one entry was `portfolio.md`, and it moved to
- * `LIVE_STATE` on 2026-08-23: `rules/workbench-tracking.md` places that file in
- * class L, regenerated in full by the ranking pass that wrote it, so calling it an authored
- * record told the model to stage a briefing the next run overwrites.
+ * **Empty, deliberately.** Its one entry was `portfolio.md`, which moved to
+ * `LIVE_STATE` on 2026-08-23 as class L (regenerated in full by the ranking
+ * pass that wrote it, so calling it an authored record told the model to stage
+ * what the next run overwrote) and left that list too once v11 removed the
+ * pass: `rules/workbench-tracking.md` now names it as an entry that left the
+ * layout, and a leftover copy classifies `unclassified`.
  *
  * The list is kept, along with its branch in `classify`, because the workbench
  * root is where a new surface arrives. The next one that is authored text rather

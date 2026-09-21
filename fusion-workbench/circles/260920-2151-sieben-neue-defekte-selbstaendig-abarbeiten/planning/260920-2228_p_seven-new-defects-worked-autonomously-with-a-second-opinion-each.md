@@ -165,7 +165,7 @@ Field key. **Record** is the storeless citation and where the file stands, in wo
    - **Second opinion:** discussion (`/fusion:discuss`), over the decision record named above
    - Dependencies: none
 
-7. **Make `LIVE_STATE` class L in full, and hold it there against the rule text**
+7. [DONE] **Make `LIVE_STATE` class L in full, and hold it there against the rule text**
    - Executor: `coder`
    - Record: `260918-1409_*_the-live-state-list-claims-class-l-in-full-while-two-class-l-entries-classify-as-unclassified.md`, in the issues store of the container `260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung`
    - Present at HEAD: `rules/workbench-tracking.md:24` names `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.commit-lock/`, `monitor` and `.guard-state/` as class L; the same `node -e` probe on `.checkout-id` and `.cadence-anchors` prints `unclassified` for both; line 182 of `hooks/lib/staging-drift.ts` spans class L as "`.session-marker` through `portfolio.md`".
