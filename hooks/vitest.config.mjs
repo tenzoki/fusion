@@ -40,7 +40,7 @@ import { defineConfig } from "vitest/config";
 // changed, nothing is skipped. What changed is how much of the machine one run
 // takes while another needs it — which is a statement about concurrency, which
 // is the question. Answering
-// `shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
+// `260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
 // option 2, alongside the build change in `scripts/build.mjs` and the two
 // observable waits in the files named above.
 //

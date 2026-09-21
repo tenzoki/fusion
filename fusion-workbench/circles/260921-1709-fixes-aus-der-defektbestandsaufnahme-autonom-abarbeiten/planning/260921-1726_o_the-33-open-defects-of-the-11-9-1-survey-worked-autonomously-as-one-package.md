@@ -296,7 +296,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-16. [IN PROGRESS] **Fix the side finding: the vitest config's store-prefixed citation, and put `.mjs` in the corpus**
+16. [DONE] **Fix the side finding: the vitest config's store-prefixed citation, and put `.mjs` in the corpus**
     - Executor: `coder`
     - Record: `260921-1718_*_the-vitest-config-cites-a-decision-with-its-store-segment-in-a-file-no-citation-corpus-reads.md` (this container's issues store, filed by this plan)
     - Site at HEAD: `hooks/vitest.config.mjs:43` cites the fork-cap decision with the shared decision store's segment in front of it; `fusion.json` `citations.extraPaths` is `["bin/*", "hooks/*.ts", "hooks/lib/*.ts"]`.
