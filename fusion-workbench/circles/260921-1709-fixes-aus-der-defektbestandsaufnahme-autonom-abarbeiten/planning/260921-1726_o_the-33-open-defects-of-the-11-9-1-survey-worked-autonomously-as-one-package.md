@@ -310,7 +310,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package C — the funding cut, then the test-bearing and code fixes it pays for
 
-17. **Roll the three re-baselining log sections out of the growth-bound test into a workbench record**
+17. [DONE] **Roll the three re-baselining log sections out of the growth-bound test into a workbench record**
     - Executor: `coder`
     - Record: none (the funding cut the directive's point 4 asks for; the cut is named, never a baseline edit)
     - Site at HEAD: `hooks/lib/__tests__/surface-growth-bound.test.ts` lines 92 to 243 hold `## The arming, 2026-08-15`, `## The cleanup re-baseline, 2026-08-17 — the hook tests, and them alone` and `## The merge re-baseline, 2026-09-05 — skills/ and the hook tests`, 152 comment lines of dated log; lines 245 to 257 already say the head-room-raise log was moved out of this file into `README-hooks.md` and that "the move is itself a reduction of this surface". No file cites the three headings (`grep -rn` over `README*.md`, `rules`, `agents`, `skills`, `docs`, `hooks/lib` prints nothing). The precedent is the pin log of `reference-resolution-lint.test.ts` (its header, lines 451 to 457: "roll, never drop", decision `260822-1229`, option 2).
@@ -323,7 +323,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: step 2 (the suite is trusted alone again)
 
-18. **Make the lock write a commit row only for a commit object created in the held region** (row 33)
+18. [IN PROGRESS] **Make the lock write a commit row only for a commit object created in the held region** (row 33)
     - Executor: `coder`
     - Record: `260918-0834_*_the-lock-reads-any-head-movement-as-a-landed-commit-so-a-reset-inside-the-held-region-writes-a-row.md`
     - Site at HEAD: `bin/fusion-commit-lock` `emit_commit_event`: `[ "$head" = "$before" ] && return 0` then `commit_is_log_only "$before" && return 0`; the `with` branch captures `head_before` after `do_acquire`; nothing reads a region start or the reflog. `hooks/lib/__tests__/fusion-commit-lock.test.ts` `describe("fusion-commit-lock: the machine-written commit row")` has no reset case; its five-line model is the case "writes no row when the wrapped command left HEAD where it was".
@@ -335,7 +335,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-19. **Report a citation that spells the record's current marker at write time** (row 11)
+19. [IN PROGRESS] **Report a citation that spells the record's current marker at write time** (row 11)
     - Executor: `coder`
     - Record: `260908-0027_*_the-write-time-citation-check-is-silent-on-the-class-that-produced-every-violation-of-this-session.md`
     - Site at HEAD: `hooks/lib/citation-scan.ts:1150-1152`: `findRecord(stamp + rest)` matches the literal marker, so the test file's `CLOSED_ISSUE` fixture cited with its own current marker letter spelled out returns `found(hit)`, status `resolved`; the `markerM` branch at `:1154` runs only when nothing was found. `hooks/lib/citation-form.ts:168` `REPORTED_STATUSES = ["store-prefixed", "stale-marker"]`. `hooks/lib/__tests__/citation-form.test.ts` `describe("which verdicts reach the writer")` has cases for both reported statuses, for `dangling` (silent) and for the wildcard form (silent), and none for this class; its fixtures are `CLOSED_ISSUE`, `STALE_MARKER`, `STORELESS`.
@@ -347,7 +347,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-20. **Read a citation wrapped across two lines, refuse a line-number citation, and state the count** (rows 20 and 9, lint half)
+20. [IN PROGRESS] **Read a citation wrapped across two lines, refuse a line-number citation, and state the count** (rows 20 and 9, lint half)
     - Executor: `coder`
     - Records: `260911-0752_*_a-citation-wrapped-across-a-line-break-is-checked-by-neither-class-and-fails-silently.md`; `260906-0335_*_nine-of-twelve-line-number-citations-in-shipped-text-name-the-wrong-line-and-no-gate-resolves-one.md` (its text half is step 3)
     - Site at HEAD: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `scanHeadingAnchors` (lines 390 to 432) runs `ANCHOR_RE` per `{ line, text }` and joins nothing; `scanPluginPaths` (303 to 362) resolves a path token and never looks at what follows it. The conventions already mandate anchors and forbid line numbers in living text (`rules/fusion-workbench-conventions.md` `## Filename Patterns`).
