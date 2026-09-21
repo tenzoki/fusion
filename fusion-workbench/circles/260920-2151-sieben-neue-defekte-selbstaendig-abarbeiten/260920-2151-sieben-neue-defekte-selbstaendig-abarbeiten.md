@@ -4,6 +4,7 @@
 **Domain:** code
 **Status:** claimed
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260920-2222
+**Active spec/plan:** 260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md (the plan; no spec, planned from the directive)
 **Cross-references:** 260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 ---
