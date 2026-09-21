@@ -516,8 +516,8 @@ function reportStatements(rel: string, found: CascadeStatement[]): string {
         `    domains: ${s.domains.join(", ")}   inputs: ${s.inputs.join(", ")}\n` +
         `    ${s.text.slice(0, 160)}\n` +
         `    -> ${DEFINITION_SITE} Setup Step 5 is the one definition. Obtain the domain,\n` +
-        `       do not decide it: run bin/fusion-session-domain (the route /fusion:next,\n` +
-        `       /fusion:direct and /fusion:reconcile take), or take it from a\n` +
+        `       do not decide it: run bin/fusion-session-domain (the route\n` +
+        `       /fusion:reconcile takes), or take it from a\n` +
         `       **Domain:** dispatch parameter.`,
     )
     .join("\n");

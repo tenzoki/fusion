@@ -212,7 +212,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-9. [IN PROGRESS] **Name only a command that exists in the domain-cascade remediation text** (row 32, text half; the record closes at step 21 with its gate half)
+9. [DONE] **Name only a command that exists in the domain-cascade remediation text** (row 32, text half; the record closes at step 21 with its gate half)
    - Executor: `coder`
    - Record: `260916-2145_*_a-gates-remediation-text-names-two-commands-that-do-not-exist-and-no-gate-resolves-a-command-token.md` (closed at step 21)
    - Site at HEAD: `hooks/lib/__tests__/domain-cascade.test.ts:519-520` "run bin/fusion-session-domain (the route /fusion:next,\n       /fusion:direct and /fusion:reconcile take), or take it from a".
