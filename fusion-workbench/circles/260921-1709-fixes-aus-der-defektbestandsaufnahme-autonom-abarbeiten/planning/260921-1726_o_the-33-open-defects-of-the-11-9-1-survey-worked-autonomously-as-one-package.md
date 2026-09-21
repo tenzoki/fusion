@@ -420,7 +420,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-26. [IN PROGRESS] **Let a project declare a record an exhibit** (row 10)
+26. [DONE] **Let a project declare a record an exhibit** (row 10)
     - Executor: `coder`
     - Record: `260906-0416_*_a-project-may-widen-the-citation-corpus-and-never-narrow-it-so-an-exhibit-has-no-declarable-form.md`; working answer per `260906-0416_*_should-a-project-be-able-to-declare-a-record-an-exhibit-and-what-does-that-declaration-cover.md` option 2
     - Site at HEAD: `hooks/lib/config.ts:209-242` and `:625-635` read `citations.extraPaths` and nothing else under `citations`; `hooks/lib/citation-scan.ts:1038` `const fileExempt = rel in RECORD_EXAMPLE_FILES` is the only whole-file exemption and is a literal; `hooks/citation-check.ts:335-353` prints `declared-patterns=` and `declared-files=`; `templates/fusion.json` and `fusion.json` carry the `_citations` note byte-identically (`config.test.ts` pins it).

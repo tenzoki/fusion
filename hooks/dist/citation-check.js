@@ -29,6 +29,18 @@
  * already in the corpus contributes nothing and a declared `.go` is added. A
  * project that declares nothing reads exactly the corpus it read before.
  *
+ * And since 2026-09-21 the corpus can be NARROWED by one record at a time:
+ * `citations.exhibits` names records, by storeless basename with the marker
+ * wildcarded, whose every token is an exhibit; `createScanner()` takes the
+ * list and reports each such token `exempt` with the reason
+ * `declared-exhibit`, shape-decided verdicts included, so a fenced
+ * store-prefixed transcript in a declared record is no longer a row. The
+ * declaration is printed as `declared-exhibits=` beside the verdict, because
+ * a silencing leaf that is invisible is the one most likely to be reached for
+ * when a gate is inconvenient; the residual — a genuine violation declared
+ * away is silenced, and nothing mechanical tells the two apart — is accepted
+ * in `lib/citation-scan.ts`'s header on the reasoning `foreign:` was.
+ *
  * ## The declaration reaches both hand-run helpers and neither gate
  *
  * `citation-sweep.ts` resolves the same leaf through the same function, and
@@ -120,7 +132,7 @@
  *   anchor=workbench-root
  *   root=<project directory>
  *   files=<n>            edited-files=<n>
- *   declared-patterns=<n>   declared-files=<n>
+ *   declared-patterns=<n>   declared-files=<n>   declared-exhibits=<n>
  *   tokens=<n>           judged=<n>
  *   resolved=<n>         dangling=<n>        store-prefixed=<n>
  *   edited-violations=<n>   unedited-violations=<n>
@@ -170,7 +182,9 @@
  * patterns name, which is a different figure and is why both are printed. It
  * reads `unavailable` — never `0` — where git would not answer for the tree,
  * because a count that could not be taken is not a count of none. `files`
- * counts the whole corpus after the deduplication above.
+ * counts the whole corpus after the deduplication above. `declared-exhibits`
+ * is what the project wrote under `citations.exhibits`, like
+ * `declared-patterns`: an entry naming no file in the corpus is not reported.
  *
  * The loader's diagnostics, and one line per pattern that matched nothing or
  * was refused, go to **stderr**: they are about the declaration rather than
@@ -266,7 +280,9 @@ function main(argv) {
         return 2;
     }
     const workbenchRoot = join(root, "fusion-workbench");
-    const scanner = createScanner(workbenchRoot);
+    // the configuration first: the scanner takes the declared exhibits
+    const config = loadConfig({ projectRoot: root });
+    const scanner = createScanner(workbenchRoot, { exhibits: config.citations.exhibits });
     const files = [
         ...markdownFilesUnder(workbenchRoot).map((f) => ({
             rel: `fusion-workbench/${f.rel}`,
@@ -279,7 +295,6 @@ function main(argv) {
     ];
     // what the project declared, added to the corpus and never subtracted from
     // it: a declared file already in the list above contributes nothing
-    const config = loadConfig({ projectRoot: root });
     const declared = declaredCitationFiles(root, config.citations.extraPaths);
     for (const line of [...config.diagnostics, ...declaredCitationNotes(declared)]) {
         process.stderr.write(`fusion-citation-check: ${line}\n`);
@@ -311,6 +326,7 @@ function main(argv) {
         `edited-files=${files.filter((f) => f.edited).length}`,
         `declared-patterns=${config.citations.extraPaths.length}`,
         `declared-files=${declared.unavailable ? "unavailable" : declared.files.length}`,
+        `declared-exhibits=${config.citations.exhibits.length}`,
         `tokens=${hits.length}`,
         `judged=${judged.length}`,
         `resolved=${p.resolved.length}`,

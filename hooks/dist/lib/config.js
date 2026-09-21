@@ -19,9 +19,9 @@
  *
  * ## The settings
  *
- * `citations.extraPaths` is the ONLY setting this loader resolves. The
- * `orchestrator` container is still walked, and it carries nothing but its two
- * retirements.
+ * `citations.extraPaths` and, since 2026-09-21, `citations.exhibits` are the
+ * two settings this loader resolves. The `orchestrator` container is still
+ * walked, and it carries nothing but its two retirements.
  *
  * `orchestrator.maxTurns` was the Turn budget of the orchestrator's Phase-2
  * loop and went with that loop on 2026-09-10. The budget had been prose in
@@ -55,6 +55,21 @@
  * those patterns name to the Markdown corpus they already read; no hook reads
  * this one either. A project that declares nothing gets `[]`, which is exactly
  * the corpus those two helpers read today.
+ *
+ * `citations.exhibits` is the subtractive counterpart: the records a project
+ * declares as EXHIBITS, by storeless basename with the marker wildcarded, whose
+ * every token the two helpers report `exempt` with the reason
+ * `declared-exhibit` and the sweep therefore never rewrites. A record whose
+ * subject is a path has to quote that path, and until this leaf a project
+ * could widen the corpus and never narrow it
+ * (`260906-0416_*_a-project-may-widen-the-citation-corpus-and-never-narrow-it-so-an-exhibit-has-no-declarable-form.md`;
+ * decision
+ * `260906-0416_*_should-a-project-be-able-to-declare-a-record-an-exhibit-and-what-does-that-declaration-cover.md`,
+ * option 2). Every entry must end in `.md`: a citation may be truncated to a
+ * prefix, but a silencing declaration that read `2609` would declare every
+ * record of a month an exhibit, so the whole array is dropped and named when
+ * one entry is a prefix. The reach and the accepted residual are in
+ * `lib/citation-scan.ts`'s header.
  *
  * It is a DECLARATION because the question underneath it cannot be decided
  * from a file's text. Outside Markdown there is no fence and no block quote,
@@ -190,6 +205,7 @@ const DEFAULTS = {
     // reads the resolved value and does not mutate it in place.
     citations: {
         extraPaths: [],
+        exhibits: [],
     },
 };
 /**
@@ -288,6 +304,24 @@ function explainArrayOfNonEmptyStrings(value) {
     return null;
 }
 /**
+ * `citations.exhibits`' rule: the array rule above, plus every entry ends in
+ * `.md`. The scanner's `basenameMatcher` reads an entry without `.md` as a
+ * PREFIX, which is right for a citation and wrong for a declaration that
+ * silences: `2609` would declare a month of records exhibits. Whole-array drop
+ * with the index, as every leaf failure here.
+ */
+function explainArrayOfRecordBasenames(value) {
+    const strings = explainArrayOfNonEmptyStrings(value);
+    if (strings !== null)
+        return strings;
+    for (const [index, entry] of value.entries()) {
+        if (!entry.endsWith(".md")) {
+            return `must be an array of record basenames ending in .md, but the element at index ${index} does not end in .md`;
+        }
+    }
+    return null;
+}
+/**
  * Every leaf this loader reads, with the type it must have.
  *
  * The table IS the rule, which is why it is a table: a leaf that is not named
@@ -310,6 +344,7 @@ const CONTAINER_LEAF_RULES = {
     orchestrator: {},
     citations: {
         extraPaths: { explain: explainArrayOfNonEmptyStrings },
+        exhibits: { explain: explainArrayOfRecordBasenames },
     },
 };
 /**
@@ -503,6 +538,7 @@ export function loadConfig(sources) {
     const value = {
         citations: {
             extraPaths: pickCitations("extraPaths"),
+            exhibits: pickCitations("exhibits"),
         },
         diagnostics,
     };

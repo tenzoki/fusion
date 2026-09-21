@@ -119,3 +119,6 @@ separate asymmetry that a project can widen the corpus and never narrow it
 Neither settles the other.
 
 **Filed by:** analyst, Kai Stalmann <ks@qantr.com>, checkout 5e8248d7
+
+---
+Working answer (plan 260921-1726): option 2 — a subtractive leaf `citations.exhibits`, per record by storeless basename, every token in a declared record exempt with the reason `declared-exhibit`, the checker printing `declared-exhibits=` beside its verdict; option 4 is not taken and not foreclosed; implemented in the commit that carries this line

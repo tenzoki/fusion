@@ -251,8 +251,14 @@ export interface Scanner {
  * Bind the grammar to a workbench root. The two indexes below are memoised per
  * scanner, and for one reason: both are read once per token and the tree does
  * not move under a run. A caller that needs a fresh read makes a fresh scanner.
+ *
+ * `opts.exhibits` is the project's `citations.exhibits` (the header's
+ * declared-exhibit paragraph); absent or empty, no file is an exhibit and the
+ * grammar reads exactly as it did before the leaf existed.
  */
-export declare function createScanner(workbenchRoot: string): Scanner;
+export declare function createScanner(workbenchRoot: string, opts?: {
+    exhibits?: string[];
+}): Scanner;
 /** Every agent's name, read off the prompt directory rather than hard-coded. */
 export declare function agentNames(pluginRoot: string): string[];
 /**

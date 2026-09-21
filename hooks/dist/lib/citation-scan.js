@@ -240,6 +240,43 @@
 // approximated (`rules/critical-stance.md` §4). Its own docstring carries the
 // six-branch case split and what it refuses to decide.
 //
+// AND SINCE 2026-09-21 A PROJECT CAN NARROW IT BY ONE RECORD AT A TIME:
+// `citations.exhibits` in its `fusion.json` names records, by storeless
+// basename with the marker wildcarded, whose subject is a path and which
+// therefore have to quote one — a transcript, a reproduced checker message, a
+// listing of where files were found. `createScanner()` takes the list, and a
+// corpus file whose OWN basename matches an entry (by `basenameMatcher`, the
+// lookup a citation resolves through, so the declaration survives an archive
+// sweep exactly as a citation does) has every token reported `exempt` with
+// the reason `declared-exhibit`. The reason sits FIRST in the chain and is
+// not in `RESOLUTION_PREMISED_EXEMPTIONS`: its premise is the record's
+// subject, as `retired-layout-file`'s is, so it reaches the shape-decided
+// `store-prefixed` verdict too, which is the whole point — the reporting
+// project's exhibits were fenced store-prefixed tokens, and a fence does not
+// silence a verdict that needs no lookup. The sweep rewrites nothing that
+// carries a reason, so an exhibit stays as written with no sweep code. The
+// question it decides is "did the project declare this record", which is
+// decidable because somebody wrote it in a git-tracked file; the leaf's own
+// rule in `lib/config.ts` refuses an entry that is not a `.md` basename, since
+// a prefix there would declare a month of records at once. What it does NOT
+// decide, stated rather than found later: whether the record really is an
+// exhibit. A project can silence a genuine violation by declaring it, and
+// nothing mechanical distinguishes the two — the residual `foreign:` carries,
+// accepted on the same reasoning. What bounds it: `bin/fusion-citation-check`
+// prints `declared-exhibits=` beside its verdict, the tokens land in
+// `partition()`'s `exempt` bucket, which every census prints, and a `.md`
+// entry naming `rules/decision-record-examples.md`'s basename would silence
+// the teaching file's coverage, so the shipped configuration declares none.
+// Two readers do not consult the leaf: the blocking gate
+// `workbench-citation-lint.test.ts`, for the reason it reads no `extraPaths`;
+// and the write-time hook (`lib/citation-form.ts`), which already skips every
+// hit carrying a reason, so an UNFENCED store-prefixed token in a declared
+// exhibit still draws the write-time sentence on the lines just written.
+// Working answer under decision
+// 260906-0416_*_should-a-project-be-able-to-declare-a-record-an-exhibit-and-what-does-that-declaration-cover.md
+// (option 2), closing
+// 260906-0416_*_a-project-may-widen-the-citation-corpus-and-never-narrow-it-so-an-exhibit-has-no-declarable-form.md.
+//
 // This is a measuring instrument, not a fixer (`rules/critical-stance.md` §2):
 // it reads and reports, it never rewrites a citation.
 // ---------------------------------------------------------------------------
@@ -815,9 +852,14 @@ const RESOLUTION_PREMISED_EXEMPTIONS = new Set(["record-example-file", "fenced-c
  * Bind the grammar to a workbench root. The two indexes below are memoised per
  * scanner, and for one reason: both are read once per token and the tree does
  * not move under a run. A caller that needs a fresh read makes a fresh scanner.
+ *
+ * `opts.exhibits` is the project's `citations.exhibits` (the header's
+ * declared-exhibit paragraph); absent or empty, no file is an exhibit and the
+ * grammar reads exactly as it did before the leaf existed.
  */
-export function createScanner(workbenchRoot) {
+export function createScanner(workbenchRoot, opts = {}) {
     const present = existsSync(join(workbenchRoot, ".fusion-setup"));
+    const exhibitRes = (opts.exhibits ?? []).map(basenameMatcher);
     let wbIndex = null;
     function workbenchIndex() {
         if (wbIndex)
@@ -917,6 +959,9 @@ export function createScanner(workbenchRoot) {
         const hits = [];
         const fileExempt = rel in RECORD_EXAMPLE_FILES;
         const layoutExempt = rel in RETIRED_LAYOUT_FILES;
+        // the corpus file's OWN basename, whichever root the caller names it from
+        const base = rel.slice(rel.lastIndexOf("/") + 1);
+        const declaredExhibit = exhibitRes.some((re) => re.test(base));
         const fenced = fencedContentLines(lines);
         for (let li = 0; li < lines.length; li++) {
             const { line, text } = lines[li];
@@ -932,43 +977,45 @@ export function createScanner(workbenchRoot) {
                 covered.push([idx, idx + token.length]);
                 const before = text.slice(0, idx);
                 const headField = isHeadFieldValue(before, text.slice(idx + token.length));
-                const reason = layoutExempt
-                    ? "retired-layout-file"
-                    : fileExempt
-                        ? "record-example-file"
-                        : // ahead of `fenced-code`, unlike the other writer-supplied markers:
-                            // this one's premise is the token's REFERENT, so it must reach the
-                            // shape-decided `store-prefixed` verdict too, and a writer who both
-                            // qualifies and fences must not still be told to respell a path
-                            // that is not this project's to respell.
-                            carriesForeignQualifier(before)
-                                ? "foreign-record"
-                                : // ahead of `blockquote`: inside a fence a leading `>` is literal text
-                                    // and not a quotation, so on a line that satisfies both this is the
-                                    // true reason and the other is a coincidence of the first character.
-                                    fenced[li]
-                                        ? "fenced-code"
-                                        : blockquoted
-                                            ? "blockquote"
-                                            : inAnnouncedIllustration(before)
-                                                ? "announced-illustration"
-                                                : inFooterTemplateSpan(before)
-                                                    ? "footer-template"
-                                                    : // a token cut at a `$`, `<` or `{` is the head of a template
-                                                        // (`<stamp>_*_$f.md` in a shell illustration)
-                                                        isPlaceholder(token) || isPlaceholder(text.charAt(idx + token.length))
-                                                            ? "placeholder"
-                                                            : FABRICATED_NAME.test(token)
-                                                                ? "fabricated-name"
-                                                                : // a `*` anywhere but the marker position is a glob, not a citation
-                                                                    /\*/.test(token.replace(/_\*_/g, ""))
-                                                                        ? "glob"
-                                                                        : // a bare stamp that is the whole value of a `**Field:**`
-                                                                            // head line is the minute the record was written, not a
-                                                                            // pointer (the `**Date:**` case in the header)
-                                                                            kind === "stamp-bare" && headField
-                                                                                ? "head-field"
-                                                                                : null;
+                const reason = declaredExhibit
+                    ? "declared-exhibit"
+                    : layoutExempt
+                        ? "retired-layout-file"
+                        : fileExempt
+                            ? "record-example-file"
+                            : // ahead of `fenced-code`, unlike the other writer-supplied markers:
+                                // this one's premise is the token's REFERENT, so it must reach the
+                                // shape-decided `store-prefixed` verdict too, and a writer who both
+                                // qualifies and fences must not still be told to respell a path
+                                // that is not this project's to respell.
+                                carriesForeignQualifier(before)
+                                    ? "foreign-record"
+                                    : // ahead of `blockquote`: inside a fence a leading `>` is literal text
+                                        // and not a quotation, so on a line that satisfies both this is the
+                                        // true reason and the other is a coincidence of the first character.
+                                        fenced[li]
+                                            ? "fenced-code"
+                                            : blockquoted
+                                                ? "blockquote"
+                                                : inAnnouncedIllustration(before)
+                                                    ? "announced-illustration"
+                                                    : inFooterTemplateSpan(before)
+                                                        ? "footer-template"
+                                                        : // a token cut at a `$`, `<` or `{` is the head of a template
+                                                            // (`<stamp>_*_$f.md` in a shell illustration)
+                                                            isPlaceholder(token) || isPlaceholder(text.charAt(idx + token.length))
+                                                                ? "placeholder"
+                                                                : FABRICATED_NAME.test(token)
+                                                                    ? "fabricated-name"
+                                                                    : // a `*` anywhere but the marker position is a glob, not a citation
+                                                                        /\*/.test(token.replace(/_\*_/g, ""))
+                                                                            ? "glob"
+                                                                            : // a bare stamp that is the whole value of a `**Field:**`
+                                                                                // head line is the minute the record was written, not a
+                                                                                // pointer (the `**Date:**` case in the header)
+                                                                                kind === "stamp-bare" && headField
+                                                                                    ? "head-field"
+                                                                                    : null;
                 // An exemption whose premise is "do not look this token up" cannot
                 // reach a verdict that needed no lookup, so a shape-decided kind under
                 // one is JUDGED — and keeps the reason, which is what stops a rewriter

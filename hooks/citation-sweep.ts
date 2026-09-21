@@ -40,7 +40,10 @@
  * or was refused go to stderr; the summary line below is untouched by any of
  * it, byte for byte, because `lib/__tests__/citation-sweep.test.ts` pins it as
  * a release gate. A project that declares nothing sweeps exactly what it swept
- * before.
+ * before. Since 2026-09-21 the run also hands `citations.exhibits` to
+ * `createScanner()`: a declared exhibit is read like every other file and
+ * rewritten nowhere, because every token in it carries the reason
+ * `declared-exhibit` and `rewriteOf()` rewrites nothing that carries one.
  *
  * `citation-check.ts` resolves the same leaf through the same function: the
  * two hand-run helpers share one corpus, because a reporter narrower than the
@@ -711,7 +714,7 @@ function main(argv: string[]): number {
     }
   }
 
-  const scanner = createScanner(root);
+  const scanner = createScanner(root, { exhibits: config.citations.exhibits });
   const mode = write ? "write" : "dry-run";
   const out: string[] = [];
   let touched = 0;
