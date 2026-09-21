@@ -383,7 +383,8 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: step 17
 
-23. [IN PROGRESS] **Read a storeless bracket-marked citation as a marker spelling** (row 4)
+23. **Read a storeless bracket-marked citation as a marker spelling** (row 4)
+    - Skipped 260921-2002: the sweep corpus includes `archive/`, so the reading would rewrite 37 archived records among 142 tokens in 51 files; the choice is filed as `260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md` and the step waits on it. Record `260831-0748_*` stays `_o_`.
     - Executor: `coder`
     - Record: `260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md`; working answer per `260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md` option 1
     - Site at HEAD: `hooks/lib/citation-scan.ts:443-446` `BARE_RE` requires `(?:${MARKER_SLOT}|_)` after the stamp; `:468-469` `STAMP_RE`'s lookahead refuses `[`; `:164-190` the header's not-read-on-purpose paragraph; `:1153-1167` the `markerM` branch reads `_x_` only and `storelessBase()` (`:752-754`) rewrites `_x_` only. The sweep's `CHAINED_RE` already handles a bracket tail.
@@ -395,7 +396,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-24. **Classify an unresolvable head-field identifier `undecidable` rather than `dangling`** (row 5)
+24. [IN PROGRESS] **Classify an unresolvable head-field identifier `undecidable` rather than `dangling`** (row 5)
     - Executor: `coder`
     - Record: `260831-2121_*_the-head-field-exemption-reads-only-a-bare-stamp-so-a-name-shaped-identifier-in-a-head-field-is-judged.md`; working answer per `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md`, the fourth direction narrowed as `## Working answers` states
     - Site at HEAD: `hooks/lib/citation-scan.ts:1084` `kind === "stamp-bare" && isHeadFieldValue(...)` is the whole head-field exemption; `:1192-1227` the `STAMP_RE` branch returns `dangling` for a `stamp-name` token nothing matches; `CitationStatus` (`:857-871`) has no `undecidable` member, `partition()` (`:1505-1524`) builds the `undecidable` bucket from `stamp-bare` and `ambiguous`. `grep -rn IDENTIFIER_HEAD_FIELDS hooks/` prints nothing.
@@ -407,7 +408,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17; step 23 by preference (same file, same `consider()` block)
 
-25. **Let presence read the work item off the party's latest dispatch row** (row 19)
+25. [IN PROGRESS] **Let presence read the work item off the party's latest dispatch row** (row 19)
     - Executor: `coder`
     - Record: `260910-2144_*_presence-cannot-name-what-another-checkout-is-working-on-because-no-event-row-carries-it-any-more.md`; working answer per `260921-1718_*_where-does-presence-read-what-another-checkout-is-working-on-now-that-no-session-row-carries-it.md` option 1
     - Site at HEAD: `hooks/lib/events-query.ts:307-331` builds parties from `session_start` lines only and sets `circle: circleOf(line.history_file)`; `EventLine` (`:89-118`) parses no `work_item`; `hooks/lib/orchestrator-events.ts:506-516` writes `work_item` on every `task_start` row that carries a `**Work-item:**` line; `bin/fusion-events:65-70` states that every line renders `unknown` since 2026-09-10.
@@ -419,7 +420,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-26. **Let a project declare a record an exhibit** (row 10)
+26. [IN PROGRESS] **Let a project declare a record an exhibit** (row 10)
     - Executor: `coder`
     - Record: `260906-0416_*_a-project-may-widen-the-citation-corpus-and-never-narrow-it-so-an-exhibit-has-no-declarable-form.md`; working answer per `260906-0416_*_should-a-project-be-able-to-declare-a-record-an-exhibit-and-what-does-that-declaration-cover.md` option 2
     - Site at HEAD: `hooks/lib/config.ts:209-242` and `:625-635` read `citations.extraPaths` and nothing else under `citations`; `hooks/lib/citation-scan.ts:1038` `const fileExempt = rel in RECORD_EXAMPLE_FILES` is the only whole-file exemption and is a literal; `hooks/citation-check.ts:335-353` prints `declared-patterns=` and `declared-files=`; `templates/fusion.json` and `fusion.json` carry the `_citations` note byte-identically (`config.test.ts` pins it).
