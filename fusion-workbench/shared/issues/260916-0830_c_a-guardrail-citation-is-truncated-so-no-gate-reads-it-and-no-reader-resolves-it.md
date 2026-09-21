@@ -11,3 +11,6 @@ A guardrail citation is truncated, so no gate reads it and no reader resolves it
 **Why it was not fixed in that pass.** It sits outside the seven findings that pass was dispatched on, and restoring the full basename costs bytes on the `skills/` surface, which stood at 576 bytes of margin when the observation was made.
 
 **Acceptance test.** The bullet carries the record's full storeless basename with the marker wildcarded and the `.md` extension, and a workbench-wide lookup on that basename resolves to exactly one file.
+
+---
+Resolved: the guardrail bullet in `skills/archive/SKILL.md` now carries the full storeless basename `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`; a workbench-wide lookup resolves it to exactly one file, and the citation gates read it (+39 bytes on `skills/`). Plan `260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md` step 6, fixed in the commit that carries this line.

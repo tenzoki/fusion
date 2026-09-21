@@ -255,6 +255,6 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
 - **Never delete the archive folder.** This skill only creates and adds.
 - **Never touch git.** No `git add`, no `git commit`. The user decides whether to commit the archive.
 - **Never modify content of what's being archived.** Move only; do not rewrite, reformat, or "tidy".
-- **Never truncate the guard event log without archiving it first**, and never add a line or byte ceiling to it — not here, and not in `emitEvent` (`hooks/lib/events.ts`). The roll above is the only sanctioned way the file gets shorter. Any ceiling drops the oldest lines, which are the guard's block, halt and clear events (fusion's own record `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…`).
+- **Never truncate the guard event log without archiving it first**, and never add a line or byte ceiling to it — not here, and not in `emitEvent` (`hooks/lib/events.ts`). The roll above is the only sanctioned way the file gets shorter. Any ceiling drops the oldest lines, which are the guard's block, halt and clear events (fusion's own record `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`).
 - **If the survey returns zero matches:** report that and stop. Do not invent candidates. Do not broaden the search without re-asking.
 - **The citation check is a hard exclusion** — do not surface cited files even with `[ACTIVE]` flags. To archive something the corpus cites, the user updates the citing file first.

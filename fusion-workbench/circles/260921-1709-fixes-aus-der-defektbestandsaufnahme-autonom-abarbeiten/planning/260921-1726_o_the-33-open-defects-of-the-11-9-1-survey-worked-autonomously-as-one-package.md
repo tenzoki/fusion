@@ -176,7 +176,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-6. [IN PROGRESS] **Restore the truncated guardrail citation in the archive body** (row 28)
+6. [DONE] **Restore the truncated guardrail citation in the archive body** (row 28)
    - Executor: `coder`
    - Record: `260916-0830_*_a-guardrail-citation-is-truncated-so-no-gate-reads-it-and-no-reader-resolves-it.md`
    - Site at HEAD: `skills/archive/SKILL.md:258` ends "(fusion's own record `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…`)"; line 112 carries the full basename, `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`.
