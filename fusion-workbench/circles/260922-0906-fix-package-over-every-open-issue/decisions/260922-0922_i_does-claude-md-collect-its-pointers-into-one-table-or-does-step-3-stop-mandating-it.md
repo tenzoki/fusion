@@ -34,3 +34,9 @@ Option 2. The rule was written against a file whose sections had been emptied; f
 
 ---
 Answered: 260922-0922_*_does-claude-md-collect-its-pointers-into-one-table-or-does-step-3-stop-mandating-it.md `## Options` — option 2: Step 3 softens; a pointer may stay where its passage stood when the section around it survives with content of its own (a passage being the text under one heading at the chosen level), and the one-table mandate holds for pointers whose sections the cut emptied; `CLAUDE.md` keeps its shape; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1221.
+
+---
+
+Implemented: the commit that carries this line — option 2, Step 3 softens. `rules/context-lean-claude-md.md` `### Step 3 — what a passage that fails the test becomes` now scopes the one-table mandate to the pointers whose sections the cut emptied, and states the ruled condition beside it: a pointer may stay where its passage stood when the section around it survives with content of its own, a passage being the text under one heading at the chosen level, which is Step 1's own division and is what makes the condition decidable. The failure the paragraph names is now a scatter of orphan lines under emptied headings, and fusion's own `CLAUDE.md` is cited as the case the condition is written for rather than as a violation. `CLAUDE.md` keeps its shape, as the ruling leaves it; Steps 1 and 2 and the two worked classifications are untouched.
+
+`bin/fusion-prose-metric` reads the file `over` at 37 em-dashes against a permit of 2, which it also did at `49ab50e4`: the plan expected `ok` and the file has never been `ok`. The step added no em-dash and the rate fell, 16.2 to 15.3 per 1 000 words, so the file is left better than it was found and the verdict is the file's own standing debt rather than this step's.

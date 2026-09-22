@@ -243,10 +243,21 @@ which is why the destination is written before the source is cut. The
 **section** is optional, and earns its place only where the destination file is
 big enough that naming it saves a search.
 
-Collect the pointer lines into the one table described under *What stays
-always-on* above, rather than leaving each one stranded where its section used to
-be. The table is what a reader scans; a scatter of orphan lines is the old file
-with the text removed.
+Where the cut emptied a section, collect its pointer line into the one table
+described under *What stays always-on* above, rather than leaving it stranded
+where its section used to be. The table is what a reader scans; a scatter of
+orphan lines under emptied headings is the old file with the text removed.
+
+**A pointer may stay where its passage stood when the section around it
+survives with content of its own.** A passage is the text under one heading at
+the chosen level, which is Step 1's own division, and that division is what
+makes the condition decidable rather than a matter of taste. There the pointer
+is no orphan: it sits in the passage a reader is already in, which is where they
+look for it, and moving it into the table would cost that reader the search the
+table exists to save. fusion's own `CLAUDE.md` is the case this condition is
+written for. It carries pointer lines both inside its `## Layout` table and
+under headings whose sections kept text, and the second group is right where it
+stands.
 
 ### Two worked classifications
 
