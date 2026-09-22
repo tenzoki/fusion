@@ -734,8 +734,8 @@ file.** The plan `260907-1450_*_plan-bounded-executor-dispatches.md` predates th
 disagrees with it in three named places. First, its step 2 prescribes the comment beside
 `DEFAULTS.orchestrator.dispatchMinutes` verbatim and carries only the first of the two sentences C1's
 fourth criterion now requires; the second sentence, the four-candidate check and the break-even band,
-has to join it. Second, its step 1 calls C5's acceptance criteria eight where the specification
-states nine, at the plan's line 124 and again at line 132, and step 1 has since run and stands. Third,
+has to join it. Second, its step 1 calls C5's acceptance criteria eight where C5's own list carries ten
+(`grep -c '^- \[ \]'` over its section), at the plan's line 124 and again at line 132, and step 1 has since run and stands. Third,
 its `## Where this Circle stops` carries the old closure clauses, including the one this
 specification's `## Stops when` records as fired.
 

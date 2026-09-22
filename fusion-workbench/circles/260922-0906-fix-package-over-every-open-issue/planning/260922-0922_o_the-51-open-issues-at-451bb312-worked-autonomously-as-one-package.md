@@ -409,7 +409,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: none
 
-22. **Let the spec's sentence carry the count its list has**
+22. [DONE] **Let the spec's sentence carry the count its list has**
     - Executor: `coder`
     - Record: `260908-0020_*_the-specs-open-for-planner-states-nine-c5-criteria-where-c5-carries-ten.md`
     - Site at HEAD: `260907-0820_*_spec-bounded-executor-dispatches.md` (in the container of `260906-2258-bounded-executor-dispatches`), lines 737 to 738: "its step 1 calls C5's acceptance criteria eight where the specification states nine"; C5's section carries ten `- [ ]` items.
