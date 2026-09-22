@@ -263,7 +263,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
    - Gate: none
    - Dependencies: none
 
-10. **Send the README's two sentences to the rolled record**
+10. [DONE] **Send the README's two sentences to the rolled record**
     - Executor: `coder`
     - Record: `260921-1855_*_readme-hooks-says-the-two-re-baselines-are-logged-in-full-in-the-growth-bound-test-header-after-the-log-rolled-out.md`
     - Site at HEAD: `README-hooks.md:527` "Each arming reproduces, as text in the file it armed, what its re-baseline let through." and `:529` "are both logged in full, with their per-surface figures and what each absolved, in the header of `hooks/lib/__tests__/surface-growth-bound.test.ts`". The log sits in `260921-1855-surface-growth-bound-arming-and-re-baseline-log-2026-08-15-to-2026-09-05.md`.
