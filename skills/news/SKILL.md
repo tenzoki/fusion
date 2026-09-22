@@ -51,7 +51,7 @@ On `missing`, say this and stop:
 Hold `ref=`, `head=`, `new=` and every `entry=` line. Exit 0 is the only case that continues. For every other, say one plain sentence naming what could not be done, and stop. Substitute nothing for an answer that could not be taken.
 
 - **exit 3**: no workbench above here. Run `/fusion:setup`.
-- **exit 5**: there is nothing to read against, and `state=` says which: `no-work-tree` (this project is not a git repository), `no-branch` (detached HEAD, which has no upstream at all), `no-upstream` (this branch tracks nothing, so nobody's messages can reach it), `upstream-unresolved` (an upstream is configured and its ref still does not resolve after the fetch). Name the one that came back, not the list.
+- **exit 5**: there is nothing to read against, and `state=` says which: `no-work-tree` (this project is not a git repository), `no-branch` (detached HEAD, which has no upstream at all), `no-upstream` (this branch tracks nothing, so nobody's messages can reach it), `upstream-unresolved` (an upstream is configured and its ref still does not resolve after the fetch), `workbench-untracked` (this project does not track its workbench, so nothing another checkout wrote can arrive by `git fetch`; whether to track it is the project's own decision, and until it does this command has nothing to read). Name the one that came back, not the list.
 - **exit 6**: the fetch did not complete. Pass git's own stderr through to the user unchanged; the causes are git's to explain and a paraphrase loses what the user needs.
 - **exit 7**: the workbench is not inside this repository, so no path into it can be derived.
 - **exit 2**: a usage fault in this body. Report it as a fusion defect, not as the user's problem.

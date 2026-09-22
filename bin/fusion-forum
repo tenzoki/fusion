@@ -93,9 +93,10 @@
 #   3  no fusion workbench above pwd (nothing to read against, and nowhere to
 #      keep the mark)
 #   5  nothing to read against: not a git work tree, a detached HEAD, no
-#      upstream configured for the branch, or an upstream ref that does not
-#      resolve after the fetch. `state=` names which, and no value is
-#      substituted for the answer that could not be taken.
+#      upstream configured for the branch, an upstream ref that does not
+#      resolve after the fetch, or a workbench that is in no tree at that
+#      ref. `state=` names which, and no value is substituted for the answer
+#      that could not be taken.
 #   6  the fetch did not complete. git's own stderr is passed through
 #      unmodified, because the causes (unreachable host, refused credentials,
 #      a wedged lock) are git's to explain and paraphrasing them loses the
@@ -123,6 +124,13 @@
 #                         here rather than having `origin` assumed for it.
 #   upstream-unresolved   Exit 5. An upstream is configured and its ref does
 #                         not resolve to a commit even after the fetch.
+#   workbench-untracked   Exit 5. The ref resolves and the workbench directory
+#                         is in no tree there: this project does not track its
+#                         workbench, so nothing another checkout wrote can
+#                         arrive by fetch, and `new=0` would be a false answer
+#                         rather than a real one. Whether to track it is the
+#                         project's own decision, and fusion ships no rule
+#                         for it.
 #   fetch-failed          Exit 6.
 #   workbench-outside-repo  Exit 7.
 #
@@ -186,6 +194,8 @@
 # checkout sees about a fortnight of messages on its first run, which is the
 # intent. A first-run branch would be the rim of special cases
 # `rules/critical-stance.md` §2 rules out, bolted onto a case already bounded.
+# Both halves of that bound need a tracked workbench, and the untracked one
+# lands in `state=workbench-untracked` before either is reached.
 #
 # ## Why one entry is not shown to the checkout that wrote it
 #
@@ -308,6 +318,15 @@ case "$cmd" in
 
     if ! head_sha="$(git rev-parse -q --verify "${upstream}^{commit}" 2>/dev/null)"; then
       echo "state=upstream-unresolved"
+      echo "branch=$branch"
+      echo "ref=$upstream"
+      exit 5
+    fi
+
+    # A workbench in no tree at the fetched ref is not `new=0`: it is nothing
+    # to read against, and the vocabulary stays total by naming it.
+    if [ -z "$(git ls-tree -d --full-tree "$head_sha" -- "$rel" 2>/dev/null)" ]; then
+      echo "state=workbench-untracked"
       echo "branch=$branch"
       echo "ref=$upstream"
       exit 5

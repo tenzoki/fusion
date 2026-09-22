@@ -507,7 +507,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: step 1
 
-30. **Name the untracked-workbench condition instead of answering `new=0`**
+30. [DONE] **Name the untracked-workbench condition instead of answering `new=0`** (+10 lines; `skills/news/SKILL.md` +231 bytes, inside the room step 29's cut left; the header names the tracking decision in words rather than by anchor, so the pin stays where step 29 left it)
     - Executor: `coder`
     - Record: `260908-0848_*_an-untracked-workbench-answers-new-equals-zero-forever-and-no-state-names-it.md`
     - Site at HEAD: `bin/fusion-forum` `new` compares two `git ls-tree` listings and never asks whether the store is in any tree (`:283-293` checks only that the workbench lies under the toplevel); the state vocabulary (`:99-119`) has no value for it; `skills/news/SKILL.md` says nothing about an untracked workbench.

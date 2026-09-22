@@ -172,6 +172,16 @@ describe("bin/fusion-forum", () => {
     expect([unresolved.status, unresolved.value("state"), unresolved.value("ref")]).toEqual([5, "upstream-unresolved", "origin/nowhere"]);
   });
 
+  it("state=workbench-untracked at exit 5 once the workbench is in no tree at the fetched ref, never new=0", () => {
+    const t = trio("260907-1000-99999999-hello.md");
+    // The author stops tracking the workbench and pushes; the reader's own copy stays on disk, untracked from then on.
+    git(t.author, "rm", "-rq", "--cached", "fusion-workbench");
+    writeFileSync(join(t.author, ".gitignore"), "fusion-workbench/\n");
+    publish(t.author);
+    const r = run(t.reader, "new", STORE);
+    expect([r.status, r.value("state"), r.value("new")]).toEqual([5, "workbench-untracked", null]);
+  });
+
   it("a branch tracking a local ref skips the fetch and says the comparison is that local", () => {
     const t = trio("260907-1000-99999999-hello.md");
     git(t.reader, "branch", "side");
