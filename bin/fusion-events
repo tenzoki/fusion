@@ -41,8 +41,11 @@
 # since the cutoff cannot be applied to it; a completion with none inside the
 # cutoff). Neither is a figure taken from the log; each says how far the log
 # fell short of letting one be taken. The second is under the same agent and
-# cutoff filters as every figure on stdout, so the four sum to the dispatches
-# in scope.
+# cutoff filters as every figure on stdout, and it is the fourth summand of the
+# dispatches in scope: that unstamped count, plus `counted`, `unpaired` and
+# `unattributable` from stdout, is the whole of them. `longer_than_threshold`
+# is in no sum. It is a subset of `counted`, so adding it would count those
+# dispatches twice.
 #
 # ---------------------------------------------------------------------------
 # The `scope=` key, which presence prints and does not count

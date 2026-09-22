@@ -328,7 +328,7 @@ Field key. **Record** is the storeless citation of the decision or defect the st
     - Gate: none
     - Dependencies: none
 
-13. **Name the four summands in `bin/fusion-events`' header**
+13. [DONE] **Name the four summands in `bin/fusion-events`' header**
     - Executor: `coder`
     - Record: `260922-1208_*_the-events-header-says-the-four-sum-without-naming-which-four.md`
     - Site at HEAD: `bin/fusion-events:43-45`: "The second is under the same agent and cutoff filters as every figure on stdout, so the four sum to the dispatches in scope." The stdout block prints `counted=`, `longer_than_threshold=`, `unattributable=` and `unpaired=` (`hooks/events-query.ts:463-470`), and those four do not sum, `longer_than_threshold` being a subset of `counted`. The identity that holds is `counted + unpaired + unattributable + unstamped`, with `unstamped` on stderr (`hooks/lib/events-query.ts:655-700`).
@@ -336,8 +336,8 @@ Field key. **Record** is the storeless citation of the decision or defect the st
     - Do not touch: `hooks/lib/events-query.ts` and `hooks/events-query.ts`; no figure changes and no rebuild is owed
     - Changes: the sentence names its summands and says where each is printed: `counted`, `unpaired` and `unattributable` on stdout and `unstamped` on stderr sum to the dispatches in scope, while `longer_than_threshold` is a subset of `counted` and is in no sum.
     - Acceptance: `grep -c 'counted.*unpaired.*unattributable.*unstamped\|unstamped.*counted' bin/fusion-events` is at least `1`; `grep -c 'so the four sum to the dispatches' bin/fusion-events` prints `0`; `cd hooks && npm test` exits 0.
-    - Growth: none bounded (`bin/` is covered by no bound).
-    - Pin: unmoved.
+    - Growth: none bounded (`bin/` is covered by no bound). **Landed: +3 comment lines**, three replacing one in the header block.
+    - Pin: unmoved. **Landed: unmoved**, no re-approval; the sentence names printed keys, which are no pinned class.
     - Gate: none
     - Dependencies: none
 

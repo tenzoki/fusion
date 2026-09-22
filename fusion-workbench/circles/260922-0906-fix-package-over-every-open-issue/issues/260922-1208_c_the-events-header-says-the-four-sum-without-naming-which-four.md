@@ -8,3 +8,6 @@ Acceptance: the sentence names its four summands; `grep -c 'counted.*unpaired.*u
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
 Executor: `coder`. Found in the closing review `260922-1208-reviewer-closing-pass-over-the-51-issue-package-451bb312-to-bf515cad.md`.
+
+---
+Resolved: `bin/fusion-events`' header names its summands and says where each is printed: the unstamped count on stderr is the fourth, and with `counted`, `unpaired` and `unattributable` from stdout it is the whole of the dispatches in scope. `longer_than_threshold` is named as being in no sum, a subset of `counted` whose addition would count those dispatches twice. No figure and no program changed; the sentence describes what already prints.
