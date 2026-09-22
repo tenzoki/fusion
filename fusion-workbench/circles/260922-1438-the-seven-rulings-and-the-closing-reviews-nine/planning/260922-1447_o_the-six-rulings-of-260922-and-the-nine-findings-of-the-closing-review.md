@@ -341,7 +341,7 @@ Field key. **Record** is the storeless citation of the decision or defect the st
     - Gate: none
     - Dependencies: none
 
-14. **Push the work-order test's bare directory onto the roots it is cleaned from**
+14. [DONE] **Push the work-order test's bare directory onto the roots it is cleaned from**
     - Executor: `coder`
     - Record: `260922-1208_*_the-work-order-tests-bare-directory-is-never-removed.md`
     - Site at HEAD: `hooks/lib/__tests__/fusion-work-order.test.ts:52`, `expect(run(mkdtempSync(join(tmpdir(), "fusion-work-order-bare-"))).status).toBe(2);`. Every other fixture goes through `scratch()` at `:18`, which pushes its root onto `roots` for the `afterAll` at `:15`; this one is created inline and pushed nowhere, so each suite run leaves one `fusion-work-order-bare-*` directory under the OS temp directory.
@@ -350,7 +350,9 @@ Field key. **Record** is the storeless citation of the decision or defect the st
     - Changes: a one-line `bare()` helper creates the directory, pushes it onto `roots` and returns it, and line 52 calls it. The dense in-place form that keeps the file line-neutral is not chosen: step 3 frees about 42 lines, so the readable helper is funded, and a test whose cleanup is legible is the point of the fix.
     - Acceptance: `npx vitest run fusion-work-order` from `hooks/` exits 0 and `ls "${TMPDIR:-/tmp}" | grep -c fusion-work-order-bare` prints `0` afterwards; `grep -c 'roots.push' hooks/lib/__tests__/fusion-work-order.test.ts` is at least `2`; `cd hooks && npm test` exits 0.
     - Growth: hook tests, at most +2 lines against about 57 after step 3. **If step 3 was skipped at its gate**, the head-room is 15 and the two lines still fit, so this step is not deferred by that branch; it is deferred only if the bound is red at its own commit, in which case the record stays `_o_` with an `Also seen:` line naming the lines it needed.
-    - Pin: unmoved.
+    - **Landed: +2 lines**, `fusion-work-order.test.ts` 55 -> 57, hook tests 22 199 -> 22 201, head-room 59 -> 57. Step 3 landed, so the readable helper was funded as the step says. The golden was regenerated; no baseline moved. The site was at `:49`, not `:52`, the file having moved under the plan's reading; it is the same statement.
+    - **One reading the plan does not carry.** 48 `fusion-work-order-bare-*` directories the defect had already left under the OS temp directory were removed by hand before the acceptance run, since the fix stops new ones and clears none of the old.
+    - Pin: unmoved. **Landed: unmoved**, no re-approval.
     - Gate: none
     - Dependencies: step 3 (hook-test lines)
 

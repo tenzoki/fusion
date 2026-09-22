@@ -26,6 +26,8 @@ function scratch(items: Record<string, string | null> = {}): string {
   }
   return root;
 }
+/** A bare directory with no workbench above it, cleaned from `roots` like every other fixture. */
+const bare = () => ((d) => (roots.push(d), d))(mkdtempSync(join(tmpdir(), "fusion-work-order-bare-")));
 const run = (cwd: string, ...args: string[]) => spawnSync(script, args, { cwd, encoding: "utf-8" });
 const value = (out: string, key: string) => out.split("\n").find((l) => l.startsWith(`${key}=`))?.slice(key.length + 1);
 const notes = (out: string) => out.split("\n").filter((l) => l.startsWith("note="));
@@ -46,7 +48,7 @@ describe("bin/fusion-work-order: reports, never gates", () => {
   });
   it("exits 1 on an argument and 2 with no workbench above the working directory", () => {
     expect(run(scratch(), "--wat").status).toBe(1);
-    expect(run(mkdtempSync(join(tmpdir(), "fusion-work-order-bare-"))).status).toBe(2);
+    expect(run(bare()).status).toBe(2);
   });
   it("holds roots= equal to ready= on an acyclic store, and apart where a cycle sits at depth 0", () => {
     const [a, c] = [run(scratch(ACYCLIC)).stdout, run(scratch(CYCLIC)).stdout];

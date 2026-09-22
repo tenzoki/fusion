@@ -6,3 +6,6 @@ Acceptance: the exit-2 case's directory is pushed onto `roots` (or created throu
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
 Executor: `coder`. Found in the closing review `260922-1208-reviewer-closing-pass-over-the-51-issue-package-451bb312-to-bf515cad.md`.
+
+---
+Resolved: a one-line `bare()` helper beside `scratch()` in `hooks/lib/__tests__/fusion-work-order.test.ts` makes the directory, pushes it onto `roots` and returns it, and the exit-2 case calls it, so the `afterAll` removes it with every other fixture. Measured: `npx vitest run fusion-work-order` exits 0 and `ls "$TMPDIR" | grep -c fusion-work-order-bare` prints `0` after it, against 48 directories the defect had already left under the OS temp directory, which were removed by hand in the same pass. The line-neutral in-place form the acceptance assumed is not taken: step 3 of this package freed 44 hook-test lines, so the readable helper is funded at +2 lines and a test whose cleanup is legible is the point of the fix.
