@@ -399,7 +399,7 @@ Two gates in sequence, each inside the three-option cap of `rules/user-facing-ou
 
 ## Work items
 
-A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You file one only when the user instructs it** (the **File** row below), the user's words as the Directive, `**Filed by:** user, <person>`, and `**Mode:** autonomous` when the user asked for it; otherwise the user files, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
+A work item is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**`, its `**Depends-on:**` field and its `**Cross-references:**` field are in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and this section does not restate them. **You file one only when the user instructs it** (the **File** row below), the user's words as the Directive, `**Filed by:** user, <person>`, and `**Mode:** autonomous` when the user asked for it; otherwise the user files, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
 
 What you may do, at the user's word and with no dispatch, is maintain the store at `$OUT_BACKLOG`, reading it at `$SCAN_BACKLOG`.
 

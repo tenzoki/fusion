@@ -78,3 +78,6 @@ merges and closes items at the user's word, so it is the agent that writes these
 `skills/archive/SKILL.md` (the fix), `agents/orchestrator.md` (the second occurrence). No code
 change: `hooks/lib/work-graph.ts` is correct to ignore `**Cross-references:**`, which orders
 nothing.
+
+---
+Resolved: filter 2, its Step 3 prose and the walk in `skills/archive/SKILL.md` read `**Depends-on:**` and `**Cross-references:**` alike (the `sed` matches both heads with `-E` and the `head -n 1` that could read only one line is gone; a scratch workbench with a live item citing a `done` target through `**Cross-references:**` lists the target), and the orchestrator's field enumeration names `**Cross-references:**` beside `**Depends-on:**`; the commit that carries this line.

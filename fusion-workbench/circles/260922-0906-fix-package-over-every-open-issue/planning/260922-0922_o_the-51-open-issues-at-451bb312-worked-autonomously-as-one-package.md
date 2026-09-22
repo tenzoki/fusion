@@ -203,7 +203,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
    - Gate: none
    - Dependencies: none
 
-5. **Let the archive safety filter and the orchestrator's field list read `**Cross-references:**`**
+5. [DONE] **Let the archive safety filter and the orchestrator's field list read `**Cross-references:**`**
    - Executor: `coder`
    - Record: `260913-0818_*_the-new-cross-references-field-has-two-unswept-consumers-and-one-is-a-safety-filter.md`
    - Site at HEAD: `skills/archive/SKILL.md:84` (filter 2, "any item another live item names in its `**Depends-on:**` field"), `:149` ("An item named in a live item's `**Depends-on:**` is excluded in every tier"), `:152` (the walk, `sed -n 's/^\*\*Depends-on:\*\*[[:space:]]*//p'`). `agents/orchestrator.md:402` "its five `**Status:**` values, its `**Claim:**` and its `**Depends-on:**` field are in …" (the record's line 397 moved; the enumeration is this one and names no `**Cross-references:**`).
