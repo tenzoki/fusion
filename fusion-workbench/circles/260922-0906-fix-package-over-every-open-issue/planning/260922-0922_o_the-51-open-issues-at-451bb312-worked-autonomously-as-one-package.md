@@ -373,7 +373,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: step 1
 
-19. **Fence the two exhibits the repair pass rewrites, and pin `repairs=0` over the own tree**
+19. [DONE] **Fence the two exhibits the repair pass rewrites, and pin `repairs=0` over the own tree** (+7 lines)
     - Executor: `coder`
     - Record: `260829-1810_*_the-repair-pass-rewrites-two-unfenced-exhibits-in-a-closed-issue-record-and-no-gate-holds-repairs-at-zero.md`
     - Site at HEAD: `bin/fusion-citation-sweep --repair --dry-run` prints `files=1 repairs=2 … chained-tail=1 doubled=1`, both in `260829-1346_*_the-committed-sweep-rewrote-29-date-head-fields-into-filenames-and-left-181-chained-tails-in-the-tree.md` lines 24 and 26 (inline backticks); `citation-sweep.test.ts:518-537`, the own-tree describe block, has one case (`rewrites=0` for `--dry-run`) and none for `--repair`.

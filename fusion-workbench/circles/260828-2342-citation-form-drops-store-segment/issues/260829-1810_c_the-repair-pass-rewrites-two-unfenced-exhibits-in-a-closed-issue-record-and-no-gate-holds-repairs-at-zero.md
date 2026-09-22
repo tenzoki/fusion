@@ -20,3 +20,6 @@ The rule the repair pass follows is the scanner's: fenced and blockquoted lines 
 
 - The two exhibit lines in the issue record sit in a fenced block, so `--repair --dry-run` over the committed tree prints `files=0 repairs=0`.
 - The own-tree describe block in `citation-sweep.test.ts` carries a second case asserting `repairs=0` for `--repair --dry-run`, beside the `rewrites=0` case, so the repair leg cannot drift back.
+
+---
+Resolved: the commit that carries this line moves each of the two exhibit tokens in `260829-1346_*_the-committed-sweep-rewrote-29-date-head-fields-into-filenames-and-left-181-chained-tails-in-the-tree.md` out of its sentence into a fenced line directly below it, the sentence pointing at the line below, and adds a second `it.skipIf(!ownRepo)` case to the own-tree block of `hooks/lib/__tests__/citation-sweep.test.ts` that runs `--repair --dry-run` and asserts `files=0 repairs=0`.

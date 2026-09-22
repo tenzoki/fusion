@@ -538,4 +538,11 @@ describe("citation-sweep over fusion's own tree", () => {
         run.stdout.split("\n").filter((l) => / {2}rewrites=/.test(l)).join("\n"),
     ).toMatch(/^files=0 rewrites=0 /);
   }, CASE_TIMEOUT * 4);
+
+  // issue 260829-1810_*: the repair leg had no such gate, and two unfenced exhibits sat in its path
+  it.skipIf(!ownRepo)(`--repair --dry-run over this repository's workbench reports repairs=0${reason && ` [skipped: ${reason}]`}`, () => {
+    const run = spawnSync(process.execPath, [ENTRY, "--repair", "--dry-run"], { cwd: REPO_ROOT, encoding: "utf-8" });
+    expect(run.status, run.stderr).toBe(0);
+    expect(last(run), "an exhibit of the retired rewrite is fenced, never repaired; fence the lines above").toMatch(/^files=0 repairs=0 /);
+  }, CASE_TIMEOUT * 4);
 });

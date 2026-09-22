@@ -21,9 +21,17 @@ The sweep's `stamp-bare` rule rewrites a bare stamp into the basename of the one
 
    A date field now names a file, and the file it names is the record itself.
 
-2. **175 truncated citations carry a residual marker tail after `.md`** (69 files), the shape the sibling issue describes as stripped by hand: `git grep -cE '\.md_[a-z*]_?([^a-z0-9]|$)' -- fusion-workbench`. Example, `archive/260828-0043-safe-cleanup-tier-1/shared/issues/260826-1305_c_*.md`: `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md_*`. The sibling issue records 239 stripped; these 175 were not.
+2. **175 truncated citations carry a residual marker tail after `.md`** (69 files), the shape the sibling issue describes as stripped by hand: `git grep -cE '\.md_[a-z*]_?([^a-z0-9]|$)' -- fusion-workbench`. Example, `archive/260828-0043-safe-cleanup-tier-1/shared/issues/260826-1305_c_*.md`, the line below. The sibling issue records 239 stripped; these 175 were not.
 
-3. **6 doubled tails on the legacy `_coder_` history shape**: `git grep -cE '\.md_[a-z]+_' -- fusion-workbench`. Example, `260731-2324-reconciliation.md` (shared history): `260731-2235_coder_cadence-skill-registration.md_coder_cadence-skill-regist…`. Here the original token was already the full filename; the grammar reads `_coder_` as no marker (single-letter slot), tokenises the stamp alone, and the sweep appended the basename a second time.
+   ```
+   260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md_*
+   ```
+
+3. **6 doubled tails on the legacy `_coder_` history shape**: `git grep -cE '\.md_[a-z]+_' -- fusion-workbench`. Example, `260731-2324-reconciliation.md` (shared history), the line below. Here the original token was already the full filename; the grammar reads `_coder_` as no marker (single-letter slot), tokenises the stamp alone, and the sweep appended the basename a second time.
+
+   ```
+   260731-2235_coder_cadence-skill-registration.md_coder_cadence-skill-regist…
+   ```
 
 A second `--dry-run` at `e9f2ed0b` offers 208 further `stamp-bare` rewrites over 107 files (`files=107 rewrites=208 residual=3336 … stamp-bare=208`); classified by what follows the stamp: 136 plain, 45 with a single-letter marker tail, 27 with a pre-v4 bracket tail. Every one of the 29 `**Date:**` lines would be chained again on the next `--write`.
 
