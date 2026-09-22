@@ -177,7 +177,7 @@ stateDiagram-v2
    - Acceptance, and the package's verification: `cd hooks && npm test` exits 0; `node hooks/dist/citation-check.js` prints `verdict=clean`; `bin/fusion-citation-sweep --dry-run` prints a summary beginning `files=0 rewrites=0`; `bin/fusion-citation-sweep --repair --dry-run` prints a summary beginning `files=0 repairs=0`.
    - Dependencies: 4, 5.
 
-7. **`/fusion:migrate` gains the sweep as a closing step**
+7. [DONE] **`/fusion:migrate` gains the sweep as a closing step**
    - Executor: `coder`
    - Files: `skills/migrate/SKILL.md`
    - Changes: add a closing step after `## Step 5 — Report` and before `## Guardrails`, which runs `bin/fusion-citation-sweep --dry-run`, reports the proposed rewrites, asks, and on a yes runs `--write --yes`. The ask is not ceremony: a consuming project may hold bracket-named files in a frozen store (one measured 226), and a citation of such a file respells to a form that then resolves to nothing, which is precisely the open half `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md` holds. Step 3 of the same skill already asks before moving, so the shape is the skill's own.
