@@ -164,10 +164,11 @@
  *                                             a pointer at a record into one at
  *                                             a directory
  *   circle-dir      -> `<stamp>-<slug>`       the bare container name
- *   bare-record     -> `_*_` at the marker    only when the marker is literal; a
- *                                             truncated citation (`<stamp>_o_`,
- *                                             `<stamp>_d`) is one token and is
- *                                             rewritten whole or left whole
+ *   bare-record     -> `_*_` at the marker    in either spelling, the underscore
+ *                                             one and the pre-v4 bracket; only
+ *                                             when the marker is complete, so a
+ *                                             citation truncated inside the slot
+ *                                             (`<stamp>_d`) is left whole
  *   stamp-bare      -> never rewritten; listed with its status
  *
  * Tokens are spliced right to left within a line, so earlier columns stay
@@ -200,11 +201,24 @@
  * directory index, and it is evaluated only after a candidate exists — a token
  * the table leaves alone never reaches it.
  *
- * What the guard deliberately does NOT do is make the bracket form rewritable.
- * The grammar reads such a citation whole and reports it; resolving one is a
- * separate open question, `/fusion:migrate` not having converted the frozen
- * stores:
- * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
+ * SINCE 2026-09-22 THE BRACKET FORM IS REWRITABLE, and the guard is what lets it
+ * be. `candidateFor()` respells the marker position through the grammar's own
+ * `markerAtHead()`, so the candidate is `<stamp>_*_…` — a string this grammar
+ * reads back whole, which is exactly the property the guard asks for and exactly
+ * what the bracket spelling lacked. Nothing was relaxed to allow it: the
+ * measured case above stopped being an instance because the rewrite changed, not
+ * because the question did.
+ *
+ * What did NOT change is stated so it is not read into the above: nothing here
+ * RESOLVES a bracket-named record on disk. `/fusion:migrate` does not convert
+ * the frozen stores, so such a file is permanent where it exists, and whether a
+ * citation may resolve THROUGH the bracket form is the question
+ * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`
+ * holds, deferred by the user on 2026-09-22 and untouched here. The consequence
+ * a consuming project meets: a tree that really holds bracket-named files has
+ * citations that resolve today and respell to a form that then resolves to
+ * nothing, which is why `/fusion:migrate` runs this sweep as a dry run and ASKS
+ * before writing.
  *
  * ## One spelling per corpus file, anchored on the project root
  *
@@ -365,12 +379,14 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import {
+  BRACKET_SLOT,
   createScanner,
   declaredCitationFiles,
   declaredCitationNotes,
   fencedContentLines,
   GATE_KINDS,
   markdownFilesUnder,
+  markerAtHead,
   MARKER_SLOT,
   type CitationHit,
   type Scanner,
@@ -560,14 +576,35 @@ function readsBackWhole(scanner: Scanner, rewritten: string): boolean {
   );
 }
 
-/** The storeless spelling of one hit, before the visibility guard reads it. */
+/**
+ * The storeless spelling of one hit, before the visibility guard reads it.
+ *
+ * Both record branches respell the marker position through `markerAtHead()`,
+ * which is the GRAMMAR's own rule and is imported rather than restated: a sweep
+ * that wrote a form the grammar's own lookup would not have produced is a
+ * rewrite nothing vouches for, and two copies of one rule drift. Since
+ * 2026-09-22 that rule reads the pre-v4 bracket spelling as well as the
+ * underscore one, so a bracket citation respells to `<stamp>_*_…` like any
+ * other. The `record` branch is included deliberately even though every
+ * store-prefixed bracket token in THIS tree carries a reason and is left alone:
+ * the sweep applies the fix the checker prints, and for these tokens the checker
+ * prints "cite the marker position as `_*_`". A candidate that dropped only the
+ * store segment and kept the bracket would be a fix no gate ever proposed.
+ *
+ * A marker truncated inside its own slot (`<stamp>_d`) is declined by both, as
+ * it was before the helper existed: `markerAtHead()` reports it incomplete, and
+ * writing `_*_` over it would invent the closing half its writer elided.
+ */
 function candidateFor(hit: CitationHit): string | null {
   const t = hit.token;
   switch (hit.kind) {
     case "record": {
-      const m = /([0-9]{6}-[0-9]{4})((?:_[a-zA-Z*]_)?[^]*)$/.exec(t.slice(t.lastIndexOf("/") + 1));
+      const m = new RegExp(`(${STAMP})((?:_[a-zA-Z*]_|${BRACKET_SLOT})?[^]*)$`).exec(
+        t.slice(t.lastIndexOf("/") + 1),
+      );
       if (m === null) return null;
-      return m[1] + m[2].replace(/^_[a-z]_/, "_*_");
+      const at = markerAtHead(m[2]);
+      return m[1] + (at !== null && at.complete ? at.wildcarded : m[2]);
     }
     case "circle-record":
     case "circle-dir": {
@@ -579,8 +616,12 @@ function candidateFor(hit: CitationHit): string | null {
       // re-asserted here rather than assumed, so this stays readable alone.
       return m[2] === m[1] ? `${m[1]}.md` : m[1];
     }
-    case "bare-record":
-      return /^[0-9]{6}-[0-9]{4}_[a-z]_/.test(t) ? t.replace(/_[a-z]_/, "_*_") : null;
+    case "bare-record": {
+      const m = new RegExp(`^(${STAMP})([^]*)$`).exec(t);
+      if (m === null) return null;
+      const at = markerAtHead(m[2]);
+      return at !== null && at.complete ? m[1] + at.wildcarded : null;
+    }
     default:
       return null;
   }

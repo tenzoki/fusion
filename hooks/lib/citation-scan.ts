@@ -182,33 +182,49 @@
 //   `carriesForeignQualifier()` carries the spelling, why both segments are
 //   required, and what the form does NOT decide.
 //
-//   NOT READ, ON PURPOSE: the pre-v4 bracket marker (`260717-1918[o]_slug`).
-//   It is retired syntax that `/fusion:migrate` rewrites; a grammar that
-//   accepted it would remove the only pressure to rewrite it (issue
-//   260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md, the second half).
-//   Since the `STAMP_RE` boundary above, a bracket-marked token is no token at
-//   all rather than a bare stamp with an invisible tail.
+//   READ SINCE 2026-09-22: THE PRE-V4 BRACKET MARKER, `<stamp>[o]_<slug>`, in
+//   `BARE_RE`'s marker position beside the underscore form. It was refused here
+//   until then, and the refusal's own reason is what retired it: the reason was
+//   written for workbench FILENAMES, where `/fusion:migrate` is the pressure to
+//   rewrite one and a grammar that read the retired spelling would take that
+//   pressure away (issue
+//   260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md,
+//   the second half). The population that bites is citations inside SOURCE
+//   FILES, which no migration ever opens: there the refusal bought no pressure
+//   and cost the report, so a storeless bracket citation was invisible while a
+//   store-prefixed one was reported (issue
+//   260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md).
+//   The user ruled on 2026-09-22 that one form is read
+//   (260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md,
+//   option 1) and that the tree is swept once rather than carrying the class
+//   (260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md).
 //
-//   THE STANCE IS PRESERVED AND SHARPENED, NOT OVERTURNED, by the one place a
-//   `[` is admitted: `REC_RE`'s TAIL, since 2026-08-30. Only the tail, and only
-//   so that a store-prefixed citation of such a record is READ WHOLE. Until
-//   then the tail class refused `[`, so `<store>/260519-0438[o]-loader-check.md`
-//   tokenised as the store segment plus the bare stamp and stopped there, with
-//   `[o]-loader-check.md` outside the token; the sweep rewrote what it could see
-//   to the bare stamp and left the bracket tail standing beside it, and after
-//   that rewrite `STAMP_RE`'s boundary refused the token altogether, so nothing
-//   reported the pointer it had just made unresolvable. `BARE_RE`, `STAMP_RE`,
-//   `MARKER_SLOT` and `basenameMatcher` are untouched by that widening, so such
-//   a token is still never RESOLVED — only reported, now as one whole token
-//   instead of half of one, which is MORE pressure to run `/fusion:migrate`
-//   rather than less. The sweep declines it from the other side: a rewrite is
-//   applied only when the rewritten string re-tokenises whole under this same
-//   grammar, and the bracket form does not, so the token is left as it stands.
-//   Whether the grammar should ever RESOLVE such a record — `/fusion:migrate`
-//   does not convert the frozen stores, so a bracket-named record there is
-//   permanent — is open, and this widening deliberately does not answer it:
+//   `MARKER_SLOT` IS NOT WIDENED WITH IT, and `BRACKET_SLOT` is the second
+//   spelling named apart. `workbench-citation-lint.test.ts` reads `MARKER_SLOT`
+//   for the uniqueness measurement and normalises a basename through a separate
+//   literal, so widening it there would let that gate's `STAMPED_RE` admit a
+//   basename its normalisation key does not reach. Nor does `basenameMatcher`
+//   learn the bracket: a bracket-NAMED record ON DISK is a different question,
+//   and
 //   260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md
-//   holds that question.
+//   still holds it, deferred. What is read is the CITATION, and it resolves the
+//   one way every other citation does — by respelling its marker position to the
+//   wildcard, which `markerAtHead()` does for both spellings at once.
+//
+//   `REC_RE`'S TAIL IS THE NARROWER HALF OF THAT ONE RULE, not an exception to a
+//   prohibition that no longer stands. It has admitted `[` since 2026-08-30,
+//   alone in this grammar, so that a store-prefixed citation of such a record is
+//   READ WHOLE. Until then the tail class refused `[`, so
+//   `<store>/260519-0438[o]-loader-check.md` tokenised as the store segment plus
+//   the bare stamp and stopped there, with `[o]-loader-check.md` outside the
+//   token; the sweep rewrote what it could see to the bare stamp and left the
+//   bracket tail standing beside it, and after that rewrite `STAMP_RE`'s
+//   boundary refused the token altogether, so nothing reported the pointer it
+//   had just made unresolvable. `STAMP_RE` still refuses a `[` after a stamp for
+//   that reason; what changed is which pattern claims the token, and `BARE_RE`
+//   now claims it first. The sweep no longer declines it from the other side
+//   either: the rewrite it computes is the wildcard form, which re-tokenises
+//   whole, so the visibility guard passes it where it used to stop it.
 //
 // The residual token class, the **bare timestamp** (`stamp-bare`).
 // `260722-1943` in running prose carries no store, kind or slug, so the gate
@@ -331,6 +347,58 @@ export const MARKER_WORDS = ["coder", "ontocoder", "planner"] as const;
 
 /** The marker slot, `_x_` or `_<word>_`, as a regex source with no capture. */
 export const MARKER_SLOT = `_(?:[a-zA-Z*]|${MARKER_WORDS.join("|")})_`;
+
+/**
+ * The SAME one-letter alphabet in the pre-v4 bracket spelling, `[x]`, as a
+ * regex source with no capture. Named apart from `MARKER_SLOT` rather than
+ * folded into it, for the reason the header's bracket paragraph carries: the
+ * uniqueness gate reads `MARKER_SLOT` against a normalisation key that knows
+ * only the underscore form. The legacy WORDS are deliberately absent — they were
+ * stamped on pre-Circle history files, which never carried a bracket.
+ */
+export const BRACKET_SLOT = `\\[[a-zA-Z*]\\]`;
+
+/**
+ * The marker a storeless basename carries right after its stamp, in EITHER
+ * spelling, and the same tail with that marker respelled to the wildcard `_*_`.
+ * `null` when the tail opens with no marker at all (`<stamp>_` truncated to
+ * nothing, `<stamp>_…`), which is the case every caller has to tell apart from a
+ * marker it could respell.
+ *
+ * ONE RULE, TWO CALLERS, ONE SPELLING OF IT. `storelessBase()` below asks it so
+ * a lookup can be retried under the wildcard, and `candidateFor()` in
+ * `hooks/citation-sweep.ts` asks it for what a rewrite writes. Those two must
+ * agree by construction: a sweep that wrote a form the grammar's own lookup
+ * would not have produced is a rewrite nothing here vouches for, and two copies
+ * of the rule are what let them drift apart.
+ *
+ * The underscore arm matches a marker cut short by the end of a truncated
+ * citation (`<stamp>_d`) exactly as it did before this function existed, and
+ * `complete` is false for exactly that case; the bracket arm needs no such arm,
+ * because a bracket that lost its `]` never tokenised in the first place. A
+ * LOOKUP retries an incomplete marker under the wildcard like any other, which
+ * is what `storelessBase()` below does, while a REWRITE declines it: writing
+ * `_*_` over `<stamp>_d` invents the closing half the citation's writer elided.
+ *
+ * THE BRACKET ARM ABSORBS THE MARKER'S TRAILING HYPHEN, because the hyphen is
+ * the delimiter and not the first character of the slug: the pre-v4 name is
+ * `<stamp>[o]-<topic>.md` and the underscore name is `<stamp>_o_<topic>.md`.
+ * That is `/fusion:migrate`'s own rename rule, `s/\[([oatcibspd])\]-/_\1_/g`
+ * (`skills/migrate/SKILL.md`, the bracket-marker bullet under Step 4), read off
+ * that skill rather than re-derived — a citation and the file it names have to
+ * arrive at the same spelling or the pointer the sweep writes finds nothing.
+ */
+export function markerAtHead(
+  rest: string,
+): { letter: string; complete: boolean; wildcarded: string } | null {
+  const m = new RegExp(`^(?:_([a-z])(_|$)|\\[([a-z])\\]-?)`).exec(rest);
+  if (m === null) return null;
+  return {
+    letter: m[1] ?? m[3],
+    complete: m[1] === undefined || m[2] === "_",
+    wildcarded: "_*_" + rest.slice(m[0].length),
+  };
+}
 
 /**
  * A Circle directory's name, `<stamp>-<slug>`. One fragment because the shape
@@ -496,13 +564,30 @@ const CIRCLE_REC_RE = new RegExp(
   "g",
 );
 
-// Bare record citation — the `_` right after the stamp is required, or every
-// plain timestamp and Circle-directory name would fire. What follows the `_` is
-// a marker slot and a slug when the citation is whole, and any prefix of that
-// when it is truncated (`<stamp>_*_`, `<stamp>_d`, `<stamp>_…`);
-// `basenameMatcher` reads a token not ending in `.md` as a prefix either way.
+// Bare record citation — a marker slot or a bare `_` right after the stamp is
+// required, or every plain timestamp and Circle-directory name would fire. What
+// follows is a slug when the citation is whole, and any prefix of that when it
+// is truncated (`<stamp>_*_`, `<stamp>_d`, `<stamp>_…`); `basenameMatcher` reads
+// a token not ending in `.md` as a prefix either way.
+//
+// `BRACKET_SLOT` is the third alternative, since 2026-09-22 and for the reason
+// the header's bracket paragraph carries. THE TAIL CLASS IS UNCHANGED, so it
+// still holds no `[`: a bracket AFTER the slug (`<stamp>_o_slug[x]`) ends the
+// token exactly where it always did, and only the marker POSITION reads one.
+//
+// THE STOP IS `REC_TAIL`'s, NOT `BARE_TAIL`'s, and the two tails now differ in
+// exactly that. The stop `recordTail()` derives is a lookbehind over the tail's
+// own characters, and `BARE_TAIL`'s class holds no `]`, so a bracket citation
+// ending a sentence (`<stamp>[o].`) failed the word-before-the-stop test, kept
+// the sentence's full stop inside the basename and dangled with its record on
+// disk — the same class
+// 260901-0320_*_the-sentence-stop-lookbehind-does-not-cover-the-bracket-characters-the-record-tail-admits.md
+// repaired on the other tail, arriving here for the same reason. `REC_TAIL`'s
+// stop is the same derivation over a class that does hold one. Measured both
+// ways over this repository's 3 035-file corpus: the wider stop loses no token.
 const BARE_RE = new RegExp(
-  `(?<![\\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT}|_)${BARE_TAIL.cls})` + BARE_TAIL.stop,
+  `(?<![\\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT}|${BRACKET_SLOT}|_)${BARE_TAIL.cls})` +
+    REC_TAIL.stop,
   "g",
 );
 
@@ -828,7 +913,7 @@ const SWEEP_DIR_RE = new RegExp(`^${CIRCLE_DIR}$`);
 
 /** The storeless spelling of a store-prefixed record token's basename. */
 function storelessBase(stamp: string, rest: string): string {
-  return stamp + rest.replace(/^_[a-z](?:_|$)/, "_*_");
+  return stamp + (markerAtHead(rest)?.wildcarded ?? rest);
 }
 
 // --- the per-token walk -----------------------------------------------------
@@ -1246,8 +1331,9 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
         const idx = m.index;
         consider(idx, full, "bare-record", () => {
           const hit = findRecord(stamp + rest);
-          // `_o_` on a whole or truncated citation, `_o` on one cut inside the slot
-          const markerM = rest.match(/^_([a-z])(?:_|$)/);
+          // `_o_` on a whole or truncated citation, `_o` on one cut inside the
+          // slot, `[o]` in the pre-v4 spelling — one rule, read once
+          const markerM = markerAtHead(rest);
           if (hit.length === 1 && markerM) {
             // The lookup FOUND the record under the letter the token spells, so
             // the pointer holds today and dies at the record's next transition;
@@ -1257,7 +1343,7 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
             return {
               status: "spelled-marker",
               matches: hit.map(pathOf),
-              problem: `spells the marker '_${markerM[1]}_', which the record's next transition invalidates`,
+              problem: `spells the marker '_${markerM.letter}_', which the record's next transition invalidates`,
               fix: "cite the marker position as '_*_'",
             };
           }
@@ -1269,7 +1355,7 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
                 status: "stale-marker",
                 matches: wild.map(pathOf),
                 problem:
-                  `stale marker '_${markerM[1]}_': the record now exists as ` +
+                  `stale marker '_${markerM.letter}_': the record now exists as ` +
                   `${wild[0].relDir}/${wild[0].base}`,
                 fix: "cite the marker position as '_*_'",
               };

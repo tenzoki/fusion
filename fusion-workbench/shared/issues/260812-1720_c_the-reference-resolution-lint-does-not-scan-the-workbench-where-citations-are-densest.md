@@ -31,8 +31,8 @@ filename. The forms found in the wild:
   …260807-2024_o_…                                                 5×
   ```
 - the **wildcard marker** `_*_`, which is the mandated form and resolves correctly
-- the **pre-v4 bracket form** `260717-1918[o]`, thirteen occurrences, a marker syntax retired in
-  v4
+> - the **pre-v4 bracket form** `260717-1918[o]`, thirteen occurrences, a marker syntax retired in
+  > v4
 - an **ellipsis truncation** — `archive/260817-1907-safe-cleanup-scoped/260809-1229_*_…:366,412`,
   `260807-2024_*_…`, `260801-1122…:301`
 - a `fusion-workbench/` **prefix** on an otherwise workbench-relative path

@@ -21,14 +21,14 @@ workbench**, every one of them a false positive in the dangling count. Verified 
 the citation of `260717-0030_*_…` written with three ASCII dots in place of the
 ellipsis, which the parser reports as `dangling` while the record it names is on disk.
 
-**2. The pre-v4 bracket marker `260717-1918[o]` has no case at all.** **171 occurrences** in the
-workbench. What happens to them depends on whether a store prefix is in front, and neither
-outcome is right:
+> **2. The pre-v4 bracket marker `260717-1918[o]` has no case at all.** **171 occurrences** in the
+> workbench. What happens to them depends on whether a store prefix is in front, and neither
+> outcome is right:
 
-- with a prefix, `260717-1918[o]_slug.md` tokenises as `260717-1918`, because
-  `[` ends the character class. That prefix-matches the real file and is counted **resolved** —
-  the marker was never read, so a stale one in this spelling can never be found.
-- bare, `260717-1918[o]` tokenises as the stamp alone and lands in the undecidable residual.
+> - with a prefix, `260717-1918[o]_slug.md` tokenises as `260717-1918`, because
+  > `[` ends the character class. That prefix-matches the real file and is counted **resolved** —
+  > the marker was never read, so a stale one in this spelling can never be found.
+> - bare, `260717-1918[o]` tokenises as the stamp alone and lands in the undecidable residual.
 
 The two are one defect and are filed together because the fix is one decision, not two: the
 grammar currently enumerates the spellings it accepts and silently reinterprets the rest. That is

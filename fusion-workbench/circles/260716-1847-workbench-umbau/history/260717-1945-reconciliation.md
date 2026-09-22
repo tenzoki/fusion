@@ -30,9 +30,11 @@ Keine. Alle unerwarteten Befunde des Laufs (zsh-Glob, Branch-Guard) waren vom Or
 
 ## Geänderte Tracking-Dateien
 
+```
 - `260716-1910[p]→[c]-plan-workbench-umbau-circle-container.md` (Status, Schritte 9/10, Reconciliation Log)
 - `260716-1847[a]→[i]-workbench-struktur-circle-container-vs-typ-ordner.md`
 - `260716-1910[a]→[i]-circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`
 - `260716-1940[a]→[i]-fusion-paths-argument-namespace-agents-vs-skills.md`
 - `260717-0033[a]→[i]-derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md`
+```
 - `260717-1832-orchestrator-session.md` (`## Coherence` angehängt)

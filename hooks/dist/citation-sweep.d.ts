@@ -164,10 +164,11 @@
  *                                             a pointer at a record into one at
  *                                             a directory
  *   circle-dir      -> `<stamp>-<slug>`       the bare container name
- *   bare-record     -> `_*_` at the marker    only when the marker is literal; a
- *                                             truncated citation (`<stamp>_o_`,
- *                                             `<stamp>_d`) is one token and is
- *                                             rewritten whole or left whole
+ *   bare-record     -> `_*_` at the marker    in either spelling, the underscore
+ *                                             one and the pre-v4 bracket; only
+ *                                             when the marker is complete, so a
+ *                                             citation truncated inside the slot
+ *                                             (`<stamp>_d`) is left whole
  *   stamp-bare      -> never rewritten; listed with its status
  *
  * Tokens are spliced right to left within a line, so earlier columns stay
@@ -200,11 +201,24 @@
  * directory index, and it is evaluated only after a candidate exists — a token
  * the table leaves alone never reaches it.
  *
- * What the guard deliberately does NOT do is make the bracket form rewritable.
- * The grammar reads such a citation whole and reports it; resolving one is a
- * separate open question, `/fusion:migrate` not having converted the frozen
- * stores:
- * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
+ * SINCE 2026-09-22 THE BRACKET FORM IS REWRITABLE, and the guard is what lets it
+ * be. `candidateFor()` respells the marker position through the grammar's own
+ * `markerAtHead()`, so the candidate is `<stamp>_*_…` — a string this grammar
+ * reads back whole, which is exactly the property the guard asks for and exactly
+ * what the bracket spelling lacked. Nothing was relaxed to allow it: the
+ * measured case above stopped being an instance because the rewrite changed, not
+ * because the question did.
+ *
+ * What did NOT change is stated so it is not read into the above: nothing here
+ * RESOLVES a bracket-named record on disk. `/fusion:migrate` does not convert
+ * the frozen stores, so such a file is permanent where it exists, and whether a
+ * citation may resolve THROUGH the bracket form is the question
+ * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`
+ * holds, deferred by the user on 2026-09-22 and untouched here. The consequence
+ * a consuming project meets: a tree that really holds bracket-named files has
+ * citations that resolve today and respell to a form that then resolves to
+ * nothing, which is why `/fusion:migrate` runs this sweep as a dry run and ASKS
+ * before writing.
  *
  * ## One spelling per corpus file, anchored on the project root
  *

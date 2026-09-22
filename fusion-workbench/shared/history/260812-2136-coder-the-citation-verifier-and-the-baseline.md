@@ -114,11 +114,11 @@ new record filed below cites it for that reason, but nothing here measures it.
 
 ## Issues filed
 
-- `260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
-  Two grammar gaps found by the run, moving the count in opposite directions: ASCII `...` is not
-  read as a truncation where `…` is, manufacturing 54 false danglings; and the retired pre-v4
-  bracket marker (`260717-1918[o]`, 171 occurrences) has no case at all, so with a store prefix it
-  resolves by prefix accident with the marker unread, and bare it falls into the residual.
+> - `260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
+  > Two grammar gaps found by the run, moving the count in opposite directions: ASCII `...` is not
+  > read as a truncation where `…` is, manufacturing 54 false danglings; and the retired pre-v4
+  > bracket marker (`260717-1918[o]`, 171 occurrences) has no case at all, so with a store prefix it
+  > resolves by prefix accident with the marker unread, and bare it falls into the residual.
 
 **Nothing was fixed.** A dangling-citation sweep is its own body of work and would have buried the
 measurement. No citation was rewritten, no marker touched, no file moved.

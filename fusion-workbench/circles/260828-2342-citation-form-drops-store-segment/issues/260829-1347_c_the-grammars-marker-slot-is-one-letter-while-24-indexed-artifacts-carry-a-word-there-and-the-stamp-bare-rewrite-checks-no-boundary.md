@@ -14,7 +14,7 @@
 
 2. **The uniqueness claim does not cover the index the resolver uses.** `STAMPED_RE` in the uniqueness test skips the 24 files, so the rule text's "0 collisions over 2 235 marker-normalised basenames" is measured over a set the `stamp-name` prefix lookup (`e.base.startsWith(full)`, line 617) does not stop at. The measurement happens to hold today; nothing re-takes it for the 24.
 
-3. **The `stamp-bare` rewrite has no token boundary.** `STAMP_RE`'s trailing lookahead is `(?![0-9])` only, so `260801-1355_coder_…`, `260809-1224_d`, `260826-0136_*_`, `260717-1918[o]-slug` and `**Date:** 260801-1355` all tokenise as a bare stamp; `rewriteOf()` then trusts `matches.length === 1`, which the header of `partition()` (lines 750-756) itself calls an accident of the minute. The rewriter acts on exactly the class the scanner's own comment says no mechanism can judge.
+> 3. **The `stamp-bare` rewrite has no token boundary.** `STAMP_RE`'s trailing lookahead is `(?![0-9])` only, so `260801-1355_coder_…`, `260809-1224_d`, `260826-0136_*_`, `260717-1918[o]-slug` and `**Date:** 260801-1355` all tokenise as a bare stamp; `rewriteOf()` then trusts `matches.length === 1`, which the header of `partition()` (lines 750-756) itself calls an accident of the minute. The rewriter acts on exactly the class the scanner's own comment says no mechanism can judge.
 
 ## What the sibling issue's acceptance cannot reach as stated
 

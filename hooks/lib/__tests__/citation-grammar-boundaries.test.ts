@@ -56,6 +56,12 @@ describe("a record token stops at a word, never on the sentence's full stop", ()
     ["ASCII ellipsis tail 260819-1645_*_what-defines...", "260819-1645_*_what-defines..."],
     ["Unicode ellipsis then stop 260819-1645_*_what-defines….", "260819-1645_*_what-defines…"],
     ["ASCII ellipsis then stop 260819-1645_*_what-defines....", "260819-1645_*_what-defines...."],
+    // the pre-v4 bracket marker, read here since 2026-09-22: the same slot in
+    // the other spelling, the tail class unchanged, and `REC_TAIL`'s stop
+    ["bracket marker 260519-0438[o]-loader-check.md", "260519-0438[o]-loader-check.md"],
+    ["bracket marker alone 260716-1910[a]", "260716-1910[a]"],
+    ["bracket then the sentence's stop 260519-0438[o].", "260519-0438[o]"],
+    ["a bracket AFTER the slug 260519-0438_o_slug[x]", "260519-0438_o_slug"],
   ];
   const wb = scratch();
   for (const [text, token] of rows) {
@@ -76,12 +82,15 @@ describe("a record token stops at a word, never on the sentence's full stop", ()
     expect(toks(wb, "see 260819-1645_o_slug..").map((h) => h.token)).toEqual(["260819-1645_o_slug.."]);
   });
 
-  // The rows above are all `bare-record`, and only `REC_RE` admits a bracket, so
-  // the stop derived from ITS tail class is reachable from no probe there.
+  // `BARE_RE` reads a bracket in the MARKER position since 2026-09-22 and takes
+  // `REC_TAIL`'s stop with it, which is what the four bracket rows above pin.
+  // This case keeps the store-prefixed half of the same rule, plus the bound on
+  // the slot: one letter, so a word in brackets is no token at all.
   it("stops before the stop on a bracket-marked store-prefixed token, `fix` included", () => {
     const [hit] = toks(wb, "see shared/issues/260519-0438[o].");
     expect([hit.token, hit.kind]).toEqual(["shared/issues/260519-0438[o]", "record"]);
     expect(hit.fix).not.toContain("[o].");
+    expect(toks(wb, "see 260519-0438[foo]-x.md"), "the marker slot is one letter").toEqual([]);
   });
 
   // A Circle record carries no greedy tail: what refused the sentence's stop was

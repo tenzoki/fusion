@@ -19,6 +19,50 @@ export declare const MARKER_WORDS: readonly ["coder", "ontocoder", "planner"];
 /** The marker slot, `_x_` or `_<word>_`, as a regex source with no capture. */
 export declare const MARKER_SLOT: string;
 /**
+ * The SAME one-letter alphabet in the pre-v4 bracket spelling, `[x]`, as a
+ * regex source with no capture. Named apart from `MARKER_SLOT` rather than
+ * folded into it, for the reason the header's bracket paragraph carries: the
+ * uniqueness gate reads `MARKER_SLOT` against a normalisation key that knows
+ * only the underscore form. The legacy WORDS are deliberately absent — they were
+ * stamped on pre-Circle history files, which never carried a bracket.
+ */
+export declare const BRACKET_SLOT = "\\[[a-zA-Z*]\\]";
+/**
+ * The marker a storeless basename carries right after its stamp, in EITHER
+ * spelling, and the same tail with that marker respelled to the wildcard `_*_`.
+ * `null` when the tail opens with no marker at all (`<stamp>_` truncated to
+ * nothing, `<stamp>_…`), which is the case every caller has to tell apart from a
+ * marker it could respell.
+ *
+ * ONE RULE, TWO CALLERS, ONE SPELLING OF IT. `storelessBase()` below asks it so
+ * a lookup can be retried under the wildcard, and `candidateFor()` in
+ * `hooks/citation-sweep.ts` asks it for what a rewrite writes. Those two must
+ * agree by construction: a sweep that wrote a form the grammar's own lookup
+ * would not have produced is a rewrite nothing here vouches for, and two copies
+ * of the rule are what let them drift apart.
+ *
+ * The underscore arm matches a marker cut short by the end of a truncated
+ * citation (`<stamp>_d`) exactly as it did before this function existed, and
+ * `complete` is false for exactly that case; the bracket arm needs no such arm,
+ * because a bracket that lost its `]` never tokenised in the first place. A
+ * LOOKUP retries an incomplete marker under the wildcard like any other, which
+ * is what `storelessBase()` below does, while a REWRITE declines it: writing
+ * `_*_` over `<stamp>_d` invents the closing half the citation's writer elided.
+ *
+ * THE BRACKET ARM ABSORBS THE MARKER'S TRAILING HYPHEN, because the hyphen is
+ * the delimiter and not the first character of the slug: the pre-v4 name is
+ * `<stamp>[o]-<topic>.md` and the underscore name is `<stamp>_o_<topic>.md`.
+ * That is `/fusion:migrate`'s own rename rule, `s/\[([oatcibspd])\]-/_\1_/g`
+ * (`skills/migrate/SKILL.md`, the bracket-marker bullet under Step 4), read off
+ * that skill rather than re-derived — a citation and the file it names have to
+ * arrive at the same spelling or the pointer the sweep writes finds nothing.
+ */
+export declare function markerAtHead(rest: string): {
+    letter: string;
+    complete: boolean;
+    wildcarded: string;
+} | null;
+/**
  * Files whose record citations are fabricated, with the reason. THE PREMISE IS
  * RESOLUTION — a made-up record cannot be found on disk — so the exemption
  * reaches exactly the verdicts a lookup decides and NOT `store-prefixed`, which

@@ -94,19 +94,19 @@ token already began at its own left edge, so the splice replaced the whole path
 and the storeless basename read back as `bare-record`/`resolved`. It is in the
 table for corpus coverage, not because it ever failed.
 
-Two things the transitions say that the summary line does not. The three
-unanchored rows each lose the token because the rewrite spliced a storeless
-basename in behind a path fragment the token never covered; the four spliced
-results are in the fenced failure listing above, in the four rows whose fixture
-names begin with a foreign path, a word character, a bare Circle directory and
-an archive rooting. `BARE_RE`'s
-lookbehind refuses every one of those left contexts — the corruption and the
-blindness are one defect seen from two sides. The bracket row loses it
-differently: the old tail class stopped at the stamp, so the token was the store
-segment plus that stamp alone, its rewrite was the bare stamp `260519-0438`, and
-the resulting `260519-0438[o]-loader-check.md` is refused by `STAMP_RE`'s
-`(?![0-9A-Za-z_\[])` lookahead. Not a demotion to `stamp-bare`, which is what a
-reader might expect: no token at all.
+> Two things the transitions say that the summary line does not. The three
+> unanchored rows each lose the token because the rewrite spliced a storeless
+> basename in behind a path fragment the token never covered; the four spliced
+> results are in the fenced failure listing above, in the four rows whose fixture
+> names begin with a foreign path, a word character, a bare Circle directory and
+> an archive rooting. `BARE_RE`'s
+> lookbehind refuses every one of those left contexts — the corruption and the
+> blindness are one defect seen from two sides. The bracket row loses it
+> differently: the old tail class stopped at the stamp, so the token was the store
+> segment plus that stamp alone, its rewrite was the bare stamp `260519-0438`, and
+> the resulting `260519-0438[o]-loader-check.md` is refused by `STAMP_RE`'s
+> `(?![0-9A-Za-z_\[])` lookahead. Not a demotion to `stamp-bare`, which is what a
+> reader might expect: no token at all.
 
 At HEAD all six hold. Rows 1 and 2 hold vacuously — the left anchor means the
 grammar reports nothing there to begin with, which is the repair — row 3 holds

@@ -13,7 +13,7 @@
 
 ## Directive
 
-Die Zustandsmarker in Dateinamen tragen kein Glob-Metazeichen mehr. Aus `260716-1847[o]-topic.md` wird `260716-1847_*_topic.md`, aus `[t]-circle.md` wird `_t_circle.md`. Das Marker-Vokabular selbst (`o a t c i b s d p`) bleibt unverändert — nur seine Klammern verschwinden. Danach kann kein Muster über einem Marker mehr versehentlich eine Zeichenklasse sein.
+> Die Zustandsmarker in Dateinamen tragen kein Glob-Metazeichen mehr. Aus `260716-1847[o]-topic.md` wird `260716-1847_*_topic.md`, aus `[t]-circle.md` wird `_t_circle.md`. Das Marker-Vokabular selbst (`o a t c i b s d p`) bleibt unverändert — nur seine Klammern verschwinden. Danach kann kein Muster über einem Marker mehr versehentlich eine Zeichenklasse sein.
 
 ## Grounding snapshot
 

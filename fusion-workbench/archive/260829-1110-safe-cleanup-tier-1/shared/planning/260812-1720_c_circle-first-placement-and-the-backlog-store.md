@@ -11,7 +11,7 @@ moves?"*, and asked of the citation **text** it is not decidable from the inputs
 has. Measured over the seven candidate files in `shared/planning/`: 184 references exist, and 91
 of them (49 per cent) do not contain the file's current filename. They carry a stale marker
 (`_o_` where the file is now `_c_`, seven times for one file alone), a wildcard (`_*_`), the
-pre-v4 bracket form (`260717-1918[o]`, thirteen times), a trailing ellipsis
+pre-v4 bracket form (e.g. `260717-1918[o]`, thirteen times), a trailing ellipsis
 (`260809-1229_*_…`), a `fusion-workbench/` prefix, a Circle-relative `planning/`
 prefix, or a bare timestamp. Matching the exact filename under-reports by half. Matching the
 timestamp stem over-reports, because a stem is not unique across artifact kinds: `260812-1232`
@@ -681,9 +681,9 @@ Three bounds on that number, each measured rather than estimated:
 2. **54 of the 322 "names nothing" are the parser's own blind spot**: a citation truncated with
    ASCII `...` rather than the `…` the grammar knows. Filed as
    `260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
-3. **171 occurrences of the retired pre-v4 bracket marker** (`260717-1918[o]`) are in the corpus
-   and the grammar has no case for them. Store-prefixed, they resolve by prefix accident with the
-   marker unread; bare, they fall into the residual. Same issue record.
+> 3. **171 occurrences of the retired pre-v4 bracket marker** (`260717-1918[o]`) are in the corpus
+   > and the grammar has no case for them. Store-prefixed, they resolve by prefix accident with the
+   > marker unread; bare, they fall into the residual. Same issue record.
 
 The residual is larger than the plan's Decidability line estimated. It named "roughly eight" bare
 timestamps across the seven planning files; the workbench carries **4074**, of which 2869 happen

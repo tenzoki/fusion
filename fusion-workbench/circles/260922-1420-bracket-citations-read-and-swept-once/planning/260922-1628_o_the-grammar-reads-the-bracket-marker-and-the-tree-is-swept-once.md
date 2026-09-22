@@ -131,7 +131,7 @@ stateDiagram-v2
    - Gated if no cut of the clause's size can be taken without losing a statement: the way out would be a head-room raise, which is a user ruling and not this plan's to make. File the finding in the item's `issues/` store and skip, leaving steps 2 to 6 to proceed; they do not depend on the clause for correctness, only for authority.
    - Dependencies: none.
 
-2. **`BARE_RE` reads the bracket marker**
+2. [IN PROGRESS] **`BARE_RE` reads the bracket marker**
    - Executor: `coder`
    - Files: `hooks/lib/citation-scan.ts`
    - Changes, four edits in one file:
@@ -144,7 +144,7 @@ stateDiagram-v2
    - Acceptance: `cd hooks && npx vitest run citation` exits 0 except for the two whole-tree cases step 6 settles, and `node -e` against the built scanner reproduces the five rows below.
    - Dependencies: none.
 
-3. **`candidateFor()` respells the bracket marker**
+3. [DONE] **`candidateFor()` respells the bracket marker**
    - Executor: `coder`
    - Files: `hooks/citation-sweep.ts`
    - Changes: the `bare-record` branch and the `record` branch of `candidateFor()` call the helper step 2 exports, so both produce the storeless wildcard form for either marker spelling. Without this the sweep proposes nothing for a bracket token and the ruling's whole-tree sweep is a no-op. The `record` branch is included deliberately: **the sweep applies the fix the checker prints**, and for these tokens the checker prints "cite the marker position as `_*_`". A candidate that dropped only the store segment and kept the bracket would be a fix no gate ever proposed.
@@ -152,7 +152,7 @@ stateDiagram-v2
    - Acceptance: `cd hooks && npm run build && node hooks/dist/citation-sweep.js --dry-run` prints a non-zero `rewrites=` over this tree, which is the state step 5 reads and step 6 clears.
    - Dependencies: 2.
 
-4. **The tests, and the comments the change falsifies**
+4. [DONE] **The tests, and the comments the change falsifies**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/citation-grammar-boundaries.test.ts`, `hooks/lib/__tests__/citation-sweep.test.ts`
    - Changes: add cases pinning the five specimens in step 2, the sweep's candidate for a bracket `bare-record`, and the sentence-stop case, which is the one a future edit to `recordTail()` would silently undo. Edit the comment above the existing bracket boundary case, which reads that only `REC_RE` admits a bracket, and the `SHAPES` table comment in the sweep test if the change makes its row rewritable.
@@ -160,7 +160,7 @@ stateDiagram-v2
    - Acceptance: `cd hooks && npx vitest run surface-growth-bound` exits 0 with `holds hook-tests inside its own head-room of 3030 lines` green.
    - Dependencies: 2, 3.
 
-5. **Build, dry-run, classify the 139, fence the exhibits**
+5. [DONE] **Build, dry-run, classify the 139, fence the exhibits**
    - Executor: `coder`
    - Files: `hooks/dist/**` (rebuilt), and the workbench records the classification marks, roughly 25 of them.
    - Changes: run `cd hooks && npm run build`, then `bin/fusion-citation-sweep --dry-run` and read **every** proposed rewrite. Each is a pointer or an exhibit, and the sweep cannot tell them apart, which is what the Decidability line above says. Mark each exhibit so it carries a `reason` before any write: move it into a fenced block, exactly as `260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md` already does for its own four specimens and for the same stated reason. A blockquote or an `e.g.` announcement on the line is the cheaper instrument where the sentence allows it. Do **not** use `citations.exhibits`: it silences a whole record, and every one of these records carries genuine citations beside the exhibit.
@@ -170,7 +170,7 @@ stateDiagram-v2
    - Acceptance: `bin/fusion-citation-sweep --dry-run` lists no proposed rewrite that a reader has not classified, and the count of proposed rewrites has fallen by the number of exhibits fenced (roughly 139 to 114).
    - Dependencies: 1, 3.
 
-6. **Sweep the tree, verify, close both decisions**
+6. [IN PROGRESS] **Sweep the tree, verify, close both decisions**
    - Executor: `coder`
    - Files: the workbench records the sweep rewrites (roughly 114 tokens in some 50 files, `archive/` included), plus the two decision records.
    - Changes: run `bin/fusion-citation-sweep --write --yes`, then `bin/fusion-citation-sweep --dry-run` again and confirm it has settled. Append an `Implemented:` line to `260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md` and to `260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md`, naming the commit, and rename both from `_a_` to `_i_`. Write the record lines **before** the verifying run, so the suite sees the commit's whole content. `260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md` is already `_c_` and terminal and is not touched; `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md` is `_d_` and terminal and stays deferred.

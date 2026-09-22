@@ -191,6 +191,31 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
     }
   }, CASE_TIMEOUT);
 
+  // The pre-v4 bracket marker, read by `BARE_RE` since 2026-09-22. What is
+  // pinned is the SPELLING the sweep writes: the marker's trailing hyphen is the
+  // delimiter, so it is absorbed exactly as `/fusion:migrate` absorbs it when it
+  // renames the file, and citation and filename arrive at the same name. A word
+  // in brackets is no marker and produces no token at all.
+  it("respells a bracket marker to the wildcard, hyphen absorbed, and leaves a word in brackets alone", () => {
+    const { root, wb } = scratchRepo();
+    const doc = join(wb, "shared/decisions/260404-0404_o_bracket.md");
+    const after = "see 260101-0101_*_alpha.md, never 260101-0101[open]-alpha.md";
+    writeFileSync(doc, "see 260101-0101[o]-alpha.md, never 260101-0101[open]-alpha.md");
+    git(root, "add", "-A");
+    git(root, "commit", "-q", "-m", "bracket");
+    try {
+      const run = sweep(root, wb, "--write", "--yes");
+      expect(run.status, run.stderr).toBe(0);
+      expect(readFileSync(doc, "utf-8")).toBe(after);
+      expect(last(run)).toMatch(/^files=2 rewrites=2 residual=0 record=1 .* bare-record=1 .* mode=write$/);
+      // and the form it wrote is one the grammar resolves, not merely one it reads
+      const [hit] = createScanner(wb).scanCitationTokens("x.md", [{ line: 1, text: after }]);
+      expect([hit.token, hit.status]).toEqual(["260101-0101_*_alpha.md", "resolved"]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
   it("without --yes prints the census, writes nothing, and exits 5", () => {
     const { root, wb, doc } = scratchRepo();
     try {

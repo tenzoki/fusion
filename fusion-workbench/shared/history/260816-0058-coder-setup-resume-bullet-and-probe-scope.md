@@ -70,12 +70,12 @@ same run in the live tree also showed `agents/orchestrator.md` moved by another 
 
 The probe was verified empirically on a fixture workbench rather than by reading:
 
-| Fixture | Probe at HEAD | Narrowed probe |
-|---|---|---|
-| Bracket files only under `archive/`, `stashes/`, `.migration-v2-backup/`, at the workbench root, and a flat `circles/notes[o]-unparsable.md` | `OLD=1`, naming `circles/notes[o]-unparsable.md` | `OLD=0` |
-| Plus `260101-0000[o]-live.md` | — | `OLD=1`, naming it |
-| Plus `260101-0000[p]-live.md` | — | `OLD=1`, naming it |
-| Genuine pre-v4 `circles/260716-1847[t]-umbau.md` | — | `OLD=1` through the Circle-file probe |
+> | Fixture | Probe at HEAD | Narrowed probe |
+> |---|---|---|
+> | Bracket files only under `archive/`, `stashes/`, `.migration-v2-backup/`, at the workbench root, and a flat `circles/notes[o]-unparsable.md` | `OLD=1`, naming `circles/notes[o]-unparsable.md` | `OLD=0` |
+> | Plus `260101-0000[o]-live.md` | — | `OLD=1`, naming it |
+> | Plus `260101-0000[p]-live.md` | — | `OLD=1`, naming it |
+> | Genuine pre-v4 `circles/260716-1847[t]-umbau.md` | — | `OLD=1` through the Circle-file probe |
 
 The first row is the deadlock reproducing at HEAD and closing under the fix; the last three confirm
 nothing live stopped being detected.

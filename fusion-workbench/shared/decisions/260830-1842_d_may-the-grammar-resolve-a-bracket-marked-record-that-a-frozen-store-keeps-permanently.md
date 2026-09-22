@@ -9,7 +9,7 @@
 
 ## Question
 
-`hooks/lib/citation-scan.ts` states, with its reason, that the pre-v4 bracket marker (`260519-0438[o]-loader-check.md`) is **not read on purpose**: a grammar that accepted it would remove the only pressure to run `/fusion:migrate`.
+> `hooks/lib/citation-scan.ts` states, with its reason, that the pre-v4 bracket marker (`260519-0438[o]-loader-check.md`) is **not read on purpose**: a grammar that accepted it would remove the only pressure to run `/fusion:migrate`.
 
 That reason holds for a live workbench and does not hold for a frozen one. `/fusion:migrate` deliberately does not convert `archive/`, `stashes/` or `.migration-v2-backup/`, because `skills/setup/SKILL.md` bounds its probe to the two live trees, and `rules/fusion-workbench-conventions.md` says the frozen stores keep the filenames their content was frozen with. So a bracket-named record in a frozen store is **permanent**, and no citation form fusion accepts can address it. Measured in the consuming project `unite-co-creator`: 21 bracket-named `.md` files in `archive/`, 205 in `.migration-v2-backup/`.
 

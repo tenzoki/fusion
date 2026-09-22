@@ -2,7 +2,7 @@
 
 ---
 
-`fusion-workbench/tasklist.md` at HEAD is the v4.0.0 workbench-restructure queue, generated `260716-1920`. Every one of its nine entries is `[x]` or `[deferred]`. Its `**Source plan:**` line points at `260716-1910[p]-plan-workbench-umbau-circle-container.md` — a pre-v4 root-relative path in the bracket marker format, so it resolves to nothing in the current layout, twice over.
+> `fusion-workbench/tasklist.md` at HEAD is the v4.0.0 workbench-restructure queue, generated `260716-1920`. Every one of its nine entries is `[x]` or `[deferred]`. Its `**Source plan:**` line points at `260716-1910[p]-plan-workbench-umbau-circle-container.md` — a pre-v4 root-relative path in the bracket marker format, so it resolves to nothing in the current layout, twice over.
 
 The Circle it belongs to (`260716-1847-workbench-umbau`) is closed. The session of 260801 ran three Turns and sixteen commits without the file being read, written, or noticed as stale until a coder mentioned it in passing.
 
