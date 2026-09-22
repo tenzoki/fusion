@@ -156,6 +156,8 @@ whole file**. Pick that level by counting, not by naming it:
    whose every heading is unique then divides at its first heading and can come
    back as a single passage. That fallback is coarse by construction, and it
    still gives every reader the same division.
+4. A file with no heading at any level is one passage, the preamble, and the
+   level is 0; `bin/fusion-claude-md-weight` prints `heading-level=0` for it.
 
 A heading at the chosen level, together with everything under it up to the next
 heading of that same level, is **one passage**. Whatever stands above the first

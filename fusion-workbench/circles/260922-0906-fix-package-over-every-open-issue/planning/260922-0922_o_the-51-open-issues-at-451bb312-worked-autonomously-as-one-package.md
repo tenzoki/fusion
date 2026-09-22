@@ -251,7 +251,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
    - Gate: none
    - Dependencies: none
 
-9. **Name the no-heading case in Step 1**
+9. [DONE] **Name the no-heading case in Step 1**
    - Executor: `coder`
    - Record: `260916-2210_*_step-1s-two-branches-leave-a-file-with-no-headings-undivided-while-the-helper-answers-heading-level-0.md`
    - Site at HEAD: `rules/context-lean-claude-md.md:153-158`, branches 2 and 3 ("shallowest level that has at least two headings", "shallowest level present at all"); a file with no heading falls through both; `bin/fusion-claude-md-weight` prints `heading-level=0` and one `(preamble)` row for such a file (measured in the record).

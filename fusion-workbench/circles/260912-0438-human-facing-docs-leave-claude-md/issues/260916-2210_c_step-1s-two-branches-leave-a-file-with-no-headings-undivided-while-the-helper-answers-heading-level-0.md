@@ -29,3 +29,6 @@ The three shapes the rule does claim were each run and each hold: a lone `# ` ti
 **Acceptance test.** `### Step 1` names the no-heading case and the division it produces, and the answer it names is the one `bin/fusion-claude-md-weight` prints for such a file. Proved by running the helper against a heading-less scratch `CLAUDE.md` and reading the rule's own branch for it.
 
 **Cross-references:** 260916-1316_*_three-surfaces-state-the-heading-division-rule-and-two-of-them-answer-differently-on-fusions-own-claude-md.md
+
+---
+Resolved: `rules/context-lean-claude-md.md` `### Step 1 — divide the file by heading, before judging anything` carries a fourth item naming the no-heading case (one passage, the preamble, level 0, which is what `bin/fusion-claude-md-weight` prints as `heading-level=0` for a heading-less scratch `CLAUDE.md` weighed under a threshold it exceeds); the commit that carries this line.
