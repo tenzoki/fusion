@@ -17,3 +17,6 @@ Why this is worth a record rather than a shrug. The attribution convention exist
 Nothing is wrong with the pinned number itself. `npm test` is green at `a98e763b` (925 tests, 53 files), so 1702/243 is what the gate reads. Only the account of how it got there is broken.
 
 **Acceptance test:** the entry for `22d6f839` states the pin it replaced (1692/237), names `skills/post/SKILL.md` with its share, and the four shares sum to the observed move; a reader can walk the chain from `1713` to `1702` with no step whose "from" is a figure the pin never held.
+
+---
+Resolved: the commit that carries this line files `260922-1040-reference-resolution-pin-re-approval-log-the-2026-09-08-entries-dropped-at-b3649305.md`, which carries verbatim the five 2026-09-08 entries `b3649305` deleted from the pin line (the entry this record corrects among them, as evidence) and a corrected entry for `22d6f839` opening at the 1692/237 it replaced, with `skills/post/SKILL.md` at +11 paths and +5 anchors beside the three shares the original named, summing to 1702/240; the test header's pointer line names the record. The defect's shape had changed since filing: the entry was not corrected in place but dropped whole at `b3649305`, so the fix is a roll record rather than an edit to the line.

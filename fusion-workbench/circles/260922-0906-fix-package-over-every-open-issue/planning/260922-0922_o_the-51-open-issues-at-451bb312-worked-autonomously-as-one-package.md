@@ -421,7 +421,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: none
 
-23. **Recover the dropped 2026-09-08 pin entries into a roll record, with the attribution the defect asked for**
+23. [DONE] **Recover the dropped 2026-09-08 pin entries into a roll record, with the attribution the defect asked for** (five entries, not six: the v10.25 note returned to the line at `9c7f2575` and is in the 55-to-72 roll; the header's pointer line does enumerate the rolls and gained the basename)
     - Executor: `coder`
     - Record: `260908-1853_*_the-reference-count-re-approval-omits-the-file-that-carries-its-whole-movement.md`
     - Site at HEAD: the entry the record corrects (`paths 1703 -> 1702, anchors 242 -> 240`) is on no line of `hooks/lib/__tests__/reference-resolution-lint.test.ts` and in none of the six roll records under `fusion-workbench/shared/analyses/` (`grep -rl '1703 -> 1702\|1692 -> 1702' …` prints nothing). `git show b3649305 -- hooks/lib/__tests__/reference-resolution-lint.test.ts` shows the `BASELINE` line replaced whole: the removed line carried the 2026-09-08 chain `1692/237 → 1703/242 → 1702/240 → 1707/245` and the added line opens at `1713 -> 1721`. The header's "roll, never drop" rule was broken by that replacement, and two roll records already exist for the same fault (`260904-2202-…-the-two-dropped-2026-08-29-entries.md`, `260915-2006-…-the-two-2026-09-09-entries.md`).
