@@ -215,7 +215,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
    - Gate: none
    - Dependencies: none
 
-6. **Make the migration's drop rule and its reason agree**
+6. [DONE] **Make the migration's drop rule and its reason agree**
    - Executor: `coder`
    - Record: `260913-0822_*_the-migrations-new-drop-rule-justifies-itself-with-a-claim-that-is-false-on-a-re-run.md`
    - Site at HEAD: `skills/migrate/SKILL.md:162` "Every entry naming a container **this pass also converted** goes to `**Cross-references:**`, comma-separated, which orders nothing; every other entry names no such record and is dropped, because a citation that resolves to nothing degrades without announcing it (`HYG-NO-SILENT-FAIL`)."

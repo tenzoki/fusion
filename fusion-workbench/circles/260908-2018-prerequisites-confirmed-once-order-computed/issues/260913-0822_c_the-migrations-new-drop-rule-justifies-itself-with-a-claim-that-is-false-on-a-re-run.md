@@ -63,3 +63,6 @@ rule or the sentence is the error.
 
 `skills/migrate/SKILL.md` alone. The `skills/` surface carries a growth bound; the fix should be
 at or below the current byte count, which a restatement can be.
+
+---
+Resolved: the drop rule in `skills/migrate/SKILL.md` now gives its real reason (the record's second branch: a conversion writes only what this pass can verify, so an entry outside that set is dropped and reported resolving or not) at the same byte count as before, the `**Depends-on:**` sentence and the report obligation untouched; the commit that carries this line.
