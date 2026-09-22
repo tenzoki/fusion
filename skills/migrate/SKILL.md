@@ -198,9 +198,9 @@ For `MODE=plain`, remind the user that the move is not in any diff, so a `git re
 
 ## Step 6 — Sweep the citations
 
-The renames move filenames; citations naming them are the other half. Run `bin/fusion-citation-sweep --dry-run`, report its summary, and ask in Step 3's shape whether to respell those markers to the wildcard. On a yes run `bin/fusion-citation-sweep --write --yes` and report its summary; on a no, say they were left as written.
+The renames move filenames; citations naming them are the other half. Set `SWEEP="$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep"`. If `[ -x "$SWEEP" ]` is false, say the sweep was skipped because the installed copy carries no `bin/fusion-citation-sweep` yet and `fusion --update` then a restart will get it, and stop there. Otherwise run `"$SWEEP" --dry-run`, report its summary, and ask in Step 3's shape whether to respell those markers to the wildcard. On a yes run `"$SWEEP" --write --yes` and report its summary; on a no, say they were left as written.
 
-The ask is not ceremony: a frozen store this migration does not convert may hold bracket-named files (226 in one project), whose citations resolve today and stop once respelled — the open half of `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
+The ask is not ceremony: what it puts to the user is the open half of `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
 
 ## Guardrails
 
