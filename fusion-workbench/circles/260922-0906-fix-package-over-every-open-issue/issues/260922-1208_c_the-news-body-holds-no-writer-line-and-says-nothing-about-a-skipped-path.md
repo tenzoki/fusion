@@ -9,3 +9,6 @@ Acceptance: `:51` names `writer=` and `skipped=` among what is held; Step 4 or S
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
 Executor: `coder`. Found in the closing review `260922-1208-reviewer-closing-pass-over-the-51-issue-package-451bb312-to-bf515cad.md`.
+
+---
+Resolved: `skills/news/SKILL.md` `## Step 2: ask what is new` holds `ref=`, `head=`, `new=`, every `entry=` line with the `writer=` line printed under it, and every `skipped=` line; `## Step 7: report` names the skipped paths in one sentence and says they are files the store holds that are not messages. Funded inside the `skills/` bound by cutting the two preamble bullets restated verbatim at Step 5 and Step 7, leaving the one bullet nothing else states and rewording the preamble's cardinality with it: net 8 373 -> 8 211 bytes.

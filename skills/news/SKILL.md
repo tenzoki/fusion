@@ -9,11 +9,9 @@ The user invoked `/fusion:news`. This skill shows the messages that reached the 
 
 **The mechanism is not in this body.** The fetch, the two-tree set difference, the exit codes and the state vocabulary are documented in `bin/fusion-forum`'s own header, which is the authoritative text for all of it. Open that header when you need to know how an answer was produced. What this body carries is the flow and the sentences the user reads.
 
-**Three things this skill says aloud, because nothing else will.** Each has its own step below; they are collected here so none is silently dropped.
+**One thing this skill says aloud, because nothing else will.** It has its own step below and is named here so it is not silently dropped.
 
-- **The read mark advances on render.** An entry that has been shown is not shown again, so a message seen and then abandoned does not come back. It is still a file in the store, and whoever wants it reads it there.
 - **A pull is the user's yes and never automatic.** This skill fetches, which changes no file, and it pulls only after the user answers Step 6.
-- **This reads a store and holds no thread.** There are no replies here. A message that needs an answer gets one through the other person's own next message, written on their side.
 
 Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`).
 
@@ -48,7 +46,7 @@ On `missing`, say this and stop:
 "$FUSION_PLUGIN_ROOT/bin/fusion-forum" new "$SCAN_FORUM"; echo "exit=$?"
 ```
 
-Hold `ref=`, `head=`, `new=` and every `entry=` line. Exit 0 is the only case that continues. For every other, say one plain sentence naming what could not be done, and stop. Substitute nothing for an answer that could not be taken.
+Hold `ref=`, `head=`, `new=`, every `entry=` line with the `writer=` line printed under it, and every `skipped=` line. Exit 0 is the only case that continues. For every other, say one plain sentence naming what could not be done, and stop. Substitute nothing for an answer that could not be taken.
 
 - **exit 3**: no workbench above here. Run `/fusion:setup`.
 - **exit 5**: there is nothing to read against, and `state=` says which: `no-work-tree` (this project is not a git repository), `no-branch` (detached HEAD, which has no upstream at all), `no-upstream` (this branch tracks nothing, so nobody's messages can reach it), `upstream-unresolved` (an upstream is configured and its ref still does not resolve after the fetch), `workbench-untracked` (this project does not track its workbench, so nothing another checkout wrote can arrive by `git fetch`; whether to track it is the project's own decision, and until it does this command has nothing to read). Name the one that came back, not the list.
@@ -118,4 +116,4 @@ A non-fast-forward is reported to the user as something for them to resolve, wit
 
 ## Step 7: report
 
-Keep it to a few lines: how many entries were shown and who wrote them, that the mark advanced, and what became of the pull question. Close with the property nobody else states: this skill reads a store and holds no thread, so there is nothing to reply to here. A message that needs an answer gets one through the other person's own next message.
+Keep it to a few lines: how many entries were shown and who wrote them, that the mark advanced, and what became of the pull question. Where Step 2 printed any `skipped=` line, name those paths in one sentence and say they are files the store holds that are not messages, so nothing was lost by not rendering them. Close with the property nobody else states: this skill reads a store and holds no thread, so there is nothing to reply to here. A message that needs an answer gets one through the other person's own next message.
