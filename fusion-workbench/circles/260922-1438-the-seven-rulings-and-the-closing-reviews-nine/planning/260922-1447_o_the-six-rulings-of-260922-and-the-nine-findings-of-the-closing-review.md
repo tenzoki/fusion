@@ -177,7 +177,7 @@ Field key. **Record** is the storeless citation of the decision or defect the st
    - Dependencies: none
    - **Landed with one deviation.** `## Current State` records the suite as green at `49ab50e4`; it was not. `citation-sweep.test.ts` was already red there, the closing review spelling each of its nine `Filed:` markers literally (`bare-record=9`, `files=1`), and that red blocks every commit in this package. It was repaired first and alone in `0cacf3c0`, by the rewrite `bin/fusion-citation-sweep --write` produces on a clean tree, before this step's commit.
 
-2. **Say in the 11.11.0 help paragraph what the release actually changes**
+2. [DONE] **Say in the 11.11.0 help paragraph what the release actually changes**
    - Executor: `coder`
    - Record: `260922-1208_*_the-11-11-0-help-paragraph-says-helper-output-only-while-the-release-changes-a-gate-and-two-skill-bodies.md`
    - Site at HEAD: `skills/help/SKILL.md:96`, 732 bytes, opening "**Coming from an 11.10.0 install:** 11.11.0 changes helper output only and asks nothing of the user." and then listing six helper changes. The range `451bb312..bf515cad` also ships `57e2b7eb` (the gate change), `2bb9088a` (`/fusion:cleanup` carries the registry entry in a split), `5f544591` (`/fusion:post` writes a draft file), `cfb70cc5` (`/fusion:news` holds the mark back on an unrendered entry). The section's own rule at `:102` is that it carries the last three releases and no more, so no paragraph rotates out here.
