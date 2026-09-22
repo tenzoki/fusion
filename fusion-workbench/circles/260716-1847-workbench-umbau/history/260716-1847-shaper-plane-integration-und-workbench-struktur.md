@@ -28,13 +28,13 @@ Research Gate vor jedem Vorschlag (`rules/critical-stance.md` §2):
 
 ## Ergebnis
 
-Spec: `260716-1847[o]-spec-plane-integration-und-workbench-struktur.md`
+Spec: `260716-1847_*_spec-plane-integration-und-workbench-struktur.md`
 
 Vier Entscheidungssätze abgelegt:
-- `260716-1847[o]-plane-rolle-source-of-truth.md` (D1, blockiert C3/C4)
-- `260716-1847[o]-workbench-struktur-circle-container-vs-typ-ordner.md` (D2, blockiert C1/C2)
-- `260716-1847[o]-offline-verhalten-bei-plane-ausfall.md` (D3)
-- `260716-1847[o]-zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md` (D4)
+- `260716-1847_*_plane-rolle-source-of-truth.md` (D1, blockiert C3/C4)
+- `260716-1847_*_workbench-struktur-circle-container-vs-typ-ordner.md` (D2, blockiert C1/C2)
+- `260716-1847_*_offline-verhalten-bei-plane-ausfall.md` (D3)
+- `260716-1847_*_zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md` (D4)
 
 Vorschlag: zwei Circles, Umbau zuerst.
 

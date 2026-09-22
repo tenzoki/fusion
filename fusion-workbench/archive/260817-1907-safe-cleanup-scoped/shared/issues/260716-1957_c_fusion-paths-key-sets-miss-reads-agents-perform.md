@@ -57,7 +57,7 @@ read-only) or ignore it.
 ## Recommendation
 
 Settle this together with the already-open argument-namespace decision
-(`260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`),
+(`260716-1940_*_fusion-paths-argument-namespace-agents-vs-skills.md`),
 since both are "what is the key vocabulary and who gets which key".
 
 1. Add `SCAN_ISSUES` to `consultant`, `shaper`, `playmaker`.
@@ -80,7 +80,7 @@ since both are "what is the key vocabulary and who gets which key".
 - `bin/fusion-paths` §1 "Per-agent key sets"
 - `rules/fusion-workbench-conventions.md` `## Path Resolution (Pfadauflösung)` → Contract table
 - `agents/conceptrev.md:32,42`
-- Open decision: `260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`
+- Open decision: `260716-1940_*_fusion-paths-argument-namespace-agents-vs-skills.md`
 
 ---
 Resolved: commit 6228391 (task T2-A). Verified by the orchestrator against the running system, not by reading.

@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-17
 **Status:** Complete — verified retroactively at HEAD `cde5319`; see Reconciliation Log.
-**Spec:** none — planned from the defect issue `260717-1903[o]-skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`
+**Spec:** none — planned from the defect issue `260717-1903_*_skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`
 **Origin — why this plan sits in `shared/planning/` and not in the Circle that caused it.** It was
 written while Circle `260716-1847-workbench-umbau` was active: its sibling planner session history
 is `260717-1918-planner-session.md`, written by the
@@ -242,7 +242,7 @@ Full-suite gate: `npm test` green after step 6, and `claude plugin validate .` s
 
 ## Open Questions
 
-- [ ] None blocking. The open/answered decisions in scope (`260716-*`, `260717-0033_*_derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md`) concern the Circle-container restructure and the Plane, not shell hygiene; none feeds this plan. The one open decision `260716-1847[o]-offline-verhalten-bei-plane-ausfall` is unrelated.
+- [ ] None blocking. The open/answered decisions in scope (`260716-*`, `260717-0033_*_derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md`) concern the Circle-container restructure and the Plane, not shell hygiene; none feeds this plan. The one open decision `260716-1847_*_offline-verhalten-bei-plane-ausfall` is unrelated.
 - [ ] Cosmetic only: whether to append `| sort` to the cleanup listing (site 12) for deterministic display order. Executor's call at implementation time; not a blocker.
 
 ## Reconciliation Log

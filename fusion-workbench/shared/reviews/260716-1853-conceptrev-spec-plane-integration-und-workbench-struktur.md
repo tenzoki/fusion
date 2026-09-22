@@ -1,7 +1,7 @@
 # Concept Evaluation: Spec — Plane-Anbindung und Umstrukturierung der workbench
 
 **Date:** 2026-07-16 18:53
-**Target:** `260716-1847[o]-spec-plane-integration-und-workbench-struktur.md`
+**Target:** `260716-1847_*_spec-plane-integration-und-workbench-struktur.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 1  |  **Validation:** by-tool (mmdc, exit 0)
 

@@ -84,8 +84,8 @@ One boundary the reclassification must settle, filed as a decision (see below): 
 
 ## Filed artifacts
 
-- Issue: `260706-1902[o]-consultant-chat-misrouted-to-longform-voice.md`
-- Decision: `260706-1902[o]-consultant-chat-longform-boundary.md`
+- Issue: `260706-1902_*_consultant-chat-misrouted-to-longform-voice.md`
+- Decision: `260706-1902_*_consultant-chat-longform-boundary.md`
 
 ## Sources
 

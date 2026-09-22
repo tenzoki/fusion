@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** shaper
-**Cross-references:** 260716-1847[o]-spec-plane-integration-und-workbench-struktur.md, 260716-1847[a]-plane-rolle-source-of-truth.md, 260716-1847[a]-workbench-struktur-circle-container-vs-typ-ordner.md
+**Cross-references:** 260716-1847_*_spec-plane-integration-und-workbench-struktur.md, 260716-1847_*_plane-rolle-source-of-truth.md, 260716-1847_*_workbench-struktur-circle-container-vs-typ-ordner.md
 
 ---
 

@@ -62,7 +62,7 @@ install shape — currently unknown.
 ## Cross-reference
 
 - Launcher fix: commit `dbf98f6`, `install.sh:147-152`.
-- Historical: closed issue `260707-0616[c]-fusion-plugin-root-unset-in-agent-bash.md` (the symptom
+- Historical: closed issue `260707-0616_*_fusion-plugin-root-unset-in-agent-bash.md` (the symptom
   recurred in this session, which is what surfaced the residual gap).
 
 ---

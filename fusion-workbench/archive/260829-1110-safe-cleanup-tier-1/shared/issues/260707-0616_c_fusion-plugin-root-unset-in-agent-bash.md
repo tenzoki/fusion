@@ -16,7 +16,7 @@ and the plugin `rules/` directory.
 ## Scope note (not the guard)
 
 This is SEPARATE from the guard-not-firing defect
-(`260707-0616[o]-guard-hook-not-wired-to-bash-matcher.md`). The guard hook command uses
+(`260707-0616_*_guard-hook-not-wired-to-bash-matcher.md`). The guard hook command uses
 `${CLAUDE_PLUGIN_ROOT}` (set by Claude Code for hook execution), NOT `FUSION_PLUGIN_ROOT`, so
 the guard is unaffected by this issue. `FUSION_PLUGIN_ROOT` matters only for agent Bash calls.
 

@@ -20,9 +20,9 @@
 
 ## Zwei zsh-Defekte — Abschluss-Bewertung
 
-`260717-1903[o]` (Skill-Shell-Blöcke brechen unter zsh am No-Match-Glob ab) + Fix-Plan `260717-1918[o]` (14 aufgezählte Stellen, 6 Schritte). **Blockieren den Abschluss nicht.** Es sind neu entdeckte Shell-Hygiene-Defekte, kein Directive-Verstoß: die Pfad-Umstellung ist vollständig und korrekt; die No-Match-Glob-Fatalität ist eine orthogonale Klasse (dieselben Idiome wären vor v4 gleich zsh-fragil gewesen). Die C2-Abnahme lief durch, die Migration verlor 0 Bytes. Beide sind bereits triagiert und damit legitime Folgearbeit.
+`260717-1903_*_` (Skill-Shell-Blöcke brechen unter zsh am No-Match-Glob ab) + Fix-Plan `260717-1918_*_` (14 aufgezählte Stellen, 6 Schritte). **Blockieren den Abschluss nicht.** Es sind neu entdeckte Shell-Hygiene-Defekte, kein Directive-Verstoß: die Pfad-Umstellung ist vollständig und korrekt; die No-Match-Glob-Fatalität ist eine orthogonale Klasse (dieselben Idiome wären vor v4 gleich zsh-fragil gewesen). Die C2-Abnahme lief durch, die Migration verlor 0 Bytes. Beide sind bereits triagiert und damit legitime Folgearbeit.
 
-**Placement-Hinweis (Orchestrator):** Der Fix-Plan `260717-1918[o]` liegt korrekt im Circle (per Herkunftsregel bei aktivem Circle authored), deklariert aber eine eigene Directive und ist eigenständige Folgearbeit. Nach dem Abschluss von Circle 1 sitzt er in einem geschlossenen Circle. Empfehlung: zum eigenen Circle promovieren oder nach `shared/planning/` ziehen. Keine Abschluss-Voraussetzung.
+**Placement-Hinweis (Orchestrator):** Der Fix-Plan `260717-1918_*_` liegt korrekt im Circle (per Herkunftsregel bei aktivem Circle authored), deklariert aber eine eigene Directive und ist eigenständige Folgearbeit. Nach dem Abschluss von Circle 1 sitzt er in einem geschlossenen Circle. Empfehlung: zum eigenen Circle promovieren oder nach `shared/planning/` ziehen. Keine Abschluss-Voraussetzung.
 
 ## Vom reconciler gefilte neue Issues
 

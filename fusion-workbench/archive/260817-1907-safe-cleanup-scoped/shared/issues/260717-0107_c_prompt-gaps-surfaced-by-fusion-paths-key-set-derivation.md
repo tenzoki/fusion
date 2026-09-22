@@ -3,7 +3,7 @@ Prompt gaps surfaced by the fusion-paths key-set derivation
 ---
 **Domain:** code
 **Filed by:** `coder` in T3-A
-**Cross-references:** `260717-0033[a]-derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md`, `260717-0031[o]-p8-lint-gate-scope-open-questions-from-conversions.md` (item 4), `bin/fusion-paths`, `rules/fusion-workbench-conventions.md` `## Path Resolution`
+**Cross-references:** `260717-0033_*_derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md`, `260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md` (item 4), `bin/fusion-paths`, `rules/fusion-workbench-conventions.md` `## Path Resolution`
 
 ---
 
@@ -19,7 +19,7 @@ Measured, not estimated: the declared key sets at `HEAD` versus the derived sets
 
 | Agent | Dropped | Verdict |
 |---|---|---|
-| `orchestrator` | `OUT_CIRCLE`, `OUT_MEMO`, `SCAN_HISTORY` | **Not a gap — resolved.** These are the three T2-B flagged as "used by hosted skills, do not delete". Under the skill namespace (`260716-1940[a]`) they now sit with their real consumers: `OUT_MEMO` → `memo`, `OUT_CIRCLE` → `direct` + `circle-pop`, `SCAN_HISTORY` → `circle-stash`. Verified by running each. |
+| `orchestrator` | `OUT_CIRCLE`, `OUT_MEMO`, `SCAN_HISTORY` | **Not a gap — resolved.** These are the three T2-B flagged as "used by hosted skills, do not delete". Under the skill namespace (`260716-1940_*_`) they now sit with their real consumers: `OUT_MEMO` → `memo`, `OUT_CIRCLE` → `direct` + `circle-pop`, `SCAN_HISTORY` → `circle-stash`. Verified by running each. |
 | `bugfixer` | `SCAN_PLANS` | **Not a gap — correct drop.** The prompt says twice that it does not follow plans. T2-B classified this as the one clear-cut spare. |
 | `coder` | `OUT_DECISION`, `SCAN_ISSUES` | **Not a gap — correct drop.** `coder.md:47` edits a decision record *in place*, reached via `$SCAN_DECISIONS`; it files no new record, so it needs no write key. It reaches an issue by the path `$TASKLIST` gives it (`:44-46`), not by scanning. |
 | `ontocoder` | `OUT_DECISION` | **Not a gap — correct drop.** Same in-place edit pattern as `coder`. |

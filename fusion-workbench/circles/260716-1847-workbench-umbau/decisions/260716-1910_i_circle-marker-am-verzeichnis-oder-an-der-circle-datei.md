@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** `260716-1910[o]-plan-workbench-umbau-circle-container.md`, `260716-1847[a]-workbench-struktur-circle-container-vs-typ-ordner.md` (D2), `260716-1847[a]-plane-rolle-source-of-truth.md` (D1)
+**Cross-references:** `260716-1910_*_plan-workbench-umbau-circle-container.md`, `260716-1847_*_workbench-struktur-circle-container-vs-typ-ordner.md` (D2), `260716-1847_*_plane-rolle-source-of-truth.md` (D1)
 
 ---
 

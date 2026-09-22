@@ -24,8 +24,8 @@ Rationale (one line): sole anticipated Circle; its gate (Circle 1 closing) is cl
 
 ## Warnings emitted to portfolio
 
-- **glob-blast-radius-overlap** (coordination, not a cycle): marker-format Circle overlaps the open zsh-glob fix-plan `260717-1918[o]` at the skill/agent globs — distinct defect classes, same lines; land order matters at `skills/cleanup/SKILL.md` site 12 and the Circle-1 path-lint.
-- **open follow-on** (informational): `260717-1903[o]` (zsh-glob) and `260717-1938[o]` (branch-guard harness gap) remain open; neither blocks the marker-format Circle.
+- **glob-blast-radius-overlap** (coordination, not a cycle): marker-format Circle overlaps the open zsh-glob fix-plan `260717-1918_*_` at the skill/agent globs — distinct defect classes, same lines; land order matters at `skills/cleanup/SKILL.md` site 12 and the Circle-1 path-lint.
+- **open follow-on** (informational): `260717-1903_*_` (zsh-glob) and `260717-1938_*_` (branch-guard harness gap) remain open; neither blocks the marker-format Circle.
 - No dependency cycle (single non-terminal Circle, its one dependency terminal `[c]`).
 - No parent-grounding-stale (Circle 1 closed `[c]`, not `[b]` — no Bounded-Closure scan).
 
@@ -39,7 +39,7 @@ Rationale (one line): sole anticipated Circle; its gate (Circle 1 closing) is cl
 
 ## Un-filed anticipated undertaking noted
 
-- Circle 2 (Plane-push) — conceptually anticipated per D4 (`260716-1847[a]-zuschnitt-...`), no `[a]` record, deferred pending open decision D3 `260716-1847[o]-offline-verhalten-bei-plane-ausfall.md`. Noted in portfolio, not invented as a record.
+- Circle 2 (Plane-push) — conceptually anticipated per D4 (`260716-1847_*_zuschnitt-...`), no `[a]` record, deferred pending open decision D3 `260716-1847_*_offline-verhalten-bei-plane-ausfall.md`. Noted in portfolio, not invented as a record.
 
 ## Output
 

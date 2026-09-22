@@ -31,7 +31,7 @@ Beide Richtungen sind stumm. Bei der leeren Menge expandiert das Muster zu sich 
 
 1. Die P-1-Dispatch-Anweisung des Orchestrators schrieb `circles/*/[t]-circle.md`.
 2. Der Umbau-Plan schrieb dieselbe Form in Schritt 4 als Vorschrift an P-4.
-3. Die Marker-Entscheidung `260716-1910[a]` wiederholte sie.
+3. Die Marker-Entscheidung `260716-1910_*_` wiederholte sie.
 4. `skills/cleanup/SKILL.md` trug `planning/*[o]*.md` — die zu lockere Richtung.
 5. `find -name` wurde als Ausweg vorgeschlagen und hat denselben Bug.
 
@@ -59,7 +59,7 @@ Der Unterstrich ist weder Shell-Glob- noch Regex-Metazeichen.
 
 ## Dependencies
 
-- `fusion-workbench/circles/` (dieser Ordner) — Circle 1 (Container-Umbau, Plan `260716-1910[p]`) sollte geschlossen sein. Begründung: Circle 1 fasst gerade alle 26 Prompts und Skills an; beide Umbauten gleichzeitig verdoppeln den Radius ohne Not. Die Marker-Änderung trifft Dateinamen und Glob-Formen, Circle 1 trifft Pfade — verschiedene Zeilen, also kostet die Reihenfolge nichts außer einem zweiten Durchgang, den die Zuschnitt-Entscheidung `260716-1847[a]` für Prompts ohnehin akzeptiert hat.
+- `fusion-workbench/circles/` (dieser Ordner) — Circle 1 (Container-Umbau, Plan `260716-1910_*_`) sollte geschlossen sein. Begründung: Circle 1 fasst gerade alle 26 Prompts und Skills an; beide Umbauten gleichzeitig verdoppeln den Radius ohne Not. Die Marker-Änderung trifft Dateinamen und Glob-Formen, Circle 1 trifft Pfade — verschiedene Zeilen, also kostet die Reihenfolge nichts außer einem zweiten Durchgang, den die Zuschnitt-Entscheidung `260716-1847_*_` für Prompts ohnehin akzeptiert hat.
 - Berührt, aber blockiert nicht: `/fusion:migrate` (Circle 1, T3-B) und der Pfad-Lint (Circle 1, P-8) sind die zwei Stellen, an denen diese Umstellung später andocken würde.
 
 ## Turn log
@@ -89,6 +89,6 @@ Der einzige anticipated Circle, und seine Abhängigkeit ist geklärt: Circle 1 (
 
 **Vorgeschlagener Aktivierungs-Zeitpunkt:** 260717-1949-playmaker-orchestrator-phase4.md (oder wann der Nutzer aktiviert).
 
-**Koordinationshinweis, der die Empfehlung nicht aufhebt:** Diese Umstellung teilt sich ihren Blast-Radius (die Skill-/Agent-Globs) mit dem offenen zsh-Glob-Fix-Plan `260717-1918[o]-skill-glob-nomatch-zsh-hardening.md`. Es sind zwei verschiedene Defektklassen (no-match-Abbruch unter zsh vs. Klammer-als-Metazeichen), aber sie berühren dieselben Zeilen — insbesondere Stelle 12 (`skills/cleanup/SKILL.md`, der escaped-bracket-Glob `*\[o\]*.md`, der nur existiert, weil Marker Klammern tragen) und den Pfad-Lint aus Circle 1. Welche Arbeit zweitens landet, muss Stelle 12 und den Lint nachziehen. Die Spec dieses Circles sollte diese Reihenfolge ausdrücklich aufnehmen (die „Offen, gehört in die Spec"-Liste nennt den Lint-Punkt bereits).
+**Koordinationshinweis, der die Empfehlung nicht aufhebt:** Diese Umstellung teilt sich ihren Blast-Radius (die Skill-/Agent-Globs) mit dem offenen zsh-Glob-Fix-Plan `260717-1918_*_skill-glob-nomatch-zsh-hardening.md`. Es sind zwei verschiedene Defektklassen (no-match-Abbruch unter zsh vs. Klammer-als-Metazeichen), aber sie berühren dieselben Zeilen — insbesondere Stelle 12 (`skills/cleanup/SKILL.md`, der escaped-bracket-Glob `*\[o\]*.md`, der nur existiert, weil Marker Klammern tragen) und den Pfad-Lint aus Circle 1. Welche Arbeit zweitens landet, muss Stelle 12 und den Lint nachziehen. Die Spec dieses Circles sollte diese Reihenfolge ausdrücklich aufnehmen (die „Offen, gehört in die Spec"-Liste nennt den Lint-Punkt bereits).
 
 *Kein `mv` und kein `.active-circle`-Schreiben durch playmaker — der Nutzer bestätigt via `/fusion:next` (oder der Orchestrator aktiviert). Vorschlag, nicht Vollzug.*

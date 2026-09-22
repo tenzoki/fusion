@@ -82,7 +82,7 @@ precisely "add keys to `KEYS` sets".
 - `rules/fusion-workbench-conventions.md` `## Path Resolution (Pfadauflösung)` → Contract / Failure behaviour
 - `skills/setup/SKILL.md` Step 2
 - `hooks/lib/__tests__/fusion-paths.test.ts` → `emits no key it cannot resolve`
-- Related: `260716-1957[o]-fusion-paths-key-sets-miss-reads-agents-perform.md`
+- Related: `260716-1957_*_fusion-paths-key-sets-miss-reads-agents-perform.md`
 
 ---
 Resolved: commit 6228391 (task T2-A). Verified by the orchestrator against the running system, not by reading.

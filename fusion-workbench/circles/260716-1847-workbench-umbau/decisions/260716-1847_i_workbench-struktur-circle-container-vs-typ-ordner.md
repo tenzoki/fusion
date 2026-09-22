@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** shaper
-**Cross-references:** 260716-1847[o]-spec-plane-integration-und-workbench-struktur.md
+**Cross-references:** 260716-1847_*_spec-plane-integration-und-workbench-struktur.md
 
 ---
 

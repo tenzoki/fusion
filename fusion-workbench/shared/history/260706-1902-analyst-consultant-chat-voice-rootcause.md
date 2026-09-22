@@ -19,5 +19,5 @@ Fix direction: reclassify the consultant's Conversation-mode answers as chat-voi
 ## Artifacts
 
 - Report: `260706-1902-user-facing-agents-garbled-language-rootcause.md`
-- Issue: `260706-1902[o]-consultant-chat-misrouted-to-longform-voice.md`
-- Decision: `260706-1902[o]-consultant-chat-longform-boundary.md`
+- Issue: `260706-1902_*_consultant-chat-misrouted-to-longform-voice.md`
+- Decision: `260706-1902_*_consultant-chat-longform-boundary.md`

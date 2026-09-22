@@ -22,7 +22,7 @@ other six files in `shared/planning/` each have their sibling in `shared/history
 "no Circle was active" looks like on disk.
 
 At that Circle's closure the plan was lifted to `shared/planning/`, and the record says why
-(`_c_circle.md:49`): *"Der zsh-Glob-Fix-Plan `260717-1918[o]` (14 Stellen) wurde beim Abschluss
+(`_c_circle.md:49`): *"Der zsh-Glob-Fix-Plan `260717-1918_*_` (14 Stellen) wurde beim Abschluss
 nach `shared/planning/` gehoben — er deklariert eine eigene Directive und ist eigenständige
 Folgearbeit, nicht Teil dieses geschlossenen Circles."*
 

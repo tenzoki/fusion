@@ -150,10 +150,10 @@ Vier Entscheidungen sind als Entscheidungssätze abgelegt. D1 ist die wichtigste
 
 | Nr. | Frage | Datei | Unsere Empfehlung |
 |---|---|---|---|
-| D1 | Ist Plane Spiegel, führendes System oder beidseitiger Abgleich? | `260716-1847[o]-plane-rolle-source-of-truth.md` | Spiegel, unter Vorbehalt |
-| D2 | Circle-Verzeichnis oder Typ-Ordner? | `260716-1847[o]-workbench-struktur-circle-container-vs-typ-ordner.md` | Circle-Verzeichnis plus gemeinsame Ablage |
-| D3 | Was tut fusion, wenn Plane nicht erreichbar ist? | `260716-1847[o]-offline-verhalten-bei-plane-ausfall.md` | Weiterarbeiten, Plane später neu aufbauen |
-| D4 | Ein Circle oder zwei? | `260716-1847[o]-zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md` | Zwei, Umbau zuerst |
+| D1 | Ist Plane Spiegel, führendes System oder beidseitiger Abgleich? | `260716-1847_*_plane-rolle-source-of-truth.md` | Spiegel, unter Vorbehalt |
+| D2 | Circle-Verzeichnis oder Typ-Ordner? | `260716-1847_*_workbench-struktur-circle-container-vs-typ-ordner.md` | Circle-Verzeichnis plus gemeinsame Ablage |
+| D3 | Was tut fusion, wenn Plane nicht erreichbar ist? | `260716-1847_*_offline-verhalten-bei-plane-ausfall.md` | Weiterarbeiten, Plane später neu aufbauen |
+| D4 | Ein Circle oder zwei? | `260716-1847_*_zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md` | Zwei, Umbau zuerst |
 
 Der Vorbehalt bei D1: unsere Empfehlung trägt nur, wenn der Nutzer Plane zum Mitlesen und zur Abstimmung nutzen will. Erwartet er, in Plane selbst Status zu ziehen und zu kommentieren, und dass fusion das aufnimmt, dann lautet die Frage Option 3 oder gar nicht.
 

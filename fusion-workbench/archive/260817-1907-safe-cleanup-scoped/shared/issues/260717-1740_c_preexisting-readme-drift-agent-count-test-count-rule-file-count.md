@@ -11,7 +11,7 @@ Three stale statements in the READMEs, none caused by the workbench restructure.
 
 ---
 All three are cosmetic doc drift, low priority. Grouped because they are the same class (a count that fell behind reality) and would be fixed in one README-hygiene pass. Found during P-11; the restructure's own doc changes are correct and already committed in `cb5fa80`.
-Source: P-11 (260716-1910[p]-plan-workbench-umbau-circle-container.md)
+Source: P-11 (260716-1910_*_plan-workbench-umbau-circle-container.md)
 
 ---
 Resolved (Circle E-rest reconciliation, 260719): all three items verified fixed on disk.

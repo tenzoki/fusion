@@ -56,7 +56,7 @@ copy-paste:
 - `find circles -name '[t]-circle.md'` (`find` takes the pattern as a literal argument;
   no shell expansion), or
 - rename the record so no marker character is a glob metacharacter — but that reopens
-  the binding decision `260716-1910[a]-circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`,
+  the binding decision `260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`,
   so treat it as a last resort.
 
 Whichever form is chosen, it should land in **P-8's lint gate** as a forbidden-pattern
@@ -68,7 +68,7 @@ Circles will copy whatever the conventions document shows.
 
 - `rules/fusion-workbench-conventions.md` `## State Markers — circles`
 - `skills/setup/SKILL.md` Step 3 (Circle-count snapshot and hint)
-- Governing plan: `260716-1910[p]-plan-workbench-umbau-circle-container.md` (P-8 lint gate)
+- Governing plan: `260716-1910_*_plan-workbench-umbau-circle-container.md` (P-8 lint gate)
 
 ---
 Resolved: commit 6228391 (task T2-A). Verified by the orchestrator against the running system, not by reading.

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator (Befund von `coder` in P-2)
-**Cross-references:** `260716-1910[p]-plan-workbench-umbau-circle-container.md` (Schritt 7), `rules/fusion-workbench-conventions.md` `## Path Resolution`, `bin/fusion-paths`
+**Cross-references:** `260716-1910_*_plan-workbench-umbau-circle-container.md` (Schritt 7), `rules/fusion-workbench-conventions.md` `## Path Resolution`, `bin/fusion-paths`
 
 ---
 

@@ -7,7 +7,7 @@
 
 ## What was done
 
-Produced the implementation plan `260717-1959[o]-plan-marker-format-underscore.md`
+Produced the implementation plan `260717-1959_*_plan-marker-format-underscore.md`
 for switching state markers from bracket delimiters (`[o]`) to underscore
 delimiters (`_o_`) so no marker written into a shell glob is silently a
 character class.
@@ -38,7 +38,7 @@ character class.
 3. Path-lint: yes — add a strict bracket-marker reject over agents/skills,
    reusing the existing {setup, migrate} exemption.
 4. Sequencing: this Circle lands FIRST, then the zsh-fix plan
-   (`260717-1918[o]`), which is re-grounded afterward (its
+   (`260717-1918_*_`), which is re-grounded afterward (its
    site-12 bracket special-casing dissolves once markers are underscores).
 
 ## Output

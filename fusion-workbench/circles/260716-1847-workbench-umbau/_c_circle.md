@@ -32,7 +32,7 @@ Diese Sitzung (260717-1832-orchestrator-session.md) führt beides aus:
 ### Turn 1 (End-to-End-Lauf, 260717-1832-orchestrator-session.md) — C2-Abnahme
 - **Beob. 6** (kein aktiver Circle → `shared/`): analyst-Verifikation → `260717-1910-v4-migration-verification.md`. **PASS.**
 - **Schritt 9:** dieser Circle angelegt und aktiviert, 11 Artefakte hineingezogen (Spec, Plan, 5 Decisions, 4 Protokolle), `.active-circle` gesetzt. `fusion-paths orchestrator` löst `OUT_*` jetzt in den Circle auf, `SCAN_*` nennt Circle + `shared/`. **PASS.**
-- **Beob. 5** (aktiver Circle → Circle-Ablage): planner plante die zsh-Glob-Härtung (Issue `260717-1903_*_skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`) → `260717-1918[o]-skill-glob-nomatch-zsh-hardening.md` + `260717-1918-planner-session.md`, beide im Circle. Nebenbefund: 14 verwundbare Glob-Stellen in 9 Dateien (Issue nannte 2). **PASS.**
+- **Beob. 5** (aktiver Circle → Circle-Ablage): planner plante die zsh-Glob-Härtung (Issue `260717-1903_*_skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`) → `260717-1918_*_skill-glob-nomatch-zsh-hardening.md` + `260717-1918-planner-session.md`, beide im Circle. Nebenbefund: 14 verwundbare Glob-Stellen in 9 Dateien (Issue nannte 2). **PASS.**
 - **Beob. 1** Dashboard zeigt Sitzungszustand: **PASS.** **Beob. 2** `orchestrator-events.jsonl` wächst (107 Zeilen): **PASS.** **Beob. 4** Commit-Sperre greift (acquire→halten→release, sauber): **PASS.**
 - **Beob. 3** `.guard-state/` zählt: `events.jsonl` wuchs live mit Guard-Entscheidungen je Write (Write-Guard steht in fusions Repo bestimmungsgemäß still, jede Entscheidung protokolliert) — **PASS**. Nebenbefund: ein absichtlicher `git switch` wurde NICHT abgefangen (kein `git_branch_switch`-Event heute); der Branch-Guard feuerte in dieser Sitzung nicht. Offen zur Klärung.
 - **Ergebnis: C2 abgenommen** — alle sechs Beobachtungen durch Lauf belegt, nicht durch Lesen. Ein Nebenbefund (Branch-Guard) offen.
@@ -46,7 +46,7 @@ Diese Sitzung (260717-1832-orchestrator-session.md) führt beides aus:
 - **Plan** `260716-1910` auf `[c]`; vier Grounding-Decisions auf `[i]` (realisiert); D4 bleibt `[a]` (Circle 2/Plane steht aus).
 
 **Folgearbeit, die den Abschluss nicht blockierte:**
-- Der zsh-Glob-Fix-Plan `260717-1918[o]` (14 Stellen) wurde beim Abschluss nach `shared/planning/` gehoben — er deklariert eine eigene Directive und ist eigenständige Folgearbeit, nicht Teil dieses geschlossenen Circles.
+- Der zsh-Glob-Fix-Plan `260717-1918_*_` (14 Stellen) wurde beim Abschluss nach `shared/planning/` gehoben — er deklariert eine eigene Directive und ist eigenständige Folgearbeit, nicht Teil dieses geschlossenen Circles.
 - Issues `260717-1903_*_skill-shell-scripts-assume-bash-glob-abort-under-zsh.md` (zsh-Glob) und `260717-1938_*_branch-switch-guard-not-invoked-live-harness-pretooluse-bash.md` (Branch-Guard-Harness-Lücke) bleiben in `shared/issues/` offen.
 
 **Nachgelagert:** Circle 3 (`archive/260817-1907-safe-cleanup-scoped/260717-1638-marker-format-ohne-glob-metazeichen`) war hinter diesem Abschluss gegated und ist jetzt entsperrt.

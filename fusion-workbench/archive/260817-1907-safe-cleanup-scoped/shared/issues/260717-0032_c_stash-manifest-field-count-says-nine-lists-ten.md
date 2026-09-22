@@ -15,7 +15,7 @@ Also noted by the same coder, pre-existing and separate: `original_circle_dirnam
 
 ---
 Cosmetic. Found by `coder` during task P-4 while implementing the schema against the document.
-Source: 260716-1910[p]-plan-workbench-umbau-circle-container.md
+Source: 260716-1910_*_plan-workbench-umbau-circle-container.md
 
 ---
 Reconciliation 260731-2324-reconciliation.md (reconciler, domain `code`) — **confirmed still live, stays `_o_`.** `rules/fusion-workbench-conventions.md:609` reads "Nine fields, in this order:" and the YAML block beneath it carries ten keys (`stash_id`, `timestamp`, `reason`, `original_circle_dirname`, `original_circle_record`, `active_circle_content`, `head_short_hash`, `git_stash_ref`, `git_stash_sha`, `has_agentstate` — counted mechanically, = 10).

@@ -170,7 +170,7 @@ stateDiagram-v2
    - Acceptance: `bin/fusion-citation-sweep --dry-run` lists no proposed rewrite that a reader has not classified, and the count of proposed rewrites has fallen by the number of exhibits fenced (roughly 139 to 114).
    - Dependencies: 1, 3.
 
-6. [IN PROGRESS] **Sweep the tree, verify, close both decisions**
+6. [DONE] **Sweep the tree, verify, close both decisions**
    - Executor: `coder`
    - Files: the workbench records the sweep rewrites (roughly 114 tokens in some 50 files, `archive/` included), plus the two decision records.
    - Changes: run `bin/fusion-citation-sweep --write --yes`, then `bin/fusion-citation-sweep --dry-run` again and confirm it has settled. Append an `Implemented:` line to `260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md` and to `260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md`, naming the commit, and rename both from `_a_` to `_i_`. Write the record lines **before** the verifying run, so the suite sees the commit's whole content. `260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md` is already `_c_` and terminal and is not touched; `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md` is `_d_` and terminal and stays deferred.

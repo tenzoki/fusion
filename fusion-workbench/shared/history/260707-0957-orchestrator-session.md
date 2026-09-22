@@ -57,7 +57,7 @@ To activate: `fusion --update`, then start a fresh `fusion` session. Cross-check
 - **Open issues:** 2
   - `260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md`
   - `260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md`
-- **Open decisions:** 0 (`260706-1902[i]` is implemented/terminal)
+- **Open decisions:** 0 (`260706-1902_*_` is implemented/terminal)
 - **Open plans:** 0
 - **Circles:** 0 anticipated, 0 active → no portfolio hint printed
 - **Guard state:** clean (no escalation.json, no churn.json; halt not active)
@@ -73,7 +73,7 @@ Heuristic output: `strategic` (via the `analyses_count > 0 AND commits == 0` bra
 
 ## Environment note
 
-`$FUSION_PLUGIN_ROOT` was unset in the orchestrator's Bash environment at session start. Because this session runs inside the fusion plugin source itself, the plugin root equals the workbench root (`pwd`); all `bin/`, `rules/`, and `stilwerk/` assets resolved from `.`. `bin/fusion-rules` and the marker/version steps were run with `FUSION_PLUGIN_ROOT="$(pwd -P)"` where needed. This overlaps with open issue `260707-0616[c]-fusion-plugin-root-unset-in-agent-bash.md` (marked closed) — worth noting the symptom recurred in this session.
+`$FUSION_PLUGIN_ROOT` was unset in the orchestrator's Bash environment at session start. Because this session runs inside the fusion plugin source itself, the plugin root equals the workbench root (`pwd`); all `bin/`, `rules/`, and `stilwerk/` assets resolved from `.`. `bin/fusion-rules` and the marker/version steps were run with `FUSION_PLUGIN_ROOT="$(pwd -P)"` where needed. This overlaps with open issue `260707-0616_*_fusion-plugin-root-unset-in-agent-bash.md` (marked closed) — worth noting the symptom recurred in this session.
 
 ## Rules loaded
 
