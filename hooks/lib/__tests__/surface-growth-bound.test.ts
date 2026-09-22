@@ -78,16 +78,7 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // 2 500 also sits under the +4 026 of 2026-08-01, the FIRST day of the four-day
 // run that built most of this suite, so a run like that one trips on day one.
 //
-// THE ARMING CLAIMED TWO FURTHER PROPERTIES AND A CORROBORATION RATE; all three
-// are gone, named here so nobody restores them from an older commit. "Two to
-// three weeks of the surface's own sustained rate" and "above the p95 honest
-// single-commit addition" reproduce under no replay method, and the rates are out
-// by large factors: over 2026-08-05..08-15 `agents/` measures 17 033 bytes a day
-// against a stated 10 989, `skills/` 8 398 against 1 029 (issue 260815-1939). No
-// head-room moved and nothing was recomputed to fit — a figure no method
-// reproduces reads as measured, which is worse than none. The peak days of that
-// window DO reproduce and still corroborate: `agents/` +66 803 (2026-08-11) and
-// `skills/` +28 367 (2026-08-10), both far above every head-room here.
+// THE ARMING'S TWO DISCARDED PROPERTIES AND ITS CORROBORATION RATE are in `260922-0939-rules-emission-golden-cut-log-and-retired-core-bound-argument-2026-08-05-to-2026-09-11.md`.
 //
 // ## The arming and the two re-baselines, 2026-08-15 to 2026-09-05 — rolled out
 //
