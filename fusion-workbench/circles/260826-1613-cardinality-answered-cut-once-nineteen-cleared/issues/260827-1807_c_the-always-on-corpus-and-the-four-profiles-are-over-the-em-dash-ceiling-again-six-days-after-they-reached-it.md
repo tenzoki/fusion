@@ -35,3 +35,6 @@ Prose sites at HEAD in the two files still on the floor: `rules/fusion-workbench
 **Found by:** analyst, plan step 6 measurement, HEAD `0fb5085`.
 
 Also seen: 260922-1019 by coder — the rule half landed in the commit that carries this line: `rules/agent-setup.md` and `rules/fusion-workbench-conventions.md` read `ok` under `bin/fusion-prose-metric` (0 and 4 prose em-dashes; the four left are the section headings that are anchors), so `bin/fusion-rules coder | xargs bin/fusion-prose-metric` is over on `chat-voice-de.yaml` alone; the profile half waits on `260922-0937_*_may-the-eight-voice-profile-yaml-files-be-repunctuated-under-the-em-dash-ceiling.md`, the ontocoder gate under `**Mode:** autonomous`, and the record stays open for it.
+
+---
+Resolved: the rule half landed at 06488d85 (`rules/agent-setup.md` 0 and `rules/fusion-workbench-conventions.md` 4 prose em-dashes, the four being anchor headings under a permit of 9) and the profile half in the commit that carries this line, so `bin/fusion-prose-metric stilwerk/*.yaml` and the same over `fusion-workbench/stilwerk/*.yaml` read 0 em-dashes on every file (366, 368, 391 and 404 prose words, `ok` in every row, from 5, 5, 2, 2 before) and `bin/fusion-rules coder | xargs bin/fusion-prose-metric` reads 5 over 11 969, permit 11, `ok` in every row.

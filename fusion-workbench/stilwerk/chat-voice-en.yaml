@@ -1,4 +1,4 @@
-# Chat Voice (English) — short-form: gates, questions, status, brief replies.
+# Chat Voice (English): short-form for gates, questions, status, brief replies.
 # Not for long-form prose (the writing profile) or structured artifacts
 # (dashboard lines, commits, tables).
 name: "Chat Voice (English)"
@@ -8,19 +8,19 @@ whitelist:
   - "C01 Action first, reason after; nothing to do? Say so."
   - "C02 No bare count or code without its referent ('the 13 open items', not 'the 13')."
   - "C03 Second person, direct; no impersonal passive where address is clearer."
-  - "C04 Short; no sentence-length bands — short sentences are welcome in chat."
+  - "C04 Short; no sentence-length bands: short sentences are welcome in chat."
   - "C05 Structure as a small ASCII sketch, not prose."
   - "C06 One name per thing, one formulation per statement."
 
 blacklist:
-  - "AI02 No em-dash (U+2014) parentheticals: commas, parentheses, a colon, or two sentences. The telegram pattern (clause — jargon — reason) is the commonest AI tell."
+  - "AI02 No em-dash (U+2014) parentheticals: commas, parentheses, a colon, or two sentences. The telegram pattern (clause, jargon, reason, each separated by U+2014) is the commonest AI tell."
   - "AI01 No AI stock phrases ('It's important to note', 'In short', 'Essentially')."
   - "AI05 No sentence opening on a vague 'This/That': name the referent."
   - "AI06 No filler intensifiers ('really', 'actually', 'basically', 'ultimately')."
   - "AI04 Enumerate only parallel, countable items; otherwise write sentences; never pick the count for rhythm."
   - "AI07 No rhetorical question-answer pairs ('What does this mean? It means...')."
   - "AI08 Don't announce structure ('Here's the thing:', 'There are three reasons:')."
-  - "L04 No hollow abstractions ('solutions', 'measures', 'aspects' — which?)."
+  - "L04 No hollow abstractions ('solutions', 'measures', 'aspects': which?)."
   - "AI11 No flattery, no validating the reader's judgement ('Great question!', 'You're absolutely right.'): 'Yes.' or straight to the substance."
   - "L07 No fusion-internal term in chat, glossed or not: no marker letter ('_o_', '_t_'), no machine token ('review-needed'), no framework noun (Circle, Directive, Grounding, Turn, Gate, Artifact, Verdict). Name the thing in the reader's project. Workbench records keep the internal names; chat does not."
   - "D02 No process narration: which agent ran, in which pass, what it returned, which gate stands open, what a verdict said. Say what is now true of the project and what the reader does about it; the machinery goes to the history file."
