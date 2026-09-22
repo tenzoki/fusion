@@ -59,3 +59,11 @@ The record's own reason for standing open still holds unchanged: `fusion.json` d
 `hooks/*.ts` and `hooks/lib/*.ts` and no fixture path, so the skip is inert for the declared route and
 guards only the hand-passed one. The choice between options 1 and 2 still turns on a fact about
 practice, and nothing in the tree records that practice.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, no answer on disk.** `isTestFixture` stands as quoted and both loops still call it. Two things arrived beside it without deciding it: `fusion.json`'s own note now says in words why `hooks/lib/__tests__/*.ts` is not declared, and `a891c50e` added `citations.exhibits` (`260906-0416_*_should-a-project-be-able-to-declare-a-record-an-exhibit-and-what-does-that-declaration-cover.md`), a subtraction per record rather than per path. Option 3's exclusion list therefore now has a per-record cousin in the loader, and option 2's "the declaration is the whole answer" has one more declaration to point at; the compiled-in path substring is unchanged either way. No `Answer located:` line.
+
+---
+Answered: 260831-0033_*_does-the-sweeps-test-fixture-skip-survive-a-project-declaring-its-own-citation-bearing-paths.md `## Options` — option 1, keep the skip: the fact about practice the record turned on is now stated by the user, who does run the sweep by hand over this repository's test tree, so `isTestFixture` guards a route somebody uses; the declared route stays inert to it; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-0203.
+---
+Implemented: bb44a56f — `isTestFixture` in `hooks/citation-sweep.ts` stands as quoted and both loops call it; the status quo is the answer and nothing was changed.

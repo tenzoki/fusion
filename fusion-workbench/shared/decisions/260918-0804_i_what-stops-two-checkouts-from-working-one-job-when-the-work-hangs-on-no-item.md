@@ -39,3 +39,12 @@ The route the work took is worth stating exactly, because it is the ordinary rou
 Option 1, with option 2 unadopted rather than rejected. The measured work spanned thirteen steps and an hour of gates, which is the shape the item store exists for, and one asked line would have surfaced the other checkout's claim before either executor ran. Option 2 is cheaper and catches strictly less: it would not have caught this one.
 
 The case against both is worth stating plainly, because it is the case the user may prefer. Nothing was lost in the measured collision except time, the merge did detect it, and a gate that fires on every multi-dispatch piece of work is a gate that gets answered by reflex. If the ruling is option 3, this record should say so and the two prompts stay as they are.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, no answer on disk.** Neither `agents/orchestrator.md` nor `agents/planner.md` carries an ask-before-planning step or a cross-store plan survey, so none of the three options is built. The record is named only as adjacent by `260921-1653-open-defect-survey-at-11-9-1.md` (row 19) and by `260921-1718_*_where-does-presence-read-what-another-checkout-is-working-on-now-that-no-session-row-carries-it.md`, which answers the item-bearing case and not this one. The consuming project's ruling this record exists to land stays foreign and unlanded. No `Answer located:` line.
+
+---
+Answered: 260918-0804_*_what-stops-two-checkouts-from-working-one-job-when-the-work-hangs-on-no-item.md `## Options` — option 1: before the orchestrator dispatches the planner with no work item claimed by this checkout, it asks once whether to file and claim the work as an item, "plan it without an item" an explicit answer; a planner dispatch is the point where "more than one dispatch" is known, since a plan is what work spanning more than one dispatch gets (`## Record filing`); since `260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md` a yes files and claims in one command; option 2 unadopted, not rejected; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-0207.
+
+---
+Implemented: c91e0cca — `agents/orchestrator.md` Plan step 1 asks once, with no claimed item and no `**Item:**`, whether to file and claim the work or plan it without an item; `## Human Gate Rules` carries the matching row.

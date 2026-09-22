@@ -84,3 +84,11 @@ stated as the smaller one when this record is answered.
 
 The pressure the record was about is still low rather than gone. The surface stands inside its
 head-room at HEAD and `cd hooks && npm test` is green, 50 files and 864 tests.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, no answer on disk.** The collector still counts every newline under `hooks/lib/__tests__/` with `fixtures/` the only exclusion. Three later records lean on this one and none rules: `260912-2045_*_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md` and `260918-1124_*_autonomous-defect-package-fifteen-fixes-with-a-second-opinion-each.md` both name it as open and plan around it. One premise moved again: `b90590fc` set the head-room raise out beside the three re-baselining events as a fourth named event that moves no baseline (`hooks/lib/__tests__/helpers/growth-bound.ts`), so a ruling for option 2 or 3 now has a written route for the room it needs, though a recount under a changed rule is still none of the four. No `Answer located:` line.
+
+---
+Answered: 260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md `## Options` — option 1, a line is a line: the surface keeps counting every newline, no comment classifier and no recount; the pressure that raised the question is gone (3 030 lines of head-room at `cb8776f3`, 6 253 comment lines of 22 207) and the head-room raise is the written route if it returns; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-0118.
+---
+Implemented: cb8776f3 — `hooks/lib/__tests__/surface-growth-bound.test.ts` collector unchanged, every newline under `hooks/lib/__tests__/` counted with `fixtures/` the only exclusion; the status quo is the answer and nothing was built.

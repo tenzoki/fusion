@@ -56,3 +56,9 @@ blocked on data rather than on judgement.
 The detection half is tracked separately and is still open as
 `260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md`,
 which asks only whether the citation is seen. The two remain independently answerable.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, no answer on disk.** `BARE_RE` still reads no bracket marker. Two records now sit beside this one and both leave resolution untouched: `260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md` asks whether the form is seen at all, and `260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md` records that the fix package skipped that step because reading the form would rewrite 37 archived records. The measurement this record's Recommendation waits on, how often a frozen bracket-named record is cited, has still not been taken in any project. No `Answer located:` line.
+
+---
+Deferred: until `260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md` and `260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md` are ruled and the citation count this record's Recommendation asks for is taken in a consuming project — which of the four options is reachable depends on those two, and fusion's own workbench measures 0 bracket-named files in any store at `bb44a56f`, so the count cannot be taken here; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-0159.

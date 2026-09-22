@@ -33,3 +33,6 @@ normative text and its pass carries an evidence tier and a citation per change, 
 
 ---
 Answered: this record — the user answered at a gate in session `260820-2103-orchestrator-session.md` on 260821, before the Circle was activated. Their words, not the orchestrator's reading of them.
+
+---
+Superseded by: 260825-1456_*_does-claude-mds-register-repair-reach-the-curators-pass-and-under-what-evidence.md — the curator's remit admits no register ground, and once `CLAUDE.md` shrank to 8 105 bytes the blast radius that justified a gated, ledgered writer was gone; the user ruled 260922-0131 that `coder` performs the repair as an ordinary task.

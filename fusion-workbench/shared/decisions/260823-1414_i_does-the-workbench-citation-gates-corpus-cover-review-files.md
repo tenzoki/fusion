@@ -172,3 +172,11 @@ treats as unreachable. But it answers a different question in two ways that matt
 So option 4's "another written obligation with no mechanism behind it" now has *part* of a mechanism,
 covering the moment of writing and not the moment of staleness, and options 1 through 3 are unmoved.
 The trade this record puts to the user is the same trade.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, still no answer on disk.** `inCorpus` is now `isLiveRecord` from `hooks/lib/citation-corpus.ts`, which admits the item record beside the five kinds named above and still no review file. The tree holds 126 review files against the 108 of the 260905 note and the 90 of `## Measured`, so option 2's repair debt has grown again and has still not been re-measured with the project's own scanner. No `Answer located:` line.
+
+---
+Answered: 260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md `## Options` — option 4: the corpus stays as it stands and the obligation sits on the review's own form, the wildcarded marker every agent's citation rule already prescribes, now checked at write time by `hooks/lib/citation-form.ts`; option 3 is moot with the Circle state gone, option 2's 270-and-growing repair debt is not paid; the residual, a spelled marker that passes the write-time check and goes stale later, is accepted; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-0125.
+---
+Implemented: b462d55d — `hooks/lib/citation-form.ts` reads every `.md` landing under the workbench, reviews included, and reports `stale-marker` and `store-prefixed` at write time; `rules/fusion-workbench-conventions.md` `## Filename Patterns` mandates the wildcarded form; `isLiveRecord` in `hooks/lib/citation-corpus.ts` unchanged.

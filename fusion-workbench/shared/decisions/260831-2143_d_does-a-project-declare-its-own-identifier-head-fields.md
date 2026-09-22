@@ -71,3 +71,9 @@ The condition option 2 waits on has moved further away rather than closer: the e
 is the recurrence of was itself refuted on 260831-2215, in the record above, so there is currently no
 list for a project to extend. Whoever answers the parent question decides whether this one still has a
 subject.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, no answer on disk, and the subject may have gone.** Still no `exemptHeadFields` leaf anywhere. The parent question was realised at `76b36efa` under a working answer (`260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md` `## Working answers`, row 5) that classifies an unresolvable `.md`-less head-field value `undecidable` by shape and compiles in no label list, so today there is no enumeration for a project to extend and option 2's trigger cannot arise. `inference:` this record is moot while that working answer stands; it regains a subject only if the user rules on `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md` for an enumeration instead. Not a marker move; the user rules. No `Answer located:` line.
+
+---
+Deferred: until a compiled label enumeration exists for a project to extend — the parent question was ruled for the shape test (`260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md`), which compiles in no label list, so option 2's trigger cannot arise and the record has no subject today; ruled by user, Kai Stalmann <ks@qantr.com>, 260921-2312.

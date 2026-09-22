@@ -69,3 +69,12 @@ Whoever opens this record should read the deferral first and decide whether revi
 answer or a separate act.
 
 The measurement itself was not re-taken at this pass, so the 126-over-9-646 figure stands as filed.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, no answer on disk, and the subject has shrunk by an order of magnitude.** `agents/curator.md` still admits its two grounds and names the register edit as somebody else's, so the routing contradiction stands as filed. What moved is the file: after `260912-0438-human-facing-docs-leave-claude-md.md` `CLAUDE.md` is 8 105 bytes, and `bin/fusion-prose-metric CLAUDE.md` reads 28 em-dashes over 1 008 prose words, 27.8 per 1000 against a permit of 1, verdict `over`. The repair is now 28 marks in a short file rather than 126 across the largest text every agent reads, which weakens option 1's blast-radius objection and option 4's "largest conditioning text" cost alike; which option that favours is the user's to say. No `Answer located:` line.
+
+---
+Answered: 260825-1456_*_does-claude-mds-register-repair-reach-the-curators-pass-and-under-what-evidence.md `## Options` — option 2: a different writer (`coder`, as an ordinary shipped-text task) repunctuates `CLAUDE.md`, and the routing answer in `260821-1108_*_is-claude-mds-register-repair-inside-this-circle.md` is superseded for this file; the reason the routing bought a gate and a ledger was a 72 KB blast radius, and at 8 105 bytes the commit diff is the ledger; no constraint may be removed, acceptance is `bin/fusion-prose-metric CLAUDE.md` below its permit and the user's read of the diff; the `## Conventions` length finding stays the curator's; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-0131.
+
+---
+Implemented: bb44a56f — `CLAUDE.md` repunctuated by `coder`, 28 em-dashes to 0 over 981 prose words, verdict `ok`, 8 105 to 8 021 bytes, no sentence cut and no constraint removed.

@@ -145,3 +145,10 @@ is therefore blocked on a user ruling and not on executor work.
 
 ---
 Working answer (plan 260921-1726): the fourth direction, narrowed by option 3's shape test — in a head field, a `.md`-less `stamp-name` resolving to nothing is `undecidable`, not `dangling`, while a value carrying `.md` or a marker slot stays judged; implemented in the commit that carries this line
+
+Answer located: 260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md `## Working answers` — row 5, the fourth direction narrowed by option 3's shape test, implemented at `76b36efa` (the commit that appended the line above); step 3 of `260831-2144_*_repair-three-citation-grammar-defects.md` is built against it and `260831-2121_*_the-head-field-exemption-reads-only-a-bare-stamp-so-a-name-shaped-identifier-in-a-head-field-is-judged.md` is closed. A working answer, not a ruling: the user rules with the implementation in front of them.
+
+---
+Answered: 260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md `## Working answers` row 5 — the fourth direction, narrowed by option 3's shape test: in a head field a `.md`-less `stamp-name` resolving to nothing is `undecidable`, a value carrying `.md` or a marker slot stays judged; ruled by user, Kai Stalmann <ks@qantr.com>, 260921-2312.
+---
+Implemented: 76b36efa — `hooks/lib/citation-scan.ts` classifies the unresolvable `.md`-less head-field value `undecidable`; `**Active spec/plan:**` stays judged; the 20 `**Bus session:**` rows clear without configuration.

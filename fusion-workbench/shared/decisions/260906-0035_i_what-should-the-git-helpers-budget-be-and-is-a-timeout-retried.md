@@ -74,3 +74,10 @@ production budget has been partly damped while the budget itself is unchanged.
 
 ---
 Working answer (plan 260921-1726): option 1 — the helper distinguishes a timeout from a decline, retries a timeout once under the same budget, and the budget is 10 000 ms per attempt (the status read 20 000), chosen from the measured tail of 7 580 ms with margin rather than from habit; implemented at `91515fd5`, the ten-pair acceptance read 0 red of 20 at `73c11cfd`. The marker does not move: the user rules with the implementation in front of them.
+
+Answer located: 260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md `## Working answers` — row 8, option 1 (this record's own recommendation), implemented at `91515fd5`: `GIT_TIMEOUT_MS = 10_000`, a timeout told from a decline and retried once; verified in `hooks/lib/git.ts`. A working answer, not a ruling.
+
+---
+Answered: 260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md `## Working answers` row 8 — option 1: a timeout is told from a decline and retried once, the budget is 10 000 ms per attempt, chosen from the measured 7 580 ms tail with margin; ruled by user, Kai Stalmann <ks@qantr.com>, 260921-2330.
+---
+Implemented: 91515fd5 — `hooks/lib/git.ts` `GIT_TIMEOUT_MS = 10_000`, timeout distinguished from decline and retried once; ten-pair acceptance 0 red of 20 at `73c11cfd`.

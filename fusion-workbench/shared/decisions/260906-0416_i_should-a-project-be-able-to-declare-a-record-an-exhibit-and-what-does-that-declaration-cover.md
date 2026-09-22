@@ -122,3 +122,10 @@ Neither settles the other.
 
 ---
 Working answer (plan 260921-1726): option 2 — a subtractive leaf `citations.exhibits`, per record by storeless basename, every token in a declared record exempt with the reason `declared-exhibit`, the checker printing `declared-exhibits=` beside its verdict; option 4 is not taken and not foreclosed; implemented in the commit that carries this line
+
+Answer located: 260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md `## Working answers` — row 10, option 2, implemented at `a891c50e` (the commit that appended the line above): `citations.exhibits` in `hooks/lib/config.ts`, exemption reason `declared-exhibit` and `declared-exhibits=` on the checker's verdict line; option 4 untaken and not foreclosed. A working answer, not a ruling.
+
+---
+Answered: 260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md `## Working answers` row 10 — option 2: a subtractive leaf `citations.exhibits`, per record by storeless basename, every token in a declared record exempt as `declared-exhibit`, the count printed beside the verdict; option 4 not taken and not foreclosed; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-0027.
+---
+Implemented: a891c50e — `citations.exhibits` in `hooks/lib/config.ts`, exemption reason `declared-exhibit` in `hooks/lib/citation-scan.ts`, `declared-exhibits=` on `bin/fusion-citation-check`'s verdict line.

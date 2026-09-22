@@ -52,3 +52,10 @@ The question is therefore what the surface should be after the cut, not whether 
 
 None yet. The user asked to be reminded of the question, not to have it answered ahead of the work
 it depends on.
+
+Answer located: 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md `### C2` and `### C3`, with 260915-2309_*_does-the-activity-log-keep-its-own-command-or-become-the-first-half-of-cadence.md `## Question` for the last piece — the surface was cut inside the same work rather than after it (option 2 in effect, never ruled as such): `next` went at `2a785ba2`, `direct` at `07961552`, `log-activity` at `9d5b1e80`, `discuss` and `post` arrived, and `README-agents.md` `### skills/ — one file per slash command` states the resulting shape. Two curator runs (260918-0738-curator-run.md, 260918-0806-curator-run.md) already flagged this record as open past its subject. A pointer, not a ruling; the user says whether the question is closed by the outcome.
+
+---
+Answered: 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md `### C2` and `### C3` — option 2 in effect: the surface was cut inside the same work, and the user rules that the outcome is the answer; a further cut would be a new question with its own record; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-0110.
+---
+Implemented: 2a785ba2, 07961552, 9d5b1e80 — `next`, `direct` and `log-activity` removed, `discuss` and `post` added; the resulting fourteen commands are `ls -1d skills/*/` at HEAD and `README-agents.md` `### skills/ — one file per slash command` states the shape.
