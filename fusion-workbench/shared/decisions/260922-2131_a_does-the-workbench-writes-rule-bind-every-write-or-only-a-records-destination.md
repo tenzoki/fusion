@@ -45,3 +45,6 @@ This is filed as its own record rather than fixed in a text pass because the bul
 ## Recommendation
 
 Option 1, on two grounds the filing party can point at rather than infer. The bullet's second sentence is about state, which is the narrow reading's subject and not the absolute's; and the four project-side writers are not incidental but constitutive, since three of them exist for no other purpose, so an absolute that excludes them would never have been true of this system at any point in its history. Option 2 is the honest choice if the absolute is what was meant, and the user is the only party who can say.
+
+---
+Answered: 260922-2131_*_does-the-workbench-writes-rule-bind-every-write-or-only-a-records-destination.md `## Options` — option 1: the bullet governs where an agent's records go, not every write it makes; the no-stray-record-store property it exists for is kept and the false absolute is dropped; ruled by user, Kai Stalmann <ks@qantr.com>.
