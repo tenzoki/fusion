@@ -2,8 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** claimed
-**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-0700
+**Status:** paused
 **Active spec/plan:** 260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md (the spec), 260918-0712_*_implementation-depends-on-edges-proposed-and-confirmed.md (the plan drawn from it, and the one carrying the stopping section)
 **Depends-on:** 260918-0706-strike-unconfirmed-depends-on-entry.md
 **Cross-references:** 260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md, 260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md, 260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md, 260908-2018-prerequisites-confirmed-once-order-computed.md, 260909-1700-cut-fusion-to-working-minimum.md, 260912-0438-human-facing-docs-leave-claude-md.md
@@ -74,3 +73,6 @@ implement:
 Two open decisions carry the rest: whether a proposal may point at an item whose text it never
 read is answered and implemented, and so is how a rejection is remembered. Neither is a blocker
 for whoever picks this up.
+
+---
+Paused 260922-0906, on the user's word, so this checkout can take up the defect package `260922-0906-fix-package-over-every-open-issue`. Waiting for two things, both the user's: a ruling at the closing gate on the acceptance quarter the store cannot give (an order over more than one node), and the confirmed entry onto the done item `260918-0706-strike-unconfirmed-depends-on-entry.md`, which `bin/fusion-work-order` reports by name as the ruling on `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md` prescribes; it is the user's to strike or keep.

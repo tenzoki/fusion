@@ -1,0 +1,34 @@
+# Does the edge pass's citation-edge yield need a mechanism, or is the gate the bound?
+
+---
+**Domain:** code
+**Filed by:** planner, Kai Stalmann <ks@qantr.com>
+**Cross-references:** 260918-0824_*_the-container-hop-voided-the-only-stated-mitigation-for-flooding-the-gate.md, 260918-0828_*_may-the-edge-pass-propose-an-edge-whose-dependent-is-not-the-corpus-owner.md, 260917-2253-depends-on-edges-proposed-and-confirmed.md, 260922-0922_*_the-51-open-issues-at-451bb312-worked-autonomously-as-one-package.md
+
+---
+
+## Question
+
+`agents/curator.md` `### The corpus, and the live/terminal bound` now states, in its own words, that nothing in the prompt bounds the citation-edge yield of the `**Edges:** on` survey: the one-hop bound stops recursion and not the count, the pre-test excludes less after the container hop than before, and what held the first run to a handful of proposals was the legacy-status exclusion and a store of seven items, neither of which scales. The defect that measured this closed its three acceptance clauses and left the substance open: a store of forty native items at the first run's citation density puts the proposal count an order of magnitude higher with the same prompt in force, and "the gate is the bound" is a statement of where the cost lands, not a bound. The item that owns the pass is `paused` on two other rulings; this question is not among them, so it is filed where a ruling can land.
+
+## Options
+
+1. **The gate is the bound, stated**: the survey proposes every citation edge the hop reaches, the ledger puts them all at one gate, and the user rules once per ledger; the prompt says so and names the measured figure.
+   - Pros: nothing new; the ledger-at-a-gate shape already batches the cost into one question.
+   - Cons: a forty-item store puts thirty to a hundred rows at one gate, which is the flooding the plan's struck risk row named.
+2. **Bound by relation, not by count**: the citation arm proposes only where the cited record is a work item's own record or a spec or plan the item runs on (`**Active spec/plan:**`), never for a decision, review or analysis cited in passing.
+   - Pros: the yield tracks what a reader would call a relation between items; decisions and analyses keep their own checkers, which is what the struck mitigation said.
+   - Cons: an item cited only through a decision it rests on produces no proposal; the classification gains a branch, and the classification is the part already found neither disjoint nor complete once.
+3. **Bound by budget**: the survey proposes at most N citation edges per run, highest-confidence first, and reports the residue count.
+   - Pros: the gate's size is fixed.
+   - Cons: N is a number nobody derived; the residue is re-read every run and never shrinks unless the user confirms.
+
+## Constraints
+
+- `**Depends-on:**` proposals are unaffected; only the `**Cross-references:**` arm is in question.
+- A confirmed edge is durable and re-run semantics (`applied` with nothing written) stay as `agents/curator.md` `### Pass 2 — apply. Approved entries only.` states them.
+- `agents/curator.md` sits on the agent growth bound; option 2 costs one classification branch, option 3 one constant and its residue sentence.
+
+## Recommendation
+
+Option 2. It restores the mitigation the plan named, on the relation the field was defined to carry rather than on a count, and the branch it adds is decidable from the cited record's kind, which the citation grammar already reads. Option 1 is where the tree stands and is what the defect measured as not scaling.
