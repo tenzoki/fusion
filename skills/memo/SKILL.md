@@ -20,7 +20,7 @@ Capture something the user wants kept. Three kinds of capture, and the third is 
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" memo
 ```
 
-Read `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` from the output. `$WORKBENCH/$OUT_MEMO` is the directory the memo and task files live in; `$WORKBENCH/$OUT_BACKLOG` is where a backlog entry goes. They are the only correct answers to "where does this go". Never guess either; if the resolver fails, stop and report.
+Read `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` from the output. `$WORKBENCH/$OUT_MEMO` is the directory the memo and task files live in; `$WORKBENCH/$OUT_BACKLOG` is where a backlog entry goes.
 
 On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
 
@@ -33,9 +33,8 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 - Memo file: `$WORKBENCH/$OUT_MEMO/memos-$CO.md`
 - Task file: `$WORKBENCH/$OUT_MEMO/tasks-$CO.md`
 - Backlog entry: a new container per idea in `$WORKBENCH/$OUT_BACKLOG`, never an append
-- Either file may be hand-edited later; work items are project-wide, not per checkout.
 - `$CO` is the `CHECKOUT=` line of `I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true`, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
-- **No `CHECKOUT=` line, no write.** Exit 3, exit 5 and the `[ -x ]` miss branch each leave `$CO` empty, and none means the workbench is absent. Halt and name which one: an empty key writes `memos-.md` and `tasks-.md`, the one pair of names every checkout would share.
+- **No `CHECKOUT=` line, no keyed write.** Exit 3, exit 5 and the `[ -x ]` miss branch each leave `$CO` empty, and none means the workbench is absent. Halt and name which one: an empty key writes `memos-.md` and `tasks-.md`, the one pair of names every checkout would share. An idea is a work item and proceeds under `rules/fusion-workbench-conventions.md` `### Who filed it`, never halted here.
 
 If the memo store or one of its two files does not exist, create it. When creating a file for the first time, write only its header and nothing else:
 
@@ -132,7 +131,7 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 ## Process
 
 1. Resolve `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` per Step 0.
-2. Resolve `$CO`; adopt a legacy `-$USER` name.
+2. Resolve `$CO`; adopt a legacy `-$USER` name, and an empty `$CO` halts only when step 5 picks a memo or a task.
 3. Ensure the target directory exists (`mkdir -p`): `$WORKBENCH/$OUT_MEMO` for a memo or a task, `$WORKBENCH/$OUT_BACKLOG/<YYMMDD-HHMM>-<topic>` — the item's own container — for an idea.
 4. Resolve the invocation mode from the argument.
 5. **Decide memo, task or idea** per "Memo, task or idea — which target"; this picks the target.

@@ -287,7 +287,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: none (before step 14 by convenience: same file)
 
-12. **Scope the memo body's checkout halt to the two keyed targets**
+12. [DONE] **Scope the memo body's checkout halt to the two keyed targets** (the named cut of line 36 did not cover the bytes; two Step 0 sentences restating the resolver contract went as well, net −13 bytes)
     - Executor: `coder`
     - Record: `260921-2049_*_the-memo-bodys-checkout-halt-fires-before-the-target-is-chosen-so-an-idea-halts-where-the-conventions-say-file.md`
     - Site at HEAD: `skills/memo/SKILL.md:38` "**No `CHECKOUT=` line, no write.** …"; `## Process` step 2 resolves `$CO`, step 5 picks memo, task or idea; `grep -c 'no keyed write\|never an idea' skills/memo/SKILL.md` prints `0`.
