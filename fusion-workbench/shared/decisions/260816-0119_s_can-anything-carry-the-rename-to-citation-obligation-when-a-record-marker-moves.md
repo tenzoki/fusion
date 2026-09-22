@@ -66,7 +66,7 @@ inside a closed defect.
 Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: nothing new; the reference lint remains the whole mechanism. No fusion mechanism rewrites shipped text. User answered inline 2026-08-16.
 Implemented:
 Deferred:
-Superseded by:
+Superseded by: 260922-2125_*_is-the-rename-to-citation-obligation-dissolved-now-that-the-mandated-form-stales-nothing.md — the obligation has no subject left, because the mandated citation form names no marker and a rename therefore stales nothing; and this answer's stated ground, that no fusion mechanism rewrites shipped text, is false at HEAD since `bin/fusion-citation-sweep` rewrites citations across a declared corpus of shipped text. Option 1 itself is not reopened: no mechanism was built for stale marker citations, and the reference lint remains the whole mechanism for them.
 
 ---
 **Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
