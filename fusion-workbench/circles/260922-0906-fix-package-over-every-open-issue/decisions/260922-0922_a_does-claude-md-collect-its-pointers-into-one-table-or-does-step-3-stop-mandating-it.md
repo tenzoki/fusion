@@ -31,3 +31,6 @@
 ## Recommendation
 
 Option 2. The rule was written against a file whose sections had been emptied; fusion's own file kept its sections, and a pointer inside a surviving passage is where a reader looks for it. Option 1 would have the rule's example rewritten to fit the rule rather than the rule stated for the case its example demonstrates.
+
+---
+Answered: 260922-0922_*_does-claude-md-collect-its-pointers-into-one-table-or-does-step-3-stop-mandating-it.md `## Options` — option 2: Step 3 softens; a pointer may stay where its passage stood when the section around it survives with content of its own (a passage being the text under one heading at the chosen level), and the one-table mandate holds for pointers whose sections the cut emptied; `CLAUDE.md` keeps its shape; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1221.

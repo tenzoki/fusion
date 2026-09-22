@@ -30,3 +30,8 @@ Rule identifiers and list order stay unchanged whatever is chosen; `rules-voice-
 ## Recommendation
 
 Option 1, the plan's own shape: it is the only one that closes the defect as measured.
+
+---
+Answered: 260922-1028_*_which-gates-does-the-autonomous-mode-answer-beyond-the-plan-the-claim-and-the-finish.md — option 1 as the plan wrote it: the data task is answered by the autonomous field since that ruling, so the gate this record stood in for no longer asks; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1204.
+---
+Implemented: ad5535df — the eight profile files repunctuated, metric `ok` on every row, the four workbench copies stale-shipped and taken with the shipped edit.

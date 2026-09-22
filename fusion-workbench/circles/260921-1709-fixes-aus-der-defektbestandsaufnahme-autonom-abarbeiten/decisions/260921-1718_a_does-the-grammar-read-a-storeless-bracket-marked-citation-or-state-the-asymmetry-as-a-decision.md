@@ -29,3 +29,6 @@
 ## Recommendation
 
 Option 1. The header's reason was written for filenames and the case that bit is citations in code; detecting is not rewriting, and where a rewrite does happen it produces the one form every gate reads. The cost is one paragraph of header saying the stance moved and why.
+
+---
+Answered: 260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md — option 1 of this record: `BARE_RE` admits `[x]` in the marker position, `MARKER_SLOT` untouched, and the header paragraph is rewritten to say the stance moved because the reason was written for filenames while the population that bit is citations in source files; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1420.

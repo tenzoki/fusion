@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** claimed
+**Status:** done
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-0906
 **Mode:** autonomous
 **Active spec/plan:** 260922-0922_*_the-51-open-issues-at-451bb312-worked-autonomously-as-one-package.md (the plan)
@@ -67,3 +67,10 @@ The user's words, 260922-0906: "lege ein Arbeitspaket mit allen vorhandenen (sow
 - `260921-2049_*_the-memo-bodys-checkout-halt-fires-before-the-target-is-chosen-so-an-idea-halts-where-the-conventions-say-file.md` (260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten)
 - `260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md` (shared)
 - `260921-2238_*_a-curator-survey-spells-a-decisions-marker-letter-and-the-reconciliation-rename-made-the-row-stale.md` (shared)
+
+---
+Closed 260922-1437 as done, over the commit range `451bb312..bf515cad` (43 commits) plus the closing review at `260922-1208`. All 51 records reached one of the directive's three end states: 36 fixed and closed, 5 closed on the evidence the tree already carried, 3 closed as corrections whose target is a terminal record, 7 carried into the decisions that hold their choice. The plan's 37 steps are `[DONE]` and it is `_c_`; nothing was deferred, including the entry-point test the plan named as first to defer. Version stands at 11.11.0, untagged and unpushed.
+
+Under `**Mode:** autonomous` the plan's stopping section was not put to the user and no clause was judged; all 22 are carried here verbatim by reference to `260922-0922_*_the-51-open-issues-at-451bb312-worked-autonomously-as-one-package.md` `## Where this work stops`, and the log carries one `gate_response` per clause. Two things the closure names rather than hides: step 16 first met the `ontocoder` gate and was filed and skipped, then ran after the user ruled on `260922-1028_*` (`57e2b7eb`) and landed at `ad5535df`; and the closing review filed nine new issues, none a release blocker, two of them (the help topic's 11.11.0 sentence and `docs/working-model.md` `## 3. The gates`) recommended before a tag.
+
+The review coverage is tiled: `260922-1208-reviewer-closing-pass-over-the-51-issue-package-451bb312-to-bf515cad.md` carries `**Reviewed-range:** 451bb312..bf515cad` with the twelve `hooks/dist/` files as its `**Not-opened:**` list, which the next review takes into its scope.

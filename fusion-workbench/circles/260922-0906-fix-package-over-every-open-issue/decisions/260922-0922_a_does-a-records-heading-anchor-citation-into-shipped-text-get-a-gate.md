@@ -31,3 +31,6 @@
 ## Recommendation
 
 Option 1. The anchor form was chosen for text that outlives its target; a record is the other kind, and the point-in-time reading is what its commit already guarantees. Option 2 is worth taking only if a count of stale anchors in live records is ever measured above a handful, and nobody has measured it.
+
+---
+Answered: 260922-0922_*_does-a-records-heading-anchor-citation-into-shipped-text-get-a-gate.md `## Options` — option 1: no gate; `rules/fusion-workbench-conventions.md` `## Filename Patterns` gains one clause saying a record's heading anchor reads as the heading stood when the record was written, the anchor form being for living text that outlives its target; option 2 waits on a measured count above a handful; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1225.

@@ -32,3 +32,6 @@ Step 23 of the plan takes option 1 of `260921-1718_*_does-the-grammar-read-a-sto
 ## Recommendation
 
 Option 2. The frozen-store exclusion is already the answer two other consumers carry, and the rewrite count it avoids (37) is the whole of what makes option 1 need the user's eyes. Step 23 stays skipped in this package; a follow-on package takes it with the exclusion in front.
+
+---
+Answered: 260922-0906-fix-package-over-every-open-issue.md, the session of 260922-1420 — option 1, the whole-tree sweep, against this record's own recommendation and with the reason stated: `## Terminal states are history` governs state (a step marker, a ticked criterion, a head field), and a citation rewritten from `[x]-` to `_*_` changes no state but respells the same pointer at the same target, which the sweep already does for spelled underscore markers inside closed records. The rule gains a clause saying citation form is not state. So: land the grammar, sweep the whole workbench including `archive/` in a second commit, repair the 17 dangling tokens by hand with their annotations, and add the sweep to `/fusion:migrate` as a closing step so a consuming project cleans up in one command after `fusion --update`; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1420.

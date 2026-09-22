@@ -31,3 +31,6 @@
 ## Recommendation
 
 Option 1, with the `_p_` entry's reading stated in the archive commit message: recommended on 2026-08-14, realised by the conventions' write-with-the-act rule, and never claimed as an item. Option 2 asks the user to file two items for work that is done, which the store's own grammar says is not a reason to file.
+
+---
+Answered: 260922-0922_*_what-becomes-of-the-two-entries-in-the-unread-shared-backlog-store.md `## Options` — option 1: both files move under `archive/` by hand (the `_p_` marker is live, so no archive tier selects it), the layout names `shared/backlog/` as a third frozen legacy store beside `stashes/` and `.migration-v2-backup/`, and the commit message states the `_p_` entry's reading: recommended 2026-08-14, realised by the conventions' write-with-the-act rule, never claimed as an item; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1223.

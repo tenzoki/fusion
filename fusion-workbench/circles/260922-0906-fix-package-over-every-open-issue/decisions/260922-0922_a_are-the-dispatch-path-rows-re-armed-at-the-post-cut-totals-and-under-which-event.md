@@ -31,3 +31,6 @@
 ## Recommendation
 
 Option 1. The dispatch-path bound is defined as zero-sum, and a zero-sum bound that is not at the measurement is not the instrument its header describes. The event is named, scoped to this surface, and logged, which is what separates it from the silent raise the growth rule exists to prevent.
+
+---
+Answered: 260922-0922_*_are-the-dispatch-path-rows-re-armed-at-the-post-cut-totals-and-under-which-event.md `## Options` — option 1: every dispatch-path row is re-armed at the post-cut totals as a fourth named event scoped to the zero-sum surface alone ("after a cut of a shared component, the zero-sum bound follows the measurement down"), logged in `README-hooks.md` with the per-row figures; `260822-1154_*` stands for the rate surfaces; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1220.

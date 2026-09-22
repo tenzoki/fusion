@@ -31,3 +31,6 @@
 ## Recommendation
 
 Option 1. The measurement is three weeks old and unchanged: nothing reads it. Option 2 would add a reader whose only justification is the export, and the SessionStart-only resolution makes it an unreliable one.
+
+---
+Answered: 260922-0922_*_does-fusion-alias-get-a-reader-or-does-the-export-go.md `## Options` — option 1: the export, its three wiring assertions and the v10.23 note's sentence go; nothing read the variable in three weeks and a reader added to justify it would be unreliable at first registration; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1218.

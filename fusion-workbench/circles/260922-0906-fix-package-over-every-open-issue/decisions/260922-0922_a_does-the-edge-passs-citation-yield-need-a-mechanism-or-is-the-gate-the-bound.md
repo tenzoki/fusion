@@ -32,3 +32,6 @@
 ## Recommendation
 
 Option 2. It restores the mitigation the plan named, on the relation the field was defined to carry rather than on a count, and the branch it adds is decidable from the cited record's kind, which the citation grammar already reads. Option 1 is where the tree stands and is what the defect measured as not scaling.
+
+---
+Answered: 260922-0922_*_does-the-edge-passs-citation-yield-need-a-mechanism-or-is-the-gate-the-bound.md `## Options` — option 2: the citation arm proposes only where the cited record is a work item's own record or a spec or plan an item runs on, never a decision, review or analysis cited in passing; the 260922-0703 run's four written edges all had item targets and would have survived; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1228.
