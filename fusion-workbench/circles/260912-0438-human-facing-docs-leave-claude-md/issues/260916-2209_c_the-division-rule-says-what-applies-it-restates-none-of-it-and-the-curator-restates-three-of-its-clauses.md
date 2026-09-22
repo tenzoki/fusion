@@ -27,3 +27,6 @@ That is three clauses of Step 1 restated: the one-level-per-file rule, the not-n
 **Acceptance test.** Either `agents/curator.md:309` names Step 1 and states none of its mechanics, or `rules/context-lean-claude-md.md:181` stops claiming that nothing restates it and says instead what a restatement owes. Whichever lands, the rule and the prompt agree in the same commit, as `260916-1316_*`'s own test required of its pair.
 
 **Cross-references:** 260916-1316_*_three-surfaces-state-the-heading-division-rule-and-two-of-them-answer-differently-on-fusions-own-claude-md.md
+
+---
+Resolved: the placement-classification bullet in `agents/curator.md` now names `rules/context-lean-claude-md.md` `### Step 1 — divide the file by heading, before judging anything` and restates none of its three clauses (the first of the two routes the acceptance offered, so the rule's "what applies it restates none of it" holds as written); the commit that carries this line.

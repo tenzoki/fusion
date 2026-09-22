@@ -239,7 +239,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
    - Gate: none
    - Dependencies: none
 
-8. **Let the curator name Step 1 and restate none of it**
+8. [DONE] **Let the curator name Step 1 and restate none of it**
    - Executor: `coder`
    - Record: `260916-2209_*_the-division-rule-says-what-applies-it-restates-none-of-it-and-the-curator-restates-three-of-its-clauses.md`
    - Site at HEAD: `agents/curator.md:418` "the passage as Step 1 of the placement criterion divides it, by one heading level picked once for the whole file, which is not always its top one, and with whatever stands above the first heading of that level counting as a passage of its own"; `rules/context-lean-claude-md.md:181` "what applies it restates none of it".
