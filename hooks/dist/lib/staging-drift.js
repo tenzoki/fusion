@@ -137,6 +137,7 @@
 import { basename, resolve, relative, sep } from "node:path";
 import { git, GIT_TIMED_OUT, GIT_TIMEOUT_MS } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
+import { LEGACY_STORES, RECORD_STORES } from "./stores.js";
 /* ------------------------------------------------------------------ *
  * Layout — root-anchored
  * ------------------------------------------------------------------ */
@@ -227,24 +228,16 @@ export const LIVE_PREFIXES = [
  * The artifact stores. A path with one of these as a segment holds authored
  * records, whether it sits under a work item's container or under `shared/`.
  *
- * This is the same set `hooks/lib/__tests__/path-literal-lint.test.ts` calls
- * `TYPE_FOLDERS`, minus the three retired pre-v4 review folders — a converted
- * workbench has no `codereview/`, and a workbench that still does is a
- * `/fusion:migrate` matter rather than a staging one.
+ * The live set is `RECORD_STORES` in `./stores.ts`, the layout tree's twelve,
+ * plus `LEGACY_STORES` for the pre-container backlog store whose two files the
+ * tree still holds. The three retired pre-v4 review folders are not here: a
+ * converted workbench has no `codereview/`, and a workbench that still does is
+ * a `/fusion:migrate` matter rather than a staging one. `checkouts` IS here:
+ * a registry entry `bin/fusion-checkout-name register` rewrites is a tracked
+ * record (`rules/workbench-tracking.md`, class R1), so its change is a staging
+ * obligation this measurement names like any other record's.
  */
-const STORES = [
-    "planning",
-    "issues",
-    "decisions",
-    "history",
-    "reviews",
-    "analyses",
-    "investigations",
-    "consult",
-    "memos",
-    "backlog",
-    "discussions",
-];
+const STORES = [...RECORD_STORES, ...LEGACY_STORES];
 /**
  * The root-anchored records: a file at the workbench root that a person authored
  * and a staging list therefore has to name.

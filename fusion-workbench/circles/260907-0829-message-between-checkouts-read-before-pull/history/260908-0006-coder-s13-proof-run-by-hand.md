@@ -62,7 +62,7 @@ performed by hand.
   against its allowance of nine. Two lines were rewritten as one and the file was
   recounted at 20 before it was written anywhere.
 
-Written to `fusion-workbench/shared/forum/260907-2354-1d05b0e4-read-before-pull.md`
+Written to `260907-2354-1d05b0e4-read-before-pull.md`
 after `mkdir -p`, 20 lines, no `**Filed by:**`.
 
 **Citations.** `bin/fusion-citation-check` reports `verdict=clean` with
@@ -142,6 +142,6 @@ were additionally run alone after this log was written and passed, 30 of 30.
 
 ## Files changed
 
-- `fusion-workbench/shared/forum/260907-2354-1d05b0e4-read-before-pull.md` (new)
+- `260907-2354-1d05b0e4-read-before-pull.md` (new)
 - the plan `260907-1942_*_message-between-checkouts-read-before-pull.md` — step 13 marked `[DONE]`
 - this file

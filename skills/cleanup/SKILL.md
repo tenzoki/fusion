@@ -80,7 +80,7 @@ Under `--dry-run`, print the splits and their draft messages and stop here.
 
 ## Step 3 — Push
 
-Unless `--no-push` was given: plain `git push`; `git push -u origin <branch>` when the branch has no upstream. **The precondition is not a clean tree** — `.fusion-setup` and this checkout's `shared/checkouts/<id>.md` are live state a session dirties and no split names (`rules/workbench-tracking.md`) — it is that every split committed and the log was settled above.
+Unless `--no-push` was given: plain `git push`; `git push -u origin <branch>` when the branch has no upstream. **The precondition is not a clean tree** — `.fusion-setup` and this checkout's registry entry are live state a session dirties and no split names (`rules/workbench-tracking.md`) — it is that every split committed and the log was settled above.
 
 ## Step 4 — Report
 

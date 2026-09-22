@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
+import { LEGACY_STORES, RECORD_STORES, RETIRED_REVIEW_FOLDERS } from "../stores.js";
 
 // ---------------------------------------------------------------------------
 // Path-literal lint gate (plan step 8 / P-8).
@@ -19,10 +20,11 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 // ---------------------------------------------------------------------------
 
 
-// The artifact-store folders. These are the kinds whose location must come from
-// `fusion-paths` ($OUT_* / $SCAN_*). `codereview` / `ontoreview` /
-// `conceptreview` are the retired pre-v4 review folders (merged into `reviews`);
-// they must never reappear in a converted prompt.
+// The artifact-store folders, composed from `hooks/lib/stores.ts` rather than
+// listed here: the live stores (the layout tree's, `checkouts` included), the
+// legacy backlog store, and the three retired pre-v4 review folders (merged
+// into `reviews`), which must never reappear in a converted prompt. A kind's
+// location comes from `fusion-paths` ($OUT_* / $SCAN_*), never from a literal.
 //
 // Deliberately EXCLUDED: the structural container roots `circles/`, `shared/`,
 // `archive/`, `stashes/`. They are not artifact stores — they are the layout's
@@ -32,22 +34,7 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 // force wrong exemptions. An artifact-type segment nested inside such a path
 // (e.g. `circles/x/reviews/y`) is still caught, because `reviews/` matches on
 // its own.
-const TYPE_FOLDERS = [
-  "planning",
-  "issues",
-  "decisions",
-  "history",
-  "analyses",
-  "reviews",
-  "consult",
-  "investigations",
-  "memos",
-  "backlog",
-  "forum", "discussions",
-  "codereview",
-  "ontoreview",
-  "conceptreview",
-];
+const TYPE_FOLDERS: readonly string[] = [...RECORD_STORES, ...LEGACY_STORES, ...RETIRED_REVIEW_FOLDERS];
 
 // The whole trust surface — the sites allowed to name type folders as paths.
 // Enumerated explicitly, never pattern-matched: `setup` names the pre-v4 layout
@@ -328,5 +315,17 @@ describe("path-literal lint: setup's key needs stay a subset of the orchestrator
         `so the resolver will not emit them: ${missing.join(", ")}. ` +
         `Add the usage to agents/orchestrator.md or stop relying on it in skills/setup/SKILL.md.`,
     ).toEqual([]);
+  });
+});
+
+describe("path-literal lint: the store list is the layout tree's", () => {
+  // Issue 260905-0933_*: three hand-kept copies of this set drifted by one element each way.
+  // `hooks/lib/stores.ts` is the one copy now, and this is what keeps it equal to the definition.
+  it("RECORD_STORES equals the shared/ subtree of the conventions' layout tree, in order", () => {
+    const tree = readFileSync(join(pluginRoot, "rules/fusion-workbench-conventions.md"), "utf-8");
+    const subtree = tree.match(/^├── shared\/[\s\S]*?(?=^├── archive\/)/m);
+    expect(subtree, "the layout tree's `shared/` subtree was not found between `├── shared/` and `├── archive/`").not.toBeNull();
+    const fromTree = [...subtree![0].matchAll(/[├└]── ([a-z]+)\//g)].map((m) => m[1]).slice(1);
+    expect(fromTree, "RECORD_STORES and the layout tree disagree: edit both in one commit").toEqual([...RECORD_STORES]);
   });
 });

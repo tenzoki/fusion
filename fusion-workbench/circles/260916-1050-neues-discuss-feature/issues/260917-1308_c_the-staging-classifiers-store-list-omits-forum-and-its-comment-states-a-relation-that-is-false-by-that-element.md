@@ -33,3 +33,6 @@ The acceptance test: `STORES` in `staging-drift.ts` and the alternation in `cita
 list is true when read against that list, or it is not stated.
 
 **Cross-references:** `260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md`, `260917-1124_*_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md`
+
+---
+Resolved: the commit that carries this line replaces both hand-kept lists with sets composed from `hooks/lib/stores.ts`: `STORES` in `hooks/lib/staging-drift.ts` is `RECORD_STORES` plus `LEGACY_STORES` and contains `forum`, its comment now stating that composition and the one deliberate inclusion (`checkouts`) rather than a relation to another file's list; the alternation in `hooks/lib/citation-scan.ts` is the same two arrays minus `checkouts`, with the comment naming that absence and its reason (a registry entry carries no stamp, so no record citation can name one). A forum entry uncommitted under the workbench classifies `record`, and a citation carrying `shared/forum/` is reported store-prefixed: three such tokens in two records of the message-between-checkouts container were repaired in the same commit (two pointers rewritten to the storeless form, one fenced exhibit given a `<forum>` placeholder for its store segment).

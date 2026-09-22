@@ -284,6 +284,7 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { isAbsolute, join, relative, sep } from "node:path";
 import { git, GIT_TIMED_OUT } from "./git.js";
+import { LEGACY_STORES, RECORD_STORES } from "./stores.js";
 
 // --- shared with the gate's other two classes -------------------------------
 
@@ -309,13 +310,15 @@ export function isPlaceholder(token: string): boolean {
 // --- the citation grammar ---------------------------------------------------
 
 /**
- * The store segments a store-prefixed citation may carry. `discussions` is here
- * for citations OF a discussion record, written in some other record; nothing
- * reads the citations written INSIDE one, because a discussion record is
- * machine-rewritten every round and so is no live record to `isLiveRecord()`.
+ * The store segments a store-prefixed citation may carry: `RECORD_STORES` and
+ * `LEGACY_STORES` from `./stores.ts`, minus `checkouts`. A registry entry is
+ * `<hex>.md`, no stamp and no slug, so no record citation can name one and the
+ * segment would match nothing. `discussions` is here for citations OF a
+ * discussion record, written in some other record; nothing reads the citations
+ * written INSIDE one, because a discussion record is machine-rewritten every
+ * round and so is no live record to `isLiveRecord()`.
  */
-const STORES =
-  "planning|issues|decisions|history|reviews|analyses|investigations|consult|memos|backlog|discussions";
+const STORES = [...RECORD_STORES, ...LEGACY_STORES].filter((s) => s !== "checkouts").join("|");
 
 /**
  * The words the marker slot may carry besides one letter: the agent names the

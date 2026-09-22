@@ -16,11 +16,11 @@ seeded:  260907-1000-99999999-hello.md
          README.md
 ```
 
-The names above are fixture strings, not records in this workbench. What the helper printed:
+The names above are fixture strings, not records in this workbench. What the helper printed, with the forum store's segment written `<forum>` on the first entry because a spelled store segment is reported wherever it stands, a fence included:
 
 ```
 new=2
-entry=fusion-workbench/shared/forum/260907-1000-99999999-hello.md
+entry=fusion-workbench/shared/<forum>/260907-1000-99999999-hello.md
 entry=fusion-workbench/shared/forum/README.md
 ```
 

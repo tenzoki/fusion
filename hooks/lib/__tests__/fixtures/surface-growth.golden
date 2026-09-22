@@ -29,7 +29,7 @@
   archive/SKILL.md 24473
   cadence/SKILL.md 22271
   check/SKILL.md 31855
-  cleanup/SKILL.md 6768
+  cleanup/SKILL.md 6756
   commit/SKILL.md 6113
   curate/SKILL.md 12017
   discuss/SKILL.md 14346
@@ -40,7 +40,7 @@
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19424
-  total 227986
+  total 227974
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -87,7 +87,7 @@
   live-circle-record-detection.test.ts 77
   marker-format-lint.test.ts 168
   monitor-warnings-panel.test.ts 1222
-  path-literal-lint.test.ts 332
+  path-literal-lint.test.ts 331
   paths.test.ts 31
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
@@ -104,4 +104,4 @@
   surface-growth-bound.test.ts 568
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22098
+  total 22097
