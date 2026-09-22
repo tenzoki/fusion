@@ -12,3 +12,6 @@ README-agents calls curate the only path to CLAUDE.md while a lint forces a hand
 **Origin.** Surfaced while planning `260908-1612_*_cut-the-skills-surface-and-add-the-post-step-body.md`, whose step 11 performs exactly the hand edit the claim forbids, for `/fusion:post`.
 
 **Acceptance test.** The `/fusion:curate` row states what curate is actually the only path to, so that a reader deciding whether a same-commit `CLAUDE.md` token needs a gate gets the right answer from the row alone. Either the claim is qualified (the only path to a *reconciliation* of the file), or the exception is named beside it.
+
+---
+Resolved: the `/fusion:curate` row of `README-agents.md` now reads "The one path to a *reconciliation* of `CLAUDE.md`" and names the same-commit `/fusion:<name>` token `derivable-enumerations-lint.test.ts` demands as a hand edit outside the skill (the first of the two routes the acceptance offered, since the exception is named beside the qualified claim in one clause); the commit that carries this line.

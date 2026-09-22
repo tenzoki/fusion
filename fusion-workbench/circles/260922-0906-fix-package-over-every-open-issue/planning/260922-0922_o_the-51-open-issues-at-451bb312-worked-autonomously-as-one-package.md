@@ -167,7 +167,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
 
 ### Package B — shipped text, one commit per record
 
-2. **State what `/fusion:curate` is the one path to**
+2. [DONE] **State what `/fusion:curate` is the one path to**
    - Executor: `coder`
    - Record: `260908-1612_*_readme-agents-calls-curate-the-only-path-to-claude-md-while-a-lint-forces-a-hand-edit.md`
    - Site at HEAD: `README-agents.md:259`, the `/fusion:curate` row: "The one path to `CLAUDE.md`. Reconciles the three normative surfaces …". `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`'s `claudeMdDrift` block fails the suite when `skills/<name>/` exists and `CLAUDE.md` names no `/fusion:<name>`, so a same-commit hand edit is mandatory at every skill addition (`5c240eb7` did it for `/fusion:news`, `115be68d` reworded this row without qualifying it).
