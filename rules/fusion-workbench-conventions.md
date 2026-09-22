@@ -75,7 +75,7 @@ The list is exhaustive as written, and it is a list rather than a count on purpo
 
 ### Which of them a tracked workbench tracks
 
-Whether a consuming project tracks its workbench at all is that project's decision: fusion ships no `.gitignore` rule for it. Which of the root entries above a project that *does* track it should commit, which it should not, and what preserves the evidence in the ones it does not, are authored in `rules/workbench-tracking.md`, which `bin/fusion-rules` emits to **no agent**: its two readers are a human writing a project's `.gitignore` and `/fusion:archive`.
+Whether a consuming project tracks its workbench at all is that project's decision: fusion ships no `.gitignore` rule for it. Which of the root entries above a project that *does* track it should commit, which it should not, and what preserves the evidence in the ones it does not, are authored in `rules/workbench-tracking.md`.
 
 **One kind, two candidate stores, and one decision between them.** A kind never has two stores inside one container, so all that is left to decide is container or `shared/`, and `## Origin Rule` decides it. What a citation carries is the record's basename and never its store, which is what lets a record be moved by an archive sweep without breaking a pointer to it (`## Filename Patterns`).
 
@@ -115,8 +115,7 @@ Three questions this section used to answer in full are now authored in
 a skill, one flat namespace, every consumer asks under its own name), what each emitted key
 means, and why the key set is derived from the prompt rather than declared. None of it is
 needed to *use* the resolver: an agent's keys are the ones its own prompt already names,
-and it reads their values off stdout. Read that file when you write or edit a consumer
-prompt, or change `bin/fusion-paths` itself. `bin/fusion-rules` emits it to no agent.
+and it reads their values off stdout.
 
 ### Where the call belongs
 
@@ -369,7 +368,7 @@ This applies to every marker in both vocabularies (`_o_`, `_p_`, `_c_`, `_d_` on
 
 `_c_` and `_d_` on an issue or a plan, `_c_` on a discussion, `_i_`, `_s_` and `_d_` on a decision, `done` and `dropped` on a work item: these are **terminal**, and a rename or an edit back to a live state is disallowed. Where continuation is needed, file a new record that cites the terminal one.
 
-**A terminal record is read as evidence and never reconciled in place.** No step mark, ticked criterion or header change is written into it after the transition, and an unticked box there is not outstanding work. This is what makes a reconciliation pass' scan finite: it opens the live records, and a terminal one tells it nothing it may act on. Binding decision: `260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` (option 5).
+**A terminal record is read as evidence and never reconciled in place.** No step mark, ticked criterion or header change is written into it after the transition, and an unticked box there is not outstanding work. This is what makes a reconciliation pass' scan finite: it opens the live records, and a terminal one tells it nothing it may act on. Binding decision: `260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` (option 5). **State, not spelling:** respelling a citation's pre-v4 bracket marker to the storeless wildcard names the same target and writes no state, as the sweep already does for an underscore one here (`260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md`).
 
 ## Inline State Tracking
 
@@ -587,4 +586,4 @@ Never read or display `.secret` files. If secrets are needed, ask the user to pr
 
 ## Commit lock
 
-The commit-lock protocol (when it activates, mechanism, the `bin/fusion-commit-lock` subcommands, who acquires, tag conventions, failure modes) moved verbatim to `rules/commit-lock.md`, which `bin/fusion-rules` emits to `orchestrator` only.
+The commit-lock protocol (when it activates, mechanism, the `bin/fusion-commit-lock` subcommands, who acquires, tag conventions, failure modes) moved verbatim to `rules/commit-lock.md`.

@@ -2,8 +2,10 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** claimed
+**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-1601
 **Mode:** autonomous
+**Active spec/plan:** 260922-1628_*_the-grammar-reads-the-bracket-marker-and-the-tree-is-swept-once.md (the plan)
 **Cross-references:** 260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md, 260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md, 260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md, 260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 
