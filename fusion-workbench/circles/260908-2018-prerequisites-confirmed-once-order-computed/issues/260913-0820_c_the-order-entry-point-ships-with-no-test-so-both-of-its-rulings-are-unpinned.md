@@ -66,3 +66,6 @@ A new test running `hooks/dist/order.js` against scratch workbench roots, in the
 New `hooks/lib/__tests__/fusion-work-order.test.ts`. The hook-test surface is bounded and stood
 at zero margin when the fixture test landed, so this needs its own room; that is a cut, never a
 baseline edit.
+
+---
+Resolved: the commit that carries this line adds `hooks/lib/__tests__/fusion-work-order.test.ts`, five cases running `bin/fusion-work-order` against scratch workbench roots in `plan-size.test.ts`'s shape: a cyclic store is exit 0 with `verdict=cyclic`; a store whose root item carries no `**Depends-on:**` prints exactly one `note=` line naming the count and a store where every item carries the field and every entry resolves prints none; a workbench with no `circles/` is `verdict=empty` at exit 0; an argument is exit 1 and a working directory with no workbench above it is exit 2; `roots=` equals `ready=` on the acyclic fixture and reads `2` against `0` on the cycle at depth 0. The fixture builder is local, since `work-graph.test.ts` exports none. The file is 55 lines, the step's ceiling, funded by the package's earlier cut and by no baseline edit.

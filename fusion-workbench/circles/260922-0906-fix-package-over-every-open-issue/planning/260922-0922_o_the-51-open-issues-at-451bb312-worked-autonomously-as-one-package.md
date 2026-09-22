@@ -483,7 +483,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: step 1
 
-28. **Run the order entry point under test**
+28. [DONE] **Run the order entry point under test** (+55 lines, the ceiling to the line after two cuts of its own header and helpers; it fit, so nothing is deferred)
     - Executor: `coder`
     - Record: `260913-0820_*_the-order-entry-point-ships-with-no-test-so-both-of-its-rulings-are-unpinned.md`
     - Site at HEAD: no test opens `hooks/dist/order.js` or `bin/fusion-work-order` (`grep -rln 'order\.js\|work-order' hooks/lib/__tests__/` prints only the reference lint); `plan-size.test.ts` is the precedent shape.
