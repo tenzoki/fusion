@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** claimed
+**Status:** done
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-1601
 **Mode:** autonomous
 **Active spec/plan:** 260922-1628_*_the-grammar-reads-the-bracket-marker-and-the-tree-is-swept-once.md (the plan)
@@ -20,3 +20,10 @@ Then the tree is swept once, `archive/` included: measured at `f0f4c9c6`, 142 un
 Last, `/fusion:migrate` gains the sweep as a closing step, so a consuming project that runs `fusion --update` and then the migration cleans its own corpus in one command instead of discovering the class defect by defect.
 
 A reader knows this is reached when `bin/fusion-citation-check` reads `verdict=clean` with the bracket form being read, `bin/fusion-citation-sweep --repair --dry-run` prints `files=0 repairs=0` over fusion's own tree, no bracket token resolves to nothing without an annotation, `cd hooks && npm test` exits 0, and the migration body names the sweep.
+
+---
+Closed 260922-1733 as done, over `7294e06f..454f8a39`. The grammar reads the pre-v4 bracket marker, 28 exhibits are fenced in 17 records, one sweep rewrote 111 tokens in 45 files with `archive/` included, and `/fusion:migrate` closes by offering the sweep so a consuming project cleans its corpus in one command. Every gate is green: 987 tests, `verdict=clean`, `files=0 rewrites=0` both ways.
+
+The measured figures matched the plan exactly (139 tokens in 59 files, 126 resolving, 13 dangling); two things the plan did not carry were found while building and are the reason it worked: the sweep's own candidate rule knew only the underscore marker, so the grammar alone would have been a no-op, and a respelling must absorb the marker's trailing hyphen or all 126 rewrites would have named records that do not exist. The grammar and the sweep landed in two adjacent commits rather than one, because the sweep refuses to write against a tree whose corpus holds an uncommitted file; `78328863` is red on three gates by construction and `23576fe6` clears them.
+
+Under `**Mode:** autonomous` the plan's stopping clauses were not put and none was judged; the log carries one `gate_response` per clause. The closing review over `49ab50e4..e41e333f` found no release blocker and filed three issues and one decision; the two that touch a release landed here (`35c775a9`, `454f8a39`), the first of them the one defect that would have made this whole package useless to a consuming project. Left for the user: `260922-1719_*` (the fencing turned single list items into quotations in nine records) and `260922-1720_*` (whether the sweep declines a rewrite whose result resolves to more than one record).
