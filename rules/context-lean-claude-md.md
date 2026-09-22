@@ -254,7 +254,7 @@ carried out.
 
 **It stays: the preamble.** Counted as Step 1 says, that file divides at `## `,
 so its preamble — everything above the first `## ` — is one passage: seven lines
-and 414 bytes, holding the document title, the two language declarations
+and the bytes the helper's `(preamble)` row prints (411 at `bb44a56f`), holding the document title, the two language declarations
 `**Language:** de` and `**Artifact language:** en`, and one paragraph saying what
 the repository is. The declarations are 43 of those bytes, and they are why the
 passage stays, for a mechanical reason rather than a matter of taste: the
