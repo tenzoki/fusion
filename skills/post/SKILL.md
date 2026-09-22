@@ -49,6 +49,12 @@ The pointer block carries the commit range (the session's start anchor, to `HEAD
 
 **The person's part reads plainly to somebody who never saw this session.** No state marker, no fusion noun, no agent name as the subject of a sentence, no bare identifier. That obligation is authored here rather than cited: `rules/user-facing-output.md` `## Vocabulary` exempts workbench records, and a message is one.
 
+Clear any leftover first, so an interrupted run's draft is removed by the next one instead of surviving at the workbench root, where `bin/fusion-staging-drift` reports it unclassified:
+
+```bash
+rm -f "$WORKBENCH/.post-draft-$CHECKOUT"
+```
+
 Write the draft with the `Write` tool to `"$WORKBENCH/.post-draft-$CHECKOUT"`, a dotfile at the workbench root that no staging list names and `/fusion:cleanup` does not commit, and count that file, never a rendering of it:
 
 ```bash
@@ -59,11 +65,11 @@ wc -l < "$WORKBENCH/.post-draft-$CHECKOUT"
 
 ## Step 3: nothing to say is an answer
 
-**Compose nothing** when the project is not a git repository, or when the run has nothing to report: no commits in the range, and no records filed. **With no range to read, that second condition reads on the records alone** — an unread anchor is not a third condition and never suppresses an entry on its own. Say that in one line and stop. An empty entry costs the other side a read and tells them nothing.
+**Compose nothing** when the project is not a git repository, or when the run has nothing to report: no commits in the range, and no records filed. **With no range to read, that second condition reads on the records alone** — an unread anchor is not a third condition and never suppresses an entry on its own. Say that in one line, `rm -f "$WORKBENCH/.post-draft-$CHECKOUT"` where Step 2 wrote one, and stop. An empty entry costs the other side a read and tells them nothing.
 
 ## Step 4: put the draft to the user
 
-Show the draft file's content as ordinary output, then ask: one `AskUserQuestion` with three options, write it, change it, cancel. That is the same shape `skills/archive/SKILL.md` `## Process` step 6 puts. Write on the first, change nothing on the other two.
+Show the draft file's content as ordinary output, then ask: one `AskUserQuestion` with three options, write it, change it, cancel. Write on the first, change nothing on the other two.
 
 ## Step 5: write the entry
 
@@ -88,4 +94,3 @@ Two lines at most: the path written, or that nothing was written and which of St
 - **Dispatches no agent**, and runs no other pass.
 - **Commits nothing** and pushes nothing. The user carries the entry into their next commit.
 - **Composes nothing when there is nothing to say** (Step 3), and writes nothing without the yes that Step 4's shape puts.
-- Holds no thread. There are no replies here, and an answer to this entry is the other person's own next message, written on their side.

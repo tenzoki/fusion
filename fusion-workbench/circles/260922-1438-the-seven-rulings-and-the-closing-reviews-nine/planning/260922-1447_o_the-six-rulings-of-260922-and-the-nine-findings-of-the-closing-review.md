@@ -300,7 +300,7 @@ Field key. **Record** is the storeless citation of the decision or defect the st
     - Gate: none
     - Dependencies: none
 
-11. **Give the post draft file an exit on every path that leaves the gate unanswered**
+11. [DONE] **Give the post draft file an exit on every path that leaves the gate unanswered**
     - Executor: `coder`
     - Record: `260922-1208_*_the-post-draft-dotfile-survives-step-3s-stop-and-an-interrupted-run-and-nothing-removes-it.md`
     - Site at HEAD: `skills/post/SKILL.md:52` writes the draft to `"$WORKBENCH/.post-draft-$CHECKOUT"` in Step 2. `:74` moves it into the store on yes and `:77` removes it on change or cancel. Step 3 at `:62` ("**Compose nothing** when … Say that in one line and stop") comes after the write and removes nothing, and a run interrupted between Step 2 and Step 4 removes nothing either. A leftover sits at the workbench root in none of `rules/workbench-tracking.md`'s four classes, so `bin/fusion-staging-drift` reports it `unclassified` on every commit from then on.
@@ -308,8 +308,9 @@ Field key. **Record** is the storeless citation of the decision or defect the st
     - Do not touch: the twenty-line ceiling and the `wc -l` count, which must keep counting the file that gets written; Step 5's `mv`; `bin/fusion-staging-drift`
     - Changes: Step 2 removes any leftover `.post-draft-$CHECKOUT` before writing and says so in one line, so an interrupted run's file is cleared by the next run rather than surviving it. Step 3's stop removes the draft where one was written, in the same clause that says to stop. The file then exists only between a write and the gate's answer, which is what the plan's original risk row claimed and what the two missing paths falsified. Funded by two cuts in the same file: the cross-reference at `:66`, " That is the same shape `skills/archive/SKILL.md` `## Process` step 6 puts." (75 bytes, a pointer that changes no instruction), and the Boundaries bullet at `:91` (137 bytes, restated in the body's own opening at `:8` and in `skills/news/SKILL.md`).
     - Acceptance: `grep -c 'post-draft' skills/post/SKILL.md` is at least `5`; `awk '/^## Step 3/,/^## Step 4/' skills/post/SKILL.md | grep -c 'post-draft'` is at least `1`; `cd hooks && npm test` exits 0 with the `skills/` surface at or below 228 028 bytes.
-    - Growth: `skills/`, about +78 net (about +290 against 212 of cuts).
-    - Pin: paths fall by one (the cut `skills/archive/SKILL.md` pointer) and anchors by one; re-approve on line 492.
+    - Growth: `skills/`, about +78 net (about +290 against 212 of cuts). **Landed: +96 net**, `post/SKILL.md` 6 598 -> 6 694, `skills/` 227 812 -> 227 908, head-room 120. The golden was regenerated; no baseline moved.
+    - **One cut's justification differs from the plan's.** The step says the Boundaries no-thread bullet is restated "in the body's own opening at `:8`", and it is not: `:8` names the read side and the helper header and says nothing about threads. The property is authored in `docs/messages-between-checkouts.md` `## What it does not do` and stated to the user by `skills/news/SKILL.md` Step 7, which is where a reader meets it; the cut was taken on that reading and is recorded here rather than left to be rediscovered.
+    - Pin: paths fall by one (the cut `skills/archive/SKILL.md` pointer) and anchors by one; re-approve on line 492. **Landed: paths unmoved at 1712, anchors 320 -> 319.** Two path tokens cancel, the cut archive pointer against the `bin/fusion-staging-drift` the new clause names; only the cut token carried an anchor. Re-approved on line 492.
     - Gate: none
     - Dependencies: none
 

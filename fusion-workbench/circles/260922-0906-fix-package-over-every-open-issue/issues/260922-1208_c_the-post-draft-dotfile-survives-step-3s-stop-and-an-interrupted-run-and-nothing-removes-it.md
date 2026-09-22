@@ -11,3 +11,6 @@ Acceptance: Step 3's stop removes the draft file where one was written, and Step
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
 Executor: `coder`. Found in the closing review `260922-1208-reviewer-closing-pass-over-the-51-issue-package-451bb312-to-bf515cad.md`.
+
+---
+Resolved: `skills/post/SKILL.md` `## Step 2: compose the draft` clears any leftover `.post-draft-$CHECKOUT` before the `Write`, naming the staging classifier that would otherwise report it unclassified, and `## Step 3: nothing to say is an answer` removes the draft in the same clause that says to stop. The file now exists only between its write and the gate's answer, which is what the plan's risk row claimed and what the two missing paths falsified. Funded inside the `skills/` bound by two cuts in the same file, net 6 598 -> 6 694 bytes.
