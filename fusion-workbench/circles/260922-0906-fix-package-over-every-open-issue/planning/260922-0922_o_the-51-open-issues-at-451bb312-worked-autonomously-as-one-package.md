@@ -275,7 +275,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: none (step 1 adds a second rolled record; this step may name both)
 
-11. **Let the orchestrator's consultant row name the second-opinion case**
+11. [DONE] **Let the orchestrator's consultant row name the second-opinion case**
     - Executor: `coder`
     - Record: `260921-2049_*_the-conventions-let-any-agent-dispatch-the-consultant-for-a-second-opinion-while-the-orchestrator-table-allows-only-fusion-discuss.md`
     - Site at HEAD: `agents/orchestrator.md:606`, the `consultant` row's When column "Only while you are running a skill body that dispatches it: `/fusion:discuss` …"; `:170` "and `consultant` when a skill body you are running dispatches it — `/fusion:discuss` does, once per round"; `rules/fusion-workbench-conventions.md:241` "an agent dispatches it only for a second opinion on a concept or, through `/fusion:discuss`, as the second discussion partner". `grep -c 'second opinion' agents/orchestrator.md` prints `0`.
