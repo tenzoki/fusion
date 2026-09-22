@@ -35,3 +35,13 @@ Option 2. It restores the mitigation the plan named, on the relation the field w
 
 ---
 Answered: 260922-0922_*_does-the-edge-passs-citation-yield-need-a-mechanism-or-is-the-gate-the-bound.md `## Options` — option 2: the citation arm proposes only where the cited record is a work item's own record or a spec or plan an item runs on, never a decision, review or analysis cited in passing; the 260922-0703 run's four written edges all had item targets and would have survived; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1228.
+
+---
+
+Implemented: the commit that carries this line — option 2, the arm is bounded by the relation. `agents/curator.md` `### The corpus, and the live/terminal bound` keeps its measurement (70 basenames, 27 resolving into a container, 11 containers, 6 out under the legacy rule, 5 work items, 2 already in the field) and replaces the claim that the gate is the only bound with the ruled one: the citation arm proposes an entry only where the cited record is a work item's own record, or a spec or plan the item runs on as named in its `**Active spec/plan:**` field, and never for a decision, review, analysis or history cited in passing. The classification table's `non-empty | no` row carries the same condition and sends any other record kind to residue with that reason. The `**Edge:**` line's `hop` description says what `hop` may now report on a citation entry.
+
+The residue definition moved with it rather than being left false: it was an ordering reading this pass may not propose, in two cases with no third, and it is now a reading of either arm, in three cases with no fourth, the new one being the citation that resolved through a record kind the bound excludes. `rules/critical-stance.md` §4 makes a gap in a case split a defect of the same kind as a wrong result, and adding a residue case without widening its definition would have opened one.
+
+The check the ruling names holds: all four edges the 260922-0703 run wrote had item targets and survive the bound unchanged. The `**Depends-on:**` arm and the node-set ruling under it are untouched, and so is the one-hop rule.
+
+`bin/fusion-prose-metric` reads `agents/curator.md` `over`, as it did at `49ab50e4`: 156 em-dashes both times, the rate falling 13.2 to 13.0 per 1 000 words. The plan expected `ok`; the file has not been `ok`, and this step added no em-dash.

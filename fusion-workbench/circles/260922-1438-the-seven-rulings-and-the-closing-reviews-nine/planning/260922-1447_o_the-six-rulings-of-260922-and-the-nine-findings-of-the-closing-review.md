@@ -245,7 +245,7 @@ Field key. **Record** is the storeless citation of the decision or defect the st
    - Gate: none
    - Dependencies: none
 
-7. **Bound the edge pass's citation arm to item records, specs and plans**
+7. [DONE] **Bound the edge pass's citation arm to item records, specs and plans**
    - Executor: `coder`
    - Record: `260922-0922_*_does-the-edge-passs-citation-yield-need-a-mechanism-or-is-the-gate-the-bound.md` (`_a_`, option 2, ruled by the user at 260922-1228)
    - Site at HEAD: `agents/curator.md:198`, under `### The corpus, and the live/terminal bound`: "**Nothing in this prompt bounds that yield, and the two things once named here as bounding it do not.** … **The legacy exclusion and a store holding seven items are doing the work, and neither scales** … The bound that holds at any size is the gate, where a citation group too large to read is refused as a group and nothing reaches a work item." The classification table's third row (`non-empty | no`) produces "a `**Cross-references:**` entry on the corpus owner, consequence group **work-item citation edge**" with no condition on what kind of record the citation resolved through.
@@ -253,8 +253,8 @@ Field key. **Record** is the storeless citation of the decision or defect the st
    - Do not touch: the `**Depends-on:**` arm and the node-set ruling under it; the one-hop rule itself, which stops recursion and is unaffected; `### Pass 2 — apply`'s preconditions
    - Changes: the yield paragraph keeps its measurement (70 basenames, 27 resolving into a container, 11 containers, 6 falling out under the legacy rule, 5 work items, 2 already in the field) and replaces its closing claim with the bound the user ruled: the citation arm proposes an entry only where the cited record is a work item's own record, or a spec or plan an item runs on as named in its `**Active spec/plan:**`, and never for a decision, review or analysis cited in passing. The classification row carries the same condition, and a citation that resolves into a container through any other record kind becomes residue with the reason, reported and not proposed. The paragraph states the check against the one run on record: all four edges the 260922-0703 run wrote had item targets and survive the bound unchanged.
    - Acceptance: `grep -c 'a work item.s own record, or a spec or plan' agents/curator.md` is at least `1`; `grep -c 'The bound that holds at any size is the gate' agents/curator.md` prints `0`; `bin/fusion-prose-metric agents/curator.md` reads `ok`; `cd hooks && npm test` exits 0.
-   - Growth: `agents/`, about +350 bytes against 8 493 of head-room.
-   - Pin: anchors may rise by one (`## Backlog entries — work items` for the field); re-approve on line 492.
+   - Growth: `agents/`, about +350 bytes against 8 493 of head-room. **Landed: +1 450 bytes**, `curator.md` 76 738 -> 78 188, `agents/` 320 074 -> 321 524, head-room 7 043. The residue definition had to widen with the new case, which the estimate did not carry.
+   - Pin: anchors may rise by one (`## Backlog entries — work items` for the field); re-approve on line 492. **Landed: unmoved, no re-approval.** One draft of the check sentence named the run by a bare stamp and took `stampBare` 11 -> 12, which `## Filename Patterns` says is not a citation; the sentence now cites `260922-0703-curator-run.md`, a markerless record citation, and that class left the pin on 2026-08-24.
    - Gate: none
    - Dependencies: none
 
