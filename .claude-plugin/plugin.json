@@ -1,6 +1,6 @@
 {
   "name": "fusion",
-  "version": "11.10.0",
+  "version": "11.11.0",
   "description": "Multi-domain AI agent orchestration framework. 11 project-agnostic specialized agents (one of them parameterised by domain: code or data) with observation-only hooks that decide nothing and machine-write the bookkeeping — the write trace, the dispatch and commit rows of the orchestrator event log with identity on every line, and a configuration advisory when the project's file is broken or retired — plus decision-record tracking, a work-item backlog whose prerequisites are proposed for the user's confirmation and, once declared, reported back as depth, topological order, readiness and cycles, incremental cleanup off per-checkout anchors, a message one checkout leaves at the end of a session and another reads with /fusion:news before it pulls, kept in its own store and archived by age, a bounded discussion the user opens with /fusion:discuss between the agent they are already talking to and the consultant, each claim coming back checked, refuted or not decidable from the inputs at hand and the whole exchange written into its own record from the first round, a curator that reconciles decision records, rule files and CLAUDE.md against the project's recorded history, and a real-time browser-based monitor with session-scoped ETA estimation. /fusion:help inside Claude Code for self-explainer.",
   "author": {
     "name": "Kai / qantr GmbH"

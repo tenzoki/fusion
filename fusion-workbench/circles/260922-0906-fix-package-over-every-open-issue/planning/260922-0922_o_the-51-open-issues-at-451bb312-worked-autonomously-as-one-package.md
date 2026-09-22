@@ -581,7 +581,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
 
 ### Package F — the version
 
-36. **Fold the package into the unreleased 11.10.0, or bump past it if it was tagged meanwhile**
+36. [DONE] **Fold the package into the unreleased 11.10.0, or bump past it if it was tagged meanwhile** (second branch: `v11.10.0` was tagged after this plan was written, so `11.10.0` → `11.11.0` with its own paragraph, the 11.8.0 paragraph dropped; the rotation is −19 bytes net on `skills/`; the pin moved by the four helper paths the paragraph names, 1697 → 1701, re-approved on the line; validate passed, the smoke printed `SMOKE-OK`, the v11 note describes none of the changed surfaces)
     - Executor: `coder`
     - Record: none (the release surface's own obligation; `CLAUDE.md` `## Layout`: bump on every change)
     - Site at HEAD: `.claude-plugin/plugin.json` reads `"version": "11.10.0"`, `git tag -l v11.10.0` prints nothing, and `skills/help/SKILL.md:96` carries the 11.10.0 paragraph ("adds one optional setting, changes six readings").
