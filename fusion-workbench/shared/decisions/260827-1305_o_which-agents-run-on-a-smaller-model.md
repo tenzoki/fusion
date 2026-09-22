@@ -37,3 +37,6 @@ transcripts — does not exist anywhere in the tree. No `Answer located:` line.
 
 The first candidate this record names is the reconciler, and this pass is the kind of run it means. It
 was made on the session model and is therefore a control rather than evidence.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, no answer on disk.** Still no `model:` key in any of the eleven prompts, and no transcript-verified candidate run exists in the tree; the only later mention is the curator survey `260911-1218-curator-run.md`, which rules nothing. This pass ran on the session model and is again a control. No `Answer located:` line.

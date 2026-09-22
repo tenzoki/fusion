@@ -67,3 +67,6 @@ was not in the session.
 documented default. There is no release boundary protecting an intermediate state, so "it will be
 fixed before the tag" is not available as a mitigation for anything a deep change breaks on the
 default path.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** Still awaiting realisation. `install.sh` still defaults to `heads/main` and its header, `README.md` and `README-agents.md` `## Releasing` each describe that default and the tag pin as an override; none states the policy as a policy. The answer's consequence has since been consumed a second time, by `260908-1234_*_how-does-a-fix-reach-a-consumer-while-main-carries-unreleased-work.md` (delivery by pinning the ref), so two answered records now rest on a sentence nobody has written.

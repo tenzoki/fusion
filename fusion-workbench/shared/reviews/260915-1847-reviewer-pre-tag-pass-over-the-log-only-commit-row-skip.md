@@ -169,3 +169,6 @@ been taken at the centre.
    release that ships the mechanism without the caller ships the same dirty tree.
 3. After the tag: findings 2, 3 and 4. None of them loses data and none is reached by a shipped
    body today.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — all four findings closed in one commit.** `260915-1843_*_the-commit-lock-can-settle-the-tree-and-no-shipped-body-makes-the-settling-commit.md`, `260915-1844_*_a-union-merged-log-merge-is-read-as-log-only-so-three-shipped-statements-about-merges-are-false.md`, `260915-1845_*_the-log-only-predicate-reads-head-alone-so-a-wrapped-command-landing-two-commits-can-lose-its-row.md` and `260915-1846_*_the-monitors-commit-counter-reads-low-and-its-own-docstring-does-not-say-so.md` each carry `_c_` and a `Resolved:` note, closed at `9c7f2575` ("the four findings of the pre-tag pass"). Findings themselves are not rewritten.

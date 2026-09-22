@@ -102,3 +102,21 @@ stance without stating the asymmetry as a decision, so neither branch of the acc
 The neighbour this record kept separate is still separate and still open: whether such a record may be
 **resolved** is `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`,
 which stands at `_o_` with its recommendation still asking for a citation count nobody has taken.
+
+---
+Reconciled 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`): still open, and the asymmetry
+reproduced unchanged. `BARE_RE` (`hooks/lib/citation-scan.ts`, the `const BARE_RE` declaration) still
+admits only `MARKER_SLOT` or `_` after the stamp, so the storeless bracket form produces no token; the
+header still states the retired-syntax stance without stating the asymmetry as a decision. Neither
+branch of the acceptance is met.
+
+What changed is that the choice is now filed where a ruling can land on it. The autonomous fix package
+of 260921 reached this record as its step 23, did not build it, and filed two decisions in its own
+container instead: `260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md`
+(recommends option 1, read the form) and
+`260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md`
+(why the step was skipped: reading the form would rewrite 37 archived records, so the sweep must first
+learn to skip the frozen stores). The package closed as `done` at `f34330ba` with this step named as its
+gap. So this defect is blocked on those two rulings rather than on executor work; the neighbour
+`260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`
+stays `_o_` beside them and still asks for a citation count nobody has taken.

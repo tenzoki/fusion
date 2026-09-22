@@ -21,3 +21,6 @@ The backlog core keeps: what an entry is, where it lives, the marker reading, mi
 
 ---
 Retired: `260909-1700-cut-fusion-to-working-minimum.md`, commits `2a785ba2` and `76d833be` — the backlog half only. `agents/playmaker.md` and `rules/backlog-entries.md` were both deleted, so the full backlog rule has no audience and the work-item grammar sits on the always-on floor for every agent in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`. The language half stands unchanged: `bin/fusion-rules` still emits `rules/project-language.md` to the editor alone and names this record for the reason.
+
+---
+Implemented: 265a86fb — both halves landed that day: `rules/project-language.md` emitted to the editor alone and `rules/backlog-entries.md` to the playmaker alone, with the four-clause language core and the backlog core on the floor; the `Retired:` line above records the backlog half's removal on 2026-09-10, and the language half stands (`bin/fusion-rules` names this record at its emission).

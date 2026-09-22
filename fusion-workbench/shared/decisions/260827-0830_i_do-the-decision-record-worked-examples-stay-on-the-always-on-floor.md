@@ -22,3 +22,6 @@ An audience change to the emission list "is a decision, and it may not happen si
 ## Answer (260827, user, at the gate)
 
 **Option 1.** Realised in the same change set: the `emit_if_exists` line moves from the unindented always-on list into a `case` block for the transition agents (`bin/fusion-rules`, block 1b2 — orchestrator, shaper, playmaker, planner, and reconciler, whose act worked transition 1 is), the pointer lands at `rules/fusion-workbench-conventions.md` `## Decision Record Template`, and the role map in `rules-emission-golden.test.ts` gains the file as an extra for each. Realising it also removed the duplicate: the five worked transitions that stood in `rules/fusion-workbench-conventions.md` beside the marker table restated the examples file inside the always-on floor, and they collapse onto the authoring home — which is the growth cut the hard bound asked for. Every agent still files records: filing needs the vocabulary and the template, both of which stay always-on.
+
+---
+Implemented: 8ac9a533 — option 1: `rules/decision-record-examples.md` is a conditional emission under `IS_DECISION_TRANSITION_AGENT` in `bin/fusion-rules` (block 1b2), the always-on conventions keep the vocabulary and a pointer; playmaker left the audience with its deletion at 2a785ba2, so the list is orchestrator, shaper, planner and reconciler.

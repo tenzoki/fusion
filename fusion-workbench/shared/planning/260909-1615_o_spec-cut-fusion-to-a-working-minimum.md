@@ -1,7 +1,7 @@
 # Spec: cut fusion to a working minimum
 
 **Date:** 2026-09-09
-**Status:** Draft, revised after adversarial review
+**Status:** Partially Complete
 **Source:** The user's request to cut fusion's ceremony, following `260909-1047-size-versus-bookkeeping-across-three-projects.md` and its verification `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md`. Four clarification questions were answered: depth (d), cumulative across all four tiers; no agent-written session history; no closing pipeline; a zero-sum bound on everything a dispatch loads, `CLAUDE.md` included.
 **Revised against:** `260909-1628-adversarial-review-of-the-cut-fusion-to-a-working-minimum-spec.md`, whose measurements govern this draft wherever it and the first draft disagree. Three issues it filed are answered here: `260909-1631_*_the-cut-spec-removes-agentstate-yaml-whose-existence-gates-every-machine-written-event-row.md`, `260909-1632_*_the-cut-specs-analyst-row-forbids-the-project-writes-its-own-claude-md-gate-requires.md`, `260909-1633_*_the-zero-sum-bounds-baseline-is-armed-at-the-moment-that-absolves-the-cut-it-must-measure.md`.
 **Filed by:** shaper, Kai Stalmann <kai@qantr.com>
@@ -494,3 +494,20 @@ is annotated in the plan.
 **Why the marker is not moved to `_c_`.** This document's `## Directive` says eight agent roles and the tree has eleven; `## What the cut costs and what it risks` predicted that outcome and the tail of this file records it against `07961552`. Renaming to `_c_` would assert that the Directive stated here was met. The spec is what the work was measured against, and it is more useful as an unmet Directive on record than as a closed one. Moving it is a user's call, not a reconciliation's.
 
 **Verified against the tree at HEAD, all of it green.** `ls agents/*.md` returns eleven; `cd hooks && npm test` exits 0 at 54 files and 920 tests; the three bounded surfaces sit inside their own head-room, `agents/` by 61 153 bytes, `skills/` by 172, the hook tests by one line. Nothing in this file's acceptance text was found false against the tree beyond the eleven-versus-eight it already states about itself.
+
+---
+
+**260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`,
+`**Status:** Draft, revised after adversarial review` → `Partially Complete`.**
+
+The status field moves because it named a document state, not a delivery state, ten days after the
+implementing plan closed. The two earlier passes left it as written; this one reads it against the
+prompt's own vocabulary. `Partially Complete` is the honest value: the implementing plan
+`260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md` is `_c_` and its work item is `done`,
+and the Directive's eight-roles clause is unmet by three, which `## What the cut costs and what it risks`
+predicted. Nothing else about this document's standing changed since 260911-1418.
+
+Verified at HEAD: `ls agents/*.md | wc -l` returns 11; `cd hooks && npm test` exits 0 at 57 files and
+967 tests; `node hooks/dist/citation-check.js` reads `verdict=clean`. The marker stays `_o_` for the
+reason the 260911 pass gave: renaming to `_c_` would assert that the Directive stated here was met, and
+it was not. Closing it bounded, with the eleven-versus-eight named, is the user's call.

@@ -18,3 +18,6 @@ The incremental review dispatched `coderev`/`ontorev` at every Turn's end — 65
 **What this trades, named:** review findings no longer feed the next Turn's queue inside the same Circle — they land as issues at closure, for the follow-on Circle or the closure gate; and a long Circle accumulates more unreviewed commits before its one pass. Both accepted for the dispatch saving; coverage stays visible per Turn and stays advisory per `260815-2109` (a Circle may still close over a named gap).
 
 A session that ends without closing its Circle runs no review — the Circle's one pass comes when the Circle closes, whichever session that is.
+
+---
+Implemented: 5ebe4650 — one review pass at closure, scoped by the coverage read; the Circle became the work item at 76d833be and the per-Turn coverage read went with the Turn loop at 7dde04a6, so `agents/orchestrator.md` `## Review coverage` now reads "once per work item, at its closure" and cites this record.

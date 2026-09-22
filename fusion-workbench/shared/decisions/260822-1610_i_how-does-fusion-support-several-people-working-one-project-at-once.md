@@ -124,3 +124,6 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+Implemented: e209011d, 46aa04cc, 8d06759d — the arrangement this answer chose is on disk: several checkouts with git as the transport (`rules/workbench-tracking.md`), every record carrying `**Filed by:**` and a work item carrying `**Claim:**` (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`), and presence after a pull through `bin/fusion-events presence` over the `session_start` row; the premise was measured at 06d1bd1e as the addendum records.

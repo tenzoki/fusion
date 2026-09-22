@@ -115,3 +115,6 @@ blind to the failure it is about.
 that no gate reads. A change that redefines what a `hooks/lib/*.ts` module does must edit that row by
 hand or ship a description of the old behaviour — the failure this record was filed on, measured
 twice. Until the answer is realised, the row set is checked and the row text is not.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** Still awaiting realisation. No `hooks/lib/*.ts` module exports a description (`grep -rl 'export const DESCRIPTION' hooks/lib/*.ts` finds none) and `README-hooks.md` `## Files` is still a hand-written table; the domain-cascade reach paragraph remains the file's only generated block.

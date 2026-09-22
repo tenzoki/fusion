@@ -37,3 +37,6 @@ The question the mandate's own reason poses: is the July-overturns-June case wor
 ## Answer (260827, user, at the gate)
 
 **Option 1 — bound the pass by the anchor; a full pass on demand.** Routine runs read evidence since `last_curator_run`; `--full` (dispatched as `**Scope:** full`) forces the unbounded pass; a missing or unresolvable anchor forces it too, which also satisfies the transition constraint by construction. Realised in `agents/curator.md` `## Evidence` and `skills/curate/SKILL.md` in the same change set as this answer.
+
+---
+Implemented: 15847b73 — option 1: `agents/curator.md` `## Evidence` bounds the pass by `last_curator_run` through `bin/fusion-cadence-anchor`, `**Scope:** full` (`skills/curate/SKILL.md`, `--full`) or an unresolvable anchor forces the unbounded pass, and the edge subject is exempt from the bound by its own paragraph.

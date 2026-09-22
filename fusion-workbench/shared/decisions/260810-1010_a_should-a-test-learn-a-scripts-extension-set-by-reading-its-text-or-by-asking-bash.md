@@ -145,3 +145,6 @@ behaviour — so the file both records that the approach was abandoned and conti
 each leave bash computing one value while the test covers a smaller one, silently and with nothing
 thrown. That is a real constraint on a two-line edit to a working script, and it is the reason the
 answer chose to move the mechanism rather than widen the anchor again.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** Still awaiting realisation. `bin/fusion-count-sources` has no `--print-extensions` mode (`grep -n 'print-extensions' bin/fusion-count-sources` is empty) and `hooks/lib/__tests__/fusion-count-sources.test.ts` still reads the extension set out of the script's text by regex in `extensions()`; the answer's mechanism change has not been built in the 42 days since it was recorded.

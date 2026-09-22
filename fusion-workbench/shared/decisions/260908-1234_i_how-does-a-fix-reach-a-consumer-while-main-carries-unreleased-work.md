@@ -68,3 +68,6 @@ reject after the fact.
 
 ---
 Answered: 260907-0657-orchestrator-session.md `### Ruling: no marketplace release for a tag-cut patch` — option 1, the patch cut from the previous tag with the marketplace entry left alone; delivery by pinning the ref, since a bare `fusion --update` resolves `heads/main`; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 134265a9 (the v10.24.1 patch cut from the tag, marketplace untouched) and a33413f9 (the route written into `README-agents.md` `## Releasing`, step 5: a tag cut from anything but `main` is partial and not entered in the marketplace) — option 1 as ruled, delivery by pinning `FUSION_REF`.

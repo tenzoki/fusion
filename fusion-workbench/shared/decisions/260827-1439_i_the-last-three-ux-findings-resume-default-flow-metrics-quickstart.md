@@ -14,3 +14,9 @@
 **6 — `/fusion:cadence` measures the session feel it used to leave to impression.** A `Session flow (7d)` line from this checkout's own event rows, possible only since the rows carry machine timestamps: gate answers per Turn, median time to first dispatch, dispatch durations (median/max). Absent inputs report absent, never 0 — the counts rule.
 
 **7 — Setup ends with the three usual next moves** (name a task, "run the active Circle", `/fusion:next`), in both the skill's report and the orchestrator's "setup only" branch — the one line a first-time consumer was missing at exactly the moment they ask "and now what?".
+
+---
+Implemented: 85f196db — finding 5 in `rules/orchestrator-resume.md`, finding 6 as the Session flow line of `skills/cadence/SKILL.md`, finding 7 as the closing next-moves line of `skills/setup/SKILL.md` and the orchestrator's setup-only branch (now "name a task, or claim a work item", the `/fusion:next` move having gone with the portfolio).
+
+---
+Retired: 6357ebfc — finding 5 only: `rules/orchestrator-resume.md` went with the Turn loop and `agents/orchestrator.md` now states there is no interrupted-session resume; findings 6 and 7 stand.

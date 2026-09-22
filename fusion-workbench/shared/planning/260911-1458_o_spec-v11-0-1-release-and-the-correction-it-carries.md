@@ -1,7 +1,7 @@
 # Spec: v11.0.1, and the correction it carries
 
 **Date:** 2026-09-11
-**Status:** Draft
+**Status:** Partially Complete
 **Decidability:** The load-bearing question is whether "this session did what it set out to do" can be answered for a session that stated no goal while it ran. It cannot: the nine commits are the only surviving statement of intent, and a goal reconstructed from them afterwards cannot fail against them. The mechanism therefore changes rather than the answer. Acceptance below is read against preconditions each of which a command decides on its own: a version string in a named file, a gate that exits zero or does not, a coverage figure that is printed and quoted. Nothing here asks whether the session was successful.
 
 **Source:** The user asked for two things in one pass. Ship the nine commits that stand above the v11.0.0 tag as a release, and settle the population figure in the analysis report that one of those commits added, after two measurements in the same session overturned it and a third, taken with word anchors over the same corpus at the same commit, returned the report's own number and showed the other two to have been counting a different subject.
@@ -46,12 +46,12 @@ flowchart TD
 **Description:** A reader who opens the report finds the same 161 occurrences over 103 lines in 36 files it has always stated, and beside them a note saying that the obvious pattern, written without word anchors, returns a larger number about a different subject.
 
 **Acceptance criteria:**
-- [ ] The report's three population figures still read 161, 103 and 36, at commit `fdac1cb0`. No population figure in the report moves, and no sentence reading 161, 103 or 36 is rewritten.
-- [ ] A note at the population figures states that `coderev` is a substring of `codereview`, and `ontorev` of `ontoreview`, which are the two retired review folder names and not agent names, so an unanchored pattern counts sentences about directories as occurrences of an agent name.
+- [x] The report's three population figures still read 161, 103 and 36, at commit `fdac1cb0`. No population figure in the report moves, and no sentence reading 161, 103 or 36 is rewritten.
+- [x] A note at the population figures states that `coderev` is a substring of `codereview`, and `ontorev` of `ontoreview`, which are the two retired review folder names and not agent names, so an unanchored pattern counts sentences about directories as occurrences of an agent name.
 - [ ] The note gives the size of the difference and where it sits: 20 occurrences across 7 files, taking the totals from 161, 103 and 36 to 181, 113 and 38. It says that only 2 of those 7 files are new to the population, `skills/setup/SKILL.md` and `hooks/lib/citation-scan.ts`, which is why the file count moves by 2 rather than by 7.
 - [ ] The note states the anchored command in full, `/usr/bin/grep -r -o -i -E '\b(coderev|ontorev|bugfixer|taskplanner|playmaker)\b'` over the corpus the report already declares, so that a later pass runs it rather than retyping the alternation from memory.
 - [ ] The note says that the twenty sit in sentences about directories: the migration skill's `codereview:coderev` folder-merge pairs, the layout tree in the conventions, the retired-folder fixtures in the path lint, and the store list in setup.
-- [ ] The closed record `260910-2146_*_five-deleted-agents-are-still-named-as-live-in-twelve-shipped-files.md`, whose resolution note repeats 161, 103 and 36, needs no correction on this account. It is terminal and is not edited.
+- [x] The closed record `260910-2146_*_five-deleted-agents-are-still-named-as-live-in-twelve-shipped-files.md`, whose resolution note repeats 161, 103 and 36, needs no correction on this account. It is terminal and is not edited.
 
 **Decisions made:**
 - Nothing in the report is repaired, because nothing in it is wrong (measurement, this session). The reading was confirmed at `fdac1cb0` over the corpus the report declares, with `/usr/bin/grep` rather than the shell's `grep` function and with the word anchors restored, varying that one thing: anchored gives 161, 103 and 36, unanchored gives 181, 113 and 38, and `(codereview|ontoreview)` alone gives exactly the 20 between them.
@@ -88,11 +88,11 @@ flowchart TD
 **Description:** Four files carry the release number, and a user or an installer reads a different one of them depending on how they arrived. After this work all four agree.
 
 **Acceptance criteria:**
-- [ ] `.claude-plugin/plugin.json` reads `"version": "11.0.1"`.
-- [ ] The fusion entry in `/Users/k1/Projects/productive/claude-plugins/.claude-plugin/marketplace.json` reads `"version": "11.0.1"`.
-- [ ] The pinning example in `README.md` reads `FUSION_REF=tags/v11.0.1`.
-- [ ] The pinning example in the `install.sh` header comment reads `FUSION_REF=tags/v11.0.1`.
-- [ ] A tag `v11.0.1` exists on the released commit and is pushed, so the two pinning examples name a ref that resolves.
+- [x] `.claude-plugin/plugin.json` reads `"version": "11.0.1"`.
+- [x] The fusion entry in `/Users/k1/Projects/productive/claude-plugins/.claude-plugin/marketplace.json` reads `"version": "11.0.1"`.
+- [x] The pinning example in `README.md` reads `FUSION_REF=tags/v11.0.1`.
+- [x] The pinning example in the `install.sh` header comment reads `FUSION_REF=tags/v11.0.1`.
+- [x] A tag `v11.0.1` exists on the released commit and is pushed, so the two pinning examples name a ref that resolves.
 
 **Decisions made:**
 - The release is a patch, 11.0.1 and not 11.1.0 or 12.0.0 (user's choice): nine commits, no new capability, and no change to what any shipped program does. The only source file in the range whose lines moved is `hooks/lib/staging-drift.ts`, and what moved there is the wording of advisory strings the program prints.
@@ -102,22 +102,22 @@ flowchart TD
 **Description:** The help topic on updating carries the last three releases and no more. A user coming from 11.0.0 finds a paragraph describing what changed for them, and the oldest paragraph leaves.
 
 **Acceptance criteria:**
-- [ ] The update topic in `skills/help/SKILL.md` carries a paragraph labelled for a reader coming from an 11.0.0 install.
-- [ ] That paragraph says plainly that nothing in this release requires an action from the reader.
+- [x] The update topic in `skills/help/SKILL.md` carries a paragraph labelled for a reader coming from an 11.0.0 install.
+- [x] That paragraph says plainly that nothing in this release requires an action from the reader.
 - [ ] The three paragraphs that follow are relabelled so each still names the install its reader is coming from, and the oldest of the previous three is gone.
-- [ ] The net change to `skills/help/SKILL.md` is at most **+172 bytes**, the whole remaining margin on the skill surface (budget 202 397 + 21 911 = 224 308, live 224 136). The paragraph that leaves and the relabelling of the survivors are what pay for the new paragraph; the addition is sized against 172, not against a three-figure margin.
-- [ ] The whole skill surface stays inside its growth bound: `cd hooks && npx vitest run lib/__tests__/surface-growth-bound.test.ts` exits 0.
+- [x] The net change to `skills/help/SKILL.md` is at most **+172 bytes**, the whole remaining margin on the skill surface (budget 202 397 + 21 911 = 224 308, live 224 136). The paragraph that leaves and the relabelling of the survivors are what pay for the new paragraph; the addition is sized against 172, not against a three-figure margin.
+- [x] The whole skill surface stays inside its growth bound: `cd hooks && npx vitest run lib/__tests__/surface-growth-bound.test.ts` exits 0.
 
 ### C6: The release procedure names a marketplace clone that exists
 
 **Description:** `CLAUDE.md` tells a reader that the marketplace working clone is at a path that was deleted during the v11.0.0 release. A reader following the release steps from cold reaches a missing directory at step 2. After this work the section names the clone the last release was actually performed from.
 
 **Acceptance criteria:**
-- [ ] `CLAUDE.md` `## Release process` names `/Users/k1/Projects/productive/claude-plugins` as the marketplace working clone.
-- [ ] The deleted path `/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins` appears nowhere in `CLAUDE.md`, including the parenthesis about a nested directory that only that path had.
-- [ ] The paragraph about the separate cache clone is left as it stands. It was already correct and is not part of this correction.
-- [ ] `260911-1233_*_the-release-procedures-marketplace-clone-path-names-a-directory-that-no-longer-exists.md` is closed with a note citing the commit that corrected it.
-- [ ] Every one of the eleven per-dispatch totals stays inside its own figure in `hooks/lib/__tests__/fixtures/dispatch-path.baseline`.
+- [x] `CLAUDE.md` `## Release process` names `/Users/k1/Projects/productive/claude-plugins` as the marketplace working clone.
+- [x] The deleted path `/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins` appears nowhere in `CLAUDE.md`, including the parenthesis about a nested directory that only that path had.
+- [x] The paragraph about the separate cache clone is left as it stands. It was already correct and is not part of this correction.
+- [x] `260911-1233_*_the-release-procedures-marketplace-clone-path-names-a-directory-that-no-longer-exists.md` is closed with a note citing the commit that corrected it.
+- [x] Every one of the eleven per-dispatch totals stays inside its own figure in `hooks/lib/__tests__/fixtures/dispatch-path.baseline`.
 
 **Decisions made:**
 - The correction is made directly in this session (user's choice). This is a deliberate departure from the route the defect record itself states: that record says the edit belongs to the gated normative pass, because `CLAUDE.md` is read by every dispatch. The user asked for the direct correction in those terms, and that instruction is the ground for the departure. The record's stated route is not being followed, and this spec says so rather than leaving the contradiction silent.
@@ -128,11 +128,11 @@ flowchart TD
 **Description:** The release procedure lists checks that must pass before a tag is pushed, and one measurement that is reported rather than enforced. All of them run, and the release records what each returned.
 
 **Acceptance criteria:**
-- [ ] `claude plugin validate .` reports passed. Warnings do not block.
+- [x] `claude plugin validate .` reports passed. Warnings do not block.
 - [ ] The smoke test resolves the default agent: `claude --plugin-dir . --agent fusion:orchestrator -p "reply SMOKE-OK"` returns that reply.
-- [ ] `cd hooks && npm test` exits 0.
+- [x] `cd hooks && npm test` exits 0.
 - [ ] `bin/fusion-review-coverage --since v11.0.0` is run and its verdict is quoted in the release commit message or the session record, reading `commits=9 uncovered=9`.
-- [ ] The uncovered range is stated and not closed. No review pass is run to clear it, and no release is blocked on it, per `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`.
+- [x] The uncovered range is stated and not closed. No review pass is run to clear it, and no release is blocked on it, per `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`.
 
 ### C8: What the release ships unresolved is written down where a release reader finds it
 
@@ -140,9 +140,9 @@ flowchart TD
 
 **Acceptance criteria:**
 - [ ] The release commit message names by basename every defect record this session filed that ships open. The set is the one enumerated in item 1 of `## What this release ships that is known wrong`, cited rather than recopied, so the two places cannot disagree about which records or about how many.
-- [ ] It states the number of open defect records across the live stores as a whole, measured at the release commit, together with the command that produced it.
-- [ ] It states the review coverage verdict for the range.
-- [ ] It states that 24 review files could not be tiled against the range by the coverage measurement, so the uncovered figure is a floor rather than a full reading.
+- [x] It states the number of open defect records across the live stores as a whole, measured at the release commit, together with the command that produced it.
+- [x] It states the review coverage verdict for the range.
+- [x] It states that 24 review files could not be tiled against the range by the coverage measurement, so the uncovered figure is a floor rather than a full reading.
 
 ## What this release ships that is known wrong
 
@@ -193,3 +193,56 @@ Each item is measured rather than estimated:
 - [ ] Whether this release gets a migration note under `docs/`. Default if unanswered: no note. The new paragraph in the help topic points at the existing v11 note, because 11.0.1 asks nothing of a reader who has already upgraded to v11.
 
 19 400 was never a bound anyone held: it was `SKILL_BASELINE` (202 397) plus `TEST_LINE_BASELINE` (19 228), two surfaces' floors added together. Nothing is pending on it. The skills margin is 172 bytes and C5 is read against that.
+
+## Reconciliation Log
+
+**260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — first pass over this spec. Marker unchanged
+at `_o_`, `**Status:** Draft` → `Partially Complete`, 23 of 39 acceptance boxes ticked against the tree
+and the tag.**
+
+**How it landed.** The spec, the hazard note and the release are one minute apart: this file and the
+report's section 1a were committed together at `86ab0b80` (260911-1516) and the release followed at
+`751e7fa0` (260911-1516, tag `v11.0.1`). Nothing has touched the spec, the report or the release surfaces
+since, so every reading below is against the tag and against HEAD alike unless it says otherwise.
+
+**D2 — delivered, with two figures differing from what this spec fixed.**
+
+- C4, all five: `git show v11.0.1:.claude-plugin/plugin.json` reads `11.0.1`; `README.md` and the
+  `install.sh` header at the tag read `FUSION_REF=tags/v11.0.1`; the marketplace clone carries commit
+  `fd0da0b` ("fusion 11.0.1"); the tag exists. Ticked.
+- C5: the paragraph is at the tag's `skills/help/SKILL.md:96` and says the release asks nothing. The third
+  box, "the three paragraphs that follow are relabelled", is **false as written and deliberately so**: the
+  release commit says the labels were not moved because each names the install its reader comes from
+  and relabelling would have made them false. Left unticked; the reason is in `751e7fa0`. The surface
+  gained room (172 → 457 bytes) rather than spending 172. Ticked the other four.
+- C6, all five: `git show v11.0.1:CLAUDE.md` names the `claude-plugins` clone and carries no `F03-` path;
+  `260911-1233_*_the-release-procedures-marketplace-clone-path-names-a-directory-that-no-longer-exists.md` closed in the release commit itself. Ticked. (At HEAD the release section has since left
+  `CLAUDE.md` for `README-agents.md` `## Releasing`; that is later work and does not un-tick a criterion
+  read against the tag.)
+- C7: validate and the suite are quoted in `751e7fa0`. The smoke test is quoted nowhere I can find
+  (`grep SMOKE-OK` over the event log finds two July rows only); left unticked. The coverage verdict was
+  quoted as `commits=10 uncovered=10`, not the `commits=9 uncovered=9` this box names: the range
+  `v11.0.0..v11.0.1` holds 11 commits, and the spec's nine were counted before the last two were made.
+  Left unticked as written; the gap is stated and not closed, which is the fifth box, ticked.
+- C8: the commit names the four shipping records by **stamp** (`260911-1339`, `260911-1421`, `260911-1423`,
+  `260911-1511`), not by basename as the first box requires; left unticked. The 83 count with its command,
+  the coverage verdict and the 24-file floor are all present. Ticked three.
+
+**D1 — half delivered.** C1's note exists (report `### 1a`, added at `86ab0b80`): the substring hazard,
+the two retired folder names, 20 hits over 7 files, 181. Ticked the two boxes it meets and the one about
+the terminal record. It does **not** give 113 and 38, does not say only 2 of the 7 files are new, and does
+not state the anchored command in full (`grep -n 'usr/bin/grep -r' `over the report finds nothing); the
+sentence about where the twenty sit is present in substance (the table plus "migration and layout prose")
+but not with the four sites the box lists. **C2 and C3 never reached the report**: no sentence records a
+per-file verification with zero mismatches, the 161 − 149 = 12 corroboration, the 181 − 169 trap, or the
+two-kinds distinction (`grep -n 'zero mismatch\|first kind\|second kind\|miscount'` over the report finds
+the original text only). Ten boxes unticked.
+
+**Pending decision** (a migration note under `docs/`): `ls docs/` holds no `upgrading-to-v11-0-1.md`, and
+the release commit touched no file under `docs/`; the stated default, no note, was taken. The box stays
+because nobody ruled; the default has the effect of a ruling.
+
+**Why the marker does not move.** D2 is met and D1 is not: C2 and C3 name report text that was never
+written, and the report is an analysis, which a reconciliation pass may not edit. Closing this spec is
+either an editor's pass over the report against C1–C3, or the user's bounded closure with those ten boxes
+named. `Partially Complete` is the field value that says so.

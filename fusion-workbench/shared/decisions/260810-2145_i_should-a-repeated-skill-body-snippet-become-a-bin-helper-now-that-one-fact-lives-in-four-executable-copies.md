@@ -161,3 +161,6 @@ which is still `_o_` at HEAD and whose own title now over-counts by one.
 that needs to read shipped text calls `bin/fusion-source-root` behind an `[ -x ]` guard and does not
 re-derive the criterion. The domain-capture half is not settled, and a change that adds a fourth
 site for it will be adding to an open record rather than to an undecided one.
+
+---
+Implemented: 1ea8fed3 — the reserved second half: `bin/fusion-session-domain` owns the session-domain read and the three inline copies became guarded calls (260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md closed on it); the first half, `bin/fusion-source-root`, landed 260811 as the note above records. Both halves realised, so the split the note reserved is no longer needed.

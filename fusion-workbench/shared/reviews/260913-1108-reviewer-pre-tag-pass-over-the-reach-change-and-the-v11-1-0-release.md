@@ -212,3 +212,6 @@ Theme 2 additionally risks a behavioural change in a measured event stream.
 
 After the tag: Theme 3 and Theme 4, which want a ruling rather than an edit, and Theme 5, which is
 one stale sentence plus a marker question for the user.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — every defect this pass filed or cited is closed.** `260913-1108_*_three-statements-that-the-reach-ruling-made-false-survive-and-one-is-in-the-orchestrators-own-role-line.md` closed at `da8c4cb2`; `260906-2014_*_the-help-topic-on-updates-has-missed-two-releases-and-names-none-of-the-last-three.md` at `02533218`; `260908-0032_*_two-hook-tests-are-load-sensitive-and-fail-only-in-the-parallel-full-run.md` at `42bed688` (the ten-pair experiment read 0 red of 20). Findings themselves are not rewritten.

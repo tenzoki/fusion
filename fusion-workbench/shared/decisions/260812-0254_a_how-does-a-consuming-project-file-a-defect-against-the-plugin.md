@@ -81,3 +81,6 @@ fusion defect, so any observation a deep change produces in a consumer will be f
 project's own `issues/` store and will not reach here. If the change is one whose failures show up
 downstream rather than in this repository, that is the channel it will be reported through, and it
 does not exist.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** Still awaiting realisation, 36 days after the answer. `grep -rln plugin-issues` over `agents/ skills/ rules/ bin/ hooks/lib/ docs/ *.md` is empty and `ls skills/` holds no such skill; neither the store nor its writer exists. The `foreign:<project>:<citation>` form (`rules/fusion-workbench-conventions.md` `## Filename Patterns`) is the only mechanism that touched the subject since, and it names a record elsewhere rather than filing one here.

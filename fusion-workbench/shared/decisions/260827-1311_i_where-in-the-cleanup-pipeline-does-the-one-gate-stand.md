@@ -17,3 +17,6 @@ The pipeline's one gate (the `CLAUDE.md` ledger) stood at Step 5 of 8, and the s
 
 ---
 Retired: commits `115be68d` and `9d5b1e80` — `/fusion:cleanup` is Steps 0 to 4 and commits and pushes only, so the Step 5, Step 6 and Step 7 this answer placed name nothing. The `CLAUDE.md` pass left for `/fusion:curate` and the activity log became the first half of `/fusion:cadence` (`260915-2309_*_does-the-activity-log-keep-its-own-command-or-become-the-first-half-of-cadence.md`), and `--skip claude-md` is now an error rather than a gateless run.
+
+---
+Implemented: 81c18caf — the activity-log pass moved to Step 5 and the `CLAUDE.md` ledger to Step 6, last before the housekeeping commits; the `Retired:` line above records the pipeline's later reduction to commit and push, which removed the steps this answer placed.

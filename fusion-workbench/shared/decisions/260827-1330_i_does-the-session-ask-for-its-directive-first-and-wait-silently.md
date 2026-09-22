@@ -14,3 +14,6 @@
 **Finding 4 — waits were silent.** A backgrounded dispatch (an 11-minute bugfixer in the user's own session) left the chat with nothing but the launch. Now one line at launch — who runs, on what, started when, the monitor has the ETA, what proceeds meanwhile — and nothing repeated while waiting; a user message during the wait is answered, not met with a restated wait.
 
 Neither change touches `/fusion:setup` (the explicit command keeps its own contract) nor any event semantics: `session_start` still means what it meant, it just no longer fires for a session that never got work.
+
+---
+Implemented: bcec6026 — Directive-first with "setup only" as a complete answer and the ceremony deferred until one exists (`agents/orchestrator.md` `## Setup`, step 6), and one line at a backgrounded dispatch's launch with nothing repeated while waiting; both cite this record at HEAD.

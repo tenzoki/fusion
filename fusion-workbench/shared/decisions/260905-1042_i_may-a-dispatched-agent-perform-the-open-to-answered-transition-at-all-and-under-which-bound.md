@@ -53,3 +53,6 @@ Answered: 260904-1050-orchestrator-session.md `## Turn 4 — the two consumer fi
 **Scope, measured rather than assumed.** A grep over the agents, the rules and the skills finds exactly two places that instruct this transition: `agents/reconciler.md`, in the `_o_` branch of its decision-marker pass, and `rules/decision-record-examples.md`, whose Example 1 shows the reconciler performing the rename. The orchestrator's own instruction stays as it is — it is the path this answer keeps. Every other hit is a counter, a citation-form illustration or the marker vocabulary itself.
 
 **What is not answered here.** `_a_` → `_i_` is a different question and stays open: implemented is a claim about code existing on disk, which an agent can verify by reading the tree, where answered is a ruling only a person can give. Nothing in this record bears on it, and no prompt was changed for it.
+
+---
+Implemented: 9f08fa58 — option 1 at both sites the answer measured: `agents/reconciler.md`'s `_o_` branch reports a located answer and moves no marker, `rules/decision-record-examples.md` Example 1 shows the same, and `agents/orchestrator.md` `## Setup` step 5 carries the `Answer located:` line to the user's listing.

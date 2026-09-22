@@ -131,3 +131,6 @@ someone edited its prose. A deep change that alters the agent roster, the skill 
 layout or the resolver's keys leaves the in-session help surface wrong until a human rewrites it,
 and there is no gate that notices. The record's own evidence for this is that the skill shipped a
 release behind twice.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** Still awaiting realisation. `skills/help/SKILL.md` (126 lines) remains a router into shipped prose: no enumeration of `agents/*.md` or `skills/*/SKILL.md`, no `bin/fusion-rules` call, no read of `plugin.json`; the analysis's four guarded call sites are absent.

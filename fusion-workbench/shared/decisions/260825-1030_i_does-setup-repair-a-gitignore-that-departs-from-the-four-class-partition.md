@@ -70,3 +70,6 @@ built, because the shape of the repair depends on it.
 
 ---
 Answered: this record `## Answer` — Setup repairs the mismatch rather than reporting it, and the check lives in Setup rather than in the archive step. Stated by the user 2026-08-25 in session `260825-0858-orchestrator-session.md`.
+
+---
+Implemented: abb0238f — Setup repairs an excluded R2/R3 entry by appending a negation line and reports rather than asks; moved at 71c0c873 into the periodic check `/fusion:check gitignore` (`skills/check/SKILL.md`, the gitignore section), which Setup names as due rather than performing itself.

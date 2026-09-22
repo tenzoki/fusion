@@ -105,3 +105,6 @@ yet show: "the multi-user rebuild starts against the room that Circle produces".
 and nothing in the range touches a record template, `.gitignore` or the event log. Renaming now
 would assert a realisation that is half on disk. The transition belongs to whoever opens C1 against
 this room; the citation is ready and is the range above.
+
+---
+Implemented: 4aaabc3d (the cut-only Circle, C0), then 06d1bd1e, e209011d, 46aa04cc and 8d06759d (C1 to C4 closing against the room it produced) — option 1 in both halves: the cut ran first with no baseline move, and the multi-user rebuild started and closed against the head-room it freed; the reconciliation of 260828-0044 on 260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md `## Reconciliation Log` records all five capability Circles terminal.

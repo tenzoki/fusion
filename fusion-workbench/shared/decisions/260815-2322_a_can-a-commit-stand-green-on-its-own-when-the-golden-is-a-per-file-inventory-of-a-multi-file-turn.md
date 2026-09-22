@@ -100,3 +100,6 @@ stand green alone. Anyone bisecting it, or running per-commit CI over it, will m
 means nothing and is documented nowhere they will be looking. Regenerate the golden once at Turn
 end, not per commit — the flag guard exists so that a human reads one diff, and making it routine is
 what the answer declined.
+
+---
+Retired: 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md `### C1` — the answer named the Turn as the green unit, and the Turn loop was removed by the v11 cut; the sentence was never added to the golden's failure text (`grep -i turn` over `surface-growth-bound.test.ts` and `helpers/growth-bound.ts` finds nothing at cb8776f3), and there is no Turn left to name. The per-file golden and its flag-guarded regeneration survive unchanged, so the multi-commit red the record measured still occurs; a new decision would have to name a unit the design still has.

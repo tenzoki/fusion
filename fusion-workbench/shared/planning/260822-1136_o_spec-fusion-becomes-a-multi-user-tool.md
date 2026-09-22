@@ -519,3 +519,33 @@ whose fix direction is where it belongs, rather than filed as a new record.
 the writing sites are repaired and the next reconciliation re-measures, or the user closes this spec
 bounded with the criterion named. This pass has performed the re-measurement half; the reconciler
 moves neither.
+
+---
+
+**260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`,
+`**Status:** Partially Complete` unchanged, no criterion ticked or unticked.**
+
+C3's third criterion is still the only thing between this spec and closure, and the population it is
+measured over has changed shape since 260905. **The session-history kind no longer takes writes**: the
+store was closed by the cut (`rules/fusion-workbench-conventions.md` `## Session history`), the last
+history file in this tree is stamped 260910, and every one of the five misses the 260905 pass counted
+was of that kind. Re-measured at this pass over every record stamped `2609*` in `issues/`, `decisions/`
+and `reviews/`, live containers and shared stores, `archive/` excluded:
+
+```
+find circles shared \( -path '*/issues/2609*.md' -o -path '*/decisions/2609*.md' -o -path '*/reviews/2609*.md' \)
+  → 344 files; 343 carry `**Filed by:** <agent or user>, Name <email>`; 1 carries no such line
+```
+
+The one miss is
+`260917-1508_*_the-reference-resolution-pin-is-red-on-commit-bs-tree-and-no-step-re-approves-it.md`,
+filed by the analyst on 260917 into the container of `260916-1050-neues-discuss-feature` with a
+`**Found by:** analyst` head field and no `**Filed by:**` line at all. It is `_c_` inside a `done` item,
+so it is history and is not edited here. The criterion is therefore still **false as written**, by one
+record of 344 against the kinds that still take writes, and the writer role that missed is the analyst's
+defect-filing branch rather than any session-history writer. The two work items stamped `2609*` that
+carry `**Filed by:** shaper (anticipated-circle mode), …` are pre-conversion Circle records the
+migration carried across; both carry the person half.
+
+The spec's second closure route is unchanged and is the user's: close it bounded with `:181` named, or
+wait for a September-clean re-measurement. This pass moves neither.

@@ -150,7 +150,7 @@ plus one case in the new test file asserting that a scanner over a scratch workb
 
 **If the reading differs:** a `dangling` still at 302 means the entry was added to a map the resolver does not read — check that it went into `circleDirs()`'s own `dirs` and not into `workbenchIndex()`. A value below 299 means the sweep entered the prefix branch as well as the exact one; that is visible as a `stamp-bare` row changing status, and it is harmless but is not this step.
 
-### 3. The head-field exemption reads the field label
+### 3. [DONE] The head-field exemption reads the field label
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/citation-scan.ts`, `hooks/lib/__tests__/citation-grammar-boundaries.test.ts`, `hooks/dist/**`
@@ -348,3 +348,45 @@ written, so the step's version obligation is satisfied incidentally rather than 
 
 **What is left of this plan is one step, and it is the user's to unblock.** Steps 1, 2 and half of 4
 are finished; step 3's whole content is a predicate nobody has a property for.
+
+---
+
+**260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`,
+`**Status:** Partially Complete` unchanged, step 3 marked `[DONE]`.**
+
+**Step 3 — landed, in `76b36efa` (260921), and not as this plan wrote it.** The heading says the
+exemption reads the field label; that is candidate 1, which the blocking record refuted on 260831-2215
+and the 260905 pass recorded as withdrawn. What landed is the record's **fourth direction**, narrowed by
+candidate 3's shape test: in a head field a `stamp-name` carrying no `.md` that resolves to nothing is
+classified `undecidable`, while a value carrying `.md` or a marker slot stays judged. `grep -rn
+IDENTIFIER_HEAD_FIELDS hooks/` still finds nothing, which is consistent: no label list was built.
+`CitationStatus` carries `undecidable` (`hooks/lib/citation-scan.ts`, the union near the `CitationStatus`
+declaration), the scanner header names the property and its accepted cost, and one case in
+`citation-sweep.test.ts` pins both halves. The plan's separate test file
+`citation-grammar-boundaries.test.ts` was never created; step 3's probes went into the existing file,
+and steps 1 and 2 had already landed without one. **Divergence, flagged:** the approach differs from the
+one this step describes; the outcome the step exists for (the reporter's 20 `**Bus session:**` rows stop
+being violations) is met. The record `260831-2121_*_the-head-field-exemption-reads-only-a-bare-stamp-so-a-name-shaped-identifier-in-a-head-field-is-judged.md`
+closed in the same commit.
+
+**Step 4 — the code half done, the ruling half open.** All three issue records carry `_c_`
+(`ls fusion-workbench/shared/issues/260831-21{19,20,21}_c_*.md` lists three). The decision
+`260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md` stands at
+`_o_` with a `Working answer (plan 260921-1726)` line appended at `76b36efa`: the fix package took the
+fourth direction as a working answer and left the marker for the user to rule. The `_o_ → _a_ → _i_` this
+step asks for is the orchestrator's to perform on that ruling, not an executor's. `.claude-plugin/plugin.json`
+reads `11.10.0`. Not marked: what remains is not executor work.
+
+**Against `## Where this work stops`, at HEAD.**
+
+1. `node hooks/dist/citation-check.js | grep '^dangling='` reads `dangling=301`, unchanged since 260905;
+   the plan's 299 was stale then and is stale now (corpus 3 049 files, 27 374 tokens). `verdict=clean`.
+2. `node hooks/dist/citation-sweep.js --dry-run` reads `files=0 rewrites=0`. **Holds.**
+3. `cd hooks && npm test` exits 0, 57 files, 967 tests. **Holds.**
+4. `committed-dist.test.ts` is in that green run. **Holds.**
+5. The hook-test surface is inside its head-room (`surface-growth-bound.test.ts` green in the same run). **Holds.**
+6. Three `_c_` — **holds**; `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md` at `_i_` — **fails**, the record is `_o_` awaiting the user.
+7. `11.10.0`. **Holds.**
+
+**What is left of this plan is one ruling.** Every code step is built and every gate is green; the plan
+closes when the user rules on `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md` and the orchestrator carries that ruling through `_a_` to `_i_`.

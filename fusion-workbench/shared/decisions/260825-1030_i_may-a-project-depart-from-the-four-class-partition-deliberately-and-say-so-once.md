@@ -134,3 +134,6 @@ this record was answered and deliberately not decided with it.
 
 ---
 Answered: this record `## Answer` — option 1, with direction A repaired for classes R2 and R3 only and direction B reported except for `.checkout-id`. No opt-out mechanism is built, because nothing repairable is left for a project to opt out of. Stated by the user 2026-08-25 in session `260825-0858-orchestrator-session.md`.
+
+---
+Implemented: abb0238f — option 1 as answered: direction A repaired for classes R2 and R3 only, an R1 exclusion never touched, direction B reported except `.checkout-id`, no opt-out mechanism built; the body now runs as `/fusion:check gitignore` since 71c0c873 (`skills/check/SKILL.md`, the gitignore section).

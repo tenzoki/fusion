@@ -183,3 +183,6 @@ history files written after it by a session that read neither that Circle's own 
 this one's, and is usable only at five files; fewer than five leaves this marker at `_a_` (sections 4
 to 6 and 12). The marker stays `_a_`: a pointer is not a measurement. Filed as
 `260821-0413_*_the-decision-record-the-measurement-reports-on-does-not-cite-the-protocol-that-defines-it.md`.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** The option-4 measurement has still not run: the shared analyses hold only the original `260816-0740-rhetorical-register-of-agent-output.md`, and no prose gate exists. One fact the protocol did not foresee: the history store is write-frozen since 2026-09-10 (`rules/fusion-workbench-conventions.md` `## Session history`), so the post-repair window is closed at the files it holds; it can be measured over what exists but never re-sampled, and a later session's output would have to be measured from another surface.

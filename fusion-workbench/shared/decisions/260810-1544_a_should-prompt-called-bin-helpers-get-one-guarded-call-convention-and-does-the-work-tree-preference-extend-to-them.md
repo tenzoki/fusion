@@ -87,3 +87,6 @@ Circle `260824-0530-record-attribution-and-circle-claim` added `bin/fusion-ident
 The consequence is that every record filed in fusion's own repository loses its person half until the next release, with a working helper in the tree. Four records filed by the second review pass carry `**Filed by:** coderev` with no person half, and this reconciliation pass filed two more the same way. That is the rule working exactly as written, and it is the first time the unanswered part (c) has changed what a shipped record contains rather than only which copy of a rule file an agent reads.
 
 Nothing is filed against it, deliberately: part (c) is open by the user's own decision and `CLAUDE.md` states the residual in the rules-loading convention. This note exists so the next pass reads it as a measured instance rather than re-deriving it.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** Part (b) holds on every surface: the `README-hooks.md` bin roster, `README-agents.md` and `skills/setup/SKILL.md` each state the `[ -x ]` guard and cite this record. Part (c) has still not been filed as its own record: no decision in either store names helper resolution, and those same three surfaces still say it is unanswered. The one user action the 260819 note named is still the only thing between this record and `_i_`.

@@ -81,3 +81,6 @@ record breaks for every clone, and this workbench is git-tracked. Any change tha
 absolute paths must keep the split between what the user reads and what persists, which is the
 distinction `rules/user-facing-output.md` already draws and the reason option 1 was not chosen
 outright.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** Still awaiting realisation. `rules/user-facing-output.md` carries no rule about rendering a `$WORKBENCH`-prefixed absolute path in chat; the absolute-path lines in `agents/coder.md` and `agents/ontocoder.md` govern the executor's report to the dispatcher, not a chat citation, so option 3 is unrealised.

@@ -14,3 +14,6 @@
 ## Answer (260827, user — "Beginne mit 1")
 
 The contract goes to the agents whose output the user reads **directly**: orchestrator (gates, status, chat), consultant (replies), playmaker (briefings), shaper (clarification rounds), editor (deliverable chat), curator (the gate ledger). Everyone else keeps two things, stated in `rules/agent-setup.md` `## Voice profiles`: the chat profile's anti-patterns bind every line a human may read, and a report's audience is the dispatcher — outcome first, the mandated `Verification:` line, no decorative structure. Realised as the `IS_USER_FACING_AGENT` flag in `bin/fusion-rules` (block 1b3), with the role map updated for the six. Per-executor dispatch load drops by 20,354 bytes (~5 K tokens), on the path that carries ~95 % of dispatches.
+
+---
+Implemented: 9c056b6c — the `IS_USER_FACING_AGENT` flag in `bin/fusion-rules` (block 1b3) emits `rules/user-facing-output.md` to orchestrator, consultant, shaper, editor and curator, or on `**Audience:** user`; every other agent keeps the two clauses in `rules/agent-setup.md` `## Voice profiles`; playmaker left the six with its deletion at 2a785ba2.

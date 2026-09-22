@@ -96,3 +96,6 @@ will be inherited from whichever shape the fourth author happened to copy."* The
 answered — but with the answer unwritten, a fourth gate added by a deep change will still inherit its
 shape by copying, and the copy most likely to hand is the count pin, which is the fallback rather
 than the convention.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** Still awaiting realisation. The chosen convention (probe-assertion, count-pinning only where no probe exists) is stated on no surface (`grep -rni 'probe-assertion\|count-pinning'` over `rules/`, `CLAUDE.md`, `README-hooks.md` and `hooks/lib/__tests__` finds nothing), and `reference-resolution-lint.test.ts` has been re-approved repeatedly since, so the fallback is still the shape in use.

@@ -19,3 +19,6 @@ The risk this shape carries, named: a stub is an instruction to fetch, and an or
 
 ---
 Retired: `260909-1700-cut-fusion-to-working-minimum.md`, commit `6357ebfc` — two of the three blocks only. `rules/orchestrator-resume.md` was deleted with the Turn loop, and the re-sharpening contract went with the shaper's two record-editing modes on 2026-09-10, which `rules/orchestrator-rebalance.md` `## What went with the Circle container` records. The third block stands: that file exists and names this record in its own provenance header.
+
+---
+Implemented: f95125ba — the three blocks left `agents/orchestrator.md` for `rules/orchestrator-resume.md` and `rules/orchestrator-rebalance.md` with trigger and invariants kept; the `Retired:` line above records two of the three going on 2026-09-10, and the Rebalance block stands: `agents/orchestrator.md` reads `rules/orchestrator-rebalance.md` through `$FUSION_PLUGIN_ROOT` and that file's provenance names this record.

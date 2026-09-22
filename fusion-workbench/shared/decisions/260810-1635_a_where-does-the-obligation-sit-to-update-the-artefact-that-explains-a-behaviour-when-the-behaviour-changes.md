@@ -121,3 +121,6 @@ is the standing rule and has no gate behind it, so it holds only for as long as 
 it. A deep change that touches many surfaces at once is the exact shape this record predicts will
 leave stale explanations behind, and it is the single most likely way a future change breaks fusion's
 documentation without breaking its tests.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** The answer's rule (one authoring home, citations elsewhere) is now the shape of `CLAUDE.md` itself: every Layout and Conventions row points at a `README-agents.md` or `README-hooks.md` heading, done by work item `260912-0438-human-facing-docs-leave-claude-md.md`, which does not cite this record. No shipped surface cites it (`grep -rn 260810-1635` over `agents/ skills/ rules/ README*.md docs/ CLAUDE.md` is empty), and no pass has ever enumerated the double-stated claims as the answer's programme requires. In force in practice, unrealised on the books, as the 260819 note said.
