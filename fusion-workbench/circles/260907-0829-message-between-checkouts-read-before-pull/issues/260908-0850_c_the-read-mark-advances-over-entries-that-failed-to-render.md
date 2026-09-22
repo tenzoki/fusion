@@ -15,3 +15,6 @@ The whole point of pinning `show` to `head=` is that "a concurrent fetch between
 `hooks/lib/__tests__/fusion-forum.test.ts:218` covers the helper's exit 1. Nothing covers the reader's response to it.
 
 **Acceptance test:** `skills/news/SKILL.md` Step 4 says what to do when `show` exits 1, and Step 5 either does not advance past an entry that failed to render or states in one sentence that it does and why that is acceptable.
+
+---
+Resolved: the commit that carries this line gives `skills/news/SKILL.md` Step 4 the branch: `show` exiting 1 means the blob could not be read at `$HEAD`, the run says so, names the entry and adds it to `$UNRENDERED`; Step 5 runs `seen "$HEAD"` only when `$UNRENDERED` is empty, and otherwise says which entries were not shown and that the mark stays where it was, so they come back next time. Of the record's two options the first was taken, not the one-sentence acceptance: the marking-on-render argument rests on the message having been shown, and one that was not was never seen.

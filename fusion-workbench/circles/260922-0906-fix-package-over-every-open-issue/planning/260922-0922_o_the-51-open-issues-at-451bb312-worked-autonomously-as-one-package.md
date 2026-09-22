@@ -495,7 +495,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: steps 1, 27
 
-29. **Admit only a message-shaped path, name its writer, and never mark an unrendered entry seen**
+29. [DONE] **Admit only a message-shaped path, name its writer, and never mark an unrendered entry seen** (+9 lines; the named cut of the glob paragraph did not cover the two new sentences, +89 bytes against 54 of head-room, so the funding cut is Step 0's source-root block, which resolved a `$FUSION_SRC` this body never reads a file through: `skills/news/SKILL.md` −691 bytes net; the pin moved, paths 1699 → 1697 and anchors 316 → 317, re-approved with the attribution on its line)
     - Executor: `coder`
     - Records: `260908-0849_*_the-store-listing-admits-every-path-and-the-reader-parses-a-hex-out-of-whatever-it-gets.md`, `260908-0850_*_the-read-mark-advances-over-entries-that-failed-to-render.md`
     - Site at HEAD: `bin/fusion-forum:319,323` list the store with `git ls-tree -r` unfiltered; `:332` excludes this checkout's entries by hex and admits everything else (a `README.md`, a subdirectory); `skills/news/SKILL.md:95` derives the hex with `cut -d- -f3`; Step 4 (`:81-100`) has no branch for `show` exiting 1; Step 5 (`:102-110`) runs `seen "$HEAD"` once, unconditionally.

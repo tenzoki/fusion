@@ -47,7 +47,20 @@
 #   entry=<git-path>    One line per new entry, oldest first. The ordering is
 #                       the filename's own `YYMMDD-HHMM` prefix, so a lexical
 #                       sort of the paths is a chronological sort of the
-#                       messages; nothing here reads a timestamp.
+#                       messages; nothing here reads a timestamp. An entry is
+#                       a path at the store's top level whose basename has the
+#                       mandated shape `YYMMDD-HHMM-<checkout>-<slug>.md`
+#                       (`rules/fusion-workbench-conventions.md`
+#                       `## Filename Patterns`, the forum row), and nothing
+#                       else: the split is "is this a message, and whose",
+#                       never "does the name carry my identifier".
+#   writer=<hex>        Directly under each `entry=`: the writing checkout's
+#                       identifier, read out of the basename here so no caller
+#                       cuts a field out of a name it did not validate.
+#   skipped=<git-path>  Zero or more, after the entries: a new path in the
+#                       store that is not a message (a README, a file in a
+#                       subdirectory, a name in another shape). Reported, never
+#                       rendered, and not counted in `new=`.
 #   note=<sentence>     Zero or more. A degradation that changed the answer,
 #                       stated rather than hidden. Three occur: the checkout
 #                       identifier could not be read, so nothing was filtered
@@ -323,6 +336,21 @@ case "$cmd" in
     git ls-tree -r --name-only --full-tree "$head_sha" -- "$storepath/" 2>/dev/null | LC_ALL=C sort > "$tmp/upstream"
     LC_ALL=C comm -13 "$tmp/seen" "$tmp/upstream" > "$tmp/new"
 
+    # Only a message-shaped basename at the store's top level is a message;
+    # everything else the store holds goes to `skipped=` and is never rendered.
+    : > "$tmp/msgs"
+    : > "$tmp/skipped"
+    while IFS= read -r line; do
+      [ -n "$line" ] || continue
+      base="${line#"$storepath"/}"
+      if printf '%s' "$base" | LC_ALL=C grep -Eq '^[0-9]{6}-[0-9]{4}-[0-9a-f]{8}-[a-z0-9-]+\.md$'; then
+        printf '%s\n' "$line" >> "$tmp/msgs"
+      else
+        printf '%s\n' "$line" >> "$tmp/skipped"
+      fi
+    done < "$tmp/new"
+    mv "$tmp/msgs" "$tmp/new"
+
     checkout=""
     if [ -x "$HERE/fusion-identity" ]; then
       idout="$("$HERE/fusion-identity" 2>/dev/null || true)"
@@ -342,8 +370,15 @@ case "$cmd" in
     if [ -n "$mark" ]; then echo "mark=$mark"; else echo "mark=none"; fi
     echo "new=$(LC_ALL=C grep -c '' "$tmp/new" || true)"
     while IFS= read -r line; do
-      [ -n "$line" ] && printf 'entry=%s\n' "$line"
+      [ -n "$line" ] || continue
+      printf 'entry=%s\n' "$line"
+      # The basename passed the shape test above, so the third field is the hex.
+      writer="${line##*/}"; writer="${writer#*-*-}"; writer="${writer%%-*}"
+      printf 'writer=%s\n' "$writer"
     done < "$tmp/new"
+    while IFS= read -r line; do
+      [ -n "$line" ] && printf 'skipped=%s\n' "$line"
+    done < "$tmp/skipped"
     if [ -n "$notes" ]; then printf '%s' "$notes"; fi
     ;;
 

@@ -19,21 +19,7 @@ Every user-facing sentence below is rendered in the project's chat language (`ru
 
 ## Step 0: roots and paths
 
-A path into a file the plugin ships carries the `$FUSION_SRC` root. Resolve it once:
-
-```bash
-if [ -x "${FUSION_PLUGIN_ROOT:-}/bin/fusion-source-root" ]; then
-  FUSION_SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
-elif [ -n "${FUSION_PLUGIN_ROOT:-}" ]; then
-  echo "fusion: no bin/fusion-source-root in the installed plugin at $FUSION_PLUGIN_ROOT — the source root falls back to that install copy" >&2
-  FUSION_SRC="$FUSION_PLUGIN_ROOT"
-else
-  FUSION_SRC=""
-fi
-echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
-```
-
-**Why the branch, why it is a call, and why the call is guarded:** `bin/fusion-source-root`'s own header. `UNRESOLVED` is not a path: with it printed, say so rather than reading through an empty value, and do not improvise the content of a file you could not open. A `bin/` helper is always run from `$FUSION_PLUGIN_ROOT`, never from `$FUSION_SRC`.
+This body opens no file the plugin ships, so it resolves no source root; every helper is run from `$FUSION_PLUGIN_ROOT`.
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"
@@ -80,18 +66,17 @@ A `note=` line can accompany any answer, exit 0 included, and it is a degradatio
 
 ## Step 4: render every entry
 
-Iterate the `entry=` lines from Step 2, in the order they were printed, which is oldest first. **Never expand a glob in a shell loop**: the Bash tool runs zsh with `nomatch` on, where an unmatched pattern aborts the whole block before a guard inside it can fire, so a listing comes from a command substitution or `find` and here it comes from the helper's own output (`rules/fusion-workbench-conventions.md` `## Marker globs`).
+Iterate the `entry=` lines from Step 2, in the order they were printed, which is oldest first; the listing comes from the helper's own output, never a glob (`rules/fusion-workbench-conventions.md` `## Marker globs`).
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-forum" show "$HEAD" "$ENTRY"
 ```
 
-`$HEAD` is the `head=` value from Step 2, passed back verbatim, and both calls here take it, so body and name are read at one tree. Show the person's part as it was written: do not summarise it, translate it, reorder it or answer it inside the render.
+`$HEAD` is the `head=` value from Step 2, passed back verbatim, and both calls here take it, so body and name are read at one tree. Show the person's part as it was written: do not summarise it, translate it, reorder it or answer it inside the render. `show` exiting 1 means the blob could not be read at `$HEAD`: say so, name the entry, and add it to `$UNRENDERED`.
 
-Name the writer. The identifier is the filename's third dash-separated field:
+Name the writer. `$HEX` is the `writer=` line the helper printed under this entry:
 
 ```bash
-HEX="$(basename "$ENTRY" | cut -d- -f3)"
 if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name" ]; then
   "$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name" resolve "$HEX" --at "$HEAD" || echo "unregistered=$HEX"
 fi
@@ -101,13 +86,13 @@ Exit 3 means the registry carries no entry for that hex at `$HEAD`, exit 6 that 
 
 ## Step 5: advance the mark
 
-After rendering and before the pull question. This ordering is settled.
+After rendering and before the pull question, and only when `$UNRENDERED` is empty. This ordering is settled.
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-forum" seen "$HEAD"
 ```
 
-Then tell the user, in one sentence, that these entries will not be shown again, and that the files stay in the store for anyone who wants to read them a second time. That is the accepted cost of marking on render: a message seen and then abandoned does not come back.
+Then tell the user, in one sentence, that these entries will not be shown again, and that the files stay in the store for anyone who wants to read them a second time. That is the accepted cost of marking on render: a message seen and then abandoned does not come back. With `$UNRENDERED` non-empty, write no mark: say which entries were not shown and that the mark stays where it was, so they come back next time. A message never shown was never seen.
 
 ## Step 6: offer the pull, once
 

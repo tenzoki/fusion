@@ -141,6 +141,15 @@ describe("bin/fusion-forum", () => {
     expect(unfiltered.lines("note")).toEqual([expect.stringContaining("checkout identifier could not be read")]);
   });
 
+  it("admits only a message-shaped basename, names its writer, and reports the rest as skipped", () => {
+    const t = trio("260907-1000-99999999-hello.md", `260907-1001-${OWN}-mine.md`, "README.md");
+    const r = run(t.reader, "new", STORE);
+    expect(r.status, r.stderr).toBe(0);
+    expect([r.value("new"), r.lines("entry"), r.lines("writer"), r.lines("skipped")]).toEqual([
+      "1", [entryPath("260907-1000-99999999-hello.md")], ["99999999"], [entryPath("README.md")],
+    ]);
+  });
+
   it("exit 5, once per state: no work tree, a detached HEAD, no upstream, an upstream that does not resolve", () => {
     const bare = scratch("no-repo");
     mkdirSync(join(bare, "fusion-workbench"));
