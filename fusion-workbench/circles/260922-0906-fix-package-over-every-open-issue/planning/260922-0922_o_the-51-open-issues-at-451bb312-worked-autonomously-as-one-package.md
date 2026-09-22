@@ -227,7 +227,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
    - Gate: none
    - Dependencies: none
 
-7. **Make `rewrite_fields` write the storeless wildcarded basename its bullet promises**
+7. [DONE] **Make `rewrite_fields` write the storeless wildcarded basename its bullet promises**
    - Executor: `coder`
    - Record: `260911-0638_*_migrates-record-field-repair-writes-a-store-prefixed-citation-into-fields-the-format-no-longer-defines.md`
    - Site at HEAD: `skills/migrate/SKILL.md:118`, inside the Step 4 block, `rewrite_fields()`: the first `sed` writes `\1shared/$t/` (a store segment) and the second writes `_\1_` (the marker letter kept); the bullet at `:185` says the function "rewrites the values to the storeless basename with the marker wildcarded (`260716-1910_*_plan-foo.md`)". The record's second half is half obsolete: `**Active spec/plan:**` is defined again (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, and `:155` of the skill carries it into the item head), while `**Active session history:**` is not (`:157` folds it into `**Cross-references:**`). `reformat_one` calls the function on terminal markers too.
