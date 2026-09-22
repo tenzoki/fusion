@@ -471,7 +471,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: step 1
 
-27. **Let the work graph report an unreadable head, state its readiness error term, and prove the branches the fixture never entered**
+27. [DONE] **Let the work graph report an unreadable head, state its readiness error term, and prove the branches the fixture never entered** (+28 lines; the heading-bound fixture is a head opened and never closed, with the body heading present: a record with neither closing `---` nor heading never reaches the heading branch, so it could not prove it; the two `README-hooks.md` rows that restated "optimistic by that count" follow the headers)
     - Executor: `coder`
     - Records: `260913-0821_*_an-item-record-whose-head-the-parser-cannot-read-vanishes-from-the-order-with-no-report.md`, `260913-0819_*_ready-is-claimed-to-be-optimistic-by-exactly-one-count-and-a-dangling-entry-inflates-it-too.md`, `260913-0823_*_the-fixture-test-carries-one-tautological-assertion-and-leaves-three-branches-unexercised.md`
     - Site at HEAD: `hooks/lib/work-graph.ts:285-287` skips a record whose `**Status:**` is unreadable with the same `continue` as a terminal one and counts nothing; `:429-434` `readiness` reads `ready` for an item whose only entry is unresolvable, while `:74-79` says "optimistic by exactly that count" (`noDependsOnField`); `hooks/order.ts:38` and `bin/fusion-work-order:32` repeat "no unmet prerequisite"; `hooks/order.ts:110-117` `caveat()` fires on `noDependsOnField > 0` only. `work-graph.test.ts` (156 lines): the tautology at `:113` stands; the duplicate entry exists on the dangle side only (`:55`); no self-edge, no empty store, no unreadable-head, no unclosed-head fixture.

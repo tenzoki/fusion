@@ -69,14 +69,24 @@
  * `lib/plan-size.ts`, `lib/staging-drift.ts` and `lib/review-coverage.ts` all
  * carry.
  *
- * ## One figure describes what the store does NOT say
+ * ## Two figures describe what the store does NOT say
  *
  * `noDependsOnField` counts the nodes carrying no `**Depends-on:**` field at
  * all. An absent field and a genuinely prerequisite-free item are
  * indistinguishable — the grammar says the field is absent when there is
- * nothing to say — so `readiness` is optimistic by exactly that count. The cost
- * was accepted at a user gate rather than designed away, and the caller is
- * obliged to say so whenever the count is above zero.
+ * nothing to say. `unresolvedEdges` names every entry that resolved to no
+ * node, and an item whose only entries are there reads `ready`: correct where
+ * the entry names a terminal item (the G1 ruling above), and an unmet
+ * prerequisite where it names live work in a form the grammar does not define
+ * (a container name, a missing `.md`, a typo, an archived target), which the
+ * literal lookup cannot tell apart. So `readiness` is optimistic by up to those
+ * two counts, and nothing here measures by how much. Both costs were accepted
+ * at user gates rather than designed away, and the caller is obliged to say so
+ * whenever either count is above zero.
+ *
+ * A third figure, `unreadableHead`, describes what this module could NOT read:
+ * an item-form record whose head yields no `**Status:**` in the five-value
+ * vocabulary. It is reported by name and never guessed at.
  */
 /** The live values of `**Status:**`. `done` and `dropped` are not nodes. */
 export type ItemStatus = "open" | "claimed" | "paused";
@@ -140,6 +150,10 @@ export interface WorkGraphReport {
     rows: ItemRow[];
     /** Nodes carrying no `**Depends-on:**` field at all — see the header. */
     noDependsOnField: number;
+    /** Item-form records whose head yields no readable `**Status:**`, by container name. */
+    unreadable: string[];
+    /** `unreadable.length`, the figure the caller prints beside `noDependsOnField`. */
+    unreadableHead: number;
     /** `empty` when there are no nodes; `cyclic` when any cycle was found. */
     verdict: "acyclic" | "cyclic" | "empty";
 }
@@ -153,9 +167,15 @@ export interface WorkGraphReport {
  * `verdict=empty`.
  *
  * A container holding no record of its own name is skipped in silence — that is
- * every terminal Circle container, and there is nothing to report about one. A
- * record whose head declares no readable `**Status:**` is outside the node set
- * for the same reason a terminal one is: the grammar says the field is always
- * written, so a record without it states no live work.
+ * every terminal Circle container, and there is nothing to report about one.
+ * Two further kinds of record are outside the node set, FOR DIFFERENT REASONS,
+ * and only one of them is silent. A terminal item (`done`, `dropped`) is outside
+ * by the user's ruling at G1, and nothing is reported. An item-form record whose
+ * head yields no readable `**Status:**` — the field absent, or a value outside
+ * the five — is outside because a parse failed, and that is reported: the
+ * record is named in `unreadable`, so a reader can tell "no live items" from
+ * "one live item this module could not read". `/fusion:archive` reports the
+ * same condition as a workbench-state fault, and the two consumers of one field
+ * must not disagree on whether it is worth saying.
  */
 export declare function computeWorkGraph(root: string): WorkGraphReport;

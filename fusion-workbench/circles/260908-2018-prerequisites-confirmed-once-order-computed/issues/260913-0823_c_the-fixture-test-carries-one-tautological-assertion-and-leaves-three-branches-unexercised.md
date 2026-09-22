@@ -73,3 +73,6 @@ at all.
 
 `hooks/lib/__tests__/work-graph.test.ts` alone. No change to `hooks/lib/work-graph.ts` is implied
 by this record: all three branches read correct, they are simply unproved.
+
+---
+Resolved: the commit that carries this line rewrites `hooks/lib/__tests__/work-graph.test.ts`: the order assertion is now against `report.rows.length`, asserted separately at 14; one fixture item names the same resolvable prerequisite twice and `edges` is asserted at 9 (10 with `seenEdge` removed, verified by mutation); one item names itself and its cycle row, `blocked` readiness and `blocks=0` are asserted (`selfEdge` removed reddens the cycle case, verified); a root with no `circles/` returns `items: 0, verdict: "empty"`. The file grows by 28 lines against the step's ceiling of 30, inside the hook-test head-room and with no baseline edit; the two further cases (unreadable head, unclosed head) land in the same commit under the sibling record.

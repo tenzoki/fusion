@@ -69,14 +69,24 @@
  * `lib/plan-size.ts`, `lib/staging-drift.ts` and `lib/review-coverage.ts` all
  * carry.
  *
- * ## One figure describes what the store does NOT say
+ * ## Two figures describe what the store does NOT say
  *
  * `noDependsOnField` counts the nodes carrying no `**Depends-on:**` field at
  * all. An absent field and a genuinely prerequisite-free item are
  * indistinguishable — the grammar says the field is absent when there is
- * nothing to say — so `readiness` is optimistic by exactly that count. The cost
- * was accepted at a user gate rather than designed away, and the caller is
- * obliged to say so whenever the count is above zero.
+ * nothing to say. `unresolvedEdges` names every entry that resolved to no
+ * node, and an item whose only entries are there reads `ready`: correct where
+ * the entry names a terminal item (the G1 ruling above), and an unmet
+ * prerequisite where it names live work in a form the grammar does not define
+ * (a container name, a missing `.md`, a typo, an archived target), which the
+ * literal lookup cannot tell apart. So `readiness` is optimistic by up to those
+ * two counts, and nothing here measures by how much. Both costs were accepted
+ * at user gates rather than designed away, and the caller is obliged to say so
+ * whenever either count is above zero.
+ *
+ * A third figure, `unreadableHead`, describes what this module could NOT read:
+ * an item-form record whose head yields no `**Status:**` in the five-value
+ * vocabulary. It is reported by name and never guessed at.
  */
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
@@ -181,14 +191,21 @@ function stronglyConnected(out) {
  * `verdict=empty`.
  *
  * A container holding no record of its own name is skipped in silence — that is
- * every terminal Circle container, and there is nothing to report about one. A
- * record whose head declares no readable `**Status:**` is outside the node set
- * for the same reason a terminal one is: the grammar says the field is always
- * written, so a record without it states no live work.
+ * every terminal Circle container, and there is nothing to report about one.
+ * Two further kinds of record are outside the node set, FOR DIFFERENT REASONS,
+ * and only one of them is silent. A terminal item (`done`, `dropped`) is outside
+ * by the user's ruling at G1, and nothing is reported. An item-form record whose
+ * head yields no readable `**Status:**` — the field absent, or a value outside
+ * the five — is outside because a parse failed, and that is reported: the
+ * record is named in `unreadable`, so a reader can tell "no live items" from
+ * "one live item this module could not read". `/fusion:archive` reports the
+ * same condition as a workbench-state fault, and the two consumers of one field
+ * must not disagree on whether it is worth saying.
  */
 export function computeWorkGraph(root) {
     const circles = join(root, "fusion-workbench", "circles");
     const nodes = [];
+    const unreadable = [];
     let noDependsOnField = 0;
     if (existsSync(circles)) {
         for (const entry of readdirSync(circles, { withFileTypes: true })) {
@@ -207,9 +224,14 @@ export function computeWorkGraph(root) {
             const head = headBlock(text);
             const status = headField(head, "Status");
             // An allowlist of the live values, not a denylist of the terminal ones:
-            // an unreadable or garbage status states no live work and stays outside.
-            if (status !== "open" && status !== "claimed" && status !== "paused")
+            // a terminal status is outside by ruling and silent; anything else is a
+            // head this module could not read, and that is named rather than dropped.
+            if (status === "done" || status === "dropped")
                 continue;
+            if (status !== "open" && status !== "claimed" && status !== "paused") {
+                unreadable.push(entry.name);
+                continue;
+            }
             const raw = headField(head, "Depends-on");
             if (raw === null)
                 noDependsOnField += 1;
@@ -223,6 +245,7 @@ export function computeWorkGraph(root) {
         }
     }
     nodes.sort((a, b) => ascending(a.base, b.base));
+    unreadable.sort(ascending);
     // --- edges ---------------------------------------------------------------
     // Resolution is a lookup in the node map and never a citation scan: the
     // scanner resolves against the whole workbench, where a decision record
@@ -360,6 +383,8 @@ export function computeWorkGraph(root) {
         cycles,
         rows,
         noDependsOnField,
+        unreadable,
+        unreadableHead: unreadable.length,
         verdict,
     };
 }

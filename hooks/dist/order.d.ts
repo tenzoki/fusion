@@ -18,6 +18,7 @@
  *   ready=3
  *   roots=3
  *   no-depends-on-field=4
+ *   unreadable-head=1
  *   verdict=cyclic
  *   note=4 items carry no `**Depends-on:**` field …
  *      1      0       2  ready    <item-a>
@@ -25,6 +26,7 @@
  *      3      1       0  blocked  <item-b>
  *   cycle=<item-c>, <item-d>
  *   unresolved=<item-b> wants <item-e>.md
+ *   unreadable=<item-g>
  *
  * The item row is five fixed columns — order, depth, blocks, readiness,
  * container name — in the indented shape `bin/fusion-plan-size` prints. The
@@ -35,26 +37,38 @@
  * which is what puts "this paused item is blocking three others" in front of
  * a reader.
  *
- * `ready=` counts the items with no unmet prerequisite; `roots=` counts the
- * items at depth 0, where the order starts. A paused item never counts in
- * `ready=`, and `roots=` still counts it at depth 0, which is correct. The two
- * are equal in an acyclic store with no paused item in it, and differ where a
- * cycle sits at depth 0 — a cycle's member has a prerequisite inside its own
- * component and is never `ready` — or where a paused item does.
+ * `ready=` counts the items with no RESOLVED unmet prerequisite; `roots=`
+ * counts the items at depth 0, where the order starts. A paused item never
+ * counts in `ready=`, and `roots=` still counts it at depth 0, which is
+ * correct. The two are equal in an acyclic store with no paused item in it, and
+ * differ where a cycle sits at depth 0 — a cycle's member has a prerequisite
+ * inside its own component and is never `ready` — or where a paused item does.
+ *
+ * `ready=` is optimistic by up to two counts, and the module header says why:
+ * `no-depends-on-field=` (an absent field asserts nothing) and
+ * `unresolved-edges=` (an entry naming live work in a form the grammar does not
+ * define blocks nothing here, and only the terminal-target dangle is genuinely
+ * no edge). Neither is measurable from here.
+ *
+ * `unreadable-head=` counts the item-form records whose head yields no readable
+ * `**Status:**`, each named on an `unreadable=` row. A terminal item is outside
+ * the graph by ruling and is not among them.
  *
  * ## The `note=` line is mandatory, and it is a user's ruling rather than a
  * ## courtesy
  *
- * Whenever `no-depends-on-field=` is above zero, one `note=` line says that an
- * absent field is not a claim of independence and that `ready=` is optimistic
- * by that count. The template's field is permitted rather than mandated and is
- * absent when there is nothing to say, so an absent field and a genuinely
- * prerequisite-free item are indistinguishable. That con was accepted at the
- * gate rather than designed away, on the condition that the helper's own output
- * state it instead of leaving a reader to infer it
+ * Whenever `no-depends-on-field=` or `unresolved-edges=` is above zero, one
+ * `note=` line names the count and says that `ready=` is optimistic by it. The
+ * template's field is permitted rather than mandated and is absent when there
+ * is nothing to say, so an absent field and a genuinely prerequisite-free item
+ * are indistinguishable. That con was accepted at the gate rather than designed
+ * away, on the condition that the helper's own output state it instead of
+ * leaving a reader to infer it
  * (`260908-2018_*_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md`,
- * the `Answered:` line). The line kind is `bin/fusion-forum`'s: a degradation
- * that changed the answer, stated rather than hidden.
+ * the `Answered:` line). The unresolved half joined on the same reasoning: the
+ * evidence was already on the page as `unresolved=` rows while the `ready` word
+ * beside the dependent contradicted it. The line kind is `bin/fusion-forum`'s:
+ * a degradation that changed the answer, stated rather than hidden.
  *
  * ## Exit codes, and the one that is deliberately NOT here
  *

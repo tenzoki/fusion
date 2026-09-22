@@ -61,14 +61,23 @@ const FIXTURE: Record<string, [string, string[] | null]> = {
   // read. It names that terminal item, so it dangles and adds no edge.
   "260101-0013-paused": ["paused", ["260101-0009-closed.md"]],
   "260101-0014-after-paused": ["open", ["260101-0013-paused.md"]],
+  // The same resolvable prerequisite twice: one edge.
+  "260101-0015-twice": ["open", ["260101-0002-base.md", "260101-0002-base.md"]],
+  // Names itself: a one-member cycle.
+  "260101-0016-self": ["open", ["260101-0016-self.md"]],
+  // A head this module cannot read: outside the graph, and NOT silently.
+  "260101-0018-garbage": ["garbage", null],
 };
 
 const ARCHIVED = "260101-0012-archived";
+// Head opened and never closed, so only the body heading bounds it: a scan past
+// that heading reads the decoy below as an edge, which is what the bound exists for.
+const UNCLOSED = "260101-0017-unclosed";
 
-function record(dir: string, status: string, deps: string[] | null): string {
+function record(dir: string, status: string, deps: string[] | null, close = "---"): string {
   const head = [`# ${dir}`, "", "---", `**Status:** ${status}`];
   if (deps) head.push(`**Depends-on:** ${deps.join(", ")}`);
-  return [...head, "---", "", "## Context", "", `**Depends-on:** ${dir}-decoy.md`, ""].join("\n");
+  return [...head, close, "", "## Context", "", `**Depends-on:** ${dir}-decoy.md`, ""].join("\n");
 }
 
 function build(): string {
@@ -78,6 +87,8 @@ function build(): string {
     mkdirSync(join(circles, dir), { recursive: true });
     writeFileSync(join(circles, dir, `${dir}.md`), record(dir, status, deps));
   }
+  mkdirSync(join(circles, UNCLOSED), { recursive: true });
+  writeFileSync(join(circles, UNCLOSED, `${UNCLOSED}.md`), record(UNCLOSED, "open", null, ""));
   // A terminal Circle record: a container holding no record of its own name.
   mkdirSync(join(circles, "260101-0011-circle"), { recursive: true });
   writeFileSync(join(circles, "260101-0011-circle", "_c_circle.md"), "# a closed Circle\n");
@@ -94,7 +105,7 @@ afterAll(() => rmSync(root, { recursive: true, force: true }));
 
 /** In printed order: dir, depth, transitive blocks, readiness. */
 const EXPECTED: [string, number, number, string][] = [
-  ["260101-0002-base", 0, 4, "ready"],
+  ["260101-0002-base", 0, 5, "ready"],
   ["260101-0001-mid", 1, 1, "blocked"],
   ["260101-0003-tip", 2, 0, "blocked"],
   ["260101-0004-fan-a", 1, 0, "blocked"],
@@ -105,23 +116,40 @@ const EXPECTED: [string, number, number, string][] = [
   ["260101-0010-after-done", 0, 0, "ready"],
   ["260101-0013-paused", 0, 1, "paused"],
   ["260101-0014-after-paused", 1, 0, "blocked"],
+  ["260101-0015-twice", 1, 0, "blocked"],
+  ["260101-0016-self", 0, 0, "blocked"],
+  ["260101-0017-unclosed", 0, 0, "ready"],
 ];
 
 describe("computeWorkGraph over a fixture store", () => {
   it("reports the order, the depth, the blocking count and the readiness", () => {
     expect(report.rows.map((r) => [r.dir, r.depth, r.blocks, r.readiness])).toEqual(EXPECTED);
-    expect(report.rows.map((r) => r.order)).toEqual(EXPECTED.map((_, i) => i + 1));
+    expect(report.rows).toHaveLength(14);
+    expect(report.rows.map((r) => r.order)).toEqual([...Array(report.rows.length)].map((_, i) => i + 1));
     // `mid` sorts first and is emitted second: the order is the graph's, not the name's.
-    expect(report.items).toBe(11);
-    expect(report.edges).toBe(7);
-    expect(report.noDependsOnField).toBe(1);
+    expect(report.items).toBe(14);
+    // `twice` adds one edge, not two; `self` adds one. Without `seenEdge`: 10.
+    expect(report.edges).toBe(9);
+    expect(report.noDependsOnField).toBe(2);
     expect(report.verdict).toBe("cyclic");
   });
 
   it("names the cycle's members and keeps them consecutive", () => {
-    expect(report.cycles).toEqual([{ members: ["260101-0006-cyc-a", "260101-0007-cyc-b"] }]);
+    expect(report.cycles).toEqual([
+      { members: ["260101-0006-cyc-a", "260101-0007-cyc-b"] },
+      { members: ["260101-0016-self"] },
+    ]);
     expect(report.rows[5].dir).toBe("260101-0006-cyc-a");
     expect(report.rows[6].dir).toBe("260101-0007-cyc-b");
+  });
+
+  it("names an unreadable head and stays silent on a terminal item", () => {
+    expect(report.unreadable).toEqual(["260101-0018-garbage"]);
+    expect(report.unreadableHead).toBe(1);
+  });
+
+  it("returns verdict=empty for a root with no circles/", () => {
+    expect(computeWorkGraph(join(root, "nowhere"))).toMatchObject({ items: 0, verdict: "empty" });
   });
 
   it("reports an entry naming no node once, by name, and leaves the dependent ready", () => {
@@ -139,8 +167,8 @@ describe("computeWorkGraph over a fixture store", () => {
   it("puts a terminal item outside the graph, its outgoing entry unread", () => {
     expect(report.rows.map((r) => r.dir)).not.toContain("260101-0009-closed");
     // `closed` names `base` as a prerequisite. If that entry were read, `base`
-    // would block five items rather than four and the edge count would be eight.
-    expect(report.rows[0].blocks).toBe(4);
+    // would block `closed` too and the edge count above would rise.
+    expect(report.rows[0].blocks).toBe(5);
     expect(report.rows.find((r) => r.dir === "260101-0006-cyc-a")?.status).toBe("claimed");
   });
 

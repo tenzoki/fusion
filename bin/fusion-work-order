@@ -16,6 +16,7 @@
 #   ready=3
 #   roots=3
 #   no-depends-on-field=4
+#   unreadable-head=1
 #   verdict=cyclic
 #   note=4 items carry no `**Depends-on:**` field …
 #      1      0       2  ready    <item-a>
@@ -23,34 +24,44 @@
 #      3      1       0  blocked  <item-b>
 #   cycle=<item-c>, <item-d>
 #   unresolved=<item-b> wants <item-e>.md
+#   unreadable=<item-g>
 #
 # The item row is five fixed columns — order, depth, blocks, readiness,
 # container name. The readiness column reads `ready`, `blocked` or `paused`: the
 # third is the item's own `**Status:**` and overrides the other two whatever its
 # out-edges, because `ready` invites a reader to pick the item up and a paused
 # item is one somebody has set down. Its `depth` and `blocks` stay computed like
-# any node's. `ready=` counts the items with no unmet prerequisite and `roots=`
-# the items at depth 0, where the order starts; a paused item never counts in
-# `ready=` and still counts at depth 0, so the two are equal in an acyclic store
-# with no paused item in it and differ where a cycle sits at depth 0 or where a
-# paused item does.
+# any node's. `ready=` counts the items with no RESOLVED unmet prerequisite and
+# `roots=` the items at depth 0, where the order starts; a paused item never
+# counts in `ready=` and still counts at depth 0, so the two are equal in an
+# acyclic store with no paused item in it and differ where a cycle sits at
+# depth 0 or where a paused item does.
+#
+# `ready=` is optimistic by up to two counts: `no-depends-on-field=` (an absent
+# field asserts nothing) and `unresolved-edges=` (an entry naming live work in a
+# form the grammar does not define blocks nothing here; only an entry naming a
+# terminal item is genuinely no edge). Neither is measurable from here.
 #
 # A node is a work item whose `**Status:**` is `open`, `claimed` or `paused`. A
 # `done` or `dropped` item is outside the graph, its outgoing entries unread,
 # and an entry naming one is reported as unresolved like an entry naming
-# nothing at all.
+# nothing at all. An item-form record whose head yields no readable
+# `**Status:**` is outside for a different reason, a failed parse, and is
+# counted in `unreadable-head=` and named on an `unreadable=` row rather than
+# dropped in silence.
 # `archive/**` is never opened. The computation is hooks/lib/work-graph.ts and
 # its header is the authoritative account of all of that.
 #
-# `note=` IS MANDATORY WHENEVER `no-depends-on-field=` IS ABOVE ZERO, and it is
-# a user's ruling rather than a courtesy. The field is permitted rather than
-# mandated and is absent when there is nothing to say, so an absent field and a
-# genuinely prerequisite-free item are indistinguishable; the con was accepted
-# at the gate on the condition that this program say so rather than leave a
-# reader to infer it
+# `note=` IS MANDATORY WHENEVER `no-depends-on-field=` OR `unresolved-edges=` IS
+# ABOVE ZERO, and it is a user's ruling rather than a courtesy. The field is
+# permitted rather than mandated and is absent when there is nothing to say, so
+# an absent field and a genuinely prerequisite-free item are indistinguishable;
+# the con was accepted at the gate on the condition that this program say so
+# rather than leave a reader to infer it
 # (`260908-2018_*_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md`,
-# the `Answered:` line). The line kind is bin/fusion-forum's: a degradation that
-# changed the answer, stated rather than hidden.
+# the `Answered:` line). The unresolved half joined on the same reasoning. The
+# line kind is bin/fusion-forum's: a degradation that changed the answer,
+# stated rather than hidden.
 #
 # Exit codes:
 #   0  the check ran. `verdict=` says what it found. A cycle is NOT a non-zero

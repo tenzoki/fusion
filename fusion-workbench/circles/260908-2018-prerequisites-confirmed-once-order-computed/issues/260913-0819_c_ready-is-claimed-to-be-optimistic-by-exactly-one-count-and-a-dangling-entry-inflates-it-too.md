@@ -69,3 +69,6 @@ the figure is stated with a precision the computation does not have.
 
 `hooks/lib/work-graph.ts`, `hooks/order.ts`, `bin/fusion-work-order` (its header repeats the
 `ready=` definition at line 27), and `hooks/lib/__tests__/work-graph.test.ts` for the new case.
+
+---
+Resolved: the commit that carries this line takes the record's second reading, a caveat rather than a third readiness value, because the terminal-target case must keep reading `ready` under the G1 ruling and a third value would have to tell that dangle from a typo, which the literal lookup cannot: `caveat()` in `hooks/order.ts` now fires when `no-depends-on-field=` or `unresolved-edges=` is above zero and names each count that is (the note line carries the literal `unresolved-edges=<n>`), and the three headers (`hooks/lib/work-graph.ts` `## Two figures describe what the store does NOT say`, `hooks/order.ts`, `bin/fusion-work-order`) state the error term as up to those two counts, "exactly" gone; the two `README-hooks.md` rows that restated it follow. Verified over a scratch store holding one open item whose sole entry is a container name without `.md`: `ready=1` and a `note=` line naming `unresolved-edges=1`; the fixture row for the item whose sole entry names a terminal item is unchanged at `ready`.
