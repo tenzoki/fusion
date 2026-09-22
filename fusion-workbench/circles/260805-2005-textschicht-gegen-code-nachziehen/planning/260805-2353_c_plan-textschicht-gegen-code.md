@@ -148,7 +148,7 @@ The graph is a layered DAG: decisions gate the text layer, code fixes gate nothi
    - Files: `skills/setup/SKILL.md` (probe at line 41); `skills/migrate/SKILL.md` (survey scope, for the consistency rule)
    - Changes: narrow the probe's filename test from "any bracket pair" to the actual old marker form the executor can remove: the basename pattern `^[0-9]{6}-[0-9]{4}\[[a-z]\]` (the same regex the Circle-file probe on the line already uses) applied to the whole-tree probe as well, e.g. via `find … -name '*\[?\]*.md'` piped through the same `grep -qE` filter instead of the raw `-name '*[[]*[]]*.md'`. Honour migrate's own rule, quoted in the review: "the detector must only look for things the executor can remove". Keep the three frozen-store exclusions untouched — they are load-bearing and documented in the skill body.
    - Dependencies: none
-   > - Verification: in a scratch workbench, `notes [draft].md` no longer sets `OLD=1`; a genuine `260101-1200[o]-topic.md` still does; the excluded stores still stay silent. Run the probe snippet directly under zsh.
+   - Verification: in a scratch workbench, `notes [draft].md` no longer sets `OLD=1`; a genuine bracket-form name, e.g. `260101-1200[o]-topic.md`, still does; the excluded stores still stay silent. Run the probe snippet directly under zsh.
    - Falsifier: legitimate pre-underscore artifacts whose names deviate from `YYMMDD-HHMM[x]` (if any real migration corpus contains them) would now be missed — check `/fusion:migrate`'s executor sed for the exact set it can convert and match the probe to that set, no wider and no narrower.
 
 7. [DONE] **Fix the garbled awk error message in `bin/fusion-rules:452`**

@@ -54,3 +54,6 @@ Verify after each edit rather than at the end: an `e.g.` that the grammar does n
 - `bin/fusion-citation-sweep --dry-run` still prints a summary beginning `files=0 rewrites=0`.
 - `node hooks/dist/citation-check.js` still reads `verdict=clean` with `edited-violations=0`.
 - `cd hooks && npm test` exits 0.
+
+---
+Resolved: the eight one-item cases now announce the exhibit in line with `e.g.`, placed inside the clause the grammar reads, and the reconciliation file's closing fence moved below the sixth bullet so the six items are one block. No list in the table above is split any more. Line counts are unchanged in all nine records, so the `path:line` citations pointing into them still resolve. The standalone-paragraph blockquotes named under `## What is NOT wrong` are left as they stand. Gates: `bin/fusion-citation-sweep --dry-run` prints `files=0 rewrites=0`, `node hooks/dist/citation-check.js` reads `verdict=clean` with `edited-violations=0`, and `npm test` in `hooks/` exits 0 across 987 tests. The two German records keep the literal `e.g.`, because that is the string the grammar matches and a translated form would turn the token back into a rewrite candidate. The secondary note on the `blockquote` reason's documented meaning is untouched: it is a choice point, not part of this fix.
