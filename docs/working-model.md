@@ -102,17 +102,17 @@ The spec and the plan are the contract. Every later check — "is this work stil
 
 ## 3. The gates
 
-Fusion stops and hands you the decision at defined points. A work item carrying `**Mode:** autonomous` (section 1) answers the stops that are about the *solution* of that item, and no other: the plan review, the item's claim and its finish, and the read of its plan's stop conditions at closure. The stops that are about the project rather than the solution are never answered by the field.
+Fusion stops and hands you the decision at defined points. A work item carrying `**Mode:** autonomous` (section 1) answers the stops that are about the *solution* of that item — the plan review, the item's claim and its finish, and the read of its plan's stop conditions at closure — and one stop that is not: an ordinary `ontocoder` task proceeds under the field, which `57e2b7eb` settled on 2026-09-22. The stops that weigh the project rather than the solution stay yours.
 
 **Human gates — fusion stops and asks before:**
 
 - reviewing a produced **spec** (approve what gets built) — asked as written, field or no field,
 - reviewing a produced **plan** (approve how it gets built) — answered `Approve` by the field,
-- any **ontology or structured-data change** (every `ontocoder` task, and especially structural changes to entities, relations, or schemas),
+- any **ontology or structured-data change** — an ordinary `ontocoder` task proceeds under the field, while a structural change to entities, relations or schemas still files and skips,
 - **destructive operations** — deleting files, removing features, dropping data,
 - an **ambiguous task** where scope or acceptance criteria can't be pinned down.
 
-At each gate you get plain choices: proceed, skip for later, defer, or modify the instruction. Under `**Mode:** autonomous` the ontology, destructive-operation and ambiguous-task gates put no question at all: the orchestrator files an open decision carrying the question the gate would have asked, skips the task, and goes on. You answer the decision record afterwards, and the log records that nobody answered the gate.
+At each gate you get plain choices: proceed, skip for later, defer, or modify the instruction. Under `**Mode:** autonomous` three gates put no question at all — a structural ontology change, a destructive operation, and an ambiguous task instruction: the orchestrator files an open decision carrying the question the gate would have asked, skips the task, and goes on. You answer the decision record afterwards, and the log records that nobody answered the gate. The same field reaches two stops that are not rows in that list: a curator survey's change ledger is applied whole instead of being put to you entry by entry, and the pause of the item this checkout already holds is confirmed by your instruction to claim another. Which rows the field answers is settled in [`agents/orchestrator.md`](../agents/orchestrator.md) `## Human Gate Rules`, not here.
 
 **The Coherence check.** Work runs one task at a time; after each one the orchestrator reports and asks what is next. Nothing checks coherence on a schedule any more — the automatic per-batch check went on 2026-09-10 with the Turn loop it rode. What is left is a **reconciliation you ask for**, which reads three questions about what has landed:
 
