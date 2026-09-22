@@ -24,3 +24,6 @@ Reconciled 260908-0027 (reconciler, HEAD `9d99b19d`): still open, verified rathe
 last two lines of `260907-0840-spec-review-message-between-checkouts.md` are still the two closing
 tool-markup tags, so the acceptance test's second half fails as written. Nothing in this session's
 range touched that file.
+
+---
+Resolved: the commit that carries this line removes the two closing tool-markup lines from `260907-0840-spec-review-message-between-checkouts.md`; the file now ends on the last unticked item under its `## Open Questions`, and no line matches `^</[a-z]+>$`.

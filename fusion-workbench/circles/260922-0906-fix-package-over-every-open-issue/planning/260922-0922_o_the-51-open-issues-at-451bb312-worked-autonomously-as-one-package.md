@@ -397,7 +397,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: none
 
-21. **Strip the two tool-markup lines from the spec-review analysis**
+21. [DONE] **Strip the two tool-markup lines from the spec-review analysis**
     - Executor: `coder`
     - Record: `260907-1234_*_the-spec-review-analysis-ends-with-two-lines-of-tool-markup.md`
     - Site at HEAD: `260907-0840-spec-review-message-between-checkouts.md` (in the container of `260907-0829-message-between-checkouts-read-before-pull`), lines 450 to 451, read `</content>` and `</invoke>`.

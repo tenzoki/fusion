@@ -447,5 +447,3 @@ so the relay is owed to the next one, alongside the relay already owed for
 - [ ] What a standalone `--only` run does about committing and pushing the entry it wrote, and
       whether a non-git project writes one at all (§7).
 - [ ] The skill name, the selector name, the argument form, and the integer line cap (§10, §11).
-</content>
-</invoke>
