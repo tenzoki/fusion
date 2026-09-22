@@ -34,3 +34,11 @@ Option 1. The measurement is three weeks old and unchanged: nothing reads it. Op
 
 ---
 Answered: 260922-0922_*_does-fusion-alias-get-a-reader-or-does-the-export-go.md `## Options` — option 1: the export, its three wiring assertions and the v10.23 note's sentence go; nothing read the variable in three weeks and a reader added to justify it would be unreliable at first registration; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1218.
+
+---
+
+Implemented: the commit that carries this line — option 1, the export goes. `hooks/hooks.json` loses the alias clause from the SessionStart identity command; the `FUSION_PERSON` and `FUSION_CHECKOUT` exports and the `identity-notice.js` pipe stand unchanged, and the command still ends `|| true`. The `describe("hooks.json wiring — SessionStart resolves the checkout's alias")` block goes whole from `hooks/lib/__tests__/hooks-wiring.test.ts`, both its cases being about the alias, and the two assertions inside them that are not (the person and checkout exports reaching the env file) are covered by `identity-mint-notice.test.ts` and by the token check earlier in the same file; three imports the block alone used go with it. `docs/upgrading-to-v10-23.md` keeps its account of what v10.23 did and dates the removal in both places the variable was named, so the four rendering sites it lists are two in the tree as it now stands: the monitor header and the `party=` lines of `bin/fusion-events presence`, the portfolio command having gone at v11. `bin/fusion-checkout-name resolve` is untouched.
+
+The step met the *Destructive operations* row of `agents/orchestrator.md` `## Human Gate Rules`. The row was put and discharged by this ruling rather than by an agent answering for the user, and no second record was filed for a question already on disk and already answered.
+
+Verified by running the edited identity command under `bash` against a scratch plugin root: the env file carries `export FUSION_PERSON=` and `export FUSION_CHECKOUT=` and no third line, with a `fusion-checkout-name` on the path that would have resolved an alias. The hook-test surface falls 44 lines, 180 to 136 in that file.
