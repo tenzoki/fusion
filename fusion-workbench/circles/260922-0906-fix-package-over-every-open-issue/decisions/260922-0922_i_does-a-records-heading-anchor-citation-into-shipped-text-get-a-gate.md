@@ -34,3 +34,7 @@ Option 1. The anchor form was chosen for text that outlives its target; a record
 
 ---
 Answered: 260922-0922_*_does-a-records-heading-anchor-citation-into-shipped-text-get-a-gate.md `## Options` — option 1: no gate; `rules/fusion-workbench-conventions.md` `## Filename Patterns` gains one clause saying a record's heading anchor reads as the heading stood when the record was written, the anchor form being for living text that outlives its target; option 2 waits on a measured count above a handful; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1225.
+
+---
+
+Implemented: the commit that carries this line — option 1, no gate and one clause. `rules/fusion-workbench-conventions.md` `## Filename Patterns` now says that a workbench record's heading anchor into shipped text reads as the heading stood when the record was written, and that no gate resolves it in either direction: the shipped-surface anchor lint excludes the workbench, and the two workbench citation gates read no heading anchor. The clause gives the reason the ruling gives, the anchor form having been chosen for living text that outlives its target while a record is point-in-time and carried by its commit, and it names what would reopen the question: a count of stale anchors in live records above a handful, which nobody has taken. No scanner gained a class, which is the whole of what was decided.

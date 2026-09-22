@@ -232,7 +232,7 @@ Field key. **Record** is the storeless citation of the decision or defect the st
    - Gate: none met, and the reading is stated rather than assumed. A `git mv` is not *Destructive operations*: nothing is deleted, both files stay on disk and stay citable, which is the difference `## Filename Patterns` draws between an archive sweep and a deletion. The step touches workbench records rather than ontology, manifest or schema data, so it is `coder`'s; were the orchestrator to read it as a *Task involves `ontocoder`* row instead, that row is answered under the field since `57e2b7eb` and the step proceeds either way.
    - Dependencies: none
 
-6. **Say in `## Filename Patterns` how a record's heading anchor into shipped text reads**
+6. [DONE] **Say in `## Filename Patterns` how a record's heading anchor into shipped text reads**
    - Executor: `coder`
    - Record: `260922-0922_*_does-a-records-heading-anchor-citation-into-shipped-text-get-a-gate.md` (`_a_`, option 1, ruled by the user at 260922-1225)
    - Site at HEAD: `rules/fusion-workbench-conventions.md:288`, the `## Filename Patterns` paragraph that already says living text cites a rule file by heading anchor and never by line number, because an edit above the line moves it silently. `reference-resolution-lint.test.ts` resolves such anchors over the shipped surface and excludes the workbench; `workbench-citation-lint.test.ts` and `bin/fusion-citation-check` resolve record citations inside the workbench and read no heading anchor. A record citing a shipped heading falls between the two, which is how `260907-0902_*` came to cite a tier heading by its pre-rename wording.
@@ -240,8 +240,8 @@ Field key. **Record** is the storeless citation of the decision or defect the st
    - Do not touch: `hooks/lib/__tests__/reference-resolution-lint.test.ts`, `hooks/lib/__tests__/workbench-citation-lint.test.ts`, `bin/fusion-citation-check`; no scanner gains a class, which is the whole of what the ruling decided
    - Changes: one clause saying that a workbench record's heading anchor into shipped text reads as the heading stood when the record was written, the anchor form having been chosen for living text that outlives its target while a record is point-in-time and carried by its commit, and that no gate resolves such an anchor in either direction. The clause names the measurement that would reopen it, a count of stale anchors in live records above a handful, which nobody has taken.
    - Acceptance: `grep -c 'as the heading stood when the record was written' rules/fusion-workbench-conventions.md` prints `1`; `bin/fusion-prose-metric rules/fusion-workbench-conventions.md` reads `ok`; `node hooks/dist/citation-check.js` prints `verdict=clean`; `cd hooks && npm test` exits 0.
-   - Growth: `rules/` is unbounded; about +300 bytes on an always-on file, charged eleven times against 43 536 of slack.
-   - Pin: anchors may rise by one; re-approve on line 492.
+   - Growth: `rules/` is unbounded; about +300 bytes on an always-on file, charged eleven times against 43 536 of slack. **Landed: +809 bytes**, 68 050 -> 68 859.
+   - Pin: anchors may rise by one; re-approve on line 492. **Landed: paths 1705 -> 1708, anchors unmoved.** The clause cites no heading and names three files: the two gates that resolve nothing across the record/shipped boundary and `bin/fusion-citation-check` beside the second.
    - Gate: none
    - Dependencies: none
 
