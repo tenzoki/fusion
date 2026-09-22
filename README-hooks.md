@@ -496,7 +496,7 @@ The four growth bounds in the next section are blocking in the same way, and are
 
 ### Growth bounds on the shipped text
 
-Three surfaces of this plugin have a **failing** bound on how much they may grow, and the suite goes red when one of them spends its head-room. This is a bound on the *rate of addition*, not on size: a shrink never trips it, and each surface's head-room was derived from that surface's own replayed `git` history rather than picked. A fourth bound, the per-dispatch-path total, works differently and is **not** documented here. It is authored where it is enforced: `hooks/lib/__tests__/rules-emission-golden.test.ts`, the `THE DISPATCH-PATH BOUND` banner comment and the `DISPATCH_HEAD_ROOM` constant under it, with the eleven rows and their arming provenance in `hooks/lib/__tests__/fixtures/dispatch-path.baseline`, which carries its own header stating what the arming did and did not absolve. Those two are the whole account; this section deliberately neither restates them nor lists that bound in the table below, because it measures a different quantity — the LEVEL one dispatch reads, not the RATE at which a surface grows.
+Three surfaces of this plugin have a **failing** bound on how much they may grow, and the suite goes red when one of them spends its head-room. This is a bound on the *rate of addition*, not on size: a shrink never trips it, and each surface's head-room was derived from that surface's own replayed `git` history rather than picked. A fourth bound, the per-dispatch-path total, works differently and is **not** documented here. It is authored where it is enforced: `hooks/lib/__tests__/rules-emission-golden.test.ts`, the `THE DISPATCH-PATH BOUND` banner comment and the `DISPATCH_HEAD_ROOM` constant under it, with the eleven rows and their arming provenance in `hooks/lib/__tests__/fixtures/dispatch-path.baseline`, which carries its own header stating what the arming did and did not absolve. Those two are the whole account; this section deliberately neither restates them nor lists that bound in the table below, because it measures a different quantity — the LEVEL one dispatch reads, not the RATE at which a surface grows. One thing about it *is* here and nowhere else, because the ruling that authorised it put it here: the log of the 2026-09-22 re-arming, in `#### The dispatch-path re-arming of 2026-09-22` at the end of this section. A log is not the authoring; the event itself is defined in that fixture's header.
 
 | Surface | Unit | Head-room | Bounded in |
 |---|---|---|---|
@@ -628,6 +628,32 @@ The first raise on the hook tests was +154 lines on the day and 59 of it has sin
 **The ruling's residual stands and is not argued away here:** the instrument stops measuring during exactly the work it exists to measure, and this project has one instance on record of that shape lasting thirteen days. What bounds it is that every raise names itself with the figure before and after, and that the reduction is read on **2026-10-10**, the date step C6's deferred measurement already carries, so one reading answers both.
 
 **One reduction has already been taken, and it is what put this section here.** The raise log stood in the header comment of `hooks/lib/__tests__/surface-growth-bound.test.ts` until 2026-09-11, where it cost the hook-test surface the lines it was written in and had already drifted on its own headline figure, stating the `skills/` overage as 866 twice and as 603 once. Moving it into this README costs no bounded surface anything, because the READMEs are on no bound, and it leaves one account of the figures instead of two. `TEST_LINE_HEAD_ROOM` came back down with it, 2 654 to 2 595, spent to the line as the raise was: the reduction gives back budget, not working room, and the surface is at zero margin either way. That is a reduction and not a raise, and the table above already reads net of it.
+
+#### The dispatch-path re-arming of 2026-09-22
+
+**All eleven dispatch-path rows were re-armed at the measurement, under an event scoped to that bound and to no other.** The event reads: *after a cut of a component shared by every row, a zero-sum bound follows the measurement down.* It is authored in the header of `hooks/lib/__tests__/fixtures/dispatch-path.baseline`, where this bound is authored; this entry is its log and not a second definition. The user ruled it on 2026-09-22 at 1220, option 1 of `260922-0922_*_are-the-dispatch-path-rows-re-armed-at-the-post-cut-totals-and-under-which-event.md`, which also required that the eleven before-and-after figures be written here and that the dispatch-path case be green at the commit that lands them.
+
+**Why it was owed.** The rows were armed on 2026-09-09 charging `CLAUDE.md` to every path at 93 432 bytes. The 2026-09-16 cut of that file took it to 8 021, so every row carried the difference as slack on a bound whose own header says head-room is zero: 43 536 bytes on the tightest of them and 160 066 on the widest. A zero-sum bound standing that far above the measurement refuses nothing, which is not the instrument its header describes.
+
+**It does not reach the three rate surfaces in the table above**, and `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining: the three events at which a baseline moves` stands unedited, heading and body. `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` rules the cut-only refusal for those surfaces and is not superseded. What admits the event here is this bound's own definition, zero-sum, which no rate surface has. No head-room constant moved: `DISPATCH_HEAD_ROOM` is still `0`.
+
+| Path | prompt | rules emitted | `CLAUDE.md` | total |
+|---|---|---|---|---|
+| analyst | 21 038 → 21 032 | 84 319 → 94 942 | 93 432 → 8 021 | 198 789 → 123 995 |
+| coder | 9 649 → 12 165 | 85 175 → 86 650 | 93 432 → 8 021 | 188 256 → 106 836 |
+| consultant | 14 329 → 13 432 | 89 918 → 100 593 | 93 432 → 8 021 | 197 679 → 122 046 |
+| curator | 34 554 → 78 507 | 99 080 → 100 593 | 93 432 → 8 021 | 227 066 → 187 121 |
+| editor | 13 635 → 13 156 | 95 672 → 106 347 | 93 432 → 8 021 | 202 739 → 127 524 |
+| ontocoder | 13 262 → 15 875 | 85 175 → 86 650 | 93 432 → 8 021 | 191 869 → 110 546 |
+| orchestrator | 155 302 → 97 760 | 131 331 → 116 808 | 93 432 → 8 021 | 380 065 → 222 589 |
+| planner | 19 725 → 19 659 | 89 271 → 99 913 | 93 432 → 8 021 | 202 428 → 127 593 |
+| reconciler | 22 825 → 21 171 | 90 127 → 91 621 | 93 432 → 8 021 | 206 384 → 120 813 |
+| reviewer | 12 837 → 12 837 | 82 743 → 93 451 | 93 432 → 8 021 | 189 012 → 114 309 |
+| shaper | 29 057 → 17 017 | 128 279 → 110 834 | 93 432 → 8 021 | 250 768 → 135 872 |
+
+**The rows did not all move one way, and the log says so rather than reporting a reduction and leaving the rises unnamed.** Every total falls, because the shared cut is larger than any component's rise. Inside the rows, three prompt components stand **above** their arming figures and are re-armed upward with the rest — curator 34 554 → 78 507, ontocoder 13 262 → 15 875, coder 9 649 → 12 165 — and every rule component rose except the orchestrator's (−14 523) and the shaper's (−17 445), the largest rise being editor's at +10 675. The orchestrator prompt carries the one large fall, 155 302 → 97 760, banked by the v11 roster cut and never followed down until now.
+
+**Every row now stands at zero slack**, which is the point of the event and the cost of it: the next byte added to `CLAUDE.md`, to an always-on rule file, or to any agent prompt must be paid for inside the same path. The next always-on addition in this repository therefore needs a cut of its own rather than finding 43 kB waiting. That is the instrument working as ruled, and no defect is filed against it.
 
 ### Rebuilding after TS changes
 

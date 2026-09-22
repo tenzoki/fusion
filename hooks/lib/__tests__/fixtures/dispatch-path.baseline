@@ -84,82 +84,122 @@
 # session work queue — and absorbed into nothing, so no row inherits their
 # figures and nothing here was credited with their removal.
 #
-# THE SURVIVING ROWS WERE NOT RE-CUT. Nine commits took real bytes off the rule
-# set between the arming and this cut, so every surviving path now measures well
-# under its row. Following the measurement down is none of the three events and
-# is deliberately not done here.
+# THE SURVIVING ROWS WERE NOT RE-CUT AT THIS EVENT. Nine commits took real bytes
+# off the rule set between the arming and this cut, so every surviving path then
+# measured well under its row. Following the measurement down was none of the
+# three events, and was deliberately not done here. The event below is what
+# changed that, thirteen days later and for this bound alone.
 #
 # Provenance: capability C8 of the spec
 # `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`, step A2 of
 # `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md`.
+#
+# ## The re-arming, 2026-09-22 — every row follows the measurement down
+#
+# THE EVENT, AND IT IS THIS BOUND'S ALONE: after a cut of a component shared by
+# every row, a zero-sum bound follows the measurement down. A zero-sum bound
+# standing above the measurement refuses nothing and is not the instrument the
+# HEAD-ROOM IS ZERO paragraph above describes. The 2026-09-16 `CLAUDE.md` cut
+# took that shared component from 93 432 bytes to 8 021 on all eleven rows and
+# left the tightest of them, curator, 43 536 bytes of slack.
+#
+# IT DOES NOT REACH THE THREE RATE SURFACES, and
+# `helpers/growth-bound.ts` `## Re-baselining: the three events at which a
+# baseline moves` stands unedited, heading and body. A rate bound's head-room is
+# what its last cut left, which is event 1 there, and
+# `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
+# rules that for those surfaces and is not superseded by this. The condition
+# that admits the event here is this bound's own definition, zero-sum, which no
+# rate surface has.
+#
+# USED ONCE, HERE. Every row below is rewritten at the sizes measured at the
+# commit that carries this paragraph, component by component, by the same
+# summation the bound performs: `statSync` on the prompt, the sum of `statSync`
+# over every path `bin/fusion-rules <name>` emits when run from this
+# repository's root, and `statSync` on `CLAUDE.md`. Slack on all eleven rows is
+# therefore zero, which is the point of the event: the next always-on addition
+# in this repository needs a cut of its own rather than finding 43 kB waiting.
+#
+# THE ROWS DID NOT ALL MOVE ONE WAY, and the two directions are named rather
+# than left inside one falling total. The shared `CLAUDE.md` component falls
+# 93 432 -> 8 021 on every path. Three prompt components stand ABOVE their
+# arming figures and are re-armed UPWARD with the rest: curator 34 554 ->
+# 78 507, ontocoder 13 262 -> 15 875, coder 9 649 -> 12 165. Every row's total
+# falls all the same, because the shared cut is larger than any prompt's rise.
+# The per-row before and after figures, with their components, are logged in
+# `README-hooks.md` `### Growth bounds on the shipped text`, which the ruling
+# requires and which this file does not restate.
+#
+# Ruled by the user at 260922-1220, option 1 of
+# `260922-0922_*_are-the-dispatch-path-rows-re-armed-at-the-post-cut-totals-and-under-which-event.md`.
 
 [analyst]
-  agents/analyst.md 21038
-  rules emitted to analyst 84319
-  CLAUDE.md 93432
-  total 198789
+  agents/analyst.md 21032
+  rules emitted to analyst 94942
+  CLAUDE.md 8021
+  total 123995
 
 
 [coder]
-  agents/coder.md 9649
-  rules emitted to coder 85175
-  CLAUDE.md 93432
-  total 188256
+  agents/coder.md 12165
+  rules emitted to coder 86650
+  CLAUDE.md 8021
+  total 106836
 
 
 [consultant]
-  agents/consultant.md 14329
-  rules emitted to consultant 89918
-  CLAUDE.md 93432
-  total 197679
+  agents/consultant.md 13432
+  rules emitted to consultant 100593
+  CLAUDE.md 8021
+  total 122046
 
 [curator]
-  agents/curator.md 34554
-  rules emitted to curator 99080
-  CLAUDE.md 93432
-  total 227066
+  agents/curator.md 78507
+  rules emitted to curator 100593
+  CLAUDE.md 8021
+  total 187121
 
 [editor]
-  agents/editor.md 13635
-  rules emitted to editor 95672
-  CLAUDE.md 93432
-  total 202739
+  agents/editor.md 13156
+  rules emitted to editor 106347
+  CLAUDE.md 8021
+  total 127524
 
 [ontocoder]
-  agents/ontocoder.md 13262
-  rules emitted to ontocoder 85175
-  CLAUDE.md 93432
-  total 191869
+  agents/ontocoder.md 15875
+  rules emitted to ontocoder 86650
+  CLAUDE.md 8021
+  total 110546
 
 
 [orchestrator]
-  agents/orchestrator.md 155302
-  rules emitted to orchestrator 131331
-  CLAUDE.md 93432
-  total 380065
+  agents/orchestrator.md 97760
+  rules emitted to orchestrator 116808
+  CLAUDE.md 8021
+  total 222589
 
 [planner]
-  agents/planner.md 19725
-  rules emitted to planner 89271
-  CLAUDE.md 93432
-  total 202428
+  agents/planner.md 19659
+  rules emitted to planner 99913
+  CLAUDE.md 8021
+  total 127593
 
 
 [reconciler]
-  agents/reconciler.md 22825
-  rules emitted to reconciler 90127
-  CLAUDE.md 93432
-  total 206384
+  agents/reconciler.md 21171
+  rules emitted to reconciler 91621
+  CLAUDE.md 8021
+  total 120813
 
 [reviewer]
   agents/reviewer.md 12837
-  rules emitted to reviewer 82743
-  CLAUDE.md 93432
-  total 189012
+  rules emitted to reviewer 93451
+  CLAUDE.md 8021
+  total 114309
 
 [shaper]
-  agents/shaper.md 29057
-  rules emitted to shaper 128279
-  CLAUDE.md 93432
-  total 250768
+  agents/shaper.md 17017
+  rules emitted to shaper 110834
+  CLAUDE.md 8021
+  total 135872
 

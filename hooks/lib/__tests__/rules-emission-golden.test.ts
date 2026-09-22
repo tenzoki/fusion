@@ -955,10 +955,13 @@ const dispatchBaselinePath = join(here, "fixtures", "dispatch-path.baseline");
 /**
  * ZERO, and it is the point. Every other surface in this project gets head-room
  * above its baseline because those bounds measure the RATE of addition. This one
- * measures the LEVEL: a row is set at the event that wrote it (the arming, or the
- * one merge the fixture records) and never follows the cut this instrument was
- * built to keep down, so any head-room at all is head-room the cut created and
- * would immediately be spent, which is what the thirteen days after 2026-08-27 measured.
+ * measures the LEVEL: a row is set at the event that wrote it (the arming, the one
+ * merge, or the 2026-09-22 re-arming, all three in the fixture), so any head-room
+ * at all is head-room a cut created and would immediately be spent, which is what
+ * the thirteen days after 2026-08-27 measured. A row follows a cut down on ONE
+ * condition, authored in that fixture's header and nowhere else: the cut was of a
+ * component shared by every row, which leaves a zero-sum bound standing above the
+ * measurement, refusing nothing.
  */
 const DISPATCH_HEAD_ROOM = 0;
 
