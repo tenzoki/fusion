@@ -50,7 +50,7 @@
   claude-md-weight.test.ts 208
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
-  config.test.ts 942
+  config.test.ts 950
   context-manifest.test.ts 518
   declared-citation-paths.test.ts 84
   deliverable-language-lint.test.ts 136
@@ -104,4 +104,4 @@
   surface-growth-bound.test.ts 568
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22097
+  total 22105

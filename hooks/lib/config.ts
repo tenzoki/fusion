@@ -384,10 +384,13 @@ function explainArrayOfNonEmptyStrings(value: unknown): string | null {
 
 /**
  * `citations.exhibits`' rule: the array rule above, plus every entry ends in
- * `.md`. The scanner's `basenameMatcher` reads an entry without `.md` as a
- * PREFIX, which is right for a citation and wrong for a declaration that
- * silences: `2609` would declare a month of records exhibits. Whole-array drop
- * with the index, as every leaf failure here.
+ * `.md` and carries no ellipsis. The scanner's `basenameMatcher` reads an entry
+ * without `.md` as a PREFIX and an `…` or `...` inside one as any infix, which
+ * is right for a citation and wrong for a declaration that silences: `2609`
+ * would declare a month of records exhibits, and so would `2609….md` while
+ * passing the `.md` test (issue
+ * 260921-2049_*_an-ellipsis-truncated-exhibits-entry-passes-the-md-rule-and-declares-a-month-of-records-exhibits.md).
+ * Whole-array drop with the index, as every leaf failure here.
  */
 function explainArrayOfRecordBasenames(value: unknown): string | null {
   const strings = explainArrayOfNonEmptyStrings(value);
@@ -395,6 +398,9 @@ function explainArrayOfRecordBasenames(value: unknown): string | null {
   for (const [index, entry] of (value as string[]).entries()) {
     if (!entry.endsWith(".md")) {
       return `must be an array of record basenames ending in .md, but the element at index ${index} does not end in .md`;
+    }
+    if (/…|\.\.\./.test(entry)) {
+      return `must be an array of record basenames naming one record each, but the element at index ${index} carries an ellipsis, which the matcher reads as a wildcard`;
     }
   }
   return null;

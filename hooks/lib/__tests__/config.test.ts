@@ -205,6 +205,14 @@ describe("a value that cannot be used is dropped, named, and inherited past", ()
     expect(config.diagnostics[0]).toContain('"citations" must be a JSON object');
   });
 
+  // issue 260921-2049_*: `2601….md` passed the `.md` test and silenced a month, since the matcher reads an ellipsis as `.*`
+  it("drops an exhibits array whose entry carries an ellipsis, naming the index and the wildcard reading", () => {
+    const config = load(projectWith({ citations: { exhibits: ["260101-0101_*_one.md", "2601….md"] } }));
+    expect(config.citations.exhibits).toEqual([]);
+    expect(config.diagnostics).toHaveLength(1);
+    expect(config.diagnostics[0]).toContain("the element at index 1 carries an ellipsis, which the matcher reads as a wildcard");
+  });
+
   it("says the same of a container that has no live leaf left", () => {
     // `orchestrator` holds two retirements and nothing else. It is still a
     // container this loader walks — that is what keeps its two retired leaves

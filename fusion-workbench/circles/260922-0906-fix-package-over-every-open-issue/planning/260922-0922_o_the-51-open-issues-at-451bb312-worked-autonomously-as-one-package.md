@@ -447,7 +447,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: step 1
 
-25. **Refuse an ellipsis in a `citations.exhibits` entry**
+25. [DONE] **Refuse an ellipsis in a `citations.exhibits` entry** (+8 lines; `config.test.ts` carried no `.md`-miss case to sit beside, so the case sits in the drop-and-name block)
     - Executor: `coder`
     - Record: `260921-2049_*_an-ellipsis-truncated-exhibits-entry-passes-the-md-rule-and-declares-a-month-of-records-exhibits.md`
     - Site at HEAD: `hooks/lib/config.ts:392-401` `explainArrayOfRecordBasenames` tests `entry.endsWith(".md")` only; `hooks/lib/citation-scan.ts:805-811` `basenameMatcher` splits on `…|\.\.\.` and joins with `.*`, so `"2601….md"` silences a month; no test covers an ellipsis entry (`config.test.ts` 942 lines, `declared-citation-paths.test.ts` 84).

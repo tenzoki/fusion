@@ -15,3 +15,6 @@ The loader's rule for `citations.exhibits` checks only that an entry ends in `.m
 **Fix direction.** Refuse an entry containing `…` or `...` in the same rule, with the index named, as the `.md` miss is; or require the full record shape (`^\d{6}-\d{4}[_-]` … `\.md$`, no ellipsis) so an entry names exactly one basename pattern. One case in `hooks/lib/__tests__/config.test.ts` or `declared-citation-paths.test.ts`: the ellipsis entry drops the array with an advisory. Then the four sites above are true as written.
 
 **Acceptance.** The probe above with `["2601….md"]` prints the advisory, `declared-exhibits=0` and `store-prefixed=2`; `cd hooks && npm test` exits 0.
+
+---
+Resolved: the commit that carries this line makes `explainArrayOfRecordBasenames` in `hooks/lib/config.ts` refuse an entry containing `…` or `...` with the index named, in the same sentence shape as the `.md` miss ("the element at index N carries an ellipsis, which the matcher reads as a wildcard"); of the two fix directions, the first, because the full-shape alternative would also refuse the storeless wildcard form the documentation prescribes. One case in `hooks/lib/__tests__/config.test.ts` drops the array on an ellipsis entry. The probe above now prints the advisory, `declared-exhibits=0` and `store-prefixed=2`, and the four sites that state the guarantee are true as written.
