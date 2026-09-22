@@ -58,3 +58,6 @@ and this pass was dispatched with a standing constraint against editing any work
 except the four it was closing. Annotating it is one edit — the `Implemented:` line and the
 `## Recommendation` paragraph both say "orchestrator, editor and curator" and both want a
 clause saying five, and why — and it belongs to whoever holds that permission.
+
+---
+Resolved: closed on evidence by the commit that carries this line, with no change to the tree. The acceptance's first clause is met on the tree: the comment above the `case` in `bin/fusion-rules` (the block headed "Five names, where the decision that keyed this block named three") names all five, says the two records under-counted and why narrowing would be a behaviour change, which is the reason written where the list is, as the partial note above records. The second clause, that the decision record's `Implemented:` line name the same set, cannot be met by an edit: `260909-1843_*_what-are-the-conditional-rule-emissions-keyed-on-once-they-are-not-keyed-on-the-agent-name.md` is `_i_`, and `rules/fusion-workbench-conventions.md` `## Terminal states are history` reads its `Implemented:` line as history, never reconciled in place. The three-name figure there records what was said at `abf569b8`; the list on the tree, and the reason it is five, is the comment this record's own evidence led to.

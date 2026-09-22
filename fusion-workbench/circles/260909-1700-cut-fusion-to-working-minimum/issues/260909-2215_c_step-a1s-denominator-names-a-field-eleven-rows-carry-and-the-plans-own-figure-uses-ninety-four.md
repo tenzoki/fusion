@@ -28,3 +28,6 @@ C1 and C2, and the gate it decided (the per-Turn Coherence check) was ruled unpr
 different quantity entirely
 (`260909-2305_*_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md`).
 The record stands as a defect in the plan's text rather than as a live risk to a deletion.
+
+---
+Resolved: closed on evidence by the commit that carries this line, with no change to the tree. The plan this record corrects, `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md`, is `_c_`, and `rules/fusion-workbench-conventions.md` `## Terminal states are history` forbids the edit the acceptance asks for: no step mark, ticked criterion or header change is written into a terminal record. The correction therefore lives here, read beside the plan: step A1's population was the 94 in-scope `session_start` rows, not the 11 carrying a `session_id`, as `260909-2215-gate-firing-read-before-the-cut.md` `### The population, and an ambiguity in how the step names it` measured, and the plan's own `## Current State` figure of 97 is that wider set before per-checkout scoping. The last reconciliation line above already records that the head list the ambiguity fed was consumed at C1 and C2 and that nothing live turns on it.

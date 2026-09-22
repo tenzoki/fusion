@@ -24,3 +24,6 @@ gone from the tree now — the convergence check and the resume procedure at C2 
 per-Turn review-coverage read with them — so nothing is left to measure and the sentence's claim
 about them can no longer be checked against a running mechanism. It is a false statement in a plan a
 later reader will consult, which is what the record says it is.
+
+---
+Resolved: closed on evidence by the commit that carries this line, with no change to the tree. The plan this record corrects, `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md`, is `_c_`, and `rules/fusion-workbench-conventions.md` `## Terminal states are history` forbids the restatement the acceptance asks for. The correction therefore lives here, read beside the plan: of the six gates step A1 named, three carried a row kind in `orchestrator-events.jsonl` and three did not (the convergence check, the per-Turn review-coverage read and the interrupted-session resume), so for those three the read was the inference the sentence denies; the per-gate table is `260909-2215-gate-firing-read-before-the-cut.md` `## Not measured, therefore not cleared`. All three mechanisms left the tree at C2 (`7dde04a6`), as the last reconciliation line above records, so the false sentence describes nothing that still runs.
