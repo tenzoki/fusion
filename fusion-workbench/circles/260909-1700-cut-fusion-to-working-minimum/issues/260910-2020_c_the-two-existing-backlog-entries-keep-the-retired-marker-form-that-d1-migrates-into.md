@@ -40,3 +40,6 @@ marker form and how a reader tells them from work items. After D1, one `ls` of t
 grammar, or shows two and the text says which is which.
 
 Also seen: 260911-1131 by reviewer — the store moved again after this was filed: `bin/fusion-paths:387` now values `OUT_BACKLOG`/`SCAN_BACKLOG` as `circles`, so `shared/backlog/` has no resolver key at all and the two entries are unread by any consumer rather than merely in the wrong grammar.
+
+---
+Resolved: carried into `260922-0922_*_what-becomes-of-the-two-entries-in-the-unread-shared-backlog-store.md` by the commit that carries this line. The record turns on what becomes of two tracked entries in a store no consumer reads any more (the `Also seen:` line above records that `bin/fusion-paths` emits no key for it), and every closure moves or reclassifies data the user owns, two of them as work-item maintenance the orchestrator performs only at the user's word. The fix, one grammar in the store or the text saying which is which, lands when that decision is implemented.

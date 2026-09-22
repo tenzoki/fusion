@@ -33,3 +33,6 @@ record's `**Cross-references:**` line still names the tier heading by its pre-ed
 The second half of the acceptance is untouched: no decision has been filed on whether a record's
 anchor citation into shipped text should be gated at all, and neither of the two gates named in the
 body has gained that reach.
+
+---
+Resolved: carried into `260922-0922_*_does-a-records-heading-anchor-citation-into-shipped-text-get-a-gate.md` by the commit that carries this line. The acceptance has two halves. The first, the stale anchor in `260907-0902_*_how-is-the-message-stores-retention-expressed-against-an-archive-step-with-one-threshold-per-run.md`, is history: that record is `_i_`, and `rules/fusion-workbench-conventions.md` `## Terminal states are history` forbids repairing it in place, so the pre-edit wording stands there as what the record said when it was written, and the widened heading in `skills/archive/SKILL.md` is the one a reader resolves it against. The second half, whether a record's anchor citation into shipped text is gated at all, is the choice the decision holds; the fix, a gate or a stated non-gate, lands when that decision is implemented.

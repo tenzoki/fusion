@@ -63,3 +63,6 @@ Whether the rows should be re-armed at the post-cut totals, and under which of t
 `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` such a re-arming would sit, is a
 choice with reasoning a later reader would otherwise re-derive. It belongs in a decision record, not
 here. This record states only that the instrument currently measures nothing.
+
+---
+Resolved: carried into `260922-0922_*_are-the-dispatch-path-rows-re-armed-at-the-post-cut-totals-and-under-which-event.md` by the commit that carries this line. The record turns on whether the eleven rows of `hooks/lib/__tests__/fixtures/dispatch-path.baseline` are re-armed at the post-cut totals and under which of the named re-baselining events, which is the choice the record itself says belongs in a decision and not here; moving a baseline without a named event is the one act the growth rule forbids, so the package did not. The fix, the instrument measuring again, lands when that decision is implemented.

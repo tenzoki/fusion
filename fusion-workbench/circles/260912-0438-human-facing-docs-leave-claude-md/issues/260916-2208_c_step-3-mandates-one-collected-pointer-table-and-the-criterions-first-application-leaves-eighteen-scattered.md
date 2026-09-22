@@ -30,3 +30,6 @@ The curator saw this and named it `C02` in `260916-1612-curator-run.md` `## 8` â
 **Acceptance test.** Either every pointer line in `CLAUDE.md` sits in one table, or `rules/context-lean-claude-md.md` `### Step 3` stops mandating that they do. Whichever lands, the rule and `CLAUDE.md` agree in the same commit.
 
 **Cross-references:** 260916-1612-curator-run.md, 260916-1126_*_implementation-human-facing-docs-leave-claude-md.md, 260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md
+
+---
+Resolved: carried into `260922-0922_*_does-claude-md-collect-its-pointers-into-one-table-or-does-step-3-stop-mandating-it.md` by the commit that carries this line. The record turns on the fork it names as the user's: either `CLAUDE.md` collects its pointers into one table, which decides what four of its sections are left holding, or `rules/context-lean-claude-md.md` `### Step 3` stops mandating it. The fix, the rule and its worked example agreeing in one commit, lands when that decision is implemented.

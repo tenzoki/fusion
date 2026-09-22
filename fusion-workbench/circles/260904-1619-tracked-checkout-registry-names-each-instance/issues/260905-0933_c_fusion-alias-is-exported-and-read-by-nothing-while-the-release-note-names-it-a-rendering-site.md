@@ -22,3 +22,6 @@ The export is resolved once, at SessionStart. `/fusion:setup` Step 0i registers 
 ## Acceptance test
 
 Either a consumer names `$FUSION_ALIAS` (an agent prompt's dashboard line or `/fusion:setup`'s Done report are the plausible ones) and the release note's count stands, or the export and its wiring assertion go and the note drops it from the four.
+
+---
+Resolved: carried into `260922-0922_*_does-fusion-alias-get-a-reader-or-does-the-export-go.md` by the commit that carries this line. The record turns on a choice between the two closures its own acceptance offers, and neither is an executor's to take: a reader adds a surface, and removing the export is a feature removal, which the package's autonomous mode routes to a decision rather than performs. The fix, whichever branch, lands when that decision is implemented; the release-note count moves with it.

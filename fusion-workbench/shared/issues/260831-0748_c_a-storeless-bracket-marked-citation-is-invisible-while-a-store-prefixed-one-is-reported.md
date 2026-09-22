@@ -120,3 +120,6 @@ learn to skip the frozen stores). The package closed as `done` at `f34330ba` wit
 gap. So this defect is blocked on those two rulings rather than on executor work; the neighbour
 `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`
 stays `_o_` beside them and still asks for a citation count nobody has taken.
+
+---
+Resolved: carried into the two standing decisions `260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md` and `260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md` by the commit that carries this line. The record turns on whether `BARE_RE` in `hooks/lib/citation-scan.ts` reads the storeless bracket form or the header states the asymmetry as a decision, and, if it reads it, whether the sweep first learns to skip the frozen stores it would otherwise rewrite; the previous reconciliation line above already names both records as where the ruling lands. The fix, either branch of the acceptance, lands when those decisions are implemented.
