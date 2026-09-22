@@ -594,7 +594,21 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: steps 1 to 35 each closed or named as skipped or deferred with its reason, so this is the package's last commit
 
-Step counts, enumerated: executor `coder` on steps 1 to 15 and 17 to 36, `ontocoder` on step 16; a gate row met on step 16 alone; a `dist` rebuild on steps 24, 25, 26, 27; a hook-test line cost on steps 17 (4), 18 (at most 8, conditional), 19 (8), 24 (15), 25 (8), 26 (15), 27 (30), 28 (55), 29 (12), 30 (12), 31 (12), 33 (8), at most 187 together against the roughly 176 step 1 leaves, so step 28 is the one that may not fit; `skills/` bytes on steps 3 (−20), 4 (+40), 5 (+90), 6 (≤0), 7 (−120), 12 (+110), 29 (−60), 30 (+150), 32 (0), 36 (rotation), about +190 together against 92 of head-room, funded by the cuts in steps 7 and 29 that precede the additions in the package order; a pin re-approval expected on steps 3, 8 and possible on 2, 4, 7, 9, 12, 36.
+### Package G — the record step 24 filed
+
+37. [DONE] **Say in the cleanup body what the staging classifier says about the registry entry** (added after step 36 by the dispatch that ran steps 34 to 36)
+    - Executor: `coder`
+    - Record: `260922-1053_*_the-cleanup-body-calls-the-registry-entry-live-state-no-split-names-while-the-staging-classifier-now-names-it-a-record.md`
+    - Site at HEAD: `skills/cleanup/SKILL.md` `## Step 3 — Push` calls `.fusion-setup` and this checkout's registry entry live state no split names; since step 24 `hooks/lib/stores.ts` lists `checkouts` in `RECORD_STORES`, so `bin/fusion-staging-drift` reports a modified entry `record … UNSTAGED`, which is the reading `rules/workbench-tracking.md` gives it (class R1, tracked, one writer per file).
+    - Files: `skills/cleanup/SKILL.md`
+    - Changes: the record's first branch, since the classifier's reading is the one that runs and the tracking rule already states it: the push paragraph names `.fusion-setup` alone as the live state no split names, and `## Step 2 — Commit in meaningful splits` names the registry entry among the workbench records a split carries. No path token is added, so the pin stays.
+    - Acceptance: `grep -c 'registry entry' skills/cleanup/SKILL.md` prints `1` and the hit is in Step 2; `cd hooks && npm test` exits 0.
+    - Growth: `skills/`, at most +10 bytes net (79 of head-room after step 36).
+    - Pin: unmoved.
+    - Gate: none
+    - Dependencies: step 24 (the classifier reading it states)
+
+Step counts, enumerated: executor `coder` on steps 1 to 15 and 17 to 37, `ontocoder` on step 16; a gate row met on step 16 alone; a `dist` rebuild on steps 24, 25, 26, 27; a hook-test line cost on steps 17 (4), 18 (at most 8, conditional), 19 (8), 24 (15), 25 (8), 26 (15), 27 (30), 28 (55), 29 (12), 30 (12), 31 (12), 33 (8), at most 187 together against the roughly 176 step 1 leaves, so step 28 is the one that may not fit; `skills/` bytes on steps 3 (−20), 4 (+40), 5 (+90), 6 (≤0), 7 (−120), 12 (+110), 29 (−60), 30 (+150), 32 (0), 36 (rotation), about +190 together against 92 of head-room, funded by the cuts in steps 7 and 29 that precede the additions in the package order; a pin re-approval expected on steps 3, 8 and possible on 2, 4, 7, 9, 12, 36.
 
 ## Where this work stops
 

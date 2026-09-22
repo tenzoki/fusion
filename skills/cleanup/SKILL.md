@@ -50,7 +50,7 @@ If the directory is not a git repository at all, say so in one line and stop: th
 
 ## Step 2 — Commit in meaningful splits
 
-**Split by concern, not by file count.** Separate application code from structured data, both from documentation, and all three from workbench records. Separate unrelated fixes. The test of a good split is that its message is one honest sentence with no "and also" in it.
+**Split by concern, not by file count.** Separate application code from structured data, both from documentation, and all three from workbench records, this checkout's registry entry among them. Separate unrelated fixes. The test of a good split is that its message is one honest sentence with no "and also" in it.
 
 For each split, in order:
 
@@ -80,7 +80,7 @@ Under `--dry-run`, print the splits and their draft messages and stop here.
 
 ## Step 3 — Push
 
-Unless `--no-push` was given: plain `git push`; `git push -u origin <branch>` when the branch has no upstream. **The precondition is not a clean tree** — `.fusion-setup` and this checkout's registry entry are live state a session dirties and no split names (`rules/workbench-tracking.md`) — it is that every split committed and the log was settled above.
+Unless `--no-push` was given: plain `git push`; `git push -u origin <branch>` when the branch has no upstream. **The precondition is not a clean tree** — `.fusion-setup` is live state a session dirties and no split names (`rules/workbench-tracking.md`) — it is that every split committed and the log was settled above.
 
 ## Step 4 — Report
 
