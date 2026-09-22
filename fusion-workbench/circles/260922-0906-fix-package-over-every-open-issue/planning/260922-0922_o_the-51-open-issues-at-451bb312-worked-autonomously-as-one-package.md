@@ -323,7 +323,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: step 11 (same file, ordering only)
 
-15. **Bring the two always-on rule files under the em-dash ceiling** (record 1, rule half; the record closes at step 16)
+15. [DONE] **Bring the two always-on rule files under the em-dash ceiling** (record 1, rule half; the record closes at step 16)
     - Executor: `coder`
     - Record: `260827-1807_*_the-always-on-corpus-and-the-four-profiles-are-over-the-em-dash-ceiling-again-six-days-after-they-reached-it.md` (closed at step 16, or left `_o_` with the note step 16 prescribes)
     - Site at HEAD: `bin/fusion-rules coder | xargs bin/fusion-prose-metric` prints `rules/agent-setup.md 2 over 632 words, permit 0`, `rules/fusion-workbench-conventions.md 31 over 9 431, permit 9`, `rules/critical-stance.md 1, permit 1, ok`, `./fusion-workbench/stilwerk/chat-voice-de.yaml 5, permit 0`, total `over`. `rules/user-facing-output.md` is no longer in the emitted set and is outside the record's acceptance.
@@ -335,7 +335,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: none
 
-16. **Bring the eight voice-profile files under the ceiling** (record 1, profile half)
+16. [SKIPPED — ontocoder gate, decision 260922-0937_*] **Bring the eight voice-profile files under the ceiling** (record 1, profile half)
     - Executor: `ontocoder`
     - Record: `260827-1807_*_the-always-on-corpus-and-the-four-profiles-are-over-the-em-dash-ceiling-again-six-days-after-they-reached-it.md`
     - Site at HEAD: `bin/fusion-prose-metric stilwerk/*.yaml` prints 5, 5, 2, 2 marks over four files whose permit is 0 each; the workbench copies under `fusion-workbench/stilwerk/` carry the same lines (`chat-voice-de.yaml` lines 1, 11, 16, 23; `chat-voice-en.yaml` the same four; `default-voice-*.yaml` lines 1 and 30/32). Line 16 of each chat profile is the AI02 rule and quotes the pattern it bans (`Klausel — Jargon — Grund`); the metric counts those two as prose.

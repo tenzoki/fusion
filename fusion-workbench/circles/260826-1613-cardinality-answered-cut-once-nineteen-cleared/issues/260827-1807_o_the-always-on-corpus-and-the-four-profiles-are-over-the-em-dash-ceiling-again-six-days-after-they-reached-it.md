@@ -33,3 +33,5 @@ Prose sites at HEAD in the two files still on the floor: `rules/fusion-workbench
 **Severity:** Medium. No malfunction; the corpus every agent reads carries the register its own rule forbids, at 3.5 per 1000 against a ceiling of 1.
 
 **Found by:** analyst, plan step 6 measurement, HEAD `0fb5085`.
+
+Also seen: 260922-1019 by coder — the rule half landed in the commit that carries this line: `rules/agent-setup.md` and `rules/fusion-workbench-conventions.md` read `ok` under `bin/fusion-prose-metric` (0 and 4 prose em-dashes; the four left are the section headings that are anchors), so `bin/fusion-rules coder | xargs bin/fusion-prose-metric` is over on `chat-voice-de.yaml` alone; the profile half waits on `260922-0937_*_may-the-eight-voice-profile-yaml-files-be-repunctuated-under-the-em-dash-ceiling.md`, the ontocoder gate under `**Mode:** autonomous`, and the record stays open for it.

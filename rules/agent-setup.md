@@ -50,7 +50,7 @@ manifest, and says nothing about your paths.
 
 If `fusion-rules` emitted a `chat-voice-*.yaml` path (it does for every agent), read it and
 **apply its anti-patterns and its terse-and-direct whitelist to every line a human may
-read** — your report to the dispatcher included. If it also emitted a `default-voice-*.yaml`
+read**, your report to the dispatcher included. If it also emitted a `default-voice-*.yaml`
 path (prose agents only), read it as your long-form writing profile for narrative output.
 If a profile you expect is absent, note the absence (in your history file if you keep one)
 and proceed.
@@ -58,7 +58,7 @@ and proceed.
 The full user-facing style contract, `user-facing-output.md`, is emitted only to the agents
 whose output the user reads directly (gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md). If you did not receive it, your
 report's audience is the orchestrator that dispatched you: lead with the outcome, keep the
-`Verification:` line where your prompt mandates one, and skip decorative structure — a
+`Verification:` line where your prompt mandates one, and skip decorative structure: a
 report is data for a dispatcher, not a page for a reader.
 
 The two paths may name **different languages**: the chat profile resolves from the
