@@ -314,7 +314,7 @@ Field key. **Record** is the storeless citation of the decision or defect the st
     - Gate: none
     - Dependencies: none
 
-12. **Close the gap in the orchestrator's three-set gate split**
+12. [DONE] **Close the gap in the orchestrator's three-set gate split**
     - Executor: `coder`
     - Record: `260922-1208_*_the-three-set-gate-split-names-no-set-for-the-planner-without-claimed-item-row.md`
     - Site at HEAD: `agents/orchestrator.md:383` sorts the `## Human Gate Rules` table "into three disjoint sets" and ends "**Every other row** (the spec, the flagged step, files outside the tree, the reconciliation verdict) stops and asks as written, field or no field." The row at `:381`, *The planner is about to be dispatched and this checkout holds no claimed work item*, appears in none of the three enumerations. `rules/critical-stance.md` §4 calls a gap in a case split a defect of the same kind as a wrong result.
@@ -322,8 +322,9 @@ Field key. **Record** is the storeless citation of the decision or defect the st
     - Do not touch: the answered set and the file-and-skip set, both of which `57e2b7eb` settled; the table rows themselves
     - Changes: the parenthetical names the planner-without-item row among the rows that ask as written, with the reason the row exists stated in the clause: the field says nothing about which checkout holds the work, and the row is what stops two checkouts planning one job in parallel. Taking the alternative the record offers, dropping the enumeration for "every row not named above", is not chosen: the enumeration is what lets a reader check the split is complete, and an enumeration with the gap closed does that better than a sentence that cannot be checked.
     - Acceptance: `grep -c 'holds no claimed work item' agents/orchestrator.md` is at least `2`; `sed -n '383p' agents/orchestrator.md | grep -c 'Every other row'` prints `1`; `bin/fusion-prose-metric agents/orchestrator.md` reads `ok`; `cd hooks && npm test` exits 0.
-    - Growth: `agents/`, about +150 bytes.
-    - Pin: unmoved.
+    - Growth: `agents/`, about +150 bytes. **Landed: +316 bytes**, `orchestrator.md` 97 444 -> 97 760, `agents/` 322 295 -> 322 611, head-room 6 272 -> 5 956. The golden was regenerated; no baseline moved.
+    - Pin: unmoved. **Landed: unmoved**, no re-approval; the added clause cites nothing.
+    - **One acceptance reading differs from the plan's.** `bin/fusion-prose-metric agents/orchestrator.md` reads `over`, and read `over` at this step's parent commit too: 171 em-dashes against a permit of 14. The plan's expectation was wrong about the tree rather than about the edit, which is the same case step 4 met in `rules/context-lean-claude-md.md`. This step added no em-dash, the count standing at 171 across the edit and the rate at 12.0 per 1 000 words.
     - Gate: none
     - Dependencies: none
 

@@ -8,3 +8,6 @@ Acceptance: the "Every other row" parenthetical names the planner-without-item r
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
 Executor: `coder`. Found in the closing review `260922-1208-reviewer-closing-pass-over-the-51-issue-package-451bb312-to-bf515cad.md`. The row itself predates the range (added at the pin's thirty-ninth re-approval, before `451bb312`); the enumeration that omits it was rewritten inside the range.
+
+---
+Resolved: `agents/orchestrator.md` `## Human Gate Rules` names the planner-about-to-be-dispatched-with-no-claimed-item row inside the "Every other row" enumeration and says why it is in no other set: the field is read off a claimed item and says nothing about which checkout holds the work, while the row exists to stop two checkouts planning one job in parallel. The alternative the record offers, dropping the enumeration for "every row not named above", was not taken: the enumeration is what lets a reader check the split is complete, and the acceptance greps for the row's own wording, so the next rewrite of the paragraph makes the omission visible.
