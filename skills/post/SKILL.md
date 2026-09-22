@@ -22,7 +22,20 @@ If the first exits non-zero, halt: there is no workbench to write into, and this
 
 ## Step 2: compose the draft
 
-The entry is **twenty lines in the file**, in this order and no other:
+The stamp comes from `date`, and the writing checkout from the guarded identity call; both are held for the rest of the run:
+
+```bash
+STAMP="$(date +%y%m%d-%H%M)"
+CHECKOUT=""
+if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]; then
+  CHECKOUT="$("$FUSION_PLUGIN_ROOT/bin/fusion-identity" | sed -n 's/^CHECKOUT=//p')"
+fi
+echo "stamp=$STAMP checkout=${CHECKOUT:-UNRESOLVED}"
+```
+
+`UNRESOLVED` stops the run before anything is composed. The identifier is the filename's third field and the only thing that tells a reader who wrote the entry, so nothing is substituted for it: say which half could not be read and write no file. `bin/fusion-identity`'s own header carries the exit codes and what each one means.
+
+The entry is **at most twenty lines**, a ceiling and not an exact count, in this order and no other:
 
 1. one subject line,
 2. one blank line,
@@ -36,13 +49,13 @@ The pointer block carries the commit range (the session's start anchor, to `HEAD
 
 **The person's part reads plainly to somebody who never saw this session.** No state marker, no fusion noun, no agent name as the subject of a sentence, no bare identifier. That obligation is authored here rather than cited: `rules/user-facing-output.md` `## Vocabulary` exempts workbench records, and a message is one.
 
-**Count the lines with `wc -l` before the draft is put**, never after:
+Write the draft with the `Write` tool to `"$WORKBENCH/.post-draft-$CHECKOUT"`, a dotfile at the workbench root that no staging list names and `/fusion:cleanup` does not commit, and count that file, never a rendering of it:
 
 ```bash
-printf '%s\n' "$DRAFT" | wc -l
+wc -l < "$WORKBENCH/.post-draft-$CHECKOUT"
 ```
 
-Over the cap, cut and recount. Putting a long draft and trimming it in front of the user is a different procedure and does not satisfy this step.
+`wc -l` counts newlines, so the file ends in one. Over the ceiling, cut the file and recount. Putting a long draft and trimming it in front of the user is a different procedure and does not satisfy this step.
 
 ## Step 3: nothing to say is an answer
 
@@ -50,38 +63,24 @@ Over the cap, cut and recount. Putting a long draft and trimming it in front of 
 
 ## Step 4: put the draft to the user
 
-Print the draft as ordinary output, then ask: one `AskUserQuestion` with three options, write it, change it, cancel. That is the same shape `skills/archive/SKILL.md` `## Process` step 6 puts. Write on the first, change nothing on the other two.
-
-**Touch git not at all**: no staging, no commit, no push. Close by telling the user to carry the file in their next commit, because an entry nobody pushed reaches nobody.
+Show the draft file's content as ordinary output, then ask: one `AskUserQuestion` with three options, write it, change it, cancel. That is the same shape `skills/archive/SKILL.md` `## Process` step 6 puts. Write on the first, change nothing on the other two.
 
 ## Step 5: write the entry
 
-On yes, and only then. The stamp comes from `date`, and the writing checkout from the guarded identity call:
+On yes, and only then, the counted file becomes the entry, so the bytes counted are the bytes written:
 
 ```bash
-STAMP="$(date +%y%m%d-%H%M)"
-CHECKOUT=""
-if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]; then
-  CHECKOUT="$("$FUSION_PLUGIN_ROOT/bin/fusion-identity" | sed -n 's/^CHECKOUT=//p')"
-fi
-echo "stamp=$STAMP checkout=${CHECKOUT:-UNRESOLVED}"
+mkdir -p "$WORKBENCH/$OUT_FORUM"
+mv "$WORKBENCH/.post-draft-$CHECKOUT" "$WORKBENCH/$OUT_FORUM/$STAMP-$CHECKOUT-<slug>.md"
 ```
 
-`UNRESOLVED` stops the write. The identifier is the filename's third field and the only thing that tells a reader who wrote the entry, so nothing is substituted for it: say which half could not be read and write no file. `bin/fusion-identity`'s own header carries the exit codes and what each one means.
-
-Otherwise `mkdir -p "$WORKBENCH/$OUT_FORUM"` and write one file:
-
-```
-$WORKBENCH/$OUT_FORUM/<STAMP>-<CHECKOUT>-<slug>.md
-```
-
-`<slug>` is a short kebab-case label, lowercase, alphanumerics and dashes, at most 40 characters.
+On change or cancel, `rm` the draft file and write nothing. `<slug>` is a short kebab-case label, lowercase, alphanumerics and dashes, at most 40 characters.
 
 **The entry carries no `**Filed by:**` field.** The filename already names the writing checkout, and a second answer to a question the name has answered is what that field would be here (`260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md`).
 
 ## Step 6: report
 
-Two lines at most: the path written, or that nothing was written and which of Step 3's two conditions or Step 5's unresolved identity is why. Name any pointer element Step 2 left out for an unread value — the omission belongs here, not in the entry. Add the one sentence about carrying the file in the next commit.
+Two lines at most: the path written, or that nothing was written and which of Step 3's two conditions or Step 2's unresolved identity is why. Name any pointer element Step 2 left out for an unread value — the omission belongs here, not in the entry. Add one sentence telling the user to carry the file in their next commit, because an entry nobody pushed reaches nobody.
 
 ## Boundaries
 

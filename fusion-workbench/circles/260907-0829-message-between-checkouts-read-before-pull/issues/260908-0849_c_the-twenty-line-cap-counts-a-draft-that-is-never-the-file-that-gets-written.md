@@ -45,3 +45,6 @@ sentence and "On yes, and only then"), and the framing sentence about the step c
 was corrected: the new home does carry one, and what it lacks is an assignment to `$DRAFT`. **The defect is
 untouched and the marker stays `_o_`** — all three gaps and the exact-count-versus-ceiling question are open
 for whoever takes them.
+
+---
+Resolved: the commit that carries this line binds the count to the bytes: `skills/post/SKILL.md` Step 2 now resolves the stamp and the checkout first (the identity block moved up from Step 5, so `UNRESOLVED` stops the run before anything is composed), writes the draft with the `Write` tool to a dotfile at the workbench root keyed by the checkout, which no staging list names, counts that file with `wc -l <` and says that `wc -l` counts newlines so the file ends in one; Step 4 shows that file's content; Step 5, on yes, moves the counted file onto the entry's path with `mv`, so what was counted is what is written, and removes it on change or cancel. The cap is stated as a ceiling, at most twenty lines and not an exact count, which answers the arithmetic question the record raised: a shorter message violates nothing. The three gaps have one answer each in the text; `$DRAFT` no longer occurs.

@@ -531,7 +531,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: steps 1, 30 (same file)
 
-32. **Count the bytes that get written**
+32. [DONE] **Count the bytes that get written** (not neutral: +370 bytes net after a 171-byte cut of Step 4's git paragraph, which `## Boundaries` and Step 6 already state; the identity block moved from Step 5 into Step 2, since the draft file is keyed by the checkout; `skills/` head-room 60 after)
     - Executor: `coder`
     - Record: `260908-0849_*_the-twenty-line-cap-counts-a-draft-that-is-never-the-file-that-gets-written.md`
     - Site at HEAD: `skills/post/SKILL.md` `## Step 2: compose the draft` says "The entry is **twenty lines in the file**" beside a `1 / blank / ≤8 / blank / ≤9` split and counts `$DRAFT`, a variable no step assigns (the only occurrence is line 42); `## Step 5: write the entry` writes "On yes, and only then" with no command binding the counted text to the file.
