@@ -361,7 +361,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
 
 ### Package C — workbench records
 
-18. **Fence the shell illustration the sweep starred, and prove the fence holds against the sweep**
+18. [DONE] **Fence the shell illustration the sweep starred, and prove the fence holds against the sweep** (+4 lines, not a separate case: the fenced fixture rides the shared scratch repository and the first `--write` case asserts it)
     - Executor: `coder`
     - Record: `260829-1623_*_the-sweep-starred-both-markers-of-a-shell-illustration-in-a-terminal-circle-record.md`
     - Site at HEAD: the container record of `260805-2005-textschicht-gegen-code-nachziehen` (its `_c_circle.md`, line 104) reads the `mv` example inline with both markers starred; at `66b486e0` the two markers were the open and the closed letter. The record is terminal; what is written back is evidence a machine rewrite destroyed, not a state, which `## Terminal states are history` does not reach. `hooks/citation-sweep.ts:269` leaves fenced and blockquoted lines alone; `hooks/lib/__tests__/citation-sweep.test.ts` carries no fenced-shell case (`grep -c fenced` prints `0`).

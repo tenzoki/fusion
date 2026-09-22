@@ -44,6 +44,8 @@ const last = (r: { stdout: string }) => r.stdout.trim().split("\n").at(-1);
 
 /** One store-prefixed citation, the shape every writing-mode case needs. */
 const DIRTY_DOC = "see `shared/issues/260101-0101_o_alpha.md`";
+/** A fenced `mv` line naming two marker letters: a statement, never a pointer (issue 260829-1623_*). */
+const FENCED_DOC = '```\nmv "260101-0101_o_alpha.md" "260101-0101_c_alpha.md"\n```\n';
 
 describe("citation-sweep rewrites through the scanner's own token walk", () => {
   it("rewrites the store-prefixed and literal-marker tokens, lists every bare stamp, and never expands one", () => {
@@ -166,18 +168,20 @@ function scratchRepo(): { root: string; wb: string; doc: string } {
   const wb = scratchAt(root);
   const doc = join(wb, "shared/decisions/260303-0303_o_doc.md");
   writeFileSync(doc, DIRTY_DOC);
+  writeFileSync(join(wb, "shared/analyses/260606-0606-fenced-mv.md"), FENCED_DOC);
   git(root, "add", "-A");
   git(root, "commit", "-q", "-m", "workbench");
   return { root, wb, doc };
 }
 
 describe("citation-sweep --write: the two mechanical guards, then the write, then idempotency", () => {
-  it("writes on a clean tracked tree with --yes, and the swept tree dry-runs to rewrites=0", () => {
+  it("writes on a clean tracked tree with --yes, leaves the fenced mv line as written, and the swept tree dry-runs to rewrites=0", () => {
     const { root, wb, doc } = scratchRepo();
     try {
       const run = sweep(root, wb, "--write", "--yes");
       expect(run.status, run.stderr).toBe(0);
       expect(readFileSync(doc, "utf-8")).toBe("see `260101-0101_*_alpha.md`");
+      expect(readFileSync(join(wb, "shared/analyses/260606-0606-fenced-mv.md"), "utf-8")).toBe(FENCED_DOC);
       expect(last(run)).toBe("files=1 rewrites=1 residual=0 record=1 circle-record=0 circle-dir=0 bare-record=0 stamp-bare=0 mode=write");
       const again = sweep(root, wb, "--dry-run");
       expect(again.status).toBe(0);
