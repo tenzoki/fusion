@@ -17,3 +17,6 @@ Two ways to close it, and they are not equivalent. Adding "forum entry" and "bac
 Worth noting for whoever takes it: the same conventions line is also the authority for the backlog entry, which does carry markers (`_o_`/`_p_`), so the line is a list of markerless kinds and not a partition. Do not add the backlog entry to it.
 
 **Acceptance test:** the section `skills/archive/SKILL.md` `## Marker vocabulary` cites a heading that actually enumerates every markerless kind archive can meet, the forum entry included, and the enumeration is in one place.
+
+---
+Resolved: `skills/archive/SKILL.md` `## Marker vocabulary` now says which kinds carry no marker is the fourth column of `rules/fusion-workbench-conventions.md` `## Filename Patterns`, the forum entry's row included (the second route the record offered, since that column already answers per kind and adds no second list); the commit that carries this line.

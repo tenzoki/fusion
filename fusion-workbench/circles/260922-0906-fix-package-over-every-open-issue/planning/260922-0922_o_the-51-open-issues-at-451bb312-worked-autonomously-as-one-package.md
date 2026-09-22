@@ -191,7 +191,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
    - Gate: none
    - Dependencies: none
 
-4. **Cite the one heading that enumerates every markerless kind**
+4. [DONE] **Cite the one heading that enumerates every markerless kind**
    - Executor: `coder`
    - Record: `260908-1854_*_archives-marker-cut-cites-a-list-of-markerless-kinds-that-does-not-carry-the-forum-entry.md`
    - Site at HEAD: `skills/archive/SKILL.md:66` "Authored in `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` and `## State Markers — decisions`; the markerless kinds are enumerated there too." The only enumeration in those two sections is the line "History, review, analysis, investigation, consultation, memo, and cadence files do NOT carry state markers." (`rules/fusion-workbench-conventions.md:322`), which carries no forum entry; `## Filename Patterns`'s fourth column answers per kind and its `Forum entry` row reads `no`.
