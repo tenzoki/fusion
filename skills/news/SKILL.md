@@ -56,7 +56,7 @@ Hold `ref=`, `head=`, `new=` and every `entry=` line. Exit 0 is the only case th
 - **exit 7**: the workbench is not inside this repository, so no path into it can be derived.
 - **exit 2**: a usage fault in this body. Report it as a fusion defect, not as the user's problem.
 
-A `note=` line can accompany any answer, exit 0 included, and it is a degradation that changed the answer rather than a warning to skip. Three occur: this checkout's own entries could not be filtered out, or the mark does not resolve so the whole store reads as new, or the branch tracks a local ref so no fetch was owed and the answer is as local as that ref. Repeat whichever came back to the user in its own sentence.
+A `note=` line can accompany any answer, exit 0 included, and it is a degradation that changed the answer rather than a warning to skip. Four occur: this checkout's own entries could not be filtered out, or the mark does not resolve so the whole store reads as new, or the branch tracks a local ref so no fetch was owed and the answer is as local as that ref, or the mark helper is not installed beside the reading one so no mark could be read. Repeat whichever came back to the user in its own sentence.
 
 ## Step 3: when nothing is new
 

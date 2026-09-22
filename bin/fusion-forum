@@ -62,13 +62,15 @@
 #                       subdirectory, a name in another shape). Reported, never
 #                       rendered, and not counted in `new=`.
 #   note=<sentence>     Zero or more. A degradation that changed the answer,
-#                       stated rather than hidden. Three occur: the checkout
+#                       stated rather than hidden. Four occur: the checkout
 #                       identifier could not be read, so nothing was filtered
 #                       out and this checkout's own entries may be in the list;
 #                       the mark does not resolve to a commit in this
 #                       repository, so the whole store reads as new; the branch
 #                       tracks a local ref, so no fetch was owed and the answer
-#                       is as local as the ref is.
+#                       is as local as the ref is; the mark helper is not
+#                       installed beside this one, so no mark could be read and
+#                       the whole store reads as new.
 #
 # ## `show <commit> <git-path>`
 #
@@ -81,7 +83,9 @@
 #
 # Delegates to `bin/fusion-cadence-anchor set last_forum_read_commit <commit>`
 # and exits with that program's own code. It exists so that the key name is
-# spelled in one place and never in a skill body.
+# spelled in one place and never in a skill body. The call is guarded like
+# every other sibling call here: with the helper absent, one line names it and
+# the exit is 5, never the 127 a bare call would leak through `status`.
 #
 # ## Exit codes
 #
@@ -96,7 +100,8 @@
 #      upstream configured for the branch, an upstream ref that does not
 #      resolve after the fetch, or a workbench that is in no tree at that
 #      ref. `state=` names which, and no value is substituted for the answer
-#      that could not be taken.
+#      that could not be taken. From `seen`: the mark could not be written,
+#      because the mark helper it delegates to is absent beside this script.
 #   6  the fetch did not complete. git's own stderr is passed through
 #      unmodified, because the causes (unreachable host, refused credentials,
 #      a wedged lock) are git's to explain and paraphrasing them loses the
@@ -335,6 +340,8 @@ case "$cmd" in
     mark=""
     if [ -x "$HERE/fusion-cadence-anchor" ]; then
       mark="$("$HERE/fusion-cadence-anchor" get "$ANCHOR_KEY" 2>/dev/null || true)"
+    else
+      add_note "the mark helper is not installed beside this one, so no mark could be read and the whole store reads as new"
     fi
     mark_usable=""
     if [ -n "$mark" ]; then
@@ -408,6 +415,10 @@ case "$cmd" in
 
   seen)
     [ "$#" -eq 2 ] || die_usage "seen takes exactly one argument, a commit"
+    if [ ! -x "$HERE/fusion-cadence-anchor" ]; then
+      echo "fusion-forum: $HERE/fusion-cadence-anchor is missing, so the mark could not be written." >&2
+      exit 5
+    fi
     status=0
     "$HERE/fusion-cadence-anchor" set "$ANCHOR_KEY" "$2" || status=$?
     exit "$status"

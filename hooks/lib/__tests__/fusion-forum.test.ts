@@ -1,13 +1,13 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 
 // `bin/fusion-forum` is a bash script, so this drives the real script through child_process against scratch
 // repositories (a bare origin, the checkout that pushes into it, the checkout that reads), the way the reading skill
-// calls it. Under test is the interface its header names: the exit table, the `state=` vocabulary, and the three
+// calls it. Under test is the interface its header names: the exit table, the `state=` vocabulary, and the four
 // `note=` degradations, the only places the answer moves while the exit code does not.
 //
 // EVERY FIXTURE PATH IS PHYSICAL (`realpathSync`): the script takes both sides as `pwd -P`, and a fixture built on
@@ -180,6 +180,18 @@ describe("bin/fusion-forum", () => {
     publish(t.author);
     const r = run(t.reader, "new", STORE);
     expect([r.status, r.value("state"), r.value("new")]).toEqual([5, "workbench-untracked", null]);
+  });
+
+  it("with the mark helper absent beside it, new reports the unreadable mark and seen exits 5 with one line", () => {
+    const t = trio("260907-1000-99999999-hello.md");
+    const stub = join(scratch("stub"), "bin");
+    mkdirSync(stub);
+    for (const f of ["fusion-forum", "fusion-workbench-root", "fusion-identity"]) copyFileSync(join(pluginRoot, "bin", f), join(stub, f));
+    const call = (...args: string[]) => spawnSync(join(stub, "fusion-forum"), args, { cwd: t.reader, encoding: "utf-8", env: { ...process.env, ...gitEnv(t.reader) } });
+    const fresh = call("new", STORE);
+    expect([fresh.status, fresh.stdout.split("\n").filter((l) => l.startsWith("note="))]).toEqual([0, [expect.stringContaining("mark helper is not installed")]]);
+    const seen = call("seen", "0123456789abcdef0123456789abcdef01234567");
+    expect([seen.status, seen.stderr.trim().split("\n")]).toEqual([5, [expect.stringContaining("fusion-cadence-anchor is missing")]]);
   });
 
   it("a branch tracking a local ref skips the fetch and says the comparison is that local", () => {

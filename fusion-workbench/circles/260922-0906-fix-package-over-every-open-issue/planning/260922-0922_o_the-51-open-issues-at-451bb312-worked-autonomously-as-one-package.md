@@ -519,7 +519,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: steps 1, 29
 
-31. **Guard the sibling helper in both subcommands and report the miss**
+31. [DONE] **Guard the sibling helper in both subcommands and report the miss** (+12 lines; the news body's "Three occur" became four with the vocabulary, +84 bytes; the exit table's `seen` cause names the mark helper in words rather than by path, since a spelled path there moved the pin by one and the `## seen` section two paragraphs up already spells it)
     - Executor: `coder`
     - Record: `260908-0848_*_the-mark-helper-is-guarded-in-new-and-unguarded-in-seen-and-both-branches-are-wrong.md`
     - Site at HEAD: `bin/fusion-forum:304-306` guards `fusion-cadence-anchor get` with `[ -x ]` and adds no `note=` on the miss; `:358` calls `fusion-cadence-anchor set` bare, so an absent sibling exits 127 through `status`, a code the table (`:73-93`) does not define.
