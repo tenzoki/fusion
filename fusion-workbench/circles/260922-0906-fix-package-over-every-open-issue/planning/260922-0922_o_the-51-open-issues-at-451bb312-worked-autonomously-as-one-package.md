@@ -543,7 +543,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: none
 
-33. **Report a person collision the way an alias collision is reported**
+33. [DONE] **Report a person collision the way an alias collision is reported** (+9 lines, one over the step's figure, inside the bound with 15 left; the header names the events helper's `presence` reading in words rather than by path, since the path token moved the pin by one)
     - Executor: `coder`
     - Record: `260905-0933_*_the-presence-join-key-is-free-text-so-two-humans-claiming-one-person-string-merge-into-one-party.md`
     - Site at HEAD: `bin/fusion-checkout-name:534-541` loops the store for an equal `Alias` on another stem and prints `collision=<stem>`; no loop compares `Person`; the header's collision section (`:199-213`) is about the alias alone; `hooks/events-query.ts:267-275` warns on one git identity claimed by two persons and not the reverse.

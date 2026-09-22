@@ -163,6 +163,15 @@ describe("bin/fusion-checkout-name", () => {
     expect(entryText(f, ownHex(f))).toContain("**Alias:** amber-harbor");
   });
 
+  it("another entry claiming this person under a different git identity is one person-collision line; the same identity is none", () => {
+    const f = fixture();
+    run(f, "register", "--person", "Kai");
+    writeFileSync(join(f.store, "aaaaaaaa.md"), "**Checkout:** aaaaaaaa\n**Alias:** a\n**Person:** Kai\n**Git identity:** Bo <bo@example.invalid>\n");
+    writeFileSync(join(f.store, "bbbbbbbb.md"), "**Checkout:** bbbbbbbb\n**Alias:** b\n**Person:** Kai\n**Git identity:** Ada Example <ada@example.invalid>\n");
+    const r = run(f, "register");
+    expect([r.status, r.lines("person-collision"), r.lines("collision")], r.stderr).toEqual([0, ["aaaaaaaa"], []]);
+  });
+
   it("a field holding a TAB reaches roster flattened, so the record stays four fields wide", () => {
     const f = fixture();
     run(f, "register", "--alias", "amber-harbor");

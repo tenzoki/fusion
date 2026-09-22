@@ -53,8 +53,11 @@
 #                    fields only where a flag was given, so the person and the
 #                    alias stand. Prints `entry=<path relative to
 #                    fusion-workbench/>`,
-#                    `action=created|refreshed`, and one `collision=<hex>` line
-#                    per OTHER entry holding the same alias.
+#                    `action=created|refreshed`, one `collision=<hex>` line
+#                    per OTHER entry holding the same alias, and one
+#                    `person-collision=<hex>` line per other entry holding
+#                    the same `**Person:**` under a different
+#                    `**Git identity:**`.
 #
 # ## Exit codes
 #
@@ -211,6 +214,19 @@
 # may decline. Declining leaves two entries holding one alias, and that is a
 # working state rather than a fault — the hex stays the key, so every lookup,
 # comparison and claim goes on answering exactly as it did.
+#
+# A PERSON COLLISION IS REPORTED ON THE SAME TERMS AND IS NOT HARMLESS. Two
+# entries holding one `**Person:**` under one `**Git identity:**` are one human
+# on two machines, which is what the field is for. Two entries holding one
+# `**Person:**` under DIFFERENT git identities are two humans who typed the same
+# free-text name, and `register` says so with one `person-collision=<hex>` line
+# per such entry. Unlike the alias, the person DOES enter a comparison: the
+# events helper's `presence` reading canonicalises a git identity to this
+# string and counts distinct strings, so a collision merges two parties and
+# reclassifies one human's checkouts as the other's. Reported and never
+# enforced, for the reason above — a checkout that has not pulled cannot see
+# the entry it collides with — and the caller's response is the same: name the
+# other checkout and offer a different spelling, which the human may decline.
 #
 # ## A resolution failure is never a substituted value
 #
@@ -532,11 +548,20 @@ case "$cmd" in
     printf 'action=%s\n' "$action"
 
     mine="$(get_field "$entry" Alias)"
+    my_person="$(get_field "$entry" Person)"
+    my_git="$(get_field "$entry" 'Git identity')"
     for f in "$STORE"/*.md; do
       [ -f "$f" ] || continue
       stem="$(basename "$f" .md)"
-      if [ "$stem" != "$SELF_HEX" ] && [ "$(get_field "$f" Alias)" = "$mine" ]; then
+      [ "$stem" != "$SELF_HEX" ] || continue
+      if [ "$(get_field "$f" Alias)" = "$mine" ]; then
         printf 'collision=%s\n' "$stem"
+      fi
+      # One person under one git identity is one human on two machines; under
+      # different identities it is two humans sharing a free-text name.
+      if [ -n "$my_person" ] && [ "$(get_field "$f" Person)" = "$my_person" ] \
+         && [ "$(get_field "$f" 'Git identity')" != "$my_git" ]; then
+        printf 'person-collision=%s\n' "$stem"
       fi
     done
     exit 0
