@@ -12,3 +12,6 @@ The migrate carve-out's authoring home has no heading a citation can address
 **Origin.** Surfaced by step 1 of `260908-1612_*_cut-the-skills-surface-and-add-the-post-step-body.md`, which replaces `skills/migrate/SKILL.md`'s copy of the three reasons with a pointer at this paragraph. The Circle's Directive forbids any rule file gaining a byte, so the plan cites the file without an anchor and names the paragraph in prose rather than adding the heading.
 
 **Acceptance test.** A citation of the migrate carve-out resolves to a heading whose text names the carve-out, and `skills/migrate/SKILL.md`'s pointer uses that anchor.
+
+---
+Resolved: the paragraph in `rules/workbench-path-resolution.md` now stands under its own heading, `### The one consumer that names the layout literally`, and `skills/migrate/SKILL.md` cites it by that anchor in place of the prose pointer; the commit that carries this line.

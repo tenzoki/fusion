@@ -35,12 +35,12 @@
   discuss/SKILL.md 14346
   help/SKILL.md 16183
   memo/SKILL.md 13267
-  migrate/SKILL.md 39744
+  migrate/SKILL.md 39729
   news/SKILL.md 8749
   post/SKILL.md 6228
   reconcile/SKILL.md 6604
   setup/SKILL.md 19424
-  total 227936
+  total 227921
 
 [hook-tests lines]
   archive-filter-key.test.ts 40

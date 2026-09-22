@@ -68,6 +68,8 @@ care the retirement took. `bin/fusion-rules` still exits 3 for a malformed
 `rules/context-manifest.yaml`: read a 3 against the helper that returned it, never across
 the two.
 
+### The one consumer that names the layout literally
+
 **One consumer names the layout literally in order to move it, and only one:**
 `/fusion:migrate`. Every other consumer asks the resolver which store a kind maps to.
 Migrate is the transition *between* layouts, so it must name both sides, and the resolver

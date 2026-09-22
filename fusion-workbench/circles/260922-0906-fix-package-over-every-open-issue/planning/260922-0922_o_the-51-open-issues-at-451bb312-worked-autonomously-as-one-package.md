@@ -179,7 +179,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
    - Gate: none
    - Dependencies: none
 
-3. **Give the migrate carve-out a heading and cite it by anchor**
+3. [DONE] **Give the migrate carve-out a heading and cite it by anchor**
    - Executor: `coder`
    - Record: `260908-1612_*_the-migrate-carve-outs-authoring-home-has-no-heading-a-citation-can-address.md`
    - Site at HEAD: `rules/workbench-path-resolution.md:71`, the paragraph opening "One consumer names the layout literally, and only one: `/fusion:migrate`", under `## The second argument, and what it is for`, with no heading of its own; `skills/migrate/SKILL.md:24` cites it as "in the paragraph beginning "One consumer names the layout literally"".
