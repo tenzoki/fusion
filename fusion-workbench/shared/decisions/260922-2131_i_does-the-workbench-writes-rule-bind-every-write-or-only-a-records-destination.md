@@ -48,3 +48,6 @@ Option 1, on two grounds the filing party can point at rather than infer. The bu
 
 ---
 Answered: 260922-2131_*_does-the-workbench-writes-rule-bind-every-write-or-only-a-records-destination.md `## Options` — option 1: the bullet governs where an agent's records go, not every write it makes; the no-stray-record-store property it exists for is kept and the false absolute is dropped; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: b26abe2b — the bullet now reads "agents' records go only to `fusion-workbench/`"; the second sentence is unchanged, and the wording was chosen at +6 bytes against 8 of slack so the dispatch-path bound stayed green without a cut elsewhere.
