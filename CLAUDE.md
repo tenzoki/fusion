@@ -22,7 +22,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 |---|---|
 | `.claude-plugin/plugin.json` | Manifest. **Bump version on every change.** |
 | `agents/*.md` | The 11 agent prompts; none declares a `tools:` line. Detail: `README-agents.md` `## The agents`. |
-| `hooks/` | TypeScript source and compiled `dist/`; the four hooks and what each writes. Detail: `README-hooks.md` `## Files`. |
+| `hooks/` | TypeScript source and compiled `dist/`; the hooks and what each writes. Detail: `README-hooks.md` `## Files`. |
 | `fusion.json` + `templates/fusion.json` | The per-project configuration, its two-layer merge and its retired keys. Detail: `README-hooks.md`, the per-project configuration section. |
 | `bin/` | The plugin's helper executables, called from every agent's Setup, from skill bodies and from the hook wrappers. **The roster, one row per helper, is `README-hooks.md` `### The bin/ helper roster`**, which sits on no dispatch path; each helper's own header stays its authoritative documentation. |
 | `install.sh` | The HTTPS `curl \| bash` installer and the `fusion` launcher it writes. Detail: `README-agents.md` `## Releasing`. |
