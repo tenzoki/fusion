@@ -33,3 +33,5 @@ Two consequences for the work in flight, neither of them a defect in any executo
   the named golden is.
 
 **Cross-references:** `260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md`
+---
+Resolved: the commit that carries this line fixes the class in `agents/planner.md` `## Plan Output Format`: where a later step's regeneration of a golden, a fixture or a pin clears a red this step causes, the criterion names that one test file as the expected red and any other as a stop, never a green suite alone, which is the acceptance test this record states. Steps A2 to A6 of `260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md` are not rewritten: that plan's item is `done` and the plan is read as history.

@@ -29,3 +29,5 @@ dangling anchors into a prompt C2 may not touch from files it does not own), at 
 (`path-literal-lint`, repairable only in C3's file), at C6 (`committed-dist` against an untracked
 helper) and at C9a (5 failures deliberately left to C9b). Each is named in its own commit message,
 which is the workaround this record exists to replace.
+---
+Resolved: the commit that carries this line fixes the class in `agents/planner.md` `## Plan Output Format`: a step's acceptance names only a suite state the step's own files can reach, and where a file another step owns clears a red this step causes, the criterion names that one test file as the expected red and any other as a stop. The C1 verification line itself is not rewritten: the plan `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md` is `_c_`, a terminal record read as evidence and never reconciled in place.

@@ -55,3 +55,5 @@ making a full-suite run pointless; the other two need no golden at all.
 
 That widens the acceptance test rather than satisfying it. Distinguishing a stale-golden red from
 any other red does not reach a red that appears after the last run of the suite.
+---
+Resolved: the commit that carries this line fixes the class rather than the instance: the parenthetical after the step list in `agents/planner.md` `## Plan Output Format` now binds a step's acceptance to a suite state its own files can reach, naming the one test file expected red where a later regeneration clears it and any other red as a stop, and it says the verifying run comes after every record write the step makes, which is the widened mechanism the `Also seen:` line above measured. The plan that carried the stale golden is history under `## Terminal states are history` and is left as it stands; the seven tokens were corrected at the time.

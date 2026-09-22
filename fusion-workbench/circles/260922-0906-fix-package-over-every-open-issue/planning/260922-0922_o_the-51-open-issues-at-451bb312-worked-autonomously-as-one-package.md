@@ -299,7 +299,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: none
 
-13. **Bind a plan step's acceptance to the suite state its own files can reach**
+13. [DONE] **Bind a plan step's acceptance to the suite state its own files can reach**
     - Executor: `coder`
     - Records: `260908-1800_*_three-commits-shipped-a-red-citation-sweep-gate-because-an-expected-red-golden-masked-it.md`, `260910-1033_*_step-c1s-acceptance-asks-for-a-green-suite-that-only-step-c2-can-deliver.md`, `260917-1252_*_four-steps-of-commit-a-carry-a-green-suite-acceptance-criterion-that-only-step-a7-can-satisfy.md`
     - Site at HEAD: the three records describe one class, measured five times across three packages: a step whose edit is covered by a generated fixture, a pin or a text another step owns is given "the suite is green" as its criterion, which it cannot meet with the files it may touch; and (the 2026-09-08 refinement) a record written after the last suite run reddens a gate with no run to catch it. `agents/planner.md` `## Plan Output Format`'s parenthetical after the step list states the endpoint rule and nothing about acceptance reach; the plans the records cite are `_c_` (`260909-1843_*`) or belong to a `done` item (`260917-1124_*`), so the text is not repaired there.

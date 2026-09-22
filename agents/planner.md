@@ -121,7 +121,7 @@ You may receive work in two forms:
 
 2. ...
 
-(Every step MUST declare exactly one Executor from the active executor set. See "Executor Agents" above for the set and routing rules. Steps are updated inline by agents per `fusion-workbench-conventions.md`. **A step's stated endpoint is a state the artifact can occupy, or the step names the write that makes it one.** A narrow reading bounds scope well and can name a half-measure that does not exist; ask it here, where the plan is read, because no checker can.)
+(Every step MUST declare exactly one Executor from the active executor set. See "Executor Agents" above for the set and routing rules. Steps are updated inline by agents per `fusion-workbench-conventions.md`. **A step's stated endpoint is a state the artifact can occupy, or the step names the write that makes it one.** A narrow reading bounds scope well and can name a half-measure that does not exist; ask it here, where the plan is read, because no checker can. **A step's acceptance names only a suite state the step's own files can reach:** where a later step's regeneration (a golden, a fixture, a pin re-approval) or a file another step owns clears a red this step causes, the criterion names that one test file as the expected red and any other red as a stop, and never a green suite alone. A record the step writes (a `Resolved:` line, a history note) is inside the gates' corpus, so the run that verifies the step comes after every record write the step makes.)
 
 ## Where this work stops
 
