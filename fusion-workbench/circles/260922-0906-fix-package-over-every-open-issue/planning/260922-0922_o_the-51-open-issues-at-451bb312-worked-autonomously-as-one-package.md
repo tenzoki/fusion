@@ -385,7 +385,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: step 1
 
-20. **Fence the spelled marker in the curator survey**
+20. [DONE] **Fence the spelled marker in the curator survey** (`dangling=` read 301 before and 300 after, not 302 → 301: the tree had moved by one since `451bb312`)
     - Executor: `coder`
     - Record: `260921-2238_*_a-curator-survey-spells-a-decisions-marker-letter-and-the-reconciliation-rename-made-the-row-stale.md`
     - Site at HEAD: `node hooks/dist/citation-check.js` prints one row for `260918-0738-curator-run.md:616`, status `stale-marker`: the token is the stamp `260822-1102` followed by the answered-marker letter and no slug (the record it names now stands `_i_`); the file is an analysis, markerless, and the line is a statement about the record's state at survey time.

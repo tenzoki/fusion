@@ -31,3 +31,6 @@ or rewrite the token to the wildcarded basename
 **Acceptance.** `node hooks/dist/citation-check.js` reports no `stale-marker` row for
 `260918-0738-curator-run.md`, and `dangling=` reads one lower than it did at this record's filing over
 the same tree.
+
+---
+Resolved: the commit that carries this line moves the token at line 616 of `260918-0738-curator-run.md` into a fenced line under its paragraph, the sentence pointing at it; of the two remedies the record offered, the fence, because the line states what the record read at survey time and a wildcarded basename would erase that. `node hooks/dist/citation-check.js` reports no `stale-marker` row for the file and `dangling=300` (301 before the edit over the same tree; `unedited-violations` 704 from 705).
