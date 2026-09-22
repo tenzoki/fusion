@@ -32,3 +32,6 @@ Option 1. The header's reason was written for filenames and the case that bit is
 
 ---
 Answered: 260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md — option 1 of this record: `BARE_RE` admits `[x]` in the marker position, `MARKER_SLOT` untouched, and the header paragraph is rewritten to say the stance moved because the reason was written for filenames while the population that bit is citations in source files; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1420.
+
+---
+Implemented: 23576fe6 — `BARE_RE` reads the bracket spelling of the marker slot beside the underscore one (`BRACKET_SLOT`, `MARKER_SLOT` untouched) and takes `REC_TAIL`'s sentence stop with it; `markerAtHead()` is the one respelling rule both the grammar's wildcard lookup and the sweep's candidate read; the header's not-read-on-purpose paragraph now says the stance moved and why. Landed over `78328863` (grammar, tests, exhibit fences) and `23576fe6` (the swept tree).

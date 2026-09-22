@@ -1,7 +1,7 @@
 # Implementation Plan: the grammar reads the bracket marker, and the tree is swept once
 
 **Date:** 2026-09-22
-**Status:** Approved (`**Mode:** autonomous` on the item answers the plan review)
+**Status:** Complete
 **Spec:** none, planned from the work item's `## Directive` in `260922-1420-bracket-citations-read-and-swept-once.md` and the two rulings it rests on, `260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md` and `260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md`
 **Decidability:** The load-bearing question is whether a bracket-marked token in the tree is a **pointer** to be respelled or an **exhibit** that must survive verbatim. It is **not decidable** from the inputs the sweep has. The token text of a pointer and of an exhibit are the same string, and resolution does not separate them either: of the 139 tokens measured here, exhibits appear on both sides of the resolution boundary (13 resolve to nothing and are all exhibits, and at least 12 that resolve under the wildcard are exhibits too). That is `rules/critical-stance.md` §4 exactly. So the mechanism changes rather than the approximation improving: the deciding input is **writer-supplied and read off the line before any lookup**, which is the mechanism `hooks/lib/citation-scan.ts` already carries as `fenced-code`, `blockquote`, `announced-illustration` and `declared-exhibit`. Step 5 therefore does not ask the sweep to decide. It puts the dry-run listing in front of a reader, the reader marks the exhibits, and only then does the sweep run, whose remaining question ("does this hit carry a `reason`?") is decided from inputs it holds. Two further inputs are handed on rather than approximated. Whether the clause in step 1 and the closing step in step 7 fit their bounded surfaces is reported by the bounds at their own commits, and each step names the cut it takes; where no acceptable cut exists the step is gated and says so.
 **Domain:** code
@@ -131,7 +131,7 @@ stateDiagram-v2
    - Gated if no cut of the clause's size can be taken without losing a statement: the way out would be a head-room raise, which is a user ruling and not this plan's to make. File the finding in the item's `issues/` store and skip, leaving steps 2 to 6 to proceed; they do not depend on the clause for correctness, only for authority.
    - Dependencies: none.
 
-2. [IN PROGRESS] **`BARE_RE` reads the bracket marker**
+2. [DONE] **`BARE_RE` reads the bracket marker**
    - Executor: `coder`
    - Files: `hooks/lib/citation-scan.ts`
    - Changes, four edits in one file:
@@ -185,7 +185,7 @@ stateDiagram-v2
    - Acceptance: `cd hooks && npx vitest run surface-growth-bound marker-format-lint path-literal-lint` exits 0, and `wc -c skills/migrate/SKILL.md` is at or below 39 701.
    - Dependencies: 6.
 
-8. **Close the plan and hand the item back**
+8. [DONE] **Close the plan and hand the item back**
    - Executor: `coder`
    - Files: this plan, the item record's head fields
    - Changes: mark every step `[DONE]`, set `**Status:** Complete`, rename this file from `_o_` to `_c_`. Report to the orchestrator that the item is ready to move to `done`; moving it is the orchestrator's, at the user's word, and no agent dispatch performs it.
