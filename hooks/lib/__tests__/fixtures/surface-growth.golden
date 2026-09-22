@@ -66,7 +66,7 @@
   fusion-claimed-item.test.ts 192
   fusion-commit-lock.test.ts 454
   fusion-count-sources.test.ts 413
-  fusion-events.test.ts 422
+  fusion-events.test.ts 437
   fusion-forum.test.ts 220
   fusion-identity.test.ts 217
   fusion-paths.test.ts 737
@@ -104,4 +104,4 @@
   surface-growth-bound.test.ts 568
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22105
+  total 22120

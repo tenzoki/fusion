@@ -36,9 +36,13 @@
 #     dispatch=coder<TAB>toolu_01H3L9xg<TAB>2026-09-08T16:00:55<TAB>24.3<TAB>longer
 #
 # **Two counts are on stderr and never on stdout**: lines of the log that were
-# not a JSON object at all, and dispatches carrying no readable stamp on one of
-# their two rows. Neither is a figure taken from the log; each says how far the
-# log fell short of letting one be taken.
+# not a JSON object at all, and dispatches of the agents read carrying no
+# readable stamp on one of their two rows (a start with none whatever its date,
+# since the cutoff cannot be applied to it; a completion with none inside the
+# cutoff). Neither is a figure taken from the log; each says how far the log
+# fell short of letting one be taken. The second is under the same agent and
+# cutoff filters as every figure on stdout, so the four sum to the dispatches
+# in scope.
 #
 # ---------------------------------------------------------------------------
 # The `scope=` key, which presence prints and does not count
@@ -149,7 +153,10 @@
 # the date the dispatch bound landed, kept as the floor after its retirement so
 # that a reading taken today covers the same window as the readings taken while
 # the bound existed. `--since` overrides it and takes YYYY-MM-DD; anything else
-# is a usage error rather than an empty reading that looks like an answer.
+# is a usage error rather than an empty reading that looks like an answer. A
+# value of that shape naming no date (`2026-13-45`) passes the shape check and
+# is an empty reading that says so: one stderr sentence names the value, every
+# figure prints zero, and nothing is said about the log's stamps.
 # `--since 1970-01-01` reads the whole log.
 #
 # **This subcommand is deliberately not identity-scoped.** The other one is,

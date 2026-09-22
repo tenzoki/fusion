@@ -378,6 +378,16 @@ describe("measureDispatchDurations scores each pair into exactly one of four out
     expect(r.rows).toEqual([]);
   });
 
+  it("unstamped is scoped by the agent filter, and a start with no stamp is counted whatever its date (issue 260908-2112_*)", () => {
+    const r = dispatchIn(log(sess(), ...dispatch("p", { agent: "planner", ts: "2026-09-0", end: null }), ...dispatch("c", { ts: "2026-09-0", end: null })));
+    expect(r).toMatchObject({ unstamped: 1, cutoffUnparseable: false });
+  });
+
+  it("an unparseable cutoff is its own field, with every dispatch figure zero and unstamped among them (issue 260908-2113_*)", () => {
+    const r = dispatchIn(log(sess(), ...dispatch("t1")), { cutoffIso: "2026-13-45" });
+    expect(r).toMatchObject({ cutoffUnparseable: true, unstamped: 0, counted: 0, unpaired: 0, rows: [], sessionStarts: 1 });
+  });
+
   it("a ts written without a Z designator is read as UTC and not as local time", () => {
     // The one assertion that would move with the runner's timezone if parseTs
     // stopped appending the designator: the start is unzoned, the completion
@@ -418,5 +428,10 @@ describe("the entry point puts the three limit= qualifications on stdout", () =>
     }
     expect(r.stdout.split("\n").filter((l) => l.startsWith("limit=")).length).toBe(3);
     expect(r.stdout).toContain("counted=1");
+  });
+
+  it("--since of date shape naming no date says so on stderr, blames no stamp, and exits 0 with zeros", () => {
+    const r = cli(workbench(log(sess(), ...dispatch("t1"))), ident(0, { person: KAI, checkout: ME }), process.execPath, "dispatches", "--since", "2026-13-45");
+    expect([r.status, r.stderr.includes("--since 2026-13-45 has the shape of a date"), r.stderr.includes("readable ts"), r.stdout.includes("counted=0")]).toEqual([0, true, false, true]);
   });
 });

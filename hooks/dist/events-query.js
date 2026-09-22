@@ -370,9 +370,15 @@ function dispatches(root, minutes, since) {
         agents: MEASURED_AGENTS,
     });
     noteMalformed(r.malformed);
+    if (r.cutoffUnparseable) {
+        // The stamps are fine; the value is not. Said as that, and nothing about the log.
+        say(`--since ${cutoff} has the shape of a date and is not one this program can read, so ` +
+            "the reading is empty: no dispatch is placed against it and every figure below is zero.");
+    }
     if (r.unstamped > 0) {
-        say(`${r.unstamped} dispatch(es) carry no readable ts on one of their two rows and could ` +
-            "neither be placed against the cutoff nor measured. They are in no figure below.");
+        say(`${r.unstamped} dispatch(es) of the agents read carry no readable ts on one of their two ` +
+            "rows: a start with none whatever its date, since it cannot be placed against the " +
+            "cutoff, or a completion with none inside it. They are in no figure below.");
     }
     const out = [
         `threshold_minutes=${thresholdMinutes}`,

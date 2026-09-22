@@ -374,7 +374,7 @@ export const MEASURED_AGENTS = [
  * dispatch made from another checkout is still a dispatch, and `isOurs` is not
  * applied anywhere below.
  *
- * The order of the filters is the specification's and matters:
+ * The filters are the specification's and matter:
  *
  *   1. pair `task_start` with `task_done` on `task`, and only where `task` is
  *      present. A start with no completion is `unpaired`;
@@ -384,14 +384,21 @@ export const MEASURED_AGENTS = [
  *   4. mark what no `session_start` accounts for as `unattributable`, which is
  *      reported and neither dropped nor counted.
  *
- * Steps 2 and 3 apply to an unpaired start as well. Without that the `unpaired`
- * figure would run over the whole file and over every agent, which is the exact
- * widening the cutoff exists to prevent, and it would not be comparable with
- * `counted` beside it.
+ * Steps 2 and 3 apply to an unpaired start as well, and to an unstamped one.
+ * Without that the `unpaired` figure would run over the whole file and over
+ * every agent, which is the exact widening the cutoff exists to prevent, and it
+ * would not be comparable with `counted` beside it; `unstamped` counted over
+ * the whole log until 2026-09-22 for the same reason, that its increment sat
+ * above the two filters. In the loop the agent filter therefore runs first,
+ * then the stamp is read, then the cutoff applied: a start with no readable
+ * stamp is counted `unstamped` whatever its date, because the cutoff cannot be
+ * applied to it, but only for the agents in scope.
  *
- * **A cutoff that cannot be parsed keeps nothing.** The failure is closed
- * towards the empty reading rather than the whole history, because the history
- * is what the cutoff is there to exclude.
+ * **A cutoff that cannot be parsed keeps nothing, and says so.** The failure is
+ * closed towards the empty reading rather than the whole history, because the
+ * history is what the cutoff is there to exclude; it is reported as
+ * `cutoffUnparseable` rather than folded into `unstamped`, whose sentence would
+ * then blame the log's stamps for a value the caller passed.
  *
  * Every timestamp goes through `parseTs`. The emit convention writes UTC with
  * no `Z` designator and ECMA-262 reads such a string as local time.
@@ -429,6 +436,21 @@ export function measureDispatchDurations(text, opts) {
     let unattributable = 0;
     let unpaired = 0;
     let unstamped = 0;
+    const empty = {
+        rows,
+        counted,
+        longerThanThreshold,
+        unattributable,
+        unpaired,
+        unstamped,
+        sessionStarts,
+        sessionStartsWithoutId,
+        malformed,
+    };
+    // Decided once, before any dispatch is looked at: the log's coverage figures
+    // above are still the log's, and every dispatch figure is zero.
+    if (cutoffMs === null)
+        return { ...empty, cutoffUnparseable: true };
     const seenStart = new Set();
     for (const line of lines) {
         if (line.event !== "task_start" || line.task === undefined)
@@ -436,14 +458,14 @@ export function measureDispatchDurations(text, opts) {
         if (seenStart.has(line.task))
             continue;
         seenStart.add(line.task);
+        if (line.agent === undefined || !agents.has(line.agent))
+            continue;
         const startMs = parseTs(line.ts);
-        if (startMs === null || cutoffMs === null) {
+        if (startMs === null) {
             unstamped++;
             continue;
         }
         if (startMs < cutoffMs)
-            continue;
-        if (line.agent === undefined || !agents.has(line.agent))
             continue;
         const agent = line.agent;
         const task = line.task;
@@ -487,6 +509,7 @@ export function measureDispatchDurations(text, opts) {
         sessionStarts,
         sessionStartsWithoutId,
         malformed,
+        cutoffUnparseable: false,
     };
 }
 /**

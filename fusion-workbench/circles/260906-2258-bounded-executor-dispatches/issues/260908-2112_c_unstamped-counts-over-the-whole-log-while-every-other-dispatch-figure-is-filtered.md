@@ -54,3 +54,6 @@ criterion naming `unstamped` before changing what the figure counts, and update 
 ## Scope
 
 `bin/fusion-events dispatches` only. Reported figure, no gate, no other subcommand.
+
+---
+Resolved: the commit that carries this line moves the agent filter ahead of the stamp read in `measureDispatchDurations` (`hooks/lib/events-query.ts`), then the cutoff test, so `unstamped` counts only starts of the agents read (a start with no readable stamp is counted whatever its date, because the cutoff cannot be applied to it) and completions inside the cutoff, the same population as every other figure; the interface comment, the doc block, the wrapper's stderr sentence and the `bin/fusion-events` header say what the figure now counts, and a case in `hooks/lib/__tests__/fusion-events.test.ts` pins a `planner` start with a truncated stamp at `unstamped=0`. The spec's C4 names no `unstamped` criterion, checked by grep over the container's planning store before the change.

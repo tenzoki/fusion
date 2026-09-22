@@ -303,12 +303,23 @@ export interface DispatchReport {
     unattributable: number;
     unpaired: number;
     /**
-     * Dispatches dropped because a stamp could not be read, so they could not be
-     * placed against the cutoff or measured. Returned rather than dropped
-     * silently, per `parseLog`'s rule: a skipped line nobody counts is the silent
-     * under-report this module exists to remove.
+     * Dispatches of the agents read that were dropped because a stamp could not
+     * be read: a start row with none, whatever its date, since a start that
+     * cannot be placed against the cutoff cannot be excluded by it either; or an
+     * end row with none, on a start inside the cutoff. Returned rather than
+     * dropped silently, per `parseLog`'s rule: a skipped line nobody counts is
+     * the silent under-report this module exists to remove. Under the same
+     * filters as every other figure, so it is comparable with `counted` (issue
+     * 260908-2112_*_unstamped-counts-over-the-whole-log-while-every-other-dispatch-figure-is-filtered.md).
      */
     unstamped: number;
+    /**
+     * `cutoffIso` could not be parsed. Then no dispatch is placed and every
+     * dispatch figure above is zero; the stamps are fine and `unstamped` says so
+     * by staying zero (issue
+     * 260908-2113_*_an-unparseable-cutoff-is-reported-to-the-user-as-unstamped-dispatches.md).
+     */
+    cutoffUnparseable: boolean;
     /**
      * `session_start` rows seen, and how many of them carry no `session_id`. The
      * second is the whole cause of `unattributable`, and it is derived here so a
@@ -334,7 +345,7 @@ export interface DispatchOptions {
  * dispatch made from another checkout is still a dispatch, and `isOurs` is not
  * applied anywhere below.
  *
- * The order of the filters is the specification's and matters:
+ * The filters are the specification's and matter:
  *
  *   1. pair `task_start` with `task_done` on `task`, and only where `task` is
  *      present. A start with no completion is `unpaired`;
@@ -344,14 +355,21 @@ export interface DispatchOptions {
  *   4. mark what no `session_start` accounts for as `unattributable`, which is
  *      reported and neither dropped nor counted.
  *
- * Steps 2 and 3 apply to an unpaired start as well. Without that the `unpaired`
- * figure would run over the whole file and over every agent, which is the exact
- * widening the cutoff exists to prevent, and it would not be comparable with
- * `counted` beside it.
+ * Steps 2 and 3 apply to an unpaired start as well, and to an unstamped one.
+ * Without that the `unpaired` figure would run over the whole file and over
+ * every agent, which is the exact widening the cutoff exists to prevent, and it
+ * would not be comparable with `counted` beside it; `unstamped` counted over
+ * the whole log until 2026-09-22 for the same reason, that its increment sat
+ * above the two filters. In the loop the agent filter therefore runs first,
+ * then the stamp is read, then the cutoff applied: a start with no readable
+ * stamp is counted `unstamped` whatever its date, because the cutoff cannot be
+ * applied to it, but only for the agents in scope.
  *
- * **A cutoff that cannot be parsed keeps nothing.** The failure is closed
- * towards the empty reading rather than the whole history, because the history
- * is what the cutoff is there to exclude.
+ * **A cutoff that cannot be parsed keeps nothing, and says so.** The failure is
+ * closed towards the empty reading rather than the whole history, because the
+ * history is what the cutoff is there to exclude; it is reported as
+ * `cutoffUnparseable` rather than folded into `unstamped`, whose sentence would
+ * then blame the log's stamps for a value the caller passed.
  *
  * Every timestamp goes through `parseTs`. The emit convention writes UTC with
  * no `Z` designator and ECMA-262 reads such a string as local time.

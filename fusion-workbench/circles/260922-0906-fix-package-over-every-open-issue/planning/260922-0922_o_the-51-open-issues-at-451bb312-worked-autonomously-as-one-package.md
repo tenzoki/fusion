@@ -459,7 +459,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: step 1
 
-26. **Count `unstamped` under the same filters as every other dispatch figure, and report an unparseable cutoff as what it is**
+26. [DONE] **Count `unstamped` under the same filters as every other dispatch figure, and report an unparseable cutoff as what it is** (+15 lines; the helper prints no `unstamped=` key, so the first probe's evidence is the absence of the stderr sentence, and `counted=1` for the in-scope pair; the empty report keeps `malformed` and the session-start figures as read, since they describe the log and not the reading)
     - Executor: `coder`
     - Records: `260908-2112_*_unstamped-counts-over-the-whole-log-while-every-other-dispatch-figure-is-filtered.md`, `260908-2113_*_an-unparseable-cutoff-is-reported-to-the-user-as-unstamped-dispatches.md`
     - Site at HEAD: `hooks/lib/events-query.ts:627-633`, `measureDispatchDurations`: `if (startMs === null || cutoffMs === null) { unstamped++; continue; }` above both `if (startMs < cutoffMs) continue;` and the agent filter; a second `unstamped++` at `:649` (the end row) below them; `DispatchReport` (`:521-543`) has no field for an unparseable cutoff; `hooks/events-query.ts:450-452` prints "carry no readable ts on one of their two rows … They are in no figure below." for both causes.

@@ -51,3 +51,6 @@ say so at the site.
 ## Scope
 
 `bin/fusion-events dispatches` only.
+
+---
+Resolved: the commit that carries this line tests `cutoffMs === null` once before the loop in `measureDispatchDurations` and returns a report with a new `cutoffUnparseable: true` and every dispatch figure zero (the log's own coverage figures, `malformed` and the session-start counts, stay as read); the wrapper prints one sentence naming the `--since` value as the thing it cannot read and nothing about stamps, and the `bin/fusion-events` header says so under `cutoff=`. Of the record's two fix directions, the first: a real calendar check would leave the branch reachable through `parseTs` all the same. Reachability confirmed by running the helper: `--since 2026-13-45` reaches the branch, exit 0, the sentence on stderr and `counted=0` on stdout.
