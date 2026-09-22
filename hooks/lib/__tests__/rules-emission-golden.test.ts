@@ -1045,14 +1045,17 @@ function dispatchBoundMessage(over: { agent: string; g: Growth }[]): string {
       "conditionally emitted rules only that path receives. There is no third way to " +
       "land it, and no path may be left over while another is under.",
     "",
-    "The baseline moves only at the three events in helpers/growth-bound.ts " +
-      "`## Re-baselining: the three events at which a baseline moves`, and NO " +
-      "RE-BASELINING EVENT COVERS A GROWING CLAUDE.md. That rule was written for a " +
-      "surface fusion owns; two of this quantity's three components belong to the " +
-      "project, and no fourth event was added for them. Inside this repository a " +
-      "larger CLAUDE.md is offset against another component of the same paths or it " +
-      "is not landed. Editing the fixture to make this assertion pass is none of the " +
-      "three events.",
+    "The baseline moves at four events: the three in helpers/growth-bound.ts " +
+      "`## Re-baselining: the three events at which a baseline moves`, and the " +
+      "fourth this bound alone carries, authored in fixtures/dispatch-path.baseline " +
+      "`## The re-arming, 2026-09-22 — every row follows the measurement down`: " +
+      "after a cut of a component shared by every row, a zero-sum bound follows the " +
+      "measurement down. NO RE-BASELINING EVENT COVERS A GROWING CLAUDE.md, the " +
+      "fourth included — it takes a path's total DOWN to a measurement and never up " +
+      "to one. Two of this quantity's three components belong to the project, so " +
+      "inside this repository a larger CLAUDE.md is offset against another component " +
+      "of the same paths or it is not landed. Editing the fixture outside those four " +
+      "events is none of them.",
     "",
   );
   return lines.join("\n");
@@ -1211,6 +1214,8 @@ describe("the dispatch-path bound, on synthetic component sizes", () => {
       "must be offset ONCE IN A SHARED COMPONENT, or ONCE PER PATH",
     );
     expect(msg).toContain("NO RE-BASELINING EVENT COVERS A GROWING CLAUDE.md");
-    expect(msg).toContain("## Re-baselining: the three events at which a baseline moves");
+    expect(msg).toContain(
+      "## The re-arming, 2026-09-22 — every row follows the measurement down",
+    );
   });
 });
