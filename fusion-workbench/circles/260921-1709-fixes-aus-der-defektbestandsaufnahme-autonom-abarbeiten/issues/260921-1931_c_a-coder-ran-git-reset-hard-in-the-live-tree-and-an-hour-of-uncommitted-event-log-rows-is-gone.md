@@ -8,3 +8,5 @@ Acceptance: either every commit under the lock stages the event log (the `with` 
 ---
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 Filed at 260921-1931 during the package's Package C run; the gap is between `73c11cfd` and `10124e3a`.
+---
+Resolved: the commit that carries this line adds two bullets to the dispatch-prompt list in `agents/orchestrator.md` `### Step 2 — dispatch`: a scratch repository is entered with an absolute `cd` on its own line, verified by `pwd`, before any command that resets, amends, cherry-picks or checks out; and an executor told to commit under the lock names `fusion-workbench/orchestrator-events.jsonl` in every staging list. Of the two branches the acceptance offers for the log, the second was taken: the lock appends its row after the wrapped command exits (`rules/commit-lock.md` `### The lock writes the commit event`), so staging the row into the same commit would contradict the lock's own predicate, and the staging-list rule is what this package has obeyed from its first commit. The rows lost between `73c11cfd` and `10124e3a` are not restored; the sixteen commits are in git.

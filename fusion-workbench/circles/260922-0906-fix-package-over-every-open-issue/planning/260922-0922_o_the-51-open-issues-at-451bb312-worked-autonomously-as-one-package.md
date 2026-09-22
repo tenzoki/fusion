@@ -311,7 +311,7 @@ Field key. **Record** is the storeless citation of the defect the step closes. *
     - Gate: none
     - Dependencies: none
 
-14. **Tell an executor how it enters a scratch repository, and what it stages when it commits under the lock**
+14. [DONE] **Tell an executor how it enters a scratch repository, and what it stages when it commits under the lock**
     - Executor: `coder`
     - Record: `260921-1931_*_a-coder-ran-git-reset-hard-in-the-live-tree-and-an-hour-of-uncommitted-event-log-rows-is-gone.md`
     - Site at HEAD: `agents/orchestrator.md` `### Step 2 — dispatch`, the bullet list the dispatch prompt carries (lines 248 to 253), whose last bullet is the whole-tree git prohibition; no bullet says how a scratch repository is entered. `bin/fusion-commit-lock` `with` appends the `commit` row after the wrapped command exits and stages nothing (`rules/commit-lock.md` `### The lock writes the commit event`: the tree is dirty after a landed commit, by design, so the record's first branch, staging the row into the same commit, contradicts the lock's own predicate and is not taken). The second branch is the fix: the executor's staging list names the log.
