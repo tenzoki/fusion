@@ -274,7 +274,7 @@ Field key. **Record** is the storeless citation of the decision or defect the st
 
 ### Package C — the remaining findings
 
-9. **Say in `docs/messages-between-checkouts.md` that an untracked workbench is named**
+9. [DONE] **Say in `docs/messages-between-checkouts.md` that an untracked workbench is named**
    - Executor: `coder`
    - Record: `260922-1208_*_the-messages-doc-says-an-untracked-workbench-answers-new-0-permanently-after-step-30-made-it-exit-5.md`
    - Site at HEAD: `docs/messages-between-checkouts.md:68`, under `## What it does not do`: "**A project that does not track its workbench in git gets nothing, and is told nothing.** … the answer is `new=0` on a successful exit, permanently. … the untracked configuration is supported and the whole feature is inert and silent inside it. Filed as `260908-0848_*_an-untracked-workbench-answers-new-equals-zero-forever-and-no-state-names-it.md`." Since `d29c5947` the helper runs `git ls-tree -d --full-tree` over the workbench path and, on an empty listing, prints `state=workbench-untracked` and exits 5 (`bin/fusion-forum:331-338`); `skills/news/SKILL.md:54` names the state to the user.
@@ -283,7 +283,7 @@ Field key. **Record** is the storeless citation of the decision or defect the st
    - Changes: the paragraph says an untracked workbench is named rather than silent: the command exits 5 with `state=workbench-untracked`, the news body tells the user which state came back, and whether to track the workbench stays the project's own decision, with fusion shipping no rule either way. The citation of `260908-0848_*` stays and reads as the record the fix closed rather than as the state of the tree.
    - Acceptance: `grep -c 'new=0.*permanently' docs/messages-between-checkouts.md` prints `0`; `grep -c 'workbench-untracked' docs/messages-between-checkouts.md` is at least `1`; `node hooks/dist/citation-check.js` prints `verdict=clean`; `cd hooks && npm test` exits 0.
    - Growth: none bounded.
-   - Pin: paths may rise by one (`bin/fusion-forum`); re-approve on line 492.
+   - Pin: paths may rise by one (`bin/fusion-forum`); re-approve on line 492. **Landed: paths 1711 -> 1712, anchors and stampBare unmoved**, the one added token being `bin/fusion-forum`, attributed by restoring the edited file to HEAD in place. Re-approved on line 492. The citation gate read `verdict=clean` with `dangling=300` and `store-prefixed=405` unmoved.
    - Gate: none
    - Dependencies: none
 

@@ -8,3 +8,6 @@ Acceptance: the paragraph says an untracked workbench is named as `workbench-unt
 ---
 **Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
 Executor: `coder` (documentation). Found in the closing review `260922-1208-reviewer-closing-pass-over-the-51-issue-package-451bb312-to-bf515cad.md`.
+
+---
+Resolved: `docs/messages-between-checkouts.md` `## What it does not do` now says an untracked workbench is named rather than silent: `bin/fusion-forum new` exits 5 printing `state=workbench-untracked` instead of a successful `new=0`, the news body names that state, and tracking stays the project's own decision. The citation of `260908-0848_*_an-untracked-workbench-answers-new-equals-zero-forever-and-no-state-names-it.md` reads as the record the fix closed.
