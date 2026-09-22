@@ -34,3 +34,11 @@ Option 1, with the `_p_` entry's reading stated in the archive commit message: r
 
 ---
 Answered: 260922-0922_*_what-becomes-of-the-two-entries-in-the-unread-shared-backlog-store.md `## Options` — option 1: both files move under `archive/` by hand (the `_p_` marker is live, so no archive tier selects it), the layout names `shared/backlog/` as a third frozen legacy store beside `stashes/` and `.migration-v2-backup/`, and the commit message states the `_p_` entry's reading: recommended 2026-08-14, realised by the conventions' write-with-the-act rule, never claimed as an item; ruled by user, Kai Stalmann <ks@qantr.com>, 260922-1223.
+
+---
+
+Implemented: the commit that carries this line — option 1, both entries archived by hand. `260814-1733_*_bounded-executor-dispatches.md` and `260814-1733_*_attach-the-rule-to-the-act.md`, the second of the two carrying a live marker, moved with `git mv` into `archive/260922-1514-backlog-store-frozen/shared/backlog/`, bodies unedited, and the emptied store directory was removed. The `_p_` marker is live, so no archive tier would have selected it; the move is by hand for exactly that reason. `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` now names three legacy stores absent from the tree on purpose, `stashes/`, `.migration-v2-backup/` and `shared/backlog/`, the third with its own reason: it held the unit of work before the container store took it and the work-item grammar replaced it. The paragraph's cardinality words moved with it, and the trailing sentence about the path exclusions now names its three rather than counting them, so the two figures in one paragraph cannot be read as one.
+
+The ruling's two constraints hold, measured at this commit: `bin/fusion-citation-check` reads `dangling=300 store-prefixed=405 edited-violations=0 verdict=clean`, all four as they stood before the move, the citations of both files being storeless and marker-wildcarded so the workbench-wide lookup resolves them at the new path; and `backlog` stays in the store-segment lists of `hooks/lib/staging-drift.ts` and `hooks/lib/citation-scan.ts`, which the layout paragraph now says out loud.
+
+The `_p_` entry's reading, in the words this ruling gives it: recommended on 2026-08-14, realised by the conventions' write-with-the-act rule, never claimed as an item.
