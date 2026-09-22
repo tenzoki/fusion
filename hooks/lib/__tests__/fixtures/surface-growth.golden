@@ -77,7 +77,7 @@
   guard-project-config-integration.test.ts 232
   guard-state-shape.test.ts 343
   helpers/citation-scan.ts 56
-  helpers/growth-bound.ts 168
+  helpers/growth-bound.ts 174
   helpers/guard-harness.ts 1047
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 614
@@ -104,4 +104,4 @@
   surface-growth-bound.test.ts 568
   work-graph.test.ts 156
   workbench-citation-lint.test.ts 352
-  total 22081
+  total 22087

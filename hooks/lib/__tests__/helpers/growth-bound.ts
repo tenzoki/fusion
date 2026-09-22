@@ -117,8 +117,14 @@ export interface Sized {
  *
  * `floor` is the baseline summed over the same files. A file with no baseline
  * entry contributes 0, so its whole current size reads as growth, which is
- * correct: nobody granted it a budget. A shrink gives a negative `delta` and is
- * never `over`, which is the other half of "this bounds the RATE of addition".
+ * correct: nobody granted it a budget. And a deleted file refunds nothing: its
+ * size and its baseline leave the two sums together, and
+ * `surface-growth-bound.test.ts` fails on a baseline entry naming a file that is
+ * gone, so there is no entry left to refund from. Room comes from a file that
+ * stays and shrinks, or from one added after the last re-baseline and never
+ * granted a budget (`260910-0445_*_deleting-a-test-file-at-its-baseline-frees-no-head-room-so-the-turn-budget-cut-cannot-pay-the-bound.md`).
+ * A shrink gives a negative `delta` and is never `over`, which is the other
+ * half of "this bounds the RATE of addition".
  */
 export interface Growth {
   /** What the set measures today. */

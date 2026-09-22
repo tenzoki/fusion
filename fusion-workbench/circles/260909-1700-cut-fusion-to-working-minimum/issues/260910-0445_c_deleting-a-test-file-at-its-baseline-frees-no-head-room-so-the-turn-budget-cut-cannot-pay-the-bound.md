@@ -110,3 +110,5 @@ the behaviour is unchanged: `6357ebfc` deleted `turn-budget-lint.test.ts` and
 the instrument fails on a baseline naming a file that is gone" — a failure until the entry is
 removed, and no head-room once it is. Each removal was paid for by a cut elsewhere, exactly as this
 record predicts.
+---
+Resolved: the commit that carries this line takes the second branch of the acceptance: the `growth()` doc comment in `hooks/lib/__tests__/helpers/growth-bound.ts` now states in as many words that a deleted file refunds nothing and where room comes from instead. The ruling the fix's part 2 asked for was answered by a test already in the tree rather than by a new decision: `surface-growth-bound.test.ts` `it("carries no baseline entry for a file that is gone")` fails the suite on a baseline entry naming a deleted file, so there is never an entry to refund from and no-refund is the only behaviour consistent with it. Part 1, the closing sentence of the cross-referenced record, is answered by that record's own `Resolved:` line, which cites this one.

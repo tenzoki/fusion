@@ -48,3 +48,5 @@ that the route taken is named in the plan — is still unmet: `grep -n "R1\|R2\b
 `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md` still returns nothing, and session 3
 added two more steps of the same class (C1b and C2b), which the plan's status line names and its body
 does not define. The gap this record is about has widened rather than closed.
+---
+Resolved: the commit that carries this line closes this on evidence: the acceptance's first half holds (`cd hooks && npm test` exits 0 with session 2's steps in the tree) and its second half holds since the plan `260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md` names the R1/R2 route at its lines 410 to 460 (`grep -c R1` prints 5 where the last reconciliation found 0). The closing sentence's inference, that deleting `turn-budget-lint.test.ts` would free 525 lines, was false: `260910-0445_*_deleting-a-test-file-at-its-baseline-frees-no-head-room-so-the-turn-budget-cut-cannot-pay-the-bound.md` measured it, and the instrument's header now says so.
