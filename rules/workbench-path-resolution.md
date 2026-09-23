@@ -73,17 +73,18 @@ the two.
 **One consumer names the layout literally in order to move it, and only one:**
 `/fusion:migrate`. Every other consumer asks the resolver which store a kind maps to.
 Migrate is the transition *between* layouts, so it must name both sides, and the resolver
-cannot help it with either. The old sides have no keys: the pre-v4 type folders at the
-workbench root, a flat `circles/*.md` that never had a directory of its own, and a record
-stating its state in a filename marker. The new side would resolve, but migrate's own input
+cannot help it with either. The old sides are the v11 store names, `circles/`, `planning/`
+and `consult/`: no `OUT_*` key names them, and a `SCAN_*` key lists one only while it exists,
+which is exactly what the move ends. The pre-v4 shapes it names only to refuse them, with the
+`v11.11.1` route. The new side would resolve, but migrate's own input
 is a tree the resolver's answers do not describe — it is reading files where they used to
 be in order to move them where they now belong. Its store paths are literal, and that is
 correct.
 
 **`/fusion:setup` is the second exemption the path-literal gate carries, and it is not this
-one.** Setup names the pre-v4 type folders in the probe that refuses them, and it `mkdir`s
-the current stores; neither act is a transition between layouts, and neither could be
-expressed as a resolver key — one is about a layout that has no keys, the other creates the
+one.** Setup `mkdir`s the stores it scaffolds and, for the window, names the v11 stores its
+probe reports; neither act is a transition between layouts, and neither could be expressed
+as a resolver key — the report is about names no key writes, the `mkdir` creates the
 directories the keys name. The two exemptions are enumerated in
 `hooks/lib/__tests__/path-literal-lint.test.ts` and recorded in
 `rules/fusion-workbench-conventions.md`, in the *Store-directory path literals* paragraph

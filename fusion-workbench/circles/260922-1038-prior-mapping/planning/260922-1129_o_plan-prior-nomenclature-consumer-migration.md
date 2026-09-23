@@ -165,7 +165,7 @@ Steps 1 to 3 are one commit, so the surface is measured once at that commit; the
    - Dependencies: step 3 (same commit)
    - Acceptance: `npm test` in `hooks/` green at the commit, with no baseline figure changed and no head-room constant raised; the hook-test surface's line total and any comment-prose cut recorded in Appendix A; the reference pin re-approved with its attribution line; `fenced-code-exemption.test.ts` still green on the reworded entry; C1 second and third criteria, C3 first, second, third and fifth criteria, and C10 second criterion hold on the fixtures.
 
-5. **The two rule passages that describe the carve-out**
+5. [DONE] **The two rule passages that describe the carve-out**
    - Executor: `coder`
    - Files: `rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`, the paragraph at `:68`, which `e47977ca` turned into "Three legacy stores are absent" by adding `shared/backlog/`), `rules/workbench-path-resolution.md` (`### The one consumer that names the layout literally`, and the setup sentence at `:84`)
    - Changes: the conventions paragraph cites "the Probe 3 bullet under the migration probes in `skills/setup/SKILL.md`" for the cost of a probe reaching a frozen store; that bullet is gone, so the sentence cites `/fusion:migrate`'s frozen-store rule instead and keeps the cost in its own words, net ≤ 0 bytes. The resolution rule's carve-out paragraph names the pre-v4 shapes as "the old sides"; it names the v11 store names instead, keeps the reasoning (the resolver's answers do not describe a tree being moved), and the `:84` sentence says setup names the stores it scaffolds and, for the window, the legacy store it reports. Provenance headers untouched.
