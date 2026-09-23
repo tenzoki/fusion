@@ -5,29 +5,29 @@
  * ## What this measures and why the measurement exists
  *
  * The spec that removed the per-commit filing obligation kept one bound on what
- * may still be written: a plan is the fattest artifact in the store a dispatch
+ * may still be written: a plan is the fattest artefact in the store a dispatch
  * is pointed at, and no other record kind has that property. A plan that needs
  * more room than the ceiling is two plans.
  *
  * ## What it does NOT do, and that half is the ruling
  *
  * The ceiling is carried in **no exit code**, this module is wired into **no
- * gate and no pipeline**, and nothing here rewrites, splits or refuses a plan.
- * That was ruled at the user gate, in
+ * check and no pipeline**, and nothing here rewrites, splits or refuses a plan.
+ * That was ruled at the user's approval, in
  * `260909-1700_*_does-the-plan-size-ceiling-fail-hard-or-only-report.md`
  * (option 1, report only): no plan has a measured reader, so a hard bound here
  * would be the first in that cut enforced without one, which is the shape the
  * spec refuses everywhere else. It joins `bin/fusion-staging-drift`,
  * `bin/fusion-review-coverage` and `bin/fusion-citation-check`, none of which
- * has been promoted to a gate, and it carries their stdout-verdict rule: the
- * verdict is a line of output, where a reader can see which row produced it.
+ * has been promoted to a check, and it carries their stdout-verdict rule: the
+ * result is a line of output, where a reader can see which row produced it.
  *
  * ## The ceiling is chosen, not measured, and it says so
  *
  * `DEFAULT_CEILING` is a policy value. It is **not** a threshold read off a
  * measurement of readers, because no such measurement exists — the decision
  * above says so in as many words. What it was chosen against is only this: a
- * ceiling above every plan in the corpus prints the same verdict forever and
+ * ceiling above every plan in the corpus prints the same result forever and
  * tells a reader nothing, so it sits below the corpus fusion itself was
  * carrying when the helper was written. `--ceiling <bytes>` re-reads the same
  * corpus at any other number, which is what makes a wrong choice cost a line of
@@ -37,9 +37,9 @@
  *
  * Live (`_o_`/`_p_`) plans in every planning store, requirements-designer specs excluded. That
  * is the same corpus `hooks/lib/__tests__/plan-stopping-section-lint.test.ts`
- * builds for its own gate, and the two definitions are separate copies: that
+ * builds for its own check, and the two definitions are separate copies: that
  * one is test-scoped and this one ships, and folding either into the other
- * would move a green gate for a reason this step does not have. The residual is
+ * would move a green check for a reason this step does not have. The residual is
  * recorded here rather than discovered later, the way `bin/fusion-prose-metric`
  * records its own fence-rule duplication.
  */
@@ -48,7 +48,7 @@ import { join, relative, sep } from "node:path";
 import { containerRoots, storeDirs } from "./stores.js";
 /**
  * The ceiling, in bytes. Chosen, not measured — see the header. Below every
- * plan but one in the corpus fusion carried on 2026-09-10, so the verdict says
+ * plan but one in the corpus fusion carried on 2026-09-10, so the result says
  * something on the day it lands.
  */
 export const DEFAULT_CEILING = 40000;
@@ -89,7 +89,7 @@ export function planningStores(root) {
 /**
  * Measure the live plans under `root`'s workbench against `ceiling`.
  *
- * Rows come back largest first, so the reader meets the plan the verdict is
+ * Rows come back largest first, so the reader meets the plan the result is
  * about before the ones it is not. A file that cannot be read is skipped rather
  * than counted as zero: a zero would report a plan as comfortably under a
  * ceiling nobody measured it against.

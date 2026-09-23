@@ -60,7 +60,7 @@
 # ---------------------------------------------------------------------------
 # What it deliberately does NOT do
 #
-# It renders NO verdict about whether a section is bound to a topic. That
+# It renders NO finding about whether a section is bound to a topic. That
 # question is not decidable from anything this program can read: a topic is a
 # property of the work a reader is doing, not of the text, and the same heading
 # classifies differently for two readers with no command to settle it. So the
@@ -99,7 +99,7 @@
 #
 # Exit codes:
 #   0  always, on every path — a finding, a clean file, no file at all, and a
-#      misuse alike. It reports, and a reporting check that hands its verdict to
+#      misuse alike. It reports, and a reporting check that hands its result to
 #      an exit code teaches its reader to ignore that code
 #      (bin/fusion-review-coverage gives the same reason). A misused invocation
 #      says so on stderr and prints no report; everything else prints one.

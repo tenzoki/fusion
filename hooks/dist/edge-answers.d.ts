@@ -1,5 +1,5 @@
 /**
- * What prior policy-curator runs already asked the user about a work-item edge, printed
+ * What prior policy-curator runs already asked the user about a work-package edge, printed
  * for `agents/policy-curator.md` `### The suppression read` to read instead of the
  * corpus.
  *
@@ -37,7 +37,7 @@
  *   1  usage error.
  *   2  no fusion workbench above the working directory; nothing to read.
  *
- * **No exit code carries the verdict**, the stdout-verdict rule
+ * **No exit code carries the result**, the stdout-verdict rule
  * `bin/fusion-work-order`, `bin/fusion-plan-size`, `bin/fusion-review-coverage`,
  * `bin/fusion-staging-drift` and `bin/fusion-citation-check` all carry. An empty
  * corpus is an answer about the project — no edge was ever proposed — and a

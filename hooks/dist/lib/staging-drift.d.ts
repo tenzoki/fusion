@@ -79,7 +79,7 @@
  * So every entry is classified and every entry is printed, with the reason:
  *
  *   - `commit-message` — a file whose name says it holds a commit message AND
- *     that no artifact store owns. A fault of its own kind: item 3 of
+ *     that no artefact store owns. A fault of its own kind: item 3 of
  *     `agents/orchestrator.md` `### Step 4 — commit` prescribes
  *     `/tmp/fusion-commit-msg-<session-id>-<task-id>.txt` because `/tmp` is
  *     swept and the workbench is not, and `.commit-msg-tmp` is what improvising
@@ -89,10 +89,10 @@
  *     only. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
  *     message", and told the model to delete it (issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`).
- *   - `record` — an authored artifact: a work item's own record
- *     (`circles/<item>/<item>.md`), a legacy Circle's `*_circle.md` (a
+ *   - `record` — an authored artefact: a work package's own record
+ *     (`work-packages/<item>/<item>.md`), a legacy Circle's `*_circle.md` (a
  *     terminal record `/fusion:migrate` never touches, so a converted workbench
- *     can still hold one), or anything under an artifact store. These are what
+ *     can still hold one), or anything under an artefact store. These are what
  *     a staging list is supposed to name.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
@@ -111,7 +111,7 @@
  *     the honest thing to do with one is print it and claim nothing.
  *
  * Only `record` and `commit-message` rows that are not fully staged enter the
- * verdict, the signature, and the sentence handed to the model. The CLI prints
+ * result, the signature, and the sentence handed to the model. The CLI prints
  * all four classes, because the CLI's read is taken on purpose — at a commit
  * and at the session's end — and a deliberate read should be complete.
  *
@@ -180,7 +180,7 @@ export declare const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-
  * nothing.
  *
  * `.asset-provenance` was missing here while its class-R3 sibling was named,
- * and fell through to `unclassified` — a machine-written setup artifact printed
+ * and fell through to `unclassified` — a machine-written setup artefact printed
  * under the heading that claims nothing about it (issue
  * `260830-1845_*_staging-drift-does-not-name-asset-provenance-as-live-state-while-its-sibling-marker-is.md`).
  */
@@ -211,18 +211,18 @@ export declare const LIVE_PREFIXES: {
  *     instruction, not about a file, and a prescription pointing into a store
  *     is precisely the case the location test forgives.
  *
- * That gate reached the pattern through `classify` and so inherited the
+ * That check reached the pattern through `classify` and so inherited the
  * scoping, silently losing the in-a-store case (issue `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md`). The cheap
  * repair — transcribing the regex into the test — would put two spellings of
  * one concept in the tree, which is the trap `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` was filed about and
- * the reason the gate reached through `classify` to begin with. So the name
+ * the reason the check reached through `classify` to begin with. So the name
  * question becomes its own export instead: **one pattern, and each caller
  * composes the scoping its own question needs.** Nothing here can drift from
  * `classify`, because `classify` calls it.
  *
  * The asymmetry that makes the two scopings both correct, rather than one of
  * them a compromise: a false positive in `classify` told the model to delete an
- * authored record, and a false positive in the gate costs a developer one
+ * authored record, and a false positive in the check costs a developer one
  * exemption entry at test time. Same predicate, incomparable consequences.
  */
 export declare function hasCommitMessageName(rel: string): boolean;
@@ -247,7 +247,7 @@ export interface StagingReport {
     root: string;
     /**
      * Why nothing could be measured. Non-empty means `rows` is empty and the
-     * verdict is `unchecked` — a workbench outside a git repository, or a git
+     * result is `unchecked` — a workbench outside a git repository, or a git
      * that would not answer. Different from a clean tree, and never reported as
      * one.
      */
@@ -294,7 +294,7 @@ export interface StagingReport {
  *
  * ## What the scoping gives up, stated rather than glossed
  *
- * A commit message genuinely written into `shared/issues/` or a work item's
+ * A commit message genuinely written into `shared/issues/` or a work package's
  * `planning/` is no longer read as a message file. It comes back as an unstaged
  * `record`: the model is told to stage it, not to delete it, so the leftover
  * enters a commit instead of being swept, and the sentence naming

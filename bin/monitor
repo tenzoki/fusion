@@ -298,7 +298,7 @@ STAGING_EVENT_TYPES = {"staging_drift"}
 # above was sized for and that these two still run at: hooks/tracker.ts
 # throttles both on signature, so a miss that persists is one row and a miss
 # that changes is another. A session that never runs a review, or that files a
-# record per Turn and commits none of them, emits a row per commit; charged to
+# record per work round and commits none of them, emits a row per commit; charged to
 # the warning class those rows would evict the historical guard_block and
 # guard_halt rows exactly as the advisory burst would.
 MAX_WARNINGS_RETURNED = 30
@@ -431,7 +431,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .md-content th { background: var(--bg3); color: var(--accent); font-weight: 600; }
   /* Status badges in rendered markdown */
   .md-content { word-wrap: break-word; }
-  /* Long unbroken tokens (active-Circle paths, commit hashes) can overflow
+  /* Long unbroken tokens (active work-package paths, commit hashes) can overflow
      narrow viewports because `word-wrap: break-word` only breaks on word
      boundaries — hyphenated ids
      are treated as a single long word. break-all permits a hard break anywhere
@@ -1018,7 +1018,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
       text.textContent = 'No dashboard file found';
     } else if (mode === 'gate') {
       dot.className = 'status-dot gate';
-      text.textContent = '⏸ Paused at gate — waiting on user';
+      text.textContent = '⏸ Paused for approval — waiting on user';
     } else if (mode === 'setup' && !(age !== undefined && age > 3600)) {
       // "Awaiting instruction" is honest right after a session_start, but a
       // session_start from an interrupted session (Claude killed before it
@@ -1479,7 +1479,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         """The newest hook-written session_start row among `events`, or None.
 
         `writer` is what tells it from the model's own session_start row for the
-        same session: the model's carries the Directive and the history file and
+        same session: the model's carries the brief and the history file and
         NOT the mechanical facts this panel renders, so a reader wanting the head
         commit or the domain must not read it (hooks/lib/orchestrator-events.ts,
         `## The session_start row`). `events` is already checkout-scoped and
@@ -1961,7 +1961,7 @@ trap 'kill $SERVER_PID 2>/dev/null; wait $SERVER_PID 2>/dev/null; exit 0' INT TE
 # anywhere: a spawn with stdio ignored, piped or redirected has no terminal on
 # stdout, and a person at a terminal does.
 #
-# MONITOR_NO_BROWSER is the second, independent gate: a person at a terminal
+# MONITOR_NO_BROWSER is the second, independent switch: a person at a terminal
 # who wants the server without the tab. Any non-empty value suppresses.
 #
 # The launcher never decides the wrapper's lifetime. This script runs under
@@ -2005,7 +2005,7 @@ trap 'kill $SERVER_PID 2>/dev/null; wait $SERVER_PID 2>/dev/null; exit 0' INT TE
 # the server does not answer at is the same defect as a banner printing one,
 # and this half is the half that would have kept it: only the python process
 # knows whether the dual-stack bind succeeded. `$URL_FILE` is written right
-# after the bind, so waiting for it is also a better startup gate than the flat
+# after the bind, so waiting for it is also a better startup wait than the flat
 # `sleep` — it waits for the event the sleep was estimating. The constant stays
 # as the fallback for a server that never wrote the file, because a tab at the
 # old URL is what this script did before and is better than no tab at all.

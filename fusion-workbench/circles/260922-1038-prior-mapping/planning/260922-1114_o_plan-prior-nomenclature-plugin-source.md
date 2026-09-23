@@ -217,14 +217,14 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
     - Acceptance: `npm test` green; Appendix B carries the skills delta and cuts; C3 criteria over `skills/`.
 
    - Carried from step 7 (260923): `skills/help/SKILL.md` still describes the container store as `circles/` ("each work item's own container under `circles/`"); step 7's `grep` criterion holds once this step renames it.
-12. **Term pass over the unbounded surfaces: READMEs, live docs, `bin/` headers, hooks comments, `install.sh`, `templates/`**
+12. [DONE] **Term pass over the unbounded surfaces: READMEs, live docs, `bin/` headers, hooks comments, `install.sh`, `templates/`**
     - Executor: `coder`
     - Files: `README.md`, `README-agents.md`, `README-hooks.md`, `docs/philosophy.md`, `docs/working-model.md`, `docs/fusion-intro.md`, `docs/messages-between-checkouts.md`, `bin/*` header comments, `hooks/*.ts` and `hooks/lib/*.ts` comments, `install.sh` (prose only; its marketplace steps are Claude Code's surface), `templates/fusion.json` (its `_retired` note is history and stays), `hooks/dist/` (rebuilt if a `.ts` comment changed)
     - Changes: the classification rule per sentence; `README-agents.md` `## The agents` count bullets and the six registration surfaces agree with `ls agents/`; the co-mention lines the derivable-enumerations lint checks (`:340`) name the new identifiers; `docs/upgrading-to-v9.md` through `docs/upgrading-to-v11-4.md` are not opened. Reference pin re-approved.
     - Dependencies: step 11
     - Acceptance: `derivable-enumerations-lint` green; `git diff --stat` shows no `docs/upgrading-to-*` file (C4 fourth criterion, first half); C3 fifth criterion (one name per thing across `README.md`, `README-agents.md`, `docs/philosophy.md`, `/fusion:help`) checked by reading the four.
 
-13. **Chat-profile ban lists**
+13. [IN PROGRESS] **Chat-profile ban lists**
     - Executor: `ontocoder`
     - Files: `stilwerk/chat-voice-en.yaml:25`, `stilwerk/chat-voice-de.yaml:25` (the shipped templates; a consumer's copies are part (2)'s)
     - Changes: `L07` names the canonical nouns beside the legacy ones (work package, brief, evidence base, work round, approval, review result, artefact; German: Arbeitspaket, Auftrag, Evidenzbasis, Arbeitsrunde, Freigabe, Prüfergebnis, Artefakt) and keeps every legacy noun it names today (C3 fourth criterion).
@@ -239,6 +239,7 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
     - Acceptance: C4 first criterion; C3 first and second criteria checked against the table; C2 fifth criterion's survivors are rows.
 
    - Carried from step 8 (260923): `.claude-plugin/plugin.json`'s description still names "curator"; this step renames it to policy-curator with the rest of the description.
+   - Carried from step 12 (260923): `skills/help/SKILL.md` says "work package in the project backlog" (:57) where the READMEs and philosophy doc now say "work-package store", and uses "item" as shorthand at :57 and :63; `docs/messages-between-checkouts.md` "Writing" still describes the pre-v11 cleanup pipeline; the `README-hooks.md` `lib/stores.ts` row does not name `CONTAINER_STORE` or `WINDOW_LEGACY_NAMES`. Step 16 touches these files and takes them.
 15. **Manifest: version and description**
     - Executor: `ontocoder`
     - Files: `.claude-plugin/plugin.json`

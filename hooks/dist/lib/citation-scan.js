@@ -1,29 +1,29 @@
 // ---------------------------------------------------------------------------
 // The workbench-record citation parser — class (c) of the reference-resolution
 // lint, lifted out of `reference-resolution-lint.test.ts` so the same grammar
-// can be pointed at a corpus that gate does not scan.
+// can be pointed at a corpus that check does not scan.
 //
 // It is one parser with two callers, deliberately:
 //
-//   - `scanRecordCitations()` is the gate's entry point, unchanged in
+//   - `scanRecordCitations()` is the check's entry point, unchanged in
 //     behaviour. It returns violations and a resolved count, and the lint
 //     asserts on exactly what it asserted before the move.
 //   - `scanCitationTokens()` is the same walk reporting per token instead of
 //     per failure: what the token was, what it resolved to, and how many
 //     things it resolved to. The corpus scan below is built on it, because a
 //     baseline needs the count of citations that resolve AMBIGUOUSLY, and a
-//     boolean gate has nowhere to put that — one match and five matches are
-//     both "ok" to a gate and are not the same fact about a corpus.
+//     boolean check has nowhere to put that — one match and five matches are
+//     both "ok" to a check and are not the same fact about a corpus.
 //
 // THE GRAMMAR, storeless since 2026-08-29 (Circle
 // `260828-2342-citation-form-drops-store-segment`, decision
 // `260829-1225_*_which-path-shaped-tokens-does-the-storeless-form-reach-beyond-a-record-citation.md`
 // option 1: one form everywhere):
 //   A record is cited by its basename alone, `260806-0015_*_<slug>.md`
-//   (`bare-record`); a markerless artifact by `<stamp>-<slug>.md` and a Circle
+//   (`bare-record`); a markerless artefact by `<stamp>-<slug>.md` and a work package
 //   by its bare directory name `<stamp>-<slug>` (both `stamp-name`). Every
 //   citation resolves by ONE basename lookup over the whole workbench index,
-//   `archive/` included, with no path arithmetic: no two stamped artifacts share
+//   `archive/` included, with no path arithmetic: no two stamped artefacts share
 //   a marker-normalised basename (the uniqueness test in
 //   `workbench-citation-lint.test.ts` re-takes that measurement on every run).
 //   The wildcard `_*_` at the marker position matches any state marker; a
@@ -68,7 +68,7 @@
 //   the mechanism changed rather than the approximation improving.
 //
 //   THE BARE CIRCLE DIRECTORY IS ONE OF `REC_RE`'S ROOTINGS: `<dir>/<store>/…`
-//   with nothing in front of it, the everyday spelling of a Circle-scoped
+//   with nothing in front of it, the everyday spelling of a package-scoped
 //   record in running text and 150 of that project's sites. It is in the
 //   enumeration because a token must span its own rooting. Without it the
 //   anchored pattern would begin at the store segment and one such line would
@@ -109,13 +109,13 @@
 //   `recordTail()` DERIVES from the tail's own character class; its docstring
 //   carries the rule, the one dot it does not trim (the ASCII ellipsis), the run
 //   it deliberately leaves alone, and why the class is derived rather than
-//   restated. The two Circle patterns carry no greedy tail and so cannot eat a
+//   restated. The two work-package patterns carry no greedy tail and so cannot eat a
 //   stop; what they needed was to stop REFUSING one, and since 2026-09-05 both
 //   end in the one lookahead `NAME_END`, which admits it.
 //
-//   A BARE DIRECTORY NAME RESOLVES TO A CIRCLE OR TO AN ARCHIVE SWEEP. Since
+//   A BARE DIRECTORY NAME RESOLVES TO A WORK PACKAGE OR TO AN ARCHIVE SWEEP. Since
 //   2026-08-31 `circleDirs()` indexes the sweep directory itself alongside the
-//   Circles inside it, reporting `archive/<sweep>` as what such a citation
+//   work packages inside it, reporting `archive/<sweep>` as what such a citation
 //   resolved to; a record naming the sweep that moved it used to dangle against
 //   a directory plainly on disk. The two are the same name shape, a collision
 //   would report `ambiguous`, and only the BARE name is a token — a sweep cited
@@ -163,7 +163,7 @@
 //   substring test on three letters inside a corpus of hyphenated slugs, and
 //   `footer` is a word this project files records about: sixteen store-prefixed
 //   citations were exempt, so the checker printed `store-prefixed=0`, the sweep
-//   printed `rewrites=0`, and the release gate that asserts that zero was green
+//   printed `rewrites=0`, and the release check that asserts that zero was green
 //   over a tree still carrying the spelling the storeless form retired (issue
 //   260901-0318_*_the-fabricated-name-exemption-hides-sixteen-store-prefixed-citations-in-this-repositorys-own-workbench.md).
 //   An exemption keyed on a substring gets wider every time English does; one
@@ -202,7 +202,7 @@
 //   `MARKER_SLOT` IS NOT WIDENED WITH IT, and `BRACKET_SLOT` is the second
 //   spelling named apart. `workbench-citation-lint.test.ts` reads `MARKER_SLOT`
 //   for the uniqueness measurement and normalises a basename through a separate
-//   literal, so widening it there would let that gate's `STAMPED_RE` admit a
+//   literal, so widening it there would let that check's `STAMPED_RE` admit a
 //   basename its normalisation key does not reach. Nor does `basenameMatcher`
 //   learn the bracket: a bracket-NAMED record ON DISK is a different question,
 //   and
@@ -227,7 +227,7 @@
 //   whole, so the visibility guard passes it where it used to stop it.
 //
 // The residual token class, the **bare timestamp** (`stamp-bare`).
-// `260722-1943` in running prose carries no store, kind or slug, so the gate
+// `260722-1943` in running prose carries no store, kind or slug, so the check
 // cannot judge it (`BARE_RE` requires the `_` a record citation carries). A
 // measurement must still count
 // them, because "how many citations cannot be resolved by any mechanism" is a
@@ -243,7 +243,7 @@
 // provide: an install ships no `node_modules`, so `tsx` is not an option there.
 // So the grammar compiles here, parameterised by the workbench root it resolves
 // against (`createScanner(workbenchRoot)`), and the old path is a shim that
-// binds fusion's own roots so no gate import had to change. Nothing about what
+// binds fusion's own roots so no check import had to change. Nothing about what
 // the parser reads or reports moved with it.
 //
 // THE CORPUS THIS GRAMMAR IS POINTED AT IS NOT ITS OWN QUESTION, and since
@@ -267,9 +267,9 @@
 // the reason `declared-exhibit`. The reason sits FIRST in the chain and is
 // not in `RESOLUTION_PREMISED_EXEMPTIONS`: its premise is the record's
 // subject, as `retired-layout-file`'s is, so it reaches the shape-decided
-// `store-prefixed` verdict too, which is the whole point — the reporting
+// `store-prefixed` finding too, which is the whole point — the reporting
 // project's exhibits were fenced store-prefixed tokens, and a fence does not
-// silence a verdict that needs no lookup. The sweep rewrites nothing that
+// silence a finding that needs no lookup. The sweep rewrites nothing that
 // carries a reason, so an exhibit stays as written with no sweep code. The
 // question it decides is "did the project declare this record", which is
 // decidable because somebody wrote it in a git-tracked file; the leaf's own
@@ -279,11 +279,11 @@
 // exhibit. A project can silence a genuine violation by declaring it, and
 // nothing mechanical distinguishes the two — the residual `foreign:` carries,
 // accepted on the same reasoning. What bounds it: `bin/fusion-citation-check`
-// prints `declared-exhibits=` beside its verdict, the tokens land in
+// prints `declared-exhibits=` beside its `verdict=` line, the tokens land in
 // `partition()`'s `exempt` bucket, which every census prints, and a `.md`
 // entry naming `rules/decision-record-examples.md`'s basename would silence
 // the teaching file's coverage, so the shipped configuration declares none.
-// Two readers do not consult the leaf: the blocking gate
+// Two readers do not consult the leaf: the blocking check
 // `workbench-citation-lint.test.ts`, for the reason it reads no `extraPaths`;
 // and the write-time hook (`lib/citation-form.ts`), which already skips every
 // hit carrying a reason, so an UNFENCED store-prefixed token in a declared
@@ -336,7 +336,7 @@ export const MARKER_SLOT = `_(?:[a-zA-Z*]|${MARKER_WORDS.join("|")})_`;
  * The SAME one-letter alphabet in the pre-v4 bracket spelling, `[x]`, as a
  * regex source with no capture. Named apart from `MARKER_SLOT` rather than
  * folded into it, for the reason the header's bracket paragraph carries: the
- * uniqueness gate reads `MARKER_SLOT` against a normalisation key that knows
+ * uniqueness check reads `MARKER_SLOT` against a normalisation key that knows
  * only the underscore form. The legacy WORDS are deliberately absent — they were
  * stamped on pre-Circle history files, which never carried a bracket.
  */
@@ -367,7 +367,7 @@ export const BRACKET_SLOT = `\\[[a-zA-Z*]\\]`;
  * the delimiter and not the first character of the slug: the pre-v4 name is
  * `<stamp>[o]-<topic>.md` and the underscore name is `<stamp>_o_<topic>.md`.
  * The rename rule is `s/\[([oatcibspd])\]-/_\1_/g`, stated here in place: it
- * was `/fusion:migrate`'s up to the last v11 tag, and the skill no longer
+ * was `/fusion:migrate`'s up to the last v11 tag, and the skill body no longer
  * carries it. A citation and the file it names have to arrive at the same
  * spelling or the pointer the sweep writes finds nothing.
  */
@@ -382,8 +382,8 @@ export function markerAtHead(rest) {
     };
 }
 /**
- * A Circle directory's name, `<stamp>-<slug>`. One fragment because the shape
- * is read in four places that must agree: the two Circle patterns, `REC_RE`'s
+ * A work-package directory's name, `<stamp>-<slug>`. One fragment because the shape
+ * is read in four places that must agree: the two work-package patterns, `REC_RE`'s
  * bare-directory rooting, and `SWEEP_DIR_RE`, which is how `circleDirs()`
  * recognises an archive sweep's own directory. It was written out twice until
  * 2026-08-30, and the two copies were the same shape only by inspection.
@@ -452,9 +452,9 @@ const BARE_TAIL = recordTail("A-Za-z0-9_…*");
  */
 const REC_TAIL = recordTail("A-Za-z0-9_…*\\[\\]");
 /**
- * Where a Circle-shaped token may END: not in the middle of a longer path-like
+ * Where a work-package-shaped token may END: not in the middle of a longer path-like
  * word. `.` is NOT in the class, so a citation that ends a sentence keeps its
- * `.md` and the sentence keeps its stop. One spelling for both Circle patterns,
+ * `.md` and the sentence keeps its stop. One spelling for both work-package patterns,
  * which differed by exactly that `.` until 2026-09-05 — `CIRCLE_REC_RE` refused
  * it, so a `circles/<dir>/_x_circle.md` ending a sentence matched nothing, was
  * picked up by no other pattern, and was not reported at all (issue
@@ -463,10 +463,10 @@ const REC_TAIL = recordTail("A-Za-z0-9_…*\\[\\]");
  * repairs, which is why the two endings are now the same string.
  */
 const NAME_END = "(?![A-Za-z0-9_\\/-])";
-// Store-prefixed (optionally Circle-/shared-/workbench-rooted) record citation.
+// Store-prefixed (optionally package-/shared-/workbench-rooted) record citation.
 // A DETECTOR since 2026-08-29: every match is reported `store-prefixed`.
 //
-// The third alternative in the container group is the BARE Circle directory,
+// The third alternative in the container group is the BARE work-package directory,
 // `<dir>/<store>/<record>` with nothing in front of it. It is there so that such
 // a citation is one token spanning its own rooting instead of two overlapping
 // ones — see the header's boundary paragraph, which is where the reason is
@@ -514,12 +514,12 @@ const REC_RE = new RegExp(LEFT_ANCHOR +
 //
 // IT READS BOTH RECORD FORMS, and the second alternative is a BACKREFERENCE
 // rather than a second shape. A container filed since the restoration holds its
-// record under the container's OWN name, `circles/<dir>/<dir>.md`, and a
+// record under the container's OWN name, `work-packages/<dir>/<dir>.md`, and a
 // pre-restoration container holds `_x_circle.md`; both stand in one tree for
 // good, because only a live record is ever converted
 // (`260910-2145_*_restore-the-per-work-item-container.md` step S9). Written as
 // `\1` the alternative admits exactly one path per container and cannot widen:
-// `circles/<dir>/notes.md` matches nothing here, and neither does a container
+// `work-packages/<dir>/notes.md` matches nothing here, and neither does a container
 // naming ANOTHER container's record. Before this, the store-prefixed spelling
 // of an item record produced NO TOKEN AT ALL — no pattern claimed it and the
 // stamp patterns refuse a `/` in front of a stamp — which is the same silent
@@ -531,7 +531,7 @@ const CIRCLE_REC_RE = new RegExp(LEFT_ANCHOR +
     "(_[a-zA-Z*]_circle|\\2)(?:\\.md)?(?!\\.md)" +
     NAME_END, "g");
 // Bare record citation — a marker slot or a bare `_` right after the stamp is
-// required, or every plain timestamp and Circle-directory name would fire. What
+// required, or every plain timestamp and work-package directory name would fire. What
 // follows is a slug when the citation is whole, and any prefix of that when it
 // is truncated (`<stamp>_*_`, `<stamp>_d`, `<stamp>_…`); `basenameMatcher` reads
 // a token not ending in `.md` as a prefix either way.
@@ -553,14 +553,14 @@ const CIRCLE_REC_RE = new RegExp(LEFT_ANCHOR +
 // ways over this repository's 3 035-file corpus: the wider stop loses no token.
 const BARE_RE = new RegExp(`(?<![\\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT}|${BRACKET_SLOT}|_)${BARE_TAIL.cls})` +
     REC_TAIL.stop, "g");
-// Bare Circle-directory citation. A trailing `/` is allowed when nothing
+// Bare work-package-directory citation. A trailing `/` is allowed when nothing
 // path-like follows (the conventions file's layout tree).
 const CIRCLE_RE = new RegExp(LEFT_ANCHOR + ROOTING + `(${CONTAINER_ROOT_ALT})\\/(${CIRCLE_DIR})(?:\\/(?![A-Za-z0-9_.*<]))?` + NAME_END, "g");
 // A record stamp carrying no store prefix. Scanned last, and only where no
 // citation token above already covers the position. Two shapes, and they are
 // not the same question: `260812-2116-coder-<slug>` carries a name and is
 // decidable by prefix (exactly, when it ends in `.md` — that is the storeless
-// citation of a markerless artifact), while `260812-2116` alone is the residual.
+// citation of a markerless artefact), while `260812-2116` alone is the residual.
 //
 // The trailing boundary is the one `BARE_RE` has in front: a stamp followed by
 // `_`, `[` or a letter is the head of a longer token (a truncated citation, a
@@ -573,9 +573,9 @@ const STAMP_RE = /(?<![\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:-[a-z0-9]+)*)(\.md)
 /**
  * Files whose record citations are fabricated, with the reason. THE PREMISE IS
  * RESOLUTION — a made-up record cannot be found on disk — so the exemption
- * reaches exactly the verdicts a lookup decides and NOT `store-prefixed`, which
+ * reaches exactly the findings a lookup decides and NOT `store-prefixed`, which
  * `SHAPE_DECIDED_KINDS` below settles from the token's shape before anything is
- * looked up. Until 2026-09-05 it silenced every verdict, which made the one file
+ * looked up. Until 2026-09-05 it silenced every finding, which made the one file
  * whose job is to teach the citation form the one file where a wrong form could
  * not be detected (issue
  * 260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md).
@@ -589,12 +589,12 @@ export const RECORD_EXAMPLE_FILES = {
  * reach: here the store segment is what the file is about, so the exemption
  * covers `store-prefixed` as well. `skills/migrate/SKILL.md` carries the
  * v11 -> v12 store-name migration, naming both layouts literally (`circles/…`
- * becomes `work-packages/…`), and a gate telling it to drop the segment would be
+ * becomes `work-packages/…`), and a check telling it to drop the segment would be
  * telling it to stop describing the migration; `CLAUDE.md` states the same
  * licence in prose, calling `/fusion:migrate` the only consumer allowed to name
  * both layouts literally, because it is the transition between them.
  *
- * A SECOND MEMBER NEEDS THAT CLAIM ABOUT ITS CONTENT, not a red gate. The claim
+ * A SECOND MEMBER NEEDS THAT CLAIM ABOUT ITS CONTENT, not a red check. The claim
  * is checkable by reading the file: does it convert between the two layouts? If
  * the answer is "no, it merely cites a record", the file belongs in
  * `RECORD_EXAMPLE_FILES` or the citation belongs in the storeless form.
@@ -612,7 +612,7 @@ export const RETIRED_LAYOUT_FILES = {
  * refusing nothing else. The narrower test is the point: the exemption keyed on
  * the bare substring until 2026-09-01 and fired on `footer`, which is a word
  * this project files records about, so sixteen store-prefixed citations were
- * invisible to both the checker and the sweep and the release gate asserting
+ * invisible to both the checker and the sweep and the release check asserting
  * `rewrites=0` was green over them
  * (260901-0318_*_the-fabricated-name-exemption-hides-sixteen-store-prefixed-citations-in-this-repositorys-own-workbench.md).
  * A three-letter substring inside a corpus of hyphenated slugs will keep
@@ -640,7 +640,7 @@ const FABRICATED_NAME = /(?:^|[^A-Za-z0-9])foo(?:[^A-Za-z0-9]|$)/;
  * A class-(c) token inside an open backtick span that begins with a
  * resolution-footer keyword is a footer-TEMPLATE illustration (`Append
  * `Answered: <record> — …``) — the conventions teach the footer syntax on a
- * fabricated record. Real footers live in workbench records, which the gate
+ * fabricated record. Real footers live in workbench records, which the check
  * never scans (the corpus scan does, and counts them like any other token).
  */
 function inFooterTemplateSpan(before) {
@@ -653,7 +653,7 @@ function inFooterTemplateSpan(before) {
  * announcement — without that bound, ANY earlier `e.g.` on the line exempted
  * every later citation, and a dead citation four words behind an unrelated
  * `(e.g. \`en\`)` passed silently (issue 260806-1031_*_referenz-lint-die-eg-ausnahme-ist-breiter-als-ihr-eigener-kommentar-behauptet.md, the swallow-a-real-defect
- * shape the gate's exemption-design note warns against).
+ * shape the check's exemption-design note warns against).
  */
 /**
  * A `**<Field>:** <value>` head line whose value is exactly the token: `before`
@@ -698,7 +698,7 @@ function inAnnouncedIllustration(before) {
  * segment out of a foreign path is telling them to break the pointer. Observed
  * rather than reasoned about: the first version of issue
  * 260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md
- * spelled such a path out, the gate reported it `store-prefixed`, and the sweep
+ * spelled such a path out, the check reported it `store-prefixed`, and the sweep
  * stood ready to rewrite a path that names nothing here and never will. That
  * record names the stamp and the kind of file in prose instead, which is the
  * workaround this form exists to retire.
@@ -761,7 +761,7 @@ const FENCE_RE = /^( {0,3})(`{3,}|~{3,})(.*)$/;
  *     — `agents/orchestrator.md:162` carries one at five spaces. The cost is
  *     that its content stays JUDGED, which is the status quo and the safe
  *     direction; dropping the indent bound instead would let any indented run
- *     of three backticks switch the gate off for an arbitrary span.
+ *     of three backticks switch the check off for an arbitrary span.
  *   - **tabs as indentation.** A leading tab advances to column 4 and so cannot
  *     introduce a fence; the pattern asks for spaces and stops there.
  *   - **indented (four-space) code blocks.** Not fences, and out of scope by
@@ -777,8 +777,8 @@ const FENCE_RE = /^( {0,3})(`{3,}|~{3,})(.*)$/;
  * reached and no closing code fence has been found, the code block contains all
  * of the lines after the opening code fence until the end". Here an unclosed
  * fence exempts NOTHING — the lines it opened are discarded at the end of the
- * walk rather than added. A gate that one stray backtick line can switch off
- * for the whole remainder of a file is not a gate, and an unbalanced fence is a
+ * walk rather than added. A check that one stray backtick line can switch off
+ * for the whole remainder of a file is not a check, and an unbalanced fence is a
  * record to fix rather than a region to stop reading.
  */
 export function fencedContentLines(lines) {
@@ -834,12 +834,12 @@ function basenameMatcher(cited) {
 /**
  * An archive sweep's directory name: `/fusion:archive` creates exactly one
  * level, `archive/<YYMMDD-HHMM>-<slug>/`, and moves whole subtrees beneath it.
- * Read by `circleDirs()` alone — to find the swept `circles/` containers, and
+ * Read by `circleDirs()` alone — to find the swept `circles/` and `work-packages/` containers, and
  * since 2026-08-31 to index the sweep directory itself, which a record naming
  * the sweep that moved it cites by bare name. No resolver reads a path prefix
  * any more. Its shape is `CIRCLE_DIR`, the same
  * fragment the three store-prefixed patterns root against — a sweep directory
- * and a Circle directory are the same name shape, and stating it once is what
+ * and a work-package directory are the same name shape, and stating it once is what
  * keeps the rooting enumeration and this index reading the same set.
  */
 const SWEEP_DIR_RE = new RegExp(`^${CIRCLE_DIR}$`);
@@ -848,12 +848,12 @@ function storelessBase(stamp, rest) {
     return stamp + (markerAtHead(rest)?.wildcarded ?? rest);
 }
 /**
- * The kinds the gate judges. Everything else is measurement-only, and since
+ * The kinds the check judges. Everything else is measurement-only, and since
  * 2026-08-20 "everything else" is one kind: `stamp-bare`.
  *
  * `stamp-name` joined the list under decision
  * `260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
- * (option 2), so that the repair scope and the gate scope coincide instead of
+ * (option 2), so that the repair scope and the check scope coincide instead of
  * diverging by 33 tokens. A `stamp-name` token is a stamp plus a dashed name
  * (`260812-2116-coder-<slug>`), which this parser's own header calls decidable
  * by prefix. `stamp-bare` stays out and is not a candidate for joining: a bare
@@ -863,7 +863,7 @@ function storelessBase(stamp, rest) {
  *
  * BOTH callers share this list — the shipped-text lint in
  * `hooks/lib/__tests__/reference-resolution-lint.test.ts` and the workbench
- * gate in `hooks/lib/__tests__/workbench-citation-lint.test.ts`. Adding a kind
+ * check in `hooks/lib/__tests__/workbench-citation-lint.test.ts`. Adding a kind
  * here therefore moves the first one's pinned counts, and that re-approval
  * belongs in the same commit as the widening.
  *
@@ -882,13 +882,13 @@ export const GATE_KINDS = [
     "stamp-name",
 ];
 /**
- * The kinds whose verdict is settled by the token's SHAPE. Each of the three
+ * The kinds whose finding is settled by the token's SHAPE. Each of the three
  * carries a store segment, so each is `store-prefixed` unconditionally: their
  * `check()` below reads nothing off disk, and a fabricated record and a real one
  * are indistinguishable to it.
  *
  * WHAT THE LIST IS FOR. An exemption whose premise is "do not look this token
- * up" cannot reach a verdict that needed no lookup, so the two resolution-
+ * up" cannot reach a finding that needed no lookup, so the two resolution-
  * premised exemptions — `record-example-file` and `fenced-code` — are skipped
  * for these three kinds and the token is judged (issue
  * 260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md).
@@ -902,7 +902,7 @@ export const GATE_KINDS = [
  * THE RESIDUAL, stated rather than left to be found: the same argument reaches
  * `announced-illustration`, `footer-template` and `fabricated-name`, which are
  * announcements about one illustration rather than claims that the token is not
- * a citation. They were measured at zero store-shaped tokens over both gate
+ * a citation. They were measured at zero store-shaped tokens over both check
  * corpora on 2026-09-05 and left alone — the record that asked for this
  * narrowing names the other two, and each of these three has fixtures of its own
  * that would have to be rewritten to decide it.
@@ -960,11 +960,11 @@ export function createScanner(workbenchRoot, opts = {}) {
     }
     /**
      * Every stamped directory a citation can name, keyed by directory name and
-     * carrying the workbench-relative path(s) that hold it: `circles/<dir>` while
-     * the Circle is live, `archive/<sweep>/circles/<dir>` once a sweep has moved
+     * carrying the workbench-relative path(s) that hold it: `work-packages/<dir>` (or `circles/<dir>`) while
+     * the work package is live, `archive/<sweep>/circles/<dir>` once a sweep has moved
      * it, and `archive/<sweep>` for the sweep's OWN directory. The map is the
      * paths rather than a bare name set so that what a citation RESOLVED TO is
-     * reported truthfully — an archived Circle that reported `circles/<dir>` would
+     * reported truthfully — an archived work package that reported `circles/<dir>` would
      * be naming a path that is not on disk, in a file whose header calls itself a
      * measuring instrument. Archive sweeps are indexed because a bare directory
      * name resolves wherever the directory is.
@@ -976,11 +976,11 @@ export function createScanner(workbenchRoot, opts = {}) {
      * 260831-2120_*_an-archive-sweep-directory-is-in-no-index-so-a-citation-naming-one-dangles.md).
      * A sweep resolves to `archive/<sweep>` and never to a path inside it.
      *
-     * A sweep and a Circle are the same name shape, so a collision is possible in
+     * A sweep and a work package are the same name shape, so a collision is possible in
      * principle; measured here on 2026-08-31 there is none (4 sweeps, 26 distinct
-     * Circle names, no overlap). One would report `ambiguous` with both paths,
+     * container names, no overlap). One would report `ambiguous` with both paths,
      * which `scanRecordCitations()` counts as resolved and `partition()` puts in
-     * `undecidable` — the honest answer, and the one two same-named Circles in two
+     * `undecidable` — the honest answer, and the one two same-named work packages in two
      * sweeps already get. ONLY THE BARE NAME: a sweep cited as a PATH,
      * `archive/<sweep>/`, still produces no token at all, because every pattern's
      * lookbehind refuses a `/` in front of the stamp. That is unchanged behaviour.
@@ -991,7 +991,7 @@ export function createScanner(workbenchRoot, opts = {}) {
             return circleDirIndex;
         const dirs = new Map();
         // One directory under its own name. Extracted so the sweep entry and the
-        // Circle entries share the push-or-set arm: a name held twice accumulates
+        // container entries share the push-or-set arm: a name held twice accumulates
         // paths and reports `ambiguous`, rather than one overwriting the other.
         const one = (name, path) => {
             const at = dirs.get(name);
@@ -1034,11 +1034,11 @@ export function createScanner(workbenchRoot, opts = {}) {
     }
     /**
      * Every citation token on the given lines, with what it resolves to. The
-     * exemptions are the gate's, applied identically — a token they catch is
+     * exemptions are the check's, applied identically — a token they catch is
      * reported as `exempt` with the reason rather than dropped, so a corpus scan
      * can state how much of itself it did not judge.
      *
-     * ONE HIT SHAPE CARRIES BOTH: a `store-prefixed` verdict with a `reason` set.
+     * ONE HIT SHAPE CARRIES BOTH: a `store-prefixed` finding with a `reason` set.
      * It means the token was judged on its shape, which no exemption here bears
      * on, while an exemption still forbids rewriting it in place
      * (`RESOLUTION_PREMISED_EXEMPTIONS`).
@@ -1057,7 +1057,7 @@ export function createScanner(workbenchRoot, opts = {}) {
             const covered = [];
             // `check` receives whether the token is the whole value of a `**Field:**`
             // head line: read once here, used by the `head-field` exemption below and
-            // by the `STAMP_RE` branch's `undecidable` verdict (the header's head-field
+            // by the `STAMP_RE` branch's `undecidable` finding (the header's head-field
             // paragraphs).
             const consider = (idx, token, kind, check) => {
                 if (covered.some(([s, e]) => idx >= s && idx < e))
@@ -1073,7 +1073,7 @@ export function createScanner(workbenchRoot, opts = {}) {
                             ? "record-example-file"
                             : // ahead of `fenced-code`, unlike the other writer-supplied markers:
                                 // this one's premise is the token's REFERENT, so it must reach the
-                                // shape-decided `store-prefixed` verdict too, and a writer who both
+                                // shape-decided `store-prefixed` finding too, and a writer who both
                                 // qualifies and fences must not still be told to respell a path
                                 // that is not this project's to respell.
                                 carriesForeignQualifier(before)
@@ -1105,7 +1105,7 @@ export function createScanner(workbenchRoot, opts = {}) {
                                                                                     ? "head-field"
                                                                                     : null;
                 // An exemption whose premise is "do not look this token up" cannot
-                // reach a verdict that needed no lookup, so a shape-decided kind under
+                // reach a finding that needed no lookup, so a shape-decided kind under
                 // one is JUDGED — and keeps the reason, which is what stops a rewriter
                 // from touching it. See `SHAPE_DECIDED_KINDS`.
                 const judgedAnyway = reason !== null &&
@@ -1135,7 +1135,7 @@ export function createScanner(workbenchRoot, opts = {}) {
             let m;
             while ((m = REC_RE.exec(text)) !== null) {
                 // Three container alternatives, exactly one of which can be set:
-                // `<root>/<dir>`, `shared`, or the bare Circle directory `<dir>`.
+                // `<root>/<dir>`, `shared`, or the bare work-package directory `<dir>`.
                 const [full, circleDir, shared, bareDir, store, stamp, restRaw] = m;
                 const rest = restRaw ?? "";
                 const idx = m.index;
@@ -1152,7 +1152,7 @@ export function createScanner(workbenchRoot, opts = {}) {
                 // is `_x_circle.md` in every container, so nothing but the directory
                 // name can be looked up; an item record's basename is unique across the
                 // workbench and IS the citation, per `## Filename Patterns`'
-                // markerless-artifact form. Spelling both as the directory would quietly
+                // markerless-artefact form. Spelling both as the directory would quietly
                 // turn a citation of the RECORD into a citation of the DIRECTORY.
                 const storeless = base === dir ? `${dir}.md` : dir;
                 consider(idx, full, "package-record", () => storePrefixed(`${top}/`, storeless));
@@ -1169,7 +1169,7 @@ export function createScanner(workbenchRoot, opts = {}) {
                     if (hit.length === 1 && markerM) {
                         // The lookup FOUND the record under the letter the token spells, so
                         // the pointer holds today and dies at the record's next transition;
-                        // the write-time hook reports it, the gate and the checker count it
+                        // the write-time hook reports it, the check and the checker count it
                         // as resolved (`partition`, `scanRecordCitations`). Issue
                         // 260908-0027_*_the-write-time-citation-check-is-silent-on-the-class-that-produced-every-violation-of-this-session.md.
                         return {
@@ -1210,10 +1210,10 @@ export function createScanner(workbenchRoot, opts = {}) {
             }
             // Store-prefixless stamps, last: whatever no citation token above claimed.
             // A `stamp-name` ending in `.md` is the storeless citation of a markerless
-            // artifact and matches its basename exactly; every other shape resolves by
-            // prefix against the whole index, files and Circle directories alike, which
+            // artefact and matches its basename exactly; every other shape resolves by
+            // prefix against the whole index, files and work-package directories alike, which
             // is all the token supports — and the match COUNT is the answer, because a
-            // stamp that names five artifacts names none of them.
+            // stamp that names five artefacts names none of them.
             STAMP_RE.lastIndex = 0;
             while ((m = STAMP_RE.exec(text)) !== null) {
                 const [full, stamp, dashed, md] = m;
@@ -1245,8 +1245,8 @@ export function createScanner(workbenchRoot, opts = {}) {
                             status: "dangling",
                             matches: [],
                             problem: dashed
-                                ? "no artifact and no Circle directory carries this name"
-                                : "no artifact in the workbench carries this timestamp",
+                                ? "no artefact and no work-package directory carries this name"
+                                : "no artefact in the workbench carries this timestamp",
                             fix: "cite the record's storeless basename, or drop the token",
                         };
                     }
@@ -1255,7 +1255,7 @@ export function createScanner(workbenchRoot, opts = {}) {
                         matches: named,
                         problem: named.length === 1
                             ? undefined
-                            : `${named.length} artifacts share this stamp; the token names none of them`,
+                            : `${named.length} artefacts share this stamp; the token names none of them`,
                         fix: named.length === 1 ? undefined : "cite the record's storeless basename",
                     };
                 });
@@ -1264,11 +1264,11 @@ export function createScanner(workbenchRoot, opts = {}) {
         return hits;
     }
     /**
-     * The gate's entry point: violations and a resolved count, derived from the
+     * The check's entry point: violations and a resolved count, derived from the
      * walk above. An ambiguous citation counts as resolved here, exactly as it did
-     * when the gate asked `hit.length > 0` — the gate's question is whether the
+     * when the check asked `hit.length > 0` — the check's question is whether the
      * citation finds anything, and widening it to "finds exactly one" is a
-     * different gate, not a fix to this one. A bare timestamp is neither: the gate
+     * different check, not a fix to this one. A bare timestamp is neither: the check
      * never saw one and still does not. Nor is an `undecidable` head-field value:
      * it matches neither list below, so it is neither counted nor reported.
      */
@@ -1450,8 +1450,8 @@ export function markdownFilesUnder(root) {
  *
  * A `stamp-bare` token lands in `undecidable` WHATEVER it resolved to, and
  * that is the one placement worth defending. Such a token carries no store, no
- * kind and no slug: when it matches exactly one artifact today, it does so by
- * the accident that one artifact was written in that minute, and it silently
+ * kind and no slug: when it matches exactly one artefact today, it does so by
+ * the accident that one artefact was written in that minute, and it silently
  * becomes ambiguous the moment a second one is. The question it fails is not
  * "does this exist" but "which of these is meant", and no mechanism reading
  * that token can answer it. A head-field value naming no record lands here by
@@ -1465,7 +1465,7 @@ export function partition(hits) {
         // `spelled-marker` lands here too: the pointer resolves today, and the
         // write-time hook is the one reader that interrupts on it.
         resolved: hits.filter((h) => !unjudged(h) && !undecidable(h) && (h.status === "resolved" || h.status === "spelled-marker")),
-        // `store-prefixed` lands here: it is a violation the gate reports, and the
+        // `store-prefixed` lands here: it is a violation the check reports, and the
         // baseline's three lists have no fourth. A caller that wants it apart
         // filters on the status.
         dangling: hits.filter((h) => !unjudged(h) &&

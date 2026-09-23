@@ -97,7 +97,7 @@
  * the two resolutions:
  *
  *   - **The envelope goes out first, before stdin is touched.** The warning
- *     above is this hook's verdict and the row is an addendum to it. Reading
+ *     above is this hook's reply and the row is an addendum to it. Reading
  *     stdin is the one thing here that can block, so a payload that never
  *     arrives costs the row and never the warning.
  *   - **The head commit and the domain are resolved here, not in the module.**
@@ -111,7 +111,7 @@
  *     `bin/fusion-count-sources` prints. A helper that could not be run at all
  *     is NOT the same fact as a count it declined to take: the first leaves the
  *     key absent, the second reaches the cascade's own `counted_by == "none"`
- *     branch and is a real verdict.
+ *     branch and is a real result.
  *
  * ## Channel
  *
@@ -260,7 +260,7 @@ async function readPayload(): Promise<SessionStartHookInput | null> {
 }
 
 /**
- * Whether the verdict has already reached stdout. The fail-open handler reads
+ * Whether the reply has already reached stdout. The fail-open handler reads
  * it so a late failure cannot emit a second envelope on top of the first.
  */
 let envelopeWritten = false;
@@ -301,11 +301,11 @@ main().catch((error) => {
   // must not take the session down with it. The marker line is what the test
   // harness watches for, so a crash cannot pass as a quiet run.
   //
-  // The verdict goes out first, as in both siblings — but only if it has not
+  // The reply goes out first, as in both siblings — but only if it has not
   // gone out already. `main` writes the envelope before it touches stdin or the
   // event log, so the reachable failures are almost all AFTER it, and a second
   // envelope on top of the first would be unparseable stdout rather than a
-  // degraded verdict.
+  // degraded reply.
   failOpen("session-start", error, () => {
     if (!envelopeWritten) process.stdout.write("{}\n");
   });

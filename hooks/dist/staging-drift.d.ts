@@ -40,9 +40,9 @@
  *
  * **Finding an unstaged record is not an error exit**, for the reason
  * `bin/fusion-review-coverage` gives at the same place (issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`): a
- * check that hands its verdict to an exit code teaches its reader to ignore
+ * check that hands its result to an exit code teaches its reader to ignore
  * that code, and a commit step that legitimately leaves a record still in flight
- * would then be reporting failure where nothing is wrong. The verdict is a line
+ * would then be reporting failure where nothing is wrong. The result is a line
  * of output, where a reader can see which row produced it.
  */
 export {};

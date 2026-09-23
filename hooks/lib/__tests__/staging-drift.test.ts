@@ -400,7 +400,7 @@ describe("staging drift: what it reports without raising an alarm", () => {
   );
 
   it(
-    "reads a work item's own record as a record, and claims nothing about a sibling no store owns",
+    "reads a work package's own record as a record, and claims nothing about a sibling no store owns",
     () => {
       withWorkbench((project) => {
         // The unit of work is `<root>/<item>/<item>.md`: the same name twice
@@ -415,11 +415,11 @@ describe("staging drift: what it reports without raising an alarm", () => {
 
         const res = runStagingDrift(project.root);
         expect(keys(res.stdout).unstaged).toBe("3");
-        expect(row(res.stdout, "circles/260811-0300-older/260811-0300-older.md")).toContain("a work item's own record");
+        expect(row(res.stdout, "circles/260811-0300-older/260811-0300-older.md")).toContain("a work package's own record");
         expect(row(res.stdout, "shared/consult/260811-0300-note.md")).toContain("the consult store");
         const record = row(res.stdout, `${item}/260811-0200-file-the-idea.md`);
         expect(record).toMatch(/^ {2}record\s+\?\? .*UNSTAGED/);
-        expect(record).toContain("a work item's own record");
+        expect(record).toContain("a work package's own record");
         const other = row(res.stdout, `${item}/other.md`);
         expect(other).toMatch(/^ {2}unclassified/);
         expect(other).toContain("nothing is claimed about it");

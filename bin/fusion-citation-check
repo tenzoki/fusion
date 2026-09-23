@@ -28,14 +28,14 @@
 #
 # ONLY A ROW IN A FILE SOMEBODY STILL EDITS MOVES `verdict=` (2026-09-01,
 # decision 260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md,
-# option 3). Every violation is still PRINTED — the scope narrows the verdict
+# option 3). Every violation is still PRINTED — the scope narrows the result
 # and never the search. The reason is that `verdict=` is the one figure a reader
 # acts on, and a violation nobody will repair cannot be acted on: over fusion's
 # own repository 297 of 299 rows sat in text nobody edits, so the line was
 # pinned at `violations` and carried no information. Archived-ness is NOT the
 # criterion — the frozen stores are under a quarter of that mass.
 #
-# In scope: a live workbench record — a Circle record in any state,
+# In scope: a live workbench record — a work-package record in any state,
 # portfolio.md, an open issue, a decision carrying `_o_` or `_a_`, a plan
 # carrying `_o_` or `_p_` — and everything outside the workbench, where no
 # marker exists and every file is live (CLAUDE.md, rules/, .claude/rules/,
@@ -45,17 +45,17 @@
 # investigations, which record what was true when they were written. That last
 # class is a judgement rather than a derivation and is reasoned in
 # hooks/lib/citation-corpus.ts, the one place the predicate is authored: the
-# blocking gate hooks/lib/__tests__/workbench-citation-lint.test.ts reads the
+# blocking check hooks/lib/__tests__/workbench-citation-lint.test.ts reads the
 # same function as its corpus, so the two cannot drift apart.
 #
 # `edited-files` says how many of `files` were in that scope, and
 # `edited-violations` / `unedited-violations` split the printed rows the same
 # way — they sum to dangling + store-prefixed, and the first is what `verdict=`
-# reads. A scoped verdict whose scope is not in the output would be worse than
+# reads. A scoped result whose scope is not in the output would be worse than
 # an unscoped one, so those three figures are part of the block rather than
 # extras on it. Each violation row repeats the split in a column between the
 # status and the problem, `edited` or `not-edited`. An `--undecidable` row
-# carries no such column: it reaches no verdict by kind, before any scoping
+# carries no such column: it reaches no finding by kind, before any scoping
 # question is asked.
 #
 # `unrewritable-violations` is how many of the printed rows the grammar has
@@ -69,7 +69,7 @@
 # `unrewritable` or `rewritable`; `rewritable` says only that no exemption
 # forbids respelling that token, not that a rewrite exists for it. The figure is
 # a marginal over the same rows as `edited-violations`, not a subset of it, and
-# `verdict=` does not read it: what makes the verdict `violations` is still
+# `verdict=` does not read it: what makes the result `violations` is still
 # `edited-violations` > 0 and nothing else.
 #
 # Corpus: every .md under fusion-workbench/, the frozen stores read exactly
@@ -79,7 +79,7 @@
 # fusion's own gates run; the form it reads is stated in
 # rules/fusion-workbench-conventions.md "Filename Patterns".
 # `--undecidable` adds one row per bare stamp or ambiguous token, which reach
-# no verdict: a bare stamp names a minute, not a file.
+# no finding: a bare stamp names a minute, not a file.
 #
 # Plus the declared corpus: every file the project named in citations.extraPaths
 # in its fusion.json, as git pathspecs under :(glob), deduplicated against the
@@ -96,7 +96,7 @@
 # bin/fusion-citation-sweep resolves the same leaf through the same function:
 # the two hand-run helpers share one corpus, because a reporter narrower than
 # the rewriter is how the sweep came to change files this check declared clean.
-# The blocking gate hooks/lib/__tests__/workbench-citation-lint.test.ts does
+# The blocking check hooks/lib/__tests__/workbench-citation-lint.test.ts does
 # NOT read the declaration, on purpose: it runs in everyone's npm test with no
 # approvable baseline, so a corpus set by an editable configuration leaf would
 # redden the suite of somebody who edited nothing.

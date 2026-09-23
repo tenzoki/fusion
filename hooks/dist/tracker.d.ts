@@ -8,7 +8,7 @@
  *      `reviews/` store. It tiles the review files' declared ranges against the
  *      session's commit range and names, commit by commit, what no reviewer has
  *      opened — plus the files the last pass declared it did not open, which are
- *      the next dispatch's scope. An uncovered range mid-Turn is the normal
+ *      the next dispatch's scope. An uncovered range mid-round is the normal
  *      state, and a check that fires on its commonest path is one its reader
  *      learns to ignore. See lib/review-coverage.ts and
  *      `measureReviewCoverageForModel`.
@@ -16,9 +16,9 @@
  *   0b. STAGING DRIFT, on one measured trigger: HEAD is not where it was on the
  *      previous tool call. It reads `git status --porcelain` over the workbench
  *      and names the authored records — and any commit-message-shaped file that
- *      landed inside the workbench where no artifact store owns it — that the
+ *      landed inside the workbench where no artefact store owns it — that the
  *      commit just made did not carry. Same reason for the narrow trigger: an
- *      unstaged record mid-Turn is the normal state, and the moment a missed
+ *      unstaged record mid-round is the normal state, and the moment a missed
  *      record becomes a missed record is the commit. The trigger is READ FROM
  *      THE REPOSITORY, never from the command's text — deciding from a shell
  *      string whether it will move HEAD is the question the deleted branch

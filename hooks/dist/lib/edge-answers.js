@@ -1,5 +1,5 @@
 /**
- * What prior policy-curator runs already asked the user about a work-item edge.
+ * What prior policy-curator runs already asked the user about a work-package edge.
  *
  * `agents/policy-curator.md` `### The suppression read` must not re-propose an edge the
  * user has already answered. The corpus that records those answers is every
@@ -21,7 +21,7 @@
  *
  * The entry's **consequence group is not a column**, and that absence is the
  * ruling. The suppression key reads the outcome value alone: `not-offered` names
- * the entry the gate never put, so nothing has to be learned by holding the group
+ * the entry the approval never put, so nothing has to be learned by holding the group
  * line beside the outcome line. What decides on each value is
  * `agents/policy-curator.md` `### The suppression read` and nothing here — this module
  * reports a fact and applies no key, the stdout-verdict stance every other

@@ -21,7 +21,7 @@
  *      changed. The reviewer reported the boundary of its scope correctly.
  *      Nothing downstream read that sentence and re-queued the files.
  *   2. **The data was on disk and nothing read it.** The review files carry
- *      their ranges. No artifact holds "commits reviewed" against "commits
+ *      their ranges. No artefact holds "commits reviewed" against "commits
  *      landed", so nothing could tile one against the other.
  *
  * ## Why the ranges had to be mandated before they could be read
@@ -75,7 +75,7 @@
  *
  * ## What it does NOT do, and why
  *
- * It never writes a review file, `agentstate.yaml`, a Circle record or a
+ * It never writes a review file, `agentstate.yaml`, a work-package record or a
  * history file, and it adds no `reviewed_through` field to the session state.
  * That last one is deliberate and is the point: `agentstate.yaml` is a surface
  * a session can pass a boundary without writing, and issue `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
@@ -84,7 +84,7 @@
  * review files already answer unfreezably — writing the review file *is* the
  * review, the way a commit is the work rather than a note about it.
  *
- * It is also not a release gate. Whether a release may go out over an
+ * It is also not a release check. Whether a release may go out over an
  * uncovered range is a decision and is not filed; it belongs beside
  * `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
  * This module reports; nothing here blocks anything.
@@ -104,10 +104,10 @@
  *
  * It is **not** on an every-tool-call path, and the difference is not an
  * oversight. An uncovered range mid-session is the *normal and correct* state —
- * the review pass runs once per work item, at its closure — so a per-call report would
+ * the review pass runs once per work package, at its closure — so a per-call report would
  * fire on the commonest path, and a check that cries wolf on its commonest path
  * teaches its reader to ignore it. That is issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` arriving one
- * level up, and it is why this measurement's verdict is a line of output rather
+ * level up, and it is why this measurement's result is a line of output rather
  * than an exit code. Until 2026-08-15 a third measurement DID sit on the
  * every-call path — session-state drift, whose subject was a stale
  * `agentstate.yaml`, a fault at every moment after the commit that outdated it.
@@ -187,7 +187,7 @@ const HASH = /^[0-9a-f]{7,40}$/;
  * `reviewer` at v11, and the mandate moved with them — `agents/reviewer.md` is
  * the only prompt that writes a review file now. The two retired segments stay
  * in this set because review files carrying them are ON DISK, in every
- * workbench this plugin has ever run against, and a scan that stopped
+ * workbench fusion has ever run against, and a scan that stopped
  * recognising them would silently drop every review written before the merge
  * from the coverage it tiles. Recognising a sender is not mandating one: the
  * mandate is what `review-coverage-mandate.test.ts` pins against the prompts,
@@ -269,7 +269,7 @@ export interface CoverageReport {
   head: string;
   /**
    * Why no coverage could be computed. Non-empty means every other field is
-   * empty and the verdict is `unchecked` — the window itself was undecidable,
+   * empty and the result is `unchecked` — the window itself was undecidable,
    * which is a different thing from a window with nothing in it.
    */
   why: string;
@@ -732,7 +732,7 @@ export function coverageSentence(report: CoverageReport): string {
 
   parts.push(
     "If you are the orchestrator, widen the next dispatch's scope and name the gap commit by commit in the session summary — `bin/fusion-review-coverage` prints both. " +
-      "If you are a sub-agent, carry this line into your report; the dispatch scope is the orchestrator's to set.",
+      "If you are a dispatched child run, carry this line into your report; the dispatch scope is the orchestrator's to set.",
   );
 
   return parts.join(" ");

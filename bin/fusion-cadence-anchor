@@ -57,7 +57,7 @@
 #   set <key> <value>       Write/replace the key. Creates the file. Exit 0;
 #                           2 on a malformed key/value.
 #   changed-files <key> [<pathspec>]
-#                           The list behind the verdict: every path under
+#                           The list behind the result: every path under
 #                           <pathspec> that moved since the mark — committed
 #                           (`git diff --name-only <mark>..HEAD`) and
 #                           uncommitted (`git status --porcelain`) alike,
@@ -123,7 +123,7 @@ ANCHORS="fusion-workbench/.cadence-anchors"
 # The default pathspec: the tracking corpus, NOT the live state. Class L
 # (rules/workbench-tracking.md) plus the event log change on every session by
 # construction; counting them would make `changed=no` unreachable and the
-# skip they gate dead code. An explicit <pathspec> argument is taken raw.
+# skip they guard dead code. An explicit <pathspec> argument is taken raw.
 default_pathspec() {
   printf '%s\n' \
     'fusion-workbench/' \

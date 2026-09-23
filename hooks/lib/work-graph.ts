@@ -1,13 +1,13 @@
 /**
- * The order the work-item store imposes on itself — computed per run, stored
+ * The order the work-package store imposes on itself — computed per run, stored
  * nowhere.
  *
- * A work item's `**Depends-on:**` field carries the prerequisite relation and
+ * A work package's `**Depends-on:**` field carries the prerequisite relation and
  * carries nothing else: an entry there asserts that the named item reaches
  * `done` or `dropped` before this item may start, and every citation that binds
  * an item without ordering it sits in `**Cross-references:**`, which this module
  * never reads (`rules/fusion-workbench-conventions.md`
- * `## Backlog entries — work items`). Nothing here reads the text of a value to
+ * `## Work packages`). Nothing here reads the text of a value to
  * learn what a writer meant; the field a basename sits in is the whole of the
  * grammar.
  *
@@ -19,7 +19,7 @@
  * is a report. No agent asserts a ranking, no marker records one, and the user
  * overrides the figures wherever he wants to.
  *
- * ## The graph spans live work items only, and two kinds of record are outside it
+ * ## The graph spans live work packages only, and two kinds of record are outside it
  *
  * A NODE IS A WORK-ITEM RECORD WHOSE `**Status:**` IS LIVE — `open`, `claimed`
  * or `paused`. The node set is the live half of the status partition and was
@@ -30,11 +30,11 @@
  * unreadable or garbage is outside the node set rather than admitted to it.
  * `done` and `dropped` are terminal, and a terminal item is not a node: its
  * outgoing entries are never read, and an entry naming it resolves to nothing
- * and is reported as a dangle. That is the user's ruling at gate G1, recorded in
+ * and is reported as a dangle. That is the user's ruling at approval G1, recorded in
  * `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`
  * — the record as filed asked about an edge's target and was answered on the
  * dependent side, the target and resolution sides following by implication.
- * **Its accepted consequence, stated at the gate and repeated here because a
+ * **Its accepted consequence, stated at the approval and repeated here because a
  * later reader will otherwise read the figures as more than they are**: `depth`
  * and `blocks` measure unfinished work only, so the graph is blind to what has
  * closed. An item whose whole chain of prerequisites is done and an item that
@@ -49,8 +49,8 @@
  * grammar this module could read. In fusion's own workbench those records are
  * the large majority of the containers, and the ratio only ever moves one way.
  * The node set is `ITEM_RECORD_RE` and nothing else, imported rather than
- * re-spelled so that this module and the citation gate cannot drift on what a
- * work-item record is.
+ * re-spelled so that this module and the citation check cannot drift on what a
+ * work-package record is.
  *
  * `archive/**` IS NEVER OPENED. Only the container roots are read, so an
  * entry naming an item that was archived resolves to nothing and is reported by
@@ -64,7 +64,7 @@
  * unchanged store return equal reports, which is what makes the figures safe to
  * print and safe to ignore.
  *
- * It carries no verdict in any exit code, because it is a library and has none;
+ * It carries no result in any exit code, because it is a library and has none;
  * its caller prints `verdict=` as a line of stdout, the stdout-verdict rule
  * `lib/plan-size.ts`, `lib/staging-drift.ts` and `lib/review-coverage.ts` all
  * carry.
@@ -218,7 +218,7 @@ function headField(head: string[], name: string): string | null {
  * nothing downstream relies on that, because Kahn re-derives the order with the
  * tie-break the report needs.
  *
- * Recursive, and the recursion depth is the number of live work items — a
+ * Recursive, and the recursion depth is the number of live work packages — a
  * backlog, not a data set.
  */
 function stronglyConnected(out: number[][]): number[] {
@@ -263,7 +263,7 @@ function stronglyConnected(out: number[][]): number[] {
 }
 
 /**
- * Read `root`'s work-item store and return the ordering report.
+ * Read `root`'s work-package store and return the ordering report.
  *
  * `root` is the project root — the directory holding `fusion-workbench/`, which
  * is what `findWorkbenchRoot` returns and what the callers of `lib/plan-size.ts`
@@ -339,7 +339,7 @@ export function computeWorkGraph(root: string): WorkGraphReport {
   // --- edges ---------------------------------------------------------------
   // Resolution is a lookup in the node map and never a citation scan: the
   // scanner resolves against the whole workbench, where a decision record
-  // sharing a basename would resolve an entry that names no work item at all.
+  // sharing a basename would resolve an entry that names no work package at all.
   // An entry is compared literally, so a name written in any other form than
   // the basename the grammar defines is reported rather than guessed at.
   const byBase = new Map<string, number>();

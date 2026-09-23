@@ -8,7 +8,7 @@
  *      `reviews/` store. It tiles the review files' declared ranges against the
  *      session's commit range and names, commit by commit, what no reviewer has
  *      opened — plus the files the last pass declared it did not open, which are
- *      the next dispatch's scope. An uncovered range mid-Turn is the normal
+ *      the next dispatch's scope. An uncovered range mid-round is the normal
  *      state, and a check that fires on its commonest path is one its reader
  *      learns to ignore. See lib/review-coverage.ts and
  *      `measureReviewCoverageForModel`.
@@ -16,9 +16,9 @@
  *   0b. STAGING DRIFT, on one measured trigger: HEAD is not where it was on the
  *      previous tool call. It reads `git status --porcelain` over the workbench
  *      and names the authored records — and any commit-message-shaped file that
- *      landed inside the workbench where no artifact store owns it — that the
+ *      landed inside the workbench where no artefact store owns it — that the
  *      commit just made did not carry. Same reason for the narrow trigger: an
- *      unstaged record mid-Turn is the normal state, and the moment a missed
+ *      unstaged record mid-round is the normal state, and the moment a missed
  *      record becomes a missed record is the commit. The trigger is READ FROM
  *      THE REPOSITORY, never from the command's text — deciding from a shell
  *      string whether it will move HEAD is the question the deleted branch
@@ -224,11 +224,11 @@ function respond(additionalContext?: string): void {
  * The three, in the order they appear below:
  *
  *   - `measureReviewCoverageForModel` — **a review file lands** under a
- *     `reviews/` store. An uncovered commit range mid-Turn is the normal and
+ *     `reviews/` store. An uncovered commit range mid-round is the normal and
  *     correct state; the review landing is the moment the gap becomes both
  *     answerable and a fault to ignore.
  *   - `measureStagingDriftForModel` — **HEAD has moved** since the previous
- *     tool call. An unstaged record mid-Turn is the normal state; the commit is
+ *     tool call. An unstaged record mid-round is the normal state; the commit is
  *     the moment a missed record becomes a missed record.
  *   - `measureCitationFormForModel` — **a `.md` record lands** under the
  *     workbench. Unlike the two above there is no interval in which the answer
@@ -315,8 +315,8 @@ function respond(additionalContext?: string): void {
  * `reviews/` store inside the workbench. It is not on the every-tool-call path,
  * and that is deliberate rather than an omission.
  *
- * An uncovered commit range mid-Turn is the **normal and correct** state —
- * the review pass runs once per work item, at its closure (`agents/orchestrator.md`
+ * An uncovered commit range mid-round is the **normal and correct** state —
+ * the review pass runs once per work package, at its closure (`agents/orchestrator.md`
  * `## Closing a work package` step 2) — so an every-call
  * cadence here would report a fault on the commonest path, and a check that
  * cries wolf on its commonest path teaches its reader to ignore it. That is
@@ -471,14 +471,14 @@ function measureStagingDriftForModel(): string | null {
  *
  * One condition: a write tool just wrote a `.md` file under the workbench,
  * outside the frozen stores. The two measurements above wait, because the state
- * they report on is legitimately unfinished mid-Turn. This one does not wait,
+ * they report on is legitimately unfinished mid-round. This one does not wait,
  * and the reason is not impatience: a citation spelled in a retired form is
  * wrong at the byte that wrote it and stays wrong at every later reading, so
  * there is no interval to wait through. The write is the first moment anything
  * can read it, and it is also the last moment the writer still has the file
  * open — which is the whole of what the defect measured. Three agents in one
  * session wrote such a citation with the rule in context; each heard about it
- * from a gate minutes to hours later, and one left `npm test` red for every
+ * from a check minutes to hours later, and one left `npm test` red for every
  * agent in the checkout.
  *
  * ## What keeps it off the commonest path
@@ -562,19 +562,19 @@ async function main(): Promise<void> {
   setEventSession(input.session_id);
 
   // The dispatch trace's second half: a machine-written `task_done` row per
-  // completed sub-agent dispatch, for every session running inside a fusion
-  // project — `lib/orchestrator-events.ts` carries the gate and why it is
+  // completed dispatch, for every session running inside a fusion
+  // project — `lib/orchestrator-events.ts` carries the admission check and why it is
   // project-scoped rather than orchestrator-scoped.
   // Not a measurement and not a sibling of the family below — it reports
   // nothing to the model, it records; the trigger question in the family
   // header does not apply to a row with no sentence. `guard.ts` writes the
-  // `task_start` half; `lib/orchestrator-events.ts` carries schema and gate.
+  // `task_start` half; `lib/orchestrator-events.ts` carries schema and admission check.
   // A BACKGROUNDED dispatch returns at launch (`tool_response.status:
   // "async_launched"`, measured — see the lib's header block on the two
   // emitters), so its row would record the launch and not the finish: that
   // case parks an agentId->tool_use_id mapping instead, which the
   // SubagentStop hook resolves at the real completion.
-  // The measurements still run after it: a sub-agent may have committed during
+  // The measurements still run after it: a child run may have committed during
   // its run, which is exactly the HEAD-moved trigger staging drift reads.
   if (isDispatchTool(input.tool_name)) {
     if (dispatchWasBackgrounded(input)) {
@@ -585,7 +585,7 @@ async function main(): Promise<void> {
   }
 
   // The session-marker heartbeat, on every call and self-rate-limited — see
-  // `lib/orchestrator-events.ts` for the gate and the residual. Not a
+  // `lib/orchestrator-events.ts` for the admission check and the residual. Not a
   // measurement either: it says nothing and records only an mtime.
   bestEffort("tracker", () => {
     const root = findWorkbenchRoot();

@@ -69,11 +69,11 @@
 # runs on one. **The separator is a TAB** because the person value is git's
 # `Name <email>` form and contains spaces by
 # construction. A person the line did not record renders `(not recorded)`. **The
-# fifth field is the work item off the party's latest `task_start` row in the
+# fifth field is the work package off the party's latest `task_start` row in the
 # window** (since 2026-09-21): the guard writes `work_item` on every dispatch
 # that names a `**Work-item:**`, so the field says "on what, as of their last
-# dispatch". Where no dispatch row names one, it is the Circle read off a
-# pre-cut `session_start`'s `history_file` (`circles/<dir>/…` names its Circle,
+# dispatch". Where no dispatch row names one, it is the work package read off a
+# pre-cut `session_start`'s `history_file` (`circles/<dir>/…` names its package,
 # anything else is `shared`; no session row has carried the field since the
 # history store closed on 2026-09-10); where neither exists it reads
 # `none on record`, which is a statement, where `unknown` was not.
@@ -168,7 +168,7 @@
 # merged log is looking for. The identity is still exported below, because one
 # script serves both subcommands.
 #
-# It is a reading and a gate on nothing. Nothing runs it automatically.
+# It is a reading and blocks nothing. Nothing runs it automatically.
 #
 # ---------------------------------------------------------------------------
 # Exit codes. The 0/1/2 core is shared with bin/fusion-paths and

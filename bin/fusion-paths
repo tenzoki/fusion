@@ -74,7 +74,7 @@
 #     than an error it has to handle.
 #   - Every SCAN_* names BOTH stores for its kind, the container first and the
 #     shared one second, and collapses to the shared one alone when no item is
-#     in scope. An artifact filed under a directive is the same kind as one
+#     in scope. An artefact filed under a brief is the same kind as one
 #     filed without, so a consumer that read only the first value would report
 #     a clean pass over half the corpus.
 #   - During the v12 transition window a renamed store is also read under its
@@ -126,7 +126,7 @@
 #     name only, so `fusion-paths code-implementer` reads agents/code-implementer.md and nothing
 #     else. (The cost feared when this was decided — "a grep over 26 files on
 #     every call" — assumed all sets were built per call. They are not.)
-#   - A generated block would be a third artifact to maintain and ship, and it
+#   - A generated block would be a third artefact to maintain and ship, and it
 #     would go stale exactly the way the declared sets did: whenever someone
 #     edits a prompt and does not re-run the generator. That is the same defect
 #     with an extra step.
@@ -153,7 +153,7 @@
 # 260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md
 # so they survive this change rather than dissolving into it.
 #
-# Consequence for P-8's lint gate: under- and over-emission both leave its
+# Consequence for P-8's lint check: under- and over-emission both leave its
 # scope. Its remaining job is the one it was really for — no store-path literal
 # in a prompt.
 #
@@ -486,7 +486,7 @@ value_for() {
     # criterion every time: a key set restates the prompts, so a key no prompt
     # names restates nothing. Nothing reads memos — a memo is written for the
     # user. SCAN_CONSULT lost its last consumer on 2026-09-10, when the archive
-    # skill's shared-store derivation went; the store and its reports stay. And
+    # workflow's shared-store derivation went; the store and its reports stay. And
     # no prompt reads past discussions in this version: a discussion's record is
     # the register of its own rounds, addressed by its own path, and nothing
     # searches the store across items. So the discussions kind has no read key

@@ -35,13 +35,13 @@
  * list and reports each such token `exempt` with the reason
  * `declared-exhibit`, shape-decided verdicts included, so a fenced
  * store-prefixed transcript in a declared record is no longer a row. The
- * declaration is printed as `declared-exhibits=` beside the verdict, because
+ * declaration is printed as `declared-exhibits=` beside the `verdict=` line, because
  * a silencing leaf that is invisible is the one most likely to be reached for
- * when a gate is inconvenient; the residual — a genuine violation declared
+ * when a check is inconvenient; the residual — a genuine violation declared
  * away is silenced, and nothing mechanical tells the two apart — is accepted
  * in `lib/citation-scan.ts`'s header on the reasoning `foreign:` was.
  *
- * ## The declaration reaches both hand-run helpers and neither gate
+ * ## The declaration reaches both hand-run helpers and neither check
  *
  * `citation-sweep.ts` resolves the same leaf through the same function, and
  * that is the point rather than an incidental symmetry: a reporter narrower
@@ -50,11 +50,11 @@
  * reports. The two hand-run helpers share one corpus.
  *
  * `lib/__tests__/workbench-citation-lint.test.ts` deliberately does NOT read
- * the declaration, and it is not to be made to. That gate runs inside
+ * the declaration, and it is not to be made to. That check runs inside
  * `npm test` and recomputes its corpus on every run with no approvable
  * baseline, so a corpus set by an editable configuration leaf would turn a
  * one-line edit into a red suite for everyone who pulls. It is the same split
- * the frozen stores are on, from the same reason: a gate reddens the suite of
+ * the frozen stores are on, from the same reason: a check reddens the suite of
  * somebody who compiled nothing, and a reporter costs its reader a row.
  *
  * The frozen stores (`archive/`, `stashes/`, `.migration-v2-backup/`) are read
@@ -82,17 +82,17 @@
  *     to need has no measured case.
  *
  * `lib/__tests__/workbench-citation-lint.test.ts` keeps all three exclusions,
- * and the divergence is the point rather than an oversight: that gate reddens
+ * and the divergence is the point rather than an oversight: that check reddens
  * the suite of somebody who compiled nothing, over text an archive sweep moved
  * or a marker rename stranded, and this reporter costs its reader one row.
- * The gate's own comment reasons its exclusions; nothing here overrides it, and
- * the two corpora are not to be re-unified by making the gate wider.
+ * The check's own comment reasons its exclusions; nothing here overrides it, and
+ * the two corpora are not to be re-unified by making the check wider.
  *
  * ## The verdict scope: only a file somebody still edits moves `verdict=`
  *
  * Since 2026-09-01, by decision
  * `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`
- * (option 3). EVERY VIOLATION IS STILL PRINTED — the scope narrows the verdict
+ * (option 3). EVERY VIOLATION IS STILL PRINTED — the scope narrows the `verdict=` line
  * and never the search, because a row nobody prints is a row nobody can check
  * and hiding one is the coverage claim the corpus decision already refused.
  *
@@ -108,7 +108,7 @@
  * WHAT IS IN SCOPE, in three parts, which are disjoint and cover the corpus:
  *
  *   - A workbench file, by `isLiveRecord()` in `lib/citation-corpus.ts` — the
- *     blocking gate's own corpus predicate, moved there so the two share one
+ *     blocking check's own corpus predicate, moved there so the two share one
  *     definition instead of authoring two. Circle records in any state,
  *     `portfolio.md`, open issues, live decisions, live plans; the frozen
  *     stores out, terminal issues and decisions out.
@@ -122,9 +122,9 @@
  *     `.claude/rules/*.md`, `docs/**` and every declared path. IN scope: no
  *     marker exists there and every one of those files is live.
  *
- * The scope reaches the verdict and NOTHING else. `dangling`, `store-prefixed`,
+ * The scope reaches the `verdict=` line and NOTHING else. `dangling`, `store-prefixed`,
  * `files` and the row list are unchanged by it, and no exit code carries the
- * verdict — that rule is shared with `bin/fusion-review-coverage` and
+ * result — that rule is shared with `bin/fusion-review-coverage` and
  * `bin/fusion-staging-drift` and this change does not reopen it.
  *
  * ## Output, one `KEY=value` per line, then one row per violation
@@ -144,12 +144,12 @@
  * `edited-files` is how many of `files` are in the verdict scope, and
  * `edited-violations` / `unedited-violations` split the printed rows the same
  * way — they sum to `dangling` + `store-prefixed`, and the first is what
- * `verdict=` reads. A scoped verdict whose scope is not in the output would be
+ * `verdict=` reads. A scoped result whose scope is not in the output would be
  * worse than an unscoped one, so the three figures are mandatory rather than
  * decorative. `<scope>` repeats the split per row, `edited` or `not-edited`, so
- * a reader looking at three hundred rows can see which ones the verdict was
+ * a reader looking at three hundred rows can see which ones the result was
  * taken over. An `--undecidable` row carries no scope column: it reaches no
- * verdict by kind, before any scoping question is asked.
+ * result by kind, before any scoping question is asked.
  *
  * ## `unrewritable-violations`: the rows nobody is allowed to repair
  *
@@ -190,13 +190,13 @@
  * was refused, go to **stderr**: they are about the declaration rather than
  * about the corpus, and stdout is what a consumer greps.
  *
- * `judged` is every token the gate reads (`GATE_KINDS`, resolved or not);
+ * `judged` is every token the check reads (`GATE_KINDS`, resolved or not);
  * `dangling` counts `dangling` and `stale-marker` together, the two ways a
  * pointer fails to find its record; `store-prefixed` is the spelling the
  * storeless form retired; `undecidable` is the bare stamps, the ambiguous
  * tokens and, since 2026-09-21, the head-field values naming no record
  * (status `undecidable`: an identifier, or a citation whose record moved),
- * which no reader of the token can settle and which reach no verdict.
+ * which no reader of the token can settle and which reach no result.
  * `verdict=violations` when `edited-violations` > 0 — which is the scoped half
  * of dangling + store-prefixed, not their whole; see `## The verdict scope`.
  * `--undecidable` adds one row per undecidable token after the violations.
@@ -256,7 +256,7 @@ const unrewritable = (h) => h.reason !== undefined;
 /**
  * One violation row. The scope column sits between the status and the problem,
  * reading `edited` or `not-edited`, so a reader with three hundred rows can see
- * which of them the verdict was taken over without counting stores by eye. The
+ * which of them the result was taken over without counting stores by eye. The
  * rewrite column follows it, `unrewritable` or `rewritable`. Both are columns
  * and not filters: every row is printed under either value.
  */

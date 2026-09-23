@@ -4,7 +4,7 @@
 # Usage: fusion-rules <agent-name> [<topic>] [--audience=user]
 #
 # Prints one path per line. Searches three locations in order:
-#   1. The plugin's rules/        (via $FUSION_PLUGIN_ROOT, set by SessionStart;
+#   1. The module's rules/        (via $FUSION_PLUGIN_ROOT, set by SessionStart;
 #                                  in the fusion plugin's OWN source repo the
 #                                  work tree's ./rules is read instead — see
 #                                  the repo-context block below)
@@ -25,25 +25,25 @@
 #                       plain Claude Code in this repo would respect).
 #
 # Convention for filename patterns:
-#   - Every agent reads agent-setup.md FIRST (shipped by plugin) — the single
+#   - Every agent reads agent-setup.md FIRST (shipped by fusion) — the single
 #     authoring home for the Setup contract: "read every emitted path", the
 #     fusion-paths KEY=value / OUT_* vs SCAN_* semantics (incl. the two-
 #     directories-per-SCAN_* nuance and the exit-3/exit-4 distinction), the
 #     generalised pattern-kind clause, and the universal voice-profile-read
 #     instruction. Emitted before fusion-workbench-conventions.md so an agent
 #     reads "how Setup works" before the detailed conventions.
-#   - Every agent reads fusion-workbench-conventions.md (shipped by plugin).
+#   - Every agent reads fusion-workbench-conventions.md (shipped by fusion).
 #   - The decision-transition agents (orchestrator, requirements-designer, implementation-planner,
 #     state-auditor) additionally read decision-record-examples.md —
 #     the worked marker transitions; audience decided at 260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md, when
 #     the always-on floor could no longer carry the tutorial.
 #   - The user-read agents (orchestrator, consultant, requirements-designer, document-editor,
 #     policy-curator) additionally read user-facing-output.md — the full
-#     user-facing style contract (gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md); everyone else carries
+#     user-facing style contract (decision 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md); everyone else carries
 #     the chat profile's anti-patterns via agent-setup.md. This is the ONE
 #     emission a dispatch can also ask for by hand, with `--audience=user`; the
 #     name list above is the fallback and nothing else here reads the flag.
-#   - Every agent also reads critical-stance.md (shipped by plugin) —
+#   - Every agent also reads critical-stance.md (shipped by fusion) —
 #     the epistemic norms governing reasoning substance (not formatting):
 #     own your errors, no premature solutions, calibrated certainty, case
 #     splits disjoint-and-complete, cardinalities enumerated or derived.
@@ -53,7 +53,7 @@
 #     pointer from fusion-workbench-conventions.md. A third, circle-records.md,
 #     went with the Circle container itself.
 #   - The review-writing agent (reviewer) additionally reads
-#     review-contract.md (shipped by plugin) — the single authoring home of the
+#     review-contract.md (shipped by fusion) — the single authoring home of the
 #     review file's two mandated header fields, the per-topic working files and
 #     the final consolidated review. The audience is the one agent that writes
 #     review files; every other agent would be carrying a contract it can never
@@ -86,7 +86,7 @@
 #     - a `path` unit emits its file path (an agent reads it, as today);
 #     - a `skill` unit emits a `skill:<name>` pointer line (invoked on demand).
 #   The topic is resolved (see resolve_topics below): an explicit CLI <topic>
-#   argument wins; otherwise it is derived from the work item this checkout has
+#   argument wins; otherwise it is derived from the work package this checkout has
 #   claimed, which bin/fusion-claimed-package answers and this script does not
 #   decide for itself — an explicit `Topic:`/`Tags:` line in the item, else the
 #   item filename's slug keywords; with nothing claimed here, and on every
@@ -114,7 +114,7 @@
 #                                    `**Artifact language:**` line.
 #     What the two declarations name is a boundary by SURFACE, not by length:
 #     output the user reads in the terminal is the chat language, output that
-#     persists as a file is the artifact language. Authored once in
+#     persists as a file is the artefact language. Authored once in
 #     rules/fusion-workbench-conventions.md `## Project language`; the routing
 #     here is a consequence of that boundary, not a second definition of it.
 #
@@ -210,7 +210,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 # implementation of that criterion (hooks/lib/self-detect.ts keeps the
 # root-anchored form, `isFusionPluginRoot(dir)`, and no cwd entry point; the
 # helper's own header documents the split). One consequence
-# below, and it does not touch a consuming project: the plugin rule set is read
+# below, and it does not touch a consuming project: the shipped rule set is read
 # from the WORK TREE's ./rules instead of $FUSION_PLUGIN_ROOT/rules (see
 # PLUGIN_RULES_DIR). In the plugin's own repo the source is the meant state,
 # while $FUSION_PLUGIN_ROOT pins to the installed copy for the whole session and
@@ -227,7 +227,7 @@ case "$AGENT" in
   data-implementer)               PATTERNS="ontology normative verb" ;;
   # The reviewer covers both domains in one agent, so it takes both pattern
   # sets: a code pass needs the project's coding rules and an ontology pass its
-  # ontology, normative and verb rules. The plugin ships none of these, so in
+  # ontology, normative and verb rules. The module ships none of these, so in
   # this repository the union costs 0 bytes; in a consuming project it is what
   # keeps an ontology review from running without the heuristics that bind it.
   reviewer)                       PATTERNS="coding ontology normative verb" ;;
@@ -274,7 +274,7 @@ esac
 # Design-diagram-agent flag — independent of PATTERNS. These agents produce
 # technical-design documents whose structure is expressed as formal parseable
 # Mermaid. They read the shared rubric in rules/design-diagrams.md so that one
-# definition of "coherent" governs every diagram the plugin's agents draw.
+# definition of "coherent" governs every diagram fusion's agents draw.
 case "$AGENT" in
   implementation-planner|analyst|requirements-designer) IS_DIAGRAM_AGENT=1 ;;
   *)                              IS_DIAGRAM_AGENT=0 ;;
@@ -296,15 +296,15 @@ esac
 
 # Decision-transition-agent flag — the agents that perform or plan decision
 # marker transitions and therefore read the worked examples (audience decided
-# at the 260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md user gate; the vocabulary itself stays always-on).
+# at the 260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md approval; the vocabulary itself stays always-on).
 case "$AGENT" in
   orchestrator|requirements-designer|implementation-planner|state-auditor) IS_DECISION_TRANSITION_AGENT=1 ;;
   *)                                                IS_DECISION_TRANSITION_AGENT=0 ;;
 esac
 
 # User-facing-agent flag — the agents whose output the user reads DIRECTLY:
-# the orchestrator (gates, status, chat), consultant (replies), requirements-designer
-# (clarification rounds), document-editor (deliverable chat) and policy-curator (the gate ledger
+# the orchestrator (approvals, status, chat), consultant (replies), requirements-designer
+# (clarification rounds), document-editor (deliverable chat) and policy-curator (the approval ledger
 # reports). They carry the full user-facing style contract.
 #
 # **Five names, where the decision that keyed this block named three.** Its
@@ -318,10 +318,10 @@ esac
 # Narrowing to three would put both behind a `--audience=user` line nobody
 # passes there — a behaviour change, not a text repair. The rest, which
 # report to the orchestrator, do not — and reach the file on the dispatches where
-# they do hold a gate through `--audience=user`, which is the second key below: measured before
-# the 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md user gate, they took ~95 % of all dispatches and carried
-# 20 KB of gate-prompt and chat-format doctrine per dispatch without ever
-# holding a gate or a chat. Their replacement is two sentences in
+# they do hold an approval through `--audience=user`, which is the second key below: measured before
+# the 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md approval, they took ~95 % of all dispatches and carried
+# 20 KB of approval-prompt and chat-format doctrine per dispatch without ever
+# holding an approval or a chat. Their replacement is two sentences in
 # agent-setup.md: the chat profile's anti-patterns still bind every line a
 # human may read, and a report's audience is the dispatcher.
 case "$AGENT" in
@@ -373,13 +373,13 @@ declared_lang() {
   # `([a-z]{2})` and let `.*` eat the remainder, which made the test a PREFIX
   # test: `deutsch`, `denmark` and `de-DE` each resolved to `de`, so a value
   # naming no language fusion supports silently selected the German writing
-  # profile for every artifact. The supported set lives in exactly one place —
+  # profile for every artefact. The supported set lives in exactly one place —
   # the `case` below — and the extractor hands it a candidate rather than
   # pre-truncating one into shape. Adding a third language means editing that
   # `case` and nothing else.
   #
   # The default deliberately does NOT live here. The two call sites default
-  # differently (chat -> `en`, artifact -> whatever the chat language resolved
+  # differently (chat -> `en`, artefact -> whatever the chat language resolved
   # to), and standing side by side there the difference between them is legible.
   # One function, one job: this one extracts, it does not decide.
   local label="$1"
@@ -428,7 +428,7 @@ emit_voice_profile() {
   # obligations as overridable under load (`rules/critical-stance.md`, the
   # closing note of §4). Do not read this notice as compliance.
   #
-  # Stdout is untouched in every case, and the gate that holds that is
+  # Stdout is untouched in every case, and the check that holds that is
   # `hooks/lib/__tests__/rules-voice-profile.test.ts`, its two cases that drive
   # this script in a fixture project: one with `de` declared and the chat
   # profile removed, asserting stdout is exactly the fallback path plus the
@@ -466,7 +466,7 @@ resolve_topics() {
   #
   # Resolution order (documented in rules/context-manifest.md):
   #   1. Explicit CLI <topic> argument (commas accepted) — overrides the item.
-  #   2. An explicit `Topic:`/`Tags:` line in the work item this checkout has
+  #   2. An explicit `Topic:`/`Tags:` line in the work package this checkout has
   #      claimed.
   #   3. That item's slug keywords (basename minus the YYMMDD-HHMM- stamp and
   #      the .md suffix).
@@ -490,7 +490,7 @@ resolve_topics() {
   # carry on, where bin/fusion-paths stops the caller on 1 and refuses on 3. The
   # asymmetry is the cost of being wrong: a topic buys optional manifest units,
   # so a missing one costs an agent a few files it then does not read, while a
-  # path decides where an artifact is written and a wrong one files a plan into
+  # path decides where an artefact is written and a wrong one files a plan into
   # another item's container in silence. In particular the helper's 3 is NOT
   # re-raised as this script's exit 3, which means a malformed manifest and
   # nothing else (`rules/fusion-workbench-conventions.md` `## Path Resolution` →
@@ -558,7 +558,7 @@ PROJECT_CLAUDE_RULES_DIR=".claude/rules"
 # The project's two language declarations, resolved once, before anything is
 # emitted. The defaults sit here rather than inside declared_lang so the one
 # difference that matters is readable in two adjacent lines: the chat language
-# falls back to English, the artifact language falls back to whatever the chat
+# falls back to English, the artefact language falls back to whatever the chat
 # language resolved to. That second default is the whole backwards-compatibility
 # story — a project declaring only `**Language:**` drives both profile families
 # from it, exactly as the single pre-split resolution did.
@@ -574,12 +574,12 @@ emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
 emit_if_exists "$PLUGIN_RULES_DIR/critical-stance.md"
 
 # 1b3. The full user-facing style contract goes to the agents the user reads
-#      directly (the IS_USER_FACING_AGENT case above; gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md). For
+#      directly (the IS_USER_FACING_AGENT case above; decision 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md). For
 #      everyone else, agent-setup.md `## Voice profiles` carries the two
 #      sentences that still bind them.
 #      Two keys, and the name is only the first of them. `--audience=user` is
 #      the second: it asks the DISPATCH who reads this run's output, which the
-#      roster cannot answer for a role that holds a gate on some dispatches and
+#      roster cannot answer for a role that holds an approval on some dispatches and
 #      reports to the orchestrator on others. Either key alone emits the file, so
 #      a role that is user-facing by nature never loses it and only a role that
 #      is not gains the ability to ask. Decision
@@ -593,7 +593,7 @@ fi
 #      state-auditor (worked transition 1, the _o_ -> _a_ rename, is its act).
 #      Every agent still files records and still carries the marker VOCABULARY
 #      (fusion-workbench-conventions.md, always-on); what leaves the always-on
-#      floor is the tutorial. Audience change decided at the user gate,
+#      floor is the tutorial. Audience change decided at the user's approval,
 #      `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md`,
 #      when critical-stance §5 (decision 260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md) had to land on a floor
 #      872 bytes past its hard budget. The pointer at the template site in
@@ -603,7 +603,7 @@ if [ "$IS_DECISION_TRANSITION_AGENT" -eq 1 ]; then
 fi
 
 # 1a. Every agent receives the project's chat voice profile (short-form output
-#     style: gate prompts, AskUserQuestion text, status reports, chat replies).
+#     style: approval prompts, AskUserQuestion text, status reports, chat replies).
 #     Resolved from the CHAT language, because every one of those surfaces is
 #     read in the terminal and never persists. Not gated on prose — every agent
 #     produces some user-facing chat. The semantics ("apply its blacklist to
@@ -615,7 +615,7 @@ emit_voice_profile "chat-voice" "$CHAT_LANG"
 #     (long-form narrative outputs), resolved from the ARTIFACT language,
 #     because every surface it governs is a file that persists. The two paths
 #     may therefore name different languages; for a project whose chat and
-#     artifacts differ that is the intended configuration, and rules/
+#     artefacts differ that is the intended configuration, and rules/
 #     agent-setup.md `## Voice profiles` tells the agent so.
 if [ "$IS_PROSE_AGENT" -eq 1 ]; then
   emit_voice_profile "default-voice" "$ARTIFACT_LANG"
@@ -677,10 +677,10 @@ if [ "$IS_REVIEWER_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/review-contract.md"
 fi
 
-# 2. Domain patterns — plugin first, then fusion-agent-specific project rules,
+# 2. Domain patterns — module first, then fusion-agent-specific project rules,
 #    then project-wide rules in .claude/rules/. Order is read-order, not
 #    precedence: agents read every emitted path. Layered intentionally so a
-#    consuming project can extend the plugin's defaults without overriding.
+#    consuming project can extend the module's defaults without overriding.
 for pat in $PATTERNS; do
   emit_pattern_in_dir "$PLUGIN_RULES_DIR" "$pat"
   # In the plugin's own repo, PLUGIN_RULES_DIR and PROJECT_RULES_DIR are the

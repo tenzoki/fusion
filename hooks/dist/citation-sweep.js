@@ -10,7 +10,7 @@
  * (option 2). It lived as a `.mjs` script under `hooks/scripts/` until then, one
  * script only a checkout with `node_modules` could run; it is compiled now so
  * the install tarball runs it like every other helper. **No fusion pipeline
- * or skill runs it**: `/fusion:cleanup` prints the checker's verdict and
+ * or workflow runs it**: `/fusion:cleanup` prints the checker's result and
  * stops there, and a person runs the sweep by hand after reading its census.
  *
  * ## Usage
@@ -39,7 +39,7 @@
  * code. The loader's diagnostics and one line per pattern that matched nothing
  * or was refused go to stderr; the summary line below is untouched by any of
  * it, byte for byte, because `lib/__tests__/citation-sweep.test.ts` pins it as
- * a release gate. A project that declares nothing sweeps exactly what it swept
+ * a release check. A project that declares nothing sweeps exactly what it swept
  * before. Since 2026-09-21 the run also hands `citations.exhibits` to
  * `createScanner()`: a declared exhibit is read like every other file and
  * rewritten nowhere, because every token in it carries the reason
@@ -49,7 +49,7 @@
  * two hand-run helpers share one corpus, because a reporter narrower than the
  * rewriter is how this program came to change files the checker then declared
  * clean. `lib/__tests__/workbench-citation-lint.test.ts` deliberately does not
- * read the declaration and is not to be made to — that gate has no approvable
+ * read the declaration and is not to be made to — that check has no approvable
  * baseline and runs in everyone's `npm test`, so a corpus set by an editable
  * configuration leaf would redden the suite of somebody who edited nothing.
  *
@@ -147,7 +147,7 @@
  * lines, footer templates, announced illustrations, placeholders, fabricated
  * names, globs, head fields, the example files and the layout-conversion file.
  * The reason and not the status is what holds the sweep off: a fenced or
- * worked-example token whose SHAPE is store-prefixed is judged by the gate and
+ * worked-example token whose SHAPE is store-prefixed is judged by the check and
  * still carries its reason here, because rewriting a verbatim exhibit deletes
  * the finding it exists to show:
  *
@@ -197,7 +197,7 @@
  * than a rim of special cases).
  *
  * Cost, since the guard runs per candidate rewrite: it reuses the run's one
- * memoised scanner, so it re-walks neither the workbench index nor the Circle
+ * memoised scanner, so it re-walks neither the workbench index nor the work-package
  * directory index, and it is evaluated only after a candidate exists — a token
  * the table leaves alone never reaches it.
  *
@@ -277,7 +277,7 @@
  *                (`<letters><stamp>_<x>_<slug>.md`, `<letters><stamp>-<slug>`)
  *                -> the basename alone. The letter run must itself begin at a
  *                non-path boundary, and the basename must name a record or a
- *                Circle directory the index holds AND read back through the
+ *                work-package directory the index holds AND read back through the
  *                grammar whole.
  *
  * Fenced and blockquoted lines are left alone (an exhibit of the fault is not
@@ -340,8 +340,8 @@
  *        git diff <sweep>^ <sweep> -- fusion-workbench | grep -E '^[-+].*[0-9]{6}-[0-9]{4}'
  *
  *      Every `-` line carries the original spelling. A `-` line whose citation
- *      sat behind a path that is NOT one of `shared/`, `circles/<dir>/`,
- *      `archive/<sweep-dir>/` or a bare `<stamp>-<slug>/` Circle directory is
+ *      sat behind a path that is NOT one of `shared/`, `work-packages/<dir>/`, `circles/<dir>/`,
+ *      `archive/<sweep-dir>/` or a bare `<stamp>-<slug>/` work-package directory is
  *      an instance of this shape.
  *   3. Restore one file to its pre-sweep text, edit the citations by hand
  *      against what step 2 showed, and keep everything else the sweep did:
@@ -566,7 +566,7 @@ function readsBackWhole(scanner, rewritten) {
  * store-prefixed bracket token in THIS tree carries a reason and is left alone:
  * the sweep applies the fix the checker prints, and for these tokens the checker
  * prints "cite the marker position as `_*_`". A candidate that dropped only the
- * store segment and kept the bracket would be a fix no gate ever proposed.
+ * store segment and kept the bracket would be a fix no check ever proposed.
  *
  * A marker truncated inside its own slot (`<stamp>_d`) is declined by both, as
  * it was before the helper existed: `markerAtHead()` reports it incomplete, and
@@ -612,7 +612,7 @@ function rewriteOf(scanner, hit) {
     // 2026-09-05 a shape-decided token inside a fence or in a worked-example file
     // is REPORTED as `store-prefixed` and still carries its reason, because a
     // rewrite of a verbatim exhibit deletes the finding the exhibit exists to
-    // show. The gate names such a token to a human; this program never edits one.
+    // show. The check names such a token to a human; this program never edits one.
     // Every `exempt` hit carries one, so this subsumes the status test it replaced.
     if (hit.reason !== undefined)
         return null;

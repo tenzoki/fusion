@@ -24,7 +24,7 @@ export declare const MARKER_SLOT: string;
  * The SAME one-letter alphabet in the pre-v4 bracket spelling, `[x]`, as a
  * regex source with no capture. Named apart from `MARKER_SLOT` rather than
  * folded into it, for the reason the header's bracket paragraph carries: the
- * uniqueness gate reads `MARKER_SLOT` against a normalisation key that knows
+ * uniqueness check reads `MARKER_SLOT` against a normalisation key that knows
  * only the underscore form. The legacy WORDS are deliberately absent — they were
  * stamped on pre-Circle history files, which never carried a bracket.
  */
@@ -55,7 +55,7 @@ export declare const BRACKET_SLOT = "\\[[a-zA-Z*]\\]";
  * the delimiter and not the first character of the slug: the pre-v4 name is
  * `<stamp>[o]-<topic>.md` and the underscore name is `<stamp>_o_<topic>.md`.
  * The rename rule is `s/\[([oatcibspd])\]-/_\1_/g`, stated here in place: it
- * was `/fusion:migrate`'s up to the last v11 tag, and the skill no longer
+ * was `/fusion:migrate`'s up to the last v11 tag, and the skill body no longer
  * carries it. A citation and the file it names have to arrive at the same
  * spelling or the pointer the sweep writes finds nothing.
  */
@@ -67,9 +67,9 @@ export declare function markerAtHead(rest: string): {
 /**
  * Files whose record citations are fabricated, with the reason. THE PREMISE IS
  * RESOLUTION — a made-up record cannot be found on disk — so the exemption
- * reaches exactly the verdicts a lookup decides and NOT `store-prefixed`, which
+ * reaches exactly the findings a lookup decides and NOT `store-prefixed`, which
  * `SHAPE_DECIDED_KINDS` below settles from the token's shape before anything is
- * looked up. Until 2026-09-05 it silenced every verdict, which made the one file
+ * looked up. Until 2026-09-05 it silenced every finding, which made the one file
  * whose job is to teach the citation form the one file where a wrong form could
  * not be detected (issue
  * 260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md).
@@ -81,12 +81,12 @@ export declare const RECORD_EXAMPLE_FILES: Record<string, string>;
  * reach: here the store segment is what the file is about, so the exemption
  * covers `store-prefixed` as well. `skills/migrate/SKILL.md` carries the
  * v11 -> v12 store-name migration, naming both layouts literally (`circles/…`
- * becomes `work-packages/…`), and a gate telling it to drop the segment would be
+ * becomes `work-packages/…`), and a check telling it to drop the segment would be
  * telling it to stop describing the migration; `CLAUDE.md` states the same
  * licence in prose, calling `/fusion:migrate` the only consumer allowed to name
  * both layouts literally, because it is the transition between them.
  *
- * A SECOND MEMBER NEEDS THAT CLAIM ABOUT ITS CONTENT, not a red gate. The claim
+ * A SECOND MEMBER NEEDS THAT CLAIM ABOUT ITS CONTENT, not a red check. The claim
  * is checkable by reading the file: does it convert between the two layouts? If
  * the answer is "no, it merely cites a record", the file belongs in
  * `RECORD_EXAMPLE_FILES` or the citation belongs in the storeless form.
@@ -121,7 +121,7 @@ export declare const RETIRED_LAYOUT_FILES: Record<string, string>;
  *     — `agents/orchestrator.md:162` carries one at five spaces. The cost is
  *     that its content stays JUDGED, which is the status quo and the safe
  *     direction; dropping the indent bound instead would let any indented run
- *     of three backticks switch the gate off for an arbitrary span.
+ *     of three backticks switch the check off for an arbitrary span.
  *   - **tabs as indentation.** A leading tab advances to column 4 and so cannot
  *     introduce a fence; the pattern asks for spaces and stops there.
  *   - **indented (four-space) code blocks.** Not fences, and out of scope by
@@ -137,8 +137,8 @@ export declare const RETIRED_LAYOUT_FILES: Record<string, string>;
  * reached and no closing code fence has been found, the code block contains all
  * of the lines after the opening code fence until the end". Here an unclosed
  * fence exempts NOTHING — the lines it opened are discarded at the end of the
- * walk rather than added. A gate that one stray backtick line can switch off
- * for the whole remainder of a file is not a gate, and an unbalanced fence is a
+ * walk rather than added. A check that one stray backtick line can switch off
+ * for the whole remainder of a file is not a check, and an unbalanced fence is a
  * record to fix rather than a region to stop reading.
  */
 export declare function fencedContentLines(lines: {
@@ -150,19 +150,19 @@ export interface WorkbenchEntry {
     base: string;
 }
 export type CitationKind = 
-/** the five the gate judges; the first, third and fourth carry a store segment and are violations */
+/** the five the check judges; the first, third and fourth carry a store segment and are violations */
 "record" | "bare-record" | "package-record" | "package-dir"
 /** a stamp plus a dashed name, no store prefix — decidable by prefix */
  | "stamp-name"
-/** a stamp alone — the residual, and the only kind the gate does not read */
+/** a stamp alone — the residual, and the only kind the check does not read */
  | "stamp-bare";
 /**
- * The kinds the gate judges. Everything else is measurement-only, and since
+ * The kinds the check judges. Everything else is measurement-only, and since
  * 2026-08-20 "everything else" is one kind: `stamp-bare`.
  *
  * `stamp-name` joined the list under decision
  * `260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
- * (option 2), so that the repair scope and the gate scope coincide instead of
+ * (option 2), so that the repair scope and the check scope coincide instead of
  * diverging by 33 tokens. A `stamp-name` token is a stamp plus a dashed name
  * (`260812-2116-coder-<slug>`), which this parser's own header calls decidable
  * by prefix. `stamp-bare` stays out and is not a candidate for joining: a bare
@@ -172,7 +172,7 @@ export type CitationKind =
  *
  * BOTH callers share this list — the shipped-text lint in
  * `hooks/lib/__tests__/reference-resolution-lint.test.ts` and the workbench
- * gate in `hooks/lib/__tests__/workbench-citation-lint.test.ts`. Adding a kind
+ * check in `hooks/lib/__tests__/workbench-citation-lint.test.ts`. Adding a kind
  * here therefore moves the first one's pinned counts, and that re-approval
  * belongs in the same commit as the widening.
  *
@@ -185,13 +185,13 @@ export type CitationKind =
  */
 export declare const GATE_KINDS: CitationKind[];
 /**
- * The kinds whose verdict is settled by the token's SHAPE. Each of the three
+ * The kinds whose finding is settled by the token's SHAPE. Each of the three
  * carries a store segment, so each is `store-prefixed` unconditionally: their
  * `check()` below reads nothing off disk, and a fabricated record and a real one
  * are indistinguishable to it.
  *
  * WHAT THE LIST IS FOR. An exemption whose premise is "do not look this token
- * up" cannot reach a verdict that needed no lookup, so the two resolution-
+ * up" cannot reach a finding that needed no lookup, so the two resolution-
  * premised exemptions — `record-example-file` and `fenced-code` — are skipped
  * for these three kinds and the token is judged (issue
  * 260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md).
@@ -205,14 +205,14 @@ export declare const GATE_KINDS: CitationKind[];
  * THE RESIDUAL, stated rather than left to be found: the same argument reaches
  * `announced-illustration`, `footer-template` and `fabricated-name`, which are
  * announcements about one illustration rather than claims that the token is not
- * a citation. They were measured at zero store-shaped tokens over both gate
+ * a citation. They were measured at zero store-shaped tokens over both check
  * corpora on 2026-09-05 and left alone — the record that asked for this
  * narrowing names the other two, and each of these three has fixtures of its own
  * that would have to be rewritten to decide it.
  */
 export declare const SHAPE_DECIDED_KINDS: CitationKind[];
 export type CitationStatus = 
-/** resolves to exactly one file (or one Circle directory) */
+/** resolves to exactly one file (or one work-package directory) */
 "resolved"
 /** resolves to more than one — the citation does not say which */
  | "ambiguous"
@@ -255,15 +255,15 @@ export interface CitationHit {
      * already points at carries it.
      *
      * `dangling` keeps its stamp: it is not in `REPORTED_STATUSES`, so its only
-     * reader is the release gate's own failure text inside this repository, and
+     * reader is the release check's own failure text inside this repository, and
      * the substance rule it names is stated nowhere the sentence points. If it
      * ever joins that set, the stamp goes with it — the test asserting no reported
-     * verdict carries one is in `__tests__/reference-resolution-lint.test.ts`.
+     * finding carries one is in `__tests__/reference-resolution-lint.test.ts`.
      */
     fix?: string;
     /**
-     * Which exemption fired. With `status: "exempt"` it reached every verdict;
-     * on any other status it reached only the verdicts a lookup decides, and what
+     * Which exemption fired. With `status: "exempt"` it reached every finding;
+     * on any other status it reached only the findings a lookup decides, and what
      * it still forbids is REWRITING the token in place
      * (`RESOLUTION_PREMISED_EXEMPTIONS`).
      */
@@ -421,8 +421,8 @@ export declare function markdownFilesUnder(root: string): {
  *
  * A `stamp-bare` token lands in `undecidable` WHATEVER it resolved to, and
  * that is the one placement worth defending. Such a token carries no store, no
- * kind and no slug: when it matches exactly one artifact today, it does so by
- * the accident that one artifact was written in that minute, and it silently
+ * kind and no slug: when it matches exactly one artefact today, it does so by
+ * the accident that one artefact was written in that minute, and it silently
  * becomes ambiguous the moment a second one is. The question it fails is not
  * "does this exist" but "which of these is meant", and no mechanism reading
  * that token can answer it. A head-field value naming no record lands here by

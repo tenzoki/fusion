@@ -3,7 +3,7 @@
 # yet, read out of a fetched ref and never out of the working tree.
 #
 # THIS HEADER IS THE AUTHORITATIVE DOCUMENTATION. The row in CLAUDE.md and the
-# call sites in the reading skill summarise it and deliberately do not restate
+# call sites in the reading workflow summarise it and deliberately do not restate
 # it.
 #
 # ## Usage
@@ -174,7 +174,7 @@
 # `timeout` nor `gtimeout` is on `PATH`, and `GIT_TIMEOUT_MS` in
 # `hooks/lib/git.ts` is node's `execFileSync` timeout inside a PostToolUse
 # hook, a facility a bash script does not have and a latency budget it does
-# not share. What a fetch issued from a skill must not do is wait on a human
+# not share. What a fetch issued from a workflow must not do is wait on a human
 # who is not going to answer, and that is bounded exactly:
 # `GIT_TERMINAL_PROMPT=0` and `GIT_SSH_COMMAND='ssh -oBatchMode=yes'` turn
 # every credential prompt into an immediate, reportable failure. The residual

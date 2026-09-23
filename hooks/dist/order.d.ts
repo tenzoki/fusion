@@ -1,5 +1,5 @@
 /**
- * The order the work-item store imposes on itself, printed for a human or an
+ * The order the work-package store imposes on itself, printed for a human or an
  * agent to read.
  *
  * The computation is `lib/work-graph.ts`, and this is its only caller — no hook
@@ -61,7 +61,7 @@
  * `note=` line names the count and says that `ready=` is optimistic by it. The
  * template's field is permitted rather than mandated and is absent when there
  * is nothing to say, so an absent field and a genuinely prerequisite-free item
- * are indistinguishable. That con was accepted at the gate rather than designed
+ * are indistinguishable. That con was accepted at the approval rather than designed
  * away, on the condition that the helper's own output state it instead of
  * leaving a reader to infer it
  * (`260908-2018_*_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md`,
@@ -76,14 +76,14 @@
  *   1  usage error.
  *   2  no fusion workbench above the working directory; nothing to compute.
  *
- * **No exit code carries the verdict**, the stdout-verdict rule
+ * **No exit code carries the result**, the stdout-verdict rule
  * `bin/fusion-plan-size`, `bin/fusion-review-coverage`, `bin/fusion-staging-drift`
- * and `bin/fusion-citation-check` all carry: a check that hands its verdict to
+ * and `bin/fusion-citation-check` all carry: a check that hands its result to
  * an exit code teaches its reader to ignore that code. A cycle is a finding
  * about the store, not a failure of this program.
  *
  * `verdict=empty` is a real answer and reaches exit 0 like the other two: "there
- * are no live work items" is an answer about the project, and a broken install
+ * are no live work packages" is an answer about the project, and a broken install
  * must never be reported as one — that is the wrapper's own exit 3.
  */
 export {};

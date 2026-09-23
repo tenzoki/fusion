@@ -1,8 +1,8 @@
 # fusion
 
-A multi-agent orchestration framework for Claude Code. Fusion runs a work session as a team of **11 specialized agents** — an orchestrator that dispatches the rest, plus coders, reviewers, planners, and analysts — coordinating through files on disk, with a human at the decisions that matter and a hook layer that traces every write the agents make.
+A multi-agent orchestration framework for Claude Code. Fusion runs a work session as a team of **11 specialized agents** — an orchestrator that dispatches the rest, plus implementers, reviewers, planners, and analysts — coordinating through files on disk, with a human at the decisions that matter and a hook layer that traces every write the agents make.
 
-See [`docs/philosophy.md`](docs/philosophy.md) for why it's built this way, [`docs/working-model.md`](docs/working-model.md) for how a session runs (the work item's life, the gates, and the guard), and [`README-agents.md`](README-agents.md) for the full agent reference.
+See [`docs/philosophy.md`](docs/philosophy.md) for why it's built this way, [`docs/working-model.md`](docs/working-model.md) for how a session runs (the work package's life, the approvals, and the guard), and [`README-agents.md`](README-agents.md) for the full agent reference.
 
 ## Install
 
@@ -102,9 +102,9 @@ Start the orchestrator and give it a task:
 fusion                                   # or: claude --agent fusion:orchestrator
 ```
 
-Then, in the chat, state what you want — for example *"implement the plan in planning, then review it"* or *"fix the failing test in the parser."* The orchestrator resolves the scope and runs a **dispatch loop**: one task at a time — read it, dispatch an executor (code-implementer, data-implementer), read what comes back, commit it, and tell you where things stand before taking the next one. No queue is built and no count bounds the loop; you do, by saying what is next. The reviewer runs **once per work item, at its close**, scoped by the coverage tiling so nothing slips between sessions. A reconciliation checks the tracking files when you ask for it (`/fusion:reconcile`), and on anything but a clean verdict it opens the **Rebalance gate**.
+Then, in the chat, state what you want — for example *"implement the plan, then review it"* or *"fix the failing test in the parser."* The orchestrator resolves the scope and runs a **dispatch loop**: one task at a time — read it, dispatch an executor (code-implementer, data-implementer), read what comes back, commit it, and tell you where things stand before taking the next one. No queue is built and no count bounds the loop; you do, by saying what is next. The reviewer runs **once per work package, at its close**, scoped by the coverage tiling so nothing slips between sessions. A reconciliation checks the tracking files when you ask for it (`/fusion:reconcile`), and on any audit result but `coherent` it opens the **Rebalance approval**.
 
-You'll hit **gates** — points where the orchestrator stops and asks — before ontology changes, destructive operations, and ambiguous decisions. That's the design; answering them is how you steer.
+You'll hit **approvals** — points where the orchestrator stops and asks — before ontology changes, destructive operations, and ambiguous decisions. That's the design; answering them is how you steer.
 
 Watch it live. In a second terminal at the project root:
 
@@ -116,11 +116,11 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 
 ## Best practices
 
-- **One Directive per session.** Give the orchestrator a single, clear outcome. If you find yourself describing three unrelated goals, that's three sessions — or file the extras as work items (below) and take them one at a time.
-- **Let the gates do their job.** The human gates before ontology edits and destructive operations are where fusion earns its keep. Don't `--yolo` through them out of habit; `--yolo` is for a throwaway loop where nothing is at stake, not for real work on a shared tree.
+- **One brief per session.** Give the orchestrator a single, clear outcome. If you find yourself describing three unrelated goals, that's three sessions — or file the extras as work packages (below) and take them one at a time.
+- **Let the approvals do their job.** The approvals before ontology edits and destructive operations are where fusion earns its keep. Don't `--yolo` through them out of habit; `--yolo` is for a throwaway loop where nothing is at stake, not for real work on a shared tree.
 - **Trust tracking files only after reconciliation.** Status markers in plans and issues can lag reality mid-session. Ask for a reconciliation before you rely on what the tracking files claim — nothing schedules one, so it runs when you say so.
 - **Keep the working tree clean.** The orchestrator commits per task. Start a session from a clean tree so its commits are legible; don't mix hand-edits into a running session, or you'll blur which change came from where.
-- **One task, or a backlog.** For one obvious task, just tell the orchestrator. When you have several units of future work whose priority isn't obvious, file each as a work item with `/fusion:memo` and claim one by hand. Nothing ranks them: the ranking agent and its command both went at v11.
+- **One task, or a backlog.** For one obvious task, just tell the orchestrator. When you have several units of future work whose priority isn't obvious, file each as a work package with `/fusion:memo` and claim one by hand. Nothing ranks them: the ranking agent and its command both went at v11.
 - **Keep `CLAUDE.md` and `./rules/` current.** Agents load your project rules every session through `fusion-rules`. Stale rules mean stale behavior — treat them as living config, not documentation.
 - **Say yes to Setup's permission question rather than reaching for `--yolo`.** `/fusion:setup` offers once to write a permissive `.claude/settings.local.json` for the project. It persists across sessions, it is a considered choice you made once, and it keeps the catastrophic-operation backstop that `--yolo` removes. `--yolo` is per-run, unconditional, and worth keeping for throwaway loops. Decline the question and the project simply keeps its per-tool approval prompts; Setup will offer again next run.
 - **Nothing blocks your writes.** fusion's hook layer is observation-only: it allows every tool call, traces the write-tool ones into the event log the monitor renders, and tells you when your `fusion.json` is broken. It used to enforce — a protected-path deny, a decision-governed deny, and a halt after three blocks — and each was removed on its own measurement. See [Configuration](#configuration) for what the file still sets, and [`README-hooks.md`](README-hooks.md) for what each check was and why it went.
@@ -136,37 +136,37 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 | Bound how much a session does in one go | Nothing to set. `orchestrator.maxTurns` and `orchestrator.dispatchMinutes` are **retired**: the Turn loop and the dispatch bound they configured were removed on 2026-09-10, and a project still declaring either gets one advisory per guarded tool call until the key is deleted. The loop is bounded by you answering after each task |
 | Have the citation helpers read your non-Markdown files too | `citations.extraPaths`, declared as `{"citations": {"extraPaths": ["src/**/*.go"]}}`. Each entry is a git pathspec under `:(glob)`, resolved against the files git tracks. `bin/fusion-citation-check` and `bin/fusion-citation-sweep` add exactly those files to the Markdown corpus they already read; no hook reads it. Outside Markdown there is no code fence and no block quote, so fusion cannot tell a token that points at a record from one that shows what a record name looks like — you declare the files that cite, and leave out the ones that exhibit. Declare nothing and you get today's behaviour exactly. A value that is not an array of non-empty strings is dropped whole, named in an advisory, and inherits as if absent |
 | Stop the advisory naming `fusion-guard.json` | Delete `fusion-guard.json`. Copy nothing across: everything that file could set is retired too. That file is **retired**: fusion replaced it and no longer reads a byte of it. The advisory repeats on every guarded tool call until the file is gone. Full account in [`README-hooks.md`](README-hooks.md#per-project-configuration-fusionjson) |
-| Turn the guard down | There is nothing to turn down. The hooks block nothing and decide nothing — see [`README-hooks.md`](README-hooks.md) for what each removed check was and the measurement that removed it |
+| Loosen the guard | There is nothing to turn down. The hooks block nothing and decide nothing — see [`README-hooks.md`](README-hooks.md) for what each removed check was and the measurement that removed it |
 
-- **Rules** — three layers, all discovered by `bin/fusion-rules` at each agent's Setup: the plugin's own `rules/` (framework ground truth, always loaded), the project's `./rules/` (fusion-agent-specific rules — capture layouts, priority overrides), and the project's `.claude/rules/` (project-wide rules every Claude session should respect — coding and ontology standards). Missing files are skipped silently; add what your project needs.
+- **Rules** — three layers, all discovered by `bin/fusion-rules` at each agent's Setup: the module's own `rules/` (framework ground truth, always loaded), the project's `./rules/` (fusion-agent-specific rules — capture layouts, priority overrides), and the project's `.claude/rules/` (project-wide rules every Claude session should respect — coding and ontology standards). Missing files are skipped silently; add what your project needs.
 - **Language and voice** — set `**Language:** en` (or `de`) in your project `CLAUDE.md`. Setup copies four stylometric profiles into `fusion-workbench/stilwerk/`: `default-voice-{en,de}.yaml` (long-form writing, for prose agents) and `chat-voice-{en,de}.yaml` (short-form chat, for every agent). The `**Language:**` line selects the chat pair. A project whose written files use a different language than its chat adds an optional second line, `**Artifact language:** en` (or `de`), which then selects the writing pair — leave it out and one language governs everything, as before. Both lines are defined in `rules/fusion-workbench-conventions.md` `## Project language`.
 
 ## fusion-workbench
 
-`fusion-workbench/` at the project root is the shared workspace for all agents. **One kind, two candidate stores**: a work item's own container under `circles/`, and `shared/` for work belonging to no item. Session and hook state stays at the root.
+`fusion-workbench/` at the project root is the shared workspace for all agents. **One kind, two candidate stores**: a work package's own container under `work-packages/`, and `shared/` for work belonging to no package. Session and hook state stays at the root.
 
 ```
 fusion-workbench/
-├── circles/                      # one directory per work item
-│   └── <stamp>-<slug>/           # the item's record, plus what the item produced
+├── work-packages/                # one directory per work package
+│   └── <stamp>-<slug>/           # the package's record, plus what it produced
 │       ├── <stamp>-<slug>.md
-│       └── planning/ issues/ decisions/ reviews/ analyses/ history/
-├── shared/                       # the same kinds, for work belonging to no item
-│   ├── planning/ issues/ decisions/ reviews/ analyses/
-│   ├── history/ investigations/ consult/ memos/ forum/ checkouts/
+│       └── plans/ issues/ decisions/ reviews/ analyses/ history/
+├── shared/                       # the same kinds, for work belonging to no package
+│   ├── plans/ issues/ decisions/ reviews/ analyses/
+│   ├── history/ investigations/ consultations/ memos/ forum/ checkouts/
 ├── archive/  stilwerk/  monitor
 └── (root-anchored state: orchestrator-events.jsonl, .guard-state/,
      .commit-lock/, .session-marker, .checkout-id, .cadence-anchors)
 ```
 
-**The Origin Rule makes the placement decision**: an artifact belongs to the work item whose directive caused it to come into existence, and to `shared/` when no item is in scope. Cross-cutting relevance is cited rather than copied. Agents never hard-code these paths — they resolve write and scan targets through `bin/fusion-paths` at Setup, which names the container of the item this checkout has claimed, or the shared store when it holds none. What v11 removed here was the six-state Circle record and the ranking layer over it, not the container; `/fusion:migrate` converts a workbench that still holds a live Circle record.
+**The Origin Rule makes the placement decision**: an artefact belongs to the work package whose brief caused it to come into existence, and to `shared/` when no package is in scope. Cross-cutting relevance is cited rather than copied. Agents never hard-code these paths — they resolve write and scan targets through `bin/fusion-paths` at Setup, which names the container of the work package this checkout has claimed, or the shared store when it holds none. What v11 removed here was the six-state Circle record and the ranking layer over it, not the container; `/fusion:migrate` converts a workbench that still holds a live Circle record.
 
 **State markers** (encoded as `_x_` in filenames):
 
-- **issues / planning:** `_o_` open · `_p_` in progress · `_c_` closed · `_d_` deferred
+- **issues / plans:** `_o_` open · `_p_` in progress · `_c_` closed · `_d_` deferred
 - **decisions:** `_o_` open question · `_a_` answered · `_i_` implemented · `_d_` deferred · `_s_` superseded
-**A work item carries no marker at all.** Its state is the `**Status:**` head field — `open`, `claimed`, `paused`, `done`, `dropped` — so a state change edits the file instead of renaming it and every citation of an item stays valid for the item's whole life. `claimed` is the value the other two vocabularies have no equivalent for, and it is what the store exists to carry: it names the checkout doing the work.
+**A work package carries no marker at all.** Its state is the `**Status:**` head field — `open`, `claimed`, `paused`, `done`, `dropped` — so a state change edits the file instead of renaming it and every citation of an item stays valid for the item's whole life. `claimed` is the value the other two vocabularies have no equivalent for, and it is what the store exists to carry: it names the checkout doing the work.
 
-Rule of thumb: file in `issues/` when the resolution is "go fix it," in `decisions/` when it's "decide and record," and as a work item under `circles/` when it is a job somebody is going to do. The full layout, the work-item grammar and the issue, planning and decision marker transitions live in [`rules/fusion-workbench-conventions.md`](rules/fusion-workbench-conventions.md).
+Rule of thumb: file in `issues/` when the resolution is "go fix it," in `decisions/` when it's "decide and record," and as a work package under `work-packages/` when it is a job somebody is going to do. The full layout, the work-package grammar and the issue, planning and decision marker transitions live in [`rules/fusion-workbench-conventions.md`](rules/fusion-workbench-conventions.md).
 
-Two surfaces open the workbench for you directly: `/fusion:memo` appends personal notes to `shared/memos/` and files each idea as its own work-item directory under `circles/`, and `/fusion:cadence` scans commits and the whole workbench tree into a per-day activity log at the project root and then digests that log into what you have actually been working on — topics since yesterday, topics of the last seven days, and the themes that keep recurring ranked by how many distinct days they show up in. The digest lands next to the memos as `cadence-<checkout>.md` and is overwritten on each run; the log underneath it is rewritten in the same pass, so there is nothing to refresh beforehand.
+Two surfaces open the workbench for you directly: `/fusion:memo` appends personal notes to `shared/memos/` and files each idea as its own work-package directory under `work-packages/`, and `/fusion:cadence` scans commits and the whole workbench tree into a per-day activity log at the project root and then digests that log into what you have actually been working on — topics since yesterday, topics of the last seven days, and the themes that keep recurring ranked by how many distinct days they show up in. The digest lands next to the memos as `cadence-<checkout>.md` and is overwritten on each run; the log underneath it is rewritten in the same pass, so there is nothing to refresh beforehand.

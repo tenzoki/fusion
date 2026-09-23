@@ -8,7 +8,7 @@
  * which `bin/fusion-rules` emits to every agent on every dispatch. In one
  * session three different agents — an orchestrator, a code-implementer and an analyst —
  * wrote a record carrying a citation that rule forbids, and every one of them
- * was caught minutes to hours later by a release gate or by the hand-run
+ * was caught minutes to hours later by a release check or by the hand-run
  * checker, never at the moment of writing. One left `npm test` red for every
  * agent in the checkout until a human repaired it.
  *
@@ -24,7 +24,7 @@
  *
  *   1. **The moment its answer changes from "not yet" to "wrong".** Before the
  *      write there is no token to judge. At the write the citation is wrong,
- *      and every later reader of that file — the release gate, the sweep, a
+ *      and every later reader of that file — the release check, the sweep, a
  *      person following the pointer — will read it wrong. There is no
  *      intervening state in which it is correct-for-now, which is what
  *      separates this from an uncovered review range or an unstaged record.
@@ -52,8 +52,8 @@
  * ## Which verdicts, and the one that is deliberately left out
  *
  * `REPORTED_STATUSES` is `store-prefixed`, `stale-marker` and `spelled-marker`,
- * and NOT `dangling`, which the gate treats as a violation exactly like the
- * first two. The split is by what the verdict is decided FROM:
+ * and NOT `dangling`, which the check treats as a violation exactly like the
+ * first two. The split is by what the finding is decided FROM:
  *
  *   - `store-prefixed` is settled by the token's own shape, before anything is
  *     looked up (`SHAPE_DECIDED_KINDS` in the scanner). A fixture, a real
@@ -68,7 +68,7 @@
  *     the class that produced every violation of one measured session while
  *     this set was silent on it (issue
  *     `260908-0027_*_the-write-time-citation-check-is-silent-on-the-class-that-produced-every-violation-of-this-session.md`).
- *     The gate and the checker count it as RESOLVED — the sweep already
+ *     The check and the checker count it as RESOLVED — the sweep already
  *     computes its rewrite — so only the writer, at the write, hears of it.
  *   - `dangling` is decided by a lookup that found NOTHING, and "nothing on
  *     disk matches" is what a dead pointer, a probe fixture quoted in prose, a
@@ -83,7 +83,7 @@
  *     not producing (`rules/critical-stance.md` §4).
  *
  * THE COST OF LEAVING IT OUT IS REAL AND IS NOT HIDDEN: a dangling citation
- * still reddens the release gate later, exactly as it did before this module
+ * still reddens the release check later, exactly as it did before this module
  * existed. This mechanism does not reach that record's acceptance and does not
  * claim to.
  *
@@ -95,16 +95,16 @@
  * `e.g.` clause, a footer template, a placeholder, a glob, the `foreign:`
  * qualifier. This module reports only hits whose `reason` is undefined.
  *
- * That is one notch quieter than the gate, on purpose and in one case only.
+ * That is one notch quieter than the check, on purpose and in one case only.
  * Since 2026-09-05 the scanner judges a shape-decided kind under a
  * resolution-premised exemption anyway and KEEPS the reason, so a retired
  * spelling quoted inside a fence comes back as `store-prefixed` with
- * `reason: "fenced-code"`. The gate reports it; the sweep declines to rewrite
+ * `reason: "fenced-code"`. The check reports it; the sweep declines to rewrite
  * it, because rewriting an exhibit deletes the finding it exists to show. A
  * write-time report is addressed to the writer as "respell this", which is the
- * sweep's question rather than the gate's, so it follows the sweep: a hit
+ * sweep's question rather than the check's, so it follows the sweep: a hit
  * carrying a reason is somebody's exhibit and this module says nothing about
- * it. The residual is that such a token still reaches the gate unannounced.
+ * it. The residual is that such a token still reaches the check unannounced.
  *
  * ## Nothing in the sentence names a fusion record
  *
@@ -198,7 +198,7 @@ const MAX_ROWS = 4;
  * marker-less kinds — a history entry, an analysis, a review — are IN, and
  * deliberately so: two of the three instances that filed this defect were a
  * history file and an analysis, and both were caught by the sweep rather than
- * by the gate, whose corpus excludes them.
+ * by the check, whose corpus excludes them.
  */
 export function workbenchRecordPath(root: string, abs: string): string | null {
   const store = resolve(root, WB);
@@ -274,7 +274,7 @@ function linesCovering(text: string, fragments: string[]): Set<number> {
  *     exact and free of a match that could fail on a trailing newline.
  *   - `Edit` and `MultiEdit` name what they inserted, and only those lines are
  *     this call's. The rest of the file may carry a violation somebody else
- *     wrote, which is the gate's business and not this hook's.
+ *     wrote, which is the check's business and not this hook's.
  *   - `NotebookEdit` names a notebook, which no branch above reaches: a record
  *     is a `.md` file, and `workbenchRecordPath` has already declined.
  *
@@ -406,7 +406,7 @@ export function citationFormSentence(report: CitationFormReport): string {
     `fusion: the record you just wrote carries ${report.violations.length} citation(s) in a form this project retired. ` +
     rows +
     more +
-    " Repair them in this file now, while it is the file you are in: the same grammar runs in the release gate and in " +
+    " Repair them in this file now, while it is the file you are in: the same grammar runs in the release check and in " +
     "`bin/fusion-citation-check`, where the same token turns the suite red for everyone in the checkout instead of for you. " +
     "The form is stated in `rules/fusion-workbench-conventions.md` `## Marker globs`."
   );

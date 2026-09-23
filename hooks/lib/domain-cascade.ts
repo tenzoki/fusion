@@ -4,7 +4,7 @@
 // `agents/orchestrator.md` Setup Step 5 decides a workbench's domain
 // (code | data) from a fixed if/elif cascade over two integers and one string.
 // The cascade is prompt text, so nothing ran it, and
-// the only gate on it measured the *layout* of its branch lines — whether a
+// the only check on it measured the *layout* of its branch lines — whether a
 // line mentioned a token, not whether that line could ever fire. Four edits
 // that reinstated the defect it guards therefore passed it: a decoy branch
 // (`elif code_files < 0`) above a restored pre-fix order, an inverted condition
@@ -36,7 +36,7 @@
 // second definition is representable and one existed: `skills/cleanup/SKILL.md`
 // carried the cascade as a single prose sentence, in the pre-fix order and with
 // no absent-count case, so one project got two different domains out of one
-// session (issue 260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md). It predated the claim denying it, and both gates
+// session (issue 260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md). It predated the claim denying it, and both checks
 // read `agents/orchestrator.md` alone, so neither could see it. Running the
 // prompt's own block keeps THIS file from being a second copy; it says nothing
 // about any other consumer.
@@ -52,8 +52,8 @@
 // What that costs is strictness, and it is deliberate: anything the grammar
 // below cannot read raises `CascadeError` rather than being skipped. A renamed
 // variable, a condition form nobody anticipated, a missing final `else`, a
-// branch assigning a fifth domain — each fails loudly at the gate instead of
-// quietly narrowing what the gate covers. Widen the grammar when the prompt
+// branch assigning a fifth domain — each fails loudly at the check instead of
+// quietly narrowing what the check covers. Widen the grammar when the prompt
 // legitimately needs a construct; never widen it to make a failure go away.
 //
 // Trailing comments are stripped before parsing (`# counts unavailable`), which
@@ -85,7 +85,7 @@ export type Domain = (typeof DOMAINS)[number];
 // What was retired, and why the names are still here
 //
 // The cascade had four outcomes until the domain parameter was cut back to two.
-// `strategic` and `knowledge` were decided from the workbench's own artifact
+// `strategic` and `knowledge` were decided from the workbench's own artefact
 // counts — open decisions, open issues, analyses, commits — and both are gone,
 // measured: across the dispatches where the parameter meant anything,
 // `strategic` was never passed once and `knowledge` was passed twice.
@@ -100,7 +100,7 @@ export type Domain = (typeof DOMAINS)[number];
 //                          `domainLiteralsIn` still recognises them, for the
 //                          same reason the count names are kept: a copy
 //                          written only in the two retired outcomes is a
-//                          stale copy the reach gate must see (issue
+//                          stale copy the reach check must see (issue
 //                          260815-1501_*_the-reach-gate-is-blind-to-a-copy-written-only-in-the-retired-domain-names-and-reach-holes-does-not-say-so.md). `cascadeBlocks` keeps deriving from
 //                          DOMAINS alone, or the definition site stops parsing.
 //   RETIRED_COUNT_NAMES  — the grammar no longer accepts these as inputs, but
@@ -108,7 +108,7 @@ export type Domain = (typeof DOMAINS)[number];
 //                          plainest second copy anyone will meet from here on
 //                          is a STALE one restating the four-outcome cascade.
 //                          Dropping them would make exactly that copy invisible
-//                          to the reach gate, which is the one shape it was
+//                          to the reach check, which is the one shape it was
 //                          built for (issue 260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md).
 // ---------------------------------------------------------------------------
 
@@ -276,7 +276,7 @@ class Parser {
       const after = this.peek();
       if (after?.t === "op" && ["==", "!=", ">", ">=", "<", "<="].includes(after.v)) {
         // Python allows `0 < x < 5`; this reader does not, because getting it
-        // subtly wrong would misreport a verdict rather than fail.
+        // subtly wrong would misreport a result rather than fail.
         throw new CascadeError(`chained comparison is not readable here: ${this.src}`);
       }
       return { kind: "compare", op: tok.v as never, left, right };
@@ -405,7 +405,7 @@ function stripComment(line: string): string {
  * The pair is derived from DOMAINS rather than spelled out, so it moved with
  * the removal instead of staying pinned to a name that no longer exists.
  *
- * Exported because "how many files hold one" is the reach gate's question as
+ * Exported because "how many files hold one" is the reach check's question as
  * much as "which block do I run" is this module's.
  */
 export function cascadeBlocks(markdown: string): string[] {
@@ -488,7 +488,7 @@ export function parseCascade(markdown: string): Branch[] {
 /**
  * Shape the evaluator depends on: one leading `if`, `elif` in the middle, and a
  * final `else`. The `else` is what makes the cascade total — without it some
- * input reaches the end with no verdict, and Step 5 has no answer to give.
+ * input reaches the end with no result, and Step 5 has no answer to give.
  */
 function assertWellFormed(branches: Branch[]): void {
   if (branches.length < 2) {
@@ -683,13 +683,13 @@ export function countsFromHelperOutput(stdout: string): Pick<
 // The input half deliberately spans more than the cascade now reads. Both
 // `COUNT_NAMES` and `RETIRED_COUNT_NAMES` count, so a copy restating the
 // four-outcome cascade — the likeliest stale copy from here on — still trips
-// the gate on the counts only that cascade read.
+// the check on the counts only that cascade read.
 //
 // ---------------------------------------------------------------------------
 // HOW FAR THIS REACHES IS NOT WRITTEN IN THIS COMMENT
 //
 // It is `REACH` below, and `REACH` is data rather than prose for a specific
-// reason: the claim about this gate has now been broader than the gate twice in
+// reason: the claim about this check has now been broader than the check twice in
 // a row. The first version said a second definition was unrepresentable while
 // one sat in `skills/cleanup/SKILL.md` (issue 260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md). The second replaced
 // that with a scoped measurement naming three holes, and a review measured a
@@ -881,20 +881,20 @@ export interface ReachCase {
   cost?: { readonly widening: string; readonly singleLine: number; readonly withWindow: number };
 }
 
-/** A path the gate does not read, and what reading it would yield today. */
+/** A path the check does not read, and what reading it would yield today. */
 export interface ReachExclusion {
   /** Path or glob, relative to the plugin root. */
   glob: string;
-  /** Measured, not assumed: does the gate select anything in these files? */
+  /** Measured, not assumed: does the check select anything in these files? */
   measured: "clean" | "fires";
   /** Why it is out of the scanned set, in terms the measurement supports. */
   note: string;
 }
 
 /**
- * What the reach gate scans, catches, misses, and leaves out — the single
+ * What the reach check scans, catches, misses, and leaves out — the single
  * authoring home for all four. Every field is checked in
- * `domain-cascade.test.ts`: `fileSet` is what the gate actually enumerates,
+ * `domain-cascade.test.ts`: `fileSet` is what the check actually enumerates,
  * each `covered` probe must fire, each `holes` probe must not, each `excluded`
  * glob must measure what it claims, and `README-hooks.md` must carry
  * `describeReach()` verbatim.
@@ -1046,7 +1046,7 @@ export const REACH = {
       glob: "README-hooks.md",
       measured: "clean",
       note:
-        "Documentation about the gate, including this block. Not scanned, and it would be " +
+        "Documentation about the check, including this block. Not scanned, and it would be " +
         "wrong to scan the file whose job is to quote the claim.",
     },
   ] as const satisfies readonly ReachExclusion[],
@@ -1082,7 +1082,7 @@ export function describeReach(): string {
     "",
     bullets(REACH.holes),
     "",
-    "**Not scanned**, with what running the gate over it yields today:",
+    "**Not scanned**, with what running the check over it yields today:",
     "",
     REACH.excluded.map((e) => `- \`${e.glob}\` — ${e.measured}. ${e.note}`).join("\n"),
   ].join("\n");

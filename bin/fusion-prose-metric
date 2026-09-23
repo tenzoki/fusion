@@ -35,11 +35,11 @@
 # ---------------------------------------------------------------------------
 # It reports and it never gates
 #
-# No exit code of this program carries a prose verdict, and nothing here is
+# No exit code of this program carries a prose result, and nothing here is
 # wired into `npm test`. A file 30x over the ceiling exits 0, the same as a file
 # under it. The precedent is the pair of reporting programs that already carry
 # this rule, bin/fusion-staging-drift and bin/fusion-review-coverage, whose
-# headers give the reason (issue 260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md): a check that hands its verdict to
+# headers give the reason (issue 260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md): a check that hands its result to
 # an exit code teaches its reader to ignore that code. The verdict column is for
 # a human, and the decision about what to do with an `over` belongs to whoever
 # reads it.
@@ -129,7 +129,7 @@
 # file's raw `wc -w`: the hand count excluded the example subtrees from the
 # em-dash count and did not exclude them from the word count, against the rule
 # the same paragraph states. 617 was the count under the stated rule, and the
-# rate moved from 2.3 to 3.2 per 1000. No verdict changed.
+# rate moved from 2.3 to 3.2 per 1000. No verdict-column value changed.
 
 set -eu
 
@@ -142,7 +142,7 @@ usage() {
   cat >&2 <<'USAGE'
 usage: fusion-prose-metric <file> [<file> ...]
 Counts prose em-dashes and prose words per file; see the header of this script
-for what "prose" excludes. Reports only; the exit code carries no verdict.
+for what "prose" excludes. Reports only; the exit code carries no result.
 USAGE
 }
 

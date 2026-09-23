@@ -144,7 +144,7 @@ export function parseTs(ts) {
  *
  * Only a pre-cut `session_start` carries the field: the history store closed
  * at `0ec15cb9`. Since 2026-09-21 `measurePresence` calls this only where the
- * field is present, and reads a party's work item off its `task_start` rows
+ * field is present, and reads a party's work package off its `task_start` rows
  * otherwise, so `unknown` is now the answer for a malformed `circles/` path
  * alone. The literal stays after v12: the field is a pre-cut persisted value
  * no writer produces any more, which the window in
@@ -220,7 +220,7 @@ export function measurePresence(text, identity, opts) {
             seen.set(key, { line, ms });
     }
     // What each party is on, off its latest `task_start` in the window that
-    // names a work item. Both rows carry the same identity fields, so the key
+    // names a work package. Both rows carry the same identity fields, so the key
     // matches the pass above byte for byte; a dispatch older than the party's
     // latest `session_start` still counts, because a claim lives on the item
     // and not on the session, and a party that restarted and has not dispatched

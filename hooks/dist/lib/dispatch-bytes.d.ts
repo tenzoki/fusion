@@ -28,7 +28,7 @@
  * the environment untouched. That is deliberate rather than convenient: the
  * helper reads `./rules`, `./.claude/rules`, `./CLAUDE.md` and
  * `./fusion-workbench/stilwerk` relative to cwd, and prefers the work tree's
- * rules when cwd is the plugin's own repository. Reproducing the agent's call
+ * rules when cwd is fusion's own source repository. Reproducing the agent's call
  * exactly is the only way this measures what the agent will be handed.
  *
  * ## The memo, and what invalidates it
@@ -46,8 +46,8 @@
  * by the same helper and are part of what a dispatch loads. `CLAUDE.md` is
  * scanned because its two language declarations decide WHICH profile is emitted,
  * so an edit there can change the emission without touching a rule file. Both
- * plugin candidates for the rules directory are scanned — the installed copy's
- * and the project's own — because in the plugin's own repository the helper
+ * candidates for the rules directory are scanned — the installed copy's
+ * and the project's own — because in fusion's own source repository the helper
  * reads the second, and asking which would mean a second implementation of the
  * work-tree criterion.
  *
@@ -131,7 +131,7 @@ export interface DispatchByteMeasurement {
 /**
  * Measure one dispatch, arming or reading the project's own baseline.
  *
- * Called only after the row's gate has admitted it, so a dispatch that writes
+ * Called only after the row's admission check has admitted it, so a dispatch that writes
  * no row pays for none of this.
  */
 export declare function measureDispatchBytes(root: string, agent: string, run?: RuleEmissionRunner): DispatchByteMeasurement;

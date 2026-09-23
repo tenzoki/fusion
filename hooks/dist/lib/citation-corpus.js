@@ -12,8 +12,8 @@
  * It lived in that test file until 2026-09-01 and moved here whole, with its
  * reasoning, when decision `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`
  * chose option 3: only rows in a file somebody still edits move the reporter's
- * verdict. **Nothing about what the gate asserts or reads changed with the
- * move** — that gate's corpus is settled by
+ * `verdict=` line. **Nothing about what the check asserts or reads changed with the
+ * move** — that check's corpus is settled by
  * `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
  * and bounded by
  * `260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md`,
@@ -37,7 +37,7 @@
  * mechanism is finished and a person owns the file: that state satisfies the
  * criterion, earns a clause of its own, and moves nothing else written here. The
  * cost of leaving it as it stands is that a dangling citation inside a
- * mechanism-written file is caught by no gate and shows only as a printed row,
+ * mechanism-written file is caught by no check and shows only as a printed row,
  * so a run of the reporter is where the evidence for revisiting comes from.
  *
  * TWO CLASSES OF FILE REACH THE REPORTER AND NOT THE GATE WITH NO MARKER TO
@@ -67,7 +67,7 @@
  * `.claude/rules/*.md`, `docs/**`, and every path a project declared in
  * `citations.extraPaths`. No marker exists there and every one of those files
  * is live by construction: they are the project's normative text and its
- * source. **They move the verdict**, and this predicate is not asked about
+ * source. **They move `verdict=`**, and this predicate is not asked about
  * them at all — it takes a WORKBENCH-RELATIVE path, and `citation-check.ts`
  * scopes a non-workbench file in without consulting it.
  *
@@ -86,7 +86,7 @@
  * and a closed issue are. The open one is the mirror of the marker-less
  * judgement above: those are out because repairing them falsifies the record,
  * this is out because repairing it is futile. The next round overwrites the
- * file, so a hand repair buys nothing, and a blocking gate over it would fire on
+ * file, so a hand repair buys nothing, and a blocking check over it would fire on
  * a state the design REQUIRES the file to pass through rather than on a defect
  * somebody left behind. The reporter still prints every row it finds in one, so
  * the cost is visible to whoever runs the checker and is simply not blocking.
@@ -105,12 +105,12 @@
  *
  *   1. It is this project's own definition of a live decision.
  *      `rules/fusion-workbench-conventions.md` `## Decision Records` states
- *      that `_o_` and `_a_` together are Grounding-Stand, "the current best-of-
+ *      that `_o_` and `_a_` together are the current evidence base, "the best-of-
  *      knowledge the project is working with", and that a reconciliation pass
- *      listing active Grounding filters on `_o_` + `_a_`. An answered decision
+ *      listing the current evidence base filters on `_o_` + `_a_`. An answered decision
  *      awaiting realisation is a document people still open and act on.
  *   2. It is a superset of the narrow reading, so it can only judge more. Where
- *      the two disagree the wide one is the stricter, and a citation gate
+ *      the two disagree the wide one is the stricter, and a citation check
  *      erring strict costs a repair while erring loose costs a dead pointer
  *      nobody sees.
  *   3. It is the reading the repair was performed against. Plan steps 5 to 9b
@@ -120,9 +120,9 @@
  * THE HOLE THIS PREDICATE HAS, recorded because it is real and because the
  * answering decision's own footer records it. Membership follows markers, so a
  * record LEAVES the corpus when it reaches a terminal state, carrying whatever
- * citations it holds. That happened inside the Circle that armed the gate: a
+ * citations it holds. That happened inside the Circle that armed the check: a
  * decision moved `_a_` -> `_i_` at plan step 4 and took three dangling
- * citations out of reach, silently, and the gate would have shown green over
+ * citations out of reach, silently, and the check would have shown green over
  * them. It is a cost of the recomputed corpus — the same property that makes a
  * baseline unnecessary is the property that lets a record walk out of scope —
  * and not a defect in it. The fix would be a predicate that does not narrow at
@@ -156,8 +156,8 @@ export const CIRCLE_RECORD_RE = new RegExp(`^${ROOT}\\/[^/]+\\/_[atcbsd]_circle\
  *
  * THE DISCRIMINATOR IS A STRUCTURAL EQUALITY, NOT A WILDCARD OVER A CONTAINER.
  * The backreference is the whole of it: the basename, minus `.md`, must BE the
- * name of the directory holding it. `circles/<dir>/notes.md` is outside,
- * `circles/<other>/<dir>.md` is outside, and every path under a container's
+ * name of the directory holding it. `work-packages/<dir>/notes.md` is outside,
+ * `work-packages/<other>/<dir>.md` is outside, and every path under a container's
  * `planning/`, `issues/` or `decisions/` is outside and stays judged by the
  * clause for its own kind. One path per container is admitted and there is no
  * input for which this clause admits more than the marked clause refused —
@@ -173,15 +173,15 @@ export const CIRCLE_RECORD_RE = new RegExp(`^${ROOT}\\/[^/]+\\/_[atcbsd]_circle\
  *
  * MEASURED WHEN IT WAS WRITTEN: it admits ZERO files in this tree, because the
  * conversion of the two live records is the NEXT step and this one lands first
- * so that the conversion has a gate that can see it. That is the `LIVE_PLAN_RE`
+ * so that the conversion has a check that can see it. That is the `LIVE_PLAN_RE`
  * precedent — a clause armed for the records somebody is about to write — and
  * the same note is owed here, because a clause measured at zero is a clause a
  * later reader will otherwise assume was measured at something.
  */
 export const ITEM_RECORD_RE = new RegExp(`^${ROOT}\\/([^/]+)\\/\\1\\.md$`);
-/** An issue carrying `_o_`, in a Circle's store or in `shared/`. */
+/** An issue carrying `_o_`, in a work package's store or in `shared/`. */
 export const OPEN_ISSUE_RE = /(?:^|\/)issues\/[0-9]{6}-[0-9]{4}_o_[^/]+\.md$/;
-/** A decision carrying `_o_` or `_a_` — Grounding-Stand, per the wide reading. */
+/** A decision carrying `_o_` or `_a_` — the current evidence base, per the wide reading. */
 export const LIVE_DECISION_RE = /(?:^|\/)decisions\/[0-9]{6}-[0-9]{4}_[oa]_[^/]+\.md$/;
 /**
  * The portfolio briefing, at the workbench root. **Nothing writes one at this
@@ -204,7 +204,7 @@ export const PORTFOLIO = "portfolio.md";
  * retired `/fusion:migrate-workbench-v2`'s rollback copy) are copy trees of the
  * same layout, carrying the very `issues/` and `decisions/` subtrees these
  * predicates match. Neither exists in this workbench; one exists in any project
- * that ran that migration, and a blocking gate over a rollback copy has no
+ * that ran that migration, and a blocking check over a rollback copy has no
  * honest remedy. The pair is authored in `rules/fusion-workbench-conventions.md`
  * ("Two legacy stores are absent from this tree on purpose"), and
  * `skills/cadence/SKILL.md` `### 3. Scan git and the workbench tree — once` is
@@ -226,11 +226,11 @@ export const PORTFOLIO = "portfolio.md";
  * into one leaves the corpus, but so do the obligations of everything it cited,
  * and the citations OF it in live records stay judged and go red. That
  * asymmetry is intentional. It is also why the reporter still PRINTS every row
- * it finds in one: a scoped verdict is not a narrowed search.
+ * it finds in one: a scoped result is not a narrowed search.
  */
 export const FROZEN_PREFIXES = ["archive/", "stashes/", ".migration-v2-backup/"];
 /**
- * A plan or spec carrying `_o_` or `_p_`, in a Circle's store or in `shared/`.
+ * A plan or spec carrying `_o_` or `_p_`, in a work package's store or in `shared/`.
  *
  * THOSE TWO MARKERS AND NO OTHERS. `rules/fusion-workbench-conventions.md`
  * `## State Markers — issues and planning` gives a planning file four states:
@@ -240,7 +240,7 @@ export const FROZEN_PREFIXES = ["archive/", "stashes/", ".migration-v2-backup/"]
  * terminal and out for the reason a closed issue is out — and measurably so: the
  * 24 closed plans outside `archive/` carry 157 dangling citations between them
  * (2026-08-20; the exact figure moves with the parser, the order does not).
- * Admitting them would arm a red gate over records nobody will open again, and
+ * Admitting them would arm a red check over records nobody will open again, and
  * narrowing the corpus afterwards to get back to green is exactly the move
  * decision `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
  * exists to refuse. An `_o_`/`_p_` backlog entry is a separate question, asked

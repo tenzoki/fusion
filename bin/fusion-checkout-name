@@ -262,7 +262,7 @@
 # person as written, both values the two sides hold locally, while an entry in
 # this store is a pulled file: a comparison reading one would answer
 # differently before and after a fetch, so whether two checkouts are one party
-# or two would turn on when somebody last ran `git pull`. A work item's claim is
+# or two would turn on when somebody last ran `git pull`. A work package's claim is
 # compared by equality on the eight hex characters alone
 # (`rules/fusion-workbench-conventions.md` `## Work packages`),
 # and this program is not an input to that comparison either.

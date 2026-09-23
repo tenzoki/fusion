@@ -15,7 +15,7 @@
 #   total=195402
 #   skipped-specs=4
 #   verdict=over
-#     over      57891  circles/<dir>/planning/…_p_….md  (17891 over — …)
+#     over      57891  work-packages/<dir>/plans/…_p_….md  (17891 over — …)
 #     under     33472  shared/planning/…_o_….md
 #
 # The corpus is live (_o_ / _p_) plans in every planning store, requirements-designer specs
@@ -37,7 +37,7 @@
 #
 # `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md` `### C5` removed the
 # per-commit and per-dispatch record obligation and kept one bound on what may
-# still be written: a plan is the fattest artifact in the store a dispatch is
+# still be written: a plan is the fattest artefact in the store a dispatch is
 # pointed at, and a plan that needs more room is two plans.
 #
 # It reports and it gates nothing. The ceiling is carried in no exit code, and
@@ -46,7 +46,7 @@
 # (option 1): no plan has a measured reader, so a hard bound would be the first
 # in that cut enforced without one. It joins bin/fusion-staging-drift,
 # bin/fusion-review-coverage and bin/fusion-citation-check, none of which has
-# been promoted to a gate.
+# been promoted to a blocking check.
 #
 # The ceiling itself is a CHOSEN value and not a measured threshold; the
 # library header says what it was chosen against, and `--ceiling <bytes>`

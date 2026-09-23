@@ -45,12 +45,12 @@
 # bin/fusion-citation-check resolves the same leaf through the same function:
 # the two hand-run helpers share one corpus, because a reporter narrower than
 # the rewriter is how this program came to change files the checker then
-# declared clean. The blocking gate
+# declared clean. The blocking check
 # hooks/lib/__tests__/workbench-citation-lint.test.ts does NOT read the
 # declaration, on purpose, and is not to be made to.
 #
-# No fusion pipeline or skill runs this helper. `/fusion:cleanup` prints the
-# checker's verdict (bin/fusion-citation-check) and stops there; a person runs
+# No fusion pipeline or workflow runs this helper. `/fusion:cleanup` prints the
+# checker's result (bin/fusion-citation-check) and stops there; a person runs
 # the sweep by hand, --dry-run first, then --write --yes on a clean tree so
 # the sweep is its own commit and the way back is one revert.
 #

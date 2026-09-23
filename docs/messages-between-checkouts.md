@@ -16,11 +16,11 @@ When there is nothing new it says so in words rather than printing an empty resu
 
 ## Writing: inside the end-of-session cleanup
 
-The writing half is a part of `/fusion:cleanup`, not a command of its own. `/fusion:cleanup` holds you exactly once, at the end, so that a run you type and walk away from completes everything but one answer. The message draft rides in that one stop as a second question: the draft is printed, and you approve it in the same breath as the `CLAUDE.md` gate.
+The writing half is a part of `/fusion:cleanup`, not a command of its own. `/fusion:cleanup` holds you exactly once, at the end, so that a run you type and walk away from completes everything but one answer. The message draft rides in that one stop as a second question: the draft is printed, and you approve it in the same breath as the `CLAUDE.md` approval.
 
 Three consequences follow from folding it into that stop, and the pipeline states each aloud rather than leaving it to be discovered:
 
-- `--skip claude-md` skips the gate, and therefore leaves no message at all.
+- `--skip claude-md` skips that approval, and therefore leaves no message at all.
 - `--dry-run` puts no draft and writes nothing.
 - `--only forum` runs the half alone. It asks its own single confirmation, writes the file, touches git not at all, and tells you to carry the new file in your next commit.
 
@@ -36,7 +36,7 @@ You type `news`; the files live in `shared/forum/`. The two names differ, both a
 
 A subject line, a short part addressed to a person, and a pointer block, in that order and under a line cap. The cap, its arithmetic and the blank lines between the parts are `skills/post/SKILL.md` `## Step 2: compose the draft`'s and are not repeated here — the same reason `## Where the mechanism is written down` gives below for the helper's header. A number stated twice is a number that can disagree with itself, and the writer of a message obeys the body, not this page.
 
-The two halves are written for different readers and follow different languages. The person's part follows the project's chat language and reads plainly to somebody who never saw the session: no state markers, no fusion nouns, no agent name as the subject of a sentence, no bare identifiers. The pointer block follows the artifact language and carries the machine-checkable facts: the commit range, the session history file's basename, the records the session filed as storeless wildcard citations, and a sentence or two on what the receiving side need not redo.
+The two halves are written for different readers and follow different languages. The person's part follows the project's chat language and reads plainly to somebody who never saw the session: no state markers, no fusion nouns, no agent name as the subject of a sentence, no bare identifiers. The pointer block follows the artefact language and carries the machine-checkable facts: the commit range, the session history file's basename, the records the session filed as storeless wildcard citations, and a sentence or two on what the receiving side need not redo.
 
 Each entry is one file per session with a single writer, and its name carries the stamp, the writing checkout and a short slug, so a reader can tell who wrote what without opening anything. The pattern itself is the `Forum entry` row of `rules/fusion-workbench-conventions.md` `## Filename Patterns`. Nothing appends to a shared log, so there is no merge driver and no ordering to lose.
 
@@ -73,7 +73,7 @@ Three limits, and none of them is a rough edge that a later release will quietly
 
 ## Two output states
 
-Running the reading command produces one of two shapes, depending on whether the fetch turned up anything. Both are the shape the skill prescribes rather than a captured transcript.
+Running the reading command produces one of two shapes, depending on whether the fetch turned up anything. Both are the shape the workflow prescribes rather than a captured transcript.
 
 Nothing new:
 

@@ -288,7 +288,7 @@ do_release() {
 # commit actually landed (HEAD read from the repository and compared — never
 # inferred from the command's text) and only when the row can be scoped to a
 # session: `FUSION_SESSION_ID` is exported (the SessionStart hook exports it).
-# That is the same gate `hooks/lib/orchestrator-events.ts` states as
+# That is the same condition `hooks/lib/orchestrator-events.ts` states as
 # `eventRowsAdmitted`. A second term, `agentstate.yaml` exists, stood beside it
 # until 2026-09-10 and went with that file; that module's header carries why. No advisory is written here — this script is not a
 # hook and has no `.guard-state/` writer, and a bare `commit` row with no

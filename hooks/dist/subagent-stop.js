@@ -16,7 +16,7 @@
  * `lib/orchestrator-events.ts` carries the whole mechanism.
  *
  * Protocol: reads JSON from stdin, writes nothing to stdout — this event has
- * no verdict to give and no model channel to fill. Fail open, like the other
+ * no reply to give and no model channel to fill. Fail open, like the other
  * hooks: a lost completion row is a defined degradation (the pair falls back
  * to launch-time semantics), a SubagentStop that takes the session down is
  * not.

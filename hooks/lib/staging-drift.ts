@@ -79,7 +79,7 @@
  * So every entry is classified and every entry is printed, with the reason:
  *
  *   - `commit-message` — a file whose name says it holds a commit message AND
- *     that no artifact store owns. A fault of its own kind: item 3 of
+ *     that no artefact store owns. A fault of its own kind: item 3 of
  *     `agents/orchestrator.md` `### Step 4 — commit` prescribes
  *     `/tmp/fusion-commit-msg-<session-id>-<task-id>.txt` because `/tmp` is
  *     swept and the workbench is not, and `.commit-msg-tmp` is what improvising
@@ -89,10 +89,10 @@
  *     only. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
  *     message", and told the model to delete it (issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`).
- *   - `record` — an authored artifact: a work item's own record
- *     (`circles/<item>/<item>.md`), a legacy Circle's `*_circle.md` (a
+ *   - `record` — an authored artefact: a work package's own record
+ *     (`work-packages/<item>/<item>.md`), a legacy Circle's `*_circle.md` (a
  *     terminal record `/fusion:migrate` never touches, so a converted workbench
- *     can still hold one), or anything under an artifact store. These are what
+ *     can still hold one), or anything under an artefact store. These are what
  *     a staging list is supposed to name.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
@@ -111,7 +111,7 @@
  *     the honest thing to do with one is print it and claim nothing.
  *
  * Only `record` and `commit-message` rows that are not fully staged enter the
- * verdict, the signature, and the sentence handed to the model. The CLI prints
+ * result, the signature, and the sentence handed to the model. The CLI prints
  * all four classes, because the CLI's read is taken on purpose — at a commit
  * and at the session's end — and a deliberate read should be complete.
  *
@@ -211,7 +211,7 @@ export const PRESCRIBED_MESSAGE_PATH =
  * nothing.
  *
  * `.asset-provenance` was missing here while its class-R3 sibling was named,
- * and fell through to `unclassified` — a machine-written setup artifact printed
+ * and fell through to `unclassified` — a machine-written setup artefact printed
  * under the heading that claims nothing about it (issue
  * `260830-1845_*_staging-drift-does-not-name-asset-provenance-as-live-state-while-its-sibling-marker-is.md`).
  */
@@ -235,8 +235,8 @@ export const LIVE_PREFIXES: { prefix: string; why: string }[] = [
 ];
 
 /**
- * The artifact stores. A path with one of these as a segment holds authored
- * records, whether it sits under a work item's container or under `shared/`.
+ * The artefact stores. A path with one of these as a segment holds authored
+ * records, whether it sits under a work package's container or under `shared/`.
  *
  * The live set is `RECORD_STORES` in `./stores.ts`, the layout tree's twelve,
  * their window names (`WINDOW_LEGACY_RECORD_STORES`), plus `LEGACY_STORES`
@@ -306,18 +306,18 @@ const COMMIT_MESSAGE = /commit[-._]?(msg|message)/i;
  *     instruction, not about a file, and a prescription pointing into a store
  *     is precisely the case the location test forgives.
  *
- * That gate reached the pattern through `classify` and so inherited the
+ * That check reached the pattern through `classify` and so inherited the
  * scoping, silently losing the in-a-store case (issue `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md`). The cheap
  * repair — transcribing the regex into the test — would put two spellings of
  * one concept in the tree, which is the trap `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` was filed about and
- * the reason the gate reached through `classify` to begin with. So the name
+ * the reason the check reached through `classify` to begin with. So the name
  * question becomes its own export instead: **one pattern, and each caller
  * composes the scoping its own question needs.** Nothing here can drift from
  * `classify`, because `classify` calls it.
  *
  * The asymmetry that makes the two scopings both correct, rather than one of
  * them a compromise: a false positive in `classify` told the model to delete an
- * authored record, and a false positive in the gate costs a developer one
+ * authored record, and a false positive in the check costs a developer one
  * exemption entry at test time. Same predicate, incomparable consequences.
  */
 export function hasCommitMessageName(rel: string): boolean {
@@ -351,7 +351,7 @@ export interface StagingReport {
   root: string;
   /**
    * Why nothing could be measured. Non-empty means `rows` is empty and the
-   * verdict is `unchecked` — a workbench outside a git repository, or a git
+   * result is `unchecked` — a workbench outside a git repository, or a git
    * that would not answer. Different from a clean tree, and never reported as
    * one.
    */
@@ -422,7 +422,7 @@ function unquote(raw: string): string {
  *
  * ## What the scoping gives up, stated rather than glossed
  *
- * A commit message genuinely written into `shared/issues/` or a work item's
+ * A commit message genuinely written into `shared/issues/` or a work package's
  * `planning/` is no longer read as a message file. It comes back as an unstaged
  * `record`: the model is told to stage it, not to delete it, so the leftover
  * enters a commit instead of being swept, and the sentence naming
@@ -468,7 +468,7 @@ export function classify(rel: string, sessionHistory: string): { klass: EntryCla
   // The unit of work: `<root>/<item>/<item>.md`, the same name twice and no
   // store segment (`rules/fusion-workbench-conventions.md` `## Work packages`).
   if (inContainer && segments.length === 3 && segments[2] === `${segments[1]}.md`) {
-    return { klass: "record", why: "a work item's own record" };
+    return { klass: "record", why: "a work package's own record" };
   }
   for (const store of STORES) {
     if (segments.includes(store)) {
@@ -477,13 +477,13 @@ export function classify(rel: string, sessionHistory: string): { klass: EntryCla
   }
 
   // Last, and only over what nothing above claimed. The name question itself
-  // is `hasCommitMessageName`, shared with the prompt gate that asks it without
+  // is `hasCommitMessageName`, shared with the prompt check that asks it without
   // this scoping (see that function for why the two scopings differ).
   if (hasCommitMessageName(rel)) {
     return {
       klass: "commit-message",
       why:
-        "a commit-message-shaped name that no artifact store owns — the orchestrator's commit step prescribes " +
+        "a commit-message-shaped name that no artefact store owns — the orchestrator's commit step prescribes " +
         PRESCRIBED_MESSAGE_PATH,
     };
   }
@@ -707,7 +707,7 @@ export function stagingSentence(report: StagingReport): string {
 
   if (messages.length > 0) {
     parts.push(
-      `A commit-message-shaped file that no artifact store owns is sitting in the workbench: ` +
+      `A commit-message-shaped file that no artefact store owns is sitting in the workbench: ` +
         `${messages.map((r) => r.path).join(", ")}. ` +
         `The orchestrator's commit step writes the message to ${PRESCRIBED_MESSAGE_PATH} — /tmp is swept ` +
         `and the workbench is not, ` +
@@ -729,7 +729,7 @@ export function stagingSentence(report: StagingReport): string {
       "stages a renamed record's deletion and adds nothing in its place, taking that record out of HEAD; an " +
       "unquoted shell glob does the reverse, staging the successor and leaving the deletion behind, so both " +
       "names land in HEAD. " +
-      "If you are a sub-agent, carry this line into your report — committing is the orchestrator's.",
+      "If you are a dispatched child run, carry this line into your report — committing is the orchestrator's.",
   );
 
   return parts.join(" ");

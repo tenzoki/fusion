@@ -28,29 +28,29 @@
  *     session. See `## The session_start row` at the foot of this module for
  *     what it carries, why the model's own row is not replaced by it, and what
  *     tells the two apart. It is the one machine row that does NOT pass the
- *     gate below: the identifier is that row's dedup key rather than a
+ *     admission check below: the identifier is that row's dedup key rather than a
  *     descriptive field, so it is required outright.
  *
- * Everything else semantic — `turn_start`, gates, reviews — stays
- * model-written: those rows carry judgements (a Directive, a verdict, a Turn's
+ * Everything else semantic — `turn_start`, approvals, reviews — stays
+ * model-written: those rows carry judgements (a brief, a review result, a work round's
  * stats) that no hook can know. `session_start` is the one row kind written
  * from both sides at once, and it is deliberately a coexistence rather than a
  * replacement: the hook can know the session's identity, head and domain and
- * cannot know its Directive or its history file, so for now each writer writes
+ * cannot know its brief or its history file, so for now each writer writes
  * the row it can, and the `writer` field says which wrote which.
  *
- * ## The gate: a workbench root, and a session the row can be scoped to
+ * ## The admission check: a workbench root, and a session the row can be scoped to
  *
  * A dispatch row is written when `findWorkbenchRoot()` found a root AND the
  * hook payload carries a session identifier. `eventRowsAdmitted` is the
  * predicate, and one term is the whole of it.
  *
- * ## Why the gate is project-scoped
+ * ## Why the admission check is project-scoped
  *
  * It had a second term until 2026-09-10: `fusion-workbench/agentstate.yaml`
  * exists. That file was Setup's own bookkeeping, written by the model at the
  * start of an orchestrator session and deleted at a clean close, so the term
- * made the gate ORCHESTRATOR-scoped — a dispatch outside that window, from a
+ * made the check ORCHESTRATOR-scoped — a dispatch outside that window, from a
  * plain Claude session in the same project, wrote nothing here.
  *
  * The Turn loop that kept the file went with the cut, so the term was keyed on
@@ -61,7 +61,7 @@
  *
  * The consequence is the point rather than a cost to apologise for. A plain
  * session's dispatches land in the log whether or not an orchestrator is
- * running — which the old gate already admitted for the window it could not
+ * running — which the old check already admitted for the window it could not
  * exclude, and stated as its residual. Every row carries its own `session_id`,
  * so scoping is the READER's job: `bin/fusion-events` already reads this log by
  * the identity on each line rather than by a line's position in it, and that is
@@ -80,9 +80,9 @@
  *
  * The advisory is emitted once per emission call, and only where a row was
  * actually owed: `recordDispatchLaunch` parks a mapping entry rather than
- * writing a row, so it takes the gate and stays silent — `emitSubagentStop`
+ * writing a row, so it takes the admission check and stays silent — `emitSubagentStop`
  * raises the advisory when that parked dispatch's row finally comes due.
- * `heartbeatSessionMarker` keeps its own narrow gate — the marker's existence —
+ * `heartbeatSessionMarker` keeps its own narrow check — the marker's existence —
  * and stays unadvised, because its subject is the orchestrator's own session
  * marker rather than a row in this log.
  *
@@ -141,8 +141,8 @@ export declare function payloadSessionId(input: {
     session_id?: unknown;
 }): string | undefined;
 /**
- * The gate. A row is admitted with a workbench root found and either term of
- * the disjunction satisfied — see `## The gate` in the header for both terms,
+ * The admission check. A row is admitted with a workbench root found and either term of
+ * the disjunction satisfied — see `## The admission check` in the header for both terms,
  * why the second one is kept, and why the first one was added.
  */
 export declare function eventRowsAdmitted(_root: string, sessionId: string | undefined): boolean;
@@ -164,14 +164,14 @@ export declare const ABSENT_SESSION_ID_ADVISORY = "orchestrator-events: the hook
  * conjunct, `agentstate.yaml` exists, stood beside it until 2026-09-10 and went
  * with the file: a term nothing writes any more admits nothing.
  * Residual, stated: a plain session's tool calls DURING a live orchestrator
- * session also refresh the marker; the `running` verdict that produces at
+ * session also refresh the marker; the `running` result that produces at
  * Setup Step 0c is then true anyway. Never creates, never deletes — writing
  * and clearing stay `bin/fusion-session-mark`'s.
  *
  * It deliberately does NOT take `eventRowsAdmitted`, and the reason is that its
  * subject is different: the marker records that an ORCHESTRATOR is running
  * against this project, and a plain session refreshing it on the strength of
- * having a session identifier would make Setup Step 0c's `running` verdict a
+ * having a session identifier would make Setup Step 0c's `running` result a
  * statement about the wrong thing. The marker's own existence is what keeps the
  * two apart.
  */
@@ -193,12 +193,12 @@ export interface DispatchHookInput {
     tool_input?: Record<string, unknown>;
     tool_response?: unknown;
 }
-/** The launch verdict off the PostToolUse payload, read and never predicted. */
+/** The launch status off the PostToolUse payload, read and never predicted. */
 export declare function dispatchWasBackgrounded(input: DispatchHookInput): boolean;
 /**
  * Park the pairing for the SubagentStop hook. No-op without an agentId.
  *
- * Takes the gate and raises no advisory: nothing is written to the event log
+ * Takes the admission check and raises no advisory: nothing is written to the event log
  * here, so there is no row for an absent identifier to be missing from.
  * `emitSubagentStop` advises when this launch's row actually comes due.
  */
@@ -282,7 +282,7 @@ export declare function readCheckoutId(root: string): string | undefined;
  * Three things decide a row, and each is the answer to a measured defect:
  *
  *   - `writer === SESSION_START_WRITER`. The model writes a `session_start`
- *     row of its own for the same session, carrying the Directive and the
+ *     row of its own for the same session, carrying the brief and the
  *     history file and NOT the mechanical facts; a reader wanting the head
  *     commit or the domain must not read it. That is why the field exists.
  *   - the `checkout` field, where the row carries one and this checkout is

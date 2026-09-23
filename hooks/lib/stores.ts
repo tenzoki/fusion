@@ -1,5 +1,5 @@
 /**
- * The artifact stores, named once.
+ * The artefact stores, named once.
  *
  * Three lists in three files used to enumerate the stores by hand, and they
  * drifted by one element each way: the staging classifier and the citation

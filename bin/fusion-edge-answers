@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # fusion-edge-answers — what prior policy-curator runs already asked the user about a
-# work-item edge.
+# work-package edge.
 #
 # Usage:
 #   fusion-edge-answers
@@ -34,11 +34,11 @@
 #
 # WHAT IT DOES NOT PRINT, AND THAT ABSENCE IS THE RULING. Not the entry's
 # consequence group. The suppression key reads the outcome value alone, because
-# `not-offered` names the entry the gate never put; a key that read the group
+# `not-offered` names the entry the approval never put; a key that read the group
 # line beside the outcome line would be the drifting second copy the ruling
 # removed. And not the decision: which of the seven values suppresses and which
 # re-proposes is authored in `### The suppression read` and nowhere here. This
-# program reports and gates nothing — no exit code carries the verdict, the
+# program reports and blocks nothing — no exit code carries the result, the
 # stdout-verdict rule every other reporting helper in this directory carries.
 #
 # THE CORPUS IS EVERY RUN FILE, WITH NOTHING EXCLUDED — not bounded by the
