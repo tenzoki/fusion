@@ -1,7 +1,7 @@
 # Implementation Plan: one reconciler run on haiku beside a same-state control run
 
 **Date:** 2026-09-23
-**Status:** Ready for Review
+**Status:** Complete
 **Spec:** none. The work item's Directive is the spec (`260922-0137-measure-the-reconciler-on-a-smaller-model.md`)
 **Decidability:** The load-bearing question is whether the reconciler on haiku gets the same verified findings as the session model does, from one identical workbench state. Three parts of it can be decided. First, which model each run used: the transcript's `"model"` field records it. Second, whether a claim a run makes is correct: it is checked against the tree at the base commit. Third, whether one run missed a verified claim the other run made. What cannot be decided from these inputs is the full set of drift neither run found, because no oracle for it exists. The mechanism therefore defines "missed" relative to the union of both runs' verified claims and states that this undercounts misses. It does not pretend to be complete.
 
@@ -55,12 +55,12 @@ flowchart TD
 
 Steps S0 to S2 are dispatches and git housekeeping, which the orchestrator does itself. They are not implementation work, so they name no executor from the set. That is stated here rather than forced onto `coder`, which would have nothing to implement. S3 to S5 each name one executor.
 
-0. **Precondition: clean main tree, recorded base** (orchestrator)
+0. [DONE] **Precondition: clean main tree, recorded base** (orchestrator)
    - Commit the pending `fusion-workbench/orchestrator-events.jsonl` change, as the orchestrator routinely does.
    - Record `BASE=$(git rev-parse HEAD)` and the output of `git status --porcelain` (expected empty).
    - Dependencies: none.
 
-1. **Dispatch the pair, in one message, in parallel** (orchestrator)
+1. [DONE] **Dispatch the pair, in one message, in parallel** (orchestrator)
    - S1a: `Agent(subagent_type: "fusion:reconciler", model: "haiku", isolation: "worktree", description: "reconcile, candidate haiku")`.
    - S1b: the same call **without** `model` (it inherits the session model), description `"reconcile, control session model"`.
    - The prompt is identical in both calls, byte for byte:
@@ -75,14 +75,14 @@ Steps S0 to S2 are dispatches and git housekeeping, which the orchestrator does 
    - Keep both result texts (the reports), the worktree path and branch each result names, and the agent IDs.
    - Dependencies: S0.
 
-2. **Capture, clean up, check the main tree** (orchestrator)
+2. [DONE] **Capture, clean up, check the main tree** (orchestrator)
    - In each worktree, run `git -C <wt> add -A && git -C <wt> commit -m "exp: reconciler <haiku|control> run over <BASE>"`, creating the branch first if the worktree is detached: `exp/reconciler-haiku-260923` and `exp/reconciler-control-260923`. Then run `git -C <wt> show --stat -M HEAD`. The commit keeps each run's edits, including renames and new issue files, as a citable hash outside the live workbench, where the citation gates do not scan them. A raw patch filed into the workbench would carry store-prefixed record paths and turn the gates red.
    - Save each report text in the same commit? **No.** The report is the final assistant message in the transcript, which Step 3 already reads. Saving it a second time would create a second copy that could drift.
    - Remove both worktrees with `git worktree remove <wt>`. **The branches stay** until the user decides (see *Where this work stops*).
    - Main-tree check: `git status --porcelain` in the repository root must match S0 apart from machine-written hook rows (the events log). If any other path moved, **stop and report to the user. Restore nothing without their approval.**
    - Dependencies: S1a, S1b.
 
-3. **Verify both runs from their transcripts** (Executor: analyst)
+3. [DONE] **Verify both runs from their transcripts** (Executor: analyst)
    - Files: `~/.claude/projects/-Users-k1-Projects-productive-fusion/<session>/subagents/agent-<id>.{jsonl,meta.json}` for the two agent IDs from S1. Match on `meta.json` `agentType == "fusion:reconciler"` and on `description`.
    - Checks, each recorded with the command and its output:
      - `grep -o '"model":"[^"]*"' <jsonl> | sort | uniq -c`: the candidate shows only a haiku ID, and the control shows only the session model.
@@ -92,7 +92,7 @@ Steps S0 to S2 are dispatches and git housekeeping, which the orchestrator does 
    - Stop condition: if any check fails, that run is invalid. The analyst reports this and S4 does not run.
    - Dependencies: S2.
 
-4. **Write the comparison analysis** (Executor: analyst)
+4. [DONE] **Write the comparison analysis** (Executor: analyst)
    - Files: `circles/260922-0137-measure-the-reconciler-on-a-smaller-model/analyses/260923-HHMM-reconciler-haiku-versus-session-model.md`
    - Method:
      - (a) Split each run into atomic claims: every marker rename, appended note, filed issue and `Answer located:` line in its branch diff, and every finding and edge line in its report.
@@ -104,7 +104,7 @@ Steps S0 to S2 are dispatches and git housekeeping, which the orchestrator does 
    - Records are cited as storeless basenames only, never the worktree's raw paths.
    - Dependencies: S3.
 
-5. **Point the decision at the analysis** (Executor: analyst)
+5. [DONE] **Point the decision at the analysis** (Executor: analyst)
    - Files: `260827-1305_*_which-agents-run-on-a-smaller-model.md` in the shared decision store.
    - Changes: append one last line, `Answer located: 260923-HHMM-reconciler-haiku-versus-session-model.md ## <result heading> — <one-line result; one of the two candidate runs the bar asks for>`. **No marker move.** The ruling stays the user's.
    - Acceptance: `npm test` passes after this write, specifically the citation lints over the new line and the analysis. Any red test means stop.

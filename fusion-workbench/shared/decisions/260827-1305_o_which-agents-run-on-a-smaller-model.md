@@ -40,3 +40,6 @@ was made on the session model and is therefore a control rather than evidence.
 
 ---
 **Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, no answer on disk.** Still no `model:` key in any of the eleven prompts, and no transcript-verified candidate run exists in the tree; the only later mention is the curator survey `260911-1218-curator-run.md`, which rules nothing. This pass ran on the session model and is again a control. No `Answer located:` line.
+
+---
+Answer located: 260923-0800-reconciler-haiku-versus-session-model.md `## Result` — one candidate run on haiku (transcript-verified) beside a same-state session-model control: not clean, it missed both drift items the control found and made 16 wrong claims, so it is not one of the two clean candidate runs the bar asks for; the ruling stays the user's.
