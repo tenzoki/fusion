@@ -29,29 +29,31 @@ Note the path: the workbench is created here.
 
 ### Superseded-format check (CRITICAL — refuse, do not migrate)
 
-**This runs before the `mkdir` below, and the order is the whole point.** A workbench carrying a shape that preceded the current one is refused rather than repaired. Setup does **not** migrate — `/fusion:migrate` does. Setup's job here is to notice and stop.
+**This runs before the `mkdir` below.** Setup does **not** migrate — `/fusion:migrate` does. Setup's job here is to notice.
 
-Running the `mkdir` first splits the workbench across two formats and leaves every out-of-format artifact unreachable; the marker write further down overwrites `plugin_version`.
+**A `work-packages/` container holding work-item directories is the CURRENT layout and is never a finding.** That is what a workbench looks like now: one directory per work item, holding that item's own stores, beside the `shared/` stores for everything with no item to belong to (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). Setup creates `work-packages/` itself, below. A probe that refused a container would refuse the ordinary shape and route every user to a migration that must not run.
 
-**A `circles/` container holding work-item directories is the CURRENT layout and is never a finding.** That is what a workbench looks like now: one directory per work item, holding that item's own stores, beside the `shared/` stores for everything with no item to belong to (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). Setup creates `circles/` itself, below. A probe that refused a container would refuse the ordinary shape and route every user to a migration that must not run.
+**A v11 store name is reported, never refused.** `circles/`, `shared/planning/` and `shared/consult/` are read beside their v12 names until `13.0.0` (`rules/fusion-workbench-conventions.md` `### Transition window (v12.0.0 to v13.0.0)`), so the probe prints one `LEGACY-STORES` line naming each one it finds and `/fusion:migrate`, and Setup continues. The `mkdir` below then creates the new names beside them, and new records land there.
 
 Detection is by artifact presence, not by version. A pre-v4, v4-era or bracket-marked shape is `/fusion:migrate`'s to recognise, and it refuses with the `v11.11.1` route; setup probes for none of them. Read-only:
 
 ```bash
-WB=./fusion-workbench; OLD=0; echo "OLD=$OLD"
+WB=./fusion-workbench; OLD=0; L=""; for s in circles shared/planning shared/consult; do [ -d "$WB/$s" ] && L="$L $s/"; done
+[ -n "$L" ] && echo "LEGACY-STORES:$L (v11 names, read until 13.0.0; /fusion:migrate renames them)"; echo "OLD=$OLD"
 ```
 
+- **`LEGACY-STORES`** — say the line to the user once, in the chat language, and continue.
 - **`OLD=0`** — nothing out of format here. Continue with the `mkdir` below. Say nothing about it.
 
 Only when `OLD=0`:
 
 ```bash
-mkdir -p ./fusion-workbench/circles ./fusion-workbench/shared/planning ./fusion-workbench/shared/issues ./fusion-workbench/shared/decisions ./fusion-workbench/shared/analyses ./fusion-workbench/shared/reviews ./fusion-workbench/shared/investigations ./fusion-workbench/shared/consult ./fusion-workbench/shared/history ./fusion-workbench/shared/memos ./fusion-workbench/archive ./fusion-workbench/.guard-state
+mkdir -p ./fusion-workbench/work-packages ./fusion-workbench/shared/plans ./fusion-workbench/shared/issues ./fusion-workbench/shared/decisions ./fusion-workbench/shared/analyses ./fusion-workbench/shared/reviews ./fusion-workbench/shared/investigations ./fusion-workbench/shared/consultations ./fusion-workbench/shared/history ./fusion-workbench/shared/memos ./fusion-workbench/archive ./fusion-workbench/.guard-state
 ```
 
 This is the layout defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, which enumerates every store and every root-anchored surface. Two facts about it are Setup's own:
 
-- **`circles/` is created empty, and Setup creates nothing inside it.** A work item's container and its own stores come into existence when the item is filed and when its first artifact is written; Setup has no item to create one for.
+- **`work-packages/` is created empty, and Setup creates nothing inside it.** A work item's container and its own stores come into existence when the item is filed and when its first artifact is written; Setup has no item to create one for.
 - **Of the root-anchored surfaces, only `.guard-state/` is pre-created above.** The rest appear when their consumer first writes them, at the fixed root-relative paths the layout names; never create one anywhere else, because no consumer has a fallback path.
 
 Write the setup marker — the file every agent and hook looks for to confirm fusion is set up here — and read, out of the same block, which periodic checks are due. Both halves need the version the plugin ships, so they are one call rather than two. The marker is rewritten only when its content would change; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run` says why that matters.

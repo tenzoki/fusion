@@ -181,7 +181,7 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
    - Dependencies: step 5
    - Acceptance: C1 first and second criteria as stated in the spec, run in a fixture holding the new layout and in one holding the legacy layout; C9 first and second criteria; `npm test` green, the hook-test line total measured and any comment-prose cut named in Appendix B; `bin/fusion-paths planner 260922-1038-prior-mapping` run in this repository (legacy workbench) exits 0 with `OUT_PLAN=work-packages/260922-1038-prior-mapping/plans` and `SCAN_PLANS` naming both that directory and `circles/260922-1038-prior-mapping/planning`.
 
-7. **Setup and migrate: new names in every write, legacy names only in the probe and the report**
+7. [DONE] **Setup and migrate: new names in every write, legacy names only in the probe and the report**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`, `hooks/lib/__tests__/store-name-migration.test.ts` (created by plan (2) step 4)
    - Changes: this step runs after plan (2) steps 1 to 4 (`## Execution order across both plans`), which leave setup's probe block as the skeleton `WB=./fusion-workbench; OLD=0; … echo "OLD=$OLD"`, delete migrate's pre-v4 blocks at `:59,:118` together with the three-site pin at `path-literal-lint.test.ts:273-287`, and delete `live-circle-record-detection.test.ts`. So the step is setup's half only: setup's `mkdir -p` (`:69` at `eef3ced0`) creates `work-packages/`, `shared/plans/`, `shared/consultations/`; the probe skeleton gains a case for a legacy v11 layout (a `circles/` root, a `shared/planning/` or `shared/consult/` store) that prints one line naming the store and `/fusion:migrate` and **continues** (C9, fourth criterion); the remaining prose names `work-packages/` as the layout it creates and `circles/` as the layout it detects. The probe's cases join `store-name-migration.test.ts` in that file's pattern (`extractBashBlock`, `mkdtempSync`, real `bash`): a `work-packages/` fixture reports nothing, a `circles/` fixture prints the one line and `OLD=0`. Migrate needs nothing here: plan (2) step 2's blocks already write only the new names.
@@ -216,6 +216,7 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
     - Dependencies: step 10
     - Acceptance: `npm test` green; Appendix B carries the skills delta and cuts; C3 criteria over `skills/`.
 
+   - Carried from step 7 (260923): `skills/help/SKILL.md` still describes the container store as `circles/` ("each work item's own container under `circles/`"); step 7's `grep` criterion holds once this step renames it.
 12. **Term pass over the unbounded surfaces: READMEs, live docs, `bin/` headers, hooks comments, `install.sh`, `templates/`**
     - Executor: `coder`
     - Files: `README.md`, `README-agents.md`, `README-hooks.md`, `docs/philosophy.md`, `docs/working-model.md`, `docs/fusion-intro.md`, `docs/messages-between-checkouts.md`, `bin/*` header comments, `hooks/*.ts` and `hooks/lib/*.ts` comments, `install.sh` (prose only; its marketplace steps are Claude Code's surface), `templates/fusion.json` (its `_retired` note is history and stays), `hooks/dist/` (rebuilt if a `.ts` comment changed)
