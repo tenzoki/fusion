@@ -2,7 +2,8 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** claimed
+**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260923-0710
 **Cross-references:** 260827-1305_*_which-agents-run-on-a-smaller-model.md, 260827-1305-does-agent-frontmatter-model-reach-the-dispatch.md, 260909-1700-cut-fusion-to-working-minimum.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 
