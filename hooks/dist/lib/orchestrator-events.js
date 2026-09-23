@@ -11,7 +11,7 @@
  * `person`/`checkout` identity the C4 readers scope on, and `session_id` stood
  * on zero lines although the SessionStart hook that supplies it had shipped.
  * The mandate was right and the work departed from it — the project's own
- * reconciler had already filed that as a defect
+ * state-auditor had already filed that as a defect
  * (`260825-1430-reconciliation.md`). The repair is not a louder
  * mandate; it is moving the mechanical rows to a writer that cannot forget.
  *
@@ -377,7 +377,7 @@ export function emitSubagentStop(input) {
     };
     appendFileSync(resolve(root, "fusion-workbench", "orchestrator-events.jsonl"), JSON.stringify(row) + "\n", "utf-8");
 }
-/** `fusion:coder` → `coder`, matching the model-written rows' spelling. */
+/** `fusion:code-implementer` → `code-implementer`, matching the model-written rows' spelling. */
 function agentName(toolInput) {
     const raw = toolInput?.subagent_type;
     if (typeof raw !== "string" || raw === "")
