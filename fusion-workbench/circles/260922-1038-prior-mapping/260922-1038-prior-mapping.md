@@ -2,7 +2,8 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** claimed
+**Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260923-0812
 **Active spec/plan:** 260922-1045_*_spec-prior-nomenclature-plugin-source.md (spec, part 1), 260922-1106_*_spec-prior-nomenclature-consumer-migration.md (spec, part 2)
 **Cross-references:** nomenclature.md (this container), 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md, 260922-1114_*_plan-prior-nomenclature-plugin-source.md, 260922-1129_*_plan-prior-nomenclature-consumer-migration.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
