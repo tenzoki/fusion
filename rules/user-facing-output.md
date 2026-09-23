@@ -2,9 +2,9 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:c18a946`.
 
-Every piece of output the user reads (status reports, gate prompts, `AskUserQuestion` text, session summaries, error messages, banners) is **self-contained, plain-English, and action-first**: no jargon to decode, no hunting for what to do, no scrolling back to understand a question.
+Every piece of output the user reads (status reports, approval prompts, `AskUserQuestion` text, session summaries, error messages, banners) is **self-contained, plain-English, and action-first**: no jargon to decode, no hunting for what to do, no scrolling back to understand a question.
 
-This rule is emitted to the agents whose output the user reads directly — orchestrator, consultant, requirements-designer, document-editor, policy-curator (gate `260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md`; the others carry the chat profile's anti-patterns via `agent-setup.md` `## Voice profiles`). If you are reading this, you hold a user-facing surface: rewrite before sending anything that violates it.
+This rule is emitted to the agents whose output the user reads directly — orchestrator, consultant, requirements-designer, document-editor, policy-curator (decision `260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md`; the others carry the chat profile's anti-patterns via `agent-setup.md` `## Voice profiles`). If you are reading this, you hold a user-facing surface: rewrite before sending anything that violates it.
 
 Two stylometric profiles layer on top, each resolved from its own `CLAUDE.md` declaration (`rules/fusion-workbench-conventions.md` `## Project language`): long-form prose (summary bodies, consultant replies, reports, briefings, spec/plan prose) applies the **writing profile** (`./fusion-workbench/stilwerk/default-voice-<lang>.yaml`); short-form chat applies the **chat profile** (`chat-voice-<lang>.yaml`).
 
@@ -14,8 +14,8 @@ The chat profile is deliberately lean: a load-bearing **blacklist** (em-dash asi
 
 - **Answer, don't validate.** When the user is right, "Yes" or the substantive answer is enough; praising their question or instinct is filler and reads as paternalistic.
 - **Correctio earns its place only where the reader would have assumed the rejected term** ("recommended, not closed" earns it; "Und nachgemessen statt geschlossen" does not — write "Nachgemessen.").
-- **Never apply the writing profile to chat**: its consulting register and length targets are wrong for a one-line gate prompt.
-- **Structured artifacts are exempt from both profiles**: dashboard lines, commit messages, monitor strings, event-log JSON, machine-read tables stay terse and parseable.
+- **Never apply the writing profile to chat**: its consulting register and length targets are wrong for a one-line approval prompt.
+- **Structured artefacts are exempt from both profiles**: dashboard lines, commit messages, monitor strings, event-log JSON, machine-read tables stay terse and parseable.
 - With no chat profile on disk, the anti-patterns still hold in spirit: they are language-independent.
 
 ## Sketch structure instead of narrating it
@@ -39,35 +39,35 @@ The reply answers the question that was asked; what you noticed on the way is fi
 
 ## Vocabulary
 
-**Chat carries no fusion-internal term, glossed or not.** A gloss legalises the term and leaves the sentence unreadable. Name the thing in the reader's project. Binds chat, gates, `AskUserQuestion` text and summaries; **not** workbench records (defects, decisions, history, reviews), where the internal names are correct.
+**Chat carries no fusion-internal term, glossed or not.** A gloss legalises the term and leaves the sentence unreadable. Name the thing in the reader's project. Binds chat, approvals, `AskUserQuestion` text and summaries; **not** workbench records (defects, decisions, history, reviews), where the internal names are correct.
 
 - **No marker, machine token or commit type.** Not `_o_`, `_t_`, `review-needed`, `T1 chore:`. Write what is true: "still open", "needs a second look", "Task 1 bumped the version".
-- **No fusion noun.** Not Circle, Directive, Grounding, Gate, Artifact, Verdict, queue. Write the thing: this piece of work, your goal, why you wanted it, this pass, the question below, the file, the work list.
+- **No fusion noun.** Not work package, brief, evidence base, work round, approval, review result, artefact, nor Circle, Directive, Grounding, Gate, Artifact, Verdict, queue. Write the thing: this piece of work, your goal, why you wanted it, this pass, the question below, the file, the work list.
 - **No agent name as a sentence subject.** "Three notes cite a commit that does not exist", not "the state-auditor reported that ...".
 - **No ID or abbreviation without its plain summary** (project codes need one expansion or a pointer; CLI/API/YAML are fine).
 - **One name per thing, one formulation per claim.** Synonym rotation forces the reader to re-prove identity; a second wording is not truer.
 
 ## Report the project, not the machinery
 
-Same binding as `## Vocabulary`: chat, gates, `AskUserQuestion` text and summaries. Workbench records carry the machinery, and that is where it belongs.
+Same binding as `## Vocabulary`: chat, approvals, `AskUserQuestion` text and summaries. Workbench records carry the machinery, and that is where it belongs.
 
-- **No process narration.** Which agent ran, in which pass, what it returned, which gate stands open, what a verdict said: none of it reaches the user. It goes to the history file. Report the finding and its consequence instead: "the plan cites a commit that does not exist, so its three claims are unproven".
+- **No process narration.** Which agent ran, in which pass, what it returned, which approval stands open, what a review result said: none of it reaches the user. It goes to the history file. Report the finding and its consequence instead: "the plan cites a commit that does not exist, so its three claims are unproven".
 - **No self-assessment.** Not how an error feels, not who should have caught it, not which rule it breaks, not how you are reading the user. Own the error in one clause, then say what is wrong in his project and what fixes it: "I got that wrong. The hash is dead, so those three notes prove nothing until they cite the real one."
 
-## Questions and gates
+## Questions and approvals
 
 - **A response moment is either a question or an explicit "nothing to decide"** — output that is neither reads as a demand the user cannot locate.
-- **Every `AskUserQuestion` is self-contained**: the work item's title or the user's own words for the job, the path, or the task title inside the question text; the user is reading scrollback.
-- **Options in plain English**, internal verbs in parentheses for traceability: "Try again with a refined task list (Revise Artifact)".
+- **Every `AskUserQuestion` is self-contained**: the work package's title or the user's own words for the job, the path, or the task title inside the question text; the user is reading scrollback.
+- **Options in plain English**, internal verbs in parentheses for traceability: "Try again with a refined task list (Revise Artefact)".
 - **An option names the thing it decides, not the kind of thing**: "the record still promises a restart that was never built", not "the record promises a constraint that no longer exists". Same length, no licence for longer options.
 - **Mark the recommended default** when one choice is far likelier than the rest.
 - **Every option says what it forecloses**, separating deferred from given up for good — in the option `description`, or on its own line in plain-text gates; a description that restates the label is the failure this clause stops. **A foreclosure takes its own line**, never folded onto the option's line to buy a line back against a cap.
-- **A gate carries at most three options.** Worst case (stem + three labels + three foreclosures) is seven lines against the cap of eight in `## Length`. A decision needing a fourth option is too big for one gate: split it.
+- **An approval carries at most three options.** Worst case (stem + three labels + three foreclosures) is seven lines against the cap of eight in `## Length`. A decision needing a fourth option is too big for one approval: split it.
 
 ## Length
 
-- **Status reports: ~5–15 lines.** Verdict and user action first, trailing details after.
-- **Gate prompts: ≤ 8 lines total**, on any surface; `AskUserQuestion`'s per-field ceilings (≤ 6-line stem, ≤ 4-line label, ≤ 2-line description) never override the total.
+- **Status reports: ~5–15 lines.** Result and user action first, trailing details after.
+- **Approval prompts: ≤ 8 lines total**, on any surface; `AskUserQuestion`'s per-field ceilings (≤ 6-line stem, ≤ 4-line label, ≤ 2-line description) never override the total.
 - **Session summary: ≤ 25 lines total, ≤ 10 before the first "Details" anchor** (decided in `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`); the rest lives in the linked history file.
 - **Chat reply default: ≤ 12 lines**; more goes to a file, linked.
 - **A report is sized by what the reader needs, not by how much work there was.** Wide tables and long lists go under "Details".
@@ -78,18 +78,18 @@ Every cap is the budget for the whole output, Details included. Count the lines 
 
 No agent emits an effort estimate unless the user asked in the current exchange (the monitor's ETA covers the standing need). When asked: exactly one trailing line, `estimated effort (ai-based): about <N> <unit>` — lowercase, the word "about", unit `min`/`h`/`day`, AI-paced rather than human-houred. Never `~5 hours` or `roughly half a day` unprompted.
 
-## Self-review before sending: the readability gate
+## Self-review before sending: the readability check
 
-The known failure mode: under technical load, agents drop the prose discipline and emit telegraphic, jargon-packed output. Treat the rules as a gate you pass the draft through. **Before sending any substantive explanation, run this check and rewrite what fails:**
+The known failure mode: under technical load, agents drop the prose discipline and emit telegraphic, jargon-packed output. Treat the rules as a check you pass the draft through. **Before sending any substantive explanation, run this check and rewrite what fails:**
 
 1. **Thesis first** — the first line carries the finding, and it states the *fact*, not the significance of a fact you withheld ("Schritt 8 fand neun Prosastellen, der Plan führte vier", not "Schritt 8 hat etwas gefunden, das mehr wert ist als seine eigene Arbeit").
-2. **No em-dash asides** — one `—` per ~1000 words is the ceiling; the telegram-with-parentheses pattern shows up most in gate prompts and option text.
+2. **No em-dash asides** — one `—` per ~1000 words is the ceiling; the telegram-with-parentheses pattern shows up most in approval prompts and option text.
 3. **Whole sentences** — each point has a subject and a finite verb; "Recall top, Precision leck" is a fragment.
 4. **Every code of the user's own project glossed on first use** — `S1`, `gate.go`, `must_not` each get a short gloss; the reader does not hold the project's codes in working memory. A fusion-internal term is not glossed but replaced (`## Vocabulary`).
 5. **Counts are named** — "8 of the 13 open items", not "8 of 13".
-6. **The stranger test, sentence by sentence** — read each sentence alone and ask: would a reader who knows this project's source code, and has never seen this conversation, understand it? If it needs something only this session holds (a pass, a gate, an agent, a marker, a verdict, what some other agent returned), rewrite it around the thing in the user's project.
+6. **The stranger test, sentence by sentence** — read each sentence alone and ask: would a reader who knows this project's source code, and has never seen this conversation, understand it? If it needs something only this session holds (a pass, an approval, an agent, a marker, a review result, what some other agent returned), rewrite it around the thing in the user's project.
 
-The gate applies to long-form bodies and chat alike — a concrete check on the draft, like "count the lines" in `## Length`. The canonical failure and its repair:
+The check applies to long-form bodies and chat alike — a concrete check on the draft, like "count the lines" in `## Length`. The canonical failure and its repair:
 
 > S1s Selektion findet hervorragend, diszipliniert aber nicht — Recall top, Precision/Constraints leck, weil das deterministische Gate mit dem Boot-Flip wegfiel.
 

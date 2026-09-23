@@ -18,7 +18,7 @@ demand, not read a file. The set is layered, not ranked: you read all of it.
 ## What `fusion-rules` emits
 
 - `fusion-workbench-conventions.md`: always, for every agent. The framework ground truth
-  (workbench layout, the work-item grammar, marker vocabularies, the Path Resolution contract).
+  (workbench layout, the work-package grammar, marker vocabularies, the Path Resolution contract).
 - **Pattern-matched domain rules**: coding, ontology, normative, verb, etc., selected per
   your agent. The descriptive name of the pattern does not matter; you read
   whatever is emitted regardless of what kind of rule it is.
@@ -56,18 +56,18 @@ If a profile you expect is absent, note the absence (in your history file if you
 and proceed.
 
 The full user-facing style contract, `user-facing-output.md`, is emitted only to the agents
-whose output the user reads directly (gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md). If you did not receive it, your
+whose output the user reads directly (decision 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md). If you did not receive it, your
 report's audience is the orchestrator that dispatched you: lead with the outcome, keep the
 `Verification:` line where your prompt mandates one, and skip decorative structure: a
 report is data for a dispatcher, not a page for a reader.
 
 The two paths may name **different languages**: the chat profile resolves from the
-project's chat language, the writing profile from its artifact language. For a project
+project's chat language, the writing profile from its artefact language. For a project
 whose two declarations differ that is the intended configuration, not a fault to report or
 work around. The resolution is defined in `rules/fusion-workbench-conventions.md`
 `## Project language`.
 
-Receiving **only** the chat path does not exempt you from the artifact language. That one
+Receiving **only** the chat path does not exempt you from the artefact language. That one
 path names your chat surface; the files you write (reviews, defect records, the task
 queue, your own session history) persist, and no profile you hold names their language.
 Read the declarations in `CLAUDE.md` and resolve it there, under that same rule.

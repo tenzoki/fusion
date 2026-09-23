@@ -4,7 +4,7 @@
 
 This rule is loaded for the planning and analysis agents (`implementation-planner`, `analyst`, `requirements-designer`). It governs **how technical design is represented** in the documents these agents produce.
 
-The core idea: **a diagram of a design is also a measurement of that design.** A clear graph — few crossing edges, visible layering, sensible fan-out, no unexplained cycles — reflects a clear architecture. A tangled hairball reflects a tangled one. So the diagram is not decoration; it is evidence. For that evidence to be usable, it must be in a **formal, parseable form** — Mermaid — that you and the human at the gate can both read and judge unambiguously.
+The core idea: **a diagram of a design is also a measurement of that design.** A clear graph — few crossing edges, visible layering, sensible fan-out, no unexplained cycles — reflects a clear architecture. A tangled hairball reflects a tangled one. So the diagram is not decoration; it is evidence. For that evidence to be usable, it must be in a **formal, parseable form** — Mermaid — that you and the human approving it can both read and judge unambiguously.
 
 ASCII art is **rejected** for structural design. It is ambiguous, it cannot be parsed, and it cannot be evaluated. Use it only for throwaway sketches that never enter a deliverable.
 
@@ -15,7 +15,7 @@ Include a Mermaid diagram whenever the document describes structure worth seeing
 - **Component / architecture shape** — modules, services, packages and how they relate.
 - **Control or data flow** — how a request, a value, or an event moves through the system.
 - **State / lifecycle** — an entity that moves through named states with transitions.
-- **Dependency ordering** — tasks, build steps, or work items with prerequisites (a DAG).
+- **Dependency ordering** — tasks, build steps, or work packages with prerequisites (a DAG).
 - **Interaction sequence** — who calls whom, in what order, across components or agents.
 - **Data model** — entities and their relationships.
 
@@ -44,7 +44,7 @@ When in doubt, a directed `flowchart` with named edges covers most design conten
 
 ## Coherence self-check
 
-Before you finalise a diagram, read it as a critic would. This check is the only structural assessment the graph gets before the human at the gate reads it, so run it rather than assume something downstream will. An obvious hairball should never leave your hands:
+Before you finalise a diagram, read it as a critic would. This check is the only structural assessment the graph gets before the human approving it reads it, so run it rather than assume something downstream will. An obvious hairball should never leave your hands:
 
 - **Hairball test** — is the edge count wildly out of proportion to the node count? Dense crossing edges usually mean missing structure (a layer or grouping you have not drawn), not genuine complexity.
 - **Fan-out** — does one node point at almost everything? A god-node in the graph is usually a god-object in the design.
@@ -55,4 +55,4 @@ Before you finalise a diagram, read it as a critic would. This check is the only
 
 If your own diagram fails these, the fix is almost never "draw it neater" — it is "the design has the problem the graph is showing you." Fix the design, then redraw. This is `HYG-FIX-DESIGN` applied to the picture.
 
-This is why the formal form matters: a parseable graph is one a reader can check claim by claim. Write it so that an honest reading of it holds up at the gate.
+This is why the formal form matters: a parseable graph is one a reader can check claim by claim. Write it so that an honest reading of it holds up at approval.

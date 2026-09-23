@@ -226,4 +226,4 @@ Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung fes
 | `/fusion:commit` | Commit mit generierter Nachricht, unter dem Lock |
 | `/fusion:migrate` | Alte Workbench-Layouts auf das aktuelle Format bringen |
 
-Quellen: `README.md`, `docs/working-model.md`, `skills/*/SKILL.md`, `rules/workbench-tracking.md`, `rules/commit-lock.md`, `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`, `bin/fusion-events`, `bin/fusion-identity`, `bin/fusion-cadence-anchor`, `docs/upgrading-to-v10-8.md`, `docs/upgrading-to-v10-14.md`.
+Quellen: `README.md`, `docs/working-model.md`, `skills/*/SKILL.md`, `rules/workbench-tracking.md`, `rules/commit-lock.md`, `rules/fusion-workbench-conventions.md` `## Work packages`, `bin/fusion-events`, `bin/fusion-identity`, `bin/fusion-cadence-anchor`, `docs/upgrading-to-v10-8.md`, `docs/upgrading-to-v10-14.md`.

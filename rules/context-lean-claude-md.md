@@ -8,7 +8,7 @@
 > what it hands to the manifest. Together they take a project from
 > "everything-always-loaded" to "a lean index plus on-demand units".
 
-It is a convention, not machinery: nothing in the plugin
+It is a convention, not machinery: nothing in the module
 enforces a line count. The goal is a `CLAUDE.md` a reader can hold in their head.
 
 ---
@@ -25,7 +25,7 @@ irrelevant always-on context that crowds out the task.
 The fix has two halves:
 
 1. **The manifest** (`./rules/context-manifest.yaml`) makes heavy knowledge
-   **topic-scoped and agent-scoped** — loaded only when the claimed work item's
+   **topic-scoped and agent-scoped** — loaded only when the claimed work package's
    topic and the running agent match. Documented in `context-manifest.md`.
 2. **A lean `CLAUDE.md`** keeps only what genuinely must be present every session,
    and **points at** the rest.
@@ -42,7 +42,7 @@ Keep it to what every agent needs on every session, independent of the topic:
   than its chat carries it, and where it is absent the first line governs both.
   Defined in `rules/fusion-workbench-conventions.md` `## Project language`.
 - **The handful of truly-every-session rules** — conventions that bind every
-  edit regardless of topic (e.g. "never commit build artifacts", a release-bump
+  edit regardless of topic (e.g. "never commit build artefacts", a release-bump
   discipline, a naming convention). If a rule only matters for one topic, it does
   not belong here — it belongs in a manifest unit tagged with that topic.
 - **A pointer table** — a short index that names the topics and says where each
@@ -196,8 +196,8 @@ property of the text. No command reads it off the file: the same section is
 topic-bound for one reader and always-on for the next, and both can be right.
 What a tool *can* measure is weight — which headings the file's bytes sit under,
 so you know which passages are worth looking at first — and that measurement is
-worth having. It renders no verdict. The verdict is a person's, and where the
-pass runs through fusion's policy-curator, a person confirms it at a gate before any
+worth having. It renders no decision. The decision is a person's, and where the
+pass runs through fusion's policy-curator, a person approves it before any
 text moves.
 
 That limit was established by measurement while this section was being written,
@@ -311,7 +311,7 @@ it behind a pointer keeps it while deleting it does not.
 
 There is exactly one exception. A passage may be deleted rather than moved where
 **a record in the project's workbench already carries the same account** — a
-decision record, an issue, or a work-item record that states the same thing in at
+decision record, an issue, or a work-package record that states the same thing in at
 least as much detail — and where **that record is named at the point the move is
 recorded**: in the ledger entry, where the pass ran through `/fusion:curate`, or
 in the commit message, where the cut was made by hand. A deletion whose record is

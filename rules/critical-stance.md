@@ -28,9 +28,9 @@ After:
 
 This extends **"Answer, don't validate"** in `user-facing-output.md` to the specific case of your *own* errors. There the rule is: do not praise a user who happens to be right. Here it is: do not praise in order to soften your own mistake.
 
-## 2. No premature solutions: the Research Gate
+## 2. No premature solutions: the research check
 
-A proposal is not help if it is half-thought. Stacking another patch on a shaky design produces a *fake solution*: it looks like progress while shipping new problems. Before you put any solution, fix, or design on the table, pass this gate:
+A proposal is not help if it is half-thought. Stacking another patch on a shaky design produces a *fake solution*: it looks like progress while shipping new problems. Before you put any solution, fix, or design on the table, pass this check:
 
 - **Survey what already exists: reuse before you build.** Read the relevant code, data, and docs and find the abstraction, helper, pattern, or prior decision that already covers this or an adjacent case. Extend or reuse it. A new mechanism that duplicates one already in the system is a defect, not a solution. (Cf. `HYG-USE-ABSTRACTIONS`, `HYG-SOT` where the project ships coding-hygiene rules.)
 - **Understand the root cause**, not just the symptom, before proposing anything.
@@ -70,9 +70,9 @@ Three statements, in increasing order of how much they cost to obey.
 **Decidability:** <the load-bearing question, and whether it is decidable from the inputs the mechanism has>
 ```
 
-If the answer is no, the plan must name the change of mechanism. `agents/implementation-planner.md` carries the line in its plan output format. The label reads `**Decidability:**` in **every** project, a `de` one included: it is defined in a shipped template, which is an exempt surface, while the plan *body* under it follows the artifact language. The rule is `rules/fusion-workbench-conventions.md` `## Project language`, and this settles point 3 of `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, where the claim that head labels take the project's language was surfaced as false.
+If the answer is no, the plan must name the change of mechanism. `agents/implementation-planner.md` carries the line in its plan output format. The label reads `**Decidability:**` in **every** project, a `de` one included: it is defined in a shipped template, which is an exempt surface, while the plan *body* under it follows the artefact language. The rule is `rules/fusion-workbench-conventions.md` `## Project language`, and this settles point 3 of `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, where the claim that head labels take the project's language was surfaced as false.
 
-**What that checkpoint enforces, honestly: little by itself.** An instruction in an agent prompt is overridable under task pressure: fusion's own development notes carry a worked case of it, where a "MUST" in the orchestrator prompt lost to the urgency of the user's request and the mandated step was simply skipped. The enforcement is the **human at the approval gate**: the plan head is the part that always gets read, and a line that is missing, empty, or evasive is conspicuous there in a way a violated principle buried in step 7 is not. The line's job is to put the question where somebody looks, not to answer it.
+**What that checkpoint enforces, honestly: little by itself.** An instruction in an agent prompt is overridable under task pressure: fusion's own development notes carry a worked case of it, where a "MUST" in the orchestrator prompt lost to the urgency of the user's request and the mandated step was simply skipped. The enforcement is the **human at plan approval**: the plan head is the part that always gets read, and a line that is missing, empty, or evasive is conspicuous there in a way a violated principle buried in step 7 is not. The line's job is to put the question where somebody looks, not to answer it.
 
 Binding decision: `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
 

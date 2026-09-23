@@ -466,7 +466,7 @@ export function classify(rel: string, sessionHistory: string): { klass: EntryCla
     return { klass: "record", why: "a Circle record" };
   }
   // The unit of work: `<root>/<item>/<item>.md`, the same name twice and no
-  // store segment (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`).
+  // store segment (`rules/fusion-workbench-conventions.md` `## Work packages`).
   if (inContainer && segments.length === 3 && segments[2] === `${segments[1]}.md`) {
     return { klass: "record", why: "a work item's own record" };
   }

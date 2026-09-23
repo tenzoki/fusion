@@ -12,21 +12,21 @@
 # does not move any baseline and therefore never clears a bound.
 
 [agents bytes]
-  analyst.md 21161
+  analyst.md 21163
   code-implementer.md 12255
-  consultant.md 13518
+  consultant.md 13520
   data-implementer.md 15987
-  document-editor.md 13228
-  implementation-planner.md 20048
-  orchestrator.md 98134
-  policy-curator.md 78685
-  requirements-designer.md 17411
+  document-editor.md 13230
+  implementation-planner.md 20059
+  orchestrator.md 98200
+  policy-curator.md 78751
+  requirements-designer.md 17407
   reviewer.md 12926
-  state-auditor.md 21228
-  total 324581
+  state-auditor.md 21184
+  total 324682
 
 [skills bytes]
-  archive/SKILL.md 24532
+  archive/SKILL.md 24515
   cadence/SKILL.md 22271
   check/SKILL.md 31855
   cleanup/SKILL.md 6763
@@ -34,13 +34,13 @@
   curate/SKILL.md 12150
   discuss/SKILL.md 14346
   help/SKILL.md 16268
-  memo/SKILL.md 13260
+  memo/SKILL.md 13209
   migrate/SKILL.md 19898
   news/SKILL.md 8211
   post/SKILL.md 6694
   reconcile/SKILL.md 6646
   setup/SKILL.md 14533
-  total 203540
+  total 203472
 
 [hook-tests lines]
   archive-filter-key.test.ts 40

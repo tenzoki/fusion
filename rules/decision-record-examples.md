@@ -10,7 +10,7 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 
 **Initial state (filed by requirements-designer after the user said "we'll need to pick a vector store, but not now"):**
 
-`260501-1430_o_vector-store-pick.md`, filed in the shared decision store because this checkout has claimed no work item:
+`260501-1430_o_vector-store-pick.md`, filed in the shared decision store because this checkout has claimed no work package:
 
 ```markdown
 # Which vector store for v1?
@@ -46,7 +46,7 @@ sqlite-vss for v1; revisit if a customer crosses 1M vectors.
 
 **The state-auditor's next pass (analyst has authored a comparative-analysis report selecting sqlite-vss):** it reports where the answer sits and moves no marker. Only the orchestrator performs `_o_` → `_a_`, and only to relay a ruling the user gave.
 
-**Orchestrator, once the user has ruled at the gate:**
+**Orchestrator, once the user has ruled:**
 
 Append to file body:
 

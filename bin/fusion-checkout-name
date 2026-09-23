@@ -242,7 +242,7 @@
 #
 # A site that renders another checkout's holder reads the hex off the claim
 # (`**Claim:** <8 hex> — <person>, YYMMDD-HHMM`, the record template in
-# `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`),
+# `rules/fusion-workbench-conventions.md` `## Work packages`),
 # calls `resolve <hex>` behind the usual `[ -x ]`, and renders the `person=`
 # and `alias=` lines it gets, each absent when the entry lacks it: an absent
 # field stays absent here as everywhere else. Exit 3, a missing helper, and a
@@ -264,7 +264,7 @@
 # differently before and after a fetch, so whether two checkouts are one party
 # or two would turn on when somebody last ran `git pull`. A work item's claim is
 # compared by equality on the eight hex characters alone
-# (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`),
+# (`rules/fusion-workbench-conventions.md` `## Work packages`),
 # and this program is not an input to that comparison either.
 #
 # ## Reading the registry at a commit

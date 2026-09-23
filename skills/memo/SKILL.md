@@ -109,7 +109,7 @@ If several tasks are captured at once (e.g. "the open tasks"), append one checkb
 
 If the container you derived already exists, neither overwrite nor append: pick a `<topic>` that tells the two ideas apart, and say in your report that you did.
 
-The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` defines the kind, its statuses and this floor:
+The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-conventions.md` `## Work packages` defines the kind, its statuses and this floor:
 
 ```markdown
 # <one-line idea title>
@@ -152,5 +152,5 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 - Never rewrite the user's pasted content in your own words — verbatim only.
 - Keep entries short. If the user wants a full write-up, direct them to a plan, an analysis, or a consultation instead — those are separate artifact kinds with their own stores.
 - Do not file an issue or plan based on a memo or task — these are for keeping, not for acting.
-- Never edit, rename, claim, finish or drop an existing work item. This skill creates items at `open` and does nothing else to the store. A status moves elsewhere: the orchestrator maintains the store at the user's word, and the user can edit one by hand. Which operations exist and under what confirmation is `agents/orchestrator.md` `## Work items`, over the definition in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`.
-- **Never file an item on an agent's behalf.** The backlog holds what the *user* files (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`), and this skill is that surface — it runs because the user typed `/fusion:memo` with an idea of their own. A finding an agent carried into the conversation does not become the user's idea by being routed through here: something broken is still an issue, something to settle is still a decision record, and neither is filed from this skill at all.
+- Never edit, rename, claim, finish or drop an existing work item. This skill creates items at `open` and does nothing else to the store. A status moves elsewhere: the orchestrator maintains the store at the user's word, and the user can edit one by hand. Which operations exist and under what confirmation is `agents/orchestrator.md` `## Work items`, over the definition in `rules/fusion-workbench-conventions.md` `## Work packages`.
+- **Never file an item on an agent's behalf.** The backlog holds what the *user* files (`rules/fusion-workbench-conventions.md` `## Work packages`), and this skill is that surface — it runs because the user typed `/fusion:memo` with an idea of their own. A finding an agent carried into the conversation does not become the user's idea by being routed through here: something broken is still an issue, something to settle is still a decision record, and neither is filed from this skill at all.

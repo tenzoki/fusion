@@ -8,8 +8,8 @@ need: the lock is taken by whoever is about to commit, and among the agents that
 orchestrator. So this file is emitted to `orchestrator` only. Every other agent reaches it
 through the pointer left at `## Commit lock` in the conventions file, the three agents that
 may commit directly carry the lock instruction inline in their own prompts, and the two
-committing skills (`/fusion:commit`, `/fusion:cleanup`) carry it in their own bodies —
-skills reach rule text by direct citation and are never served by `bin/fusion-rules` at
+committing workflows (`/fusion:commit`, `/fusion:cleanup`) carry it in their own bodies —
+they reach rule text by direct citation and are never served by `bin/fusion-rules` at
 all.
 
 This file carried a second protocol until 2026-08-15. The stash half was the definition
@@ -26,7 +26,7 @@ Always, when any party is about to commit. Workbench-anchored — different proj
 
 ### Mechanism
 
-Atomic `mkdir fusion-workbench/.commit-lock/` (POSIX guarantees mkdir either creates the directory exclusively or fails). The lock is root-anchored, like the other project-wide state — it guards the project's git index, which no single work item owns. The holder file `.commit-lock/holder` records three lines: `tag`, `pid`, `acquired_at` (RFC-3339 UTC). The holder write is noclobber (`set -C`): if a holder file already exists at write time, this acquirer was suspended between its `mkdir` and the write, got reaped, and another party took the lock — the write fails and the acquisition counts as lost (the acquirer re-enters the poll loop) instead of overwriting the new holder.
+Atomic `mkdir fusion-workbench/.commit-lock/` (POSIX guarantees mkdir either creates the directory exclusively or fails). The lock is root-anchored, like the other project-wide state — it guards the project's git index, which no single work package owns. The holder file `.commit-lock/holder` records three lines: `tag`, `pid`, `acquired_at` (RFC-3339 UTC). The holder write is noclobber (`set -C`): if a holder file already exists at write time, this acquirer was suspended between its `mkdir` and the write, got reaped, and another party took the lock — the write fails and the acquisition counts as lost (the acquirer re-enters the poll loop) instead of overwriting the new holder.
 
 Stale-lock detection at 60 seconds, on two paths. With a holder file: if the recorded PID is no longer running AND the lock is older than the threshold, the next acquirer force-releases it. Without a holder file (the holder died — or is still suspended — between `mkdir` and the holder write, or the directory was created some other way): the directory is aged on its own mtime and force-released past the same threshold — otherwise it would block acquire forever with nothing recorded to go stale.
 
@@ -47,12 +47,12 @@ The `with` form is canonical; explicit `acquire`/`release` exists for control-fl
 
 - **Orchestrator** at `agents/orchestrator.md` `### Step 4 — commit` — staging and committing in the held command.
 - **code-implementer / data-implementer** ONLY if they commit directly (rare; default is the orchestrator commits on their behalf).
-- **`/fusion:commit` and `/fusion:cleanup`** — the two skills that commit; each wraps every stage+commit pair in `with <skillname> --` (tags `commit`, `cleanup`). Skills are never served by `bin/fusion-rules`; their bodies carry the instruction and cite this section directly.
+- **`/fusion:commit` and `/fusion:cleanup`** — the two workflows that commit; each wraps every stage+commit pair in `with <skillname> --` (tags `commit`, `cleanup`). Neither is served by `bin/fusion-rules`; their bodies carry the instruction and cite this section directly.
 - **Other agents** — never commit, never need the lock.
 
 ### Tag conventions
 
-Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, `code-implementer`, `data-implementer`) or the committing skill's name (`commit`, `cleanup`).
+Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, `code-implementer`, `data-implementer`) or the committing workflow's name (`commit`, `cleanup`).
 
 ### Failure modes
 

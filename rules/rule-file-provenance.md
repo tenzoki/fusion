@@ -3,22 +3,22 @@
 **Provenance:** 260801-1244-guard-rules-write
 
 **This document is the definition** of the provenance header: where it sits, which three
-citation forms are legitimate, what the lint gate checks and what it does not, and who
+citation forms are legitimate, what the lint checks and what it does not, and who
 carries the obligation. No other file may carry a competing or supplementary definition.
 
 Read it when you are about to **create or edit a file under a `rules/` directory** — the
-plugin's own, a consuming project's `./rules/`, or a project-wide `.claude/rules/`. That is
+module's own, a consuming project's `./rules/`, or a project-wide `.claude/rules/`. That is
 the whole trigger, and it is why `bin/fusion-rules` emits this file to no agent: only the
 `policy-curator` has writing normative rule text as part of its routine job, so loading it into
 every agent on every dispatch would buy nothing for the rest. `agents/policy-curator.md` cites
-this file at Setup, which is how the one agent that needs it gets it. In the plugin's own
+this file at Setup, which is how the one agent that needs it gets it. In the module's own
 repository `hooks/lib/__tests__/provenance-header-lint.test.ts` catches a missing header;
 everywhere else the pointer in `rules/fusion-workbench-conventions.md` is what brings a
 writer here.
 
 ## Provenance headers on rule files
 
-Every file in the plugin's `rules/` directory opens with a line naming what caused it to exist. A reader who opens a rule learns, within the first ten lines, which record, Circle, or commit put it there, and therefore has a way to ask whether the reason still holds.
+Every file in the module's `rules/` directory opens with a line naming what caused it to exist. A reader who opens a rule learns, within the first ten lines, which record, work package, or commit put it there, and therefore has a way to ask whether the reason still holds.
 
 **The header.** One line, anywhere in the first ten lines of the file. The canonical written form is:
 
@@ -31,7 +31,7 @@ Canonical placement is directly under the file's H1 title, on line 3. The ten-li
 **Three citation forms.** Which one a file uses is decided by what its history supports, not by the author's preference.
 
 1. **A decision record.** A workbench-relative path to a record under a decisions store, with the marker position wildcarded — `YYMMDD-HHMM_*_<slug>.md` — for example `260801-1020_*_provenance-header-on-rule-files.md`. Prefer this form whenever a record exists. The wildcard is load-bearing: a record's marker moves with its life (`_o_→_a_→_i_`, later perhaps `_s_`), so a citation carrying a literal marker dies at the record's first transition — this file's own binding-decision line did exactly that. The wildcarded citation survives every transition and still delivers the header's real payoff: the reader resolves it against the store and reads the current marker off the resolved filename, so a rule citing a record that has moved to `_s_` is a retirement candidate any reader can spot. (Citation form decided in `260806-0015_*_zitierform-fuer-workbench-records.md`.)
-2. **A work item.** The item's **container directory** name, for example `260718-1924-v5x-overhaul`. The directory name is used rather than the record filename because the directory is stable for the item's whole life, and a reader follows the citation by opening the directory and reading the one record inside it. What that record is called, and where its state is written, depends on when the item was filed: an item at the current format carries a record named after its own directory with no marker at all, and its state is the `**Status:**` head field (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`); a container closed before 2026-09-11 still holds a `*_circle.md` whose state is the marker in its name, and those records are deliberately not converted (`rules/fusion-workbench-conventions.md` `## Terminal states are history`). The citation form is the same across both, which is the point of citing the directory.
+2. **A work package.** The item's **container directory** name, for example `260718-1924-v5x-overhaul`. The directory name is used rather than the record filename because the directory is stable for the item's whole life, and a reader follows the citation by opening the directory and reading the one record inside it. What that record is called, and where its state is written, depends on when the item was filed: an item at the current format carries a record named after its own directory with no marker at all, and its state is the `**Status:**` head field (`rules/fusion-workbench-conventions.md` `## Work packages`); a container closed before 2026-09-11 still holds a `*_circle.md` whose state is the marker in its name, and those records are deliberately not converted (`rules/fusion-workbench-conventions.md` `## Terminal states are history`). The citation form is the same across both, which is the point of citing the directory.
 3. **The admission plus the introducing commit.** For a file with no recoverable motivating record, written exactly like this:
 
 ```
@@ -40,10 +40,10 @@ Canonical placement is directly under the file's H1 title, on line 3. The ten-li
 
 The commit is admission-scoped and nothing more. Git is not the provenance mechanism; it is what an honest header falls back to when the alternative is a citation the reader cannot follow anywhere. Do not reconstruct a plausible record for a file that has none. An invented rationale is exactly the fiction this header exists to prevent.
 
-**What the gate checks, and what it does not.** `hooks/lib/__tests__/provenance-header-lint.test.ts` fails `npm test` when a file in the plugin's `rules/` directory carries no `Provenance:` line in its first ten lines, and it names the offending file. It reads the plugin's own `rules/` only. A consuming project's `./rules/` and `.claude/rules/` are in no test set fusion controls, so there the header is documented convention backed by the policy-curator's discipline, and a project gains header-based evidence only for rules written or edited after it adopts the convention. The gate checks that a header is present. It does not read the value and it resolves no cited path, so a header citing something useless still passes, and a header citing a record that was later moved or archived also still passes. What stops a hollow header is review, not the gate.
+**What the lint checks, and what it does not.** `hooks/lib/__tests__/provenance-header-lint.test.ts` fails `npm test` when a file in the module's `rules/` directory carries no `Provenance:` line in its first ten lines, and it names the offending file. It reads the module's own `rules/` only. A consuming project's `./rules/` and `.claude/rules/` are in no test set fusion controls, so there the header is documented convention backed by the policy-curator's discipline, and a project gains header-based evidence only for rules written or edited after it adopts the convention. The lint checks that a header is present. It does not read the value and it resolves no cited path, so a header citing something useless still passes, and a header citing a record that was later moved or archived also still passes. What stops a hollow header is review, not the lint.
 
-**`Provenance:` is file-scoped; `Binding decision:` is section-scoped.** The two coexist and mean different things. A `Provenance:` line at the top of a file states why the *file* exists. A `Binding decision:` line inside a section states which record binds *that section*. Neither replaces the other, and a section note never satisfies the gate: the gate reads only the first ten lines, and only for `Provenance:`.
+**`Provenance:` is file-scoped; `Binding decision:` is section-scoped.** The two coexist and mean different things. A `Provenance:` line at the top of a file states why the *file* exists. A `Binding decision:` line inside a section states which record binds *that section*. Neither replaces the other, and a section note never satisfies the lint: the lint reads only the first ten lines, and only for `Provenance:`.
 
-**Whoever writes a rule file writes its header.** An agent that creates a rule file gives it a header in the same edit, choosing the form its history supports. An agent that edits an existing rule file preserves the header, and updates it when the edit is substantial enough that a different record has become the file's reason for existing. This obligation falls first on the policy-curator, whose work is writing and consolidating normative text; in the plugin's own repository the lint gate backs it, and everywhere else the discipline stands alone.
+**Whoever writes a rule file writes its header.** An agent that creates a rule file gives it a header in the same edit, choosing the form its history supports. An agent that edits an existing rule file preserves the header, and updates it when the edit is substantial enough that a different record has become the file's reason for existing. This obligation falls first on the policy-curator, whose work is writing and consolidating normative text; in the module's own repository the lint backs it, and everywhere else the discipline stands alone.
 
 Binding decision: `260801-1020_*_provenance-header-on-rule-files.md`.

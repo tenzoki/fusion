@@ -57,7 +57,7 @@
 # The store is read from `bin/fusion-stores` rather than resolved through
 # `bin/fusion-paths`, for that same reason and no other: this program is not a
 # consumer with a prompt to derive a key set from. `rules/fusion-workbench-conventions.md`
-# `## Backlog entries — work items` is the definition of both the store and the
+# `## Work packages` is the definition of both the store and the
 # record's name, and this program applies it rather than restating it.
 #
 # ---------------------------------------------------------------------------

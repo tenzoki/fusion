@@ -63,7 +63,7 @@ The skill takes one of:
 
 ## Marker vocabulary
 
-Authored in `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` and `## State Markers — decisions`; which kinds carry no marker is the fourth column of `## Filename Patterns`, the forum entry's row included. **Terminal** means a record rather than live work: `_c_` for a defect or spec/plan, `_i_` and `_s_` for a decision, and only terminal artifacts bulk-archive without per-file review. **Terminal is not archive-class:** `_d_` is terminal for a defect or plan and is still excluded from every tier (safety filter 2). A **work item** carries no marker at all — its state is its `**Status:**` head field (`## Backlog entries — work items`), and `done` and `dropped` are its terminal pair.
+Authored in `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` and `## State Markers — decisions`; which kinds carry no marker is the fourth column of `## Filename Patterns`, the forum entry's row included. **Terminal** means a record rather than live work: `_c_` for a defect or spec/plan, `_i_` and `_s_` for a decision, and only terminal artifacts bulk-archive without per-file review. **Terminal is not archive-class:** `_d_` is terminal for a defect or plan and is still excluded from every tier (safety filter 2). A **work item** carries no marker at all — its state is its `**Status:**` head field (`## Work packages`), and `done` and `dropped` are its terminal pair.
 
 ## Safety filters (apply to ALL modes)
 

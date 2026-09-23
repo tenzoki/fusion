@@ -136,4 +136,4 @@ User-facing output (status reports, AskUserQuestion text, session summaries) fol
 
 ## Housekeeping
 
-Leave code better than you found it. Maintain `.gitignore`. Do not commit build artifacts or binaries.
+Leave code better than you found it. Maintain `.gitignore`. Do not commit build artefacts or binaries.
