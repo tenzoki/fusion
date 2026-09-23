@@ -137,12 +137,13 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
 
 ## Implementation Steps
 
-1. **Probe: does Claude Code accept a hyphenated agent name and its `fusion:<name>` token?**
+1. [DONE] **Probe: does Claude Code accept a hyphenated agent name and its `fusion:<name>` token?**
    - Executor: `coder`
    - Files: none in the tree; a copy of the repository under the scratchpad directory
    - Changes: copy the work tree, `git mv agents/shaper.md agents/requirements-designer.md` in the copy and set its `name:` line, then run `claude plugin validate <copy>` and `claude --plugin-dir <copy> --agent fusion:requirements-designer -p "reply SMOKE-OK"`. Report both outputs verbatim. Delete the copy.
    - Dependencies: none
    - Acceptance: validation passes and the run answers `SMOKE-OK`. On any other outcome the plan stops (`## Where this work stops`, clause 2) and the outputs go to the user with the naming question.
+   - Result 260923: passed. Claude Code 2.1.280, `claude plugin validate <copy>` exit 0 (one unrelated warning about the root `CLAUDE.md`), `claude --plugin-dir <copy> --agent fusion:requirements-designer -p "reply SMOKE-OK"` exit 0 answering `SMOKE-OK`; negative control `--agent fusion:no-such-agent` exit 1 listing `fusion:requirements-designer` and no `fusion:shaper`.
 
 2. **TypeScript store definition and the window table**
    - Executor: `coder`
