@@ -1,6 +1,6 @@
 ---
-description: Reconcile the workbench's tracking files against ground truth. Dispatches the state-auditor once, reports what it changed and the three-edge Coherence verdict it returned, and advances this checkout's reconcile mark. Writes no record and commits nothing.
-argument-hint: "[<directive text>] [--since <commit>] [--domain code|data] [--force]"
+description: Reconcile the workbench's tracking files against ground truth. Dispatches the state-auditor once, reports what it changed and the three-edge Coherence audit result it returned, and advances this checkout's reconcile mark. Writes no record and commits nothing.
+argument-hint: "[<brief text>] [--since <commit>] [--domain code|data] [--force]"
 allowed-tools: [Bash, Read, Agent(fusion:state-auditor)]
 ---
 
@@ -10,14 +10,14 @@ The user invoked `/fusion:reconcile`. This body performs one procedure: it dispa
 
 **It writes one thing and no more**: this checkout's reconcile mark, after the pass returns. Every change to a plan, a defect record or a review is the agent's, made under `agents/state-auditor.md` `## Scope`, and every one of them is left in the working tree — this body commits nothing and pushes nothing. `/fusion:cleanup` is what commits, when the user runs it.
 
-**It holds no gate.** The state-auditor returns a Coherence verdict; this body prints it. Deciding what to do about a verdict that is not `coherent` is the Rebalance gate, which belongs to a session that has a Directive to rebalance (`rules/orchestrator-rebalance.md`). A command that reports cannot also rule.
+**It holds no approval.** The state-auditor returns a Coherence audit result; this body prints it. Deciding what to do about a result that is not `coherent` is the Rebalance approval, which belongs to a session that has a brief to rebalance (`rules/orchestrator-rebalance.md`). A command that reports cannot also rule.
 
 ## Arguments
 
 All four are optional, and a bare `/fusion:reconcile` is the ordinary invocation.
 
-- `<directive text>` — the session Directive, in the user's own words. It is what the state-auditor's two Directive edges are evaluated against.
-- `--since <commit>` — the anchor the ground-truth walk starts from. Absent, this body reads the checkout's own reconcile mark; absent that too, the state-auditor falls back to the stamp on the work item this checkout claimed and says so.
+- `<brief text>` — the session brief, in the user's own words. It is what the state-auditor's two Brief edges are evaluated against.
+- `--since <commit>` — the anchor the ground-truth walk starts from. Absent, this body reads the checkout's own reconcile mark; absent that too, the state-auditor falls back to the stamp on the work package this checkout claimed and says so.
 - `--domain code|data` — overrides the detected domain.
 - `--force` — dispatch even when nothing has moved since the last pass (Step 3).
 
@@ -42,7 +42,7 @@ if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain" ]; then "$FUSION_PLUGIN_
 
 Hold `domain=` and `source=`. **Report the source beside the value, never the value alone**: a defaulted domain and a read one are different facts, and this body decides neither — it obtains one.
 
-**Directive.** The argument text, verbatim, or nothing. **Invent none.** With no Directive on the dispatch the state-auditor's two Directive edges read `not evaluable: no Directive stated` and its recommendation is `state Directive` — that is a complete run with a narrower verdict, not a failure, and Step 5 says so in one line rather than hiding it.
+**Brief.** The argument text, verbatim, on the `**Directive:**` line, or nothing. **Invent none.** With no brief on the dispatch the state-auditor's two Brief edges read `not evaluable: no brief stated` and its recommendation is `state brief` — that is a complete run with a narrower audit result, not a failure, and Step 5 says so in one line rather than hiding it.
 
 **Since.** The `--since` argument when one was given, else this checkout's mark:
 
@@ -70,7 +70,7 @@ Use the `Agent` tool with target `fusion:state-auditor`. The parameter lines com
 **Since:** <commit>
 ```
 
-Then the task in one sentence: reconcile every tracking file against ground truth and return the three-edge Coherence verdict. `agents/state-auditor.md` `## Domain Parameter` defines how the first is read and `## Setup` step 6 the other two; do not restate either here, and do not re-decide any part of them.
+Then the task in one sentence: reconcile every tracking file against ground truth and return the three-edge Coherence audit result. `agents/state-auditor.md` `## Domain Parameter` defines how the first is read and `## Setup` step 6 the other two; do not restate either here, and do not re-decide any part of them.
 
 Wait for the agent. When it returns, and only then, advance the mark:
 
@@ -86,8 +86,8 @@ Action-first, per `rules/user-facing-output.md`:
 
 1. **What the pass changed** — the tracking files the agent updated, by kind and count, and every marker it moved.
 2. **What it flagged and did not change** — discrepancies it reported, and every record it filed.
-3. **The Coherence verdict** — the aggregate word and the three edge lines, as the agent wrote them (`agents/state-auditor.md` `## Coherence`). An edge reading `not evaluable: <reason>` is reported with its reason, never as a pass.
-4. **What this run stood on** — the domain and where it came from, whether a Directive was passed, and the anchor the walk used or that none was held.
+3. **The Coherence audit result** — the aggregate word and the three edge lines, as the agent wrote them (`agents/state-auditor.md` `## Coherence`). An edge reading `not evaluable: <reason>` is reported with its reason, never as a pass.
+4. **What this run stood on** — the domain and where it came from, whether a brief was passed, and the anchor the walk used or that none was held.
 
 Close with the one line that says the edits are uncommitted and `/fusion:cleanup` is what commits them.
 
@@ -96,4 +96,4 @@ Close with the one line that says the edits are uncommitted and `/fusion:cleanup
 - **Dispatches `fusion:state-auditor`, once.** No second dispatch, no other agent, no fallback pass of its own when the agent returns badly — an unusable return is reported as one.
 - **Writes the reconcile mark and nothing else.** No record, no tracking file, no session state.
 - **Commits nothing and pushes nothing.**
-- **Opens no gate and asks nothing.** A run typed and walked away from finishes.
+- **Opens no approval and asks nothing.** A run typed and walked away from finishes.

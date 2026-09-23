@@ -11,7 +11,7 @@
  * Called through `bin/fusion-review-coverage` by `agents/orchestrator.md` at
  * `## Review coverage` (the read before the closing review's dispatch is
  * written: `carried=` and the `uncovered` lines set that review's scope), at
- * `## Closing a work item` step 2 (the same read, once more, before the review
+ * `## Closing a work package` step 2 (the same read, once more, before the review
  * is routed), at `## Ending the session` (the summary's review-coverage section
  * is read off this output, never recalled), and by anyone at a terminal who
  * wants to know which commits no reviewer has opened.

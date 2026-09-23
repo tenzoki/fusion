@@ -18,29 +18,29 @@
   data-implementer.md 15987
   document-editor.md 13230
   implementation-planner.md 20059
-  orchestrator.md 98200
-  policy-curator.md 78751
-  requirements-designer.md 17407
+  orchestrator.md 98235
+  policy-curator.md 78785
+  requirements-designer.md 17410
   reviewer.md 12926
-  state-auditor.md 21184
-  total 324682
+  state-auditor.md 21197
+  total 324767
 
 [skills bytes]
-  archive/SKILL.md 24515
-  cadence/SKILL.md 22271
-  check/SKILL.md 31855
+  archive/SKILL.md 24407
+  cadence/SKILL.md 22288
+  check/SKILL.md 31861
   cleanup/SKILL.md 6763
-  commit/SKILL.md 6113
-  curate/SKILL.md 12150
-  discuss/SKILL.md 14346
-  help/SKILL.md 16268
-  memo/SKILL.md 13209
-  migrate/SKILL.md 19898
-  news/SKILL.md 8211
+  commit/SKILL.md 6119
+  curate/SKILL.md 12135
+  discuss/SKILL.md 14332
+  help/SKILL.md 16242
+  memo/SKILL.md 13245
+  migrate/SKILL.md 19907
+  news/SKILL.md 8223
   post/SKILL.md 6694
-  reconcile/SKILL.md 6646
-  setup/SKILL.md 14533
-  total 203472
+  reconcile/SKILL.md 6671
+  setup/SKILL.md 14567
+  total 203454
 
 [hook-tests lines]
   archive-filter-key.test.ts 40

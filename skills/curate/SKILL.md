@@ -1,21 +1,21 @@
 ---
-description: Reconciles the project's three normative surfaces — its decision records, its own rule files, and CLAUDE.md — against its recorded history: dispatches the policy-curator to survey, puts the change ledger to the user at a gate, then dispatches it again to apply only what was approved.
+description: Reconciles the project's three normative surfaces — its decision records, its own rule files, and CLAUDE.md — against its recorded history: dispatches the policy-curator to survey, puts the change ledger to the user for approval, then dispatches it again to apply only what was approved.
 allowed-tools: [Bash, Read, AskUserQuestion, Agent(fusion:policy-curator)]
 ---
 
 # Fusion — curate (reconcile the normative surfaces)
 
-The user invoked `/fusion:curate`. This is the user-facing surface for the `policy-curator` agent, and the one path to `CLAUDE.md`. It dispatches the agent to **survey**, reads the run file the agent wrote, holds the **gate** itself, and dispatches the agent a second time to **apply** only the entries the user approved.
+The user invoked `/fusion:curate`. This is the user-facing surface for the `policy-curator` agent, and the one path to `CLAUDE.md`. It dispatches the agent to **survey**, reads the run file the agent wrote, holds the **approval** itself, and dispatches the agent a second time to **apply** only the entries the user approved.
 
 **It performs this procedure and no other.** No pass runs before it or after it, and nothing here commits: the policy-curator's edits are working-tree edits, and `/fusion:cleanup` is what commits them when the user runs it.
 
-Takes two optional arguments, `--full` (the unbounded evidence pass) and `--edges` (the work-item edge subject), passed through to the survey dispatch in Step 2.
+Takes two optional arguments, `--full` (the unbounded evidence pass) and `--edges` (the work-package edge subject), passed through to the survey dispatch in Step 2.
 
-**This skill writes nothing.** The two dispatches are the only writes in the whole operation, and only the second one reaches a normative surface. Rejecting everything at the gate leaves all three surfaces byte-identical and still leaves the run file on disk.
+**This workflow writes nothing.** The two dispatches are the only writes in the whole operation, and only the second one reaches a normative surface. Rejecting everything at the approval leaves all three surfaces byte-identical and still leaves the run file on disk.
 
-**The gate lives here because `AskUserQuestion` does.** The grant in this file's frontmatter belongs to the skill body running in the main session; it does not travel to a dispatched sub-agent. So the agent surveys, returns the gate question, and this skill puts it to the user. `agents/policy-curator.md` `## Tool Discipline` defines all three invocation shapes and states that they differ in exactly one thing, who holds the prompt — the two passes and the run file are identical on each. Do not restate that section here, and do not re-decide any part of it.
+**The approval lives here because `AskUserQuestion` does.** The grant in this file's frontmatter belongs to the skill body running in the main session; it does not travel to a dispatched child run. So the agent surveys, returns the approval question, and this workflow puts it to the user. `agents/policy-curator.md` `## Tool Discipline` defines all three invocation shapes. Do not restate that section here, and do not re-decide any part of it.
 
-**The skill re-derives nothing.** It does not read the three surfaces, does not judge a proposal, does not edit the ledger, and does not compose an entry the agent did not write. Its whole job is to carry a file path, three counts and an approval set between two dispatches.
+**The workflow re-derives nothing.** It does not read the three surfaces, does not judge a proposal, does not edit the ledger, and does not compose an entry the agent did not write. Its whole job is to carry a file path, three counts and an approval set between two dispatches.
 
 ## Step 1 — Pre-flight: resolve paths
 
@@ -27,7 +27,7 @@ Hold the emitted values (`WORKBENCH`, `OUT_ANALYSIS`). `$WORKBENCH` is absolute;
 
 - **Exit 1** — no workbench above `pwd`. Halt: `/fusion:setup` must run once at the project root. Do NOT bootstrap a workbench from here — setup is the single point of workbench creation.
 
-Nothing in this skill branches on where a store is: the policy-curator resolves its own write targets at its own Setup, and the run file lands where that resolution puts it.
+Nothing in this workflow branches on where a store is: the policy-curator resolves its own write targets at its own Setup, and the run file lands where that resolution puts it.
 
 ## Step 2 — Dispatch the policy-curator to survey
 
@@ -43,20 +43,20 @@ Add `**Scope:** full` on its own line when the user passed `--full` — the unbo
 
 ## Step 3 — Read what the survey returned
 
-The agent's report carries three things this skill needs, and they are the gate question it could not put itself:
+The agent's report carries three things this workflow needs, and they are the approval question it could not put itself:
 
 1. **The run file's path**, workbench-relative.
-2. **The count per consequence group** (`agents/policy-curator.md` `### The gate`) plus the number of candidates, which are never offered for approval.
-3. **The blast-radius verdict** — whether proposed deletions exceed 20 percent of any single surface's bytes.
+2. **The count per consequence group** (`agents/policy-curator.md` `### The approval`) plus the number of candidates, which are never offered for approval.
+3. **The blast-radius check** — whether proposed deletions exceed 20 percent of any single surface's bytes.
 
-Then read the run file itself with the `Read` tool, at `$WORKBENCH/<run-file path>`. It carries the entry ids, which per-entry approval needs, and the outcomes section this skill reports from in Step 7.
+Then read the run file itself with the `Read` tool, at `$WORKBENCH/<run-file path>`. It carries the entry ids, which per-entry approval needs, and the outcomes section this workflow reports from in Step 7.
 
-**Two conditions halt here, and neither is repaired from this skill.** Report what was found, name the run file path as the agent gave it, and dispatch nothing further:
+**Two conditions halt here, and neither is repaired from this workflow.** Report what was found, name the run file path as the agent gave it, and dispatch nothing further:
 
-- The reported path does not start with the `$OUT_ANALYSIS` value from Step 1. A ledger this skill would relay into an apply dispatch has to be a run file where the agent writes one (`agents/policy-curator.md` `## The run file`); a path pointing anywhere else is not one, and guessing which file was meant would hand the apply pass a document nobody wrote.
+- The reported path does not start with the `$OUT_ANALYSIS` value from Step 1. A ledger this workflow would relay into an apply dispatch has to be a run file where the agent writes one (`agents/policy-curator.md` `## The run file`); a path pointing anywhere else is not one, and guessing which file was meant would hand the apply pass a document nobody wrote.
 - The file is not there, or cannot be read.
 
-**A survey that proposes nothing is a complete result.** When every group count is zero, say so in one line, name the run file, and stop — no gate, no second dispatch. That is the ordinary outcome on a project whose surfaces are current.
+**A survey that proposes nothing is a complete result.** When every group count is zero, say so in one line, name the run file, and stop — no approval, no second dispatch. That is the ordinary outcome on a project whose surfaces are current.
 
 ## Step 4 — The scale confirmation, only when the blast-radius stop fired
 
@@ -64,13 +64,13 @@ This is a **separate prompt, asked before the ledger counts are shown**. Its who
 
 A run that wants to delete a fifth of a project's binding rules is either right about something large or wrong about something large, and both deserve a pause before the counts start reading like a summary. If the user stops, report the run file path so the proposal survives, and dispatch nothing.
 
-When the verdict is that no surface crossed the threshold, skip this step entirely and ask nothing.
+When the check finds that no surface crossed the threshold, skip this step entirely and ask nothing.
 
-## Step 5 — The gate
+## Step 5 — The approval
 
 One `AskUserQuestion`. Keep it inside the eight-line cap in `rules/user-facing-output.md`, including the option list.
 
-**The prompt never contains the ledger.** It names the run file's path, the count per consequence group in the most-consequential-first order `agents/policy-curator.md` `### The gate` sets, the count of candidates as text that says they are not on offer, and the blast-radius verdict in one clause. Constraint removals appear first in what the user sees, never last.
+**The prompt never contains the ledger.** It names the run file's path, the count per consequence group in the most-consequential-first order `agents/policy-curator.md` `### The approval` sets, the count of candidates as text that says they are not on offer, and the blast-radius check in one clause. Constraint removals appear first in what the user sees, never last.
 
 Three options:
 
@@ -96,7 +96,7 @@ Use the `Agent` tool with target `fusion:policy-curator`. The first three non-em
 
 `**Approved:**` carries either the word `all` or an explicit id list, and nothing else. Do not paraphrase an approval into a sentence, do not write "everything except", and do not translate a group selection into prose — resolve the chosen groups to the ids those groups hold and pass the ids. `agents/policy-curator.md` `## Dispatch parameters` defines the refusals on the agent's side: a ledger path that does not resolve is a halt, and an id the ledger does not carry is a halt naming that id.
 
-The apply pass re-reads from disk before touching anything, so an entry whose file moved under the gate is stale rather than applied — the whole before-text for most entries, and for the two edge fields the record and three preconditions, the rest of that shared line being other entries'. It is the agent's check, not this skill's — do not attempt a verification of your own here.
+The apply pass re-reads from disk before touching anything, so an entry whose file moved while the approval was open is stale rather than applied — the whole before-text for most entries, and for the two edge fields the record and three preconditions, the rest of that shared line being other entries'. It is the agent's check, not this workflow's — do not attempt a verification of your own here.
 
 ## Step 7 — Report what happened
 
@@ -113,20 +113,20 @@ If an approved entry has no outcome line at all, say which one plainly. That, an
 
 ## Boundaries
 
-- The skill performs **no write**. Not to a normative surface, not to the run file, not to the workbench. Both writes in the operation are the agent's.
-- The skill **judges nothing**. It does not open a rule file, a decision record or `CLAUDE.md` to check a proposal, and it forms no view about whether an entry is right. The evidence the user judges is in the ledger, and the agent put it there.
-- The skill **dispatches only `fusion:policy-curator`**, twice at most.
-- The skill **commits nothing**, and neither does the agent. The working-tree edits are left for the user or the orchestrator to commit.
-- Safe to invoke during a running orchestrator session in the sense that it starts nothing: it claims no work item and touches no session state. The apply pass does edit files an active session may also be editing, so it is worth running at a quiet point.
-- **The gate is never absent.** This body holds it. An orchestrator that dispatches the policy-curator mid-session proxies the same question instead (`agents/orchestrator.md`); a caller that cannot ask the user runs the survey pass and stops.
+- The workflow performs **no write**. Not to a normative surface, not to the run file, not to the workbench. Both writes in the operation are the agent's.
+- The workflow **judges nothing**. It does not open a rule file, a decision record or `CLAUDE.md` to check a proposal, and it forms no view about whether an entry is right. The evidence the user judges is in the ledger, and the agent put it there.
+- The workflow **dispatches only `fusion:policy-curator`**, twice at most.
+- The workflow **commits nothing**, and neither does the agent. The working-tree edits are left for the user or the orchestrator to commit.
+- Safe to invoke during a running orchestrator session in the sense that it starts nothing: it claims no work package and touches no session state. The apply pass does edit files an active session may also be editing, so it is worth running at a quiet point.
+- **The approval is never absent.** This body holds it. An orchestrator that dispatches the policy-curator mid-session proxies the same question instead (`agents/orchestrator.md`); a caller that cannot ask the user runs the survey pass and stops.
 
 ## Tone
 
 Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`).
 
-For this skill specifically:
+For this workflow specifically:
 
-- **The gate leads with the decision**, not with a description of what the policy-curator does. The user invoked this and knows.
+- **The approval question leads with the decision**, not with a description of what the policy-curator does. The user invoked this and knows.
 - **Groups are named in words**, not by tier number alone: "changes that remove a rule" reads, "tier 3" does not, and the tier can follow in parentheses.
 - **Never print entry ids without the count they belong to.** `L01,L04` on its own is unreadable; "two entries, `L01` and `L04`" is not.
 - **A run that proposes nothing gets one line.** No summary of the evidence sources, no restatement of what was checked — the agent's run file holds all of it for a reader who wants it.

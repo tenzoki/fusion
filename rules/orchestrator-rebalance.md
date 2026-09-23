@@ -17,9 +17,9 @@ The Turn loop, the Turn budget, the per-Turn Coherence check, the circuit-breake
 
 **What replaced them is the user, and nothing else.** The orchestrator reports after every commit and asks whether to go on (`agents/orchestrator.md` `### Step 5`), and the Rebalance approval itself is now reachable only from a reconciliation the user ran by hand. So a *Revise Artefact* re-entry is bounded by the same question every other unit of work is bounded by, and by no count. **Do not read this as "the loop is bounded".** It is bounded by a person paying attention, which is a real bound and a different one, and the difference is stated rather than described away. The bound that does **not** depend on any removed mechanism — the once-per-session cap on *Revise Brief* — survives below, with its persistence removed and that cost named.
 
-### Rebalance Gate
+### Rebalance approval
 
-The approval's one trigger is the Coherence audit result of a reconciliation the user ran by hand: any result other than `coherent`, or `coherent` with recommendation `state brief` (`agents/orchestrator.md` `## Reconciliation, and the one gate it opens`). Nothing evaluates coherence automatically any more, and no other site opens this approval.
+The approval's one trigger is the Coherence audit result of a reconciliation the user ran by hand: any result other than `coherent`, or `coherent` with recommendation `state brief` (`agents/orchestrator.md` `## Reconciliation, and the one approval it opens`). Nothing evaluates coherence automatically any more, and no other site opens this approval.
 
 It replaces the standard Proceed/Skip/Defer/Modify with **two approvals in sequence**, each inside the three-option cap of `rules/user-facing-output.md` `## Questions and approvals` (decision `260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md`, option 2). The four moves of the Coherence model — its three edges and its termination — are all reachable, and every option carries its foreclosure line. The split follows the model's own order: destination first, then the path to it.
 
@@ -62,7 +62,7 @@ The approval is reachable from the hand-run reconciliation's audit result and fr
 
   When the user runs a reconciliation again after filing, the result may now pass with the new evidence base. If it still flags `review-needed`, the approval fires again — but the evidence base has changed, so the user has new options.
 
-- **Accept Bounded Closure is terminal.** The orchestrator emits `bounded_closure_proposed`, sets the session history file's `**Status:**` to `Bounded Closure: <reason>`, and goes to `agents/orchestrator.md` `## Closing a work item`, where the closing value is `dropped` and the body says what was learned. The state-auditor has already run for the audit result that triggered this approval; do **not** re-run it. Skip any further execution.
+- **Accept Bounded Closure is terminal.** The orchestrator emits `bounded_closure_proposed`, sets the session history file's `**Status:**` to `Bounded Closure: <reason>`, and goes to `agents/orchestrator.md` `## Closing a work package`, where the closing value is `dropped` and the body says what was learned. The state-auditor has already run for the audit result that triggered this approval; do **not** re-run it. Skip any further execution.
 
 
 ## What went with the Circle container

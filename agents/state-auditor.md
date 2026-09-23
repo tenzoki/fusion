@@ -84,13 +84,13 @@ Apply the verification protocol named for the active domain (see Domain Paramete
 - For each plan claim about data shape, grep the data file and verify directly.
 - No code-test runs are required unless a data change is gated by code validation.
 
-### Step 2.5: Three-edge Coherence verdict
+### Step 2.5: Three-edge Coherence audit result
 
 This step runs **regardless of domain**. The three-edge result is the Coherence Review check — layered on top of whichever ground-truth verification protocol the domain selected in Step 2.
 
-**Cadence note:** there is no automatic trigger and no schedule. The orchestrator dispatches you when the user asks for a reconciliation and never otherwise (`agents/orchestrator.md` `## Reconciliation, and the one gate it opens`), so the result's cadence is the user's. What the result is *about* is the work in scope: the item this checkout claimed when there is one, and the session's own commit range when there is not.
+**Cadence note:** there is no automatic trigger and no schedule. The orchestrator dispatches you when the user asks for a reconciliation and never otherwise (`agents/orchestrator.md` `## Reconciliation, and the one approval it opens`), so the result's cadence is the user's. What the result is *about* is the work in scope: the item this checkout claimed when there is one, and the session's own commit range when there is not.
 
-**The user is informed, not asked.** The state-auditor computes the audit result and returns it in its report. If the aggregate result is anything but `coherent`, or `coherent` with recommendation `state brief`, the orchestrator (not the state-auditor) opens the Rebalance approval after consuming this result (`agents/orchestrator.md` `## Reconciliation, and the one gate it opens`). The state-auditor does not present `AskUserQuestion`.
+**The user is informed, not asked.** The state-auditor computes the audit result and returns it in its report. If the aggregate result is anything but `coherent`, or `coherent` with recommendation `state brief`, the orchestrator (not the state-auditor) opens the Rebalance approval after consuming this result (`agents/orchestrator.md` `## Reconciliation, and the one approval it opens`). The state-auditor does not present `AskUserQuestion`.
 
 **Compute the three edges.** One line each, with cited evidence.
 

@@ -250,7 +250,7 @@ Each analysis produces one report file at `$OUT_ANALYSIS/YYMMDD-HHMM-<topic>.md`
 ### Comparative → comparison matrix + dimension-by-dimension evaluation
 ### Gap → gap inventory table (gap, severity, effort, recommendation)
 ### Risk → risk register table (risk, likelihood, impact, mitigation)
-### Feasibility → verdict + prerequisites + blockers + evidence
+### Feasibility → finding + prerequisites + blockers + evidence
 ### Impact → impact map table (area, files, severity, nature of impact)
 ### Failure Investigation → evidence inventory, then the timeline with the derail point marked, then the root cause with its contributing factors
 

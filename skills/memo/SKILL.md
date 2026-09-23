@@ -1,5 +1,5 @@
 ---
-description: Append a concise memo to the user's personal memo log (memos-<checkout>.md) or a task to the user's task list (tasks-<checkout>.md), both in the workbench's shared memo store, or file an idea as a new work item in the project backlog
+description: Append a concise memo to the user's personal memo log (memos-<checkout>.md) or a task to the user's task list (tasks-<checkout>.md), both in the workbench's shared memo store, or file an idea as a new work package in the project backlog
 argument-hint: [content, or "task: <todo>", or "idea: <idea>", or a directive like "the open tasks"]
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
@@ -10,9 +10,9 @@ Capture something the user wants kept. Three kinds of capture, and the third is 
 
 - **Memos** — informal captures: notes, options to remember, the shape of an open problem, a pointer to a file. Snapshots the user wants to keep. They are **not** issues, plans, or history entries.
 - **Tasks** — things to do: a todo, an open action, something to pick up later. Kept as a checkbox list so they can be ticked off.
-- **Ideas** — something worth considering that is not yet worth planning: a direction for the project rather than a note to self. An idea goes to the **project backlog** as a work item, where it waits at `open` until somebody claims it.
+- **Ideas** — something worth considering that is not yet worth planning: a direction for the project rather than a note to self. An idea goes to the **project backlog** as a work package, where it waits at `open` until somebody claims it.
 
-**The memo and task files are append logs; a work item is not.** One memo file and one task file per checkout, and every capture adds a block to the end of the right one. An idea is **a new file each time** — one file per idea, in a different store, carrying its state in a head field rather than on its name. That difference is stated rather than left to be inferred from the two siblings, because inferring it produces the wrong write: every reader of the backlog takes one file to be one job.
+**The memo and task files are append logs; a work package is not.** One memo file and one task file per checkout, and every capture adds a block to the end of the right one. An idea is **a new file each time** — one file per idea, in a different store, carrying its state in a head field rather than on its name. That difference is stated rather than left to be inferred from the two siblings, because inferring it produces the wrong write: every reader of the backlog takes one file to be one job.
 
 ## Step 0 — Resolve the stores
 
@@ -26,7 +26,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
 - **Exit 1** — no workbench above `pwd`. Tell the user to run `/fusion:setup` at the project root first.
 
-**Why `memo`, and why exactly these two keys:** `fusion-paths` takes the name of the consumer asking, and a skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`). This skill's key set is read from this file, so both write keys are emitted because this file names them. There is one store per kind and no state selects between candidates, so both values are right whichever agent, or none, is actually running. **No read key is emitted, deliberately:** this skill files, and it never lists, re-reads or consolidates the backlog. Consolidating is a maintenance operation the orchestrator performs at the user's word, and a run here that set out to do it has no resolved path to read from.
+**Why `memo`, and why exactly these two keys:** `fusion-paths` takes the name of the consumer asking, and a skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`). This skill's key set is read from this file, so both write keys are emitted because this file names them. There is one store per kind and no state selects between candidates, so both values are right whichever agent, or none, is actually running. **No read key is emitted, deliberately:** this workflow files, and it never lists, re-reads or consolidates the backlog. Consolidating is a maintenance operation the orchestrator performs at the user's word, and a run here that set out to do it has no resolved path to read from.
 
 ## Where each kind goes
 
@@ -34,7 +34,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 - Task file: `$WORKBENCH/$OUT_MEMO/tasks-$CO.md`
 - Backlog entry: a new container per idea in `$WORKBENCH/$OUT_PACKAGES`, never an append
 - `$CO` is the `CHECKOUT=` line of `I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true`, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
-- **No `CHECKOUT=` line, no keyed write.** Exit 3, exit 5 and the `[ -x ]` miss branch each leave `$CO` empty, and none means the workbench is absent. Halt and name which one: an empty key writes `memos-.md` and `tasks-.md`, the one pair of names every checkout would share. An idea is a work item and proceeds under `rules/fusion-workbench-conventions.md` `### Who filed it`, never halted here.
+- **No `CHECKOUT=` line, no keyed write.** Exit 3, exit 5 and the `[ -x ]` miss branch each leave `$CO` empty, and none means the workbench is absent. Halt and name which one: an empty key writes `memos-.md` and `tasks-.md`, the one pair of names every checkout would share. An idea is a work package and proceeds under `rules/fusion-workbench-conventions.md` `### Who filed it`, never halted here.
 
 If the memo store or one of its two files does not exist, create it. When creating a file for the first time, write only its header and nothing else:
 
@@ -103,9 +103,9 @@ Each task is appended as a single checkbox line at the end of the task file (no 
 
 If several tasks are captured at once (e.g. "the open tasks"), append one checkbox line per task. Keep each line to one task. Do not tick (`- [x]`) or remove existing tasks unless the user explicitly says so.
 
-### Work item
+### Work package
 
-**Created, not appended, and an item is a directory.** One new container per idea at `$WORKBENCH/$OUT_PACKAGES/<YYMMDD-HHMM>-<topic>/`, holding one record under the container's own name: `<YYMMDD-HHMM>-<topic>/<YYMMDD-HHMM>-<topic>.md`. The stamp comes from `date +%y%m%d-%H%M` (`rules/fusion-workbench-conventions.md` `## Timestamps` — never guess it), and `<topic>` is a kebab-case slug of the title, lowercased, articles dropped, six words at most. **There is no marker on either name** — an item's state is its `**Status:**` head field, which is `open` at creation and always here; this skill writes no other status and changes none. Create the container and the record and stop there: the per-kind subdirectories an item's own work fills are made on first write, not at filing, so a freshly filed item is one directory holding one file.
+**Created, not appended, and an item is a directory.** One new container per idea at `$WORKBENCH/$OUT_PACKAGES/<YYMMDD-HHMM>-<topic>/`, holding one record under the container's own name: `<YYMMDD-HHMM>-<topic>/<YYMMDD-HHMM>-<topic>.md`. The stamp comes from `date +%y%m%d-%H%M` (`rules/fusion-workbench-conventions.md` `## Timestamps` — never guess it), and `<topic>` is a kebab-case slug of the title, lowercased, articles dropped, six words at most. **There is no marker on either name** — an item's state is its `**Status:**` head field, which is `open` at creation and always here; this workflow writes no other status and changes none. Create the container and the record and stop there: the per-kind subdirectories an item's own work fills are made on first write, not at filing, so a freshly filed item is one directory holding one file.
 
 If the container you derived already exists, neither overwrite nor append: pick a `<topic>` that tells the two ideas apart, and say in your report that you did.
 
@@ -150,7 +150,7 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 - Never remove or reorder existing memos or tasks.
 - Never tick or un-tick a task unless the user explicitly asks.
 - Never rewrite the user's pasted content in your own words — verbatim only.
-- Keep entries short. If the user wants a full write-up, direct them to a plan, an analysis, or a consultation instead — those are separate artifact kinds with their own stores.
+- Keep entries short. If the user wants a full write-up, direct them to a plan, an analysis, or a consultation instead — those are separate artefact kinds with their own stores.
 - Do not file an issue or plan based on a memo or task — these are for keeping, not for acting.
-- Never edit, rename, claim, finish or drop an existing work item. This skill creates items at `open` and does nothing else to the store. A status moves elsewhere: the orchestrator maintains the store at the user's word, and the user can edit one by hand. Which operations exist and under what confirmation is `agents/orchestrator.md` `## Work items`, over the definition in `rules/fusion-workbench-conventions.md` `## Work packages`.
-- **Never file an item on an agent's behalf.** The backlog holds what the *user* files (`rules/fusion-workbench-conventions.md` `## Work packages`), and this skill is that surface — it runs because the user typed `/fusion:memo` with an idea of their own. A finding an agent carried into the conversation does not become the user's idea by being routed through here: something broken is still an issue, something to settle is still a decision record, and neither is filed from this skill at all.
+- Never edit, rename, claim, finish or drop an existing work package. This workflow creates items at `open` and does nothing else to the store. A status moves elsewhere: the orchestrator maintains the store at the user's word, and the user can edit one by hand. Which operations exist and under what confirmation is `agents/orchestrator.md` `## Work packages`, over the definition in `rules/fusion-workbench-conventions.md` `## Work packages`.
+- **Never file an item on an agent's behalf.** The backlog holds what the *user* files (`rules/fusion-workbench-conventions.md` `## Work packages`), and this workflow is that surface — it runs because the user typed `/fusion:memo` with an idea of their own. A finding an agent carried into the conversation does not become the user's idea by being routed through here: something broken is still an issue, something to settle is still a decision record, and neither is filed from this workflow at all.

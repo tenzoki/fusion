@@ -68,7 +68,7 @@ Use the printed values literally: **recent window** `[week_start, today]` and **
 
 ### 3. Scan git and the workbench tree — once
 
-Collect timestamped items; record a timestamp, a topic, and a **source code** for each. The code names the artifact's *kind*, and the kind is the basename of the directory the file sits in.
+Collect timestamped items; record a timestamp, a topic, and a **source code** for each. The code names the artefact's *kind*, and the kind is the basename of the directory the file sits in.
 
 **Codes:** `g` git commits · `h` session history · `p` specs and plans · `i` issues · `d` decisions · `s` discussions · `r` reviews · `a` analyses · `n` investigations · `t` consultations · `b` backlog entries · `w` workbench root-level files. `o` (ontology reviews) and `c` (code reviews) are **retired but still readable**, from days logged before v4 when the review kinds had a directory each: leave those rows alone, write `r` for new ones, and when a log's own legend predates v4 add the `r` row while keeping `o` and `c` listed as historic — deleting them strands the rows using them.
 
@@ -87,7 +87,7 @@ empty=
 find "$WORKBENCH" -type f -name '*.md' -not -path '*/archive/*' -not -path '*/stashes/*' -not -path '*/stilwerk/*' -not -path '*/.migration-v2-backup/*' ${SINCE:+-newermt "$SINCE"} -exec ls -l -T {} +
 ```
 
-**Substitute the resolver values before you run anything above.** They are step-0 keys, not shell variables: nothing exports them and the Bash tool starts a fresh shell per call, so write their values into every block literally. The assertion is looking for exactly the key you forgot, which expands to the empty string. **A non-zero exit there stops the skill:** report it as a fusion bug, name the key the message names, and write **neither file**. An empty *directory* is legitimate and still earns a normal run saying the week was quiet; an empty *key* never is, because a run built on one asserts a quiet week that nothing ever checked and the reader cannot tell the two apart.
+**Substitute the resolver values before you run anything above.** They are step-0 keys, not shell variables: nothing exports them and the Bash tool starts a fresh shell per call, so write their values into every block literally. The assertion is looking for exactly the key you forgot, which expands to the empty string. **A non-zero exit there stops the workflow:** report it as a fusion bug, name the key the message names, and write **neither file**. An empty *directory* is legitimate and still earns a normal run saying the week was quiet; an empty *key* never is, because a run built on one asserts a quiet week that nothing ever checked and the reader cannot tell the two apart.
 
 - **Derive each item's code from its containing directory's basename**, per the legend. A file directly in the workbench root is `w`; a file in the directory `$SCAN_HISTORY` names is `h`.
 - Parse filenames for embedded stamps (e.g. `260408-1523-topic.md` means April 8, 15:23) and read headers for date metadata where they carry it; fall back to mtime when the filename has no stamp. `-newermt` is behaviour-preserving: an older mtime can only feed dates step 2 already closed.
@@ -185,7 +185,7 @@ The labels are assigned; the digest ranks them. First, **exclude tooling and met
 - **reconciliation**, archiving, and the activity-log or cadence runs themselves
 - compliance-**guard** toggling, and commit / push / release *mechanics* as such
 
-Keep the **substance** of what was decided, built, analysed or written, even when the subject is the tooling itself: in a plugin-development repo "cadence churn metric" is real work and "workbench tracking and housekeeping" is not, while in an end-user project the domain work is the signal and all fusion machinery is noise. The test: would the user name this as something they worked on? The labels stay in the record; this filter applies to the digest.
+Keep the **substance** of what was decided, built, analysed or written, even when the subject is the tooling itself: in a module-development repo "cadence churn metric" is real work and "workbench tracking and housekeeping" is not, while in an end-user project the domain work is the signal and all fusion machinery is noise. The test: would the user name this as something they worked on? The labels stay in the record; this filter applies to the digest.
 
 ### 8. The three lists
 
@@ -197,7 +197,7 @@ Each **day-section** of the log is one unit, and the unit is a day: the record i
 
 ### 8b. Session-flow metrics — how the sessions felt, measured
 
-From this checkout's own event lines (drop rows whose `checkout` differs from `.checkout-id`), over the 7-day window: **gate answers per session** (`gate_response`/`session_start`; the per-Turn reading went with `turn_start`, which nothing emits any more), **time to first dispatch** (`session_start` → first `task_start`, median), **dispatch duration** (`task_start`/`task_done` pairs by `task` id, median and max). An absent input is reported absent, never as 0. This is the one section that is not project-wide (see Scope), so its report line says so rather than leaving the reader to assume one scope for the whole document.
+From this checkout's own event lines (drop rows whose `checkout` differs from `.checkout-id`), over the 7-day window: **approval answers per session** (`gate_response`/`session_start`; the per-Turn reading went with `turn_start`, which nothing emits any more), **time to first dispatch** (`session_start` → first `task_start`, median), **dispatch duration** (`task_start`/`task_done` pairs by `task` id, median and max). An absent input is reported absent, never as 0. This is the one section that is not project-wide (see Scope), so its report line says so rather than leaving the reader to assume one scope for the whole document.
 
 ### 9. Write the digest
 
@@ -206,7 +206,7 @@ From this checkout's own event lines (drop rows whose `checkout` differs from `.
 mkdir -p "$WORKBENCH/$OUT_MEMO"
 ```
 
-Step 3's assertion repeats because each Bash call is its own shell; without it an empty pair turns the `mkdir` into `mkdir -p "/"` and the digest lands at `/cadence-$CO.md`. A non-zero exit stops the skill, reported as a fusion bug.
+Step 3's assertion repeats because each Bash call is its own shell; without it an empty pair turns the `mkdir` into `mkdir -p "/"` and the digest lands at `/cadence-$CO.md`. A non-zero exit stops the workflow, reported as a fusion bug.
 
 The digest goes to `$WORKBENCH/$OUT_MEMO/cadence-$CO.md` and is **overwritten each run** — a fresh snapshot, not an append log (unlike `/fusion:memo`'s files in the same store). Cadence keeps no history of its own runs; the activity log is that history.
 
@@ -219,7 +219,7 @@ The digest goes to `$WORKBENCH/$OUT_MEMO/cadence-$CO.md` and is **overwritten ea
 **Recent window:** <week_start> → <today> (7 days)
 **Activity log:** <path> — <n new days logged, m refreshed / "already current">
 **Sources scanned:** <e.g. git (37 commits on 12 days); workbench tree (84 files, codes h p i d r); session histories: frozen corpus, nothing after 2026-09-10>
-**Session flow (7d, this checkout only):** <e.g. 1.1 gate answers/session · first dispatch median 6 min · dispatches median 4 min, max 14 — or "no event data">
+**Session flow (7d, this checkout only):** <e.g. 1.1 approval answers/session · first dispatch median 6 min · dispatches median 4 min, max 14 — or "no event data">
 
 ## Topics — yesterday
 
@@ -265,7 +265,7 @@ Output follows `rules/user-facing-output.md` plus the chat profile for the proje
 
 **Neither halt is degradation.** No workbench stops the command at step 0 and an empty resolver key stops it at step 3; those two are the only conditions under which this command writes nothing at all, and every case above still writes both files.
 
-## What this skill is NOT
+## What this workflow is NOT
 
 - It is **not** read-only. It writes `activity-log-$CO.md` in the project root and `cadence-$CO.md` in `$OUT_MEMO`, and it adopts a legacy `-$USER` activity log onto the checkout name. It modifies no other source.
 - It commits nothing — both files are left in the working tree.

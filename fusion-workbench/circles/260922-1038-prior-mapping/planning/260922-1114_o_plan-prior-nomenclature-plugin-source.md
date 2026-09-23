@@ -209,7 +209,7 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
     - Dependencies: step 9
     - Acceptance: `npm test` green with no baseline or head-room change; Appendix B carries, for each of the eleven paths, the byte delta of the term pass and the cuts taken (C7 third criterion); the C3 first, second and third criteria hold over `agents rules CLAUDE.md` for the words the criteria name, against Appendix A.
 
-11. **Term pass over `skills/`, and the help topic's release entry**
+11. [DONE] **Term pass over `skills/`, and the help topic's release entry**
     - Executor: `coder`
     - Files: `skills/*/SKILL.md`
     - Changes: the classification rule per sentence; `skills/help/SKILL.md` `### 4. Update` carries v12 on top and drops the oldest of its three (C8 second criterion; the drop funds bytes), its philosophy and daily topics say work package, brief, module, workflow; `skills/setup/SKILL.md` and `migrate` prose already touched in step 7 are re-read for the remaining words. Measure the skills byte total; a cut is taken in the same skill that grew.
@@ -381,6 +381,7 @@ Filled by the executor at the end of steps 3, 4, 5, 6, 7, 8, 9, 10, 11; one row 
 | (1) 7 `ce095467`, (2) 5 `7161c6be` | skills bytes / hook tests / conventions / pin | 203 238 / 22 256 / 68 928 / 1718·315·11 | | 2 | |
 | (1) 8 `7727987a` | agents bytes / skills / hook tests / CLAUDE.md / pin | 324 581 / 203 540 / 22 257 / 8 040 / 1713·312·11 | orchestrator −1 114, conventions −472 | 1 | per-path room: analyst 472, code-implementer 541, consultant 511, data-implementer 519, document-editor 507, implementation-planner 160, orchestrator 135, policy-curator 419, requirements-designer 121, reviewer 542, state-auditor 522 |
 | (1) 10 (260923) | per-path term-pass delta, then after the cut | analyst +84/−169, code-implementer +77/−176, consultant +233/−20, data-implementer +77/−176, document-editor +233/−20, implementation-planner +84/−169, orchestrator +292/+39, policy-curator +297/+44, requirements-designer +223/−30, reviewer +77/−176, state-auditor +24/−229 | conventions `**Active spec/plan:**` paragraph drops its restatement of `260910-2011_*_a-work-item-has-no-field-for-the-plan-it-runs-on-so-the-closure-step-lost-its-source.md`, −253 on all eleven paths | orchestrator 96, requirements-designer 151, policy-curator 375, implementation-planner 329, others ≥ 527 | before the cut orchestrator was 157 over and requirements-designer 102 over; agents 324 682 bytes, CLAUDE.md 8 035, hook tests 22 257, pin unchanged |
+| (1) 11 + (2) 6 (260923) | skills bytes; CLAUDE.md; per-path delta of the eleven heading renames plus the CLAUDE.md bullet | skills 203 472 → 203 454; CLAUDE.md 8 035 → 7 987; orchestrator −10, policy-curator −11, state-auditor −32, requirements-designer −42, every other path −45 | help −26 (11.10.0 entry and a restated v9 example), curate −15 (restated tool discipline), archive −108 (invariant 2 restatement → citation) | orchestrator 106 | eleven headings renamed, `## What went with the Circle container` kept as history; pin 1713 → 1712 (the dropped help entry's `bin/fusion-events`) |
 
 ### Step 9 proofs (260923, HEAD `6ef77dc1`, Claude Code 2.1.280)
 

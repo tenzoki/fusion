@@ -17,7 +17,7 @@
 // here rather than worked around. Nothing below judges whether a clause is
 // good, complete, answerable, or true. A plan satisfies this gate with one
 // clause of any quality. Whether the clauses hold is what the human is asked at
-// `## Closing a work item` step 3, and that question is not moved here.
+// `## Closing a work package` step 3, and that question is not moved here.
 //
 // WHAT COUNTS AS FILLED, and why the placeholder is judged too. The mandate has
 // two halves — the section is present, and it is never left as the angle-bracket

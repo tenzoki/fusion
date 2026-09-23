@@ -5,7 +5,7 @@ allowed-tools: [Bash, Read, AskUserQuestion]
 
 # Migrate a workbench to the current format
 
-This skill brings a workbench to the **v12 store names**, and it does nothing else. Three stores were renamed at `12.0.0`:
+This workflow brings a workbench to the **v12 store names**, and it does nothing else. Three stores were renamed at `12.0.0`:
 
 | From | To |
 |---|---|
@@ -17,7 +17,7 @@ This skill brings a workbench to the **v12 store names**, and it does nothing el
 
 Run it once after updating to `12.0.0` or later. It is idempotent and resumable: on a workbench already in the v12 format it finds nothing and stops without asking; after an interruption the next run continues from what the filesystem holds.
 
-**An older workbench is refused, not converted.** The conversions of the pre-v4 type-folder layout, the flat v4-era `circles/<stamp>[t]-<slug>.md` file, the live `_a_`/`_t_` Circle record and the bracket-marked filename (`…[o]-….md`) left this skill at `12.0.0`. The survey still recognises all four, since refusing loudly is cheaper than renaming a shape it was not written for, and stops with the route: check out the plugin source at the tag `v11.11.1`, load it with `claude --plugin-dir <that checkout>`, run `/fusion:migrate` there, then `fusion --update`, restart, and run `/fusion:migrate` again for the store names.
+**An older workbench is refused, not converted.** The conversions of the pre-v4 type-folder layout, the flat v4-era `circles/<stamp>[t]-<slug>.md` file, the live `_a_`/`_t_` Circle record and the bracket-marked filename (`…[o]-….md`) left this workflow at `12.0.0`. The survey still recognises all four, since refusing loudly is cheaper than renaming a shape it was not written for, and stops with the route: check out the plugin source at the tag `v11.11.1`, load it with `claude --plugin-dir <that checkout>`, run `/fusion:migrate` there, then `fusion --update`, restart, and run `/fusion:migrate` again for the store names.
 
 **Every message this file specifies is written here in English and rendered in the project's chat language** — the `**Language:**` line in `CLAUDE.md`, resolved per `rules/fusion-workbench-conventions.md` `## Project language`, with the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. The strings printed *by the shell blocks below* are the exception, and they stay English in every project: they are CLI operator output, which the same rule exempts alongside every other helper and hook string fusion ships.
 
@@ -45,7 +45,7 @@ V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" 2>/dev/nu
 
 **`WINDOW=closed`: stop here**, before surveying, and tell the user the `REFUSED` line.
 
-**Then the survey. Detection is by artifact presence, not by version** (not `.fusion-setup`'s `plugin_version`). The pass is due while a legacy store exists: `circles/`, `shared/planning/`, `shared/consult/`, or a `planning/` directly inside a container under either store, which is where a refused fold leaves one. Each is something the apply removes, so the filesystem is the only state and a refused or interrupted move is found again next run. Nothing the pass merely inspects enters the trigger, or the question would fire forever.
+**Then the survey. Detection is by artefact presence, not by version** (not `.fusion-setup`'s `plugin_version`). The pass is due while a legacy store exists: `circles/`, `shared/planning/`, `shared/consult/`, or a `planning/` directly inside a container under either store, which is where a refused fold leaves one. Each is something the apply removes, so the filesystem is the only state and a refused or interrupted move is found again next run. Nothing the pass merely inspects enters the trigger, or the question would fire forever.
 
 Run this second. It is read-only:
 
@@ -102,7 +102,7 @@ Then, in this order:
 
 - **`LEGACY=1`**: stop. Show the `LEGACY` lines and render the `REFUSED` line as one message. Ask nothing.
 - **`DIRTY>0`**: stop. Name every `DIRTY` path and ask the user to commit or stash, then run again: a rename over a modified file mixes the migration with work in flight and leaves no clean revert.
-- **`UNKNOWN>0`**: stop. Name the entry; the user rules on its class, and this skill's classification gains a row.
+- **`UNKNOWN>0`**: stop. Name the entry; the user rules on its class, and this workflow's classification gains a row.
 - **`FOUND=0`**: *"This workbench is already in the v12 format. Nothing to do."* Stop, and ask nothing.
 
 ## Step 3 — Ask before moving
@@ -115,7 +115,7 @@ Use `AskUserQuestion` in the project's language (see `rules/fusion-workbench-con
 >
 > **Option "Convert"** (recommended): Renames as listed.
 > **Option "Tracked entries only"**: Renames every entry git tracks and leaves the untracked ones where they are, named in the report.
-> **Option "Cancel"**: Leaves the workbench exactly as it is. The plugin reads both names until `13.0.0`, so nothing breaks; `/fusion:migrate` can run again at any time.
+> **Option "Cancel"**: Leaves the workbench exactly as it is. The module reads both names until `13.0.0`, so nothing breaks; `/fusion:migrate` can run again at any time.
 
 Offer "Tracked entries only" only in `git` mode with `UNTRACKED>0`. With `COLLISIONS>0`, put the collision lines above the options and say that those entries stay and the rest moves. For `MODE=plain`, replace the `git mv` sentence with the honest one: *"This workbench is not under version control, so moving uses `mv`. The renames appear in no diff and cannot be taken back with `git revert`."*
 

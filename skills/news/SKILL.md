@@ -5,19 +5,19 @@ allowed-tools: [Bash, Read, AskUserQuestion]
 
 # Fusion news (read what another checkout left)
 
-The user invoked `/fusion:news`. This skill shows the messages that reached the remote and that this checkout has not been shown yet. They are read out of a fetched ref: nothing in the working tree is touched, and no merge happens in order to see them.
+The user invoked `/fusion:news`. This workflow shows the messages that reached the remote and that this checkout has not been shown yet. They are read out of a fetched ref: nothing in the working tree is touched, and no merge happens in order to see them.
 
 **The mechanism is not in this body.** The fetch, the two-tree set difference, the exit codes and the state vocabulary are documented in `bin/fusion-forum`'s own header, which is the authoritative text for all of it. Open that header when you need to know how an answer was produced. What this body carries is the flow and the sentences the user reads.
 
-**One thing this skill says aloud, because nothing else will.** It has its own step below and is named here so it is not silently dropped.
+**One thing this workflow says aloud, because nothing else will.** It has its own step below and is named here so it is not silently dropped.
 
-- **A pull is the user's yes and never automatic.** This skill fetches, which changes no file, and it pulls only after the user answers Step 6.
+- **A pull is the user's yes and never automatic.** This workflow fetches, which changes no file, and it pulls only after the user answers Step 6.
 
 Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`).
 
 ## Step 0: roots and paths
 
-This body opens no file the plugin ships, so it resolves no source root; every helper is run from `$FUSION_PLUGIN_ROOT`.
+This body opens no file the module ships, so it resolves no source root; every helper is run from `$FUSION_PLUGIN_ROOT`.
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"
@@ -116,4 +116,4 @@ A non-fast-forward is reported to the user as something for them to resolve, wit
 
 ## Step 7: report
 
-Keep it to a few lines: how many entries were shown and who wrote them, that the mark advanced, and what became of the pull question. Where Step 2 printed any `skipped=` line, name those paths in one sentence and say they are files the store holds that are not messages, so nothing was lost by not rendering them. Close with the property nobody else states: this skill reads a store and holds no thread, so there is nothing to reply to here. A message that needs an answer gets one through the other person's own next message.
+Keep it to a few lines: how many entries were shown and who wrote them, that the mark advanced, and what became of the pull question. Where Step 2 printed any `skipped=` line, name those paths in one sentence and say they are files the store holds that are not messages, so nothing was lost by not rendering them. Close with the property nobody else states: this workflow reads a store and holds no thread, so there is nothing to reply to here. A message that needs an answer gets one through the other person's own next message.

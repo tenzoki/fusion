@@ -172,7 +172,7 @@ Steps 1 to 3 are one commit, so the surface is measured once at that commit; the
    - Dependencies: step 4; plan (1) step 2 and step 7
    - Acceptance: `wc -c rules/fusion-workbench-conventions.md` not above its figure before the edit; `rules-emission-golden.test.ts` and `reference-resolution-lint.test.ts` green (the pin re-approved with its attribution line if a citation moved); `grep -n 'Probe 3' rules/*.md` empty.
 
-6. **The `CLAUDE.md` bootstrap bullet**
+6. [DONE] **The `CLAUDE.md` bootstrap bullet**
    - Executor: `coder`
    - Files: `CLAUDE.md` (`## Conventions`, the "Workbench bootstrap is exclusive to `/fusion:setup`" bullet)
    - Changes: the sentences from "Since v4.0.0, setup also detects a pre-v4 (type-folder) workbench" to the end of the bullet say what holds at `12.0.0`: setup reports a legacy store during the window and does not refuse; `/fusion:migrate` performs the store-name migration and is the only skill that names both layouts literally; the pre-v4 conversions live at the `v11.10.0` tag; `EXEMPT_SKILLS` still enumerates the two. Net bytes ≤ 0 (the bullet is charged to all eleven dispatch paths at zero head-room).

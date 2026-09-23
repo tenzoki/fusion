@@ -93,7 +93,7 @@
  *
  *   1. `hooks/review-coverage.ts` → `bin/fusion-review-coverage` — the CLI,
  *      read by `agents/orchestrator.md` at `## Review coverage` (the closing
- *      review's dispatch scope), at `## Closing a work item` step 2 (the same
+ *      review's dispatch scope), at `## Closing a work package` step 2 (the same
  *      read before the review is routed) and at `## Ending the session` (the
  *      summary's review-coverage section).
  *   2. `hooks/tracker.ts` — the PostToolUse hook, on the narrow trigger of a

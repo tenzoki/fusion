@@ -18,7 +18,7 @@ When the user invokes `/fusion:commit`, help them commit their changes with a we
    ```
 
 2. **Select what to commit — do NOT stage yet**
-   - Anything already staged when the skill starts is part of the commit; note it.
+   - Anything already staged when the workflow starts is part of the commit; note it.
    - Show the unstaged changes and ask which to include: all, specific files, or cancel
    - If `--all` flag provided, include all changes automatically
    - Record the selected paths as a list. Run **no** `git add` here — staging
@@ -89,7 +89,7 @@ a leftover. Measured — `fusion-workbench/.commit-msg-tmp`, holding one commit'
 message, at a path no helper in `agents/`, `skills/`, `bin/` or `hooks/` names
 (`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`).
 `hooks/lib/staging-drift.ts` reads a commit-message-shaped file under the
-workbench as a fault and says so — scoped to what no artifact store owns, so a
+workbench as a fault and says so — scoped to what no artefact store owns, so a
 record you authored *about* commit messages is not mistaken for one.
 
 Write the scratch file with a **quoted** heredoc delimiter, so the shell expands
@@ -124,7 +124,7 @@ layout permits the workbench root to sit below it, in which case every relative
 path in that selection misses.
 
 Only when there is nothing to stage (everything to commit was already staged
-before the skill started) does the bare form apply:
+before the workflow started) does the bare form apply:
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- git commit -F <msg-file>

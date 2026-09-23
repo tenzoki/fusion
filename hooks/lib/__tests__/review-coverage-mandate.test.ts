@@ -319,7 +319,7 @@ describe("review-coverage mandate: the consumer", () => {
       /\*\*The review — the one pass[\s\S]*?plus the carried[\s\S]*?\*\*Read the plan/.test(
         orchestrator(),
       ),
-      "the one dispatch left (Closing a work item step 2, decision 260827-1120) never adds the carried out-of-scope list to its scope.",
+      "the one dispatch left (Closing a work package step 2, decision 260827-1120) never adds the carried out-of-scope list to its scope.",
     ).toBe(true);
   });
 

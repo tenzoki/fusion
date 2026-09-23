@@ -41,7 +41,7 @@ The entry is **at most twenty lines**, a ceiling and not an exact count, in this
 2. one blank line,
 3. at most **eight** lines addressed to the person, in the project's chat language,
 4. one blank line,
-5. at most **nine** lines of pointer block, in the project's artifact language.
+5. at most **nine** lines of pointer block, in the project's artefact language.
 
 The pointer block carries the commit range (the session's start anchor, to `HEAD`), this session's filed records as **storeless wildcard citations** in the form `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines, and one sentence on what the other side need not redo.
 

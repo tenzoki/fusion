@@ -5,7 +5,7 @@ allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 
 # Orchestrator Setup
 
-The active agent MUST be `fusion:orchestrator`. This skill inlines the whole of Setup so it cannot be skipped.
+The active agent MUST be `fusion:orchestrator`. This workflow inlines the whole of Setup so it cannot be skipped.
 
 **Setup is two prerequisites and three short steps.** Step 0 creates the workspace and writes the marker; Step 0d puts the voice profiles in place. Nothing fusion does works without those two, so they run every time.
 
@@ -13,7 +13,7 @@ The active agent MUST be `fusion:orchestrator`. This skill inlines the whole of 
 
 ## CRITICAL — Setup is the ONLY place a workbench is created
 
-Setup is the single point where a fusion workbench is bootstrapped. The workbench lands at `./fusion-workbench/` relative to the directory `pwd` reports when this skill runs. After setup completes, every subsequent fusion agent and hook locates the workbench by walking *upward* from its working directory until it finds the marker file `fusion-workbench/.fusion-setup` (written in Step 0 below). Without that marker, agents halt and hooks no-op — fusion does NOT bootstrap a workbench in any directory other than the one setup ran in.
+Setup is the single point where a fusion workbench is bootstrapped. The workbench lands at `./fusion-workbench/` relative to the directory `pwd` reports when this workflow runs. After setup completes, every subsequent fusion agent and hook locates the workbench by walking *upward* from its working directory until it finds the marker file `fusion-workbench/.fusion-setup` (written in Step 0 below). Without that marker, agents halt and hooks no-op — fusion does NOT bootstrap a workbench in any directory other than the one setup ran in.
 
 This makes setup deliberately strict: run it once, at the project root you want fusion to govern. Run in a subfolder, it produces two independent fusion projects — one at the subfolder and one at the parent, if that had setup before. Walk up to the intended root first.
 
@@ -31,11 +31,11 @@ Note the path: the workbench is created here.
 
 **This runs before the `mkdir` below.** Setup does **not** migrate — `/fusion:migrate` does. Setup's job here is to notice.
 
-**A `work-packages/` container holding work-item directories is the CURRENT layout and is never a finding.** That is what a workbench looks like now: one directory per work item, holding that item's own stores, beside the `shared/` stores for everything with no item to belong to (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). Setup creates `work-packages/` itself, below. A probe that refused a container would refuse the ordinary shape and route every user to a migration that must not run.
+**A `work-packages/` container holding work-package directories is the CURRENT layout and is never a finding.** That is what a workbench looks like now: one directory per work package, holding that package's own stores, beside the `shared/` stores for everything with no item to belong to (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). Setup creates `work-packages/` itself, below. A probe that refused a container would refuse the ordinary shape and route every user to a migration that must not run.
 
 **A v11 store name is reported, never refused.** `circles/`, `shared/planning/` and `shared/consult/` are read beside their v12 names until `13.0.0` (`rules/fusion-workbench-conventions.md` `### Transition window (v12.0.0 to v13.0.0)`), so the probe prints one `LEGACY-STORES` line naming each one it finds and `/fusion:migrate`, and Setup continues. The `mkdir` below then creates the new names beside them, and new records land there.
 
-Detection is by artifact presence, not by version. A pre-v4, v4-era or bracket-marked shape is `/fusion:migrate`'s to recognise, and it refuses with the `v11.11.1` route; setup probes for none of them. Read-only:
+Detection is by artefact presence, not by version. A pre-v4, v4-era or bracket-marked shape is `/fusion:migrate`'s to recognise, and it refuses with the `v11.11.1` route; setup probes for none of them. Read-only:
 
 ```bash
 WB=./fusion-workbench; OLD=0; L=""; for s in circles shared/planning shared/consult; do [ -d "$WB/$s" ] && L="$L $s/"; done
@@ -53,10 +53,10 @@ mkdir -p ./fusion-workbench/work-packages ./fusion-workbench/shared/plans ./fusi
 
 This is the layout defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, which enumerates every store and every root-anchored surface. Two facts about it are Setup's own:
 
-- **`work-packages/` is created empty, and Setup creates nothing inside it.** A work item's container and its own stores come into existence when the item is filed and when its first artifact is written; Setup has no item to create one for.
+- **`work-packages/` is created empty, and Setup creates nothing inside it.** A work package's container and its own stores come into existence when the package is filed and when its first artefact is written; Setup has no item to create one for.
 - **Of the root-anchored surfaces, only `.guard-state/` is pre-created above.** The rest appear when their consumer first writes them, at the fixed root-relative paths the layout names; never create one anywhere else, because no consumer has a fallback path.
 
-Write the setup marker — the file every agent and hook looks for to confirm fusion is set up here — and read, out of the same block, which periodic checks are due. Both halves need the version the plugin ships, so they are one call rather than two. The marker is rewritten only when its content would change; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run` says why that matters.
+Write the setup marker — the file every agent and hook looks for to confirm fusion is set up here — and read, out of the same block, which periodic checks are due. Both halves need the version the module ships, so they are one call rather than two. The marker is rewritten only when its content would change; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run` says why that matters.
 
 ```bash
 M=./fusion-workbench/.fusion-setup
@@ -89,10 +89,10 @@ console.log("checks_due=" + (due.join(",") || "none"));
 
 ## Step 0d — Ensure stylometric profiles are present locally
 
-Two profile families seed the project's user-facing voice, both at `./fusion-workbench/stilwerk/` so each project can edit them without affecting other projects or the plugin:
+Two profile families seed the project's user-facing voice, both at `./fusion-workbench/stilwerk/` so each project can edit them without affecting other projects or the module:
 
 - `default-voice-{en,de}.yaml` — the long-form **writing** profile (cadence, vocabulary, structural patterns for narrative outputs: session summaries, consultant reports, analysis reports, spec/plan prose).
-- `chat-voice-{en,de}.yaml` — the short-form **chat** profile (anti-pattern blacklist plus a minimal terse-and-direct whitelist for gate prompts, AskUserQuestion text, status reports, chat replies).
+- `chat-voice-{en,de}.yaml` — the short-form **chat** profile (anti-pattern blacklist plus a minimal terse-and-direct whitelist for approval prompts, AskUserQuestion text, status reports, chat replies).
 
 ```bash
 mkdir -p ./fusion-workbench/stilwerk
@@ -118,7 +118,7 @@ Step 0 printed `checks_due=`. On `none`, say nothing at all and go to Step 2 —
 
 **One or more selectors: perform them here.** A skill body cannot invoke a slash command, so read `$FUSION_SRC/skills/check/SKILL.md` and execute the section of each named selector inline, then its stamp block over exactly the selectors you ran. That body owns the procedures and their reporting; restate none of it here, and do not tell the user to type the command instead.
 
-Resolve the root once, first — nothing the plugin ships exists at a consuming project's root:
+Resolve the root once, first — nothing the module ships exists at a consuming project's root:
 
 ```bash
 if [ -x "${FUSION_PLUGIN_ROOT:-}/bin/fusion-source-root" ]; then FUSION_SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
@@ -126,7 +126,7 @@ elif [ -n "${FUSION_PLUGIN_ROOT:-}" ]; then FUSION_SRC="$FUSION_PLUGIN_ROOT"; el
 echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 ```
 
-**`UNRESOLVED` is not a path and nothing here reads through it** (`bin/fusion-source-root`'s header carries the branch). Say so, say the due checks were not run and stay due, and tell the user to restart the session so the SessionStart hook exports the variable. **A due selector is not a gate either way:** nothing here blocks the session, and a check not run stays due.
+**`UNRESOLVED` is not a path and nothing here reads through it** (`bin/fusion-source-root`'s header carries the branch). Say so, say the due checks were not run and stay due, and tell the user to restart the session so the SessionStart hook exports the variable. **A due selector is not a blocking check either way:** nothing here blocks the session, and a check not run stays due.
 
 ## Step 2 — Rules check
 
@@ -161,8 +161,8 @@ Name each line in the Done report.
 [ -f ./fusion-workbench/orchestrator-events.jsonl ] || touch ./fusion-workbench/orchestrator-events.jsonl
 ```
 
-**Write no row here.** The SessionStart hook appends this session's mechanical `session_start` row; your own row, the one carrying the Directive, belongs to your Setup step 6. There is no live dashboard file to write — the monitor reads the log.
+**Write no row here.** The SessionStart hook appends this session's mechanical `session_start` row; your own row, the one carrying the brief, belongs to your Setup step 6. There is no live dashboard file to write — the monitor reads the log.
 
 ## Done
 
-Only after every step above completes may you begin the user's task. Report Setup complete with: the workspace path, what Step 0's marker block reported (`marker=`, `checks_due=`, or `marker-version-unresolved`), which checks Step 1 ran and what each said, and every helper Step 2 found in the work tree and not in the install. End with the two usual next moves: name a task, or claim a work item.
+Only after every step above completes may you begin the user's task. Report Setup complete with: the workspace path, what Step 0's marker block reported (`marker=`, `checks_due=`, or `marker-version-unresolved`), which checks Step 1 ran and what each said, and every helper Step 2 found in the work tree and not in the install. End with the two usual next moves: name a task, or claim a work package.

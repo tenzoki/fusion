@@ -15,81 +15,81 @@
 
 [analyst]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
   design-diagrams.md 5305
-  total 88418
+  total 88421
 
 [code-implementer]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
-  total 83113
+  total 83116
 
 [consultant]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
   user-facing-output.md 11109
-  total 94222
+  total 94225
 
 [data-implementer]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
-  total 83113
+  total 83116
 
 [document-editor]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
   user-facing-output.md 11109
   project-language.md 5772
-  total 99994
+  total 99997
 
 [implementation-planner]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
   decision-record-examples.md 5014
   design-diagrams.md 5305
-  total 93432
+  total 93435
 
 [orchestrator]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
   user-facing-output.md 11109
   decision-record-examples.md 5014
   commit-lock.md 11284
-  total 110520
+  total 110523
 
 [policy-curator]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
   user-facing-output.md 11109
-  total 94222
+  total 94225
 
 [requirements-designer]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
   user-facing-output.md 11109
   decision-record-examples.md 5014
   design-diagrams.md 5305
-  total 104541
+  total 104544
 
 [reviewer]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
   review-contract.md 6801
-  total 89914
+  total 89917
 
 [state-auditor]
   agent-setup.md 4367
-  fusion-workbench-conventions.md 68357
+  fusion-workbench-conventions.md 68360
   critical-stance.md 10389
   decision-record-examples.md 5014
-  total 88127
+  total 88130
