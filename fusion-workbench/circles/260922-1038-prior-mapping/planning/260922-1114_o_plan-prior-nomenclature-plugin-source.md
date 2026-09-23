@@ -195,7 +195,7 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
    - Dependencies: steps 1, 7
    - Acceptance: `ls agents/` lists the eleven names of C2's first criterion, `name:` equals basename in each; `npm test` green with no baseline figure changed and no head-room constant raised (C7 first criterion; `git diff` of the two baseline files shows key lines only); `grep -rEo 'fusion:(shaper|planner|coder|ontocoder|reconciler|editor|curator)\b' agents skills rules README*.md docs bin hooks CLAUDE.md install.sh templates` returns only `docs/upgrading-to-v10-4.md:113` and the test rows that write synthetic event values (class 2), listed in Appendix A (C2 fifth criterion); `grep -rn 'agents/\(shaper\|planner\|coder\|ontocoder\|reconciler\|editor\|curator\)\.md'` over the same surfaces returns only upgrade notes.
 
-9. **Proofs of the rename**
+9. [DONE] **Proofs of the rename**
    - Executor: `coder`
    - Files: none
    - Changes: run `claude plugin validate .`; run `claude --plugin-dir . --agent fusion:<name> -p "reply SMOKE-OK"` for each of the eleven names, headless (the two-session pin does not bind a headless run, which loads the tree afresh); run `bin/fusion-rules <name>` and `bin/fusion-paths <name>` for each new name and compare the emission and key set with the same commands at the commit before step 8 (`git stash` is not used; run the old commands from a `git worktree` of that commit); run each old name and record the exit 2 and its note. Record all outputs in Appendix B.
@@ -375,3 +375,15 @@ Filled by the executor at the end of steps 3, 4, 5, 6, 7, 8, 9, 10, 11; one row 
 | baseline `eef3ced0` | dispatch paths (eleven totals, `dispatch-path.baseline`) | as keyed, each path 2 bytes under its row | | 0 | |
 | baseline `eef3ced0` | `bin/fusion-citation-check` dangling / store-prefixed, run from the repository root | 298 / 405 | | | |
 | baseline `eef3ced0` | reference pin `{paths, anchors, stampBare}` | 1716 / 320 / 11 | | | |
+| (2) 1–4 `f4addc3f` | `skills/*/SKILL.md` bytes / hook tests lines | 202 734 / 22 250 | | 25 294 / 8 | |
+| (1) 2–4 `3954992a` | hook tests lines / conventions bytes | 22 253 / 68 965 | −59 comment lines cut | 5 | |
+| (1) 5–6 `2c05cd6b` | hook tests lines / conventions bytes / pin | 22 252 / 68 931 / 1717·314·11 | comment cuts in two tests | 6 | |
+| (1) 7 `ce095467`, (2) 5 `7161c6be` | skills bytes / hook tests / conventions / pin | 203 238 / 22 256 / 68 928 / 1718·315·11 | | 2 | |
+| (1) 8 `7727987a` | agents bytes / skills / hook tests / CLAUDE.md / pin | 324 581 / 203 540 / 22 257 / 8 040 / 1713·312·11 | orchestrator −1 114, conventions −472 | 1 | per-path room: analyst 472, code-implementer 541, consultant 511, data-implementer 519, document-editor 507, implementation-planner 160, orchestrator 135, policy-curator 419, requirements-designer 121, reviewer 542, state-auditor 522 |
+
+### Step 9 proofs (260923, HEAD `6ef77dc1`, Claude Code 2.1.280)
+
+- `claude plugin validate .` exit 0, one warning unrelated to the rename (root `CLAUDE.md` not loaded as plugin context).
+- `claude --plugin-dir . --agent fusion:<name> -p "reply SMOKE-OK"`: 11 of 11 names exit 0 answering `SMOKE-OK`.
+- For each of the seven renames, `bin/fusion-rules <new>` equals `bin/fusion-rules <old>` at `7161c6be` (a `git worktree`, since removed), and `bin/fusion-paths <new> 260923-0839-implement-prior-nomenclature` equals the old name's output there, key set included. Run bare, the two sides differ only because the old worktree holds no claim.
+- Every old name exits 2 on both helpers, and each note names the rename and all seven pairs.
