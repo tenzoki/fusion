@@ -37,10 +37,10 @@ import { LEGACY_STORES, RECORD_STORES, RETIRED_REVIEW_FOLDERS } from "../stores.
 const TYPE_FOLDERS: readonly string[] = [...RECORD_STORES, ...LEGACY_STORES, ...RETIRED_REVIEW_FOLDERS];
 
 // The whole trust surface — the sites allowed to name type folders as paths.
-// Enumerated explicitly, never pattern-matched: `setup` names the pre-v4 layout
-// in its detection check (it must recognise the old folders to stop before
-// mkdir), and `migrate`'s entire purpose is to move those folders. Every other
-// skill and every agent must go through `fusion-paths`.
+// Enumerated explicitly, never pattern-matched: `setup` names the stores it
+// scaffolds and, during the window, the legacy store it reports; `migrate`
+// names both sides of the rename. Every other skill and every agent must go
+// through `fusion-paths`.
 const EXEMPT_SKILLS = new Set(["setup", "migrate"]);
 
 // The files allowed to name a store directory because they DEFINE where a kind
@@ -267,22 +267,6 @@ describe("path-literal lint: the definition sites are enumerated, not assumed", 
         `stores. The two cannot both hold: widening the file set means turning these into ` +
         `real exemptions in scan(), not leaving them on a list the gate never consults.`,
     ).toEqual([]);
-  });
-});
-
-describe("path-literal lint: setup's bracket probe and migrate's reformat list are one string", () => {
-  // Three copies of one `find` expression, pinned rather than factored: a skill
-  // body is a prompt, not a shell library (issue 260816-0133).
-  it("the three sites select the same files, byte for byte", () => {
-    const PROBE = /\{ \[ -d "\$WB\/shared" \][^\n]*?grep -E '[^']*'/g;
-    const sites = ["skills/setup/SKILL.md", "skills/migrate/SKILL.md"].flatMap((rel) =>
-      [...readFileSync(join(pluginRoot, rel), "utf-8").matchAll(PROBE)].map((m) => m[0]),
-    );
-    expect(sites.length, "setup's probe, migrate's survey and migrate's reformat pass").toBe(3);
-    expect(
-      new Set(sites).size,
-      "setup's bracket probe and migrate's reformat candidate list must select the same files; three sites, one string",
-    ).toBe(1);
   });
 });
 

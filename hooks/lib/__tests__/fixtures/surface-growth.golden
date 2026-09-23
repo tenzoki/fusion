@@ -35,12 +35,12 @@
   discuss/SKILL.md 14346
   help/SKILL.md 16141
   memo/SKILL.md 13254
-  migrate/SKILL.md 39790
+  migrate/SKILL.md 19898
   news/SKILL.md 8211
   post/SKILL.md 6694
   reconcile/SKILL.md 6604
-  setup/SKILL.md 19424
-  total 227956
+  setup/SKILL.md 14094
+  total 202734
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -85,10 +85,9 @@
   hooks-wiring.test.ts 136
   identity-mint-notice.test.ts 118
   legacy-halt-clearing.test.ts 213
-  live-circle-record-detection.test.ts 77
-  marker-format-lint.test.ts 168
+  marker-format-lint.test.ts 164
   monitor-warnings-panel.test.ts 1222
-  path-literal-lint.test.ts 331
+  path-literal-lint.test.ts 315
   paths.test.ts 31
   plan-size.test.ts 163
   plan-stopping-section-lint.test.ts 261
@@ -102,7 +101,8 @@
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 650
+  store-name-migration.test.ts 104
   surface-growth-bound.test.ts 568
   work-graph.test.ts 184
   workbench-citation-lint.test.ts 352
-  total 22243
+  total 22250

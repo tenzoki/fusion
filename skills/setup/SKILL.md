@@ -35,33 +35,13 @@ Running the `mkdir` first splits the workbench across two formats and leaves eve
 
 **A `circles/` container holding work-item directories is the CURRENT layout and is never a finding.** That is what a workbench looks like now: one directory per work item, holding that item's own stores, beside the `shared/` stores for everything with no item to belong to (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). Setup creates `circles/` itself, below. A probe that refused a container would refuse the ordinary shape and route every user to a migration that must not run.
 
-Detection is by artifact presence, not by version — a workbench with no out-of-format artifacts has nothing to migrate regardless of which version created it. Four shapes fire, and each is something `/fusion:migrate` can actually convert:
-
-1. **A pre-v4 type-folder layout** — artifacts in type folders at the workbench root (`planning/`, `issues/`, `decisions/`, …) rather than under `shared/` or inside a work item's container.
-2. **A flat `circles/*.md` file carrying a v4-era marker in its name** (`circles/260716-1847[t]-umbau.md`). A work item is a *directory* whose record lives inside it, so a markered file directly under `circles/` has nowhere to be; migrate's grouping pass is what gives it its directory.
-3. **A filename still carrying the old bracket-form state marker** (`…[o]-….md`) instead of the underscore form.
-4. **A container whose record still carries a live state marker** (`circles/<item>/_t_circle.md`). The current format names an item's record after its container, with no marker on either; while the marker is there `bin/fusion-claimed-item` matches nothing, so every `OUT_*` lands in `shared/` instead of inside the item. Only the **live** markers `_a_` and `_t_` fire. A terminal record (`_c_`, `_b_`, `_s_`, `_d_`) is history that `/fusion:migrate` Step 4b never opens, so a workbench whose containers all hold terminal records is in the current format and `OLD=0` is the right answer for it.
-
-All four route to `/fusion:migrate`, which brings the workbench fully to the current format. Read-only:
-
-**Each probe matches only what migrate's own passes can remove, none may be widened, and none may be given a path exception.**
-
-- **Probe 2 keeps the unmarked flat file out.** A `circles/README.md` is legitimate and permanent, and migrate reports it as a standing note it will never move (`skills/migrate/SKILL.md` Step 2); flagging it would refuse Setup for a file no migration converts. The filter is migrate's own grouping key — the datestamp followed by a bracketed letter — and nothing wider.
-- **Probe 3 walks the two trees migrate's reformat pass renames, and nothing else.** It anchors its `find` at `shared/` (any depth) and `circles/` (from depth 2), which are now the ordinary tree rather than a legacy one: a live markered artifact has nowhere else to be. Depth 1 under `circles/` is deliberately outside it — a markered file there is probe 2's finding, converted by a different pass. `archive/`, `stashes/` and `.migration-v2-backup/` keep the filenames their content was frozen with, so a probe reaching them reads an unconverted workbench, refuses Setup permanently, and routes the user to a migration that reports nothing to do.
-- **Probe 3 matches the marker shape, not any bracket pair.** The `find` name test `'*[[]*[]]*.md'` is only the cheap prefilter; the `grep` behind it keeps a file only when its basename carries the actual old marker form `[x]-` with `x` one of `oatcibspd` — exactly the set `/fusion:migrate`'s rename pass converts (`s/\[([oatcibspd])\]-/_\1_/g`, `skills/migrate/SKILL.md` Step 4). A name like `notes [draft].md` carries a bracket pair no migration will ever rename, and flagging it would refuse Setup permanently.
+Detection is by artifact presence, not by version. A pre-v4, v4-era or bracket-marked shape is `/fusion:migrate`'s to recognise, and it refuses with the `v11.11.1` route; setup probes for none of them. Read-only:
 
 ```bash
-WB=./fusion-workbench; OLD=0; if [ -d "$WB" ]; then for d in planning issues decisions history analyses investigations consult memos codereview ontoreview conceptreview; do [ -d "$WB/$d" ] && { echo "  $d/ (root type folder)"; OLD=1; }; done; FC="$(find "$WB/circles" -mindepth 1 -maxdepth 1 -type f -name '*.md' 2>/dev/null | grep -E '/[0-9]{6}-[0-9]{4}\[[a-z]\][^/]*\.md$' | head -1)"; [ -n "$FC" ] && { echo "  ${FC#"$WB"/} (a v4-era work item as a file directly under circles/, not as a directory)"; OLD=1; }; BM="$({ [ -d "$WB/shared" ] && find "$WB/shared" -type f -name '*[[]*[]]*.md' 2>/dev/null; [ -d "$WB/circles" ] && find "$WB/circles" -mindepth 2 -type f -name '*[[]*[]]*.md' 2>/dev/null; } | grep -E '\[[oatcibspd]\]-[^/]*$' | head -1)"; [ -n "$BM" ] && { echo "  files with a bracket marker in the name (the format before the underscore form), e.g. ${BM#"$WB"/}"; OLD=1; }; LR="$(find "$WB/circles" -mindepth 2 -maxdepth 2 -type f -name '_[at]_circle.md' 2>/dev/null | head -1)"; [ -n "$LR" ] && { echo "  ${LR#"$WB"/} (a live Circle record; the item's record is named after its container)"; OLD=1; }; fi; echo "OLD=$OLD"
+WB=./fusion-workbench; OLD=0; echo "OLD=$OLD"
 ```
 
 - **`OLD=0`** — nothing out of format here. Continue with the `mkdir` below. Say nothing about it.
-- **`OLD=1`** — **stop Setup here.** Do not run the `mkdir`. Do not write the marker. Do not proceed to any later step. Tell the user, in the project's language per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`), following `rules/user-facing-output.md` and the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Show the detected entries above the message so the user sees what was found. The message is specified here in English; render it in that language:
-
-  > **Setup stopped.** This workbench still carries a format that preceded the current one: the entries listed above either sit outside the stores fusion reads, or are named in a form no fusion agent recognises. Setup does not create the current structure beside them, because the workbench would then be spread across two formats and no search would reach the old entries.
-  >
-  > **Next step:** run `/fusion:migrate`, then start `/fusion:setup` again. The migration shows what it will move and asks before moving anything.
-
-  This is a refusal, not a question — there is nothing for the user to choose here, and `AskUserQuestion` would imply otherwise. `/fusion:migrate` is where the choice lives.
 
 Only when `OLD=0`:
 

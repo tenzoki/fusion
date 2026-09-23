@@ -1,21 +1,23 @@
 ---
-description: Bring a fusion workbench to the current format — a container per work item, the shared stores beside it, and underscore state markers. Moves pre-v4 root type folders into shared/, merges the three review folders, converts a live Circle record into its own container's item record, and reformats bracket-marked filenames to the underscore form. Moves nothing out of a container and never touches a terminal record. Surveys first, asks before moving, never overwrites.
+description: Bring a fusion workbench to the v12 store names — `circles/` to `work-packages/`, `planning/` to `plans/` in `shared/` and in every container, `shared/consult/` to `shared/consultations/`. Directory renames only; no record is rewritten, nothing in `archive/` or the Review-class stores moves. Surveys first, asks before moving, never overwrites, resumes after an interruption. A pre-v4 workbench is refused and routed to the `v11.11.1` tag.
 allowed-tools: [Bash, Read, AskUserQuestion]
 ---
 
 # Migrate a workbench to the current format
 
-This skill brings a workbench to the **current format**, which has three parts.
+This skill brings a workbench to the **v12 store names**, and it does nothing else. Three stores were renamed at `12.0.0`:
 
-First, **one store per artifact kind, in two places**: a work item's own container and `shared/` for everything with no item to belong to (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). A workbench created before v4 keeps its artifacts in type folders at the workbench root (`planning/`, `issues/`, `decisions/`, …); those move into `shared/`, because an artifact whose origin was never recorded is not attributable to any item.
+| From | To |
+|---|---|
+| `circles/` | `work-packages/` |
+| `shared/planning/`, and `planning/` inside every container | `plans/` in the same place |
+| `shared/consult/` | `shared/consultations/` |
 
-Second, **a work item keeps its container, and only the record inside it changes**. A v4-to-v10 `circles/<dir>/` already holds what the current format wants: one directory per unit of work, with that work's own `planning/`, `issues/`, `decisions/`, `reviews/`, `analyses/` and `history/`. What is out of format is the record — `_t_circle.md`, stating its state in a filename marker. A **live** record (`_a_`, `_t_`) is renamed to its container's own name and re-headed with the item's head fields. A **terminal** record is left exactly as it stands, and no file is moved out of any container.
+**Directories move; no file changes.** Every file keeps its basename and its bytes, so every storeless citation resolves after the move exactly as before (`rules/fusion-workbench-conventions.md` `## Filename Patterns`), and the migration commit is renames only. `archive/`, the frozen stores, the Review-class stores, `stilwerk/` and every root file stay where they stand; the survey names each one, with the decision record that holds its question where one does.
 
-Third, **underscore state markers**: filenames carry the state marker as `_o_` / `_p_` rather than the older bracket form `[o]` / `[p]`, because `[` and `]` are shell-glob metacharacters and a marker written into a glob is silently a character class.
+Run it once after updating to `12.0.0` or later. It is idempotent and resumable: on a workbench already in the v12 format it finds nothing and stops without asking; after an interruption the next run continues from what the filesystem holds.
 
-This skill moves and renames as needed, and it asks first.
-
-Run it once, when `/fusion:setup` tells you to. It is idempotent: on a workbench already in the current format it surveys, finds nothing, and stops without asking anything.
+**An older workbench is refused, not converted.** The conversions of the pre-v4 type-folder layout, the flat v4-era `circles/<stamp>[t]-<slug>.md` file, the live `_a_`/`_t_` Circle record and the bracket-marked filename (`…[o]-….md`) left this skill at `12.0.0`. The survey still recognises all four, since refusing loudly is cheaper than renaming a shape it was not written for, and stops with the route: check out the plugin source at the tag `v11.11.1`, load it with `claude --plugin-dir <that checkout>`, run `/fusion:migrate` there, then `fusion --update`, restart, and run `/fusion:migrate` again for the store names.
 
 **Every message this file specifies is written here in English and rendered in the project's chat language** — the `**Language:**` line in `CLAUDE.md`, resolved per `rules/fusion-workbench-conventions.md` `## Project language`, with the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. The strings printed *by the shell blocks below* are the exception, and they stay English in every project: they are CLI operator output, which the same rule exempts alongside every other helper and hook string fusion ships.
 
@@ -33,172 +35,124 @@ ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || { echo "No fusion w
 
 `cd "$ROOT"` so the relative paths below resolve. On a non-zero exit, halt: there is no workbench to migrate, and the user needs `/fusion:setup` first.
 
-## Step 2 — Survey what would move
+## Step 2 — Guard and survey
 
-**Detection is by artifact presence, not by version.** A workbench needs migration when at least one out-of-format artifact still exists: a type folder at the workbench root, a `circles/*.md` file (the old marker-in-filename form), a container whose record is a **live** `_a_circle.md` or `_t_circle.md`, or any filename still carrying a bracket-form state marker (`…[o]-….md`) rather than the underscore form. The `plugin_version` in `.fusion-setup` is *not* the detector — it answers the wrong question, because a workbench with no out-of-format artifacts has nothing to migrate regardless of which version created it, and `/fusion:setup` overwrites the field on every run anyway. Report the old version to the user as context if you like; key the decision on the artifacts.
-
-**This is also the idempotency guarantee, and it constrains what the detector may look for.** The detector must only look for things the executor can *remove* — not for things it merely *inspects*. If a move fails, its source stays put, the detector fires again next run, and the user gets another chance; no state flag can drift out of sync with the filesystem, because the filesystem *is* the flag. But that design has no memory of "the user already saw this one", so anything the executor will never remove must never enter the trigger, or the skill asks a question forever that has nothing left to do — and a prompt that fires forever gets clicked through without reading, which is what makes the *next*, real migration question dangerous.
-
-Hence every counter below says for itself whether it triggers the question:
-
-| Counter | Meaning | Triggers the question? |
-|---|---|---|
-| `FOUND` | Things the migration will move or rename, plus conflicts it refuses but the user can resolve | **yes** |
-| `REFORMAT` | Bracket-marked filenames to rename in place to the underscore form | counted into `FOUND` — the reformat is a removable artifact, so it fits the idempotency model |
-| `SKIPPED` | `circles/*.md` with no marker — not part of the migration, never moved | no — reported as a standing note |
-| `CONFLICTS` | Two markered Circle files collapsing to one directory name; a container holding two records; a container already holding the item record the rename would write | counted into `FOUND`; the user resolves by deciding which file is real |
-| `LIVE` | Containers whose record is **live** (`_a_`, `_t_`) and becomes the item record | counted into `FOUND` — that record is renamed away, so it fits the idempotency model |
-| `TERMINAL` | Containers whose record is terminal (`_c_`, `_b_`, `_s_`, `_d_`) | no — nothing will ever convert one, so it is reported as a count and never asked about |
-| `NOTES` | A container holding no record at all | no — the migration removes nothing there, and the user may be mid-way through writing one |
-
-`SKIPPED` is out of the trigger because a `circles/README.md` is legitimate and permanent. `TERMINAL` and `NOTES` are out for the same reason, and theirs is the stronger case: nothing here will ever touch either. `CONFLICTS` stays in the trigger because it *is* resolvable, and re-asking after the user has resolved it is the recovery path.
-
-Run this first. It is read-only:
+**First the version guard.** The pass runs only when the installed plugin, the copy `$FUSION_PLUGIN_ROOT` names and every agent's helpers come from, reads the new names. Below `12.0.0` those helpers resolve only `circles/`, so a migrated workbench would leave every `OUT_*` and `SCAN_*` pointing at a directory that no longer exists. The window opens and closes at a major, so the major alone decides:
 
 ```bash
-WB=./fusion-workbench; FOUND=0; SKIPPED=0; CONFLICTS=0; for d in planning issues decisions history analyses investigations consult memos; do [ -d "$WB/$d" ] || continue; printf '  %-16s -> shared/%-16s %s entry/entries\n' "$d/" "$d/" "$(find "$WB/$d" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')"; FOUND=1; done; for pair in codereview:coderev ontoreview:ontorev conceptreview:conceptrev; do d="${pair%%:*}"; [ -d "$WB/$d" ] || continue; printf '  %-16s -> shared/%-16s %s entry/entries\n' "$d/" "reviews/" "$(find "$WB/$d" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')"; FOUND=1; done; TMP="$(mktemp)"; while IFS= read -r f; do b="$(basename "$f" .md)"; m="$(printf '%s' "$b" | sed -nE 's/^[0-9]{6}-[0-9]{4}\[([a-z])\].*$/\1/p')"; if [ -z "$m" ]; then printf '  circles/%s — no marker, ignored (not part of the migration)\n' "$(basename "$f")"; SKIPPED=$((SKIPPED+1)); else printf '%s\t%s\t%s\n' "$(printf '%s' "$b" | sed -E 's/\[[a-z]\]//')" "$m" "$(basename "$f")" >> "$TMP"; fi; done < <(find "$WB/circles" -mindepth 1 -maxdepth 1 -name '*.md' 2>/dev/null); for dir in $(cut -f1 "$TMP" 2>/dev/null | sort -u); do n="$(awk -F'\t' -v d="$dir" '$1==d' "$TMP" | wc -l | tr -d ' ')"; if [ "$n" -gt 1 ]; then printf '  CONFLICT: %s files all map to circles/%s/ — none is moved:\n' "$n" "$dir"; awk -F'\t' -v d="$dir" '$1==d {printf "      circles/%s\n", $3}' "$TMP"; CONFLICTS=$((CONFLICTS+1)); else printf '  circles/%s -> circles/%s/_%s_circle.md\n' "$(awk -F'\t' -v d="$dir" '$1==d {print $3}' "$TMP")" "$dir" "$(awk -F'\t' -v d="$dir" '$1==d {print $2}' "$TMP")"; fi; FOUND=1; done; rm -f "$TMP"; [ -f "$WB/.active-circle" ] && { echo "  .active-circle -> deleted (the per-checkout active-Circle pointer; nothing reads it)"; FOUND=1; }; REFORMAT=$({ [ -d "$WB/shared" ] && find "$WB/shared" -type f -name '*[[]*[]]*.md' 2>/dev/null; [ -d "$WB/circles" ] && find "$WB/circles" -mindepth 2 -type f -name '*[[]*[]]*.md' 2>/dev/null; } | grep -E '\[[oatcibspd]\]-[^/]*$' | wc -l | tr -d ' '); [ "$REFORMAT" -gt 0 ] && { printf '  %s file(s) with a bracket marker in the name -> underscore form (renamed in place)\n' "$REFORMAT"; FOUND=1; }; [ "$FOUND" = 0 ] && [ "$SKIPPED" = 0 ] && echo "  (nothing — already in the current format)"; [ "$FOUND" = 0 ] && [ "$SKIPPED" -gt 0 ] && echo "  (nothing to move — the unmarked files named above are not part of the migration)"; if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && [ -n "$(git ls-files "$WB" | head -1)" ]; then echo "MODE=git"; else echo "MODE=plain"; fi; echo "FOUND=$FOUND"; echo "REFORMAT=$REFORMAT"; echo "SKIPPED=$SKIPPED"; echo "CONFLICTS=$CONFLICTS"
+V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" 2>/dev/null | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"; M="${V%%.*}"; if [ -n "$V" ] && [ "$M" -ge 12 ] 2>/dev/null; then echo "INSTALLED=$V"; echo "WINDOW=open"; else echo "INSTALLED=${V:-unreadable}"; echo "WINDOW=closed"; echo "REFUSED: the installed plugin is ${V:-unreadable}; the store-name pass needs 12.0.0 or later. Run fusion --update, restart, and run /fusion:migrate again."; fi
 ```
 
-### The containers, and what happens to the record inside each
+**`WINDOW=closed`: stop here**, before surveying, and tell the user the `REFUSED` line.
 
-Run this second, after the block above. It is read-only, and its output goes into the proposal verbatim — the user is deciding a status per live record, not approving a count:
+**Then the survey. Detection is by artifact presence, not by version** (not `.fusion-setup`'s `plugin_version`). The pass is due while a legacy store exists: `circles/`, `shared/planning/`, `shared/consult/`, or a `planning/` directly inside a container under either store, which is where a refused fold leaves one. Each is something the apply removes, so the filesystem is the only state and a refused or interrupted move is found again next run. Nothing the pass merely inspects enters the trigger, or the question would fire forever.
+
+Run this second. It is read-only:
 
 ```bash
-WB=./fusion-workbench; LIVE=0; TERMINAL=0; DEFERRED=0; NOTES=0; CONFLICTS=0; while IFS= read -r d; do b="$(basename "$d")"; rel="${d#"$WB"/}"; n="$(find "$d" -mindepth 1 -maxdepth 1 -name '_*_circle.md' -type f 2>/dev/null | wc -l | tr -d ' ')"; if [ "$n" -gt 1 ]; then printf '  CONFLICT: %s holds %s records, not one — no defined state, nothing converted\n' "$rel" "$n"; CONFLICTS=$((CONFLICTS+1)); continue; fi; if [ "$n" = 0 ]; then [ -f "$d/$b.md" ] || { printf '  %s holds no record — nothing here is converted, and nothing removes it\n' "$rel"; NOTES=$((NOTES+1)); }; continue; fi; if [ -f "$d/$b.md" ]; then printf '  CONFLICT: %s already holds %s.md beside a marked record — the rename would collide, nothing converted\n' "$rel" "$b"; CONFLICTS=$((CONFLICTS+1)); continue; fi; r="$(find "$d" -mindepth 1 -maxdepth 1 -name '_*_circle.md' -type f)"; m="$(basename "$r" | sed -nE 's/^_([a-z])_circle\.md$/\1/p')"; case "$m" in a) st=open ;; t) cl="$(sed -n 's/^\*\*Claim:\*\*[[:space:]]*//p' "$r" | head -n 1)"; case "$cl" in "Claimed "*) st=claimed ;; *) st=open ;; esac ;; c|b|s) TERMINAL=$((TERMINAL+1)); continue ;; d) printf '  %s — record is terminal (_d_, deferred): left exactly as it is, and no status is written for it\n' "$rel"; TERMINAL=$((TERMINAL+1)); DEFERRED=$((DEFERRED+1)); continue ;; *) printf '  CONFLICT: %s carries marker _%s_, which is not one of a t c b s d\n' "${r#"$WB"/}" "$m"; CONFLICTS=$((CONFLICTS+1)); continue ;; esac; printf '  %s/%s -> %s/%s.md   status %s   (the container and its %s artifact(s) stay where they are)\n' "$rel" "$(basename "$r")" "$rel" "$b" "$st" "$(find "$d" -mindepth 2 -type f 2>/dev/null | wc -l | tr -d ' ')"; LIVE=$((LIVE+1)); done < <(find "$WB/circles" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort); [ "$TERMINAL" -gt 0 ] && printf '  %s container(s) hold a terminal record: not renamed, not re-headed, nothing moved out of them\n' "$TERMINAL"; echo "LIVE=$LIVE"; echo "TERMINAL=$TERMINAL"; echo "DEFERRED=$DEFERRED"; echo "NOTES=$NOTES"; echo "CONFLICTS=$CONFLICTS"
+WB=./fusion-workbench; FOUND=0; LEGACY=0; COLLISIONS=0; UNTRACKED=0; DIRTY=0; UNKNOWN=0; LEFT=0
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && [ -n "$(git ls-files "$WB" | head -1)" ]; then MODE=git; else MODE=plain; fi
+for d in planning issues decisions history analyses investigations consult memos codereview ontoreview conceptreview; do [ -d "$WB/$d" ] && { echo "  LEGACY: $d/ (root type folder)"; LEGACY=1; }; done
+F="$(find "$WB/circles" -mindepth 1 -maxdepth 1 -type f -name '*.md' 2>/dev/null | grep -E '/[0-9]{6}-[0-9]{4}\[[a-z]\][^/]*\.md$' | head -1)"; [ -n "$F" ] && { echo "  LEGACY: ${F#"$WB"/} (v4-era work item as a flat file)"; LEGACY=1; }
+F="$({ [ -d "$WB/shared" ] && find "$WB/shared" -type f -name '*[[]*[]]*.md' 2>/dev/null; [ -d "$WB/circles" ] && find "$WB/circles" -mindepth 2 -type f -name '*[[]*[]]*.md' 2>/dev/null; } | grep -E '\[[oatcibspd]\]-[^/]*$' | head -1)"; [ -n "$F" ] && { echo "  LEGACY: ${F#"$WB"/} (bracket marker in the name)"; LEGACY=1; }
+F="$(find "$WB/circles" -mindepth 2 -maxdepth 2 -type f -name '_[at]_circle.md' 2>/dev/null | head -1)"; [ -n "$F" ] && { echo "  LEGACY: ${F#"$WB"/} (live Circle record)"; LEGACY=1; }
+[ "$LEGACY" = 1 ] && echo "REFUSED: this shape converts with the plugin source at tag v11.11.1. Check it out, start claude --plugin-dir <that checkout>, run /fusion:migrate there; then fusion --update, restart, and run /fusion:migrate again."
+O='260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md'
+while IFS= read -r e; do r="${e#"$WB"/}"; case "$r" in
+  shared|circles|work-packages|shared/planning|shared/plans|shared/consult|shared/consultations) continue ;;
+  shared/issues) k='260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md' ;;
+  shared/memos) k='260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md' ;;
+  shared/history) k='260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md' ;;
+  shared/checkouts) k='260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md' ;;
+  stilwerk) k='260922-1059_*_which-english-name-does-stilwerk-take-and-when.md' ;;
+  .guard-state) k='260922-1059_*_does-guard-state-become-a-prior-runtime-record-or-go.md' ;;
+  shared/forum|shared/discussions|orchestrator-events.jsonl|.commit-lock|.cadence-anchors|.session-marker|.checkout-id|.asset-provenance|monitor) k="$O" ;;
+  archive|stashes|.migration-v2-backup|shared/backlog) echo "  FROZEN: $r (never opened)"; LEFT=$((LEFT+1)); continue ;;
+  shared/analyses|shared/investigations|shared/decisions|shared/reviews|.fusion-setup) echo "  LEFT: $r"; LEFT=$((LEFT+1)); continue ;;
+  agentstate.yaml|orchestrator-live.md|portfolio.md|.active-circle) echo "  LEFT: $r (retired, nothing reads it; deletable by hand)"; LEFT=$((LEFT+1)); continue ;;
+  *) if grep -rqE 'circles/|planning/|consult/' "$e" 2>/dev/null; then echo "  UNKNOWN: $r names a legacy store and is in no class"; UNKNOWN=$((UNKNOWN+1)); else echo "  UNCLASSIFIED: $r (no store path; left)"; fi; continue ;;
+esac; echo "  LEFT: $r (question held by $k)"; LEFT=$((LEFT+1)); done < <(find "$WB" "$WB/shared" -mindepth 1 -maxdepth 1 2>/dev/null | sort)
+sv() { [ -d "$1" ] || return 0; FOUND=1; printf '  %s/ -> %s/  %s entries\n' "${1#"$WB"/}" "${2#"$WB"/}" "$(find "$1" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')"; while IFS= read -r e; do [ -e "$2/${e##*/}" ] && { echo "  COLLISION: ${2#"$WB"/}/${e##*/} exists; ${e#"$WB"/} stays"; COLLISIONS=$((COLLISIONS+1)); }; done < <(find "$1" -mindepth 1 -maxdepth 1); return 0; }
+sv "$WB/shared/consult" "$WB/shared/consultations"; sv "$WB/shared/planning" "$WB/shared/plans"
+while IFS= read -r p; do sv "$p" "${p%/planning}/plans"; done < <(find "$WB/circles" "$WB/work-packages" -mindepth 2 -maxdepth 2 -type d -name planning 2>/dev/null | sort)
+sv "$WB/circles" "$WB/work-packages"
+EMPTY="$(find "$WB/circles" "$WB/shared/planning" "$WB/shared/consult" -type d -empty 2>/dev/null | wc -l | tr -d ' ')"
+if [ "$MODE" = git ]; then UNTRACKED="$(git ls-files -o -- "$WB/circles" "$WB/shared/planning" "$WB/shared/consult" | wc -l | tr -d ' ')"
+  while IFS= read -r l; do echo "  DIRTY: ${l#???}"; DIRTY=$((DIRTY+1)); done < <(git status --porcelain -- "$WB/circles" "$WB/shared/planning" "$WB/shared/consult" | grep -vE '^(\?\?|R ) '); fi
+[ -f .gitignore ] && grep -nE 'fusion-workbench/(circles|shared/planning|shared/consult)' .gitignore | sed 's/^/  GITIGNORE: /'
+[ "$FOUND" = 0 ] && echo "  (no legacy store: already in the v12 format)"
+echo "MODE=$MODE"; echo "FOUND=$FOUND"; echo "LEGACY=$LEGACY"; echo "COLLISIONS=$COLLISIONS"; echo "EMPTY=$EMPTY"; echo "UNTRACKED=$UNTRACKED"; echo "DIRTY=$DIRTY"; echo "UNKNOWN=$UNKNOWN"; echo "LEFT=$LEFT"
 ```
 
-`CONFLICTS` restarts at zero here: this is a second shell and it inherits nothing. Add it to the count the first block printed, and raise `FOUND` to 1 whenever `LIVE` or this `CONFLICTS` is above zero. **The gate sits below, not between the two blocks**: a live record is found only here, so a count read above this block says `FOUND=0` on a workbench that does have a record to convert, and a stop placed there stops on a partial count.
-
-**If the total is 0: stop here.** The workbench is already in the current format. Do not ask the question — there is nothing the migration would do. Tell the user so in one line, and add the `SKIPPED` note if there is one (below).
-
-- If `SKIPPED=0` too, report *"This workbench is already in the current format. Nothing to do."* and stop.
-- If `SKIPPED>0`, add one standing line naming the files and their status, e.g. *"`circles/README.md` carries no marker, and the migration leaves it untouched."* It is a note, not an action item, and it must not become a question: the file is legitimate and nothing will ever move it.
-
-**If either block reported a conflict**, show the conflict lines prominently in the question below. The user has to decide which file is real before those Circles can migrate; the rest of the migration proceeds regardless.
-
-**The status mapping, and the two markers it is defined over.**
-
-| Record marker | Item `**Status:**` | Why |
+| Counter | Meaning | Effect |
 |---|---|---|
-| `_a_` anticipated | `open` | nobody was working on it, which is what `open` says |
-| `_t_` active | `claimed` when the record's `**Claim:**` opens `Claimed ` — `open` otherwise | an item is claimed by a **checkout**, and activation's per-checkout half (`.active-circle`) never travelled between checkouts. Where the record names a checkout itself, that is carried; where it says `Unclaimed` or carries no field, no holder exists to name and inventing one would say the work is held by nobody |
+| `FOUND` | a legacy store exists | triggers the question |
+| `COLLISIONS` | an entry whose destination exists: one container name under both stores, or one basename in a container's `planning/` and `plans/` | triggers the question; each is refused at apply and named, and the rest proceeds |
+| `EMPTY`, `UNTRACKED` | empty directories, and in `git` mode untracked files, under a source; both move by `mv` and appear in no diff | informational |
+| `LEFT` | entries left by rule, frozen, or owing no record | informational; nothing here ever moves |
+| `LEGACY` | a pre-v4, v4-era or bracket-marked shape | **stops** before the question |
+| `DIRTY` | in `git` mode, an uncommitted change under a source; untracked rows and the staged renames of an interrupted run excepted | **stops** before the question |
+| `UNKNOWN` | an unclassified entry at the root or under `shared/` that names a legacy store | **stops** before the question |
 
-**There is no row for `_c_`, `_b_`, `_s_` or `_d_`, and that absence is the design.** All four are terminal, and a terminal record is evidence of work that ended: `rules/fusion-workbench-conventions.md` `## Terminal states are history` forbids editing one back into a live shape, no consumer reads a terminal container's state, and renaming the file would break every citation that names it in exchange for nothing.
+A destination *directory* that already exists is not a collision but the ordinary state after the update; the pass folds the legacy entries into it.
 
-**The deferred question is answered, and the answer changes nothing here.** `**Status:**` has gained a fifth value, `paused`, and a `_d_` record still does not convert to it: it is terminal in its own vocabulary, which the paragraph above settles. So work in a `_d_` container does not come back by itself — wanting it back means filing a new item, setting it `paused`, and citing the container. Each `_d_` container is named in the survey and the report, so a user has something to do about it.
+**Every entry at the workbench root and under `shared/` falls in one class of the block's `case`**: renamed or its new name; left by rule, naming the record that holds its question open for a later pass; left with no record owed (the retired root files among them, deletable by hand); frozen, never opened, because a sweep froze its subtrees under the names they had; or unclassified, grepped for a legacy store path. An unclassified hit is `UNKNOWN`: which class it belongs to is the user's ruling, never the pass's guess.
+
+Then, in this order:
+
+- **`LEGACY=1`**: stop. Show the `LEGACY` lines and render the `REFUSED` line as one message. Ask nothing.
+- **`DIRTY>0`**: stop. Name every `DIRTY` path and ask the user to commit or stash, then run again: a rename over a modified file mixes the migration with work in flight and leaves no clean revert.
+- **`UNKNOWN>0`**: stop. Name the entry; the user rules on its class, and this skill's classification gains a row.
+- **`FOUND=0`**: *"This workbench is already in the v12 format. Nothing to do."* Stop, and ask nothing.
 
 ## Step 3 — Ask before moving
 
-Note `MODE` — the user must know before deciding whether the move will be reviewable:
+Say `MODE` out loud: with `git`, moves use `git mv`, the migration is one diff of renames and `git revert` retreats; with `plain` (untracked, gitignored, or no repo), moves use `mv`, appear in no diff and cannot be undone with git.
 
-- `MODE=git` — the workbench is tracked. Moves use `git mv`, history is preserved, the whole migration lands as one reviewable diff, and a retreat is `git revert`.
-- `MODE=plain` — the workbench is untracked or gitignored, or the project is not a git repo. `git mv` cannot work here. Moves use plain `mv`. **Say this out loud in the question.** The migration will not appear in any diff and cannot be undone with git.
+Use `AskUserQuestion` in the project's language (see `rules/fusion-workbench-conventions.md` `## Project language`), following `rules/user-facing-output.md` and the chat profile. Show the survey output above the question, so the user sees the entries and counts rather than a summary of them. The prompt, in English:
 
-Use `AskUserQuestion`. Write the prompt in the project's language per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`), and follow `rules/user-facing-output.md` plus the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Show the survey output above the question so the user sees the actual file counts, not a summary of them. The prompt, in English:
-
-> **Question:** This workbench is not yet in the current format. I will convert it: the type folders move into `shared/`, the three review folders merge into `shared/reviews/`, each live Circle record becomes the work-item record inside its own container, and filenames carrying a bracket marker (`…[o]-….md`) are renamed to the underscore form (`…_o_….md`). Moving and renaming use `git mv`, so the whole conversion is reviewable as one diff. Nothing is deleted. **No container is emptied and no terminal record is opened** — the lists above name the containers that stay exactly as they are. The lists also show which status each live record would take.
+> **Question:** This workbench still uses the v11 store names. I will rename them as listed above: `circles/` to `work-packages/`, each `planning/` to `plans/`, and `shared/consult/` to `shared/consultations/`. Directories move entry by entry with `git mv`, so the migration is one reviewable diff of renames. No file's content changes and every filename survives. `archive/`, the Review-class stores, `stilwerk/` and the root files stay where they are.
 >
-> **Option "Convert"** (recommended): Moves and renames as listed, with the statuses proposed above.
-> **Option "Change a status"**: Say which record should take a different status before anything moves.
-> **Option "Cancel"**: Leaves the workbench exactly as it is. `/fusion:setup` then keeps refusing to start until the workbench is converted. You can call `/fusion:migrate` again at any time.
+> **Option "Convert"** (recommended): Renames as listed.
+> **Option "Tracked entries only"**: Renames every entry git tracks and leaves the untracked ones where they are, named in the report.
+> **Option "Cancel"**: Leaves the workbench exactly as it is. The plugin reads both names until `13.0.0`, so nothing breaks; `/fusion:migrate` can run again at any time.
 
-**When `DEFERRED>0`, say so in the question**, above the options: *"N container(s) hold a record that was deferred rather than finished. They are terminal, so nothing is written for them and the record keeps its marker. To pick one up again, file a new work item, set it `paused`, and cite the container."* It is a statement, not a choice — nothing here is the user's to decide at a confirmation prompt.
+Offer "Tracked entries only" only in `git` mode with `UNTRACKED>0`. With `COLLISIONS>0`, put the collision lines above the options and say that those entries stay and the rest moves. For `MODE=plain`, replace the `git mv` sentence with the honest one: *"This workbench is not under version control, so moving uses `mv`. The renames appear in no diff and cannot be taken back with `git revert`."*
 
-For `MODE=plain`, replace the `git mv` sentence with the honest one: *"This workbench is not under version control, so moving uses `mv`. The conversion appears in no diff and cannot be taken back with `git revert`."*
+Do not migrate without an explicit choice.
 
-**And say the one thing that is not a move.** Every other step of this migration relocates a file; converting a live record additionally **rewrites its head block** where it stands. Say that plainly: the record's own prose — the Directive, the Grounding snapshot, the Dependencies, any Turn log — is carried across verbatim, and what changes is the head, because the item grammar states the state in a field where the Circle stated it in the filename. And say that `**Active spec/plan:**` survives into the new head and `**Active session history:**`, which the item grammar does not define, is carried rather than dropped.
+## Step 4 — Apply
 
-Do not migrate without an explicit choice. The user's own `CLAUDE.md` may declare a different language; the two options and their consequences stay the same.
-
-## Step 4 — Execute (only after the user chose to migrate)
-
-The migration creates the destination scaffold itself. It cannot assume `/fusion:setup` ran first: setup refuses to proceed on a pre-v4 workbench (that is what sent the user here), so on the ordinary path nothing has created `shared/` yet. The `mkdir -p` calls below are inside the loops, per destination, and are idempotent either way.
+Only after the user chose to convert. For "Tracked entries only", set `TRACKED_ONLY=1` at the head of the block.
 
 ```bash
-set -u; WB="./fusion-workbench"; FALLBACKS=0; COLLISIONS=0; MOVED=0; SKIPPED=0; if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && [ -n "$(git ls-files "$WB" | head -1)" ]; then MODE=git; else MODE=plain; echo "NOTE: workbench not under version control. Moving with mv; the move is not reviewable as a diff and not undoable with git revert." >&2; fi; move_one() { if [ -e "$2" ]; then echo "COLLISION: $2 already exists. $1 stays where it is." >&2; COLLISIONS=$((COLLISIONS+1)); return 1; fi; if [ "$MODE" = git ] && git mv "$1" "$2" 2>/dev/null; then MOVED=$((MOVED+1)); return 0; fi; if mv "$1" "$2"; then if [ "$MODE" = git ]; then echo "NOTE: $1 is untracked, moved with mv (not in the diff)." >&2; FALLBACKS=$((FALLBACKS+1)); fi; MOVED=$((MOVED+1)); return 0; fi; echo "ERROR: $1 -> $2 failed." >&2; return 1; }; rewrite_fields() { r="$1"; ch=0; for t in planning issues decisions history analyses investigations consult memos; do if grep -qE "^\*\*Active (spec/plan|session history):\*\* $t/" "$r" 2>/dev/null; then sed -E "s#^(\*\*Active (spec/plan|session history):\*\* )$t/#\1#" "$r" > "$r.tmp" && mv "$r.tmp" "$r"; ch=1; fi; done; if grep -qE '^\*\*Active (spec/plan|session history):\*\*.*\[[oatcibspd]\]-' "$r" 2>/dev/null; then sed -E '/^\*\*Active (spec\/plan|session history):\*\*/ s#\[([oatcibspd])\]-#_*_#g' "$r" > "$r.tmp" && mv "$r.tmp" "$r"; ch=1; fi; [ "$ch" = 1 ] && echo "  Fields in $(basename "$r") brought to the current format."; return 0; }; for d in planning issues decisions history analyses investigations consult memos; do [ -d "$WB/$d" ] || continue; mkdir -p "$WB/shared/$d"; while IFS= read -r f; do move_one "$f" "$WB/shared/$d/$(basename "$f")" || true; done < <(find "$WB/$d" -mindepth 1 -maxdepth 1); rmdir "$WB/$d" 2>/dev/null || echo "NOTE: $WB/$d is not empty and stays." >&2; done; for pair in codereview:coderev ontoreview:ontorev conceptreview:conceptrev; do src="${pair%%:*}"; sender="${pair##*:}"; [ -d "$WB/$src" ] || continue; mkdir -p "$WB/shared/reviews"; while IFS= read -r f; do b="$(basename "$f")"; case "$b" in *"-$sender-"*) nb="$b" ;; *) nb="$(printf '%s' "$b" | sed -E "s/^([0-9]{6}-[0-9]{4})-/\1-$sender-/")" ;; esac; move_one "$f" "$WB/shared/reviews/$nb" || true; done < <(find "$WB/$src" -mindepth 1 -maxdepth 1); rmdir "$WB/$src" 2>/dev/null || echo "NOTE: $WB/$src is not empty and stays." >&2; done; TMP="$(mktemp)"; while IFS= read -r f; do b="$(basename "$f" .md)"; m="$(printf '%s' "$b" | sed -nE 's/^[0-9]{6}-[0-9]{4}\[([a-z])\].*$/\1/p')"; if [ -z "$m" ]; then echo "IGNORED: $f carries no marker and is not part of the migration. Left untouched." >&2; SKIPPED=$((SKIPPED+1)); continue; fi; printf '%s\t%s\t%s\n' "$(printf '%s' "$b" | sed -E 's/\[[a-z]\]//')" "$m" "$f" >> "$TMP"; done < <(find "$WB/circles" -mindepth 1 -maxdepth 1 -name '*.md' 2>/dev/null); for dir in $(cut -f1 "$TMP" 2>/dev/null | sort -u); do n="$(awk -F'\t' -v d="$dir" '$1==d' "$TMP" | wc -l | tr -d ' ')"; if [ "$n" -gt 1 ]; then echo "CONFLICT: $n Circle files all map to circles/$dir/ and differ only in the marker. A Circle has exactly one state — only a human can decide which file holds. None is moved:" >&2; awk -F'\t' -v d="$dir" '$1==d {print "    " $3}' "$TMP" >&2; COLLISIONS=$((COLLISIONS+1)); continue; fi; m="$(awk -F'\t' -v d="$dir" '$1==d {print $2}' "$TMP")"; f="$(awk -F'\t' -v d="$dir" '$1==d {print $3}' "$TMP")"; mkdir -p "$WB/circles/$dir"; if move_one "$f" "$WB/circles/$dir/_${m}_circle.md"; then mkdir -p "$WB/circles/$dir/planning" "$WB/circles/$dir/issues" "$WB/circles/$dir/decisions" "$WB/circles/$dir/history" "$WB/circles/$dir/reviews" "$WB/circles/$dir/analyses"; rewrite_fields "$WB/circles/$dir/_${m}_circle.md"; else rmdir "$WB/circles/$dir" 2>/dev/null || true; fi; done; rm -f "$TMP"; reformat_one() { s="$1"; dd="$(dirname "$s")"; bb="$(basename "$s")"; nn="$(printf '%s' "$bb" | sed -E 's/\[([oatcibspd])\]-/_\1_/g')"; [ "$nn" = "$bb" ] && return 0; if move_one "$s" "$dd/$nn"; then case "$nn" in _[oatcibspd]_circle.md) rewrite_fields "$dd/$nn" ;; esac; fi; }; RTMP="$(mktemp)"; { [ -d "$WB/shared" ] && find "$WB/shared" -type f -name '*[[]*[]]*.md' 2>/dev/null; [ -d "$WB/circles" ] && find "$WB/circles" -mindepth 2 -type f -name '*[[]*[]]*.md' 2>/dev/null; } | grep -E '\[[oatcibspd]\]-[^/]*$' > "$RTMP"; while IFS= read -r rf; do [ -e "$rf" ] || continue; reformat_one "$rf"; done < "$RTMP"; rm -f "$RTMP"; echo "---"; echo "moved=$MOVED collisions=$COLLISIONS mv-fallbacks=$FALLBACKS ignored=$SKIPPED mode=$MODE"
+set -u; WB=./fusion-workbench; TRACKED_ONLY=0; FALLBACKS=0; COLLISIONS=0; MOVED=0; LEFT=0; if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && [ -n "$(git ls-files "$WB" | head -1)" ]; then MODE=git; else MODE=plain; echo "NOTE: workbench not under version control. Moving with mv; the move is not reviewable as a diff and not undoable with git revert." >&2; fi
+move_one() { if [ -e "$2" ]; then echo "COLLISION: $2 already exists. $1 stays where it is." >&2; COLLISIONS=$((COLLISIONS+1)); return 1; fi; if [ "$MODE" = git ] && git mv "$1" "$2" 2>/dev/null; then MOVED=$((MOVED+1)); return 0; fi; if mv "$1" "$2"; then if [ "$MODE" = git ]; then echo "NOTE: $1 is untracked, moved with mv (not in the diff)." >&2; FALLBACKS=$((FALLBACKS+1)); fi; MOVED=$((MOVED+1)); return 0; fi; echo "ERROR: $1 -> $2 failed." >&2; return 1; }
+fold_store() { src="$1"; dst="$2"; [ -d "$src" ] || return 0; mkdir -p "$dst"; while IFS= read -r e; do if [ "$TRACKED_ONLY" = 1 ] && [ "$MODE" = git ] && [ -z "$(git ls-files -- "$e" | head -1)" ]; then echo "LEFT: $e is untracked and stays." >&2; LEFT=$((LEFT+1)); continue; fi; move_one "$e" "$dst/${e##*/}" || true; done < <(find "$src" -mindepth 1 -maxdepth 1 | sort); rmdir "$src" 2>/dev/null || echo "NOTE: $src is not empty and stays." >&2; }
+fold_store "$WB/shared/consult" "$WB/shared/consultations"; fold_store "$WB/shared/planning" "$WB/shared/plans"
+while IFS= read -r p; do fold_store "$p" "${p%/planning}/plans"; done < <(find "$WB/circles" "$WB/work-packages" -mindepth 2 -maxdepth 2 -type d -name planning 2>/dev/null | sort)
+fold_store "$WB/circles" "$WB/work-packages"
+echo "---"; echo "moved=$MOVED mv-fallbacks=$FALLBACKS collisions=$COLLISIONS left=$LEFT mode=$MODE"
 ```
 
-### Step 4b — A live record becomes its container's item record
+- **Stores move by content, not as a directory.** `git mv circles work-packages` nests the source *inside* an existing destination, and inside the window one usually exists. `fold_store` moves entry by entry, then `rmdir`s the drained source: the only removal here, and loud on a source a collision kept.
+- **The order keeps every intermediate state one the survey recognises**: shared stores, then each container's `planning/`, the container store last. An interrupted run leaves some entries under the destination and the rest under the source, and the next run moves the rest; a move leaves no copy, so nothing collides with itself.
 
-Run this **after** the block above, so a flat `circles/*.md` has already become a container, and **before** the report. Unlike every other pass in this skill it is not one shell one-liner: it reads a record's sections and re-heads a file, which is not sed work. Take the containers one at a time, in the order the survey listed them, and open only the ones the survey counted into `LIVE`.
-
-**Nothing leaves a container.** The unit of work's `planning/`, `issues/`, `decisions/`, `reviews/`, `analyses/` and `history/` stay where they are with every file in them. The pass this replaces emptied each container into the shared stores and wrote one flat item; it was written when the container was going away, and running it now would take a workbench apart. It is gone, not disabled.
-
-**A terminal record is not opened at all** — no read, no rename, no head block. Count those containers for the report and move on.
-
-**The live record is renamed to its container's own name.** `circles/<dir>/_<m>_circle.md` becomes `circles/<dir>/<dir>.md`: the same name twice, directory and record, with no marker on either (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`). The directory name is already `YYMMDD-HHMM-<slug>`, which is the record's name exactly, so no name is invented and every citation of the directory still resolves. One rename per container:
-
-```bash
-WB=./fusion-workbench; D="<the container, workbench-relative>"; B="$(basename "$D")"; if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && [ -n "$(git ls-files "$WB" | head -1)" ]; then MODE=git; else MODE=plain; fi; R="$(find "$WB/$D" -mindepth 1 -maxdepth 1 -name '_*_circle.md' -type f)"; T="$WB/$D/$B.md"; if [ -e "$T" ]; then echo "COLLISION: $T already exists. $R stays where it is." >&2; elif [ "$MODE" = git ] && git mv "$R" "$T" 2>/dev/null; then echo "renamed (git mv): $D/$(basename "$R") -> $D/$B.md"; elif mv "$R" "$T"; then echo "renamed (mv): $D/$(basename "$R") -> $D/$B.md"; else echo "ERROR: $R -> $T failed." >&2; fi
-```
-
-`MODE` is recomputed because this is a fresh shell: a `git mv` silently downgraded to `mv` drops the rename out of the diff the user was promised.
-
-**Then write the head block**, keeping the record's own `# ` title line above it:
-
-```markdown
-# <the record's H1, or the Directive's first sentence where it has none>
-
----
-**Domain:** <the record's **Domain:**, or `code` where it carried none>
-**Status:** <the status the survey proposed, or the one the user named instead>
-**Claim:** <carried from the record's **Claim:** — see below>
-**Active spec/plan:** <carried from the record's field of the same name — see below>
-**Cross-references:** <one `<dirname>.md` per converted container — see below>
-**Filed by:** <the record's **Filed by:**, verbatim>
-
----
-```
-
-Then **the record's own body, verbatim, from `## Directive` down.** Every section it carried stays: the Grounding snapshot, the Dependencies, any Turn log, any closure note. The item grammar's head fields are a floor, not a ceiling, and a closure note is the only surviving statement of how that work ended — dropping it to reach a tidier file would destroy evidence to gain nothing.
-
-**`**Active spec/plan:**` is carried into the head, not dropped.** The item grammar defines it (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`) under the same name the Circle used, so the field survives the head rewrite: copy the value across, bringing any `[m]` marker in it to `_m_` as Step 4 has just done to the file itself, and omit the field where it reads `(none yet)`. Keeping the name is what leaves a `## Directive` reading "See `**Active spec/plan:**` above" pointing at a field the record still has, so nothing about the Directive is rewritten and no pointer is left dangling.
-
-**`**Active session history:**` has no item field**, the store having closed to writes. Where it names one or more bare basenames they join `**Cross-references:**`, which is the field for a record the work rests on; where the value carries anything else — a qualifying sentence, or a path — write the whole line verbatim into the body directly above `## Directive` instead, unbolded so it reads as prose. Either way it is not dropped, and the report says which was done.
-
-The head fields need care:
-
-- **`**Claim:**` is carried only when the record's own claim opens with `Claimed `**, and it is rewritten to the item form: the eight-hex checkout first, then the person, then the stamp (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`). `Unclaimed`, an absent field, or the partial-identity form (`Claimed …, identity partial: …`) all mean **the field is absent from the item** — a claim that names no checkout keys nothing. Never compose a checkout identifier here, and never substitute this checkout's own: the record is being converted, not claimed.
-- **`**Depends-on:**` is never written**: a conversion cannot confirm a prerequisite, and an entry there asserts one the user confirmed. The record's `## Dependencies` section held Circle **directory** names, and a converted container's record is `<dirname>.md`. Every entry naming a container **this pass also converted** goes to `**Cross-references:**`, comma-separated, which orders nothing; every other entry is dropped and reported, resolving or not: a conversion writes only what this pass can verify, which an earlier run's container is not. Say in the report which you dropped and why. `**Cross-references:**` is **absent** when nothing survives — never present and empty.
-- **`**Domain:**` and `**Filed by:**` are copied, never derived.** A record carrying no `**Filed by:**` — they predate the field — gets the line the conventions' `### Who filed it` prescribes for an unattributable record rather than a guess.
-- **There is no `**Status:**` to copy.** The Circle stated its state in the filename marker, which is why the survey had to propose one; the record's own `**Status:**` head field, where a pre-260815 record still carries one, is **not** read — it is exactly the field that drifted from the marker and was dropped for it. Carry it down into the body untouched with the rest of the prose, and take the status from the marker.
-
-**Finally, once every live record has converted**, remove the dead pointer:
-
-```bash
-WB=./fusion-workbench; [ -f "$WB/.active-circle" ] && { rm -f "$WB/.active-circle"; echo "pointer .active-circle removed — nothing reads it"; }; :
-```
-
-`.active-circle` is deleted rather than migrated: it named the running Circle for this checkout alone, no consumer reads it, and there is no per-checkout pointer in the current format for it to become. A checkout's claim on an item is the `**Claim:**` field, which travels.
-
-**If any live record cannot convert — a refused container, a collision, a rename that failed — stop and return to the user with what stands**, naming which containers converted and which did not. Each conversion is a rename and a head block in place, so a partial run leaves nothing half-emptied behind; what it leaves is a user expecting item records that are not there.
-
-What the moves do, and why each is what it is:
-
-- **Type folders move by content, not by directory.** `git mv <dir> shared/<dir>` nests the source *inside* the destination (`shared/planning/planning/`) whenever the destination already exists — and it can, either because a prior partial run created it or because a converted agent wrote there before the migration ran. Both `git mv` and `mv` behave this way. Moving entry by entry and then `rmdir`-ing the drained folder is what avoids it.
-- **Every type folder goes to `shared/` wholesale.** There are two candidate stores for every kind — a work item's container and `shared/` — and the Origin Rule picks between them by which item's directive caused the artifact (`rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)`). A pre-v4 workbench recorded no such affiliation for anything, so by that rule's own first corollary every one of these files goes to `shared/`.
-- **The three review folders merge, and the sender is inserted into the filename.** `codereview/260519-0438-loader-check.md` becomes `shared/reviews/260519-0438-coderev-loader-check.md`. This is not decoration: the conventions make `<sender>` mandatory on a review filename precisely because the three kinds now share one directory, and inserting it makes same-name collisions across the three sources **impossible by construction** rather than merely unlikely. Files that already carry their sender are left alone; files that do not match the `YYMMDD-HHMM-` stamp shape get no insert and can still collide.
-- **A real collision never overwrites.** If the destination exists, the source stays where it is, the script says so on stderr, and the drained folder survives the `rmdir`. The next run detects it again. Losing an artifact to a silent clobber is the one outcome this skill must never produce (`HYG-NO-SILENT-FAIL`).
-- **A flat Circle file becomes a container.** `circles/260716-1847[t]-umbau.md` becomes `circles/260716-1847-umbau/_t_circle.md` with the six empty subdirectories beside it, and Step 4b then renames that record to `circles/260716-1847-umbau/260716-1847-umbau.md`. The container is the destination, not a waypoint: the directory this pass creates is where the unit of work stays. A `circles/*.md` file with no parsable marker is ignored loudly and left in place rather than guessed at, and it does not re-trigger the migration question (see the counter table in Step 2).
-- **Two Circle files that differ only by marker are refused, not merged.** The directory name is the marker-stripped filename, so `260101-0903[a]-dup.md` and `260101-0903[t]-dup.md` both map to `circles/260101-0903-dup/`. Their records would land side by side — different filenames, so no collision fires — producing one container holding two records and therefore no defined state, a shape the conventions do not admit and no consumer handles. The grouping pass therefore detects the collapse **before** any move, refuses the whole group, counts it into `collisions`, and leaves both files where they are. Which one is real is a question only the user can answer. This is the same posture as everywhere else in this skill: refuse loudly, never guess (`HYG-NO-SILENT-FAIL`).
-- **Bracket-marker filenames are renamed to the underscore form.** After the layout moves, a final pass walks `shared/` (any depth) and each Circle from depth 2 down (`circles/*/`, so a flat pre-v4 `circles/*.md` is untouched), renaming any bracket-form marker (`…[o]-….md`) to the underscore form (`…_o_….md`), the trailing hyphen absorbed into the delimiter (`s/\[([oatcibspd])\]-/_\1_/g`). It reuses `move_one`, so a collision is refused loudly rather than overwritten (`HYG-NO-SILENT-FAIL`) and every rename counts into `moved`. The survey's `REFORMAT` count, this pass's candidates and `/fusion:setup`'s probe select with the same `\[[oatcibspd]\]-` filter the sed converts, so no proposal claims a rename the pass would skip.
-- **The record's path fields are reformatted to the underscore form.** A record's `**Active spec/plan:**` and `**Active session history:**` hold the storeless basename (`rules/fusion-workbench-conventions.md` `## Filename Patterns`); a pre-v4 record wrote them as paths under the old layout (`planning/260716-1910[p]-plan-foo.md`). The migration has just moved those targets to `shared/planning/` **and** renamed them to the underscore-marker form, so `rewrite_fields` rewrites the values to the storeless basename with the marker wildcarded (`260716-1910_*_plan-foo.md`), which a workbench-wide lookup resolves wherever the file now sits. It runs on a terminal record too: a format conversion is not a reconciliation (`## Terminal states are history` forbids state writes, not format), which is what the guardrail below already claims. The field carries no store, so where the file actually sits is what the lookup finds rather than what the field claims. The store-drop touches only values starting with a known type-folder name or `circles/`; the marker-absorb touches any bracket marker on the two field lines wherever it appears. `(none yet)` and anything with neither shape are left alone.
+**If a move failed** (an `ERROR` line), stop and report what moved and what did not. Nothing is undone automatically; the next run resumes from the filesystem.
 
 ## Step 5 — Report
 
-Report the tail counters (`moved`, `collisions`, `mv-fallbacks`, `ignored`) and, for Step 4b, one line per record converted: the record's new path, the status written, any `## Dependencies` entry dropped and why, and where `**Active session history:**` went, or that the record carried none. Then tell the user what to do next:
+Report the tail counters (`moved`, `mv-fallbacks`, `collisions`, `left`), then:
 
-- **`collisions=0` and every live record converted** — the migration is complete. Tell the user to run `/fusion:setup` now; it will find the current format and proceed normally.
-- **`collisions>0`** — some artifacts stayed put. Name them. It means a real name collision, a refused pair of flat Circle files, or a container holding two records, and each needs the user's decision. `/fusion:setup` will still refuse to start until they are resolved and `/fusion:migrate` has been run again.
-- **`ignored>0`** — informational. Those files are staying put by design and will never move.
-- **`TERMINAL` and `NOTES`** — say the counts in one line each. A terminal record was left exactly as it stands, and a container holding no record was left alone.
-- **Any `_d_` container** — name it, and say that it keeps its marker and takes no status. Deferred work is picked up again by filing a new item, setting it `paused` and citing the container; the terminal record is not edited back.
+- one line per left-by-rule entry with its record, and the frozen and no-record entries one line each;
+- every `GITIGNORE` hit, which is the project's own rule to edit;
+- every entry moved by `mv` in `git` mode (`git revert` will not restore it), every untracked entry left, and every collision with both paths.
 
-For `MODE=plain`, remind the user that the move is not in any diff, so a `git revert` is not available if they want to retreat.
+Then what to do next, in this order: commit the migration as one commit of renames and push it; tell the other checkouts to pull rather than migrate again, so the project has one revert point (a checkout holding an untracked container under `circles/` runs `/fusion:migrate` once more after the pull); run `/fusion:setup`. For `MODE=plain`, say that nothing here is in a diff.
 
 ## Step 6 — Sweep the citations
 
-The renames move filenames; citations naming them are the other half. Set `SWEEP="$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep"`. If `[ -x "$SWEEP" ]` is false, say the sweep was skipped because the installed copy carries no `bin/fusion-citation-sweep` yet and `fusion --update` then a restart will get it, and stop there. Otherwise run `"$SWEEP" --dry-run`, report its summary, and ask in Step 3's shape whether to respell those markers to the wildcard. On a yes run `"$SWEEP" --write --yes` and report its summary; on a no, say they were left as written.
+The pass moved directories and rewrote no record, so a citation spelling a moved store segment, or a pre-v4 bracket marker, is the other half. Set `SWEEP="$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep"`. If `[ -x "$SWEEP" ]` is false, say the sweep was skipped because the installed copy carries no `bin/fusion-citation-sweep` yet and `fusion --update` then a restart will get it, and stop there. Otherwise run `"$SWEEP" --dry-run`, report its summary, and ask in Step 3's shape whether to respell those markers to the wildcard. On a yes run `"$SWEEP" --write --yes` and report its summary, and say that it wrote record content, which stays unstaged beside the staged renames and is committed separately, after the migration commit; on a no, say they were left as written.
 
 The ask is not ceremony: what it puts to the user is the open half of `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
 
@@ -206,9 +160,7 @@ The ask is not ceremony: what it puts to the user is the open half of `260830-18
 
 - **Never migrate without an explicit user choice.** The survey is read-only; nothing moves before Step 3's answer.
 - **Never overwrite.** A destination that exists means the source stays and the collision is reported. Move only; never copy, never delete.
-- **Never touch the root-anchored surfaces.** `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/`, `.session-marker`, `.checkout-id`, `.cadence-anchors`, `monitor`, `stilwerk/`, `.fusion-setup` stay where they are (`.active-circle` is the one exception, and it is deleted rather than moved — Step 4b says why); their consumers read them at fixed root-relative paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`).
-- **Never guess a status.** The mapping table in Step 2 is proposed to the user and confirmed before anything moves. Where a marker is not one of the six, the container is refused and named, not assigned a status by inference.
-- **Never empty a container, and never open a terminal record.** Every artifact a unit of work produced stays inside that unit's directory, and a record carrying `_c_`, `_b_`, `_s_` or `_d_` is not read, renamed or re-headed by this skill at all.
-- **Never claim an item for this checkout.** A `**Claim:**` is carried only where the record itself names a checkout. The migration moves work; it does not take it on.
-- **Never reconcile a record it moves.** A terminal issue, decision or plan arrives exactly as it was written (`rules/fusion-workbench-conventions.md` `## Terminal states are history`). The one head block this skill rewrites is a **live** Circle record's, as it becomes an item record, and the body below it is carried verbatim, gaining at most the one field the item head does not define.
-- **Never touch git beyond `git mv`.** No `git add`, no `git commit`. The user decides whether to commit the migration.
+- **Never touch the root-anchored surfaces.** `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/`, `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.asset-provenance`, `monitor`, `stilwerk/`, `.fusion-setup` stay where they are; their consumers read them at fixed root-relative paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`).
+- **Never rename inside `archive/`, `stashes/`, `.migration-v2-backup/` or `shared/backlog/`.** Frozen content keeps the names it was frozen with.
+- **Never open a record.** The pass renames directories; no line inside any file is read for its state or rewritten, terminal or live (`rules/fusion-workbench-conventions.md` `## Terminal states are history`).
+- **Never touch git beyond `git mv`.** No `git add`, no `git commit`. The user decides when to commit the migration.

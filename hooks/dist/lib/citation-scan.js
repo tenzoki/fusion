@@ -185,9 +185,9 @@
 //   READ SINCE 2026-09-22: THE PRE-V4 BRACKET MARKER, `<stamp>[o]_<slug>`, in
 //   `BARE_RE`'s marker position beside the underscore form. It was refused here
 //   until then, and the refusal's own reason is what retired it: the reason was
-//   written for workbench FILENAMES, where `/fusion:migrate` is the pressure to
-//   rewrite one and a grammar that read the retired spelling would take that
-//   pressure away (issue
+//   written for workbench FILENAMES, where `/fusion:migrate` was then the
+//   pressure to rewrite one and a grammar reading the retired spelling would
+//   have taken that pressure away (issue
 //   260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md,
 //   the second half). The population that bites is citations inside SOURCE
 //   FILES, which no migration ever opens: there the refusal bought no pressure
@@ -364,10 +364,10 @@ export const BRACKET_SLOT = `\\[[a-zA-Z*]\\]`;
  * THE BRACKET ARM ABSORBS THE MARKER'S TRAILING HYPHEN, because the hyphen is
  * the delimiter and not the first character of the slug: the pre-v4 name is
  * `<stamp>[o]-<topic>.md` and the underscore name is `<stamp>_o_<topic>.md`.
- * That is `/fusion:migrate`'s own rename rule, `s/\[([oatcibspd])\]-/_\1_/g`
- * (`skills/migrate/SKILL.md`, the bracket-marker bullet under Step 4), read off
- * that skill rather than re-derived — a citation and the file it names have to
- * arrive at the same spelling or the pointer the sweep writes finds nothing.
+ * The rename rule is `s/\[([oatcibspd])\]-/_\1_/g`, stated here in place: it
+ * was `/fusion:migrate`'s up to the last v11 tag, and the skill no longer
+ * carries it. A citation and the file it names have to arrive at the same
+ * spelling or the pointer the sweep writes finds nothing.
  */
 export function markerAtHead(rest) {
     const m = new RegExp(`^(?:_([a-z])(_|$)|\\[([a-z])\\]-?)`).exec(rest);
@@ -585,9 +585,9 @@ export const RECORD_EXAMPLE_FILES = {
  * Files whose SUBJECT is the retired store-prefixed layout, with the reason.
  * A different premise from `RECORD_EXAMPLE_FILES` and therefore a different
  * reach: here the store segment is what the file is about, so the exemption
- * covers `store-prefixed` as well. `skills/migrate/SKILL.md` describes the
- * pre-v4 -> v4 conversion move by move (`codereview/…` becomes
- * `shared/reviews/…`), and a gate telling it to drop the segment would be
+ * covers `store-prefixed` as well. `skills/migrate/SKILL.md` carries the
+ * v11 -> v12 store-name migration, naming both layouts literally (`circles/…`
+ * becomes `work-packages/…`), and a gate telling it to drop the segment would be
  * telling it to stop describing the migration; `CLAUDE.md` states the same
  * licence in prose, calling `/fusion:migrate` the only consumer allowed to name
  * both layouts literally, because it is the transition between them.
@@ -598,11 +598,7 @@ export const RECORD_EXAMPLE_FILES = {
  * `RECORD_EXAMPLE_FILES` or the citation belongs in the storeless form.
  */
 export const RETIRED_LAYOUT_FILES = {
-    "skills/migrate/SKILL.md": "the pre-v4 -> v4 layout conversion, demonstrated move by move on fabricated " +
-        "artifacts: two invented record names and one invented plan slug, spelled in that " +
-        "file. They are named there rather than here, because a name written in pointer " +
-        "form inside this file is a pointer to this scanner, and this file is declared in " +
-        "citations.extraPaths",
+    "skills/migrate/SKILL.md": "the v11 -> v12 store-name migration, the transition between two layouts, both named literally",
 };
 /**
  * The placeholder slug a fabricated record carries, as a WORD of the token's

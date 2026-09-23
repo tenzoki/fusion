@@ -52,10 +52,10 @@ export declare const BRACKET_SLOT = "\\[[a-zA-Z*]\\]";
  * THE BRACKET ARM ABSORBS THE MARKER'S TRAILING HYPHEN, because the hyphen is
  * the delimiter and not the first character of the slug: the pre-v4 name is
  * `<stamp>[o]-<topic>.md` and the underscore name is `<stamp>_o_<topic>.md`.
- * That is `/fusion:migrate`'s own rename rule, `s/\[([oatcibspd])\]-/_\1_/g`
- * (`skills/migrate/SKILL.md`, the bracket-marker bullet under Step 4), read off
- * that skill rather than re-derived — a citation and the file it names have to
- * arrive at the same spelling or the pointer the sweep writes finds nothing.
+ * The rename rule is `s/\[([oatcibspd])\]-/_\1_/g`, stated here in place: it
+ * was `/fusion:migrate`'s up to the last v11 tag, and the skill no longer
+ * carries it. A citation and the file it names have to arrive at the same
+ * spelling or the pointer the sweep writes finds nothing.
  */
 export declare function markerAtHead(rest: string): {
     letter: string;
@@ -77,9 +77,9 @@ export declare const RECORD_EXAMPLE_FILES: Record<string, string>;
  * Files whose SUBJECT is the retired store-prefixed layout, with the reason.
  * A different premise from `RECORD_EXAMPLE_FILES` and therefore a different
  * reach: here the store segment is what the file is about, so the exemption
- * covers `store-prefixed` as well. `skills/migrate/SKILL.md` describes the
- * pre-v4 -> v4 conversion move by move (`codereview/…` becomes
- * `shared/reviews/…`), and a gate telling it to drop the segment would be
+ * covers `store-prefixed` as well. `skills/migrate/SKILL.md` carries the
+ * v11 -> v12 store-name migration, naming both layouts literally (`circles/…`
+ * becomes `work-packages/…`), and a gate telling it to drop the segment would be
  * telling it to stop describing the migration; `CLAUDE.md` states the same
  * licence in prose, calling `/fusion:migrate` the only consumer allowed to name
  * both layouts literally, because it is the transition between them.

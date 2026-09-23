@@ -193,8 +193,8 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
 
   // The pre-v4 bracket marker, read by `BARE_RE` since 2026-09-22. What is
   // pinned is the SPELLING the sweep writes: the marker's trailing hyphen is the
-  // delimiter, so it is absorbed exactly as `/fusion:migrate` absorbs it when it
-  // renames the file, and citation and filename arrive at the same name. A word
+  // delimiter, so it is absorbed exactly as `/fusion:migrate` absorbed it when it
+  // renamed the file, and citation and filename arrive at the same name. A word
   // in brackets is no marker and produces no token at all.
   it("respells a bracket marker to the wildcard, hyphen absorbed, and leaves a word in brackets alone", () => {
     const { root, wb } = scratchRepo();
