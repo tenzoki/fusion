@@ -231,7 +231,7 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
     - Dependencies: step 12
     - Acceptance: `rules-voice-profile.test.ts` green; both files parse as YAML; `bin/fusion-rules planner` still emits both profile paths.
 
-14. **Appendix A: the surviving-occurrence table**
+14. [DONE] **Appendix A: the surviving-occurrence table**
     - Executor: `coder`
     - Files: this plan (Appendix A)
     - Changes: run the enumeration command of Appendix A over the surfaces the spec's C3 names; write one row per surviving line, `path:line`, the word, and exactly one class; one row `path:*` per file wholly in class 3 (the upgrade notes), with the count. The enumeration's output and the table's row count are equal, or the difference is a listed rewrite the executor missed and fixes.
@@ -359,10 +359,843 @@ grep -arnE '\b(Circles?|Directive|Grounding|Turn|Artifacts?|artifacts?|Plugin|pl
 
 (`-w` is not used: it would refuse `circles/260922-…`, whose `/` is followed by a word character. `-a` is used because `hooks/lib/work-graph.ts` and `hooks/lib/edge-answers.ts` hold a NUL byte and would otherwise print "Binary file … matches" instead of their lines.)
 
+**Run at step 14** (260923) over `0d6305aa` plus the two rewrites listed below: **816 lines, 816 per-line rows**, and one `path:*` row for each of the 17 upgrade notes the command filters out (227 lines, class 3 whole). Per class: 1 = 75, 2 = 169, 3 = 136, 4 = 418. Eighteen rows carry no class and say why: `— code` (13) is a code identifier the paragraph above keeps out of the classes (`Verdict` types in `citation-scan.ts` and `domain-cascade.ts`, the `verdict` callback in `fail-open.ts`); `— stilwerk` (4) is live prose in a shipped profile that no term pass reached, which `stilwerk/` makes the data-implementer's; `— step 15` (1) is the manifest description step 15 rewrites. A line holding words of two classes takes the class of its legacy concept word (`Circle`, `Turn`, `gate`, …) over `plugin`/`skill`, and of `verdict=` over `plugin`. Rewritten here rather than classified: `agents/orchestrator.md:160` `<Directive and mode>` → `<brief and mode>` (−4 bytes on the orchestrator path), `hooks/lib/guard-state-file.ts:140` `Turn an arbitrary` → `Convert an arbitrary` (a verb, not the concept; `dist/` does not carry the comment).
+
 | `path:line` | word | class |
 |---|---|---|
-| _(written at step 14)_ | | |
-| `docs/upgrading-to-v9.md` through `docs/upgrading-to-v11-4.md`, `path:*` | all | 3 |
+| `.claude-plugin/plugin.json:4` | `work-item` | — step 15 |
+| `CLAUDE.md:1` | `plugin` | 4 |
+| `CLAUDE.md:4` | `Artifact` | 4 |
+| `CLAUDE.md:6` | `plugin` | 4 |
+| `CLAUDE.md:10` | `Plugin` | 4 |
+| `CLAUDE.md:17` | `skills` | 4 |
+| `CLAUDE.md:23` | `plugin` | 4 |
+| `CLAUDE.md:27` | `skill` | 4 |
+| `CLAUDE.md:29` | `Plugin` | 4 |
+| `CLAUDE.md:30` | `Plugin` | 4 |
+| `CLAUDE.md:31` | `Plugin` | 4 |
+| `CLAUDE.md:32` | `skills`, `Skill` | 4 |
+| `CLAUDE.md:38` | `sub-agents`, `plugin` | 4 |
+| `CLAUDE.md:41` | `Plugin` | 4 |
+| `CLAUDE.md:42` | `Plugin` | 4 |
+| `CLAUDE.md:44` | `skills` | 4 |
+| `CLAUDE.md:45` | `Plugin` | 4 |
+| `CLAUDE.md:46` | `skills`, `skill` | 4 |
+| `CLAUDE.md:48` | `plugin` | 4 |
+| `CLAUDE.md:62` | `plugin` | 4 |
+| `README-agents.md:1` | `sub-agents` | 4 |
+| `README-agents.md:3` | `sub-agent` | 4 |
+| `README-agents.md:5` | `sub-agents` | 4 |
+| `README-agents.md:15` | `sub-agent` | 4 |
+| `README-agents.md:17` | `sub-agent` | 4 |
+| `README-agents.md:43` | `gate` | 3 |
+| `README-agents.md:47` | `Circle` | 3 |
+| `README-agents.md:53` | `skill`, `skills` | 4 |
+| `README-agents.md:57` | `skills` | 4 |
+| `README-agents.md:64` | `skills` | 4 |
+| `README-agents.md:65` | `skills` | 4 |
+| `README-agents.md:66` | `skills` | 4 |
+| `README-agents.md:67` | `skills` | 4 |
+| `README-agents.md:69` | `skills` | 4 |
+| `README-agents.md:70` | `skill` | 4 |
+| `README-agents.md:72` | `Circle` | 3 |
+| `README-agents.md:80` | `skill` | 4 |
+| `README-agents.md:84` | `sub-agent` | 4 |
+| `README-agents.md:95` | `sub-agent` | 4 |
+| `README-agents.md:96` | `sub-agent` | 4 |
+| `README-agents.md:162` | `Turn` | 3 |
+| `README-agents.md:179` | `Plugin` | 4 |
+| `README-agents.md:184` | `Circle` | 3 |
+| `README-agents.md:193` | `skill` | 4 |
+| `README-agents.md:196` | `plugin` | 4 |
+| `README-agents.md:198` | `gate` | 1 |
+| `README-agents.md:199` | `skills` | 4 |
+| `README-agents.md:200` | `skills`, `Skill`, `skill` | 4 |
+| `README-agents.md:225` | `skill` | 4 |
+| `README-agents.md:226` | `skill` | 4 |
+| `README-agents.md:227` | `Circle` | 3 |
+| `README-agents.md:229` | `skills`, `skill` | 4 |
+| `README-agents.md:235` | `Plugin`, `Circle`, `skill`, `plugin` | 3 |
+| `README-agents.md:239` | `Artifact` | 4 |
+| `README-agents.md:241` | `skills` | 4 |
+| `README-agents.md:247` | `skills` | 4 |
+| `README-agents.md:248` | `skills`, `plugin` | 4 |
+| `README-agents.md:249` | `skills` | 4 |
+| `README-agents.md:250` | `skills` | 4 |
+| `README-agents.md:251` | `skills` | 4 |
+| `README-agents.md:252` | `skills` | 4 |
+| `README-agents.md:253` | `skills` | 4 |
+| `README-agents.md:254` | `skills` | 4 |
+| `README-agents.md:255` | `skills` | 4 |
+| `README-agents.md:256` | `skills` | 4 |
+| `README-agents.md:257` | `skills` | 4 |
+| `README-agents.md:258` | `skills` | 4 |
+| `README-agents.md:259` | `skills` | 4 |
+| `README-agents.md:260` | `skills` | 4 |
+| `README-agents.md:262` | `sub-agent` | 4 |
+| `README-agents.md:264` | `Skill`, `skills` | 4 |
+| `README-agents.md:286` | `Circle` | 3 |
+| `README-agents.md:290` | `skill`, `circles/`, `Circle` | 3 |
+| `README-agents.md:294` | `work item`, `Circle`, `circles/`, `verdict`, `Circles` | 3 |
+| `README-agents.md:305` | `Turn` | 3 |
+| `README-agents.md:323` | `Plugin` | 4 |
+| `README-agents.md:333` | `plugin` | 4 |
+| `README-agents.md:335` | `plugin` | 4 |
+| `README-agents.md:339` | `plugin`, `skills` | 4 |
+| `README-agents.md:340` | `plugin` | 4 |
+| `README-agents.md:342` | `plugin` | 4 |
+| `README-agents.md:349` | `plugin` | 4 |
+| `README-agents.md:351` | `plugin`, `skill`, `Circle` | 3 |
+| `README-agents.md:353` | `plugin` | 4 |
+| `README-agents.md:357` | `plugin` | 4 |
+| `README-agents.md:362` | `plugin` | 4 |
+| `README-agents.md:363` | `plugin` | 4 |
+| `README-agents.md:365` | `plugin` | 4 |
+| `README-agents.md:367` | `plugin` | 4 |
+| `README-hooks.md:3` | `sub-agent` | 4 |
+| `README-hooks.md:14` | `sub-agent` | 4 |
+| `README-hooks.md:18` | `plugin`, `verdict` | 3 |
+| `README-hooks.md:20` | `verdict`, `plugin` | 3 |
+| `README-hooks.md:24` | `sub-agent` | 4 |
+| `README-hooks.md:43` | `plugin` | 3 |
+| `README-hooks.md:84` | `sub-agent` | 4 |
+| `README-hooks.md:117` | `plugin` | 4 |
+| `README-hooks.md:157` | `plugin` | 4 |
+| `README-hooks.md:194` | `plugin` | 4 |
+| `README-hooks.md:196` | `plugin` | 4 |
+| `README-hooks.md:221` | `sub-agent` | 4 |
+| `README-hooks.md:222` | `sub-agent` | 4 |
+| `README-hooks.md:223` | `sub-agent` | 4 |
+| `README-hooks.md:224` | `verdict` | 2 |
+| `README-hooks.md:225` | `Turn` | 3 |
+| `README-hooks.md:226` | `verdict` | 2 |
+| `README-hooks.md:227` | `verdict` | 2 |
+| `README-hooks.md:229` | `verdict` | 2 |
+| `README-hooks.md:230` | `verdict` | 2 |
+| `README-hooks.md:234` | `sub-agent` | 4 |
+| `README-hooks.md:238` | `gate` | 1 |
+| `README-hooks.md:241` | `Turn` | 3 |
+| `README-hooks.md:243` | `plugin`, `verdict` | 3 |
+| `README-hooks.md:244` | `skills`, `skill`, `gate` | 4 |
+| `README-hooks.md:245` | `verdict` | 2 |
+| `README-hooks.md:247` | `gate` | 1 |
+| `README-hooks.md:248` | `plugin` | 4 |
+| `README-hooks.md:249` | `Circle` | 2 |
+| `README-hooks.md:254` | `plugin`, `verdict`, `sub-agent` | 3 |
+| `README-hooks.md:255` | `Turn`, `plugin` | 3 |
+| `README-hooks.md:261` | `skill` | 4 |
+| `README-hooks.md:273` | `skills`, `skill` | 4 |
+| `README-hooks.md:316` | `skill`, `Circle` | 3 |
+| `README-hooks.md:317` | `skill` | 4 |
+| `README-hooks.md:320` | `plugin`, `skill`, `Circle` | 3 |
+| `README-hooks.md:321` | `plugin`, `skill`, `skills` | 4 |
+| `README-hooks.md:326` | `verdict` | 2 |
+| `README-hooks.md:329` | `Circle`, `Turn` | 2 |
+| `README-hooks.md:331` | `skill`, `skills`, `Circle` | 3 |
+| `README-hooks.md:332` | `verdict` | 2 |
+| `README-hooks.md:333` | `verdict` | 2 |
+| `README-hooks.md:334` | `verdict` | 2 |
+| `README-hooks.md:337` | `verdict` | 2 |
+| `README-hooks.md:338` | `verdict` | 2 |
+| `README-hooks.md:339` | `verdict` | 2 |
+| `README-hooks.md:340` | `skill` | 4 |
+| `README-hooks.md:386` | `plugin` | 4 |
+| `README-hooks.md:409` | `Turn` | 3 |
+| `README-hooks.md:411` | `plugin` | 3 |
+| `README-hooks.md:429` | `verdict` | 2 |
+| `README-hooks.md:435` | `Turn` | 3 |
+| `README-hooks.md:505` | `skills` | 4 |
+| `README-hooks.md:510` | `skills` | 4 |
+| `README-hooks.md:512` | `skills` | 4 |
+| `README-hooks.md:525` | `skills` | 4 |
+| `README-hooks.md:538` | `skills` | 4 |
+| `README-hooks.md:558` | `skills` | 4 |
+| `README-hooks.md:561` | `skills` | 4 |
+| `README-hooks.md:563` | `skills`, `skill` | 4 |
+| `README-hooks.md:567` | `work-item`, `skills` | 1 |
+| `README-hooks.md:569` | `work-item`, `skills` | 3 |
+| `README-hooks.md:571` | `skills` | 4 |
+| `README-hooks.md:573` | `Circle` | 3 |
+| `README-hooks.md:575` | `skills`, `skill` | 4 |
+| `README-hooks.md:577` | `skill` | 4 |
+| `README-hooks.md:579` | `skills` | 4 |
+| `README-hooks.md:583` | `gate` | 3 |
+| `README-hooks.md:585` | `skill`, `gate` | 3 |
+| `README-hooks.md:594` | `gate`, `skill` | 3 |
+| `README-hooks.md:595` | `gate`, `skills` | 1 |
+| `README-hooks.md:603` | `skill`, `skills` | 4 |
+| `README-hooks.md:611` | `skills` | 4 |
+| `README-hooks.md:613` | `skills` | 1 |
+| `README-hooks.md:615` | `skill` | 4 |
+| `README-hooks.md:617` | `skill` | 1 |
+| `README-hooks.md:619` | `skills` | 4 |
+| `README-hooks.md:631` | `skills` | 4 |
+| `README-hooks.md:665` | `plugin` | 4 |
+| `README-hooks.md:677` | `plugin` | 4 |
+| `README-hooks.md:681` | `sub-agents`, `sub-agent` | 4 |
+| `README-hooks.md:683` | `plugin` | 4 |
+| `README-hooks.md:685` | `plugin` | 4 |
+| `README-hooks.md:687` | `gate`, `Grounding`, `skill`, `sub-agents` | 3 |
+| `README-hooks.md:691` | `Turn` | 3 |
+| `README-hooks.md:693` | `skills` | 4 |
+| `README-hooks.md:698` | `verdict` | 3 |
+| `README.md:17` | `plugin` | 4 |
+| `README.md:30` | `Circle`, `work item`, `Turn` | 3 |
+| `README.md:36` | `gate`, `verdict` | 3 |
+| `README.md:38` | `skill` | 3 |
+| `README.md:40` | `verdict` | 3 |
+| `README.md:42` | `Circle` | 3 |
+| `README.md:44` | `verdict`, `Directive`, `gate` | 3 |
+| `README.md:48` | `Circle` | 3 |
+| `README.md:50` | `Circle`, `Directive` | 3 |
+| `README.md:52` | `Turn` | 3 |
+| `README.md:54` | `skills`, `plugin` | 3 |
+| `README.md:59` | `plugin` | 4 |
+| `README.md:60` | `plugin` | 4 |
+| `README.md:63` | `plugin` | 4 |
+| `README.md:67` | `plugin` | 4 |
+| `README.md:136` | `Turn` | 3 |
+| `README.md:142` | `Artifact` | 4 |
+| `README.md:162` | `Circle` | 3 |
+| `agents/document-editor.md:3` | `skills` | 4 |
+| `agents/document-editor.md:37` | `skill` | 4 |
+| `agents/document-editor.md:72` | `Skill`, `skill` | 4 |
+| `agents/implementation-planner.md:102` | `Directive` | 4 |
+| `agents/orchestrator.md:34` | `skill` | 4 |
+| `agents/orchestrator.md:56` | `plugin` | 4 |
+| `agents/orchestrator.md:62` | `plugin` | 4 |
+| `agents/orchestrator.md:102` | `plugin` | 4 |
+| `agents/orchestrator.md:108` | `plugin` | 4 |
+| `agents/orchestrator.md:131` | `plugin` | 4 |
+| `agents/orchestrator.md:143` | `Circle` | 3 |
+| `agents/orchestrator.md:170` | `skill` | 4 |
+| `agents/orchestrator.md:294` | `skills` | 4 |
+| `agents/orchestrator.md:343` | `plugin` | 4 |
+| `agents/orchestrator.md:352` | `verdict` | 2 |
+| `agents/orchestrator.md:356` | `verdict` | 2 |
+| `agents/orchestrator.md:366` | `verdict` | 2 |
+| `agents/orchestrator.md:368` | `verdict` | 2 |
+| `agents/orchestrator.md:372` | `gate` | 1 |
+| `agents/orchestrator.md:408` | `gate` | 1 |
+| `agents/orchestrator.md:457` | `Circle` | 2 |
+| `agents/orchestrator.md:514` | `plugin` | 4 |
+| `agents/orchestrator.md:520` | `verdict` | 2 |
+| `agents/orchestrator.md:529` | `verdict` | 2 |
+| `agents/orchestrator.md:531` | `verdict`, `plugin` | 2 |
+| `agents/orchestrator.md:586` | `Circle` | 2 |
+| `agents/orchestrator.md:592` | `verdict` | 2 |
+| `agents/orchestrator.md:618` | `skill` | 4 |
+| `agents/policy-curator.md:48` | `gate` | 3 |
+| `agents/policy-curator.md:70` | `skill`, `work-items` | 1 |
+| `agents/policy-curator.md:72` | `plugin` | 4 |
+| `agents/policy-curator.md:81` | `skill` | 4 |
+| `agents/policy-curator.md:182` | `skills` | 4 |
+| `agents/policy-curator.md:194` | `Circle` | 3 |
+| `agents/policy-curator.md:198` | `gate` | 1 |
+| `agents/policy-curator.md:225` | `work-item` | 2 |
+| `agents/policy-curator.md:232` | `work-item` | 2 |
+| `agents/policy-curator.md:233` | `work-item` | 2 |
+| `agents/policy-curator.md:281` | `work-item` | 2 |
+| `agents/policy-curator.md:282` | `work-item` | 2 |
+| `agents/policy-curator.md:295` | `skill` | 4 |
+| `agents/policy-curator.md:309` | `skills` | 4 |
+| `agents/policy-curator.md:362` | `skill` | 4 |
+| `agents/policy-curator.md:371` | `skills` | 4 |
+| `agents/policy-curator.md:396` | `skills` | 4 |
+| `agents/policy-curator.md:398` | `skills` | 4 |
+| `agents/policy-curator.md:434` | `work item` | 2 |
+| `agents/policy-curator.md:438` | `work-item` | 2 |
+| `agents/policy-curator.md:456` | `plugin` | 4 |
+| `agents/policy-curator.md:458` | `work item` | 2 |
+| `agents/policy-curator.md:460` | `work-item` | 2 |
+| `agents/policy-curator.md:508` | `skill` | 4 |
+| `agents/policy-curator.md:509` | `plugin` | 4 |
+| `agents/requirements-designer.md:45` | `Directive` | 4 |
+| `agents/requirements-designer.md:55` | `Directive` | 3 |
+| `agents/requirements-designer.md:132` | `Directive` | 4 |
+| `agents/requirements-designer.md:212` | `Directive` | 4 |
+| `agents/state-auditor.md:18` | `Directive` | 4 |
+| `agents/state-auditor.md:21` | `Directive` | 4 |
+| `agents/state-auditor.md:98` | `Directive` | 4 |
+| `bin/fusion-cadence-anchor:7` | `skills` | 4 |
+| `bin/fusion-cadence-anchor:100` | `skill` | 4 |
+| `bin/fusion-cadence-anchor:102` | `skills` | 4 |
+| `bin/fusion-checkout-name:7` | `skill` | 4 |
+| `bin/fusion-checkout-name:255` | `skills` | 4 |
+| `bin/fusion-checkout-name:257` | `skills` | 4 |
+| `bin/fusion-checkout-name:279` | `skill` | 1 |
+| `bin/fusion-checkout-name:331` | `plugin` | 4 |
+| `bin/fusion-checkout-name:384` | `plugin` | 4 |
+| `bin/fusion-citation-check:26` | `verdict` | 2 |
+| `bin/fusion-citation-check:29` | `verdict` | 2 |
+| `bin/fusion-citation-check:30` | `verdict` | 1 |
+| `bin/fusion-citation-check:32` | `verdict` | 2 |
+| `bin/fusion-citation-check:53` | `verdict` | 2 |
+| `bin/fusion-citation-check:72` | `verdict` | 2 |
+| `bin/fusion-citation-check:110` | `verdict` | 2 |
+| `bin/fusion-citation-check:115` | `plugin` | 4 |
+| `bin/fusion-citation-check:130` | `plugin` | 4 |
+| `bin/fusion-citation-sweep:61` | `plugin` | 4 |
+| `bin/fusion-citation-sweep:81` | `plugin` | 4 |
+| `bin/fusion-claimed-package:75` | `work-item` | 1 |
+| `bin/fusion-claimed-package:138` | `plugin` | 4 |
+| `bin/fusion-edge-answers:16` | `verdict` | 2 |
+| `bin/fusion-edge-answers:42` | `verdict` | 2 |
+| `bin/fusion-edge-answers:55` | `verdict` | 2 |
+| `bin/fusion-edge-answers:59` | `plugin` | 4 |
+| `bin/fusion-edge-answers:65` | `plugin` | 4 |
+| `bin/fusion-edge-answers:74` | `plugin` | 4 |
+| `bin/fusion-events:76` | `circles/` | 2 |
+| `bin/fusion-events:117` | `skill` | 4 |
+| `bin/fusion-events:208` | `plugin` | 4 |
+| `bin/fusion-events:305` | `plugin` | 4 |
+| `bin/fusion-forum:86` | `skill` | 4 |
+| `bin/fusion-forum:182` | `skills` | 4 |
+| `bin/fusion-forum:215` | `skill` | 4 |
+| `bin/fusion-forum:217` | `skills` | 4 |
+| `bin/fusion-identity:62` | `skills` | 4 |
+| `bin/fusion-identity:238` | `plugin` | 4 |
+| `bin/fusion-paths:6` | `skill`, `skills` | 4 |
+| `bin/fusion-paths:19` | `skill` | 4 |
+| `bin/fusion-paths:46` | `skill` | 4 |
+| `bin/fusion-paths:52` | `skill` | 4 |
+| `bin/fusion-paths:153` | `gate` | 1 |
+| `bin/fusion-paths:160` | `skills`, `skill` | 4 |
+| `bin/fusion-paths:161` | `skills` | 4 |
+| `bin/fusion-paths:163` | `skill` | 4 |
+| `bin/fusion-paths:170` | `skill`, `skills` | 4 |
+| `bin/fusion-paths:195` | `plugin` | 4 |
+| `bin/fusion-paths:198` | `skills` | 4 |
+| `bin/fusion-paths:200` | `plugin` | 4 |
+| `bin/fusion-paths:203` | `plugin` | 4 |
+| `bin/fusion-paths:207` | `plugin` | 4 |
+| `bin/fusion-paths:218` | `skills` | 1 |
+| `bin/fusion-paths:241` | `skills` | 4 |
+| `bin/fusion-paths:250` | `skill`, `skills` | 4 |
+| `bin/fusion-paths:256` | `skills` | 4 |
+| `bin/fusion-paths:259` | `skills` | 4 |
+| `bin/fusion-paths:264` | `skill`, `skills` | 4 |
+| `bin/fusion-paths:271` | `skill`, `skills` | 4 |
+| `bin/fusion-paths:317` | `plugin` | 4 |
+| `bin/fusion-paths:363` | `plugin` | 4 |
+| `bin/fusion-plan-size:17` | `verdict` | 2 |
+| `bin/fusion-plan-size:26` | `verdict` | 2 |
+| `bin/fusion-plan-size:27` | `verdict` | 2 |
+| `bin/fusion-plan-size:31` | `plugin` | 4 |
+| `bin/fusion-plan-size:66` | `plugin` | 4 |
+| `bin/fusion-plugin-cwd:2` | `plugin` | 4 |
+| `bin/fusion-plugin-cwd:5` | `plugin` | 4 |
+| `bin/fusion-plugin-cwd:7` | `plugin` | 4 |
+| `bin/fusion-plugin-cwd:32` | `skill` | 4 |
+| `bin/fusion-plugin-cwd:35` | `Circle` | 3 |
+| `bin/fusion-plugin-cwd:38` | `plugin` | 4 |
+| `bin/fusion-prose-metric:11` | `verdict` | 2 |
+| `bin/fusion-prose-metric:26` | `verdict` | 2 |
+| `bin/fusion-prose-metric:29` | `verdict` | 2 |
+| `bin/fusion-prose-metric:43` | `verdict` | 2 |
+| `bin/fusion-prose-metric:132` | `verdict` | 2 |
+| `bin/fusion-prose-metric:283` | `verdict` | 2 |
+| `bin/fusion-review-coverage:29` | `verdict` | 2 |
+| `bin/fusion-review-coverage:32` | `skills` | 4 |
+| `bin/fusion-review-coverage:36` | `verdict` | 2 |
+| `bin/fusion-review-coverage:42` | `plugin` | 4 |
+| `bin/fusion-review-coverage:53` | `Turn` | 3 |
+| `bin/fusion-review-coverage:77` | `plugin` | 4 |
+| `bin/fusion-rules:8` | `plugin` | 4 |
+| `bin/fusion-rules:54` | `Circle` | 3 |
+| `bin/fusion-rules:62` | `plugin` | 4 |
+| `bin/fusion-rules:87` | `skill` | 4 |
+| `bin/fusion-rules:114` | `Artifact` | 4 |
+| `bin/fusion-rules:121` | `Artifact` | 4 |
+| `bin/fusion-rules:204` | `plugin` | 4 |
+| `bin/fusion-rules:208` | `plugin` | 4 |
+| `bin/fusion-rules:209` | `plugin` | 4 |
+| `bin/fusion-rules:215` | `plugin` | 4 |
+| `bin/fusion-rules:219` | `plugin` | 4 |
+| `bin/fusion-rules:237` | `Circle` | 1 |
+| `bin/fusion-rules:359` | `Artifact` | 4 |
+| `bin/fusion-rules:547` | `plugin` | 4 |
+| `bin/fusion-rules:567` | `Artifact` | 4 |
+| `bin/fusion-rules:648` | `skills` | 4 |
+| `bin/fusion-rules:662` | `work item`, `Circle` | 3 |
+| `bin/fusion-rules:686` | `plugin` | 4 |
+| `bin/fusion-rules:747` | `skill` | 4 |
+| `bin/fusion-rules:784` | `skill` | 4 |
+| `bin/fusion-rules:805` | `skill` | 4 |
+| `bin/fusion-session-domain:2` | `skill` | 4 |
+| `bin/fusion-session-domain:3` | `skill` | 1 |
+| `bin/fusion-session-domain:4` | `skill` | 4 |
+| `bin/fusion-session-domain:5` | `skill` | 1 |
+| `bin/fusion-session-domain:51` | `skills` | 4 |
+| `bin/fusion-source-root:4` | `skills` | 4 |
+| `bin/fusion-source-root:11` | `skills` | 4 |
+| `bin/fusion-source-root:14` | `plugin` | 4 |
+| `bin/fusion-source-root:15` | `plugin` | 4 |
+| `bin/fusion-source-root:23` | `plugin` | 4 |
+| `bin/fusion-source-root:32` | `skill` | 4 |
+| `bin/fusion-source-root:34` | `skill` | 4 |
+| `bin/fusion-source-root:39` | `skills` | 1 |
+| `bin/fusion-source-root:40` | `skill` | 1 |
+| `bin/fusion-source-root:43` | `plugin` | 4 |
+| `bin/fusion-source-root:49` | `skill` | 4 |
+| `bin/fusion-source-root:60` | `plugin` | 4 |
+| `bin/fusion-source-root:74` | `plugin` | 4 |
+| `bin/fusion-source-root:80` | `plugin` | 4 |
+| `bin/fusion-source-root:88` | `plugin` | 4 |
+| `bin/fusion-source-root:89` | `plugin` | 4 |
+| `bin/fusion-source-root:103` | `plugin` | 4 |
+| `bin/fusion-source-root:113` | `plugin` | 4 |
+| `bin/fusion-staging-drift:13` | `verdict` | 2 |
+| `bin/fusion-staging-drift:20` | `verdict` | 2 |
+| `bin/fusion-staging-drift:28` | `verdict` | 2 |
+| `bin/fusion-staging-drift:33` | `plugin` | 4 |
+| `bin/fusion-staging-drift:73` | `plugin` | 4 |
+| `bin/fusion-work-order:20` | `verdict` | 2 |
+| `bin/fusion-work-order:67` | `verdict` | 2 |
+| `bin/fusion-work-order:68` | `verdict` | 2 |
+| `bin/fusion-work-order:72` | `plugin` | 4 |
+| `bin/fusion-work-order:79` | `work-items` | 1 |
+| `bin/fusion-work-order:86` | `verdict` | 2 |
+| `bin/fusion-work-order:96` | `plugin` | 4 |
+| `bin/fusion-work-order:105` | `plugin` | 4 |
+| `bin/fusion-workbench-root:20` | `skill` | 4 |
+| `bin/monitor:185` | `Circle`, `Turn` | 3 |
+| `bin/monitor:367` | `gate` | 2 |
+| `bin/monitor:566` | `Turn` | 2 |
+| `bin/monitor:569` | `gate`, `Turn` | 2 |
+| `bin/monitor:576` | `gate` | 2 |
+| `bin/monitor:582` | `Turn` | 2 |
+| `bin/monitor:585` | `Turn` | 2 |
+| `bin/monitor:586` | `Turn` | 2 |
+| `bin/monitor:588` | `Turn` | 2 |
+| `bin/monitor:1019` | `gate` | 2 |
+| `bin/monitor:1020` | `gate` | 2 |
+| `bin/monitor:1287` | `gate` | 2 |
+| `bin/monitor:1525` | `Turn` | 3 |
+| `bin/monitor:1587` | `Turn` | 3 |
+| `bin/monitor:1610` | `Turn` | 3 |
+| `bin/monitor:1664` | `circles/` | 1 |
+| `bin/monitor:1831` | `circles/` | 1 |
+| `docs/fusion-intro.md:3` | `Plugin` | 4 |
+| `docs/fusion-intro.md:71` | `Turn` | 3 |
+| `docs/fusion-intro.md:97` | `Circle`, `circles/` | 3 |
+| `docs/fusion-intro.md:126` | `Gate` | 3 |
+| `docs/fusion-intro.md:161` | `Circle` | 3 |
+| `docs/fusion-intro.md:208` | `plugin` | 4 |
+| `docs/fusion-intro.md:210` | `Artifact` | 4 |
+| `docs/fusion-intro.md:229` | `skills` | 4 |
+| `docs/messages-between-checkouts.md:33` | `Circle` | 3 |
+| `docs/messages-between-checkouts.md:37` | `skills` | 4 |
+| `docs/messages-between-checkouts.md:108` | `skills` | 4 |
+| `docs/working-model.md:27` | `Directive` | 4 |
+| `docs/working-model.md:54` | `skills` | 4 |
+| `docs/working-model.md:60` | `Circle` | 3 |
+| `docs/working-model.md:100` | `Directive` | 3 |
+| `docs/working-model.md:118` | `Turn` | 3 |
+| `hooks/citation-check.ts:38` | `verdict` | 2 |
+| `hooks/citation-check.ts:73` | `Circle` | 2 |
+| `hooks/citation-check.ts:91` | `verdict` | 2 |
+| `hooks/citation-check.ts:94` | `verdict` | 1 |
+| `hooks/citation-check.ts:95` | `verdict` | 2 |
+| `hooks/citation-check.ts:99` | `verdict` | 2 |
+| `hooks/citation-check.ts:112` | `Circle` | 2 |
+| `hooks/citation-check.ts:125` | `verdict` | 2 |
+| `hooks/citation-check.ts:141` | `verdict` | 2 |
+| `hooks/citation-check.ts:144` | `verdict` | 2 |
+| `hooks/citation-check.ts:147` | `verdict` | 2 |
+| `hooks/citation-check.ts:177` | `verdict` | 2 |
+| `hooks/citation-check.ts:178` | `verdict` | 2 |
+| `hooks/citation-check.ts:200` | `verdict` | 2 |
+| `hooks/citation-check.ts:201` | `verdict` | 2 |
+| `hooks/citation-check.ts:213` | `verdict` | 2 |
+| `hooks/citation-check.ts:242` | `verdict` | 2 |
+| `hooks/citation-check.ts:243` | `verdict` | 2 |
+| `hooks/citation-check.ts:316` | `verdict` | 2 |
+| `hooks/citation-check.ts:370` | `verdict` | 2 |
+| `hooks/citation-sweep.ts:7` | `Circle` | 1 |
+| `hooks/citation-sweep.ts:59` | `Turn` | 3 |
+| `hooks/citation-sweep.ts:65` | `artifacts` | 1 |
+| `hooks/citation-sweep.ts:343` | `circles/` | 2 |
+| `hooks/edge-answers.ts:18` | `verdict` | 2 |
+| `hooks/edge-answers.ts:36` | `verdict` | 2 |
+| `hooks/edge-answers.ts:40` | `verdict` | 2 |
+| `hooks/edge-answers.ts:90` | `verdict` | 2 |
+| `hooks/events-query.ts:3` | `skill` | 4 |
+| `hooks/events-query.ts:193` | `plugin` | 4 |
+| `hooks/guard.ts:5` | `sub-agent` | 4 |
+| `hooks/lib/citation-corpus.ts:10` | `verdict` | 2 |
+| `hooks/lib/citation-corpus.ts:13` | `verdict` | 1 |
+| `hooks/lib/citation-corpus.ts:15` | `verdict` | 2 |
+| `hooks/lib/citation-corpus.ts:19` | `gate` | 1 |
+| `hooks/lib/citation-corpus.ts:70` | `verdict` | 2 |
+| `hooks/lib/citation-corpus.ts:97` | `Circle` | 3 |
+| `hooks/lib/citation-corpus.ts:123` | `Circle` | 3 |
+| `hooks/lib/citation-corpus.ts:142` | `Circle` | 2 |
+| `hooks/lib/citation-corpus.ts:149` | `work-item` | 1 |
+| `hooks/lib/citation-corpus.ts:150` | `artifacts` | 1 |
+| `hooks/lib/citation-corpus.ts:176` | `Circle` | 2 |
+| `hooks/lib/citation-corpus.ts:195` | `Circle` | 3 |
+| `hooks/lib/citation-corpus.ts:211` | `Circle`, `skills` | 3 |
+| `hooks/lib/citation-corpus.ts:218` | `skills` | 4 |
+| `hooks/lib/citation-corpus.ts:260` | `Circle` | 3 |
+| `hooks/lib/citation-corpus.ts:273` | `skills` | 4 |
+| `hooks/lib/citation-form.ts:3` | `gate` | 1 |
+| `hooks/lib/citation-scan.ts:18` | `Circle` | 1 |
+| `hooks/lib/citation-scan.ts:61` | `circles/` | 1 |
+| `hooks/lib/citation-scan.ts:81` | `Circle` | 2 |
+| `hooks/lib/citation-scan.ts:87` | `artifacts` | 1 |
+| `hooks/lib/citation-scan.ts:152` | `Circle` | 3 |
+| `hooks/lib/citation-scan.ts:282` | `verdict` | 2 |
+| `hooks/lib/citation-scan.ts:348` | `Circle` | 2 |
+| `hooks/lib/citation-scan.ts:366` | `Circle` | 2 |
+| `hooks/lib/citation-scan.ts:396` | `skill` | 4 |
+| `hooks/lib/citation-scan.ts:493` | `circles/` | 2 |
+| `hooks/lib/citation-scan.ts:534` | `Circle` | 2 |
+| `hooks/lib/citation-scan.ts:550` | `circles/` | 2 |
+| `hooks/lib/citation-scan.ts:559` | `work-item` | 1 |
+| `hooks/lib/citation-scan.ts:634` | `verdict` | 1 |
+| `hooks/lib/citation-scan.ts:645` | `skills` | 4 |
+| `hooks/lib/citation-scan.ts:646` | `circles/` | 2 |
+| `hooks/lib/citation-scan.ts:658` | `skills` | 4 |
+| `hooks/lib/citation-scan.ts:691` | `gate` | 1 |
+| `hooks/lib/citation-scan.ts:909` | `circles/` | 2 |
+| `hooks/lib/citation-scan.ts:942` | `gate` | 1 |
+| `hooks/lib/citation-scan.ts:982` | `verdict` | 1 |
+| `hooks/lib/citation-scan.ts:1014` | `verdict` | 1 |
+| `hooks/lib/citation-scan.ts:1085` | `Verdict` | — code |
+| `hooks/lib/citation-scan.ts:1137` | `circles/` | 2 |
+| `hooks/lib/citation-scan.ts:1138` | `circles/` | 2 |
+| `hooks/lib/citation-scan.ts:1141` | `circles/` | 2 |
+| `hooks/lib/citation-scan.ts:1147` | `circles/` | 2 |
+| `hooks/lib/citation-scan.ts:1232` | `Verdict` | — code |
+| `hooks/lib/citation-scan.ts:1295` | `Verdict` | — code |
+| `hooks/lib/citation-scan.ts:1300` | `Verdict` | — code |
+| `hooks/lib/citation-scan.ts:1325` | `Circle` | 2 |
+| `hooks/lib/citation-scan.ts:1512` | `skill` | 4 |
+| `hooks/lib/citation-scan.ts:1513` | `skill` | 4 |
+| `hooks/lib/citation-scan.ts:1525` | `skills` | 4 |
+| `hooks/lib/citation-scan.ts:1527` | `skills` | 4 |
+| `hooks/lib/citation-scan.ts:1528` | `skills` | 4 |
+| `hooks/lib/config.ts:9` | `plugin` | 4 |
+| `hooks/lib/config.ts:11` | `plugin` | 4 |
+| `hooks/lib/config.ts:26` | `Turn` | 3 |
+| `hooks/lib/config.ts:46` | `Turn` | 3 |
+| `hooks/lib/config.ts:114` | `verdict` | 3 |
+| `hooks/lib/config.ts:162` | `Turn` | 3 |
+| `hooks/lib/config.ts:191` | `plugin` | 4 |
+| `hooks/lib/config.ts:192` | `plugin` | 1 |
+| `hooks/lib/config.ts:462` | `Turn` | 3 |
+| `hooks/lib/config.ts:483` | `verdict` | 3 |
+| `hooks/lib/config.ts:485` | `verdict` | 3 |
+| `hooks/lib/config.ts:487` | `plugin` | 4 |
+| `hooks/lib/config.ts:501` | `Turn` | 3 |
+| `hooks/lib/config.ts:508` | `Turn` | 3 |
+| `hooks/lib/config.ts:517` | `Turn` | 3 |
+| `hooks/lib/config.ts:540` | `plugin` | 4 |
+| `hooks/lib/dispatch-bytes.ts:23` | `skill` | 4 |
+| `hooks/lib/dispatch-bytes.ts:38` | `plugin` | 4 |
+| `hooks/lib/dispatch-bytes.ts:134` | `plugin` | 4 |
+| `hooks/lib/dispatch-bytes.ts:200` | `skill` | 4 |
+| `hooks/lib/dispatch-bytes.ts:208` | `skill` | 4 |
+| `hooks/lib/domain-cascade.ts:36` | `skills` | 4 |
+| `hooks/lib/domain-cascade.ts:39` | `skill`, `gate` | 1 |
+| `hooks/lib/domain-cascade.ts:104` | `gate` | 1 |
+| `hooks/lib/domain-cascade.ts:112` | `skill`, `gate` | 1 |
+| `hooks/lib/domain-cascade.ts:602` | `Verdict` | — code |
+| `hooks/lib/domain-cascade.ts:610` | `Verdict` | — code |
+| `hooks/lib/domain-cascade.ts:694` | `skills`, `skill`, `gate` | 4 |
+| `hooks/lib/domain-cascade.ts:698` | `gate` | 1 |
+| `hooks/lib/domain-cascade.ts:886` | `plugin` | 4 |
+| `hooks/lib/domain-cascade.ts:903` | `skills` | 4 |
+| `hooks/lib/domain-cascade.ts:1074` | `skill` | 4 |
+| `hooks/lib/edge-answers.ts:27` | `verdict` | 2 |
+| `hooks/lib/edge-answers.ts:98` | `verdict` | 2 |
+| `hooks/lib/edge-answers.ts:250` | `verdict` | 2 |
+| `hooks/lib/events-query.ts:131` | `Circle` | 3 |
+| `hooks/lib/events-query.ts:178` | `Circle` | 2 |
+| `hooks/lib/events-query.ts:179` | `circles/`, `Circle` | 2 |
+| `hooks/lib/events-query.ts:185` | `circles/` | 2 |
+| `hooks/lib/events-query.ts:238` | `Circle` | 2 |
+| `hooks/lib/events-query.ts:462` | `gate` | 3 |
+| `hooks/lib/events-query.ts:463` | `gate` | 3 |
+| `hooks/lib/events-query.ts:524` | `skill` | 4 |
+| `hooks/lib/fail-open.ts:81` | `verdict` | — code |
+| `hooks/lib/fail-open.ts:141` | `verdict` | — code |
+| `hooks/lib/fail-open.ts:152` | `verdict` | — code |
+| `hooks/lib/fail-open.ts:155` | `verdict` | — code |
+| `hooks/lib/fail-open.ts:166` | `verdict` | — code |
+| `hooks/lib/fail-open.ts:174` | `verdict` | — code |
+| `hooks/lib/fail-open.ts:177` | `verdict` | — code |
+| `hooks/lib/orchestrator-events.ts:21` | `sub-agent` | 4 |
+| `hooks/lib/orchestrator-events.ts:56` | `Turn` | 3 |
+| `hooks/lib/orchestrator-events.ts:148` | `sub-agent` | 4 |
+| `hooks/lib/orchestrator-events.ts:212` | `Turn` | 3 |
+| `hooks/lib/orchestrator-events.ts:257` | `plugin` | 4 |
+| `hooks/lib/orchestrator-events.ts:304` | `sub-agent` | 4 |
+| `hooks/lib/orchestrator-events.ts:317` | `sub-agent` | 1 |
+| `hooks/lib/paths.ts:19` | `verdict` | 3 |
+| `hooks/lib/plan-size.ts:22` | `verdict` | 2 |
+| `hooks/lib/plan-size.ts:75` | `verdict` | 2 |
+| `hooks/lib/plan-size.ts:153` | `verdict` | 2 |
+| `hooks/lib/plan-size.ts:156` | `verdict` | 2 |
+| `hooks/lib/review-coverage.ts:11` | `Turn` | 3 |
+| `hooks/lib/review-coverage.ts:16` | `Turn` | 3 |
+| `hooks/lib/review-coverage.ts:17` | `skills` | 4 |
+| `hooks/lib/review-coverage.ts:18` | `Circle`, `skill` | 3 |
+| `hooks/lib/review-coverage.ts:55` | `Circle` | 3 |
+| `hooks/lib/review-coverage.ts:56` | `plugin` | 4 |
+| `hooks/lib/review-coverage.ts:174` | `gate`, `Turn` | 3 |
+| `hooks/lib/review-coverage.ts:483` | `Turn` | 3 |
+| `hooks/lib/self-detect.ts:2` | `plugin` | 4 |
+| `hooks/lib/self-detect.ts:37` | `plugin` | 4 |
+| `hooks/lib/self-detect.ts:44` | `plugin` | 4 |
+| `hooks/lib/self-detect.ts:45` | `plugin` | 4 |
+| `hooks/lib/self-detect.ts:52` | `plugin` | 4 |
+| `hooks/lib/self-detect.ts:59` | `plugin` | 4 |
+| `hooks/lib/staging-drift.ts:17` | `plugin` | 4 |
+| `hooks/lib/staging-drift.ts:93` | `Circle` | 2 |
+| `hooks/lib/staging-drift.ts:279` | `skills` | 4 |
+| `hooks/lib/staging-drift.ts:310` | `gate` | 1 |
+| `hooks/lib/staging-drift.ts:403` | `skills` | 4 |
+| `hooks/lib/staging-drift.ts:457` | `skills` | 4 |
+| `hooks/lib/staging-drift.ts:466` | `Circle` | 2 |
+| `hooks/lib/staging-drift.ts:551` | `Turn` | 3 |
+| `hooks/lib/stores.ts:9` | `artifact` | 1 |
+| `hooks/lib/stores.ts:46` | `work items` | 3 |
+| `hooks/lib/stores.ts:62` | `plugin` | 4 |
+| `hooks/lib/stores.ts:84` | `circles/` | 2 |
+| `hooks/lib/work-graph.ts:17` | `work-items` | 1 |
+| `hooks/lib/work-graph.ts:28` | `work-items` | 1 |
+| `hooks/lib/work-graph.ts:43` | `circles/` | 2 |
+| `hooks/lib/work-graph.ts:47` | `Circle` | 2 |
+| `hooks/lib/work-graph.ts:68` | `verdict` | 2 |
+| `hooks/lib/work-graph.ts:172` | `verdict` | 2 |
+| `hooks/lib/work-graph.ts:272` | `verdict` | 2 |
+| `hooks/lib/work-graph.ts:275` | `Circle` | 2 |
+| `hooks/lib/work-graph.ts:473` | `verdict` | 2 |
+| `hooks/lib/work-graph.ts:485` | `verdict` | 2 |
+| `hooks/order.ts:22` | `verdict` | 2 |
+| `hooks/order.ts:75` | `verdict` | 2 |
+| `hooks/order.ts:79` | `verdict` | 2 |
+| `hooks/order.ts:85` | `verdict` | 2 |
+| `hooks/order.ts:173` | `verdict` | 2 |
+| `hooks/plan-size.ts:18` | `verdict` | 2 |
+| `hooks/plan-size.ts:24` | `verdict` | 2 |
+| `hooks/plan-size.ts:33` | `verdict` | 2 |
+| `hooks/plan-size.ts:87` | `verdict` | 2 |
+| `hooks/review-coverage.ts:29` | `verdict` | 2 |
+| `hooks/review-coverage.ts:33` | `skills` | 4 |
+| `hooks/review-coverage.ts:44` | `verdict` | 2 |
+| `hooks/review-coverage.ts:116` | `verdict` | 2 |
+| `hooks/review-coverage.ts:132` | `verdict` | 2 |
+| `hooks/session-start.ts:14` | `plugin` | 4 |
+| `hooks/session-start.ts:17` | `plugin`, `skill` | 4 |
+| `hooks/session-start.ts:179` | `plugin` | 4 |
+| `hooks/session-start.ts:216` | `plugin` | 4 |
+| `hooks/session-start.ts:217` | `plugin` | 4 |
+| `hooks/session-start.ts:231` | `plugin` | 4 |
+| `hooks/staging-drift.ts:22` | `verdict` | 2 |
+| `hooks/staging-drift.ts:23` | `circles/`, `Circle` | 1 |
+| `hooks/staging-drift.ts:32` | `verdict` | 2 |
+| `hooks/staging-drift.ts:37` | `verdict` | 2 |
+| `hooks/staging-drift.ts:83` | `verdict` | 2 |
+| `hooks/staging-drift.ts:93` | `verdict` | 2 |
+| `hooks/subagent-stop.ts:4` | `sub-agent` | 4 |
+| `hooks/subagent-stop.ts:7` | `sub-agent` | 1 |
+| `hooks/subagent-stop.ts:8` | `sub-agent` | 4 |
+| `hooks/tracker.ts:39` | `Circle`, `Turn` | 3 |
+| `hooks/tracker.ts:48` | `Directive` | 3 |
+| `hooks/tracker.ts:49` | `Circle`, `Turn` | 3 |
+| `hooks/tracker.ts:62` | `plugin` | 4 |
+| `hooks/tracker.ts:68` | `verdict` | 3 |
+| `hooks/tracker.ts:360` | `verdict`, `gate` | 3 |
+| `hooks/tracker.ts:468` | `gate` | 1 |
+| `hooks/tracker.ts:623` | `plugin`, `gate` | 3 |
+| `hooks/tracker.ts:628` | `gate` | 3 |
+| `hooks/tracker.ts:632` | `verdict` | 3 |
+| `install.sh:5` | `plugin` | 4 |
+| `install.sh:6` | `plugin` | 4 |
+| `install.sh:8` | `plugin` | 4 |
+| `install.sh:68` | `plugin` | 4 |
+| `install.sh:69` | `plugin` | 4 |
+| `install.sh:71` | `plugin` | 4 |
+| `install.sh:77` | `plugin` | 4 |
+| `install.sh:78` | `plugin` | 4 |
+| `install.sh:82` | `plugin`, `skills` | 4 |
+| `install.sh:86` | `plugin` | 4 |
+| `install.sh:100` | `plugin` | 4 |
+| `install.sh:120` | `plugin` | 4 |
+| `install.sh:150` | `plugin` | 4 |
+| `install.sh:153` | `plugin` | 4 |
+| `install.sh:155` | `plugin` | 4 |
+| `rules/agent-setup.md:14` | `skill` | 4 |
+| `rules/agent-setup.md:15` | `skill` | 4 |
+| `rules/commit-lock.md:16` | `Circle`, `skills` | 3 |
+| `rules/commit-lock.md:17` | `plugin`, `Circle` | 3 |
+| `rules/context-lean-claude-md.md:38` | `Artifact` | 4 |
+| `rules/context-lean-claude-md.md:49` | `Skill` | 4 |
+| `rules/context-lean-claude-md.md:60` | `skill` | 4 |
+| `rules/context-lean-claude-md.md:61` | `Skill` | 4 |
+| `rules/context-lean-claude-md.md:105` | `artifacts` | 1 |
+| `rules/context-lean-claude-md.md:106` | `plugin` | 1 |
+| `rules/context-lean-claude-md.md:114` | `Skill`, `skill` | 1 |
+| `rules/context-lean-claude-md.md:129` | `skill` | 1 |
+| `rules/context-lean-claude-md.md:134` | `skill` | 4 |
+| `rules/context-lean-claude-md.md:215` | `skill` | 4 |
+| `rules/context-lean-claude-md.md:274` | `Artifact` | 4 |
+| `rules/context-manifest.md:28` | `Skill` | 4 |
+| `rules/context-manifest.md:29` | `skill` | 4 |
+| `rules/context-manifest.md:45` | `skill` | 4 |
+| `rules/context-manifest.md:50` | `plugin` | 1 |
+| `rules/context-manifest.md:52` | `skill` | 1 |
+| `rules/context-manifest.md:57` | `skill` | 1 |
+| `rules/context-manifest.md:71` | `skill` | 4 |
+| `rules/context-manifest.md:72` | `skill` | 4 |
+| `rules/context-manifest.md:77` | `skill` | 4 |
+| `rules/context-manifest.md:78` | `skill` | 4 |
+| `rules/context-manifest.md:88` | `skill` | 4 |
+| `rules/context-manifest.md:141` | `Circle` | 3 |
+| `rules/context-manifest.md:158` | `Skill` | 4 |
+| `rules/context-manifest.md:162` | `skill` | 4 |
+| `rules/context-manifest.md:164` | `skill`, `skills` | 4 |
+| `rules/context-manifest.md:165` | `skill` | 4 |
+| `rules/context-manifest.md:180` | `skill` | 4 |
+| `rules/critical-stance.md:65` | `Circle` | 1 |
+| `rules/fusion-workbench-conventions.md:17` | `skill` | 4 |
+| `rules/fusion-workbench-conventions.md:19` | `skills` | 4 |
+| `rules/fusion-workbench-conventions.md:53` | `plugin` | 4 |
+| `rules/fusion-workbench-conventions.md:66` | `circles/` | 3 |
+| `rules/fusion-workbench-conventions.md:68` | `skills` | 4 |
+| `rules/fusion-workbench-conventions.md:80` | `circles/` | 2 |
+| `rules/fusion-workbench-conventions.md:84` | `circles/` | 2 |
+| `rules/fusion-workbench-conventions.md:100` | `plugin` | 4 |
+| `rules/fusion-workbench-conventions.md:119` | `skill` | 4 |
+| `rules/fusion-workbench-conventions.md:125` | `skill` | 4 |
+| `rules/fusion-workbench-conventions.md:132` | `skill` | 4 |
+| `rules/fusion-workbench-conventions.md:136` | `skill` | 4 |
+| `rules/fusion-workbench-conventions.md:144` | `work-item` | 1 |
+| `rules/fusion-workbench-conventions.md:154` | `skill` | 4 |
+| `rules/fusion-workbench-conventions.md:156` | `skill` | 4 |
+| `rules/fusion-workbench-conventions.md:209` | `Directive` | 4 |
+| `rules/fusion-workbench-conventions.md:238` | `work-items` | 1 |
+| `rules/fusion-workbench-conventions.md:242` | `work-item` | 1 |
+| `rules/fusion-workbench-conventions.md:244` | `work-item` | 1 |
+| `rules/fusion-workbench-conventions.md:267` | `plugin`, `skill` | 4 |
+| `rules/fusion-workbench-conventions.md:269` | `Artifact` | 4 |
+| `rules/fusion-workbench-conventions.md:351` | `Grounding` | 3 |
+| `rules/fusion-workbench-conventions.md:373` | `skill` | 4 |
+| `rules/orchestrator-rebalance.md:3` | `Turn` | 3 |
+| `rules/orchestrator-rebalance.md:9` | `Turn` | 3 |
+| `rules/orchestrator-rebalance.md:13` | `Turn` | 3 |
+| `rules/orchestrator-rebalance.md:15` | `gate`, `Turn` | 3 |
+| `rules/orchestrator-rebalance.md:24` | `gate` | 1 |
+| `rules/orchestrator-rebalance.md:31` | `Turn` | 3 |
+| `rules/orchestrator-rebalance.md:41` | `Turn`, `gate`, `verdict` | 3 |
+| `rules/orchestrator-rebalance.md:47` | `Turn` | 3 |
+| `rules/orchestrator-rebalance.md:68` | `Circle` | 3 |
+| `rules/orchestrator-rebalance.md:70` | `Circle` | 3 |
+| `rules/project-language.md:17` | `skill` | 4 |
+| `rules/review-contract.md:42` | `skills` | 4 |
+| `rules/user-facing-output.md:45` | `Circle`, `Directive`, `Grounding`, `Gate`, `Artifact`, `Verdict` | 1 |
+| `rules/user-facing-output.md:88` | `gate` | 1 |
+| `rules/user-facing-output.md:94` | `Gate` | 1 |
+| `rules/user-facing-output.md:96` | `Gate` | 1 |
+| `rules/workbench-path-resolution.md:24` | `skill`, `skills` | 4 |
+| `rules/workbench-path-resolution.md:26` | `skill` | 4 |
+| `rules/workbench-path-resolution.md:28` | `skill` | 4 |
+| `rules/workbench-path-resolution.md:30` | `skill` | 4 |
+| `rules/workbench-path-resolution.md:53` | `Circle` | 3 |
+| `rules/workbench-path-resolution.md:57` | `Circle` | 3 |
+| `rules/workbench-path-resolution.md:76` | `circles/` | 2 |
+| `rules/workbench-path-resolution.md:110` | `skill` | 4 |
+| `rules/workbench-path-resolution.md:122` | `Circle` | 3 |
+| `rules/workbench-path-resolution.md:126` | `circles/` | 3 |
+| `rules/workbench-path-resolution.md:146` | `Circle`, `circles/` | 3 |
+| `rules/workbench-path-resolution.md:165` | `skills` | 4 |
+| `rules/workbench-tracking.md:3` | `skill` | 1 |
+| `rules/workbench-tracking.md:7` | `skills` | 4 |
+| `rules/workbench-tracking.md:32` | `Circle`, `Turn` | 3 |
+| `rules/workbench-tracking.md:36` | `skills` | 4 |
+| `rules/workbench-tracking.md:61` | `Circle` | 3 |
+| `rules/workbench-tracking.md:63` | `Circle` | 3 |
+| `rules/workbench-tracking.md:69` | `plugin` | 4 |
+| `rules/workbench-tracking.md:71` | `plugin` | 4 |
+| `rules/workbench-tracking.md:77` | `skills` | 3 |
+| `skills/archive/SKILL.md:29` | `skill` | 4 |
+| `skills/archive/SKILL.md:33` | `plugin` | 4 |
+| `skills/archive/SKILL.md:86` | `skills` | 4 |
+| `skills/archive/SKILL.md:167` | `skills` | 4 |
+| `skills/cadence/SKILL.md:31` | `skill` | 4 |
+| `skills/cadence/SKILL.md:200` | `Turn` | 3 |
+| `skills/check/SKILL.md:8` | `plugin` | 4 |
+| `skills/check/SKILL.md:32` | `plugin` | 4 |
+| `skills/check/SKILL.md:44` | `plugin` | 4 |
+| `skills/check/SKILL.md:349` | `plugin` | 4 |
+| `skills/check/SKILL.md:350` | `plugin` | 4 |
+| `skills/commit/SKILL.md:89` | `skills` | 4 |
+| `skills/curate/SKILL.md:16` | `skill` | 4 |
+| `skills/help/SKILL.md:23` | `plugin` | 4 |
+| `skills/help/SKILL.md:81` | `plugin` | 4 |
+| `skills/help/SKILL.md:89` | `plugin` | 4 |
+| `skills/help/SKILL.md:90` | `plugin` | 4 |
+| `skills/help/SKILL.md:93` | `plugin` | 4 |
+| `skills/help/SKILL.md:95` | `**Item:**`, `Circle`, `Directive`, `Grounding`, `gate` | 3 |
+| `skills/help/SKILL.md:97` | `gate` | 3 |
+| `skills/help/SKILL.md:99` | `gate`, `skill` | 3 |
+| `skills/help/SKILL.md:103` | `plugin` | 4 |
+| `skills/help/SKILL.md:105` | `plugin` | 4 |
+| `skills/help/SKILL.md:115` | `skill` | 4 |
+| `skills/memo/SKILL.md:29` | `skill` | 4 |
+| `skills/memo/SKILL.md:122` | `Directive` | 4 |
+| `skills/migrate/SKILL.md:2` | `circles/` | 2 |
+| `skills/migrate/SKILL.md:12` | `circles/` | 2 |
+| `skills/migrate/SKILL.md:20` | `circles/`, `Circle`, `plugin` | 3 |
+| `skills/migrate/SKILL.md:24` | `skill` | 4 |
+| `skills/migrate/SKILL.md:26` | `skill` | 4 |
+| `skills/migrate/SKILL.md:40` | `plugin`, `circles/` | 2 |
+| `skills/migrate/SKILL.md:43` | `plugin` | 4 |
+| `skills/migrate/SKILL.md:48` | `circles/` | 2 |
+| `skills/migrate/SKILL.md:56` | `work item` | 3 |
+| `skills/migrate/SKILL.md:58` | `Circle` | 3 |
+| `skills/migrate/SKILL.md:59` | `plugin` | 4 |
+| `skills/migrate/SKILL.md:63` | `work-item` | 1 |
+| `skills/migrate/SKILL.md:73` | `circles/` | 2 |
+| `skills/migrate/SKILL.md:114` | `circles/` | 2 |
+| `skills/migrate/SKILL.md:151` | `circles/` | 2 |
+| `skills/reconcile/SKILL.md:9` | `skill` | 4 |
+| `skills/reconcile/SKILL.md:45` | `Directive` | 4 |
+| `skills/reconcile/SKILL.md:69` | `Directive` | 4 |
+| `skills/setup/SKILL.md:36` | `circles/` | 2 |
+| `skills/setup/SKILL.md:63` | `plugin` | 4 |
+| `skills/setup/SKILL.md:119` | `skill`, `skills` | 4 |
+| `skills/setup/SKILL.md:142` | `skill` | 4 |
+| `skills/setup/SKILL.md:151` | `plugin` | 4 |
+| `stilwerk/chat-voice-de.yaml:25` | `Circle`, `Directive`, `Grounding`, `Turn`, `Gate` | 1 |
+| `stilwerk/chat-voice-de.yaml:27` | `Gate` | — stilwerk |
+| `stilwerk/chat-voice-en.yaml:2` | `artifacts` | — stilwerk |
+| `stilwerk/chat-voice-en.yaml:25` | `Circle`, `Directive`, `Grounding`, `Turn`, `Gate`, `Artifact`, `Verdict` | 1 |
+| `stilwerk/chat-voice-en.yaml:26` | `gate`, `verdict` | — stilwerk |
+| `stilwerk/default-voice-en.yaml:1` | `artifacts` | — stilwerk |
+| `templates/fusion.json:4` | `plugin` | 4 |
+| `templates/fusion.json:6` | `verdict` | 2 |
+| `templates/fusion.json:8` | `Turn` | 3 |
+| `docs/upgrading-to-v9.md:*` | all, 16 lines | 3 |
+| `docs/upgrading-to-v10.md:*` | all, 10 lines | 3 |
+| `docs/upgrading-to-v10-2.md:*` | all, 32 lines | 3 |
+| `docs/upgrading-to-v10-3.md:*` | all, 21 lines | 3 |
+| `docs/upgrading-to-v10-4.md:*` | all, 32 lines | 3 |
+| `docs/upgrading-to-v10-5.md:*` | all, 7 lines | 3 |
+| `docs/upgrading-to-v10-6.md:*` | all, 23 lines | 3 |
+| `docs/upgrading-to-v10-7.md:*` | all, 18 lines | 3 |
+| `docs/upgrading-to-v10-8.md:*` | all, 2 lines | 3 |
+| `docs/upgrading-to-v10-14.md:*` | all, 3 lines | 3 |
+| `docs/upgrading-to-v10-20.md:*` | all, 5 lines | 3 |
+| `docs/upgrading-to-v10-23.md:*` | all, 7 lines | 3 |
+| `docs/upgrading-to-v10-24.md:*` | all, 20 lines | 3 |
+| `docs/upgrading-to-v10-25.md:*` | all, 7 lines | 3 |
+| `docs/upgrading-to-v10-26.md:*` | all, 2 lines | 3 |
+| `docs/upgrading-to-v11.md:*` | all, 20 lines | 3 |
+| `docs/upgrading-to-v11-4.md:*` | all, 2 lines | 3 |
 
 ## Appendix B: measurement record (C7)
 
