@@ -241,7 +241,8 @@ export declare function measurePresence(text: string, identity: ReadingIdentity,
  */
 export declare function renderParty(p: Party, aliasOf: (hex: string) => string | null): string;
 /**
- * The seven agents whose dispatch durations this reading measures.
+ * The seven agents whose dispatch durations this reading measures, each under
+ * every name it has carried.
  *
  * **It was the bound-agent set, and it is now a set with one definition site.**
  * Until 2026-09-10 it was one of two copies — the other being the
@@ -269,7 +270,14 @@ export declare function renderParty(p: Party, aliasOf: (hex: string) => string |
  * widening the paragraph above refuses. A reading that wants the new roster
  * passes its own `agents` list — the option exists for exactly that.
  */
-export declare const MEASURED_AGENTS: readonly ["coder", "ontocoder", "bugfixer", "reconciler", "coderev", "ontorev", "curator"];
+export declare const MEASURED_AGENTS: readonly ["coder", "ontocoder", "bugfixer", "reconciler", "coderev", "ontorev", "curator", "code-implementer", "data-implementer", "state-auditor", "policy-curator"];
+/**
+ * The v12.0.0 agent renames, old to new — the table `bin/fusion-paths` and
+ * `bin/fusion-rules` also carry. The log keeps every row under the name it was
+ * written with; a dispatch row is REPORTED under the role's current name, so a
+ * range spanning the rename gives one series per role rather than two.
+ */
+export declare const ROLE_OF: Readonly<Record<string, string>>;
 /**
  * What the reading did with one dispatch. The four are disjoint and every row
  * carries exactly one.

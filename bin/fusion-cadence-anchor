@@ -22,11 +22,11 @@
 #
 # ## The keys in use today
 #
-#   last_reconcile_commit   The commit HEAD stood on when the reconciler last
+#   last_reconcile_commit   The commit HEAD stood on when the state-auditor last
 #                           ran to completion here. /fusion:reconcile Step 3
 #                           skips the dispatch when nothing under
 #                           fusion-workbench/ changed since it — read via
-#                           `changed-since`, written after the reconciler
+#                           `changed-since`, written after the state-auditor
 #                           returns. An absent or unresolvable mark means
 #                           "no anchor": the full pass runs, which is the
 #                           correct first-run and post-history-rewrite
@@ -66,7 +66,7 @@
 #                           question cannot be answered (no work tree, no mark,
 #                           a mark git cannot resolve): the caller reads
 #                           everything — a skipped read rests only on a proven
-#                           bound. First consumer: the reconciler's Step 1
+#                           bound. First consumer: the state-auditor's Step 1
 #                           inventory, which reads live-marker records plus
 #                           exactly this list. <pathspec> defaults to the
 #                           tracking corpus (`default_pathspec` below).

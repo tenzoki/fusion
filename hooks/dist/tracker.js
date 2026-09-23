@@ -344,7 +344,7 @@ function measureReviewCoverageForModel(input) {
  * mistakes this codebase has already paid for.
  *
  * Firing on **every tool call** — where the removed state-drift measurement
- * sat — would report the commonest correct state as a fault. A coder writes an issue
+ * sat — would report the commonest correct state as a fault. A code-implementer writes an issue
  * file and `agents/orchestrator.md` `### Step 4 — commit` item 5 stages it minutes later; in between, the record is unstaged
  * and nothing is wrong. `measureReviewCoverageForModel` above declines the
  * every-call path for the same reason, and issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` is where that

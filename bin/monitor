@@ -1040,8 +1040,8 @@ HTML_PAGE = r"""<!DOCTYPE html>
       dot.className = 'status-dot stale';
       text.textContent = 'no updates in ' + Math.round(age/3600) + 'h — investigate';
     } else if (age !== undefined && age > 900) {
-      // 15min threshold (was 5min). Many legitimate tasks (coder dispatches
-      // across multiple files, reconciler passes, smoke tests) exceed 5min;
+      // 15min threshold (was 5min). Many legitimate tasks (code-implementer dispatches
+      // across multiple files, state-auditor passes, smoke tests) exceed 5min;
       // the previous "agent may be stuck" copy alarmed users during normal
       // long-running work. 15min is a more honest first-tier signal.
       dot.className = 'status-dot stale';

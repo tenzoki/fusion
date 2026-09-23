@@ -150,7 +150,8 @@ export declare const NOT_OPENED_FIELD = "**Not-opened:**";
  * recognising them would silently drop every review written before the merge
  * from the coverage it tiles. Recognising a sender is not mandating one: the
  * mandate is what `review-coverage-mandate.test.ts` pins against the prompts,
- * and it pins one.
+ * and it pins one. The v12.0.0 agent renames left `reviewer` unrenamed, so
+ * they add no sender here.
  */
 export declare const REVIEW_SENDERS: readonly ["reviewer", "coderev", "ontorev"];
 /**

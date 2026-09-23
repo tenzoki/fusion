@@ -9,8 +9,8 @@ carries the obligation. No other file may carry a competing or supplementary def
 Read it when you are about to **create or edit a file under a `rules/` directory** — the
 plugin's own, a consuming project's `./rules/`, or a project-wide `.claude/rules/`. That is
 the whole trigger, and it is why `bin/fusion-rules` emits this file to no agent: only the
-`curator` has writing normative rule text as part of its routine job, so loading it into
-every agent on every dispatch would buy nothing for the rest. `agents/curator.md` cites
+`policy-curator` has writing normative rule text as part of its routine job, so loading it into
+every agent on every dispatch would buy nothing for the rest. `agents/policy-curator.md` cites
 this file at Setup, which is how the one agent that needs it gets it. In the plugin's own
 repository `hooks/lib/__tests__/provenance-header-lint.test.ts` catches a missing header;
 everywhere else the pointer in `rules/fusion-workbench-conventions.md` is what brings a
@@ -40,10 +40,10 @@ Canonical placement is directly under the file's H1 title, on line 3. The ten-li
 
 The commit is admission-scoped and nothing more. Git is not the provenance mechanism; it is what an honest header falls back to when the alternative is a citation the reader cannot follow anywhere. Do not reconstruct a plausible record for a file that has none. An invented rationale is exactly the fiction this header exists to prevent.
 
-**What the gate checks, and what it does not.** `hooks/lib/__tests__/provenance-header-lint.test.ts` fails `npm test` when a file in the plugin's `rules/` directory carries no `Provenance:` line in its first ten lines, and it names the offending file. It reads the plugin's own `rules/` only. A consuming project's `./rules/` and `.claude/rules/` are in no test set fusion controls, so there the header is documented convention backed by the curator's discipline, and a project gains header-based evidence only for rules written or edited after it adopts the convention. The gate checks that a header is present. It does not read the value and it resolves no cited path, so a header citing something useless still passes, and a header citing a record that was later moved or archived also still passes. What stops a hollow header is review, not the gate.
+**What the gate checks, and what it does not.** `hooks/lib/__tests__/provenance-header-lint.test.ts` fails `npm test` when a file in the plugin's `rules/` directory carries no `Provenance:` line in its first ten lines, and it names the offending file. It reads the plugin's own `rules/` only. A consuming project's `./rules/` and `.claude/rules/` are in no test set fusion controls, so there the header is documented convention backed by the policy-curator's discipline, and a project gains header-based evidence only for rules written or edited after it adopts the convention. The gate checks that a header is present. It does not read the value and it resolves no cited path, so a header citing something useless still passes, and a header citing a record that was later moved or archived also still passes. What stops a hollow header is review, not the gate.
 
 **`Provenance:` is file-scoped; `Binding decision:` is section-scoped.** The two coexist and mean different things. A `Provenance:` line at the top of a file states why the *file* exists. A `Binding decision:` line inside a section states which record binds *that section*. Neither replaces the other, and a section note never satisfies the gate: the gate reads only the first ten lines, and only for `Provenance:`.
 
-**Whoever writes a rule file writes its header.** An agent that creates a rule file gives it a header in the same edit, choosing the form its history supports. An agent that edits an existing rule file preserves the header, and updates it when the edit is substantial enough that a different record has become the file's reason for existing. This obligation falls first on the curator, whose work is writing and consolidating normative text; in the plugin's own repository the lint gate backs it, and everywhere else the discipline stands alone.
+**Whoever writes a rule file writes its header.** An agent that creates a rule file gives it a header in the same edit, choosing the form its history supports. An agent that edits an existing rule file preserves the header, and updates it when the edit is substantial enough that a different record has become the file's reason for existing. This obligation falls first on the policy-curator, whose work is writing and consolidating normative text; in the plugin's own repository the lint gate backs it, and everywhere else the discipline stands alone.
 
 Binding decision: `260801-1020_*_provenance-header-on-rule-files.md`.

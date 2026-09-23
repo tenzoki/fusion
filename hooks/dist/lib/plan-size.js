@@ -35,7 +35,7 @@
  *
  * ## The corpus, and a duplication this header owns rather than hides
  *
- * Live (`_o_`/`_p_`) plans in every planning store, shaper specs excluded. That
+ * Live (`_o_`/`_p_`) plans in every planning store, requirements-designer specs excluded. That
  * is the same corpus `hooks/lib/__tests__/plan-stopping-section-lint.test.ts`
  * builds for its own gate, and the two definitions are separate copies: that
  * one is test-scoped and this one ships, and folding either into the other
@@ -60,7 +60,7 @@ export function markerOf(base) {
     return m ? m[1] : null;
 }
 /**
- * A shaper spec rather than a planner plan, by the shaper's own two template
+ * A requirements-designer spec rather than an implementation-planner plan, by the requirements-designer's own two template
  * signatures (the `spec-` topic prefix and the `# Spec:` H1), either sufficient.
  * A spec is not a plan and the ceiling is not about it.
  */

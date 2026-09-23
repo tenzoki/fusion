@@ -50,7 +50,7 @@
  * codebase has already paid for:
  *
  *   - **Every tool call would cry wolf.** An unstaged record *while the work
- *     is still in flight* is the normal and correct state: a coder writes an
+ *     is still in flight* is the normal and correct state: a code-implementer writes an
  *     issue file, and the commit that carries it stages it minutes later. A
  *     check that fires on its commonest path is one its reader learns to
  *     ignore (issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`, and

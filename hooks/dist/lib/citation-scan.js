@@ -326,6 +326,8 @@ const STORES = [...RECORD_STORES, ...WINDOW_LEGACY_RECORD_STORES, ...LEGACY_STOR
  * 2026-08-29 (`find fusion-workbench -name '*.md' | grep -oE
  * '/[0-9]{6}-[0-9]{4}_[a-zA-Z]{2,}_'`), not guessed; a fourth word needs a line
  * here or its file is invisible to the grammar while present in the index.
+ * The v12.0.0 agent renames add nothing: no file was ever stamped with a new
+ * name, and these three are the names the stamped files carry for ever.
  */
 export const MARKER_WORDS = ["coder", "ontocoder", "planner"];
 /** The marker slot, `_x_` or `_<word>_`, as a regex source with no capture. */

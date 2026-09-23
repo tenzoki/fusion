@@ -33,7 +33,7 @@
 #     limit=no-bound-to-overrun<TAB><one sentence>
 #     limit=threshold-is-the-readings<TAB><one sentence>
 #     limit=no-session-invisible<TAB><one sentence>
-#     dispatch=coder<TAB>toolu_01H3L9xg<TAB>2026-09-08T16:00:55<TAB>24.3<TAB>longer
+#     dispatch=code-implementer<TAB>toolu_01H3L9xg<TAB>2026-09-08T16:00:55<TAB>24.3<TAB>longer
 #
 # **Two counts are on stderr and never on stdout**: lines of the log that were
 # not a JSON object at all, and dispatches of the agents read carrying no

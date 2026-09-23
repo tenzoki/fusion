@@ -70,8 +70,9 @@ you read the store       and pick the item worth doing. Nothing ranks it: the
 the orchestrator claims  Status: open → claimed, Claim: <your checkout>,
                          on your word
        ↓
-shaper / planner         the item's path is a valid request to the shaper,
-                         which writes a spec from it and edits no byte of it
+requirements-designer    the item's path is a valid request to the
+/ implementation-planner requirements-designer, which writes a spec from it
+                         and edits no byte of it
 ```
 
 Section 5 walks that path step by step, beside a code session that never touches it.
@@ -81,20 +82,20 @@ Section 5 walks that path step by step, beside a code session that never touches
 Fusion doesn't execute a vague request directly. It turns the request into a written contract first, then judges the work against that contract. The flow:
 
 ```
-your request  →  shaper  →  SPEC GATE  →  planner  →  PLAN GATE  →  execute  →  report
+your request  →  requirements-designer  →  SPEC GATE  →  implementation-planner  →  PLAN GATE  →  execute  →  report
                  (if the request needs sharpening)
 
-a work item's path  →  shaper  →  the same flow, with the item as the request
+a work item's path  →  requirements-designer  →  the same flow, with the item as the request
                        (the item is read, never written)
 ```
 
-- **shaper** takes an ambiguous or many-sided request and produces a **spec** — a precise statement of what will be built, with the hidden decisions surfaced. If your request is already clear and single-purpose, the shaper is skipped and fusion goes straight to planning.
+- **requirements-designer** takes an ambiguous or many-sided request and produces a **spec** — a precise statement of what will be built, with the hidden decisions surfaced. If your request is already clear and single-purpose, the requirements-designer is skipped and fusion goes straight to planning.
 - The **spec gate** is where you approve (or revise) what will be built, before any planning happens.
-- **planner** turns the approved spec into a **plan** — ordered, dependency-aware steps, each routed to an executor (coder for code, ontocoder for data and ontology).
+- **implementation-planner** turns the approved spec into a **plan** — ordered, dependency-aware steps, each routed to an executor (code-implementer for code, data-implementer for data and ontology).
 - The **plan gate** is where you approve *how* it will be built, before any code is written.
 - **execute** runs the plan step by step.
 
-**The shaper has two invocation modes and both end in a spec** ([`agents/shaper.md`](../agents/shaper.md) `## Two invocation modes`): your direct request, and a task clarification the orchestrator asks for before a vague task is planned. A **work item is a valid request** — hand the shaper the item's path and it reads the item's Directive as your words. It edits no byte of the item: its key set carries the read key and no write key, so a run that tried to file or claim one has no path to write to.
+**The requirements-designer has two invocation modes and both end in a spec** ([`agents/requirements-designer.md`](../agents/requirements-designer.md) `## Two invocation modes`): your direct request, and a task clarification the orchestrator asks for before a vague task is planned. A **work item is a valid request** — hand the requirements-designer the item's path and it reads the item's Directive as your words. It edits no byte of the item: its key set carries the read key and no write key, so a run that tried to file or claim one has no path to write to.
 
 Two further modes stood here until v11 and went with the record they edited: one re-clarified a unit-of-work record's Directive in place, the other created such a record from a draft and was the whole of what the removed `/fusion:memo`-adjacent capture command dispatched. A re-shape is now an ordinary run producing an ordinary spec.
 
@@ -102,17 +103,17 @@ The spec and the plan are the contract. Every later check — "is this work stil
 
 ## 3. The gates
 
-Fusion stops and hands you the decision at defined points. A work item carrying `**Mode:** autonomous` (section 1) answers the stops that are about the *solution* of that item — the plan review, the item's claim and its finish, and the read of its plan's stop conditions at closure — and one stop that is not: an ordinary `ontocoder` task proceeds under the field, which `57e2b7eb` settled on 2026-09-22. The stops that weigh the project rather than the solution stay yours.
+Fusion stops and hands you the decision at defined points. A work item carrying `**Mode:** autonomous` (section 1) answers the stops that are about the *solution* of that item — the plan review, the item's claim and its finish, and the read of its plan's stop conditions at closure — and one stop that is not: an ordinary `data-implementer` task proceeds under the field, which `57e2b7eb` settled on 2026-09-22. The stops that weigh the project rather than the solution stay yours.
 
 **Human gates — fusion stops and asks before:**
 
 - reviewing a produced **spec** (approve what gets built) — asked as written, field or no field,
 - reviewing a produced **plan** (approve how it gets built) — answered `Approve` by the field,
-- any **ontology or structured-data change** — an ordinary `ontocoder` task proceeds under the field, while a structural change to entities, relations or schemas still files and skips,
+- any **ontology or structured-data change** — an ordinary `data-implementer` task proceeds under the field, while a structural change to entities, relations or schemas still files and skips,
 - **destructive operations** — deleting files, removing features, dropping data,
 - an **ambiguous task** where scope or acceptance criteria can't be pinned down.
 
-At each gate you get plain choices: proceed, skip for later, defer, or modify the instruction. Under `**Mode:** autonomous` three gates put no question at all — a structural ontology change, a destructive operation, and an ambiguous task instruction: the orchestrator files an open decision carrying the question the gate would have asked, skips the task, and goes on. You answer the decision record afterwards, and the log records that nobody answered the gate. The same field reaches two stops that are not rows in that list: a curator survey's change ledger is applied whole instead of being put to you entry by entry, and the pause of the item this checkout already holds is confirmed by your instruction to claim another. Which rows the field answers is settled in [`agents/orchestrator.md`](../agents/orchestrator.md) `## Human Gate Rules`, not here.
+At each gate you get plain choices: proceed, skip for later, defer, or modify the instruction. Under `**Mode:** autonomous` three gates put no question at all — a structural ontology change, a destructive operation, and an ambiguous task instruction: the orchestrator files an open decision carrying the question the gate would have asked, skips the task, and goes on. You answer the decision record afterwards, and the log records that nobody answered the gate. The same field reaches two stops that are not rows in that list: a policy-curator survey's change ledger is applied whole instead of being put to you entry by entry, and the pause of the item this checkout already holds is confirmed by your instruction to claim another. Which rows the field answers is settled in [`agents/orchestrator.md`](../agents/orchestrator.md) `## Human Gate Rules`, not here.
 
 **The Coherence check.** Work runs one task at a time; after each one the orchestrator reports and asks what is next. Nothing checks coherence on a schedule any more — the automatic per-batch check went on 2026-09-10 with the Turn loop it rode. What is left is a **reconciliation you ask for**, which reads three questions about what has landed:
 
@@ -152,17 +153,17 @@ Two paths reach the same place and cross different machinery. The first is one c
 
 1. You say: *"Add rate-limiting to the API and cover it with tests."*
 2. The **orchestrator** resolves the scope: this is code work, one clear outcome.
-3. The request is specific enough, so the **shaper** is skipped. The **planner** produces a plan — a middleware step, a config step, a test step.
+3. The request is specific enough, so the **requirements-designer** is skipped. The **implementation-planner** produces a plan — a middleware step, a config step, a test step.
 4. **PLAN GATE** — you review the three steps and approve.
-5. **The first task is dispatched.** The **coder** edits the middleware. Each write passes through the **hook layer**, which allows it and records a row naming the tool and the file, so the monitor shows the edit as it happens. The coder edits it twice more while iterating, and nothing stands in the way.
+5. **The first task is dispatched.** The **code-implementer** edits the middleware. Each write passes through the **hook layer**, which allows it and records a row naming the tool and the file, so the monitor shows the edit as it happens. The code-implementer edits it twice more while iterating, and nothing stands in the way.
 6. The coverage read notes what a review will eventually tile — the **reviewer** itself runs once per work item, at its close, scoped to every commit no review has covered.
 7. The orchestrator **commits** the work (holding the commit lock so parallel agents don't collide on the git index).
 8. The orchestrator **reports what landed and asks what is next**. Nothing checks coherence here unless you ask for a reconciliation.
 9. You say to go on. The test step is dispatched the same way, and nothing is left in the plan.
-10. **Reconciliation, if you ask for it** — the `reconciler` verifies the tracking files against the actual code and returns its three-edge Coherence verdict. Nothing schedules this; it runs when you say so.
+10. **Reconciliation, if you ask for it** — the `state-auditor` verifies the tracking files against the actual code and returns its three-edge Coherence verdict. Nothing schedules this; it runs when you say so.
 11. The item's `**Status:**` moves to **done**, its `**Claim:**` stays naming who did the work, a closure note is appended citing the commit range, and the orchestrator **reports** what landed.
 
-Had the work been drifting at step 8 — say the coder had started refactoring an unrelated module — a reconciliation asked for there would have flagged it and opened the **Rebalance gate** for you to steer. Nobody is flagged for you: asking is the trigger.
+Had the work been drifting at step 8 — say the code-implementer had started refactoring an unrelated module — a reconciliation asked for there would have flagged it and opened the **Rebalance gate** for you to steer. Nobody is flagged for you: asking is the trigger.
 
 ### 5b. From an idea to a claimed work item
 
@@ -172,7 +173,7 @@ The same store, at a slower speed. Nothing here is executed, nothing is committe
 2. **Nothing ranks it.** A `playmaker` agent did until v11, and no replacement was built: an order over the store is yours to hold. What a helper may do is *report* an order over the `**Depends-on:**` edges as the store carries them, with cycles named — and you override that report wherever you want to.
 3. **You read the store.** The items stand side by side on disk with their statuses in their heads. An item holding several jobs wants **splitting first**, because everything downstream takes an item whole — a spec written from a dozen observations covers one of them and leaves the rest unread. Splitting is one of the orchestrator's operations and needs your word for that item.
 4. **You claim it.** The orchestrator sets `**Status:** claimed` and writes `**Claim:** <your checkout> — <you>, <stamp>`, on your say-so and in one edit. From that moment the session holds the item's basename and puts it on every dispatch, so the monitor can say what this session is doing.
-5. **You work it.** Hand the item's path to the shaper and the first walkthrough takes over from there — the item is read as the request, and no byte of it is written by the shaper or by anything else until the orchestrator closes it at your word.
+5. **You work it.** Hand the item's path to the requirements-designer and the first walkthrough takes over from there — the item is read as the request, and no byte of it is written by the requirements-designer or by anything else until the orchestrator closes it at your word.
 
 None of steps 1 to 3 writes anything but the backlog store, so they are safe to walk in the middle of a running session. Filing an item disturbs nothing that a dispatch loop is holding.
 

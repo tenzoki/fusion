@@ -1,9 +1,9 @@
 /**
- * What prior curator runs already asked the user about a work-item edge.
+ * What prior policy-curator runs already asked the user about a work-item edge.
  *
- * `agents/curator.md` `### The suppression read` must not re-propose an edge the
+ * `agents/policy-curator.md` `### The suppression read` must not re-propose an edge the
  * user has already answered. The corpus that records those answers is every
- * curator run file in the workbench, and it is large: 975 220 bytes over 15
+ * policy-curator run file in the workbench, and it is large: 975 220 bytes over 15
  * files on fusion's own tree at 2026-09-18, of which exactly ONE carries an edge
  * entry, and each run adds 60 to 170 KB. Pulling that into an agent's context to
  * learn a handful of pairs is the uneconomic charge the ruling on
@@ -23,7 +23,7 @@
  * ruling. The suppression key reads the outcome value alone: `not-offered` names
  * the entry the gate never put, so nothing has to be learned by holding the group
  * line beside the outcome line. What decides on each value is
- * `agents/curator.md` `### The suppression read` and nothing here — this module
+ * `agents/policy-curator.md` `### The suppression read` and nothing here — this module
  * reports a fact and applies no key, the stdout-verdict stance every other
  * reporting helper in `bin/` carries.
  *
@@ -66,7 +66,7 @@
  * and that name is their order. A later answer is the user answering again, and
  * an earlier one it contradicts is superseded rather than combined.
  */
-/** The outcome vocabulary, authored in `agents/curator.md` `## The run file`. */
+/** The outcome vocabulary, authored in `agents/policy-curator.md` `## The run file`. */
 export declare const OUTCOMES: readonly ["applied", "skipped", "not-offered", "stale", "failed"];
 /** An outcome value, or one of the two ways there is no answer to read. */
 export type Answer = (typeof OUTCOMES)[number] | "none" | "unreadable";
@@ -93,7 +93,7 @@ export interface EdgeAnswersReport {
 /** `YYMMDD-HHMM-curator-run.md`, and nothing else — a defect record whose slug
  *  merely contains the words is not a run file. */
 export declare function isRunFile(base: string): boolean;
-/** Every curator run file under the workbench, in name order, which is time order. */
+/** Every policy-curator run file under the workbench, in name order, which is time order. */
 export declare function runFiles(root: string): string[];
 /** The two endpoints and the field off one `- **Edge:**` line, or null if the
  *  line does not carry both endpoints. Tolerant of the `(named | hop |

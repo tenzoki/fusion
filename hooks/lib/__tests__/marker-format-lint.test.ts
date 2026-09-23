@@ -143,21 +143,21 @@ describe("marker-format lint: a re-introduced bracket marker fails, with an acti
     // Prove the gate fails in the other direction: splice a bracket marker into a
     // copy of a real prompt and confirm it is caught at the right line with the
     // right token — and that the message points at the underscore replacement.
-    const original = readFileSync(join(pluginRoot, "agents", "coder.md"), "utf-8").split("\n");
+    const original = readFileSync(join(pluginRoot, "agents", "code-implementer.md"), "utf-8").split("\n");
     const injectAt = 4; // 0-based; a body line, not frontmatter
     const copy = [...original];
     copy[injectAt] = "Skip files with the terminal marker [c] before continuing.";
 
-    const violations = scan("agents/coder.md", copy.join("\n"));
+    const violations = scan("agents/code-implementer.md", copy.join("\n"));
     expect(violations.length).toBeGreaterThan(0);
 
     const hit = violations.find((v) => v.line === injectAt + 1);
     expect(hit, "the injected marker must be caught on its own line").toBeDefined();
-    expect(hit!.file).toBe("agents/coder.md");
+    expect(hit!.file).toBe("agents/code-implementer.md");
     expect(hit!.token).toBe("[c]");
 
     const msg = report(violations);
-    expect(msg).toContain("agents/coder.md:5");
+    expect(msg).toContain("agents/code-implementer.md:5");
     expect(msg).toContain("[c]");
     expect(msg).toContain("_c_");
   });

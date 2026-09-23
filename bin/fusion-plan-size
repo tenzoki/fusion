@@ -18,7 +18,7 @@
 #     over      57891  circles/<dir>/planning/…_p_….md  (17891 over — …)
 #     under     33472  shared/planning/…_o_….md
 #
-# The corpus is live (_o_ / _p_) plans in every planning store, shaper specs
+# The corpus is live (_o_ / _p_) plans in every planning store, requirements-designer specs
 # excluded and counted on `skipped-specs=`. A spec is not a plan and the ceiling
 # is not about it.
 #

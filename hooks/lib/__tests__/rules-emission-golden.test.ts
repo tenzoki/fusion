@@ -267,7 +267,7 @@ interface Role {
 const ROLES: Record<string, Role> = {
   /**
    * The agents that edit the tree as they work and carry nothing beyond the
-   * always-on core: coder and ontocoder. `bugfixer` was the third until v11,
+   * always-on core: code-implementer and data-implementer. `bugfixer` was the third until v11,
    * when it was removed and its diagnose-before-editing contract moved into
    * these two — prompt text, not a rule file, so the role's file set is
    * unchanged by that.
@@ -277,7 +277,7 @@ const ROLES: Record<string, Role> = {
   "(core only)": {},
 
   /**
-   * The reconciler: the worked transitions, because worked transition 1,
+   * The state-auditor: the worked transitions, because worked transition 1,
    * `_o_ -> _a_`, is its act (gate 260827-0830). It carried
    * `bounded-dispatch.md` beside them until the bound's retirement on
    * 2026-09-10.
@@ -304,11 +304,11 @@ const ROLES: Record<string, Role> = {
    */
   "design-diagrams.md": {},
 
-  /** The planner: diagrams plus the worked transitions (gate 260827-0830). */
+  /** The implementation-planner: diagrams plus the worked transitions (gate 260827-0830). */
   "decision-record-examples.md + design-diagrams.md": {},
 
   /**
-   * The shaper: the worked transitions plus the design diagram doctrine, over a
+   * The requirements-designer: the worked transitions plus the design diagram doctrine, over a
    * user-read surface (gate 260827-0910). It carried `circle-records.md` as
    * well until 2026-09-10 — it turned a Directive into a Circle record — and
    * the two modes that did so went with the container, leaving the role one
@@ -316,13 +316,13 @@ const ROLES: Record<string, Role> = {
    */
   "decision-record-examples.md + design-diagrams.md + user-facing-output.md": {},
 
-  // consultant, and since 2026-09-10 the curator too: a user-read surface (gate
-  // 260827-0910). The curator held its own role while it also carried
+  // consultant, and since 2026-09-10 the policy-curator too: a user-read surface (gate
+  // 260827-0910). The policy-curator held its own role while it also carried
   // `bounded-dispatch.md` — the change ledger it puts to the user at the gate is
   // read in the terminal, and its survey accumulated one normative surface at a
   // time — and the retirement of the bound merged it into this one.
   "user-facing-output.md": {},
-  "project-language.md + user-facing-output.md": {}, // editor: + the language cascade, its deliverable halt (decision 260827-1056)
+  "project-language.md + user-facing-output.md": {}, // document-editor: + the language cascade, its deliverable halt (decision 260827-1056)
 
   /**
    * NOT OVER THE RELEASE CAP, and the role that would cross it first. It was
@@ -333,7 +333,7 @@ const ROLES: Record<string, Role> = {
    * justification duty is discharged by prose, the prose is still true of this
    * role, and a floor that moves back up would otherwise silently find no reason
    * where one had been written. The assertion skips it while the floor is under
-   * the cap, and nothing an editor writes to a rule file spends that margin: the
+   * the cap, and nothing a document-editor writes to a rule file spends that margin: the
    * floor is RULE_BASELINE summed over this role's files, so editing one moves
    * what the role EMITS and not what it stands on, and a newly added always-on
    * file has no baseline entry, contributes 0 to the floor and counts as growth
@@ -823,9 +823,9 @@ describe("the audience argument", () => {
   const rel = (lines: string[]) => lines.map((p) => relative(rulesDir, p));
 
   it("adds exactly user-facing-output.md, for an agent the name list excludes", () => {
-    const plain = rel(runRules("planner"));
-    const asked = rel(runRules("planner", ["", "--audience=user"]));
-    expect(plain, "planner is user-facing by name after all; pick another agent").not.toContain(
+    const plain = rel(runRules("implementation-planner"));
+    const asked = rel(runRules("implementation-planner", ["", "--audience=user"]));
+    expect(plain, "implementation-planner is user-facing by name after all; pick another agent").not.toContain(
       "user-facing-output.md",
     );
     expect(
@@ -849,7 +849,7 @@ describe("the audience argument", () => {
   });
 
   it("keeps the name list as the fallback, so no role loses the rule by default", () => {
-    for (const a of ["orchestrator", "editor", "curator"]) {
+    for (const a of ["orchestrator", "document-editor", "policy-curator"]) {
       expect(rel(runRules(a)), `${a} lost the user-facing contract`).toContain(
         "user-facing-output.md",
       );
@@ -862,8 +862,8 @@ describe("the audience argument", () => {
 
   it("refuses an unrecognised audience and an unrecognised option, printing nothing", () => {
     for (const [args, needle] of [
-      [["planner", "", "--audience=users"], "unknown audience"],
-      [["planner", "--bogus"], "unknown option"],
+      [["implementation-planner", "", "--audience=users"], "unknown audience"],
+      [["implementation-planner", "--bogus"], "unknown option"],
     ] as [string[], string][]) {
       const r = spawnSync(fusionRules, args, {
         cwd: neutralCwd,
@@ -1172,10 +1172,10 @@ describe("the dispatch-path bound, on synthetic component sizes", () => {
   });
 
   it("names the path, the component that grew, and both standing sentences", () => {
-    const a = "coder";
+    const a = "code-implementer";
     const g = growth(bump(atBaseline(a), "CLAUDE.md", 512), baseline.get(a)!, DISPATCH_HEAD_ROOM);
     const msg = dispatchBoundMessage([{ agent: a, g }]);
-    expect(msg).toContain("path 'coder'");
+    expect(msg).toContain("path 'code-implementer'");
     expect(msg).toContain("CLAUDE.md");
     expect(msg).toContain(`+${fmt(512)}`);
     expect(msg).toContain(

@@ -21,7 +21,7 @@ cites only the conventions file.
 
 ## The name namespace
 
-`<name>` is an **agent** (`agents/<name>.md`) or a **skill** (`skills/<name>/SKILL.md`). The two share one flat namespace, and **every consumer asks under its own name**: `fusion-paths coder`, `fusion-paths memo`, `fusion-paths cadence`.
+`<name>` is an **agent** (`agents/<name>.md`) or a **skill** (`skills/<name>/SKILL.md`). The two share one flat namespace, and **every consumer asks under its own name**: `fusion-paths code-implementer`, `fusion-paths memo`, `fusion-paths cadence`.
 
 A skill is its own consumer, not a guest in an agent's key set. The alternative — a skill resolving under whichever agent hosts its session — does not work, and not marginally: `/fusion:cadence` writes its digest to `$OUT_MEMO` and reads `$SCAN_HISTORY`, and no agent's prompt names `$OUT_MEMO` at all — a memo is written for the user, not for an agent. There is no agent name that resolves that skill's write. Making one work would mean adding the key to an agent whose prompt performs no such write, which breaks the rule under *Emission is per-consumer* below and turns a key set into "whatever some skill in this session might want".
 
@@ -45,7 +45,7 @@ Every artifact kind has a store inside a work item's container and a store under
 two candidate destinations and something has to pick. The claim is how an agent picks for
 itself. The argument is how a **dispatcher** picks on its behalf, and it buys exactly one
 thing the claim cannot: writing into an item this checkout has not claimed. Two prompts
-carry a dispatch parameter for it, `planner` and `shaper`, rostered in
+carry a dispatch parameter for it, `implementation-planner` and `requirements-designer`, rostered in
 `README-agents.md` `## Dispatch parameters`; each passes its value straight through to the
 resolver.
 
@@ -160,7 +160,7 @@ look better with it.
 
 ## Emission is per-consumer, and derived from the prompt
 
-The resolver emits only the keys a consumer needs — a coder gets no `OUT_PLAN`, an editor gets no `OUT_ISSUE`. This table defines what each key *means*; **the prompt defines which keys a consumer gets.**
+The resolver emits only the keys a consumer needs — a code-implementer gets no `OUT_PLAN`, a document-editor gets no `OUT_ISSUE`. This table defines what each key *means*; **the prompt defines which keys a consumer gets.**
 
 **The key set is not declared anywhere. It is read out of the prompt.** `bin/fusion-paths <name>` greps `agents/<name>.md` or `skills/<name>/SKILL.md` for its own `$OUT_*` and `$SCAN_*` references, and those references *are* the set. `WORKBENCH` is emitted unconditionally and belongs to no set. A prompt that names no key gets `WORKBENCH` alone — a true answer, not a failure.
 

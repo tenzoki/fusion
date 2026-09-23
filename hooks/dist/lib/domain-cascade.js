@@ -592,7 +592,7 @@ export function countsFromHelperOutput(stdout) {
 // least two DOMAINS as literals AND at least two INPUTS. Two outcomes plus two
 // of the counts they are decided from is a decision procedure; anything less is
 // a consumer talking about a domain it was handed. That split was measured, not
-// assumed: it leaves the per-domain table in `reconciler` alone, which names
+// assumed: it leaves the per-domain table in `state-auditor` alone, which names
 // the domains and no input. Two further such tables went at v11 with the agents
 // that carried them.
 //
@@ -687,7 +687,7 @@ export function inputsNamedIn(line) {
  * the per-domain lists and tables the two-input rule was chosen to leave alone
  * — measured on this tree, an unconditional two-line window selects
  * two rows of a legitimate per-domain table in the ranking prompt removed at
- * v11, and `agents/reconciler.md:107-108`, two adjacent bullets of the edge
+ * v11, and `agents/state-auditor.md:107-108`, two adjacent bullets of the edge
  * list. The continuation rule selects neither.
  */
 const BLOCK_START = /^\s*(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||>|```|~~~|<!--|<[A-Za-z/]|\[[^\]]+\]:)/;

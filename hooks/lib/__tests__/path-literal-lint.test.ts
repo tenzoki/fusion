@@ -208,21 +208,21 @@ describe("path-literal lint: a re-introduced literal fails, with an actionable m
     // Prove the gate fails in the other direction: splice the mandated literal
     // into a copy of a real prompt and confirm it is caught at the right line
     // with the right text — and that the message points to the fix.
-    const original = readFileSync(join(pluginRoot, "agents", "coder.md"), "utf-8").split("\n");
+    const original = readFileSync(join(pluginRoot, "agents", "code-implementer.md"), "utf-8").split("\n");
     const injectAt = 4; // 0-based; a body line, not frontmatter
     const copy = [...original];
     copy[injectAt] = "See fusion-workbench/planning/ for the current step.";
 
-    const violations = scan("agents/coder.md", copy.join("\n"));
+    const violations = scan("agents/code-implementer.md", copy.join("\n"));
     expect(violations.length).toBeGreaterThan(0);
 
     const hit = violations.find((v) => v.line === injectAt + 1);
     expect(hit, "the injected literal must be caught on its own line").toBeDefined();
-    expect(hit!.file).toBe("agents/coder.md");
+    expect(hit!.file).toBe("agents/code-implementer.md");
     expect(hit!.literal).toBe("fusion-workbench/planning/");
 
     const msg = report(violations);
-    expect(msg).toContain("agents/coder.md:5");
+    expect(msg).toContain("agents/code-implementer.md:5");
     expect(msg).toContain("fusion-workbench/planning/");
     expect(msg).toContain("bin/fusion-paths");
   });

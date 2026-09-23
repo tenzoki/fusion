@@ -191,7 +191,8 @@ const HASH = /^[0-9a-f]{7,40}$/;
  * recognising them would silently drop every review written before the merge
  * from the coverage it tiles. Recognising a sender is not mandating one: the
  * mandate is what `review-coverage-mandate.test.ts` pins against the prompts,
- * and it pins one.
+ * and it pins one. The v12.0.0 agent renames left `reviewer` unrenamed, so
+ * they add no sender here.
  */
 export const REVIEW_SENDERS = ["reviewer", "coderev", "ontorev"] as const;
 

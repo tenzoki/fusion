@@ -10,9 +10,9 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 const fusionPaths = join(pluginRoot, "bin", "fusion-paths");
 
 const AGENTS = [
-  "orchestrator", "coder", "ontocoder", "reviewer",
-  "planner", "shaper", "reconciler", "analyst",
-  "consultant", "editor", "curator",
+  "orchestrator", "code-implementer", "data-implementer", "reviewer",
+  "implementation-planner", "requirements-designer", "state-auditor", "analyst",
+  "consultant", "document-editor", "policy-curator",
 ];
 
 // Read off the tree, not hand-written: a hand-written roster omitted two skills
@@ -98,8 +98,8 @@ describe("bin/fusion-paths", () => {
 
   describe("no item in scope: one store, the shared one", () => {
     it("points every OUT_* into shared/", () => {
-      // shaper, because its prompt names three of the artifact-kind OUT_* keys.
-      const r = run(project, "shaper");
+      // requirements-designer, because its prompt names three of the artifact-kind OUT_* keys.
+      const r = run(project, "requirements-designer");
       expect(r.status).toBe(0);
       const p = parse(r.stdout);
 
@@ -109,7 +109,7 @@ describe("bin/fusion-paths", () => {
     });
 
     it("emits WORKBENCH as the only absolute path", () => {
-      const p = parse(run(project, "planner").stdout);
+      const p = parse(run(project, "implementation-planner").stdout);
       expect(p.WORKBENCH).toMatch(/\/fusion-workbench$/);
       for (const [key, value] of Object.entries(p)) {
         if (key === "WORKBENCH") continue;
@@ -121,7 +121,7 @@ describe("bin/fusion-paths", () => {
       // Invariant 2's second half: a SCAN_* names both stores for its kind and
       // collapses to the shared one when no item is in scope. This is the
       // collapsed reading; the two-store reading is under `an item in scope`.
-      const p = parse(run(project, "reconciler").stdout);
+      const p = parse(run(project, "state-auditor").stdout);
       for (const key of ["SCAN_PLANS", "SCAN_ISSUES", "SCAN_DECISIONS", "SCAN_REVIEWS"]) {
         expect(p[key].split(" "), `${key} must name exactly one store`).toHaveLength(1);
         expect(p[key]).toMatch(/^shared\//);
@@ -141,10 +141,10 @@ describe("bin/fusion-paths", () => {
     it("resolves the same values whatever the retired pointer holds", () => {
       // The resolver reads the claim, never `.active-circle`, and a container
       // with no record inside it is claimed by nobody, so neither moves a value.
-      const before = run(project, "reconciler").stdout;
+      const before = run(project, "state-auditor").stdout;
       mkdirSync(join(workbench, "circles", "260716-1847-workbench-umbau"), { recursive: true });
       writeFileSync(join(workbench, ".active-circle"), "260716-1847-workbench-umbau\n");
-      const after = run(project, "reconciler");
+      const after = run(project, "state-auditor");
       expect(after.status).toBe(0);
       expect(after.stderr).toBe("");
       expect(after.stdout).toBe(before);
@@ -154,7 +154,7 @@ describe("bin/fusion-paths", () => {
       // And silent on stderr too: `bin/fusion-claimed-package` says "not a git
       // work tree" on a clean answer, and that reason is kept back rather than
       // printed at every agent's Setup in a project that has no git.
-      expect(run(project, "coder").status).toBe(0);
+      expect(run(project, "code-implementer").status).toBe(0);
       expect(run(project, "orchestrator").stderr).toBe("");
     });
   });
@@ -193,7 +193,7 @@ describe("bin/fusion-paths", () => {
 
     it("puts every OUT_* in the claimed item's container and every SCAN_* in both", () => {
       claimAlpha();
-      const r = run(project, "reconciler");
+      const r = run(project, "state-auditor");
       expect(r.status, r.stderr).toBe(0);
       const p = parse(r.stdout);
       expect(p.OUT_ISSUE).toBe("work-packages/260910-1000-alpha/issues");
@@ -220,7 +220,7 @@ describe("bin/fusion-paths", () => {
       expect(p.SCAN_PACKAGES).toBe("work-packages circles");
       expect(p.SCAN_PLANS).toBe(
         "work-packages/260910-1000-alpha/plans circles/260910-1000-alpha/planning shared/plans shared/planning");
-      expect(parse(run(project, "planner", "260910-1000-alpha").stdout).OUT_PLAN).toBe("work-packages/260910-1000-alpha/plans");
+      expect(parse(run(project, "implementation-planner", "260910-1000-alpha").stdout).OUT_PLAN).toBe("work-packages/260910-1000-alpha/plans");
     });
 
     it("reads a mixed workbench: both roots walked, a legacy name listed only where it exists", () => {
@@ -247,7 +247,7 @@ describe("bin/fusion-paths", () => {
       // How a dispatcher sends an agent into an item this checkout does not
       // hold. The claimed item exists and is deliberately not the answer.
       claimAlpha();
-      const p = parse(run(project, "planner", "260910-1100-beta").stdout);
+      const p = parse(run(project, "implementation-planner", "260910-1100-beta").stdout);
       expect(p.OUT_PLAN).toBe("work-packages/260910-1100-beta/plans");
     });
 
@@ -260,7 +260,7 @@ describe("bin/fusion-paths", () => {
     ])("exits 1 — the caller's mistake, not the workbench's — when it %s", (_, args) => {
       // Never 3: the scope is determinable and the caller named an item that is
       // not there; the user's workbench has nothing to repair.
-      const r = run(project, "planner", ...args);
+      const r = run(project, "implementation-planner", ...args);
       expect(r.status).toBe(1);
       expect(r.stdout).toBe("");
     });
@@ -271,7 +271,7 @@ describe("bin/fusion-paths", () => {
       const mine = withIdentity();
       item("260910-1000-alpha", "claimed", `${mine} — Scratch Person, 260910-1000`);
       item("260910-1100-beta", "claimed", `${mine} — Scratch Person, 260910-1100`);
-      const r = run(project, "planner");
+      const r = run(project, "implementation-planner");
       expect(r.status).toBe(3);
       expect(r.stdout).toBe("");
       expect(r.stderr, "the helper's reason reaches the user").toContain("260910-1100-beta");
@@ -282,7 +282,7 @@ describe("bin/fusion-paths", () => {
       // work tree at all is the shared store being TRUE (every other case here).
       withIdentity();
       writeFileSync(join(workbench, ".checkout-id"), "not-hex\n");
-      const r = run(project, "planner");
+      const r = run(project, "implementation-planner");
       expect(r.status).toBe(3);
       expect(r.stdout).toBe("");
     });
@@ -306,7 +306,7 @@ describe("bin/fusion-paths", () => {
     it("emits neither to a shipped prompt that names neither", () => {
       // Emission stays per-consumer: adding a key to the resolver gives it to
       // nobody until a prompt asks for it.
-      for (const name of ["coder", "planner", "reviewer"]) {
+      for (const name of ["code-implementer", "implementation-planner", "reviewer"]) {
         const p = parse(run(project, name).stdout);
         expect(p.OUT_PACKAGES, name).toBeUndefined();
         expect(p.SCAN_PACKAGES, name).toBeUndefined();
@@ -321,9 +321,9 @@ describe("bin/fusion-paths", () => {
       expect(p.SCAN_PACKAGES).toBe("work-packages");
     });
 
-    it("gives shaper the read key and withholds the write key", () => {
-      // An item may be the shaper's input and no byte of one is ever its output.
-      const p = parse(run(project, "shaper").stdout);
+    it("gives requirements-designer the read key and withholds the write key", () => {
+      // An item may be the requirements-designer's input and no byte of one is ever its output.
+      const p = parse(run(project, "requirements-designer").stdout);
       expect(p.SCAN_PACKAGES).toBe("work-packages");
       expect(p.OUT_PACKAGES).toBeUndefined();
     });
@@ -371,7 +371,7 @@ describe("bin/fusion-paths", () => {
     });
 
     it("exits 1 when no workbench is found above cwd", () => {
-      const r = run(outside, "planner");
+      const r = run(outside, "implementation-planner");
       expect(r.status).toBe(1);
       expect(r.stderr).toContain("/fusion:setup");
     });
@@ -380,29 +380,29 @@ describe("bin/fusion-paths", () => {
   describe("per-agent emission", () => {
     // The whole point of per-agent emission: an agent receives only the keys
     // it needs. These assertions are the conventions' own examples.
-    it("gives a coder no OUT_PLAN", () => {
-      const p = parse(run(project, "coder").stdout);
+    it("gives a code-implementer no OUT_PLAN", () => {
+      const p = parse(run(project, "code-implementer").stdout);
       expect(p.OUT_PLAN).toBeUndefined();
       expect(p.OUT_ISSUE).toBeDefined();
     });
 
     // The negative example used to be `playmaker`, which read every store and
-    // filed into none. That agent went at v11 and `editor` is the survivor with
+    // filed into none. That agent went at v11 and `document-editor` is the survivor with
     // the same shape from the other direction: it writes plenty, all of it
     // project-side, and holds no workbench key at all.
-    it("gives an editor no OUT_ISSUE and no store key whatsoever", () => {
-      const p = parse(run(project, "editor").stdout);
+    it("gives a document-editor no OUT_ISSUE and no store key whatsoever", () => {
+      const p = parse(run(project, "document-editor").stdout);
       expect(p.OUT_ISSUE).toBeUndefined();
       expect(Object.keys(p)).toEqual(["WORKBENCH"]);
     });
 
     it("gives every agent WORKBENCH, and every workbench writer at least one key", () => {
-      // `editor` is the one agent that names no key, and that is its contract
+      // `document-editor` is the one agent that names no key, and that is its contract
       // rather than a gap: everything it produces is project-side, and its
       // last workbench write — a session log — went with the history store on
       // 2026-09-10. It is listed here rather than filtered silently, so an
       // agent that loses its last key by accident still fails.
-      const NO_KEY = ["editor"];
+      const NO_KEY = ["document-editor"];
       for (const agent of AGENTS) {
         const r = run(project, agent);
         expect(r.status, `${agent} must resolve`).toBe(0);
@@ -420,7 +420,7 @@ describe("bin/fusion-paths", () => {
     });
 
     it("routes writers to their own output kind", () => {
-      expect(parse(run(project, "planner").stdout).OUT_PLAN).toBe("shared/plans");
+      expect(parse(run(project, "implementation-planner").stdout).OUT_PLAN).toBe("shared/plans");
       expect(parse(run(project, "analyst").stdout).OUT_ANALYSIS).toBe("shared/analyses");
       expect(parse(run(project, "reviewer").stdout).OUT_REVIEW).toBe("shared/reviews");
       expect(parse(run(project, "orchestrator").stdout).OUT_PACKAGES).toBe("work-packages");
@@ -430,7 +430,7 @@ describe("bin/fusion-paths", () => {
     it("emits no key it cannot resolve", () => {
       // Guards against a key landing in an agent's set without a value —
       // an empty right-hand side would send writes to the workbench root.
-      for (const agent of ["orchestrator", "reconciler", "curator"]) {
+      for (const agent of ["orchestrator", "state-auditor", "policy-curator"]) {
         for (const [key, value] of Object.entries(parse(run(project, agent).stdout))) {
           expect(value.trim(), `${agent}: ${key} resolved empty`).not.toBe("");
         }
@@ -442,7 +442,7 @@ describe("bin/fusion-paths", () => {
   // the emitted set and the prompt's text — the contract's own rule ("the
   // prompt defines which keys a consumer gets"), checked rather than assumed.
   // They replace a hand-audited expectation table that was a second copy of
-  // the same claim: it went 14/15 (see the reconciler pin below).
+  // the same claim: it went 14/15 (see the state-auditor pin below).
   describe("the emitted key set is exactly the set the prompt names", () => {
     for (const name of [...AGENTS, ...SKILLS]) {
       it(`${name}: emits every key it names and no other`, () => {
@@ -455,7 +455,7 @@ describe("bin/fusion-paths", () => {
 
         // Both directions at once. Under-emission (a key the prompt names and
         // the resolver withholds) was the live defect: $OUT_DECISION expanded
-        // empty and the reconciler's decision records landed at the workbench
+        // empty and the state-auditor's decision records landed at the workbench
         // root. Over-emission is now structurally impossible, and this is
         // where that is pinned.
         expect(emitted).toEqual(keysNamedIn(name));
@@ -469,12 +469,12 @@ describe("bin/fusion-paths", () => {
       expect(parse(run(project, "orchestrator").stdout).OUT_MEMO).toBeUndefined();
     });
 
-    it("gives reconciler OUT_DECISION — it files decision records (reconciler.md:65)", () => {
+    it("gives state-auditor OUT_DECISION — it files decision records (state-auditor.md:65)", () => {
       // The specific regression. Absent the key, $OUT_DECISION expanded to the
-      // empty string and every decision record the reconciler filed landed at
+      // empty string and every decision record the state-auditor filed landed at
       // the workbench root instead of the decision store. Silent: the write
       // succeeded, just in the wrong place.
-      expect(parse(run(project, "reconciler").stdout).OUT_DECISION).toBe("shared/decisions");
+      expect(parse(run(project, "state-auditor").stdout).OUT_DECISION).toBe("shared/decisions");
     });
 
     it("emits no history key to any agent — the store is closed to writes", () => {
@@ -581,7 +581,7 @@ describe("bin/fusion-paths", () => {
       // each is. 3 sends the user to their own claimed items; 4 tells them the
       // fault is not theirs to fix. Reading one as the other sends somebody
       // hunting a defect in the wrong tree.
-      const r = run(project, "planner");
+      const r = run(project, "implementation-planner");
       expect(r.status).toBe(0);
       expect(r.stderr).toBe("");
     });
@@ -659,7 +659,7 @@ describe("bin/fusion-paths", () => {
     it("rejects a name that could escape agents/ or skills/", () => {
       // The name is interpolated into a path, so this guard is a safety
       // property rather than a style rule.
-      for (const bad of ["../etc/passwd", "..", "coder/../coder", "Coder"]) {
+      for (const bad of ["../etc/passwd", "..", "code-implementer/../code-implementer", "Coder"]) {
         const r = run(project, bad);
         expect(r.status, `${bad} must not resolve`).toBe(2);
         expect(r.stdout).toBe("");

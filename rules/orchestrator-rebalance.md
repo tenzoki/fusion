@@ -25,7 +25,7 @@ It replaces the standard Proceed/Skip/Defer/Modify with **two gates in sequence*
 
 **Gate 1 — does the Directive stand?** Three options, always all three:
 
-- **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Under `state Directive` there is no spec and nothing to drift from: this is the option that states one, and `shaper` is dispatched in user-direct mode with the session's evidence. Emits `rebalance_directive` event. Re-enters the shaping step of `agents/orchestrator.md` `### Shaping and planning, when the task needs them`. **No new mechanism sits at this bullet**: the re-entry runs the ordinary shaping and planning steps and produces an ordinary spec. Forecloses: the Artifact and Grounding are not touched until the new Directive exists. (Bounding: once-per-session — see Rebalance bounding below.)
+- **Revise Directive** — re-shape: dispatch `requirements-designer` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Under `state Directive` there is no spec and nothing to drift from: this is the option that states one, and `requirements-designer` is dispatched in user-direct mode with the session's evidence. Emits `rebalance_directive` event. Re-enters the shaping step of `agents/orchestrator.md` `### Shaping and planning, when the task needs them`. **No new mechanism sits at this bullet**: the re-entry runs the ordinary shaping and planning steps and produces an ordinary spec. Forecloses: the Artifact and Grounding are not touched until the new Directive exists. (Bounding: once-per-session — see Rebalance bounding below.)
 - **Accept Bounded Closure** — the Directive is not reachable as stated; what was learned along the way is the Artifact, and the session ends acknowledging that. Emits `bounded_closure_proposed` event. Names the reason in the closure note the work item takes. Forecloses: no further execution pass, no decision filed, no re-shape in this session. Terminal — see Rebalance bounding below.
 
   **It is the one move a mechanism can still force**, and only through the *Revise Directive* cap below. The three bounds that used to force it from a Turn count are gone (`## What the cut took out of this file`); nothing counts, so nothing else here reaches this option except the user choosing it.
@@ -33,10 +33,10 @@ It replaces the standard Proceed/Skip/Defer/Modify with **two gates in sequence*
 
 **Gate 2 — reached only on Keep it: what to revise?** Two options, always both:
 
-- **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator names the next task itself from the reconciler's three-edge summary, and re-enters the dispatch loop at `agents/orchestrator.md` `### Step 1 — read the task` with one task, not a queue. Emits `rebalance_artifact` event. Forecloses: the Grounding is not questioned on this pass. (Bounding: see Rebalance bounding below.)
+- **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator names the next task itself from the state-auditor's three-edge summary, and re-enters the dispatch loop at `agents/orchestrator.md` `### Step 1 — read the task` with one task, not a queue. Emits `rebalance_artifact` event. Forecloses: the Grounding is not questioned on this pass. (Bounding: see Rebalance bounding below.)
 - **Revise Grounding** — file a new `_o_` decision record, or supersede an existing `_i_` decision (rename `_i_`→`_s_` and create a new `_o_`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. Forecloses: nothing is dispatched until the decision is filed. (Resume mechanics: see Rebalance bounding below.)
 
-When the reconciler's recommendation names a move, say which gate and which option it maps to when you put Gate 1, and put every option regardless: a recommendation is an input to the question, never a reason to hide a branch (`rules/critical-stance.md` §4).
+When the state-auditor's recommendation names a move, say which gate and which option it maps to when you put Gate 1, and put every option regardless: a recommendation is an input to the question, never a reason to hide a branch (`rules/critical-stance.md` §4).
 
 The gate is reachable from the hand-run reconciliation's verdict and from nowhere else. It had a second trigger — the per-Turn Coherence check, decision `260827-1310_*_does-the-coherence-gate-ask-when-its-own-verdict-is-ok.md` — and that check was removed on 2026-09-10. The surviving procedure below is written against `agents/orchestrator.md`'s dispatch loop; the only Phases and Turns still named in this file are named in the table above, as things that are gone.
 
@@ -52,7 +52,7 @@ The gate is reachable from the hand-run reconciliation's verdict and from nowher
 
   **The count is no longer persisted, and that costs something.** It rode `control.directive_revisions_this_session` in the session state file, which is not written any more, so the cap holds for as long as the session's own context does and no further. A session that is interrupted and restarted starts the count at zero and may revise the Directive a second time without the gate objecting. Nothing detects that. It is not repaired here because a new persisted counter is precisely the class of hand-written state the cut removed — a number written at a boundary a session can pass without writing it — and re-adding one to hold a once-per-session cap would trade a measured failure mode for an unmeasured one. Say so if it comes up rather than claiming the cap survives a restart.
 
-  **On the re-entry:** tell the user what triggered it — the reconciliation's verdict and their own Rebalance choice — and carry that into the commit message of whatever lands next, which is where this project keeps its per-change record. The shaper produces a new spec with the prior commits as Grounding context; then the planning step, and back into the dispatch loop.
+  **On the re-entry:** tell the user what triggered it — the reconciliation's verdict and their own Rebalance choice — and carry that into the commit message of whatever lands next, which is where this project keeps its per-change record. The requirements-designer produces a new spec with the prior commits as Grounding context; then the planning step, and back into the dispatch loop.
 
 - **Revise Grounding files a record and nothing else.** The orchestrator notes where it was, then asks the user in chat to choose between:
   (a) **File a new `_o_` decision record** — orchestrator asks the user for the question text and any options/constraints (or for the full decision body if the user prefers to type it directly), then writes the file at `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`. A record that cites a work item names it by its bare basename, which carries no marker and never changes; OR
@@ -62,18 +62,18 @@ The gate is reachable from the hand-run reconciliation's verdict and from nowher
 
   When the user runs a reconciliation again after filing, the verdict may now pass with the new Grounding context. If it still flags `review-needed`, the gate fires again — but the Grounding has changed, so the user has new options.
 
-- **Accept Bounded Closure is terminal.** The orchestrator emits `bounded_closure_proposed`, sets the session history file's `**Status:**` to `Bounded Closure: <reason>`, and goes to `agents/orchestrator.md` `## Closing a work item`, where the closing value is `dropped` and the body says what was learned. The reconciler has already run for the verdict that triggered this gate; do **not** re-run it. Skip any further execution.
+- **Accept Bounded Closure is terminal.** The orchestrator emits `bounded_closure_proposed`, sets the session history file's `**Status:**` to `Bounded Closure: <reason>`, and goes to `agents/orchestrator.md` `## Closing a work item`, where the closing value is `dropped` and the body says what was learned. The state-auditor has already run for the verdict that triggered this gate; do **not** re-run it. Skip any further execution.
 
 
 ## What went with the Circle container
 
 A second section stood here, **Re-sharpening an anticipated Circle**: the one condition under which
-the orchestrator could dispatch the shaper's record-editing mode, the four parameter lines it
-carried, and the relay of its clarification rounds. Both of the shaper's record-editing modes went
-on 2026-09-10 with the unit-of-work record they edited (`agents/shaper.md` `## Two invocation
+the orchestrator could dispatch the requirements-designer's record-editing mode, the four parameter lines it
+carried, and the relay of its clarification rounds. Both of the requirements-designer's record-editing modes went
+on 2026-09-10 with the unit-of-work record they edited (`agents/requirements-designer.md` `## Two invocation
 modes`), so the permission has no mode to grant and the parameter block names nothing. **Revise
-Directive** below dispatches the shaper in its ordinary mode, which produces an ordinary spec, and
-the relay obligation it shares with every shaper dispatch is stated once in
+Directive** below dispatches the requirements-designer in its ordinary mode, which produces an ordinary spec, and
+the relay obligation it shares with every requirements-designer dispatch is stated once in
 `agents/orchestrator.md` `### Shaping and planning, when the task needs them`, step 3.
 
 **One thing the removed section carried is not re-imposed and is named rather than lost:** the
@@ -81,6 +81,6 @@ the relay obligation it shares with every shaper dispatch is stated once in
 on every run of that mode. It existed because the mode edited a record the user owns without the
 user in the room. No surviving mode edits such a record, so there is no unattributed edit for the
 line to attribute — but the *distinguishing rule* it enforced still holds wherever this file grants
-a permission: **can you quote the user's own words choosing it?** A stale Grounding, a reconciler
+a permission: **can you quote the user's own words choosing it?** A stale Grounding, a state-auditor
 verdict or your own reading that the Directive no longer fits are inputs to the question you ask,
 never substitutes for the answer to it.

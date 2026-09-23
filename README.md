@@ -68,9 +68,9 @@ The HTTPS installer writes `fusion` to `~/.local/bin`. It runs Claude Code with 
 
 ```bash
 fusion                   # --agent fusion:orchestrator (default)
-fusion coder             # --agent fusion:coder (bare names auto-prefixed)
+fusion code-implementer  # --agent fusion:code-implementer (bare names auto-prefixed)
 fusion --yolo            # add --dangerously-skip-permissions (skip approval prompts)
-fusion coder -p "..."    # extra args after the agent pass straight to claude
+fusion code-implementer -p "..." # extra args after the agent pass straight to claude
 fusion --help            # full usage
 ```
 
@@ -102,7 +102,7 @@ Start the orchestrator and give it a task:
 fusion                                   # or: claude --agent fusion:orchestrator
 ```
 
-Then, in the chat, state what you want — for example *"implement the plan in planning, then review it"* or *"fix the failing test in the parser."* The orchestrator resolves the scope and runs a **dispatch loop**: one task at a time — read it, dispatch an executor (coder, ontocoder), read what comes back, commit it, and tell you where things stand before taking the next one. No queue is built and no count bounds the loop; you do, by saying what is next. The reviewer runs **once per work item, at its close**, scoped by the coverage tiling so nothing slips between sessions. A reconciliation checks the tracking files when you ask for it (`/fusion:reconcile`), and on anything but a clean verdict it opens the **Rebalance gate**.
+Then, in the chat, state what you want — for example *"implement the plan in planning, then review it"* or *"fix the failing test in the parser."* The orchestrator resolves the scope and runs a **dispatch loop**: one task at a time — read it, dispatch an executor (code-implementer, data-implementer), read what comes back, commit it, and tell you where things stand before taking the next one. No queue is built and no count bounds the loop; you do, by saying what is next. The reviewer runs **once per work item, at its close**, scoped by the coverage tiling so nothing slips between sessions. A reconciliation checks the tracking files when you ask for it (`/fusion:reconcile`), and on anything but a clean verdict it opens the **Rebalance gate**.
 
 You'll hit **gates** — points where the orchestrator stops and asks — before ontology changes, destructive operations, and ambiguous decisions. That's the design; answering them is how you steer.
 

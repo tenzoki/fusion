@@ -144,15 +144,15 @@ interface Surface {
  */
 const AGENT_BASELINE: Record<string, number> = {
   "analyst.md": 21317,
-  "coder.md": 9688,
+  "code-implementer.md": 9688,
   "consultant.md": 14825,
-  "curator.md": 33541,
-  "editor.md": 14272,
-  "ontocoder.md": 13305,
+  "policy-curator.md": 33541,
+  "document-editor.md": 14272,
+  "data-implementer.md": 13305,
   "orchestrator.md": 139859,
-  "planner.md": 18434,
-  "reconciler.md": 20006,
-  "shaper.md": 25320,
+  "implementation-planner.md": 18434,
+  "state-auditor.md": 20006,
+  "requirements-designer.md": 25320,
 };
 
 /**

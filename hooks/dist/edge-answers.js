@@ -1,6 +1,6 @@
 /**
- * What prior curator runs already asked the user about a work-item edge, printed
- * for `agents/curator.md` `### The suppression read` to read instead of the
+ * What prior policy-curator runs already asked the user about a work-item edge, printed
+ * for `agents/policy-curator.md` `### The suppression read` to read instead of the
  * corpus.
  *
  * The computation is `lib/edge-answers.ts`, and this is its only caller — no

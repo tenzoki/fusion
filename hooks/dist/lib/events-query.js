@@ -331,7 +331,8 @@ export function renderParty(p, aliasOf) {
  * dispatches, the reading of how long a dispatch ran
  * ------------------------------------------------------------------ */
 /**
- * The seven agents whose dispatch durations this reading measures.
+ * The seven agents whose dispatch durations this reading measures, each under
+ * every name it has carried.
  *
  * **It was the bound-agent set, and it is now a set with one definition site.**
  * Until 2026-09-10 it was one of two copies — the other being the
@@ -367,7 +368,28 @@ export const MEASURED_AGENTS = [
     "coderev",
     "ontorev",
     "curator",
+    // v12.0.0 renamed four of the seven. The new names are the same roles, not a
+    // widening, and `ROLE_OF` reports both spellings as one series.
+    "code-implementer",
+    "data-implementer",
+    "state-auditor",
+    "policy-curator",
 ];
+/**
+ * The v12.0.0 agent renames, old to new — the table `bin/fusion-paths` and
+ * `bin/fusion-rules` also carry. The log keeps every row under the name it was
+ * written with; a dispatch row is REPORTED under the role's current name, so a
+ * range spanning the rename gives one series per role rather than two.
+ */
+export const ROLE_OF = {
+    shaper: "requirements-designer",
+    planner: "implementation-planner",
+    coder: "code-implementer",
+    ontocoder: "data-implementer",
+    reconciler: "state-auditor",
+    editor: "document-editor",
+    curator: "policy-curator",
+};
 /**
  * How long each dispatch of a measured agent ran, since a cutoff.
  *
@@ -469,7 +491,7 @@ export function measureDispatchDurations(text, opts) {
         }
         if (startMs < cutoffMs)
             continue;
-        const agent = line.agent;
+        const agent = ROLE_OF[line.agent] ?? line.agent;
         const task = line.task;
         const ts = line.ts;
         const end = done.get(task);

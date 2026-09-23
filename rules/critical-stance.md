@@ -39,7 +39,7 @@ A proposal is not help if it is half-thought. Stacking another patch on a shaky 
 - **"I don't have a clean answer yet" is a valid response.** If you cannot yet propose something sound, say exactly that and name what you would need to investigate. This is far more useful than a confident guess that adds work.
 - **One considered option beats three shallow ones.** Do not pad a reply with alternatives you have not thought through.
 
-This is the substantive complement to the `planner` / `coder` "simplest solution, no premature abstractions" lines. *Simplest* does not mean *fastest to type*: it means the cleanest integral design that actually resolves the cause.
+This is the substantive complement to the `implementation-planner` / `code-implementer` "simplest solution, no premature abstractions" lines. *Simplest* does not mean *fastest to type*: it means the cleanest integral design that actually resolves the cause.
 
 ## 3. Calibrated certainty
 
@@ -70,7 +70,7 @@ Three statements, in increasing order of how much they cost to obey.
 **Decidability:** <the load-bearing question, and whether it is decidable from the inputs the mechanism has>
 ```
 
-If the answer is no, the plan must name the change of mechanism. `agents/planner.md` carries the line in its plan output format. The label reads `**Decidability:**` in **every** project, a `de` one included: it is defined in a shipped template, which is an exempt surface, while the plan *body* under it follows the artifact language. The rule is `rules/fusion-workbench-conventions.md` `## Project language`, and this settles point 3 of `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, where the claim that head labels take the project's language was surfaced as false.
+If the answer is no, the plan must name the change of mechanism. `agents/implementation-planner.md` carries the line in its plan output format. The label reads `**Decidability:**` in **every** project, a `de` one included: it is defined in a shipped template, which is an exempt surface, while the plan *body* under it follows the artifact language. The rule is `rules/fusion-workbench-conventions.md` `## Project language`, and this settles point 3 of `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, where the claim that head labels take the project's language was surfaced as false.
 
 **What that checkpoint enforces, honestly: little by itself.** An instruction in an agent prompt is overridable under task pressure: fusion's own development notes carry a worked case of it, where a "MUST" in the orchestrator prompt lost to the urgency of the user's request and the mandated step was simply skipped. The enforcement is the **human at the approval gate**: the plan head is the part that always gets read, and a line that is missing, empty, or evasive is conspicuous there in a way a violated principle buried in step 7 is not. The line's job is to put the question where somebody looks, not to answer it.
 

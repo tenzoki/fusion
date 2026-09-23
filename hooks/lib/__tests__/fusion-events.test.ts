@@ -309,7 +309,7 @@ describe("measureDispatchDurations scores each pair into exactly one of four out
   it("a pair inside the threshold is counted, within, and not longer", () => {
     const r = dispatchIn(log(sess(), ...dispatch("t1", { end: "2026-09-08T09:10:00" })));
     expect(r).toMatchObject({ counted: 1, longerThanThreshold: 0, unattributable: 0, unpaired: 0, unstamped: 0 });
-    expect(r.rows).toEqual([{ agent: "coder", task: "t1", ts: "2026-09-08T09:00:00", minutes: 10, outcome: "within" }]);
+    expect(r.rows).toEqual([{ agent: "code-implementer", task: "t1", ts: "2026-09-08T09:00:00", minutes: 10, outcome: "within" }]);
   });
 
   it("a pair over the threshold is counted and longer", () => {
@@ -325,15 +325,15 @@ describe("measureDispatchDurations scores each pair into exactly one of four out
     // reports the unplaceable pair as its own outcome instead. Asserted as the
     // code behaves. `minutes: null` is C4's eighth criterion: a zero there would
     // read as an instant dispatch.
-    expect(r.rows).toEqual([{ agent: "coder", task: "t1", ts: "2026-09-08T09:00:00", minutes: null, outcome: "unpaired" }]);
-    expect(renderDispatch(r.rows[0])).toBe("dispatch=coder\tt1\t2026-09-08T09:00:00\t-\tunpaired");
+    expect(r.rows).toEqual([{ agent: "code-implementer", task: "t1", ts: "2026-09-08T09:00:00", minutes: null, outcome: "unpaired" }]);
+    expect(renderDispatch(r.rows[0])).toBe("dispatch=code-implementer\tt1\t2026-09-08T09:00:00\t-\tunpaired");
   });
 
   it("a pair whose session_id no session_start accounts for is unattributable, reported and not dropped", () => {
     const r = dispatchIn(log(sess(), ...dispatch("t1", { session_id: "sess-other", end: "2026-09-08T09:45:00" })));
     expect(r).toMatchObject({ counted: 0, longerThanThreshold: 0, unattributable: 1, unpaired: 0 });
     // Measured but not scored: the duration is known, the dispatch is not placeable.
-    expect(r.rows).toEqual([{ agent: "coder", task: "t1", ts: "2026-09-08T09:00:00", minutes: 45, outcome: "unattributable" }]);
+    expect(r.rows).toEqual([{ agent: "code-implementer", task: "t1", ts: "2026-09-08T09:00:00", minutes: 45, outcome: "unattributable" }]);
     expect(r).toMatchObject({ sessionStarts: 1, sessionStartsWithoutId: 0 });
   });
 

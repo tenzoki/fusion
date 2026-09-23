@@ -29,7 +29,7 @@
 # Usage:
 #   fusion-commit-lock acquire <tag>
 #       Block until the lock is acquired. Tag is mandatory (used in stale-
-#       lock messages — typically the agent name: orchestrator, coder, ...).
+#       lock messages — typically the agent name: orchestrator, code-implementer, ...).
 #       Polls every 200ms with exponential backoff capped at 2s. Emits one
 #       stderr message after the first failed acquire; thereafter silent.
 #       Stale-lock detection: if the holder's acquired_at is older than 60

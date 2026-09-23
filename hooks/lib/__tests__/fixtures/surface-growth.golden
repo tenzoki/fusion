@@ -12,18 +12,18 @@
 # does not move any baseline and therefore never clears a bound.
 
 [agents bytes]
-  analyst.md 21032
-  coder.md 12165
-  consultant.md 13432
-  curator.md 78509
-  editor.md 13156
-  ontocoder.md 15875
-  orchestrator.md 97792
-  planner.md 19659
-  reconciler.md 21171
-  reviewer.md 12837
-  shaper.md 17019
-  total 322647
+  analyst.md 21161
+  code-implementer.md 12255
+  consultant.md 13518
+  data-implementer.md 15987
+  document-editor.md 13228
+  implementation-planner.md 20048
+  orchestrator.md 98134
+  policy-curator.md 78685
+  requirements-designer.md 17411
+  reviewer.md 12926
+  state-auditor.md 21228
+  total 324581
 
 [skills bytes]
   archive/SKILL.md 24532
@@ -31,16 +31,16 @@
   check/SKILL.md 31855
   cleanup/SKILL.md 6763
   commit/SKILL.md 6113
-  curate/SKILL.md 12017
+  curate/SKILL.md 12150
   discuss/SKILL.md 14346
-  help/SKILL.md 16141
+  help/SKILL.md 16268
   memo/SKILL.md 13260
   migrate/SKILL.md 19898
   news/SKILL.md 8211
   post/SKILL.md 6694
-  reconcile/SKILL.md 6604
+  reconcile/SKILL.md 6646
   setup/SKILL.md 14533
-  total 203238
+  total 203540
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -77,9 +77,9 @@
   glob-nomatch-lint.test.ts 140
   guard-bash-integration.test.ts 334
   guard-project-config-integration.test.ts 232
-  guard-state-shape.test.ts 343
+  guard-state-shape.test.ts 344
   helpers/citation-scan.ts 56
-  helpers/growth-bound.ts 174
+  helpers/growth-bound.ts 178
   helpers/guard-harness.ts 1047
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 614
@@ -93,7 +93,7 @@
   plan-size.test.ts 165
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
-  reference-resolution-lint.test.ts 1016
+  reference-resolution-lint.test.ts 1012
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 862
   rules-emission-golden.test.ts 1189
@@ -107,4 +107,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 189
   workbench-citation-lint.test.ts 353
-  total 22256
+  total 22257

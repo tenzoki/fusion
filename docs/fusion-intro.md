@@ -15,9 +15,9 @@ Das legt das Plugin nach `~/.fusion` und einen Launcher `fusion` nach `~/.local/
 **Starten:**
 
 ```bash
-fusion              # Orchestrator-Sitzung (Standard)
-fusion coder        # einen bestimmten Agenten direkt starten
-fusion --yolo       # ohne Freigabe-Prompts; nur für Wegwerf-Schleifen
+fusion                   # Orchestrator-Sitzung (Standard)
+fusion code-implementer  # einen bestimmten Agenten direkt starten
+fusion --yolo            # ohne Freigabe-Prompts; nur für Wegwerf-Schleifen
 ```
 
 **Setup, einmal pro Projekt, in der gerade gestarteten Sitzung:**
@@ -64,15 +64,15 @@ Der Help-Skill liest die ausgelieferten Docs und zitiert sie mit Pfad, statt aus
 
 ### Direktmodus: einfach sagen, was man will
 
-Dem laufenden Orchestrator die Aufgabe nennen („implementiere den Plan in planning und reviewe ihn“, „fix den fehlschlagenden Test im Parser“). Der Orchestrator klärt den Umfang und arbeitet eine Aufgabe nach der anderen ab. Ist die Anfrage vage, geht sie erst durch den `shaper` (ergibt eine Spec, mit **Spec-Gate**), dann durch den `planner` (ergibt einen Plan, mit **Plan-Gate**). Ist sie klar, wird der Shaper übersprungen.
+Dem laufenden Orchestrator die Aufgabe nennen („implementiere den Plan in planning und reviewe ihn“, „fix den fehlschlagenden Test im Parser“). Der Orchestrator klärt den Umfang und arbeitet eine Aufgabe nach der anderen ab. Ist die Anfrage vage, geht sie erst durch den `requirements-designer` (ergibt eine Spec, mit **Spec-Gate**), dann durch den `implementation-planner` (ergibt einen Plan, mit **Plan-Gate**). Ist sie klar, wird der Shaper übersprungen.
 
 ### Die Dispatch-Schleife
 
-Fünf Schritte, je Aufgabe wiederholt: Aufgabe lesen, dispatchen (`coder` für Code, `ontocoder` für Daten/Ontologie), die Rückgabe lesen, committen (unter dem Commit-Lock), berichten und fragen, was als Nächstes kommt. **Es gibt keine Warteschlange und keinen Zähler:** genau eine Aufgabe ist unterwegs, und die nächste kommt von dir, aus dem Plan oder Issue, an dem die Sitzung arbeitet, oder aus dem, was die letzte Rückgabe aufgedeckt hat. Begrenzt wird die Schleife von dem Menschen, der nach jedem Commit antwortet, und von sonst nichts. Bis v11 lief die Arbeit stattdessen in **Turns** — Batches von Tasks, mit einem automatischen Kohärenz-Check am Ende jedes Turns und einem Turn-Budget in `fusion.json`; beides ist am 2026-09-10 entfallen.
+Fünf Schritte, je Aufgabe wiederholt: Aufgabe lesen, dispatchen (`code-implementer` für Code, `data-implementer` für Daten/Ontologie), die Rückgabe lesen, committen (unter dem Commit-Lock), berichten und fragen, was als Nächstes kommt. **Es gibt keine Warteschlange und keinen Zähler:** genau eine Aufgabe ist unterwegs, und die nächste kommt von dir, aus dem Plan oder Issue, an dem die Sitzung arbeitet, oder aus dem, was die letzte Rückgabe aufgedeckt hat. Begrenzt wird die Schleife von dem Menschen, der nach jedem Commit antwortet, und von sonst nichts. Bis v11 lief die Arbeit stattdessen in **Turns** — Batches von Tasks, mit einem automatischen Kohärenz-Check am Ende jedes Turns und einem Turn-Budget in `fusion.json`; beides ist am 2026-09-10 entfallen.
 
 ### Kohärenz-Check und Rebalance-Gate
 
-Von selbst prüft nichts mehr die Kohärenz. Was bleibt, ist die **Reconciliation, um die du bittest** (`/fusion:reconcile`): der `reconciler` gleicht die Tracking-Dateien mit dem Code ab und liefert ein Verdikt aus drei Fragen — passt die Arbeit noch zu den Annahmen (Grounding), führt sie zum Ziel (Directive), ist das Ziel noch erreichbar? Ist das Verdikt nicht `coherent`, öffnet das **Rebalance-Gate** mit vier Optionen (Arbeit nachbessern, Ziel ändern, Annahmen ändern, begrenzt abschließen). Das ist sein einziger Auslöser: wer keine Reconciliation anstößt, sieht das Gate nie.
+Von selbst prüft nichts mehr die Kohärenz. Was bleibt, ist die **Reconciliation, um die du bittest** (`/fusion:reconcile`): der `state-auditor` gleicht die Tracking-Dateien mit dem Code ab und liefert ein Verdikt aus drei Fragen — passt die Arbeit noch zu den Annahmen (Grounding), führt sie zum Ziel (Directive), ist das Ziel noch erreichbar? Ist das Verdikt nicht `coherent`, öffnet das **Rebalance-Gate** mit vier Optionen (Arbeit nachbessern, Ziel ändern, Annahmen ändern, begrenzt abschließen). Das ist sein einziger Auslöser: wer keine Reconciliation anstößt, sieht das Gate nie.
 
 In `fusion.json` steht genau ein aktives Setting: `citations.extraPaths`, die Nicht-Markdown-Dateien, in denen dieses Projekt Record-Zitate führt. `orchestrator.maxTurns` und `orchestrator.dispatchMinutes` sind zurückgezogen; ein Projekt, das eines davon noch deklariert, bekommt je eine Advisory pro Tool-Call.
 
@@ -99,10 +99,10 @@ Bis v11 hieß die Arbeitseinheit *Circle*: ein Verzeichnis unter `circles/` mit 
 ### Backlog, Memo und der Weg zur Arbeit
 
 ```
-/fusion:memo idea: <eine Zeile>   Idee als Work Item ablegen (Status: open)
-Store lesen, eines auswählen      nichts rankt sie; die Reihenfolge ist deine
-Orchestrator claimed es           Status: open → claimed, Claim: <dein Checkout>
-Item-Pfad an den shaper           er liest es als Anfrage und schreibt kein Byte hinein
+/fusion:memo idea: <eine Zeile>              Idee als Work Item ablegen (Status: open)
+Store lesen, eines auswählen                 nichts rankt sie; die Reihenfolge ist deine
+Orchestrator claimed es                      Status: open → claimed, Claim: <dein Checkout>
+Item-Pfad an den requirements-designer       er liest es als Anfrage und schreibt kein Byte hinein
 ```
 
 `/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<checkout>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<checkout>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigenes Verzeichnis unter `circles/`). Kein Agent legt ein Work Item an; das ist Sache des Menschen. Der Orchestrator pflegt den Store — claimen, freigeben, abschließen, verwerfen, teilen, zusammenlegen — und zwar je Operation und je Item nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
@@ -113,7 +113,7 @@ Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen,
 
 ## 5. Abschluss von Arbeitseinheit und Sitzung
 
-**Item-Ende:** Ein Work Item kann mehrere Sitzungen dauern; Sitzungsende und Item-Ende sind zwei verschiedene Dinge. Der `reconciler` gleicht die Tracking-Dateien mit dem Code ab, wenn du ihn darum bittest. Der Reviewer läuft **einmal je Item, beim Abschluss**, über alle Commits, die noch kein Review abgedeckt hat (`bin/fusion-review-coverage`). Der Orchestrator liest die Abbruchklauseln des Plans vor und fragt, ob jede hält. Dann geht `**Status:**` auf `done` oder `dropped`, der Claim bleibt stehen und nennt, wer die Arbeit getan hat, und eine Abschlussnotiz mit dem Commit-Bereich wird angehängt.
+**Item-Ende:** Ein Work Item kann mehrere Sitzungen dauern; Sitzungsende und Item-Ende sind zwei verschiedene Dinge. Der `state-auditor` gleicht die Tracking-Dateien mit dem Code ab, wenn du ihn darum bittest. Der Reviewer läuft **einmal je Item, beim Abschluss**, über alle Commits, die noch kein Review abgedeckt hat (`bin/fusion-review-coverage`). Der Orchestrator liest die Abbruchklauseln des Plans vor und fragt, ob jede hält. Dann geht `**Status:**` auf `done` oder `dropped`, der Claim bleibt stehen und nennt, wer die Arbeit getan hat, und eine Abschlussnotiz mit dem Commit-Bereich wird angehängt.
 
 **Sitzungsende:**
 

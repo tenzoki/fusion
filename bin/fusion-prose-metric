@@ -4,7 +4,7 @@
 #
 # Usage:
 #   fusion-prose-metric <file> [<file> ...]
-#   fusion-prose-metric $(fusion-rules coder)     # the always-on corpus
+#   fusion-prose-metric $(fusion-rules code-implementer)     # the always-on corpus
 #
 # Output on stdout: a column header, one row per file, and one total row.
 #
@@ -123,7 +123,7 @@
 # reader who re-runs the comparison at HEAD gets different numbers (issue
 # 260822-0119_*_the-prose-metrics-worked-exhibit-reports-six-em-dashes-in-a-file-that-carries-four.md records the drift, and that 617 did not reproduce at fac97f4
 # either, where the program read 614). Measured then against that table over
-# the six files `fusion-rules coder` emits, all six em-dash counts and five of
+# the six files `fusion-rules code-implementer` emits, all six em-dash counts and five of
 # the six word counts reproduced exactly. The sixth was chat-voice-de.yaml,
 # where the table read 882 prose words and this program read 617. 882 was that
 # file's raw `wc -w`: the hand count excluded the example subtrees from the

@@ -46,17 +46,17 @@ If the user wants a fast answer, summarize the pillars in a few sentences. If th
 
 Once `/fusion:setup` has run in a project, the day-to-day flow is:
 
-1. **Use the launcher.** If you installed via the HTTPS installer, `fusion` runs an agent: bare `fusion` invokes the orchestrator; `fusion coder`, `fusion planner`, etc. dispatch a specific agent directly. Add `--yolo` to clear permission prompts (`fusion --yolo coder`). If you installed via the Claude Code marketplace, start an agent directly with `claude --agent fusion:orchestrator`.
+1. **Use the launcher.** If you installed via the HTTPS installer, `fusion` runs an agent: bare `fusion` invokes the orchestrator; `fusion code-implementer`, `fusion implementation-planner`, etc. dispatch a specific agent directly. Add `--yolo` to clear permission prompts (`fusion --yolo code-implementer`). If you installed via the Claude Code marketplace, start an agent directly with `claude --agent fusion:orchestrator`.
 
 2. **Pick the right entry point** depending on what you're doing:
    - Multi-task batch session → **orchestrator**
-   - Vague request that needs scoping → **shaper**, then planner
-   - Concrete change with a clear ask → **planner** directly
-   - One bug to fix → **coder** or **ontocoder**, whichever owns the file; a task naming an error takes the diagnose-before-editing route in its own prompt
-   - Customer-ready deliverable, branded deck, or en↔de translation → **editor**
-   - A goal to capture without starting work on it → `/fusion:memo` files it as its own work item in the project backlog, where it waits at `open` until somebody claims it. Its path is then a valid input to **shaper**, which turns it into a spec without touching the item
+   - Vague request that needs scoping → **requirements-designer**, then implementation-planner
+   - Concrete change with a clear ask → **implementation-planner** directly
+   - One bug to fix → **code-implementer** or **data-implementer**, whichever owns the file; a task naming an error takes the diagnose-before-editing route in its own prompt
+   - Customer-ready deliverable, branded deck, or en↔de translation → **document-editor**
+   - A goal to capture without starting work on it → `/fusion:memo` files it as its own work item in the project backlog, where it waits at `open` until somebody claims it. Its path is then a valid input to **requirements-designer**, which turns it into a spec without touching the item
    - "What should I work on next?" → read the backlog yourself; the portfolio briefing and the session work queue both went at v11 with the agents that built them
-   - Tracking files feel stale → **reconciler**
+   - Tracking files feel stale → **state-auditor**
    - Strategic advice or second opinion → **consultant**
    - Deep document/problem study before work, or a forensic look at a captured failed run → **analyst**
 

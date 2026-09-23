@@ -19,11 +19,11 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 
 const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
 
-const EDITOR = "agents/editor.md";
+const EDITOR = "agents/document-editor.md";
 const CONVENTIONS = "rules/fusion-workbench-conventions.md";
 
 /**
- * The two `CLAUDE.md` declaration tokens. Naming either one inside the editor's
+ * The two `CLAUDE.md` declaration tokens. Naming either one inside the document-editor's
  * prompt is the only shape a project-wide default for a deliverable can take —
  * there is nowhere else a default could be read from. Matched with the asterisks
  * so ordinary prose about "the artifact language" elsewhere is not caught; the
@@ -41,7 +41,7 @@ function projectLanguageSection(): string {
   return parts[1].split(/^## /m)[0];
 }
 
-/** The `## Deliverable language …` section of the editor prompt. */
+/** The `## Deliverable language …` section of the document-editor prompt. */
 function deliverableLanguageSection(): string {
   const text = read(EDITOR);
   const parts = text.split(/^## Deliverable language.*$/m);
@@ -52,7 +52,7 @@ function deliverableLanguageSection(): string {
   return parts[1].split(/^## /m)[0];
 }
 
-describe("the editor's deliverable language has no default", () => {
+describe("the document-editor's deliverable language has no default", () => {
   it("names neither project declaration anywhere in the prompt", () => {
     const text = read(EDITOR);
     const found = DECLARATION_TOKENS.filter((t) => text.includes(t));
@@ -115,7 +115,7 @@ describe("the conventions file's language split stays four-way", () => {
     // "the fourth case" once resolved silently to the bullet stating the
     // opposite rule (issue 260811-2245). Same-line window around the name.
     const hits: string[] = [];
-    for (const rel of ["agents/orchestrator.md", "agents/editor.md", "CLAUDE.md", CONVENTIONS]) {
+    for (const rel of ["agents/orchestrator.md", "agents/document-editor.md", "CLAUDE.md", CONVENTIONS]) {
       read(rel).split("\n").forEach((line, i) => {
         if (/Project language/.test(line) && /\b(first|second|third|fourth|fifth) case\b/i.test(line)) {
           hits.push(`${rel}:${i + 1}`);

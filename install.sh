@@ -119,16 +119,16 @@ case "\${1:-}" in
     cat <<'USAGE'
 fusion — launch Claude Code with a fusion agent (loads ~/.fusion via --plugin-dir)
 
-  fusion                  orchestrator (default)
-  fusion coder            --agent fusion:coder
-  fusion consultant       --agent fusion:consultant
-  fusion fusion:planner   already-namespaced names pass through
-  fusion --yolo [agent]   add --dangerously-skip-permissions (no prompts)
-  fusion [agent] -p "..." extra args after the agent go straight to claude
+  fusion                          orchestrator (default)
+  fusion code-implementer         --agent fusion:code-implementer
+  fusion consultant               --agent fusion:consultant
+  fusion fusion:state-auditor     already-namespaced names pass through
+  fusion --yolo [agent]           add --dangerously-skip-permissions (no prompts)
+  fusion [agent] -p "..."         extra args after the agent go straight to claude
 
-  fusion --update         re-download the latest over HTTPS
-  fusion --uninstall      remove ~/.fusion and this launcher
-  fusion --where          print the install dir
+  fusion --update                 re-download the latest over HTTPS
+  fusion --uninstall              remove ~/.fusion and this launcher
+  fusion --where                  print the install dir
 USAGE
     exit 0
     ;;

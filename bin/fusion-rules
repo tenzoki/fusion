@@ -33,12 +33,12 @@
 #     instruction. Emitted before fusion-workbench-conventions.md so an agent
 #     reads "how Setup works" before the detailed conventions.
 #   - Every agent reads fusion-workbench-conventions.md (shipped by plugin).
-#   - The decision-transition agents (orchestrator, shaper, planner,
-#     reconciler) additionally read decision-record-examples.md —
+#   - The decision-transition agents (orchestrator, requirements-designer, implementation-planner,
+#     state-auditor) additionally read decision-record-examples.md —
 #     the worked marker transitions; audience decided at 260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md, when
 #     the always-on floor could no longer carry the tutorial.
-#   - The user-read agents (orchestrator, consultant, shaper, editor,
-#     curator) additionally read user-facing-output.md — the full
+#   - The user-read agents (orchestrator, consultant, requirements-designer, document-editor,
+#     policy-curator) additionally read user-facing-output.md — the full
 #     user-facing style contract (gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md); everyone else carries
 #     the chat profile's anti-patterns via agent-setup.md. This is the ONE
 #     emission a dispatch can also ask for by hand, with `--audience=user`; the
@@ -61,15 +61,15 @@
 #   - Design-diagram agents additionally read design-diagrams.md (shipped by
 #     plugin) — the doctrine for expressing technical design as formal,
 #     parseable Mermaid (when / which type, validity, coherence self-check).
-#     Recipients: planner, analyst, shaper — the agents that
+#     Recipients: implementation-planner, analyst, requirements-designer — the agents that
 #     produce the diagrams.
 #   - Domain agents additionally match filename patterns:
-#       coder                     → *coding*.md
-#       ontocoder                 → *ontology*.md, *normative*.md, *verb*.md
+#       code-implementer          → *coding*.md
+#       data-implementer          → *ontology*.md, *normative*.md, *verb*.md
 #       reviewer                  → both sets, because one agent covers both
 #                                   review domains
-#       planner                   → *coding*.md, *ontology*.md
-#   - The editor additionally reads project-language.md (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md);
+#       implementation-planner    → *coding*.md, *ontology*.md
+#   - The document-editor additionally reads project-language.md (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md);
 #     agents matching none of the conditions above get the always-on core alone.
 #
 # Optional topic-scoped loading (the context manifest):
@@ -103,13 +103,13 @@
 #                                    chat output. Language: the `**Language:**`
 #                                    line.
 #       default-voice-<lang>.yaml  — emitted for the long-form-prose agents only
-#                                    (orchestrator, consultant, shaper, planner,
-#                                    analyst, editor, curator), for
+#                                    (orchestrator, consultant, requirements-designer, implementation-planner,
+#                                    analyst, document-editor, policy-curator), for
 #                                    narrative outputs:
 #                                    session summary bodies, consultation
 #                                    replies, analysis reports including
 #                                    failure timelines,
-#                                    prose sections of specs and plans, editor
+#                                    prose sections of specs and plans, document-editor
 #                                    deliverables. Language: the
 #                                    `**Artifact language:**` line.
 #     What the two declarations name is a boundary by SURFACE, not by length:
@@ -143,8 +143,8 @@ set -eu
 
 # Argument parsing. Two positionals — the agent name and an optional topic — plus
 # one optional flag, `--audience=user`, which may stand anywhere after the agent.
-# The flag is scanned out first so that `fusion-rules planner --audience=user`
-# and `fusion-rules planner "" --audience=user` are the same call; the plan's
+# The flag is scanned out first so that `fusion-rules implementation-planner --audience=user`
+# and `fusion-rules implementation-planner "" --audience=user` are the same call; the plan's
 # verification uses the second form and a reader should not have to know which
 # one the parser wants.
 #
@@ -223,15 +223,15 @@ else
 fi
 
 case "$AGENT" in
-  coder)                          PATTERNS="coding" ;;
-  ontocoder)                      PATTERNS="ontology normative verb" ;;
+  code-implementer)               PATTERNS="coding" ;;
+  data-implementer)               PATTERNS="ontology normative verb" ;;
   # The reviewer covers both domains in one agent, so it takes both pattern
   # sets: a code pass needs the project's coding rules and an ontology pass its
   # ontology, normative and verb rules. The plugin ships none of these, so in
   # this repository the union costs 0 bytes; in a consuming project it is what
   # keeps an ontology review from running without the heuristics that bind it.
   reviewer)                       PATTERNS="coding ontology normative verb" ;;
-  planner)                        PATTERNS="coding ontology" ;;
+  implementation-planner)         PATTERNS="coding ontology" ;;
   # `analyst` carries its own pattern so a SMALL project-local rule reaches it by
   # filename, the way ./rules/investigator-*.md reached the investigator before
   # step 8 of Circle 260815-0007-remove-eight-mechanisms-and-cap-growth folded that agent in here. Deliberately the one
@@ -246,10 +246,19 @@ case "$AGENT" in
   # 260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md,
   # option 3 (both), answered by the user 2026-08-20.
   analyst)                        PATTERNS="analyst" ;;
-  orchestrator|shaper|reconciler|consultant|editor|curator)
+  orchestrator|requirements-designer|state-auditor|consultant|document-editor|policy-curator)
                                   PATTERNS="" ;;
   *)
-    echo "fusion-rules: unknown agent '$AGENT'" >&2
+    # The v12.0.0 renames, old:new, the table bin/fusion-paths also carries: a
+    # stale prompt asking under a pre-v12 name is told the name to ask under.
+    V12_RENAMES="shaper:requirements-designer planner:implementation-planner coder:code-implementer ontocoder:data-implementer reconciler:state-auditor editor:document-editor curator:policy-curator"
+    NOTE=""
+    for pair in $V12_RENAMES; do
+      if [ "${pair%%:*}" = "$AGENT" ]; then
+        NOTE=" '$AGENT' was renamed '${pair#*:}' at v12.0.0 (the seven renames: $(printf '%s' "$V12_RENAMES" | tr ' ' ',' | sed 's/:/ -> /g; s/,/, /g'))."
+      fi
+    done
+    echo "fusion-rules: unknown agent '$AGENT'.$NOTE" >&2
     exit 2
     ;;
 esac
@@ -257,7 +266,7 @@ esac
 # Prose-agent flag — independent of PATTERNS. The agents below produce
 # long-form narrative output that the stylometric profile governs.
 case "$AGENT" in
-  orchestrator|consultant|shaper|planner|analyst|editor|curator)
+  orchestrator|consultant|requirements-designer|implementation-planner|analyst|document-editor|policy-curator)
                                   IS_PROSE_AGENT=1 ;;
   *)                              IS_PROSE_AGENT=0 ;;
 esac
@@ -267,7 +276,7 @@ esac
 # Mermaid. They read the shared rubric in rules/design-diagrams.md so that one
 # definition of "coherent" governs every diagram the plugin's agents draw.
 case "$AGENT" in
-  planner|analyst|shaper)         IS_DIAGRAM_AGENT=1 ;;
+  implementation-planner|analyst|requirements-designer) IS_DIAGRAM_AGENT=1 ;;
   *)                              IS_DIAGRAM_AGENT=0 ;;
 esac
 
@@ -289,13 +298,13 @@ esac
 # marker transitions and therefore read the worked examples (audience decided
 # at the 260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md user gate; the vocabulary itself stays always-on).
 case "$AGENT" in
-  orchestrator|shaper|planner|reconciler) IS_DECISION_TRANSITION_AGENT=1 ;;
+  orchestrator|requirements-designer|implementation-planner|state-auditor) IS_DECISION_TRANSITION_AGENT=1 ;;
   *)                                                IS_DECISION_TRANSITION_AGENT=0 ;;
 esac
 
 # User-facing-agent flag — the agents whose output the user reads DIRECTLY:
-# the orchestrator (gates, status, chat), consultant (replies), shaper
-# (clarification rounds), editor (deliverable chat) and curator (the gate ledger
+# the orchestrator (gates, status, chat), consultant (replies), requirements-designer
+# (clarification rounds), document-editor (deliverable chat) and policy-curator (the gate ledger
 # reports). They carry the full user-facing style contract.
 #
 # **Five names, where the decision that keyed this block named three.** Its
@@ -305,7 +314,7 @@ esac
 # code. The list is right and the two records under-counted
 # (260910-2020_*_the-user-facing-fallback-list-is-five-where-the-answered-decision-says-three.md):
 # `consultant` is user-initiated and answers the user with no orchestrator
-# between them, and `shaper` runs user-direct with its rounds relayed verbatim.
+# between them, and `requirements-designer` runs user-direct with its rounds relayed verbatim.
 # Narrowing to three would put both behind a `--audience=user` line nobody
 # passes there — a behaviour change, not a text repair. The rest, which
 # report to the orchestrator, do not — and reach the file on the dispatches where
@@ -316,7 +325,7 @@ esac
 # agent-setup.md: the chat profile's anti-patterns still bind every line a
 # human may read, and a report's audience is the dispatcher.
 case "$AGENT" in
-  orchestrator|consultant|shaper|editor|curator) IS_USER_FACING_AGENT=1 ;;
+  orchestrator|consultant|requirements-designer|document-editor|policy-curator) IS_USER_FACING_AGENT=1 ;;
   *)                                                       IS_USER_FACING_AGENT=0 ;;
 esac
 
@@ -580,8 +589,8 @@ if [ "$IS_USER_FACING_AGENT" -eq 1 ] || [ "$AUDIENCE_USER" -eq 1 ]; then
 fi
 
 # 1b2. The decision-marker WORKED EXAMPLES go to the agents that transition or
-#      plan decision transitions: orchestrator, shaper, planner,
-#      reconciler (worked transition 1, the _o_ -> _a_ rename, is its act).
+#      plan decision transitions: orchestrator, requirements-designer, implementation-planner,
+#      state-auditor (worked transition 1, the _o_ -> _a_ rename, is its act).
 #      Every agent still files records and still carries the marker VOCABULARY
 #      (fusion-workbench-conventions.md, always-on); what leaves the always-on
 #      floor is the tutorial. Audience change decided at the user gate,
@@ -648,13 +657,13 @@ fi
 
 # 1e2. One partitioned conventions topic goes to the one agent whose act it
 #      governs (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md): the language cascade's full text to
-#      the editor, whose deliverable-language halt lives in it. Its sibling from
+#      the document-editor, whose deliverable-language halt lives in it. Its sibling from
 #      that partition, the backlog maintenance mandate, was folded back into the
 #      conventions when the work item replaced the Circle: the mandate is now
 #      three sentences rather than a file, and the item grammar it sits beside is
 #      always-on. The operative core stays always-on in
 #      fusion-workbench-conventions.md.
-if [ "$AGENT" = "editor" ]; then
+if [ "$AGENT" = "document-editor" ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/project-language.md"
 fi
 

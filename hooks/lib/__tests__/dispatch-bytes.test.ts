@@ -55,22 +55,22 @@ describe("the rule emission is measured once and memoised", () => {
   it("spawns the runner on the first call and NOTHING on the second", () => {
     const root = project();
     const first = countingRunner(root);
-    const a = measureDispatchBytes(root, "coder", first.run);
-    expect(first.calls, "the cold path did not run the helper").toEqual(["coder"]);
+    const a = measureDispatchBytes(root, "code-implementer", first.run);
+    expect(first.calls, "the cold path did not run the helper").toEqual(["code-implementer"]);
     expect(a.fields.bytes_rules).toBe(500);
 
     // Same agent, same tree, nothing touched. The memo answers and the runner is
     // never reached — which is the acceptance criterion, counted rather than
     // asserted in prose.
     const second = countingRunner(root);
-    const b = measureDispatchBytes(root, "coder", second.run);
+    const b = measureDispatchBytes(root, "code-implementer", second.run);
     expect(second.calls, "the warm path spawned a subprocess").toEqual([]);
     expect(b.fields.bytes_rules).toBe(500);
   });
 
   it("re-measures when a rule file's mtime moves, and not otherwise", () => {
     const root = project();
-    measureDispatchBytes(root, "coder", countingRunner(root).run);
+    measureDispatchBytes(root, "code-implementer", countingRunner(root).run);
 
     const rule = resolve(root, "rules", "local.md");
     writeFileSync(rule, "x".repeat(900), "utf-8");
@@ -78,26 +78,26 @@ describe("the rule emission is measured once and memoised", () => {
     utimesSync(rule, future, future);
 
     const after = countingRunner(root);
-    const m = measureDispatchBytes(root, "coder", after.run);
-    expect(after.calls, "a changed rule file did not invalidate the memo").toEqual(["coder"]);
+    const m = measureDispatchBytes(root, "code-implementer", after.run);
+    expect(after.calls, "a changed rule file did not invalidate the memo").toEqual(["code-implementer"]);
     expect(m.fields.bytes_rules).toBe(900);
   });
 
   it("keeps a second agent's measurement out of the first agent's memo", () => {
     const root = project();
-    measureDispatchBytes(root, "coder", countingRunner(root).run);
+    measureDispatchBytes(root, "code-implementer", countingRunner(root).run);
     const other = countingRunner(root);
-    measureDispatchBytes(root, "ontocoder", other.run);
-    expect(other.calls).toEqual(["ontocoder"]);
+    measureDispatchBytes(root, "data-implementer", other.run);
+    expect(other.calls).toEqual(["data-implementer"]);
     const memo = JSON.parse(readFileSync(resolve(root, "fusion-workbench", ".guard-state", RULE_SIZES_FILE), "utf-8"));
-    expect(Object.keys(memo).sort()).toEqual(["coder", "ontocoder"]);
+    expect(Object.keys(memo).sort()).toEqual(["code-implementer", "data-implementer"]);
   });
 });
 
 describe("an unmeasurable emission is absent and said, never zero", () => {
   it("drops bytes_rules and bytes_total and hands back one advisory", () => {
     const root = project();
-    const m = measureDispatchBytes(root, "coder", () => {
+    const m = measureDispatchBytes(root, "code-implementer", () => {
       throw new Error("exit 2");
     });
     const keys = Object.keys(m.fields);
@@ -112,7 +112,7 @@ describe("an unmeasurable emission is absent and said, never zero", () => {
 describe("the baseline is the project's own, armed by its first row", () => {
   it("arms silently, then carries the delta against itself", () => {
     const root = project();
-    const first = measureDispatchBytes(root, "coder", countingRunner(root).run);
+    const first = measureDispatchBytes(root, "code-implementer", countingRunner(root).run);
     expect(first.fields.bytes_total).toBeGreaterThan(0);
     expect(
       Object.keys(first.fields),
@@ -122,10 +122,10 @@ describe("the baseline is the project's own, armed by its first row", () => {
     const armed = JSON.parse(
       readFileSync(resolve(root, "fusion-workbench", ".guard-state", BYTE_BASELINE_FILE), "utf-8"),
     );
-    expect(armed.coder).toBe(first.fields.bytes_total);
+    expect(armed["code-implementer"]).toBe(first.fields.bytes_total);
 
     writeFileSync(resolve(root, "CLAUDE.md"), "# project\n" + "y".repeat(120), "utf-8");
-    const second = measureDispatchBytes(root, "coder", countingRunner(root).run);
+    const second = measureDispatchBytes(root, "code-implementer", countingRunner(root).run);
     expect(second.fields.bytes_delta).toBe(120);
   });
 });
@@ -147,7 +147,7 @@ describe("the work item is read off the dispatch prompt", () => {
         runDispatch(root, {
           sessionId: "sid-work-item",
           toolUseId: "toolu_01work",
-          subagentType: "fusion:coder",
+          subagentType: "fusion:code-implementer",
           prompt: "**Work-item:** `260909-1843_o_measure.md`\n\ndo the thing",
         });
         const rows = readOrchestratorEvents(root).filter((r) => r.event === "task_start");
@@ -168,7 +168,7 @@ describe("the work item is read off the dispatch prompt", () => {
         runDispatch(root, {
           sessionId: "sid-no-work-item",
           toolUseId: "toolu_01none",
-          subagentType: "fusion:coder",
+          subagentType: "fusion:code-implementer",
           prompt: "just a directive, no claim",
         });
         const rows = readOrchestratorEvents(root).filter((r) => r.event === "task_start");
@@ -185,7 +185,7 @@ describe("the work item is read off the dispatch prompt", () => {
       withProject(({ root }) => {
         runDispatch(
           root,
-          { sessionId: "sid-bytes", toolUseId: "toolu_01bytes", subagentType: "fusion:coder" },
+          { sessionId: "sid-bytes", toolUseId: "toolu_01bytes", subagentType: "fusion:code-implementer" },
           { FUSION_PLUGIN_ROOT: REPO_ROOT },
         );
         const row = readOrchestratorEvents(root).filter((r) => r.event === "task_start")[0];

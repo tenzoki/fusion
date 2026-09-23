@@ -8,7 +8,7 @@ This doc explains *why* fusion is shaped the way it is and *how* a session runs 
 
 ## Why it's built this way
 
-**1. Specialization beats generalists.** Fusion ships **a fleet of narrow agents** — an orchestrator that dispatches the rest, plus coder, ontocoder, planner, shaper, reconciler, reviewer, analyst, consultant, editor, and curator. Each has a tight scope enforced in its prompt: a `coder` cannot edit ontology YAML, an `ontocoder` cannot edit Go, a reviewer never edits what it reviews. The cost is dispatch overhead — one task may pass through three agents before it lands. The payoff is reasoning quality per pass, because no agent strays into a layer it shouldn't touch.
+**1. Specialization beats generalists.** Fusion ships **a fleet of narrow agents** — an orchestrator that dispatches the rest, plus code-implementer, data-implementer, implementation-planner, requirements-designer, state-auditor, reviewer, analyst, consultant, document-editor, and policy-curator. Each has a tight scope enforced in its prompt: a `code-implementer` cannot edit ontology YAML, an `data-implementer` cannot edit Go, a reviewer never edits what it reviews. The cost is dispatch overhead — one task may pass through three agents before it lands. The payoff is reasoning quality per pass, because no agent strays into a layer it shouldn't touch.
 
 **2. Coordination through files, not shared memory.** Sub-agents in Claude Code share no context with each other or their parent. Fusion turns that constraint into its design: every agent reads and writes files under `fusion-workbench/` — plans, issues, decisions, reviews, history. So runs are **interruptible** (close the session mid-flight and the next one reads the workbench and resumes), **auditable** (every agent leaves a paper trail), and **resumable across people** (a new contributor reads the workbench and picks up where the project is, not just where the code is).
 
@@ -20,7 +20,7 @@ It was built the other way first, and this principle is what the measurements le
 
 Each removal is written up with its figures rather than quietly dropped, and the write trace and the diagnostic are what survived the arithmetic: they answer questions that are decidable from what a hook can actually see. Drift is caught by the reviewers and the coherence gates, which read what landed — not by a pre-check guessing at what a call is about to do.
 
-**5. One framework, many project shapes.** The `reconciler` takes a **domain parameter** at dispatch: `code | data`. It picks that agent's ground-truth protocol; two further agents took the same parameter until v11 removed them. Same plumbing, different priorities — `code` favours user-visible features and bugs, `data` favours schema and ontology integrity. This lets fusion run on a Go monorepo and on an ontology project without a fork.
+**5. One framework, many project shapes.** The `state-auditor` takes a **domain parameter** at dispatch: `code | data`. It picks that agent's ground-truth protocol; two further agents took the same parameter until v11 removed them. Same plumbing, different priorities — `code` favours user-visible features and bugs, `data` favours schema and ontology integrity. This lets fusion run on a Go monorepo and on an ontology project without a fork.
 
 ## How a session runs
 

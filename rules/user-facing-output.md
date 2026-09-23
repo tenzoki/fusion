@@ -4,7 +4,7 @@
 
 Every piece of output the user reads (status reports, gate prompts, `AskUserQuestion` text, session summaries, error messages, banners) is **self-contained, plain-English, and action-first**: no jargon to decode, no hunting for what to do, no scrolling back to understand a question.
 
-This rule is emitted to the agents whose output the user reads directly — orchestrator, consultant, shaper, editor, curator (gate `260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md`; the others carry the chat profile's anti-patterns via `agent-setup.md` `## Voice profiles`). If you are reading this, you hold a user-facing surface: rewrite before sending anything that violates it.
+This rule is emitted to the agents whose output the user reads directly — orchestrator, consultant, requirements-designer, document-editor, policy-curator (gate `260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md`; the others carry the chat profile's anti-patterns via `agent-setup.md` `## Voice profiles`). If you are reading this, you hold a user-facing surface: rewrite before sending anything that violates it.
 
 Two stylometric profiles layer on top, each resolved from its own `CLAUDE.md` declaration (`rules/fusion-workbench-conventions.md` `## Project language`): long-form prose (summary bodies, consultant replies, reports, briefings, spec/plan prose) applies the **writing profile** (`./fusion-workbench/stilwerk/default-voice-<lang>.yaml`); short-form chat applies the **chat profile** (`chat-voice-<lang>.yaml`).
 
@@ -43,7 +43,7 @@ The reply answers the question that was asked; what you noticed on the way is fi
 
 - **No marker, machine token or commit type.** Not `_o_`, `_t_`, `review-needed`, `T1 chore:`. Write what is true: "still open", "needs a second look", "Task 1 bumped the version".
 - **No fusion noun.** Not Circle, Directive, Grounding, Gate, Artifact, Verdict, queue. Write the thing: this piece of work, your goal, why you wanted it, this pass, the question below, the file, the work list.
-- **No agent name as a sentence subject.** "Three notes cite a commit that does not exist", not "the reconciler reported that ...".
+- **No agent name as a sentence subject.** "Three notes cite a commit that does not exist", not "the state-auditor reported that ...".
 - **No ID or abbreviation without its plain summary** (project codes need one expansion or a pointer; CLI/API/YAML are fine).
 - **One name per thing, one formulation per claim.** Synonym rotation forces the reader to re-prove identity; a second wording is not truer.
 

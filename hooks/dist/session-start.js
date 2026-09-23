@@ -29,7 +29,7 @@
  * stopped deciding anything. The issue that tracked the first residual is
  * `260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`,
  * still open at the time of writing and now moot — its subject is gone, and
- * closing it is a reconciler's act, not this file's.
+ * closing it is a state-auditor's act, not this file's.
  *
  * What survives is milder in consequence and not milder in kind: nothing is
  * blocked or reverted wrongly any more, but an agent can spend a whole session

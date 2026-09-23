@@ -109,8 +109,8 @@ This is the <project> repo: <one-paragraph identity>.
 | Topic | Where the detail lives | Loaded for |
 |---|---|---|
 | architecture   | .claude/rules/ARCHITECTURE-RULES.md | code agents |
-| ontology       | .claude/rules/ONTO-ENG-RULES.md     | ontocoder, reviewer, planner |
-| llm-pipeline   | .claude/rules/READER-ABSTRACTION-RULES.md | coder, planner |
+| ontology       | .claude/rules/ONTO-ENG-RULES.md     | data-implementer, reviewer, implementation-planner |
+| llm-pipeline   | .claude/rules/READER-ABSTRACTION-RULES.md | code-implementer, implementation-planner |
 | unite-framework| Skill: unite-bok-sc-skill (on demand) | all agents |
 ```
 
@@ -118,13 +118,13 @@ This is the <project> repo: <one-paragraph identity>.
 # ./rules/context-manifest.yaml
 units:
   - path: .claude/rules/ARCHITECTURE-RULES.md
-    agents: [coder, reviewer, planner]
+    agents: [code-implementer, reviewer, implementation-planner]
     topics: [always]                      # architecture binds every code edit
   - path: .claude/rules/ONTO-ENG-RULES.md
-    agents: [ontocoder, reviewer, planner]
+    agents: [data-implementer, reviewer, implementation-planner]
     topics: [ontology]
   - path: .claude/rules/READER-ABSTRACTION-RULES.md
-    agents: [coder, planner]
+    agents: [code-implementer, implementation-planner]
     topics: [llm-pipeline]
   - skill: unite-bok-sc-skill
     agents: ["*"]
@@ -186,7 +186,7 @@ answering different questions, and their two answers cannot be compared at all.
 **This section is where that division is authored, and what applies it restates
 none of it.** `bin/fusion-claude-md-weight` implements exactly the rule above
 and prints the level it picked as `heading-level=`, so a reader sees which level
-the rows were cut at instead of inferring it; `agents/curator.md` classifies
+the rows were cut at instead of inferring it; `agents/policy-curator.md` classifies
 placement per passage as divided here. Change the division in one of those and
 it is a defect there, not a second answer.
 
@@ -197,7 +197,7 @@ topic-bound for one reader and always-on for the next, and both can be right.
 What a tool *can* measure is weight — which headings the file's bytes sit under,
 so you know which passages are worth looking at first — and that measurement is
 worth having. It renders no verdict. The verdict is a person's, and where the
-pass runs through fusion's curator, a person confirms it at a gate before any
+pass runs through fusion's policy-curator, a person confirms it at a gate before any
 text moves.
 
 That limit was established by measurement while this section was being written,

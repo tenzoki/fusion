@@ -6,7 +6,7 @@
  *
  * The citation form is mandated in `rules/fusion-workbench-conventions.md`,
  * which `bin/fusion-rules` emits to every agent on every dispatch. In one
- * session three different agents — an orchestrator, a coder and an analyst —
+ * session three different agents — an orchestrator, a code-implementer and an analyst —
  * wrote a record carrying a citation that rule forbids, and every one of them
  * was caught minutes to hours later by a release gate or by the hand-run
  * checker, never at the moment of writing. One left `npm test` red for every

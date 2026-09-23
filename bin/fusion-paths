@@ -5,7 +5,7 @@
 #
 # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md).
 # The two share one flat namespace: each consumer asks for its own keys under
-# its own name — `fusion-paths coder`, `fusion-paths memo`.
+# its own name — `fusion-paths code-implementer`, `fusion-paths memo`.
 #
 # <item-dir> names the work package in scope, as a directory name that must
 # already exist in the container store, under its name or, during the v12
@@ -99,7 +99,7 @@
 # Why the key sets are derived and not declared
 # ---------------------------------------------------------------------------
 # Emission is per-consumer, as in bin/fusion-rules: each gets only the keys it
-# needs — a coder gets no OUT_PLAN, an editor gets no OUT_ISSUE. What each
+# needs — a code-implementer gets no OUT_PLAN, a document-editor gets no OUT_ISSUE. What each
 # needs is READ OUT OF ITS PROMPT, not declared here.
 #
 # The declared version failed twice. The sets were built in T2-A by a
@@ -123,7 +123,7 @@
 #
 # Derivation is at run time, not generated into this file at build time:
 #   - It costs ONE grep over ONE file. The set is derived for the requested
-#     name only, so `fusion-paths coder` reads agents/coder.md and nothing
+#     name only, so `fusion-paths code-implementer` reads agents/code-implementer.md and nothing
 #     else. (The cost feared when this was decided — "a grep over 26 files on
 #     every call" — assumed all sets were built per call. They are not.)
 #   - A generated block would be a third artifact to maintain and ship, and it
@@ -144,7 +144,7 @@
 # What derivation gives up: over-emission — a key emitted that no prompt names
 # — becomes structurally impossible, and with it the signal it carried. That
 # signal was real but misfiled. When a declared set held a key the prompt never
-# used, the finding was usually "this prompt is missing a step" (planner names
+# used, the finding was usually "this prompt is missing a step" (implementation-planner names
 # issue entries with no path), not "this key is spare". A prompt gap is found
 # by reading the prompt. It was only visible here by accident, as the diff
 # between a human's belief about a prompt and the prompt's text — and it cost
@@ -216,7 +216,19 @@ fi
 # install lacks one the tree has (the reverse). Composed once so the two sites
 # cannot drift apart. Issue
 # 260908-1324_*_a-work-tree-behind-the-install-hides-skills-the-install-has-and-nothing-warns.md.
+# The v12.0.0 agent renames, old:new. The same table stands in bin/fusion-rules,
+# the orchestrator's Executor alias and hooks/lib/events-query.ts `ROLE_OF`: a stale
+# prompt or a user asking under a pre-v12 name is told the name to ask under.
+V12_RENAMES="shaper:requirements-designer planner:implementation-planner coder:code-implementer ontocoder:data-implementer reconciler:state-auditor editor:document-editor curator:policy-curator"
+
 unknown_name_note() {
+  local pair list=""
+  for pair in $V12_RENAMES; do list="${list:+$list, }${pair%%:*} -> ${pair#*:}"; done
+  for pair in $V12_RENAMES; do
+    if [ "${pair%%:*}" = "$NAME" ]; then
+      printf '%s ' "'$NAME' was renamed '${pair#*:}' at v12.0.0 (the seven renames: $list)."
+    fi
+  done
   if [ "$PLUGIN_ROOT" = "$PWD" ]; then
     printf '%s' "Searched $PLUGIN_ROOT, resolved from this repository's work tree rather than the install; a name the install has and this tree lacks means the tree is behind — \`git pull\`; the reverse case is \`fusion --update\`."
   else
@@ -230,7 +242,7 @@ unknown_name_note() {
 #
 # POSIX classes, not `[!a-z0-9-]`: a range in a case pattern is collation-based,
 # and under most locales `a-z` also matches uppercase. That let `Coder` through
-# — and on a case-insensitive filesystem it then resolved to agents/coder.md,
+# — and on a case-insensitive filesystem it then resolved to the lowercase prompt,
 # so the guard was passing for the wrong reason on the machine most likely to
 # run it.
 case "$NAME" in

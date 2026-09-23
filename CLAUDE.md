@@ -35,7 +35,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 
 ## Conventions
 
-- **Agent dispatch**, always namespaced: `Agent(fusion:coder)`, `Agent(fusion:ontocoder)`, etc. Bare names don't resolve. Any agent with a `tools: Agent(...)` allowlist must list sub-agents in `<plugin>:<name>` form.
+- **Agent dispatch**, always namespaced: `Agent(fusion:code-implementer)`, `Agent(fusion:data-implementer)`, etc. Bare names don't resolve. Any agent with a `tools: Agent(...)` allowlist must list sub-agents in `<plugin>:<name>` form.
 - **Dispatch parameters**: which agents read a `**<Keyword>:**` line off the dispatch prompt, and what each line does. Detail: `README-agents.md` `## Dispatch parameters`, which is that roster's single authoring home.
 - **Rules loading**: how `bin/fusion-rules` discovers rules, the three roots it searches, and why this repository's helpers prefer the work tree. Detail: `README-agents.md` `### Adding rules`.
 - **User-facing output style**: which agents receive the full style contract and what it mandates. Detail: `README-agents.md` `## Plugin structure`.
