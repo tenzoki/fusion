@@ -7,11 +7,12 @@
 # The two share one flat namespace: each consumer asks for its own keys under
 # its own name — `fusion-paths coder`, `fusion-paths memo`.
 #
-# <item-dir> names the work item in scope, as a directory name that must
-# already exist under circles/. It is how a dispatcher sends an agent into an
+# <item-dir> names the work package in scope, as a directory name that must
+# already exist in the container store, under its name or, during the v12
+# transition window, its v11 name. It is how a dispatcher sends an agent into an
 # item other than the one this checkout holds. With no second argument the item
-# in scope is this checkout's own claim, read through bin/fusion-claimed-item —
-# the single implementation of that criterion, which bin/fusion-rules also
+# in scope is this checkout's own claim, read through bin/fusion-claimed-package
+# — the single implementation of that criterion, which bin/fusion-rules also
 # calls. This script does not re-derive it.
 #
 # Prints one KEY=value line per emitted key on stdout. The single resolution
@@ -25,7 +26,9 @@
 # namespace, in rules/workbench-path-resolution.md. That first document and
 # this script are two of the definition sites where a store-directory path
 # literal may appear; the full set is enumerated as DEFINITION_SITES in
-# hooks/lib/__tests__/path-literal-lint.test.ts, which enforces it.
+# hooks/lib/__tests__/path-literal-lint.test.ts, which enforces it. The store
+# names themselves, and their v11 names for the transition window, are read
+# from bin/fusion-stores and named nowhere in this script.
 #
 # Called from Setup step 2, alongside `fusion-rules <agent>` — the step every
 # agent demonstrably runs. Resolve once, use the values for the session.
@@ -38,15 +41,16 @@
 # resolver's own). Callers key on the code, so no code carries two meanings:
 #   0  success
 #   1  usage error (missing name, more than two arguments, or an <item-dir>
-#      that names no directory under circles/ — a caller's mistake, not a fault
-#      in the workbench), or no workbench found above pwd
+#      that names no directory in the container store — a caller's mistake,
+#      not a fault in the workbench), or no workbench found above pwd
 #   2  unknown name (no such agent and no such skill)
 #   3  the item in scope cannot be determined: this checkout holds two or more
 #      claimed items, or its own identifier could not be read inside a git work
 #      tree. No output, and NEVER a fall back to shared/ — that answer is exit
 #      0, and it is a different answer.
 #   4  internal error: the prompt names a key this resolver cannot order or
-#      value, or one name is both an agent and a skill
+#      value, one name is both an agent and a skill, or bin/fusion-stores is
+#      missing or names no container store
 #      — a fusion BUG. The user cannot fix it by touching the workbench, and
 #      must not be told to (see rules/fusion-workbench-conventions.md
 #      "## Path Resolution" → Exit codes).
@@ -57,7 +61,7 @@
 # conventions state and no other. A project that is not a git work tree takes
 # no claim at all, so no item in scope is the TRUE answer there and it exits 0
 # into shared/ — which is why bin/fusion-identity splits its 3 and 5 from its 4
-# and why neither this script nor bin/fusion-claimed-item merges them back.
+# and why neither this script nor bin/fusion-claimed-package merges them back.
 # bin/fusion-rules also exits 3, for an unrelated reason, a malformed
 # rules/context-manifest.yaml: read a 3 against the helper that returned it,
 # never across the two.
@@ -73,10 +77,16 @@
 #     in scope. An artifact filed under a directive is the same kind as one
 #     filed without, so a consumer that read only the first value would report
 #     a clean pass over half the corpus.
+#   - During the v12 transition window a renamed store is also read under its
+#     v11 name, next to the new one and only where that directory exists, and
+#     is never written there: every OUT_* names a new store, under the new
+#     container root even for an item whose container still stands under the
+#     old one. Rule: rules/fusion-workbench-conventions.md, "### Transition
+#     window (v12.0.0 to v13.0.0)".
 #   - Three kinds are unconditionally shared, because no container holds them:
-#     consult/, memos/ and forum/ answer to nobody's directive. And circles/ IS
-#     the container store, so OUT_BACKLOG and SCAN_BACKLOG name it whole rather
-#     than naming anything inside one container.
+#     consultations, memos and messages answer to nobody's directive. And the
+#     container store IS the work packages, so OUT_PACKAGES and SCAN_PACKAGES
+#     name it whole rather than naming anything inside one container.
 #   - OUT_HISTORY and SCAN_HISTORY are LEGACY. The history store is closed to
 #     writes (rules/fusion-workbench-conventions.md "## Session history"): no
 #     agent prompt names either key, the existing corpus stays on disk and stays
@@ -157,7 +167,7 @@ set -eu
 
 NAME="${1:-}"
 if [ -z "$NAME" ]; then
-  echo "Usage: $0 <name> [<item-dir>]   # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md); <item-dir> is a work item's directory under circles/" >&2
+  echo "Usage: $0 <name> [<item-dir>]   # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md); <item-dir> is a work package's directory in the container store" >&2
   exit 1
 fi
 
@@ -273,6 +283,29 @@ if ! PROJECT_ROOT="$("$SCRIPT_DIR/fusion-workbench-root")"; then
 fi
 WORKBENCH="$PROJECT_ROOT/fusion-workbench"
 
+# The store names, from the one bash helper that holds them. A missing or empty
+# answer is an incomplete install, fusion's fault and not the workbench's.
+CONTAINER_STORE=''
+PLAN_STORE=''
+CONSULT_STORE=''
+LEGACY_CONTAINER_STORE=''
+LEGACY_PLAN_STORE=''
+LEGACY_CONSULT_STORE=''
+if [ -x "$SCRIPT_DIR/fusion-stores" ]; then
+  while IFS='=' read -r key val; do
+    case "$key" in
+      CONTAINER_STORE|PLAN_STORE|CONSULT_STORE|LEGACY_CONTAINER_STORE|LEGACY_PLAN_STORE|LEGACY_CONSULT_STORE)
+        printf -v "$key" '%s' "$val" ;;
+    esac
+  done <<EOF
+$("$SCRIPT_DIR/fusion-stores")
+EOF
+fi
+if [ -z "$CONTAINER_STORE" ] || [ -z "$PLAN_STORE" ] || [ -z "$CONSULT_STORE" ]; then
+  echo "fusion-paths: internal error — $SCRIPT_DIR/fusion-stores is missing or did not name the stores. The plugin install is incomplete; this is not a fault in your workbench." >&2
+  exit 4
+fi
+
 # ---------------------------------------------------------------------------
 # 3. Resolve the item in scope. This is the whole of the workbench state this
 #    script reads, and it is read once.
@@ -284,31 +317,32 @@ WORKBENCH="$PROJECT_ROOT/fusion-workbench"
 #    path. A caller that names none gets this checkout's own claim.
 #
 #    The criterion behind that claim is NOT implemented here. It lives once, in
-#    bin/fusion-claimed-item, which bin/fusion-rules calls from the same Setup
+#    bin/fusion-claimed-package, which bin/fusion-rules calls from the same Setup
 #    step for its own reason. Two implementations of one criterion drift, and
 #    the drift is invisible because each answers plausibly on its own.
 # ---------------------------------------------------------------------------
-SCOPE=""
+SCOPE_DIR=""
 
 if [ "$HAVE_ITEM_ARG" = 1 ]; then
   # The argument is interpolated into a path, so the shape guard is a safety
   # property and not a style rule — the same reason <name> carries one above.
   case "$ITEM_ARG" in
     ""|.|..|*/*|*[!A-Za-z0-9._-]*)
-      echo "fusion-paths: '$ITEM_ARG' is not a work item directory name. Pass the directory's own name, as it stands under circles/ — not a path, and not empty." >&2
+      echo "fusion-paths: '$ITEM_ARG' is not a work package directory name. Pass the directory's own name, as it stands in $CONTAINER_STORE/ — not a path, and not empty." >&2
       exit 1
       ;;
   esac
-  if [ ! -d "$WORKBENCH/circles/$ITEM_ARG" ]; then
+  if [ ! -d "$WORKBENCH/$CONTAINER_STORE/$ITEM_ARG" ] &&
+     { [ -z "$LEGACY_CONTAINER_STORE" ] || [ ! -d "$WORKBENCH/$LEGACY_CONTAINER_STORE/$ITEM_ARG" ]; }; then
     # Exit 1 and not 3: the scope is perfectly determinable, the caller just
     # named an item that is not there. Nothing in the workbench is at fault and
     # the user must not be sent to repair it.
-    echo "fusion-paths: no work item directory 'circles/$ITEM_ARG' under $WORKBENCH. The second argument names an item that must already exist." >&2
+    echo "fusion-paths: no work package directory '$ITEM_ARG' in the container store under $WORKBENCH. The second argument names a package that must already exist." >&2
     exit 1
   fi
-  SCOPE="circles/$ITEM_ARG"
+  SCOPE_DIR="$ITEM_ARG"
 else
-  CLAIMED="$SCRIPT_DIR/fusion-claimed-item"
+  CLAIMED="$SCRIPT_DIR/fusion-claimed-package"
   if [ ! -x "$CLAIMED" ]; then
     # Not shared/. A missing sibling means the question was never asked, which
     # is unknown scope; answering shared/ here would file an item's work outside
@@ -337,12 +371,13 @@ else
     0)
       # Exit 0 with no output is "no item claimed", and it is an answer, not a
       # degradation: it is what puts a consumer's writes in the shared store.
-      SCOPE="$(printf '%s\n' "$CLAIM_OUT" | sed -n 's/^CONTAINER=//p' | head -n 1)"
+      SCOPE_DIR="$(printf '%s\n' "$CLAIM_OUT" | sed -n 's/^CONTAINER=//p' | head -n 1)"
+      SCOPE_DIR="${SCOPE_DIR##*/}"
       ;;
     1)
       # The helper's only stop code, passed straight through with its own reason
       # already on stderr.
-      echo "fusion-paths: bin/fusion-claimed-item stopped, so nothing is resolved." >&2
+      echo "fusion-paths: bin/fusion-claimed-package stopped, so nothing is resolved." >&2
       exit 1
       ;;
     *)
@@ -350,7 +385,7 @@ else
       # are unknown scope. The one thing no caller may do with a non-zero is
       # read it as "none claimed" — that is exit 0, and it is a different
       # answer.
-      echo "fusion-paths: the item in scope cannot be determined (bin/fusion-claimed-item exited $CLAIM_RC), so no path is resolved and nothing falls back to shared/." >&2
+      echo "fusion-paths: the item in scope cannot be determined (bin/fusion-claimed-package exited $CLAIM_RC), so no path is resolved and nothing falls back to shared/." >&2
       exit 3
       ;;
   esac
@@ -360,48 +395,81 @@ fi
 # 4. Resolve values. One kind, two candidate stores, and section 3 already
 #    decided between them: OUT_BASE is the container of the item in scope, or
 #    shared/ when there is none, so the write table below carries no branch of
-#    its own. The read table carries exactly one, in scan_value().
+#    its own. OUT_BASE is under the new container root even when the package
+#    still stands under the legacy one: nothing is written under a v11 name.
+#    The read table carries the one branch, in scan_value().
 # ---------------------------------------------------------------------------
-if [ -n "$SCOPE" ]; then
-  OUT_BASE="$SCOPE"
+if [ -n "$SCOPE_DIR" ]; then
+  OUT_BASE="$CONTAINER_STORE/$SCOPE_DIR"
 else
   OUT_BASE="shared"
 fi
 
-scan_value() {
-  # $1 = the kind's subdirectory name. Both stores when an item is in scope,
-  # container first; the shared store alone when none is. The order is part of
-  # the contract: a consumer that shows the first hit shows the item's own.
-  if [ -n "$SCOPE" ]; then
-    printf '%s %s' "$SCOPE/$1" "shared/$1"
-  else
-    printf '%s' "shared/$1"
+# Print "$1/$2" when $1 is the always-listed new root or the directory exists.
+# $3 set to "always" lists it regardless: the write target of a kind is named
+# even before anything has been written there.
+scan_dir() {
+  if [ "${3:-}" = always ] || [ -d "$WORKBENCH/$1/$2" ]; then
+    printf ' %s' "$1/$2"
   fi
+}
+
+scan_value() {
+  # $1 = the kind's store name, $2 = its v11 name or empty. The item's
+  # container first (its new root, then its legacy root), the shared store
+  # second, collapsing to the shared one when no item is in scope. The new name
+  # is always listed, a legacy one only where that directory exists. The order
+  # is part of the contract: a consumer that shows the first hit shows the
+  # item's own.
+  local out='' base
+  if [ -n "$SCOPE_DIR" ]; then
+    for base in "$CONTAINER_STORE/$SCOPE_DIR" ${LEGACY_CONTAINER_STORE:+"$LEGACY_CONTAINER_STORE/$SCOPE_DIR"}; do
+      if [ "$base" = "$OUT_BASE" ]; then
+        out="$out$(scan_dir "$base" "$1" always)"
+      else
+        out="$out$(scan_dir "$base" "$1")"
+      fi
+      [ -z "$2" ] || out="$out$(scan_dir "$base" "$2")"
+    done
+  fi
+  out="$out$(scan_dir shared "$1" always)"
+  [ -z "$2" ] || out="$out$(scan_dir shared "$2")"
+  printf '%s' "${out# }"
+}
+
+# The container store whole: the new root always, the legacy one if it exists.
+packages_value() {
+  local out="$CONTAINER_STORE"
+  if [ -n "$LEGACY_CONTAINER_STORE" ] && [ -d "$WORKBENCH/$LEGACY_CONTAINER_STORE" ]; then
+    out="$out $LEGACY_CONTAINER_STORE"
+  fi
+  printf '%s' "$out"
 }
 
 value_for() {
   case "$1" in
-    OUT_PLAN)                     printf '%s' "$OUT_BASE/planning" ;;
+    OUT_PLAN)                     printf '%s' "$OUT_BASE/$PLAN_STORE" ;;
     OUT_HISTORY)                  printf '%s' "$OUT_BASE/history" ;;
     OUT_ISSUE)                    printf '%s' "$OUT_BASE/issues" ;;
     OUT_DECISION)                 printf '%s' "$OUT_BASE/decisions" ;;
     OUT_REVIEW)                   printf '%s' "$OUT_BASE/reviews" ;;
     OUT_ANALYSIS)                 printf '%s' "$OUT_BASE/analyses" ;;
     OUT_DISCUSSION)               printf '%s' "$OUT_BASE/discussions" ;;
-    SCAN_PLANS)                   scan_value "planning" ;;
-    SCAN_HISTORY)                 scan_value "history" ;;
-    SCAN_ISSUES)                  scan_value "issues" ;;
-    SCAN_DECISIONS)               scan_value "decisions" ;;
-    SCAN_REVIEWS)                 scan_value "reviews" ;;
-    SCAN_ANALYSES)                scan_value "analyses" ;;
+    SCAN_PLANS)                   scan_value "$PLAN_STORE" "$LEGACY_PLAN_STORE" ;;
+    SCAN_HISTORY)                 scan_value "history" "" ;;
+    SCAN_ISSUES)                  scan_value "issues" "" ;;
+    SCAN_DECISIONS)               scan_value "decisions" "" ;;
+    SCAN_REVIEWS)                 scan_value "reviews" "" ;;
+    SCAN_ANALYSES)                scan_value "analyses" "" ;;
     # Unconditionally shared: a consultation, a memo and a message answer to
     # nobody's directive, so no container holds them and the Origin Rule has
     # nothing to decide.
-    OUT_CONSULT)                  printf '%s' "shared/consult" ;;
+    OUT_CONSULT)                  printf '%s' "shared/$CONSULT_STORE" ;;
     OUT_FORUM|SCAN_FORUM)         printf '%s' "shared/forum" ;;
-    # The container store itself, whole. An item's record lives inside its own
-    # container, so the pair names circles/ and never one directory in it.
-    OUT_BACKLOG|SCAN_BACKLOG)     printf '%s' "circles" ;;
+    # The container store itself, whole. A package's record lives inside its
+    # own container, so the pair names the store and never one directory in it.
+    OUT_PACKAGES)                 printf '%s' "$CONTAINER_STORE" ;;
+    SCAN_PACKAGES)                packages_value ;;
     # Three kinds have a write key and no read key, and it is the same
     # criterion every time: a key set restates the prompts, so a key no prompt
     # names restates nothing. Nothing reads memos — a memo is written for the
@@ -430,9 +498,9 @@ value_for() {
 # 5. Emit. Canonical order, filtered by the derived key set.
 # ---------------------------------------------------------------------------
 ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
-       OUT_DISCUSSION OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_FORUM
+       OUT_DISCUSSION OUT_CONSULT OUT_MEMO OUT_PACKAGES OUT_FORUM
        SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
-       SCAN_ANALYSES SCAN_BACKLOG SCAN_FORUM"
+       SCAN_ANALYSES SCAN_PACKAGES SCAN_FORUM"
 
 has_key() {
   local want="$1" k

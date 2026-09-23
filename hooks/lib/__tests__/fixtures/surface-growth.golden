@@ -15,18 +15,18 @@
   analyst.md 21032
   coder.md 12165
   consultant.md 13432
-  curator.md 78507
+  curator.md 78509
   editor.md 13156
   ontocoder.md 15875
-  orchestrator.md 97760
+  orchestrator.md 97792
   planner.md 19659
   reconciler.md 21171
   reviewer.md 12837
-  shaper.md 17017
-  total 322611
+  shaper.md 17019
+  total 322647
 
 [skills bytes]
-  archive/SKILL.md 24473
+  archive/SKILL.md 24532
   cadence/SKILL.md 22271
   check/SKILL.md 31855
   cleanup/SKILL.md 6763
@@ -34,13 +34,13 @@
   curate/SKILL.md 12017
   discuss/SKILL.md 14346
   help/SKILL.md 16141
-  memo/SKILL.md 13254
+  memo/SKILL.md 13260
   migrate/SKILL.md 19898
   news/SKILL.md 8211
   post/SKILL.md 6694
   reconcile/SKILL.md 6604
   setup/SKILL.md 14094
-  total 202734
+  total 202799
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -63,15 +63,16 @@
   fenced-code-exemption.test.ts 206
   fusion-checkout-name.test.ts 202
   fusion-citation-check.test.ts 284
-  fusion-claimed-item.test.ts 192
+  fusion-claimed-package.test.ts 194
   fusion-commit-lock.test.ts 454
   fusion-count-sources.test.ts 413
   fusion-events.test.ts 437
   fusion-forum.test.ts 251
   fusion-identity.test.ts 217
-  fusion-paths.test.ts 737
+  fusion-paths.test.ts 729
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
+  fusion-stores.test.ts 17
   fusion-work-order.test.ts 57
   glob-nomatch-lint.test.ts 140
   guard-bash-integration.test.ts 334
@@ -87,7 +88,7 @@
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 164
   monitor-warnings-panel.test.ts 1222
-  path-literal-lint.test.ts 337
+  path-literal-lint.test.ts 325
   paths.test.ts 31
   plan-size.test.ts 165
   plan-stopping-section-lint.test.ts 261
@@ -106,4 +107,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 189
   workbench-citation-lint.test.ts 353
-  total 22253
+  total 22252

@@ -86,7 +86,7 @@ afterEach(() => {
 /**
  * File a work item in `dir`'s workbench, in its own container, claimed by
  * `claim`. Three properties of the setup are load-bearing, and each is what
- * `bin/fusion-claimed-item` reads: the record lives INSIDE the container and is
+ * `bin/fusion-claimed-package` reads: the record lives INSIDE the container and is
  * named after it; the checkout identifier is pinned rather than minted, because
  * the claim is compared by equality on those eight hex characters and a test
  * that let `bin/fusion-identity` mint one would assert against a value it does

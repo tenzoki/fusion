@@ -20,7 +20,7 @@ Capture something the user wants kept. Three kinds of capture, and the third is 
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" memo
 ```
 
-Read `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` from the output. `$WORKBENCH/$OUT_MEMO` is the directory the memo and task files live in; `$WORKBENCH/$OUT_BACKLOG` is where a backlog entry goes.
+Read `WORKBENCH`, `OUT_MEMO` and `OUT_PACKAGES` from the output. `$WORKBENCH/$OUT_MEMO` is the directory the memo and task files live in; `$WORKBENCH/$OUT_PACKAGES` is where a backlog entry goes.
 
 On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
 
@@ -32,7 +32,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
 - Memo file: `$WORKBENCH/$OUT_MEMO/memos-$CO.md`
 - Task file: `$WORKBENCH/$OUT_MEMO/tasks-$CO.md`
-- Backlog entry: a new container per idea in `$WORKBENCH/$OUT_BACKLOG`, never an append
+- Backlog entry: a new container per idea in `$WORKBENCH/$OUT_PACKAGES`, never an append
 - `$CO` is the `CHECKOUT=` line of `I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true`, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
 - **No `CHECKOUT=` line, no keyed write.** Exit 3, exit 5 and the `[ -x ]` miss branch each leave `$CO` empty, and none means the workbench is absent. Halt and name which one: an empty key writes `memos-.md` and `tasks-.md`, the one pair of names every checkout would share. An idea is a work item and proceeds under `rules/fusion-workbench-conventions.md` `### Who filed it`, never halted here.
 
@@ -105,7 +105,7 @@ If several tasks are captured at once (e.g. "the open tasks"), append one checkb
 
 ### Work item
 
-**Created, not appended, and an item is a directory.** One new container per idea at `$WORKBENCH/$OUT_BACKLOG/<YYMMDD-HHMM>-<topic>/`, holding one record under the container's own name: `<YYMMDD-HHMM>-<topic>/<YYMMDD-HHMM>-<topic>.md`. The stamp comes from `date +%y%m%d-%H%M` (`rules/fusion-workbench-conventions.md` `## Timestamps` — never guess it), and `<topic>` is a kebab-case slug of the title, lowercased, articles dropped, six words at most. **There is no marker on either name** — an item's state is its `**Status:**` head field, which is `open` at creation and always here; this skill writes no other status and changes none. Create the container and the record and stop there: the per-kind subdirectories an item's own work fills are made on first write, not at filing, so a freshly filed item is one directory holding one file.
+**Created, not appended, and an item is a directory.** One new container per idea at `$WORKBENCH/$OUT_PACKAGES/<YYMMDD-HHMM>-<topic>/`, holding one record under the container's own name: `<YYMMDD-HHMM>-<topic>/<YYMMDD-HHMM>-<topic>.md`. The stamp comes from `date +%y%m%d-%H%M` (`rules/fusion-workbench-conventions.md` `## Timestamps` — never guess it), and `<topic>` is a kebab-case slug of the title, lowercased, articles dropped, six words at most. **There is no marker on either name** — an item's state is its `**Status:**` head field, which is `open` at creation and always here; this skill writes no other status and changes none. Create the container and the record and stop there: the per-kind subdirectories an item's own work fills are made on first write, not at filing, so a freshly filed item is one directory holding one file.
 
 If the container you derived already exists, neither overwrite nor append: pick a `<topic>` that tells the two ideas apart, and say in your report that you did.
 
@@ -130,9 +130,9 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 
 ## Process
 
-1. Resolve `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` per Step 0.
+1. Resolve `WORKBENCH`, `OUT_MEMO` and `OUT_PACKAGES` per Step 0.
 2. Resolve `$CO`; adopt a legacy `-$USER` name, and an empty `$CO` halts only when step 5 picks a memo or a task.
-3. Ensure the target directory exists (`mkdir -p`): `$WORKBENCH/$OUT_MEMO` for a memo or a task, `$WORKBENCH/$OUT_BACKLOG/<YYMMDD-HHMM>-<topic>` — the item's own container — for an idea.
+3. Ensure the target directory exists (`mkdir -p`): `$WORKBENCH/$OUT_MEMO` for a memo or a task, `$WORKBENCH/$OUT_PACKAGES/<YYMMDD-HHMM>-<topic>` — the item's own container — for an idea.
 4. Resolve the invocation mode from the argument.
 5. **Decide memo, task or idea** per "Memo, task or idea — which target"; this picks the target.
 6. Memo or task: read the target file if it exists; if not, create it with its header (above). Item: there is no file to read — derive the stamp and the `<topic>` slug and check only that the container is free.

@@ -16,7 +16,7 @@ Shared conventions for all agents operating on `fusion-workbench/`, and for the 
 
 No agent prompt and no skill body may carry a competing or supplementary definition of where artifacts go: they resolve their paths at run time (see `## Path Resolution (Pfadauflösung)`) and cite whichever of these files owns the rule.
 
-**Store-directory path literals.** `hooks/lib/__tests__/path-literal-lint.test.ts` forbids one in any `agents/*.md` or `skills/*/SKILL.md` outside `/fusion:setup` and `/fusion:migrate`; every other consumer resolves through `bin/fusion-paths`. The gate reads neither `rules/` nor `bin/`, so the files that *define* the stores are outside its reach rather than exempted by it. They are enumerated there as `DEFINITION_SITES` all the same: an enumeration somebody has to edit is the difference between a fourth definition site being decided and one merely slipping past a gate that never looked.
+**Store-directory path literals.** `hooks/lib/__tests__/path-literal-lint.test.ts` forbids one in any `agents/*.md` or `skills/*/SKILL.md` outside `/fusion:setup` and `/fusion:migrate`; every other consumer resolves through `bin/fusion-paths`. The gate reads neither `rules/` nor `bin/`, so the files that *define* the stores are outside its reach rather than exempted by it. They are enumerated there as `DEFINITION_SITES` all the same: an enumeration somebody has to edit is the difference between a fifth definition site being decided and one merely slipping past a gate that never looked.
 
 ## fusion-workbench Layout
 
@@ -81,7 +81,7 @@ Until v13.0.0 each store v12 renamed is read under its old name beside the new o
 - `plans/`: `planning/`
 - `consultations/`: `consult/`
 
-`hooks/lib/stores.ts` and one bash helper copy this list, and a test holds the three equal. v13.0.0 deletes this subsection and the legacy entries of both copies; archive sweeps keep `circles/` for good.
+`hooks/lib/stores.ts` and `bin/fusion-stores` copy this list; tests hold the three equal. v13.0.0 deletes this subsection and the legacy entries of both copies; archive sweeps keep `circles/` for good.
 
 ### Which of them a tracked workbench tracks
 
@@ -139,9 +139,9 @@ In **Setup step 2**, alongside `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" <agent>`.
 
 Signature `fusion-paths <name> [<item-dir>]`. Output: one `KEY=value` line per emitted key on stdout. Paths are workbench-relative except `WORKBENCH` itself, which is absolute. Multi-value keys are space-separated.
 
-**The second argument names the item in scope**, as a directory name that must already exist under `circles/`; one that does not is exit 1, a caller usage error rather than a workbench fault. It is how a dispatcher sends an agent into an item other than the one this checkout holds.
+**The second argument names the item in scope**, as a directory name that must already exist in the container store; one that does not is exit 1, a caller usage error rather than a workbench fault. It is how a dispatcher sends an agent into an item other than the one this checkout holds.
 
-**With no second argument the resolver reads the claim.** The item in scope is the one whose record carries `**Status:** claimed` and a `**Claim:**` naming this checkout's eight hex characters (`## Backlog entries — work items`). No claimed item is a real answer and resolves to `shared/`, exit 0. **Two claimed items is refused, never resolved:** exit 3, both files named on stderr, no output at all. Taking either would file this item's work into that item's container, which is the same silent-wrong-place failure the exit-4 refusal prevents one step earlier. The criterion is implemented once, in `bin/fusion-claimed-item`, which `bin/fusion-paths` and `bin/fusion-rules` both call rather than each carrying a claim scan of its own; binding decision `260910-2145_*_how-does-the-resolver-learn-which-work-item-is-in-scope.md` (option 2), against a pointer file that would store one fact twice with no writer to keep the copies in step.
+**With no second argument the resolver reads the claim.** The item in scope is the one whose record carries `**Status:** claimed` and a `**Claim:**` naming this checkout's eight hex characters (`## Backlog entries — work items`). No claimed item is a real answer and resolves to `shared/`, exit 0. **Two claimed items is refused, never resolved:** exit 3, both files named on stderr, no output at all. Taking either would file this item's work into that item's container, which is the same silent-wrong-place failure the exit-4 refusal prevents one step earlier. The criterion is implemented once, in `bin/fusion-claimed-package`, which `bin/fusion-paths` and `bin/fusion-rules` both call rather than each carrying a claim scan of its own; binding decision `260910-2145_*_how-does-the-resolver-learn-which-work-item-is-in-scope.md` (option 2), against a pointer file that would store one fact twice.
 
 **Scope is per checkout, and holds by construction rather than by a rule.** A claim names one checkout, so an item another checkout holds does not match here and is not this checkout's scope: its writes go to `shared/`, or into the container of whatever it holds itself. The claim travels with git, so both checkouts read one store and reach different answers out of it. No pointer, no per-checkout state, nothing to reconcile.
 
@@ -187,7 +187,7 @@ This three-way distinction is about **what kind of thing** an artifact is, and t
 
 ## Backlog entries — work items
 
-A **work item** is one unit of work: something somebody is going to do, or has decided not to. **It is a directory, and its record lives inside it.** The container is `circles/YYMMDD-HHMM-<slug>/` (`$OUT_BACKLOG`) and the record is `circles/YYMMDD-HHMM-<slug>/YYMMDD-HHMM-<slug>.md`: the same name twice, directory and record, with **no marker on either**. Everything the item produces goes into that directory too, in the same per-kind subdirectories `shared/` carries (`## fusion-workbench Layout`), so `ls` on one path is a unit of work's whole account of itself. Finding the record is finding the container, so a claim that resolves can never point at a directory that is not there.
+A **work item** is one unit of work: something somebody is going to do, or has decided not to. **It is a directory, and its record lives inside it.** The container is `circles/YYMMDD-HHMM-<slug>/` (`$OUT_PACKAGES`) and the record is `circles/YYMMDD-HHMM-<slug>/YYMMDD-HHMM-<slug>.md`: the same name twice, directory and record, with **no marker on either**. Everything the item produces goes into that directory too, in the same per-kind subdirectories `shared/` carries (`## fusion-workbench Layout`), so `ls` on one path is a unit of work's whole account of itself. Finding the record is finding the container, so a claim that resolves can never point at a directory that is not there.
 
 One file per item rather than one list file, because two checkouts adding work at the same time then merge with no conflict. No marker, because an item's state is a head field: a state change edits the file instead of renaming it, so every citation of an item stays valid for the item's whole life.
 
@@ -278,7 +278,7 @@ Patterns attach to the **kind of artifact**, and the kind decides the store too.
 
 | Artifact kind | Written to | Pattern | State marker |
 |---|---|---|---|
-| Work item | `$OUT_BACKLOG` | `YYMMDD-HHMM-<slug>/YYMMDD-HHMM-<slug>.md` | no: the state is the `**Status:**` head field |
+| Work item | `$OUT_PACKAGES` | `YYMMDD-HHMM-<slug>/YYMMDD-HHMM-<slug>.md` | no: the state is the `**Status:**` head field |
 | Spec / plan | `$OUT_PLAN` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Defect | `$OUT_ISSUE` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Decision record | `$OUT_DECISION` | `YYMMDD-HHMM_S_<topic>.md` | yes (decisions vocabulary, richer set) |

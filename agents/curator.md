@@ -116,7 +116,7 @@ Read all seven, each bounded by the anchor below. Your report names **how many f
 
 | # | Source | Where |
 |---|---|---|
-| 1 | Work items — the Directive, the dependency field, the status and the closure note a finished or dropped item carries. One **directory** per item under the store, the record inside it under the directory's own name, or under the container's marked name where the item predates that form | `$SCAN_BACKLOG` |
+| 1 | Work items — the Directive, the dependency field, the status and the closure note a finished or dropped item carries. One **directory** per item under the store, the record inside it under the directory's own name, or under the container's marked name where the item predates that form | `$SCAN_PACKAGES` |
 | 2 | Decision records, all five markers. Superseded and implemented records carry their own citation inline | `$SCAN_DECISIONS` |
 | 3 | `git log --follow` on each rule file and on `CLAUDE.md`; `git blame` when a single paragraph is in question. **The commit message is the per-commit record**, so this source carries what a session log used to | the repository |
 | 4 | Reviews and analyses | `$SCAN_REVIEWS`, `$SCAN_ANALYSES` |
@@ -185,7 +185,7 @@ You run it **only on a dispatch carrying `**Edges:** on`** (`## Dispatch paramet
 
 ### The corpus, and the live/terminal bound
 
-For each **live** work item under `$SCAN_BACKLOG` — `**Status:**` one of `open`, `claimed`, `paused` — read the item record, every file inside that item's own container directory, and every record **the item record** cites, resolved by the one workbench-wide lookup `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines. Nothing outside `$WORKBENCH` is read. A cited record resolving into the archive store is read as evidence exactly as evidence source 6 already reads it, and is never written.
+For each **live** work item under `$SCAN_PACKAGES` — `**Status:**` one of `open`, `claimed`, `paused` — read the item record, every file inside that item's own container directory, and every record **the item record** cites, resolved by the one workbench-wide lookup `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines. Nothing outside `$WORKBENCH` is read. A cited record resolving into the archive store is read as evidence exactly as evidence source 6 already reads it, and is never written.
 
 **That live item is the corpus owner, here and in every clause below, and the term has no second referent.** The corpus spans containers — the cited records sit in other items' directories, routinely terminal ones — and the owner does not move with the file: a sentence read out of a cited record is a sentence in *this* item's corpus, and the item owning the container that record sits in is a target like any other. Reading the owner off the container instead puts a citation entry on a terminal item, which the three clauses below forbid and precondition 2 of `### Pass 2 — apply` would then refuse after the gate had already spent the user's judgement on it (`260918-0842_*_a-citation-entry-lands-on-a-terminal-item-whenever-the-sentence-came-from-a-cited-record.md`).
 

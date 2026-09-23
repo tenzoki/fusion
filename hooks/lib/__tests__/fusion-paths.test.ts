@@ -103,7 +103,7 @@ describe("bin/fusion-paths", () => {
       expect(r.status).toBe(0);
       const p = parse(r.stdout);
 
-      expect(p.OUT_PLAN).toBe("shared/planning");
+      expect(p.OUT_PLAN).toBe("shared/plans");
       expect(p.OUT_ISSUE).toBe("shared/issues");
       expect(p.OUT_DECISION).toBe("shared/decisions");
     });
@@ -132,18 +132,15 @@ describe("bin/fusion-paths", () => {
       for (const [scan, out] of [
         ["SCAN_ISSUES", "OUT_ISSUE"],
         ["SCAN_DECISIONS", "OUT_DECISION"],
-        ["SCAN_BACKLOG", "OUT_BACKLOG"],
+        ["SCAN_PACKAGES", "OUT_PACKAGES"],
       ] as [string, string][]) {
         expect(o[scan], `${scan} must name what ${out} names`).toBe(o[out]);
       }
     });
 
     it("resolves the same values whatever the retired pointer holds", () => {
-      // The one piece of workbench state the resolver reads is the item claim,
-      // and `.active-circle` is not it. A leftover pointer from a workbench
-      // that has not been migrated is the case this pins: a file the resolver
-      // does not open, not a state it tolerates. A container with no record
-      // inside it is claimed by nobody, so it moves no value either.
+      // The resolver reads the claim, never `.active-circle`, and a container
+      // with no record inside it is claimed by nobody, so neither moves a value.
       const before = run(project, "reconciler").stdout;
       mkdirSync(join(workbench, "circles", "260716-1847-workbench-umbau"), { recursive: true });
       writeFileSync(join(workbench, ".active-circle"), "260716-1847-workbench-umbau\n");
@@ -154,7 +151,7 @@ describe("bin/fusion-paths", () => {
     });
 
     it("is not an error state to hold no item — that answer is exit 0 and silent", () => {
-      // And silent on stderr too: `bin/fusion-claimed-item` says "not a git
+      // And silent on stderr too: `bin/fusion-claimed-package` says "not a git
       // work tree" on a clean answer, and that reason is kept back rather than
       // printed at every agent's Setup in a project that has no git.
       expect(run(project, "coder").status).toBe(0);
@@ -178,10 +175,10 @@ describe("bin/fusion-paths", () => {
       return /^CHECKOUT=(.*)$/m.exec(out)![1];
     }
 
-    /** One work item: the container, and the record named after it. */
-    function item(slug: string, status: string, claim?: string): void {
-      mkdirSync(join(workbench, "circles", slug), { recursive: true });
-      writeFileSync(join(workbench, "circles", slug, `${slug}.md`), [
+    /** One work package: the container under `root`, and the record named after it. */
+    function item(slug: string, status: string, claim?: string, root = "work-packages"): void {
+      mkdirSync(join(workbench, root, slug), { recursive: true });
+      writeFileSync(join(workbench, root, slug, `${slug}.md`), [
         `# ${slug}`, "", "---", "**Domain:** code", `**Status:** ${status}`,
         ...(claim === undefined ? [] : [`**Claim:** ${claim}`]),
         "**Filed by:** user, Scratch Person", "", "---", "",
@@ -199,33 +196,51 @@ describe("bin/fusion-paths", () => {
       const r = run(project, "reconciler");
       expect(r.status, r.stderr).toBe(0);
       const p = parse(r.stdout);
-      expect(p.OUT_ISSUE).toBe("circles/260910-1000-alpha/issues");
-      expect(p.OUT_DECISION).toBe("circles/260910-1000-alpha/decisions");
+      expect(p.OUT_ISSUE).toBe("work-packages/260910-1000-alpha/issues");
+      expect(p.OUT_DECISION).toBe("work-packages/260910-1000-alpha/decisions");
       // Container first, then the shared store. The order is contract: a
       // consumer that shows the first hit shows the item's own.
-      expect(p.SCAN_ISSUES).toBe("circles/260910-1000-alpha/issues shared/issues");
+      expect(p.SCAN_ISSUES).toBe("work-packages/260910-1000-alpha/issues shared/issues");
       expect(p.SCAN_PLANS.split(" ")).toHaveLength(2);
       // The container store itself is not per-item, and stays whole.
-      expect(parse(run(project, "orchestrator").stdout).SCAN_BACKLOG).toBe("circles");
+      const o = run(project, "orchestrator").stdout;
+      expect(parse(o).SCAN_PACKAGES).toBe("work-packages");
+      expect(r.stdout + o, "a migrated workbench's output names no v11 store").not.toMatch(/circles|planning|consult\b/);
+    });
+
+    it("reads a legacy-only workbench: the claim under the v11 root, every OUT_* in a new store", () => {
+      item("260910-1000-alpha", "claimed", `${withIdentity()} — Scratch Person, 260910-1000`, "circles");
+      mkdirSync(join(workbench, "circles", "260910-1000-alpha", "planning"));
+      mkdirSync(join(workbench, "shared", "planning"));
+      const r = run(project, "orchestrator");
+      expect(r.status, r.stderr).toBe(0);
+      const p = parse(r.stdout);
+      expect(p.OUT_ISSUE).toBe("work-packages/260910-1000-alpha/issues");
+      expect(p.OUT_PACKAGES).toBe("work-packages");
+      expect(p.SCAN_PACKAGES).toBe("work-packages circles");
+      expect(p.SCAN_PLANS).toBe(
+        "work-packages/260910-1000-alpha/plans circles/260910-1000-alpha/planning shared/plans shared/planning");
+      expect(parse(run(project, "planner", "260910-1000-alpha").stdout).OUT_PLAN).toBe("work-packages/260910-1000-alpha/plans");
+    });
+
+    it("reads a mixed workbench: both roots walked, a legacy name listed only where it exists", () => {
+      claimAlpha();
+      item("260901-0900-old", "open", undefined, "circles");
+      mkdirSync(join(workbench, "shared", "consult"));
+      const p = parse(run(project, "orchestrator").stdout);
+      expect(p.SCAN_PACKAGES).toBe("work-packages circles");
+      expect(p.SCAN_PLANS).toBe("work-packages/260910-1000-alpha/plans shared/plans");
+      expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consultations");
     });
 
     it("resolves OUT_DISCUSSION to the item's own store, in both scopes", () => {
-      // The parameterised key-set block below already asserts for `discuss`,
-      // as for every consumer, that the emitted set equals the set its prompt
-      // names, in both directions. What no case there can say is what the one
-      // new key RESOLVES to, which is the only genuinely new contract the
-      // discussions store brings — so that is what these two lines pin.
-      // The kind has a write key and no read key by ruling, not oversight: the
-      // spec's `## Out of Scope` bars any pass that reads past discussions in
-      // this version, so adding `$SCAN_DISCUSSIONS` reverses that ruling rather
-      // than filling a gap. Change it first, in
-      // `260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`. The
-      // absence needs no pin: the key has no `value_for()` arm and no `ORDER`
-      // entry, so a prompt naming it exits 4 and the block below fails first.
+      // The key-set block below pins that `discuss` gets the key; this pins what
+      // it RESOLVES to. No read key exists by ruling: the `## Out of Scope` of
+      // `260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`.
       expect(parse(run(project, "discuss").stdout).OUT_DISCUSSION).toBe("shared/discussions");
       claimAlpha();
       expect(parse(run(project, "discuss").stdout).OUT_DISCUSSION)
-        .toBe("circles/260910-1000-alpha/discussions");
+        .toBe("work-packages/260910-1000-alpha/discussions");
     });
 
     it("takes the second argument over the claim", () => {
@@ -233,30 +248,26 @@ describe("bin/fusion-paths", () => {
       // hold. The claimed item exists and is deliberately not the answer.
       claimAlpha();
       const p = parse(run(project, "planner", "260910-1100-beta").stdout);
-      expect(p.OUT_PLAN).toBe("circles/260910-1100-beta/planning");
+      expect(p.OUT_PLAN).toBe("work-packages/260910-1100-beta/plans");
     });
 
     it.each([
-      ["names no directory under circles/", ["260910-9999-absent"]],
-      ["is a path rather than a directory name", ["circles/260910-1100-beta"]],
+      ["names no directory in the container store", ["260910-9999-absent"]],
+      ["is a path rather than a directory name", ["work-packages/260910-1100-beta"]],
       ["could escape the container store", ["../../etc"]],
       ["is empty", [""]],
       ["is joined by a third argument", ["260910-1100-beta", "extra"]],
     ])("exits 1 — the caller's mistake, not the workbench's — when it %s", (_, args) => {
-      // Never 3: the scope is perfectly determinable here and the caller simply
-      // named an item that is not there. Sending the user off to repair their
-      // workbench would send them after somebody else's bug.
+      // Never 3: the scope is determinable and the caller named an item that is
+      // not there; the user's workbench has nothing to repair.
       const r = run(project, "planner", ...args);
       expect(r.status).toBe(1);
       expect(r.stdout).toBe("");
     });
 
     it("refuses two claimed items with exit 3 and no output", () => {
-      // The case a first-match implementation passes silently and wrongly. The
-      // criterion is `bin/fusion-claimed-item`'s and its own test drives it;
-      // under test here is that the 3 arrives whole — no output, and no fall
-      // back to shared/, which would file this item's work into that item's
-      // container.
+      // `bin/fusion-claimed-package`'s own test drives the criterion; this pins
+      // that the 3 arrives whole — no output, and no fall back to shared/.
       const mine = withIdentity();
       item("260910-1000-alpha", "claimed", `${mine} — Scratch Person, 260910-1000`);
       item("260910-1100-beta", "claimed", `${mine} — Scratch Person, 260910-1100`);
@@ -267,10 +278,8 @@ describe("bin/fusion-paths", () => {
     });
 
     it("exits 3 when this checkout's identifier cannot be read inside a work tree", () => {
-      // The other half of the pair the whole table turns on. Unreadable inside a
-      // work tree is a question with an answer this run failed to obtain; not a
-      // work tree at all is the shared store being TRUE, and that is the case
-      // every other test in this file runs under.
+      // Unreadable inside a work tree is an answer this run failed to obtain; no
+      // work tree at all is the shared store being TRUE (every other case here).
       withIdentity();
       writeFileSync(join(workbench, ".checkout-id"), "not-hex\n");
       const r = run(project, "planner");
@@ -279,23 +288,19 @@ describe("bin/fusion-paths", () => {
     });
   });
 
-  describe("the backlog keys", () => {
-    // OUT_BACKLOG and SCAN_BACKLOG name the container store whole — a work item
-    // IS a directory there, and its record is the file inside it. The
-    // staged-fixture cases below exercise the derivation path itself (see the
-    // block above `stage()`); the shipped-prompt cases at the end are where
-    // each consumer's actual key set is pinned.
+  describe("the package keys", () => {
+    // The pair names the container store whole. The staged fixture exercises the
+    // derivation (see above `stage()`); the shipped prompts pin each key set.
     beforeEach(() => {
-      stageWithAgent("fixture", "File the idea to $OUT_BACKLOG, and skim $SCAN_BACKLOG.\n");
+      stageWithAgent("fixture", "File the idea to $OUT_PACKAGES, and skim $SCAN_PACKAGES.\n");
     });
 
     it("emits both keys for a prompt that names them", () => {
       const r = runStaged("fixture");
       expect(r.status).toBe(0);
       const p = parse(r.stdout);
-      expect(p.OUT_BACKLOG).toBe("circles");
-      expect(p.SCAN_BACKLOG).toBe("circles");
-      expect(p.SCAN_BACKLOG.split(" ")).toHaveLength(1);
+      expect(p.OUT_PACKAGES).toBe("work-packages");
+      expect(p.SCAN_PACKAGES).toBe("work-packages");
     });
 
     it("emits neither to a shipped prompt that names neither", () => {
@@ -303,45 +308,32 @@ describe("bin/fusion-paths", () => {
       // nobody until a prompt asks for it.
       for (const name of ["coder", "planner", "reviewer"]) {
         const p = parse(run(project, name).stdout);
-        expect(p.OUT_BACKLOG, name).toBeUndefined();
-        expect(p.SCAN_BACKLOG, name).toBeUndefined();
+        expect(p.OUT_PACKAGES, name).toBeUndefined();
+        expect(p.SCAN_PACKAGES, name).toBeUndefined();
       }
     });
 
     it("gives the orchestrator both keys — it maintains the store at the user's word", () => {
-      // Its prompt names `$OUT_BACKLOG` and `$SCAN_BACKLOG`, so the resolver
-      // emits them. Nothing in the resolver was changed to bring them across.
-      //
-      // A green result says "the key is granted" and says NOTHING about the
-      // write being bounded. What bounds the writer is prose, in
-      // `rules/fusion-workbench-conventions.md` `## Backlog entries — work
-      // items` and `agents/orchestrator.md` `## Work items`; no assertion in
-      // this file reaches it.
+      // A green result says "the key is granted" and NOTHING about the write
+      // being bounded: that is prose in the conventions and the orchestrator.
       const p = parse(run(project, "orchestrator").stdout);
-      expect(p.OUT_BACKLOG).toBe("circles");
-      expect(p.SCAN_BACKLOG).toBe("circles");
+      expect(p.OUT_PACKAGES).toBe("work-packages");
+      expect(p.SCAN_PACKAGES).toBe("work-packages");
     });
 
     it("gives shaper the read key and withholds the write key", () => {
-      // The asymmetry is the shaper's whole access to the store: an item may
-      // be its input and no byte of one is ever its output. A run that tried
-      // to file or claim one has no resolved path to write to.
+      // An item may be the shaper's input and no byte of one is ever its output.
       const p = parse(run(project, "shaper").stdout);
-      expect(p.SCAN_BACKLOG).toBe("circles");
-      expect(p.OUT_BACKLOG).toBeUndefined();
+      expect(p.SCAN_PACKAGES).toBe("work-packages");
+      expect(p.OUT_PACKAGES).toBeUndefined();
     });
 
     it("gives memo the write key and withholds the read key", () => {
-      // The asymmetry runs the other way. `/fusion:memo` is the one surface
-      // where the store is WRITTEN — by the user, which is what the "no agent
-      // files an item" bound leaves open — and it files one item per
-      // invocation without ever listing, re-reading or consolidating the
-      // store. Consolidating is a maintenance operation the orchestrator
-      // performs at the user's word, so a run here that set out to do it has
-      // no resolved path to read from.
+      // The other way round: `/fusion:memo` files one item per invocation for the
+      // user and never lists or consolidates the store, the orchestrator's job.
       const p = parse(run(project, "memo").stdout);
-      expect(p.OUT_BACKLOG).toBe("circles");
-      expect(p.SCAN_BACKLOG).toBeUndefined();
+      expect(p.OUT_PACKAGES).toBe("work-packages");
+      expect(p.SCAN_PACKAGES).toBeUndefined();
     });
   });
 
@@ -360,7 +352,7 @@ describe("bin/fusion-paths", () => {
       expect(p.OUT_FORUM).toBe("shared/forum");
       expect(p.SCAN_FORUM).toBe("shared/forum");
       expect(p.SCAN_FORUM.split(" ")).toHaveLength(1);
-      expect(p.OUT_PLAN).toBe("shared/planning");
+      expect(p.OUT_PLAN).toBe("shared/plans");
     });
   });
 
@@ -428,11 +420,11 @@ describe("bin/fusion-paths", () => {
     });
 
     it("routes writers to their own output kind", () => {
-      expect(parse(run(project, "planner").stdout).OUT_PLAN).toBe("shared/planning");
+      expect(parse(run(project, "planner").stdout).OUT_PLAN).toBe("shared/plans");
       expect(parse(run(project, "analyst").stdout).OUT_ANALYSIS).toBe("shared/analyses");
       expect(parse(run(project, "reviewer").stdout).OUT_REVIEW).toBe("shared/reviews");
-      expect(parse(run(project, "orchestrator").stdout).OUT_BACKLOG).toBe("circles");
-      expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consult");
+      expect(parse(run(project, "orchestrator").stdout).OUT_PACKAGES).toBe("work-packages");
+      expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consultations");
     });
 
     it("emits no key it cannot resolve", () => {
@@ -516,7 +508,7 @@ describe("bin/fusion-paths", () => {
     // The claim helper and the identity helper it calls travel with the script:
     // a scratch bin/ without them is an incomplete install, which is exit 3.
     for (const helper of ["fusion-paths", "fusion-workbench-root", "fusion-plugin-cwd",
-                          "fusion-claimed-item", "fusion-identity"]) {
+                          "fusion-claimed-package", "fusion-identity", "fusion-stores"]) {
       const dst = join(bin, helper);
       writeFileSync(dst, readFileSync(join(pluginRoot, "bin", helper), "utf-8"));
       chmodSync(dst, 0o755);
@@ -560,8 +552,8 @@ describe("bin/fusion-paths", () => {
       const bin = stage();
       const source = readFileSync(fusionPaths, "utf-8");
       const patched = source.replace(
-        /^       SCAN_ANALYSES SCAN_BACKLOG SCAN_FORUM"$/m,
-        '       SCAN_ANALYSES SCAN_BACKLOG SCAN_FORUM OUT_NOVALUE"',
+        /^       SCAN_ANALYSES SCAN_PACKAGES SCAN_FORUM"$/m,
+        '       SCAN_ANALYSES SCAN_PACKAGES SCAN_FORUM OUT_NOVALUE"',
       );
       expect(patched, "ORDER injection did not apply — update the anchor").not.toBe(source);
       writeFileSync(join(bin, "fusion-paths"), patched);

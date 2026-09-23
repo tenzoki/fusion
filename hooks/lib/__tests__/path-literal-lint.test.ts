@@ -12,20 +12,12 @@ import {
 } from "../stores.js";
 
 // ---------------------------------------------------------------------------
-// Path-literal lint gate (plan step 8 / P-8).
-//
-// The rule this enforces — store paths resolved through `bin/fusion-paths` and
-// never written as a literal in a prompt — and this gate's own place in it are
-// stated in `CLAUDE.md`'s last `## Where to look when something breaks` row,
-// down to `DEFINITION_SITES` and why that list grants nothing. It fails
-// `npm test` if a type-folder path literal survives in `agents/*.md` or
-// `skills/*/SKILL.md` outside the two skills that legitimately name the pre-v4
-// layout, and it reads no file that DEFINES a store. Widen the file set and
-// those must become explicit exemptions.
-//
-// This is a guard, not a fixer (rules/critical-stance.md §2).
+// Path-literal lint gate (plan step 8 / P-8): store paths are resolved through
+// `bin/fusion-paths`, never written as a literal in `agents/*.md` or a
+// non-exempt `skills/*/SKILL.md`. It reads no file that DEFINES a store; widen
+// the file set and those must become explicit exemptions. A guard, not a fixer
+// (rules/critical-stance.md §2).
 // ---------------------------------------------------------------------------
-
 
 // The artifact-store folders, composed from `hooks/lib/stores.ts` rather than
 // listed here: the live stores (the layout tree's, `checkouts` included) and the
@@ -56,12 +48,12 @@ const EXEMPT_SKILLS = new Set(["setup", "migrate"]);
 // The files allowed to name a store directory because they DEFINE where a kind
 // goes. They are outside the gate's file set by construction — it reads
 // `agents/` and `skills/` only — so this list grants nothing. Its job is to make
-// the set countable: a fifth definition site is added here in the same commit
-// that creates it, or the tree carries one nobody chose. Ordered as the
-// conventions file's own header table orders them.
+// the set countable: a new definition site is added here in the same commit
+// that creates it, or the tree carries one nobody chose.
 const DEFINITION_SITES = [
   "rules/fusion-workbench-conventions.md", // layout, work-item grammar, operative path resolution
   "bin/fusion-paths", // the executable definition
+  "bin/fusion-stores", // the bash copy of the store names
   "rules/workbench-path-resolution.md", // name namespace, key table, key-set derivation
 ];
 
@@ -155,13 +147,9 @@ describe("path-literal lint: no type-folder literals in prompts or skills", () =
   });
 
   it("reads the whole file, frontmatter included", () => {
-    // Decision (issue item 1): the gate scans the entire file, frontmatter and
-    // all — it does NOT skip the description block. Skipping was tempting
-    // (frontmatter edits once broke agent loading, v2.8.1) but the gate is
-    // shape-aware, so prose descriptions never false-positive; meanwhile a
-    // path literal in a description is a real regression. This is the exact
-    // class the pre-fix agent descriptions carried (playmaker's "history/<own>.md"
-    // before commit 1508680): a $OUT_*/$SCAN_* value belongs there, not a path.
+    // Decision (issue item 1): the description block is scanned too — the gate is
+    // shape-aware, so prose there never false-positives, and a path literal there
+    // is a real regression (playmaker's "history/<own>.md" before 1508680).
     const frontmatter = 'description: writes only circles/<file>.md and history/<own>.md\n';
     const v = scan("agents/fixture.md", frontmatter);
     expect(v.map((x) => x.literal)).toContain("history/<own>.md");

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# fusion-stores — the workbench store names v12 renamed, for the bash helpers
+#
+# Usage: fusion-stores
+#
+# Takes no arguments. Prints six KEY=value lines on stdout, in this order, and
+# exits 0; any argument is exit 1 with nothing on stdout.
+#
+#   CONTAINER_STORE         the container store, work-packages/<dir>/ per package
+#   PLAN_STORE              the spec and plan store
+#   CONSULT_STORE           the consultation store
+#   LEGACY_CONTAINER_STORE  each one's v11 name, read beside the new name
+#   LEGACY_PLAN_STORE       while that directory exists and never written
+#   LEGACY_CONSULT_STORE
+#
+# The bash copy of one table. The definition is the layout tree in
+# rules/fusion-workbench-conventions.md ("## fusion-workbench Layout" and its
+# "### Transition window (v12.0.0 to v13.0.0)"); hooks/lib/stores.ts is the
+# TypeScript copy, and hooks/lib/__tests__/fusion-stores.test.ts holds this
+# output equal to it. bin/fusion-paths and the claim scan it calls read this
+# rather than naming a store themselves (ruling
+# 260922-1114_*_does-the-transition-windows-legacy-read-live-at-one-site-per-runtime.md).
+#
+# The closing release, 13.0.0, deletes the three LEGACY_ lines; a caller reads
+# an absent one as "no legacy name".
+
+set -eu
+
+if [ "$#" -ne 0 ]; then
+  echo "usage: fusion-stores   # takes no arguments; prints the store names as KEY=value" >&2
+  exit 1
+fi
+
+cat <<'STORES'
+CONTAINER_STORE=work-packages
+PLAN_STORE=plans
+CONSULT_STORE=consultations
+LEGACY_CONTAINER_STORE=circles
+LEGACY_PLAN_STORE=planning
+LEGACY_CONSULT_STORE=consult
+STORES

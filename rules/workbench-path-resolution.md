@@ -97,20 +97,23 @@ in scope. An `OUT_*` resolves under that item's container, or under `shared/` wh
 A `SCAN_*` names **both** stores, container first and the shared one second, and collapses
 to the shared store alone when nothing is in scope. `<scope>` below stands for whichever
 base the resolver chose, so one row states both readings. Four rows carry a literal instead,
-and each says why it has no second candidate.
+and each says why it has no second candidate. Until v13.0.0 a `SCAN_*` also lists a renamed
+store's v11 name, and an item container under the v11 root, wherever that directory exists;
+no `OUT_*` ever names one (`rules/fusion-workbench-conventions.md`
+`### Transition window (v12.0.0 to v13.0.0)`).
 
 | Key | Read key | Value | Notes |
 |---|---|---|---|
 | `WORKBENCH` | — | Absolute path to `fusion-workbench/` | Always emitted, and the only absolute path. Resolved via `bin/fusion-workbench-root`. |
-| `OUT_PLAN` | `SCAN_PLANS` | `<scope>/planning` | Spec and plan writes. |
+| `OUT_PLAN` | `SCAN_PLANS` | `<scope>/plans` | Spec and plan writes. |
 | `OUT_HISTORY` | `SCAN_HISTORY` | `<scope>/history` | **Legacy: the history store is closed to writes** (`rules/fusion-workbench-conventions.md` `## Session history`). No agent names it. The arm survives only while the last skill bodies naming it do, and goes with them. `/fusion:cadence` is the consumer the read key is emitted for; a reader of it says so rather than reporting an empty stretch as a quiet week. |
 | `OUT_ISSUE` | `SCAN_ISSUES` | `<scope>/issues` | Defect filing. |
 | `OUT_DECISION` | `SCAN_DECISIONS` | `<scope>/decisions` | Decision-record filing. |
 | `OUT_REVIEW` | `SCAN_REVIEWS` | `<scope>/reviews` | Review writes, both review domains. |
 | `OUT_ANALYSIS` | `SCAN_ANALYSES` | `<scope>/analyses` | Analysis writes. |
 | `OUT_DISCUSSION` | — | `<scope>/discussions` | Discussion-record writes. No read key, for the reason the `OUT_MEMO` row gives: no prompt reads past discussions in this version, so nothing would name a `SCAN_DISCUSSIONS`. Never defined rather than retired. |
-| `OUT_CONSULT` | — | `shared/consult` | Literal: a consultation answers to nobody's directive, so no container holds one. `SCAN_CONSULT` was retired on 2026-09-10 with its last consumer; the store and its reports stay. |
-| `OUT_BACKLOG` | `SCAN_BACKLOG` | `circles` | Literal, and it is the container store itself rather than a directory inside one container. A work item's record lives in its own container (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`), so the pair names the store whole and a consumer walks it at depth 2. |
+| `OUT_CONSULT` | — | `shared/consultations` | Literal: a consultation answers to nobody's directive, so no container holds one. `SCAN_CONSULT` was retired on 2026-09-10 with its last consumer; the store and its reports stay. |
+| `OUT_PACKAGES` | `SCAN_PACKAGES` | `work-packages` | Literal, and it is the container store itself rather than a directory inside one container. A work item's record lives in its own container (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`), so the pair names the store whole and a consumer walks it at depth 2. |
 | `OUT_FORUM` | `SCAN_FORUM` | `shared/forum` | Literal: a message is addressed to another checkout, not to a unit of work. |
 | `OUT_MEMO` | — | `shared/memos` | Literal, for the same reason. A memo is written for the user, so nothing reads memos and no read key exists. |
 
@@ -119,9 +122,9 @@ container. It named the active Circle, or was absent when none was, and was how 
 told the two apart. Nothing asks a question of that shape now: the resolver decides scope
 and hands over finished values, so a consumer never learns whether an item was in scope and
 never branches on it. **Three store keys went with it, and none returned.** `OUT_CIRCLE` and
-`SCAN_CIRCLES` named the `circles/` container — the container has keys again, but they are
+`SCAN_CIRCLES` named the `circles/` container — the container has keys again, but they were
 `OUT_BACKLOG` and `SCAN_BACKLOG`, the names every prompt already used, so no consumer had to
-learn one. `PORTFOLIO` named the ranking file the portfolio layer regenerated, and that
+learn one; v12 renamed them `OUT_PACKAGES` and `SCAN_PACKAGES` with the store. `PORTFOLIO` named the ranking file the portfolio layer regenerated, and that
 layer has no writer at all.
 
 ### Retiring a key, and the worked case for it

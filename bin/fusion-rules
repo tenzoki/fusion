@@ -87,7 +87,7 @@
 #     - a `skill` unit emits a `skill:<name>` pointer line (invoked on demand).
 #   The topic is resolved (see resolve_topics below): an explicit CLI <topic>
 #   argument wins; otherwise it is derived from the work item this checkout has
-#   claimed, which bin/fusion-claimed-item answers and this script does not
+#   claimed, which bin/fusion-claimed-package answers and this script does not
 #   decide for itself — an explicit `Topic:`/`Tags:` line in the item, else the
 #   item filename's slug keywords; with nothing claimed here, and on every
 #   non-zero from that helper, only `[always]` units match. A malformed manifest fails LOUDLY with exit 3 rather than silently
@@ -464,7 +464,7 @@ resolve_topics() {
   #   4. Nothing claimed by this checkout, or no answer to be had → empty.
   #
   # WHICH ITEM IS CLAIMED IS NOT DECIDED HERE. One criterion, one
-  # implementation: bin/fusion-claimed-item, which bin/fusion-paths calls from
+  # implementation: bin/fusion-claimed-package, which bin/fusion-paths calls from
   # this same Setup step for its own reason. This function carried the second
   # implementation of it: its own store literal, its own bin/fusion-identity
   # call and its own claim loop, whose first match it took, which is tolerable
@@ -495,7 +495,7 @@ resolve_topics() {
 
   # Guarded with [ -x ] per decision 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md: an installed
   # copy may predate the helper, and a bare call is exit 127 mid-Setup.
-  claimed="$SCRIPT_DIR/fusion-claimed-item"
+  claimed="$SCRIPT_DIR/fusion-claimed-package"
   [ -x "$claimed" ] || return 0
 
   # Its stderr is passed through on every non-zero and held back on a clean
@@ -513,7 +513,7 @@ resolve_topics() {
   [ "$rc" -eq 0 ] || return 0
 
   # Exit 0 with no output is "nothing claimed", and it is an answer.
-  rel="$(printf '%s\n' "$out" | sed -n 's/^ITEM=//p' | head -n 1)"
+  rel="$(printf '%s\n' "$out" | sed -n 's/^PACKAGE=//p' | head -n 1)"
   [ -n "$rel" ] || return 0
 
   proot="$("$SCRIPT_DIR/fusion-workbench-root" 2>/dev/null)" || return 0

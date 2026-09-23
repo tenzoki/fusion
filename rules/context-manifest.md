@@ -115,7 +115,7 @@ The topic is **not** a per-invocation user argument in the standard flow. It is
    `[always]` units match.
 
 **Which item is claimed is not decided here, and this file does not define it.**
-`bin/fusion-rules` asks `bin/fusion-claimed-item`, which is the single
+`bin/fusion-rules` asks `bin/fusion-claimed-package`, which is the single
 implementation of that criterion and the one `bin/fusion-paths` calls from the
 same Setup step for its own reason; the criterion itself — the `**Status:**` and
 `**Claim:**` fields, and the refusal to pick when two items are claimed — is the *Contract*
@@ -132,7 +132,7 @@ where `bin/fusion-paths` stops the caller on 1 and refuses on 3. The asymmetry i
 the cost of being wrong: a topic buys optional manifest units, so a missing one
 costs an agent a few files it then does not read, while a path decides where an
 artifact is written and a wrong one files a plan into another item's container in
-silence. In particular `bin/fusion-claimed-item`'s exit 3 is **not** re-raised as
+silence. In particular `bin/fusion-claimed-package`'s exit 3 is **not** re-raised as
 `bin/fusion-rules`' own exit 3, which means a malformed manifest and nothing else
 (the exit-code table at the end of this file): read an exit 3 against the helper
 that returned it.

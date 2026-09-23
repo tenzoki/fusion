@@ -4,14 +4,15 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
+import { CONTAINER_STORE, WINDOW_LEGACY_NAMES } from "../stores.js";
 
-// `bin/fusion-claimed-item` is a bash script; this drives the real one against
-// throwaway workbenches, the way its two Setup callers do. Under test is the
-// header's exit table, every code of it reached by a case, and above all the one
-// case a first-match implementation passes silently and wrongly: two items
-// claimed by one checkout is REFUSED, both named, nothing on stdout.
+// Drives the real `bin/fusion-claimed-package` against throwaway workbenches:
+// every code of its header's exit table, and above all the case a first-match
+// implementation passes silently and wrongly — two claims by one checkout, under
+// one container root or across both, is REFUSED, both named, nothing on stdout.
 
-const script = join(pluginRoot, "bin", "fusion-claimed-item");
+const script = join(pluginRoot, "bin", "fusion-claimed-package");
+const LEGACY = WINDOW_LEGACY_NAMES[CONTAINER_STORE];
 const identity = join(pluginRoot, "bin", "fusion-identity");
 
 const tmpRoots: string[] = [];
@@ -47,7 +48,7 @@ interface Opts {
 
 function project(opts: Opts = {}): string {
   const { workbench = true, git = true, named = true, checkoutId } = opts;
-  const dir = mkdtempSync(join(tmpdir(), "fusion-claimed-item-"));
+  const dir = mkdtempSync(join(tmpdir(), "fusion-claimed-package-"));
   tmpRoots.push(dir);
   if (git) {
     sh("git", ["init", "-q"], dir);
@@ -55,7 +56,7 @@ function project(opts: Opts = {}): string {
     if (named) sh("git", ["config", "user.name", "Scratch Person"], dir);
   }
   if (workbench) {
-    mkdirSync(join(dir, "fusion-workbench", "circles"), { recursive: true });
+    mkdirSync(join(dir, "fusion-workbench", CONTAINER_STORE), { recursive: true });
     writeFileSync(join(dir, "fusion-workbench", ".fusion-setup"), "{}\n");
     if (checkoutId !== undefined)
       writeFileSync(join(dir, "fusion-workbench", ".checkout-id"), checkoutId + "\n");
@@ -70,16 +71,18 @@ function checkout(dir: string): string {
   return m![1];
 }
 
-/** One item: its container, and the record named after it. `record` overrides
- *  that name, which is how a file at the same depth is shown NOT to be an item. */
+/** One package: its container under `root`, and the record named after it.
+ *  `record` overrides that name, which is how a file at the same depth is shown
+ *  NOT to be a package. */
 function add(
   dir: string,
   slug: string,
   status: string,
   claim?: string,
   record = `${slug}.md`,
+  root = CONTAINER_STORE,
 ): void {
-  const d = join(dir, "fusion-workbench", "circles", slug);
+  const d = join(dir, "fusion-workbench", root, slug);
   mkdirSync(d, { recursive: true });
   writeFileSync(
     join(d, record),
@@ -98,31 +101,30 @@ function add(
   );
 }
 
-describe("bin/fusion-claimed-item", () => {
-  it("prints both lines for the one item this checkout has claimed", () => {
+describe("bin/fusion-claimed-package", () => {
+  it.each([CONTAINER_STORE, LEGACY])("prints both lines for the one package claimed, under %s/", (root) => {
     const dir = project();
-    add(dir, "260910-1000-alpha", "claimed", `${checkout(dir)} — Scratch Person, 260910-1000`);
+    add(dir, "260910-1000-alpha", "claimed", `${checkout(dir)} — Scratch Person, 260910-1000`, undefined, root);
     add(dir, "260910-1100-beta", "open");
     const r = run(dir);
     expect(r.status, r.stderr).toBe(0);
     expect(r.stdout).toBe(
-      "ITEM=circles/260910-1000-alpha/260910-1000-alpha.md\n" +
-        "CONTAINER=circles/260910-1000-alpha\n",
+      `PACKAGE=${root}/260910-1000-alpha/260910-1000-alpha.md\nCONTAINER=${root}/260910-1000-alpha\n`,
     );
   });
 
-  it("refuses two claimed items rather than taking the first", () => {
+  it.each([CONTAINER_STORE, LEGACY])("refuses two claims, the second under %s/, rather than taking the first", (root) => {
     // The case the whole exit table turns on. A first match would resolve here,
     // and would file this item's work into the other item's container.
     const dir = project();
     const mine = checkout(dir);
     add(dir, "260910-1000-alpha", "claimed", `${mine} — Scratch Person, 260910-1000`);
-    add(dir, "260910-1100-beta", "claimed", `${mine} — Scratch Person, 260910-1100`);
+    add(dir, "260910-1100-beta", "claimed", `${mine} — Scratch Person, 260910-1100`, undefined, root);
     const r = run(dir);
     expect(r.status).toBe(3);
     expect(r.stdout, "nothing is resolved and nothing falls back to the shared store").toBe("");
-    expect(r.stderr).toContain("circles/260910-1000-alpha/260910-1000-alpha.md");
-    expect(r.stderr).toContain("circles/260910-1100-beta/260910-1100-beta.md");
+    expect(r.stderr).toContain(`${CONTAINER_STORE}/260910-1000-alpha/260910-1000-alpha.md`);
+    expect(r.stderr).toContain(`${root}/260910-1100-beta/260910-1100-beta.md`);
   });
 
   it.each([
