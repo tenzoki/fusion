@@ -5,6 +5,7 @@
 **Status:** claimed
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260923-0839
 **Cross-references:** 260922-1038-prior-mapping.md, 260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1106_*_spec-prior-nomenclature-consumer-migration.md, 260922-1114_*_plan-prior-nomenclature-plugin-source.md, 260922-1129_*_plan-prior-nomenclature-consumer-migration.md
+**Active spec/plan:** 260922-1045_*_spec-prior-nomenclature-plugin-source.md (spec, part 1), 260922-1114_*_plan-prior-nomenclature-plugin-source.md (plan, part 1: the one this item runs on and closes against; part 2's plan 260922-1129_*_plan-prior-nomenclature-consumer-migration.md interleaves with it and is cross-referenced)
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 
 ---

@@ -41,3 +41,6 @@ Deferring it is not the same as ignoring it. This is filed so that whoever meets
 
 ---
 Answered: 260910-0900-orchestrator-session.md `## Ruling on the container store's name` — option 1, the store keeps the directory name `circles/` and the naming debt is named rather than paid. The rename's cost is one-way and measured (1414 files, a citation class that stops matching with no rewrite available, four helpers and the monitor carrying the literal) and nothing in the container ruling required it; the one objection is answered by the clause step S1 wrote into the layout tree. Ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Superseded by: 260922-1114_*_does-the-container-store-take-the-name-work-packages-superseding-circles.md — the PRIOR/Fusion nomenclature renames the container store to `work-packages/`, the later ruling this record anticipated.

@@ -32,3 +32,6 @@
 ## Recommendation
 
 Option 1. The nomenclature is the user's own ruling and names the store; the old record already said the debt would be paid by a later ruling. The `Answered:` line, when the user confirms, cites `nomenclature.md` `### Fusion workbench migration` as the answer's location.
+
+---
+Answered: nomenclature.md `### Fusion workbench migration` — option 1, the container store becomes `work-packages/`, with `circles/` read beside it for the v12 window; confirmed at the plan gate of 260923-0839-implement-prior-nomenclature.md; ruled by user, Kai Stalmann <ks@qantr.com>

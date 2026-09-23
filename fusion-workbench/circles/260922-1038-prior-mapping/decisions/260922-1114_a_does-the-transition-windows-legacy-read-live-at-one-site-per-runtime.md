@@ -32,3 +32,6 @@ The spec's C9 asks that the legacy read (the plugin reading `circles/`, `plannin
 ## Recommendation
 
 Option 1. It is the mechanism the repository already uses for the shared stores, extended to the container store and to the bash side, and it turns the closing release's removal from a remembered step into a failing test.
+
+---
+Answered: 260922-1114_*_plan-prior-nomenclature-plugin-source.md `### Names this plan fixes` — option 1, one definition site per runtime (`hooks/lib/stores.ts`, `bin/fusion-stores`) derived from the layout tree and held equal by a test; confirmed at the plan gate of 260923-0839-implement-prior-nomenclature.md; ruled by user, Kai Stalmann <ks@qantr.com>

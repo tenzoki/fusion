@@ -30,3 +30,6 @@ Spec (2) `## Open for Planner` leaves open whether a `bin/` helper carries the m
 ## Recommendation
 
 Option 1. The closing release is what decides it: a mechanism that reads the legacy names from the definition sites dies on the day those sites drop them, and the pass is the one consumer that must outlive them. The fourth copy is bounded by that same fact: it is not a copy of the live definition but a statement of the transition, which is what the carve-out licenses. Plan (2) proceeds on this option as its default; a ruling for option 2 or 3 stops plan (2) at its step 4 and re-plans the helper with its header, exit codes and test in the shape `bin/fusion-claimed-item` uses.
+
+---
+Answered: 260922-1129_*_plan-prior-nomenclature-consumer-migration.md `## Implementation Steps` — option 1, the survey and apply blocks stay in `skills/migrate/SKILL.md` with the three rename pairs literal, so the pass outlives 13.0.0; confirmed at the plan gate of 260923-0839-implement-prior-nomenclature.md; ruled by user, Kai Stalmann <ks@qantr.com>
