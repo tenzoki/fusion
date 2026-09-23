@@ -2,10 +2,10 @@
 
 ---
 **Domain:** code
-**Status:** claimed
+**Status:** done
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 260923-0812
 **Active spec/plan:** 260922-1045_*_spec-prior-nomenclature-plugin-source.md (spec, part 1), 260922-1106_*_spec-prior-nomenclature-consumer-migration.md (spec, part 2)
-**Cross-references:** nomenclature.md (this container), 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md, 260922-1114_*_plan-prior-nomenclature-plugin-source.md, 260922-1129_*_plan-prior-nomenclature-consumer-migration.md
+**Cross-references:** nomenclature.md (this container), 260923-0839-implement-prior-nomenclature.md (the implementation, filed at closure), 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md, 260922-1114_*_plan-prior-nomenclature-plugin-source.md, 260922-1129_*_plan-prior-nomenclature-consumer-migration.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 
 ---
@@ -24,3 +24,7 @@ The item is reached when two specs and two plans stand in this container's `plan
 - Not claimed at filing: this checkout already holds `260922-0906-fix-package-over-every-open-issue.md`, and a second claim by the same checkout is the ambiguity `bin/fusion-claimed-item` refuses (exit 3). Whoever takes this item up claims it once that package is done, or works it through `**Item:**` dispatches as the specs and plans were written.
 - 260922-1130: both specs are Decided (five user rulings on 2026-09-22, recorded in their bodies) and both plans stand: `260922-1114_*_plan-prior-nomenclature-plugin-source.md` (16 steps) and `260922-1129_*_plan-prior-nomenclature-consumer-migration.md` (9 steps plus one user step). `**Active spec/plan:**` holds at most one plan, and this item has two whose steps interleave (plan (2) `## Sequencing against plan (1)`), so the field names the two specs and the plans are cross-referenced. Whether the item is split into one per part, or which plan is entered first, is the user's call at the plan gate. Eleven decision records stand in `decisions/`: seven for the Review-class stores (`260922-1059_*`, open by design, part (2) closes them), three from plan (1) and one from plan (2), of which `260922-1114_*_does-the-transition-windows-legacy-read-live-at-one-site-per-runtime.md` and `260922-1125_*_does-the-store-name-migration-carry-its-mechanics-in-the-skill-body-or-in-a-bin-helper.md` need the user's ruling before their plans proceed past their first steps.
 - `nomenclature.md` `### Fusion workbench migration` states explicitly that its table "defines naming direction, not an authorised bulk move" and that record schemas, references, history and compatibility readers must be designed before existing files are migrated. Both specs are bound by that sentence.
+
+## Closure — 260923-0839
+
+Done: the Directive asked for two specs and two plans in this container's `planning/`, and all four stand (`68271c80`). Implementation was excluded by the Directive itself; at the user's choice on 260923 it continues as the new item `260923-0839-implement-prior-nomenclature.md`, which carries the plan gate, the interleaved sequencing and the three rulings the plans wait on. Commit range `68271c80..dba00e9c`, records only, so no review pass was routed and the range stays uncovered. Stop conditions: `**Active spec/plan:**` names the two specs and no plan, so no stopping section was put to the user.

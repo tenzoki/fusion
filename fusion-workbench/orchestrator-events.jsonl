@@ -4757,3 +4757,5 @@
 {"ts":"2026-09-23T06:12:16","event":"gate_response","person":"Kai Stalmann <ks@qantr.com>","checkout":"5e8248d7","session_id":"4c6ab811-dfb4-45de-8504-cb0f5a0c02aa","detail":"clause 7: holds"}
 {"ts":"2026-09-23T06:12:36","event":"portfolio_refresh","person":"Kai Stalmann <ks@qantr.com>","checkout":"5e8248d7","session_id":"4c6ab811-dfb4-45de-8504-cb0f5a0c02aa","detail":"260922-0137-measure-the-reconciler-on-a-smaller-model"}
 {"ts":"2026-09-23T06:12:36","event":"commit","person":"Kai Stalmann <ks@qantr.com>","checkout":"5e8248d7","session_id":"4c6ab811-dfb4-45de-8504-cb0f5a0c02aa","detail":"9b2f0a82 chore(workbench): close the smaller-model reconciler measurement as done"}
+{"ts":"2026-09-23T06:13:05","event":"commit","person":"Kai Stalmann <ks@qantr.com>","checkout":"5e8248d7","session_id":"4c6ab811-dfb4-45de-8504-cb0f5a0c02aa","detail":"dba00e9c chore(workbench): claim the PRIOR nomenclature item"}
+{"ts":"2026-09-23T06:39:53","event":"portfolio_refresh","person":"Kai Stalmann <ks@qantr.com>","checkout":"5e8248d7","session_id":"4c6ab811-dfb4-45de-8504-cb0f5a0c02aa","detail":"260922-1038-prior-mapping"}
