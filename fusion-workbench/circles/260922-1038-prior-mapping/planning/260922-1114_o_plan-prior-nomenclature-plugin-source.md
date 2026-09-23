@@ -224,7 +224,7 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
     - Dependencies: step 11
     - Acceptance: `derivable-enumerations-lint` green; `git diff --stat` shows no `docs/upgrading-to-*` file (C4 fourth criterion, first half); C3 fifth criterion (one name per thing across `README.md`, `README-agents.md`, `docs/philosophy.md`, `/fusion:help`) checked by reading the four.
 
-13. [IN PROGRESS] **Chat-profile ban lists**
+13. [DONE] **Chat-profile ban lists**
     - Executor: `ontocoder`
     - Files: `stilwerk/chat-voice-en.yaml:25`, `stilwerk/chat-voice-de.yaml:25` (the shipped templates; a consumer's copies are part (2)'s)
     - Changes: `L07` names the canonical nouns beside the legacy ones (work package, brief, evidence base, work round, approval, review result, artefact; German: Arbeitspaket, Auftrag, Evidenzbasis, Arbeitsrunde, Freigabe, Prüfergebnis, Artefakt) and keeps every legacy noun it names today (C3 fourth criterion).
