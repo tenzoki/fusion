@@ -240,7 +240,7 @@ One list for both parts; "(1)" is this plan, "(2)" is `260922-1129_*_plan-prior-
 
    - Carried from step 8 (260923): `.claude-plugin/plugin.json`'s description still names "curator"; this step renames it to policy-curator with the rest of the description.
    - Carried from step 12 (260923): `skills/help/SKILL.md` says "work package in the project backlog" (:57) where the READMEs and philosophy doc now say "work-package store", and uses "item" as shorthand at :57 and :63; `docs/messages-between-checkouts.md` "Writing" still describes the pre-v11 cleanup pipeline; the `README-hooks.md` `lib/stores.ts` row does not name `CONTAINER_STORE` or `WINDOW_LEGACY_NAMES`. Step 16 touches these files and takes them.
-15. **Manifest: version and description**
+15. [DONE] **Manifest: version and description**
     - Executor: `ontocoder`
     - Files: `.claude-plugin/plugin.json`
     - Changes: `version` `12.0.0`; `description` in the canonical terms, stating the agent count `ls agents/` gives, eleven (C3 sixth, C8 first criteria).
