@@ -2,7 +2,14 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
-import { LEGACY_STORES, RECORD_STORES, RETIRED_REVIEW_FOLDERS } from "../stores.js";
+import {
+  CONTAINER_STORE,
+  LEGACY_STORES,
+  RECORD_STORES,
+  RETIRED_REVIEW_FOLDERS,
+  WINDOW_LEGACY_NAMES,
+  WINDOW_LEGACY_RECORD_STORES,
+} from "../stores.js";
 
 // ---------------------------------------------------------------------------
 // Path-literal lint gate (plan step 8 / P-8).
@@ -21,20 +28,23 @@ import { LEGACY_STORES, RECORD_STORES, RETIRED_REVIEW_FOLDERS } from "../stores.
 
 
 // The artifact-store folders, composed from `hooks/lib/stores.ts` rather than
-// listed here: the live stores (the layout tree's, `checkouts` included), the
-// legacy backlog store, and the three retired pre-v4 review folders (merged
-// into `reviews`), which must never reappear in a converted prompt. A kind's
-// location comes from `fusion-paths` ($OUT_* / $SCAN_*), never from a literal.
+// listed here: the live stores (the layout tree's, `checkouts` included) and the
+// container store, the window's legacy record-store names, the legacy backlog
+// store, and the three retired pre-v4 review folders. A kind's location comes
+// from `fusion-paths` ($OUT_* / $SCAN_*), never from a literal.
 //
-// Deliberately EXCLUDED: the structural container roots `circles/`, `shared/`,
-// `archive/`, `stashes/`. They are not artifact stores — they are the layout's
-// roots, legitimately named in prose (help explaining the layout) and, for
-// `circles/`, by the two skills that recognise the superseded layout in order to
-// refuse or convert it. Flagging them would fire on legitimate mentions and
-// force wrong exemptions. An artifact-type segment nested inside such a path
-// (e.g. `circles/x/reviews/y`) is still caught, because `reviews/` matches on
-// its own.
-const TYPE_FOLDERS: readonly string[] = [...RECORD_STORES, ...LEGACY_STORES, ...RETIRED_REVIEW_FOLDERS];
+// Deliberately EXCLUDED: the roots `circles/`, `shared/`, `archive/`,
+// `stashes/`, legitimately named in prose (help explaining the layout, the
+// upgrade) and, for `circles/`, by the two skills that recognise the v11 layout.
+// A store segment nested inside such a path (`circles/x/reviews/y`) is still
+// caught, because `reviews/` matches on its own.
+const TYPE_FOLDERS: readonly string[] = [
+  ...RECORD_STORES,
+  CONTAINER_STORE,
+  ...WINDOW_LEGACY_RECORD_STORES,
+  ...LEGACY_STORES,
+  ...RETIRED_REVIEW_FOLDERS,
+];
 
 // The whole trust surface — the sites allowed to name type folders as paths.
 // Enumerated explicitly, never pattern-matched: `setup` names the stores it
@@ -170,7 +180,7 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
   // the real false-positive lines in the tree today.
   const PROSE_THAT_MUST_NOT_FIRE: [string, string][] = [
     ["a dispatch line naming a document kind", "names the target — a path to a planning/analysis document, or a set of them."],
-    ["taskplanner.md:171", "- How many plans/issues/reviews scanned"],
+    ["a slash-joined kind list", "- How many issues/reviews scanned"],
     ["taskplanner.md:71", "Skip files with terminal markers — issues/planning `[c]`/`[d]` — entirely."],
     ["cadence legend", "defects go in issues, decisions record open questions, analyses study."],
     ["cadence legend, backlog row", "| b | backlog entries |"],
@@ -192,6 +202,10 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
     ["retired review folder", "put the review in codereview/latest.md"],
     ["artifact segment nested in a circle path", "read circles/260716-x/reviews/y.md"],
     ["the backlog store", "file the idea at shared/backlog/260812-1720_o_an-idea.md"],
+    ["the container store", "open work-packages/260716-x/ first"],
+    ["the plans store", "skim plans/*.md for open steps"],
+    ["the consultations store", "write the report to shared/consultations/<file>.md"],
+    ["a window legacy name", "the report sits in consult/<file>.md"],
   ];
 
   for (const [label, text] of PATHS_THAT_MUST_FIRE) {
@@ -305,11 +319,19 @@ describe("path-literal lint: setup's key needs stay a subset of the orchestrator
 describe("path-literal lint: the store list is the layout tree's", () => {
   // Issue 260905-0933_*: three hand-kept copies of this set drifted by one element each way.
   // `hooks/lib/stores.ts` is the one copy now, and this is what keeps it equal to the definition.
+  const tree = readFileSync(join(pluginRoot, "rules/fusion-workbench-conventions.md"), "utf-8");
+
   it("RECORD_STORES equals the shared/ subtree of the conventions' layout tree, in order", () => {
-    const tree = readFileSync(join(pluginRoot, "rules/fusion-workbench-conventions.md"), "utf-8");
     const subtree = tree.match(/^├── shared\/[\s\S]*?(?=^├── archive\/)/m);
     expect(subtree, "the layout tree's `shared/` subtree was not found between `├── shared/` and `├── archive/`").not.toBeNull();
     const fromTree = [...subtree![0].matchAll(/[├└]── ([a-z]+)\//g)].map((m) => m[1]).slice(1);
     expect(fromTree, "RECORD_STORES and the layout tree disagree: edit both in one commit").toEqual([...RECORD_STORES]);
+  });
+
+  it("CONTAINER_STORE is the tree's first root, and WINDOW_LEGACY_NAMES its window subsection", () => {
+    expect(tree.match(/^fusion-workbench\/\n├── ([a-z-]+)\//m)?.[1]).toBe(CONTAINER_STORE);
+    const window = tree.match(/^### Transition window[^\n]*\n([\s\S]*?)(?=^##)/m)?.[1] ?? "";
+    const rows = [...window.matchAll(/^- `([a-z-]+)\/`: `([a-z-]+)\/`$/gm)].map((m) => [m[1], m[2]]);
+    expect(Object.fromEntries(rows), "the window table and the tree's subsection disagree").toEqual({ ...WINDOW_LEGACY_NAMES });
   });
 });

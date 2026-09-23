@@ -45,7 +45,7 @@
 [hook-tests lines]
   archive-filter-key.test.ts 40
   citation-form.test.ts 360
-  citation-grammar-boundaries.test.ts 239
+  citation-grammar-boundaries.test.ts 242
   citation-sweep.test.ts 573
   claude-md-weight.test.ts 208
   commit-message-path.test.ts 385
@@ -87,22 +87,23 @@
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 164
   monitor-warnings-panel.test.ts 1222
-  path-literal-lint.test.ts 315
+  path-literal-lint.test.ts 337
   paths.test.ts 31
-  plan-size.test.ts 163
+  plan-size.test.ts 165
   plan-stopping-section-lint.test.ts 261
   provenance-header-lint.test.ts 434
   reference-resolution-lint.test.ts 1016
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 862
-  rules-emission-golden.test.ts 1221
+  rules-emission-golden.test.ts 1189
   rules-voice-profile.test.ts 319
   sentence-identifier-containment.test.ts 456
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 650
+  staging-drift.test.ts 655
   store-name-migration.test.ts 104
-  surface-growth-bound.test.ts 568
-  work-graph.test.ts 184
-  workbench-citation-lint.test.ts 352
-  total 22250
+  surface-growth-bound.test.ts 541
+  window-bound.test.ts 24
+  work-graph.test.ts 189
+  workbench-citation-lint.test.ts 353
+  total 22253

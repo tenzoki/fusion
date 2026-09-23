@@ -52,7 +52,7 @@
  * re-spelled so that this module and the citation gate cannot drift on what a
  * work-item record is.
  *
- * `archive/**` IS NEVER OPENED. Only `fusion-workbench/circles/` is read, so an
+ * `archive/**` IS NEVER OPENED. Only the container roots are read, so an
  * entry naming an item that was archived resolves to nothing and is reported by
  * name, exactly like an entry naming an item that never existed. That is the
  * `3b-i` half of the same ruling.
@@ -163,7 +163,7 @@ export interface WorkGraphReport {
  * `root` is the project root — the directory holding `fusion-workbench/`, which
  * is what `findWorkbenchRoot` returns and what the callers of `lib/plan-size.ts`
  * and `lib/staging-drift.ts` pass. A root with no workbench, or a workbench with
- * no `circles/`, is a real answer and not a failure: zero items and
+ * no container root, is a real answer and not a failure: zero items and
  * `verdict=empty`.
  *
  * A container holding no record of its own name is skipped in silence — that is

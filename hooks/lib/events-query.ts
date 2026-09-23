@@ -183,7 +183,9 @@ export function parseTs(ts: string | undefined): number | null {
  * at `0ec15cb9`. Since 2026-09-21 `measurePresence` calls this only where the
  * field is present, and reads a party's work item off its `task_start` rows
  * otherwise, so `unknown` is now the answer for a malformed `circles/` path
- * alone.
+ * alone. The literal stays after v12: the field is a pre-cut persisted value
+ * no writer produces any more, which the window in
+ * `rules/fusion-workbench-conventions.md` `### Transition window (v12.0.0 to v13.0.0)` does not govern.
  */
 export function circleOf(historyFile: string | undefined): string {
   if (typeof historyFile !== "string" || historyFile === "") return "unknown";

@@ -962,8 +962,8 @@ describe.runIf(WORKBENCH_PRESENT)("citation scan: the measuring view and the gat
   const GATE: CitationKind[] = [
     "record",
     "bare-record",
-    "circle-record",
-    "circle-dir",
+    "package-record",
+    "package-dir",
     "stamp-name",
   ];
 

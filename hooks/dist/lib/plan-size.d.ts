@@ -72,7 +72,10 @@ export declare function markerOf(base: string): string | null;
  * A spec is not a plan and the ceiling is not about it.
  */
 export declare function isSpec(base: string, firstLine: string): boolean;
-/** Every planning store under the workbench: each Circle's, plus the shared one. */
+/**
+ * Every plans store under the workbench: each work package's, plus the shared
+ * one, under either name during the window (`./stores.ts`).
+ */
 export declare function planningStores(root: string): string[];
 /**
  * Measure the live plans under `root`'s workbench against `ceiling`.

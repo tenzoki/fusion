@@ -52,7 +52,7 @@
  * re-spelled so that this module and the citation gate cannot drift on what a
  * work-item record is.
  *
- * `archive/**` IS NEVER OPENED. Only `fusion-workbench/circles/` is read, so an
+ * `archive/**` IS NEVER OPENED. Only the container roots are read, so an
  * entry naming an item that was archived resolves to nothing and is reported by
  * name, exactly like an entry naming an item that never existed. That is the
  * `3b-i` half of the same ruling.
@@ -92,6 +92,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { ITEM_RECORD_RE } from "./citation-corpus.js";
+import { containerRoots } from "./stores.js";
 
 /** The live values of `**Status:**`. `done` and `dropped` are not nodes. */
 export type ItemStatus = "open" | "claimed" | "paused";
@@ -267,7 +268,7 @@ function stronglyConnected(out: number[][]): number[] {
  * `root` is the project root — the directory holding `fusion-workbench/`, which
  * is what `findWorkbenchRoot` returns and what the callers of `lib/plan-size.ts`
  * and `lib/staging-drift.ts` pass. A root with no workbench, or a workbench with
- * no `circles/`, is a real answer and not a failure: zero items and
+ * no container root, is a real answer and not a failure: zero items and
  * `verdict=empty`.
  *
  * A container holding no record of its own name is skipped in silence — that is
@@ -283,20 +284,26 @@ function stronglyConnected(out: number[][]): number[] {
  * must not disagree on whether it is worth saying.
  */
 export function computeWorkGraph(root: string): WorkGraphReport {
-  const circles = join(root, "fusion-workbench", "circles");
+  const wb = join(root, "fusion-workbench");
   const nodes: WorkItemNode[] = [];
   const unreadable: string[] = [];
+  const seen = new Set<string>();
   let noDependsOnField = 0;
 
-  if (existsSync(circles)) {
-    for (const entry of readdirSync(circles, { withFileTypes: true })) {
+  for (const top of containerRoots(wb)) {
+    const rootDir = join(wb, top);
+    if (!existsSync(rootDir)) continue;
+    for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
       if (!entry.isDirectory()) continue;
       const base = `${entry.name}.md`;
-      if (!ITEM_RECORD_RE.test(`circles/${entry.name}/${base}`)) continue;
+      // The new root is read first, so a package standing under both roots
+      // mid-migration is one node, read where it now lives.
+      if (seen.has(entry.name) || !ITEM_RECORD_RE.test(`${top}/${entry.name}/${base}`)) continue;
+      seen.add(entry.name);
 
       let text: string;
       try {
-        text = readFileSync(join(circles, entry.name, base), "utf-8");
+        text = readFileSync(join(rootDir, entry.name, base), "utf-8");
       } catch {
         continue;
       }

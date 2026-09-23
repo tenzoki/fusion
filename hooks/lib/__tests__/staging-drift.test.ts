@@ -403,15 +403,20 @@ describe("staging drift: what it reports without raising an alarm", () => {
     "reads a work item's own record as a record, and claims nothing about a sibling no store owns",
     () => {
       withWorkbench((project) => {
-        // The v11 unit of work is `circles/<item>/<item>.md`: the same name twice
+        // The unit of work is `<root>/<item>/<item>.md`: the same name twice
         // and no store segment, so it fell through to `unclassified` and an
         // uncommitted item never reached the verdict (issue 260911-1421_*_a-work-items-own-record-classifies-as-unclassified-so-staging-drift-claims-nothing-about-the-unit-of-work.md).
-        const item = "circles/260811-0200-file-the-idea";
+        // A mixed window tree: one package under each root, and a legacy-named store.
+        const item = "work-packages/260811-0200-file-the-idea";
         write(project.root, `fusion-workbench/${item}/260811-0200-file-the-idea.md`, "# Idea\n");
         write(project.root, `fusion-workbench/${item}/other.md`, "a note\n");
+        write(project.root, "fusion-workbench/circles/260811-0300-older/260811-0300-older.md", "# Older\n");
+        write(project.root, "fusion-workbench/shared/consult/260811-0300-note.md", "a report\n");
 
         const res = runStagingDrift(project.root);
-        expect(keys(res.stdout).unstaged).toBe("1");
+        expect(keys(res.stdout).unstaged).toBe("3");
+        expect(row(res.stdout, "circles/260811-0300-older/260811-0300-older.md")).toContain("a work item's own record");
+        expect(row(res.stdout, "shared/consult/260811-0300-note.md")).toContain("the consult store");
         const record = row(res.stdout, `${item}/260811-0200-file-the-idea.md`);
         expect(record).toMatch(/^ {2}record\s+\?\? .*UNSTAGED/);
         expect(record).toContain("a work item's own record");

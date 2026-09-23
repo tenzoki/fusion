@@ -33,11 +33,11 @@
 //   infix. A citation not ending in `.md` is a prefix.
 //
 //   THE THREE STORE-PREFIXED SHAPES ARE DETECTED AND NEVER RESOLVED. A record
-//   behind a store segment (`shared/<store>/…`, `circles/<dir>/<store>/…`,
+//   behind a store segment (`shared/<store>/…`, `<root>/<dir>/<store>/…`,
 //   `<dir>/<store>/…`, `record`), a container's own record — either form,
-//   `circles/<dir>/_x_circle.md` or `circles/<dir>/<dir>.md` (`circle-record`)
+//   `<root>/<dir>/_x_circle.md` or `<root>/<dir>/<dir>.md` (`package-record`)
 //   — and a container directory
-//   `circles/<dir>` (`circle-dir`) each get the status `store-prefixed`, a
+//   `<root>/<dir>` (`package-dir`) each get the status `store-prefixed`, a
 //   violation whose `fix` spells the storeless form. The segment is what an
 //   archive sweep moves, so a citation carrying it dies at the sweep; the
 //   storeless form survives it. Keeping the three as detectors is what lets the
@@ -300,7 +300,14 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { isAbsolute, join, relative, sep } from "node:path";
 import { git, GIT_TIMED_OUT } from "./git.js";
-import { LEGACY_STORES, RECORD_STORES } from "./stores.js";
+import {
+  ARCHIVED_CONTAINER_ROOTS,
+  CONTAINER_ROOT_ALT,
+  CONTAINER_ROOT_NAMES,
+  LEGACY_STORES,
+  RECORD_STORES,
+  WINDOW_LEGACY_RECORD_STORES,
+} from "./stores.js";
 
 // --- shared with the gate's other two classes -------------------------------
 
@@ -326,15 +333,15 @@ export function isPlaceholder(token: string): boolean {
 // --- the citation grammar ---------------------------------------------------
 
 /**
- * The store segments a store-prefixed citation may carry: `RECORD_STORES` and
- * `LEGACY_STORES` from `./stores.ts`, minus `checkouts`. A registry entry is
+ * The store segments a store-prefixed citation may carry: `RECORD_STORES`, their
+ * window names and `LEGACY_STORES` from `./stores.ts`, minus `checkouts`. A registry entry is
  * `<hex>.md`, no stamp and no slug, so no record citation can name one and the
  * segment would match nothing. `discussions` is here for citations OF a
  * discussion record, written in some other record; nothing reads the citations
  * written INSIDE one, because a discussion record is machine-rewritten every
  * round and so is no live record to `isLiveRecord()`.
  */
-const STORES = [...RECORD_STORES, ...LEGACY_STORES].filter((s) => s !== "checkouts").join("|");
+const STORES = [...RECORD_STORES, ...WINDOW_LEGACY_RECORD_STORES, ...LEGACY_STORES].filter((s) => s !== "checkouts").join("|");
 
 /**
  * The words the marker slot may carry besides one letter: the agent names the
@@ -512,7 +519,7 @@ const NAME_END = "(?![A-Za-z0-9_\\/-])";
 const REC_RE = new RegExp(
   LEFT_ANCHOR +
     ROOTING +
-    `(?:(circles\\/${CIRCLE_DIR})\\/|(shared)\\/|(${CIRCLE_DIR})\\/)?` +
+    `(?:((?:${CONTAINER_ROOT_ALT})\\/${CIRCLE_DIR})\\/|(shared)\\/|(${CIRCLE_DIR})\\/)?` +
     `(${STORES})\\/` +
     `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?${REC_TAIL.cls})` + // `.` admits ASCII `...`
     REC_TAIL.stop,
@@ -558,8 +565,8 @@ const REC_RE = new RegExp(
 const CIRCLE_REC_RE = new RegExp(
   LEFT_ANCHOR +
     ROOTING +
-    `circles\\/(${CIRCLE_DIR})\\/` +
-    "(_[a-zA-Z*]_circle|\\1)(?:\\.md)?(?!\\.md)" +
+    `(${CONTAINER_ROOT_ALT})\\/(${CIRCLE_DIR})\\/` +
+    "(_[a-zA-Z*]_circle|\\2)(?:\\.md)?(?!\\.md)" +
     NAME_END,
   "g",
 );
@@ -594,7 +601,7 @@ const BARE_RE = new RegExp(
 // Bare Circle-directory citation. A trailing `/` is allowed when nothing
 // path-like follows (the conventions file's layout tree).
 const CIRCLE_RE = new RegExp(
-  LEFT_ANCHOR + ROOTING + `circles\\/(${CIRCLE_DIR})(?:\\/(?![A-Za-z0-9_.*<]))?` + NAME_END,
+  LEFT_ANCHOR + ROOTING + `(${CONTAINER_ROOT_ALT})\\/(${CIRCLE_DIR})(?:\\/(?![A-Za-z0-9_.*<]))?` + NAME_END,
   "g",
 );
 
@@ -918,8 +925,8 @@ export type CitationKind =
   /** the five the gate judges; the first, third and fourth carry a store segment and are violations */
   | "record"
   | "bare-record"
-  | "circle-record"
-  | "circle-dir"
+  | "package-record"
+  | "package-dir"
   /** a stamp plus a dashed name, no store prefix — decidable by prefix */
   | "stamp-name"
   /** a stamp alone — the residual, and the only kind the gate does not read */
@@ -955,8 +962,8 @@ export type CitationKind =
 export const GATE_KINDS: CitationKind[] = [
   "record",
   "bare-record",
-  "circle-record",
-  "circle-dir",
+  "package-record",
+  "package-dir",
   "stamp-name",
 ];
 
@@ -986,7 +993,7 @@ export const GATE_KINDS: CitationKind[] = [
  * narrowing names the other two, and each of these three has fixtures of its own
  * that would have to be rewritten to decide it.
  */
-export const SHAPE_DECIDED_KINDS: CitationKind[] = ["record", "circle-record", "circle-dir"];
+export const SHAPE_DECIDED_KINDS: CitationKind[] = ["record", "package-record", "package-dir"];
 
 /**
  * The exemptions whose premise is "do not look this token up": a fabricated
@@ -1170,13 +1177,15 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
         one(e.name, `${relRoot}/${e.name}`);
       }
     };
-    add("circles");
+    // Both root names, live and in every sweep (`./stores.ts` says why the
+    // archive's pair is permanent).
+    for (const top of CONTAINER_ROOT_NAMES) add(top);
     const archive = join(workbenchRoot, "archive");
     if (existsSync(archive)) {
       for (const sweep of readdirSync(archive, { withFileTypes: true })) {
         if (sweep.isDirectory() && SWEEP_DIR_RE.test(sweep.name)) {
           one(sweep.name, `archive/${sweep.name}`);
-          add(`archive/${sweep.name}/circles`);
+          for (const top of ARCHIVED_CONTAINER_ROOTS) add(`archive/${sweep.name}/${top}`);
         }
       }
     }
@@ -1297,7 +1306,7 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
       let m: RegExpExecArray | null;
       while ((m = REC_RE.exec(text)) !== null) {
         // Three container alternatives, exactly one of which can be set:
-        // `circles/<dir>`, `shared`, or the bare Circle directory `<dir>`.
+        // `<root>/<dir>`, `shared`, or the bare Circle directory `<dir>`.
         const [full, circleDir, shared, bareDir, store, stamp, restRaw] = m;
         const rest = restRaw ?? "";
         const idx = m.index;
@@ -1308,7 +1317,7 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
 
       CIRCLE_REC_RE.lastIndex = 0;
       while ((m = CIRCLE_REC_RE.exec(text)) !== null) {
-        const [full, dir, base] = m;
+        const [full, top, dir, base] = m;
         const idx = m.index;
         // The two record forms take DIFFERENT storeless spellings, and the
         // backreference is what tells them apart. A Circle record's own basename
@@ -1318,7 +1327,7 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
         // markerless-artifact form. Spelling both as the directory would quietly
         // turn a citation of the RECORD into a citation of the DIRECTORY.
         const storeless = base === dir ? `${dir}.md` : dir;
-        consider(idx, full, "circle-record", () => storePrefixed("circles/", storeless));
+        consider(idx, full, "package-record", () => storePrefixed(`${top}/`, storeless));
       }
 
       BARE_RE.lastIndex = 0;
@@ -1370,9 +1379,9 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
 
       CIRCLE_RE.lastIndex = 0;
       while ((m = CIRCLE_RE.exec(text)) !== null) {
-        const [full, dir] = m;
+        const [full, top, dir] = m;
         const idx = m.index;
-        consider(idx, full, "circle-dir", () => storePrefixed("circles/", dir));
+        consider(idx, full, "package-dir", () => storePrefixed(`${top}/`, dir));
       }
 
       // Store-prefixless stamps, last: whatever no citation token above claimed.

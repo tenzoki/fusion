@@ -67,7 +67,7 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     expect(out[0]).toBe("fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=2");
     expect(out[1]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260202-0202' {2}resolved$/);
     expect(out[2]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260101-0101' {2}ambiguous$/);
-    expect(out[3]).toBe("files=1 rewrites=2 residual=2 record=1 circle-record=0 circle-dir=0 bare-record=1 stamp-bare=0 mode=dry-run");
+    expect(out[3]).toBe("files=1 rewrites=2 residual=2 record=1 package-record=0 package-dir=0 bare-record=1 stamp-bare=0 mode=dry-run");
   }, CASE_TIMEOUT);
 
   it("a truncated citation, a head-field date and a word-marked filename are each one token and never chained", () => {
@@ -86,7 +86,7 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     expect(dry.status, dry.stderr).toBe(0);
     expect(dry.stdout).not.toMatch(/'260505-0505'|'260202-0202'/);
     expect(last(dry)).toBe(
-      "files=1 rewrites=1 residual=1 record=0 circle-record=0 circle-dir=0 bare-record=1 stamp-bare=0 mode=dry-run",
+      "files=1 rewrites=1 residual=1 record=0 package-record=0 package-dir=0 bare-record=1 stamp-bare=0 mode=dry-run",
     );
   }, CASE_TIMEOUT);
 
@@ -182,10 +182,10 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
       expect(run.status, run.stderr).toBe(0);
       expect(readFileSync(doc, "utf-8")).toBe("see `260101-0101_*_alpha.md`");
       expect(readFileSync(join(wb, "shared/analyses/260606-0606-fenced-mv.md"), "utf-8")).toBe(FENCED_DOC);
-      expect(last(run)).toBe("files=1 rewrites=1 residual=0 record=1 circle-record=0 circle-dir=0 bare-record=0 stamp-bare=0 mode=write");
+      expect(last(run)).toBe("files=1 rewrites=1 residual=0 record=1 package-record=0 package-dir=0 bare-record=0 stamp-bare=0 mode=write");
       const again = sweep(root, wb, "--dry-run");
       expect(again.status).toBe(0);
-      expect(last(again)).toBe("files=0 rewrites=0 residual=0 record=0 circle-record=0 circle-dir=0 bare-record=0 stamp-bare=0 mode=dry-run");
+      expect(last(again)).toBe("files=0 rewrites=0 residual=0 record=0 package-record=0 package-dir=0 bare-record=0 stamp-bare=0 mode=dry-run");
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -315,7 +315,7 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
       expect(run.status, run.stderr).toBe(0);
       expect(readFileSync(go, "utf-8")).toBe("// see `260101-0101_*_alpha.md`");
       // the summary line is the release gate's, and the declaration never touches its shape
-      expect(last(run)).toBe("files=2 rewrites=2 residual=0 record=2 circle-record=0 circle-dir=0 bare-record=0 stamp-bare=0 mode=write");
+      expect(last(run)).toBe("files=2 rewrites=2 residual=0 record=2 package-record=0 package-dir=0 bare-record=0 stamp-bare=0 mode=write");
       git(root, "add", "-A");
       git(root, "commit", "-q", "-m", "swept");
       writeFileSync(go, `// ${DIRTY_DOC}`);

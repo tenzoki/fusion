@@ -154,7 +154,7 @@
  *   record          -> `<stamp>_*_<slug>...`  the store segment is dropped and
  *                                             a literal marker becomes `_*_`;
  *                                             a token with no marker keeps its tail
- *   circle-record   -> `<stamp>-<slug>`       the bare container name, when the
+ *   package-record  -> `<stamp>-<slug>`       the bare container name, when the
  *                                             token is the `_x_circle.md` form
  *                   -> `<stamp>-<slug>.md`    the record's own basename, when it
  *                                             is the item form named after its
@@ -163,7 +163,7 @@
  *                                             both to the directory would turn
  *                                             a pointer at a record into one at
  *                                             a directory
- *   circle-dir      -> `<stamp>-<slug>`       the bare container name
+ *   package-dir     -> `<stamp>-<slug>`       the bare container name
  *   bare-record     -> `_*_` at the marker    in either spelling, the underscore
  *                                             one and the pre-v4 bracket; only
  *                                             when the marker is complete, so a
@@ -241,7 +241,7 @@
  * order the census lines above them use, and by line within a file; an exempt
  * one is not listed) as `<file>:<line>  '<token>'  <status>`, then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
- * circle-record=<n> circle-dir=<n> bare-record=<n> stamp-bare=<n>
+ * package-record=<n> package-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message
  * that lands a sweep names. `stamp-bare=` is always 0 since the rule went and
  * is kept so the line's shape is stable. The summary line reads `mode=write`
@@ -392,6 +392,7 @@ import {
   type Scanner,
 } from "./lib/citation-scan.js";
 import { loadConfig } from "./lib/config.js";
+import { CONTAINER_ROOT_ALT } from "./lib/stores.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 
@@ -606,10 +607,10 @@ function candidateFor(hit: CitationHit): string | null {
       const at = markerAtHead(m[2]);
       return m[1] + (at !== null && at.complete ? at.wildcarded : m[2]);
     }
-    case "circle-record":
-    case "circle-dir": {
+    case "package-record":
+    case "package-dir": {
       const DIR = "[0-9]{6}-[0-9]{4}-[a-z0-9-]+";
-      const m = new RegExp(`circles\\/(${DIR})(?:\\/(${DIR}))?`).exec(t);
+      const m = new RegExp(`(?:${CONTAINER_ROOT_ALT})\\/(${DIR})(?:\\/(${DIR}))?`).exec(t);
       if (m === null) return null;
       // The second group is set only for the item form, where the grammar's own
       // backreference has already proved the two names equal; the equality is
@@ -796,7 +797,7 @@ function main(argv: string[]): number {
     out.push(`files=${touched} repairs=${repairs} ${classes} mode=${mode}`);
   } else {
     let rewrites = 0;
-    const byKind = { record: 0, "circle-record": 0, "circle-dir": 0, "bare-record": 0, "stamp-bare": 0 };
+    const byKind = { record: 0, "package-record": 0, "package-dir": 0, "bare-record": 0, "stamp-bare": 0 };
     const residual: string[] = [];
     for (const abs of files) {
       if (isTestFixture(abs)) continue;

@@ -128,10 +128,18 @@
  * and not a defect in it. The fix would be a predicate that does not narrow at
  * terminal state. Nobody has proposed one and this file does not.
  */
-/** `circles/<dir>/_<marker>_circle.md` — a Circle record in ANY state. */
-export const CIRCLE_RECORD_RE = /^circles\/[^/]+\/_[atcbsd]_circle\.md$/;
+import { CONTAINER_ROOT_ALT, namesOf } from "./stores.js";
 /**
- * `circles/<dir>/<dir>.md` — a WORK-ITEM record: the file named after its own
+ * The root and store names these predicates read, from `./stores.ts`: both
+ * names of each renamed store during the window, so a legacy tree is judged
+ * exactly as a migrated one.
+ */
+const ROOT = `(?:${CONTAINER_ROOT_ALT})`;
+const PLANS = `(?:${namesOf("plans").join("|")})`;
+/** `<root>/<dir>/_<marker>_circle.md` — a Circle record in ANY state. */
+export const CIRCLE_RECORD_RE = new RegExp(`^${ROOT}\\/[^/]+\\/_[atcbsd]_circle\\.md$`);
+/**
+ * `<root>/<dir>/<dir>.md` — a WORK-ITEM record: the file named after its own
  * container. The second record form the container store holds, and the one a
  * container filed since the restoration carries
  * (`260910-2145_*_restore-the-per-work-item-container.md` step S9, under the
@@ -170,7 +178,7 @@ export const CIRCLE_RECORD_RE = /^circles\/[^/]+\/_[atcbsd]_circle\.md$/;
  * the same note is owed here, because a clause measured at zero is a clause a
  * later reader will otherwise assume was measured at something.
  */
-export const ITEM_RECORD_RE = /^circles\/([^/]+)\/\1\.md$/;
+export const ITEM_RECORD_RE = new RegExp(`^${ROOT}\\/([^/]+)\\/\\1\\.md$`);
 /** An issue carrying `_o_`, in a Circle's store or in `shared/`. */
 export const OPEN_ISSUE_RE = /(?:^|\/)issues\/[0-9]{6}-[0-9]{4}_o_[^/]+\.md$/;
 /** A decision carrying `_o_` or `_a_` — Grounding-Stand, per the wide reading. */
@@ -245,7 +253,7 @@ export const FROZEN_PREFIXES = ["archive/", "stashes/", ".migration-v2-backup/"]
  * were unchanged by adding it — 199 files, 0 violations, before and after. It
  * is armed for the next plan somebody writes, which is the whole of its job.
  */
-export const LIVE_PLAN_RE = /(?:^|\/)planning\/[0-9]{6}-[0-9]{4}_[op]_[^/]+\.md$/;
+export const LIVE_PLAN_RE = new RegExp(`(?:^|\\/)${PLANS}\\/[0-9]{6}-[0-9]{4}_[op]_[^/]+\\.md$`);
 /**
  * The predicate itself, pure and over a WORKBENCH-RELATIVE path, so a caller
  * can put a path to it that no tree carries. Two of the three frozen stores are

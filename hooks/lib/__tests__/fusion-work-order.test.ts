@@ -21,8 +21,8 @@ function scratch(items: Record<string, string | null> = {}): string {
   writeFileSync(join(root, "fusion-workbench", ".fusion-setup"), "{}\n");
   for (const [dir, deps] of Object.entries(items)) {
     const field = deps === null ? "" : `**Depends-on:** ${deps}\n`;
-    mkdirSync(join(root, "fusion-workbench", "circles", dir), { recursive: true });
-    writeFileSync(join(root, "fusion-workbench", "circles", dir, `${dir}.md`), `# ${dir}\n\n---\n**Status:** open\n${field}---\n`);
+    mkdirSync(join(root, "fusion-workbench", "work-packages", dir), { recursive: true });
+    writeFileSync(join(root, "fusion-workbench", "work-packages", dir, `${dir}.md`), `# ${dir}\n\n---\n**Status:** open\n${field}---\n`);
   }
   return root;
 }
@@ -43,7 +43,7 @@ describe("bin/fusion-work-order: reports, never gates", () => {
     expect(notes(run(scratch(ACYCLIC)).stdout)).toEqual([expect.stringContaining("1 item carries")]);
     expect(notes(run(scratch(CYCLIC)).stdout)).toEqual([]);
   });
-  it("answers verdict=empty at exit 0 for a workbench with no circles/", () => {
+  it("answers verdict=empty at exit 0 for a workbench with no container root", () => {
     expect(verdict(scratch())).toEqual([0, "empty"]);
   });
   it("exits 1 on an argument and 2 with no workbench above the working directory", () => {

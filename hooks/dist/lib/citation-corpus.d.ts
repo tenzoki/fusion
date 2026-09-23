@@ -128,10 +128,10 @@
  * and not a defect in it. The fix would be a predicate that does not narrow at
  * terminal state. Nobody has proposed one and this file does not.
  */
-/** `circles/<dir>/_<marker>_circle.md` — a Circle record in ANY state. */
+/** `<root>/<dir>/_<marker>_circle.md` — a Circle record in ANY state. */
 export declare const CIRCLE_RECORD_RE: RegExp;
 /**
- * `circles/<dir>/<dir>.md` — a WORK-ITEM record: the file named after its own
+ * `<root>/<dir>/<dir>.md` — a WORK-ITEM record: the file named after its own
  * container. The second record form the container store holds, and the one a
  * container filed since the restoration carries
  * (`260910-2145_*_restore-the-per-work-item-container.md` step S9, under the

@@ -8,25 +8,12 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // The surface growth bounds — what the shipped prompt, skill and test text is
 // allowed to GROW BY before the suite fails.
 //
-// WHY THIS FILE EXISTS. On 2026-08-05 this project converted its one growth
-// ratchet from a blocking gate into a non-failing report, for a reason that was
-// good where it applied: a ratchet made the first finding-driven addition
-// unlandable unless somebody else's reasoned prose was cut by the same number of
-// bytes (decision 260805-1559). What happened next was measured rather than
-// feared. The largest deletion in this project's history was back above its
-// pre-deletion peak in four and a half days
-// (`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`),
-// and over the ten days from the last commit of 2026-08-05 (`66e4a698`) to the
-// start of the Circle that armed this file (`9a7da8e`, 2026-08-15), with the
-// report in force and read by nobody, `agents/*.md` rose 289 958 -> 460 292
-// bytes (+59 %) and the hook test suite 19 838 -> 25 897 lines (+31 %), while
-// `rules/` — the ONE surface the old cap still covered — FELL, 166 610 ->
-// 154 092 (-7.5 %). All four are re-measured from `git` at those two named
-// commits rather than quoted; the Circle record's own headline figures for the
-// same period (agents +38 %, hook tests +47 %) used a different anchor and are
-// not restated here as measurements.
-// A failing cap is the only instrument this project has ever had that bounded the
-// rate, and the surfaces it did not cover are the surfaces that grew. This file
+// WHY THIS FILE EXISTS. On 2026-08-05 the one growth ratchet became a
+// non-failing report (decision 260805-1559). Read by nobody, it bounded nothing:
+// from `66e4a698` to `9a7da8e` `agents/*.md` rose +59 % and the hook tests +31 %
+// while `rules/`, the one surface the old cap covered, fell -7.5 %
+// (`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`).
+// A failing cap is the only instrument that ever bounded the rate; this file
 // puts it where the growth was.
 //
 // WHY A SECOND FILE RATHER THAN AN EXTENSION OF THE FIRST.
@@ -48,12 +35,8 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // WHAT A FILE WITH NO BASELINE ENTRY COSTS. Its whole current size, counted as
 // growth — a new agent prompt, a new skill body or a new test file spends the
 // surface's head-room in full. That is the same rule `RULE_BASELINE` already
-// applies and it is deliberate: nobody granted the new file a budget. In this
-// project's measured history the biggest single additions to all three surfaces
-// were exactly that (`feat(playmaker): introduce Circle portfolio agent`,
-// +18 170 bytes; `feat(skills): add /fusion:circle-stash and /fusion:circle-pop
-// bodies`, +38 025), so a new file tripping the bound and forcing a deliberate
-// re-baseline is the instrument working, not a false alarm.
+// applies and it is deliberate: nobody granted the new file a budget, so a new
+// file tripping the bound is the instrument working, not a false alarm.
 //
 // ## Where each head-room comes from
 //
@@ -89,23 +72,13 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 //
 // ## The head-room raises, 2026-09-11 and 2026-09-16 — logged in `README-hooks.md`
 //
-// NOT A RE-BASELINING EVENT, and deliberately not logged here.
-// `SKILL_HEAD_ROOM` went 20 000 -> 20 866 and `TEST_LINE_HEAD_ROOM`
-// 2 500 -> 2 654 under a user ruling for the container restoration. Both moved
-// head-room and left every baseline exactly where it stood, so each byte and
-// line added under them is still growth above an unmoved floor. The ruling, what
-// each raise bought, the cut looked for first, the residual it leaves and the
-// figures the 2026-10-10 reduction restores are authored under `README-hooks.md`
-// `### Growth bounds on the shipped text`, in ONE place, because the two-section
-// copy that stood here had already drifted on its own headline figure. The move
-// is itself a reduction of this surface, and the constant came back down with
-// it: `TEST_LINE_HEAD_ROOM` 2 654 -> 2 595, spent to the line as the raise was.
+// NOT A RE-BASELINING EVENT: each raise moved head-room and no baseline. The
+// ruling, the figures and the reduction are authored once, under `README-hooks.md`
+// `### Growth bounds on the shipped text`.
 //
 // ## What no bound covers
 //
 // Authored under that heading in `README-hooks.md`, and claimed by no step here.
-// The three `.mjs` files it names are also invisible to the Circle's own
-// before/after command (issue `260815-1251`).
 //
 // RELEASE_CAP AND DRIFT_CEILING ARE NOT TOUCHED, NOT COPIED AND NOT IMITATED.
 // They are historical facts about what `origin/main` once shipped in RULE TEXT.

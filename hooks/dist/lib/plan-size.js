@@ -44,7 +44,8 @@
  * records its own fence-rule duplication.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative, sep } from "node:path";
+import { containerRoots, storeDirs } from "./stores.js";
 /**
  * The ceiling, in bytes. Chosen, not measured — see the header. Below every
  * plan but one in the corpus fusion carried on 2026-09-10, so the verdict says
@@ -67,21 +68,23 @@ export function isSpec(base, firstLine) {
     const topic = base.replace(/^\d{6}-\d{4}_[a-z]_/, "");
     return topic.startsWith("spec-") || /^#\s+Spec:/.test(firstLine);
 }
-/** Every planning store under the workbench: each Circle's, plus the shared one. */
+/**
+ * Every plans store under the workbench: each work package's, plus the shared
+ * one, under either name during the window (`./stores.ts`).
+ */
 export function planningStores(root) {
     const wb = join(root, "fusion-workbench");
     const stores = [];
-    const circles = join(wb, "circles");
-    if (existsSync(circles)) {
-        for (const d of readdirSync(circles, { withFileTypes: true })) {
-            if (d.isDirectory() && existsSync(join(circles, d.name, "planning"))) {
-                stores.push(`circles/${d.name}/planning`);
-            }
+    for (const top of containerRoots(wb)) {
+        if (!existsSync(join(wb, top)))
+            continue;
+        for (const d of readdirSync(join(wb, top), { withFileTypes: true })) {
+            if (d.isDirectory())
+                stores.push(...storeDirs(join(wb, top, d.name), "plans"));
         }
     }
-    if (existsSync(join(wb, "shared", "planning")))
-        stores.push("shared/planning");
-    return stores.sort();
+    stores.push(...storeDirs(join(wb, "shared"), "plans"));
+    return stores.filter((s) => existsSync(s)).map((s) => relative(wb, s).split(sep).join("/")).sort();
 }
 /**
  * Measure the live plans under `root`'s workbench against `ceiling`.

@@ -233,11 +233,8 @@ const RULE_BASELINE: Record<string, number> = {
   // touched by the 2026-08-14 arming: that growth still stands against the report.
   "design-diagrams.md": 5_673, // 2026-08-05 cut
   "commit-lock.md": 9_250, // 2026-08-05 cut, carried through the 2026-08-15 rename
-  // `circle-records.md` (9 302) stood here until 2026-09-10 and went with the
-  // Circle container. A baseline entry for a file the tree no longer holds
-  // would credit every role that once loaded it with a shrink it did not earn,
-  // so the entry is removed rather than zeroed. Same for `backlog-entries.md`,
-  // which never had one: it was small enough to sit under the arming.
+  // An entry for a file the tree no longer holds is removed, not zeroed: it
+  // would credit every role that loaded it with a shrink it did not earn.
 };
 
 interface Role {
@@ -265,21 +262,7 @@ interface Role {
  *
  * Every role is still below RELEASE_CAP, the orchestrator's by 229 bytes. A
  * role's floor is RULE_BASELINE summed over its files, and it is NOT what the
- * role emits today: for the core files the two are equal, and for a role's
- * extras the gap between them is what the budget report prints. The figures
- * below are the floors measured between the 2026-08-14 arming and 2026-08-22,
- * under role KEYS the gates of 2026-08-27 re-cut, the bounded-dispatch audience
- * re-cut again, and the dispatch bound's retirement on 2026-09-10 re-cut back —
- * they are kept as the record of what the fleet stood at, not as a listing of
- * the map. The map is the only authority for which roles exist, and
- * how many agents each holds is not written here at all: it is measured, and the
- * messages print it.
- *
- *    86 573  the core floor, carried by any role whose extras are all unbaselined
- *    92 246  design-diagrams.md
- *    95 875  circle-records.md
- *   101 548  circle-records.md + design-diagrams.md
- *   105 125  circle-records.md + commit-lock.md
+ * role emits today: for a role's extras the gap is what the budget report prints.
  */
 const ROLES: Record<string, Role> = {
   /**
@@ -288,14 +271,8 @@ const ROLES: Record<string, Role> = {
    * when it was removed and its diagnose-before-editing contract moved into
    * these two — prompt text, not a rule file, so the role's file set is
    * unchanged by that.
-   *
-   * THE ROLE CAME BACK on 2026-09-10. It had been the floor every other role was
-   * read against until the bounded-dispatch audience gave these three
-   * `bounded-dispatch.md` and emptied it; the dispatch bound was retired, that
-   * file was deleted, and its whole audience fell back to whatever else it
-   * carried. The number that says what the always-on set costs is still the hard
-   * bound's own measurement of the universal core rather than this role's floor
-   * — the two are equal here, and only one of them is the definition.
+   * What the always-on set costs is the hard bound's measurement of the
+   * universal core, not this role's floor; the two are equal here.
    */
   "(core only)": {},
 
@@ -329,15 +306,6 @@ const ROLES: Record<string, Role> = {
 
   /** The planner: diagrams plus the worked transitions (gate 260827-0830). */
   "decision-record-examples.md + design-diagrams.md": {},
-
-  // A role stood here for the agent that ranked Circles and maintained the
-  // backlog: circle-records.md + decision-record-examples.md +
-  // user-facing-output.md + backlog-entries.md. It went at v11 with the
-  // portfolio layer, and both of the files that were peculiar to it have since
-  // gone too — `circle-records.md` retired with the Circle container on
-  // 2026-09-10, and `backlog-entries.md` folded back into the always-on
-  // conventions in the same change, the item grammar and its three-sentence
-  // maintenance mandate now standing side by side there.
 
   /**
    * The shaper: the worked transitions plus the design diagram doctrine, over a

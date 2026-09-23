@@ -24,10 +24,10 @@ No agent prompt and no skill body may carry a competing or supplementary definit
 
 ```
 fusion-workbench/
-├── circles/                           # one directory per work item — see ## Backlog entries
+├── work-packages/                     # one directory per work item — see ## Backlog entries
 │   └── <stamp>-<slug>/                # the container: the item's record, plus what the item produced
 │       ├── <stamp>-<slug>.md          # the item record — the directory's own name
-│       ├── planning/
+│       ├── plans/
 │       ├── issues/
 │       ├── decisions/
 │       ├── discussions/
@@ -35,7 +35,7 @@ fusion-workbench/
 │       ├── analyses/
 │       └── history/                   # write-frozen — see ## Session history
 ├── shared/                            # the same kinds, for work belonging to no item
-│   ├── planning/                      # specs and plans
+│   ├── plans/                         # specs and plans
 │   ├── issues/
 │   ├── decisions/
 │   ├── discussions/
@@ -43,7 +43,7 @@ fusion-workbench/
 │   ├── reviews/                       # codereview + ontoreview, merged
 │   ├── investigations/                # write-frozen — see below
 │   ├── history/                       # write-frozen — see ## Session history
-│   ├── consult/
+│   ├── consultations/
 │   ├── memos/
 │   ├── forum/                         # messages left for another checkout
 │   └── checkouts/                     # one entry per checkout — written by bin/fusion-checkout-name, nothing else
@@ -63,15 +63,25 @@ fusion-workbench/
 └── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
 ```
 
-**The container store keeps the directory name `circles/`, and the name outlived its concept.** A Circle was a six-state unit with a portfolio layer over it; both are gone and neither returns. The directory survives because its reason does: a unit of work bundles what it produced, and without the bundling there is no overview. Whether to rename the store is asked and deliberately not answered here: `260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md`.
+**The container store is `work-packages/`**, renamed from `circles/` at v12: `260922-1114_*_does-the-container-store-take-the-name-work-packages-superseding-circles.md`.
 
-**Three legacy stores are absent from this tree on purpose.** A workbench may carry `stashes/`, written by the stash skills removed on 2026-08-15; `.migration-v2-backup/`, left by the retired `/fusion:migrate-workbench-v2` (fusion v2.3–v2.5) as its rollback copy; and `shared/backlog/`, which held the unit of work before the container store took it and the work-item grammar replaced it, frozen since 2026-09-22 (`260922-0922_*_what-becomes-of-the-two-entries-in-the-unread-shared-backlog-store.md`). Nothing shipped writes to any of the three any more: a line in the tree above would read as a store the plugin still creates. Frozen content is not live content, so live-tree consumers keep it out. `skills/cadence/SKILL.md` and `skills/archive/SKILL.md` exclude `stashes/` and `.migration-v2-backup/` by path, and name no exclusion for `shared/backlog/`, which is empty and therefore excludes itself; `backlog` stays in the store-segment lists of `hooks/lib/staging-drift.ts` and `hooks/lib/citation-scan.ts`, so a citation of an archived entry is still read as store-prefixed rather than becoming invisible. `/fusion:setup` names no exclusion at all: it bounds its probe to the two live trees (the Probe 3 bullet under the migration probes in `skills/setup/SKILL.md`), leaving every frozen store outside by construction. Do not drop the three path exclusions that remain, `stashes/`, `stilwerk/` and `.migration-v2-backup/`: that same bullet records the cost, a Setup that refuses permanently and routes to a migration with nothing to do.
+**Three legacy stores are absent from this tree on purpose.** A workbench may carry `stashes/`, written by the stash skills removed on 2026-08-15; `.migration-v2-backup/`, left by the retired `/fusion:migrate-workbench-v2` (fusion v2.3–v2.5) as its rollback copy; and `shared/backlog/`, which held the unit of work before the container store took it and the work-item grammar replaced it, frozen since 2026-09-22 (`260922-0922_*_what-becomes-of-the-two-entries-in-the-unread-shared-backlog-store.md`). Nothing shipped writes to any of the three any more: a line in the tree above would read as a store the plugin still creates. Frozen content is not live content, so live-tree consumers keep it out. `skills/cadence/SKILL.md` and `skills/archive/SKILL.md` exclude `stashes/` and `.migration-v2-backup/` by path, and name no exclusion for `shared/backlog/`, which is empty and therefore excludes itself; `backlog` stays in the store-segment lists of `hooks/lib/staging-drift.ts` and `hooks/lib/citation-scan.ts`, so a citation of an archived entry is still read as store-prefixed rather than becoming invisible.
 
 **The root-anchored surfaces are not negotiable.** Each is bound to a fixed root-relative path by every consumer named beside it in the tree, and none of those consumers has a fallback path: relocating one into `shared/` breaks it silently. The column names a consumer that only *names* the path, in an exclusion or classification list, next to one that reads the file: what breaks on a move is the same dependency either way.
 
 They are root-anchored because none of them belongs to a unit of work. `orchestrator-events.jsonl` is session state, and a session may span work items. `.guard-state/` counters are project-wide. `.commit-lock/` guards the project's git index, which no single work item owns. `.session-marker` answers "is an orchestrator already running in this project", which is meaningless scoped to one item. This placement is what makes the guarantee "hooks behave unchanged across the layout" structural rather than promised.
 
 The list is exhaustive as written, and it is a list rather than a count on purpose: a count goes stale on the next helper that needs project-wide state, and this one already had. When a `bin/` helper or a hook adds a root-anchored surface, it lands in this tree and in the record-or-live-state split in `rules/workbench-tracking.md`, both in the same commit: this document is the definition, and an incomplete tree invites exactly the reasoning-by-omission it exists to prevent.
+
+### Transition window (v12.0.0 to v13.0.0)
+
+Until v13.0.0 each store v12 renamed is read under its old name beside the new one, where that directory exists, and is never written under it:
+
+- `work-packages/`: `circles/`
+- `plans/`: `planning/`
+- `consultations/`: `consult/`
+
+`hooks/lib/stores.ts` and one bash helper copy this list, and a test holds the three equal. v13.0.0 deletes this subsection and the legacy entries of both copies; archive sweeps keep `circles/` for good.
 
 ### Which of them a tracked workbench tracks
 

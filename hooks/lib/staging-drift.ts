@@ -138,7 +138,7 @@
 import { basename, resolve, relative, sep } from "node:path";
 import { git, GIT_TIMED_OUT, GIT_TIMEOUT_MS } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
-import { LEGACY_STORES, RECORD_STORES } from "./stores.js";
+import { CONTAINER_ROOT_NAMES, LEGACY_STORES, RECORD_STORES, WINDOW_LEGACY_RECORD_STORES } from "./stores.js";
 
 /* ------------------------------------------------------------------ *
  * Layout — root-anchored
@@ -239,15 +239,15 @@ export const LIVE_PREFIXES: { prefix: string; why: string }[] = [
  * records, whether it sits under a work item's container or under `shared/`.
  *
  * The live set is `RECORD_STORES` in `./stores.ts`, the layout tree's twelve,
- * plus `LEGACY_STORES` for the pre-container backlog store whose two files the
- * tree still holds. The three retired pre-v4 review folders are not here: a
- * converted workbench has no `codereview/`, and a workbench that still does is
- * a `/fusion:migrate` matter rather than a staging one. `checkouts` IS here:
+ * their window names (`WINDOW_LEGACY_RECORD_STORES`), plus `LEGACY_STORES`
+ * for the pre-container backlog store whose two files the tree still holds.
+ * The three retired pre-v4 review folders are not here: a converted workbench
+ * has no `codereview/`, and a workbench that still does is a `/fusion:migrate` matter rather than a staging one. `checkouts` IS here:
  * a registry entry `bin/fusion-checkout-name register` rewrites is a tracked
  * record (`rules/workbench-tracking.md`, class R1), so its change is a staging
  * obligation this measurement names like any other record's.
  */
-const STORES: readonly string[] = [...RECORD_STORES, ...LEGACY_STORES];
+const STORES: readonly string[] = [...RECORD_STORES, ...WINDOW_LEGACY_RECORD_STORES, ...LEGACY_STORES];
 
 /**
  * The root-anchored records: a file at the workbench root that a person authored
@@ -461,12 +461,13 @@ export function classify(rel: string, sessionHistory: string): { klass: EntryCla
   for (const record of ROOT_RECORDS) {
     if (rel === record.path) return { klass: "record", why: record.why };
   }
-  if (segments[0] === "circles" && name.endsWith("_circle.md")) {
+  const inContainer = CONTAINER_ROOT_NAMES.includes(segments[0]);
+  if (inContainer && name.endsWith("_circle.md")) {
     return { klass: "record", why: "a Circle record" };
   }
-  // The unit of work: `circles/<item>/<item>.md`, the same name twice and no
+  // The unit of work: `<root>/<item>/<item>.md`, the same name twice and no
   // store segment (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`).
-  if (segments[0] === "circles" && segments.length === 3 && segments[2] === `${segments[1]}.md`) {
+  if (inContainer && segments.length === 3 && segments[2] === `${segments[1]}.md`) {
     return { klass: "record", why: "a work item's own record" };
   }
   for (const store of STORES) {

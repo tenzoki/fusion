@@ -119,6 +119,7 @@ import { resolve } from "node:path";
 import { git, GIT_TIMED_OUT } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 import { newestHookSessionStart } from "./orchestrator-events.js";
+import { CONTAINER_ROOT_NAMES } from "./stores.js";
 /* ------------------------------------------------------------------ *
  * Layout — root-anchored
  * ------------------------------------------------------------------ */
@@ -128,14 +129,14 @@ import { newestHookSessionStart } from "./orchestrator-events.js";
  * `## fusion-workbench Layout` puts these at fixed root-relative paths precisely
  * because the hooks and the `bin/` helpers read them there and none of them has
  * a fallback. `reviews` is the constant `bin/fusion-paths` resolves
- * `SCAN_REVIEWS` to under both bases; the container *inside* `circles/` is not
+ * `SCAN_REVIEWS` to under both bases; the container under either root name
+ * (`CONTAINER_ROOT_NAMES` in `./stores.ts`) is not
  * constant, which is why every container is enumerated rather than looked up
  * through a pointer — `.active-circle` is retired and nothing writes it — and
  * a review filed under another item still covers commits this session landed.
  */
 const WB = "fusion-workbench";
 const SHARED_REVIEWS_REL = `${WB}/shared/reviews`;
-const CIRCLES_REL = `${WB}/circles`;
 /**
  * The throttle record's file NAME, not its path: `lib/guard-state-file.ts`
  * builds the path under `.guard-state/` and this module no longer knows how.
@@ -319,15 +320,17 @@ export function parseNotOpened(value) {
  */
 function reviewFiles(root) {
     const dirs = [SHARED_REVIEWS_REL];
-    try {
-        for (const e of readdirSync(resolve(root, CIRCLES_REL), { withFileTypes: true })) {
-            if (e.isDirectory())
-                dirs.push(`${CIRCLES_REL}/${e.name}/reviews`);
+    for (const top of CONTAINER_ROOT_NAMES) {
+        try {
+            for (const e of readdirSync(resolve(root, WB, top), { withFileTypes: true })) {
+                if (e.isDirectory())
+                    dirs.push(`${WB}/${top}/${e.name}/reviews`);
+            }
         }
-    }
-    catch {
-        // No `circles/` at all is the ordinary state of a project that has never
-        // opened one. The shared store still answers.
+        catch {
+            // A root that is absent is the ordinary state: a project that never
+            // opened a package, or one with no legacy root. The shared store still answers.
+        }
     }
     const out = [];
     for (const dir of dirs) {

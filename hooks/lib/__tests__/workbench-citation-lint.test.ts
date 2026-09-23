@@ -226,13 +226,14 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
     // conversion of this workbench's two live records is the NEXT step, and this
     // clause lands first so that conversion has a gate that can see it. Measured
     // here, it admits zero files on disk — the `LIVE_PLAN_RE` precedent.
-    expect(inCorpus("circles/260101-0000-x/260101-0000-x.md")).toBe(true);
+    expect(inCorpus("work-packages/260101-0000-x/260101-0000-x.md")).toBe(true);
+    expect(inCorpus("circles/260101-0000-x/260101-0000-x.md")).toBe(true); // the window's legacy root
     // The structural equality is the whole discriminator. A stray file inside a
     // container, and one container naming another container's record, are each
     // outside — which is what stops the second clause from being an exemption
     // that widens the corpus until the marked clause's refusals fall through it.
-    expect(inCorpus("circles/260101-0000-x/notes.md")).toBe(false);
-    expect(inCorpus("circles/260101-0000-x/260101-0000-y.md")).toBe(false);
+    expect(inCorpus("work-packages/260101-0000-x/notes.md")).toBe(false);
+    expect(inCorpus("work-packages/260101-0000-x/260101-0000-y.md")).toBe(false);
     for (const p of FROZEN_PREFIXES) {
       expect(inCorpus(`${p}b/circles/260101-0000-x/260101-0000-x.md`), p).toBe(false);
     }
@@ -265,10 +266,10 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
     // Against the predicate, not the tree, because the predicate is what is under
     // test and which plans stand open on any given day is not a property of it.
     // The dated measurement at the clause itself is where a live count belongs.
-    expect(inCorpus("shared/planning/260101-0000_o_x.md")).toBe(true);
-    expect(inCorpus("circles/260101-0000-c/planning/260101-0000_p_x.md")).toBe(true);
+    expect(inCorpus("shared/plans/260101-0000_o_x.md")).toBe(true);
+    expect(inCorpus("circles/260101-0000-c/planning/260101-0000_p_x.md")).toBe(true); // legacy names
     for (const m of ["c", "d"]) {
-      expect(inCorpus(`shared/planning/260101-0000_${m}_x.md`), m).toBe(false);
+      expect(inCorpus(`shared/plans/260101-0000_${m}_x.md`), m).toBe(false);
     }
     // And against the walk, where the terminal plans really are: over 150 dangling
     // citations sit in them, so this case is what keeps the gate green for a

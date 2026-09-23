@@ -149,7 +149,7 @@ export interface WorkbenchEntry {
 }
 export type CitationKind = 
 /** the five the gate judges; the first, third and fourth carry a store segment and are violations */
-"record" | "bare-record" | "circle-record" | "circle-dir"
+"record" | "bare-record" | "package-record" | "package-dir"
 /** a stamp plus a dashed name, no store prefix — decidable by prefix */
  | "stamp-name"
 /** a stamp alone — the residual, and the only kind the gate does not read */

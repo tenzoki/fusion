@@ -154,7 +154,7 @@
  *   record          -> `<stamp>_*_<slug>...`  the store segment is dropped and
  *                                             a literal marker becomes `_*_`;
  *                                             a token with no marker keeps its tail
- *   circle-record   -> `<stamp>-<slug>`       the bare container name, when the
+ *   package-record  -> `<stamp>-<slug>`       the bare container name, when the
  *                                             token is the `_x_circle.md` form
  *                   -> `<stamp>-<slug>.md`    the record's own basename, when it
  *                                             is the item form named after its
@@ -163,7 +163,7 @@
  *                                             both to the directory would turn
  *                                             a pointer at a record into one at
  *                                             a directory
- *   circle-dir      -> `<stamp>-<slug>`       the bare container name
+ *   package-dir     -> `<stamp>-<slug>`       the bare container name
  *   bare-record     -> `_*_` at the marker    in either spelling, the underscore
  *                                             one and the pre-v4 bracket; only
  *                                             when the marker is complete, so a
@@ -241,7 +241,7 @@
  * order the census lines above them use, and by line within a file; an exempt
  * one is not listed) as `<file>:<line>  '<token>'  <status>`, then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
- * circle-record=<n> circle-dir=<n> bare-record=<n> stamp-bare=<n>
+ * package-record=<n> package-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message
  * that lands a sweep names. `stamp-bare=` is always 0 since the rule went and
  * is kept so the line's shape is stable. The summary line reads `mode=write`

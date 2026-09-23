@@ -514,7 +514,7 @@ describe("review coverage: the declared out-of-scope list", () => {
         writeReview(p.root, "260811-0900-coderev-in-circle.md", {
           range: `\`${start}..${end}\``,
           notOpened: "`bin/fusion-paths`",
-          dir: "fusion-workbench/circles/260811-0900-a-circle/reviews",
+          dir: "fusion-workbench/work-packages/260811-0900-a-circle/reviews",
         });
 
         const k = keys(runCli(p.root).stdout);

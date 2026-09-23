@@ -27,16 +27,16 @@ const RECORD = "260819-1645_o_what-defines-the-corpus.md";
 /** A container holding its record under its own name — the second record form. */
 const ITEM = "260910-2145-restore-the-container";
 
-/** A workbench with one record, one live Circle, one item, and one Circle in a sweep. */
+/** A workbench with one record, a legacy-root Circle, a new-root package, and one Circle in a sweep: both window roots. */
 function scratch(): string {
   const wb = join(realpathSync(mkdtempSync(join(tmpdir(), "grammar-"))), "fusion-workbench");
   mkdirSync(join(wb, "shared", "history"), { recursive: true });
   mkdirSync(join(wb, "circles", LIVE), { recursive: true });
-  mkdirSync(join(wb, "circles", ITEM), { recursive: true });
+  mkdirSync(join(wb, "work-packages", ITEM), { recursive: true });
   mkdirSync(join(wb, "archive", SWEEP, "circles", SWEPT), { recursive: true });
   writeFileSync(join(wb, ".fusion-setup"), "{}");
   writeFileSync(join(wb, "shared", "history", RECORD), "x");
-  writeFileSync(join(wb, "circles", ITEM, `${ITEM}.md`), "an item record");
+  writeFileSync(join(wb, "work-packages", ITEM, `${ITEM}.md`), "an item record");
   return wb;
 }
 
@@ -98,7 +98,7 @@ describe("a record token stops at a word, never on the sentence's full stop", ()
   it("reads a Circle-record citation that ends a sentence, and gives no `.md` back", () => {
     const hit = toks(wb, `see circles/${LIVE}/_t_circle.md.`);
     expect(hit.map((h) => [h.token, h.kind, h.status])).toEqual([
-      [`circles/${LIVE}/_t_circle.md`, "circle-record", "store-prefixed"],
+      [`circles/${LIVE}/_t_circle.md`, "package-record", "store-prefixed"],
     ]);
     expect(toks(wb, `see circles/${LIVE}/_t_circle.mdx here`)).toEqual([]);
   });
@@ -202,7 +202,7 @@ describe("both container record forms are read, and neither widens into the othe
 
   it("resolves an item record by its own basename, and a container by its bare name", () => {
     expect(toks(wb, `the item ${ITEM}.md is claimed`).map((h) => [h.kind, h.status, ...h.matches])).toEqual([
-      ["stamp-name", "resolved", `circles/${ITEM}/${ITEM}.md`],
+      ["stamp-name", "resolved", `work-packages/${ITEM}/${ITEM}.md`],
     ]);
     expect(toks(wb, `the Circle ${LIVE} is open`).map((h) => [h.kind, h.status, ...h.matches])).toEqual([
       ["stamp-name", "resolved", `circles/${LIVE}`],
@@ -221,19 +221,22 @@ describe("both container record forms are read, and neither widens into the othe
     // directory can be looked up; an item record's basename is unique and is
     // itself the citation. One `fix` for both would respell a pointer at a
     // record into a pointer at a directory.
-    const item = toks(wb, `see circles/${ITEM}/${ITEM}.md here`);
+    const item = toks(wb, `see work-packages/${ITEM}/${ITEM}.md here`);
     expect(item.map((h) => [h.token, h.kind, h.status])).toEqual([
-      [`circles/${ITEM}/${ITEM}.md`, "circle-record", "store-prefixed"],
+      [`work-packages/${ITEM}/${ITEM}.md`, "package-record", "store-prefixed"],
     ]);
     expect(item[0].fix).toContain(`'${ITEM}.md'`);
-    expect(toks(wb, `see circles/${LIVE}/_t_circle.md here`)[0].fix).toContain(`'${LIVE}'`);
+    const legacy = toks(wb, `see circles/${LIVE}/_t_circle.md here`)[0];
+    expect(legacy.fix).toContain(`'${LIVE}'`);
+    // each root reports the segment it matched, not a literal
+    expect([item[0].problem, legacy.problem].map((p) => p.split("'")[1])).toEqual(["work-packages/", "circles/"]);
   });
 
   it("reads no other file in a container as that container's record", () => {
     // The backreference, put to the one input that separates it from a wildcard
     // over a container's contents. Both lines are store-prefixed spellings a
     // widened pattern would claim; neither names a record.
-    expect(toks(wb, `see circles/${ITEM}/notes.md here`)).toEqual([]);
-    expect(toks(wb, `see circles/${ITEM}/${LIVE}.md here`)).toEqual([]);
+    expect(toks(wb, `see work-packages/${ITEM}/notes.md here`)).toEqual([]);
+    expect(toks(wb, `see work-packages/${ITEM}/${LIVE}.md here`)).toEqual([]);
   });
 });
