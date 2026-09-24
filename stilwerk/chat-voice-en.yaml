@@ -1,4 +1,4 @@
-# Chat Voice (English): short-form for gates, questions, status, brief replies.
+# Chat Voice (English): short-form for approvals, questions, status, brief replies.
 # Not for long-form prose (the writing profile) or structured artefacts
 # (dashboard lines, commits, tables).
 name: "Chat Voice (English)"
