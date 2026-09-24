@@ -18,29 +18,30 @@
   data-implementer.md 15987
   document-editor.md 13230
   implementation-planner.md 20059
-  orchestrator.md 98231
+  orchestrator.md 98229
   policy-curator.md 78785
   requirements-designer.md 17410
   reviewer.md 12926
   state-auditor.md 21197
-  total 324763
+  total 324761
 
 [skills bytes]
-  archive/SKILL.md 24407
+  archive/SKILL.md 24435
   cadence/SKILL.md 22288
-  check/SKILL.md 31861
+  check/SKILL.md 31748
   cleanup/SKILL.md 6763
   commit/SKILL.md 6119
   curate/SKILL.md 12135
   discuss/SKILL.md 14332
-  help/SKILL.md 16398
-  memo/SKILL.md 13245
-  migrate/SKILL.md 20572
+  help/SKILL.md 15979
+  memo/SKILL.md 6824
+  migrate/SKILL.md 20589
   news/SKILL.md 8223
   post/SKILL.md 6694
   reconcile/SKILL.md 6671
-  setup/SKILL.md 14567
-  total 204275
+  setup/SKILL.md 14675
+  wp/SKILL.md 4994
+  total 202469
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -68,8 +69,8 @@
   fusion-count-sources.test.ts 413
   fusion-events.test.ts 437
   fusion-forum.test.ts 251
-  fusion-identity.test.ts 217
-  fusion-paths.test.ts 729
+  fusion-identity.test.ts 225
+  fusion-paths.test.ts 728
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
   fusion-stores.test.ts 17
@@ -92,7 +93,7 @@
   paths.test.ts 31
   plan-size.test.ts 165
   plan-stopping-section-lint.test.ts 261
-  provenance-header-lint.test.ts 434
+  provenance-header-lint.test.ts 425
   reference-resolution-lint.test.ts 1012
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 857
@@ -102,9 +103,9 @@
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 655
-  store-name-migration.test.ts 114
-  surface-growth-bound.test.ts 541
+  store-name-migration.test.ts 120
+  surface-growth-bound.test.ts 536
   window-bound.test.ts 24
   work-graph.test.ts 189
   workbench-citation-lint.test.ts 353
-  total 22257
+  total 22256

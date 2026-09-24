@@ -103,12 +103,18 @@ describe("the apply", () => {
     renameSync(join(cut, "fusion-workbench", B), join(cut, "fusion-workbench", "work-packages", "260101-0202-b"));
     sh(apply, cut); expect(dirs(cut)).toBe(dirs(whole)); expect(basenames(cut)).toBe(basenames(whole));
   });
-  it("in git mode stages renames only, and refuses a dirty source", () => {
-    const root = tree(LEGACY); git(root);
-    expect(sh(apply, root)).toMatch(/mode=git$/m);
-    expect(sh("git status --porcelain", root).trim().split("\n").filter((l) => !l.startsWith("R "))).toEqual([]);
+  it("in git mode refuses a dirty source (staging renames only is the fold test's)", () => {
     const dirty = tree(LEGACY); git(dirty); writeFileSync(join(dirty, "fusion-workbench", B, "260101-0202-b.md"), "changed\n");
     const out = sh(survey, dirty);
     expect(out).toMatch(/^DIRTY=1$/m); expect(out).toContain(`DIRTY: fusion-workbench/${B}/260101-0202-b.md`);
   });
+});
+
+it("a pulled marker stamping every periodic check makes none count as done, and a stamp taken here is read (issue 260924-1732)", () => {
+  const setup = extractBashBlock(md("setup"), "Write the setup marker"), dir = tree(["x.md"]), m = join(dir, "fusion-workbench", ".fusion-setup"), env = { ...ENV, FUSION_PLUGIN_ROOT: pluginRoot };
+  const SEL: string[] = JSON.parse(setup.match(/const SEL = (\[.*\]);/)![1]), at = new Date().toISOString().slice(0, 10), v = JSON.parse(readFileSync(join(pluginRoot, ".claude-plugin", "plugin.json"), "utf-8")).version;
+  writeFileSync(m, JSON.stringify({ setup_at: "2026-09-01T00:00:00", plugin_version: v, checks: Object.fromEntries(SEL.map((s) => [s, { at, version: v }])) }));
+  expect(sh(setup, dir, env)).toBe(`marker=written\nchecks_due=${SEL.join(",")}\n`);
+  sh(extractBashBlock(md("check"), "## Stamp what you ran").replace("<sel...>", SEL.join(" ")), dir, env);
+  expect([readFileSync(m, "utf-8"), sh(setup, dir, env)]).toEqual([expect.not.stringContaining("checks"), "marker=unchanged\nchecks_due=none\n"]);
 });

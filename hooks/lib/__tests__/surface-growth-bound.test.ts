@@ -167,16 +167,11 @@ const SKILL_BASELINE: Record<string, number> = {
   "cleanup/SKILL.md": 23674,
   "commit/SKILL.md": 6298,
   "curate/SKILL.md": 12398,
-  // `direct/SKILL.md` (10 613) stood here until 2026-09-10 and went with the
-  // per-unit-of-work record its whole body dispatched the shaper to create.
-  // The entry is DROPPED rather than zeroed: a baseline entry for a file the
-  // tree no longer holds inflates the surface's floor by its whole size and
-  // grants that much head-room nobody decided to grant.
+  // DROPPED rather than zeroed, since an entry for a file the tree no longer
+  // holds inflates the floor by its whole size: `direct/SKILL.md` (10 613, gone
+  // 2026-09-10 with the record it dispatched the shaper to create) and
+  // `log-activity/SKILL.md` (13 629, merged into `/fusion:cadence` 2026-09-16).
   "help/SKILL.md": 16919,
-  // `log-activity/SKILL.md` (13 629) stood here until 2026-09-16 and went with
-  // the body, whose two procedures merged into `/fusion:cadence`. DROPPED
-  // rather than zeroed, for the reason five lines above: an entry nothing is
-  // measured against inflates the floor by its whole size.
   "memo/SKILL.md": 12336,
   "migrate/SKILL.md": 26620,
   "setup/SKILL.md": 47236,

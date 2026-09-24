@@ -411,7 +411,7 @@ Two approvals in sequence, each inside the three-option cap of `rules/user-facin
 
 ## Work packages
 
-A work package is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**`, its `**Depends-on:**` field and its `**Cross-references:**` field are in `rules/fusion-workbench-conventions.md` `## Work packages`, and this section does not restate them. **You file one only when the user instructs it** (the **File** row below), the user's words as the brief, `**Filed by:** user, <person>`, and `**Mode:** autonomous` when the user asked for it; otherwise the user files, by hand or through `/fusion:memo`. A defect you find is an issue; a choice point is a decision record.
+A work package is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, its five `**Status:**` values, its `**Claim:**`, its `**Depends-on:**` field and its `**Cross-references:**` field are in `rules/fusion-workbench-conventions.md` `## Work packages`, and this section does not restate them. **You file one only when the user instructs it** (the **File** row below), the user's words as the brief, `**Filed by:** user, <person>`, and `**Mode:** autonomous` when the user asked for it; otherwise the user files, by hand or through `/fusion:wp`. A defect you find is an issue; a choice point is a decision record.
 
 What you may do, at the user's word and with no dispatch, is maintain the store at `$OUT_PACKAGES`, reading it at `$SCAN_PACKAGES`.
 

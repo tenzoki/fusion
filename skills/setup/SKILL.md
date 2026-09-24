@@ -62,26 +62,27 @@ Write the setup marker — the file every agent and hook looks for to confirm fu
 M=./fusion-workbench/.fusion-setup
 V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"
 [ -n "$V" ] || { echo "marker-version-unresolved"; exit 0; }
-command -v node >/dev/null 2>&1 || { [ -f "$M" ] && grep -qF "\"plugin_version\":\"$V\"" "$M" || printf '{"setup_at":"%s","plugin_version":"%s","checks":{}}\n' "$(date -u +%Y-%m-%dT%H:%M:%S)" "$V" > "$M"; echo "checks_due=unread (no node on PATH)"; exit 0; }
+command -v node >/dev/null 2>&1 || { [ -f "$M" ] && grep -qF "\"plugin_version\":\"$V\"" "$M" || printf '{"setup_at":"%s","plugin_version":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%S)" "$V" > "$M"; echo "checks_due=unread (no node on PATH)"; exit 0; }
 node -e '
-const fs = require("fs"); const [m, v] = process.argv.slice(1);
+const fs = require("fs"); const [m, v, c] = process.argv.slice(1);
 const SEL = ["monitor","concurrency","assets","config","permissions","gitattributes","identity","gitignore","upstream","leftovers","claude-md"];
 let o = null; try { o = JSON.parse(fs.readFileSync(m, "utf8")); } catch {}
 if (typeof o !== "object" || o === null) o = {};
 const before = JSON.stringify(o);
 if (typeof o.setup_at !== "string") o.setup_at = new Date().toISOString().slice(0, 19);
 o.plugin_version = v;
-if (typeof o.checks !== "object" || o.checks === null) o.checks = {};
+delete o.checks;
+let s = null; try { s = JSON.parse(fs.readFileSync(c, "utf8")); } catch {}
 const now = Date.now();
-const due = SEL.filter((sel) => { const e = o.checks[sel]; return !e || e.version !== v || !(now - Date.parse(e.at) < 30 * 864e5); });
+const due = SEL.filter((sel) => { const e = s?.[sel]; return !e || e.version !== v || !(now - Date.parse(e.at) < 30 * 864e5); });
 const after = JSON.stringify(o);
 if (after !== before) fs.writeFileSync(m, after + "\n");
 console.log("marker=" + (after !== before ? "written" : "unchanged"));
 console.log("checks_due=" + (due.join(",") || "none"));
-' "$M" "$V"
+' "$M" "$V" ./fusion-workbench/.check-stamps
 ```
 
-`marker=unchanged` means nothing was written and the file's modification time did not move, which is the property the tracking rule asks for. `marker=written` means the marker was missing, carried another version, or gained its first `checks` object.
+`marker=unchanged` means nothing was written and the file's modification time did not move, which is the property the tracking rule asks for. `marker=written` means the marker was missing, carried another version, or still carried the `checks` object it drops. The due list reads `.check-stamps`, which never travels.
 
 **`marker-version-unresolved` says the version could not be read, which is not the same as the version matching.** The version decides both halves, so an unreadable one leaves no comparison to make and no due list to compute: the block writes nothing and prints that token. Setup is not blocked. A marker is never written with an empty version, because the next run cannot tell an empty one apart from a real one. Report the token together with whichever outcome followed: an existing marker was left exactly as it stands, or the workbench has no marker at all and is therefore not set up here until the session is restarted and Setup run again.
 

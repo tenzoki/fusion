@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
+import { extractBashBlock } from "./helpers/prompt-blocks.js";
 
 // `bin/fusion-identity` is a bash script, so this drives the real script through
 // child_process against throwaway trees — the way a filing agent calls it.
@@ -214,4 +215,11 @@ describe("bin/fusion-identity", () => {
     expect(r.status).toBe(2);
     expect(r.stdout).toBe("");
   });
+});
+
+it("/fusion:memo's key block slugs the PERSON e-mail and halts on none (260924-1216)", () => {
+  const d = mkdtempSync(join(tmpdir(), "memo-key-")); tmpRoots.push(d); mkdirSync(join(d, "bin"));
+  const run = (out: string) => (writeFileSync(join(d, "bin", "fusion-identity"), `#!/bin/sh\n${out}\n`, { mode: 0o755 }), spawnSync("bash", ["-c", extractBashBlock(readFileSync(join(pluginRoot, "skills", "memo", "SKILL.md"), "utf-8"), "Then the keys")], { env: { ...process.env, FUSION_PLUGIN_ROOT: d }, encoding: "utf-8" }));
+  expect(run('echo "PERSON=Kai Stalmann <ks@qantr.com>"; echo CHECKOUT=abcd1234').stdout).toBe("P=ks-qantr-com CO=abcd1234\n");
+  expect(run("echo CHECKOUT=abcd1234; exit 4")).toMatchObject({ status: 1, stdout: "" });
 });

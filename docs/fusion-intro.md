@@ -59,7 +59,7 @@ Der Help-Workflow liest die ausgelieferten Docs und zitiert sie mit Pfad, statt 
 2. Beim allerersten Mal im Projekt `/fusion:setup` ausführen. Danach nicht mehr nötig: der Orchestrator führt Setup selbst aus, sobald er die erste Aufgabe bekommt.
 3. `/fusion:cadence`: was habe ich zuletzt getan. Braucht keinen laufenden Orchestrator, nur die Sitzung und die Workbench.
 4. Arbeiten: dem Orchestrator sagen, was man will.
-5. Ideen unterwegs mit `/fusion:memo` ablegen, ohne die laufende Arbeit zu stören.
+5. Ideen unterwegs mit `/fusion:wp` ablegen, ohne die laufende Arbeit zu stören.
 6. Fertig: `/fusion:cleanup` — committen und pushen, sonst nichts. Aufräumen, Reconcile, `CLAUDE.md` und die Nachricht an das nächste Checkout sind je ein eigenes Kommando; das Aktivitätslog ist in `/fusion:cadence` aufgegangen.
 
 ### Direktmodus: einfach sagen, was man will
@@ -99,13 +99,13 @@ Bis v11 hieß die Arbeitseinheit *Circle*: ein Verzeichnis unter `circles/` mit 
 ### Arbeitspakete, Memo und der Weg zur Arbeit
 
 ```
-/fusion:memo idea: <eine Zeile>              Idee als Arbeitspaket ablegen (Status: open)
+/fusion:wp <eine Zeile>                      Idee als Arbeitspaket ablegen (Status: open)
 Store lesen, eines auswählen                 nichts rankt sie; die Reihenfolge ist deine
 Orchestrator claimed es                      Status: open → claimed, Claim: <dein Checkout>
 Paket-Pfad an den requirements-designer      er liest es als Anfrage und schreibt kein Byte hinein
 ```
 
-`/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<checkout>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<checkout>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigenes Verzeichnis unter `work-packages/`). Kein Agent legt ein Arbeitspaket an; das ist Sache des Menschen. Der Orchestrator pflegt den Store — claimen, freigeben, abschließen, verwerfen, teilen, zusammenlegen — und zwar je Operation und je Paket nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
+`/fusion:memo` kennt zwei Ziele je Person, benannt nach deiner git-E-Mail: eine Notiz (`shared/memos/notes-<person>.md`) oder eine Aufgabe (`task:`/`todo:` nach `tasks-<person>.md`). Eine Idee legt `/fusion:wp` als eigenes Verzeichnis unter `work-packages/` an. Kein Agent legt ein Arbeitspaket an; das ist Sache des Menschen. Der Orchestrator pflegt den Store — claimen, freigeben, abschließen, verwerfen, teilen, zusammenlegen — und zwar je Operation und je Paket nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
 
 ### Issues und Decisions
 
@@ -155,7 +155,8 @@ fusion-workbench/
 │   ├── history/ investigations/ consultations/ memos/ forum/ checkouts/
 ├── archive/  stilwerk/  monitor
 └── (Zustand am Wurzelverzeichnis: orchestrator-events.jsonl, .guard-state/,
-     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors)
+     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors,
+     .check-stamps)
 ```
 
 **Die Herkunftsregel trifft die Ablageentscheidung:** ein Artefakt gehört zu dem Arbeitspaket, aus dessen Auftrag es entstanden ist, und nach `shared/`, wenn kein Paket im Zugriff ist. Querbezüge werden zitiert, nicht durch Ablage abgebildet. Agenten schreiben keine Pfade fest; sie lösen sie zur Laufzeit über `bin/fusion-paths <agent>` auf — das nennt den Container des Pakets, das dieser Checkout geclaimt hat, sonst den gemeinsamen Store. Mit v11 entfallen sind der sechszustandsbehaftete Circle-Record und die Rangfolge darüber, nicht der Container; `/fusion:migrate` wandelt eine Workbench um, die noch einen lebenden Circle-Record hat.
@@ -171,9 +172,9 @@ fusion-workbench/
 | R1 viele Dateien, je ein Schreiber | `shared/`, `archive/`, `stilwerk/` | tracken |
 | R2 eine Datei, viele Anhänger | `orchestrator-events.jsonl` | tracken, mit `merge=union` |
 | R3 einmal geschrieben | `.fusion-setup`, `.asset-provenance` | tracken |
-| L bleibt im Checkout | `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.commit-lock/`, `.guard-state/`, `monitor` | ignorieren |
+| L bleibt im Checkout | `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.check-stamps`, `.commit-lock/`, `.guard-state/`, `monitor` | ignorieren |
 
-Klasse L beschreibt *jetzt* (Sitzungszustand) oder *dieses Checkout* (`.checkout-id`, `.cadence-anchors`) und würde im Diff nur rauschen oder, aus einem fremden Checkout gezogen, lügen. Dieses Repository wendet genau diese Partition an; seine `.gitignore` ist die Vorlage für eine eigene.
+Klasse L beschreibt *jetzt* (Sitzungszustand) oder *dieses Checkout* (`.checkout-id`, `.cadence-anchors`, `.check-stamps`) und würde im Diff nur rauschen oder, aus einem fremden Checkout gezogen, lügen. Dieses Repository wendet genau diese Partition an; seine `.gitignore` ist die Vorlage für eine eigene.
 
 **Das Event-Log braucht einen Merge-Treiber.** `orchestrator-events.jsonl` ist die eine Datei, an die jedes Checkout anhängt. Git's Standard-Textmerge macht daraus einen Konflikt. Die Lösung ist eine Zeile in `.gitattributes` im Projekt-Root:
 
@@ -221,7 +222,8 @@ Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung fes
 | `/fusion:post` | Eine Nachricht für das nächste Checkout hinterlassen |
 | `/fusion:cadence` | Aktivitätslog schreiben und daraus: was ist passiert (gestern, 7 Tage, wiederkehrend) |
 | `/fusion:news` | Was ein anderes Checkout hinterlassen hat, gelesen vor dem Pull |
-| `/fusion:memo` | Memo, Aufgabe oder Idee ablegen |
+| `/fusion:memo` | Notiz oder Aufgabe ablegen |
+| `/fusion:wp` | Neues Arbeitspaket anlegen |
 | `/fusion:help [topic]` | Selbstauskunft |
 | `/fusion:commit` | Commit mit generierter Nachricht, unter dem Lock |
 | `/fusion:migrate` | Alte Workbench-Layouts auf das aktuelle Format bringen |

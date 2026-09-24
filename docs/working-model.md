@@ -47,11 +47,11 @@ A **work package** is one bounded unit of work: something somebody is going to d
 
 **`**Active spec/plan:**` names what the work runs on** — the spec or plan in force, as a storeless basename — and it is absent until one exists. Whoever makes a spec or plan the one this package runs on writes the field in the same act; no pass maintains it afterwards, because a field somebody else is supposed to keep up to date is a field that drifts. It has two readers: you, looking at the package and seeing what it is being built from, and the closure step, which reads that plan's `## Where this work stops` back to you clause by clause when the package finishes.
 
-**`**Mode:** autonomous` is your standing answer to the approvals about the solution**, and absent is the ordinary mode. It stands on your word and is written only on it: by you by hand, by `/fusion:memo` from your own words, or by the orchestrator in the same command as a filing or a claim you asked for. It is never inferred from the brief's prose, however plainly that prose says "just do it". Which approvals it answers, and which it never does, is section 3 below; the field on one package never rules on another package's state.
+**`**Mode:** autonomous` is your standing answer to the approvals about the solution**, and absent is the ordinary mode. It stands on your word and is written only on it: by you by hand, by `/fusion:wp` from your own words, or by the orchestrator in the same command as a filing or a claim you asked for. It is never inferred from the brief's prose, however plainly that prose says "just do it". Which approvals it answers, and which it never does, is section 3 below; the field on one package never rules on another package's state.
 
 ### How a package comes into existence
 
-**You file it, and no agent ever does on its own initiative.** `/fusion:memo idea: <one line>` writes the package — a title, one paragraph, `**Status:** open` — and a title plus one paragraph is the whole minimum ([`skills/memo/SKILL.md`](../skills/memo/SKILL.md)). Telling the orchestrator in chat to file one does the same: it writes the package in that shape, with your words as the brief, and the package is yours. The cheapness is the design: a package that costs more to write than a note is a package nobody writes. A defect an agent finds is still an issue, and a choice point is still a decision record; neither becomes a work package by being routed through here.
+**You file it, and no agent ever does on its own initiative.** `/fusion:wp <one line>` writes the package — a title, one paragraph, `**Status:** open` — and a title plus one paragraph is the whole minimum ([`skills/wp/SKILL.md`](../skills/wp/SKILL.md)). Telling the orchestrator in chat to file one does the same: it writes the package in that shape, with your words as the brief, and the package is yours. The cheapness is the design: a package that costs more to write than a note is a package nobody writes. A defect an agent finds is still an issue, and a choice point is still a decision record; neither becomes a work package by being routed through here.
 
 **What the orchestrator may do to the store, it does at your word.** Claiming, releasing, finishing, dropping, splitting one package into several and merging several into one are edits it performs once you have said so, one confirmation per operation on that package. None of them adds a job to the store on the orchestrator's own initiative, which is what keeps that bound intact across all of them.
 
@@ -62,7 +62,7 @@ A **work package** is one bounded unit of work: something somebody is going to d
 **The idea-to-work path**, from filing to claiming:
 
 ```
-/fusion:memo idea: …     you file the package, always at Status: open
+/fusion:wp …             you file the package, always at Status: open
        ↓
 you read the store       and pick the package worth doing. Nothing ranks it: the
                          ranking agent and its command both went at v11
@@ -169,7 +169,7 @@ Had the work been drifting at step 8 — say the code-implementer had started re
 
 The same store, at a slower speed. Nothing here is executed, nothing is committed, and the steps can sit weeks apart.
 
-1. **You file the package.** Mid-session you notice something worth doing later and type `/fusion:memo idea: split the manifest loader from the validator`. A new directory appears at `work-packages/<stamp>-split-manifest-loader-from-validator/`, holding one record of the same name — a title, one paragraph, `**Status:** open`, no marker on either. That is all that happens: the memo workflow files packages and never reads the store back, so nothing ranks or reshapes what you just wrote.
+1. **You file the package.** Mid-session you notice something worth doing later and type `/fusion:wp split the manifest loader from the validator`. A new directory appears at `work-packages/<stamp>-split-manifest-loader-from-validator/`, holding one record of the same name — a title, one paragraph, `**Status:** open`, no marker on either. That is all that happens: the workflow files packages and never reads the store back, so nothing ranks or reshapes what you just wrote.
 2. **Nothing ranks it.** A `playmaker` agent did until v11, and no replacement was built: an order over the store is yours to hold. What a helper may do is *report* an order over the `**Depends-on:**` edges as the store carries them, with cycles named — and you override that report wherever you want to.
 3. **You read the store.** The packages stand side by side on disk with their statuses in their heads. A package holding several jobs wants **splitting first**, because everything downstream takes a package whole — a spec written from a dozen observations covers one of them and leaves the rest unread. Splitting is one of the orchestrator's operations and needs your word for that package.
 4. **You claim it.** The orchestrator sets `**Status:** claimed` and writes `**Claim:** <your checkout> — <you>, <stamp>`, on your say-so and in one edit. From that moment the session holds the package's basename and puts it on every dispatch, so the monitor can say what this session is doing.

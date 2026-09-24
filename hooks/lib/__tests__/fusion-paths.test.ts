@@ -328,10 +328,10 @@ describe("bin/fusion-paths", () => {
       expect(p.OUT_PACKAGES).toBeUndefined();
     });
 
-    it("gives memo the write key and withholds the read key", () => {
-      // The other way round: `/fusion:memo` files one item per invocation for the
-      // user and never lists or consolidates the store, the orchestrator's job.
-      const p = parse(run(project, "memo").stdout);
+    it("gives wp the write key and withholds the read key", () => {
+      // The other way round: `/fusion:wp` files one package per invocation for the
+      // user and never lists or consolidates the store (`skills/wp/SKILL.md` Step 0).
+      const p = parse(run(project, "wp").stdout);
       expect(p.OUT_PACKAGES).toBe("work-packages");
       expect(p.SCAN_PACKAGES).toBeUndefined();
     });
@@ -463,8 +463,7 @@ describe("bin/fusion-paths", () => {
     }
 
     it("gives memo OUT_MEMO under its own name — no agent prompt writes memos", () => {
-      // OUT_MEMO used to hang off the orchestrator, whose prompt never writes
-      // a memo. The key now sits with its only writer.
+      // OUT_MEMO sits with its only writer; the orchestrator's prompt writes no memo.
       expect(parse(run(project, "memo").stdout).OUT_MEMO).toBe("shared/memos");
       expect(parse(run(project, "orchestrator").stdout).OUT_MEMO).toBeUndefined();
     });
