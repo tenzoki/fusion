@@ -156,7 +156,8 @@ fusion-workbench/
 │   ├── history/ investigations/ consult/ memos/ forum/ checkouts/
 ├── archive/  stilwerk/  monitor
 └── (root-anchored state: orchestrator-events.jsonl, .guard-state/,
-     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors)
+     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors,
+     .check-stamps)
 ```
 
 **The Origin Rule makes the placement decision**: an artifact belongs to the work item whose directive caused it to come into existence, and to `shared/` when no item is in scope. Cross-cutting relevance is cited rather than copied. Agents never hard-code these paths — they resolve write and scan targets through `bin/fusion-paths` at Setup, which names the container of the item this checkout has claimed, or the shared store when it holds none. What v11 removed here was the six-state Circle record and the ranking layer over it, not the container; `/fusion:migrate` converts a workbench that still holds a live Circle record.

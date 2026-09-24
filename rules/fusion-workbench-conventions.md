@@ -60,6 +60,7 @@ fusion-workbench/
 ├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts, hooks/lib/staging-drift.ts
 ├── .commit-lock/                       # bin/fusion-commit-lock, hooks/lib/staging-drift.ts (created and removed per commit)
 ├── .cadence-anchors                    # bin/fusion-cadence-anchor, hooks/lib/staging-drift.ts
+├── .check-stamps                       # /fusion:check, /fusion:setup, hooks/lib/staging-drift.ts
 └── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
 ```
 
@@ -83,7 +84,7 @@ Whether a consuming project tracks its workbench at all is that project's decisi
 
 **The review types collapse into one `reviews/`.** codereview and ontoreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header, so they do not earn a directory each.
 
-`fusion-workbench/.checkout-id` holds eight lowercase hex characters naming **this checkout** and nothing else: `bin/fusion-identity` mints it on first read and never again, and it is what a work item's `**Claim:**` names, beside the person. It is class L in `rules/workbench-tracking.md` and never travels, for the reason the field exists at all: a checkout that pulled another checkout's copy would be indistinguishable from it.
+`fusion-workbench/.checkout-id` holds eight lowercase hex characters naming **this checkout** and nothing else: `bin/fusion-identity` mints it on first read and never again, and it is what a work item's `**Claim:**` names, beside the person. It is class L in `rules/workbench-tracking.md`, which says why it never travels.
 
 `fusion-workbench/.asset-provenance` records what `/fusion:setup` copied into the workbench: one line per asset in the shape `shasum -a 256` prints. The checksum is taken at the moment of copying, then comes the asset's path relative to the workbench. It is the third input that makes "is this project's copy stale, or has the project adapted it" decidable, which the two files alone are not: one difference, two causes. `/fusion:setup` is its only writer and its only reader, and an asset with no line is one the record says nothing about rather than one it classifies.
 

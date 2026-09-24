@@ -280,7 +280,8 @@ fusion-workbench/
 │   ├── history/ investigations/ consult/ memos/ forum/ checkouts/
 ├── archive/  stilwerk/  monitor
 └── (root-anchored state: orchestrator-events.jsonl, .guard-state/,
-     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors)
+     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors,
+     .check-stamps)
 ```
 
 Each work item keeps its own container under `circles/`, holding the item's record and its own copy of every store; `shared/` holds the same kinds for everything no item owns. What v11 removed was the six-state Circle record and the ranking layer over it — the container and the Origin Rule that places into it both stand. `/fusion:migrate` converts a workbench that still holds a live Circle *record*, not one that has containers: the record becomes the item record of the container it already sits in.

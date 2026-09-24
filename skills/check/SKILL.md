@@ -5,9 +5,9 @@ allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 
 # Periodic checks
 
-These eleven checks ran at the top of every session until the ramp-up was cut. **None of them is a fact about this session**, and each answers the same way for days at a time. `fusion-workbench/.fusion-setup` therefore records, per selector, the date the check last ran and the plugin version it ran against; `/fusion:setup` asks for a selector again only when the version differs or that date is more than 30 days old, and runs it by reading this body.
+These eleven checks ran at the top of every session until the ramp-up was cut. **None of them is a fact about this session**, and each answers the same way for days at a time. `fusion-workbench/.check-stamps`, which never leaves this checkout, therefore records, per selector, the date the check last ran and the plugin version it ran against; `/fusion:setup` asks for a selector again only when the version differs or that date is more than 30 days old, and runs it by reading this body.
 
-**Run them all, or run one.** `/fusion:check` runs every selector below; `--only <selector>` runs exactly one. A selector this run does not perform keeps whatever the marker already records for it, so a `--only` run never claims coverage it did not take.
+**Run them all, or run one.** `/fusion:check` runs every selector below; `--only <selector>` runs exactly one. A selector this run does not perform keeps its stamp, so a `--only` run never claims coverage it did not take.
 
 | Selector | What it answers |
 |---|---|
@@ -264,7 +264,7 @@ if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ] && git ls-f
   if git ls-files --error-unmatch fusion-workbench/.checkout-id >/dev/null 2>&1; then
     git rm -q --cached fusion-workbench/.checkout-id && printf 'fusion-workbench/.checkout-id\n' >> ./.gitignore && echo "gitignore: .checkout-id was tracked — untracked (file kept on disk) and excluded"
   fi
-  for p in .session-marker .cadence-anchors .commit-lock monitor .guard-state; do
+  for p in .session-marker .cadence-anchors .check-stamps .commit-lock monitor .guard-state; do
     if git ls-files --error-unmatch "fusion-workbench/$p" >/dev/null 2>&1; then echo "gitignore: class L entry $p is tracked — not repaired, report it"
     elif [ -n "$(git ls-files --others --exclude-standard -- "fusion-workbench/$p")" ]; then echo "gitignore: class L entry $p is untracked and covered by no ignore rule — not repaired, report it"
     fi
@@ -345,23 +345,22 @@ Report what it printed and nothing past it. `clean` and `absent` are one line, *
 **Last, and only over the selectors this run actually performed.** A selector you skipped, or one whose block could not read what it needed, is **not** stamped: a stamp is a claim that the check was taken, and a claim nobody took is the one thing this record must never carry. Substitute the selectors you ran for `<sel...>`:
 
 ```bash
-M=./fusion-workbench/.fusion-setup
+M=./fusion-workbench/.check-stamps
 V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"
 [ -n "$V" ] || { echo "stamp-skipped: plugin version unresolved"; exit 0; }
 command -v node >/dev/null 2>&1 || { echo "stamp-skipped: no node on PATH"; exit 0; }
 node -e '
 const fs = require("fs"); const [m, v, ...ran] = process.argv.slice(1);
 let o = null; try { o = JSON.parse(fs.readFileSync(m, "utf8")); } catch {}
-if (typeof o !== "object" || o === null) { console.log("stamp-skipped: no readable marker"); process.exit(0); }
-if (typeof o.checks !== "object" || o.checks === null) o.checks = {};
+if (typeof o !== "object" || o === null || Array.isArray(o)) o = {};
 const at = new Date().toISOString().slice(0, 10);
-for (const sel of ran) o.checks[sel] = { at, version: v };
+for (const sel of ran) o[sel] = { at, version: v };
 fs.writeFileSync(m, JSON.stringify(o) + "\n");
 console.log("stamped=" + (ran.join(",") || "none"));
 ' "$M" "$V" <sel...>
 ```
 
-Any `stamp-skipped:` line means the marker was not written, so every selector you just ran is asked for again on the next Setup. Say so; do not write the marker by hand to make the line go away.
+Any `stamp-skipped:` line means nothing was stamped, so every selector you just ran is asked for again on the next Setup. Say so; do not write the file by hand to make the line go away.
 
 ## Done
 

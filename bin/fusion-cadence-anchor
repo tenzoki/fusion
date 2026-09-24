@@ -134,6 +134,7 @@ default_pathspec() {
     ':!fusion-workbench/.guard-state' \
     ':!fusion-workbench/.session-marker' \
     ':!fusion-workbench/.cadence-anchors' \
+    ':!fusion-workbench/.check-stamps' \
     ':!fusion-workbench/.checkout-id' \
     ':!fusion-workbench/.commit-lock' \
     ':!fusion-workbench/.active-circle'

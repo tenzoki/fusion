@@ -26,21 +26,21 @@
   total 322611
 
 [skills bytes]
-  archive/SKILL.md 24473
+  archive/SKILL.md 24501
   cadence/SKILL.md 22271
-  check/SKILL.md 31855
+  check/SKILL.md 31742
   cleanup/SKILL.md 6763
   commit/SKILL.md 6113
   curate/SKILL.md 12017
   discuss/SKILL.md 14346
   help/SKILL.md 16141
   memo/SKILL.md 13254
-  migrate/SKILL.md 39790
+  migrate/SKILL.md 39807
   news/SKILL.md 8211
   post/SKILL.md 6694
   reconcile/SKILL.md 6604
-  setup/SKILL.md 19424
-  total 227956
+  setup/SKILL.md 19532
+  total 227996
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -85,7 +85,7 @@
   hooks-wiring.test.ts 136
   identity-mint-notice.test.ts 118
   legacy-halt-clearing.test.ts 213
-  live-circle-record-detection.test.ts 77
+  live-circle-record-detection.test.ts 92
   marker-format-lint.test.ts 168
   monitor-warnings-panel.test.ts 1222
   path-literal-lint.test.ts 331
@@ -105,4 +105,4 @@
   surface-growth-bound.test.ts 568
   work-graph.test.ts 184
   workbench-citation-lint.test.ts 352
-  total 22243
+  total 22258

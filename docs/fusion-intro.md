@@ -155,7 +155,8 @@ fusion-workbench/
 │   ├── history/ investigations/ consult/ memos/ forum/ checkouts/
 ├── archive/  stilwerk/  monitor
 └── (Zustand am Wurzelverzeichnis: orchestrator-events.jsonl, .guard-state/,
-     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors)
+     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors,
+     .check-stamps)
 ```
 
 **Die Herkunftsregel trifft die Ablageentscheidung:** ein Artefakt gehört zu dem Work Item, aus dessen Direktive es entstanden ist, und nach `shared/`, wenn kein Item im Zugriff ist. Querbezüge werden zitiert, nicht durch Ablage abgebildet. Agenten schreiben keine Pfade fest; sie lösen sie zur Laufzeit über `bin/fusion-paths <agent>` auf — das nennt den Container des Items, das dieser Checkout geclaimt hat, sonst den gemeinsamen Store. Mit v11 entfallen sind der sechszustandsbehaftete Circle-Record und die Rangfolge darüber, nicht der Container; `/fusion:migrate` wandelt eine Workbench um, die noch einen lebenden Circle-Record hat.
@@ -171,9 +172,9 @@ fusion-workbench/
 | R1 viele Dateien, je ein Schreiber | `shared/`, `archive/`, `stilwerk/` | tracken |
 | R2 eine Datei, viele Anhänger | `orchestrator-events.jsonl` | tracken, mit `merge=union` |
 | R3 einmal geschrieben | `.fusion-setup`, `.asset-provenance` | tracken |
-| L bleibt im Checkout | `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.commit-lock/`, `.guard-state/`, `monitor` | ignorieren |
+| L bleibt im Checkout | `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.check-stamps`, `.commit-lock/`, `.guard-state/`, `monitor` | ignorieren |
 
-Klasse L beschreibt *jetzt* (Sitzungszustand) oder *dieses Checkout* (`.checkout-id`, `.cadence-anchors`) und würde im Diff nur rauschen oder, aus einem fremden Checkout gezogen, lügen. Dieses Repository wendet genau diese Partition an; seine `.gitignore` ist die Vorlage für eine eigene.
+Klasse L beschreibt *jetzt* (Sitzungszustand) oder *dieses Checkout* (`.checkout-id`, `.cadence-anchors`, `.check-stamps`) und würde im Diff nur rauschen oder, aus einem fremden Checkout gezogen, lügen. Dieses Repository wendet genau diese Partition an; seine `.gitignore` ist die Vorlage für eine eigene.
 
 **Das Event-Log braucht einen Merge-Treiber.** `orchestrator-events.jsonl` ist die eine Datei, an die jedes Checkout anhängt. Git's Standard-Textmerge macht daraus einen Konflikt. Die Lösung ist eine Zeile in `.gitattributes` im Projekt-Root:
 

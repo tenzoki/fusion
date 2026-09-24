@@ -75,3 +75,18 @@ describe("a container whose record is terminal", () => {
     expect(out).toMatch(/^TERMINAL=1$/m);
   });
 });
+
+// Issue 260924-1732, run the same way: the periodic-check stamps travelled in the tracked marker, so a
+// checkout that pulled another's skipped checks it never ran. They live in the class L `.check-stamps`.
+describe("a pulled marker stamping every periodic check", () => {
+  it("makes no selector count as done, loses the stamps, and a stamp taken here is read", () => {
+    process.env.FUSION_PLUGIN_ROOT = pluginRoot;
+    const setup = extractBashBlock(md("setup"), "Write the setup marker"), dir = tree("x.md"), m = join(dir, "fusion-workbench", ".fusion-setup");
+    const SEL: string[] = JSON.parse(setup.match(/const SEL = (\[.*\]);/)![1]), at = new Date().toISOString().slice(0, 10);
+    const v = JSON.parse(readFileSync(join(pluginRoot, ".claude-plugin", "plugin.json"), "utf-8")).version;
+    writeFileSync(m, JSON.stringify({ setup_at: "2026-09-01T00:00:00", plugin_version: v, checks: Object.fromEntries(SEL.map((s) => [s, { at, version: v }])) }));
+    expect(run(setup, dir)).toBe(`marker=written\nchecks_due=${SEL.join(",")}\n`);
+    run(extractBashBlock(md("check"), "## Stamp what you ran").replace("<sel...>", SEL.join(" ")), dir);
+    expect([readFileSync(m, "utf-8"), run(setup, dir)]).toEqual([expect.not.stringContaining("checks"), "marker=unchanged\nchecks_due=none\n"]);
+  });
+});

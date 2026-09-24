@@ -97,6 +97,9 @@ fusion-workbench/.checkout-id
 # High-water marks of this checkout's cleanup passes (bin/fusion-cadence-anchor); a pulled
 # mark would claim coverage this checkout never performed.
 fusion-workbench/.cadence-anchors
+# When each periodic check last ran here (/fusion:check); a pulled stamp would skip a
+# check this checkout never took.
+fusion-workbench/.check-stamps
 fusion-workbench/.guard-state/*
 fusion-workbench/.commit-lock/*
 # Verbatim copy of the tracked bin/monitor, re-created by /fusion:setup.

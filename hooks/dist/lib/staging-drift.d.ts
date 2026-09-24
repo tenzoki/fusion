@@ -162,7 +162,7 @@ export declare const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-
  * second case and consumed by nothing else.
  *
  * **Class L**, the entries that stay in the checkout they were written in: the
- * first four files here, `.session-marker` through `monitor`, and the
+ * first five files here, `.session-marker` through `monitor`, and the
  * directories in `LIVE_PREFIXES`. This repository's own
  * `.gitignore` applies exactly that split, so in a project that follows it they
  * never reach `git status` at all. They are listed anyway because whether the
