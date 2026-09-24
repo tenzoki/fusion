@@ -1,6 +1,6 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
@@ -37,6 +37,7 @@ function sh(src: string, cwd: string, env: NodeJS.ProcessEnv = ENV): string {
 }
 const basenames = (r: string) => sh("find fusion-workbench -type f | sed 's#.*/##' | sort", r);
 const dirs = (r: string) => sh("find fusion-workbench -type d | sort", r);
+const git = (r: string) => sh("git init -q && git add -A && git -c user.name=t -c user.email=t@t commit -qm x", r);
 
 const A = "circles/260101-0101-a", B = "circles/260101-0202-b";
 const LEGACY = [`${A}/260101-0101-a.md`, `${A}/planning/260101-0102_o_plan-a.md`, `${A}/issues/`, `${B}/260101-0202-b.md`,
@@ -83,12 +84,18 @@ describe("the apply", () => {
     expect(sh(apply, root)).toMatch(/^moved=0 /m);
     expect(sh(survey, root)).toMatch(/^FOUND=0$/m);
   });
-  it("refuses a colliding container and moves everything else", () => {
-    const root = tree([...LEGACY, "work-packages/260101-0101-a/other.md"]);
-    expect(sh(survey, root)).toContain("COLLISION: work-packages/260101-0101-a exists; circles/260101-0101-a stays");
-    expect(sh(apply, root)).toMatch(/collisions=1 /);
-    expect(readdirSync(join(root, "fusion-workbench", "circles"))).toEqual(["260101-0101-a"]);
-    expect(dirs(root)).toContain("fusion-workbench/work-packages/260101-0202-b\n");
+  it("folds a container present under both roots file by file with git mv, planning/ included", () => {
+    const W = "work-packages/260101-0101-a", root = tree([...LEGACY, `${W}/other.md`, `${W}/plans/260101-0103_o_plan-b.md`, `${W}/issues/260101-0104_o_i.md`]); git(root);
+    expect(sh(survey, root)).toMatch(/^COLLISIONS=0$/m); expect(sh(apply, root)).toMatch(/collisions=0 left=0 mode=git$/m);
+    expect(sh(`find fusion-workbench/${W} -type f | sort`, root)).toBe(["260101-0101-a.md", "issues/260101-0104_o_i.md", "other.md", "plans/260101-0102_o_plan-a.md", "plans/260101-0103_o_plan-b.md"].map((f) => `fusion-workbench/${W}/${f}\n`).join(""));
+    expect(sh("git status --porcelain", root).trim().split("\n").filter((l) => !l.startsWith("R "))).toEqual([]); expect(sh(survey, root)).toMatch(/^FOUND=0$/m);
+  });
+  it("refuses a file path under both roots, leaving both sides, and moves everything else", () => {
+    const f = "260101-0101-a/260101-0101-a.md", root = tree([...LEGACY, `work-packages/${f}`]);
+    expect(sh(survey, root)).toContain(`COLLISION: work-packages/${f} exists; circles/${f} stays`); expect(sh(apply, root)).toMatch(/collisions=1 /);
+    expect(sh("find fusion-workbench/circles -type f", root)).toBe(`fusion-workbench/circles/${f}\n`);
+    expect(readFileSync(join(root, "fusion-workbench", "work-packages", f), "utf-8")).toBe(`# work-packages/${f}\n`);
+    expect(dirs(root)).toContain("fusion-workbench/work-packages/260101-0202-b/plans\n");
   });
   it("resumes after an interruption to the same end state", () => {
     const whole = tree(LEGACY); sh(apply, whole);
@@ -97,7 +104,6 @@ describe("the apply", () => {
     sh(apply, cut); expect(dirs(cut)).toBe(dirs(whole)); expect(basenames(cut)).toBe(basenames(whole));
   });
   it("in git mode stages renames only, and refuses a dirty source", () => {
-    const git = (r: string) => sh("git init -q && git add -A && git -c user.name=t -c user.email=t@t commit -qm x", r);
     const root = tree(LEGACY); git(root);
     expect(sh(apply, root)).toMatch(/mode=git$/m);
     expect(sh("git status --porcelain", root).trim().split("\n").filter((l) => !l.startsWith("R "))).toEqual([]);

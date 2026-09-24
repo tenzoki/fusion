@@ -5,12 +5,10 @@
  *
  * `review-coverage-mandate.test.ts` checks that the two reviewer prompts still
  * MANDATE the header fields and that `agents/orchestrator.md` still consumes
- * them. It reads text, and cannot tell whether the tiling is right — which is
- * the gap issue `260810-1205` measured at full scale, narrated in that sibling's
- * header and in the record itself. So every case here builds a real throwaway git
- * repository with real commits and real review files, and asserts on what came
- * back. The subprocess cases go through the harness for the reason
- * `staging-drift.test.ts` gives at the same place.
+ * them. It reads text, and cannot tell whether the tiling is right (the gap issue
+ * `260810-1205` measured). So every case here builds a real throwaway git repository
+ * with real commits and real review files, and asserts on what came back; the
+ * subprocess cases go through the harness for the reason `staging-drift.test.ts` gives.
  *
  * ## The properties under test
  *
@@ -56,12 +54,9 @@ const withPluginRepo = <T,>(fn: (p: Project) => T): T =>
 /**
  * The proxy for "the coverage sentence reached the model".
  *
- * It was the literal `260810-1205` until 2026-08-17, when that id left the
- * emitted text: it is a fusion workbench id, and the sentence carries it into
- * every consuming project's session, where it resolves to nothing and was read
- * as a local record. What is left is the closing instruction, which is the one
- * part `coverageSentence` emits unconditionally — the two above it depend on
- * what the report found — and which no other hook output produces.
+ * Not the id `260810-1205`, which left the emitted text on 2026-08-17 (in a consuming
+ * project it resolves to nothing and was read as a local record), but the closing
+ * instruction: the one part `coverageSentence` emits unconditionally, and no other hook output.
  */
 const COVERAGE_SPOKE = "widen the next dispatch's scope";
 

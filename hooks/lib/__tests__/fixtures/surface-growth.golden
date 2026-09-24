@@ -35,12 +35,12 @@
   discuss/SKILL.md 14332
   help/SKILL.md 16398
   memo/SKILL.md 13245
-  migrate/SKILL.md 19907
+  migrate/SKILL.md 20572
   news/SKILL.md 8223
   post/SKILL.md 6694
   reconcile/SKILL.md 6671
   setup/SKILL.md 14567
-  total 203610
+  total 204275
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -95,16 +95,16 @@
   provenance-header-lint.test.ts 434
   reference-resolution-lint.test.ts 1012
   review-coverage-mandate.test.ts 353
-  review-coverage.test.ts 862
+  review-coverage.test.ts 857
   rules-emission-golden.test.ts 1189
   rules-voice-profile.test.ts 319
   sentence-identifier-containment.test.ts 456
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 655
-  store-name-migration.test.ts 108
+  store-name-migration.test.ts 114
   surface-growth-bound.test.ts 541
   window-bound.test.ts 24
   work-graph.test.ts 189
   workbench-citation-lint.test.ts 353
-  total 22257
+  total 22258

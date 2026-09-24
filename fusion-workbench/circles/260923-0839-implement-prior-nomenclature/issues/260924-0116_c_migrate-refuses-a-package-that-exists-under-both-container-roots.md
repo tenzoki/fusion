@@ -8,3 +8,6 @@ In a workbench updated to 12.0.0 but not yet migrated, records filed for a packa
 Evidence: `skills/migrate/SKILL.md` apply block and its fold step; found while writing `docs/upgrading-to-v12.md`, which tells consumers to migrate right after updating and gives the manual fix. This repository's own workbench is exposed too: a session running the work tree's helpers writes this package's new records under the new container root while its record stays under the old one.
 
 Acceptance: `/fusion:migrate` folds a container present under both roots when no file path collides inside it (and still refuses a true file collision), with a test case beside (d).
+
+---
+Resolved: `skills/migrate/SKILL.md` `fold_store` and the survey's new `cv` descend into a directory present under both roots and fold it file by file with `git mv`; only a same-path file is refused and named, and the rest moves. Two cases in `store-name-migration.test.ts` replace (d): the fold, and the refusal on a real file collision. `docs/upgrading-to-v12.md` describes the new behaviour. Known limit: a same basename in `circles/<dir>/planning/` and `work-packages/<dir>/plans/` is not predicted by the survey; the apply still refuses and names it.

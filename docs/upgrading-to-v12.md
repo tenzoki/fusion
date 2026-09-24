@@ -154,13 +154,12 @@ means. Two cases need a word:
 - a tracked file that checkout modified under `circles/` makes git refuse the pull as it refuses any
   pull over local changes; commit or stash, then pull.
 
-**The one case the pass will not fold.** If a session filed a record for a work package you hold
-*before* you migrated, the package now has two containers: its record under `circles/<dir>/` and the
-new record under `work-packages/<dir>/`. The migration never merges one directory into another: it
-refuses that container as a collision, names it, and moves everything else. Move the entries of
-`circles/<dir>/` into `work-packages/<dir>/` by hand (`git mv`, one entry at a time) and run
-`/fusion:migrate` again. Migrating before the first session after the update is how you never meet
-this.
+**A package with records under both roots.** If a session filed a record for a work package you
+hold *before* you migrated, the package has records under `circles/<dir>/` and under
+`work-packages/<dir>/`. The migration folds the first into the second file by file. Only a file whose
+path exists on both sides is refused: the pass names it, leaves it where it is, and moves everything
+else. Keep one of the two, delete or rename the other, and run `/fusion:migrate` again. Migrating
+before the first session after the update is how you never meet this.
 
 **If you skip the migration** nothing breaks inside the window, and every store you have carries two
 names until you do. After 13.0.0, `/fusion:setup` refuses the workbench until it is migrated.
