@@ -103,3 +103,6 @@ observation for option 2, since it shows two planner runs reaching the same refu
 phrase to copy. Nothing else in the addendum needs correcting.
 
 Also seen: 260915-1922 by analyst — re-reached from a consuming project's record; all three options here edit machinery the v11 cut removed, so the question is moot as posed.
+
+---
+Retired: `76d833be` — `rules/circle-records.md` deleted; 260915-1922-the-directive-pointer-at-v11-and-what-the-migration-does-to-it.md `### Question 3` calls this moot as posed; confirmed by the user 260924

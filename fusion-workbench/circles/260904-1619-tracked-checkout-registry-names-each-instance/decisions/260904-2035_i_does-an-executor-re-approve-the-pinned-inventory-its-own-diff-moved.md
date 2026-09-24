@@ -46,3 +46,6 @@ Against it: a separate dispatch is not review. The `bugfixer` receives the same 
 ## Recommendation
 
 `inference:` Option 2, with the bound stated as it is above and the report obliged to name the shares. The evidence for it is that the two `bugfixer` runs which did the job properly did so by measuring the executor's diff, which the executor could have done first-hand and cheaper. The evidence against it is that nothing measured today would have caught an executor that quietly widened an assertion instead, and this record does not close that gap.
+
+---
+Implemented: `README-hooks.md` `### Growth bounds on the shipped text` — option 2 in practice: the executor that moves a pinned figure re-approves it in the same commit with an attributed line (e.g. `c8cccd6a`, `850d96dc`), never moving a baseline; `bugfixer`, which option 1 relied on, went in `2a785ba2`; confirmed by the user 260924; ruled by user, Kai Stalmann <ks@qantr.com>

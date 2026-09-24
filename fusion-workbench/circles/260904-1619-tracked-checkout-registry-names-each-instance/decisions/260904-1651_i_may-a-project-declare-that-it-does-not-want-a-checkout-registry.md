@@ -51,3 +51,6 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Implemented: `bin/fusion-checkout-name` (register) and `skills/check/SKILL.md` `## identity — this checkout's identity` — option 1, no opt-out: even a declined prompt writes a plain entry; the record recommended option 2, and the user confirmed the implemented option 1 on 260924; ruled by user, Kai Stalmann <ks@qantr.com>

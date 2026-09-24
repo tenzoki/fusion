@@ -34,3 +34,6 @@ Option 1. The two other pinned existence classes already take exactly this shape
 
 ---
 Working answer (plan 260921-1726): option 1 — a pinned existence class (d) in `hooks/lib/__tests__/reference-resolution-lint.test.ts` over the lint's Markdown surfaces and the `bin/` and `install.sh` comment lines, with `RETIRED_COMMANDS` enumerated and guarded twice (no key names a directory; every key is still cited on the class's lines), so the map seeds with the two names the surface cites rather than the six this record's recommendation lists, the load-bearing guard the same recommendation asks for deciding it; implemented in the commit that carries this line.
+
+---
+Implemented: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `RETIRED_COMMANDS` — option 1; confirmed by the user 260924

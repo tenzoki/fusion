@@ -35,3 +35,6 @@ Option 1. The rule the writer needs already stands in the always-on corpus, and 
 
 ---
 Working answer (plan 260921-1726): option 1 — no new exemption; the `FABRICATED_NAME` docstring in `hooks/lib/citation-scan.ts` states the bound, the fence and file-and-line restatement stay the two mechanisms, and the defect closes on it; implemented in the commit that carries this line.
+
+---
+Implemented: `hooks/lib/citation-scan.ts` — option 1, with the boundary documented in the code; confirmed by the user 260924

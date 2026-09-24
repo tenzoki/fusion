@@ -44,3 +44,6 @@ At `260904-1659`, in this checkout: the record's `## Directive` holds the shaper
 ## Recommendation
 
 Option 1. `inference:` The invariant is about the number of statements, not about which file holds the one that survives, and a back-citation already satisfies it. The rule's text names the condition it needs without stating it as a condition, so the change owed is to that sentence rather than to any agent's behaviour.
+
+---
+Retired: `76d833be` — `rules/circle-records.md` and the Directive pointer it defined were deleted; the question has no subject left (as 260915-1922-the-directive-pointer-at-v11-and-what-the-migration-does-to-it.md `### Question 3` found for its sibling); confirmed by the user 260924

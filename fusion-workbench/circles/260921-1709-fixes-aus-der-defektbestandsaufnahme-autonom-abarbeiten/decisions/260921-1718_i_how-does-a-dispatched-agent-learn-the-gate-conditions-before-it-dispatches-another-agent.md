@@ -35,3 +35,6 @@ Option 1. It is the only one of the three whose inputs the dispatched agent alre
 
 ---
 Working answer (plan 260921-1726): option 1 — the dispatching agent reads `agents/orchestrator.md` `## Human Gate Rules` through `$FUSION_PLUGIN_ROOT` before it dispatches and returns the question when a row applies or the table cannot be read, no analyst; implemented in the commit that carries this line. The gate paragraph of the `Answered:` line on `260913-0909_*_may-the-orchestrator-reach-every-tool-and-may-an-agent-dispatch-another.md` now disagrees with the rule text; the `Superseded by:` line and the `_i_` to `_s_` move it owes, scoped to the gate mechanic only (the grant and the ban stand), are applied when the user rules on this record, not now.
+
+---
+Implemented: `rules/fusion-workbench-conventions.md` `## Dispatching another agent` — option 1: the agent reads the approval rules through `$FUSION_PLUGIN_ROOT` and returns the question instead of dispatching; confirmed by the user 260924

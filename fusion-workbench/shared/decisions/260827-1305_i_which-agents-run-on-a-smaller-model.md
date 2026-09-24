@@ -43,3 +43,8 @@ was made on the session model and is therefore a control rather than evidence.
 
 ---
 Answer located: 260923-0800-reconciler-haiku-versus-session-model.md `## Result` — one candidate run on haiku (transcript-verified) beside a same-state session-model control: not clean, it missed both drift items the control found and made 16 wrong claims, so it is not one of the two clean candidate runs the bar asks for; the ruling stays the user's.
+
+---
+Answered: 260923-0800-reconciler-haiku-versus-session-model.md `## Result` — no role moves: the reconciler (now state-auditor) stays on the session model after a haiku candidate run missed both drifted records and made 16 wrong claims; ruled by user, Kai Stalmann <ks@qantr.com>
+---
+Implemented: `agents/` — no prompt carries a `model:` key, so every agent runs on the session model

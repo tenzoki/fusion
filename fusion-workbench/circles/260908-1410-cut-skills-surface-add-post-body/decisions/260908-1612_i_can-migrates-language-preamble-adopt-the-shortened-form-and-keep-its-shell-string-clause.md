@@ -36,3 +36,6 @@ One thing planning established that narrows the question. The exemption category
 ## Recommendation
 
 Option 1 for this Circle, which is what the plan does, and the question left open for the Circle that next opens `skills/migrate/SKILL.md`. Option 2 is the likely long answer, but it is worth 250-odd bytes on a surface that has 3 483 at the pessimistic end after this work, and the risk it carries lands on the one skill nobody exercises routinely.
+
+---
+Implemented: `skills/migrate/SKILL.md` — option 1: migrate keeps the long preamble with its shell-string clause, `news` and `post` use the one-line form; confirmed by the user 260924

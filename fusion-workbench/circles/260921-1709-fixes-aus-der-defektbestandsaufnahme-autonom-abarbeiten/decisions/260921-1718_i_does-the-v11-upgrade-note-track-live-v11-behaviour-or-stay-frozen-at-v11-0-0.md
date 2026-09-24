@@ -31,3 +31,6 @@ Option 1. A note read at upgrade time is read against the version being installe
 
 ---
 Working answer (plan 260921-1726): option 1 — live; the note says so under its title, its `**Status:**` sentence names the five values with `paused`, and `README-agents.md` `## Releasing` step 0 carries the obligation that a release changing what the note describes edits it in the same commit; implemented in the commit that carries this line.
+
+---
+Implemented: `docs/upgrading-to-v11.md` — option 1, the note tracked live v11 behaviour; with v12 the release duty moves to `docs/upgrading-to-v12.md` (`README-agents.md` `## Releasing`), so the v11 note now stands frozen at 11.11.1; confirmed by the user 260924

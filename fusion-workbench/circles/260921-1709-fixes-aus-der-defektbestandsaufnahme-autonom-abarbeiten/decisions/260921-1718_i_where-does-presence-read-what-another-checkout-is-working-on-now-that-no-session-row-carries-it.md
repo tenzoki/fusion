@@ -35,3 +35,6 @@ Option 1. The fact is already on disk, written by a hook with identity, on every
 
 ---
 Working answer (plan 260921-1726): option 1 — presence reads the party's latest `task_start` row's `work_item`, falls back to a pre-cut `history_file`, and states `none on record` where neither exists; implemented in the commit that carries this line
+
+---
+Implemented: `hooks/lib/events-query.ts` — option 1: presence reads the `work_item` of the checkout's newest dispatch row and says `none on record` otherwise; confirmed by the user 260924

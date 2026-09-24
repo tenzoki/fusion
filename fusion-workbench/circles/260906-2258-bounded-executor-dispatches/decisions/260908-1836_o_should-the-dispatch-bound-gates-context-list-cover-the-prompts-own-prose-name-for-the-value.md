@@ -48,3 +48,6 @@ configured value, which the gate's own header states.
 
 Option 1. The prompt's own name for the value is not an edge case, and the precedent this gate exists
 to prevent was four spellings of one number.
+
+---
+Retired: `1e367195` — `dispatch-bound-lint.test.ts` was deleted with the dispatch bound; confirmed by the user 260924

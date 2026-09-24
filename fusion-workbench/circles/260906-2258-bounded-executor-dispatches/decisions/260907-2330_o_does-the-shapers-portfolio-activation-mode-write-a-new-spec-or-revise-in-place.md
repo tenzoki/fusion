@@ -60,3 +60,6 @@ Option 2. The four departures each had the same reason and none of them was noti
 shape of a rule that describes something other than what the work needs. The one thing option 1 buys,
 a readable sequence of revisions, is what the commit history already carries for a tracked workbench,
 and this Circle's four reworks are four commits.
+
+---
+Retired: `7dde04a6` — the shaper's (now requirements-designer's) record-editing modes, portfolio activation among them, were removed on 260910 (`rules/orchestrator-rebalance.md` `## What went with the Circle container`); confirmed by the user 260924
