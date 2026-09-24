@@ -34,3 +34,6 @@ Option 1 for this item; options 2 and 3 are for the item that builds the profile
 
 ---
 Answered: 260922-1114_*_does-state-auditor-keep-the-reconcilers-write-scope.md `## Options` — option 1: the state-auditor keeps the reconciler's write scope, and `README-agents.md` `## The agents` records that it is wider than the nomenclature's audit-only description; a later item may narrow it; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: `README-agents.md` `## The agents` — the state-auditor row records the reconciler's write scope as kept by this record and wider than the nomenclature's audit-only profile; the agent prompt kept the scope at the rename (`7727987a`)
