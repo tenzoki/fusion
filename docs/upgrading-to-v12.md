@@ -1,4 +1,4 @@
-# Upgrading to fusion v12 (from v11.11.1)
+# Upgrading to fusion v12 (from v11.11.2)
 
 v12 renames. Seven agents, three workbench stores, one dispatch parameter and the helpers and keys
 that carry them take the names of the PRIOR/Fusion vocabulary, and the prose the module ships says
