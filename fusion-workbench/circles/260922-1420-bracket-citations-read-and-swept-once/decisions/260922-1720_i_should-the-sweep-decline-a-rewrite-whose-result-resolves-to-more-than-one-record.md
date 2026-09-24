@@ -49,3 +49,8 @@ Nothing here is broken against a stated rule. The sweep did exactly what the che
 ## Recommendation
 
 Option 3 first, then re-open the rewrite question on the measured number. The figure is cheap, it makes the class visible where it is currently silent, and it does not spend the sweep's ability to settle a token before anybody knows whether the class is growing.
+
+---
+Answered: 260922-1720_*_should-the-sweep-decline-a-rewrite-whose-result-resolves-to-more-than-one-record.md `## Options` — leave it: `_*_` is the mandated form, and a bare-stamp reference is residue rather than a citation, so the sweep keeps rewriting it and the checker keeps reading the result as ambiguous; no new count is added; ruled by user, Kai Stalmann <ks@qantr.com>
+---
+Implemented: `bin/fusion-citation-sweep` and `bin/fusion-citation-check` — the tree already behaves this way; nothing changes

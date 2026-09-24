@@ -38,3 +38,6 @@ The question must be settled before a consuming project runs two checkouts again
 ## Recommendation
 
 Option 2. The question the cache answers is "has **this checkout** performed this check", and `.cadence-anchors` already establishes that such an answer stays local; option 1 leaves a suppression path that is invisible when it fires, and option 3 pays the same cost as option 2 while keeping a growing per-checkout structure inside a shared file. The cost of option 2 is one table row and one extra read, both of which are visible and neither of which can fail silently.
+
+---
+Answered: 260910-1600_*_does-the-periodic-check-cache-belong-in-a-file-that-travels-between-checkouts.md `## Options` — option 2: the periodic-check cache moves out of the tracked `.fusion-setup` into a local, untracked file of its own, after the `.cadence-anchors` model; to be fixed on `main` as well (issue 260924-1732_*_the-periodic-check-cache-travels-in-the-tracked-setup-marker.md); ruled by user, Kai Stalmann <ks@qantr.com>
