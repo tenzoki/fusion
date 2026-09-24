@@ -28,3 +28,6 @@
 - No file moves before the answer: `nomenclature.md` `### Fusion workbench migration` says its table "defines naming direction, not an authorised bulk move", and the part (1) spec keeps this store unchanged in name and content.
 - The answer is realised by part (2), the consumer migration, and its spec cites this record; part (1) reads and writes the store where it stands today.
 - Every citation of a record in this store keeps resolving through the move, whatever the answer: the basename is the citation, the store is not (`rules/fusion-workbench-conventions.md` `## Filename Patterns`).
+
+---
+Answered: 260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md `## Options` — a split, closest to option 2: Prior owns the project ID, the checkout ID and its own workspaces (it partly manages them already); Fusion keeps the person, the checkout alias and the git identity for now, in `shared/checkouts/`, `bin/fusion-checkout-name` and `bin/fusion-identity`. The eight hex characters `bin/fusion-identity` mints today are taken from Prior once Prior supplies a checkout ID, and the registry keeps joining them to person and alias; ruled by user, Kai Stalmann <ks@qantr.com>

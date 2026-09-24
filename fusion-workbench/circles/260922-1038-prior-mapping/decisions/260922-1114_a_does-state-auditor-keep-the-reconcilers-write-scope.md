@@ -31,3 +31,6 @@ The spec's C2 renames `reconciler` → `state-auditor` "with the write scope unc
 ## Recommendation
 
 Option 1 for this item; options 2 and 3 are for the item that builds the profile set, which is where the nomenclature's descriptions become contracts.
+
+---
+Answered: 260922-1114_*_does-state-auditor-keep-the-reconcilers-write-scope.md `## Options` — option 1: the state-auditor keeps the reconciler's write scope, and `README-agents.md` `## The agents` records that it is wider than the nomenclature's audit-only description; a later item may narrow it; ruled by user, Kai Stalmann <ks@qantr.com>

@@ -28,3 +28,6 @@ The nomenclature marks `shared/issues/` (and the same store in every container) 
 - No file moves before the answer: `nomenclature.md` `### Fusion workbench migration` says its table "defines naming direction, not an authorised bulk move", and the part (1) spec keeps this store unchanged in name and content.
 - The answer is realised by part (2), the consumer migration, and its spec cites this record; part (1) reads and writes the store where it stands today.
 - Every citation of a record in this store keeps resolving through the move, whatever the answer: the basename is the citation, the store is not (`rules/fusion-workbench-conventions.md` `## Filename Patterns`).
+
+---
+Answered: 260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md `## Options` — option 1: one `issues/` store stays and the marker is the classification (`_o_` a pending candidate, `_p_` an admitted work item, `_c_` and `_d_` dispositions, the finer disposition read from the `Resolved:` line); an in-progress issue in the shared store is an admitted item outside any work package; nothing moves; ruled by user, Kai Stalmann <ks@qantr.com>

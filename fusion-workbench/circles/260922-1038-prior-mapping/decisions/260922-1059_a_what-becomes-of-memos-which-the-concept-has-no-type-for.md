@@ -28,3 +28,6 @@
 - No file moves before the answer: `nomenclature.md` `### Fusion workbench migration` says its table "defines naming direction, not an authorised bulk move", and the part (1) spec keeps this store unchanged in name and content.
 - The answer is realised by part (2), the consumer migration, and its spec cites this record; part (1) reads and writes the store where it stands today.
 - Every citation of a record in this store keeps resolving through the move, whatever the answer: the basename is the citation, the store is not (`rules/fusion-workbench-conventions.md` `## Filename Patterns`).
+
+---
+Answered: 260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md `## Options` — none of the three as written; the user splits the concern: filing a new work package gets a command of its own in place of `/fusion:memo idea:`, and `/fusion:memo` keeps the personal log, keyed per person instead of per checkout, as one task file and one notes file, the target chosen by content; the store stays outside the record model. Neither change is built yet; ruled by user, Kai Stalmann <ks@qantr.com>
