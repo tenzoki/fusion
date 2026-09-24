@@ -83,7 +83,7 @@ What that means for a workbench you have updated but not yet migrated:
 - **A plan step whose `Executor:` names a v11 agent is dispatched under the v12 name.** The
   orchestrator carries the seven-row table above for the persisted plans that spell the old one.
 
-At 13.0.0 the window closes: the legacy reads, the `Executor:` alias and setup's continue-on-legacy
+At 13.0.0 the window closes: the legacy reads, the `Executor:` alias, the manifest's old-name match and setup's continue-on-legacy
 case are removed together, and `/fusion:setup` refuses a workbench that still carries a v11 store
 name. `/fusion:migrate` keeps working after that, for a project that updates late.
 
@@ -108,10 +108,11 @@ helper learns what to ask for instead. Your tooling that reads `ITEM=`, `OUT_BAC
 
 ### 3. Rename the agents in your context manifest
 
-**This one is silent.** If your project ships `./rules/context-manifest.yaml`, its `agents:` arrays name
-agents by identifier, and **the manifest is not read through the window**: a unit keyed
-`agents: [coder]` simply stops loading for `code-implementer`, with no error and no advisory.
-Find the old names and replace them with the v12 ones:
+If your project ships `./rules/context-manifest.yaml`, its `agents:` arrays name agents by
+identifier. Until 13.0.0 an old name is still matched as its v12 name, so a unit keyed
+`agents: [coder]` keeps loading for `code-implementer`, and `bin/fusion-rules` prints a one-line
+advisory naming the replacement; from 13.0.0 that unit stops loading, silently. The grep below is how
+you find the old names and rename them before then:
 
 ```bash
 grep -nE '(^|[^[:alnum:]-])(shaper|planner|coder|ontocoder|reconciler|editor|curator)([^[:alnum:]-]|$)' rules/context-manifest.yaml

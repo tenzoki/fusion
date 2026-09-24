@@ -9,11 +9,8 @@ import { agentNames, pluginRoot } from "./helpers/citation-scan.js";
 // Context-manifest tests (Circle B).
 //
 // The mechanism and its load-bearing guarantee, HYG-NO-REGRESS, are authored in
-// `rules/context-manifest.md`. This suite drives the real script through
-// child_process — the same thing an agent's Setup does. The baseline for the
-// no-regress assertion is the helper's own no-manifest output captured from a
-// clean cwd (the plugin ships no manifest), so the test is self-checking: it
-// compares the helper against itself run in a directory with no manifest.
+// `rules/context-manifest.md`. This suite drives the real script as an agent's
+// Setup does; the no-regress baseline is its own output from a manifest-less cwd.
 // ---------------------------------------------------------------------------
 
 const fusionRules = join(pluginRoot, "bin", "fusion-rules");
@@ -164,21 +161,16 @@ describe("context-manifest: HYG-NO-REGRESS — byte-identical when absent", () =
 });
 
 describe("agent-setup.md is emitted always-on, first, for every agent (Circle D Bundle 0)", () => {
-  // agent-setup.md is a plugin-shipped always-on framework rule (the sixth), the
-  // single authoring home for the Setup contract. It must be emitted for every
-  // agent, with no manifest, and emitted FIRST — before the detailed
-  // fusion-workbench-conventions.md — so an agent reads "how Setup works" before
-  // the conventions. This is an intended extension of the always-on set, NOT a
-  // HYG-NO-REGRESS break (that guard protects the manifest-absent==pre-manifest
-  // property; the always-on set is deliberately extended here).
+  // agent-setup.md, the single authoring home for the Setup contract, is emitted
+  // for every agent with no manifest, and FIRST, so "how Setup works" is read
+  // before the conventions. Extending the always-on set is intended, not a
+  // HYG-NO-REGRESS break (that guard protects only the manifest-absent output).
   const setup = "agent-setup.md";
   const conventions = "fusion-workbench-conventions.md";
 
   it(`emits ${setup} for every agent (no manifest)`, () => {
-    // Derived, not written: the list above is a fixture, and a literal count
-    // beside it is a second statement of the same fact that goes stale on the
-    // next agent added or removed (it did, when `conceptrev` left on
-    // 2026-08-15). What this asserts is that the fixture still covers the tree.
+    // Derived, not written: a literal count beside the fixture goes stale on the
+    // next agent added or removed. This asserts the fixture still covers the tree.
     const onDisk = agentNames();
     expect([...AGENTS].sort()).toEqual(onDisk);
     for (const agent of AGENTS) {
@@ -240,6 +232,15 @@ describe("context-manifest: emit predicate (agent-match AND topic-match)", () =>
       const out = lines(run(manifestProject, agent, "unite-framework").stdout);
       expect(out, `${agent} should get the [*] skill unit`).toContain("skill:unite-bok-sc-skill");
     }
+  });
+
+  it("a pre-v12 agent name matches its v12 name until 13.0.0; an unknown name matches nothing", () => {
+    writeManifest(manifestProject, "units:\n  - path: A.md\n    agents: [coder]\n    topics: [always]\n" +
+      "  - path: B.md\n    agents: [no-such-agent]\n    topics: [always]\n");
+    const r = run(manifestProject, "code-implementer");
+    expect(lines(r.stdout), "agents: [coder] reaches code-implementer").toContain("A.md");
+    expect(lines(r.stdout), "an unknown name is not aliased").not.toContain("B.md");
+    expect(r.stderr).toContain("names 'coder', renamed 'code-implementer'");
   });
 
   it("a skill unit emits a `skill:<name>` pointer, not a file path", () => {
@@ -416,11 +417,9 @@ describe("context-manifest: HYG-NO-SILENT-FAIL — malformed manifest fails loud
 });
 
 describe("emit_if_exists: a missing always-on rule file is skipped silently (set -eu regression)", () => {
-  // The documented contract (rules/agent-setup.md: "missing files are skipped
-  // silently") must hold under `set -eu`. Before the fix, emit_if_exists was a
-  // bare `[ -f ] && printf`, returning 1 on a miss — which killed the emission
-  // mid-stream with partial output and exit 1. This suite runs the real script
-  // against a stripped plugin copy with one always-on file removed.
+  // rules/agent-setup.md promises "missing files are skipped silently" under
+  // `set -eu`; a bare `[ -f ] && printf` once returned 1 on a miss and killed the
+  // emission mid-stream. Run against a plugin copy with one always-on file removed.
   let strippedPlugin: string;
 
   beforeEach(() => {

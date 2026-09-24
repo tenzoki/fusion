@@ -51,7 +51,7 @@
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
   config.test.ts 950
-  context-manifest.test.ts 518
+  context-manifest.test.ts 517
   declared-citation-paths.test.ts 84
   deliverable-language-lint.test.ts 136
   derivable-enumerations-lint.test.ts 476
@@ -107,4 +107,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 189
   workbench-citation-lint.test.ts 353
-  total 22258
+  total 22257

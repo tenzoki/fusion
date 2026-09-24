@@ -222,6 +222,12 @@ else
   IN_PLUGIN_REPO=0
 fi
 
+# The v12.0.0 renames, old:new, the table bin/fusion-paths also carries: a
+# stale prompt asking under a pre-v12 name is told the name to ask under, and a
+# context-manifest `agents:` entry naming an old name matches its new one until
+# 13.0.0, which deletes that alias.
+V12_RENAMES="shaper:requirements-designer planner:implementation-planner coder:code-implementer ontocoder:data-implementer reconciler:state-auditor editor:document-editor curator:policy-curator"
+
 case "$AGENT" in
   code-implementer)               PATTERNS="coding" ;;
   data-implementer)               PATTERNS="ontology normative verb" ;;
@@ -249,9 +255,6 @@ case "$AGENT" in
   orchestrator|requirements-designer|state-auditor|consultant|document-editor|policy-curator)
                                   PATTERNS="" ;;
   *)
-    # The v12.0.0 renames, old:new, the table bin/fusion-paths also carries: a
-    # stale prompt asking under a pre-v12 name is told the name to ask under.
-    V12_RENAMES="shaper:requirements-designer planner:implementation-planner coder:code-implementer ontocoder:data-implementer reconciler:state-auditor editor:document-editor curator:policy-curator"
     NOTE=""
     for pair in $V12_RENAMES; do
       if [ "${pair%%:*}" = "$AGENT" ]; then
@@ -704,7 +707,7 @@ if [ -f "$MANIFEST" ]; then
   # malformed manifest, a reason on stderr with a non-zero exit. Output is
   # all-or-nothing: units are collected and printed only in END, so a malformed
   # file yields no partial set. `if !` keeps `set -e` from aborting here.
-  if ! MANIFEST_UNITS="$(awk -v agent="$AGENT" -v topics="$RESOLVED_TOPICS" '
+  if ! MANIFEST_UNITS="$(awk -v agent="$AGENT" -v topics="$RESOLVED_TOPICS" -v renames="$V12_RENAMES" '
     function fail(msg) {
       print "fusion-rules: malformed context-manifest.yaml: " msg > "/dev/stderr"
       malformed = 1
@@ -735,7 +738,8 @@ if [ -f "$MANIFEST" ]; then
       if (!cur_has_agents) fail("unit \047" cur_val "\047 is missing \047agents:\047")
       if (!cur_has_topics) fail("unit \047" cur_val "\047 is missing \047topics:\047")
       amatch = 0
-      for (i = 1; i <= nAG; i++) if (AG[i] == "*" || AG[i] == agent) { amatch = 1; break }
+      for (i = 1; i <= nAG; i++)
+        if (AG[i] == "*" || AG[i] == agent || (AG[i] in RENAMED && RENAMED[AG[i]] == agent)) { amatch = 1; break }
       if (!amatch) return
       tmatch = 0
       for (i = 1; i <= nTP; i++) {
@@ -749,6 +753,8 @@ if [ -f "$MANIFEST" ]; then
     BEGIN {
       n = split(topics, TT, " ")
       for (i = 1; i <= n; i++) if (TT[i] != "") TOPIC[TT[i]] = 1
+      n = split(renames, RN, " ")
+      for (i = 1; i <= n; i++) { split(RN[i], PR, ":"); RENAMED[PR[1]] = PR[2] }
       nOUT = 0; saw_content = 0; saw_units = 0; malformed = 0
       reset_unit()
     }
@@ -799,6 +805,10 @@ if [ -f "$MANIFEST" ]; then
       if (key == "agents") {
         if (parse_array(val) < 0) fail("agents: is not a [ ... ] array: " val)
         nAG = PN; for (i = 1; i <= PN; i++) AG[i] = PA[i]; cur_has_agents = 1
+        for (i = 1; i <= PN; i++) if (PA[i] in RENAMED && !(PA[i] in WARNED)) {
+          WARNED[PA[i]] = 1
+          print "fusion-rules: context-manifest.yaml names \047" PA[i] "\047, renamed \047" RENAMED[PA[i]] "\047 at v12.0.0; matched until 13.0.0, rename it." > "/dev/stderr"
+        }
       } else if (key == "topics") {
         if (parse_array(val) < 0) fail("topics: is not a [ ... ] array: " val)
         nTP = PN; for (i = 1; i <= PN; i++) TP[i] = PA[i]; cur_has_topics = 1
