@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Status:** open
-**Cross-references:** 260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md, 260923-0839-implement-prior-nomenclature.md
+**Cross-references:** 260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 
 ---
