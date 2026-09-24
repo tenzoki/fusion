@@ -1,87 +1,69 @@
 ---
-description: Append a concise memo to the user's personal memo log (memos-<checkout>.md) or a task to the user's task list (tasks-<checkout>.md), both in the workbench's shared memo store, or file an idea as a new work item in the project backlog
-argument-hint: [content, or "task: <todo>", or "idea: <idea>", or a directive like "the open tasks"]
+description: Append a concise note to the user's personal notes (notes-<person>.md) or a task to the user's task list (tasks-<person>.md), both in the workbench's shared memo store. A new work package is /fusion:wp
+argument-hint: [content, or "task: <todo>", or a directive like "the open tasks"]
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
 
 # Memo
 
-Capture something the user wants kept. Three kinds of capture, and the third is not shaped like the other two:
+Capture something the user wants kept for themselves. Two kinds:
 
-- **Memos** — informal captures: notes, options to remember, the shape of an open problem, a pointer to a file. Snapshots the user wants to keep. They are **not** issues, plans, or history entries.
+- **Notes** — informal captures: options to remember, the shape of an open problem, a pointer to a file. They are **not** issues, plans, or history entries.
 - **Tasks** — things to do: a todo, an open action, something to pick up later. Kept as a checkbox list so they can be ticked off.
-- **Ideas** — something worth considering that is not yet worth planning: a direction for the project rather than a note to self. An idea goes to the **project backlog** as a work item, where it waits at `open` until somebody claims it.
 
-**The memo and task files are append logs; a work item is not.** One memo file and one task file per checkout, and every capture adds a block to the end of the right one. An idea is **a new file each time** — one file per idea, in a different store, carrying its state in a head field rather than on its name. That difference is stated rather than left to be inferred from the two siblings, because inferring it produces the wrong write: every reader of the backlog takes one file to be one job.
+**Both files are append logs, one pair per person**, and every capture adds a block to the end of the right one. **Work for the project is not a memo:** an argument starting `idea:`, `idee:` or `backlog:`, or asking for the backlog, gets the answer that `/fusion:wp` files it, and nothing is written.
 
-## Step 0 — Resolve the stores
+## Step 0 — Resolve the store and the person
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" memo
 ```
 
-Read `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` from the output. `$WORKBENCH/$OUT_MEMO` is the directory the memo and task files live in; `$WORKBENCH/$OUT_BACKLOG` is where a backlog entry goes.
+Read `WORKBENCH` and `OUT_MEMO`: `$WORKBENCH/$OUT_MEMO` holds both files. Exit 1 means no workbench above `pwd`: tell the user to run `/fusion:setup` at the project root first. The other codes are `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes. A skill's key set is read from its own file, and nothing reads this store, so no read key exists.
 
-On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
+Then the keys, in one call:
 
-- **Exit 1** — no workbench above `pwd`. Tell the user to run `/fusion:setup` at the project root first.
+```bash
+I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; ID=$([ -x "$I" ] && "$I" || true)
+CO=$(printf '%s\n' "$ID" | sed -n 's/^CHECKOUT=//p')
+P=$(printf '%s\n' "$ID" | sed -n 's/^PERSON=.*<\(.*\)>$/\1/p' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+[ -n "$P" ] || { echo "memo: no e-mail on a PERSON= line; nothing written" >&2; exit 1; }
+echo "P=$P CO=$CO"
+```
 
-**Why `memo`, and why exactly these two keys:** `fusion-paths` takes the name of the consumer asking, and a skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`). This skill's key set is read from this file, so both write keys are emitted because this file names them. There is one store per kind and no state selects between candidates, so both values are right whichever agent, or none, is actually running. **No read key is emitted, deliberately:** this skill files, and it never lists, re-reads or consolidates the backlog. Consolidating is a maintenance operation the orchestrator performs at the user's word, and a run here that set out to do it has no resolved path to read from.
+`$P` is the git e-mail of the `PERSON=` line, slugged: `Kai Stalmann <ks@qantr.com>` gives `ks-qantr-com`. **No e-mail, no write.** Helper exit 1, 4 or 5, or a missing helper, leaves `$P` empty and the block exits 1: halt and name the reason the helper printed, because an unkeyed name is the one every person would share. `$CO` is this checkout's `CHECKOUT=` line and serves adoption alone; it may be empty.
 
 ## Where each kind goes
 
-- Memo file: `$WORKBENCH/$OUT_MEMO/memos-$CO.md`
-- Task file: `$WORKBENCH/$OUT_MEMO/tasks-$CO.md`
-- Backlog entry: a new container per idea in `$WORKBENCH/$OUT_BACKLOG`, never an append
-- `$CO` is the `CHECKOUT=` line of `I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true`, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
-- **No `CHECKOUT=` line, no keyed write.** Exit 3, exit 5 and the `[ -x ]` miss branch each leave `$CO` empty, and none means the workbench is absent. Halt and name which one: an empty key writes `memos-.md` and `tasks-.md`, the one pair of names every checkout would share. An idea is a work item and proceeds under `rules/fusion-workbench-conventions.md` `### Who filed it`, never halted here.
+- Notes: `$WORKBENCH/$OUT_MEMO/notes-$P.md`, created with the header `# Notes — <person>` and a blank line
+- Tasks: `$WORKBENCH/$OUT_MEMO/tasks-$P.md`, created with the header `# Tasks — <person>` and a blank line
 
-If the memo store or one of its two files does not exist, create it. When creating a file for the first time, write only its header and nothing else:
+**Adoption, before the first write of a run.** `memos-$CO.md` and `memos-$USER.md` go into the notes file, `tasks-$CO.md` and `tasks-$USER.md` into the tasks file: for each that exists, append its lines below its `# ` header to the end of the target, remove it, and report both paths. Those are this checkout's own files, `$CO` by its identifier and `-$USER` by the older login key (`rules/fusion-workbench-conventions.md` `## Filename Patterns`), which is folded in here rather than renamed first. Another checkout's file stays where it is; nothing else is merged or deleted.
 
-```markdown
-# Memos — <checkout>
+## Note or task — which target
 
-```
-
-```markdown
-# Tasks — <checkout>
-
-```
-
-## Memo, task or idea — which target
-
-Decide the kind first; it picks the target.
-
-**Route to the task file (`tasks-$CO.md`) when:**
+**Route to the task file when:**
 - The argument starts with an explicit keyword: `task:`, `todo:`, or `aufgabe:` (case-insensitive). Strip the keyword from the captured text.
 - The conversational reference is about things to do: `the open tasks`, `this todo`, `diese aufgabe`, `what's left to do`.
 - The content is clearly an action to perform later (imperative: "fix X", "ask Stefan about Y", "rename Z").
 
-**Route to the backlog (a new entry) when:**
-- The argument starts with an explicit keyword: `idea:`, `idee:`, or `backlog:` (case-insensitive). Strip the keyword from the captured text.
-- The conversational reference names the backlog: `this idea for the backlog`, `das gehört ins Backlog`, `merk das als Idee vor`.
-
-**Route to the memo file (`memos-$CO.md`) otherwise** — the default, and the backlog has to be asked for to win it. Notes, options, problem shapes, pointers. The asymmetry is on purpose: a memo is the user's own log and nothing reads it, while an item is a job that stands in the store until somebody claims it. A note misfiled as a memo costs nothing; a note misfiled as an idea gets promoted.
-
-If genuinely ambiguous (the content reads as two of the three), ask via `AskUserQuestion`: memo, task, or idea? Do not guess on a true coin-flip; default to memo only when there is neither a task signal nor an idea signal.
+**Route to the notes file otherwise** — the default. If the content genuinely reads as both, ask via `AskUserQuestion`: note or task?
 
 ## Invocation modes
 
-The argument after `/fusion:memo` determines how you interpret the request:
-
-1. **Literal capture** — e.g. `/fusion:memo this: <pasted text>`, `/fusion:memo task: <todo>`, or `/fusion:memo <topic>\n<content>`. Capture the content verbatim; do not rewrite. Apply the routing rule above to pick the target.
-2. **Conversational reference** — e.g. `/fusion:memo the open tasks`, `/fusion:memo these options`, `/fusion:memo the current problem`. Identify the relevant recent context and save it verbatim. Do not summarize into your own words; do not interpret. Just label and save, routing per the rule above (e.g. "the open tasks" goes to the task file).
-3. **Empty** — `/fusion:memo` alone. Ask via `AskUserQuestion`: is this a memo, a task or an idea, what is the topic, and what should be captured? Do not guess.
+1. **Literal capture** — e.g. `/fusion:memo this: <pasted text>`, `/fusion:memo task: <todo>`, or `/fusion:memo <topic>\n<content>`. Capture the content verbatim; do not rewrite.
+2. **Conversational reference** — e.g. `/fusion:memo the open tasks`, `/fusion:memo these options`. Identify the relevant recent context and save it verbatim. Do not summarize into your own words; do not interpret. Just label and save.
+3. **Empty** — `/fusion:memo` alone. Ask via `AskUserQuestion`: note or task, what topic, and what should be captured? Do not guess.
 
 ## Entry format
 
 Timestamp: `date +"%Y-%m-%d %H:%M"`.
 
-### Memo entry
+### Note entry
 
-Each memo is appended as a single `##` section. Keep memos **concise** — if more than ~15 lines are needed, the content probably belongs in a plan, issue, or analysis, not a memo. Cross-reference other workbench files by path rather than copying their contents.
+Each note is appended as a single `##` section. Keep notes **concise** — if more than ~15 lines are needed, the content probably belongs in a plan, issue, or analysis. Cross-reference other workbench files by path rather than copying their contents.
 
-Append this block to the end of the memo file (leave one blank line before it):
+Append this block to the end of the notes file (leave one blank line before it):
 
 ```markdown
 ## YYYY-MM-DD HH:MM — <topic>
@@ -101,56 +83,22 @@ Each task is appended as a single checkbox line at the end of the task file (no 
 - [ ] <task text, verbatim> — added YYYY-MM-DD HH:MM
 ```
 
-If several tasks are captured at once (e.g. "the open tasks"), append one checkbox line per task. Keep each line to one task. Do not tick (`- [x]`) or remove existing tasks unless the user explicitly says so.
-
-### Work item
-
-**Created, not appended, and an item is a directory.** One new container per idea at `$WORKBENCH/$OUT_BACKLOG/<YYMMDD-HHMM>-<topic>/`, holding one record under the container's own name: `<YYMMDD-HHMM>-<topic>/<YYMMDD-HHMM>-<topic>.md`. The stamp comes from `date +%y%m%d-%H%M` (`rules/fusion-workbench-conventions.md` `## Timestamps` — never guess it), and `<topic>` is a kebab-case slug of the title, lowercased, articles dropped, six words at most. **There is no marker on either name** — an item's state is its `**Status:**` head field, which is `open` at creation and always here; this skill writes no other status and changes none. Create the container and the record and stop there: the per-kind subdirectories an item's own work fills are made on first write, not at filing, so a freshly filed item is one directory holding one file.
-
-If the container you derived already exists, neither overwrite nor append: pick a `<topic>` that tells the two ideas apart, and say in your report that you did.
-
-The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` defines the kind, its statuses and this floor:
-
-```markdown
-# <one-line idea title>
-
----
-**Status:** open
-**Filed by:** user, <person>
----
-
-## Directive
-
-<one paragraph: what the idea is, and why it might matter>
-```
-
-`**Domain:**` and `**Mode:** autonomous` are optional and belong there only when the user's own content supplies them. `**Claim:**`, `**Active spec/plan:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** at filing, never present and empty: nothing is claimed at the moment of filing, no spec or plan exists yet, and a dependency or a cross-reference is the user's to add later. Do not invent any of them, and do not add an Options, Constraints or Recommendation section: those make a decision record, and the rule above records what filing at that cost produced.
-
-**One job per item, and two jobs are two files.** Not tidiness: everything downstream takes an item whole, so a spec written from a multi-job item covers one of them and leaves the rest unread. Splitting while filing costs one extra file; splitting later costs a pass over the store and a user confirmation.
+If several tasks are captured at once (e.g. "the open tasks"), append one checkbox line per task. Do not tick (`- [x]`) or remove existing tasks unless the user explicitly says so.
 
 ## Process
 
-1. Resolve `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` per Step 0.
-2. Resolve `$CO`; adopt a legacy `-$USER` name, and an empty `$CO` halts only when step 5 picks a memo or a task.
-3. Ensure the target directory exists (`mkdir -p`): `$WORKBENCH/$OUT_MEMO` for a memo or a task, `$WORKBENCH/$OUT_BACKLOG/<YYMMDD-HHMM>-<topic>` — the item's own container — for an idea.
-4. Resolve the invocation mode from the argument.
-5. **Decide memo, task or idea** per "Memo, task or idea — which target"; this picks the target.
-6. Memo or task: read the target file if it exists; if not, create it with its header (above). Item: there is no file to read — derive the stamp and the `<topic>` slug and check only that the container is free.
-7. For mode 1 (literal):
-   - Memo: the argument up to the first newline or colon becomes the topic; the remainder becomes the body. If only one blob was given, generate a short topic from the first line (≤ 60 chars).
-   - Task: strip any `task:`/`todo:`/`aufgabe:` keyword; the remainder is the task text.
-   - Idea: strip any `idea:`/`idee:`/`backlog:` keyword; the first line (or a short line you derive from it) becomes the title, the remainder the paragraph. If the capture holds two unrelated ideas, file two items and say so.
-8. For mode 2 (conversational ref): identify the referenced content in the recent context, extract it verbatim. Memo: use a short topic like "Options for X discussed in session". Task: one checkbox line per discrete todo. Idea: one item per idea, the user's own words in the paragraph.
-9. For mode 3 (empty): ask the user for kind, topic, and content.
-10. Write. Memo and task: append to the end of the target file, do not reorder existing entries, and do not edit prior ones unless the user explicitly says "update the last memo", "tick that task", or similar. Idea: **create** the item's container and the record inside it. Never append to an existing item and never edit one.
-11. Report to the user: which target, the path, and the topic or task text. For a memo or task, the line count of the file after the append. For an idea, that it is a new item at `**Status:** open`, and where in the backlog store it landed.
+1. Resolve `WORKBENCH`, `OUT_MEMO`, `$P` and `$CO` per Step 0; an empty `$P` halts.
+2. Adopt this checkout's per-checkout files, and `mkdir -p "$WORKBENCH/$OUT_MEMO"`.
+3. Resolve the invocation mode, then **note or task**; this picks the target.
+4. Read the target file if it exists; if not, create it with its header.
+5. Mode 1: for a note, the argument up to the first newline or colon becomes the topic and the remainder the body (one blob: a short topic from its first line, ≤ 60 chars); for a task, the text after any `task:`/`todo:`/`aufgabe:` keyword. Mode 2: the referenced content verbatim — a short topic like "Options for X discussed in session", or one checkbox line per discrete todo. Mode 3: ask for kind, topic and content.
+6. Append to the end of the target. Do not reorder entries, and do not edit prior ones unless the user explicitly says "update the last note", "tick that task", or similar.
+7. Report: which target, the path, the topic or task text, the file's line count after the append, and any adoption.
 
 ## Guardrails
 
-- Never remove or reorder existing memos or tasks.
+- Never remove or reorder existing notes or tasks.
 - Never tick or un-tick a task unless the user explicitly asks.
 - Never rewrite the user's pasted content in your own words — verbatim only.
-- Keep entries short. If the user wants a full write-up, direct them to a plan, an analysis, or a consultation instead — those are separate artifact kinds with their own stores.
-- Do not file an issue or plan based on a memo or task — these are for keeping, not for acting.
-- Never edit, rename, claim, finish or drop an existing work item. This skill creates items at `open` and does nothing else to the store. A status moves elsewhere: the orchestrator maintains the store at the user's word, and the user can edit one by hand. Which operations exist and under what confirmation is `agents/orchestrator.md` `## Work items`, over the definition in `rules/fusion-workbench-conventions.md` `## Backlog entries — work items`.
-- **Never file an item on an agent's behalf.** The backlog holds what the *user* files (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`), and this skill is that surface — it runs because the user typed `/fusion:memo` with an idea of their own. A finding an agent carried into the conversation does not become the user's idea by being routed through here: something broken is still an issue, something to settle is still a decision record, and neither is filed from this skill at all.
+- Keep entries short. A full write-up belongs in a plan, an analysis, or a consultation.
+- Do not file an issue or plan based on a note or task — these are for keeping, not for acting.

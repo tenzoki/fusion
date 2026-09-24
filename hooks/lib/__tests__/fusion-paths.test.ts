@@ -331,15 +331,12 @@ describe("bin/fusion-paths", () => {
       expect(p.OUT_BACKLOG).toBeUndefined();
     });
 
-    it("gives memo the write key and withholds the read key", () => {
-      // The asymmetry runs the other way. `/fusion:memo` is the one surface
+    it("gives wp the write key and withholds the read key", () => {
+      // The asymmetry runs the other way. `/fusion:wp` is the one surface
       // where the store is WRITTEN — by the user, which is what the "no agent
-      // files an item" bound leaves open — and it files one item per
-      // invocation without ever listing, re-reading or consolidating the
-      // store. Consolidating is a maintenance operation the orchestrator
-      // performs at the user's word, so a run here that set out to do it has
-      // no resolved path to read from.
-      const p = parse(run(project, "memo").stdout);
+      // files an item" bound leaves open — and it never lists, re-reads or
+      // consolidates it; why is `skills/wp/SKILL.md` Step 0.
+      const p = parse(run(project, "wp").stdout);
       expect(p.OUT_BACKLOG).toBe("circles");
       expect(p.SCAN_BACKLOG).toBeUndefined();
     });
@@ -471,8 +468,7 @@ describe("bin/fusion-paths", () => {
     }
 
     it("gives memo OUT_MEMO under its own name — no agent prompt writes memos", () => {
-      // OUT_MEMO used to hang off the orchestrator, whose prompt never writes
-      // a memo. The key now sits with its only writer.
+      // OUT_MEMO sits with its only writer; the orchestrator's prompt writes no memo.
       expect(parse(run(project, "memo").stdout).OUT_MEMO).toBe("shared/memos");
       expect(parse(run(project, "orchestrator").stdout).OUT_MEMO).toBeUndefined();
     });

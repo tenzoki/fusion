@@ -8,7 +8,7 @@ allowed-tools: [Read, Bash, Glob]
 
 The user invoked `/fusion:help`. Identify which topic they care about (from any argument they passed, or from the conversational context if no explicit arg), then answer focused on that topic.
 
-If no specific topic is identifiable, open with **the daily loop**: morning `/fusion:cadence`; work — start the orchestrator and say what you want; ideas `/fusion:memo`; done `/fusion:cleanup` and walk away. Then list the five topics with one-line summaries and ask which to drill into.
+If no specific topic is identifiable, open with **the daily loop**: morning `/fusion:cadence`; work — start the orchestrator and say what you want; ideas `/fusion:wp`, notes `/fusion:memo`; done `/fusion:cleanup` and walk away. Then list the five topics with one-line summaries and ask which to drill into.
 
 **Read the source files this skill points at; do not paste them whole.** Synthesize a focused answer in your own voice and cite file paths so the user can read the originals if they want.
 
@@ -54,7 +54,7 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
    - Concrete change with a clear ask → **planner** directly
    - One bug to fix → **coder** or **ontocoder**, whichever owns the file; a task naming an error takes the diagnose-before-editing route in its own prompt
    - Customer-ready deliverable, branded deck, or en↔de translation → **editor**
-   - A goal to capture without starting work on it → `/fusion:memo` files it as its own work item in the project backlog, where it waits at `open` until somebody claims it. Its path is then a valid input to **shaper**, which turns it into a spec without touching the item
+   - A goal to capture without starting work on it → `/fusion:wp` files it as its own work item in the project backlog, where it waits at `open` until somebody claims it. Its path is then a valid input to **shaper**, which turns it into a spec without touching the item
    - "What should I work on next?" → read the backlog yourself; the portfolio briefing and the session work queue both went at v11 with the agents that built them
    - Tracking files feel stale → **reconciler**
    - Strategic advice or second opinion → **consultant**

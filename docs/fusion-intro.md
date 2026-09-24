@@ -59,7 +59,7 @@ Der Help-Skill liest die ausgelieferten Docs und zitiert sie mit Pfad, statt aus
 2. Beim allerersten Mal im Projekt `/fusion:setup` ausführen. Danach nicht mehr nötig: der Orchestrator führt Setup selbst aus, sobald er die erste Aufgabe bekommt.
 3. `/fusion:cadence`: was habe ich zuletzt getan. Braucht keinen laufenden Orchestrator, nur die Sitzung und die Workbench.
 4. Arbeiten: dem Orchestrator sagen, was man will.
-5. Ideen unterwegs mit `/fusion:memo` ablegen, ohne die laufende Arbeit zu stören.
+5. Ideen unterwegs mit `/fusion:wp` ablegen, ohne die laufende Arbeit zu stören.
 6. Fertig: `/fusion:cleanup` — committen und pushen, sonst nichts. Aufräumen, Reconcile, `CLAUDE.md` und die Nachricht an das nächste Checkout sind je ein eigenes Kommando; das Aktivitätslog ist in `/fusion:cadence` aufgegangen.
 
 ### Direktmodus: einfach sagen, was man will
@@ -99,13 +99,13 @@ Bis v11 hieß die Arbeitseinheit *Circle*: ein Verzeichnis unter `circles/` mit 
 ### Backlog, Memo und der Weg zur Arbeit
 
 ```
-/fusion:memo idea: <eine Zeile>   Idee als Work Item ablegen (Status: open)
+/fusion:wp <eine Zeile>           Idee als Work Item ablegen (Status: open)
 Store lesen, eines auswählen      nichts rankt sie; die Reihenfolge ist deine
 Orchestrator claimed es           Status: open → claimed, Claim: <dein Checkout>
 Item-Pfad an den shaper           er liest es als Anfrage und schreibt kein Byte hinein
 ```
 
-`/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<checkout>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<checkout>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigenes Verzeichnis unter `circles/`). Kein Agent legt ein Work Item an; das ist Sache des Menschen. Der Orchestrator pflegt den Store — claimen, freigeben, abschließen, verwerfen, teilen, zusammenlegen — und zwar je Operation und je Item nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
+`/fusion:memo` kennt zwei Ziele je Person, benannt nach deiner git-E-Mail: eine Notiz (`shared/memos/notes-<person>.md`) oder eine Aufgabe (`task:`/`todo:` nach `tasks-<person>.md`). Eine Idee legt `/fusion:wp` als eigenes Verzeichnis unter `circles/` an. Kein Agent legt ein Work Item an; das ist Sache des Menschen. Der Orchestrator pflegt den Store — claimen, freigeben, abschließen, verwerfen, teilen, zusammenlegen — und zwar je Operation und je Item nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
 
 ### Issues und Decisions
 
@@ -222,7 +222,8 @@ Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung fes
 | `/fusion:post` | Eine Nachricht für das nächste Checkout hinterlassen |
 | `/fusion:cadence` | Aktivitätslog schreiben und daraus: was ist passiert (gestern, 7 Tage, wiederkehrend) |
 | `/fusion:news` | Was ein anderes Checkout hinterlassen hat, gelesen vor dem Pull |
-| `/fusion:memo` | Memo, Aufgabe oder Idee ablegen |
+| `/fusion:memo` | Notiz oder Aufgabe ablegen |
+| `/fusion:wp` | Neues Arbeitspaket (Work Item) anlegen |
 | `/fusion:help [topic]` | Selbstauskunft |
 | `/fusion:commit` | Commit mit generierter Nachricht, unter dem Lock |
 | `/fusion:migrate` | Alte Workbench-Layouts auf das aktuelle Format bringen |
