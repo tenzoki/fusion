@@ -30,7 +30,9 @@ release is tagged `v11.0.0`, and `FUSION_REF=tags/v11.0.0` pins exactly that fir
 | Writes to the session history store | Nothing. No agent writes a session log any more. Your existing history files stay where they are and stay readable. |
 
 Two commands arrived: `/fusion:check`, which runs the periodic installation checks `/fusion:setup`
-used to run inline, and `/fusion:reconcile`, which is one reconciler pass on its own.
+used to run inline, and `/fusion:reconcile`, which is one reconciler pass on its own. A third came
+at v11.11.2: `/fusion:wp` files a new work package, which `/fusion:memo` did through its `idea:`
+route until then; memo now answers that prefix by pointing at `/fusion:wp` and writes nothing.
 
 ## What to do in your project
 
@@ -162,6 +164,16 @@ it, so read this as a record of v11 rather than as a promise.
 - **The hook layer.** It still observes every write-tool call and every `Bash` call, allows all of
   them, and blocks nothing. Nothing about that moved in this release.
 - **Your `.claude/` permission settings and your commit lock.** Unchanged.
+- **Your memo files, since v11.11.2.** `/fusion:memo` keeps one `tasks-<person>.md` and one
+  `notes-<person>.md` per person, keyed by the git e-mail, and writes nothing where no e-mail is
+  set. On its next run it appends this checkout's older `memos-<checkout>.md` and
+  `tasks-<checkout>.md` to them, removes the old files and reports both paths; nothing is lost and
+  another checkout's files stay where they are.
+- **The periodic-check stamps, since v11.11.2.** They live in `fusion-workbench/.check-stamps`,
+  local and gitignored, rather than in the tracked `.fusion-setup`, so a checkout no longer reads
+  another's stamps as its own. Every check therefore falls due once more on each checkout, and
+  `/fusion:setup` drops the old `checks` object from `.fusion-setup` on its next write: one
+  one-line diff to commit.
 - **The citation grammar and the marker vocabularies.** Issues and plans still take `_o_`, `_p_`,
   `_c_`, `_d_`; decisions still take `_o_`, `_a_`, `_i_`, `_d_`, `_s_`. A work item is the one thing
   that carries no marker at all: its state is the `**Status:**` field.
