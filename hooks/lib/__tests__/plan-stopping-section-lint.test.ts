@@ -48,6 +48,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { fencedContentLines, workbenchRoot, WORKBENCH_PRESENT } from "./helpers/citation-scan.ts";
+import { CONTAINER_STORE, containerRoots, namesOf } from "../stores.js";
 
 /** The heading, verbatim from `agents/implementation-planner.md:131`. */
 const SECTION = "## Where this work stops";
@@ -153,19 +154,14 @@ function report(violations: Violation[]): string {
   return violations.map((v) => `  ${v.rel}  ${REMEDY[v.verdict]}`).join("\n");
 }
 
-/** Every planning store: each Circle's, plus the shared one. */
+/** Every plan store, under both window names: each container's, plus the shared one. */
 function planningStores(): string[] {
-  const stores: string[] = [];
-  const circles = join(workbenchRoot, "circles");
-  if (existsSync(circles)) {
-    for (const d of readdirSync(circles, { withFileTypes: true })) {
-      if (d.isDirectory() && existsSync(join(circles, d.name, "planning"))) {
-        stores.push(`circles/${d.name}/planning`);
-      }
-    }
+  const bases = ["shared"];
+  for (const r of containerRoots(workbenchRoot)) {
+    if (!existsSync(join(workbenchRoot, r))) continue;
+    for (const d of readdirSync(join(workbenchRoot, r), { withFileTypes: true })) if (d.isDirectory()) bases.push(`${r}/${d.name}`);
   }
-  if (existsSync(join(workbenchRoot, "shared", "planning"))) stores.push("shared/planning");
-  return stores.sort();
+  return bases.flatMap((b) => namesOf("plans").map((n) => `${b}/${n}`)).filter((s) => existsSync(join(workbenchRoot, s))).sort();
 }
 
 /** The corpus: live (`_o_`/`_p_`) plans, specs excluded. */
@@ -253,9 +249,9 @@ describe("stopping-section lint: the corpus filter", () => {
     }
   });
 
-  it.skipIf(!WORKBENCH_PRESENT)("reads every planning store — each Circle's and the shared one", () => {
+  it.skipIf(!WORKBENCH_PRESENT)("reads every plan store — each container's and the shared one", () => {
     const stores = planningStores();
-    expect(stores).toContain("shared/planning");
-    expect(stores.filter((s) => s.startsWith("circles/")).length).toBeGreaterThan(0);
+    expect(stores).toContain("shared/plans");
+    expect(stores.filter((s) => s.startsWith(`${CONTAINER_STORE}/`)).length).toBeGreaterThan(0);
   });
 });
