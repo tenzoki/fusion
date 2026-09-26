@@ -87,13 +87,12 @@
 #     consultations, memos and messages answer to nobody's directive. And the
 #     container store IS the work packages, so OUT_PACKAGES and SCAN_PACKAGES
 #     name it whole rather than naming anything inside one container.
-#   - OUT_HISTORY and SCAN_HISTORY are LEGACY. The history store is closed to
-#     writes (rules/fusion-workbench-conventions.md "## Session history"): no
-#     agent prompt names either key, the existing corpus stays on disk and stays
-#     readable, and SCAN_HISTORY is emitted for /fusion:cadence, which digests
-#     that frozen corpus. Both arms stay valued only while a shipped prompt
-#     still names them — removing an arm a prompt names is exit 4, not silence,
-#     which is why the arm outlives the last write rather than preceding it.
+#   - SCAN_HISTORY is LEGACY. The history store is closed to writes
+#     (rules/fusion-workbench-conventions.md "## Session history") and has no
+#     OUT_ key: the arm went once no shipped prompt named it, so a prompt that
+#     names it again exits 4. The corpus stays on disk and readable, and
+#     SCAN_HISTORY is emitted for /fusion:cadence, which digests it. That arm
+#     stays valued only while a shipped prompt still names it.
 #
 # ---------------------------------------------------------------------------
 # Why the key sets are derived and not declared
@@ -461,7 +460,6 @@ packages_value() {
 value_for() {
   case "$1" in
     OUT_PLAN)                     printf '%s' "$OUT_BASE/$PLAN_STORE" ;;
-    OUT_HISTORY)                  printf '%s' "$OUT_BASE/history" ;;
     OUT_ISSUE)                    printf '%s' "$OUT_BASE/issues" ;;
     OUT_DECISION)                 printf '%s' "$OUT_BASE/decisions" ;;
     OUT_REVIEW)                   printf '%s' "$OUT_BASE/reviews" ;;
@@ -509,7 +507,7 @@ value_for() {
 # ---------------------------------------------------------------------------
 # 5. Emit. Canonical order, filtered by the derived key set.
 # ---------------------------------------------------------------------------
-ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
+ORDER="OUT_PLAN OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
        OUT_DISCUSSION OUT_CONSULT OUT_MEMO OUT_PACKAGES OUT_FORUM
        SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
        SCAN_ANALYSES SCAN_PACKAGES SCAN_FORUM"

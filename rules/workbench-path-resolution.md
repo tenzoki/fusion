@@ -107,7 +107,7 @@ no `OUT_*` ever names one (`rules/fusion-workbench-conventions.md`
 |---|---|---|---|
 | `WORKBENCH` | — | Absolute path to `fusion-workbench/` | Always emitted, and the only absolute path. Resolved via `bin/fusion-workbench-root`. |
 | `OUT_PLAN` | `SCAN_PLANS` | `<scope>/plans` | Spec and plan writes. |
-| `OUT_HISTORY` | `SCAN_HISTORY` | `<scope>/history` | **Legacy: the history store is closed to writes** (`rules/fusion-workbench-conventions.md` `## Session history`). No agent names it. The arm survives only while the last skill bodies naming it do, and goes with them. `/fusion:cadence` is the consumer the read key is emitted for; a reader of it says so rather than reporting an empty stretch as a quiet week. |
+| — | `SCAN_HISTORY` | `<scope>/history` | **Legacy: the history store is closed to writes** (`rules/fusion-workbench-conventions.md` `## Session history`). No agent names it. The `OUT_HISTORY` arm went with the last prompt naming it; the read arm goes with the last skill body naming it. `/fusion:cadence` is the consumer the read key is emitted for; a reader of it says so rather than reporting an empty stretch as a quiet week. |
 | `OUT_ISSUE` | `SCAN_ISSUES` | `<scope>/issues` | Defect filing. |
 | `OUT_DECISION` | `SCAN_DECISIONS` | `<scope>/decisions` | Decision-record filing. |
 | `OUT_REVIEW` | `SCAN_REVIEWS` | `<scope>/reviews` | Review writes, both review domains. |

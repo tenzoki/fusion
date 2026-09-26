@@ -13,3 +13,6 @@ The OUT_HISTORY arm outlived the last prompt naming it
 `SCAN_HISTORY` is not affected: `skills/cadence/SKILL.md` and `skills/archive/SKILL.md` still read it.
 
 **Acceptance test:** `grep -n OUT_HISTORY bin/fusion-paths` returns nothing, the `OUT_HISTORY` row in `rules/workbench-path-resolution.md` `## The key table` is then updated in the same change (that file is the policy-curator's, so the row edit may be filed back as a ledger entry), and `npm test` stays green.
+
+---
+Resolved: `bin/fusion-paths` drops the `OUT_HISTORY` value arm and its `ORDER` entry, header note rewritten; `rules/workbench-path-resolution.md` `## The key table` row now names `SCAN_HISTORY` alone and says the write arm went. 1009 of 1009 tests green.

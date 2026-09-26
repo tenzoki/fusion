@@ -12,3 +12,6 @@ Four sentences in `README-agents.md` describe behaviour that has since moved. Th
 4. `## The agents`, the **Writes** column, lists `history/` for `implementation-planner`, `code-implementer`, `data-implementer`, `state-auditor`, `consultant`, `analyst` and `document-editor`. `rules/fusion-workbench-conventions.md` `## Session history` closes that store to writes, and `grep -rn OUT_HISTORY agents skills` returns nothing.
 
 **Acceptance test:** each of the four sentences states what the cited source states; `grep -n 'Step 0c\|stamped into .fusion-setup' README-agents.md` returns nothing.
+
+---
+Resolved: `README-agents.md` `## Invariants` names the `concurrency` selector of `/fusion:check` instead of setup Step 0c and `/fusion:wp` as the filing route; the `/fusion:check` row names `fusion-workbench/.check-stamps`; `history/` left every Writes column (and the policy-curator row now names `analyses/` for its run file), the reviewer paragraph says no agent writes a session history. Reference pin re-approved (+1 path, +1 anchor); 1009 of 1009 tests green.
