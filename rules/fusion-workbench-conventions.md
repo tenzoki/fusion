@@ -581,10 +581,11 @@ outlive either is a record in one of the stores that still takes writes: a defec
 a plan, a review or an analysis.
 
 **The existing corpus is kept, not deleted.** Every `history/` directory in this workbench and in
-`archive/` stays where it is and stays readable. A citation of a history file that already exists
-resolves exactly as it did (`## Filename Patterns`, the markerless form `YYMMDD-HHMM-<topic>.md`),
-so the resolution lines already written into records remain true. What no longer happens is a new
-file arriving in one of those directories.
+`archive/` stays readable, and stays where it is until one sweep moves the corpus into `archive/`,
+basenames unchanged (`260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md`).
+A citation of a history file that already exists resolves exactly as it did (`## Filename Patterns`,
+the markerless form `YYMMDD-HHMM-<topic>.md`), so the resolution lines already written into records
+remain true. What no longer happens is a new file arriving in one of those directories.
 
 **Coverage past the cut is nil, and a reader is told so rather than shown a zero.** A pass that
 digests the corpus (`/fusion:cadence` is the one that does) states in its own output that the

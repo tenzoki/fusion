@@ -144,7 +144,7 @@ them". Nor is the retirement silent: a later prompt naming either key exits 4 ag
 ORDER check in `bin/fusion-paths`, naming the prompt, the key, and both places to add it
 back. `OUT_CIRCLE`, `SCAN_CIRCLES` and `PORTFOLIO` were retired the same way when the
 Circle container was cut, and the two that named `circles/` show the criterion surviving
-that store's return: the directory is written to again, under `OUT_BACKLOG`, and the retired
+that store's return: the container store is written to again, under `OUT_PACKAGES`, and the retired
 keys stayed retired because no prompt names them.
 
 **Three kinds have a write key and no read key** — memos, consultations and discussions —
