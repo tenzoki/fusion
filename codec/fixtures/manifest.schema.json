@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fusion.fixture-manifest/v1",
+  "title": "Fixture manifest",
+  "description": "The index of every fixture under codec/fixtures/ except those under prior/. Both hosts read this file and assert the same outcomes (Prior's FH01 acceptance sentence). Each entry names one fixture file, the schema it is validated against, and the outcome the harness must observe.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["path", "schema", "expect"],
+    "properties": {
+      "path": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^(?!/)(?!(.*/)?\\.\\.(/|$)).+$",
+        "description": "The fixture file, relative to codec/fixtures/, with forward slashes; no leading slash, no .. segment."
+      },
+      "schema": {
+        "type": "string",
+        "minLength": 1,
+        "description": "The $id of the schema the parsed fixture is validated against, or the literal \"bytes\" for a fixture that exercises the strict reader only."
+      },
+      "expect": {
+        "enum": ["valid", "invalid"]
+      },
+      "error_class": {
+        "enum": ["schema-invalid", "unsupported-format"],
+        "description": "Required when expect is invalid, forbidden otherwise. unsupported-format is the outcome for a schema $id the validator does not know."
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Optional. When it names a strict-reader reason (bom, too-large, invalid-utf8, duplicate-key, non-finite, multiple-values, not-an-object, syntax) the harness asserts that the strict reader refused the bytes for exactly that reason; for a bytes fixture that is invalid it is required. Any other string is documentation."
+      },
+      "note": {
+        "type": "string"
+      }
+    },
+    "allOf": [
+      {
+        "if": { "properties": { "expect": { "const": "invalid" } } },
+        "then": { "required": ["error_class"] },
+        "else": { "not": { "required": ["error_class"] } }
+      },
+      {
+        "if": { "properties": { "schema": { "const": "bytes" } } },
+        "then": {
+          "properties": {
+            "reason": {
+              "enum": ["bom", "too-large", "invalid-utf8", "duplicate-key", "non-finite", "multiple-values", "not-an-object", "syntax"]
+            }
+          }
+        }
+      },
+      {
+        "if": { "properties": { "schema": { "const": "bytes" }, "expect": { "const": "invalid" } } },
+        "then": { "required": ["reason"] }
+      }
+    ]
+  }
+}

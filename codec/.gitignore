@@ -1,0 +1,5 @@
+node_modules/
+# The repository root `.gitignore` excludes every `package-lock.json`. This
+# package commits its lock, as `hooks/` does (whose lock was force-added), and
+# the negation below is what lets an ordinary `git add codec/` pick it up.
+!package-lock.json

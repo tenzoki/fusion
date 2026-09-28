@@ -45,7 +45,8 @@ The fixture manifest is language-neutral on purpose: Prior's Go side reads the s
 
 ## Implementation Steps
 
-1. **Package skeleton**
+1. [DONE] **Package skeleton**
+   - Done 2026-09-28: `codec/.gitignore` also carries `!package-lock.json`, because the root `.gitignore` excludes every lock file and `hooks/package-lock.json` is tracked only by a force-add; the codec lock is tracked by that line instead.
    - Executor: `code-implementer`
    - Files: `codec/package.json`, `codec/tsconfig.json`, `codec/vitest.config.mjs`, `codec/README.md`, `codec/.gitignore`
    - Changes: private package, `"type": "module"`, `engines.node >= 20.12.0` as `hooks/` has; devDependencies `typescript 5.9.3`, `vitest ^2.1.0`, `@types/node`, `ajv ^8`, `ajv-formats ^3`; scripts `test` (vitest run) and `typecheck` (tsc --noEmit); no `build` and no `dist` in this package yet. README states the package's purpose, the FJ00 boundary (nothing shipped), the decision record that placed it here, and that `npm test` in `codec/` is the package's own gate beside `hooks/`'s. `.gitignore` excludes `node_modules`.
@@ -96,7 +97,8 @@ The fixture manifest is language-neutral on purpose: Prior's Go side reads the s
    - Acceptance: every file under `fixtures/` except `prior/` appears in the manifest exactly once (a test asserts it); the manifest validates against a small `manifest.schema.json` of its own.
    - Dependencies: 3, 4, 5.
 
-8. **Strict reader and validation harness**
+8. [DONE] **Strict reader and validation harness**
+   - Done 2026-09-28: the loader runs Ajv 2020 with `strict: true, strictRequired: false, allErrors: true`, because `strictRequired` refuses a `required` inside an `if`/`then` branch and the package schema's cross-field rules are exactly such branches; every other strict restriction stands and is tested. `validate.test.ts` was added beyond the step's file list so the loader is proven against schemas the test controls. The harness asserts a `reason` only when it names a strict-reader reason; an Ajv keyword in a manifest `reason` is documentation, not an assertion.
    - Executor: `code-implementer`
    - Files: `codec/src/strict-json.ts`, `codec/src/validate.ts`, `codec/src/__tests__/strict-json.test.ts`, `codec/src/__tests__/fixtures.test.ts`
    - Changes: `strict-json.ts` reads bytes and returns either a parsed value or a typed refusal: BOM, size over 1 MiB, invalid UTF-8, duplicate key at any depth, non-finite number token, more than one top-level value, non-object top level. It is a scanner over the token stream, not a second JSON grammar: it tokenises only far enough to find duplicate keys and multiple values and hands the bytes to `JSON.parse` for the value. `validate.ts` loads the six schemas into one ajv instance (strict, `allErrors`), exposes `validate(schemaId, value)` returning `{ok: true}` or `{ok: false, class: "schema-invalid", errors}`. `fixtures.test.ts` walks the manifest and asserts each outcome and error class.
