@@ -122,7 +122,8 @@ The fixture manifest is language-neutral on purpose: Prior's Go side reads the s
     - Acceptance: the enumeration is exhaustive by construction (the test builds the pairs from the state list in the table, never from a hand-written list) and green.
     - Dependencies: 6, 8.
 
-11. **The hook suite still passes with `codec/` in the tree**
+11. [DONE] **The hook suite still passes with `codec/` in the tree**
+    - Done 2026-09-28, in a detached worktree at `c8992f13`: exit 1, 60 files, 1 009 tests, 1 008 passed. The one red is `monitor-warnings-panel.test.ts` "answers at localhost on both loopback families", a 30 s timeout that reproduces identically at the survey commit `40a1713f` without `codec/` and again outside the Bash sandbox, so it is a host condition and not this plan's; it is filed as `260928-1520_*_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.md` in the shared issue store. No lint tripped on the new directory and no test file changed. Growth-bound room re-read: 3 806 bytes, 25 559 bytes, 6 lines, unchanged.
     - Executor: `code-implementer`
     - Files: whichever lint the new directory trips, expected among `hooks/lib/__tests__/reference-resolution-lint.test.ts` (its pinned citation count and its scan roots), `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`, `hooks/lib/__tests__/committed-dist.test.ts`; possibly `.gitignore` for `codec/node_modules`
     - Changes: run `npm test` in `hooks/` from an isolated `git worktree` of the branch (the suite rewrites `hooks/dist`, which is why the spec asks for the worktree); classify every red as either a lint that must learn the new directory (fix inside that lint's own rules, never by widening a baseline) or a stop. Record the run's exit code, file and test counts in this step's `[DONE]` note.
