@@ -11,6 +11,11 @@
 //
 // `FormationPolicy` is a `Form` input at 12d8424; only its Version persists.
 // The import takes it as an optional side input and writes `null` otherwise.
+//
+// A work item id (`Admission.Attempts[].ItemID`, an `ActiveItems` key) names
+// something the plan alone cannot resolve, as a register's `WorkItemID` does.
+// When the caller supplies the inventory it can resolve, an id outside it is
+// unresolved-reference; without the set the check is the caller's.
 // ---------------------------------------------------------------------------
 
 import type { FormationAdmissionBlock, FormationBlock, FormationCandidateBlock, FormationPackageBlock, ImportedPlan } from "./blocks.js";
@@ -45,6 +50,8 @@ import type { PriorAdmission, PriorFormationCandidate, PriorFormationPolicy, Pri
 export interface PlanInputs {
   /** The formation policy the plan was formed under, when known; `formation.policy` is null otherwise. */
   policy?: PriorFormationPolicy | null;
+  /** The work items the caller can resolve; an attempt's ItemID or an ActiveItems key outside it is unresolved-reference. */
+  workItems?: ReadonlySet<string>;
 }
 
 export interface ExportedPlan {
@@ -84,6 +91,11 @@ export function importPlan(plan: PriorPlan, inputs: PlanInputs = {}): PriorResul
       p.dependencies.forEach((d, i) => namesPackage(`Packages[${p.id}].Dependencies[${i}]`, d));
     }
 
+    const namesItem = (path: string, id: string): string => {
+      if (inputs.workItems !== undefined && !inputs.workItems.has(id)) unresolved(path, `"${id}" names no work item the caller knows`);
+      return id;
+    };
+
     const order = stringSet("Order", t.list("Order", plan.Order));
     order.forEach((id, i) => namesPackage(`Order[${i}]`, id));
 
@@ -96,11 +108,12 @@ export function importPlan(plan: PriorPlan, inputs: PlanInputs = {}): PriorResul
     const admissions: FormationAdmissionBlock[] = t.entries("Admissions", plan.Admissions).map(([key, a]) => {
       const path = `Admissions[${key}]`;
       keyMatches(path, key, a.ID);
-      return importAdmission(a, path, t, namesCandidate, namesPackage);
+      return importAdmission(a, path, t, namesCandidate, namesPackage, namesItem);
     });
     const admissionIds = new Set(admissions.map((a) => a.id));
 
     const active_items = t.entries("ActiveItems", plan.ActiveItems).map(([item_id, admission_id]) => {
+      namesItem(`ActiveItems[${item_id}]`, item_id);
       nonEmpty(`ActiveItems[${item_id}]`, admission_id);
       if (!admissionIds.has(admission_id)) unresolved(`ActiveItems[${item_id}]`, `names admission "${admission_id}", which formation.admissions does not hold`);
       return { item_id, admission_id };
@@ -168,13 +181,14 @@ function importAdmission(
   t: EmptyTracker,
   namesCandidate: (path: string, id: string) => string,
   namesPackage: (path: string, id: string) => string,
+  namesItem: (path: string, id: string) => string,
 ): FormationAdmissionBlock {
   const at = (f: string): string => `${path}.${f}`;
   const attempts = t.list(`${path}.Attempts`, a.Attempts).map((x, i) => ({
     candidate: namesCandidate(`${at("Attempts")}[${i}].Candidate`, x.Candidate),
     candidate_version: positive(`${at("Attempts")}[${i}].CandidateVersion`, x.CandidateVersion),
     attempt: positive(`${at("Attempts")}[${i}].Attempt`, x.Attempt),
-    item_id: nonEmpty(`${at("Attempts")}[${i}].ItemID`, x.ItemID),
+    item_id: namesItem(`${at("Attempts")}[${i}].ItemID`, nonEmpty(`${at("Attempts")}[${i}].ItemID`, x.ItemID)),
   }));
   distinct(at("Attempts"), attempts.map((x) => JSON.stringify([x.candidate, x.candidate_version, x.attempt, x.item_id])));
   return {

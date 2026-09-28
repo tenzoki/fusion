@@ -8,16 +8,24 @@
 // proves, in this order: the import equals fusion.json; the import validates
 // against the schemas inside a minimal envelope; export(import(prior)) equals
 // prior after canonical re-serialisation, both structurally and as Go bytes;
-// the revision recomputed from the exported aggregate equals the stored one,
-// as do every evidence hash, snapshot hash and charter hash; and, with
-// CODEC_REQUIRE_GOLDENS=1, that the fixture is a Go-emitted golden.
+// the revision recomputed from the exported aggregate equals the stored one
+// (a `Form`-only plan stores none, and there the suite asserts the empty
+// revision rather than computing one), as do every evidence hash, snapshot
+// hash and charter hash; and, with CODEC_REQUIRE_GOLDENS=1, that the fixture
+// is a Go-emitted golden.
+//
+// `fusion.json` is a GOLDEN written by this suite: `UPDATE_PRIOR_FIXTURES=1`
+// rewrites each one from import(prior) in the serialisation below (two-space
+// indent, LF, a final newline, `_provenance` first) and then asserts the
+// same; an ordinary run compares the bytes and a difference fails, naming the
+// case and the variable. `prior.json` is Prior's and never written here.
 //
 // The coverage assertion walks every prior.json by its Go type and proves
 // that every `prior_key` in `contract/prior-mapping.json` occurs in at least
 // one fixture, and that every Go field the serialiser knows has a row.
 // ---------------------------------------------------------------------------
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -49,6 +57,19 @@ const AGGREGATES: Array<[string, PriorAggregateKind]> = [
   ["campaign", "campaign.State"],
 ];
 const REQUIRE_GOLDENS = process.env["CODEC_REQUIRE_GOLDENS"] === "1";
+const UPDATE_FIXTURES = process.env["UPDATE_PRIOR_FIXTURES"] === "1";
+
+/** The `_provenance` line a fusion.json carries: which importer produced it. */
+const FUSION_PROVENANCE: Record<PriorAggregateKind, string> = {
+  "candidates.Register": "import of prior.json by codec/src/prior/candidates.ts importRegister",
+  "packages.Plan": "import of prior.json by codec/src/prior/packages.ts importPlan",
+  "campaign.State": "import of prior.json by codec/src/prior/campaign.ts importCampaignState",
+};
+
+/** The bytes a fusion.json is written as; the importer's own key order, which is deterministic. */
+function serialiseFusion(kind: PriorAggregateKind, imported: Record<string, unknown>): string {
+  return JSON.stringify({ _provenance: FUSION_PROVENANCE[kind], ...imported }, null, 2) + "\n";
+}
 
 // --- reading a case -----------------------------------------------------------
 
@@ -58,6 +79,7 @@ interface Case {
   name: string;
   dir: string;
   priorFile: string;
+  fusionFile: string;
   provenance: string;
   /** The Go aggregate: prior.json without its underscore keys. */
   prior: Record<string, unknown>;
@@ -86,10 +108,12 @@ function readCases(): Case[] {
       const prior: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(raw)) if (!k.startsWith("_")) prior[k] = v;
       const inputs = (raw["_inputs"] ?? {}) as Record<string, unknown>;
-      const fusionRaw = readStrict(join(caseDir, "fusion.json"));
+      const fusionFile = join(caseDir, "fusion.json");
+      // Under the writer a missing fusion.json is written by the case below, not a read error here.
+      const fusionRaw = existsSync(fusionFile) || !UPDATE_FIXTURES ? readStrict(fusionFile) : {};
       const fusion: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(fusionRaw)) if (!k.startsWith("_")) fusion[k] = v;
-      out.push({ aggregate, kind, name, dir: caseDir, priorFile, provenance, prior, inputs, fusion });
+      out.push({ aggregate, kind, name, dir: caseDir, priorFile, fusionFile, provenance, prior, inputs, fusion });
     }
   }
   return out;
@@ -121,10 +145,17 @@ function roundTrip(c: Case): { imported: Record<string, unknown>; exported: Reco
       return { imported: imported as unknown as Record<string, unknown>, exported: e.register as unknown as Record<string, unknown>, exportedInputs };
     }
     case "packages.Plan": {
-      const imported = must(importPlan(c.prior as unknown as PriorPlan, { policy: (c.inputs["FormationPolicy"] as never) ?? null }));
+      const workItems = c.inputs["WorkItems"];
+      const imported = must(
+        importPlan(c.prior as unknown as PriorPlan, {
+          policy: (c.inputs["FormationPolicy"] as never) ?? null,
+          workItems: Array.isArray(workItems) ? new Set(workItems as string[]) : undefined,
+        }),
+      );
       const e = must(exportPlan(imported));
       const exportedInputs: Record<string, unknown> = {};
       if (e.policy !== null) exportedInputs["FormationPolicy"] = e.policy;
+      if (Array.isArray(workItems)) exportedInputs["WorkItems"] = workItems;
       return { imported: imported as unknown as Record<string, unknown>, exported: e.plan as unknown as Record<string, unknown>, exportedInputs };
     }
     case "campaign.State": {
@@ -214,10 +245,14 @@ describe("fixtures/prior round trips", () => {
         expect(priorAggregateKind(c.prior)).toBe(c.kind);
       });
 
-      it("imports to exactly fusion.json", () => {
+      it("imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)", () => {
         const { imported } = roundTrip(c);
-        expect(imported).toEqual(c.fusion);
         expect((imported["provenance"] as { source: string }).source).toBe("imported");
+        const fresh = serialiseFusion(c.kind, imported);
+        const differs = `${c.aggregate}/${c.name}: fusion.json differs from import(prior.json). If the mapping changed on purpose, regenerate with UPDATE_PRIOR_FIXTURES=1 and commit the file.`;
+        if (UPDATE_FIXTURES) writeFileSync(c.fusionFile, fresh);
+        else expect(imported, differs).toEqual(c.fusion); // the structural diff first: it reads better than a byte diff
+        expect(readFileSync(c.fusionFile, "utf-8"), differs).toBe(fresh);
       });
 
       it("validates against the schemas through validate()", () => {
@@ -252,8 +287,16 @@ describe("fixtures/prior round trips", () => {
       });
 
       it("the recomputed revision and hashes equal the stored ones", () => {
-        const { exported } = roundTrip(c);
-        expect(computePriorRevision(exported as never)).toBe(c.prior["Revision"]);
+        const { imported, exported } = roundTrip(c);
+        const stored = c.prior["Revision"];
+        if (stored === "") {
+          // A plan that only `Form` produced carries no revision yet: nothing to recompute, and never one to invent.
+          expect(c.kind).toBe("packages.Plan");
+          expect((imported["formation"] as { revision: unknown }).revision).toBeNull();
+          expect(exported["Revision"]).toBe("");
+        } else {
+          expect(computePriorRevision(exported as never)).toBe(stored);
+        }
         if (c.kind === "candidates.Register") {
           const snapshot = c.inputs["Snapshot"] as PriorSnapshot | undefined;
           for (const [id, cand] of Object.entries((c.prior["Candidates"] as Record<string, PriorCandidate>) ?? {})) {
@@ -387,6 +430,25 @@ describe("typed refusals, never defaults", () => {
     const plan2 = fixture<PriorPlan>("plan", "failed-package-does-not-block-unrelated-package");
     plan2.ActiveItems = { "item-b": "intent-9" };
     expect(importPlan(plan2)).toMatchObject({ ok: false, class: "unresolved-reference", path: "ActiveItems[item-b]" });
+  });
+
+  it("an attempt's ItemID or an active item naming no known work item is unresolved-reference", () => {
+    const plan = fixture<PriorPlan>("plan", "failed-package-does-not-block-unrelated-package");
+    // Admissions are read before ActiveItems, so the attempt naming item-b is the first refusal.
+    expect(importPlan(plan, { workItems: new Set(["item-a"]) })).toMatchObject({
+      ok: false,
+      class: "unresolved-reference",
+      path: "Admissions[intent-1].Attempts[0].ItemID",
+    });
+    const plan2 = fixture<PriorPlan>("plan", "failed-package-does-not-block-unrelated-package");
+    plan2.ActiveItems = { "item-c": "intent-1" };
+    expect(importPlan(plan2, { workItems: new Set(["item-a", "item-b"]) })).toMatchObject({
+      ok: false,
+      class: "unresolved-reference",
+      path: "ActiveItems[item-c]",
+    });
+    expect(importPlan(plan, { workItems: new Set(["item-a", "item-b"]) }).ok).toBe(true);
+    expect(importPlan(plan).ok).toBe(true); // without the set the check is the caller's
   });
 
   it("Version 0, an empty required string and Go's zero time are schema-invalid", () => {

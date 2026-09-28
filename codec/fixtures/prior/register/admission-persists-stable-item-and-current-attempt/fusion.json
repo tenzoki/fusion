@@ -17,7 +17,32 @@
     ],
     "intake_closed": true,
     "closed_watermark": "001",
-    "policy": null,
+    "policy": {
+      "version": "policy-1",
+      "predicates": [
+        {
+          "field": "confidence",
+          "operator": "gte",
+          "value": 5
+        }
+      ],
+      "weights": [
+        {
+          "field": "severity",
+          "multiplier": 2
+        },
+        {
+          "field": "confidence",
+          "multiplier": 1
+        },
+        {
+          "field": "risk",
+          "multiplier": -1
+        }
+      ],
+      "minimum_score": 15,
+      "maximum_risk": 5
+    },
     "snapshot": {
       "watermark": "001",
       "versions": [

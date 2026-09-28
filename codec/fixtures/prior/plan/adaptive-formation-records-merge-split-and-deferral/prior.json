@@ -1,17 +1,6 @@
 {
-  "_provenance": "derived-from-source@12d8424",
-  "_provenance_note": "Hand-derived from the Go structs and the named Go test at Prior 12d8424, not emitted by Go. Revision, EvidenceHash, SnapshotHash and CharterHash were computed by codec/src/prior/gojson.ts (computePriorRevision, computeEvidenceHash, computeSnapshotHash, computeCharterHash), which reproduces encoding/json; the Prior side replaces this file with a Go-emitted golden (plan FJ00 step 12). Keys beginning with an underscore are not Go fields and are stripped before mapping; _inputs holds the call inputs (Policy, Snapshot, FormationPolicy, CompletionEvidence, WorkItems) that Prior does not persist in the aggregate.",
-  "_inputs": {
-    "FormationPolicy": {
-      "Version": "p1",
-      "MaxRisk": 6,
-      "MaxValidationCost": 6,
-      "MaxSize": 6,
-      "Budget": 10
-    }
-  },
   "ID": "plan",
-  "Revision": "75d5d5a46a34aee7557fa1f3150dd5b7b6c3b737830cc4334b619b2a8118971a",
+  "Revision": "",
   "PolicyVersion": "p1",
   "AcceptedRevision": "rev-1",
   "RemainingBudget": 4,
@@ -137,5 +126,16 @@
     }
   ],
   "Admissions": {},
-  "ActiveItems": {}
+  "ActiveItems": {},
+  "_provenance": "go-golden@dbd1aa1",
+  "_provenance_note": "TestAdaptiveFormationRecordsMergeSplitAndDeferral: final scenario plan; encoding/json over the scenario's Go value and call inputs.",
+  "_inputs": {
+    "FormationPolicy": {
+      "Version": "p1",
+      "MaxRisk": 6,
+      "MaxValidationCost": 6,
+      "MaxSize": 6,
+      "Budget": 10
+    }
+  }
 }

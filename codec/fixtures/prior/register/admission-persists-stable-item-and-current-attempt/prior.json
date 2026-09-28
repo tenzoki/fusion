@@ -1,20 +1,4 @@
 {
-  "_provenance": "derived-from-source@12d8424",
-  "_provenance_note": "Hand-derived from the Go structs and the named Go test at Prior 12d8424, not emitted by Go. Revision, EvidenceHash, SnapshotHash and CharterHash were computed by codec/src/prior/gojson.ts (computePriorRevision, computeEvidenceHash, computeSnapshotHash, computeCharterHash), which reproduces encoding/json; the Prior side replaces this file with a Go-emitted golden (plan FJ00 step 12). Keys beginning with an underscore are not Go fields and are stripped before mapping; _inputs holds the call inputs (Policy, Snapshot, FormationPolicy, CompletionEvidence, WorkItems) that Prior does not persist in the aggregate.",
-  "_inputs": {
-    "Snapshot": {
-      "Watermark": "001",
-      "Versions": {
-        "c1": 1
-      },
-      "SourceRevisions": {
-        "c1": "rev-1"
-      }
-    },
-    "WorkItems": [
-      "item-1"
-    ]
-  },
   "ID": "campaign",
   "Revision": "7301f6a08b2540bb85e70c3fad36672fcaa02bce8c50d6d6a78259b8e2d707d4",
   "Candidates": {
@@ -80,5 +64,47 @@
     "tracker": "001"
   },
   "IntakeClosed": true,
-  "ClosedWatermark": "001"
+  "ClosedWatermark": "001",
+  "_provenance": "go-golden@dbd1aa1",
+  "_provenance_note": "TestAdmissionPersistsStableItemAndCurrentAttempt: final register after attempt advancement and intake closure; encoding/json over the scenario's Go value and call inputs.",
+  "_inputs": {
+    "Policy": {
+      "Version": "policy-1",
+      "Predicates": [
+        {
+          "Field": "confidence",
+          "Operator": "gte",
+          "Value": 5
+        }
+      ],
+      "Weights": [
+        {
+          "Field": "severity",
+          "Multiplier": 2
+        },
+        {
+          "Field": "confidence",
+          "Multiplier": 1
+        },
+        {
+          "Field": "risk",
+          "Multiplier": -1
+        }
+      ],
+      "MinimumScore": 15,
+      "MaximumRisk": 5
+    },
+    "Snapshot": {
+      "Watermark": "001",
+      "Versions": {
+        "c1": 1
+      },
+      "SourceRevisions": {
+        "c1": "rev-1"
+      }
+    },
+    "WorkItems": [
+      "item-1"
+    ]
+  }
 }

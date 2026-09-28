@@ -6,7 +6,13 @@
     "policy_version": "p1",
     "accepted_revision": "prior-opaque:rev-1",
     "remaining_budget": 4,
-    "policy": null,
+    "policy": {
+      "version": "p1",
+      "max_risk": 6,
+      "max_validation_cost": 6,
+      "max_size": 6,
+      "budget": 10
+    },
     "candidates": [
       {
         "id": "a",

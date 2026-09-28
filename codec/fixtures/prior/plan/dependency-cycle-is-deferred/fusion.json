@@ -2,7 +2,7 @@
   "_provenance": "import of prior.json by codec/src/prior/packages.ts importPlan",
   "formation": {
     "id": "cycle",
-    "revision": "prior-json-sha256:9fa73af0ba10f7bc39bf37737cafd93cbc5ee5ab67058bc490a3bb14331ece30",
+    "revision": null,
     "policy_version": "p",
     "accepted_revision": "prior-opaque:rev",
     "remaining_budget": 5,

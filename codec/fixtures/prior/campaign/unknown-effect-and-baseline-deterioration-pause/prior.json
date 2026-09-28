@@ -1,16 +1,4 @@
 {
-  "_provenance": "derived-from-source@12d8424",
-  "_provenance_note": "Hand-derived from the Go structs and the named Go test at Prior 12d8424, not emitted by Go. Revision, EvidenceHash, SnapshotHash and CharterHash were computed by codec/src/prior/gojson.ts (computePriorRevision, computeEvidenceHash, computeSnapshotHash, computeCharterHash), which reproduces encoding/json; the Prior side replaces this file with a Go-emitted golden (plan FJ00 step 12). Keys beginning with an underscore are not Go fields and are stripped before mapping; _inputs holds the call inputs (Policy, Snapshot, FormationPolicy, CompletionEvidence, WorkItems) that Prior does not persist in the aggregate.",
-  "_inputs": {
-    "CompletionEvidence": {
-      "ObjectiveMet": false,
-      "IntakeClosed": false,
-      "AllAttemptsTerminal": false,
-      "FinalAuditPassed": false,
-      "Watermark": "",
-      "AuditRef": ""
-    }
-  },
   "CampaignID": "campaign",
   "Revision": "b18d1d8ccf7b091787463d678dc730d77a38f137e6a593ccb66689cecb5678a1",
   "State": "bounded",
@@ -78,5 +66,17 @@
   "Runs": [
     "r"
   ],
-  "BaselineHash": "base"
+  "BaselineHash": "base",
+  "_provenance": "go-golden@dbd1aa1",
+  "_provenance_note": "TestUnknownEffectAndBaselineDeteriorationPause: final persisted campaign state; encoding/json over the scenario's Go value and call inputs.",
+  "_inputs": {
+    "CompletionEvidence": {
+      "ObjectiveMet": false,
+      "IntakeClosed": false,
+      "AllAttemptsTerminal": false,
+      "FinalAuditPassed": false,
+      "Watermark": "",
+      "AuditRef": ""
+    }
+  }
 }
