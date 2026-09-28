@@ -32,3 +32,6 @@ Prior's `concept/fusion-json-workbench-spec.md` (2026-09-28) asks fusion for sch
 ## Recommendation
 
 Option 1. The bounds exist to hold the rate at which the text every session loads and the hook suite grow, and the codec is neither: no agent reads it and no hook runs it. Putting it beside `hooks/` keeps both instruments honest, and it is the shape FJ01 needs anyway when Prior binds to the same implementation. The record states plainly that this is a new surface and not a way around a bound, and FJ05 adds it to the installer and the committed-dist check as the shipped surface it then is.
+
+---
+Answered: this record `## Options` option 1 — the codec lives in its own package `codec/` beside `hooks/`, ships nothing in FJ00, and FJ05 adds it to the installer and the committed-dist check; ruled by user, Kai Stalmann <ks@qantr.com>, at the FJ00 plan approval on 2026-09-28.

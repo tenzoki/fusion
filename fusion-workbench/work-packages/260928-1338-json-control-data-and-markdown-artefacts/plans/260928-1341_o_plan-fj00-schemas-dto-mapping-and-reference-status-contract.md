@@ -1,7 +1,7 @@
 # Implementation Plan: FJ00 — schemas, Prior DTO mapping and the reference/status contract
 
 **Date:** 2026-09-28
-**Status:** Draft
+**Status:** Approved at the plan approval on 2026-09-28 (codec home: option 1, own package)
 **Spec:** Prior's `concept/fusion-json-workbench-spec.md` (2026-09-28, sections 3, 4, 6 and 9; held in the Prior repository, read-only from here), read together with `rules/fusion-workbench-conventions.md` `## Work packages`, `## State Markers — issues and planning` and `## State Markers — decisions`, which the spec preserves by value.
 **Cross-references:** 260928-1338-json-control-data-and-markdown-artefacts.md, 260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md, 260927-2304-fusion-dual-host-design-review.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md, 260922-1114_*_does-the-transition-windows-legacy-read-live-at-one-site-per-runtime.md
 **Survey commit:** fusion `40a1713f` on `fj-json-workbench` (cut from `v12-prior-nomenclature`), Prior `12d8424` plus the uncommitted spec of 2026-09-28. Bounded surfaces at `40a1713f`, measured with the sums of `surface-growth-bound.test.ts`'s baselines against the tree: `agents/*.md` 3 806 bytes of room, `skills/*/SKILL.md` 25 559 bytes, the hook test suite **6 lines**.
@@ -164,6 +164,6 @@ Four suites inside `codec/`: the manifest-driven fixture suite (every fixture, b
 
 ## Open Questions
 
-- [ ] Does the codec live in its own package? (`260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md`, at the plan approval)
+- [x] Does the codec live in its own package? Yes, option 1, ruled by the user on 2026-09-28 (`260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md`)
 - [ ] Are the proposed `Package.State` rows right, and does Prior emit `null` or `[]` for empty slices in the aggregates it persists? (for the Prior side, via step 12)
 - [ ] Does the Prior side accept `fixtures/manifest.json` as the shared fixture index for FH01's acceptance sentence?
