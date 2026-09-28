@@ -99,15 +99,16 @@ export const VOCABULARY = {
   admissionStatus: () => vocabulary("packages.Admission.Status"),
   campaignState: () => vocabulary("campaign.State.State"),
   requestedOutcome: () => vocabulary("campaign.State.RequestedOutcome"),
-  /** The `packages.Package.State` values, from `state_mapping.rows`, confirmed or not. */
+  /** The `packages.Package.State` values, from `state_mapping.rows`. */
   packageState: (): ReadonlySet<string> => new Set(priorMapping().state_mapping.rows.map((r) => r.prior_value)),
 } as const;
 
 /**
- * The proposed fusion status for a Prior package state, as `state_mapping`
- * records it, with its `confirmed` flag. No importer here applies it: the
- * Package is kept verbatim in the formation block, and whether a fusion
- * package is created is FJ04's question on a confirmed row.
+ * The fusion status for a Prior package state, as `state_mapping` records
+ * it, with its `confirmed` flag (every row is confirmed since Prior's ruling
+ * at `prior_review_commit`). No importer here applies it: the Package is
+ * kept verbatim in the formation block, and whether a fusion package is
+ * created is FJ04's question.
  */
 export function proposedPackageStatus(state: string): { fusion_status: string | null; outcome_class: string | null; confirmed: boolean } | undefined {
   const row = priorMapping().state_mapping.rows.find((r) => r.prior_value === state);

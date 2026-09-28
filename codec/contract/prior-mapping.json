@@ -1,5 +1,5 @@
 {
-  "description": "Explicit field-by-field mapping of Prior's three persisted aggregates (candidates.Register, packages.Plan, campaign.State, with the structs they embed) onto the fusion JSON contract, as spec section 4.2 requires before any import. Every row is confirmed: false until the Prior side has confirmed or corrected it; an unconfirmed row is a stop for FJ04's migration and for FH09's importer, never a default. The on-disk shape is Go encoding/json without tags: keys are the Go field names; a nil slice or map is null and an empty one [] or {}; time.Time is RFC 3339; each aggregate's Revision is the hex SHA-256 of json.Marshal of the value with Revision cleared. Prior's modules/fusion/schemas/*.json are snake_case input contracts and are not this shape.",
+  "description": "Explicit field-by-field mapping of Prior's three persisted aggregates (candidates.Register, packages.Plan, campaign.State, with the structs they embed) onto the fusion JSON contract, as spec section 4.2 requires before any import. The rows are the contract as the Prior side ruled it at Prior c512c4c (docs/design/fusion-fj00-prior-mapping-ruling.json) against fusion 6667d63b; prior_review_commit is the Prior production baseline the ruling reviewed and fusion_review_commit the fusion snapshot it reviewed. Every row is confirmed: true, and confirmed=true approves this corrected target contract, not the unmodified Fusion implementation. The two candidates.Candidate rows Statement and Purpose stay after FJ04 (decision 260928-1420_*_where-do-a-candidates-statement-and-purpose-live-after-import.md, option 1: kept verbatim and frozen in provenance.legacy_fields beside the narrative). The on-disk shape is Go encoding/json without tags: keys are the Go field names; a nil slice or map is null and an empty one [] or {}; time.Time is RFC 3339; each aggregate's Revision is the hex SHA-256 of json.Marshal of the value with Revision cleared. Prior's modules/fusion/schemas/*.json are snake_case input contracts and are not this shape.",
   "prior_commit": "12d8424",
   "read_on": "2026-09-28",
   "source_structs": "codec/fixtures/prior/source-structs.txt",
@@ -31,8 +31,8 @@
       "zero-time-refused": "Go zero time.Time is refused",
       "nil-to-null": "nil pointer imports as null",
       "nil-refused": "nil or empty slice refused where Prior requires at least one element",
-      "nil-and-empty-to-[]": "nil and empty slice or map both import as []; export writes the Go nil form. Whether Prior distinguishes the two on disk is the open question for the Prior side",
-      "nil-and-empty-to-no-records": "nil and empty Register.Candidates both import as no issue records",
+      "nil-and-empty-to-[]": "Import maps nil and empty to []; provenance.legacy_fields.empty_collections records the originally non-nil empty paths. Export restores exact null versus [] or {}, including nested side inputs, before recomputing Go revisions. No normalization of existing Prior data.",
+      "nil-and-empty-to-no-records": "No issue records for nil or empty Candidates; preserve the original null versus {} at register provenance so export can rebuild the exact map form even without issues.",
       "kept-verbatim": "string kept verbatim, empty allowed"
     },
     "import_stamps": "Every imported record carries provenance.source imported, the raw aggregate revision as a prior_revision, and the removed or split original fields verbatim in provenance.legacy_fields; an import never invents a value, an unmapped field or unknown enum value is a typed refusal."
@@ -44,50 +44,50 @@
         "prior_value": "formed",
         "fusion_status": null,
         "outcome_class": null,
-        "note": "no fusion package: campaign formation only",
-        "confirmed": false
+        "note": "Keep formation only; no additional fusion package.",
+        "confirmed": true
       },
       {
         "prior_value": "admitting",
         "fusion_status": null,
         "outcome_class": null,
-        "note": "no fusion package: campaign formation only",
-        "confirmed": false
+        "note": "Keep formation and full admission intent/observations; no additional actionable package and no automatic recovery or dispatch on migration.",
+        "confirmed": true
       },
       {
         "prior_value": "admitted",
         "fusion_status": "open",
         "outcome_class": null,
-        "note": "admitted but not started",
-        "confirmed": false
+        "note": "May project open after migration verifies committed workbench/reference bindings; imported admission creates no authority or live lease.",
+        "confirmed": true
       },
       {
         "prior_value": "running",
         "fusion_status": "claimed",
         "outcome_class": null,
-        "note": "needs a claim; the checkout and person are not in the Prior aggregate and must come from the migration plan, never be invented",
-        "confirmed": false
+        "note": "claimed only with a current host-authorized, quiesced handover and explicit checkout/person binding in the migration plan; a source running string or historical claim does not revive a process or lease. Otherwise stop this projection for reconciliation; keep raw formation.",
+        "confirmed": true
       },
       {
         "prior_value": "completed",
         "fusion_status": "done",
         "outcome_class": "completed",
-        "note": "done + completed; without a bound evidence record the class is legacy-completed",
-        "confirmed": false
+        "note": "done; completed outcome only with bound valid evidence for this exact package and revision; otherwise legacy-completed. Existing evidence must not be invented or treated as fresh qualification.",
+        "confirmed": true
       },
       {
         "prior_value": "failed",
         "fusion_status": "dropped",
         "outcome_class": "failed",
-        "note": "dropped + failed with FailureReason as the reason",
-        "confirmed": false
+        "note": "dropped with outcome failed, preserving FailureReason and a reason reference; never merge into cancelled or bounded.",
+        "confirmed": true
       },
       {
         "prior_value": "stale",
         "fusion_status": "paused",
         "outcome_class": null,
-        "note": "paused with reason stale",
-        "confirmed": false
+        "note": "paused with reason stale and original FailureReason retained; requalification/renewed host admission precedes execution.",
+        "confirmed": true
       }
     ]
   },
@@ -143,7 +143,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Required non-empty at intake (Collect).",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Source",
@@ -155,7 +155,7 @@
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "empty-string-refused",
       "note": "Source-system revision; encoding unknown to fusion, kept raw behind the prefix.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Source",
@@ -167,7 +167,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Compared as a string by Prior (maxString); kept verbatim.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Source",
@@ -179,7 +179,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "The three values Collect accepts.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Evidence",
@@ -187,11 +187,11 @@
       "prior_key": "Ref",
       "prior_type": "string",
       "fusion_path": "fusion.record/v1:/control/candidate/evidence[]/ref",
-      "type": "string (minLength 1)",
+      "type": "string or null",
       "revision_encoding": null,
-      "null_vs_empty": "empty-string-refused",
-      "note": "Qualify refuses an empty Ref.",
-      "confirmed": false
+      "null_vs_empty": "empty-string-to-null",
+      "note": "Collect persists empty evidence fields; Qualify records Passed=false and unversioned evidence rather than refusing persistence. Preserve empty as null with exact empty-string export; never promote failed qualification.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Evidence",
@@ -199,11 +199,11 @@
       "prior_key": "Revision",
       "prior_type": "string",
       "fusion_path": "fusion.record/v1:/control/candidate/evidence[]/revision",
-      "type": "prior_opaque_revision",
+      "type": "prior_opaque_revision or null",
       "revision_encoding": "prior-opaque",
-      "null_vs_empty": "empty-string-refused",
-      "note": "Qualify refuses an empty Revision.",
-      "confirmed": false
+      "null_vs_empty": "empty-string-to-null",
+      "note": "As Ref: unversioned evidence can be persisted and fail qualification. Empty imports as null and exports empty; nonempty stays prior-opaque.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -215,7 +215,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Collect refuses any value but 1.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -227,7 +227,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Prior's candidate id, the join key used by Register.Stable, Snapshot, MergeInto, packages.Candidate.ID, Package.Members, Attempt.Candidate and Deferred.Candidate. The fusion record id is a UUID assigned at migration; the Register.Candidates map key must equal this value or the import is refused.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -239,7 +239,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Collect refuses an empty StableKey.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -251,7 +251,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Named item_kind because kind on a fusion record is the record kind (issue).",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -262,8 +262,8 @@
       "type": "string",
       "revision_encoding": null,
       "null_vs_empty": "kept-verbatim",
-      "note": "Prose: rendered into the issue narrative Markdown and kept verbatim in legacy_fields for the lossless round trip. Whether the copy stays after FH09 is an open point (spec principle 1, one source per information).",
-      "confirmed": false
+      "note": "Render into narrative; retain the exact frozen imported string in legacy_fields while old Go round trips remain supported. Collect requires nonblank input. Do not remove this row at FJ04; see response 6b.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -274,8 +274,8 @@
       "type": "string",
       "revision_encoding": null,
       "null_vs_empty": "kept-verbatim",
-      "note": "Prose, as Statement.",
-      "confirmed": false
+      "note": "Retain exact frozen imported string beside narrative. Empty is possible; purpose participates in intake identity and package formation semantics. Removal waits for the explicit legacy-adapter retirement, not FJ04.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -287,7 +287,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Positive per spec 4.3; Prior's Form also refuses Version 0. A persisted candidate with Version 0 is a schema-invalid refusal, not a default.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -299,7 +299,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Struct value, never nil.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -307,11 +307,11 @@
       "prior_key": "Evidence",
       "prior_type": "[]Evidence",
       "fusion_path": "fusion.record/v1:/control/candidate/evidence",
-      "type": "array (uniqueItems)",
+      "type": "array (ordered; duplicates preserved)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Prior sorts by (Ref, Revision) for evidenceHash; fusion keeps the stored order and refuses duplicates.",
-      "confirmed": false
+      "note": "sortedEvidence sorts by Ref then Revision and does not deduplicate. Preserve the stored sequence including duplicates; evidenceHash sorts a copy. Refusing duplicates would reject source-valid candidates. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -322,8 +322,8 @@
       "type": "array of string",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "List semantics: order kept.",
-      "confirmed": false
+      "note": "List semantics: order kept. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -331,11 +331,11 @@
       "prior_key": "Severity",
       "prior_type": "int",
       "fusion_path": "fusion.record/v1:/control/candidate/severity",
-      "type": "integer (minimum 0)",
+      "type": "integer",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "Non-negative per spec 4.3; Prior validates only Risk and Confidence at intake.",
-      "confirmed": false
+      "note": "Legacy Collect does not reject negative Severity. Preserve signed source values on import; native authoring may require nonnegative ratings without rewriting legacy data.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -347,7 +347,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Collect refuses a negative value.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -355,11 +355,11 @@
       "prior_key": "EstimatedScope",
       "prior_type": "int",
       "fusion_path": "fusion.record/v1:/control/candidate/estimated_scope",
-      "type": "integer (minimum 0)",
+      "type": "integer",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "Policy field name estimated_scope.",
-      "confirmed": false
+      "note": "Legacy Collect does not reject negative EstimatedScope. Preserve the signed historical value; do not clamp it to zero.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -371,7 +371,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Collect refuses a negative value.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -382,8 +382,8 @@
       "type": "array of string (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Set semantics.",
-      "confirmed": false
+      "note": "Set semantics. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -394,8 +394,8 @@
       "type": "array of string (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Set of Prior candidate ids.",
-      "confirmed": false
+      "note": "Set of Prior candidate ids. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -407,7 +407,7 @@
       "revision_encoding": null,
       "null_vs_empty": "nil-to-null",
       "note": "null means never qualified, not failed.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -419,7 +419,7 @@
       "revision_encoding": null,
       "null_vs_empty": "nil-to-null",
       "note": "Split into selection (CandidateVersion, PolicyVersion, SnapshotHash, Outcome, Score, Reasons) and admission (WorkItemID, CurrentAttempt); the spec keeps selection state and issue lifecycle on different axes. Export rebuilds one Disposition; nil when both halves are null.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Candidate",
@@ -430,8 +430,8 @@
       "type": "string or null",
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
-      "note": "Non-null exactly when selection.outcome is merged.",
-      "confirmed": false
+      "note": "Usually paired with outcome merged, but Qualify on a merged candidate clears Disposition without clearing MergeInto. Such inconsistent/intermediate states require a named migration refusal/reconciliation, not an assertion that Go cannot persist them.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Qualification",
@@ -443,7 +443,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Binds the qualification to Candidate.Version.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Qualification",
@@ -455,7 +455,7 @@
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "empty-string-refused",
       "note": "Copy of Source.Revision at qualification time.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Qualification",
@@ -467,7 +467,7 @@
       "revision_encoding": "prior-json-sha256",
       "null_vs_empty": "empty-string-refused",
       "note": "hex SHA-256 of json.Marshal over {Version, Source.Revision, sorted Evidence, Reproduction} (evidenceHash).",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Qualification",
@@ -479,7 +479,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "A boolean, never a status string.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Qualification",
@@ -490,8 +490,8 @@
       "type": "array of string",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "List semantics.",
-      "confirmed": false
+      "note": "List semantics. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Qualification",
@@ -503,7 +503,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-time-refused",
       "note": "Prior stores UTC; Go's zero time has no meaning here and is refused.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Disposition",
@@ -515,7 +515,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Binds the selection to Candidate.Version.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Disposition",
@@ -527,7 +527,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
       "note": "Set by Select; empty on a merged disposition.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Disposition",
@@ -539,7 +539,7 @@
       "revision_encoding": "prior-json-sha256",
       "null_vs_empty": "empty-string-to-null",
       "note": "hex SHA-256 of json.Marshal(Snapshot); empty on a merged disposition.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Disposition",
@@ -551,7 +551,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "The values register.go writes or tests for at 12d8424; stale is computed in Overview and never stored.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Disposition",
@@ -562,8 +562,8 @@
       "type": "string (minLength 1) inside admission, or admission null",
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null-admission",
-      "note": "admission is null when WorkItemID is empty and CurrentAttempt is 0; a WorkItemID naming no record is unresolved-reference at import.",
-      "confirmed": false
+      "note": "Empty plus attempt 0 means no admission. Nonempty IDs require a complete caller-provided migration identity inventory; missing inventory is unresolved, not proof of validity. Plan.ActiveItems is only an active ownership index; inspect Admission.Attempts and committed workbench evidence. See response 3d.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Disposition",
@@ -575,7 +575,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-to-null-admission",
       "note": "Attempt counter, positive per spec 4.3.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Disposition",
@@ -583,11 +583,11 @@
       "prior_key": "Score",
       "prior_type": "int",
       "fusion_path": "fusion.record/v1:/control/candidate/selection/score",
-      "type": "integer (minimum 0)",
+      "type": "integer",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "Non-negative per spec 4.3.",
-      "confirmed": false
+      "note": "evaluate sums signed weights; a normal deferred or selected score can be negative. Remove minimum 0 from mapping, codec and schema. Do not normalize or clamp.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Disposition",
@@ -598,8 +598,8 @@
       "type": "array of string",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "List semantics.",
-      "confirmed": false
+      "note": "List semantics. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Register",
@@ -611,7 +611,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Register id.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Register",
@@ -623,7 +623,7 @@
       "revision_encoding": "prior-json-sha256",
       "null_vs_empty": "empty-string-to-null",
       "note": "registerRevision: hex SHA-256 of json.Marshal with Revision cleared.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Register",
@@ -634,8 +634,8 @@
       "type": "one record per map entry",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-no-records",
-      "note": "Each entry becomes an issue record; the map key must equal Candidate.ID. Export rebuilds the map from the issues whose candidate.prior_id it collects.",
-      "confirmed": false
+      "note": "Each entry becomes an issue record; the map key must equal Candidate.ID. Export rebuilds the map from the issues whose candidate.prior_id it collects. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Register",
@@ -646,8 +646,8 @@
       "type": "array of {stable_key, candidate_id} (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Map to keyed entries, sorted by stable_key on export.",
-      "confirmed": false
+      "note": "Map to keyed entries, sorted by stable_key on export. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Register",
@@ -658,8 +658,8 @@
       "type": "array of {source_id, watermark} (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Map to keyed entries, sorted by source_id on export.",
-      "confirmed": false
+      "note": "Map to keyed entries, sorted by source_id on export. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Register",
@@ -671,7 +671,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "true requires closed_watermark.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Register",
@@ -683,7 +683,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
       "note": "Set by CloseIntake.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Predicate",
@@ -695,7 +695,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "The fieldValue names.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Predicate",
@@ -707,7 +707,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "validatePolicy accepts these three.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Predicate",
@@ -719,7 +719,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Threshold.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Weight",
@@ -731,7 +731,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "The fieldValue names.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Weight",
@@ -743,7 +743,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "May be negative.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Policy",
@@ -754,8 +754,8 @@
       "type": "string (minLength 1)",
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
-      "note": "Policy is a Select input at 12d8424, not a Register field; register.policy is null unless Prior persists the last policy (Prior side to confirm).",
-      "confirmed": false
+      "note": "Call input only: not persisted as a full Policy by Prior. Import register.policy as null unless exact independently bound input is supplied; Disposition.PolicyVersion alone cannot reconstruct it.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Policy",
@@ -766,8 +766,8 @@
       "type": "array",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "List semantics.",
-      "confirmed": false
+      "note": "List semantics. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Policy",
@@ -778,8 +778,8 @@
       "type": "array",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "List semantics.",
-      "confirmed": false
+      "note": "List semantics. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Policy",
@@ -791,7 +791,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Threshold.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Policy",
@@ -803,7 +803,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "validatePolicy refuses a negative value.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Snapshot",
@@ -814,8 +814,8 @@
       "type": "string (minLength 1)",
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
-      "note": "Snapshot is a Select input at 12d8424; register.snapshot is null unless Prior persists it (Prior side to confirm).",
-      "confirmed": false
+      "note": "Freeze output / Select input, not a persisted Register field. Exact bound side input is optional; otherwise snapshot null. A SnapshotHash cannot reconstruct the input.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Snapshot",
@@ -826,8 +826,8 @@
       "type": "array of {candidate_id, version} (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Map to keyed entries, sorted by candidate_id on export.",
-      "confirmed": false
+      "note": "Map to keyed entries, sorted by candidate_id on export. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "candidates.Snapshot",
@@ -838,8 +838,8 @@
       "type": "array of {candidate_id, revision: prior_opaque_revision} (uniqueItems)",
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Map to keyed entries, sorted by candidate_id on export.",
-      "confirmed": false
+      "note": "Map to keyed entries, sorted by candidate_id on export. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -851,7 +851,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Form refuses an empty ID; the Plan.Candidates map key must equal it.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -863,7 +863,7 @@
       "revision_encoding": null,
       "null_vs_empty": "kept-verbatim",
       "note": "Short formation purpose; not the issue narrative.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -875,7 +875,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Form refuses Version 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -886,8 +886,8 @@
       "type": "array of string (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Form deduplicates (unique).",
-      "confirmed": false
+      "note": "Form deduplicates (unique). Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -898,8 +898,8 @@
       "type": "array of string (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Form deduplicates (unique).",
-      "confirmed": false
+      "note": "Form deduplicates (unique). Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -907,11 +907,11 @@
       "prior_key": "Risk",
       "prior_type": "int",
       "fusion_path": "fusion.campaign/v1:/formation/candidates[]/risk",
-      "type": "integer (minimum 0)",
+      "type": "integer",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "Bound by FormationPolicy.MaxRisk.",
-      "confirmed": false
+      "note": "The legacy Form path bounds maxima but does not reject negative candidate metrics; sums can remain signed. Preserve source integers for exact legacy import. Nonnegative native-authoring rules are a separate validation policy.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -919,11 +919,11 @@
       "prior_key": "ValidationCost",
       "prior_type": "int",
       "fusion_path": "fusion.campaign/v1:/formation/candidates[]/validation_cost",
-      "type": "integer (minimum 0)",
+      "type": "integer",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "Bound by MaxValidationCost.",
-      "confirmed": false
+      "note": "The legacy Form path bounds maxima but does not reject negative candidate metrics; sums can remain signed. Preserve source integers for exact legacy import. Nonnegative native-authoring rules are a separate validation policy.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -931,11 +931,11 @@
       "prior_key": "EstimatedSize",
       "prior_type": "int",
       "fusion_path": "fusion.campaign/v1:/formation/candidates[]/estimated_size",
-      "type": "integer (minimum 0)",
+      "type": "integer",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "Bound by MaxSize.",
-      "confirmed": false
+      "note": "The legacy Form path bounds maxima but does not reject negative candidate metrics; sums can remain signed. Preserve source integers for exact legacy import. Nonnegative native-authoring rules are a separate validation policy.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -947,7 +947,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Formation view of qualification.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Candidate",
@@ -959,7 +959,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Formation view of selection.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.FormationPolicy",
@@ -970,8 +970,8 @@
       "type": "string (minLength 1)",
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
-      "note": "FormationPolicy is a Form input at 12d8424; only its Version persists as Plan.PolicyVersion. formation.policy is null unless Prior persists the policy (Prior side to confirm).",
-      "confirmed": false
+      "note": "Form input only. Plan.PolicyVersion persists the label, not the full policy. Import formation.policy as null unless exact bound input is supplied.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.FormationPolicy",
@@ -983,7 +983,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Form refuses <= 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.FormationPolicy",
@@ -995,7 +995,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Form refuses <= 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.FormationPolicy",
@@ -1007,7 +1007,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Form refuses <= 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.FormationPolicy",
@@ -1019,7 +1019,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Form refuses a negative budget.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1031,7 +1031,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "The Plan.Packages map key must equal it.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1042,8 +1042,8 @@
       "type": "array of string (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Prior candidate ids.",
-      "confirmed": false
+      "note": "Prior candidate ids. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1054,8 +1054,8 @@
       "type": "array of string (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Prior package ids.",
-      "confirmed": false
+      "note": "Prior package ids. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1066,8 +1066,8 @@
       "type": "array of string (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Union of member resources.",
-      "confirmed": false
+      "note": "Union of member resources. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1078,8 +1078,8 @@
       "type": "array of string",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "List semantics.",
-      "confirmed": false
+      "note": "List semantics. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1087,11 +1087,11 @@
       "prior_key": "Risk",
       "prior_type": "int",
       "fusion_path": "fusion.campaign/v1:/formation/packages[]/risk",
-      "type": "integer (minimum 0)",
+      "type": "integer",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "Aggregate.",
-      "confirmed": false
+      "note": "The legacy Form path bounds maxima but does not reject negative candidate metrics; sums can remain signed. Preserve source integers for exact legacy import. Nonnegative native-authoring rules are a separate validation policy.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1099,11 +1099,11 @@
       "prior_key": "ValidationCost",
       "prior_type": "int",
       "fusion_path": "fusion.campaign/v1:/formation/packages[]/validation_cost",
-      "type": "integer (minimum 0)",
+      "type": "integer",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "Aggregate.",
-      "confirmed": false
+      "note": "The legacy Form path bounds maxima but does not reject negative candidate metrics; sums can remain signed. Preserve source integers for exact legacy import. Nonnegative native-authoring rules are a separate validation policy.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1111,11 +1111,11 @@
       "prior_key": "EstimatedSize",
       "prior_type": "int",
       "fusion_path": "fusion.campaign/v1:/formation/packages[]/estimated_size",
-      "type": "integer (minimum 0)",
+      "type": "integer",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "Aggregate.",
-      "confirmed": false
+      "note": "The legacy Form path bounds maxima but does not reject negative candidate metrics; sums can remain signed. Preserve source integers for exact legacy import. Nonnegative native-authoring rules are a separate validation policy.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1126,8 +1126,8 @@
       "type": "enum formed|admitting|admitted|running|completed|failed|stale",
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
-      "note": "Kept verbatim in the campaign. The correspondence to a fusion.package/v1 status is the proposal in state_mapping below and is applied by no importer while unconfirmed.",
-      "confirmed": false
+      "note": "Seven values generated by the manager at 12d8424 and dbd1aa1. Raw Go string/repository decoding is not an enum validator. Preserve in formation; applying the separate status projection needs the stated evidence and migration preconditions.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1139,7 +1139,7 @@
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "empty-string-refused",
       "note": "The accepted workbench revision the package was formed against.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1151,7 +1151,7 @@
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "empty-string-to-null",
       "note": "Set on completion.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1162,8 +1162,8 @@
       "type": "prior_opaque_revision or null",
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "empty-string-to-null",
-      "note": "Set on Start from the runtime's baseline; cleared on other packages when one fails.",
-      "confirmed": false
+      "note": "Set by Dispatch from Runtime.ValidateBaseline; successful completion clears it on other formed packages while moving their BaseRevision. Failure does not execute that clearing branch.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Package",
@@ -1174,8 +1174,8 @@
       "type": "string or null",
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
-      "note": "Non-null exactly on state failed.",
-      "confirmed": false
+      "note": "May be set for failed or stale: Complete(false) writes package execution failed; RefreshCandidate writes candidate source/evidence changed. It is not exclusive to failed.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Deferred",
@@ -1187,7 +1187,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Prior candidate id; Prior sorts Deferred by Candidate.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Deferred",
@@ -1199,7 +1199,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Deferral reason.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Attempt",
@@ -1211,7 +1211,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Prior candidate id; Admit refuses an unknown one.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Attempt",
@@ -1223,7 +1223,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Must equal the candidate's Version at admission.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Attempt",
@@ -1235,7 +1235,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Admit refuses Attempt 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Attempt",
@@ -1247,7 +1247,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Work item id; key of Plan.ActiveItems.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Admission",
@@ -1259,7 +1259,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "The intent id; the Plan.Admissions map key must equal it.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Admission",
@@ -1271,7 +1271,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Prior package id.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Admission",
@@ -1283,7 +1283,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "The values packages.go writes at 12d8424.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Admission",
@@ -1295,7 +1295,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
       "note": "Historical lease reference; never resumed as a live lease.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Admission",
@@ -1307,7 +1307,7 @@
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "empty-string-to-null",
       "note": "Revision observed when the workbench write committed.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Admission",
@@ -1318,8 +1318,8 @@
       "type": "array (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "One per member.",
-      "confirmed": false
+      "note": "One per member. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1331,7 +1331,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Plan id.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1342,8 +1342,8 @@
       "type": "prior_revision or null",
       "revision_encoding": "prior-json-sha256",
       "null_vs_empty": "empty-string-to-null",
-      "note": "planRevision: hex SHA-256 of json.Marshal with Revision cleared.",
-      "confirmed": false
+      "note": "Persisted plans carry planRevision = SHA-256(json.Marshal with Revision cleared). Form alone returns an unpersisted plan with Revision empty; import as null and preserve empty on export. Never invent a stored hash for that case.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1355,7 +1355,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Copied from FormationPolicy.Version.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1367,7 +1367,7 @@
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "empty-string-refused",
       "note": "Form refuses an empty accepted revision.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1379,7 +1379,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "May reach 0; not negative in Prior's flow but not bounded here.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1390,8 +1390,8 @@
       "type": "array of formation_candidate (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Map to entries, sorted by id on export; key must equal Candidate.ID.",
-      "confirmed": false
+      "note": "Map to entries, sorted by id on export; key must equal Candidate.ID. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1402,8 +1402,8 @@
       "type": "array of formation_package (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Map to entries, sorted by id on export; key must equal Package.ID.",
-      "confirmed": false
+      "note": "Map to entries, sorted by id on export; key must equal Package.ID. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1414,8 +1414,8 @@
       "type": "array of string (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Prior package ids in dispatch order; order carries meaning, duplicates are refused.",
-      "confirmed": false
+      "note": "Prior package ids in dispatch order; order carries meaning, duplicates are refused. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1426,8 +1426,8 @@
       "type": "array (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Prior keeps it sorted by Candidate.",
-      "confirmed": false
+      "note": "Prior keeps it sorted by Candidate. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1438,8 +1438,8 @@
       "type": "array of admission (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Map to entries, sorted by id on export; key must equal Admission.ID.",
-      "confirmed": false
+      "note": "Map to entries, sorted by id on export; key must equal Admission.ID. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "packages.Plan",
@@ -1450,8 +1450,8 @@
       "type": "array of {item_id, admission_id} (uniqueItems)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Key is Attempt.ItemID, value the admission (intent) id; sorted by item_id on export.",
-      "confirmed": false
+      "note": "Active ownership only: item ID -> admission ID, removed on settlement. Admission.Attempts preserves the historical binding. An entry or intent alone does not prove WriteWorkbench committed. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Limits",
@@ -1463,7 +1463,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Charter.Validate refuses <= 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Limits",
@@ -1475,7 +1475,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Charter.Validate refuses < 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Limits",
@@ -1487,7 +1487,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Charter.Validate refuses <= 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Limits",
@@ -1499,7 +1499,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Charter.Validate refuses <= 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Limits",
@@ -1511,7 +1511,7 @@
       "revision_encoding": null,
       "null_vs_empty": "zero-refused",
       "note": "Charter.Validate refuses <= 0.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1523,7 +1523,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Charter.Validate refuses any value but 1.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1535,7 +1535,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Also State.CampaignID; the two must agree.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1547,7 +1547,7 @@
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "empty-string-refused",
       "note": "Author-assigned charter version label, not a computed hash.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1559,7 +1559,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Prior authorisation reference; attribution, no fusion authority.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1571,7 +1571,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Charter.Validate refuses whitespace-only.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1579,11 +1579,11 @@
       "prior_key": "ItemKinds",
       "prior_type": "[]string",
       "fusion_path": "fusion.campaign/v1:/charter/item_kinds",
-      "type": "array of string (uniqueItems, minItems 1)",
+      "type": "array of string (minItems 1; order and duplicates preserved)",
       "revision_encoding": null,
       "null_vs_empty": "nil-refused",
-      "note": "Charter.Validate refuses an empty list.",
-      "confirmed": false
+      "note": "Charter.Validate requires a nonempty slice, but does not deduplicate or refuse duplicates. Preserve exact order and multiplicity for CharterHash; do not add uniqueItems to the imported charter field.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1591,11 +1591,11 @@
       "prior_key": "CandidateSources",
       "prior_type": "[]string",
       "fusion_path": "fusion.campaign/v1:/charter/candidate_sources",
-      "type": "array of string (uniqueItems, minItems 1)",
+      "type": "array of string (minItems 1; order and duplicates preserved)",
       "revision_encoding": null,
       "null_vs_empty": "nil-refused",
-      "note": "Charter.Validate refuses an empty list.",
-      "confirmed": false
+      "note": "Charter.Validate requires a nonempty slice, but does not deduplicate or refuse duplicates. Preserve exact order and multiplicity for CharterHash; do not add uniqueItems to the imported charter field.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1603,11 +1603,11 @@
       "prior_key": "WorkflowTemplates",
       "prior_type": "[]string",
       "fusion_path": "fusion.campaign/v1:/charter/workflow_templates",
-      "type": "array of string (uniqueItems, minItems 1)",
+      "type": "array of string (minItems 1; order and duplicates preserved)",
       "revision_encoding": null,
       "null_vs_empty": "nil-refused",
-      "note": "Charter.Validate refuses an empty list.",
-      "confirmed": false
+      "note": "Charter.Validate requires a nonempty slice, but does not deduplicate or refuse duplicates. Preserve exact order and multiplicity for CharterHash; do not add uniqueItems to the imported charter field.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1618,8 +1618,8 @@
       "type": "array of string",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "List semantics.",
-      "confirmed": false
+      "note": "List semantics. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1631,7 +1631,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Policy name.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1643,7 +1643,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Policy name.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1655,7 +1655,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Policy name.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1667,7 +1667,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Policy name.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1679,7 +1679,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Part of scopeHash; grants no fusion mode.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1691,7 +1691,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Part of scopeHash.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1703,7 +1703,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Part of scopeHash.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1711,11 +1711,11 @@
       "prior_key": "DataBoundary",
       "prior_type": "[]string",
       "fusion_path": "fusion.campaign/v1:/charter/data_boundary",
-      "type": "array of string (uniqueItems)",
+      "type": "array of string (order and duplicates preserved)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Prior sorts it for scopeHash.",
-      "confirmed": false
+      "note": "scopeHash sorts a copy without deduplicating. CharterHash hashes the original slice. Preserve original order, multiplicity and nil/empty form; do not impose uniqueItems on imported legacy values. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1723,11 +1723,11 @@
       "prior_key": "Capabilities",
       "prior_type": "[]string",
       "fusion_path": "fusion.campaign/v1:/charter/capabilities",
-      "type": "array of string (uniqueItems)",
+      "type": "array of string (order and duplicates preserved)",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Prior sorts it for scopeHash.",
-      "confirmed": false
+      "note": "scopeHash sorts a copy without deduplicating. CharterHash hashes the original slice. Preserve original order, multiplicity and nil/empty form; do not impose uniqueItems on imported legacy values. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1739,7 +1739,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Part of scopeHash.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Charter",
@@ -1751,7 +1751,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Struct value.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Counters",
@@ -1763,7 +1763,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Counter.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Counters",
@@ -1775,7 +1775,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Counter.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Counters",
@@ -1787,7 +1787,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Counter.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Counters",
@@ -1799,7 +1799,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Counter.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Counters",
@@ -1811,7 +1811,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Counter.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Settlement",
@@ -1823,7 +1823,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Counter.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Settlement",
@@ -1835,7 +1835,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Counter.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Settlement",
@@ -1847,7 +1847,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Counter.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.Settlement",
@@ -1859,7 +1859,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Counter.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.CompletionEvidence",
@@ -1870,8 +1870,8 @@
       "type": "boolean",
       "revision_encoding": null,
       "null_vs_empty": "n/a",
-      "note": "CompletionEvidence is a Finalize input at 12d8424, not a State field; state.completion_evidence is null unless Prior persists it (Prior side to confirm).",
-      "confirmed": false
+      "note": "Finalize input only, not persisted inside State or a separate automatic domain log. Import completion_evidence as null when exact bound evidence is unavailable; completed alone is not a new audit.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.CompletionEvidence",
@@ -1883,7 +1883,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Boolean.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.CompletionEvidence",
@@ -1895,7 +1895,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Boolean.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.CompletionEvidence",
@@ -1907,7 +1907,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Boolean, not a status string.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.CompletionEvidence",
@@ -1919,7 +1919,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
       "note": "Watermark at completion.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.CompletionEvidence",
@@ -1931,7 +1931,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
       "note": "Reference to the final audit.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -1943,7 +1943,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "Must equal charter.campaign_id.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -1955,7 +1955,7 @@
       "revision_encoding": "prior-json-sha256",
       "null_vs_empty": "empty-string-to-null",
       "note": "stateRevision: hex SHA-256 of json.Marshal with Revision cleared.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -1967,7 +1967,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-refused",
       "note": "The values campaign.go writes at 12d8424. No mapping onto a fusion package status: a campaign is not a package.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -1979,7 +1979,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
       "note": "Non-null exactly on state archived.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -1991,7 +1991,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
       "note": "Discard, pause or requested-outcome reason.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -2003,7 +2003,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Held once at the campaign root; export embeds it back into State.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -2015,7 +2015,7 @@
       "revision_encoding": "prior-json-sha256",
       "null_vs_empty": "empty-string-refused",
       "note": "charterHash: hex SHA-256 of json.Marshal(Charter).",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -2027,7 +2027,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Struct value.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -2039,7 +2039,7 @@
       "revision_encoding": null,
       "null_vs_empty": "n/a",
       "note": "Struct value.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -2051,7 +2051,7 @@
       "revision_encoding": null,
       "null_vs_empty": "empty-string-to-null",
       "note": "Cleared on finalisation.",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -2062,8 +2062,8 @@
       "type": "array of string",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Historical session references; never resumed.",
-      "confirmed": false
+      "note": "Historical session references; never resumed. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -2074,8 +2074,8 @@
       "type": "array of string",
       "revision_encoding": null,
       "null_vs_empty": "nil-and-empty-to-[]",
-      "note": "Historical run references; never resumed.",
-      "confirmed": false
+      "note": "Historical run references; never resumed. Exact nil/empty restoration uses the corrected empty_collections convention.",
+      "confirmed": true
     },
     {
       "aggregate": "campaign.State",
@@ -2087,7 +2087,9 @@
       "revision_encoding": "prior-opaque",
       "null_vs_empty": "empty-string-to-null",
       "note": "First observed baseline; deterioration pauses the campaign.",
-      "confirmed": false
+      "confirmed": true
     }
-  ]
+  ],
+  "prior_review_commit": "dbd1aa1",
+  "fusion_review_commit": "6667d63b5c56b56b1bbf06e89e9e5de24b177717"
 }

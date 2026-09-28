@@ -4,3 +4,5 @@ Prior's own code writes empty non-nil collections (`Qualify` sets `Reasons: []st
 ---
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 Found at FJ00 step 9, 2026-09-28; the row belongs to `data-implementer`, the fix is one sentence in `prior-mapping.json`.
+---
+Resolved: contract/prior-mapping.json `conventions.null_vs_empty` — the nil-and-empty-to-[] entry now describes the empty_collections carry, as Prior's 3c ruled

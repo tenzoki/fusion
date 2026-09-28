@@ -360,10 +360,19 @@ describe("contract/prior-mapping.json coverage", () => {
     return seen;
   }
 
-  it("the table has 163 field rows and 7 state rows, none confirmed yet", () => {
+  it("the table has 163 field rows and 7 state rows, every one confirmed by Prior's ruling", () => {
+    const stateRows = priorMapping().state_mapping.rows;
     expect(rows).toHaveLength(163);
-    expect(priorMapping().state_mapping.rows).toHaveLength(7);
-    expect(rows.every((r) => r.confirmed === false)).toBe(true);
+    expect(stateRows).toHaveLength(7);
+    const unconfirmed = [
+      ...rows.filter((r) => r.confirmed !== true).map((r) => `${r.aggregate}.${r.prior_key}`),
+      ...stateRows.filter((r) => r.confirmed !== true).map((r) => `state:${r.prior_value}`),
+    ];
+    expect(unconfirmed, "rows the ruling did not confirm").toEqual([]);
+    // The ruling is pinned to the Prior commit that reviewed the table, beside the one the table was read from.
+    const stamps = priorMapping() as unknown as Record<string, unknown>;
+    expect(stamps["prior_review_commit"]).toBe("dbd1aa1");
+    expect(stamps["prior_commit"]).toBe("12d8424");
   });
 
   it("every prior_key is exercised by at least one fixture", () => {
@@ -382,11 +391,22 @@ describe("contract/prior-mapping.json coverage", () => {
     expect(missing).toEqual([]);
   });
 
-  it("the state rows are read, not applied: every Prior package state resolves to its proposal, unconfirmed", () => {
+  it("the state rows are read, not applied: every Prior package state resolves to its proposal, confirmed", () => {
     for (const row of priorMapping().state_mapping.rows) {
-      expect(proposedPackageStatus(row.prior_value)).toEqual({ fusion_status: row.fusion_status, outcome_class: row.outcome_class, confirmed: false });
+      expect(proposedPackageStatus(row.prior_value)).toEqual({ fusion_status: row.fusion_status, outcome_class: row.outcome_class, confirmed: true });
     }
     expect(proposedPackageStatus("unknown")).toBeUndefined();
+    // "Not applied" is asserted over the sources, not stated: the only call of
+    // proposedPackageStatus under src/prior/ is its own definition in common.ts
+    // (packages.ts re-exports the name and calls nothing). Whether a fusion
+    // package is created from a row is FJ04's, and no importer decides it here.
+    const priorSrc = fileURLToPath(new URL("../prior/", import.meta.url));
+    const calls: Record<string, number> = {};
+    for (const file of readdirSync(priorSrc).filter((f) => f.endsWith(".ts")).sort()) {
+      const n = readFileSync(join(priorSrc, file), "utf-8").split("proposedPackageStatus(").length - 1;
+      if (n > 0) calls[file] = n;
+    }
+    expect(calls).toEqual({ "common.ts": 1 });
   });
 });
 
