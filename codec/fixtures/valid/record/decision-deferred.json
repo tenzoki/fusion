@@ -17,9 +17,19 @@
   },
   "extensions": {},
   "control": {
-    "state": "dropped",
+    "state": "deferred",
     "answer_ref": null,
     "implementation_ref": null,
-    "superseded_by": null
+    "superseded_by": null,
+    "deferral": {
+      "target": {
+        "kind": "external",
+        "name": "v1.x"
+      },
+      "ruled_by": {
+        "actor": "user",
+        "person": "kai"
+      }
+    }
   }
 }

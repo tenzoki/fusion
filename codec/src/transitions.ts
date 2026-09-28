@@ -145,10 +145,14 @@ export interface TransitionPayload {
   outcome?: Outcome | null;
   /** Issue: the disposition the record would carry in the target state. */
   disposition?: unknown;
-  /** Decision: the references the target state may require. */
+  /**
+   * Decision: the references the target state may require, and the deferral
+   * (target plus who ruled) that `deferred` requires.
+   */
   answer_ref?: unknown;
   implementation_ref?: unknown;
   superseded_by?: unknown;
+  deferral?: unknown;
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);

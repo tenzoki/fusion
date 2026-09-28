@@ -21,6 +21,15 @@
     "answer_ref": null,
     "implementation_ref": null,
     "superseded_by": null,
-    "deferral": null
+    "deferral": {
+      "target": {
+        "kind": "external",
+        "name": "v1.x"
+      },
+      "ruled_by": {
+        "actor": "user",
+        "person": "kai"
+      }
+    }
   }
 }

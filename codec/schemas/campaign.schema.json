@@ -32,6 +32,17 @@
     "non_negative_integer": { "type": "integer", "minimum": 0 },
     "string_set": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
     "string_list": { "type": "array", "items": { "type": "string" } },
+    "string_list_nonempty": {
+      "type": "array",
+      "description": "A charter list Charter.Validate requires non-empty; order and multiplicity are kept as Prior stores them and enter CharterHash (Prior's FJ00 response 2: the lists are not deduplicated).",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "name_list": {
+      "type": "array",
+      "description": "A charter list that may be empty; order and multiplicity are kept as Prior stores them and enter CharterHash.",
+      "items": { "type": "string", "minLength": 1 }
+    },
     "optional_string": { "type": ["string", "null"], "minLength": 1 },
     "optional_prior_revision": {
       "oneOf": [
@@ -69,9 +80,9 @@
         "revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" },
         "authorisation_ref": { "type": "string", "minLength": 1 },
         "objective": { "type": "string", "minLength": 1 },
-        "item_kinds": { "allOf": [ { "$ref": "#/$defs/string_set" }, { "type": "array", "minItems": 1 } ] },
-        "candidate_sources": { "allOf": [ { "$ref": "#/$defs/string_set" }, { "type": "array", "minItems": 1 } ] },
-        "workflow_templates": { "allOf": [ { "$ref": "#/$defs/string_set" }, { "type": "array", "minItems": 1 } ] },
+        "item_kinds": { "$ref": "#/$defs/string_list_nonempty" },
+        "candidate_sources": { "$ref": "#/$defs/string_list_nonempty" },
+        "workflow_templates": { "$ref": "#/$defs/string_list_nonempty" },
         "stop_conditions": { "$ref": "#/$defs/string_list" },
         "intake_policy": { "type": "string", "minLength": 1 },
         "selection_policy": { "type": "string", "minLength": 1 },
@@ -80,8 +91,8 @@
         "autonomy_policy": { "type": "string", "minLength": 1 },
         "backend_policy": { "type": "string", "minLength": 1 },
         "delivery_policy": { "type": "string", "minLength": 1 },
-        "data_boundary": { "$ref": "#/$defs/string_set" },
-        "capabilities": { "$ref": "#/$defs/string_set" },
+        "data_boundary": { "$ref": "#/$defs/name_list" },
+        "capabilities": { "$ref": "#/$defs/name_list" },
         "budget_account": { "type": "string", "minLength": 1 },
         "limits": { "$ref": "#/$defs/limits" }
       }
@@ -308,7 +319,7 @@
     },
     "formation_candidate": {
       "type": "object",
-      "description": "packages.Candidate: the formation view of a candidate, not the register entry.",
+      "description": "packages.Candidate: the formation view of a candidate, not the register entry. Its three metrics are signed: legacy values may be negative and are transported as stored (Prior's FJ00 response 2).",
       "additionalProperties": false,
       "required": ["dependencies", "estimated_size", "id", "purpose", "qualified", "resources", "risk", "selected", "validation_cost", "version"],
       "properties": {
@@ -317,16 +328,16 @@
         "version": { "$ref": "#/$defs/positive_integer" },
         "resources": { "$ref": "#/$defs/string_set" },
         "dependencies": { "$ref": "#/$defs/string_set" },
-        "risk": { "$ref": "#/$defs/non_negative_integer" },
-        "validation_cost": { "$ref": "#/$defs/non_negative_integer" },
-        "estimated_size": { "$ref": "#/$defs/non_negative_integer" },
+        "risk": { "type": "integer" },
+        "validation_cost": { "type": "integer" },
+        "estimated_size": { "type": "integer" },
         "qualified": { "type": "boolean" },
         "selected": { "type": "boolean" }
       }
     },
     "formation_package": {
       "type": "object",
-      "description": "packages.Package kept verbatim. Its state is Prior's vocabulary; the fusion package status it may correspond to is a proposal in codec/contract/prior-mapping.json, not a field here.",
+      "description": "packages.Package kept verbatim. Its state is Prior's vocabulary; the fusion package status it may correspond to is a proposal in codec/contract/prior-mapping.json, not a field here. Its three metrics are signed, as on the formation candidate. failure_reason occurs on stale as well as failed (required on failed, admitted on stale, null on formed, admitting and admitted). baseline_hash is set by Dispatch; a successful completion clears it on the other formed packages while rebasing them, and a failure does not execute that branch (Prior's FJ00 response 2).",
       "additionalProperties": false,
       "required": ["accepted_revision", "base_revision", "baseline_hash", "dependencies", "estimated_size", "failure_reason", "id", "members", "reasons", "resources", "risk", "state", "validation_cost"],
       "properties": {
@@ -335,9 +346,9 @@
         "dependencies": { "$ref": "#/$defs/string_set" },
         "resources": { "$ref": "#/$defs/string_set" },
         "reasons": { "$ref": "#/$defs/string_list" },
-        "risk": { "$ref": "#/$defs/non_negative_integer" },
-        "validation_cost": { "$ref": "#/$defs/non_negative_integer" },
-        "estimated_size": { "$ref": "#/$defs/non_negative_integer" },
+        "risk": { "type": "integer" },
+        "validation_cost": { "type": "integer" },
+        "estimated_size": { "type": "integer" },
         "state": { "type": "string", "enum": ["formed", "admitting", "admitted", "running", "completed", "failed", "stale"] },
         "base_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" },
         "accepted_revision": { "$ref": "#/$defs/optional_prior_opaque_revision" },

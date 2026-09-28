@@ -24,6 +24,7 @@
       "kind": "markdown"
     },
     "implementation_ref": "commit 40a1713f",
-    "superseded_by": null
+    "superseded_by": null,
+    "deferral": null
   }
 }

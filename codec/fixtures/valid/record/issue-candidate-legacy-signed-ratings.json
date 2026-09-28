@@ -50,7 +50,7 @@
       ],
       "severity": -1,
       "confidence": 4,
-      "estimated_scope": 2,
+      "estimated_scope": -2,
       "risk": 1,
       "affected_resources": [
         "modules/fusion/parser"
@@ -69,10 +69,9 @@
         "policy_version": "policy-v3",
         "snapshot_hash": "prior-json-sha256:11bdcb891541deec86c554a1b5153491d2ce8f798fedd4e9477374929d4b83d5",
         "outcome": "admitted",
-        "score": 11,
+        "score": -3,
         "reasons": [
-          "severity gte 3",
-          "risk lte 2"
+          "legacy signed ratings transported as stored"
         ]
       },
       "admission": {

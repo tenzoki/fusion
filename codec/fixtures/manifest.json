@@ -472,6 +472,18 @@
     "note": "Unobserved qualification, selection and admission are null, not negative results."
   },
   {
+    "path": "valid/record/issue-candidate-legacy-signed-ratings.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "Legacy signed values transported as stored: severity -1, estimated_scope -2 and a selection score of -3 are admitted (Prior's FJ00 response 2); confidence and risk stay non-negative."
+  },
+  {
+    "path": "valid/record/issue-candidate-unversioned-and-duplicate-evidence.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "Evidence keeps order and multiplicity: one entry whose ref and revision are null (an empty Prior string), and two identical entries; the qualification over it is recorded as failed, never promoted."
+  },
+  {
     "path": "valid/record/plan-in-progress.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "valid",
@@ -487,13 +499,13 @@
     "path": "valid/record/discussion-open.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "valid",
-    "note": "An open discussion with two participants and no outcome yet."
+    "note": "An open discussion with two participants and no outcome yet; open is read as interrupted, and the state enum is open or closed."
   },
   {
     "path": "valid/record/discussion-closed.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "valid",
-    "note": "A closed discussion whose outcomes are a record ref and a legacy marker citation."
+    "note": "A closed discussion whose outcomes are a record ref and a legacy marker citation; closed is the one terminal state and open to closed the only edge."
   },
   {
     "path": "valid/record/decision-open.json",
@@ -520,10 +532,10 @@
     "note": "superseded names its successor; the historical answer and full-length implementation commit stay."
   },
   {
-    "path": "valid/record/decision-dropped.json",
+    "path": "valid/record/decision-deferred.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "valid",
-    "note": "dropped carries neither implementation nor successor."
+    "note": "deferred carries a deferral naming an external target (v1.x, never a manufactured record id) and who ruled, and neither implementation nor successor (Prior's FJ00 response 5c)."
   },
   {
     "path": "invalid/record/issue-with-decision-control.json",
@@ -589,11 +601,11 @@
     "note": "The disposition kind is a lowercase token."
   },
   {
-    "path": "invalid/record/candidate-negative-severity.json",
+    "path": "invalid/record/candidate-negative-risk.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "Ratings are non-negative integers."
+    "note": "risk stays a non-negative integer, as does confidence: the two bounds Prior validates at intake; severity, estimated_scope and score are signed."
   },
   {
     "path": "invalid/record/candidate-passed-as-string.json",
@@ -764,18 +776,32 @@
     "note": "superseded names its successor."
   },
   {
-    "path": "invalid/record/decision-dropped-with-successor.json",
+    "path": "invalid/record/decision-deferred-with-successor.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "dropped carries no successor."
+    "note": "deferred carries no successor."
+  },
+  {
+    "path": "invalid/record/decision-deferred-without-deferral.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "deferred requires a deferral object naming the target and who ruled; a missing legacy target or ruler is a migration finding, never a null."
+  },
+  {
+    "path": "invalid/record/decision-open-with-deferral.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Every state but deferred requires deferral null."
   },
   {
     "path": "invalid/record/decision-state-unknown.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "A decision state is open, answered, implemented, superseded or dropped."
+    "note": "A decision state is open, answered, implemented, superseded or deferred; dropped, the word the draft spec used for _d_, is outside the enum."
   },
   {
     "path": "invalid/record/discussion-participant-actor-uppercase.json",
@@ -790,6 +816,13 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "A legacy marker citation admits only the conventions' marker letters."
+  },
+  {
+    "path": "invalid/record/discussion-state-in-progress.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A discussion state is open or closed (Prior's FJ00 response 5b); in_progress and deferred are outside the enum, and a legacy record carrying one is a migration finding."
   },
   {
     "path": "invalid/record/foreign-ref-project-with-colon.json",
@@ -822,6 +855,12 @@
     "schema": "urn:fusion:schema:fusion.campaign/v1",
     "expect": "valid",
     "note": "archived requires previous_terminal; the completion evidence handed to Finalize is kept."
+  },
+  {
+    "path": "valid/campaign/formation-signed-metrics-stale-reason-and-charter-duplicates.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "valid",
+    "note": "Prior's FJ00 response 2 transported as stored: a formation candidate with risk -1, a stale package carrying a failure_reason, and a charter whose item_kinds and data_boundary each repeat an entry (order and multiplicity enter CharterHash)."
   },
   {
     "path": "invalid/campaign/unknown-key.json",

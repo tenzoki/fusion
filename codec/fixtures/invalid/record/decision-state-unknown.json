@@ -17,9 +17,10 @@
   },
   "extensions": {},
   "control": {
-    "state": "deferred",
+    "state": "dropped",
     "answer_ref": null,
     "implementation_ref": null,
-    "superseded_by": null
+    "superseded_by": null,
+    "deferral": null
   }
 }

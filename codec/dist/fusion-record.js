@@ -8996,6 +8996,7 @@ var transitions_default = {
   description: "The status and state vocabularies of the five controlled kinds, their terminal subsets and every allowed edge, as data. The package matrix is spec section 4.2; the record kinds carry the conventions' marker vocabularies by value (rules/fusion-workbench-conventions.md '## State Markers \u2014 issues and planning', '## State Markers \u2014 decisions', '## Terminal states are history'). An edge absent here is refused with the typed error conflict. The package matrix is never applied to a record kind. A terminal state is left only along an edge listed here; where none exists, continuation files a new record that cites the terminal one.",
   sources: [
     "concept/fusion-json-workbench-spec.md section 4.2 (Prior repository, 2026-09-28)",
+    "docs/design/fusion-fj00-prior-response.md section 5 (Prior repository, c512c4c): 5a issue and plan edges confirmed, 5b discussions narrowed to open and closed, 5c decision _d_ is deferred",
     "rules/fusion-workbench-conventions.md '## Work packages', '## State Markers \u2014 issues and planning', '## State Markers \u2014 decisions', '## Filename Patterns' (discussion row), '## Terminal states are history'"
   ],
   kinds: {
@@ -9218,13 +9219,10 @@ var transitions_default = {
       },
       states: [
         "open",
-        "in_progress",
-        "closed",
-        "deferred"
+        "closed"
       ],
       terminal: [
-        "closed",
-        "deferred"
+        "closed"
       ],
       edges: [
         {
@@ -9234,7 +9232,7 @@ var transitions_default = {
       ],
       reopen: "never",
       notes: [
-        "The spec gives discussions the same four state values as issues; the conventions' '## Filename Patterns' row allows a discussion only _o_ and _c_, so only open and closed are reachable and in_progress and deferred exist for imported values only.",
+        "A discussion has open and closed and the one edge between them (Prior's FJ00 response 5b, the conventions' '## Filename Patterns' row); a legacy record carrying another value is a migration finding, never an imported state.",
         "An _o_ discussion is read as interrupted, not as pending: its record is on disk from round one."
       ]
     },
@@ -9246,19 +9244,19 @@ var transitions_default = {
         answered: "_a_",
         implemented: "_i_",
         superseded: "_s_",
-        dropped: "_d_"
+        deferred: "_d_"
       },
       states: [
         "open",
         "answered",
         "implemented",
         "superseded",
-        "dropped"
+        "deferred"
       ],
       terminal: [
         "implemented",
         "superseded",
-        "dropped"
+        "deferred"
       ],
       edges: [
         {
@@ -9273,7 +9271,8 @@ var transitions_default = {
         },
         {
           from: "open",
-          to: "dropped"
+          to: "deferred",
+          requires: "deferral"
         },
         {
           from: "answered",
@@ -9282,7 +9281,8 @@ var transitions_default = {
         },
         {
           from: "answered",
-          to: "dropped"
+          to: "deferred",
+          requires: "deferral"
         },
         {
           from: "answered",
@@ -9298,7 +9298,7 @@ var transitions_default = {
       reopen: "never: an implemented decision that needs revisiting is superseded by a new decision",
       notes: [
         "implemented to superseded is the one terminal-to-terminal edge the conventions allow.",
-        "The conventions call the _d_ marker deferred and treat it as evidence-base history; the spec names the state dropped. It is terminal: the conventions (## Terminal states are history) name _i_, _s_ and _d_ on a decision terminal, and no reopening edge exists.",
+        "Prior's FJ00 response 5c: _d_ is deferred, terminal, with an explicit target and who ruled (control.deferral in record.schema.json; the reason stays in the Markdown Deferred: line). The conventions (## Terminal states are history) name _i_, _s_ and _d_ on a decision terminal, and no reopening edge exists.",
         "Retired: and Revised by: lines move no state; the marker stays where it stands."
       ]
     }
@@ -9340,6 +9340,17 @@ var campaign_schema_default = {
     non_negative_integer: { type: "integer", minimum: 0 },
     string_set: { type: "array", uniqueItems: true, items: { type: "string", minLength: 1 } },
     string_list: { type: "array", items: { type: "string" } },
+    string_list_nonempty: {
+      type: "array",
+      description: "A charter list Charter.Validate requires non-empty; order and multiplicity are kept as Prior stores them and enter CharterHash (Prior's FJ00 response 2: the lists are not deduplicated).",
+      minItems: 1,
+      items: { type: "string", minLength: 1 }
+    },
+    name_list: {
+      type: "array",
+      description: "A charter list that may be empty; order and multiplicity are kept as Prior stores them and enter CharterHash.",
+      items: { type: "string", minLength: 1 }
+    },
     optional_string: { type: ["string", "null"], minLength: 1 },
     optional_prior_revision: {
       oneOf: [
@@ -9377,9 +9388,9 @@ var campaign_schema_default = {
         revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" },
         authorisation_ref: { type: "string", minLength: 1 },
         objective: { type: "string", minLength: 1 },
-        item_kinds: { allOf: [{ $ref: "#/$defs/string_set" }, { type: "array", minItems: 1 }] },
-        candidate_sources: { allOf: [{ $ref: "#/$defs/string_set" }, { type: "array", minItems: 1 }] },
-        workflow_templates: { allOf: [{ $ref: "#/$defs/string_set" }, { type: "array", minItems: 1 }] },
+        item_kinds: { $ref: "#/$defs/string_list_nonempty" },
+        candidate_sources: { $ref: "#/$defs/string_list_nonempty" },
+        workflow_templates: { $ref: "#/$defs/string_list_nonempty" },
         stop_conditions: { $ref: "#/$defs/string_list" },
         intake_policy: { type: "string", minLength: 1 },
         selection_policy: { type: "string", minLength: 1 },
@@ -9388,8 +9399,8 @@ var campaign_schema_default = {
         autonomy_policy: { type: "string", minLength: 1 },
         backend_policy: { type: "string", minLength: 1 },
         delivery_policy: { type: "string", minLength: 1 },
-        data_boundary: { $ref: "#/$defs/string_set" },
-        capabilities: { $ref: "#/$defs/string_set" },
+        data_boundary: { $ref: "#/$defs/name_list" },
+        capabilities: { $ref: "#/$defs/name_list" },
         budget_account: { type: "string", minLength: 1 },
         limits: { $ref: "#/$defs/limits" }
       }
@@ -9616,7 +9627,7 @@ var campaign_schema_default = {
     },
     formation_candidate: {
       type: "object",
-      description: "packages.Candidate: the formation view of a candidate, not the register entry.",
+      description: "packages.Candidate: the formation view of a candidate, not the register entry. Its three metrics are signed: legacy values may be negative and are transported as stored (Prior's FJ00 response 2).",
       additionalProperties: false,
       required: ["dependencies", "estimated_size", "id", "purpose", "qualified", "resources", "risk", "selected", "validation_cost", "version"],
       properties: {
@@ -9625,16 +9636,16 @@ var campaign_schema_default = {
         version: { $ref: "#/$defs/positive_integer" },
         resources: { $ref: "#/$defs/string_set" },
         dependencies: { $ref: "#/$defs/string_set" },
-        risk: { $ref: "#/$defs/non_negative_integer" },
-        validation_cost: { $ref: "#/$defs/non_negative_integer" },
-        estimated_size: { $ref: "#/$defs/non_negative_integer" },
+        risk: { type: "integer" },
+        validation_cost: { type: "integer" },
+        estimated_size: { type: "integer" },
         qualified: { type: "boolean" },
         selected: { type: "boolean" }
       }
     },
     formation_package: {
       type: "object",
-      description: "packages.Package kept verbatim. Its state is Prior's vocabulary; the fusion package status it may correspond to is a proposal in codec/contract/prior-mapping.json, not a field here.",
+      description: "packages.Package kept verbatim. Its state is Prior's vocabulary; the fusion package status it may correspond to is a proposal in codec/contract/prior-mapping.json, not a field here. Its three metrics are signed, as on the formation candidate. failure_reason occurs on stale as well as failed (required on failed, admitted on stale, null on formed, admitting and admitted). baseline_hash is set by Dispatch; a successful completion clears it on the other formed packages while rebasing them, and a failure does not execute that branch (Prior's FJ00 response 2).",
       additionalProperties: false,
       required: ["accepted_revision", "base_revision", "baseline_hash", "dependencies", "estimated_size", "failure_reason", "id", "members", "reasons", "resources", "risk", "state", "validation_cost"],
       properties: {
@@ -9643,9 +9654,9 @@ var campaign_schema_default = {
         dependencies: { $ref: "#/$defs/string_set" },
         resources: { $ref: "#/$defs/string_set" },
         reasons: { $ref: "#/$defs/string_list" },
-        risk: { $ref: "#/$defs/non_negative_integer" },
-        validation_cost: { $ref: "#/$defs/non_negative_integer" },
-        estimated_size: { $ref: "#/$defs/non_negative_integer" },
+        risk: { type: "integer" },
+        validation_cost: { type: "integer" },
+        estimated_size: { type: "integer" },
         state: { type: "string", enum: ["formed", "admitting", "admitted", "running", "completed", "failed", "stale"] },
         base_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" },
         accepted_revision: { $ref: "#/$defs/optional_prior_opaque_revision" },
@@ -10572,7 +10583,7 @@ var record_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.record/v1",
   title: "fusion.record/v1",
-  description: "Control data of an issue, plan, discussion or decision, <name>.record.json beside <name>.md (spec section 4.3). control is a union discriminated by kind; each branch forbids the other kinds' fields. Cross-field rules expressed with if/then: an issue's disposition is null while open or in_progress and an object once closed or deferred; a decision's answer_ref, implementation_ref and superseded_by are null or present exactly as its state demands (answered cites an answer, implemented an implementation, superseded a successor; open carries none, dropped carries no successor); in a candidate block an admitted selection carries an admission, an admission needs a qualification, a merge target and the outcome merged imply each other, and a policy-evaluated outcome carries policy version and snapshot hash while merged carries neither. Rules JSON Schema cannot check: the legal state changes per kind live in codec/contract/transitions.json (the package matrix is never applied to records); ids inside steps, criteria, evidence and the set-valued arrays are distinct beyond what uniqueItems catches; a candidate's qualification is current only if its candidate_version equals version, its source_revision equals source.revision and its evidence_hash equals Prior's evidenceHash over the current evidence and reproduction (an admission over a stale qualification is refused, never healed); a deferred decision's target lives in the Markdown Deferred: line; historical markers and status heads in the narrative are evidence, not state, and a divergent status note in an active narrative is a conflict; a plan's acceptance revision equals the hash of the plan narrative when it was adopted.",
+  description: "Control data of an issue, plan, discussion or decision, <name>.record.json beside <name>.md (spec section 4.3). control is a union discriminated by kind; each branch forbids the other kinds' fields. Cross-field rules expressed with if/then: an issue's disposition is null while open or in_progress and an object once closed or deferred; a decision's answer_ref, implementation_ref, superseded_by and deferral are null or present exactly as its state demands (answered cites an answer, implemented an implementation, superseded a successor, deferred a deferral naming its target and who ruled; open carries none; deferred carries neither implementation nor successor, and no other state carries a deferral); in a candidate block an admitted selection carries an admission, an admission needs a qualification, a merge target and the outcome merged imply each other, and a policy-evaluated outcome carries policy version and snapshot hash while merged carries neither. Rules JSON Schema cannot check: the legal state changes per kind live in codec/contract/transitions.json (the package matrix is never applied to records); ids inside steps, criteria, evidence and the set-valued arrays are distinct beyond what uniqueItems catches; a candidate's qualification is current only if its candidate_version equals version, its source_revision equals source.revision and its evidence_hash equals Prior's evidenceHash over the current evidence and reproduction (an admission over a stale qualification is refused, never healed); a deferred decision's target is control.deferral.target, a resolvable reference or a named external target such as a release, and the reason stays in the Markdown Deferred: line (a legacy record whose Deferred: line names no target or no ruler is a migration finding, never a null the schema admits); historical markers and status heads in the narrative are evidence, not state, and a divergent status note in an active narrative is a conflict; a plan's acceptance revision equals the hash of the plan narrative when it was adopted.",
   type: "object",
   additionalProperties: false,
   required: ["control", "extensions", "filed_by", "id", "kind", "narrative", "provenance", "references", "schema", "workbench_id"],
@@ -10619,6 +10630,11 @@ var record_schema_default = {
       type: "string",
       description: "The issues-and-planning vocabulary: _o_ open, _p_ in_progress, _c_ closed, _d_ deferred.",
       enum: ["open", "in_progress", "closed", "deferred"]
+    },
+    two_states: {
+      type: "string",
+      description: "The discussion vocabulary: _o_ open (read as interrupted), _c_ closed; the only edge is open to closed (Prior's FJ00 response 5b). A legacy record carrying another value is a migration finding, never an imported state.",
+      enum: ["open", "closed"]
     },
     positive_integer: { type: "integer", minimum: 1 },
     non_negative_integer: { type: "integer", minimum: 0 },
@@ -10696,21 +10712,26 @@ var record_schema_default = {
         },
         evidence: {
           type: "array",
-          uniqueItems: true,
+          description: "Prior's Candidate.Evidence as stored: order is kept and duplicates are preserved (Prior sorts, never deduplicates). An empty Ref or Revision imports as null and exports as the empty string; Qualify records such an entry as a failed qualification, never as a pass.",
           items: {
             type: "object",
             additionalProperties: false,
             required: ["ref", "revision"],
             properties: {
-              ref: { type: "string", minLength: 1 },
-              revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" }
+              ref: { type: ["string", "null"], minLength: 1 },
+              revision: {
+                oneOf: [
+                  { type: "null" },
+                  { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" }
+                ]
+              }
             }
           }
         },
         reproduction: { $ref: "#/$defs/string_list" },
-        severity: { $ref: "#/$defs/non_negative_integer" },
+        severity: { type: "integer", description: "Signed: legacy values may be negative (Prior's FJ00 response 2); confidence and risk stay non-negative, the two bounds Prior validates at intake." },
         confidence: { $ref: "#/$defs/non_negative_integer" },
-        estimated_scope: { $ref: "#/$defs/non_negative_integer" },
+        estimated_scope: { type: "integer", description: "Signed, as severity." },
         risk: { $ref: "#/$defs/non_negative_integer" },
         affected_resources: { $ref: "#/$defs/string_set" },
         dependencies: { $ref: "#/$defs/string_set" },
@@ -10755,7 +10776,7 @@ var record_schema_default = {
                   description: "The values Prior's register code writes or tests for at 12d8424.",
                   enum: ["pending", "selected", "admitted", "deferred", "rejected", "out_of_scope", "merged"]
                 },
-                score: { $ref: "#/$defs/non_negative_integer" },
+                score: { type: "integer", description: "Signed: evaluate can persist a negative deferred or selected score (Prior's FJ00 response 2); no clamping." },
                 reasons: { $ref: "#/$defs/string_list" }
               },
               allOf: [
@@ -10874,7 +10895,7 @@ var record_schema_default = {
       additionalProperties: false,
       required: ["outcome_refs", "participants", "state"],
       properties: {
-        state: { $ref: "#/$defs/four_states" },
+        state: { $ref: "#/$defs/two_states" },
         participants: {
           type: "array",
           uniqueItems: true,
@@ -10890,12 +10911,12 @@ var record_schema_default = {
     decision_control: {
       type: "object",
       additionalProperties: false,
-      required: ["answer_ref", "implementation_ref", "state", "superseded_by"],
+      required: ["answer_ref", "deferral", "implementation_ref", "state", "superseded_by"],
       properties: {
         state: {
           type: "string",
-          description: "The decisions vocabulary: _o_ open, _a_ answered, _i_ implemented, _s_ superseded, _d_ dropped (the conventions call the marker deferred; the spec names the state dropped).",
-          enum: ["open", "answered", "implemented", "superseded", "dropped"]
+          description: "The decisions vocabulary: _o_ open, _a_ answered, _i_ implemented, _s_ superseded, _d_ deferred (terminal, with an explicit target and who ruled: Prior's FJ00 response 5c).",
+          enum: ["open", "answered", "implemented", "superseded", "deferred"]
         },
         answer_ref: {
           oneOf: [
@@ -10916,28 +10937,57 @@ var record_schema_default = {
             { type: "null" },
             { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }
           ]
+        },
+        deferral: {
+          description: "The Deferred: line's target and ruler, in the shape the conventions spell (Deferred: <target> \u2014 <reason>; ruled by <actor>, <person>); the reason stays Markdown. null in every state but deferred.",
+          oneOf: [
+            { type: "null" },
+            {
+              type: "object",
+              additionalProperties: false,
+              required: ["ruled_by", "target"],
+              properties: {
+                target: {
+                  description: "A resolvable record, artefact, foreign or legacy citation, or a named external release or undertaking such as v1.x; a phrase never becomes a manufactured record id.",
+                  oneOf: [
+                    { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" },
+                    {
+                      type: "object",
+                      additionalProperties: false,
+                      required: ["kind", "name"],
+                      properties: {
+                        kind: { const: "external" },
+                        name: { type: "string", minLength: 1 }
+                      }
+                    }
+                  ]
+                },
+                ruled_by: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" }
+              }
+            }
+          ]
         }
       },
       allOf: [
         {
           if: { type: "object", properties: { state: { const: "open" } }, required: ["state"] },
-          then: { type: "object", properties: { answer_ref: { type: "null" }, implementation_ref: { type: "null" }, superseded_by: { type: "null" } } }
+          then: { type: "object", properties: { answer_ref: { type: "null" }, implementation_ref: { type: "null" }, superseded_by: { type: "null" }, deferral: { type: "null" } } }
         },
         {
           if: { type: "object", properties: { state: { const: "answered" } }, required: ["state"] },
-          then: { type: "object", properties: { answer_ref: { not: { type: "null" } }, implementation_ref: { type: "null" }, superseded_by: { type: "null" } } }
+          then: { type: "object", properties: { answer_ref: { not: { type: "null" } }, implementation_ref: { type: "null" }, superseded_by: { type: "null" }, deferral: { type: "null" } } }
         },
         {
           if: { type: "object", properties: { state: { const: "implemented" } }, required: ["state"] },
-          then: { type: "object", properties: { implementation_ref: { not: { type: "null" } }, superseded_by: { type: "null" } } }
+          then: { type: "object", properties: { implementation_ref: { not: { type: "null" } }, superseded_by: { type: "null" }, deferral: { type: "null" } } }
         },
         {
           if: { type: "object", properties: { state: { const: "superseded" } }, required: ["state"] },
-          then: { type: "object", properties: { superseded_by: { type: "object" } } }
+          then: { type: "object", properties: { superseded_by: { type: "object" }, deferral: { type: "null" } } }
         },
         {
-          if: { type: "object", properties: { state: { const: "dropped" } }, required: ["state"] },
-          then: { type: "object", properties: { implementation_ref: { type: "null" }, superseded_by: { type: "null" } } }
+          if: { type: "object", properties: { state: { const: "deferred" } }, required: ["state"] },
+          then: { type: "object", properties: { implementation_ref: { type: "null" }, superseded_by: { type: "null" }, deferral: { type: "object" } } }
         }
       ]
     }

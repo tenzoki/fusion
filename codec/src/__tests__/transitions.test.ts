@@ -73,18 +73,21 @@ describe("contract/transitions.json carries the spec matrix and the conventions'
     }
   });
 
-  it("discussion: _o_ and _c_ only, the single edge open to closed", () => {
+  it("discussion: _o_ and _c_ only, closed terminal, the single edge open to closed", () => {
     const d = table.kinds["discussion"]!;
     expect(d.markers).toEqual({ open: "_o_", closed: "_c_" });
+    expect(d.states).toEqual(["open", "closed"]);
+    expect(d.terminal).toEqual(["closed"]);
     expect(d.edges).toEqual([{ from: "open", to: "closed" }]);
   });
 
-  it("decision: _o_ _a_ _i_ _s_ _d_, three terminal, implemented to superseded the one terminal-to-terminal edge in the whole table", () => {
+  it("decision: _o_ _a_ _i_ _s_ _d_ with _d_ deferred, three terminal, implemented to superseded the one terminal-to-terminal edge in the whole table", () => {
     const d = table.kinds["decision"]!;
-    expect(d.markers).toEqual({ open: "_o_", answered: "_a_", implemented: "_i_", superseded: "_s_", dropped: "_d_" });
-    expect(d.terminal).toEqual(["implemented", "superseded", "dropped"]);
+    expect(d.markers).toEqual({ open: "_o_", answered: "_a_", implemented: "_i_", superseded: "_s_", deferred: "_d_" });
+    expect(d.states).toEqual(["open", "answered", "implemented", "superseded", "deferred"]);
+    expect(d.terminal).toEqual(["implemented", "superseded", "deferred"]);
     expect(d.edges.map((e) => `${e.from}>${e.to}`).sort()).toEqual(
-      ["open>answered", "open>implemented", "open>dropped", "answered>implemented", "answered>dropped", "answered>superseded", "implemented>superseded"].sort(),
+      ["open>answered", "open>implemented", "open>deferred", "answered>implemented", "answered>deferred", "answered>superseded", "implemented>superseded"].sort(),
     );
     const terminalLeaves = kinds().flatMap((kind) =>
       table.kinds[kind]!.edges.filter((e) => table.kinds[kind]!.terminal.includes(e.from)).map((e) => `${kind}:${e.from}>${e.to}`),
@@ -164,12 +167,14 @@ describe("allowed(package, ...) outcome rules on the target state", () => {
 function satisfying(kind: string, to: string): TransitionPayload {
   const k = table.kinds[kind]!;
   const payload: TransitionPayload = {};
-  if (kind === "issue" && k.terminal.includes(to)) payload.disposition = { kind: "resolved", reason_ref: null };
+  if (kind === "issue" && k.terminal.includes(to)) payload.disposition = { kind: "fixed", reason_ref: null };
   if (kind === "decision") {
     const ref = { workbench_id: "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964", record_id: "00000000-0000-4000-8000-000000000001" };
     if (to === "answered") payload.answer_ref = ref;
     if (to === "implemented") payload.implementation_ref = "12d8424";
     if (to === "superseded") payload.superseded_by = ref;
+    // As fixtures/valid/record/decision-deferred.json carries it: an external target and who ruled.
+    if (to === "deferred") payload.deferral = { target: { kind: "external", name: "v1.x" }, ruled_by: { actor: "user", person: "kai" } };
   }
   return payload;
 }
@@ -203,12 +208,16 @@ describe("allowed on the record kinds: what the target state requires", () => {
     expect(requiring.map((e) => `${e.from}>${e.to}:${e.requires}`)).toEqual([
       "open>answered:answer_ref",
       "open>implemented:implementation_ref",
+      "open>deferred:deferral",
       "answered>implemented:implementation_ref",
+      "answered>deferred:deferral",
       "answered>superseded:superseded_by",
       "implemented>superseded:superseded_by",
     ]);
     for (const e of requiring) {
-      expectResult(allowed("decision", e.from, e.to, {}), false, "schema-invalid", `${e.from} -> ${e.to} without ${e.requires}`);
+      const without = allowed("decision", e.from, e.to, {});
+      expectResult(without, false, "schema-invalid", `${e.from} -> ${e.to} without ${e.requires}`);
+      if (!without.ok) expect(without.reason).toBe(`decision: ${e.to} requires ${e.requires}`);
       expectResult(allowed("decision", e.from, e.to, { [e.requires!]: null }), false, "schema-invalid");
       expectResult(allowed("decision", e.from, e.to, satisfying("decision", e.to)), true);
     }

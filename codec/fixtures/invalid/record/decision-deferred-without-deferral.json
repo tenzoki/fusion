@@ -1,14 +1,14 @@
 {
   "schema": "fusion.record/v1",
-  "id": "9e663b5f-9cd2-4e26-84fb-30c56433c30d",
+  "id": "2afd233f-bd96-47d7-85f5-e42eb3766210",
   "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
   "kind": "decision",
   "narrative": {
-    "path": "shared/decisions/260928-1900_o_does-the-shipped-codec-carry-a-schema-library.md"
+    "path": "shared/decisions/260810-0800_d_should-fixtures-be-yaml.md"
   },
   "filed_by": {
-    "actor": "implementation-planner",
-    "person": null
+    "actor": "user",
+    "person": "kai"
   },
   "references": [],
   "provenance": {
@@ -17,7 +17,7 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
+    "state": "deferred",
     "answer_ref": null,
     "implementation_ref": null,
     "superseded_by": null,

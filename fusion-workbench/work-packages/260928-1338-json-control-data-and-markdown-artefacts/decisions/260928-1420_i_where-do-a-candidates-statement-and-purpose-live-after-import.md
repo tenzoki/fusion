@@ -34,3 +34,6 @@ Option 1 for FJ00, with option 3 raised to the Prior side through step 12's requ
 
 ---
 Answered: Prior: docs/design/fusion-fj00-prior-response.md `## 6. Vocabularies and legacy prose` (6b, at Prior c512c4c) — option 1: Statement and Purpose stay verbatim and frozen in provenance.legacy_fields beside the narrative; the two mapping rows are kept after FJ04, since Prior still persists both and includes them in intake and revision identity; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 027f9bee — codec/contract/prior-mapping.json carries the Statement and Purpose rows as ruled, with the note that they stay after FJ04 (FJ01b step 2).

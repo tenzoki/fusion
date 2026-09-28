@@ -2,6 +2,7 @@
   "description": "The status and state vocabularies of the five controlled kinds, their terminal subsets and every allowed edge, as data. The package matrix is spec section 4.2; the record kinds carry the conventions' marker vocabularies by value (rules/fusion-workbench-conventions.md '## State Markers — issues and planning', '## State Markers — decisions', '## Terminal states are history'). An edge absent here is refused with the typed error conflict. The package matrix is never applied to a record kind. A terminal state is left only along an edge listed here; where none exists, continuation files a new record that cites the terminal one.",
   "sources": [
     "concept/fusion-json-workbench-spec.md section 4.2 (Prior repository, 2026-09-28)",
+    "docs/design/fusion-fj00-prior-response.md section 5 (Prior repository, c512c4c): 5a issue and plan edges confirmed, 5b discussions narrowed to open and closed, 5c decision _d_ is deferred",
     "rules/fusion-workbench-conventions.md '## Work packages', '## State Markers — issues and planning', '## State Markers — decisions', '## Filename Patterns' (discussion row), '## Terminal states are history'"
   ],
   "kinds": {
@@ -224,13 +225,10 @@
       },
       "states": [
         "open",
-        "in_progress",
-        "closed",
-        "deferred"
+        "closed"
       ],
       "terminal": [
-        "closed",
-        "deferred"
+        "closed"
       ],
       "edges": [
         {
@@ -240,7 +238,7 @@
       ],
       "reopen": "never",
       "notes": [
-        "The spec gives discussions the same four state values as issues; the conventions' '## Filename Patterns' row allows a discussion only _o_ and _c_, so only open and closed are reachable and in_progress and deferred exist for imported values only.",
+        "A discussion has open and closed and the one edge between them (Prior's FJ00 response 5b, the conventions' '## Filename Patterns' row); a legacy record carrying another value is a migration finding, never an imported state.",
         "An _o_ discussion is read as interrupted, not as pending: its record is on disk from round one."
       ]
     },
@@ -252,19 +250,19 @@
         "answered": "_a_",
         "implemented": "_i_",
         "superseded": "_s_",
-        "dropped": "_d_"
+        "deferred": "_d_"
       },
       "states": [
         "open",
         "answered",
         "implemented",
         "superseded",
-        "dropped"
+        "deferred"
       ],
       "terminal": [
         "implemented",
         "superseded",
-        "dropped"
+        "deferred"
       ],
       "edges": [
         {
@@ -279,7 +277,8 @@
         },
         {
           "from": "open",
-          "to": "dropped"
+          "to": "deferred",
+          "requires": "deferral"
         },
         {
           "from": "answered",
@@ -288,7 +287,8 @@
         },
         {
           "from": "answered",
-          "to": "dropped"
+          "to": "deferred",
+          "requires": "deferral"
         },
         {
           "from": "answered",
@@ -304,7 +304,7 @@
       "reopen": "never: an implemented decision that needs revisiting is superseded by a new decision",
       "notes": [
         "implemented to superseded is the one terminal-to-terminal edge the conventions allow.",
-        "The conventions call the _d_ marker deferred and treat it as evidence-base history; the spec names the state dropped. It is terminal: the conventions (## Terminal states are history) name _i_, _s_ and _d_ on a decision terminal, and no reopening edge exists.",
+        "Prior's FJ00 response 5c: _d_ is deferred, terminal, with an explicit target and who ruled (control.deferral in record.schema.json; the reason stays in the Markdown Deferred: line). The conventions (## Terminal states are history) name _i_, _s_ and _d_ on a decision terminal, and no reopening edge exists.",
         "Retired: and Revised by: lines move no state; the marker stays where it stands."
       ]
     }

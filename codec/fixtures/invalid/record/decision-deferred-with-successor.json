@@ -17,12 +17,22 @@
   },
   "extensions": {},
   "control": {
-    "state": "dropped",
+    "state": "deferred",
     "answer_ref": null,
     "implementation_ref": null,
     "superseded_by": {
       "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
       "record_id": "78fa93c1-e6b5-41e0-89d5-2a6547b6c480"
+    },
+    "deferral": {
+      "target": {
+        "kind": "external",
+        "name": "v1.x"
+      },
+      "ruled_by": {
+        "actor": "user",
+        "person": "kai"
+      }
     }
   }
 }

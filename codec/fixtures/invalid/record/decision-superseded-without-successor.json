@@ -24,6 +24,7 @@
       "kind": "markdown"
     },
     "implementation_ref": "9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c",
-    "superseded_by": null
+    "superseded_by": null,
+    "deferral": null
   }
 }
