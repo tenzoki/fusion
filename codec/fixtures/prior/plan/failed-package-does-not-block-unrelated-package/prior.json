@@ -1,0 +1,117 @@
+{
+  "_provenance": "derived-from-source@12d8424",
+  "_provenance_note": "Hand-derived from the Go structs and the named Go test at Prior 12d8424, not emitted by Go. Revision, EvidenceHash, SnapshotHash and CharterHash were computed by codec/src/prior/gojson.ts (computePriorRevision, computeEvidenceHash, computeSnapshotHash, computeCharterHash), which reproduces encoding/json; the Prior side replaces this file with a Go-emitted golden (plan FJ00 step 12). Keys beginning with an underscore are not Go fields and are stripped before mapping; _inputs holds the call inputs (Policy, Snapshot, FormationPolicy, CompletionEvidence, WorkItems) that Prior does not persist in the aggregate.",
+  "ID": "isolation",
+  "Revision": "d251c1ab1a08169e2e826ab59a8b828933970b428fcf96e5a5770cd68b6c45d8",
+  "PolicyVersion": "p",
+  "AcceptedRevision": "rev-1",
+  "RemainingBudget": 3,
+  "Candidates": {
+    "a": {
+      "ID": "a",
+      "Purpose": "one",
+      "Version": 1,
+      "Resources": null,
+      "Dependencies": null,
+      "Risk": 0,
+      "ValidationCost": 0,
+      "EstimatedSize": 1,
+      "Qualified": true,
+      "Selected": true
+    },
+    "b": {
+      "ID": "b",
+      "Purpose": "two",
+      "Version": 1,
+      "Resources": null,
+      "Dependencies": null,
+      "Risk": 0,
+      "ValidationCost": 0,
+      "EstimatedSize": 1,
+      "Qualified": true,
+      "Selected": true
+    }
+  },
+  "Packages": {
+    "package-1": {
+      "ID": "package-1",
+      "Members": [
+        "a"
+      ],
+      "Dependencies": null,
+      "Resources": null,
+      "Reasons": [
+        "created because no existing package satisfied overlap, risk, validation and size bounds",
+        "included a for shared purpose/overlap within package bounds"
+      ],
+      "Risk": 0,
+      "ValidationCost": 0,
+      "EstimatedSize": 1,
+      "State": "failed",
+      "BaseRevision": "rev-1",
+      "AcceptedRevision": "",
+      "BaselineHash": "baseline-1",
+      "FailureReason": "package execution failed"
+    },
+    "package-2": {
+      "ID": "package-2",
+      "Members": [
+        "b"
+      ],
+      "Dependencies": null,
+      "Resources": null,
+      "Reasons": [
+        "created because no existing package satisfied overlap, risk, validation and size bounds",
+        "included b for shared purpose/overlap within package bounds"
+      ],
+      "Risk": 0,
+      "ValidationCost": 0,
+      "EstimatedSize": 1,
+      "State": "running",
+      "BaseRevision": "rev-1",
+      "AcceptedRevision": "",
+      "BaselineHash": "baseline-1",
+      "FailureReason": ""
+    }
+  },
+  "Order": [
+    "package-1",
+    "package-2"
+  ],
+  "Deferred": null,
+  "Admissions": {
+    "intent-0": {
+      "ID": "intent-0",
+      "PackageID": "package-1",
+      "Status": "settled",
+      "LeaseRef": "lease:intent-0",
+      "WorkbenchRevision": "workbench:intent-0",
+      "Attempts": [
+        {
+          "Candidate": "a",
+          "CandidateVersion": 1,
+          "Attempt": 1,
+          "ItemID": "item-a"
+        }
+      ]
+    },
+    "intent-1": {
+      "ID": "intent-1",
+      "PackageID": "package-2",
+      "Status": "reconciled",
+      "LeaseRef": "lease:intent-1",
+      "WorkbenchRevision": "workbench:intent-1",
+      "Attempts": [
+        {
+          "Candidate": "b",
+          "CandidateVersion": 1,
+          "Attempt": 1,
+          "ItemID": "item-b"
+        }
+      ]
+    }
+  },
+  "ActiveItems": {
+    "item-b": "intent-1"
+  }
+}

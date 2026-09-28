@@ -31,6 +31,9 @@ own, are FJ01's questions.
 | `fixtures/prior/` | Round-trip fixtures for the Prior DTO mapping; not indexed by the manifest |
 | `src/strict-json.ts` | The strict reader: bytes in, one JSON object or a typed refusal out (spec §4 limits) |
 | `src/validate.ts` | Loads every schema under `schemas/` into one Ajv instance and validates a value against a schema `$id` |
+| `src/transitions.ts` | `allowed(kind, from, to, payload)` and `dependencySatisfied(condition, target)` over `contract/transitions.json` and `contract/dependencies.json`; a typed refusal, never a state change |
+| `src/references.ts` | Parses the three prose citation forms and the structured `record_ref`, `artefact_ref` and `foreign_ref` shapes into one union and renders them back; resolves nothing against a file system |
+| `src/prior/` | The Prior DTO mapping, both directions, row by row from `contract/prior-mapping.json`: `candidates.ts`, `packages.ts`, `campaign.ts`; `gojson.ts` reproduces Go's `encoding/json` bytes so that `computePriorRevision` equals Prior's stored revision |
 | `src/__tests__/` | One suite per module, plus `fixtures.test.ts` over the manifest |
 
 ## Working in it

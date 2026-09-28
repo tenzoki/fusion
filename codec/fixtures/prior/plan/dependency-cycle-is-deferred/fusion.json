@@ -1,0 +1,105 @@
+{
+  "_provenance": "import of prior.json by codec/src/prior/packages.ts importPlan",
+  "formation": {
+    "id": "cycle",
+    "revision": "prior-json-sha256:9fa73af0ba10f7bc39bf37737cafd93cbc5ee5ab67058bc490a3bb14331ece30",
+    "policy_version": "p",
+    "accepted_revision": "prior-opaque:rev",
+    "remaining_budget": 5,
+    "policy": {
+      "version": "p",
+      "max_risk": 5,
+      "max_validation_cost": 5,
+      "max_size": 5,
+      "budget": 5
+    },
+    "candidates": [
+      {
+        "id": "a",
+        "purpose": "x",
+        "version": 1,
+        "resources": [],
+        "dependencies": [
+          "b"
+        ],
+        "risk": 0,
+        "validation_cost": 0,
+        "estimated_size": 0,
+        "qualified": true,
+        "selected": true
+      },
+      {
+        "id": "b",
+        "purpose": "x",
+        "version": 1,
+        "resources": [],
+        "dependencies": [
+          "a"
+        ],
+        "risk": 0,
+        "validation_cost": 0,
+        "estimated_size": 0,
+        "qualified": true,
+        "selected": true
+      },
+      {
+        "id": "independent",
+        "purpose": "y",
+        "version": 1,
+        "resources": [],
+        "dependencies": [],
+        "risk": 0,
+        "validation_cost": 0,
+        "estimated_size": 0,
+        "qualified": true,
+        "selected": true
+      }
+    ],
+    "packages": [
+      {
+        "id": "package-1",
+        "members": [
+          "independent"
+        ],
+        "dependencies": [],
+        "resources": [],
+        "reasons": [
+          "created because no existing package satisfied overlap, risk, validation and size bounds",
+          "included independent for shared purpose/overlap within package bounds"
+        ],
+        "risk": 0,
+        "validation_cost": 0,
+        "estimated_size": 0,
+        "state": "formed",
+        "base_revision": "prior-opaque:rev",
+        "accepted_revision": null,
+        "baseline_hash": null,
+        "failure_reason": null
+      }
+    ],
+    "order": [
+      "package-1"
+    ],
+    "deferred": [
+      {
+        "candidate": "a",
+        "reason": "dependency cycle"
+      },
+      {
+        "candidate": "b",
+        "reason": "dependency cycle"
+      }
+    ],
+    "admissions": [],
+    "active_items": []
+  },
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "empty_collections": [
+        "ActiveItems",
+        "Admissions"
+      ]
+    }
+  }
+}

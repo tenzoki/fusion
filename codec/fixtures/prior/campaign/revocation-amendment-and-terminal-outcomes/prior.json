@@ -1,0 +1,85 @@
+{
+  "_provenance": "derived-from-source@12d8424",
+  "_provenance_note": "Hand-derived from the Go structs and the named Go test at Prior 12d8424, not emitted by Go. Revision, EvidenceHash, SnapshotHash and CharterHash were computed by codec/src/prior/gojson.ts (computePriorRevision, computeEvidenceHash, computeSnapshotHash, computeCharterHash), which reproduces encoding/json; the Prior side replaces this file with a Go-emitted golden (plan FJ00 step 12). Keys beginning with an underscore are not Go fields and are stripped before mapping; _inputs holds the call inputs (Policy, Snapshot, FormationPolicy, CompletionEvidence, WorkItems) that Prior does not persist in the aggregate.",
+  "_inputs": {
+    "CompletionEvidence": {
+      "ObjectiveMet": true,
+      "IntakeClosed": true,
+      "AllAttemptsTerminal": true,
+      "FinalAuditPassed": true,
+      "Watermark": "001",
+      "AuditRef": "audit"
+    }
+  },
+  "CampaignID": "campaign",
+  "Revision": "cc88b6b35a8e56d5727f273e48a49d8216465864c6ed10fa34d27b97e5f37014",
+  "State": "archived",
+  "PreviousTerminal": "completed",
+  "Reason": "",
+  "Charter": {
+    "SchemaVersion": 1,
+    "CampaignID": "campaign",
+    "Revision": "charter-2",
+    "AuthorisationRef": "approval-1",
+    "Objective": "repair bounded defects",
+    "ItemKinds": [
+      "defect"
+    ],
+    "CandidateSources": [
+      "register"
+    ],
+    "WorkflowTemplates": [
+      "defect"
+    ],
+    "StopConditions": [
+      "limit"
+    ],
+    "IntakePolicy": "snapshot",
+    "SelectionPolicy": "policy-1",
+    "PackagePolicy": "adaptive",
+    "AcceptancePolicy": "audit",
+    "AutonomyPolicy": "routine-only",
+    "BackendPolicy": "qualified",
+    "DeliveryPolicy": "local",
+    "DataBoundary": [
+      "repo",
+      "network"
+    ],
+    "Capabilities": [
+      "read",
+      "write"
+    ],
+    "BudgetAccount": "campaign-budget",
+    "Limits": {
+      "MaxAttempts": 4,
+      "MaxFailures": 3,
+      "MaxConsecutiveFailures": 2,
+      "MaxReviews": 4,
+      "ResourceUnits": 10
+    }
+  },
+  "CharterHash": "158e11e800e1b6a244e4e55976a2cd7b381649469eee66ffdb8269da9b20c813",
+  "Counters": {
+    "Attempts": 0,
+    "Failures": 0,
+    "ConsecutiveFailures": 0,
+    "Reviews": 0,
+    "ResourceUnits": 0
+  },
+  "Settlement": {
+    "OwnedRuns": 0,
+    "OpenIntents": 0,
+    "UnknownEffects": 0,
+    "Quarantined": 0
+  },
+  "RequestedOutcome": "",
+  "Sessions": [
+    "s",
+    "s2"
+  ],
+  "Runs": [
+    "r",
+    "r2"
+  ],
+  "BaselineHash": ""
+}

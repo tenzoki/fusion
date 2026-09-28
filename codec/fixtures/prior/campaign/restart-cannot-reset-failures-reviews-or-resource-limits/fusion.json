@@ -1,0 +1,80 @@
+{
+  "_provenance": "import of prior.json by codec/src/prior/campaign.ts importCampaignState",
+  "charter": {
+    "schema_version": 1,
+    "campaign_id": "campaign",
+    "revision": "prior-opaque:charter-1",
+    "authorisation_ref": "approval-1",
+    "objective": "repair bounded defects",
+    "item_kinds": [
+      "defect"
+    ],
+    "candidate_sources": [
+      "register"
+    ],
+    "workflow_templates": [
+      "defect"
+    ],
+    "stop_conditions": [
+      "limit"
+    ],
+    "intake_policy": "snapshot",
+    "selection_policy": "policy-1",
+    "package_policy": "adaptive",
+    "acceptance_policy": "audit",
+    "autonomy_policy": "routine-only",
+    "backend_policy": "qualified",
+    "delivery_policy": "local",
+    "data_boundary": [
+      "repo"
+    ],
+    "capabilities": [
+      "read",
+      "write"
+    ],
+    "budget_account": "campaign-budget",
+    "limits": {
+      "max_attempts": 4,
+      "max_failures": 3,
+      "max_consecutive_failures": 2,
+      "max_reviews": 4,
+      "resource_units": 10
+    }
+  },
+  "state": {
+    "campaign_id": "campaign",
+    "revision": "prior-json-sha256:cbf4c29c2f7a5ba23b5dda828ab48bebaad45969832d0cb9a16bad083fb89a1e",
+    "state": "paused",
+    "previous_terminal": null,
+    "reason": "persistent campaign limit exhausted",
+    "charter_hash": "prior-json-sha256:b62e844c5526df22fc0c14f07fb54bed24cf7b93eea27f0a050db84e410f0250",
+    "counters": {
+      "attempts": 2,
+      "failures": 2,
+      "consecutive_failures": 2,
+      "reviews": 2,
+      "resource_units": 4
+    },
+    "settlement": {
+      "owned_runs": 0,
+      "open_intents": 0,
+      "unknown_effects": 0,
+      "quarantined": 0
+    },
+    "requested_outcome": "bounded",
+    "sessions": [
+      "session-1"
+    ],
+    "runs": [
+      "run-1"
+    ],
+    "baseline_hash": "prior-opaque:base",
+    "completion_evidence": null
+  },
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "empty_collections": []
+    }
+  }
+}

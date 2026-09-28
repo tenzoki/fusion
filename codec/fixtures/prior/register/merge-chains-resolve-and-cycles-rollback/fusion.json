@@ -1,0 +1,189 @@
+{
+  "_provenance": "import of prior.json by codec/src/prior/candidates.ts importRegister",
+  "register": {
+    "id": "campaign",
+    "revision": "prior-json-sha256:3f6770b6f38cb639d425bbb093fe927c16eae69dc2de066c0f6cc724592609aa",
+    "stable": [
+      {
+        "stable_key": "a",
+        "candidate_id": "a"
+      },
+      {
+        "stable_key": "b",
+        "candidate_id": "b"
+      },
+      {
+        "stable_key": "c",
+        "candidate_id": "c"
+      }
+    ],
+    "watermarks": [
+      {
+        "source_id": "tracker",
+        "watermark": "001"
+      }
+    ],
+    "intake_closed": false,
+    "closed_watermark": null,
+    "policy": null,
+    "snapshot": null
+  },
+  "candidates": [
+    {
+      "candidate": {
+        "prior_id": "a",
+        "schema_version": 1,
+        "stable_key": "a",
+        "item_kind": "defect",
+        "version": 1,
+        "source": {
+          "id": "tracker",
+          "revision": "prior-opaque:r1",
+          "watermark": "001",
+          "refresh_policy": "snapshot"
+        },
+        "evidence": [
+          {
+            "ref": "report",
+            "revision": "prior-opaque:r1"
+          }
+        ],
+        "reproduction": [
+          "run fixed check"
+        ],
+        "severity": 8,
+        "confidence": 7,
+        "estimated_scope": 2,
+        "risk": 2,
+        "affected_resources": [
+          "source"
+        ],
+        "dependencies": [],
+        "qualification": null,
+        "selection": {
+          "candidate_version": 1,
+          "policy_version": null,
+          "snapshot_hash": null,
+          "outcome": "merged",
+          "score": 0,
+          "reasons": [
+            "duplicate"
+          ]
+        },
+        "admission": null,
+        "merge_into": "b"
+      },
+      "provenance": {
+        "source": "imported",
+        "legacy_fields": {
+          "Statement": "untrusted source text",
+          "Purpose": "repair",
+          "empty_collections": []
+        }
+      }
+    },
+    {
+      "candidate": {
+        "prior_id": "b",
+        "schema_version": 1,
+        "stable_key": "b",
+        "item_kind": "defect",
+        "version": 1,
+        "source": {
+          "id": "tracker",
+          "revision": "prior-opaque:r1",
+          "watermark": "001",
+          "refresh_policy": "snapshot"
+        },
+        "evidence": [
+          {
+            "ref": "report",
+            "revision": "prior-opaque:r1"
+          }
+        ],
+        "reproduction": [
+          "run fixed check"
+        ],
+        "severity": 8,
+        "confidence": 7,
+        "estimated_scope": 2,
+        "risk": 2,
+        "affected_resources": [
+          "source"
+        ],
+        "dependencies": [],
+        "qualification": null,
+        "selection": {
+          "candidate_version": 1,
+          "policy_version": null,
+          "snapshot_hash": null,
+          "outcome": "merged",
+          "score": 0,
+          "reasons": [
+            "superseded"
+          ]
+        },
+        "admission": null,
+        "merge_into": "c"
+      },
+      "provenance": {
+        "source": "imported",
+        "legacy_fields": {
+          "Statement": "untrusted source text",
+          "Purpose": "repair",
+          "empty_collections": []
+        }
+      }
+    },
+    {
+      "candidate": {
+        "prior_id": "c",
+        "schema_version": 1,
+        "stable_key": "c",
+        "item_kind": "defect",
+        "version": 1,
+        "source": {
+          "id": "tracker",
+          "revision": "prior-opaque:r1",
+          "watermark": "001",
+          "refresh_policy": "snapshot"
+        },
+        "evidence": [
+          {
+            "ref": "report",
+            "revision": "prior-opaque:r1"
+          }
+        ],
+        "reproduction": [
+          "run fixed check"
+        ],
+        "severity": 8,
+        "confidence": 7,
+        "estimated_scope": 2,
+        "risk": 2,
+        "affected_resources": [
+          "source"
+        ],
+        "dependencies": [],
+        "qualification": null,
+        "selection": null,
+        "admission": null,
+        "merge_into": null
+      },
+      "provenance": {
+        "source": "imported",
+        "legacy_fields": {
+          "Statement": "untrusted source text",
+          "Purpose": "repair",
+          "empty_collections": []
+        }
+      }
+    }
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "empty_collections": []
+    }
+  }
+}

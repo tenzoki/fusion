@@ -1,0 +1,171 @@
+{
+  "_provenance": "import of prior.json by codec/src/prior/packages.ts importPlan",
+  "formation": {
+    "id": "plan",
+    "revision": "prior-json-sha256:72ad321bcde66610ad54f1b2ba7e8000c56d88ae9d16a6e3044348a71a1d21a8",
+    "policy_version": "p1",
+    "accepted_revision": "prior-opaque:rev-1",
+    "remaining_budget": 4,
+    "policy": null,
+    "candidates": [
+      {
+        "id": "a",
+        "purpose": "parser",
+        "version": 1,
+        "resources": [
+          "parser.go"
+        ],
+        "dependencies": [],
+        "risk": 2,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "qualified": true,
+        "selected": true
+      },
+      {
+        "id": "b",
+        "purpose": "parser",
+        "version": 1,
+        "resources": [
+          "parser_test.go"
+        ],
+        "dependencies": [
+          "a"
+        ],
+        "risk": 2,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "qualified": true,
+        "selected": true
+      },
+      {
+        "id": "c",
+        "purpose": "storage",
+        "version": 1,
+        "resources": [
+          "store.go"
+        ],
+        "dependencies": [
+          "b"
+        ],
+        "risk": 2,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "qualified": true,
+        "selected": true
+      },
+      {
+        "id": "large",
+        "purpose": "architecture",
+        "version": 1,
+        "resources": [],
+        "dependencies": [],
+        "risk": 20,
+        "validation_cost": 20,
+        "estimated_size": 20,
+        "qualified": true,
+        "selected": true
+      }
+    ],
+    "packages": [
+      {
+        "id": "package-1",
+        "members": [
+          "a",
+          "b"
+        ],
+        "dependencies": [],
+        "resources": [
+          "parser.go",
+          "parser_test.go"
+        ],
+        "reasons": [
+          "created because no existing package satisfied overlap, risk, validation and size bounds",
+          "included a for shared purpose/overlap within package bounds",
+          "included b for shared purpose/overlap within package bounds"
+        ],
+        "risk": 4,
+        "validation_cost": 4,
+        "estimated_size": 4,
+        "state": "admitting",
+        "base_revision": "prior-opaque:rev-1",
+        "accepted_revision": null,
+        "baseline_hash": null,
+        "failure_reason": null
+      },
+      {
+        "id": "package-2",
+        "members": [
+          "c"
+        ],
+        "dependencies": [
+          "package-1"
+        ],
+        "resources": [
+          "store.go"
+        ],
+        "reasons": [
+          "created because no existing package satisfied overlap, risk, validation and size bounds",
+          "included c for shared purpose/overlap within package bounds"
+        ],
+        "risk": 2,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "state": "formed",
+        "base_revision": "prior-opaque:rev-1",
+        "accepted_revision": null,
+        "baseline_hash": null,
+        "failure_reason": null
+      }
+    ],
+    "order": [
+      "package-1",
+      "package-2"
+    ],
+    "deferred": [
+      {
+        "candidate": "large",
+        "reason": "remaining package budget is insufficient"
+      }
+    ],
+    "admissions": [
+      {
+        "id": "intent-1",
+        "package_id": "package-1",
+        "status": "leased",
+        "lease_ref": "lease:intent-1",
+        "workbench_revision": null,
+        "attempts": [
+          {
+            "candidate": "a",
+            "candidate_version": 1,
+            "attempt": 1,
+            "item_id": "item-a"
+          },
+          {
+            "candidate": "b",
+            "candidate_version": 1,
+            "attempt": 1,
+            "item_id": "item-b"
+          }
+        ]
+      }
+    ],
+    "active_items": [
+      {
+        "item_id": "item-a",
+        "admission_id": "intent-1"
+      },
+      {
+        "item_id": "item-b",
+        "admission_id": "intent-1"
+      }
+    ]
+  },
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "empty_collections": []
+    }
+  }
+}

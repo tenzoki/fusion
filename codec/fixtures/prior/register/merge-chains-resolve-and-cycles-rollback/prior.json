@@ -1,0 +1,145 @@
+{
+  "_provenance": "derived-from-source@12d8424",
+  "_provenance_note": "Hand-derived from the Go structs and the named Go test at Prior 12d8424, not emitted by Go. Revision, EvidenceHash, SnapshotHash and CharterHash were computed by codec/src/prior/gojson.ts (computePriorRevision, computeEvidenceHash, computeSnapshotHash, computeCharterHash), which reproduces encoding/json; the Prior side replaces this file with a Go-emitted golden (plan FJ00 step 12). Keys beginning with an underscore are not Go fields and are stripped before mapping; _inputs holds the call inputs (Policy, Snapshot, FormationPolicy, CompletionEvidence, WorkItems) that Prior does not persist in the aggregate.",
+  "ID": "campaign",
+  "Revision": "3f6770b6f38cb639d425bbb093fe927c16eae69dc2de066c0f6cc724592609aa",
+  "Candidates": {
+    "a": {
+      "SchemaVersion": 1,
+      "ID": "a",
+      "StableKey": "a",
+      "Kind": "defect",
+      "Statement": "untrusted source text",
+      "Purpose": "repair",
+      "Version": 1,
+      "Source": {
+        "ID": "tracker",
+        "Revision": "r1",
+        "Watermark": "001",
+        "RefreshPolicy": "snapshot"
+      },
+      "Evidence": [
+        {
+          "Ref": "report",
+          "Revision": "r1"
+        }
+      ],
+      "Reproduction": [
+        "run fixed check"
+      ],
+      "Severity": 8,
+      "Confidence": 7,
+      "EstimatedScope": 2,
+      "Risk": 2,
+      "AffectedResources": [
+        "source"
+      ],
+      "Dependencies": null,
+      "Qualification": null,
+      "Disposition": {
+        "CandidateVersion": 1,
+        "PolicyVersion": "",
+        "SnapshotHash": "",
+        "Outcome": "merged",
+        "WorkItemID": "",
+        "CurrentAttempt": 0,
+        "Score": 0,
+        "Reasons": [
+          "duplicate"
+        ]
+      },
+      "MergeInto": "b"
+    },
+    "b": {
+      "SchemaVersion": 1,
+      "ID": "b",
+      "StableKey": "b",
+      "Kind": "defect",
+      "Statement": "untrusted source text",
+      "Purpose": "repair",
+      "Version": 1,
+      "Source": {
+        "ID": "tracker",
+        "Revision": "r1",
+        "Watermark": "001",
+        "RefreshPolicy": "snapshot"
+      },
+      "Evidence": [
+        {
+          "Ref": "report",
+          "Revision": "r1"
+        }
+      ],
+      "Reproduction": [
+        "run fixed check"
+      ],
+      "Severity": 8,
+      "Confidence": 7,
+      "EstimatedScope": 2,
+      "Risk": 2,
+      "AffectedResources": [
+        "source"
+      ],
+      "Dependencies": null,
+      "Qualification": null,
+      "Disposition": {
+        "CandidateVersion": 1,
+        "PolicyVersion": "",
+        "SnapshotHash": "",
+        "Outcome": "merged",
+        "WorkItemID": "",
+        "CurrentAttempt": 0,
+        "Score": 0,
+        "Reasons": [
+          "superseded"
+        ]
+      },
+      "MergeInto": "c"
+    },
+    "c": {
+      "SchemaVersion": 1,
+      "ID": "c",
+      "StableKey": "c",
+      "Kind": "defect",
+      "Statement": "untrusted source text",
+      "Purpose": "repair",
+      "Version": 1,
+      "Source": {
+        "ID": "tracker",
+        "Revision": "r1",
+        "Watermark": "001",
+        "RefreshPolicy": "snapshot"
+      },
+      "Evidence": [
+        {
+          "Ref": "report",
+          "Revision": "r1"
+        }
+      ],
+      "Reproduction": [
+        "run fixed check"
+      ],
+      "Severity": 8,
+      "Confidence": 7,
+      "EstimatedScope": 2,
+      "Risk": 2,
+      "AffectedResources": [
+        "source"
+      ],
+      "Dependencies": null,
+      "Qualification": null,
+      "Disposition": null,
+      "MergeInto": ""
+    }
+  },
+  "Stable": {
+    "a": "a",
+    "b": "b",
+    "c": "c"
+  },
+  "Watermarks": {
+    "tracker": "001"
+  },
+  "IntakeClosed": false,
+  "ClosedWatermark": ""
+}

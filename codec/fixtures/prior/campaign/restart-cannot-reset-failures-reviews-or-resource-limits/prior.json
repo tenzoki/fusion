@@ -1,0 +1,72 @@
+{
+  "_provenance": "derived-from-source@12d8424",
+  "_provenance_note": "Hand-derived from the Go structs and the named Go test at Prior 12d8424, not emitted by Go. Revision, EvidenceHash, SnapshotHash and CharterHash were computed by codec/src/prior/gojson.ts (computePriorRevision, computeEvidenceHash, computeSnapshotHash, computeCharterHash), which reproduces encoding/json; the Prior side replaces this file with a Go-emitted golden (plan FJ00 step 12). Keys beginning with an underscore are not Go fields and are stripped before mapping; _inputs holds the call inputs (Policy, Snapshot, FormationPolicy, CompletionEvidence, WorkItems) that Prior does not persist in the aggregate.",
+  "CampaignID": "campaign",
+  "Revision": "cbf4c29c2f7a5ba23b5dda828ab48bebaad45969832d0cb9a16bad083fb89a1e",
+  "State": "paused",
+  "PreviousTerminal": "",
+  "Reason": "persistent campaign limit exhausted",
+  "Charter": {
+    "SchemaVersion": 1,
+    "CampaignID": "campaign",
+    "Revision": "charter-1",
+    "AuthorisationRef": "approval-1",
+    "Objective": "repair bounded defects",
+    "ItemKinds": [
+      "defect"
+    ],
+    "CandidateSources": [
+      "register"
+    ],
+    "WorkflowTemplates": [
+      "defect"
+    ],
+    "StopConditions": [
+      "limit"
+    ],
+    "IntakePolicy": "snapshot",
+    "SelectionPolicy": "policy-1",
+    "PackagePolicy": "adaptive",
+    "AcceptancePolicy": "audit",
+    "AutonomyPolicy": "routine-only",
+    "BackendPolicy": "qualified",
+    "DeliveryPolicy": "local",
+    "DataBoundary": [
+      "repo"
+    ],
+    "Capabilities": [
+      "read",
+      "write"
+    ],
+    "BudgetAccount": "campaign-budget",
+    "Limits": {
+      "MaxAttempts": 4,
+      "MaxFailures": 3,
+      "MaxConsecutiveFailures": 2,
+      "MaxReviews": 4,
+      "ResourceUnits": 10
+    }
+  },
+  "CharterHash": "b62e844c5526df22fc0c14f07fb54bed24cf7b93eea27f0a050db84e410f0250",
+  "Counters": {
+    "Attempts": 2,
+    "Failures": 2,
+    "ConsecutiveFailures": 2,
+    "Reviews": 2,
+    "ResourceUnits": 4
+  },
+  "Settlement": {
+    "OwnedRuns": 0,
+    "OpenIntents": 0,
+    "UnknownEffects": 0,
+    "Quarantined": 0
+  },
+  "RequestedOutcome": "bounded",
+  "Sessions": [
+    "session-1"
+  ],
+  "Runs": [
+    "run-1"
+  ],
+  "BaselineHash": "base"
+}

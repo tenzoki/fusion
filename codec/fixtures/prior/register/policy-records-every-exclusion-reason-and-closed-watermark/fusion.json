@@ -1,0 +1,132 @@
+{
+  "_provenance": "import of prior.json by codec/src/prior/candidates.ts importRegister",
+  "register": {
+    "id": "campaign",
+    "revision": "prior-json-sha256:b9d84fb4394ee3fe628d83620bba9340a98f9bc48d88b4e51804962828a1d8f1",
+    "stable": [
+      {
+        "stable_key": "stable",
+        "candidate_id": "c1"
+      }
+    ],
+    "watermarks": [
+      {
+        "source_id": "tracker",
+        "watermark": "001"
+      }
+    ],
+    "intake_closed": true,
+    "closed_watermark": "001",
+    "policy": {
+      "version": "policy-1",
+      "predicates": [
+        {
+          "field": "confidence",
+          "operator": "gte",
+          "value": 5
+        }
+      ],
+      "weights": [
+        {
+          "field": "severity",
+          "multiplier": 2
+        },
+        {
+          "field": "confidence",
+          "multiplier": 1
+        },
+        {
+          "field": "risk",
+          "multiplier": -1
+        }
+      ],
+      "minimum_score": 15,
+      "maximum_risk": 5
+    },
+    "snapshot": {
+      "watermark": "001",
+      "versions": [
+        {
+          "candidate_id": "c1",
+          "version": 1
+        }
+      ],
+      "source_revisions": [
+        {
+          "candidate_id": "c1",
+          "revision": "prior-opaque:rev-1"
+        }
+      ]
+    }
+  },
+  "candidates": [
+    {
+      "candidate": {
+        "prior_id": "c1",
+        "schema_version": 1,
+        "stable_key": "stable",
+        "item_kind": "defect",
+        "version": 1,
+        "source": {
+          "id": "tracker",
+          "revision": "prior-opaque:rev-1",
+          "watermark": "001",
+          "refresh_policy": "snapshot"
+        },
+        "evidence": [
+          {
+            "ref": "report",
+            "revision": "prior-opaque:rev-1"
+          }
+        ],
+        "reproduction": [
+          "run fixed check"
+        ],
+        "severity": 8,
+        "confidence": 1,
+        "estimated_scope": 2,
+        "risk": 2,
+        "affected_resources": [
+          "source"
+        ],
+        "dependencies": [],
+        "qualification": {
+          "candidate_version": 1,
+          "source_revision": "prior-opaque:rev-1",
+          "evidence_hash": "prior-json-sha256:922f3c1845c2b0b3df3a0d7901a895d000cab57f9f85ad7efe8774b49de9a5e9",
+          "passed": true,
+          "reasons": [],
+          "checked_at": "2026-09-28T12:00:00Z"
+        },
+        "selection": {
+          "candidate_version": 1,
+          "policy_version": "policy-1",
+          "snapshot_hash": "prior-json-sha256:04b6fcee8f75fea62c840abfb03521d124d1abe313337ee639a76fa391bbcebc",
+          "outcome": "out_of_scope",
+          "score": 0,
+          "reasons": [
+            "predicate failed: confidence gte"
+          ]
+        },
+        "admission": null,
+        "merge_into": null
+      },
+      "provenance": {
+        "source": "imported",
+        "legacy_fields": {
+          "Statement": "untrusted source text",
+          "Purpose": "repair",
+          "empty_collections": [
+            "Qualification.Reasons"
+          ]
+        }
+      }
+    }
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "empty_collections": []
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "_provenance": "import of prior.json by codec/src/prior/campaign.ts importCampaignState",
+  "charter": {
+    "schema_version": 1,
+    "campaign_id": "discard",
+    "revision": "prior-opaque:charter-1",
+    "authorisation_ref": "approval-1",
+    "objective": "repair bounded defects",
+    "item_kinds": [
+      "defect"
+    ],
+    "candidate_sources": [
+      "register"
+    ],
+    "workflow_templates": [
+      "defect"
+    ],
+    "stop_conditions": [
+      "limit"
+    ],
+    "intake_policy": "snapshot",
+    "selection_policy": "policy-1",
+    "package_policy": "adaptive",
+    "acceptance_policy": "audit",
+    "autonomy_policy": "routine-only",
+    "backend_policy": "qualified",
+    "delivery_policy": "local",
+    "data_boundary": [
+      "repo"
+    ],
+    "capabilities": [
+      "read",
+      "write"
+    ],
+    "budget_account": "campaign-budget",
+    "limits": {
+      "max_attempts": 4,
+      "max_failures": 3,
+      "max_consecutive_failures": 2,
+      "max_reviews": 4,
+      "resource_units": 10
+    }
+  },
+  "state": {
+    "campaign_id": "discard",
+    "revision": "prior-json-sha256:c74c55cea07e2eae9716541e8f6b5c3f3f850ef0c004a3623f20143dd0e0d1a7",
+    "state": "discarded",
+    "previous_terminal": null,
+    "reason": "not approved",
+    "charter_hash": "prior-json-sha256:8389dfe3ccacc9826c085c3c2e547609faec352804d70e617531526111188595",
+    "counters": {
+      "attempts": 0,
+      "failures": 0,
+      "consecutive_failures": 0,
+      "reviews": 0,
+      "resource_units": 0
+    },
+    "settlement": {
+      "owned_runs": 0,
+      "open_intents": 0,
+      "unknown_effects": 0,
+      "quarantined": 0
+    },
+    "requested_outcome": null,
+    "sessions": [],
+    "runs": [],
+    "baseline_hash": null,
+    "completion_evidence": null
+  },
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "empty_collections": []
+    }
+  }
+}

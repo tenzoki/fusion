@@ -1,0 +1,157 @@
+{
+  "_provenance": "derived-from-source@12d8424",
+  "_provenance_note": "Hand-derived from the Go structs and the named Go test at Prior 12d8424, not emitted by Go. Revision, EvidenceHash, SnapshotHash and CharterHash were computed by codec/src/prior/gojson.ts (computePriorRevision, computeEvidenceHash, computeSnapshotHash, computeCharterHash), which reproduces encoding/json; the Prior side replaces this file with a Go-emitted golden (plan FJ00 step 12). Keys beginning with an underscore are not Go fields and are stripped before mapping; _inputs holds the call inputs (Policy, Snapshot, FormationPolicy, CompletionEvidence, WorkItems) that Prior does not persist in the aggregate.",
+  "ID": "plan",
+  "Revision": "72ad321bcde66610ad54f1b2ba7e8000c56d88ae9d16a6e3044348a71a1d21a8",
+  "PolicyVersion": "p1",
+  "AcceptedRevision": "rev-1",
+  "RemainingBudget": 4,
+  "Candidates": {
+    "a": {
+      "ID": "a",
+      "Purpose": "parser",
+      "Version": 1,
+      "Resources": [
+        "parser.go"
+      ],
+      "Dependencies": null,
+      "Risk": 2,
+      "ValidationCost": 2,
+      "EstimatedSize": 2,
+      "Qualified": true,
+      "Selected": true
+    },
+    "b": {
+      "ID": "b",
+      "Purpose": "parser",
+      "Version": 1,
+      "Resources": [
+        "parser_test.go"
+      ],
+      "Dependencies": [
+        "a"
+      ],
+      "Risk": 2,
+      "ValidationCost": 2,
+      "EstimatedSize": 2,
+      "Qualified": true,
+      "Selected": true
+    },
+    "c": {
+      "ID": "c",
+      "Purpose": "storage",
+      "Version": 1,
+      "Resources": [
+        "store.go"
+      ],
+      "Dependencies": [
+        "b"
+      ],
+      "Risk": 2,
+      "ValidationCost": 2,
+      "EstimatedSize": 2,
+      "Qualified": true,
+      "Selected": true
+    },
+    "large": {
+      "ID": "large",
+      "Purpose": "architecture",
+      "Version": 1,
+      "Resources": null,
+      "Dependencies": null,
+      "Risk": 20,
+      "ValidationCost": 20,
+      "EstimatedSize": 20,
+      "Qualified": true,
+      "Selected": true
+    }
+  },
+  "Packages": {
+    "package-1": {
+      "ID": "package-1",
+      "Members": [
+        "a",
+        "b"
+      ],
+      "Dependencies": null,
+      "Resources": [
+        "parser.go",
+        "parser_test.go"
+      ],
+      "Reasons": [
+        "created because no existing package satisfied overlap, risk, validation and size bounds",
+        "included a for shared purpose/overlap within package bounds",
+        "included b for shared purpose/overlap within package bounds"
+      ],
+      "Risk": 4,
+      "ValidationCost": 4,
+      "EstimatedSize": 4,
+      "State": "admitting",
+      "BaseRevision": "rev-1",
+      "AcceptedRevision": "",
+      "BaselineHash": "",
+      "FailureReason": ""
+    },
+    "package-2": {
+      "ID": "package-2",
+      "Members": [
+        "c"
+      ],
+      "Dependencies": [
+        "package-1"
+      ],
+      "Resources": [
+        "store.go"
+      ],
+      "Reasons": [
+        "created because no existing package satisfied overlap, risk, validation and size bounds",
+        "included c for shared purpose/overlap within package bounds"
+      ],
+      "Risk": 2,
+      "ValidationCost": 2,
+      "EstimatedSize": 2,
+      "State": "formed",
+      "BaseRevision": "rev-1",
+      "AcceptedRevision": "",
+      "BaselineHash": "",
+      "FailureReason": ""
+    }
+  },
+  "Order": [
+    "package-1",
+    "package-2"
+  ],
+  "Deferred": [
+    {
+      "Candidate": "large",
+      "Reason": "remaining package budget is insufficient"
+    }
+  ],
+  "Admissions": {
+    "intent-1": {
+      "ID": "intent-1",
+      "PackageID": "package-1",
+      "Status": "leased",
+      "LeaseRef": "lease:intent-1",
+      "WorkbenchRevision": "",
+      "Attempts": [
+        {
+          "Candidate": "a",
+          "CandidateVersion": 1,
+          "Attempt": 1,
+          "ItemID": "item-a"
+        },
+        {
+          "Candidate": "b",
+          "CandidateVersion": 1,
+          "Attempt": 1,
+          "ItemID": "item-b"
+        }
+      ]
+    }
+  },
+  "ActiveItems": {
+    "item-a": "intent-1",
+    "item-b": "intent-1"
+  }
+}

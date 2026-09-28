@@ -1,0 +1,107 @@
+{
+  "_provenance": "derived-from-source@12d8424",
+  "_provenance_note": "Hand-derived from the Go structs and the named Go test at Prior 12d8424, not emitted by Go. Revision, EvidenceHash, SnapshotHash and CharterHash were computed by codec/src/prior/gojson.ts (computePriorRevision, computeEvidenceHash, computeSnapshotHash, computeCharterHash), which reproduces encoding/json; the Prior side replaces this file with a Go-emitted golden (plan FJ00 step 12). Keys beginning with an underscore are not Go fields and are stripped before mapping; _inputs holds the call inputs (Policy, Snapshot, FormationPolicy, CompletionEvidence, WorkItems) that Prior does not persist in the aggregate.",
+  "_inputs": {
+    "Policy": {
+      "Version": "policy-1",
+      "Predicates": [
+        {
+          "Field": "confidence",
+          "Operator": "gte",
+          "Value": 5
+        }
+      ],
+      "Weights": [
+        {
+          "Field": "severity",
+          "Multiplier": 2
+        },
+        {
+          "Field": "confidence",
+          "Multiplier": 1
+        },
+        {
+          "Field": "risk",
+          "Multiplier": -1
+        }
+      ],
+      "MinimumScore": 15,
+      "MaximumRisk": 5
+    },
+    "Snapshot": {
+      "Watermark": "001",
+      "Versions": {
+        "c1": 1
+      },
+      "SourceRevisions": {
+        "c1": "rev-1"
+      }
+    }
+  },
+  "ID": "campaign",
+  "Revision": "8503ddd6d07f9fb4f5ecc24e9aa71bd36c2dca7b397dee33ebc66690c329f481",
+  "Candidates": {
+    "c1": {
+      "SchemaVersion": 1,
+      "ID": "c1",
+      "StableKey": "stable",
+      "Kind": "defect",
+      "Statement": "untrusted source text",
+      "Purpose": "repair",
+      "Version": 1,
+      "Source": {
+        "ID": "tracker",
+        "Revision": "rev-1",
+        "Watermark": "001",
+        "RefreshPolicy": "snapshot"
+      },
+      "Evidence": [
+        {
+          "Ref": "report",
+          "Revision": "rev-1"
+        }
+      ],
+      "Reproduction": [
+        "run fixed check"
+      ],
+      "Severity": 8,
+      "Confidence": 7,
+      "EstimatedScope": 2,
+      "Risk": 2,
+      "AffectedResources": [
+        "source"
+      ],
+      "Dependencies": null,
+      "Qualification": {
+        "CandidateVersion": 1,
+        "SourceRevision": "rev-1",
+        "EvidenceHash": "922f3c1845c2b0b3df3a0d7901a895d000cab57f9f85ad7efe8774b49de9a5e9",
+        "Passed": true,
+        "Reasons": [],
+        "CheckedAt": "2026-09-28T12:00:00Z"
+      },
+      "Disposition": {
+        "CandidateVersion": 1,
+        "PolicyVersion": "policy-1",
+        "SnapshotHash": "04b6fcee8f75fea62c840abfb03521d124d1abe313337ee639a76fa391bbcebc",
+        "Outcome": "selected",
+        "WorkItemID": "",
+        "CurrentAttempt": 0,
+        "Score": 21,
+        "Reasons": [
+          "all predicates passed",
+          "score meets selection threshold"
+        ]
+      },
+      "MergeInto": ""
+    }
+  },
+  "Stable": {
+    "stable": "c1"
+  },
+  "Watermarks": {
+    "tracker": "001"
+  },
+  "IntakeClosed": false,
+  "ClosedWatermark": ""
+}

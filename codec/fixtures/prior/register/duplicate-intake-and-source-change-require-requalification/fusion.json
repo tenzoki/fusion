@@ -1,0 +1,75 @@
+{
+  "_provenance": "import of prior.json by codec/src/prior/candidates.ts importRegister",
+  "register": {
+    "id": "campaign",
+    "revision": "prior-json-sha256:3ae4005bab675b12f215f1cd235a3ee0e688849bd043614a9feab3e64dc449ce",
+    "stable": [
+      {
+        "stable_key": "stable",
+        "candidate_id": "c1"
+      }
+    ],
+    "watermarks": [
+      {
+        "source_id": "tracker",
+        "watermark": "001"
+      }
+    ],
+    "intake_closed": false,
+    "closed_watermark": null,
+    "policy": null,
+    "snapshot": null
+  },
+  "candidates": [
+    {
+      "candidate": {
+        "prior_id": "c1",
+        "schema_version": 1,
+        "stable_key": "stable",
+        "item_kind": "defect",
+        "version": 2,
+        "source": {
+          "id": "tracker",
+          "revision": "prior-opaque:rev-2",
+          "watermark": "001",
+          "refresh_policy": "snapshot"
+        },
+        "evidence": [
+          {
+            "ref": "report",
+            "revision": "prior-opaque:rev-2"
+          }
+        ],
+        "reproduction": [
+          "run fixed check"
+        ],
+        "severity": 8,
+        "confidence": 7,
+        "estimated_scope": 2,
+        "risk": 2,
+        "affected_resources": [
+          "source"
+        ],
+        "dependencies": [],
+        "qualification": null,
+        "selection": null,
+        "admission": null,
+        "merge_into": null
+      },
+      "provenance": {
+        "source": "imported",
+        "legacy_fields": {
+          "Statement": "untrusted source text",
+          "Purpose": "repair",
+          "empty_collections": []
+        }
+      }
+    }
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "empty_collections": []
+    }
+  }
+}

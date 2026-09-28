@@ -1,0 +1,149 @@
+{
+  "_provenance": "import of prior.json by codec/src/prior/packages.ts importPlan",
+  "formation": {
+    "id": "plan",
+    "revision": "prior-json-sha256:75d5d5a46a34aee7557fa1f3150dd5b7b6c3b737830cc4334b619b2a8118971a",
+    "policy_version": "p1",
+    "accepted_revision": "prior-opaque:rev-1",
+    "remaining_budget": 4,
+    "policy": {
+      "version": "p1",
+      "max_risk": 6,
+      "max_validation_cost": 6,
+      "max_size": 6,
+      "budget": 10
+    },
+    "candidates": [
+      {
+        "id": "a",
+        "purpose": "parser",
+        "version": 1,
+        "resources": [
+          "parser.go"
+        ],
+        "dependencies": [],
+        "risk": 2,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "qualified": true,
+        "selected": true
+      },
+      {
+        "id": "b",
+        "purpose": "parser",
+        "version": 1,
+        "resources": [
+          "parser_test.go"
+        ],
+        "dependencies": [
+          "a"
+        ],
+        "risk": 2,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "qualified": true,
+        "selected": true
+      },
+      {
+        "id": "c",
+        "purpose": "storage",
+        "version": 1,
+        "resources": [
+          "store.go"
+        ],
+        "dependencies": [
+          "b"
+        ],
+        "risk": 2,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "qualified": true,
+        "selected": true
+      },
+      {
+        "id": "large",
+        "purpose": "architecture",
+        "version": 1,
+        "resources": [],
+        "dependencies": [],
+        "risk": 20,
+        "validation_cost": 20,
+        "estimated_size": 20,
+        "qualified": true,
+        "selected": true
+      }
+    ],
+    "packages": [
+      {
+        "id": "package-1",
+        "members": [
+          "a",
+          "b"
+        ],
+        "dependencies": [],
+        "resources": [
+          "parser.go",
+          "parser_test.go"
+        ],
+        "reasons": [
+          "created because no existing package satisfied overlap, risk, validation and size bounds",
+          "included a for shared purpose/overlap within package bounds",
+          "included b for shared purpose/overlap within package bounds"
+        ],
+        "risk": 4,
+        "validation_cost": 4,
+        "estimated_size": 4,
+        "state": "formed",
+        "base_revision": "prior-opaque:rev-1",
+        "accepted_revision": null,
+        "baseline_hash": null,
+        "failure_reason": null
+      },
+      {
+        "id": "package-2",
+        "members": [
+          "c"
+        ],
+        "dependencies": [
+          "package-1"
+        ],
+        "resources": [
+          "store.go"
+        ],
+        "reasons": [
+          "created because no existing package satisfied overlap, risk, validation and size bounds",
+          "included c for shared purpose/overlap within package bounds"
+        ],
+        "risk": 2,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "state": "formed",
+        "base_revision": "prior-opaque:rev-1",
+        "accepted_revision": null,
+        "baseline_hash": null,
+        "failure_reason": null
+      }
+    ],
+    "order": [
+      "package-1",
+      "package-2"
+    ],
+    "deferred": [
+      {
+        "candidate": "large",
+        "reason": "remaining package budget is insufficient"
+      }
+    ],
+    "admissions": [],
+    "active_items": []
+  },
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "empty_collections": [
+        "ActiveItems",
+        "Admissions"
+      ]
+    }
+  }
+}
