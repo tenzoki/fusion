@@ -32,3 +32,6 @@ Prior's `concept/fusion-json-workbench-spec.md` section 6 says the codec and the
 ## Recommendation
 
 Option 1, with the stdin/stdout JSON protocol fixed so that option 2 stays a packaging change if a Node-free Prior host is ever required: the same bundle compiles to a single executable without touching the protocol. The Prior side is asked in FJ01 to confirm that its Fusion module may spawn `node` and that the digest over the bundle satisfies its identity check.
+
+---
+Answered: this record `## Options` option 1 — one committed, self-contained Node bundle `codec/dist/fusion-record.js` that both hosts spawn, `bin/fusion-record` on the Claude side and Prior's Fusion module as an external process with the digest taken over the bundle file; the protocol is fixed so that a per-platform executable stays a packaging change; ruled by user, Kai Stalmann <ks@qantr.com>, at the FJ01 plan approval on 2026-09-28.
