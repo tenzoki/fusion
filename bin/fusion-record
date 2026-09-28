@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# fusion-record — one JSON request in, one JSON response out, over a fusion
+# workbench's JSON control records.
+#
+# Usage:
+#   fusion-record < request.json
+#   fusion-record --file request.json
+#
+# The request is one JSON object on stdin, or in the file `--file` names; the
+# response is one JSON object on stdout, followed by a newline. The request
+# shapes are `codec/schemas/protocol.schema.json` (`fusion.protocol/v1`), one
+# branch per operation of the spec's section 6 table; the errors are the
+# spec's typed classes. FJ01 answers `inspect`, `list`, `show`, `validate` and
+# `transition` (package records only, compare-and-swap on the stored-bytes
+# revision, replayable by `operation_id`); every other operation is answered
+# `operation-unknown/not-implemented-in-fj01`. Every answer is on stdout with
+# exit 0, whatever its `ok`: a refused request, a stale revision, a record
+# that does not exist are all ANSWERS, in JSON, and never a shell error.
+#
+#   echo '{"op":"show","record":{"path":"work-packages/<d>/package.json"}}' | fusion-record
+#   {"ok":true,"result":{"path":"…","kind":"package","control":{…},"revision":"sha256:…","narrative":{…}}}
+#
+# The workbench. A request that names `workbench` (an absolute path) is
+# answered against that one, always. A request that leaves it out is answered
+# against `FUSION_WORKBENCH`, which this wrapper exports when the caller has
+# not: the project root that `bin/fusion-workbench-root` finds above the
+# working directory, plus `/fusion-workbench`. When that helper finds nothing
+# and the caller set nothing, the bundle answers `unknown-scope/
+# workbench-unspecified` on stdout, exit 0; the wrapper does not decide that
+# a request without a workbench is a usage error, because the bundle's own
+# answer is the typed one both hosts read.
+#
+# Exit codes:
+#   0  a response was written, whatever its `ok`.
+#   2  usage: an unknown argument, `--file` without a path or with an
+#      unreadable one; the reason is on stderr and nothing is on stdout.
+#   3  the codec bundle is missing, so nothing could be asked. Its own code
+#      and not 2: a broken install must never be reported as a caller's
+#      mistake. (The bundle exits 3 itself when its inlined schemas do not
+#      compile, the same "nothing could be asked" meaning.)
+#
+# The work is codec/dist/fusion-record.js, the one committed bundle both
+# hosts run (Prior spawns the same file; the codec-port decision
+# 260928-1550_*_which-process-boundary-and-shipped-form-does-the-codec-take.md,
+# option 1). It is resolved relative to this script rather than through
+# $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run their own
+# bundle, as bin/fusion-citation-check resolves hooks/dist/. The bundle is
+# self-contained: plain `node`, no node_modules. A call site guards with
+# [ -x ]: the installed copy need not carry a helper added between releases
+# (decision 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../codec/dist/fusion-record.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-record: $entry is missing — the codec bundle is not installed." >&2
+  exit 3
+fi
+
+# The caller's FUSION_WORKBENCH stands; a `workbench` in the request wins over
+# both inside the bundle. Only when neither is set does the walk-up decide.
+if [ -z "${FUSION_WORKBENCH:-}" ]; then
+  if project_root="$("$here/fusion-workbench-root" 2>/dev/null)"; then
+    export FUSION_WORKBENCH="$project_root/fusion-workbench"
+  fi
+fi
+
+exec node "$entry" "$@"

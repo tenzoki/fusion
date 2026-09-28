@@ -17,9 +17,11 @@
 # replaced on update/uninstall. This path avoids all of that — it is just a
 # download into a folder plus a one-line launcher.
 #
-# fusion ships compiled hooks (hooks/dist/*.js, committed to the repo) and
-# executable helpers under bin/. The tarball carries both; no build step, no
-# npm, no node_modules are required at install time.
+# fusion ships compiled hooks (hooks/dist/*.js, committed to the repo), the
+# codec bundle (codec/dist/fusion-record.js, committed likewise; what
+# bin/fusion-record runs) and executable helpers under bin/. The tarball
+# carries all three; no build step, no npm, no node_modules are required at
+# install time.
 #
 # Overrides (optional env vars):
 #   FUSION_REF   git ref to fetch (default: heads/main). Every release is
@@ -79,19 +81,23 @@ mkdir -p "$INSTALL_DIR"
 # fusion ships none and /fusion:setup seeds the project's own file instead.
 # Never dev cruft (no node_modules, CLAUDE.md, .gitignore). cp -R preserves the
 # +x bit on bin/ and hook scripts.
-for item in .claude-plugin agents skills rules hooks bin stilwerk templates docs \
+for item in .claude-plugin agents skills rules hooks codec bin stilwerk templates docs \
             README.md README-agents.md README-hooks.md LICENSE; do
   [ -e "$SRC/$item" ] && cp -R "$SRC/$item" "$INSTALL_DIR/"
 done
 [ -f "$INSTALL_DIR/.claude-plugin/plugin.json" ] || die "Install copy failed."
 # Defensive: drop any dev cruft that a non-pristine source might carry. The
 # GitHub tarball never contains node_modules (gitignored), but a local source
-# might — the compiled hooks under hooks/dist are self-contained, so node_modules
-# is never needed at runtime.
+# might — the compiled hooks under hooks/dist and the codec bundle under
+# codec/dist are self-contained, so node_modules is never needed at runtime.
 rm -rf "$INSTALL_DIR/hooks/node_modules"
+rm -rf "$INSTALL_DIR/codec/node_modules"
 # Compiled hooks must be present — the guard runs from hooks/dist.
 [ -f "$INSTALL_DIR/hooks/dist/guard.js" ] \
   || warn "hooks/dist/guard.js missing — the compliance guard will not run."
+# The codec bundle must be present — bin/fusion-record execs it.
+[ -f "$INSTALL_DIR/codec/dist/fusion-record.js" ] \
+  || warn "codec/dist/fusion-record.js missing — bin/fusion-record will not run."
 
 # --- 4. Launcher --------------------------------------------------------------
 mkdir -p "$BIN_DIR"

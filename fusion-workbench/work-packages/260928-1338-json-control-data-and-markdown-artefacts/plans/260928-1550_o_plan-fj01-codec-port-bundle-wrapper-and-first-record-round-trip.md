@@ -69,21 +69,24 @@ stdout {"ok":false,"error":{"class":"conflict","reason":"revision-mismatch","det
    - Acceptance: `npm run build` is idempotent (second run writes nothing); the gate is green at the commit that carries the bundle and red when a source line changes without a rebuild (asserted by the test on a temp copy).
    - Dependencies: 4.
 
-6. **The wrapper and its exception line**
+6. [DONE] **The wrapper and its exception line**
+   - Done 2026-09-28: `reference-resolution-lint.test.ts` pin re-approved on the same line, paths 1 735 to 1 742 (install.sh +2, README-hooks.md +2, the wrapper header +3); derivable-enumerations and path-literal lints green unchanged. The whole hook suite in the worktree: 1 007 of 1 009, the monitor case and `committed-dist.test.ts`'s "every helper in bin/ is tracked", which is red only until the commit that adds the wrapper.
    - Executor: `code-implementer`
    - Files: `bin/fusion-record`, root `.gitignore` (`!bin/fusion-record`), `README-hooks.md` `### The bin/ helper roster` (one row)
    - Changes: the wrapper in the shape of `bin/fusion-citation-check`: header with usage, exit codes (0 answered, 2 usage, 3 bundle missing), resolves `$here/../codec/dist/fusion-record.js`, `exec node "$entry" "$@"`; when no `workbench` is given in the request it passes the result of `bin/fusion-workbench-root` as `FUSION_WORKBENCH` in the environment, which `main.ts` reads as the default. The roster row names the helper, its one-line purpose and its exit codes.
    - Acceptance: `git ls-files bin/fusion-record` lists it; `bin/fusion-record < request.json` answers on the scratch workbench; `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` and `reference-resolution-lint.test.ts` are green or their pin is re-approved with an attributed line, per each file's header; any other hook-suite red is a stop.
    - Dependencies: 5.
 
-7. **The installer carries the codec**
+7. [DONE] **The installer carries the codec**
+   - Done 2026-09-28: the install test does not skip; it stubs `curl` to copy a local tarball built from `git archive HEAD` with the working tree's three changed files copied over, runs `install.sh` on a PATH holding node, bash, coreutils and a stub `claude`, and asserts the installed wrapper answers `show` with and without an explicit `workbench`. A by-hand run gave the same result.
    - Executor: `code-implementer`
    - Files: `install.sh` (the copy loop and the cruft drop), `codec/README.md`
    - Changes: `codec` joins the copy list; `rm -rf "$INSTALL_DIR/codec/node_modules"` beside the hooks line; a warning when `codec/dist/fusion-record.js` is missing, in the shape of the `guard.js` warning. `codec/README.md` states what ships (the bundle, schemas, contract, fixtures) and what does not (`src/`, tests are copied but unused; `node_modules` never).
    - Acceptance: from `git archive HEAD | tar -x` into a temp dir, `install.sh` with `FUSION_HOME=<temp>/home` and `FUSION_BIN=<temp>/bin` installs, and `<home>/bin/fusion-record` answers a `show` on the scratch workbench copied beside it, with `node` the only tool on `PATH` besides coreutils and bash. This is the "keine Installation aus dem Source-Checkout nötig" proof and is written as a test in `codec/src/__tests__/install.test.ts` that skips when `claude` is not on `PATH` (the installer dies without it) and says so.
    - Dependencies: 6.
 
-8. **The first record read and updated through the wrapper**
+8. [DONE] **The first record read and updated through the wrapper**
+   - Done 2026-09-28: six exchanges recorded as raw stdin/stdout bytes under `codec/fixtures/protocol-session/`, temp root replaced by the literal `<workbench>` in requests and in the one response that echoes it (`validate`); golden regenerated only under `UPDATE_PROTOCOL_SESSION=1`. `fixtures.test.ts` exempts `protocol-session/` from manifest coverage as it exempts `prior/` and `workbench/`.
    - Executor: `code-implementer`
    - Files: `codec/src/__tests__/round-trip-cli.test.ts`
    - Changes: on a temp copy of the scratch workbench, through `bin/fusion-record` only: `show` the open package, `transition` it to `claimed` with the shown revision, `show` again and see the new status and revision, `transition` again with the old revision and receive `conflict/revision-mismatch`, repeat the first transition's `operation_id` and receive the stored answer, `validate` the workbench and receive `ok`. Record the six request and response pairs as fixtures under `codec/fixtures/protocol-session/` so the Prior side has the exact bytes to reproduce.

@@ -20,8 +20,24 @@ bundle for both hosts) added `dist/fusion-record.js`: `src/cli/main.ts` and
 everything it imports, the seven schemas and the two contract tables inlined,
 bundled by esbuild at an exact pinned version and committed. Both hosts run it
 with plain `node`; neither needs `node_modules`. The Claude side reaches it
-through `bin/fusion-record` and Prior spawns it (both later FJ01 steps). What
-ships beside it, and what does not, is the installer's business (FJ01 step 7).
+through `bin/fusion-record` and Prior spawns it.
+
+## What ships
+
+`install.sh` copies this directory whole into the install, beside `hooks/`
+and `bin/`, and drops `codec/node_modules` as it drops `hooks/node_modules`.
+What an installed copy runs is the bundle, `dist/fusion-record.js`, and
+nothing else in it; what an installed copy carries for a reader or for the
+Prior side is `schemas/`, `contract/` and `fixtures/` (the language-neutral
+fixture index, the Prior DTO pairs, the scratch workbench and the recorded
+protocol session under `fixtures/protocol-session/`). `src/`, `scripts/`,
+`package.json` and the tests are copied because the copy is whole, and are
+unused at runtime: nothing in an install compiles, tests or imports them.
+`node_modules` never ships, and the tarball never carries one. The installer
+warns when `codec/dist/fusion-record.js` is absent, in the words it uses for a
+missing `hooks/dist/guard.js`; `src/__tests__/install.test.ts` installs a
+`git archive` of the tree into a scratch home with an isolated `PATH` and
+proves `bin/fusion-record` answers there with `node` the only runtime.
 
 ## The CLI
 
