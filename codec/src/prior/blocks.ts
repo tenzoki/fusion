@@ -47,9 +47,10 @@ export interface CandidateSourceBlock {
   refresh_policy: string;
 }
 
+/** One stored evidence entry; an empty Ref or Revision is null here and `""` again on export (Prior's FJ00 response 2). */
 export interface CandidateEvidenceBlock {
-  ref: string;
-  revision: PriorOpaque;
+  ref: string | null;
+  revision: PriorOpaque | null;
 }
 
 export interface QualificationBlock {

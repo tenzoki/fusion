@@ -36,6 +36,24 @@ export interface PriorRefusal {
 
 export type PriorResult<T> = { ok: true; value: T } | PriorRefusal;
 
+/**
+ * Whether an import resolved its work item ids against an inventory the
+ * caller supplied (`checked`) or only carried them (`carry-only`). Prior's
+ * FJ00 response 3d: omitting the inventory may support raw inspection, but
+ * must not count as a validated migration or enable dispatch; the mode is
+ * returned beside the blocks so that FJ04 can refuse a carry-only import as
+ * one. It is a fact about the call, never a record field.
+ */
+export interface ImportInventory {
+  work_items: "checked" | "carry-only";
+}
+
+export type ImportResult<T> = PriorResult<T> & { inventory: ImportInventory };
+
+export function inventoryOf(workItems: ReadonlySet<string> | undefined): ImportInventory {
+  return { work_items: workItems === undefined ? "carry-only" : "checked" };
+}
+
 /** Thrown inside a mapper and turned into a `PriorRefusal` at its boundary. */
 export class Refusal extends Error {
   constructor(

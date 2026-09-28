@@ -10,6 +10,12 @@
 //
 // `CompletionEvidence` is a `Finalize` input at 12d8424, not a State field.
 // The import takes it as an optional side input and writes `null` otherwise.
+//
+// The five charter lists keep their stored order and multiplicity (FJ00
+// response 2): Prior never deduplicates them and `CharterHash` is computed
+// over the original slice, so a repeated entry is carried, not refused.
+// `Charter.Validate` still requires `ItemKinds`, `CandidateSources` and
+// `WorkflowTemplates` non-empty.
 // ---------------------------------------------------------------------------
 
 import type { CampaignStateBlock, CharterBlock, ImportedCampaignState } from "./blocks.js";
@@ -31,7 +37,6 @@ import {
   opaque,
   opaqueOrNull,
   positive,
-  stringSet,
   trackerFrom,
   unJsonSha,
   unOpaque,
@@ -116,7 +121,8 @@ function importCharter(c: PriorCharter, t: EmptyTracker): CharterBlock {
   const at = (f: string): string => `Charter.${f}`;
   if (c.SchemaVersion !== 1) invalid(at("SchemaVersion"), `Charter.Validate accepts 1 only, got ${JSON.stringify(c.SchemaVersion)}`);
   if (c.Objective.trim() === "") invalid(at("Objective"), "Charter.Validate refuses a whitespace-only objective");
-  const required = (f: string, v: string[] | null): string[] => stringSet(at(f), atLeastOne(at(f), v));
+  // At least one entry, each a non-empty string (the schema's string_list_nonempty); order and duplicates as stored.
+  const required = (f: string, v: string[] | null): string[] => atLeastOne(at(f), v).map((s) => nonEmpty(at(f), s));
   return {
     schema_version: 1,
     campaign_id: nonEmpty(at("CampaignID"), c.CampaignID),
@@ -134,8 +140,8 @@ function importCharter(c: PriorCharter, t: EmptyTracker): CharterBlock {
     autonomy_policy: nonEmpty(at("AutonomyPolicy"), c.AutonomyPolicy),
     backend_policy: nonEmpty(at("BackendPolicy"), c.BackendPolicy),
     delivery_policy: nonEmpty(at("DeliveryPolicy"), c.DeliveryPolicy),
-    data_boundary: stringSet(at("DataBoundary"), t.list("Charter.DataBoundary", c.DataBoundary)),
-    capabilities: stringSet(at("Capabilities"), t.list("Charter.Capabilities", c.Capabilities)),
+    data_boundary: t.list("Charter.DataBoundary", c.DataBoundary),
+    capabilities: t.list("Charter.Capabilities", c.Capabilities),
     budget_account: nonEmpty(at("BudgetAccount"), c.BudgetAccount),
     limits: {
       max_attempts: positive(at("Limits.MaxAttempts"), c.Limits.MaxAttempts),

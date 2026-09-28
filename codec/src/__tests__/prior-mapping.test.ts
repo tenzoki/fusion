@@ -183,7 +183,7 @@ function hostCampaign(): { charter: unknown; state: unknown } {
   return { charter: host.fusion["charter"], state: host.fusion["state"] };
 }
 
-function campaignRecord(fields: Record<string, unknown>, provenance: Record<string, unknown>): Record<string, unknown> {
+function campaignRecord(fields: Record<string, unknown>, provenance: object): Record<string, unknown> {
   return {
     schema: "fusion.campaign/v1",
     id: uuid(1),
@@ -197,7 +197,7 @@ function campaignRecord(fields: Record<string, unknown>, provenance: Record<stri
   };
 }
 
-function issueRecord(n: number, candidate: unknown, provenance: Record<string, unknown>): Record<string, unknown> {
+function issueRecord(n: number, candidate: unknown, provenance: object): Record<string, unknown> {
   return {
     schema: "fusion.record/v1",
     id: uuid(100 + n),
@@ -483,10 +483,37 @@ describe("typed refusals, never defaults", () => {
     expect(importRegister(reg3)).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].Qualification.CheckedAt" });
   });
 
-  it("a merge target without the outcome merged, and the reverse, are schema-invalid", () => {
+  it("a merge target without the outcome merged is a legacy inconsistency, and the reverse is schema-invalid", () => {
+    // Qualify on a merged candidate clears Disposition without clearing MergeInto (FJ00 response 2):
+    // the class stays schema-invalid, the reason names it as a migration finding to reconcile.
     const reg = fixture<PriorRegister>("register", "merge-chains-resolve-and-cycles-rollback");
     reg.Candidates!["c"]!.MergeInto = "a";
-    expect(importRegister(reg)).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c].MergeInto" });
+    const r = importRegister(reg);
+    expect(r).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c].MergeInto" });
+    expect((r as { reason: string }).reason.startsWith("legacy-inconsistency:")).toBe(true);
+    const reg2 = fixture<PriorRegister>("register", "merge-chains-resolve-and-cycles-rollback");
+    reg2.Candidates!["a"]!.MergeInto = "";
+    const r2 = importRegister(reg2);
+    expect(r2).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[a].MergeInto" });
+    expect((r2 as { reason: string }).reason.startsWith("legacy-inconsistency:")).toBe(false);
+  });
+
+  it("the inventory mode is returned beside the blocks: checked refuses an unknown id, carry-only carries it and says so", () => {
+    const reg = fixture<PriorRegister>("register", "admission-persists-stable-item-and-current-attempt");
+    const refused = importRegister(reg, { workItems: new Set(["item-2"]) });
+    expect(refused).toMatchObject({ ok: false, class: "unresolved-reference", inventory: { work_items: "checked" } });
+    const checked = importRegister(reg, { workItems: new Set(["item-1"]) });
+    expect(checked).toMatchObject({ ok: true, inventory: { work_items: "checked" } });
+    const carried = importRegister(reg);
+    expect(carried).toMatchObject({ ok: true, inventory: { work_items: "carry-only" } });
+    expect(carried.ok && carried.value.candidates[0]!.candidate.admission).toMatchObject({ work_item_id: "item-1" });
+    // The mode is a fact about the call, never a field of the blocks: the carried value equals the checked one.
+    expect(carried.ok && carried.value).toEqual(checked.ok && checked.value);
+
+    const plan = fixture<PriorPlan>("plan", "failed-package-does-not-block-unrelated-package");
+    expect(importPlan(plan, { workItems: new Set(["item-a"]) })).toMatchObject({ ok: false, inventory: { work_items: "checked" } });
+    expect(importPlan(plan, { workItems: new Set(["item-a", "item-b"]) })).toMatchObject({ ok: true, inventory: { work_items: "checked" } });
+    expect(importPlan(plan)).toMatchObject({ ok: true, inventory: { work_items: "carry-only" } });
   });
 
   it("an unknown disposition outcome or refresh policy is schema-invalid", () => {
@@ -512,6 +539,112 @@ describe("typed refusals, never defaults", () => {
     const imported = structuredClone(c!.fusion) as never as Parameters<typeof exportRegister>[0];
     imported.candidates[0]!.candidate.selection = null;
     expect(exportRegister(imported)).toMatchObject({ ok: false, class: "schema-invalid", path: "candidates[c1].admission" });
+  });
+});
+
+// --- the corrections Prior ruled (FJ00 response 2) ------------------------------
+
+describe("corrections Prior ruled", () => {
+  const REGISTER = "frozen-selection-replays-explanation-and-stale-prevents-admission";
+  const must = <T>(r: { ok: true; value: T } | { ok: false; class: string; path: string; reason: string }): T => {
+    if (!r.ok) throw new Error(`${r.class} at ${r.path}: ${r.reason}`);
+    return r.value;
+  };
+  const goBytes = (kind: PriorAggregateKind, v: unknown): string => goMarshal(v, goStructType(kind));
+
+  it("signed Score, Severity and EstimatedScope import, validate against record.schema.json and export the same bytes", () => {
+    const reg = fixture<PriorRegister>("register", REGISTER);
+    const c1 = reg.Candidates!["c1"]!;
+    c1.Severity = -1;
+    c1.EstimatedScope = -2;
+    c1.Disposition!.Score = -3;
+    const imported = must(importRegister(reg));
+    const cand = imported.candidates[0]!;
+    expect(cand.candidate).toMatchObject({ severity: -1, estimated_scope: -2, selection: { score: -3 } });
+    expectValid("urn:fusion:schema:fusion.record/v1", issueRecord(0, cand.candidate, cand.provenance), "signed ratings");
+    const exported = must(exportRegister(imported)).register;
+    expect(goBytes("candidates.Register", exported)).toBe(goBytes("candidates.Register", reg));
+    // Confidence and Risk keep the bound Prior validates at intake.
+    const reg2 = fixture<PriorRegister>("register", REGISTER);
+    reg2.Candidates!["c1"]!.Risk = -1;
+    expect(importRegister(reg2)).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].Risk" });
+  });
+
+  it("duplicate evidence entries survive the round trip and computeEvidenceHash still equals the stored hash", () => {
+    const reg = fixture<PriorRegister>("register", REGISTER);
+    const c1 = reg.Candidates!["c1"]!;
+    c1.Evidence = [{ ...c1.Evidence![0]! }, { ...c1.Evidence![0]! }];
+    c1.Qualification!.EvidenceHash = computeEvidenceHash(c1);
+    const imported = must(importRegister(reg));
+    const cand = imported.candidates[0]!;
+    expect(cand.candidate.evidence).toHaveLength(2);
+    expect(cand.candidate.evidence[0]).toEqual(cand.candidate.evidence[1]);
+    expectValid("urn:fusion:schema:fusion.record/v1", issueRecord(0, cand.candidate, cand.provenance), "duplicate evidence");
+    const exported = must(exportRegister(imported)).register;
+    expect(goBytes("candidates.Register", exported)).toBe(goBytes("candidates.Register", reg));
+    expect(computeEvidenceHash(exported.Candidates!["c1"]!)).toBe(c1.Qualification!.EvidenceHash);
+  });
+
+  it("an empty Evidence Ref or Revision imports as null, exports as the empty string, and a failed qualification is never promoted", () => {
+    const reg = fixture<PriorRegister>("register", REGISTER);
+    const c1 = reg.Candidates!["c1"]!;
+    c1.Evidence = [
+      { Ref: "", Revision: "rev-1" },
+      { Ref: "report", Revision: "" },
+    ];
+    c1.Qualification!.Passed = false;
+    c1.Qualification!.Reasons = ["evidence reference is empty"];
+    c1.Qualification!.EvidenceHash = computeEvidenceHash(c1);
+    const imported = must(importRegister(reg));
+    const cand = imported.candidates[0]!;
+    expect(cand.candidate.evidence).toEqual([
+      { ref: null, revision: "prior-opaque:rev-1" },
+      { ref: "report", revision: null },
+    ]);
+    expect(cand.candidate.qualification?.passed).toBe(false);
+    expectValid("urn:fusion:schema:fusion.record/v1", issueRecord(0, cand.candidate, cand.provenance), "unversioned evidence");
+    const exported = must(exportRegister(imported)).register;
+    const back = exported.Candidates!["c1"]!;
+    expect(back.Evidence).toEqual(c1.Evidence);
+    expect(back.Qualification?.Passed).toBe(false);
+    expect(goBytes("candidates.Register", exported)).toBe(goBytes("candidates.Register", reg));
+    expect(computeEvidenceHash(back)).toBe(c1.Qualification!.EvidenceHash);
+  });
+
+  it("a charter with a repeated ItemKinds entry round-trips with computeCharterHash equal", () => {
+    const st = fixture<PriorCampaignState>("campaign", "revocation-amendment-and-terminal-outcomes");
+    st.Charter.ItemKinds = [...st.Charter.ItemKinds!, st.Charter.ItemKinds![0]!];
+    st.Charter.DataBoundary = ["scope", "scope"];
+    st.CharterHash = computeCharterHash(st.Charter);
+    const imported = must(importCampaignState(st));
+    expect(imported.charter.item_kinds).toEqual(st.Charter.ItemKinds);
+    expect(imported.charter.data_boundary).toEqual(["scope", "scope"]);
+    expectValid("urn:fusion:schema:fusion.campaign/v1", campaignRecord({ charter: imported.charter, state: imported.state }, imported.provenance), "charter duplicates");
+    const exported = must(exportCampaignState(imported)).state;
+    expect(exported.Charter).toEqual(st.Charter);
+    expect(computeCharterHash(exported.Charter)).toBe(st.CharterHash);
+    // Charter.Validate still requires the first three lists non-empty.
+    const st2 = fixture<PriorCampaignState>("campaign", "revocation-amendment-and-terminal-outcomes");
+    st2.Charter.WorkflowTemplates = [];
+    expect(importCampaignState(st2)).toMatchObject({ ok: false, class: "schema-invalid", path: "Charter.WorkflowTemplates" });
+  });
+
+  it("a package in stale with a FailureReason imports and exports", () => {
+    const plan = fixture<PriorPlan>("plan", "failed-package-does-not-block-unrelated-package");
+    const p1 = plan.Packages!["package-1"]!;
+    expect(p1.State).toBe("failed");
+    p1.State = "stale";
+    p1.Risk = -1; // the signed formation metric, on the same package
+    const imported = must(importPlan(plan));
+    const stale = imported.formation.packages.find((p) => p.id === "package-1")!;
+    expect(stale).toMatchObject({ state: "stale", failure_reason: p1.FailureReason, risk: -1 });
+    expectValid("urn:fusion:schema:fusion.campaign/v1", campaignRecord({ formation: imported.formation }, imported.provenance), "stale with reason");
+    const exported = must(exportPlan(imported)).plan;
+    expect(goBytes("packages.Plan", exported)).toBe(goBytes("packages.Plan", plan));
+    // `failed` without a reason stays refused.
+    const plan2 = fixture<PriorPlan>("plan", "failed-package-does-not-block-unrelated-package");
+    plan2.Packages!["package-1"]!.FailureReason = "";
+    expect(importPlan(plan2)).toMatchObject({ ok: false, class: "schema-invalid", path: "Packages[package-1].FailureReason" });
   });
 });
 

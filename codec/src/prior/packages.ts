@@ -15,7 +15,13 @@
 // A work item id (`Admission.Attempts[].ItemID`, an `ActiveItems` key) names
 // something the plan alone cannot resolve, as a register's `WorkItemID` does.
 // When the caller supplies the inventory it can resolve, an id outside it is
-// unresolved-reference; without the set the check is the caller's.
+// unresolved-reference; without the set the check is the caller's, and the
+// result says so beside the blocks (`inventory.work_items: "carry-only"`) so
+// that such an import never passes for a validated migration (FJ00 response 3d).
+//
+// The ruling's corrections (FJ00 response 2): the three metrics on a
+// formation candidate and on a package are signed, and `FailureReason`
+// occurs on `stale` as well as on `failed`.
 // ---------------------------------------------------------------------------
 
 import type { FormationAdmissionBlock, FormationBlock, FormationCandidateBlock, FormationPackageBlock, ImportedPlan } from "./blocks.js";
@@ -27,6 +33,7 @@ import {
   emptyToNull,
   guarded,
   integer,
+  inventoryOf,
   invalid,
   keyMatches,
   legacyFields,
@@ -43,6 +50,7 @@ import {
   unOpaque,
   unresolved,
   jsonShaOrNull,
+  type ImportResult,
   type PriorResult,
 } from "./common.js";
 import type { PriorAdmission, PriorFormationCandidate, PriorFormationPolicy, PriorPackage, PriorPlan } from "./types.js";
@@ -61,8 +69,9 @@ export interface ExportedPlan {
 
 // --- import -----------------------------------------------------------------
 
-export function importPlan(plan: PriorPlan, inputs: PlanInputs = {}): PriorResult<ImportedPlan> {
-  return guarded(() => {
+export function importPlan(plan: PriorPlan, inputs: PlanInputs = {}): ImportResult<ImportedPlan> {
+  const inventory = inventoryOf(inputs.workItems);
+  const result = guarded<ImportedPlan>(() => {
     const t = new EmptyTracker();
 
     const candidates: FormationCandidateBlock[] = t.entries("Candidates", plan.Candidates).map(([key, c]) => {
@@ -135,6 +144,7 @@ export function importPlan(plan: PriorPlan, inputs: PlanInputs = {}): PriorResul
     };
     return { formation, provenance: { source: "imported", legacy_fields: legacyFields(t) } };
   });
+  return { ...result, inventory };
 }
 
 function importFormationCandidate(c: PriorFormationCandidate, path: string, t: EmptyTracker): FormationCandidateBlock {
@@ -145,9 +155,10 @@ function importFormationCandidate(c: PriorFormationCandidate, path: string, t: E
     version: positive(at("Version"), c.Version),
     resources: stringSet(at("Resources"), t.list(`${path}.Resources`, c.Resources)),
     dependencies: stringSet(at("Dependencies"), t.list(`${path}.Dependencies`, c.Dependencies)),
-    risk: nonNegative(at("Risk"), c.Risk),
-    validation_cost: nonNegative(at("ValidationCost"), c.ValidationCost),
-    estimated_size: nonNegative(at("EstimatedSize"), c.EstimatedSize),
+    // Signed: the legacy Form path bounds maxima but never rejected a negative metric.
+    risk: integer(at("Risk"), c.Risk),
+    validation_cost: integer(at("ValidationCost"), c.ValidationCost),
+    estimated_size: integer(at("EstimatedSize"), c.EstimatedSize),
     qualified: boolean(at("Qualified"), c.Qualified),
     selected: boolean(at("Selected"), c.Selected),
   };
@@ -157,6 +168,9 @@ function importPackage(p: PriorPackage, path: string, t: EmptyTracker): Formatio
   const at = (f: string): string => `${path}.${f}`;
   const state = oneOf(at("State"), nonEmpty(at("State"), p.State), VOCABULARY.packageState());
   const failure_reason = emptyToNull(p.FailureReason);
+  // `failed` is the one state that requires a reason (Complete(false) writes
+  // it). `stale` is the other state that carries one (RefreshCandidate writes
+  // "candidate source/evidence changed"), admitted, never required.
   if (state === "failed" && failure_reason === null) invalid(at("FailureReason"), "state failed carries a failure reason");
   return {
     id: nonEmpty(at("ID"), p.ID),
@@ -164,9 +178,9 @@ function importPackage(p: PriorPackage, path: string, t: EmptyTracker): Formatio
     dependencies: stringSet(at("Dependencies"), t.list(`${path}.Dependencies`, p.Dependencies)),
     resources: stringSet(at("Resources"), t.list(`${path}.Resources`, p.Resources)),
     reasons: t.list(`${path}.Reasons`, p.Reasons),
-    risk: nonNegative(at("Risk"), p.Risk),
-    validation_cost: nonNegative(at("ValidationCost"), p.ValidationCost),
-    estimated_size: nonNegative(at("EstimatedSize"), p.EstimatedSize),
+    risk: integer(at("Risk"), p.Risk), // signed, as on the formation candidate
+    validation_cost: integer(at("ValidationCost"), p.ValidationCost),
+    estimated_size: integer(at("EstimatedSize"), p.EstimatedSize),
     state,
     base_revision: opaque(at("BaseRevision"), p.BaseRevision),
     accepted_revision: opaqueOrNull(at("AcceptedRevision"), p.AcceptedRevision),

@@ -17,7 +17,15 @@
 // A `WorkItemID` names a work item the register alone cannot resolve. When the
 // caller passes the set of work items it knows, an id outside that set is
 // `unresolved-reference`; without the set, the id is carried and the check is
-// the caller's.
+// the caller's. Which of the two happened is returned beside the blocks as
+// `inventory.work_items` (`checked` or `carry-only`), so that a carry-only
+// import can never pass for a validated migration (FJ00 response 3d).
+//
+// The ruling's corrections (FJ00 response 2): `Severity`, `EstimatedScope`
+// and `Disposition.Score` are signed; `Evidence` keeps its stored order and
+// its duplicates; an empty `Evidence.Ref` or `Revision` is null here and `""`
+// again on export; a `MergeInto` without the outcome merged is a legacy
+// inconsistency reported for reconciliation, never repaired.
 // ---------------------------------------------------------------------------
 
 import type {
@@ -36,10 +44,10 @@ import {
   POLICY_OPERATORS,
   VOCABULARY,
   boolean,
-  distinct,
   emptyToNull,
   guarded,
   integer,
+  inventoryOf,
   invalid,
   jsonSha,
   jsonShaOrNull,
@@ -51,12 +59,14 @@ import {
   nullToEmpty,
   oneOf,
   opaque,
+  opaqueOrNull,
   positive,
   stringSet,
   trackerFrom,
   unJsonSha,
   unOpaque,
   unresolved,
+  type ImportResult,
   type PriorResult,
 } from "./common.js";
 import type { PriorCandidate, PriorDisposition, PriorPolicy, PriorQualification, PriorRegister, PriorSnapshot } from "./types.js";
@@ -78,8 +88,9 @@ export interface ExportedRegister {
 
 // --- import -----------------------------------------------------------------
 
-export function importRegister(register: PriorRegister, inputs: RegisterInputs = {}): PriorResult<ImportedRegister> {
-  return guarded(() => {
+export function importRegister(register: PriorRegister, inputs: RegisterInputs = {}): ImportResult<ImportedRegister> {
+  const inventory = inventoryOf(inputs.workItems);
+  const result = guarded<ImportedRegister>(() => {
     const t = new EmptyTracker();
     const id = nonEmpty("ID", register.ID);
     const revision = jsonShaOrNull("Revision", register.Revision);
@@ -119,6 +130,7 @@ export function importRegister(register: PriorRegister, inputs: RegisterInputs =
     };
     return { register: block, candidates, provenance: { source: "imported", legacy_fields: legacyFields(t) } };
   });
+  return { ...result, inventory };
 }
 
 function importCandidate(c: PriorCandidate, path: string, workItems: ReadonlySet<string> | undefined): ImportedCandidate {
@@ -126,11 +138,14 @@ function importCandidate(c: PriorCandidate, path: string, workItems: ReadonlySet
   const at = (f: string): string => `${path}.${f}`;
   if (c.SchemaVersion !== 1) invalid(at("SchemaVersion"), `Collect accepts 1 only, got ${JSON.stringify(c.SchemaVersion)}`);
 
+  // The stored sequence, duplicates included: Prior sorts a copy for the hash
+  // and never deduplicates. Qualify records an empty Ref or Revision as a
+  // failed qualification rather than refusing the candidate, so both are
+  // carried as null and the failure is carried as `passed: false`.
   const evidence = t.list("Evidence", c.Evidence).map((e, i) => ({
-    ref: nonEmpty(`${at("Evidence")}[${i}].Ref`, e.Ref),
-    revision: opaque(`${at("Evidence")}[${i}].Revision`, e.Revision),
+    ref: emptyToNull(e.Ref),
+    revision: opaqueOrNull(`${at("Evidence")}[${i}].Revision`, e.Revision),
   }));
-  distinct(at("Evidence"), evidence.map((e) => `${e.ref}\u0000${e.revision}`));
 
   const { selection, admission } = splitDisposition(c.Disposition, at("Disposition"), t, workItems);
 
@@ -148,9 +163,12 @@ function importCandidate(c: PriorCandidate, path: string, workItems: ReadonlySet
     },
     evidence,
     reproduction: t.list("Reproduction", c.Reproduction),
-    severity: nonNegative(at("Severity"), c.Severity),
+    // Severity and EstimatedScope are signed: legacy Collect never rejected a
+    // negative value. Confidence and Risk stay non-negative, the two bounds
+    // Prior validates at intake.
+    severity: integer(at("Severity"), c.Severity),
     confidence: nonNegative(at("Confidence"), c.Confidence),
-    estimated_scope: nonNegative(at("EstimatedScope"), c.EstimatedScope),
+    estimated_scope: integer(at("EstimatedScope"), c.EstimatedScope),
     risk: nonNegative(at("Risk"), c.Risk),
     affected_resources: stringSet(at("AffectedResources"), t.list("AffectedResources", c.AffectedResources)),
     dependencies: stringSet(at("Dependencies"), t.list("Dependencies", c.Dependencies)),
@@ -159,9 +177,14 @@ function importCandidate(c: PriorCandidate, path: string, workItems: ReadonlySet
     admission,
     merge_into: emptyToNull(c.MergeInto),
   };
-  if ((block.merge_into !== null) !== (selection?.outcome === "merged")) {
-    invalid(at("MergeInto"), "a merge target and the disposition outcome merged imply each other");
+  const merged = selection?.outcome === "merged";
+  if (block.merge_into !== null && !merged) {
+    invalid(
+      at("MergeInto"),
+      "legacy-inconsistency: MergeInto is set while the disposition outcome is not merged (Qualify on a merged candidate clears Disposition without clearing MergeInto); a migration finding to reconcile, not repaired here",
+    );
   }
+  if (merged && block.merge_into === null) invalid(at("MergeInto"), "the disposition outcome merged names a merge target");
   return {
     candidate: block,
     provenance: { source: "imported", legacy_fields: legacyFields(t, { Statement: c.Statement, Purpose: c.Purpose }) },
@@ -192,7 +215,7 @@ function splitDisposition(
     policy_version: emptyToNull(d.PolicyVersion),
     snapshot_hash: jsonShaOrNull(`${path}.SnapshotHash`, d.SnapshotHash),
     outcome: oneOf(`${path}.Outcome`, nonEmpty(`${path}.Outcome`, d.Outcome), VOCABULARY.dispositionOutcome()),
-    score: nonNegative(`${path}.Score`, d.Score),
+    score: integer(`${path}.Score`, d.Score), // signed: evaluate sums signed weights
     reasons: t.list("Disposition.Reasons", d.Reasons),
   };
   const hasItem = d.WorkItemID !== "";
@@ -337,7 +360,10 @@ function exportCandidate(imported: ImportedCandidate): PriorCandidate {
       Watermark: c.source.watermark,
       RefreshPolicy: c.source.refresh_policy,
     },
-    Evidence: t.unlist("Evidence", c.evidence.map((e, i) => ({ Ref: e.ref, Revision: unOpaque(`${path}.evidence[${i}].revision`, e.revision) }))),
+    Evidence: t.unlist(
+      "Evidence",
+      c.evidence.map((e, i) => ({ Ref: nullToEmpty(e.ref), Revision: unOpaque(`${path}.evidence[${i}].revision`, e.revision) })),
+    ),
     Reproduction: t.unlist("Reproduction", c.reproduction),
     Severity: c.severity,
     Confidence: c.confidence,
