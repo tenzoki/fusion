@@ -58,15 +58,29 @@ eight typed classes. FJ01 implements `inspect`, `list`, `show`, `validate` and
 replayable by `operation_id`); the other nine answer
 `operation-unknown/not-implemented-in-fj01`.
 
+## The two closed vocabularies
+
+Two token sets that FJ00 left open were closed at FJ01b, as the decision
+record
+`260928-1420_*_which-closed-vocabularies-do-artefact-kind-and-issue-disposition-kind-take.md`
+rules (option 3, Prior's FJ00 response 6a): an artefact reference's
+`artefact_ref.kind` is an enum of 20 tokens in `schemas/common.schema.json`,
+and an issue's `disposition.kind` an enum of 7 in `schemas/record.schema.json`.
+Both are additive-only from here: no token is removed or redefined, an
+addition is adopted explicitly, and a token a reader does not know is a
+refusal, never a silent fallback. A kind labels an artefact by what it is,
+never by its file format.
+
 ## Layout
 
 | Path | Holds |
 |---|---|
 | `schemas/*.schema.json` | JSON Schema (draft 2020-12), one file per contract, each keyed by its `$id` |
-| `contract/` | The transition, dependency and Prior-mapping tables as data |
+| `contract/` | The transition, dependency and Prior-mapping tables as data; `prior-mapping.json` is the contract as the Prior side ruled it (Prior `c512c4c`, reviewing `dbd1aa1`), every row confirmed |
 | `fixtures/manifest.json` | The language-neutral fixture index: every fixture outside `fixtures/prior/`, with the schema it is checked against and the outcome expected. Prior's Go side reads this same file and asserts the same outcomes; its shape is `fixtures/manifest.schema.json` |
 | `fixtures/valid/`, `fixtures/invalid/`, `fixtures/bytes/` | The fixtures the manifest indexes |
-| `fixtures/prior/` | Round-trip fixtures for the Prior DTO mapping; not indexed by the manifest |
+| `fixtures/prior/` | Round-trip fixtures for the Prior DTO mapping; not indexed by the manifest. The 13 `prior.json` are Go-emitted goldens (`go-golden@dbd1aa1`, taken at Prior `c512c4c`), copied byte for byte and never edited here; each `fusion.json` beside one is the codec's import of it, and `UPDATE_PRIOR_FIXTURES=1 npm test` regenerates it when the mapping changes on purpose |
+| `fixtures/prior-handback/` | Prior's FJ01 handback: the five files after Prior's own `claimed → paused` transition through the pinned bundle (the record, its revision, the `show` response, the `transition` request and response), counterchecked by `prior-handback.test.ts`; not indexed by the manifest |
 | `fixtures/workbench/` | A minimal v12-shaped scratch workbench (`workbench.json`, `.fusion-setup`, two package pairs, one shared issue pair) the store and CLI suites copy to a temp directory before every case; not indexed by the manifest |
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |
 | `scripts/build.mjs` | esbuild, pinned exactly, `--bundle --platform=node --format=esm --target=node20`, JSON inlined, staging path then atomic rename into `dist/`; a second run writes nothing |
