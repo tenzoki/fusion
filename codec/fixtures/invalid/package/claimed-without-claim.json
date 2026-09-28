@@ -1,0 +1,43 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "5c3ed178-501a-4135-83ac-5f2d07f7722a",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "domain": "data",
+  "status": "claimed",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/260928-1338-json-control-data-and-markdown-artefacts.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "f9dc47c3-35cb-41cf-8cdb-c84e75ef2c0f",
+        "display": "260928-1341_o_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md"
+      },
+      "role": "plan",
+      "revision": "sha256:9805ef62eaea78fe71d142fed03313a25e56386ee24cac9e16b92b6d31181d95"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

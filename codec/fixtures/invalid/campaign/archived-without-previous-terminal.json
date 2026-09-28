@@ -1,0 +1,95 @@
+{
+  "schema": "fusion.campaign/v1",
+  "id": "e901d979-987e-45c8-8ae8-eb9cfb5d9d64",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "charter": {
+    "schema_version": 1,
+    "campaign_id": "camp-2026-08-lint",
+    "revision": "prior-opaque:charter-r1",
+    "authorisation_ref": "shared/decisions/260928-0900_a_authorise-the-parser-campaign.md",
+    "objective": "Close every parser defect the scanner has qualified.",
+    "item_kinds": [
+      "defect",
+      "performance"
+    ],
+    "candidate_sources": [
+      "scanner-a",
+      "scanner-b"
+    ],
+    "workflow_templates": [
+      "repair-and-review"
+    ],
+    "stop_conditions": [
+      "budget exhausted",
+      "intake closed and all attempts terminal"
+    ],
+    "intake_policy": "checkpoint",
+    "selection_policy": "policy-v3",
+    "package_policy": "formation-v1",
+    "acceptance_policy": "prior-enforced-review",
+    "autonomy_policy": "bounded",
+    "backend_policy": "claude-code",
+    "delivery_policy": "commit-per-package",
+    "data_boundary": [
+      "modules/fusion"
+    ],
+    "capabilities": [
+      "read",
+      "write",
+      "test"
+    ],
+    "budget_account": "acct-fusion",
+    "limits": {
+      "max_attempts": 3,
+      "max_failures": 2,
+      "max_consecutive_failures": 2,
+      "max_reviews": 5,
+      "resource_units": 100
+    }
+  },
+  "state": {
+    "campaign_id": "camp-2026-08-lint",
+    "revision": "prior-json-sha256:2232bdf5e44c706acb74f78722870a8c6b41399886dc37ca0e5491630640c065",
+    "state": "archived",
+    "previous_terminal": null,
+    "reason": "objective met",
+    "charter_hash": "prior-json-sha256:b67f8d625d5397ebd776372ac10bdbc343994b961701d92149ab83a728c2cba7",
+    "counters": {
+      "attempts": 4,
+      "failures": 0,
+      "consecutive_failures": 0,
+      "reviews": 4,
+      "resource_units": 80
+    },
+    "settlement": {
+      "owned_runs": 0,
+      "open_intents": 0,
+      "unknown_effects": 0,
+      "quarantined": 0
+    },
+    "requested_outcome": null,
+    "sessions": [
+      "sess-0010"
+    ],
+    "runs": [
+      "run-0010",
+      "run-0011"
+    ],
+    "baseline_hash": "prior-opaque:baseline-lint",
+    "completion_evidence": {
+      "objective_met": true,
+      "intake_closed": true,
+      "all_attempts_terminal": true,
+      "final_audit_passed": true,
+      "watermark": "2026-08-30T12:00:00Z",
+      "audit_ref": "shared/reviews/260830-1200-lint-campaign-audit.md"
+    }
+  },
+  "register": null,
+  "formation": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

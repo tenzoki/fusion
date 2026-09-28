@@ -1,0 +1,33 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "6ee445c7-2ccc-433f-89a7-473a732faecf",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "discussion",
+  "narrative": {
+    "path": "shared/discussions/260928-1100_o_should-the-codec-ship-a-validator.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "participants": [
+      {
+        "actor": "User",
+        "person": "kai"
+      },
+      {
+        "actor": "consultant",
+        "person": null
+      }
+    ],
+    "outcome_refs": []
+  }
+}

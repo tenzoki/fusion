@@ -1,0 +1,46 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "c84861aa-337c-46b1-84e1-452cf08319ea",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "subject": {
+    "git_tree": "0566591299a5f2c11f2573973ffc894791d20ee7",
+    "git_range": null
+  },
+  "brief_revision": "sha256:99cf98c73ba7c472b8985b2df1e8b922f3cbfd3bd8ee48d6f147e10f40782ff4",
+  "plan_revision": null,
+  "role": {
+    "profile": "reviewer",
+    "version": "12.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [
+    "The hook suite was not run in an isolated worktree."
+  ],
+  "checks": [
+    {
+      "id": "tests-green",
+      "result": "fail",
+      "detail": "2 of 14 round-trip cases fail"
+    },
+    {
+      "id": "worktree-run",
+      "result": "skipped",
+      "detail": null
+    },
+    {
+      "id": "growth-bounds",
+      "result": "unknown",
+      "detail": "not measured"
+    }
+  ],
+  "report": {
+    "path": "shared/reviews/260926-1500-parser-rewrite-review.md",
+    "sha256": "sha256:835ca804c3d32f8c87a8af364e6045838a0879bfa52d158fef893170aa77aebc",
+    "kind": "markdown"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-09-26T15:20:00Z",
+  "extensions": {}
+}

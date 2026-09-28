@@ -1,0 +1,46 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "0eedc76d-a05a-4182-81d4-556c9d10699e",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "domain": "code",
+  "status": "paused",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "package",
+    "ref": {
+      "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+      "record_id": "5c3ed178-501a-4135-83ac-5f2d07f7722a",
+      "display": "260928-1338-json-control-data-and-markdown-artefacts.md"
+    }
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260928-1500-parser-benchmarks/260928-1500-parser-benchmarks.md"
+  },
+  "depends_on": [
+    {
+      "target": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "591d5bf4-2219-46b6-a0d3-cbdb28d6af16",
+        "display": "260928-1200-parser-fix.md"
+      },
+      "condition": "merged"
+    }
+  ],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

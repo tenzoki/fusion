@@ -1,0 +1,29 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c877516d-5e68-498f-8af6-5ff3a030d097",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260815-0800_s_do-hooks-own-the-json-reader.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "superseded",
+    "answer_ref": {
+      "path": "shared/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+      "sha256": "sha256:5838650b1f706a0096a54fe8780c8b34306855b9a7eb20bc84e72aae10aedd45",
+      "kind": "markdown"
+    },
+    "implementation_ref": "9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c",
+    "superseded_by": null
+  }
+}

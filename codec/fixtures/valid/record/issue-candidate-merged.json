@@ -1,0 +1,65 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c38f72eb-2176-423e-8bd7-fb21b6094a17",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260928-0920-parser-empty-input-duplicate.md"
+  },
+  "filed_by": {
+    "actor": "prior",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "merged",
+      "reason_ref": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "0917aa1f-5ee5-4d5b-8ab1-ec9f6aef0f8e"
+      }
+    },
+    "candidate": {
+      "prior_id": "cand-0002",
+      "schema_version": 1,
+      "stable_key": "parser/empty-input-dup",
+      "item_kind": "defect",
+      "version": 1,
+      "source": {
+        "id": "scanner-b",
+        "revision": "prior-opaque:scan-b-r1",
+        "watermark": "2026-09-27T19:00:00Z",
+        "refresh_policy": "snapshot"
+      },
+      "evidence": [],
+      "reproduction": [],
+      "severity": 3,
+      "confidence": 2,
+      "estimated_scope": 2,
+      "risk": 1,
+      "affected_resources": [
+        "modules/fusion/parser"
+      ],
+      "dependencies": [],
+      "qualification": null,
+      "selection": {
+        "candidate_version": 1,
+        "policy_version": null,
+        "snapshot_hash": null,
+        "outcome": "merged",
+        "score": 0,
+        "reasons": [
+          "duplicate of cand-0001"
+        ]
+      },
+      "admission": null,
+      "merge_into": "cand-0001"
+    }
+  }
+}

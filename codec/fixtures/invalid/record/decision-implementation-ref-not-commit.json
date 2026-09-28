@@ -1,0 +1,29 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "70dd6c7e-b4b9-4546-8984-d14a7cc8ec4b",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260920-0800_i_is-the-lint-package-ordinary.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "implemented",
+    "answer_ref": {
+      "path": "shared/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+      "sha256": "sha256:5838650b1f706a0096a54fe8780c8b34306855b9a7eb20bc84e72aae10aedd45",
+      "kind": "markdown"
+    },
+    "implementation_ref": "commit 40a1713f",
+    "superseded_by": null
+  }
+}

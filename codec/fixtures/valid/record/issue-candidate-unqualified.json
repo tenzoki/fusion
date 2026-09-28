@@ -1,0 +1,60 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "13e5c8d5-172e-43d5-8ba1-4a9c23812d4e",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260928-0930-parser-slow-path.md"
+  },
+  "filed_by": {
+    "actor": "prior",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null,
+    "candidate": {
+      "prior_id": "cand-0003",
+      "schema_version": 1,
+      "stable_key": "parser/slow-path",
+      "item_kind": "performance",
+      "version": 1,
+      "source": {
+        "id": "scanner-a",
+        "revision": "prior-opaque:scan-2026-09-27-r3",
+        "watermark": "2026-09-27T18:00:00Z",
+        "refresh_policy": "continuous"
+      },
+      "evidence": [
+        {
+          "ref": "evidence/parser/bench.txt",
+          "revision": "prior-opaque:bench-1"
+        }
+      ],
+      "reproduction": [
+        "go test -bench Parse ./modules/fusion/parser"
+      ],
+      "severity": 1,
+      "confidence": 1,
+      "estimated_scope": 3,
+      "risk": 2,
+      "affected_resources": [
+        "modules/fusion/parser",
+        "modules/fusion/parser/bench"
+      ],
+      "dependencies": [
+        "cand-0001"
+      ],
+      "qualification": null,
+      "selection": null,
+      "admission": null,
+      "merge_into": null
+    }
+  }
+}

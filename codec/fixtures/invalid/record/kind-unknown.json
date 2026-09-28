@@ -1,0 +1,29 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d068e1ae-3f62-429a-880a-2785763aaf01",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "review",
+  "narrative": {
+    "path": "shared/issues/260928-1400-parser-fails-on-empty-input.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": null
+  },
+  "references": [
+    {
+      "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+      "record_id": "591d5bf4-2219-46b6-a0d3-cbdb28d6af16",
+      "display": "260928-1200-parser-fix.md"
+    }
+  ],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

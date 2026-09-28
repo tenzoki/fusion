@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d068e1ae-3f62-429a-880a-2785763aaf01",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260928-1400-parser-fails-on-empty-input.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": null
+  },
+  "references": [
+    {
+      "project": "pri:or",
+      "citation": "260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md"
+    }
+  ],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

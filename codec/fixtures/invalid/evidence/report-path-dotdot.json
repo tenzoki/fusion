@@ -1,0 +1,39 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "51f3db37-ef6a-4e92-88d8-6b695df10327",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "subject": {
+    "git_tree": "2d456806c9696e60e13ef97d32d7b2b9f6d4a0d9",
+    "git_range": "40a1713f..8c2e1d0a"
+  },
+  "brief_revision": "sha256:77b23fdd63c127a05679016c67fa238fd2fbe52ca80fcb335186fd70ddb63881",
+  "plan_revision": "sha256:f303b33a5932cd6fa6bb318247bb964fac4edab536ef9bda7c542eda598797e8",
+  "role": {
+    "profile": "reviewer",
+    "version": "12.0.0"
+  },
+  "host": "prior",
+  "execution_policy": "prior-enforced",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [
+    {
+      "id": "tests-green",
+      "result": "pass",
+      "detail": "codec: 4 files, 212 tests"
+    },
+    {
+      "id": "growth-bounds",
+      "result": "pass",
+      "detail": null
+    }
+  ],
+  "report": {
+    "path": "shared/reviews/../../outside.md",
+    "sha256": "sha256:ec0f03d8cf6ec47f75e8dba0d39a9f7d1a52a3bd8f0d302c2d55b2f063c6c62d",
+    "kind": "markdown"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-09-28T16:05:00+02:00",
+  "extensions": {}
+}

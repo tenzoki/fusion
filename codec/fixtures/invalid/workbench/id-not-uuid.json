@@ -1,0 +1,9 @@
+{
+  "schema": "fusion.workbench/v1",
+  "id": "workbench-1",
+  "required_features": [
+    "json-control-v1"
+  ],
+  "migration": null,
+  "extensions": {}
+}

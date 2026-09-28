@@ -1,0 +1,30 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "36c75ef8-4fb9-486a-82b6-61ecee92c9e5",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "plan",
+  "narrative": {
+    "path": "shared/plans/260928-1800_o_plan-fj01-process-boundary.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "step-1",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": null
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "0917aa1f-5ee5-4d5b-8ab1-ec9f6aef0f8e",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260928-0915-parser-empty-input-candidate.md"
+  },
+  "filed_by": {
+    "actor": "prior",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "Statement": "Parser panics on empty input",
+      "Purpose": "Fix the panic"
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20260928-example/backup/prior/candidates/cand-0001.json",
+      "sha256": "sha256:041a554386d2d30ef8284a58ad6c210b2d5922778fda98329e20a67dd44006c8",
+      "kind": "json"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "disposition": null,
+    "candidate": {
+      "prior_id": "cand-0001",
+      "schema_version": 1,
+      "stable_key": "parser/empty-input",
+      "item_kind": "defect",
+      "version": 2,
+      "source": {
+        "id": "scanner-a",
+        "revision": "prior-opaque:scan-2026-09-27-r3",
+        "watermark": "2026-09-27T18:00:00Z",
+        "refresh_policy": "checkpoint"
+      },
+      "evidence": [
+        {
+          "ref": "evidence/parser/empty-input.log",
+          "revision": "prior-opaque:log-1"
+        }
+      ],
+      "reproduction": [
+        "go test ./modules/fusion/parser -run TestEmptyInput"
+      ],
+      "severity": 3,
+      "confidence": 4,
+      "estimated_scope": 2,
+      "risk": 1,
+      "affected_resources": [
+        "modules/fusion/parser"
+      ],
+      "dependencies": [],
+      "qualification": null,
+      "selection": {
+        "candidate_version": 2,
+        "policy_version": "policy-v3",
+        "snapshot_hash": "prior-json-sha256:11bdcb891541deec86c554a1b5153491d2ce8f798fedd4e9477374929d4b83d5",
+        "outcome": "admitted",
+        "score": 11,
+        "reasons": [
+          "severity gte 3",
+          "risk lte 2"
+        ]
+      },
+      "admission": {
+        "work_item_id": "wi-0007",
+        "current_attempt": 1
+      },
+      "merge_into": null
+    }
+  }
+}

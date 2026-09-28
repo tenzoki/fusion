@@ -1,0 +1,317 @@
+{
+  "schema": "fusion.campaign/v1",
+  "id": "0481b6e2-0fdc-4dec-886c-5d6df0af2799",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "charter": {
+    "schema_version": 1,
+    "campaign_id": "camp-2026-09-parser",
+    "revision": "prior-opaque:charter-r1",
+    "authorisation_ref": "shared/decisions/260928-0900_a_authorise-the-parser-campaign.md",
+    "objective": "Close every parser defect the scanner has qualified.",
+    "item_kinds": [
+      "defect",
+      "performance"
+    ],
+    "candidate_sources": [
+      "scanner-a",
+      "scanner-b"
+    ],
+    "workflow_templates": [
+      "repair-and-review"
+    ],
+    "stop_conditions": [
+      "budget exhausted",
+      "intake closed and all attempts terminal"
+    ],
+    "intake_policy": "checkpoint",
+    "selection_policy": "policy-v3",
+    "package_policy": "formation-v1",
+    "acceptance_policy": "prior-enforced-review",
+    "autonomy_policy": "bounded",
+    "backend_policy": "claude-code",
+    "delivery_policy": "commit-per-package",
+    "data_boundary": [
+      "modules/fusion"
+    ],
+    "capabilities": [
+      "read",
+      "write",
+      "test"
+    ],
+    "budget_account": "acct-fusion",
+    "limits": {
+      "max_attempts": 3,
+      "max_failures": 2,
+      "max_consecutive_failures": 2,
+      "max_reviews": 5,
+      "resource_units": 100
+    }
+  },
+  "state": {
+    "campaign_id": "camp-2026-09-parser",
+    "revision": "prior-json-sha256:8460f2a4877edfdd961dc7cde9fc880fa8cd52451e2debe4156e66a8ac654bff",
+    "state": "running",
+    "previous_terminal": null,
+    "reason": null,
+    "charter_hash": "prior-json-sha256:292b78473f123f90fd1f186910c5ed146ba1c24250bab1d5fe854c71634f4ea3",
+    "counters": {
+      "attempts": 2,
+      "failures": 1,
+      "consecutive_failures": 0,
+      "reviews": 1,
+      "resource_units": 40
+    },
+    "settlement": {
+      "owned_runs": 1,
+      "open_intents": 1,
+      "unknown_effects": 0,
+      "quarantined": 0
+    },
+    "requested_outcome": null,
+    "sessions": [
+      "sess-0001",
+      "sess-0002"
+    ],
+    "runs": [
+      "run-0001"
+    ],
+    "baseline_hash": "prior-opaque:baseline-40a1713f",
+    "completion_evidence": null
+  },
+  "register": {
+    "id": "reg-parser",
+    "revision": "prior-json-sha256:c96e1e3ef4f08eb92d663f35b7b382b0a6f30cfb043d95bf6158f7a3cc2b324a",
+    "stable": [
+      {
+        "stable_key": "parser/empty-input",
+        "candidate_id": "cand-0001"
+      },
+      {
+        "stable_key": "parser/slow-path",
+        "candidate_id": "cand-0003"
+      }
+    ],
+    "watermarks": [
+      {
+        "source_id": "scanner-a",
+        "watermark": "2026-09-27T18:00:00Z"
+      },
+      {
+        "source_id": "scanner-b",
+        "watermark": "2026-09-27T19:00:00Z"
+      }
+    ],
+    "intake_closed": true,
+    "closed_watermark": "2026-09-27T19:00:00Z",
+    "policy": {
+      "version": "policy-v3",
+      "predicates": [
+        {
+          "field": "severity",
+          "operator": "gte",
+          "value": 2
+        },
+        {
+          "field": "risk",
+          "operator": "lte",
+          "value": 2
+        }
+      ],
+      "weights": [
+        {
+          "field": "severity",
+          "multiplier": 3
+        },
+        {
+          "field": "confidence",
+          "multiplier": 1
+        }
+      ],
+      "minimum_score": 5,
+      "maximum_risk": 2
+    },
+    "snapshot": {
+      "watermark": "2026-09-27T19:00:00Z",
+      "versions": [
+        {
+          "candidate_id": "cand-0001",
+          "version": 2
+        },
+        {
+          "candidate_id": "cand-0003",
+          "version": 1
+        }
+      ],
+      "source_revisions": [
+        {
+          "candidate_id": "cand-0001",
+          "revision": "prior-opaque:scan-2026-09-27-r3"
+        },
+        {
+          "candidate_id": "cand-0003",
+          "revision": "prior-opaque:scan-2026-09-27-r3"
+        }
+      ]
+    }
+  },
+  "formation": {
+    "id": "plan-parser-1",
+    "revision": "prior-json-sha256:08b0675a64be0a224a9169cfb6a97ffab8817b71ddc489cb77f0ab0801f493ef",
+    "policy_version": "formation-v1",
+    "accepted_revision": "prior-opaque:register-r5",
+    "remaining_budget": 60,
+    "policy": {
+      "version": "formation-v1",
+      "max_risk": 2,
+      "max_validation_cost": 10,
+      "max_size": 3,
+      "budget": 100
+    },
+    "candidates": [
+      {
+        "id": "cand-0001",
+        "purpose": "Fix the panic",
+        "version": 2,
+        "resources": [
+          "modules/fusion/parser"
+        ],
+        "dependencies": [],
+        "risk": 1,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "qualified": true,
+        "selected": true
+      },
+      {
+        "id": "cand-0003",
+        "purpose": "",
+        "version": 1,
+        "resources": [
+          "modules/fusion/parser",
+          "modules/fusion/parser/bench"
+        ],
+        "dependencies": [
+          "cand-0001"
+        ],
+        "risk": 2,
+        "validation_cost": 4,
+        "estimated_size": 3,
+        "qualified": false,
+        "selected": false
+      }
+    ],
+    "packages": [
+      {
+        "id": "pkg-a",
+        "members": [
+          "cand-0001"
+        ],
+        "dependencies": [],
+        "resources": [
+          "modules/fusion/parser"
+        ],
+        "reasons": [
+          "single qualified candidate"
+        ],
+        "risk": 1,
+        "validation_cost": 2,
+        "estimated_size": 2,
+        "state": "done",
+        "base_revision": "prior-opaque:register-r5",
+        "accepted_revision": "prior-opaque:register-r5",
+        "baseline_hash": "prior-opaque:baseline-40a1713f",
+        "failure_reason": null
+      },
+      {
+        "id": "pkg-b",
+        "members": [
+          "cand-0003"
+        ],
+        "dependencies": [
+          "pkg-a"
+        ],
+        "resources": [
+          "modules/fusion/parser/bench"
+        ],
+        "reasons": [],
+        "risk": 2,
+        "validation_cost": 4,
+        "estimated_size": 3,
+        "state": "failed",
+        "base_revision": "prior-opaque:register-r5",
+        "accepted_revision": "prior-opaque:register-r5",
+        "baseline_hash": "prior-opaque:baseline-40a1713f",
+        "failure_reason": "benchmark regression"
+      },
+      {
+        "id": "pkg-c",
+        "members": [],
+        "dependencies": [],
+        "resources": [],
+        "reasons": [
+          "placeholder for the next intake"
+        ],
+        "risk": 0,
+        "validation_cost": 0,
+        "estimated_size": 0,
+        "state": "formed",
+        "base_revision": "prior-opaque:register-r5",
+        "accepted_revision": null,
+        "baseline_hash": null,
+        "failure_reason": null
+      }
+    ],
+    "order": [
+      "pkg-a",
+      "pkg-b",
+      "pkg-c"
+    ],
+    "deferred": [
+      {
+        "candidate": "cand-0003",
+        "reason": "depends on cand-0001"
+      }
+    ],
+    "admissions": [
+      {
+        "id": "adm-0001",
+        "package_id": "pkg-a",
+        "status": "settled",
+        "lease_ref": "lease-0001",
+        "workbench_revision": "prior-opaque:wb-r12",
+        "attempts": [
+          {
+            "candidate": "cand-0001",
+            "candidate_version": 2,
+            "attempt": 1,
+            "item_id": "wi-0007"
+          }
+        ]
+      },
+      {
+        "id": "adm-0002",
+        "package_id": "pkg-b",
+        "status": "open",
+        "lease_ref": null,
+        "workbench_revision": null,
+        "attempts": []
+      }
+    ],
+    "active_items": [
+      {
+        "item_id": "wi-0007",
+        "admission_id": "adm-0001"
+      }
+    ]
+  },
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {},
+    "backup": {
+      "path": "archive/migrations/migration-20260928-example/backup/prior/campaign/camp-2026-09-parser.json",
+      "sha256": "sha256:da703a93f17e38eb37026ea215e0e5480a57d94dc5f265baf0c616a1546d6d6d",
+      "kind": "json"
+    }
+  },
+  "extensions": {}
+}

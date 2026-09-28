@@ -1,0 +1,40 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "64309eb7-26cb-408f-8ce4-202934bdf795",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "subject": {
+    "git_tree": "be9b68f25712ba9fec27276e0f5c6654611af11109315c49de607da98f273f4b",
+    "git_range": null
+  },
+  "brief_revision": "sha256:99cf98c73ba7c472b8985b2df1e8b922f3cbfd3bd8ee48d6f147e10f40782ff4",
+  "plan_revision": null,
+  "role": {
+    "profile": "security-reviewer",
+    "version": "1.2.0"
+  },
+  "host": "prior",
+  "execution_policy": "prior-enforced",
+  "verdict": "escalate",
+  "uncertainties": [
+    "The subject tree includes vendored code the role does not audit."
+  ],
+  "checks": [
+    {
+      "id": "secrets-scan",
+      "result": "fail",
+      "detail": "one committed token"
+    }
+  ],
+  "report": {
+    "path": "shared/reviews/260926-1800-parser-rewrite-security.md",
+    "sha256": "sha256:eacd8b353176661b11fea3b0847f1f84c34df49e434f7a6e61d21dae50aaf416",
+    "kind": "markdown"
+  },
+  "predecessor": {
+    "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+    "record_id": "c84861aa-337c-46b1-84e1-452cf08319ea",
+    "revision": "sha256:f5dc6eac2064390b7f86e57e383e3c0fbcb5c2c0369a72672d2a009db3b37137"
+  },
+  "accepted_at": "2026-09-26T18:00:00-05:00",
+  "extensions": {}
+}

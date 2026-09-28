@@ -1,0 +1,34 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "35ffe909-d52c-4e5b-889d-604c43751f9d",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260901-1000_c_stats-file-stale-after-import.md"
+  },
+  "filed_by": {
+    "actor": "state-auditor",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "marker": "_c_",
+      "Resolved": "260901-1200-stats-refresh-review.md"
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20260928-example/backup/shared/issues/260901-1000_c_stats-file-stale-after-import.md",
+      "sha256": "sha256:d101b6d882033bf9b80252069b215408f4c653fdf8929551855c2ec03356a0cb",
+      "kind": "markdown"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "Resolved",
+      "reason_ref": "260901-1200-stats-refresh-review.md"
+    }
+  }
+}

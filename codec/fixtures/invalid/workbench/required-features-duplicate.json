@@ -1,0 +1,10 @@
+{
+  "schema": "fusion.workbench/v1",
+  "id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "required_features": [
+    "json-control-v1",
+    "json-control-v1"
+  ],
+  "migration": null,
+  "extensions": {}
+}

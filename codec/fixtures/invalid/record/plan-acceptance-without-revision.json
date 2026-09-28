@@ -1,0 +1,58 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "f9dc47c3-35cb-41cf-8cdb-c84e75ef2c0f",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/260928-1341_o_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": null
+  },
+  "references": [
+    {
+      "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+      "record_id": "f298c09e-1917-4081-84fb-712fb89ac97b"
+    }
+  ],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "step-1",
+        "state": "done"
+      },
+      {
+        "id": "step-2",
+        "state": "in_progress"
+      },
+      {
+        "id": "step-3",
+        "state": "open"
+      }
+    ],
+    "criteria": [
+      {
+        "id": "c-1",
+        "met": true
+      },
+      {
+        "id": "c-2",
+        "met": null
+      }
+    ],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "5c3ed178-501a-4135-83ac-5f2d07f7722a",
+        "display": "260928-1338-json-control-data-and-markdown-artefacts.md"
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "2afd233f-bd96-47d7-85f5-e42eb3766210",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260810-0800_d_should-fixtures-be-yaml.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "dropped",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": {
+      "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+      "record_id": "78fa93c1-e6b5-41e0-89d5-2a6547b6c480"
+    }
+  }
+}

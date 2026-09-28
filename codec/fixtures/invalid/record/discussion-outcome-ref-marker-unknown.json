@@ -1,0 +1,39 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "0a89760f-343b-41a2-8647-06fc14c8da81",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "discussion",
+  "narrative": {
+    "path": "shared/discussions/260928-1300_c_where-does-the-codec-live.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "participants": [
+      {
+        "actor": "user",
+        "person": "kai"
+      },
+      {
+        "actor": "consultant",
+        "person": null
+      }
+    ],
+    "outcome_refs": [
+      {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "78fa93c1-e6b5-41e0-89d5-2a6547b6c480"
+      },
+      "260928-1341_x_does-the-json-codec-live-in-its-own-package-or-under-hooks.md"
+    ]
+  }
+}

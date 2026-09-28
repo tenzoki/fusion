@@ -1,0 +1,80 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "c659cc62-52e9-4887-8617-124715712a64",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "domain": "code",
+  "status": "open",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": {
+      "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+      "record_id": "a1c4e2f7-3702-4fa0-8859-f85e6b6f10c9",
+      "display": "260920-0800_a_is-the-lint-package-ordinary.md"
+    }
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260920-0900-lint-cleanup/260920-0900-lint-cleanup.md"
+  },
+  "depends_on": [
+    {
+      "target": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "591d5bf4-2219-46b6-a0d3-cbdb28d6af16"
+      },
+      "condition": "terminal"
+    },
+    {
+      "target": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "591d5bf4-2219-46b6-a0d3-cbdb28d6af16"
+      },
+      "condition": "terminal"
+    }
+  ],
+  "active_documents": [],
+  "references": [
+    {
+      "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+      "record_id": "f9dc47c3-35cb-41cf-8cdb-c84e75ef2c0f",
+      "revision": "sha256:9805ef62eaea78fe71d142fed03313a25e56386ee24cac9e16b92b6d31181d95",
+      "display": "260928-1341_o_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md"
+    },
+    {
+      "path": "shared/reviews/260927-2304-fusion-dual-host-design-review.md",
+      "sha256": "sha256:81a8ed3a0f99474861af8072bf3f2a3c4375ec13b8405997e7f85b8b5485be69",
+      "kind": "markdown"
+    },
+    {
+      "project": "prior",
+      "citation": "260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md"
+    },
+    "260928-1341_o_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md",
+    "260927-2304-fusion-dual-host-design-review.md",
+    "foreign:prior:260922-1114_a_does-the-transition-windows-legacy-read-live-at-one-site-per-runtime.md"
+  ],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "Status": "open",
+      "Mode": "ordinary",
+      "Depends-on": "260928-1200-parser-fix.md, 260927-0900-strict-reader.md"
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20260928-example/backup/work-packages/260920-0900-lint-cleanup.md",
+      "sha256": "sha256:b118f8ad7f999838fb534ededa74b73b44bca098caa47eff85b741e9eef1e3cd",
+      "kind": "markdown"
+    }
+  },
+  "extensions": {}
+}

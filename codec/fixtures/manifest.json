@@ -1,0 +1,1180 @@
+[
+  {
+    "path": "valid/workbench/new.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "valid",
+    "note": "A workbench created under JSON control: migration is null (spec 4.1)."
+  },
+  {
+    "path": "valid/workbench/imported.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "valid",
+    "note": "The spec 4.1 example verbatim: a completed import with its receipt under archive/migrations/."
+  },
+  {
+    "path": "valid/workbench/extra-feature.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "valid",
+    "note": "A second required feature and a non-empty extensions block are admitted as long as json-control-v1 is present."
+  },
+  {
+    "path": "invalid/workbench/unknown-key.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An unknown key outside extensions is a schema error (spec 4)."
+  },
+  {
+    "path": "invalid/workbench/id-not-uuid.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "id must be a lowercase RFC 4122 UUID."
+  },
+  {
+    "path": "invalid/workbench/id-uppercase-uuid.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An uppercase UUID is refused by the lowercase pattern."
+  },
+  {
+    "path": "invalid/workbench/required-features-without-json-control.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "required_features must contain json-control-v1."
+  },
+  {
+    "path": "invalid/workbench/required-features-empty.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "required_features needs at least one entry."
+  },
+  {
+    "path": "invalid/workbench/required-features-duplicate.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "required_features is a set; an identical repeated entry is refused."
+  },
+  {
+    "path": "invalid/workbench/required-feature-not-token.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A feature name is a lowercase token."
+  },
+  {
+    "path": "invalid/workbench/migration-missing.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Every key is required; migration may be null but not absent."
+  },
+  {
+    "path": "invalid/workbench/migration-id-malformed.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "migration.id follows migration-YYYYMMDD-<slug>."
+  },
+  {
+    "path": "invalid/workbench/migration-source-layout-unknown.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "source_layout is fusion-v12 or fusion-pre-v12."
+  },
+  {
+    "path": "invalid/workbench/migration-receipt-outside-archive.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The receipt must live under archive/migrations/<migration.id>/."
+  },
+  {
+    "path": "invalid/workbench/migration-receipt-absolute.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A workbench path never starts with a slash."
+  },
+  {
+    "path": "invalid/workbench/migration-unknown-key.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The migration block admits no unknown key either."
+  },
+  {
+    "path": "invalid/workbench/extensions-not-object.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "extensions is an object, never a list."
+  },
+  {
+    "path": "invalid/workbench/schema-field-mismatch.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A record whose schema field names another known contract fails the const when validated as a workbench manifest."
+  },
+  {
+    "path": "invalid/workbench/schema-namespace-unknown.json",
+    "schema": "urn:fusion:schema:fusion.workbench/v2",
+    "expect": "invalid",
+    "error_class": "unsupported-format",
+    "note": "A schema field naming an unknown namespace is refused as unsupported-format, not as a schema error."
+  },
+  {
+    "path": "valid/package/open.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "The spec 4.2 example verbatim: an open package with no claim, no documents and no outcome."
+  },
+  {
+    "path": "valid/package/claimed.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "claimed with a full claim (checkout_id, person, claimed_at) and one active plan."
+  },
+  {
+    "path": "valid/package/paused.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "paused carries no claim; origin package names the package whose scope it decomposes; one terminal depends_on edge."
+  },
+  {
+    "path": "valid/package/done-completed.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "done with class completed, the historical claim kept, and one accepted prior-enforced evidence binding, which is what a succeeded dependency requires."
+  },
+  {
+    "path": "valid/package/done-legacy-completed.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "done with class legacy-completed requires provenance.source legacy-terminal with a backup; domain null and a raw legacy mode line are admitted on an imported record."
+  },
+  {
+    "path": "valid/package/dropped-failed.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "dropped with class failed and a non-empty reason; the claim was released before the package was dropped."
+  },
+  {
+    "path": "valid/package/dropped-cancelled.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "dropped with class cancelled keeps a historical claim whose person and time are unknown (null), and origin campaign carries its ref."
+  },
+  {
+    "path": "valid/package/two-specs-one-plan.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "Two specs and one plan in active_documents: any number of specs, at most one plan."
+  },
+  {
+    "path": "valid/package/autonomous-user-word.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "mode autonomous sourced by the user's word held in an artefact; the source is never null on autonomous."
+  },
+  {
+    "path": "valid/package/imported-open.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "Exercises fusion.common/v1's record_ref, artefact_ref, foreign_ref and all three legacy citation strings through references, plus both depends_on conditions and provenance imported with a backup; common exposes no record-level schema, so no fixture lives under common/."
+  },
+  {
+    "path": "invalid/package/unknown-key.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An unknown key outside extensions is a schema error."
+  },
+  {
+    "path": "invalid/package/claimed-without-claim.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "status claimed requires a non-null claim."
+  },
+  {
+    "path": "invalid/package/open-with-claim.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "status open requires claim null."
+  },
+  {
+    "path": "invalid/package/paused-with-claim.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "status paused requires claim null."
+  },
+  {
+    "path": "invalid/package/done-without-outcome.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A terminal status carries an outcome object, not null."
+  },
+  {
+    "path": "invalid/package/done-with-class-failed.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "done admits completed and legacy-completed only."
+  },
+  {
+    "path": "invalid/package/dropped-with-class-completed.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "dropped admits bounded, cancelled, failed and dropped only."
+  },
+  {
+    "path": "invalid/package/open-with-outcome.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "outcome is null while the package is open."
+  },
+  {
+    "path": "invalid/package/two-plans.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "At most one active_documents entry has role plan."
+  },
+  {
+    "path": "invalid/package/unknown-depends-on-condition.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A depends_on condition is terminal or succeeded (contract/dependencies.json)."
+  },
+  {
+    "path": "invalid/package/malformed-sha.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A revision is sha256: followed by 64 lowercase hex characters."
+  },
+  {
+    "path": "invalid/package/artefact-path-dotdot.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An artefact path may not contain a .. segment."
+  },
+  {
+    "path": "invalid/package/artefact-path-absolute.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An artefact path is workbench-relative; an absolute user path is refused."
+  },
+  {
+    "path": "invalid/package/duplicate-depends-on.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "depends_on is a set; an identical repeated edge is refused (distinct record_ids with different display are left to transitions.ts)."
+  },
+  {
+    "path": "invalid/package/id-not-uuid.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "id must be a lowercase RFC 4122 UUID, not a basename."
+  },
+  {
+    "path": "invalid/package/autonomous-without-source.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "mode autonomous requires a non-null source; an agent never invents consent."
+  },
+  {
+    "path": "invalid/package/legacy-completed-on-created-provenance.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Class legacy-completed requires provenance.source legacy-terminal."
+  },
+  {
+    "path": "invalid/package/legacy-terminal-provenance-on-open.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "provenance legacy-terminal requires a terminal status."
+  },
+  {
+    "path": "invalid/package/imported-without-backup.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "provenance imported requires a backup artefact reference."
+  },
+  {
+    "path": "invalid/package/origin-package-without-ref.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "origin package requires a record ref."
+  },
+  {
+    "path": "invalid/package/origin-legacy-unknown-with-ref.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "origin legacy-unknown carries no ref."
+  },
+  {
+    "path": "invalid/package/failed-without-reason.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A non-completed outcome class carries a non-empty reason."
+  },
+  {
+    "path": "invalid/package/status-unknown.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "status is one of the five conventions values; no further lifecycle taxonomy."
+  },
+  {
+    "path": "invalid/package/evidence-key-missing.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Every key is required; an empty list is written as [], never omitted."
+  },
+  {
+    "path": "invalid/package/claim-checkout-id-uppercase.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "checkout_id is eight lowercase hex characters."
+  },
+  {
+    "path": "invalid/package/claim-claimed-at-without-offset.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A timestamp is RFC 3339 with an offset; a value without one is refused, never guessed."
+  },
+  {
+    "path": "invalid/package/evidence-ref-without-revision.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An evidence binding pins an exact revision."
+  },
+  {
+    "path": "invalid/package/evidence-policy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "execution_policy is claude-guided or prior-enforced."
+  },
+  {
+    "path": "invalid/package/narrative-not-markdown.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The narrative path names a Markdown file."
+  },
+  {
+    "path": "invalid/package/domain-unknown.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "domain is code, data or null."
+  },
+  {
+    "path": "invalid/package/mode-value-unknown.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "mode.value is ordinary or autonomous."
+  },
+  {
+    "path": "invalid/package/schema-field-mismatch.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The schema field must equal fusion.package/v1 when validated as a package."
+  },
+  {
+    "path": "invalid/package/filed-by-person-empty.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An unknown person is null, not the empty string."
+  },
+  {
+    "path": "invalid/package/references-duplicate.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "references is a set; an identical repeated citation is refused."
+  },
+  {
+    "path": "invalid/package/foreign-citation-malformed.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A foreign citation needs both literal segments and a valid basename."
+  },
+  {
+    "path": "invalid/package/extensions-null.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "extensions is an object; null is not an empty extensions block."
+  },
+  {
+    "path": "valid/record/issue-open.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "An open issue: disposition null, no candidate block."
+  },
+  {
+    "path": "valid/record/issue-closed.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "A closed issue carries a disposition object whose reason_ref is a legacy citation; the terminal Markdown stays byte-identical under provenance legacy-terminal."
+  },
+  {
+    "path": "valid/record/issue-with-candidate.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "An in-progress issue with the full candidate block: a passed qualification, an admitted selection and its admission, every field of Prior's Candidate typed exactly."
+  },
+  {
+    "path": "valid/record/issue-candidate-merged.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "A merged candidate: merge_into and outcome merged imply each other, and a merged selection carries neither policy version nor snapshot hash."
+  },
+  {
+    "path": "valid/record/issue-candidate-unqualified.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "Unobserved qualification, selection and admission are null, not negative results."
+  },
+  {
+    "path": "valid/record/plan-in-progress.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "An adopted plan in progress: step anchors in each of the three step states, one evaluated and one unevaluated criterion, acceptance bound to the adopting package at an exact revision."
+  },
+  {
+    "path": "valid/record/plan-open-unadopted.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "An unadopted plan: acceptance null, criteria empty."
+  },
+  {
+    "path": "valid/record/discussion-open.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "An open discussion with two participants and no outcome yet."
+  },
+  {
+    "path": "valid/record/discussion-closed.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "A closed discussion whose outcomes are a record ref and a legacy marker citation."
+  },
+  {
+    "path": "valid/record/decision-open.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "An open decision carries no answer, implementation or successor."
+  },
+  {
+    "path": "valid/record/decision-answered.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "answered cites the answer (here an artefact ref) and nothing else."
+  },
+  {
+    "path": "valid/record/decision-implemented.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "implemented cites the implementation as a git commit."
+  },
+  {
+    "path": "valid/record/decision-superseded.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "superseded names its successor; the historical answer and full-length implementation commit stay."
+  },
+  {
+    "path": "valid/record/decision-dropped.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "dropped carries neither implementation nor successor."
+  },
+  {
+    "path": "invalid/record/issue-with-decision-control.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A decision control inside an issue record matches no branch of the kind union."
+  },
+  {
+    "path": "invalid/record/issue-with-plan-steps.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An issue control forbids the plan kind's fields."
+  },
+  {
+    "path": "invalid/record/kind-control-mismatch.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "kind plan with an issue control fails the discriminated union."
+  },
+  {
+    "path": "invalid/record/kind-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "kind is one of issue, plan, discussion, decision."
+  },
+  {
+    "path": "invalid/record/unknown-key.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An unknown key outside extensions is a schema error."
+  },
+  {
+    "path": "invalid/record/issue-open-with-disposition.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An open issue has disposition null."
+  },
+  {
+    "path": "invalid/record/issue-closed-without-disposition.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A closed issue carries a disposition object."
+  },
+  {
+    "path": "invalid/record/issue-state-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An issue state is open, in_progress, closed or deferred."
+  },
+  {
+    "path": "invalid/record/issue-disposition-kind-not-token.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The disposition kind is a lowercase token."
+  },
+  {
+    "path": "invalid/record/candidate-negative-severity.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Ratings are non-negative integers."
+  },
+  {
+    "path": "invalid/record/candidate-passed-as-string.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A boolean check result is not a status string."
+  },
+  {
+    "path": "invalid/record/candidate-version-zero.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A version counter is a positive integer."
+  },
+  {
+    "path": "invalid/record/candidate-admitted-without-admission.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An admitted selection carries an admission."
+  },
+  {
+    "path": "invalid/record/candidate-admission-without-qualification.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An admission needs a qualification; the contradiction is refused, not healed."
+  },
+  {
+    "path": "invalid/record/candidate-merge-into-without-merged-outcome.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "merge_into requires the selection outcome merged."
+  },
+  {
+    "path": "invalid/record/candidate-merged-with-policy-version.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A merged selection carries no policy version."
+  },
+  {
+    "path": "invalid/record/candidate-merged-without-merge-into.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Outcome merged requires a merge target."
+  },
+  {
+    "path": "invalid/record/candidate-duplicate-affected-resource.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "affected_resources is a set."
+  },
+  {
+    "path": "invalid/record/candidate-refresh-policy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "refresh_policy is snapshot, checkpoint or continuous."
+  },
+  {
+    "path": "invalid/record/candidate-source-revision-not-opaque.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A Prior source revision carries the prior-opaque: prefix, never a bare string."
+  },
+  {
+    "path": "invalid/record/candidate-evidence-hash-not-prior-revision.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Prior's evidenceHash is a prior-json-sha256: value, not a fusion sha256."
+  },
+  {
+    "path": "invalid/record/candidate-selection-outcome-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The selection outcome vocabulary is Prior's at 12d8424."
+  },
+  {
+    "path": "invalid/record/candidate-checked-at-without-offset.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "checked_at is RFC 3339 with an offset."
+  },
+  {
+    "path": "invalid/record/candidate-unknown-key.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Statement and Purpose are prose and live in the narrative, not in the candidate block."
+  },
+  {
+    "path": "invalid/record/plan-step-state-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A step state is open, in_progress or done."
+  },
+  {
+    "path": "invalid/record/plan-duplicate-step.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "steps is a set; an identical repeated anchor is refused."
+  },
+  {
+    "path": "invalid/record/plan-criterion-met-string.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "met is true, false or null, never a string."
+  },
+  {
+    "path": "invalid/record/plan-acceptance-without-revision.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An acceptance binds the exact plan revision adopted."
+  },
+  {
+    "path": "invalid/record/decision-open-with-answer-ref.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An open decision carries no answer."
+  },
+  {
+    "path": "invalid/record/decision-answered-without-answer-ref.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "answered requires an answer reference."
+  },
+  {
+    "path": "invalid/record/decision-answered-with-implementation-ref.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "answered carries no implementation yet."
+  },
+  {
+    "path": "invalid/record/decision-implemented-without-implementation-ref.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "implemented requires an implementation reference."
+  },
+  {
+    "path": "invalid/record/decision-implementation-ref-not-commit.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An implementation reference is a git object name or a reference, not free text."
+  },
+  {
+    "path": "invalid/record/decision-superseded-without-successor.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "superseded names its successor."
+  },
+  {
+    "path": "invalid/record/decision-dropped-with-successor.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "dropped carries no successor."
+  },
+  {
+    "path": "invalid/record/decision-state-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A decision state is open, answered, implemented, superseded or dropped."
+  },
+  {
+    "path": "invalid/record/discussion-participant-actor-uppercase.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An actor name is a lowercase token."
+  },
+  {
+    "path": "invalid/record/discussion-outcome-ref-marker-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A legacy marker citation admits only the conventions' marker letters."
+  },
+  {
+    "path": "invalid/record/foreign-ref-project-with-colon.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A foreign_ref project name contains no colon, slash or whitespace."
+  },
+  {
+    "path": "invalid/record/control-missing.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "control is required."
+  },
+  {
+    "path": "valid/campaign/minimal.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "valid",
+    "note": "A drafted campaign that never used a register or a formation: both null, every nullable state field null."
+  },
+  {
+    "path": "valid/campaign/with-register-and-formation.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "valid",
+    "note": "A running campaign with a closed register (policy and snapshot persisted) and a formation holding completed, failed and formed packages, a settled and an open admission."
+  },
+  {
+    "path": "valid/campaign/archived.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "valid",
+    "note": "archived requires previous_terminal; the completion evidence handed to Finalize is kept."
+  },
+  {
+    "path": "invalid/campaign/unknown-key.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An unknown key outside extensions is a schema error."
+  },
+  {
+    "path": "invalid/campaign/archived-without-previous-terminal.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "archived requires a previous terminal state."
+  },
+  {
+    "path": "invalid/campaign/running-with-previous-terminal.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Only archived carries a previous terminal state."
+  },
+  {
+    "path": "invalid/campaign/state-unknown.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The campaign state vocabulary is campaign.go's at 12d8424."
+  },
+  {
+    "path": "invalid/campaign/requested-outcome-unknown.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "requested_outcome is bounded, failed, cancelled or null; completed is never requested."
+  },
+  {
+    "path": "invalid/campaign/intake-closed-without-watermark.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A closed intake names its closing watermark."
+  },
+  {
+    "path": "invalid/campaign/limits-max-attempts-zero.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "max_attempts is a positive integer, as Charter.Validate enforces."
+  },
+  {
+    "path": "invalid/campaign/charter-item-kinds-empty.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A charter names at least one item kind."
+  },
+  {
+    "path": "invalid/campaign/charter-hash-not-prior-revision.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "charter_hash is Prior's hash and carries prior-json-sha256:, never a fusion sha256."
+  },
+  {
+    "path": "invalid/campaign/charter-revision-empty-opaque.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An empty Prior string imports as null, never as a bare prior-opaque: prefix."
+  },
+  {
+    "path": "invalid/campaign/formation-package-failed-without-reason.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A failed formation package carries a failure reason."
+  },
+  {
+    "path": "invalid/campaign/formation-package-formed-with-accepted-revision.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A formed package has no accepted revision yet."
+  },
+  {
+    "path": "invalid/campaign/formation-package-state-unknown.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A formation package state is Prior's vocabulary; fusion's status words are not applied here."
+  },
+  {
+    "path": "invalid/campaign/register-duplicate-stable-entry.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "stable is a keyed set; an identical repeated entry is refused."
+  },
+  {
+    "path": "invalid/campaign/policy-predicate-field-unknown.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A predicate field is one of the four rating names."
+  },
+  {
+    "path": "invalid/campaign/admission-status-unknown.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Admission status values are those packages.go writes."
+  },
+  {
+    "path": "invalid/campaign/attempt-zero.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An attempt counter is a positive integer."
+  },
+  {
+    "path": "invalid/campaign/snapshot-version-zero.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A snapshot version is a positive integer."
+  },
+  {
+    "path": "invalid/campaign/completion-evidence-watermark-empty.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An unknown watermark is null, not the empty string."
+  },
+  {
+    "path": "invalid/campaign/counters-negative.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Counters are non-negative integers."
+  },
+  {
+    "path": "invalid/campaign/workbench-id-missing.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "workbench_id is required."
+  },
+  {
+    "path": "valid/evidence/accept-prior-enforced.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "valid",
+    "note": "An accepted prior-enforced review over a git range; the binding a succeeded dependency needs."
+  },
+  {
+    "path": "valid/evidence/revise-claude-guided.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "valid",
+    "note": "A claude-guided review with verdict revise over a tree without a range and without a plan; every check result value appears."
+  },
+  {
+    "path": "valid/evidence/escalate-with-predecessor.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "valid",
+    "note": "A correction names its predecessor at an exact revision; a SHA-256 git tree name is admitted beside SHA-1."
+  },
+  {
+    "path": "invalid/evidence/unknown-key.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An unknown key outside extensions is a schema error."
+  },
+  {
+    "path": "invalid/evidence/verdict-unknown.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The verdict vocabulary is accept, revise, escalate."
+  },
+  {
+    "path": "invalid/evidence/execution-policy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "execution_policy is claude-guided or prior-enforced."
+  },
+  {
+    "path": "invalid/evidence/host-unknown.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "host is claude-code or prior."
+  },
+  {
+    "path": "invalid/evidence/git-tree-abbreviated.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The subject tree is a full object name, never abbreviated."
+  },
+  {
+    "path": "invalid/evidence/git-range-not-object-names.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A range is two object names, not ref names."
+  },
+  {
+    "path": "invalid/evidence/check-result-unknown.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A check result is pass, fail, skipped or unknown."
+  },
+  {
+    "path": "invalid/evidence/check-detail-empty.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An absent detail is null, not the empty string."
+  },
+  {
+    "path": "invalid/evidence/duplicate-check.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "checks is a set; an identical repeated check is refused."
+  },
+  {
+    "path": "invalid/evidence/report-sha-unqualified.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A hash is algorithm-qualified; bare hex is refused."
+  },
+  {
+    "path": "invalid/evidence/report-path-dotdot.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The report path may not traverse out of the workbench."
+  },
+  {
+    "path": "invalid/evidence/report-kind-not-token.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The artefact kind is a lowercase token."
+  },
+  {
+    "path": "invalid/evidence/accepted-at-without-offset.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "accepted_at is RFC 3339 with an offset."
+  },
+  {
+    "path": "invalid/evidence/brief-revision-null.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "brief_revision is never null; only plan_revision may be."
+  },
+  {
+    "path": "invalid/evidence/predecessor-not-record-ref.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "predecessor is a record ref or null, never a citation string."
+  },
+  {
+    "path": "invalid/evidence/role-profile-not-token.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The role profile is a lowercase token."
+  },
+  {
+    "path": "invalid/evidence/uncertainty-empty.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An uncertainty is a non-empty sentence."
+  },
+  {
+    "path": "bytes/bom.bin",
+    "schema": "bytes",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "reason": "bom",
+    "note": "A UTF-8 byte order mark before an otherwise valid workbench manifest is refused."
+  },
+  {
+    "path": "bytes/duplicate-key-depth-two.bin",
+    "schema": "bytes",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "reason": "duplicate-key",
+    "note": "A key repeated inside a nested object (migration.id) is refused; JSON.parse alone would keep the last value."
+  },
+  {
+    "path": "bytes/nan.bin",
+    "schema": "bytes",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "reason": "non-finite",
+    "note": "NaN is not a JSON number; the refusal names it rather than leaving it to a syntax error."
+  },
+  {
+    "path": "bytes/two-top-level-objects.bin",
+    "schema": "bytes",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "reason": "multiple-values",
+    "note": "Exactly one top-level value is admitted."
+  },
+  {
+    "path": "bytes/top-level-array.bin",
+    "schema": "bytes",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "reason": "not-an-object",
+    "note": "A control record is an object; a top-level array is refused even when its element is valid."
+  },
+  {
+    "path": "bytes/syntax-trailing-comma.bin",
+    "schema": "bytes",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "reason": "syntax",
+    "note": "A trailing comma is outside the scanner's model and is reported as syntax with JSON.parse's message."
+  },
+  {
+    "path": "bytes/invalid-utf8.bin",
+    "schema": "bytes",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "reason": "invalid-utf8",
+    "note": "A lone 0xFF byte inside a string is not well-formed UTF-8."
+  },
+  {
+    "path": "bytes/too-large.bin",
+    "schema": "bytes",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "reason": "too-large",
+    "note": "A valid package record padded inside extensions to exactly 1 048 577 bytes, one over the 1 MiB cap."
+  },
+  {
+    "path": "bytes/crlf-only.bin",
+    "schema": "urn:fusion:schema:fusion.workbench/v1",
+    "expect": "valid",
+    "note": "CRLF line endings are whitespace to a reader and the manifest validates; a writer never produces CRLF, it emits LF with a final newline."
+  }
+]
