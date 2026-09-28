@@ -4,8 +4,7 @@
 **Domain:** code
 **Status:** claimed
 **Claim:** 114caf11 — Kai Stalmann <ks@qantr.com>, 260928-1338
-**Active spec/plan:** 260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md (FJ00; the spec is Prior's concept/fusion-json-workbench-spec.md)
-**Cross-references:** 260927-2304-fusion-dual-host-design-review.md, 260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 260922-1038-prior-mapping.md
+**Cross-references:** 260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md (FJ00, closed 2026-09-28), 260927-2304-fusion-dual-host-design-review.md, 260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 260922-1038-prior-mapping.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 
 ---

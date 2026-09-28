@@ -1,7 +1,7 @@
 # Implementation Plan: FJ00 — schemas, Prior DTO mapping and the reference/status contract
 
 **Date:** 2026-09-28
-**Status:** Approved at the plan approval on 2026-09-28 (codec home: option 1, own package)
+**Status:** Complete — closed by the user on 2026-09-28 at `008da4d2`, with one stopping clause read as not literally met: the hook suite's single red is the pre-existing monitor bind case filed as `260928-1520_*_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.md`, and the user closed over it.
 **Spec:** Prior's `concept/fusion-json-workbench-spec.md` (2026-09-28, sections 3, 4, 6 and 9; held in the Prior repository, read-only from here), read together with `rules/fusion-workbench-conventions.md` `## Work packages`, `## State Markers — issues and planning` and `## State Markers — decisions`, which the spec preserves by value.
 **Cross-references:** 260928-1338-json-control-data-and-markdown-artefacts.md, 260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md, 260927-2304-fusion-dual-host-design-review.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md, 260922-1114_*_does-the-transition-windows-legacy-read-live-at-one-site-per-runtime.md
 **Survey commit:** fusion `40a1713f` on `fj-json-workbench` (cut from `v12-prior-nomenclature`), Prior `12d8424` plus the uncommitted spec of 2026-09-28. Bounded surfaces at `40a1713f`, measured with the sums of `surface-growth-bound.test.ts`'s baselines against the tree: `agents/*.md` 3 806 bytes of room, `skills/*/SKILL.md` 25 559 bytes, the hook test suite **6 lines**.
