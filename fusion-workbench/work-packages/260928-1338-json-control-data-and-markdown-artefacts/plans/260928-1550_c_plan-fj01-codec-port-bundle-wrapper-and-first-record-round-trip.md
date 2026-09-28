@@ -1,7 +1,7 @@
 # Implementation Plan: FJ01 — the codec port: one committed bundle, the `bin/fusion-record` wrapper, and the first record read and updated on both hosts
 
 **Date:** 2026-09-28
-**Status:** Approved at the plan approval on 2026-09-28 (codec port: option 1, one Node bundle for both hosts)
+**Status:** Complete — closed by the user on 2026-09-28 at `68754f58`; the hook suite's one red is the host's monitor case named at FJ00's closure, and the Prior side's answers to requests 7 to 10 are FJ02's inputs.
 **Spec:** Prior's `concept/fusion-json-workbench-spec.md`, section 6 (the operations, the typed errors, the revision and the local write discipline) and section 9's row FJ01: "Derselbe Record wird aus Claude-Helfer und Prior-Testadapter gelesen/aktualisiert; keine Installation aus dem Source-Checkout nötig."
 **Cross-references:** 260928-1338-json-control-data-and-markdown-artefacts.md, 260928-1550_*_which-process-boundary-and-shipped-form-does-the-codec-take.md, 260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md (closed), 260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md, 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md
 **Survey commit:** fusion `6667d63b` on `fj-json-workbench`; Prior `12d8424`. Bounded surfaces unchanged since FJ00's survey: `agents/` 3 806 bytes of room, `skills/` 25 559 bytes, hook tests 6 lines. Nothing in this plan touches them.
