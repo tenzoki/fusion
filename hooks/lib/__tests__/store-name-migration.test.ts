@@ -55,6 +55,10 @@ describe("the survey", () => {
       `${A}/planning/ -> ${A}/plans/  1 entries`, `${B}/planning/ -> ${B}/plans/  0 entries`, "circles/ -> work-packages/  2 entries"]) expect(out).toContain(l);
     expect(out).toMatch(/^FOUND=1$/m); expect(out).toMatch(/^LEGACY=0$/m); expect(out).toMatch(/^UNKNOWN=0$/m);
   });
+  it("decides UNKNOWN by layout: prose naming circles/ passes, a store directory stops (issue 260928-1832)", () => {
+    const root = tree([...LEGACY, "shared/x/"]); for (const f of ["tasklist.md", "shared/x/notes.md"]) writeFileSync(join(root, "fusion-workbench", f), "see circles/a\n"); git(root);
+    expect(sh(survey, root)).toMatch(/^FOUND=1\nLEGACY=0\n(.*\n){3}DIRTY=0\nUNKNOWN=0$/m); expect(sh(survey, tree(["shared/x/planning/"]))).toMatch(/^UNKNOWN=1$/m);
+  });
   it.each([["planning/260101-0101_o_x.md"], ["circles/260101-0101[t]-flat.md"], ["shared/issues/260101-0101[o]-x.md"], [`${A}/_t_circle.md`]])(
     "refuses the pre-v4 shape %s with the v11.11.1 route, and setup no longer refuses it", (p) => {
       const root = tree([p]);

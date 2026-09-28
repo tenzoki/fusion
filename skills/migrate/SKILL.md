@@ -70,7 +70,7 @@ while IFS= read -r e; do r="${e#"$WB"/}"; case "$r" in
   archive|stashes|.migration-v2-backup|shared/backlog) echo "  FROZEN: $r (never opened)"; LEFT=$((LEFT+1)); continue ;;
   shared/analyses|shared/investigations|shared/decisions|shared/reviews|.fusion-setup) echo "  LEFT: $r"; LEFT=$((LEFT+1)); continue ;;
   agentstate.yaml|orchestrator-live.md|portfolio.md|.active-circle) echo "  LEFT: $r (retired, nothing reads it; deletable by hand)"; LEFT=$((LEFT+1)); continue ;;
-  *) if grep -rqE 'circles/|planning/|consult/' "$e" 2>/dev/null; then echo "  UNKNOWN: $r names a legacy store and is in no class"; UNKNOWN=$((UNKNOWN+1)); else echo "  UNCLASSIFIED: $r (no store path; left)"; fi; continue ;;
+  *) if [ -n "$(find "$e" -maxdepth 1 -type d \( -name circles -o -name planning -o -name consult \) 2>/dev/null | head -1)" ]; then echo "  UNKNOWN: $r is or holds a legacy store directory"; UNKNOWN=$((UNKNOWN+1)); else echo "  UNCLASSIFIED: $r (no store directory; left)"; fi; continue ;;
 esac; echo "  LEFT: $r (question held by $k)"; LEFT=$((LEFT+1)); done < <(find "$WB" "$WB/shared" -mindepth 1 -maxdepth 1 2>/dev/null | sort)
 cv() { local e t; while IFS= read -r e; do t="$2/${e##*/}"; if [ -d "$e" ] && [ ! -L "$e" ] && [ -d "$t" ] && [ ! -L "$t" ]; then cv "$e" "$t"; elif [ -e "$t" ]; then echo "  COLLISION: ${t#"$WB"/} exists; ${e#"$WB"/} stays"; COLLISIONS=$((COLLISIONS+1)); fi; done < <(find "$1" -mindepth 1 -maxdepth 1); }
 sv() { [ -d "$1" ] || return 0; FOUND=1; printf '  %s/ -> %s/  %s entries\n' "${1#"$WB"/}" "${2#"$WB"/}" "$(find "$1" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')"; cv "$1" "$2"; return 0; }
@@ -93,17 +93,17 @@ echo "MODE=$MODE"; echo "FOUND=$FOUND"; echo "LEGACY=$LEGACY"; echo "COLLISIONS=
 | `LEFT` | entries left by rule, frozen, or owing no record | informational; nothing here ever moves |
 | `LEGACY` | a pre-v4, v4-era or bracket-marked shape | **stops** before the question |
 | `DIRTY` | in `git` mode, an uncommitted change under a source; untracked rows and the staged renames of an interrupted run excepted | **stops** before the question |
-| `UNKNOWN` | an unclassified entry at the root or under `shared/` that names a legacy store | **stops** before the question |
+| `UNKNOWN` | an unclassified entry at the root or under `shared/` that is or directly holds a `circles`, `planning` or `consult` directory | **stops** before the question |
 
 A destination *directory* that already exists is not a collision but the ordinary state after the update, at any depth; the pass folds the legacy entries into it. That includes one container under both stores, which is what a package claimed under `circles/<dir>/` becomes once a 12.0.0 helper files its next record under `work-packages/<dir>/`.
 
-**Every entry at the workbench root and under `shared/` falls in one class of the block's `case`**: renamed or its new name; left by rule, naming the record that holds its question open for a later pass; left with no record owed (the retired root files among them, deletable by hand); frozen, never opened, because a sweep froze its subtrees under the names they had; or unclassified, grepped for a legacy store path. An unclassified hit is `UNKNOWN`: which class it belongs to is the user's ruling, never the pass's guess.
+**Every entry at the workbench root and under `shared/` falls in one class of the block's `case`**: renamed or its new name; left by rule, naming the record that holds its question open for a later pass; left with no record owed (the retired root files among them, deletable by hand); frozen, never opened, because a sweep froze its subtrees under the names they had; or unclassified, tested by layout, never by file text, since the pass opens no file. An unclassified store directory is `UNKNOWN`: the user's ruling, never the pass's guess.
 
 Then, in this order:
 
 - **`LEGACY=1`**: stop. Show the `LEGACY` lines and render the `REFUSED` line as one message. Ask nothing.
 - **`DIRTY>0`**: stop. Name every `DIRTY` path and ask the user to commit or stash, then run again: a rename over a modified file mixes the migration with work in flight and leaves no clean revert.
-- **`UNKNOWN>0`**: stop. Name the entry; the user rules on its class, and this workflow's classification gains a row.
+- **`UNKNOWN>0`**: stop. Name the entry; the user moves the misplaced store by hand, then runs again.
 - **`FOUND=0`**: *"This workbench is already in the v12 format. Nothing to do."* Stop, and ask nothing.
 
 ## Step 3 — Ask before moving
