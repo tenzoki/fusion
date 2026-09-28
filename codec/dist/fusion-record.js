@@ -9824,13 +9824,16 @@ var common_schema_default = {
     },
     artefact_ref: {
       type: "object",
-      description: "Reference to a file inside the workbench by relative path, hash of its exact bytes and artefact kind. The kind vocabulary is a lowercase token (markdown, json, ...); neither the spec nor plan FJ00 closes the set.",
+      description: "Reference to a file inside the workbench by relative path, hash of its exact bytes and artefact kind. The kind is one of the closed set the decision record 260928-1420_*_which-closed-vocabularies-do-artefact-kind-and-issue-disposition-kind-take.md rules (option 3, Prior's FJ00 response 6a): the fourteen kinds rules/fusion-workbench-conventions.md '## Filename Patterns' names plus audit, test-report, integration-report, handover, manifest and json. A kind labels an artefact by what it is, never by its file format (a review's Markdown file is a review, a backup of a narrative in archive/ is other), and it proves nothing about the check it names. The set is additive-only from here: no token is removed or redefined, an addition is adopted explicitly, and a token an older reader does not know is a refusal, never a silent other.",
       additionalProperties: false,
       required: ["kind", "path", "sha256"],
       properties: {
         path: { $ref: "#/$defs/workbench_path" },
         sha256: { $ref: "#/$defs/sha256" },
-        kind: { $ref: "#/$defs/token" }
+        kind: {
+          type: "string",
+          enum: ["spec", "plan", "issue", "decision", "discussion", "review", "analysis", "consultation", "memo", "forum", "report", "patch", "log", "other", "audit", "test-report", "integration-report", "handover", "manifest", "json"]
+        }
       }
     },
     foreign_ref: {
@@ -10656,7 +10659,7 @@ var record_schema_default = {
       properties: {
         state: { $ref: "#/$defs/four_states" },
         disposition: {
-          description: "How the issue left the live states: a kind token and the record or artefact that holds the reasoning (the Markdown Resolved: note stays prose).",
+          description: "How the issue left the live states: a kind from the closed set the decision record 260928-1420_*_which-closed-vocabularies-do-artefact-kind-and-issue-disposition-kind-take.md rules (option 3, Prior's FJ00 response 6a) and the record or artefact that holds the reasoning (the Markdown Resolved: note stays prose). The set is additive-only from here: no token is removed or redefined, and an addition is adopted explicitly. control.candidate.selection.outcome is Prior's separate verbatim vocabulary and never this one: pending, selected and admitted are no issue resolutions, out_of_scope keeps its underscore there, and a migration closes an issue as out-of-scope only on separately evidenced resolution, never inferred from the selection alone.",
           oneOf: [
             { type: "null" },
             {
@@ -10664,7 +10667,10 @@ var record_schema_default = {
               additionalProperties: false,
               required: ["kind", "reason_ref"],
               properties: {
-                kind: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/token" },
+                kind: {
+                  type: "string",
+                  enum: ["fixed", "duplicate", "deferred", "rejected", "out-of-scope", "merged", "superseded"]
+                },
                 reason_ref: {
                   oneOf: [
                     { type: "null" },

@@ -20,7 +20,7 @@
     {
       "id": "tests-green",
       "result": "pass",
-      "detail": ""
+      "detail": "codec: 4 files, 212 tests"
     },
     {
       "id": "growth-bounds",
@@ -31,7 +31,7 @@
   "report": {
     "path": "shared/reviews/260928-1600-strict-reader-review.md",
     "sha256": "sha256:ec0f03d8cf6ec47f75e8dba0d39a9f7d1a52a3bd8f0d302c2d55b2f063c6c62d",
-    "kind": "report"
+    "kind": "markdown"
   },
   "predecessor": null,
   "accepted_at": "2026-09-28T16:05:00+02:00",

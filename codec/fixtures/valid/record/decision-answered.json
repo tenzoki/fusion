@@ -21,7 +21,7 @@
     "answer_ref": {
       "path": "shared/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
       "sha256": "sha256:5838650b1f706a0096a54fe8780c8b34306855b9a7eb20bc84e72aae10aedd45",
-      "kind": "markdown"
+      "kind": "decision"
     },
     "implementation_ref": null,
     "superseded_by": null,

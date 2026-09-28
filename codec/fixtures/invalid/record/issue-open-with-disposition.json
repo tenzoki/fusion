@@ -25,7 +25,7 @@
   "control": {
     "state": "open",
     "disposition": {
-      "kind": "resolved",
+      "kind": "fixed",
       "reason_ref": null
     }
   }

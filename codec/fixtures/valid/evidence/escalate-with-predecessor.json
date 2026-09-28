@@ -28,7 +28,7 @@
   "report": {
     "path": "shared/reviews/260926-1800-parser-rewrite-security.md",
     "sha256": "sha256:eacd8b353176661b11fea3b0847f1f84c34df49e434f7a6e61d21dae50aaf416",
-    "kind": "markdown"
+    "kind": "report"
   },
   "predecessor": {
     "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",

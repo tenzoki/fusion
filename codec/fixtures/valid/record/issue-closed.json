@@ -20,14 +20,14 @@
     "backup": {
       "path": "archive/migrations/migration-20260928-example/backup/shared/issues/260901-1000_c_stats-file-stale-after-import.md",
       "sha256": "sha256:d101b6d882033bf9b80252069b215408f4c653fdf8929551855c2ec03356a0cb",
-      "kind": "markdown"
+      "kind": "other"
     }
   },
   "extensions": {},
   "control": {
     "state": "closed",
     "disposition": {
-      "kind": "resolved",
+      "kind": "fixed",
       "reason_ref": "260901-1200-stats-refresh-review.md"
     }
   }

@@ -38,7 +38,7 @@
   "report": {
     "path": "shared/reviews/260926-1500-parser-rewrite-review.md",
     "sha256": "sha256:835ca804c3d32f8c87a8af364e6045838a0879bfa52d158fef893170aa77aebc",
-    "kind": "markdown"
+    "kind": "report"
   },
   "predecessor": null,
   "accepted_at": "2026-09-26T15:20:00Z",

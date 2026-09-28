@@ -51,7 +51,7 @@
     {
       "path": "shared/reviews/260927-2304-fusion-dual-host-design-review.md",
       "sha256": "sha256:81a8ed3a0f99474861af8072bf3f2a3c4375ec13b8405997e7f85b8b5485be69",
-      "kind": "markdown"
+      "kind": "review"
     },
     {
       "project": "prior",
@@ -73,7 +73,7 @@
     "backup": {
       "path": "archive/migrations/migration-20260928-example/backup/work-packages/260920-0900-lint-cleanup.md",
       "sha256": "sha256:b118f8ad7f999838fb534ededa74b73b44bca098caa47eff85b741e9eef1e3cd",
-      "kind": "markdown"
+      "kind": "other"
     }
   },
   "extensions": {}

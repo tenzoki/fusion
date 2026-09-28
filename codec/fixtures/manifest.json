@@ -601,6 +601,13 @@
     "note": "The disposition kind is a lowercase token."
   },
   {
+    "path": "invalid/record/issue-disposition-kind-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The disposition kind is one of fixed, duplicate, deferred, rejected, out-of-scope, merged, superseded (Prior's FJ00 response 6a, decision 260928-1420_*_which-closed-vocabularies-do-artefact-kind-and-issue-disposition-kind-take.md); resolved, a well-formed token outside the set, is refused, so the closure itself is pinned and not only the token rule."
+  },
+  {
     "path": "invalid/record/candidate-negative-risk.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "invalid",
@@ -1110,6 +1117,13 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "The artefact kind is a lowercase token."
+  },
+  {
+    "path": "invalid/evidence/report-kind-unknown.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The artefact kind is one of the twenty closed tokens (Prior's FJ00 response 6a, decision 260928-1420_*_which-closed-vocabularies-do-artefact-kind-and-issue-disposition-kind-take.md); markdown, a well-formed token outside the set, is refused: a kind names what an artefact is, never its file format, and an evidence report is report."
   },
   {
     "path": "invalid/evidence/accepted-at-without-offset.json",

@@ -53,7 +53,7 @@
     "backup": {
       "path": "archive/migrations/migration-20260928-example/backup/work-packages/260715-1000-legacy-parser.md",
       "sha256": "sha256:5590388a3b2d9d22a5d4b06a57a761c72ec4f4557d8bc4f8e9a6d3d13c2c5c88",
-      "kind": "markdown"
+      "kind": "other"
     }
   },
   "extensions": {}

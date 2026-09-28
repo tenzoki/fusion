@@ -26,6 +26,9 @@
   "extensions": {},
   "control": {
     "state": "closed",
-    "disposition": null
+    "disposition": {
+      "kind": "resolved",
+      "reason_ref": "260901-1200-stats-refresh-review.md"
+    }
   }
 }

@@ -33,7 +33,7 @@
     "backup": {
       "path": "archive/migrations/migration-20260928-example/backup/work-packages/260928-1200-parser-fix.md",
       "sha256": "sha256:6106862ad14bbe5602dfd3fd75f23f5d5e1ee5869bfa1da17ba695ab26aa7605",
-      "kind": "markdown"
+      "kind": "other"
     }
   },
   "extensions": {}

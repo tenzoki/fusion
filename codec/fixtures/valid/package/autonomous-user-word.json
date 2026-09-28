@@ -12,7 +12,7 @@
       "ref": {
         "path": "shared/memos/notes-kai.md",
         "sha256": "sha256:794cfe4c17776b3d40def991597e091f2c94f74390bd79d3bf0f3b6ed11ee719",
-        "kind": "markdown"
+        "kind": "memo"
       }
     }
   },

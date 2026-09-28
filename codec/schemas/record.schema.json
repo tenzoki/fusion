@@ -75,7 +75,7 @@
       "properties": {
         "state": { "$ref": "#/$defs/four_states" },
         "disposition": {
-          "description": "How the issue left the live states: a kind token and the record or artefact that holds the reasoning (the Markdown Resolved: note stays prose).",
+          "description": "How the issue left the live states: a kind from the closed set the decision record 260928-1420_*_which-closed-vocabularies-do-artefact-kind-and-issue-disposition-kind-take.md rules (option 3, Prior's FJ00 response 6a) and the record or artefact that holds the reasoning (the Markdown Resolved: note stays prose). The set is additive-only from here: no token is removed or redefined, and an addition is adopted explicitly. control.candidate.selection.outcome is Prior's separate verbatim vocabulary and never this one: pending, selected and admitted are no issue resolutions, out_of_scope keeps its underscore there, and a migration closes an issue as out-of-scope only on separately evidenced resolution, never inferred from the selection alone.",
           "oneOf": [
             { "type": "null" },
             {
@@ -83,7 +83,10 @@
               "additionalProperties": false,
               "required": ["kind", "reason_ref"],
               "properties": {
-                "kind": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/token" },
+                "kind": {
+                  "type": "string",
+                  "enum": ["fixed", "duplicate", "deferred", "rejected", "out-of-scope", "merged", "superseded"]
+                },
                 "reason_ref": {
                   "oneOf": [
                     { "type": "null" },
