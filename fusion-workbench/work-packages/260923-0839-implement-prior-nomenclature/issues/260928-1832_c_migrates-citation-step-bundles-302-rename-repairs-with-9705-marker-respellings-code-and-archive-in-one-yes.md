@@ -18,3 +18,6 @@ files=2204 rewrites=10007 residual=24664 record=275 package-record=22 package-di
 **Where the fix should go (inference, for `code-implementer`, not a plan):** either a `--kinds` filter on the sweep, so Step 6 can offer the store-segment repairs (`record,package-record,package-dir`) on their own, or Step 6 asks only about those and names the marker respelling as a separate, later choice. In both cases Step 6 should split the census by workbench-internal vs `extraPaths` files and by `archive/` vs the rest before asking.
 
 **Acceptance test:** on a fixture with store-prefixed and bare-marker citations, Step 6's offered write changes only store-prefixed tokens. The census shown before the question names the `extraPaths` and `archive/` shares separately. `npm test` stays green.
+
+---
+Resolved: bin/fusion-citation-sweep takes --kinds (census and write alike) and splits the census into scope=workbench, scope=archive and scope=extra-paths lines; /fusion:migrate Step 6 dry-runs, asks about and writes only record,package-record,package-dir, and names the bare-record respelling as a separate later choice. Fixture test in hooks/lib/__tests__/citation-sweep.test.ts.

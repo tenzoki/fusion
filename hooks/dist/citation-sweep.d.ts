@@ -15,7 +15,7 @@
  *
  * ## Usage
  *
- *   fusion-citation-sweep [--root <workbench>] [--dry-run | --write [--yes]] [--repair] [<path>...]
+ *   fusion-citation-sweep [--root <workbench>] [--dry-run | --write [--yes]] [--kinds <k,...>] [--repair] [<path>...]
  *
  *   --root <dir>   the workbench to index and sweep; default: walk up from
  *                  cwd to the directory holding `fusion-workbench/.fusion-setup`
@@ -23,6 +23,15 @@
  *   --write        apply the rewrites, behind the three guards below
  *   --yes          the second guard's answer; without it `--write` prints the
  *                  census and writes nothing
+ *   --kinds <k,..> restrict the sweep, census and write alike, to the named
+ *                  token kinds of the rewrite table below: any of `record`,
+ *                  `package-record`, `package-dir`, `bare-record`. A token of
+ *                  another kind is left as written and counted nowhere. An
+ *                  unknown name, an empty list, or `--kinds` with `--repair`
+ *                  is a usage error. Without it every kind is swept, as before.
+ *                  The three store-prefixed kinds are the ones a store rename
+ *                  breaks; `bare-record` only respells a marker to `_*_`, which
+ *                  is why `/fusion:migrate` passes the first three alone
  *   --repair       the repair pass (below) instead of the sweep; combines with
  *                  `--write` / `--dry-run` / `--yes` the same way
  *   <path>...      files or directories to sweep BEYOND the workbench (a
@@ -240,10 +249,16 @@
  * residual (every bare stamp the scanner judged, in file order — the corpus
  * order the census lines above them use, and by line within a file; an exempt
  * one is not listed) as `<file>:<line>  '<token>'  <status>`, then
+ * three share lines, `scope=workbench files=<n> rewrites=<n>`, then
+ * `scope=archive ...` and `scope=extra-paths ...` — the touched files split by
+ * where they sit: under the workbench outside `archive/`, under its
+ * `archive/`, and outside the workbench (the declared `citations.extraPaths`
+ * and any `<path>` argument), always all three and in that order — then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
  * package-record=<n> package-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message
- * that lands a sweep names. `stamp-bare=` is always 0 since the rule went and
+ * that lands a sweep names. The summary line stays last and its shape is
+ * unchanged, so a reader of the last line reads it as before. `stamp-bare=` is always 0 since the rule went and
  * is kept so the line's shape is stable. The summary line reads `mode=write`
  * only when files were written; a `--write` run stopped by guard (b) prints
  * `mode=dry-run`, because that is what it was.
