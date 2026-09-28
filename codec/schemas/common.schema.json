@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.common/v1",
+  "title": "fusion.common/v1",
+  "description": "Shared definitions for the fusion JSON control contract (Prior spec concept/fusion-json-workbench-spec.md, sections 4 and 4.4). Every other fusion schema refers here by $ref; nothing here is a record on its own. The spec namespace of this file is fusion.common/v1; its $id carries the urn:fusion:schema: prefix because a scheme-less $id cannot be the base of a cross-file $ref under RFC 3986. Rules this file states but JSON Schema cannot check: a record_ref resolves to exactly one record in the named workbench (multiple hits are a conflict, a missing one is unresolved-reference); an artefact_ref's sha256 is the hash of the exact stored bytes and its path must not cross a symlink out of the workbench; a foreign_ref is a claim the writer makes and is never inferred; a legacy citation resolves by one workbench-wide basename lookup without reading state from the marker; the person half of an actor is never composed from a model name.",
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "description": "RFC 4122 UUID, lowercase hex, hyphenated.",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "sha256": {
+      "type": "string",
+      "description": "Algorithm-qualified SHA-256 of exact bytes: the revision of a fusion record or the hash of an artefact.",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "prior_revision": {
+      "type": "string",
+      "description": "Typed import value for a Prior aggregate revision or hash that Prior computes as hex SHA-256 over encoding/json output (registerRevision, planRevision, stateRevision, charterHash, evidenceHash, snapshot hash). Not a fusion sha256: the hashed bytes are Go's marshalling, not stored fusion bytes.",
+      "pattern": "^prior-json-sha256:[0-9a-f]{64}$"
+    },
+    "prior_opaque_revision": {
+      "type": "string",
+      "description": "Typed import value for a Prior revision, hash or version label whose encoding fusion does not know (source revisions, accepted and base revisions, baseline hashes, workbench revisions, charter revision labels). The raw Prior string follows the prefix verbatim; an empty Prior string imports as null, never as this value.",
+      "pattern": "^prior-opaque:.+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "RFC 3339 date-time with a UTC offset or Z. A legacy value without an offset is not guessed; it stays raw in provenance.legacy_fields and the field is null.",
+      "format": "date-time"
+    },
+    "checkout_id": {
+      "type": "string",
+      "description": "The eight lowercase hex characters bin/fusion-identity prints as CHECKOUT=.",
+      "pattern": "^[0-9a-f]{8}$"
+    },
+    "git_commit": {
+      "type": "string",
+      "description": "A git object name: abbreviated or full SHA-1, or full SHA-256.",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "workbench_path": {
+      "type": "string",
+      "description": "Path relative to the workbench root: no leading slash, no drive letter, no backslash, no '..' segment.",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:)(?!/)(?!\\.\\.(/|$))(?!.*/\\.\\.(/|$))[^\\\\]+$"
+    },
+    "token": {
+      "type": "string",
+      "description": "A lowercase identifier token: letters, digits and hyphens, starting with a letter.",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "record_ref": {
+      "type": "object",
+      "description": "Reference to a JSON-controlled record by (workbench_id, record_id), optionally pinned to an exact revision and carrying a display name for humans.",
+      "additionalProperties": false,
+      "required": ["record_id", "workbench_id"],
+      "properties": {
+        "workbench_id": { "$ref": "#/$defs/uuid" },
+        "record_id": { "$ref": "#/$defs/uuid" },
+        "revision": { "$ref": "#/$defs/sha256" },
+        "display": { "type": "string", "minLength": 1 }
+      }
+    },
+    "artefact_ref": {
+      "type": "object",
+      "description": "Reference to a file inside the workbench by relative path, hash of its exact bytes and artefact kind. The kind vocabulary is a lowercase token (markdown, json, ...); neither the spec nor plan FJ00 closes the set.",
+      "additionalProperties": false,
+      "required": ["kind", "path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/workbench_path" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "kind": { "$ref": "#/$defs/token" }
+      }
+    },
+    "foreign_ref": {
+      "type": "object",
+      "description": "Structured form of the foreign:<project>:<citation> citation: a record held in another project's workbench. Missing access is unknown, never dangling.",
+      "additionalProperties": false,
+      "required": ["citation", "project"],
+      "properties": {
+        "project": { "type": "string", "minLength": 1, "pattern": "^[^:/\\\\\\s]+$" },
+        "citation": {
+          "oneOf": [
+            { "$ref": "#/$defs/legacy_marker_citation" },
+            { "$ref": "#/$defs/legacy_markerless_citation" }
+          ]
+        }
+      }
+    },
+    "legacy_marker_citation": {
+      "type": "string",
+      "description": "Storeless basename of a marker-bearing record, YYMMDD-HHMM_S_<topic>.md, with the marker wildcarded (*) or concrete (o p c d a i s). The marker carries no current state under JSON control.",
+      "pattern": "^[0-9]{6}-[0-9]{4}_(\\*|[opcdais])_[^/\\\\\\s]+\\.md$"
+    },
+    "legacy_markerless_citation": {
+      "type": "string",
+      "description": "Storeless basename of a markerless artefact (work package, review, analysis, consultation, forum entry, history), YYMMDD-HHMM-<topic>.md, and the form a new marker-free record takes.",
+      "pattern": "^[0-9]{6}-[0-9]{4}-[^/\\\\\\s_]+\\.md$"
+    },
+    "legacy_foreign_citation": {
+      "type": "string",
+      "description": "foreign:<project>:<citation>, both leading segments literal and required.",
+      "pattern": "^foreign:[^:/\\\\\\s]+:[0-9]{6}-[0-9]{4}(_(\\*|[opcdais])_[^/\\\\\\s]+|-[^/\\\\\\s_]+)\\.md$"
+    },
+    "legacy_citation": {
+      "description": "Any of the three prose citation forms rules/fusion-workbench-conventions.md '## Filename Patterns' defines.",
+      "oneOf": [
+        { "$ref": "#/$defs/legacy_marker_citation" },
+        { "$ref": "#/$defs/legacy_markerless_citation" },
+        { "$ref": "#/$defs/legacy_foreign_citation" }
+      ]
+    },
+    "reference": {
+      "description": "One cross-reference: a structured record, artefact or foreign reference, or a legacy citation string.",
+      "oneOf": [
+        { "$ref": "#/$defs/record_ref" },
+        { "$ref": "#/$defs/artefact_ref" },
+        { "$ref": "#/$defs/foreign_ref" },
+        { "$ref": "#/$defs/legacy_citation" }
+      ]
+    },
+    "actor": {
+      "type": "object",
+      "description": "Who acted, in the shape of the conventions' **Filed by:** line: actor is 'user', an agent name or a host name; person is the PERSON= identity or null when unknown. Attribution, never authorisation.",
+      "additionalProperties": false,
+      "required": ["actor", "person"],
+      "properties": {
+        "actor": { "$ref": "#/$defs/token" },
+        "person": { "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+    "execution_policy": {
+      "type": "string",
+      "description": "Under which host policy a result was produced. An import never upgrades claude-guided to prior-enforced.",
+      "enum": ["claude-guided", "prior-enforced"]
+    },
+    "evidence_ref": {
+      "type": "object",
+      "description": "Binding to a fusion.evidence/v1 record at an exact revision, with the execution policy it was produced under. Prose alone never counts as a passed audit.",
+      "additionalProperties": false,
+      "required": ["policy", "ref"],
+      "properties": {
+        "ref": {
+          "allOf": [
+            { "$ref": "#/$defs/record_ref" },
+            { "type": "object", "required": ["revision"], "properties": { "revision": { "$ref": "#/$defs/sha256" } } }
+          ]
+        },
+        "policy": { "$ref": "#/$defs/execution_policy" }
+      }
+    },
+    "narrative": {
+      "type": "object",
+      "description": "The Markdown file that carries the record's content. The link is navigation, not a status copy.",
+      "additionalProperties": false,
+      "required": ["path"],
+      "properties": {
+        "path": {
+          "allOf": [
+            { "$ref": "#/$defs/workbench_path" },
+            { "type": "string", "pattern": "\\.md$" }
+          ]
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Where the record came from. created: written under JSON control. imported: converted while still live; legacy_fields holds the removed original fields verbatim and backup points at the saved original. legacy-terminal: converted while already terminal; the Markdown stays byte-identical and its markers are history, not state.",
+      "additionalProperties": false,
+      "required": ["legacy_fields", "source"],
+      "properties": {
+        "source": { "type": "string", "enum": ["created", "imported", "legacy-terminal"] },
+        "legacy_fields": { "type": "object" },
+        "backup": { "$ref": "#/$defs/artefact_ref" }
+      },
+      "if": { "type": "object", "properties": { "source": { "enum": ["imported", "legacy-terminal"] } }, "required": ["source"] },
+      "then": { "type": "object", "properties": { "backup": { "$ref": "#/$defs/artefact_ref" } }, "required": ["backup"] }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Optional extensions, preserved verbatim. Ignorance of an extension may change neither state nor an execution decision; otherwise it needs a required feature in the workbench manifest."
+    }
+  }
+}

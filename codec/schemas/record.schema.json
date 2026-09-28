@@ -1,0 +1,375 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.record/v1",
+  "title": "fusion.record/v1",
+  "description": "Control data of an issue, plan, discussion or decision, <name>.record.json beside <name>.md (spec section 4.3). control is a union discriminated by kind; each branch forbids the other kinds' fields. Cross-field rules expressed with if/then: an issue's disposition is null while open or in_progress and an object once closed or deferred; a decision's answer_ref, implementation_ref and superseded_by are null or present exactly as its state demands (answered cites an answer, implemented an implementation, superseded a successor; open carries none, dropped carries no successor); in a candidate block an admitted selection carries an admission, an admission needs a qualification, a merge target and the outcome merged imply each other, and a policy-evaluated outcome carries policy version and snapshot hash while merged carries neither. Rules JSON Schema cannot check: the legal state changes per kind live in codec/contract/transitions.json (the package matrix is never applied to records); ids inside steps, criteria, evidence and the set-valued arrays are distinct beyond what uniqueItems catches; a candidate's qualification is current only if its candidate_version equals version, its source_revision equals source.revision and its evidence_hash equals Prior's evidenceHash over the current evidence and reproduction (an admission over a stale qualification is refused, never healed); a deferred decision's target lives in the Markdown Deferred: line; historical markers and status heads in the narrative are evidence, not state, and a divergent status note in an active narrative is a conflict; a plan's acceptance revision equals the hash of the plan narrative when it was adopted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["control", "extensions", "filed_by", "id", "kind", "narrative", "provenance", "references", "schema", "workbench_id"],
+  "properties": {
+    "schema": { "const": "fusion.record/v1" },
+    "id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    "workbench_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    "kind": { "type": "string", "enum": ["issue", "plan", "discussion", "decision"] },
+    "narrative": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/narrative" },
+    "filed_by": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+    "references": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/reference" }
+    },
+    "provenance": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/provenance" },
+    "extensions": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/extensions" },
+    "control": { "type": "object" }
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": { "kind": { "const": "issue" }, "control": { "$ref": "#/$defs/issue_control" } },
+      "required": ["control", "kind"]
+    },
+    {
+      "type": "object",
+      "properties": { "kind": { "const": "plan" }, "control": { "$ref": "#/$defs/plan_control" } },
+      "required": ["control", "kind"]
+    },
+    {
+      "type": "object",
+      "properties": { "kind": { "const": "discussion" }, "control": { "$ref": "#/$defs/discussion_control" } },
+      "required": ["control", "kind"]
+    },
+    {
+      "type": "object",
+      "properties": { "kind": { "const": "decision" }, "control": { "$ref": "#/$defs/decision_control" } },
+      "required": ["control", "kind"]
+    }
+  ],
+  "$defs": {
+    "four_states": {
+      "type": "string",
+      "description": "The issues-and-planning vocabulary: _o_ open, _p_ in_progress, _c_ closed, _d_ deferred.",
+      "enum": ["open", "in_progress", "closed", "deferred"]
+    },
+    "positive_integer": { "type": "integer", "minimum": 1 },
+    "non_negative_integer": { "type": "integer", "minimum": 0 },
+    "string_set": {
+      "type": "array",
+      "description": "Set semantics: order carries no meaning, duplicates are refused.",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "string_list": {
+      "type": "array",
+      "description": "List semantics: order is kept as written.",
+      "items": { "type": "string" }
+    },
+    "issue_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["disposition", "state"],
+      "properties": {
+        "state": { "$ref": "#/$defs/four_states" },
+        "disposition": {
+          "description": "How the issue left the live states: a kind token and the record or artefact that holds the reasoning (the Markdown Resolved: note stays prose).",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "reason_ref"],
+              "properties": {
+                "kind": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/token" },
+                "reason_ref": {
+                  "oneOf": [
+                    { "type": "null" },
+                    { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/reference" }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "candidate": { "$ref": "#/$defs/candidate" }
+      },
+      "allOf": [
+        {
+          "if": { "type": "object", "properties": { "state": { "enum": ["open", "in_progress"] } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "disposition": { "type": "null" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "state": { "enum": ["closed", "deferred"] } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "disposition": { "type": "object" } } }
+        }
+      ]
+    },
+    "candidate": {
+      "type": "object",
+      "description": "Prior's candidates.Candidate with its Qualification and Disposition, typed exactly (modules/fusion/candidates/register.go at 12d8424). Disposition is split into selection (the policy's verdict) and admission (the work item binding): selection state and issue lifecycle are different axes. Statement and Purpose are prose and live in the narrative; codec/contract/prior-mapping.json names every field's home.",
+      "additionalProperties": false,
+      "required": ["admission", "affected_resources", "confidence", "dependencies", "estimated_scope", "evidence", "item_kind", "merge_into", "prior_id", "qualification", "reproduction", "risk", "schema_version", "selection", "severity", "source", "stable_key", "version"],
+      "properties": {
+        "prior_id": { "type": "string", "minLength": 1, "description": "Prior's Candidate.ID, the join key other Prior structures use." },
+        "schema_version": { "const": 1 },
+        "stable_key": { "type": "string", "minLength": 1 },
+        "item_kind": { "type": "string", "minLength": 1, "description": "Prior's Candidate.Kind; one of the charter's item kinds." },
+        "version": { "$ref": "#/$defs/positive_integer" },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "refresh_policy", "revision", "watermark"],
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" },
+            "watermark": { "type": "string", "minLength": 1 },
+            "refresh_policy": { "type": "string", "enum": ["snapshot", "checkpoint", "continuous"] }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ref", "revision"],
+            "properties": {
+              "ref": { "type": "string", "minLength": 1 },
+              "revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" }
+            }
+          }
+        },
+        "reproduction": { "$ref": "#/$defs/string_list" },
+        "severity": { "$ref": "#/$defs/non_negative_integer" },
+        "confidence": { "$ref": "#/$defs/non_negative_integer" },
+        "estimated_scope": { "$ref": "#/$defs/non_negative_integer" },
+        "risk": { "$ref": "#/$defs/non_negative_integer" },
+        "affected_resources": { "$ref": "#/$defs/string_set" },
+        "dependencies": { "$ref": "#/$defs/string_set" },
+        "qualification": {
+          "description": "null when never qualified; not a negative result.",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["candidate_version", "checked_at", "evidence_hash", "passed", "reasons", "source_revision"],
+              "properties": {
+                "candidate_version": { "$ref": "#/$defs/positive_integer" },
+                "source_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" },
+                "evidence_hash": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_revision" },
+                "passed": { "type": "boolean" },
+                "reasons": { "$ref": "#/$defs/string_list" },
+                "checked_at": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/timestamp" }
+              }
+            }
+          ]
+        },
+        "selection": {
+          "description": "Prior's Disposition without its work-item half. null when never evaluated.",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["candidate_version", "outcome", "policy_version", "reasons", "score", "snapshot_hash"],
+              "properties": {
+                "candidate_version": { "$ref": "#/$defs/positive_integer" },
+                "policy_version": { "type": ["string", "null"], "minLength": 1 },
+                "snapshot_hash": {
+                  "oneOf": [
+                    { "type": "null" },
+                    { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_revision" }
+                  ]
+                },
+                "outcome": {
+                  "type": "string",
+                  "description": "The values Prior's register code writes or tests for at 12d8424.",
+                  "enum": ["pending", "selected", "admitted", "deferred", "rejected", "out_of_scope", "merged"]
+                },
+                "score": { "$ref": "#/$defs/non_negative_integer" },
+                "reasons": { "$ref": "#/$defs/string_list" }
+              },
+              "allOf": [
+                {
+                  "if": { "type": "object", "properties": { "outcome": { "enum": ["selected", "admitted", "deferred", "rejected", "out_of_scope"] } }, "required": ["outcome"] },
+                  "then": { "type": "object", "properties": { "policy_version": { "type": "string" }, "snapshot_hash": { "type": "string" } } }
+                },
+                {
+                  "if": { "type": "object", "properties": { "outcome": { "const": "merged" } }, "required": ["outcome"] },
+                  "then": { "type": "object", "properties": { "policy_version": { "type": "null" }, "snapshot_hash": { "type": "null" } } }
+                }
+              ]
+            }
+          ]
+        },
+        "admission": {
+          "description": "The work-item half of Prior's Disposition. null until admitted.",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["current_attempt", "work_item_id"],
+              "properties": {
+                "work_item_id": { "type": "string", "minLength": 1 },
+                "current_attempt": { "$ref": "#/$defs/positive_integer" }
+              }
+            }
+          ]
+        },
+        "merge_into": { "type": ["string", "null"], "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": { "selection": { "type": "object", "properties": { "outcome": { "const": "admitted" } }, "required": ["outcome"] } },
+            "required": ["selection"]
+          },
+          "then": { "type": "object", "properties": { "admission": { "type": "object" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "admission": { "type": "object" } }, "required": ["admission"] },
+          "then": { "type": "object", "properties": { "qualification": { "type": "object" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "merge_into": { "type": "string" } }, "required": ["merge_into"] },
+          "then": {
+            "type": "object",
+            "properties": { "selection": { "type": "object", "properties": { "outcome": { "const": "merged" } }, "required": ["outcome"] } }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": { "selection": { "type": "object", "properties": { "outcome": { "const": "merged" } }, "required": ["outcome"] } },
+            "required": ["selection"]
+          },
+          "then": { "type": "object", "properties": { "merge_into": { "type": "string" } } }
+        }
+      ]
+    },
+    "plan_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["acceptance", "criteria", "state", "steps"],
+      "properties": {
+        "state": { "$ref": "#/$defs/four_states" },
+        "steps": {
+          "type": "array",
+          "description": "Stable step anchors replacing the [OPEN] [IN PROGRESS] [DONE] marks; the step texts stay in the narrative.",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "state"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "state": { "type": "string", "enum": ["open", "in_progress", "done"] }
+            }
+          }
+        },
+        "criteria": {
+          "type": "array",
+          "description": "Acceptance criteria anchors; met is null until somebody evaluated the criterion.",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "met"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "met": { "type": ["boolean", "null"] }
+            }
+          }
+        },
+        "acceptance": {
+          "description": "The package that adopted this plan and the exact plan revision it adopted; null while unadopted.",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["ref", "revision"],
+              "properties": {
+                "ref": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
+                "revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "discussion_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome_refs", "participants", "state"],
+      "properties": {
+        "state": { "$ref": "#/$defs/four_states" },
+        "participants": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" }
+        },
+        "outcome_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/reference" }
+        }
+      }
+    },
+    "decision_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["answer_ref", "implementation_ref", "state", "superseded_by"],
+      "properties": {
+        "state": {
+          "type": "string",
+          "description": "The decisions vocabulary: _o_ open, _a_ answered, _i_ implemented, _s_ superseded, _d_ dropped (the conventions call the marker deferred; the spec names the state dropped).",
+          "enum": ["open", "answered", "implemented", "superseded", "dropped"]
+        },
+        "answer_ref": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/reference" }
+          ]
+        },
+        "implementation_ref": {
+          "description": "The Implemented: citation: a commit or a record.",
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/git_commit" },
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/reference" }
+          ]
+        },
+        "superseded_by": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "type": "object", "properties": { "state": { "const": "open" } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "answer_ref": { "type": "null" }, "implementation_ref": { "type": "null" }, "superseded_by": { "type": "null" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "state": { "const": "answered" } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "answer_ref": { "not": { "type": "null" } }, "implementation_ref": { "type": "null" }, "superseded_by": { "type": "null" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "state": { "const": "implemented" } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "implementation_ref": { "not": { "type": "null" } }, "superseded_by": { "type": "null" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "state": { "const": "superseded" } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "superseded_by": { "type": "object" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "state": { "const": "dropped" } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "implementation_ref": { "type": "null" }, "superseded_by": { "type": "null" } } }
+        }
+      ]
+    }
+  }
+}

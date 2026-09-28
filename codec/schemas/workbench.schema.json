@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.workbench/v1",
+  "title": "fusion.workbench/v1",
+  "description": "The workbench manifest, fusion-workbench/workbench.json (spec section 4.1). Its presence switches JSON writers from legacy mode (read, validate, preview) to normal mutation; its activation is the last migration step. Rules JSON Schema cannot check: an unknown value in required_features locks supported mutation and dispatch with a precise diagnosis (unsupported-format); migration.receipt must resolve to the receipt written under archive/migrations/<migration.id>/ before activation; .fusion-setup and fusion.json neither replace nor override this manifest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["extensions", "id", "migration", "required_features", "schema"],
+  "properties": {
+    "schema": { "const": "fusion.workbench/v1" },
+    "id": {
+      "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid",
+      "description": "The workbench_id every record in this workbench carries. A fresh clone keeps it; a deliberate fork imports with an identity mapping."
+    },
+    "required_features": {
+      "type": "array",
+      "description": "Features a writer must support to mutate this workbench. json-control-v1 is the feature this contract introduces.",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/token" },
+      "contains": { "const": "json-control-v1" }
+    },
+    "migration": {
+      "description": "null for a workbench created under JSON control; otherwise the completed import that produced it.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "receipt", "source_layout"],
+          "properties": {
+            "id": { "type": "string", "minLength": 1, "pattern": "^migration-[0-9]{8}-[a-z0-9-]+$" },
+            "source_layout": { "type": "string", "enum": ["fusion-v12", "fusion-pre-v12"] },
+            "receipt": {
+              "allOf": [
+                { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+                { "type": "string", "pattern": "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/receipt\\.json$" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "extensions": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/extensions" }
+  }
+}

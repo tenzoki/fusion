@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.evidence/v1",
+  "title": "fusion.evidence/v1",
+  "description": "A structured review or audit result (spec section 4.4): it binds the subject git tree or range, the brief and plan revisions it was produced against, the role and profile version, the host and its execution policy, the verdict, the uncertainties, the per-check results and the hash of the Markdown report. The verdict vocabulary is Prior's review decision set (modules/fusion/schemas/review-response.json: accept, revise, escalate). Rules JSON Schema cannot check: an evidence file is immutable once accepted, a correction is a new record naming this one as predecessor; a package binds evidence through evidence_ref at an exact revision, and a changed brief_revision or plan_revision makes that binding stale; an import never upgrades claude-guided to prior-enforced; the report's sha256 is the hash of the report file's exact bytes; a check id is unique within checks beyond identical entries; a prose report without this record is not a passed audit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["accepted_at", "brief_revision", "checks", "execution_policy", "extensions", "host", "id", "plan_revision", "predecessor", "report", "role", "schema", "subject", "uncertainties", "verdict", "workbench_id"],
+  "properties": {
+    "schema": { "const": "fusion.evidence/v1" },
+    "id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    "workbench_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    "subject": {
+      "type": "object",
+      "description": "The immutable subject: the git tree reviewed and, where the review covered a range, that range.",
+      "additionalProperties": false,
+      "required": ["git_range", "git_tree"],
+      "properties": {
+        "git_tree": { "type": "string", "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$" },
+        "git_range": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{7,64}\\.\\.[0-9a-f]{7,64}$"
+        }
+      }
+    },
+    "brief_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+    "plan_revision": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      ]
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "version"],
+      "properties": {
+        "profile": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/token" },
+        "version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "host": {
+      "type": "string",
+      "description": "The host that ran the role.",
+      "enum": ["claude-code", "prior"]
+    },
+    "execution_policy": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/execution_policy" },
+    "verdict": { "type": "string", "enum": ["accept", "revise", "escalate"] },
+    "uncertainties": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "checks": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["detail", "id", "result"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "result": { "type": "string", "enum": ["pass", "fail", "skipped", "unknown"] },
+          "detail": { "type": ["string", "null"], "minLength": 1 }
+        }
+      }
+    },
+    "report": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/artefact_ref" },
+    "predecessor": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }
+      ]
+    },
+    "accepted_at": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/timestamp" },
+    "extensions": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/extensions" }
+  }
+}

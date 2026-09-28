@@ -1,0 +1,137 @@
+Prior commit 12d8424, files and line ranges as read on 2026-09-28
+// Verbatim struct definitions of the three aggregates the fusion codec maps. No JSON tags: encoding/json emits the Go field names as keys.
+
+// modules/fusion/candidates/register.go:20-77
+type Source struct{ ID, Revision, Watermark, RefreshPolicy string }
+type Evidence struct{ Ref, Revision string }
+type Candidate struct {
+	SchemaVersion                              int
+	ID, StableKey, Kind, Statement, Purpose    string
+	Version                                    uint64
+	Source                                     Source
+	Evidence                                   []Evidence
+	Reproduction                               []string
+	Severity, Confidence, EstimatedScope, Risk int
+	AffectedResources, Dependencies            []string
+	Qualification                              *Qualification
+	Disposition                                *Disposition
+	MergeInto                                  string
+}
+type Qualification struct {
+	CandidateVersion             uint64
+	SourceRevision, EvidenceHash string
+	Passed                       bool
+	Reasons                      []string
+	CheckedAt                    time.Time
+}
+type Disposition struct {
+	CandidateVersion                     uint64
+	PolicyVersion, SnapshotHash, Outcome string
+	WorkItemID                           string
+	CurrentAttempt                       uint64
+	Score                                int
+	Reasons                              []string
+}
+type Register struct {
+	ID, Revision    string
+	Candidates      map[string]Candidate
+	Stable          map[string]string
+	Watermarks      map[string]string
+	IntakeClosed    bool
+	ClosedWatermark string
+}
+
+type Predicate struct {
+	Field, Operator string
+	Value           int
+}
+type Weight struct {
+	Field      string
+	Multiplier int
+}
+type Policy struct {
+	Version                   string
+	Predicates                []Predicate
+	Weights                   []Weight
+	MinimumScore, MaximumRisk int
+}
+type Snapshot struct {
+	Watermark       string
+	Versions        map[string]uint64
+	SourceRevisions map[string]string
+}
+
+// modules/fusion/packages/packages.go:19-56
+type Candidate struct {
+	ID, Purpose                         string
+	Version                             uint64
+	Resources, Dependencies             []string
+	Risk, ValidationCost, EstimatedSize int
+	Qualified, Selected                 bool
+}
+type FormationPolicy struct {
+	Version                             string
+	MaxRisk, MaxValidationCost, MaxSize int
+	Budget                              int64
+}
+type Package struct {
+	ID                                                                 string
+	Members, Dependencies, Resources, Reasons                          []string
+	Risk, ValidationCost, EstimatedSize                                int
+	State, BaseRevision, AcceptedRevision, BaselineHash, FailureReason string
+}
+type Deferred struct{ Candidate, Reason string }
+type Attempt struct {
+	Candidate                 string
+	CandidateVersion, Attempt uint64
+	ItemID                    string
+}
+type Admission struct {
+	ID, PackageID, Status, LeaseRef, WorkbenchRevision string
+	Attempts                                           []Attempt
+}
+type Plan struct {
+	ID, Revision, PolicyVersion, AcceptedRevision string
+	RemainingBudget                               int64
+	Candidates                                    map[string]Candidate
+	Packages                                      map[string]Package
+	Order                                         []string
+	Deferred                                      []Deferred
+	Admissions                                    map[string]Admission
+	ActiveItems                                   map[string]string
+}
+
+// modules/fusion/campaign/campaign.go:21-53
+type Limits struct {
+	MaxAttempts, MaxFailures, MaxConsecutiveFailures, MaxReviews int
+	ResourceUnits                                                int64
+}
+type Charter struct {
+	SchemaVersion                                                  int
+	CampaignID, Revision, AuthorisationRef, Objective              string
+	ItemKinds, CandidateSources, WorkflowTemplates, StopConditions []string
+	IntakePolicy, SelectionPolicy, PackagePolicy, AcceptancePolicy string
+	AutonomyPolicy, BackendPolicy, DeliveryPolicy                  string
+	DataBoundary, Capabilities                                     []string
+	BudgetAccount                                                  string
+	Limits                                                         Limits
+}
+type Counters struct {
+	Attempts, Failures, ConsecutiveFailures, Reviews int
+	ResourceUnits                                    int64
+}
+type Settlement struct{ OwnedRuns, OpenIntents, UnknownEffects, Quarantined int }
+type CompletionEvidence struct {
+	ObjectiveMet, IntakeClosed, AllAttemptsTerminal, FinalAuditPassed bool
+	Watermark, AuditRef                                               string
+}
+type State struct {
+	CampaignID, Revision, State, PreviousTerminal, Reason string
+	Charter                                               Charter
+	CharterHash                                           string
+	Counters                                              Counters
+	Settlement                                            Settlement
+	RequestedOutcome                                      string
+	Sessions, Runs                                        []string
+	BaselineHash                                          string
+}

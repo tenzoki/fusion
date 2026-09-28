@@ -1,0 +1,44 @@
+{
+  "description": "The two conditions a depends_on edge of a fusion.package/v1 record may carry, evaluated against the target package's live JSON only. terminal is what every legacy **Depends-on:** entry becomes and matches fusion's behaviour today: a done or dropped predecessor satisfies the ordering. succeeded is the additional, explicitly chosen condition the spec introduces for Prior: the predecessor must be done with outcome class completed and carry at least one accepted evidence binding; a dropped predecessor never satisfies it. Neither condition is inferred from prose, from a filename marker or from the target's Markdown.",
+  "sources": [
+    "concept/fusion-json-workbench-spec.md section 4.2 (depends_on row and the paragraph on terminal and succeeded)",
+    "rules/fusion-workbench-conventions.md '## Work packages' (**Depends-on:** as a terminal-condition edge)"
+  ],
+  "conditions": {
+    "terminal": {
+      "description": "Satisfied when the target package is in a terminal status, whatever its outcome.",
+      "target_status": ["done", "dropped"],
+      "outcome_class": null,
+      "evidence": null,
+      "legacy_default": true
+    },
+    "succeeded": {
+      "description": "Satisfied when the target package is done with outcome class completed and its outcome binds at least one evidence record with verdict accept; the binding's revision must equal the evidence record's current revision, otherwise the evidence is stale and the condition is unmet with the typed error missing-evidence.",
+      "target_status": ["done"],
+      "outcome_class": ["completed"],
+      "evidence": {
+        "source": "outcome.evidence",
+        "min_accepted": 1,
+        "accepted_means": {
+          "record_schema": "fusion.evidence/v1",
+          "verdict": ["accept"],
+          "revision_matches": true
+        }
+      },
+      "legacy_default": false
+    }
+  },
+  "legacy_edge_condition": "terminal",
+  "refusals": {
+    "unknown_condition": "schema-invalid",
+    "missing_target": "unresolved-reference",
+    "cycle": "conflict",
+    "self_dependency": "conflict",
+    "succeeded_without_accepted_evidence": "missing-evidence"
+  },
+  "notes": [
+    "An unmet condition blocks dispatch of the dependant; it changes no state on either side.",
+    "legacy-completed never satisfies succeeded: it marks a done package imported without a bound evidence record.",
+    "Cycle detection runs over the whole depends_on graph of the workbench at set-dependencies time and again at validate/reconcile; a cycle found later is reported, never silently cut."
+  ]
+}

@@ -1,0 +1,312 @@
+{
+  "description": "The status and state vocabularies of the five controlled kinds, their terminal subsets and every allowed edge, as data. The package matrix is spec section 4.2; the record kinds carry the conventions' marker vocabularies by value (rules/fusion-workbench-conventions.md '## State Markers — issues and planning', '## State Markers — decisions', '## Terminal states are history'). An edge absent here is refused with the typed error conflict. The package matrix is never applied to a record kind. A terminal state is left only along an edge listed here; where none exists, continuation files a new record that cites the terminal one.",
+  "sources": [
+    "concept/fusion-json-workbench-spec.md section 4.2 (Prior repository, 2026-09-28)",
+    "rules/fusion-workbench-conventions.md '## Work packages', '## State Markers — issues and planning', '## State Markers — decisions', '## Filename Patterns' (discussion row), '## Terminal states are history'"
+  ],
+  "kinds": {
+    "package": {
+      "schema": "fusion.package/v1",
+      "field": "status",
+      "states": [
+        "open",
+        "claimed",
+        "paused",
+        "done",
+        "dropped"
+      ],
+      "terminal": [
+        "done",
+        "dropped"
+      ],
+      "edges": [
+        {
+          "from": "open",
+          "to": "claimed",
+          "operation": "claim"
+        },
+        {
+          "from": "open",
+          "to": "paused",
+          "operation": "transition"
+        },
+        {
+          "from": "open",
+          "to": "dropped",
+          "operation": "transition"
+        },
+        {
+          "from": "claimed",
+          "to": "open",
+          "operation": "release"
+        },
+        {
+          "from": "claimed",
+          "to": "paused",
+          "operation": "transition"
+        },
+        {
+          "from": "claimed",
+          "to": "done",
+          "operation": "transition"
+        },
+        {
+          "from": "claimed",
+          "to": "dropped",
+          "operation": "transition"
+        },
+        {
+          "from": "paused",
+          "to": "open",
+          "operation": "transition"
+        },
+        {
+          "from": "paused",
+          "to": "claimed",
+          "operation": "claim"
+        },
+        {
+          "from": "paused",
+          "to": "dropped",
+          "operation": "transition"
+        }
+      ],
+      "claim": {
+        "open": "forbidden",
+        "claimed": "required",
+        "paused": "forbidden",
+        "done": "optional",
+        "dropped": "optional"
+      },
+      "outcome_classes": {
+        "open": [],
+        "claimed": [],
+        "paused": [],
+        "done": [
+          "completed",
+          "legacy-completed"
+        ],
+        "dropped": [
+          "bounded",
+          "cancelled",
+          "failed",
+          "dropped"
+        ]
+      },
+      "reopen": "never: resumption files a new package that references the terminal one",
+      "notes": [
+        "open and paused carry no claim; claimed needs one; a terminal record may keep its historical claim (claim optional).",
+        "A merely interrupted package is paused, not failed; failed is an outcome class under dropped.",
+        "Migration keeps old values, reports an invalid status/claim combination and invents no repairing edge.",
+        "Only one checkout may hold the claim; a second claim on a claimed package is a conflict."
+      ]
+    },
+    "issue": {
+      "schema": "fusion.record/v1",
+      "field": "control.state",
+      "markers": {
+        "open": "_o_",
+        "in_progress": "_p_",
+        "closed": "_c_",
+        "deferred": "_d_"
+      },
+      "states": [
+        "open",
+        "in_progress",
+        "closed",
+        "deferred"
+      ],
+      "terminal": [
+        "closed",
+        "deferred"
+      ],
+      "edges": [
+        {
+          "from": "open",
+          "to": "in_progress"
+        },
+        {
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "from": "open",
+          "to": "deferred"
+        },
+        {
+          "from": "in_progress",
+          "to": "closed"
+        },
+        {
+          "from": "in_progress",
+          "to": "deferred"
+        }
+      ],
+      "reopen": "never: closed and deferred are terminal (conventions, ## Terminal states are history); continuation files a new record that cites the terminal one",
+      "notes": [
+        "closed and deferred require a disposition object; open and in_progress require disposition null (record.schema.json).",
+        "The selection state of a candidate block (pending, selected, admitted, ...) is a separate axis and moves independently of this lifecycle.",
+        "Plan FJ00 step 6 listed deferred to open; the conventions rule _c_ and _d_ terminal with no edit back to a live state, and the spec (section 4.3) reads the existing rules per kind, so the edge is not carried."
+      ]
+    },
+    "plan": {
+      "schema": "fusion.record/v1",
+      "field": "control.state",
+      "markers": {
+        "open": "_o_",
+        "in_progress": "_p_",
+        "closed": "_c_",
+        "deferred": "_d_"
+      },
+      "states": [
+        "open",
+        "in_progress",
+        "closed",
+        "deferred"
+      ],
+      "terminal": [
+        "closed",
+        "deferred"
+      ],
+      "edges": [
+        {
+          "from": "open",
+          "to": "in_progress"
+        },
+        {
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "from": "open",
+          "to": "deferred"
+        },
+        {
+          "from": "in_progress",
+          "to": "closed"
+        },
+        {
+          "from": "in_progress",
+          "to": "deferred"
+        }
+      ],
+      "step_states": [
+        "open",
+        "in_progress",
+        "done"
+      ],
+      "step_edges": [
+        {
+          "from": "open",
+          "to": "in_progress"
+        },
+        {
+          "from": "in_progress",
+          "to": "done"
+        },
+        {
+          "from": "open",
+          "to": "done"
+        }
+      ],
+      "reopen": "never: closed and deferred are terminal (conventions, ## Terminal states are history); continuation files a new record that cites the terminal one",
+      "notes": [
+        "Step marks [OPEN] [IN PROGRESS] [DONE] map to the step states; an unclear step structure blocks the import of that plan.",
+        "A plan whose steps are all done may close; closing does not require every step done (a plan may be closed early by the user)."
+      ]
+    },
+    "discussion": {
+      "schema": "fusion.record/v1",
+      "field": "control.state",
+      "markers": {
+        "open": "_o_",
+        "closed": "_c_"
+      },
+      "states": [
+        "open",
+        "in_progress",
+        "closed",
+        "deferred"
+      ],
+      "terminal": [
+        "closed",
+        "deferred"
+      ],
+      "edges": [
+        {
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "reopen": "never",
+      "notes": [
+        "The spec gives discussions the same four state values as issues; the conventions' '## Filename Patterns' row allows a discussion only _o_ and _c_, so only open and closed are reachable and in_progress and deferred exist for imported values only.",
+        "An _o_ discussion is read as interrupted, not as pending: its record is on disk from round one."
+      ]
+    },
+    "decision": {
+      "schema": "fusion.record/v1",
+      "field": "control.state",
+      "markers": {
+        "open": "_o_",
+        "answered": "_a_",
+        "implemented": "_i_",
+        "superseded": "_s_",
+        "dropped": "_d_"
+      },
+      "states": [
+        "open",
+        "answered",
+        "implemented",
+        "superseded",
+        "dropped"
+      ],
+      "terminal": [
+        "implemented",
+        "superseded",
+        "dropped"
+      ],
+      "edges": [
+        {
+          "from": "open",
+          "to": "answered",
+          "requires": "answer_ref"
+        },
+        {
+          "from": "open",
+          "to": "implemented",
+          "requires": "implementation_ref"
+        },
+        {
+          "from": "open",
+          "to": "dropped"
+        },
+        {
+          "from": "answered",
+          "to": "implemented",
+          "requires": "implementation_ref"
+        },
+        {
+          "from": "answered",
+          "to": "dropped"
+        },
+        {
+          "from": "answered",
+          "to": "superseded",
+          "requires": "superseded_by"
+        },
+        {
+          "from": "implemented",
+          "to": "superseded",
+          "requires": "superseded_by"
+        }
+      ],
+      "reopen": "never: an implemented decision that needs revisiting is superseded by a new decision",
+      "notes": [
+        "implemented to superseded is the one terminal-to-terminal edge the conventions allow.",
+        "The conventions call the _d_ marker deferred and treat it as evidence-base history; the spec names the state dropped. It is terminal: the conventions (## Terminal states are history) name _i_, _s_ and _d_ on a decision terminal, and no reopening edge exists.",
+        "Retired: and Revised by: lines move no state; the marker stays where it stands."
+      ]
+    }
+  }
+}

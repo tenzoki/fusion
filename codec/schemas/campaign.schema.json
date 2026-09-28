@@ -1,0 +1,438 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.campaign/v1",
+  "title": "fusion.campaign/v1",
+  "description": "A campaign, campaigns/<id>/campaign.json, written only when a campaign is used (spec sections 3 and 4.3). It holds what the spec keeps register-wide instead of spreading it over issue markers: Prior's campaign.Charter and campaign.State, the register-level part of candidates.Register (the candidates themselves are issues with a candidate block) and the formation plan packages.Plan (modules/fusion/campaign/campaign.go, candidates/register.go, packages/packages.go at 12d8424), each typed exactly; codec/contract/prior-mapping.json names every field. register and formation are null for a campaign that never used them; policy, snapshot, formation.policy and state.completion_evidence are null when Prior did not persist them (at 12d8424 they are call inputs, not aggregate fields). Go maps are arrays of keyed entries sorted by key on export. Rules JSON Schema cannot check: entry keys inside stable, watermarks, snapshot.versions, snapshot.source_revisions, candidates, packages, admissions and active_items are distinct beyond identical entries; a register entry's candidate_id names an issue whose candidate.prior_id matches; charter_hash equals Prior's charterHash over the charter; each revision equals Prior's hash of the aggregate with Revision cleared; a package's members, dependencies and an admission's attempts name candidates present in formation.candidates; the proposed mapping of a formation package state onto a fusion package status is unconfirmed (prior-mapping.json) and no importer applies it by default; a campaign state, claim or historical run reference grants no Prior authority and no live lease.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["charter", "extensions", "formation", "id", "provenance", "register", "schema", "state", "workbench_id"],
+  "properties": {
+    "schema": { "const": "fusion.campaign/v1" },
+    "id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    "workbench_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    "charter": { "$ref": "#/$defs/charter" },
+    "state": { "$ref": "#/$defs/state" },
+    "register": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/register" }
+      ]
+    },
+    "formation": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/formation" }
+      ]
+    },
+    "provenance": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/provenance" },
+    "extensions": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/extensions" }
+  },
+  "$defs": {
+    "positive_integer": { "type": "integer", "minimum": 1 },
+    "non_negative_integer": { "type": "integer", "minimum": 0 },
+    "string_set": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "string_list": { "type": "array", "items": { "type": "string" } },
+    "optional_string": { "type": ["string", "null"], "minLength": 1 },
+    "optional_prior_revision": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_revision" }
+      ]
+    },
+    "optional_prior_opaque_revision": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" }
+      ]
+    },
+    "limits": {
+      "type": "object",
+      "description": "campaign.Limits; bounds as Charter.Validate enforces them.",
+      "additionalProperties": false,
+      "required": ["max_attempts", "max_consecutive_failures", "max_failures", "max_reviews", "resource_units"],
+      "properties": {
+        "max_attempts": { "$ref": "#/$defs/positive_integer" },
+        "max_failures": { "$ref": "#/$defs/non_negative_integer" },
+        "max_consecutive_failures": { "$ref": "#/$defs/positive_integer" },
+        "max_reviews": { "$ref": "#/$defs/positive_integer" },
+        "resource_units": { "$ref": "#/$defs/positive_integer" }
+      }
+    },
+    "charter": {
+      "type": "object",
+      "description": "campaign.Charter. Its revision is an author-assigned label, kept as a typed opaque value.",
+      "additionalProperties": false,
+      "required": ["acceptance_policy", "authorisation_ref", "autonomy_policy", "backend_policy", "budget_account", "campaign_id", "candidate_sources", "capabilities", "data_boundary", "delivery_policy", "intake_policy", "item_kinds", "limits", "objective", "package_policy", "revision", "schema_version", "selection_policy", "stop_conditions", "workflow_templates"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "campaign_id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" },
+        "authorisation_ref": { "type": "string", "minLength": 1 },
+        "objective": { "type": "string", "minLength": 1 },
+        "item_kinds": { "allOf": [ { "$ref": "#/$defs/string_set" }, { "type": "array", "minItems": 1 } ] },
+        "candidate_sources": { "allOf": [ { "$ref": "#/$defs/string_set" }, { "type": "array", "minItems": 1 } ] },
+        "workflow_templates": { "allOf": [ { "$ref": "#/$defs/string_set" }, { "type": "array", "minItems": 1 } ] },
+        "stop_conditions": { "$ref": "#/$defs/string_list" },
+        "intake_policy": { "type": "string", "minLength": 1 },
+        "selection_policy": { "type": "string", "minLength": 1 },
+        "package_policy": { "type": "string", "minLength": 1 },
+        "acceptance_policy": { "type": "string", "minLength": 1 },
+        "autonomy_policy": { "type": "string", "minLength": 1 },
+        "backend_policy": { "type": "string", "minLength": 1 },
+        "delivery_policy": { "type": "string", "minLength": 1 },
+        "data_boundary": { "$ref": "#/$defs/string_set" },
+        "capabilities": { "$ref": "#/$defs/string_set" },
+        "budget_account": { "type": "string", "minLength": 1 },
+        "limits": { "$ref": "#/$defs/limits" }
+      }
+    },
+    "counters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempts", "consecutive_failures", "failures", "resource_units", "reviews"],
+      "properties": {
+        "attempts": { "$ref": "#/$defs/non_negative_integer" },
+        "failures": { "$ref": "#/$defs/non_negative_integer" },
+        "consecutive_failures": { "$ref": "#/$defs/non_negative_integer" },
+        "reviews": { "$ref": "#/$defs/non_negative_integer" },
+        "resource_units": { "$ref": "#/$defs/non_negative_integer" }
+      }
+    },
+    "settlement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["open_intents", "owned_runs", "quarantined", "unknown_effects"],
+      "properties": {
+        "owned_runs": { "$ref": "#/$defs/non_negative_integer" },
+        "open_intents": { "$ref": "#/$defs/non_negative_integer" },
+        "unknown_effects": { "$ref": "#/$defs/non_negative_integer" },
+        "quarantined": { "$ref": "#/$defs/non_negative_integer" }
+      }
+    },
+    "completion_evidence": {
+      "type": "object",
+      "description": "campaign.CompletionEvidence as handed to Finalize.",
+      "additionalProperties": false,
+      "required": ["all_attempts_terminal", "audit_ref", "final_audit_passed", "intake_closed", "objective_met", "watermark"],
+      "properties": {
+        "objective_met": { "type": "boolean" },
+        "intake_closed": { "type": "boolean" },
+        "all_attempts_terminal": { "type": "boolean" },
+        "final_audit_passed": { "type": "boolean" },
+        "watermark": { "$ref": "#/$defs/optional_string" },
+        "audit_ref": { "$ref": "#/$defs/optional_string" }
+      }
+    },
+    "state": {
+      "type": "object",
+      "description": "campaign.State without its embedded Charter (held in charter) and with its Revision typed. State values and outcome words are those campaign.go writes at 12d8424.",
+      "additionalProperties": false,
+      "required": ["baseline_hash", "campaign_id", "charter_hash", "completion_evidence", "counters", "previous_terminal", "reason", "requested_outcome", "revision", "runs", "sessions", "settlement", "state"],
+      "properties": {
+        "campaign_id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/optional_prior_revision" },
+        "state": {
+          "type": "string",
+          "enum": ["draft", "authorised", "discarded", "running", "paused", "completed", "bounded", "failed", "cancelled", "archived"]
+        },
+        "previous_terminal": {
+          "type": ["string", "null"],
+          "enum": ["completed", "bounded", "failed", "cancelled", null]
+        },
+        "reason": { "$ref": "#/$defs/optional_string" },
+        "charter_hash": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_revision" },
+        "counters": { "$ref": "#/$defs/counters" },
+        "settlement": { "$ref": "#/$defs/settlement" },
+        "requested_outcome": {
+          "type": ["string", "null"],
+          "enum": ["bounded", "failed", "cancelled", null]
+        },
+        "sessions": { "$ref": "#/$defs/string_list" },
+        "runs": { "$ref": "#/$defs/string_list" },
+        "baseline_hash": { "$ref": "#/$defs/optional_prior_opaque_revision" },
+        "completion_evidence": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/completion_evidence" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "type": "object", "properties": { "state": { "const": "archived" } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "previous_terminal": { "type": "string" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "state": { "enum": ["draft", "authorised", "discarded", "running", "paused", "completed", "bounded", "failed", "cancelled"] } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "previous_terminal": { "type": "null" } } }
+        }
+      ]
+    },
+    "policy": {
+      "type": "object",
+      "description": "candidates.Policy: the selection policy as validatePolicy accepts it. Predicate and weight fields are the four fieldValue names.",
+      "additionalProperties": false,
+      "required": ["maximum_risk", "minimum_score", "predicates", "version", "weights"],
+      "properties": {
+        "version": { "type": "string", "minLength": 1 },
+        "predicates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["field", "operator", "value"],
+            "properties": {
+              "field": { "type": "string", "enum": ["severity", "confidence", "estimated_scope", "risk"] },
+              "operator": { "type": "string", "enum": ["gte", "lte", "eq"] },
+              "value": { "type": "integer" }
+            }
+          }
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["field", "multiplier"],
+            "properties": {
+              "field": { "type": "string", "enum": ["severity", "confidence", "estimated_scope", "risk"] },
+              "multiplier": { "type": "integer" }
+            }
+          }
+        },
+        "minimum_score": { "type": "integer" },
+        "maximum_risk": { "$ref": "#/$defs/non_negative_integer" }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "description": "candidates.Snapshot: the frozen selection input. Its maps are keyed entries.",
+      "additionalProperties": false,
+      "required": ["source_revisions", "versions", "watermark"],
+      "properties": {
+        "watermark": { "type": "string", "minLength": 1 },
+        "versions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["candidate_id", "version"],
+            "properties": {
+              "candidate_id": { "type": "string", "minLength": 1 },
+              "version": { "$ref": "#/$defs/positive_integer" }
+            }
+          }
+        },
+        "source_revisions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["candidate_id", "revision"],
+            "properties": {
+              "candidate_id": { "type": "string", "minLength": 1 },
+              "revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" }
+            }
+          }
+        }
+      }
+    },
+    "register": {
+      "type": "object",
+      "description": "candidates.Register without Candidates (each is an issue), plus the policy and snapshot of the last selection where Prior persisted them.",
+      "additionalProperties": false,
+      "required": ["closed_watermark", "id", "intake_closed", "policy", "revision", "snapshot", "stable", "watermarks"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/optional_prior_revision" },
+        "stable": {
+          "type": "array",
+          "description": "Register.Stable: stable key to candidate id.",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["candidate_id", "stable_key"],
+            "properties": {
+              "stable_key": { "type": "string", "minLength": 1 },
+              "candidate_id": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "watermarks": {
+          "type": "array",
+          "description": "Register.Watermarks: source id to highest watermark seen.",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source_id", "watermark"],
+            "properties": {
+              "source_id": { "type": "string", "minLength": 1 },
+              "watermark": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "intake_closed": { "type": "boolean" },
+        "closed_watermark": { "$ref": "#/$defs/optional_string" },
+        "policy": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/policy" }
+          ]
+        },
+        "snapshot": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/snapshot" }
+          ]
+        }
+      },
+      "if": { "type": "object", "properties": { "intake_closed": { "const": true } }, "required": ["intake_closed"] },
+      "then": { "type": "object", "properties": { "closed_watermark": { "type": "string" } } }
+    },
+    "formation_policy": {
+      "type": "object",
+      "description": "packages.FormationPolicy as Form validates it.",
+      "additionalProperties": false,
+      "required": ["budget", "max_risk", "max_size", "max_validation_cost", "version"],
+      "properties": {
+        "version": { "type": "string", "minLength": 1 },
+        "max_risk": { "$ref": "#/$defs/positive_integer" },
+        "max_validation_cost": { "$ref": "#/$defs/positive_integer" },
+        "max_size": { "$ref": "#/$defs/positive_integer" },
+        "budget": { "$ref": "#/$defs/non_negative_integer" }
+      }
+    },
+    "formation_candidate": {
+      "type": "object",
+      "description": "packages.Candidate: the formation view of a candidate, not the register entry.",
+      "additionalProperties": false,
+      "required": ["dependencies", "estimated_size", "id", "purpose", "qualified", "resources", "risk", "selected", "validation_cost", "version"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string" },
+        "version": { "$ref": "#/$defs/positive_integer" },
+        "resources": { "$ref": "#/$defs/string_set" },
+        "dependencies": { "$ref": "#/$defs/string_set" },
+        "risk": { "$ref": "#/$defs/non_negative_integer" },
+        "validation_cost": { "$ref": "#/$defs/non_negative_integer" },
+        "estimated_size": { "$ref": "#/$defs/non_negative_integer" },
+        "qualified": { "type": "boolean" },
+        "selected": { "type": "boolean" }
+      }
+    },
+    "formation_package": {
+      "type": "object",
+      "description": "packages.Package kept verbatim. Its state is Prior's vocabulary; the fusion package status it may correspond to is a proposal in codec/contract/prior-mapping.json, not a field here.",
+      "additionalProperties": false,
+      "required": ["accepted_revision", "base_revision", "baseline_hash", "dependencies", "estimated_size", "failure_reason", "id", "members", "reasons", "resources", "risk", "state", "validation_cost"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "members": { "$ref": "#/$defs/string_set" },
+        "dependencies": { "$ref": "#/$defs/string_set" },
+        "resources": { "$ref": "#/$defs/string_set" },
+        "reasons": { "$ref": "#/$defs/string_list" },
+        "risk": { "$ref": "#/$defs/non_negative_integer" },
+        "validation_cost": { "$ref": "#/$defs/non_negative_integer" },
+        "estimated_size": { "$ref": "#/$defs/non_negative_integer" },
+        "state": { "type": "string", "enum": ["formed", "admitting", "admitted", "running", "completed", "failed", "stale"] },
+        "base_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" },
+        "accepted_revision": { "$ref": "#/$defs/optional_prior_opaque_revision" },
+        "baseline_hash": { "$ref": "#/$defs/optional_prior_opaque_revision" },
+        "failure_reason": { "$ref": "#/$defs/optional_string" }
+      },
+      "allOf": [
+        {
+          "if": { "type": "object", "properties": { "state": { "const": "failed" } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "failure_reason": { "type": "string" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "state": { "enum": ["formed", "admitting", "admitted"] } }, "required": ["state"] },
+          "then": { "type": "object", "properties": { "accepted_revision": { "type": "null" }, "failure_reason": { "type": "null" } } }
+        }
+      ]
+    },
+    "attempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempt", "candidate", "candidate_version", "item_id"],
+      "properties": {
+        "candidate": { "type": "string", "minLength": 1 },
+        "candidate_version": { "$ref": "#/$defs/positive_integer" },
+        "attempt": { "$ref": "#/$defs/positive_integer" },
+        "item_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "admission": {
+      "type": "object",
+      "description": "packages.Admission: one admission intent and its attempts. Status values are those packages.go writes at 12d8424.",
+      "additionalProperties": false,
+      "required": ["attempts", "id", "lease_ref", "package_id", "status", "workbench_revision"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "package_id": { "type": "string", "minLength": 1 },
+        "status": { "type": "string", "enum": ["open", "leased", "workbench-written", "reconciled", "settled"] },
+        "lease_ref": { "$ref": "#/$defs/optional_string" },
+        "workbench_revision": { "$ref": "#/$defs/optional_prior_opaque_revision" },
+        "attempts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/attempt" }
+        }
+      }
+    },
+    "formation": {
+      "type": "object",
+      "description": "packages.Plan with its Revision typed and its maps as keyed entries; policy is the FormationPolicy where Prior persisted it.",
+      "additionalProperties": false,
+      "required": ["accepted_revision", "active_items", "admissions", "candidates", "deferred", "id", "order", "packages", "policy", "policy_version", "remaining_budget", "revision"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/optional_prior_revision" },
+        "policy_version": { "type": "string", "minLength": 1 },
+        "accepted_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/prior_opaque_revision" },
+        "remaining_budget": { "type": "integer" },
+        "policy": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/formation_policy" }
+          ]
+        },
+        "candidates": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/formation_candidate" } },
+        "packages": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/formation_package" } },
+        "order": { "$ref": "#/$defs/string_set" },
+        "deferred": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["candidate", "reason"],
+            "properties": {
+              "candidate": { "type": "string", "minLength": 1 },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "admissions": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/admission" } },
+        "active_items": {
+          "type": "array",
+          "description": "Plan.ActiveItems: work item id to the admission (intent) id holding it.",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["admission_id", "item_id"],
+            "properties": {
+              "item_id": { "type": "string", "minLength": 1 },
+              "admission_id": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.package/v1",
+  "title": "fusion.package/v1",
+  "description": "Control data of one work package, work-packages/<name>/package.json (spec section 4.2). Every key is required; null and the empty list are deliberately distinct. Cross-field rules expressed below with if/then: claimed requires a claim, open and paused require claim null, outcome is null exactly on the non-terminal statuses, done admits the classes completed and legacy-completed, dropped admits bounded, cancelled, failed and dropped, a non-completed class carries a reason, legacy-completed requires provenance.source legacy-terminal and legacy-terminal requires a terminal status, mode autonomous requires a non-null source, origin package and campaign require a ref and legacy-unknown forbids one, at most one active_documents entry has role plan. Rules JSON Schema cannot check and codec/contract/transitions.json plus transitions.ts enforce: which status change is legal from which status (the spec 4.2 matrix; done and dropped are terminal and never reopened, resumption files a new package citing the old); depends_on targets are distinct by record_id (uniqueItems only catches identical entries) and form no cycle; a depends_on condition is evaluated against the target's live JSON (codec/contract/dependencies.json); every record_ref resolves in the named workbench; each active_documents revision equals the hash of the referenced narrative at acceptance, and a changed brief makes bound evidence stale; the claim's checkout_id is a domain assignment, never a host lease; narrative.path names this package's own Markdown file inside its own directory; mode autonomous is written only on the user's word and never invented by an agent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["active_documents", "claim", "depends_on", "domain", "evidence", "extensions", "filed_by", "id", "mode", "narrative", "origin", "outcome", "provenance", "references", "schema", "status", "workbench_id"],
+  "properties": {
+    "schema": { "const": "fusion.package/v1" },
+    "id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    "workbench_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    "domain": {
+      "description": "The conventions' **Domain:** field. null only on records imported without one.",
+      "type": ["string", "null"],
+      "enum": ["code", "data", null]
+    },
+    "status": {
+      "description": "The five statuses of rules/fusion-workbench-conventions.md '## Work packages'. No further lifecycle taxonomy.",
+      "type": "string",
+      "enum": ["open", "claimed", "paused", "done", "dropped"]
+    },
+    "claim": {
+      "description": "Domain assignment of the package to a checkout. A terminal record may keep its historical claim.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["checkout_id", "claimed_at", "person"],
+          "properties": {
+            "checkout_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/checkout_id" },
+            "person": { "type": ["string", "null"], "minLength": 1 },
+            "claimed_at": {
+              "description": "null when the historical time is unknown; never guessed.",
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/timestamp" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "mode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "value"],
+      "properties": {
+        "value": { "type": "string", "enum": ["ordinary", "autonomous"] },
+        "source": {
+          "description": "Where the mode comes from: null (nothing recorded, value must be ordinary), a record, the user's word held in a record or artefact, or the imported legacy header line kept raw.",
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "ref"],
+              "properties": {
+                "kind": { "const": "user-word" },
+                "ref": {
+                  "oneOf": [
+                    { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
+                    { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/artefact_ref" }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "raw"],
+              "properties": {
+                "kind": { "const": "legacy" },
+                "raw": { "type": "string", "minLength": 1, "description": "The imported **Mode:** header line, verbatim." }
+              }
+            }
+          ]
+        }
+      },
+      "if": { "type": "object", "properties": { "value": { "const": "autonomous" } }, "required": ["value"] },
+      "then": { "type": "object", "properties": { "source": { "type": "object" } } }
+    },
+    "origin": {
+      "type": "object",
+      "description": "What the package was filed from. An agent's sub-package references the package or campaign whose scope it decomposes; that reference creates no new mandate and no execution right.",
+      "additionalProperties": false,
+      "required": ["kind", "ref"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["user-request", "package", "campaign", "legacy-unknown"] },
+        "ref": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "type": "object", "properties": { "kind": { "enum": ["package", "campaign"] } }, "required": ["kind"] },
+          "then": { "type": "object", "properties": { "ref": { "type": "object" } } }
+        },
+        {
+          "if": { "type": "object", "properties": { "kind": { "const": "legacy-unknown" } }, "required": ["kind"] },
+          "then": { "type": "object", "properties": { "ref": { "type": "null" } } }
+        }
+      ]
+    },
+    "filed_by": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+    "narrative": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/narrative" },
+    "depends_on": {
+      "type": "array",
+      "description": "Ordering edges. A legacy **Depends-on:** entry becomes condition terminal; succeeded is the stricter, explicitly chosen condition (codec/contract/dependencies.json).",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["condition", "target"],
+        "properties": {
+          "target": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
+          "condition": { "type": "string", "enum": ["terminal", "succeeded"] }
+        }
+      }
+    },
+    "active_documents": {
+      "type": "array",
+      "description": "The specs and the plan in force, each bound to the exact revision accepted. At most one plan; any number of specs.",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref", "revision", "role"],
+        "properties": {
+          "ref": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
+          "role": { "type": "string", "enum": ["spec", "plan"] },
+          "revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+        }
+      },
+      "contains": { "type": "object", "properties": { "role": { "const": "plan" } }, "required": ["role"] },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "references": {
+      "type": "array",
+      "description": "Purely informational cross-references; no ordering edge is implied.",
+      "uniqueItems": true,
+      "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/reference" }
+    },
+    "evidence": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/evidence_ref" }
+    },
+    "outcome": {
+      "description": "Detail of the terminal result; not a second lifecycle. null while the package is open, claimed or paused.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["class", "evidence", "reason"],
+          "properties": {
+            "class": { "type": "string", "enum": ["completed", "bounded", "cancelled", "failed", "dropped", "legacy-completed"] },
+            "reason": { "type": "string" },
+            "evidence": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/evidence_ref" }
+            }
+          },
+          "if": { "type": "object", "properties": { "class": { "enum": ["bounded", "cancelled", "failed", "dropped"] } }, "required": ["class"] },
+          "then": { "type": "object", "properties": { "reason": { "type": "string", "minLength": 1 } } }
+        }
+      ]
+    },
+    "provenance": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/provenance" },
+    "extensions": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/extensions" }
+  },
+  "allOf": [
+    {
+      "if": { "type": "object", "properties": { "status": { "const": "claimed" } }, "required": ["status"] },
+      "then": { "type": "object", "properties": { "claim": { "type": "object" } } }
+    },
+    {
+      "if": { "type": "object", "properties": { "status": { "enum": ["open", "paused"] } }, "required": ["status"] },
+      "then": { "type": "object", "properties": { "claim": { "type": "null" } } }
+    },
+    {
+      "if": { "type": "object", "properties": { "status": { "enum": ["open", "claimed", "paused"] } }, "required": ["status"] },
+      "then": { "type": "object", "properties": { "outcome": { "type": "null" } } }
+    },
+    {
+      "if": { "type": "object", "properties": { "status": { "const": "done" } }, "required": ["status"] },
+      "then": {
+        "type": "object",
+        "properties": {
+          "outcome": { "type": "object", "properties": { "class": { "enum": ["completed", "legacy-completed"] } }, "required": ["class"] }
+        }
+      }
+    },
+    {
+      "if": { "type": "object", "properties": { "status": { "const": "dropped" } }, "required": ["status"] },
+      "then": {
+        "type": "object",
+        "properties": {
+          "outcome": { "type": "object", "properties": { "class": { "enum": ["bounded", "cancelled", "failed", "dropped"] } }, "required": ["class"] }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": { "outcome": { "type": "object", "properties": { "class": { "const": "legacy-completed" } }, "required": ["class"] } },
+        "required": ["outcome"]
+      },
+      "then": {
+        "type": "object",
+        "properties": { "provenance": { "type": "object", "properties": { "source": { "const": "legacy-terminal" } }, "required": ["source"] } }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": { "provenance": { "type": "object", "properties": { "source": { "const": "legacy-terminal" } }, "required": ["source"] } },
+        "required": ["provenance"]
+      },
+      "then": { "type": "object", "properties": { "status": { "enum": ["done", "dropped"] } } }
+    }
+  ]
+}
