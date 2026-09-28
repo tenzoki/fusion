@@ -116,12 +116,14 @@ function regularFiles(dir: string, rel = ""): string[] {
 }
 
 // `prior/` holds the DTO round-trip pairs, `workbench/` the scratch
-// workbench the store and CLI suites copy to a temp directory (FJ01 step 3)
-// and `protocol-session/` the recorded request/response bytes of the CLI
-// round trip (FJ01 step 8, `round-trip-cli.test.ts` is their gate); none is a
-// validation fixture, so none is indexed.
+// workbench the store and CLI suites copy to a temp directory (FJ01 step 3),
+// `protocol-session/` the recorded request/response bytes of the CLI round
+// trip (FJ01 step 8, `round-trip-cli.test.ts` is their gate) and
+// `prior-handback/` the five files of Prior's own transition (FJ01b step 8,
+// `prior-handback.test.ts` is their gate); none is a validation fixture, so
+// none is indexed.
 const isIndexed = (rel: string): boolean =>
-  rel !== MANIFEST_FILE && !rel.endsWith(".schema.json") && !rel.startsWith("prior/") && !rel.startsWith("workbench/") && !rel.startsWith("protocol-session/");
+  rel !== MANIFEST_FILE && !rel.endsWith(".schema.json") && !rel.startsWith("prior/") && !rel.startsWith("workbench/") && !rel.startsWith("protocol-session/") && !rel.startsWith("prior-handback/");
 
 describe("fixtures/ coverage", () => {
   it("every fixture file appears in the manifest exactly once, and every manifest path exists", () => {

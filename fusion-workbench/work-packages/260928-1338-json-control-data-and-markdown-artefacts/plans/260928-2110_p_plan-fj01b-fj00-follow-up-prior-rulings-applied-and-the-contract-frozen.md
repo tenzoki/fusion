@@ -146,14 +146,21 @@ Coherence check: ten nodes, twelve edges, three layers in reading order, no cycl
    - Source: decision `260928-1420_*_which-closed-vocabularies-do-artefact-kind-and-issue-disposition-kind-take.md` (option 3 as ruled; this step is its realisation, so the record takes `Implemented:` naming this step's commit).
    - Dependencies: 4.
 
-8. [IN PROGRESS] **Prior's handback counterchecked through the pinned bundle**
+8. [DONE] **Prior's handback counterchecked through the pinned bundle**
+   - Done 2026-09-28 by `code-implementer`: `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` exit 0 (13 files, 743 tests; `prior-handback.test.ts` 6 cases), `npm run typecheck` exit 0, `codec/dist/` unchanged (445 664 bytes, sha256:f82aa558…, step 7's bytes). The `show` over the scratch copy with only the record replaced equals `show.response.json` byte for byte: the schema changes of steps 4 and 7 touch no field of this record. The five digests (`shasum -a 256`, equal on both sides and to the blobs at Prior `c512c4c`):
+     `4f5897da396b43cfac70b7f79932cb291e1f9cd3b86c5ab1b688edf30893b8e7` package.json;
+     `13058c70ea4d3079a4b8d8e18414b068bf344459f032aa81ca5b9c98b5ccd6df` revision.txt;
+     `ad5d5380e9294e29dc64c217d74bebb8df3658fa666299e8ffb501aa52a83f19` show.response.json;
+     `f9c8e60e7509e2e83743d620a5bf0598a345e1fadabf72d26df516d8f749b44b` transition.request.json;
+     `dc180fce19562d281f43d73d4f39b3b9feed503554c6cab1eba1a5989c58f328` transition.response.json.
+     One thing the plan's wording did not say: the validator is keyed by the URN `urn:fusion:schema:fusion.package/v1` (as `manifest.json` spells it), not by the record's own `schema` field `fusion.package/v1`; the test names the URN.
    - Executor: `code-implementer`
    - Files: `codec/fixtures/prior-handback/package.json`, `revision.txt`, `show.response.json`, `transition.request.json`, `transition.response.json` (five files, byte-identical to `/Users/kai/Projects/productive/F09-Prior/tests/testdata/fusion-fj01/prior-handback/` at `c512c4c`), `codec/src/__tests__/prior-handback.test.ts`, `codec/src/__tests__/fixtures.test.ts` (the exemption prefix list gains `prior-handback/`)
    - Changes: the test's header names the Prior commit and the five digests; the cases: `revision.txt` equals `sha256:` over the bytes of `package.json`; `transition.response.json` carries that revision as `revision` and `03-show.response.json`'s revision as `previous_revision`, and `transition.request.json` names the record path and `to: paused` (read as data, asserted as such); the handback `package.json` passes `strictParse` and validates against `fusion.package/v1`; a fresh copy of `codec/fixtures/workbench/` in a temp directory has only `work-packages/260928-1200-parser-fix/package.json` replaced by the handback bytes, `show` on that path runs through `bin/fusion-record` as `round-trip-cli.test.ts` spawns it, and stdout equals `show.response.json` byte for byte (that response echoes no root, so no placeholder substitution). No `README.md` is added under the new directory: the codec README's layout table names it in step 9.
    - Acceptance: the new suite green; `fixtures.test.ts` green with the exemption; `CODEC_REQUIRE_GOLDENS=1 npm test` green; no expected red.
    - Dependencies: 5, 6, 7.
 
-9. **The codec README, and the hook suite in a worktree**
+9. [IN PROGRESS] **The codec README, and the hook suite in a worktree**
    - Executor: `code-implementer`
    - Files: `codec/README.md`
    - Changes: the layout table gains the row `fixtures/prior-handback/` (Prior's FJ01 handback, counterchecked by `prior-handback.test.ts`); the `fixtures/prior/` row says the 13 `prior.json` are Go-emitted goldens (`go-golden@dbd1aa1`) and that `UPDATE_PRIOR_FIXTURES=1` regenerates `fusion.json`; the `contract/` row says `prior-mapping.json` is the contract as Prior ruled it, every row confirmed; a sentence under "The CLI" or a new short section names the two closed vocabularies and where they are defined (`common.schema.json`, `record.schema.json`) and that they are additive-only; the FJ01 sentence on what is implemented stays. Then the hook suite: `git worktree add <scratch> HEAD` (never a whole-tree checkout in the working tree), `cd hooks && npm install && npm test`, record exit code, file and test counts in this step's `[DONE]` note, remove the worktree; re-read the three growth-bound figures.

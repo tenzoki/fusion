@@ -32,3 +32,6 @@ Option 3. Fusion is the authority on what an artefact is, and that list exists; 
 
 ---
 Answered: Prior: docs/design/fusion-fj00-prior-response.md `## 6. Vocabularies and legacy prose` (6a, at Prior c512c4c) — option 3: artefact_ref.kind closes to the 14 fusion kinds plus audit, test-report, integration-report, handover, manifest, json; an issue's disposition.kind closes to fixed, duplicate, deferred, rejected, out-of-scope, merged, superseded; candidate.selection.outcome stays Prior's verbatim set; both additive-only from here; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 451e771c — codec/schemas/common.schema.json `artefact_ref.kind` (20 tokens) and codec/schemas/record.schema.json `disposition.kind` (7 tokens) are closed enums, additive-only, with the fixtures reclassified by path (FJ01b step 7).
