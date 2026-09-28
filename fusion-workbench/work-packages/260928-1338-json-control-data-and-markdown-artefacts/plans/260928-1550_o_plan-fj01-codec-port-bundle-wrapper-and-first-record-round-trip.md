@@ -93,7 +93,8 @@ stdout {"ok":false,"error":{"class":"conflict","reason":"revision-mismatch","det
    - Acceptance: the test is green and the six pairs are committed.
    - Dependencies: 6.
 
-9. **Requests to the Prior side, FJ01 addendum**
+9. [DONE] **Requests to the Prior side, FJ01 addendum**
+   - Done 2026-09-28: `REQUESTS.md` items 7 to 10, stamped `d9dff6ad`. Two things the write surfaced: Prior's `process.go` digests `spec.Executable` only, so with `node` as the executable the bundle is unpinned by Prior's identity check (asked as 8b, three shapes offered); and `allowed()` matches a package edge by `from`/`to` and ignores the table's `operation` column, so `transition` walks the `claim` and `release` edges today, which the recorded pair 02 relies on: filed as `260928-1735_*_does-transition-keep-walking-the-claim-and-release-edges-once-they-are-operations-of-their-own.md`.
    - Executor: `analyst`
    - Files: `codec/fixtures/prior/REQUESTS.md` (a new section `## FJ01`)
    - Changes: what the Prior test adapter has to do to satisfy FJ01's second half: spawn `node codec/dist/fusion-record.js` from an installed fusion copy, take its digest over the bundle file, replay the six recorded request/response pairs against the same scratch workbench and assert the same bytes, then perform one `transition` of its own and hand the resulting revision back for the fusion side to `show`. Also: confirm that Prior's Fusion module may require `node` on `PATH` (the decision's option 1), and whether Prior's `moduleapi` framing or plain newline-delimited JSON is wanted on the pipes for FJ02 onward; FJ01 speaks one request, one response, then exit.
@@ -136,4 +137,4 @@ Store and ops units over a temp copy of the scratch workbench; the CLI round tri
 ## Open Questions
 
 - [x] Option 1 of the codec-port decision, ruled by the user on 2026-09-28.
-- [ ] Does Prior want `moduleapi` framing on the pipes from FJ02 on, or newline-delimited JSON? (step 9)
+- [ ] Does Prior want `moduleapi` framing on the pipes from FJ02 on, or newline-delimited JSON? Carried by `REQUESTS.md` item 9; open until the Prior side answers.

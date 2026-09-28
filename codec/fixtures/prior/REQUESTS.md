@@ -118,3 +118,44 @@ What the test asserts: for every JSON fixture, `expect` and, when invalid, `erro
 **6a. `260928-1420_*_which-closed-vocabularies-do-artefact-kind-and-issue-disposition-kind-take.md`.** Both fields are open lowercase tokens today, so they classify nothing. The record recommends closing `artefact_ref.kind` now from the artefact kinds fusion already names (`spec`, `plan`, `issue`, `decision`, `discussion`, `review`, `analysis`, `consultation`, `memo`, `forum`, `report`, `patch`, `log`, `other`), and closing an issue's `disposition.kind` once, with Prior, at FJ01, seeded from Prior's `Disposition.Outcome` set (`pending`, `selected`, `admitted`, `deferred`, `rejected`, `out_of_scope`, `merged`) and fusion's own resolution words (`fixed`, `duplicate`, `deferred`, `rejected`, `out-of-scope`, `merged`, `superseded`). Asked of Prior: which artefact kinds Prior's evidence and handover files need in the first list, and which disposition kinds Prior needs in the second. Any set adopted is additive-only afterwards.
 
 **6b. `260928-1420_*_where-do-a-candidates-statement-and-purpose-live-after-import.md`.** The two prose fields belong in the issue's Markdown narrative under the spec's own principles; FJ00 also keeps them verbatim in `provenance.legacy_fields` so that the export reproduces Prior's bytes. The record recommends keeping that copy frozen at import for now, and asks Prior whether it can stop persisting the prose in the register and refer to the record instead, and when. A yes there removes the two rows from the mapping at FJ04 and the copy from provenance.
+
+## FJ01
+
+**Written against:** fusion commit `d9dff6ad` on branch `fj-json-workbench` (2026-09-28), which read Prior at commit `478ce21`. `codec/dist/fusion-record.js` at that commit is 440 232 bytes, `sha256:d9d0d440caeb7c311c1de942ca2471a3621dbcfb7d1bcefd6877c5922e4ff500`.
+
+FJ01 turned the codec into one shipped file. `install.sh` now copies `codec/` into the install, and `codec/dist/fusion-record.js` is the one file an installed copy runs: plain `node`, no `node_modules`. `bin/fusion-record` is the Claude side's way in; the Prior side spawns the same file. The bundle reads one JSON request on stdin, writes one JSON response on stdout followed by a newline, and exits: 0 when a response was written, whatever its `ok`; 2 on a usage error; 3 when its inlined schemas do not load. Nothing is written to stderr except on 2 and 3. Four things are asked, in the order they are needed.
+
+### 7. The Prior test adapter reads and updates the same record
+
+**Closes:** the six pairs and `README.md` under `codec/fixtures/protocol-session/`, and the second half of FJ01's row in section 9 of `Prior: concept/fusion-json-workbench-spec.md` (read and updated from the Prior test adapter). Preferred form: the adapter and its test in the Prior repository, plus a reply carrying the revision and the record bytes from step 6 below.
+
+What the adapter does, from an installed fusion copy:
+
+1. Spawn `node <install>/codec/dist/fusion-record.js` with stdin and stdout pipes, one process per request. Take the executable digest of item 8 over the bundle file, not over `node`.
+2. Copy `codec/fixtures/workbench/` to a fresh temporary directory, W, and use its absolute path.
+3. Replay the six pairs in order, `01-show` to `06-validate`. In every `*.request.json`, replace the literal `<workbench>` with W before writing the bytes to stdin. In `06-validate.response.json`, the only answer that echoes the root, replace `<workbench>` with W before comparing.
+4. Assert, per exchange, that stdout equals the recorded `*.response.json` byte for byte and that the exit code is 0. Two properties hold by design: `05-transition`'s stdout equals `02-transition`'s, because 05 repeats 02's `operation_id` and payload and receives the stored answer out of `W/.json-state/ops/`; and every revision in the six is the same on every machine, because a revision is `sha256:` over the stored bytes and the fixture bytes are fixed.
+5. Perform one transition of the adapter's own: `transition` the same package from `claimed` to `paused`, with `expected_revision` set to the revision `03-show` returned, a fresh `operation_id`, an `actor` and a `reason`; expect `ok: true` and a new revision. `done` and `dropped` are the other two edges out of `claimed` in `codec/contract/transitions.json`; `done` needs an `outcome`. Note that FJ01's `transition` walks every package edge in that table, including `open -> claimed` and `claimed -> open`, which the table labels `claim` and `release`; those two become their own operations in FJ02.
+6. Report the revision the adapter received and the bytes of `W/work-packages/260928-1200-parser-fix/package.json` after that write, so the fusion side can `show` them and compare.
+
+Order matters: 02 writes what 03 reads and what 04 is refused against, and a copy on which 02 already ran answers 02 with the stored answer at once. Start from a fresh W for every run.
+
+### 8. `node` on `PATH`, and the digest over the bundle
+
+**Closes:** the sentence in the codec-port decision (`260928-1550_*_which-process-boundary-and-shipped-form-does-the-codec-take.md`, `## Recommendation`) that asks the Prior side to confirm both. Preferred form: a reply.
+
+**8a.** Option 1 of that decision, ruled on 2026-09-28, means a Prior installation needs `node` (20 or later) wherever the Fusion module runs; Prior's core takes no Node requirement, only the module that spawns the codec does. Please confirm this is acceptable. If it is not, the protocol stays as it is and a per-platform single executable (option 2 of the decision) is a packaging change on the fusion side.
+
+**8b.** What the fusion side sees in `Prior: internal/module/process.go` (lines 60 to 74 at `478ce21`): `StartProcess` opens `spec.Executable`, requires an absolute path to a regular file, hashes its bytes and compares `sha256:<hex>` with `spec.ExecutableDigest` before `exec.Command(spec.Executable, spec.Args...)`. Under option 1 the executable is the `node` binary and the bundle is an argument, so the check as written pins `node` and not the bundle. The bundle is a regular file whose first line is `#!/usr/bin/env node`, so it could be the executable itself; but `cmd.Env` holds only what the host lists, so `env` finds no `PATH` unless Prior passes one. Question: does the adapter take a second digest over `spec.Args[0]` beside the one over `node`, does Prior extend `ProcessSpec` with a digest over the bundle, or does it want the bundle to be the executable with a `PATH` entry in the explicit environment? The fusion side assumes none of the three.
+
+### 9. The framing on the pipes from FJ02 on
+
+**Closes:** the open question at the foot of the FJ01 plan (`260928-1550_*_plan-fj01-codec-port-bundle-wrapper-and-first-record-round-trip.md`, `## Open Questions`). Preferred form: a reply, ahead of FJ02.
+
+FJ01 speaks one request, one response, then exit, and needs no framing. What the fusion side can see of Prior's alternative, in `Prior: moduleapi/v1/frame.go` and `protocol.go`: a frame is a 4-byte big-endian length followed by a JSON object with `schema_version`, `message_id`, `kind`, `correlation_id` and `payload`, at most 1 MiB; a connection opens with a `module.handshake` frame and expects `module.ready` back, authenticated with an HMAC over a secret the host passes in `PRIOR_MODULE_CONNECTION_SECRET`; the process is started with `Setpgid` and killed as a group on close. Which does Prior want for a long-running codec process: (a) `moduleapi` framing, one `fusion-record` request per frame payload, the handshake included; or (b) newline-delimited JSON, one request per line and one response per line, with any framing done by Prior's adapter around the process? A third answer, one process per request as in FJ01, is also acceptable to the fusion side; say so if it is enough.
+
+### 10. The nine deferred operations are answered, not broken
+
+**Closes:** nothing to edit; the adapter's reading of `codec/schemas/protocol.schema.json` (its `description`) and `codec/src/cli/ops.ts` lines 91, 112 and 294. Preferred form: none needed.
+
+The protocol schema names fourteen operations. FJ01 implements `inspect`, `list`, `show`, `validate` and `transition`; the other nine (`create`, `claim`, `release`, `set-mode`, `set-dependencies`, `adopt-plan`, `attach-evidence`, `reconcile`, `migration`) are validated against the schema and then answered `{"ok":false,"error":{"class":"operation-unknown","reason":"not-implemented-in-fj01","detail":"..."}}` on stdout with exit 0. A `transition` on an issue, decision or any other non-package record receives the same class and reason. An adapter must read that answer as "lands in a later package", not as a codec defect. For contrast: an `op` outside the fourteen is `operation-unknown/unknown-op`, and a request that is not strict JSON or fails the schema is `schema-invalid`, both also on stdout with exit 0.
