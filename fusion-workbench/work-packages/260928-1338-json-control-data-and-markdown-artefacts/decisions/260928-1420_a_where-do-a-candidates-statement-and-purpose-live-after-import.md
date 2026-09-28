@@ -31,3 +31,6 @@ Prior's `candidates.Candidate` carries two prose fields, `Statement` and `Purpos
 ## Recommendation
 
 Option 1 for FJ00, with option 3 raised to the Prior side through step 12's requests; the frozen copy is provenance, which the spec already allows to hold "die Originalfelder", and it stops being read once Prior no longer writes the prose.
+
+---
+Answered: Prior: docs/design/fusion-fj00-prior-response.md `## 6. Vocabularies and legacy prose` (6b, at Prior c512c4c) — option 1: Statement and Purpose stay verbatim and frozen in provenance.legacy_fields beside the narrative; the two mapping rows are kept after FJ04, since Prior still persists both and includes them in intake and revision identity; ruled by user, Kai Stalmann <ks@qantr.com>.

@@ -31,3 +31,6 @@
 ## Recommendation
 
 Option 1. The table's column documents the op a caller should reach for, and `claim`/`release` in FJ02 validate the claim payload more strictly than a bare `transition` can (they know the checkout and the person they are asked to write), so they are the stricter front door over the same edge rather than the only door. If FJ02 finds a rule that only the dedicated ops can enforce, that is the moment to reopen this with a measured case.
+
+---
+Answered: Prior: docs/design/fusion-fj01-prior-response.md `## Claim/release decision for FJ02` (at Prior c512c4c) — option 1: transition stays the general edge walker, claim and release land in FJ02 as named operations over the same edges, and every check (authorizer, checkout and person binding, claim ownership, allowed edge, evidence, expected revision, operation-id binding) runs in one kernel for both entry points; the recorded protocol session stays valid; ruled by user, Kai Stalmann <ks@qantr.com>.

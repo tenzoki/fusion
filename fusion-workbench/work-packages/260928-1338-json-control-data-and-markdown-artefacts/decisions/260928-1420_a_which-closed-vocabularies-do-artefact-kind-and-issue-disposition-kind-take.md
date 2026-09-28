@@ -29,3 +29,6 @@ The FJ00 schemas (`codec/schemas/common.schema.json`, `record.schema.json`) carr
 ## Recommendation
 
 Option 3. Fusion is the authority on what an artefact is, and that list exists; the disposition of an issue is the seam to Prior's candidate register, whose outcome set (`pending, selected, admitted, deferred, rejected, out_of_scope, merged`) the mapping already carries, so that field is closed once, together with the Prior side, at FJ01.
+
+---
+Answered: Prior: docs/design/fusion-fj00-prior-response.md `## 6. Vocabularies and legacy prose` (6a, at Prior c512c4c) — option 3: artefact_ref.kind closes to the 14 fusion kinds plus audit, test-report, integration-report, handover, manifest, json; an issue's disposition.kind closes to fixed, duplicate, deferred, rejected, out-of-scope, merged, superseded; candidate.selection.outcome stays Prior's verbatim set; both additive-only from here; ruled by user, Kai Stalmann <ks@qantr.com>.
