@@ -35,3 +35,6 @@ Answered: this record `## Options` option 1 — the orchestrator may file a work
 
 ---
 Implemented: `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` — the narrowed bound stands there and in `agents/orchestrator.md` `## Scope` and `## Work items`, `README-agents.md` `## Invariants` and `docs/working-model.md`, landed in the commit that carries this line.
+
+---
+Superseded by: 260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md — the user ruled on 2026-09-27 that agents originate work packages, so the bound this record narrowed is withdrawn rather than narrowed.
