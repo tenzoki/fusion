@@ -8,3 +8,6 @@ Since `451e771c` (FJ01b step 7) `codec/schemas/common.schema.json` closes `artef
 Evidence: `codec/src/references.ts` (the `artefact_ref` branch of `parseReference`, the line refusing `artefact_ref.kind is not a lowercase token`) and the six test lines above; found by the data-implementer at FJ01b step 7, reported rather than edited because `src/` was outside that step's scope.
 
 Acceptance: `parseReference` refuses an `artefact_ref` whose `kind` is outside the schema's enum (reading the enum from `common.schema.json` rather than duplicating the list), the six test lines use kinds inside the enum, and one new test asserts the refusal for `markdown`. Executor: `code-implementer`. Whether the fix lands inside FJ01b or in FJ02 is the orchestrator's call at the next report.
+
+---
+Resolved: codec/src/references.ts reads the artefact-kind enum out of common.schema.json and refuses a kind outside it by name; the six test lines use kinds inside the enum, one test pins the refusal for markdown and one walks the enum (FJ01b tail, after step 10).

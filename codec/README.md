@@ -29,8 +29,9 @@ and `bin/`, and drops `codec/node_modules` as it drops `hooks/node_modules`.
 What an installed copy runs is the bundle, `dist/fusion-record.js`, and
 nothing else in it; what an installed copy carries for a reader or for the
 Prior side is `schemas/`, `contract/` and `fixtures/` (the language-neutral
-fixture index, the Prior DTO pairs, the scratch workbench and the recorded
-protocol session under `fixtures/protocol-session/`). `src/`, `scripts/`,
+fixture index, the Prior DTO pairs, the scratch workbench, the recorded
+protocol session under `fixtures/protocol-session/` and Prior's FJ01 handback
+under `fixtures/prior-handback/`). `src/`, `scripts/`,
 `package.json` and the tests are copied because the copy is whole, and are
 unused at runtime: nothing in an install compiles, tests or imports them.
 `node_modules` never ships, and the tarball never carries one. The installer
@@ -77,7 +78,7 @@ never by its file format.
 |---|---|
 | `schemas/*.schema.json` | JSON Schema (draft 2020-12), one file per contract, each keyed by its `$id` |
 | `contract/` | The transition, dependency and Prior-mapping tables as data; `prior-mapping.json` is the contract as the Prior side ruled it (Prior `c512c4c`, reviewing `dbd1aa1`), every row confirmed |
-| `fixtures/manifest.json` | The language-neutral fixture index: every fixture outside `fixtures/prior/`, with the schema it is checked against and the outcome expected. Prior's Go side reads this same file and asserts the same outcomes; its shape is `fixtures/manifest.schema.json` |
+| `fixtures/manifest.json` | The language-neutral fixture index: every fixture outside `fixtures/prior/`, `fixtures/workbench/`, `fixtures/protocol-session/` and `fixtures/prior-handback/` (the four `fixtures.test.ts` exempts), with the schema it is checked against and the outcome expected. Prior's Go side reads this same file and asserts the same outcomes; its shape is `fixtures/manifest.schema.json` |
 | `fixtures/valid/`, `fixtures/invalid/`, `fixtures/bytes/` | The fixtures the manifest indexes |
 | `fixtures/prior/` | Round-trip fixtures for the Prior DTO mapping; not indexed by the manifest. The 13 `prior.json` are Go-emitted goldens (`go-golden@dbd1aa1`, taken at Prior `c512c4c`), copied byte for byte and never edited here; each `fusion.json` beside one is the codec's import of it, and `UPDATE_PRIOR_FIXTURES=1 npm test` regenerates it when the mapping changes on purpose |
 | `fixtures/prior-handback/` | Prior's FJ01 handback: the five files after Prior's own `claimed → paused` transition through the pinned bundle (the record, its revision, the `show` response, the `transition` request and response), counterchecked by `prior-handback.test.ts`; not indexed by the manifest |

@@ -11,9 +11,10 @@
 // come from `schemas/common.schema.json`: `record_ref` and `artefact_ref`;
 // the structured `foreign_ref` object is accepted as the third.
 //
-// The string patterns are read out of `common.schema.json` at load, so the
-// parser and the validator cannot disagree about what a citation looks like.
-// A citation carrying a store segment (`shared/issues/...`) is refused with
+// The string patterns and the closed artefact-kind enum are read out of
+// `common.schema.json` at load, so the parser and the validator cannot
+// disagree about what a citation looks like or which kinds an artefact may
+// carry. A citation carrying a store segment (`shared/issues/...`) is refused with
 // the reason `store-prefixed`, as the conventions say a check must; a bare
 // stamp is refused as `bare-stamp`, because a stamp alone names no file.
 //
@@ -70,6 +71,8 @@ interface Patterns {
   workbenchPath: RegExp;
   token: RegExp;
   project: RegExp;
+  /** The closed `artefact_ref.kind` vocabulary, as the schema's enum lists it. */
+  artefactKinds: ReadonlySet<string>;
 }
 
 function patternOf(defs: Record<string, unknown>, name: string, prop = "pattern"): RegExp {
@@ -87,6 +90,11 @@ function loadPatterns(): Patterns {
   const foreignRef = defs["foreign_ref"] as { properties?: { project?: { pattern?: string } } } | undefined;
   const project = foreignRef?.properties?.project?.pattern;
   if (typeof project !== "string") throw new Error(`${COMMON_SCHEMA}: $defs.foreign_ref.properties.project.pattern is missing`);
+  const artefactRef = defs["artefact_ref"] as { properties?: { kind?: { enum?: unknown } } } | undefined;
+  const kinds = artefactRef?.properties?.kind?.enum;
+  if (!Array.isArray(kinds) || kinds.length === 0 || !kinds.every((k) => typeof k === "string")) {
+    throw new Error(`${COMMON_SCHEMA}: $defs.artefact_ref.properties.kind.enum is not a non-empty list of strings`);
+  }
   return {
     marker: patternOf(defs, "legacy_marker_citation"),
     markerless: patternOf(defs, "legacy_markerless_citation"),
@@ -96,6 +104,7 @@ function loadPatterns(): Patterns {
     workbenchPath: patternOf(defs, "workbench_path"),
     token: patternOf(defs, "token"),
     project: new RegExp(project),
+    artefactKinds: new Set(kinds as string[]),
   };
 }
 
@@ -188,6 +197,7 @@ function parseObject(o: Record<string, unknown>): ParseResult {
     if (path === undefined || !p.workbenchPath.test(path)) return refuse("malformed-object", "artefact_ref.path is not a workbench-relative path");
     if (sha256 === undefined || !p.sha256.test(sha256)) return refuse("malformed-object", "artefact_ref.sha256 is not a sha256: value");
     if (kind === undefined || !p.token.test(kind)) return refuse("malformed-object", "artefact_ref.kind is not a lowercase token");
+    if (!p.artefactKinds.has(kind)) return refuse("malformed-object", `artefact_ref.kind "${kind}" is outside the closed artefact-kind vocabulary`);
     return { ok: true, reference: { kind: "artefact", ref: { path, sha256, kind } } };
   }
 

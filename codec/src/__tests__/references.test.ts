@@ -11,6 +11,12 @@ const WB = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
 const REC = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
 const SHA = "sha256:" + "0".repeat(64);
 
+/** The closed `artefact_ref.kind` enum, read from the schema so the test never carries a second copy of the list. */
+function artefactKindEnum(): string[] {
+  const defs = (JSON.parse(readFileSync(COMMON_SCHEMA, "utf-8")) as { $defs: { artefact_ref: { properties: { kind: { enum: string[] } } } } }).$defs;
+  return defs.artefact_ref.properties.kind.enum;
+}
+
 function parsed(input: unknown): Reference {
   const r = parseReference(input);
   expect(r.ok, JSON.stringify(r)).toBe(true);
@@ -83,10 +89,20 @@ describe("parseReference: the structured shapes", () => {
   });
 
   it("artefact_ref", () => {
-    expect(parsed({ path: "work-packages/260928-1200-parser-fix/260928-1200-parser-fix.md", sha256: SHA, kind: "markdown" })).toEqual({
+    expect(parsed({ path: "work-packages/260928-1200-parser-fix/260928-1200-parser-fix.md", sha256: SHA, kind: "other" })).toEqual({
       kind: "artefact",
-      ref: { path: "work-packages/260928-1200-parser-fix/260928-1200-parser-fix.md", sha256: SHA, kind: "markdown" },
+      ref: { path: "work-packages/260928-1200-parser-fix/260928-1200-parser-fix.md", sha256: SHA, kind: "other" },
     });
+  });
+
+  it.each(artefactKindEnum())("artefact_ref.kind %s, inside the schema's closed enum, passes", (kind) => {
+    expect(parsed({ path: "shared/reviews/260905-2054-reviewer-topic.md", sha256: SHA, kind })).toMatchObject({ kind: "artefact", ref: { kind } });
+  });
+
+  it("artefact_ref.kind outside the closed enum is refused, the kind named: markdown is a format, not a kind", () => {
+    const detail = refused({ path: "shared/reviews/260905-2054-reviewer-topic.md", sha256: SHA, kind: "markdown" }, "malformed-object");
+    expect(detail).toContain('"markdown"');
+    expect(detail).toContain("closed artefact-kind vocabulary");
   });
 
   it("the structured foreign_ref object", () => {
@@ -101,9 +117,9 @@ describe("parseReference: the structured shapes", () => {
     expect(refused({ workbench_id: "not-a-uuid", record_id: REC }, "malformed-object")).toContain("workbench_id");
     expect(refused({ workbench_id: WB, record_id: REC, revision: "abc" }, "malformed-object")).toContain("revision");
     expect(refused({ workbench_id: WB, record_id: REC, extra: 1 }, "malformed-object")).toContain("extra");
-    expect(refused({ path: "/Users/kai/x.md", sha256: SHA, kind: "markdown" }, "malformed-object")).toContain("path");
-    expect(refused({ path: "../x.md", sha256: SHA, kind: "markdown" }, "malformed-object")).toContain("path");
-    expect(refused({ path: "a.md", sha256: "0".repeat(64), kind: "markdown" }, "malformed-object")).toContain("sha256");
+    expect(refused({ path: "/Users/kai/x.md", sha256: SHA, kind: "other" }, "malformed-object")).toContain("path");
+    expect(refused({ path: "../x.md", sha256: SHA, kind: "other" }, "malformed-object")).toContain("path");
+    expect(refused({ path: "a.md", sha256: "0".repeat(64), kind: "other" }, "malformed-object")).toContain("sha256");
     expect(refused({ path: "a.md", sha256: SHA, kind: "Markdown" }, "malformed-object")).toContain("kind");
     expect(refused({ project: "a:b", citation: "260905-2054-reconciliation.md" }, "malformed-object")).toContain("project");
     expect(refused({ project: "menue-rs", citation: "shared/issues/260905-2054-reconciliation.md" }, "store-prefixed")).toContain("shared/issues");
@@ -152,7 +168,7 @@ describe("renderReference round trips", () => {
   });
 
   it("an artefact_ref renders as its path", () => {
-    const ref = parsed({ path: "shared/reviews/260905-2054-reviewer-topic.md", sha256: SHA, kind: "markdown" });
+    const ref = parsed({ path: "shared/reviews/260905-2054-reviewer-topic.md", sha256: SHA, kind: "review" });
     expect(renderReference(ref)).toBe("shared/reviews/260905-2054-reviewer-topic.md");
   });
 
