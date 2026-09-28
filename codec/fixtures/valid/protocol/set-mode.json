@@ -1,0 +1,23 @@
+{
+  "op": "set-mode",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "0f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a",
+  "record": {
+    "path": "work-packages/260928-1200-parser-fix/package.json"
+  },
+  "expected_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actor": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "mode": {
+    "value": "autonomous",
+    "source": {
+      "kind": "user-word",
+      "ref": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "f9dc47c3-35cb-41cf-8cdb-c84e75ef2c0f"
+      }
+    }
+  }
+}

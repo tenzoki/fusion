@@ -1176,5 +1176,201 @@
     "schema": "urn:fusion:schema:fusion.workbench/v1",
     "expect": "valid",
     "note": "CRLF line endings are whitespace to a reader and the manifest validates; a writer never produces CRLF, it emits LF with a final newline."
+  },
+  {
+    "path": "valid/protocol/inspect.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "inspect takes the workbench root and nothing else."
+  },
+  {
+    "path": "valid/protocol/list.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "list over one store; scope is a workbench-relative path."
+  },
+  {
+    "path": "valid/protocol/show.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "show names one pair by the workbench-relative path of its control file."
+  },
+  {
+    "path": "valid/protocol/validate.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "validate without a record checks the whole workbench; workbench left out, so main.ts takes FUSION_WORKBENCH."
+  },
+  {
+    "path": "valid/protocol/create.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "create with a pre-assigned id, the filer, the origin and the scope (spec section 6 row create). Answered operation-unknown/not-implemented-in-fj01."
+  },
+  {
+    "path": "valid/protocol/transition.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "transition open to claimed with the claim the target state requires."
+  },
+  {
+    "path": "valid/protocol/claim.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "claim as its own operation (spec section 6). Answered operation-unknown/not-implemented-in-fj01."
+  },
+  {
+    "path": "valid/protocol/release.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "release with a reason. Answered operation-unknown/not-implemented-in-fj01."
+  },
+  {
+    "path": "valid/protocol/set-mode.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "set-mode with a user-word source. Answered operation-unknown/not-implemented-in-fj01."
+  },
+  {
+    "path": "valid/protocol/set-dependencies.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "set-dependencies with one succeeded edge. Answered operation-unknown/not-implemented-in-fj01."
+  },
+  {
+    "path": "valid/protocol/adopt-plan.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "adopt-plan binds the plan record at the accepted narrative hash. Answered operation-unknown/not-implemented-in-fj01."
+  },
+  {
+    "path": "valid/protocol/attach-evidence.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "attach-evidence with a revision-pinned evidence_ref. Answered operation-unknown/not-implemented-in-fj01."
+  },
+  {
+    "path": "valid/protocol/reconcile.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "reconcile over the whole workbench. Answered operation-unknown/not-implemented-in-fj01."
+  },
+  {
+    "path": "valid/protocol/migration.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "migration survey needs no plan. Answered operation-unknown/not-implemented-in-fj01."
+  },
+  {
+    "path": "invalid/protocol/inspect-unknown-key.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An unknown key on any branch is refused: every branch is additionalProperties false."
+  },
+  {
+    "path": "invalid/protocol/list-scope-absolute.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "scope is workbench-relative; a leading slash is refused."
+  },
+  {
+    "path": "invalid/protocol/show-record-not-control-file.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A record is named by its control file, package.json or <name>.record.json, never by the narrative."
+  },
+  {
+    "path": "invalid/protocol/validate-workbench-relative.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "workbench is an absolute path."
+  },
+  {
+    "path": "invalid/protocol/create-without-operation-id.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "Every mutation carries an operation_id."
+  },
+  {
+    "path": "invalid/protocol/transition-expected-revision-unqualified.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "expected_revision is an algorithm-qualified sha256: value."
+  },
+  {
+    "path": "invalid/protocol/claim-checkout-id-uppercase.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "checkout_id is eight lowercase hex characters."
+  },
+  {
+    "path": "invalid/protocol/release-reason-empty.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "release needs a non-empty reason."
+  },
+  {
+    "path": "invalid/protocol/set-mode-value-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "mode.value is ordinary or autonomous."
+  },
+  {
+    "path": "invalid/protocol/set-dependencies-condition-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A depends_on condition is terminal or succeeded (codec/contract/dependencies.json)."
+  },
+  {
+    "path": "invalid/protocol/adopt-plan-without-revision.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "adopt-plan binds a revision; without one there is nothing to bind."
+  },
+  {
+    "path": "invalid/protocol/attach-evidence-ref-without-revision.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An evidence_ref is pinned to an exact revision."
+  },
+  {
+    "path": "invalid/protocol/reconcile-operation-id.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "reconcile is a read and carries no operation_id."
+  },
+  {
+    "path": "invalid/protocol/migration-phase-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The migration phases are survey, plan, apply and verify."
+  },
+  {
+    "path": "invalid/protocol/op-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An op outside the fourteen of spec section 6 matches no branch. The dispatcher answers operation-unknown before validation; the schema alone says schema-invalid."
+  },
+  {
+    "path": "invalid/protocol/op-missing.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "op is required."
   }
 ]

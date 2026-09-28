@@ -115,8 +115,11 @@ function regularFiles(dir: string, rel = ""): string[] {
   return out.sort();
 }
 
+// `prior/` holds the DTO round-trip pairs and `workbench/` the scratch
+// workbench the store and CLI suites copy to a temp directory (FJ01 step 3);
+// neither is a validation fixture, so neither is indexed.
 const isIndexed = (rel: string): boolean =>
-  rel !== MANIFEST_FILE && !rel.endsWith(".schema.json") && !rel.startsWith("prior/");
+  rel !== MANIFEST_FILE && !rel.endsWith(".schema.json") && !rel.startsWith("prior/") && !rel.startsWith("workbench/");
 
 describe("fixtures/ coverage", () => {
   it("every fixture file appears in the manifest exactly once, and every manifest path exists", () => {

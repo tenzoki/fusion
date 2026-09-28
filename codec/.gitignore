@@ -3,3 +3,6 @@ node_modules/
 # package commits its lock, as `hooks/` does (whose lock was force-added), and
 # the negation below is what lets an ordinary `git add codec/` pick it up.
 !package-lock.json
+# Per-invocation bundle staging (scripts/build.mjs); the shipped dist/ is
+# synced from here by atomic rename and is tracked.
+.build-staging/

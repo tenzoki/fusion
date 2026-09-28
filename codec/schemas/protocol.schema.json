@@ -1,0 +1,320 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.protocol/v1",
+  "title": "fusion.protocol/v1",
+  "description": "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. FJ01 implements inspect, list, show, validate and transition; the other nine are validated here and answered operation-unknown/not-implemented-in-fj01 until their packages land. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there.",
+  "type": "object",
+  "required": ["op"],
+  "properties": {
+    "op": {
+      "type": "string",
+      "enum": ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "migration"]
+    }
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op"],
+      "properties": {
+        "op": { "const": "inspect" },
+        "workbench": { "$ref": "#/$defs/workbench" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op"],
+      "properties": {
+        "op": { "const": "list" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "scope": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "record"],
+      "properties": {
+        "op": { "const": "show" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "record": { "$ref": "#/$defs/record_selector" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op"],
+      "properties": {
+        "op": { "const": "validate" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "record": { "$ref": "#/$defs/record_selector" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "id", "kind", "filed_by", "origin", "scope", "narrative", "payload"],
+      "properties": {
+        "op": { "const": "create" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        "kind": { "type": "string", "enum": ["package", "issue", "plan", "discussion", "decision"] },
+        "filed_by": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "origin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "ref"],
+          "properties": {
+            "kind": { "type": "string", "enum": ["user-request", "package", "campaign", "legacy-unknown"] },
+            "ref": { "oneOf": [{ "type": "null" }, { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }] }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "description": "Where the pair is filed: the container directory (workbench-relative) or null for shared/, and the store within it (issues, plans, ...; work-packages for a package).",
+          "additionalProperties": false,
+          "required": ["container", "store"],
+          "properties": {
+            "container": { "oneOf": [{ "type": "null" }, { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" }] },
+            "store": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/token" }
+          }
+        },
+        "narrative": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/narrative" },
+        "payload": { "type": "object", "description": "The kind-specific control fields the new record starts with." }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "record", "expected_revision", "actor", "to", "reason"],
+      "properties": {
+        "op": { "const": "transition" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "record": { "$ref": "#/$defs/record_selector" },
+        "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "to": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$", "description": "The target state, in the vocabulary of the record's kind (codec/contract/transitions.json): package statuses are hyphen-free tokens, record states may carry an underscore (in_progress)." },
+        "reason": { "type": "string", "minLength": 1 },
+        "payload": {
+          "type": "object",
+          "description": "What the target state may need to see, in the record's own field shapes. Only the fields the target state has a rule about are read.",
+          "additionalProperties": false,
+          "properties": {
+            "claim": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["checkout_id", "claimed_at", "person"],
+                  "properties": {
+                    "checkout_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/checkout_id" },
+                    "person": { "type": ["string", "null"], "minLength": 1 },
+                    "claimed_at": { "oneOf": [{ "type": "null" }, { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/timestamp" }] }
+                  }
+                }
+              ]
+            },
+            "outcome": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["class", "evidence", "reason"],
+                  "properties": {
+                    "class": { "type": "string", "enum": ["completed", "bounded", "cancelled", "failed", "dropped", "legacy-completed"] },
+                    "reason": { "type": "string" },
+                    "evidence": { "type": "array", "uniqueItems": true, "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/evidence_ref" } }
+                  }
+                }
+              ]
+            },
+            "disposition": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["kind", "reason_ref"],
+                  "properties": {
+                    "kind": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/token" },
+                    "reason_ref": { "oneOf": [{ "type": "null" }, { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/reference" }] }
+                  }
+                }
+              ]
+            },
+            "answer_ref": { "oneOf": [{ "type": "null" }, { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }] },
+            "implementation_ref": { "oneOf": [{ "type": "null" }, { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/git_commit" }] },
+            "superseded_by": { "oneOf": [{ "type": "null" }, { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }] }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "record", "expected_revision", "actor", "claim"],
+      "properties": {
+        "op": { "const": "claim" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "record": { "$ref": "#/$defs/record_selector" },
+        "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "claim": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["checkout_id", "claimed_at", "person"],
+          "properties": {
+            "checkout_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/checkout_id" },
+            "person": { "type": ["string", "null"], "minLength": 1 },
+            "claimed_at": { "oneOf": [{ "type": "null" }, { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/timestamp" }] }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "record", "expected_revision", "actor", "reason"],
+      "properties": {
+        "op": { "const": "release" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "record": { "$ref": "#/$defs/record_selector" },
+        "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "record", "expected_revision", "actor", "mode"],
+      "properties": {
+        "op": { "const": "set-mode" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "record": { "$ref": "#/$defs/record_selector" },
+        "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "mode": {
+          "type": "object",
+          "description": "The package's mode field as fusion.package/v1 shapes it; autonomous needs a non-null source with the user's provenance, which the operation checks against the package schema, not this one.",
+          "additionalProperties": false,
+          "required": ["source", "value"],
+          "properties": {
+            "value": { "type": "string", "enum": ["ordinary", "autonomous"] },
+            "source": { "type": ["object", "null"] }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "record", "expected_revision", "actor", "depends_on"],
+      "properties": {
+        "op": { "const": "set-dependencies" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "record": { "$ref": "#/$defs/record_selector" },
+        "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "depends_on": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["condition", "target"],
+            "properties": {
+              "target": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
+              "condition": { "type": "string", "enum": ["terminal", "succeeded"] }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "record", "expected_revision", "actor", "plan", "revision"],
+      "properties": {
+        "op": { "const": "adopt-plan" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "record": { "$ref": "#/$defs/record_selector" },
+        "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "plan": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
+        "revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256", "description": "The hash of the plan narrative as accepted." }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "record", "expected_revision", "actor", "evidence"],
+      "properties": {
+        "op": { "const": "attach-evidence" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "record": { "$ref": "#/$defs/record_selector" },
+        "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "evidence": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/evidence_ref" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op"],
+      "properties": {
+        "op": { "const": "reconcile" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "scope": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "phase"],
+      "properties": {
+        "op": { "const": "migration" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "phase": { "type": "string", "enum": ["survey", "plan", "apply", "verify"] },
+        "plan": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path", "description": "The frozen plan; required from apply on, which the operation checks." }
+      }
+    }
+  ],
+  "$defs": {
+    "workbench": {
+      "type": "string",
+      "description": "Absolute path of the workbench root (the directory holding workbench.json). Optional in the request; main.ts fills it from FUSION_WORKBENCH.",
+      "minLength": 1,
+      "pattern": "^/"
+    },
+    "operation_id": {
+      "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid",
+      "description": "Caller-chosen, reusable for an identical replay; stored under .json-state/ops/<operation_id>.json with the answer."
+    },
+    "record_selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path"],
+      "properties": {
+        "path": {
+          "allOf": [
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { "type": "string", "pattern": "(^|/)(package|[^/]+\\.record)\\.json$" }
+          ],
+          "description": "The control file of the pair, workbench-relative: work-packages/<d>/package.json or <store>/<name>.record.json."
+        }
+      }
+    }
+  }
+}

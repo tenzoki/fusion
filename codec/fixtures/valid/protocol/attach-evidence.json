@@ -1,0 +1,21 @@
+{
+  "op": "attach-evidence",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "0f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a",
+  "record": {
+    "path": "work-packages/260928-1200-parser-fix/package.json"
+  },
+  "expected_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actor": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "evidence": {
+    "ref": {
+      "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+      "record_id": "51f3db37-ef6a-4e92-88d8-6b695df10327",
+      "revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "policy": "prior-enforced"
+  }
+}

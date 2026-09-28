@@ -99,6 +99,16 @@ let dependenciesTable: DependenciesTable | undefined;
 export const transitions = (): TransitionsTable => (transitionsTable ??= readTable<TransitionsTable>("transitions.json"));
 export const dependencies = (): DependenciesTable => (dependenciesTable ??= readTable<DependenciesTable>("dependencies.json"));
 
+/**
+ * Installs the two tables from values already in memory, in place of the
+ * files under `contract/`. The shipped bundle inlines both tables at build
+ * time (`src/cli/schemas.ts`) and calls this before the first question.
+ */
+export function useTables(t: TransitionsTable, d: DependenciesTable): void {
+  transitionsTable = t;
+  dependenciesTable = d;
+}
+
 /** The kinds the table controls, in the table's order. */
 export const kinds = (): string[] => Object.keys(transitions().kinds);
 
@@ -206,6 +216,27 @@ function decisionRules(edge: Edge, payload: TransitionPayload): RuleResult {
   const value = (payload as Record<string, unknown>)[edge.requires];
   if (value === undefined || value === null) return refuse("schema-invalid", `decision: ${edge.to} requires ${edge.requires}`);
   return { ok: true };
+}
+
+/**
+ * Whether a record at rest in `state` carries what that state's rules demand:
+ * the package claim rule and outcome classes, the issue disposition rule.
+ * This is the target-state half of `allowed` without an edge, for a validator
+ * looking at a stored record rather than at a change. Kinds without state
+ * rules (plan, discussion, decision) pass once the state is in the table.
+ */
+export function stateRules(kind: string, state: string, payload: TransitionPayload = {}): RuleResult {
+  const table = transitions().kinds[kind];
+  if (table === undefined) return refuse("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
+  if (!table.states.includes(state)) return refuse("schema-invalid", `"${state}" is not a ${kind} state`);
+  switch (kind) {
+    case "package":
+      return packageRules(table, state, payload);
+    case "issue":
+      return issueRules(table, state, payload);
+    default:
+      return { ok: true };
+  }
 }
 
 /**
