@@ -130,7 +130,8 @@ The fixture manifest is language-neutral on purpose: Prior's Go side reads the s
     - Acceptance: `hooks/` suite green in the worktree, or the one expected red named here with the lint file and the reason, and every other red a stop. The three growth-bound figures in `**Survey commit:**` are re-read after the run and stated; none may have moved, because this plan adds nothing to the bounded surfaces.
     - Dependencies: 1 to 10.
 
-12. **Cross-check note for the Prior side**
+12. [DONE] **Cross-check note for the Prior side**
+    - Done 2026-09-28: `codec/fixtures/prior/REQUESTS.md`, 120 lines, stamped `e7c11fec`; the golden provenance form the gate accepts is `go-golden@<hex>`, and the page uses it. Prior writes the aggregates indented (`json.MarshalIndent`) and hashes them compact; the page says so.
     - Executor: `analyst`
     - Files: `codec/fixtures/prior/REQUESTS.md`
     - Changes: one page listing, for the Prior side, what FJ00 needs from Prior and cannot produce here: Go-emitted goldens for every case under `fixtures/prior/`, confirmation or correction of every `confirmed: false` row in `contract/prior-mapping.json`, and a Go test that reads `fixtures/manifest.json` and asserts the same outcomes. Written so that the user can hand it to Codex verbatim.
@@ -173,5 +174,5 @@ Four suites inside `codec/`: the manifest-driven fixture suite (every fixture, b
 ## Open Questions
 
 - [x] Does the codec live in its own package? Yes, option 1, ruled by the user on 2026-09-28 (`260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md`)
-- [ ] Are the proposed `Package.State` rows right, and does Prior emit `null` or `[]` for empty slices in the aggregates it persists? (for the Prior side, via step 12)
-- [ ] Does the Prior side accept `fixtures/manifest.json` as the shared fixture index for FH01's acceptance sentence?
+- [ ] Are the proposed `Package.State` rows right, and does Prior emit `null` or `[]` for empty slices in the aggregates it persists? Carried by `codec/fixtures/prior/REQUESTS.md` items 2 and 3; open until the Prior side answers.
+- [ ] Does the Prior side accept `fixtures/manifest.json` as the shared fixture index for FH01's acceptance sentence? Carried by `codec/fixtures/prior/REQUESTS.md` item 4; open until the Prior side answers.
