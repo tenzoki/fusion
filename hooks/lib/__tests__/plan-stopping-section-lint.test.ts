@@ -2,7 +2,7 @@
 // The stopping-section gate — a live plan must carry `## Where this work stops`,
 // filled.
 //
-// WHY THIS EXISTS. `agents/planner.md` has carried the section in the plan
+// WHY THIS EXISTS. `agents/implementation-planner.md` has carried the section in the plan
 // output format since `b200902` and made it mandatory at `06ab15b`; the first
 // plan written after both does not carry it, and Phase 4 step 2b took its
 // no-such-section branch on the very Circle that built it. The measured account
@@ -17,7 +17,7 @@
 // here rather than worked around. Nothing below judges whether a clause is
 // good, complete, answerable, or true. A plan satisfies this gate with one
 // clause of any quality. Whether the clauses hold is what the human is asked at
-// `## Closing a work item` step 3, and that question is not moved here.
+// `## Closing a work package` step 3, and that question is not moved here.
 //
 // WHAT COUNTS AS FILLED, and why the placeholder is judged too. The mandate has
 // two halves — the section is present, and it is never left as the angle-bracket
@@ -30,7 +30,7 @@
 //
 // THE CORPUS IS LIVE PLANS: `_o_` and `_p_` from the issues/planning marker
 // vocabulary authored in `rules/fusion-workbench-conventions.md`; `_c_` and `_d_`
-// are out, and so are shaper specs, whose format has no such section. The mandate
+// are out, and so are requirements-designer specs, whose format has no such section. The mandate
 // serves a step that runs BEFORE the work closes, so the window in which the
 // section must exist is exactly the window in which the plan is live.
 // WHAT THIS DOES NOT COVER, stated rather than discovered. At HEAD the live
@@ -48,8 +48,9 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { fencedContentLines, workbenchRoot, WORKBENCH_PRESENT } from "./helpers/citation-scan.ts";
+import { CONTAINER_STORE, containerRoots, namesOf } from "../stores.js";
 
-/** The heading, verbatim from `agents/planner.md:131`. */
+/** The heading, verbatim from `agents/implementation-planner.md:131`. */
 const SECTION = "## Where this work stops";
 
 /**
@@ -65,8 +66,8 @@ function markerOf(base: string): string | null {
 }
 
 /**
- * A shaper spec rather than a planner plan. Decided by the shaper's own two
- * template signatures (`agents/shaper.md:183` — the H1 `# Spec:` and the
+ * A requirements-designer spec rather than an implementation-planner plan. Decided by the requirements-designer's own two
+ * template signatures (`agents/requirements-designer.md:183` — the H1 `# Spec:` and the
  * filename `..._o_spec-<topic>.md`), either of which is sufficient. Both labels
  * are template text and stay English in a `de` project, which the four specs on
  * disk confirm: German bodies under an English `# Spec:` H1.
@@ -88,7 +89,7 @@ type Verdict = "ok" | "absent" | "empty" | "placeholder";
  * Whether `text` carries a filled stopping section.
  *
  * Fenced content is excluded via `fencedContentLines`, so a plan QUOTING the
- * planner's output format does not satisfy the gate by quotation — the same
+ * implementation-planner's output format does not satisfy the gate by quotation — the same
  * reasoning `fenced-code-exemption.test.ts` records for the citation scanner.
  *
  * The body runs to the next level-1 or level-2 ATX heading outside a fence, or
@@ -129,16 +130,16 @@ function checkStoppingSection(text: string): Verdict {
 const REMEDY: Record<Exclude<Verdict, "ok">, string> = {
   absent:
     `no '${SECTION}' section\n` +
-    `    -> add it, in the position the plan output format gives it (agents/planner.md:131 — after\n` +
+    `    -> add it, in the position the plan output format gives it (agents/implementation-planner.md:131 — after\n` +
     `       '## Implementation Steps', before '## Data Structures'), and write one clause per stopping\n` +
     `       condition, each answerable yes or no.`,
   empty:
     `'${SECTION}' is present but its body is empty\n` +
     `    -> write one clause per stopping condition, each answerable yes or no, plus any precondition a\n` +
-    `       later act — a release, a tag, a closure — must satisfy first (agents/planner.md:131).`,
+    `       later act — a release, a tag, a closure — must satisfy first (agents/implementation-planner.md:131).`,
   placeholder:
     `'${SECTION}' still holds only its angle-bracket placeholder\n` +
-    `    -> replace the '<...>' with the plan's own clauses. agents/planner.md:160 states the section is\n` +
+    `    -> replace the '<...>' with the plan's own clauses. agents/implementation-planner.md:160 states the section is\n` +
     `       mandatory and is never left as the placeholder; the orchestrator reads these clauses back to\n` +
     `       the user before the work closes (agents/orchestrator.md:866), and a placeholder gives it\n` +
     `       nothing to read.`,
@@ -153,19 +154,14 @@ function report(violations: Violation[]): string {
   return violations.map((v) => `  ${v.rel}  ${REMEDY[v.verdict]}`).join("\n");
 }
 
-/** Every planning store: each Circle's, plus the shared one. */
+/** Every plan store, under both window names: each container's, plus the shared one. */
 function planningStores(): string[] {
-  const stores: string[] = [];
-  const circles = join(workbenchRoot, "circles");
-  if (existsSync(circles)) {
-    for (const d of readdirSync(circles, { withFileTypes: true })) {
-      if (d.isDirectory() && existsSync(join(circles, d.name, "planning"))) {
-        stores.push(`circles/${d.name}/planning`);
-      }
-    }
+  const bases = ["shared"];
+  for (const r of containerRoots(workbenchRoot)) {
+    if (!existsSync(join(workbenchRoot, r))) continue;
+    for (const d of readdirSync(join(workbenchRoot, r), { withFileTypes: true })) if (d.isDirectory()) bases.push(`${r}/${d.name}`);
   }
-  if (existsSync(join(workbenchRoot, "shared", "planning"))) stores.push("shared/planning");
-  return stores.sort();
+  return bases.flatMap((b) => namesOf("plans").map((n) => `${b}/${n}`)).filter((s) => existsSync(join(workbenchRoot, s))).sort();
 }
 
 /** The corpus: live (`_o_`/`_p_`) plans, specs excluded. */
@@ -227,7 +223,7 @@ describe("stopping-section lint: the mechanism", () => {
   });
 
   it("the heading inside a fenced block does not satisfy the gate", () => {
-    const quoting = ["# Implementation Plan: x", "", "The planner's format reads:", "", "```markdown", SECTION, "", "<the conditions>", "```", "", "## Data Structures"].join("\n");
+    const quoting = ["# Implementation Plan: x", "", "The implementation-planner's format reads:", "", "```markdown", SECTION, "", "<the conditions>", "```", "", "## Data Structures"].join("\n");
     expect(checkStoppingSection(quoting)).toBe("absent");
   });
 
@@ -244,18 +240,18 @@ describe("stopping-section lint: the corpus filter", () => {
     expect(markerOf("260819-2016-a-history-file.md")).toBeNull();
   });
 
-  it("excludes shaper specs by either template signature, and admits every plan H1 on disk", () => {
+  it("excludes requirements-designer specs by either template signature, and admits every plan H1 on disk", () => {
     expect(isSpec("260814-0738_o_spec-curator.md", "# Implementation Plan: mislabelled")).toBe(true);
-    expect(isSpec("260814-0738_o_curator.md", "# Spec: the curator\n")).toBe(true);
+    expect(isSpec("260814-0738_o_curator.md", "# Spec: the policy-curator\n")).toBe(true);
     // The four H1 forms the 20 plans carry, English and `de` alike.
     for (const h1 of ["# Implementation Plan: x", "# Master Implementation Plan: x", "# Umsetzungsplan: x", "# Ausstiegsplan: x"]) {
       expect(isSpec("260819-2016_o_topic.md", `${h1}\n`)).toBe(false);
     }
   });
 
-  it.skipIf(!WORKBENCH_PRESENT)("reads every planning store — each Circle's and the shared one", () => {
+  it.skipIf(!WORKBENCH_PRESENT)("reads every plan store — each container's and the shared one", () => {
     const stores = planningStores();
-    expect(stores).toContain("shared/planning");
-    expect(stores.filter((s) => s.startsWith("circles/")).length).toBeGreaterThan(0);
+    expect(stores).toContain("shared/plans");
+    expect(stores.filter((s) => s.startsWith(`${CONTAINER_STORE}/`)).length).toBeGreaterThan(0);
   });
 });

@@ -29,7 +29,7 @@
  * stopped deciding anything. The issue that tracked the first residual is
  * `260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`,
  * still open at the time of writing and now moot — its subject is gone, and
- * closing it is a reconciler's act, not this file's.
+ * closing it is a state-auditor's act, not this file's.
  *
  * What survives is milder in consequence and not milder in kind: nothing is
  * blocked or reverted wrongly any more, but an agent can spend a whole session
@@ -97,7 +97,7 @@
  * the two resolutions:
  *
  *   - **The envelope goes out first, before stdin is touched.** The warning
- *     above is this hook's verdict and the row is an addendum to it. Reading
+ *     above is this hook's reply and the row is an addendum to it. Reading
  *     stdin is the one thing here that can block, so a payload that never
  *     arrives costs the row and never the warning.
  *   - **The head commit and the domain are resolved here, not in the module.**
@@ -111,7 +111,7 @@
  *     `bin/fusion-count-sources` prints. A helper that could not be run at all
  *     is NOT the same fact as a count it declined to take: the first leaves the
  *     key absent, the second reaches the cascade's own `counted_by == "none"`
- *     branch and is a real verdict.
+ *     branch and is a real result.
  *
  * ## Channel
  *

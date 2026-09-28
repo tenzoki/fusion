@@ -13,7 +13,7 @@ import { defineConfig } from "vitest/config";
 // a suite that owns the machine and wrong for this project, whose working
 // pattern is several executors verifying disjoint changes in one checkout at
 // the same time (`agents/orchestrator.md` Step 3a dispatches them in parallel
-// batches, and `agents/coder.md` has each of them run this suite).
+// batches, and `agents/code-implementer.md` has each of them run this suite).
 //
 // ## The measurement
 //

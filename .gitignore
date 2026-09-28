@@ -32,6 +32,7 @@ bin/*
 !bin/fusion-session-mark
 !bin/fusion-commit-lock
 !bin/fusion-paths
+!bin/fusion-stores
 !bin/fusion-plugin-cwd
 !bin/fusion-source-root
 !bin/fusion-count-sources
@@ -47,7 +48,7 @@ bin/*
 !bin/fusion-citation-sweep
 !bin/fusion-forum
 !bin/fusion-plan-size
-!bin/fusion-claimed-item
+!bin/fusion-claimed-package
 !bin/fusion-work-order
 !bin/fusion-edge-answers
 !bin/fusion-claude-md-weight

@@ -140,9 +140,9 @@
   total 123995
 
 
-[coder]
-  agents/coder.md 12165
-  rules emitted to coder 86650
+[code-implementer]
+  agents/code-implementer.md 12165
+  rules emitted to code-implementer 86650
   CLAUDE.md 8021
   total 106836
 
@@ -153,21 +153,21 @@
   CLAUDE.md 8021
   total 122046
 
-[curator]
-  agents/curator.md 78507
-  rules emitted to curator 100593
+[policy-curator]
+  agents/policy-curator.md 78507
+  rules emitted to policy-curator 100593
   CLAUDE.md 8021
   total 187121
 
-[editor]
-  agents/editor.md 13156
-  rules emitted to editor 106347
+[document-editor]
+  agents/document-editor.md 13156
+  rules emitted to document-editor 106347
   CLAUDE.md 8021
   total 127524
 
-[ontocoder]
-  agents/ontocoder.md 15875
-  rules emitted to ontocoder 86650
+[data-implementer]
+  agents/data-implementer.md 15875
+  rules emitted to data-implementer 86650
   CLAUDE.md 8021
   total 110546
 
@@ -178,16 +178,16 @@
   CLAUDE.md 8021
   total 222589
 
-[planner]
-  agents/planner.md 19659
-  rules emitted to planner 99913
+[implementation-planner]
+  agents/implementation-planner.md 19659
+  rules emitted to implementation-planner 99913
   CLAUDE.md 8021
   total 127593
 
 
-[reconciler]
-  agents/reconciler.md 21171
-  rules emitted to reconciler 91621
+[state-auditor]
+  agents/state-auditor.md 21171
+  rules emitted to state-auditor 91621
   CLAUDE.md 8021
   total 120813
 
@@ -197,9 +197,9 @@
   CLAUDE.md 8021
   total 114309
 
-[shaper]
-  agents/shaper.md 17017
-  rules emitted to shaper 110834
+[requirements-designer]
+  agents/requirements-designer.md 17017
+  rules emitted to requirements-designer 110834
   CLAUDE.md 8021
   total 135872
 

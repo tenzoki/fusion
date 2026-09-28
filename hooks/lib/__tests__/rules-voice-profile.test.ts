@@ -130,12 +130,12 @@ describe("bin/fusion-rules voice-profile emission", () => {
   describe("a project declaring only **Language:**", () => {
     it("gives a prose agent both families in the declared language", () => {
       const dir = makeProject({ claudeMd: "**Language:** de\n" });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_DE, WRITE_DE]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_DE, WRITE_DE]);
     });
 
     it("gives a non-prose agent the chat family only", () => {
       const dir = makeProject({ claudeMd: "**Language:** de\n" });
-      expect(profilePaths("coder", dir)).toEqual([CHAT_DE]);
+      expect(profilePaths("code-implementer", dir)).toEqual([CHAT_DE]);
     });
   });
 
@@ -150,7 +150,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
       const dir = makeProject({
         claudeMd: "**Language:** de\n**Artifact language:** en\n",
       });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_DE, WRITE_EN]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_DE, WRITE_EN]);
     });
 
     it("routes them the other way round just as readily", () => {
@@ -160,7 +160,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
       const dir = makeProject({
         claudeMd: "**Language:** en\n**Artifact language:** de\n",
       });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_DE]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_EN, WRITE_DE]);
     });
 
     it("keeps the artifact declaration out of a non-prose agent's chat profile", () => {
@@ -170,7 +170,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
       const dir = makeProject({
         claudeMd: "**Language:** de\n**Artifact language:** en\n",
       });
-      expect(profilePaths("coder", dir)).toEqual([CHAT_DE]);
+      expect(profilePaths("code-implementer", dir)).toEqual([CHAT_DE]);
     });
   });
 
@@ -178,7 +178,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
     it("resolves both families to en when there is no CLAUDE.md at all", () => {
       const dir = makeProject({});
       expect(existsSync(join(dir, "CLAUDE.md"))).toBe(false);
-      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
     });
   });
 
@@ -194,7 +194,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
         claudeMd: "**Language:** de\n**Artifact language:** de\n",
         profiles: ALL_PROFILES.filter((p) => p !== "default-voice-de.yaml"),
       });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_DE, WRITE_EN]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_DE, WRITE_EN]);
     });
 
     it("falls the chat family back to en while writing keeps its de variant", () => {
@@ -202,7 +202,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
         claudeMd: "**Language:** de\n**Artifact language:** de\n",
         profiles: ALL_PROFILES.filter((p) => p !== "chat-voice-de.yaml"),
       });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_DE]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_EN, WRITE_DE]);
     });
   });
 
@@ -224,7 +224,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
       const dir = makeProject({
         claudeMd: "**Language:** de\n**Artifact language:** xx\n",
       });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_DE, WRITE_DE]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_DE, WRITE_DE]);
     });
 
     it("treats a capitalised value as not declared, the pattern being case-sensitive", () => {
@@ -234,7 +234,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
       const dir = makeProject({
         claudeMd: "**Language:** de\n**Artifact language:** English\n",
       });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_DE, WRITE_DE]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_DE, WRITE_DE]);
     });
 
     it("treats a lowercase spelled-out language name as not declared", () => {
@@ -243,7 +243,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
       const dir = makeProject({
         claudeMd: "**Language:** en\n**Artifact language:** deutsch\n",
       });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
     });
 
     it("treats a word that merely starts with a supported code as not declared", () => {
@@ -252,7 +252,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
       const dir = makeProject({
         claudeMd: "**Language:** en\n**Artifact language:** denmark\n",
       });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
     });
 
     it("treats a region-qualified code as not declared", () => {
@@ -262,7 +262,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
       const dir = makeProject({
         claudeMd: "**Language:** en\n**Artifact language:** de-DE\n",
       });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
     });
   });
 
@@ -273,7 +273,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
       // chat language here because it is itself undeclared, which is the
       // documented chain and not a second rule.
       const dir = makeProject({ claudeMd: "**Language:** deutsch\n" });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
     });
   });
 
@@ -284,12 +284,12 @@ describe("bin/fusion-rules voice-profile emission", () => {
       // the first line's pattern, so the case would assert nothing. With `de`,
       // a leak shows up immediately as chat-voice-de.yaml.
       const dir = makeProject({ claudeMd: "**Artifact language:** de\n" });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_DE]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_EN, WRITE_DE]);
     });
 
     it("resolves both families to en when that lone declaration is en", () => {
       const dir = makeProject({ claudeMd: "**Artifact language:** en\n" });
-      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+      expect(profilePaths("implementation-planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
     });
   });
 
@@ -302,7 +302,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
         claudeMd: "**Language:** de\n**Artifact language:** de\n",
         profiles: ALL_PROFILES.filter((p) => p !== "chat-voice-de.yaml"),
       });
-      const { out, err } = runRulesBoth("planner", dir);
+      const { out, err } = runRulesBoth("implementation-planner", dir);
       expect(out.filter((l) => l.startsWith("./"))).toEqual([CHAT_EN, WRITE_DE]);
       expect(err.split("\n").filter((l) => l.length > 0)).toEqual([
         "fusion-rules: voice profile chat-voice: requested variant de is absent, resolved to en",
@@ -311,7 +311,7 @@ describe("bin/fusion-rules voice-profile emission", () => {
 
     it("stays silent when `en` was declared and the en variant is what resolved", () => {
       const dir = makeProject({ claudeMd: "**Language:** en\n" });
-      const { out, err } = runRulesBoth("coder", dir);
+      const { out, err } = runRulesBoth("code-implementer", dir);
       expect(out.filter((l) => l.startsWith("./"))).toEqual([CHAT_EN]);
       expect(err).toBe("");
     });

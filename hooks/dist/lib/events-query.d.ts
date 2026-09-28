@@ -98,7 +98,7 @@ export interface EventLine {
     task?: string;
     /** The Claude Code session, on `session_start` and on every dispatch row. */
     session_id?: string;
-    /** The work item a dispatch ran under, on `task_start` (the `**Work-item:**` line's basename). */
+    /** The work package a dispatch ran under, on `task_start` (the `**Work-item:**` line's basename). */
     work_item?: string;
 }
 export interface ParsedLog {
@@ -128,9 +128,11 @@ export declare function parseTs(ts: string | undefined): number | null;
  *
  * Only a pre-cut `session_start` carries the field: the history store closed
  * at `0ec15cb9`. Since 2026-09-21 `measurePresence` calls this only where the
- * field is present, and reads a party's work item off its `task_start` rows
+ * field is present, and reads a party's work package off its `task_start` rows
  * otherwise, so `unknown` is now the answer for a malformed `circles/` path
- * alone.
+ * alone. The literal stays after v12: the field is a pre-cut persisted value
+ * no writer produces any more, which the window in
+ * `rules/fusion-workbench-conventions.md` `### Transition window (v12.0.0 to v13.0.0)` does not govern.
  */
 export declare function circleOf(historyFile: string | undefined): string;
 /**
@@ -166,7 +168,7 @@ export interface Party {
      * What the party is on: the `work_item` of its latest `task_start` in the
      * window, else the Circle off a pre-cut `session_start`'s `history_file`,
      * else `none on record`. The name is the field's history; the value is the
-     * work item wherever one was dispatched.
+     * work package wherever one was dispatched.
      */
     circle: string;
 }
@@ -239,7 +241,8 @@ export declare function measurePresence(text: string, identity: ReadingIdentity,
  */
 export declare function renderParty(p: Party, aliasOf: (hex: string) => string | null): string;
 /**
- * The seven agents whose dispatch durations this reading measures.
+ * The seven agents whose dispatch durations this reading measures, each under
+ * every name it has carried.
  *
  * **It was the bound-agent set, and it is now a set with one definition site.**
  * Until 2026-09-10 it was one of two copies — the other being the
@@ -267,7 +270,14 @@ export declare function renderParty(p: Party, aliasOf: (hex: string) => string |
  * widening the paragraph above refuses. A reading that wants the new roster
  * passes its own `agents` list — the option exists for exactly that.
  */
-export declare const MEASURED_AGENTS: readonly ["coder", "ontocoder", "bugfixer", "reconciler", "coderev", "ontorev", "curator"];
+export declare const MEASURED_AGENTS: readonly ["coder", "ontocoder", "bugfixer", "reconciler", "coderev", "ontorev", "curator", "code-implementer", "data-implementer", "state-auditor", "policy-curator"];
+/**
+ * The v12.0.0 agent renames, old to new — the table `bin/fusion-paths` and
+ * `bin/fusion-rules` also carry. The log keeps every row under the name it was
+ * written with; a dispatch row is REPORTED under the role's current name, so a
+ * range spanning the rename gives one series per role rather than two.
+ */
+export declare const ROLE_OF: Readonly<Record<string, string>>;
 /**
  * What the reading did with one dispatch. The four are disjoint and every row
  * carries exactly one.

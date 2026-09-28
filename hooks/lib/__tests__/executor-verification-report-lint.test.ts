@@ -8,8 +8,8 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 //
 // The defect and its measured cost are in issue 260805-0629. The report SHAPE
 // that answers it — the three admitted `Verification:` forms and the `Result`
-// field derived from them — is authored in `agents/coder.md` `### Report shape`
-// and mirrored in `agents/ontocoder.md`.
+// field derived from them — is authored in `agents/code-implementer.md` `### Report shape`
+// and mirrored in `agents/data-implementer.md`.
 //
 // What this gate is, honestly (rules/critical-stance.md §2, §4): it checks the
 // CONTRACT IS PRESENT IN THE PROMPTS, not that any run obeyed it. A prompt
@@ -26,7 +26,7 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 const agent = (name: string) => readFileSync(join(pluginRoot, "agents", `${name}.md`), "utf-8");
 
 /** The two executors that report to the orchestrator's `### Step 3 — read the return`. */
-const EXECUTORS = ["coder", "ontocoder"];
+const EXECUTORS = ["code-implementer", "data-implementer"];
 
 /**
  * The `### Report shape` section: from its heading to the next heading of the
@@ -122,7 +122,7 @@ describe("executor report shape", () => {
     // is one reporting mechanism, not two, and a prompt that quietly invented a
     // second would stop citing its counterpart.
     it(`${who} names the other executor as co-author of the one shape`, () => {
-      const other = who === "coder" ? "ontocoder" : "coder";
+      const other = who === "code-implementer" ? "data-implementer" : "code-implementer";
       expect(
         reportShape(agent(who), who),
         `${who}: the report shape does not cite agents/${other}.md as the prompt it shares ` +
@@ -197,7 +197,7 @@ describe("orchestrator acceptance of an executor report", () => {
   });
 });
 
-// The coder's pre-fix Implementation Process, abridged: the `### Report shape`
+// The code-implementer's pre-fix Implementation Process, abridged: the `### Report shape`
 // heading is supplied so `reportShape()` reaches `assertReportShape`, the
 // assertion under test, instead of throwing at the parser (issue 260810-0510).
 const preFixCoderProcess = [

@@ -16,7 +16,7 @@
  *   total=195402
  *   skipped-specs=4
  *   verdict=over
- *     over      57891  circles/<dir>/planning/…_p_….md  (17891 over — …)
+ *     over      57891  work-packages/<dir>/plans/…_p_….md  (17891 over — …)
  *     under     33472  shared/planning/…_o_….md
  *
  * ## Exit codes, and the one that is deliberately NOT here
@@ -27,7 +27,7 @@
  *
  * **A plan over the ceiling is not an error exit**, for the reason
  * `bin/fusion-review-coverage` gives at the same place: a check that hands its
- * verdict to an exit code teaches its reader to ignore that code. Here it is
+ * result to an exit code teaches its reader to ignore that code. Here it is
  * also the user's ruling rather than a convention — see the library header.
  *
  * `verdict=empty` is a real answer and not a failure: a workbench with no live

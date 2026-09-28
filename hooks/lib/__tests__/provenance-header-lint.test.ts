@@ -311,19 +311,10 @@ describe("provenance-header lint: the pattern matches the keyword, not prose", (
     });
   }
 
-  // A test reading `rules/user-facing-output.md` stood here. It asserted that
-  // the prose the long fixture above was copied from sits below line 10 of that
-  // real file. That is a fact about where a style rule keeps an illustrative
-  // example, not a fact about `headerLine`: move the example above line 10 and
-  // the test failed while the gate stayed exactly correct, because the anchor
-  // rejects that line at every position. Its comment also claimed the fixture
-  // proved rejection on case and on the colon, which it never did — the match
-  // dies at the anchor before either is reached. Removed rather than corrected,
-  // because what it was reaching for is already proved elsewhere and better:
-  // position by the window block above (a genuine header, moved one line past
-  // the boundary) and by the conventions-file block below (a real decoy that
-  // genuinely matches HEADER and is excluded by position alone, with its own
-  // non-vacuity guard); every real file's header by the corpus test at the top.
+  // A test pinning the long fixture's source below line 10 of `rules/user-facing-output.md`
+  // stood here and was removed: it measured where a style rule keeps an example, not
+  // `headerLine`. Position is proved by the window block above and the conventions-file
+  // decoy below (with its own non-vacuity guard); every real file's header by the corpus test.
 });
 
 describe("provenance-header lint: the three negative fixtures fail, with an actionable message", () => {

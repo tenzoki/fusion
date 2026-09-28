@@ -1,5 +1,5 @@
 /**
- * Where a hook's verdict stands relative to the record of it.
+ * Where a hook's reply stands relative to the record of it.
  *
  * ## The order is the whole point
  *
@@ -7,7 +7,7 @@
  * does — the `guard_block` row in `events.jsonl`, the escalation counter under
  * `.guard-state/`, the marker line on stderr — is a report
  * ABOUT that line, written for a human reading the log afterwards. Reports are
- * best effort; the verdict is not. A record must not be able to withdraw what it
+ * best effort; the reply is not. A record must not be able to withdraw what it
  * records.
  *
  * Both hooks used to write the report first:
@@ -28,8 +28,8 @@
  * nothing was never measured; both readings are bad, and the ambiguity is not
  * worth keeping either way.
  *
- * So: verdict first, unguarded, and every reporting step after it in a `try` of
- * its own. A failure in the reporting cannot withdraw a verdict that has already
+ * So: reply first, unguarded, and every reporting step after it in a `try` of
+ * its own. A failure in the reporting cannot withdraw a reply that has already
  * been written.
  *
  * ## Why this module is no longer only the error tail
@@ -37,7 +37,7 @@
  * It was written for the two `main().catch` handlers, and there it was complete.
  * The same inversion sat untouched at every site INSIDE `main`, on both hooks —
  * `saveEscalation` before `block`, `emitEvent` before `block`, the churn
- * heatmap's `trackChurn` before `respond`. Several of those turned a verdict the
+ * heatmap's `trackChurn` before `respond`. Several of those turned a reply the
  * guard had already reached into its opposite, each measured with
  * `.guard-state/` at mode `0555` or with `churn.json` replaced by a directory:
  *
@@ -57,9 +57,9 @@
  * A fix that reordered those sites one at a time would leave the next for the
  * next review, which is what produced two records for one defect the last
  * time. So the argument stated above is the mechanism now: `answer` is the
- * ordinary path's spelling of "verdict first, reporting after", and
+ * ordinary path's spelling of "reply first, reporting after", and
  * `bestEffort` is the same guarantee for a report that cannot be moved after the
- * verdict — a configuration diagnostic, an advisory in the middle of a decision
+ * reply — a configuration diagnostic, an advisory in the middle of a decision
  * — where the point is not the order but that the step can no longer decide
  * anything.
  *
@@ -75,7 +75,7 @@
  * A guarded step that fails is NOT silent: it writes the same `[<tag>] Error:`
  * marker line the fail-open tail writes, so a report that was lost is visible in
  * the same place a crash would have been (`HYG-NO-SILENT-FAIL`). Only when
- * stderr itself is broken does anything go unsaid, and by then the verdict —
+ * stderr itself is broken does anything go unsaid, and by then the reply —
  * the part that had to survive — is already out.
  *
  * ## Why `verdict` is a callback rather than a returned string
@@ -89,7 +89,7 @@
  *
  * There is a second reason it must run here rather than at the call site: on a
  * pipe, `process.stdout.write` is asynchronous. A throw after it, in the same
- * tick, can take the buffered line down with the process — so "write the verdict
+ * tick, can take the buffered line down with the process — so "write the reply
  * first" is only worth anything if nothing after it is allowed to throw. That is
  * what makes `answer`'s guarded reports a requirement rather than tidiness.
  */
@@ -101,29 +101,29 @@
  * tracker's halt record reads it, because the sentence it hands the model would
  * otherwise claim a halt that was never written.
  *
- * Use this where a report genuinely cannot be moved after the verdict: a
+ * Use this where a report genuinely cannot be moved after the reply: a
  * configuration diagnostic that has to precede every branch, an advisory emitted
- * in the middle of a decision, a state write whose outcome the verdict's own
- * wording depends on. Where the report CAN follow the verdict, use `answer`,
+ * in the middle of a decision, a state write whose outcome the reply's own
+ * wording depends on. Where the report CAN follow the reply, use `answer`,
  * which puts it there.
  */
 export declare function bestEffort(tag: string, step: () => void): string | null;
 /**
- * Write the hook's verdict, then record it.
+ * Write the hook's reply, then record it.
  *
  * @param tag     Hook name for the stderr marker line, e.g. `guard`.
  * @param verdict Writes the hook's reply to stdout. Called FIRST and NOT
  *                guarded: if the reply itself cannot be written there is nothing
  *                left to fall back to, and the failure belongs on the way out to
  *                `main().catch`.
- * @param reports Everything that records the verdict — the escalation counter,
+ * @param reports Everything that records the reply — the escalation counter,
  *                the event rows. Each runs in its own `try`,
- *                in order, and none can withdraw the verdict or take another
+ *                in order, and none can withdraw the reply or take another
  *                report down with it.
  */
 export declare function answer(tag: string, verdict: () => void, ...reports: Array<() => void>): void;
 /**
- * Write a hook's fail-open verdict, then report the error that caused it.
+ * Write a hook's fail-open reply, then report the error that caused it.
  *
  * @param tag    Hook name for the stderr marker line, e.g. `guard`. The test
  *               harness watches for `[<tag>] Error:` so a crash cannot pass as a

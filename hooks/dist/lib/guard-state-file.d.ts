@@ -122,7 +122,7 @@ export interface GuardStatePaths {
  */
 export declare function guardStatePath(fileName: string, root?: string): GuardStatePaths | null;
 /**
- * Turn an arbitrary parsed JSON value — or `undefined`, for a file that is
+ * Convert an arbitrary parsed JSON value — or `undefined`, for a file that is
  * absent, unreadable or unparseable — into a state of the caller's own type.
  * It must be total: every input has an answer, and none of them throws.
  */

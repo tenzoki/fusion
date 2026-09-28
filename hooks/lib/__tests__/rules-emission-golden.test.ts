@@ -233,11 +233,8 @@ const RULE_BASELINE: Record<string, number> = {
   // touched by the 2026-08-14 arming: that growth still stands against the report.
   "design-diagrams.md": 5_673, // 2026-08-05 cut
   "commit-lock.md": 9_250, // 2026-08-05 cut, carried through the 2026-08-15 rename
-  // `circle-records.md` (9 302) stood here until 2026-09-10 and went with the
-  // Circle container. A baseline entry for a file the tree no longer holds
-  // would credit every role that once loaded it with a shrink it did not earn,
-  // so the entry is removed rather than zeroed. Same for `backlog-entries.md`,
-  // which never had one: it was small enough to sit under the arming.
+  // An entry for a file the tree no longer holds is removed, not zeroed: it
+  // would credit every role that loaded it with a shrink it did not earn.
 };
 
 interface Role {
@@ -265,42 +262,22 @@ interface Role {
  *
  * Every role is still below RELEASE_CAP, the orchestrator's by 229 bytes. A
  * role's floor is RULE_BASELINE summed over its files, and it is NOT what the
- * role emits today: for the core files the two are equal, and for a role's
- * extras the gap between them is what the budget report prints. The figures
- * below are the floors measured between the 2026-08-14 arming and 2026-08-22,
- * under role KEYS the gates of 2026-08-27 re-cut, the bounded-dispatch audience
- * re-cut again, and the dispatch bound's retirement on 2026-09-10 re-cut back —
- * they are kept as the record of what the fleet stood at, not as a listing of
- * the map. The map is the only authority for which roles exist, and
- * how many agents each holds is not written here at all: it is measured, and the
- * messages print it.
- *
- *    86 573  the core floor, carried by any role whose extras are all unbaselined
- *    92 246  design-diagrams.md
- *    95 875  circle-records.md
- *   101 548  circle-records.md + design-diagrams.md
- *   105 125  circle-records.md + commit-lock.md
+ * role emits today: for a role's extras the gap is what the budget report prints.
  */
 const ROLES: Record<string, Role> = {
   /**
    * The agents that edit the tree as they work and carry nothing beyond the
-   * always-on core: coder and ontocoder. `bugfixer` was the third until v11,
+   * always-on core: code-implementer and data-implementer. `bugfixer` was the third until v11,
    * when it was removed and its diagnose-before-editing contract moved into
    * these two — prompt text, not a rule file, so the role's file set is
    * unchanged by that.
-   *
-   * THE ROLE CAME BACK on 2026-09-10. It had been the floor every other role was
-   * read against until the bounded-dispatch audience gave these three
-   * `bounded-dispatch.md` and emptied it; the dispatch bound was retired, that
-   * file was deleted, and its whole audience fell back to whatever else it
-   * carried. The number that says what the always-on set costs is still the hard
-   * bound's own measurement of the universal core rather than this role's floor
-   * — the two are equal here, and only one of them is the definition.
+   * What the always-on set costs is the hard bound's measurement of the
+   * universal core, not this role's floor; the two are equal here.
    */
   "(core only)": {},
 
   /**
-   * The reconciler: the worked transitions, because worked transition 1,
+   * The state-auditor: the worked transitions, because worked transition 1,
    * `_o_ -> _a_`, is its act (gate 260827-0830). It carried
    * `bounded-dispatch.md` beside them until the bound's retirement on
    * 2026-09-10.
@@ -327,20 +304,11 @@ const ROLES: Record<string, Role> = {
    */
   "design-diagrams.md": {},
 
-  /** The planner: diagrams plus the worked transitions (gate 260827-0830). */
+  /** The implementation-planner: diagrams plus the worked transitions (gate 260827-0830). */
   "decision-record-examples.md + design-diagrams.md": {},
 
-  // A role stood here for the agent that ranked Circles and maintained the
-  // backlog: circle-records.md + decision-record-examples.md +
-  // user-facing-output.md + backlog-entries.md. It went at v11 with the
-  // portfolio layer, and both of the files that were peculiar to it have since
-  // gone too — `circle-records.md` retired with the Circle container on
-  // 2026-09-10, and `backlog-entries.md` folded back into the always-on
-  // conventions in the same change, the item grammar and its three-sentence
-  // maintenance mandate now standing side by side there.
-
   /**
-   * The shaper: the worked transitions plus the design diagram doctrine, over a
+   * The requirements-designer: the worked transitions plus the design diagram doctrine, over a
    * user-read surface (gate 260827-0910). It carried `circle-records.md` as
    * well until 2026-09-10 — it turned a Directive into a Circle record — and
    * the two modes that did so went with the container, leaving the role one
@@ -348,13 +316,13 @@ const ROLES: Record<string, Role> = {
    */
   "decision-record-examples.md + design-diagrams.md + user-facing-output.md": {},
 
-  // consultant, and since 2026-09-10 the curator too: a user-read surface (gate
-  // 260827-0910). The curator held its own role while it also carried
+  // consultant, and since 2026-09-10 the policy-curator too: a user-read surface (gate
+  // 260827-0910). The policy-curator held its own role while it also carried
   // `bounded-dispatch.md` — the change ledger it puts to the user at the gate is
   // read in the terminal, and its survey accumulated one normative surface at a
   // time — and the retirement of the bound merged it into this one.
   "user-facing-output.md": {},
-  "project-language.md + user-facing-output.md": {}, // editor: + the language cascade, its deliverable halt (decision 260827-1056)
+  "project-language.md + user-facing-output.md": {}, // document-editor: + the language cascade, its deliverable halt (decision 260827-1056)
 
   /**
    * NOT OVER THE RELEASE CAP, and the role that would cross it first. It was
@@ -365,7 +333,7 @@ const ROLES: Record<string, Role> = {
    * justification duty is discharged by prose, the prose is still true of this
    * role, and a floor that moves back up would otherwise silently find no reason
    * where one had been written. The assertion skips it while the floor is under
-   * the cap, and nothing an editor writes to a rule file spends that margin: the
+   * the cap, and nothing a document-editor writes to a rule file spends that margin: the
    * floor is RULE_BASELINE summed over this role's files, so editing one moves
    * what the role EMITS and not what it stands on, and a newly added always-on
    * file has no baseline entry, contributes 0 to the floor and counts as growth
@@ -855,9 +823,9 @@ describe("the audience argument", () => {
   const rel = (lines: string[]) => lines.map((p) => relative(rulesDir, p));
 
   it("adds exactly user-facing-output.md, for an agent the name list excludes", () => {
-    const plain = rel(runRules("planner"));
-    const asked = rel(runRules("planner", ["", "--audience=user"]));
-    expect(plain, "planner is user-facing by name after all; pick another agent").not.toContain(
+    const plain = rel(runRules("implementation-planner"));
+    const asked = rel(runRules("implementation-planner", ["", "--audience=user"]));
+    expect(plain, "implementation-planner is user-facing by name after all; pick another agent").not.toContain(
       "user-facing-output.md",
     );
     expect(
@@ -881,7 +849,7 @@ describe("the audience argument", () => {
   });
 
   it("keeps the name list as the fallback, so no role loses the rule by default", () => {
-    for (const a of ["orchestrator", "editor", "curator"]) {
+    for (const a of ["orchestrator", "document-editor", "policy-curator"]) {
       expect(rel(runRules(a)), `${a} lost the user-facing contract`).toContain(
         "user-facing-output.md",
       );
@@ -894,8 +862,8 @@ describe("the audience argument", () => {
 
   it("refuses an unrecognised audience and an unrecognised option, printing nothing", () => {
     for (const [args, needle] of [
-      [["planner", "", "--audience=users"], "unknown audience"],
-      [["planner", "--bogus"], "unknown option"],
+      [["implementation-planner", "", "--audience=users"], "unknown audience"],
+      [["implementation-planner", "--bogus"], "unknown option"],
     ] as [string[], string][]) {
       const r = spawnSync(fusionRules, args, {
         cwd: neutralCwd,
@@ -1204,10 +1172,10 @@ describe("the dispatch-path bound, on synthetic component sizes", () => {
   });
 
   it("names the path, the component that grew, and both standing sentences", () => {
-    const a = "coder";
+    const a = "code-implementer";
     const g = growth(bump(atBaseline(a), "CLAUDE.md", 512), baseline.get(a)!, DISPATCH_HEAD_ROOM);
     const msg = dispatchBoundMessage([{ agent: a, g }]);
-    expect(msg).toContain("path 'coder'");
+    expect(msg).toContain("path 'code-implementer'");
     expect(msg).toContain("CLAUDE.md");
     expect(msg).toContain(`+${fmt(512)}`);
     expect(msg).toContain(

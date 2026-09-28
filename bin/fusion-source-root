@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# fusion-source-root — the root a citation of a plugin-shipped FILE resolves
-# against. Read at a skill's first step, in place of restating the branch
+# fusion-source-root — the root a citation of a fusion-shipped FILE resolves
+# against. Read at a workflow's first step, in place of restating the branch
 # inline. Which bodies those are moves: `grep -rl fusion-source-root skills/`
 # names them.
 #
@@ -35,7 +35,7 @@
 # (an announcing block and an inline re-resolution in each, because a later
 # shell call is a fresh shell). A correction to one fact then had to be written
 # into every copy, and getting it wrong in one was invisible: `63deec1` moved
-# two skills onto the resolved root and left two more citing the install copy,
+# two workflows onto the resolved root and left two more citing the install copy,
 # which is issue `260811-0109_*_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md`. Repeated prose drifts in meaning; repeated shell
 # drifts in behaviour. Decision 260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md, option 1.
 #
@@ -49,7 +49,7 @@
 # Why every documented call site guards the call with `[ -x ]`. The four skill
 # bodies do not call this script bare; each tests it for executability first,
 # and the guard is the one every prompt-called helper in this directory
-# carries. The reason is not defensive habit: a helper added to the plugin's
+# carries. The reason is not defensive habit: a helper added to the module's
 # work tree between releases is simply absent from an older install, so a bare
 # call there is exit 127 at the caller's own first step. The absent branch
 # falls back to the install root, which is the behaviour that preceded this
@@ -64,13 +64,13 @@
 # bound used to be justified as congruence with hooks/lib/self-detect.ts; that
 # module's cwd entry point was deleted on 2026-08-16 with the guard's
 # stand-down, so the helper is now the sole cwd-anchored implementation and the
-# bound stands on its own reason — a walk here would resolve a skill's citation
+# bound stands on its own reason — a walk here would resolve a workflow's citation
 # against a repository root the caller never named. SessionStart says out loud
 # when a session starts below the root (hooks/session-start.ts), which is the
 # one condition under which this bound surprises anybody.
 #
 # What this helper does NOT root. A `bin/` executable is always run from
-# $FUSION_PLUGIN_ROOT, and so is an asset a skill copies (templates/, stilwerk/,
+# $FUSION_PLUGIN_ROOT, and so is an asset a workflow copies (templates/, stilwerk/,
 # bin/monitor, .claude-plugin/plugin.json). Whether the work-tree preference
 # extends to helper resolution is part (c) of decision 260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md and is
 # explicitly UNANSWERED; it must not be assumed here. The split is by what the

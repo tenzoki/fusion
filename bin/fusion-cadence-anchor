@@ -22,11 +22,11 @@
 #
 # ## The keys in use today
 #
-#   last_reconcile_commit   The commit HEAD stood on when the reconciler last
+#   last_reconcile_commit   The commit HEAD stood on when the state-auditor last
 #                           ran to completion here. /fusion:reconcile Step 3
 #                           skips the dispatch when nothing under
 #                           fusion-workbench/ changed since it — read via
-#                           `changed-since`, written after the reconciler
+#                           `changed-since`, written after the state-auditor
 #                           returns. An absent or unresolvable mark means
 #                           "no anchor": the full pass runs, which is the
 #                           correct first-run and post-history-rewrite
@@ -57,7 +57,7 @@
 #   set <key> <value>       Write/replace the key. Creates the file. Exit 0;
 #                           2 on a malformed key/value.
 #   changed-files <key> [<pathspec>]
-#                           The list behind the verdict: every path under
+#                           The list behind the result: every path under
 #                           <pathspec> that moved since the mark — committed
 #                           (`git diff --name-only <mark>..HEAD`) and
 #                           uncommitted (`git status --porcelain`) alike,
@@ -66,7 +66,7 @@
 #                           question cannot be answered (no work tree, no mark,
 #                           a mark git cannot resolve): the caller reads
 #                           everything — a skipped read rests only on a proven
-#                           bound. First consumer: the reconciler's Step 1
+#                           bound. First consumer: the state-auditor's Step 1
 #                           inventory, which reads live-marker records plus
 #                           exactly this list. <pathspec> defaults to the
 #                           tracking corpus (`default_pathspec` below).
@@ -123,7 +123,7 @@ ANCHORS="fusion-workbench/.cadence-anchors"
 # The default pathspec: the tracking corpus, NOT the live state. Class L
 # (rules/workbench-tracking.md) plus the event log change on every session by
 # construction; counting them would make `changed=no` unreachable and the
-# skip they gate dead code. An explicit <pathspec> argument is taken raw.
+# skip they guard dead code. An explicit <pathspec> argument is taken raw.
 default_pathspec() {
   printf '%s\n' \
     'fusion-workbench/' \

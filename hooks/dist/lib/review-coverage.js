@@ -21,7 +21,7 @@
  *      changed. The reviewer reported the boundary of its scope correctly.
  *      Nothing downstream read that sentence and re-queued the files.
  *   2. **The data was on disk and nothing read it.** The review files carry
- *      their ranges. No artifact holds "commits reviewed" against "commits
+ *      their ranges. No artefact holds "commits reviewed" against "commits
  *      landed", so nothing could tile one against the other.
  *
  * ## Why the ranges had to be mandated before they could be read
@@ -75,7 +75,7 @@
  *
  * ## What it does NOT do, and why
  *
- * It never writes a review file, `agentstate.yaml`, a Circle record or a
+ * It never writes a review file, `agentstate.yaml`, a work-package record or a
  * history file, and it adds no `reviewed_through` field to the session state.
  * That last one is deliberate and is the point: `agentstate.yaml` is a surface
  * a session can pass a boundary without writing, and issue `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
@@ -84,7 +84,7 @@
  * review files already answer unfreezably — writing the review file *is* the
  * review, the way a commit is the work rather than a note about it.
  *
- * It is also not a release gate. Whether a release may go out over an
+ * It is also not a release check. Whether a release may go out over an
  * uncovered range is a decision and is not filed; it belongs beside
  * `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
  * This module reports; nothing here blocks anything.
@@ -93,7 +93,7 @@
  *
  *   1. `hooks/review-coverage.ts` → `bin/fusion-review-coverage` — the CLI,
  *      read by `agents/orchestrator.md` at `## Review coverage` (the closing
- *      review's dispatch scope), at `## Closing a work item` step 2 (the same
+ *      review's dispatch scope), at `## Closing a work package` step 2 (the same
  *      read before the review is routed) and at `## Ending the session` (the
  *      summary's review-coverage section).
  *   2. `hooks/tracker.ts` — the PostToolUse hook, on the narrow trigger of a
@@ -104,10 +104,10 @@
  *
  * It is **not** on an every-tool-call path, and the difference is not an
  * oversight. An uncovered range mid-session is the *normal and correct* state —
- * the review pass runs once per work item, at its closure — so a per-call report would
+ * the review pass runs once per work package, at its closure — so a per-call report would
  * fire on the commonest path, and a check that cries wolf on its commonest path
  * teaches its reader to ignore it. That is issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` arriving one
- * level up, and it is why this measurement's verdict is a line of output rather
+ * level up, and it is why this measurement's result is a line of output rather
  * than an exit code. Until 2026-08-15 a third measurement DID sit on the
  * every-call path — session-state drift, whose subject was a stale
  * `agentstate.yaml`, a fault at every moment after the commit that outdated it.
@@ -119,6 +119,7 @@ import { resolve } from "node:path";
 import { git, GIT_TIMED_OUT } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 import { newestHookSessionStart } from "./orchestrator-events.js";
+import { CONTAINER_ROOT_NAMES } from "./stores.js";
 /* ------------------------------------------------------------------ *
  * Layout — root-anchored
  * ------------------------------------------------------------------ */
@@ -128,14 +129,14 @@ import { newestHookSessionStart } from "./orchestrator-events.js";
  * `## fusion-workbench Layout` puts these at fixed root-relative paths precisely
  * because the hooks and the `bin/` helpers read them there and none of them has
  * a fallback. `reviews` is the constant `bin/fusion-paths` resolves
- * `SCAN_REVIEWS` to under both bases; the container *inside* `circles/` is not
+ * `SCAN_REVIEWS` to under both bases; the container under either root name
+ * (`CONTAINER_ROOT_NAMES` in `./stores.ts`) is not
  * constant, which is why every container is enumerated rather than looked up
  * through a pointer — `.active-circle` is retired and nothing writes it — and
  * a review filed under another item still covers commits this session landed.
  */
 const WB = "fusion-workbench";
 const SHARED_REVIEWS_REL = `${WB}/shared/reviews`;
-const CIRCLES_REL = `${WB}/circles`;
 /**
  * The throttle record's file NAME, not its path: `lib/guard-state-file.ts`
  * builds the path under `.guard-state/` and this module no longer knows how.
@@ -178,11 +179,12 @@ const HASH = /^[0-9a-f]{7,40}$/;
  * `reviewer` at v11, and the mandate moved with them — `agents/reviewer.md` is
  * the only prompt that writes a review file now. The two retired segments stay
  * in this set because review files carrying them are ON DISK, in every
- * workbench this plugin has ever run against, and a scan that stopped
+ * workbench fusion has ever run against, and a scan that stopped
  * recognising them would silently drop every review written before the merge
  * from the coverage it tiles. Recognising a sender is not mandating one: the
  * mandate is what `review-coverage-mandate.test.ts` pins against the prompts,
- * and it pins one.
+ * and it pins one. The v12.0.0 agent renames left `reviewer` unrenamed, so
+ * they add no sender here.
  */
 export const REVIEW_SENDERS = ["reviewer", "coderev", "ontorev"];
 /**
@@ -319,15 +321,17 @@ export function parseNotOpened(value) {
  */
 function reviewFiles(root) {
     const dirs = [SHARED_REVIEWS_REL];
-    try {
-        for (const e of readdirSync(resolve(root, CIRCLES_REL), { withFileTypes: true })) {
-            if (e.isDirectory())
-                dirs.push(`${CIRCLES_REL}/${e.name}/reviews`);
+    for (const top of CONTAINER_ROOT_NAMES) {
+        try {
+            for (const e of readdirSync(resolve(root, WB, top), { withFileTypes: true })) {
+                if (e.isDirectory())
+                    dirs.push(`${WB}/${top}/${e.name}/reviews`);
+            }
         }
-    }
-    catch {
-        // No `circles/` at all is the ordinary state of a project that has never
-        // opened one. The shared store still answers.
+        catch {
+            // A root that is absent is the ordinary state: a project that never
+            // opened a package, or one with no legacy root. The shared store still answers.
+        }
     }
     const out = [];
     for (const dir of dirs) {
@@ -613,7 +617,7 @@ export function coverageSentence(report) {
     if (parts.length === 0)
         return "";
     parts.push("If you are the orchestrator, widen the next dispatch's scope and name the gap commit by commit in the session summary — `bin/fusion-review-coverage` prints both. " +
-        "If you are a sub-agent, carry this line into your report; the dispatch scope is the orchestrator's to set.");
+        "If you are a dispatched child run, carry this line into your report; the dispatch scope is the orchestrator's to set.");
     return parts.join(" ");
 }
 /* ------------------------------------------------------------------ *

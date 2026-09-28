@@ -103,13 +103,13 @@ done
 2. **`case0-unclassifiable`** — the copies differ and no checksum was recorded (every pre-existing workbench). Name the file, say that fusion **cannot tell an adaptation from a stale copy** for it, and carry that warning into the offer. Do not guess.
 3. **`case2-stale`** — the project's copy is what it was given and the shipped file moved. Offer the replace.
 4. **`case3-adapted`** — the project edited its copy and the shipped file did not move. Say nothing; touch nothing.
-5. **`case4-conflict`** — both moved. Name it, offer no replace, neither change nor stamp it (so it is named on every run until resolved by hand), and say the two ways out: copy the shipped file over the project's (case 1 next run), or keep the project's and delete its line from `$PROV` (case 0 next run). A declined offer lands here the next time the plugin moves.
+5. **`case4-conflict`** — both moved. Name it, offer no replace, neither change nor stamp it (so it is named on every run until resolved by hand), and say the two ways out: copy the shipped file over the project's (case 1 next run), or keep the project's and delete its line from `$PROV` (case 0 next run). A declined offer lands here the next time the module moves.
 6. **`case5-missing-local`** — the project has no copy (the profile copy in `/fusion:setup` failed or was skipped), so `bin/fusion-rules` emits no path for that profile. Name it in the Done report with that consequence; presence is that step's job.
 7. **`case6-missing-shipped`** — the resolved root has no copy: a broken install or an unexpected root. Name it in the Done report as that; the project's file is neither changed nor stamped.
 
 **One `AskUserQuestion` covers every file in cases 0 and 2 together — never one per file, and none when that set is empty.** The `permissions` selector is the one that asks on a normal run, and that is the budget. Ask in the project's chat language per `rules/fusion-workbench-conventions.md` `## Project language`, following `rules/user-facing-output.md` and the chat profile. Specified here in English:
 
-> These workbench files differ from the ones this fusion version ships: *&lt;list&gt;*. Replace them with the shipped copies? Any edits you made to those files are lost. For *&lt;the case-0 files&gt;* fusion has no record of what it originally copied, so it cannot tell whether you adapted the file or the plugin moved on.
+> These workbench files differ from the ones this fusion version ships: *&lt;list&gt;*. Replace them with the shipped copies? Any edits you made to those files are lost. For *&lt;the case-0 files&gt;* fusion has no record of what it originally copied, so it cannot tell whether you adapted the file or the module moved on.
 
 Two options: **"Replace them"** and **"Keep mine"**.
 
@@ -135,7 +135,7 @@ Report in the Done report: which files were replaced, printed `replace-failed`, 
 
 fusion reads `./fusion.json` at the project root and merges it over its own built-in defaults, so this file is where a project declares which of its non-Markdown files carry record citations (`hooks/lib/config.ts`; the seeded template declares nothing and therefore inherits everything). It belongs in version control: every change to which files fusion's citation helpers read has to show up in a diff.
 
-It lands at the project root, beside `fusion-workbench/` rather than inside it, in the directory `pwd` reports. The "never prepend `cd`" rule at the top of this skill is what keeps it there.
+It lands at the project root, beside `fusion-workbench/` rather than inside it, in the directory `pwd` reports. The "never prepend `cd`" rule at the top of this workflow is what keeps it there.
 
 First check whether the project already has one. This is read-only and always allowed:
 
@@ -228,7 +228,7 @@ fi
 
 **One condition here asks**, at most once per checkout: a checkout with no registry entry.
 
-A second stood beside it and went with the unit-of-work container it was about. That container's record travelled between checkouts while the local pointer naming the running one did not, so a clone taken mid-run held a record that said "running" with no pointer beside it, and this selector offered to write one. No record carries a running state now and no such pointer is read anywhere, so the condition is unreachable rather than unchecked: a work item's `**Claim:**` names the checkout that holds it, which is a fact every checkout reads the same way off the file it pulled.
+A second stood beside it and went with the unit-of-work container it was about. That container's record travelled between checkouts while the local pointer naming the running one did not, so a clone taken mid-run held a record that said "running" with no pointer beside it, and this selector offered to write one. No record carries a running state now and no such pointer is read anywhere, so the condition is unreachable rather than unchecked: a work package's `**Claim:**` names the checkout that holds it, which is a fact every checkout reads the same way off the file it pulled.
 
 **This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`; its header documents the mint and the six exit codes, and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as your own Setup step 2 defines it (the bullet "Who, which checkout, which session"): three keys, `session_id` from the line a SessionStart hook printed into your context, and no line means no key.
 

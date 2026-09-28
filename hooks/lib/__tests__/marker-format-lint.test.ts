@@ -13,10 +13,9 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 //
 // This gate keeps the bracket form from creeping back: it fails `npm test` if a
 // single-marker-letter bracket token `\[[oatcibspd]\]` appears in `agents/*.md`
-// or a non-exempt `skills/*/SKILL.md`. The two exempt skills legitimately name
-// the bracket form — `setup` DETECTS it (to route the user to migrate) and
-// `migrate` READS it (to reformat a pre-v4 workbench to the underscore form) —
-// so the exemption is load-bearing, not cosmetic.
+// or a non-exempt `skills/*/SKILL.md`. The one exempt skill legitimately names
+// the bracket form — `migrate` RECOGNISES it (to refuse a pre-v4 workbench and
+// route it to the last v11 tag) — so the exemption is load-bearing, not cosmetic.
 //
 // This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
 // asserts, it never rewrites a prompt.
@@ -35,12 +34,10 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 const MARKER_LETTERS = "oatcibspd";
 
 // The whole trust surface — the sites allowed to name the bracket form.
-// Enumerated explicitly, never pattern-matched: `setup` names the bracket form
-// in its detection check (it must recognise the old marker to route to migrate),
-// and `migrate`'s entire purpose is to read the old form and rewrite it to the
-// underscore form. Every other skill and every agent must use the underscore
-// form only.
-const EXEMPT_SKILLS = new Set(["setup", "migrate"]);
+// Enumerated explicitly, never pattern-matched: `migrate` names the bracket form
+// in the detector that refuses it. Every other skill and every agent must use
+// the underscore form only.
+const EXEMPT_SKILLS = new Set(["migrate"]);
 
 // A single marker letter in single-char brackets. Global so `scan` can find
 // every occurrence on a line; the capture group yields the offending letter for
@@ -74,7 +71,7 @@ function report(violations: Violation[]): string {
       (v) =>
         `  ${v.file}:${v.line}  bracket-form state marker '${v.token}'\n` +
         `    -> use the underscore form '_${v.letter}_' instead (the delimiter is inert in glob and regex;\n` +
-        `       '[' and ']' are shell-glob metacharacters). Only skills/setup and skills/migrate may name the bracket form.`,
+        `       '[' and ']' are shell-glob metacharacters). Only skills/migrate may name the bracket form.`,
     )
     .join("\n");
 }
@@ -91,12 +88,11 @@ describe("marker-format lint: no bracket-form state markers in prompts or skills
     ).toEqual([]);
   });
 
-  it("the exemption is load-bearing: setup and migrate DO still carry the bracket form", () => {
-    // Not cosmetic. setup detects the bracket form to route the user to migrate;
-    // migrate reads it to reformat a pre-v4 workbench. If either stopped naming
-    // it, the exemption would be dead and should be removed — this asserts the
-    // exemption still earns its place.
-    for (const skill of ["setup", "migrate"]) {
+  it("the exemption is load-bearing: migrate DOES still carry the bracket form", () => {
+    // Not cosmetic. migrate names the bracket form to refuse it. If it stopped
+    // naming it, the exemption would be dead and should be removed — this
+    // asserts the exemption still earns its place.
+    for (const skill of EXEMPT_SKILLS) {
       const abs = join(pluginRoot, "skills", skill, "SKILL.md");
       const hits = scan(`skills/${skill}/SKILL.md`, readFileSync(abs, "utf-8"));
       expect(
@@ -147,21 +143,21 @@ describe("marker-format lint: a re-introduced bracket marker fails, with an acti
     // Prove the gate fails in the other direction: splice a bracket marker into a
     // copy of a real prompt and confirm it is caught at the right line with the
     // right token — and that the message points at the underscore replacement.
-    const original = readFileSync(join(pluginRoot, "agents", "coder.md"), "utf-8").split("\n");
+    const original = readFileSync(join(pluginRoot, "agents", "code-implementer.md"), "utf-8").split("\n");
     const injectAt = 4; // 0-based; a body line, not frontmatter
     const copy = [...original];
     copy[injectAt] = "Skip files with the terminal marker [c] before continuing.";
 
-    const violations = scan("agents/coder.md", copy.join("\n"));
+    const violations = scan("agents/code-implementer.md", copy.join("\n"));
     expect(violations.length).toBeGreaterThan(0);
 
     const hit = violations.find((v) => v.line === injectAt + 1);
     expect(hit, "the injected marker must be caught on its own line").toBeDefined();
-    expect(hit!.file).toBe("agents/coder.md");
+    expect(hit!.file).toBe("agents/code-implementer.md");
     expect(hit!.token).toBe("[c]");
 
     const msg = report(violations);
-    expect(msg).toContain("agents/coder.md:5");
+    expect(msg).toContain("agents/code-implementer.md:5");
     expect(msg).toContain("[c]");
     expect(msg).toContain("_c_");
   });

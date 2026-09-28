@@ -13,11 +13,11 @@
  *      long as the project's configuration file is broken or names a retired
  *      key.
  *   3. The dispatch trace (v10.8.0) — one machine-written `task_start` row in
- *      `fusion-workbench/orchestrator-events.jsonl` per sub-agent dispatch,
+ *      `fusion-workbench/orchestrator-events.jsonl` per dispatch,
  *      for every session running inside a fusion project.
  *      `lib/orchestrator-events.ts` carries the schema, the identity
- *      resolution and the gate, why the row moved from a prompt mandate to a
- *      writer that cannot forget, and why the gate widened from
+ *      resolution and the admission check, why the row moved from a prompt mandate to a
+ *      writer that cannot forget, and why the check widened from
  *      orchestrator-scoped to project-scoped. Dispatch calls take this branch
  *      alone: they are not "guarded calls", so they see no configuration
  *      diagnostic. What they DO write under `.guard-state/` is now three things
@@ -37,7 +37,7 @@
  *
  * Protocol: reads JSON from stdin, writes JSON to stdout.
  *   Allow: {}
- * There is no second verdict. Every path through `main` writes `{}`.
+ * There is no second reply. Every path through `main` writes `{}`.
  *
  * ## What this hook used to check, and when each half went
  *
@@ -65,7 +65,7 @@
  *     mechanism blocks nothing at this version; `/fusion:setup` offers to
  *     delete the file.
  *   - **The fusion-repository stand-down.** `isFusionPluginCwd()` allowed every
- *     write when the working directory was the plugin's own repository, so a
+ *     write when the working directory was fusion's own source repository, so a
  *     fusion developer could edit the files the protected-path deny covered. It
  *     outlived that deny by four days and was standing down only the two checks
  *     above, neither of which it was built for. It went with them on
@@ -82,15 +82,15 @@
  *
  * Ported from fusion/reactor/pkg/guard/decision_guard.go.
  *
- * ## The verdict is still written before it is recorded
+ * ## The reply is still written before it is recorded
  *
  * There is no bare `allow()` after a state write anywhere below. The one site
- * that reports goes through `answer` from lib/fail-open.ts — the verdict first,
+ * that reports goes through `answer` from lib/fail-open.ts — the reply first,
  * then the event row as a guarded report — and the diagnostic loop, which
- * cannot be moved after the verdict, goes through `bestEffort`. That ordering
+ * cannot be moved after the reply, goes through `bestEffort`. That ordering
  * mattered most when a report could throw away a deny; it is kept now because
  * a report that throws must not cost the hook its stdout, which is how the
- * guard exits 1 with an empty verdict and stalls the tool call. That module's
+ * guard exits 1 with an empty reply and stalls the tool call. That module's
  * header carries the class, the measurements and the records.
  */
 export {};

@@ -9,19 +9,16 @@ import { agentNames, pluginRoot } from "./helpers/citation-scan.js";
 // Context-manifest tests (Circle B).
 //
 // The mechanism and its load-bearing guarantee, HYG-NO-REGRESS, are authored in
-// `rules/context-manifest.md`. This suite drives the real script through
-// child_process — the same thing an agent's Setup does. The baseline for the
-// no-regress assertion is the helper's own no-manifest output captured from a
-// clean cwd (the plugin ships no manifest), so the test is self-checking: it
-// compares the helper against itself run in a directory with no manifest.
+// `rules/context-manifest.md`. This suite drives the real script as an agent's
+// Setup does; the no-regress baseline is its own output from a manifest-less cwd.
 // ---------------------------------------------------------------------------
 
 const fusionRules = join(pluginRoot, "bin", "fusion-rules");
 
 const AGENTS = [
-  "orchestrator", "coder", "ontocoder", "reviewer",
-  "planner", "shaper", "reconciler", "analyst",
-  "consultant", "editor", "curator",
+  "orchestrator", "code-implementer", "data-implementer", "reviewer",
+  "implementation-planner", "requirements-designer", "state-auditor", "analyst",
+  "consultant", "document-editor", "policy-curator",
 ];
 
 interface RunResult {
@@ -86,7 +83,7 @@ afterEach(() => {
 /**
  * File a work item in `dir`'s workbench, in its own container, claimed by
  * `claim`. Three properties of the setup are load-bearing, and each is what
- * `bin/fusion-claimed-item` reads: the record lives INSIDE the container and is
+ * `bin/fusion-claimed-package` reads: the record lives INSIDE the container and is
  * named after it; the checkout identifier is pinned rather than minted, because
  * the claim is compared by equality on those eight hex characters and a test
  * that let `bin/fusion-identity` mint one would assert against a value it does
@@ -121,17 +118,17 @@ const SAMPLE_MANIFEST = [
   "# fixture manifest",
   "units:",
   "  - path: .claude/rules/ONTO-ENG-RULES.md   # loaded rule",
-  "    agents: [ontocoder, reviewer, planner]",
+  "    agents: [data-implementer, reviewer, implementation-planner]",
   "    topics: [ontology]",
   '    note: "UEOF/UIF engineering rules"',
   "  - path: .claude/rules/READER.md",
-  "    agents: [coder, planner]",
+  "    agents: [code-implementer, implementation-planner]",
   "    topics: [llm-pipeline]",
   "  - skill: unite-bok-sc-skill",
   '    agents: ["*"]',
   "    topics: [unite-framework]",
   "  - path: .claude/rules/CODING-HYGIENE.md",
-  "    agents: [coder, reviewer]",
+  "    agents: [code-implementer, reviewer]",
   "    topics: [always]",
   "",
 ].join("\n");
@@ -149,7 +146,7 @@ describe("context-manifest: HYG-NO-REGRESS — byte-identical when absent", () =
   });
 
   it("no manifest, WITH a topic argument → still byte-identical (topic is a no-op absent a manifest)", () => {
-    for (const agent of ["coder", "ontocoder", "planner", "orchestrator"]) {
+    for (const agent of ["code-implementer", "data-implementer", "implementation-planner", "orchestrator"]) {
       const noTopic = run(emptyProject, agent);
       const withTopic = run(emptyProject, agent, "ontology");
       expect(withTopic.stdout, `${agent} topic must not change no-manifest output`).toBe(noTopic.stdout);
@@ -164,21 +161,16 @@ describe("context-manifest: HYG-NO-REGRESS — byte-identical when absent", () =
 });
 
 describe("agent-setup.md is emitted always-on, first, for every agent (Circle D Bundle 0)", () => {
-  // agent-setup.md is a plugin-shipped always-on framework rule (the sixth), the
-  // single authoring home for the Setup contract. It must be emitted for every
-  // agent, with no manifest, and emitted FIRST — before the detailed
-  // fusion-workbench-conventions.md — so an agent reads "how Setup works" before
-  // the conventions. This is an intended extension of the always-on set, NOT a
-  // HYG-NO-REGRESS break (that guard protects the manifest-absent==pre-manifest
-  // property; the always-on set is deliberately extended here).
+  // agent-setup.md, the single authoring home for the Setup contract, is emitted
+  // for every agent with no manifest, and FIRST, so "how Setup works" is read
+  // before the conventions. Extending the always-on set is intended, not a
+  // HYG-NO-REGRESS break (that guard protects only the manifest-absent output).
   const setup = "agent-setup.md";
   const conventions = "fusion-workbench-conventions.md";
 
   it(`emits ${setup} for every agent (no manifest)`, () => {
-    // Derived, not written: the list above is a fixture, and a literal count
-    // beside it is a second statement of the same fact that goes stale on the
-    // next agent added or removed (it did, when `conceptrev` left on
-    // 2026-08-15). What this asserts is that the fixture still covers the tree.
+    // Derived, not written: a literal count beside the fixture goes stale on the
+    // next agent added or removed. This asserts the fixture still covers the tree.
     const onDisk = agentNames();
     expect([...AGENTS].sort()).toEqual(onDisk);
     for (const agent of AGENTS) {
@@ -206,60 +198,69 @@ describe("context-manifest: emit predicate (agent-match AND topic-match)", () =>
   beforeEach(() => writeManifest(manifestProject, SAMPLE_MANIFEST));
 
   it("emits a path unit when the agent and the explicit topic both match", () => {
-    const out = lines(run(manifestProject, "ontocoder", "ontology").stdout);
+    const out = lines(run(manifestProject, "data-implementer", "ontology").stdout);
     expect(out).toContain(".claude/rules/ONTO-ENG-RULES.md");
   });
 
   it("excludes a unit whose topic does not match, even when the agent matches", () => {
-    // coder matches READER's agent set, but topic 'ontology' != 'llm-pipeline'.
-    const out = lines(run(manifestProject, "coder", "ontology").stdout);
+    // code-implementer matches READER's agent set, but topic 'ontology' != 'llm-pipeline'.
+    const out = lines(run(manifestProject, "code-implementer", "ontology").stdout);
     expect(out).not.toContain(".claude/rules/READER.md");
   });
 
   it("excludes a unit whose agent does not match, even when the topic matches", () => {
-    // ontocoder is not in READER's agent set; topic llm-pipeline matches nothing else for it.
-    const out = lines(run(manifestProject, "ontocoder", "llm-pipeline").stdout);
+    // data-implementer is not in READER's agent set; topic llm-pipeline matches nothing else for it.
+    const out = lines(run(manifestProject, "data-implementer", "llm-pipeline").stdout);
     expect(out).not.toContain(".claude/rules/READER.md");
   });
 
   it("[always] units emit for a matching agent regardless of the topic", () => {
-    const withOther = lines(run(manifestProject, "coder", "unrelated-topic").stdout);
-    expect(withOther, "CODING-HYGIENE is [always] for coder").toContain(".claude/rules/CODING-HYGIENE.md");
-    const noTopic = lines(run(manifestProject, "coder").stdout);
+    const withOther = lines(run(manifestProject, "code-implementer", "unrelated-topic").stdout);
+    expect(withOther, "CODING-HYGIENE is [always] for code-implementer").toContain(".claude/rules/CODING-HYGIENE.md");
+    const noTopic = lines(run(manifestProject, "code-implementer").stdout);
     expect(noTopic).toContain(".claude/rules/CODING-HYGIENE.md");
   });
 
   it("[always] units do NOT emit for a non-matching agent", () => {
-    // CODING-HYGIENE is [always] but only for [coder, reviewer].
-    const out = lines(run(manifestProject, "ontocoder", "ontology").stdout);
+    // CODING-HYGIENE is [always] but only for [code-implementer, reviewer].
+    const out = lines(run(manifestProject, "data-implementer", "ontology").stdout);
     expect(out).not.toContain(".claude/rules/CODING-HYGIENE.md");
   });
 
   it("agents: [*] wildcard matches every agent", () => {
-    for (const agent of ["reconciler", "curator", "coder"]) {
+    for (const agent of ["state-auditor", "policy-curator", "code-implementer"]) {
       const out = lines(run(manifestProject, agent, "unite-framework").stdout);
       expect(out, `${agent} should get the [*] skill unit`).toContain("skill:unite-bok-sc-skill");
     }
   });
 
+  it("a pre-v12 agent name matches its v12 name until 13.0.0; an unknown name matches nothing", () => {
+    writeManifest(manifestProject, "units:\n  - path: A.md\n    agents: [coder]\n    topics: [always]\n" +
+      "  - path: B.md\n    agents: [no-such-agent]\n    topics: [always]\n");
+    const r = run(manifestProject, "code-implementer");
+    expect(lines(r.stdout), "agents: [coder] reaches code-implementer").toContain("A.md");
+    expect(lines(r.stdout), "an unknown name is not aliased").not.toContain("B.md");
+    expect(r.stderr).toContain("names 'coder', renamed 'code-implementer'");
+  });
+
   it("a skill unit emits a `skill:<name>` pointer, not a file path", () => {
-    const out = lines(run(manifestProject, "coder", "unite-framework").stdout);
+    const out = lines(run(manifestProject, "code-implementer", "unite-framework").stdout);
     expect(out).toContain("skill:unite-bok-sc-skill");
     // no bare skill path leaked
     expect(out.some((l) => l.endsWith("unite-bok-sc-skill") && !l.startsWith("skill:"))).toBe(false);
   });
 
   it("per-agent-AND-per-topic: a topic pulls a unit the agent would never get by pattern alone", () => {
-    // reconciler is a conventions-only agent — no domain rule pattern. It has no
+    // state-auditor is a conventions-only agent — no domain rule pattern. It has no
     // path by which it would ever load a UNITE skill, yet the topic axis pulls it.
-    const withTopic = lines(run(manifestProject, "reconciler", "unite-framework").stdout);
-    const withoutTopic = lines(run(manifestProject, "reconciler").stdout);
+    const withTopic = lines(run(manifestProject, "state-auditor", "unite-framework").stdout);
+    const withoutTopic = lines(run(manifestProject, "state-auditor").stdout);
     expect(withTopic).toContain("skill:unite-bok-sc-skill");
     expect(withoutTopic).not.toContain("skill:unite-bok-sc-skill");
   });
 
   it("manifest units are appended AFTER the existing always-on plugin rules", () => {
-    const out = lines(run(manifestProject, "ontocoder", "ontology").stdout);
+    const out = lines(run(manifestProject, "data-implementer", "ontology").stdout);
     const conventionsIdx = out.findIndex((l) => l.includes("fusion-workbench-conventions.md"));
     const unitIdx = out.findIndex((l) => l === ".claude/rules/ONTO-ENG-RULES.md");
     expect(conventionsIdx).toBeGreaterThanOrEqual(0);
@@ -273,14 +274,14 @@ describe("context-manifest: topic resolution from the claimed work item", () => 
   it("derives topic keywords from the item's slug when no CLI topic is given", () => {
     // slug 'ontology-refactor' → keywords {ontology, refactor} → matches the ontology unit.
     makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
-    const out = lines(run(manifestProject, "ontocoder").stdout);
+    const out = lines(run(manifestProject, "data-implementer").stdout);
     expect(out).toContain(".claude/rules/ONTO-ENG-RULES.md");
   });
 
   it("an explicit CLI topic overrides the item's slug", () => {
     makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
-    // Ask for llm-pipeline as coder → READER, NOT the slug-derived ontology unit.
-    const out = lines(run(manifestProject, "coder", "llm-pipeline").stdout);
+    // Ask for llm-pipeline as code-implementer → READER, NOT the slug-derived ontology unit.
+    const out = lines(run(manifestProject, "code-implementer", "llm-pipeline").stdout);
     expect(out).toContain(".claude/rules/READER.md");
   });
 
@@ -291,21 +292,21 @@ describe("context-manifest: topic resolution from the claimed work item", () => 
       "260718-1924-plain",
       "# c\n**Domain:** code\n**Topic:** unite-framework\n",
     );
-    const out = lines(run(manifestProject, "coder").stdout);
+    const out = lines(run(manifestProject, "code-implementer").stdout);
     expect(out).toContain("skill:unite-bok-sc-skill");
   });
 
   it("a Tags: line (multi-value) in the item resolves each tag", () => {
     makeClaimedItem(manifestProject, "260718-1924-plain", "# c\n**Tags:** ontology, unite-framework\n");
-    const planner = lines(run(manifestProject, "planner").stdout);
-    expect(planner, "planner in ontology unit").toContain(".claude/rules/ONTO-ENG-RULES.md");
-    const coder = lines(run(manifestProject, "coder").stdout);
-    expect(coder, "coder in unite-framework skill").toContain("skill:unite-bok-sc-skill");
+    const planner = lines(run(manifestProject, "implementation-planner").stdout);
+    expect(planner, "implementation-planner in ontology unit").toContain(".claude/rules/ONTO-ENG-RULES.md");
+    const coder = lines(run(manifestProject, "code-implementer").stdout);
+    expect(coder, "code-implementer in unite-framework skill").toContain("skill:unite-bok-sc-skill");
   });
 
   it("nothing claimed → only [always] units match (empty topic set)", () => {
     // manifestProject has a manifest but no item store at all.
-    const out = lines(run(manifestProject, "coder").stdout);
+    const out = lines(run(manifestProject, "code-implementer").stdout);
     expect(out).toContain(".claude/rules/CODING-HYGIENE.md"); // [always]
     expect(out).not.toContain(".claude/rules/READER.md");     // topic'd, no topic resolved
   });
@@ -316,13 +317,13 @@ describe("context-manifest: topic resolution from the claimed work item", () => 
     // answer about this one, and reading it would hand an agent somebody
     // else's rules.
     makeForeignItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
-    const r = run(manifestProject, "ontocoder");
+    const r = run(manifestProject, "data-implementer");
     expect(r.status, "a foreign claim is an ordinary answer, not a fault").toBe(0);
     expect(lines(r.stdout)).not.toContain(".claude/rules/ONTO-ENG-RULES.md");
     // And the same item DOES resolve for the checkout that holds it, so the
     // absence above is the comparison working rather than the read failing.
     makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
-    expect(lines(run(manifestProject, "ontocoder").stdout)).toContain(
+    expect(lines(run(manifestProject, "data-implementer").stdout)).toContain(
       ".claude/rules/ONTO-ENG-RULES.md",
     );
   });
@@ -336,7 +337,7 @@ describe("context-manifest: topic resolution from the claimed work item", () => 
       join(manifestProject, "fusion-workbench", "circles", slug, `${slug}.md`),
       "# c\n**Status:** open\n",
     );
-    const out = lines(run(manifestProject, "ontocoder").stdout);
+    const out = lines(run(manifestProject, "data-implementer").stdout);
     expect(out).not.toContain(".claude/rules/ONTO-ENG-RULES.md");
   });
 
@@ -348,7 +349,7 @@ describe("context-manifest: topic resolution from the claimed work item", () => 
     // manifest and nothing else.
     makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n");
     makeClaimedItem(manifestProject, "260718-1930-second-claim", "# c\n");
-    const r = run(manifestProject, "ontocoder");
+    const r = run(manifestProject, "data-implementer");
     expect(r.status, "a refused claim is not this script's own failure").toBe(0);
     expect(lines(r.stdout), "the slug of one of them must not become the topic")
       .not.toContain(".claude/rules/ONTO-ENG-RULES.md");
@@ -362,23 +363,23 @@ describe("context-manifest: HYG-NO-SILENT-FAIL — malformed manifest fails loud
   const MALFORMED: [string, string][] = [
     [
       "unit missing topics:",
-      ["units:", "  - path: .claude/rules/A.md", "    agents: [coder]"].join("\n"),
+      ["units:", "  - path: .claude/rules/A.md", "    agents: [code-implementer]"].join("\n"),
     ],
     [
       "agents: not an array",
-      ["units:", "  - path: .claude/rules/A.md", "    agents: coder", "    topics: [x]"].join("\n"),
+      ["units:", "  - path: .claude/rules/A.md", "    agents: code-implementer", "    topics: [x]"].join("\n"),
     ],
     [
       "topics: not an array",
-      ["units:", "  - path: .claude/rules/A.md", "    agents: [coder]", "    topics: x"].join("\n"),
+      ["units:", "  - path: .claude/rules/A.md", "    agents: [code-implementer]", "    topics: x"].join("\n"),
     ],
     [
       "empty path value",
-      ["units:", "  - path:", "    agents: [coder]", "    topics: [x]"].join("\n"),
+      ["units:", "  - path:", "    agents: [code-implementer]", "    topics: [x]"].join("\n"),
     ],
     [
       "list item is neither path nor skill",
-      ["units:", "  - foo: bar", "    agents: [coder]", "    topics: [x]"].join("\n"),
+      ["units:", "  - foo: bar", "    agents: [code-implementer]", "    topics: [x]"].join("\n"),
     ],
     [
       "content with no units: key",
@@ -389,7 +390,7 @@ describe("context-manifest: HYG-NO-SILENT-FAIL — malformed manifest fails loud
   for (const [label, body] of MALFORMED) {
     it(`exits 3 with a stderr reason: ${label}`, () => {
       writeManifest(manifestProject, body);
-      const r = run(manifestProject, "coder");
+      const r = run(manifestProject, "code-implementer");
       expect(r.status, `${label} must exit 3`).toBe(3);
       expect(r.stderr).toContain("malformed context-manifest.yaml");
       // fail-closed: no partial unit set on stdout
@@ -401,26 +402,24 @@ describe("context-manifest: HYG-NO-SILENT-FAIL — malformed manifest fails loud
     const body = [
       "units:",
       "  - path: .claude/rules/CODING-HYGIENE.md",
-      "    agents: [coder]",
+      "    agents: [code-implementer]",
       "    topics: [always]",
       "  - path: .claude/rules/READER.md",
-      "    agents: [coder]",
+      "    agents: [code-implementer]",
       // topics: deliberately missing → malformed
     ].join("\n");
     writeManifest(manifestProject, body);
-    const r = run(manifestProject, "coder");
+    const r = run(manifestProject, "code-implementer");
     expect(r.status).toBe(3);
-    // The first unit WOULD have matched (coder, always), but the run must abort clean.
+    // The first unit WOULD have matched (code-implementer, always), but the run must abort clean.
     expect(r.stdout).not.toContain(".claude/rules/CODING-HYGIENE.md");
   });
 });
 
 describe("emit_if_exists: a missing always-on rule file is skipped silently (set -eu regression)", () => {
-  // The documented contract (rules/agent-setup.md: "missing files are skipped
-  // silently") must hold under `set -eu`. Before the fix, emit_if_exists was a
-  // bare `[ -f ] && printf`, returning 1 on a miss — which killed the emission
-  // mid-stream with partial output and exit 1. This suite runs the real script
-  // against a stripped plugin copy with one always-on file removed.
+  // rules/agent-setup.md promises "missing files are skipped silently" under
+  // `set -eu`; a bare `[ -f ] && printf` once returned 1 on a miss and killed the
+  // emission mid-stream. Run against a plugin copy with one always-on file removed.
   let strippedPlugin: string;
 
   beforeEach(() => {
@@ -448,7 +447,7 @@ describe("emit_if_exists: a missing always-on rule file is skipped silently (set
     runAt(join(strippedPlugin, "bin", "fusion-rules"), emptyProject, strippedPlugin, [agent]);
 
   it("exits 0 and emits every remaining always-on path when one file is missing", () => {
-    const r = runStripped("coder");
+    const r = runStripped("code-implementer");
     expect(r.status, "missing always-on file must not abort the emission").toBe(0);
     const out = lines(r.stdout);
     // Everything after the missing file in the emit block must still be there.
@@ -464,7 +463,7 @@ describe("emit_if_exists: a missing always-on rule file is skipped silently (set
   });
 
   it("holds for a conventions-only agent too", () => {
-    const r = runStripped("reconciler");
+    const r = runStripped("state-auditor");
     expect(r.status).toBe(0);
     const out = lines(r.stdout);
     // The LAST always-on emission, so its presence proves the block ran to the
@@ -483,7 +482,7 @@ describe("malformed-manifest error message is verbatim (awk quote-escape regress
       manifestProject,
       ["units:", "  - path: .claude/rules/A.md", "    topics: [x]"].join("\n"),
     );
-    const r = run(manifestProject, "coder");
+    const r = run(manifestProject, "code-implementer");
     expect(r.status).toBe(3);
     expect(r.stderr).toContain("unit '.claude/rules/A.md' is missing 'agents:'");
     expect(r.stderr, "hex-escape greed must not garble the message").not.toContain("zgents");
@@ -492,9 +491,9 @@ describe("malformed-manifest error message is verbatim (awk quote-escape regress
   it("unit missing topics: → stderr carries `is missing 'topics:'` verbatim", () => {
     writeManifest(
       manifestProject,
-      ["units:", "  - path: .claude/rules/A.md", "    agents: [coder]"].join("\n"),
+      ["units:", "  - path: .claude/rules/A.md", "    agents: [code-implementer]"].join("\n"),
     );
-    const r = run(manifestProject, "coder");
+    const r = run(manifestProject, "code-implementer");
     expect(r.status).toBe(3);
     expect(r.stderr).toContain("unit '.claude/rules/A.md' is missing 'topics:'");
   });
@@ -503,16 +502,16 @@ describe("malformed-manifest error message is verbatim (awk quote-escape regress
 describe("context-manifest: a valid empty manifest is not an error", () => {
   it("units: [] → exit 0, no extra units, existing set intact", () => {
     writeManifest(manifestProject, "# nothing here\nunits: []\n");
-    const withEmpty = run(manifestProject, "coder");
-    const baseline = run(emptyProject, "coder");
+    const withEmpty = run(manifestProject, "code-implementer");
+    const baseline = run(emptyProject, "code-implementer");
     expect(withEmpty.status).toBe(0);
     expect(withEmpty.stdout).toBe(baseline.stdout);
   });
 
   it("a comments-only file → exit 0, byte-identical to no manifest", () => {
     writeManifest(manifestProject, "# just a comment\n");
-    const r = run(manifestProject, "coder");
+    const r = run(manifestProject, "code-implementer");
     expect(r.status).toBe(0);
-    expect(r.stdout).toBe(run(emptyProject, "coder").stdout);
+    expect(r.stdout).toBe(run(emptyProject, "code-implementer").stdout);
   });
 });

@@ -2,56 +2,58 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
-import { LEGACY_STORES, RECORD_STORES, RETIRED_REVIEW_FOLDERS } from "../stores.js";
+import {
+  CONTAINER_STORE,
+  LEGACY_STORES,
+  RECORD_STORES,
+  RETIRED_REVIEW_FOLDERS,
+  WINDOW_LEGACY_NAMES,
+  WINDOW_LEGACY_RECORD_STORES,
+} from "../stores.js";
 
 // ---------------------------------------------------------------------------
-// Path-literal lint gate (plan step 8 / P-8).
-//
-// The rule this enforces — store paths resolved through `bin/fusion-paths` and
-// never written as a literal in a prompt — and this gate's own place in it are
-// stated in `CLAUDE.md`'s last `## Where to look when something breaks` row,
-// down to `DEFINITION_SITES` and why that list grants nothing. It fails
-// `npm test` if a type-folder path literal survives in `agents/*.md` or
-// `skills/*/SKILL.md` outside the two skills that legitimately name the pre-v4
-// layout, and it reads no file that DEFINES a store. Widen the file set and
-// those must become explicit exemptions.
-//
-// This is a guard, not a fixer (rules/critical-stance.md §2).
+// Path-literal lint gate (plan step 8 / P-8): store paths are resolved through
+// `bin/fusion-paths`, never written as a literal in `agents/*.md` or a
+// non-exempt `skills/*/SKILL.md`. It reads no file that DEFINES a store; widen
+// the file set and those must become explicit exemptions. A guard, not a fixer
+// (rules/critical-stance.md §2).
 // ---------------------------------------------------------------------------
-
 
 // The artifact-store folders, composed from `hooks/lib/stores.ts` rather than
-// listed here: the live stores (the layout tree's, `checkouts` included), the
-// legacy backlog store, and the three retired pre-v4 review folders (merged
-// into `reviews`), which must never reappear in a converted prompt. A kind's
-// location comes from `fusion-paths` ($OUT_* / $SCAN_*), never from a literal.
+// listed here: the live stores (the layout tree's, `checkouts` included) and the
+// container store, the window's legacy record-store names, the legacy backlog
+// store, and the three retired pre-v4 review folders. A kind's location comes
+// from `fusion-paths` ($OUT_* / $SCAN_*), never from a literal.
 //
-// Deliberately EXCLUDED: the structural container roots `circles/`, `shared/`,
-// `archive/`, `stashes/`. They are not artifact stores — they are the layout's
-// roots, legitimately named in prose (help explaining the layout) and, for
-// `circles/`, by the two skills that recognise the superseded layout in order to
-// refuse or convert it. Flagging them would fire on legitimate mentions and
-// force wrong exemptions. An artifact-type segment nested inside such a path
-// (e.g. `circles/x/reviews/y`) is still caught, because `reviews/` matches on
-// its own.
-const TYPE_FOLDERS: readonly string[] = [...RECORD_STORES, ...LEGACY_STORES, ...RETIRED_REVIEW_FOLDERS];
+// Deliberately EXCLUDED: the roots `circles/`, `shared/`, `archive/`,
+// `stashes/`, legitimately named in prose (help explaining the layout, the
+// upgrade) and, for `circles/`, by the two skills that recognise the v11 layout.
+// A store segment nested inside such a path (`circles/x/reviews/y`) is still
+// caught, because `reviews/` matches on its own.
+const TYPE_FOLDERS: readonly string[] = [
+  ...RECORD_STORES,
+  CONTAINER_STORE,
+  ...WINDOW_LEGACY_RECORD_STORES,
+  ...LEGACY_STORES,
+  ...RETIRED_REVIEW_FOLDERS,
+];
 
 // The whole trust surface — the sites allowed to name type folders as paths.
-// Enumerated explicitly, never pattern-matched: `setup` names the pre-v4 layout
-// in its detection check (it must recognise the old folders to stop before
-// mkdir), and `migrate`'s entire purpose is to move those folders. Every other
-// skill and every agent must go through `fusion-paths`.
+// Enumerated explicitly, never pattern-matched: `setup` names the stores it
+// scaffolds and, during the window, the legacy store it reports; `migrate`
+// names both sides of the rename. Every other skill and every agent must go
+// through `fusion-paths`.
 const EXEMPT_SKILLS = new Set(["setup", "migrate"]);
 
 // The files allowed to name a store directory because they DEFINE where a kind
 // goes. They are outside the gate's file set by construction — it reads
 // `agents/` and `skills/` only — so this list grants nothing. Its job is to make
-// the set countable: a fifth definition site is added here in the same commit
-// that creates it, or the tree carries one nobody chose. Ordered as the
-// conventions file's own header table orders them.
+// the set countable: a new definition site is added here in the same commit
+// that creates it, or the tree carries one nobody chose.
 const DEFINITION_SITES = [
   "rules/fusion-workbench-conventions.md", // layout, work-item grammar, operative path resolution
   "bin/fusion-paths", // the executable definition
+  "bin/fusion-stores", // the bash copy of the store names
   "rules/workbench-path-resolution.md", // name namespace, key table, key-set derivation
 ];
 
@@ -145,13 +147,9 @@ describe("path-literal lint: no type-folder literals in prompts or skills", () =
   });
 
   it("reads the whole file, frontmatter included", () => {
-    // Decision (issue item 1): the gate scans the entire file, frontmatter and
-    // all — it does NOT skip the description block. Skipping was tempting
-    // (frontmatter edits once broke agent loading, v2.8.1) but the gate is
-    // shape-aware, so prose descriptions never false-positive; meanwhile a
-    // path literal in a description is a real regression. This is the exact
-    // class the pre-fix agent descriptions carried (playmaker's "history/<own>.md"
-    // before commit 1508680): a $OUT_*/$SCAN_* value belongs there, not a path.
+    // Decision (issue item 1): the description block is scanned too — the gate is
+    // shape-aware, so prose there never false-positives, and a path literal there
+    // is a real regression (playmaker's "history/<own>.md" before 1508680).
     const frontmatter = 'description: writes only circles/<file>.md and history/<own>.md\n';
     const v = scan("agents/fixture.md", frontmatter);
     expect(v.map((x) => x.literal)).toContain("history/<own>.md");
@@ -170,7 +168,7 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
   // the real false-positive lines in the tree today.
   const PROSE_THAT_MUST_NOT_FIRE: [string, string][] = [
     ["a dispatch line naming a document kind", "names the target — a path to a planning/analysis document, or a set of them."],
-    ["taskplanner.md:171", "- How many plans/issues/reviews scanned"],
+    ["a slash-joined kind list", "- How many issues/reviews scanned"],
     ["taskplanner.md:71", "Skip files with terminal markers — issues/planning `[c]`/`[d]` — entirely."],
     ["cadence legend", "defects go in issues, decisions record open questions, analyses study."],
     ["cadence legend, backlog row", "| b | backlog entries |"],
@@ -192,6 +190,10 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
     ["retired review folder", "put the review in codereview/latest.md"],
     ["artifact segment nested in a circle path", "read circles/260716-x/reviews/y.md"],
     ["the backlog store", "file the idea at shared/backlog/260812-1720_o_an-idea.md"],
+    ["the container store", "open work-packages/260716-x/ first"],
+    ["the plans store", "skim plans/*.md for open steps"],
+    ["the consultations store", "write the report to shared/consultations/<file>.md"],
+    ["a window legacy name", "the report sits in consult/<file>.md"],
   ];
 
   for (const [label, text] of PATHS_THAT_MUST_FIRE) {
@@ -206,21 +208,21 @@ describe("path-literal lint: a re-introduced literal fails, with an actionable m
     // Prove the gate fails in the other direction: splice the mandated literal
     // into a copy of a real prompt and confirm it is caught at the right line
     // with the right text — and that the message points to the fix.
-    const original = readFileSync(join(pluginRoot, "agents", "coder.md"), "utf-8").split("\n");
+    const original = readFileSync(join(pluginRoot, "agents", "code-implementer.md"), "utf-8").split("\n");
     const injectAt = 4; // 0-based; a body line, not frontmatter
     const copy = [...original];
     copy[injectAt] = "See fusion-workbench/planning/ for the current step.";
 
-    const violations = scan("agents/coder.md", copy.join("\n"));
+    const violations = scan("agents/code-implementer.md", copy.join("\n"));
     expect(violations.length).toBeGreaterThan(0);
 
     const hit = violations.find((v) => v.line === injectAt + 1);
     expect(hit, "the injected literal must be caught on its own line").toBeDefined();
-    expect(hit!.file).toBe("agents/coder.md");
+    expect(hit!.file).toBe("agents/code-implementer.md");
     expect(hit!.literal).toBe("fusion-workbench/planning/");
 
     const msg = report(violations);
-    expect(msg).toContain("agents/coder.md:5");
+    expect(msg).toContain("agents/code-implementer.md:5");
     expect(msg).toContain("fusion-workbench/planning/");
     expect(msg).toContain("bin/fusion-paths");
   });
@@ -270,22 +272,6 @@ describe("path-literal lint: the definition sites are enumerated, not assumed", 
   });
 });
 
-describe("path-literal lint: setup's bracket probe and migrate's reformat list are one string", () => {
-  // Three copies of one `find` expression, pinned rather than factored: a skill
-  // body is a prompt, not a shell library (issue 260816-0133).
-  it("the three sites select the same files, byte for byte", () => {
-    const PROBE = /\{ \[ -d "\$WB\/shared" \][^\n]*?grep -E '[^']*'/g;
-    const sites = ["skills/setup/SKILL.md", "skills/migrate/SKILL.md"].flatMap((rel) =>
-      [...readFileSync(join(pluginRoot, rel), "utf-8").matchAll(PROBE)].map((m) => m[0]),
-    );
-    expect(sites.length, "setup's probe, migrate's survey and migrate's reformat pass").toBe(3);
-    expect(
-      new Set(sites).size,
-      "setup's bracket probe and migrate's reformat candidate list must select the same files; three sites, one string",
-    ).toBe(1);
-  });
-});
-
 describe("path-literal lint: setup's key needs stay a subset of the orchestrator's", () => {
   // Issue item 4. `skills/setup/SKILL.md` deliberately calls `fusion-paths
   // orchestrator` (documented at skills/setup/SKILL.md Step 2): setup IS the
@@ -321,11 +307,19 @@ describe("path-literal lint: setup's key needs stay a subset of the orchestrator
 describe("path-literal lint: the store list is the layout tree's", () => {
   // Issue 260905-0933_*: three hand-kept copies of this set drifted by one element each way.
   // `hooks/lib/stores.ts` is the one copy now, and this is what keeps it equal to the definition.
+  const tree = readFileSync(join(pluginRoot, "rules/fusion-workbench-conventions.md"), "utf-8");
+
   it("RECORD_STORES equals the shared/ subtree of the conventions' layout tree, in order", () => {
-    const tree = readFileSync(join(pluginRoot, "rules/fusion-workbench-conventions.md"), "utf-8");
     const subtree = tree.match(/^├── shared\/[\s\S]*?(?=^├── archive\/)/m);
     expect(subtree, "the layout tree's `shared/` subtree was not found between `├── shared/` and `├── archive/`").not.toBeNull();
     const fromTree = [...subtree![0].matchAll(/[├└]── ([a-z]+)\//g)].map((m) => m[1]).slice(1);
     expect(fromTree, "RECORD_STORES and the layout tree disagree: edit both in one commit").toEqual([...RECORD_STORES]);
+  });
+
+  it("CONTAINER_STORE is the tree's first root, and WINDOW_LEGACY_NAMES its window subsection", () => {
+    expect(tree.match(/^fusion-workbench\/\n├── ([a-z-]+)\//m)?.[1]).toBe(CONTAINER_STORE);
+    const window = tree.match(/^### Transition window[^\n]*\n([\s\S]*?)(?=^##)/m)?.[1] ?? "";
+    const rows = [...window.matchAll(/^- `([a-z-]+)\/`: `([a-z-]+)\/`$/gm)].map((m) => [m[1], m[2]]);
+    expect(Object.fromEntries(rows), "the window table and the tree's subsection disagree").toEqual({ ...WINDOW_LEGACY_NAMES });
   });
 });

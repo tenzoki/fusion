@@ -124,7 +124,7 @@ async function main() {
     }
 }
 main().catch((err) => {
-    // Fail open, as the other three hooks do. The verdict here is silence: this
+    // Fail open, as the other three hooks do. The reply here is silence: this
     // hook has no envelope to emit and no state to append to, so there is nothing
     // to write before the marker. A session identifier the model never received is
     // a field absent from the log, which is a defined state; a SessionStart hook

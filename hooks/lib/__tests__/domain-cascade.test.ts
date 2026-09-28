@@ -25,7 +25,7 @@ import {
 //
 // `agents/orchestrator.md` Setup Step 5 picks a workbench's domain from an
 // if/elif chain over two counts and one string, and that domain is passed as
-// the default to `reconciler`, its one consumer at HEAD. What rides on the
+// the default to `state-auditor`, its one consumer at HEAD. What rides on the
 // verdict and why the branch ORDER is the substance are stated there.
 //
 // The gate that stood here measured branch LAYOUT, and four edits reinstating
@@ -452,7 +452,7 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
 // reaches, and it states nothing about that reach: `REACH` in
 // `hooks/lib/domain-cascade.ts` holds the file set, what is caught, what is
 // missed and what is not scanned, each line carrying probes this file runs, and
-// `README-hooks.md` `### How far the domain-cascade reach gate reaches` is
+// `README-hooks.md` `### How far the domain-cascade reach check reaches` is
 // rendered from the same object and compared byte-for-byte. Why the prose is
 // generated rather than written is stated in that section (issue 260810-2110).
 //

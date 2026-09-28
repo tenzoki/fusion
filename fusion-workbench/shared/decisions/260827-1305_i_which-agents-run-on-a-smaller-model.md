@@ -1,0 +1,50 @@
+# Which agents run on a smaller model?
+
+---
+**Domain:** code
+**Filed by:** claude-code (conditioning-load work; the last open lever of the 260827 optimisation round), Kai Stalmann <ks@qantr.com>
+**Cross-references:** `260827-1305-does-agent-frontmatter-model-reach-the-dispatch.md` (the mechanism, measured: `model:` frontmatter is honoured, verified from transcripts) · `agents/reconciler.md` (the first candidate) · `refactor/260827-0335-bookkeeping-cost-repair-plan.md` (the audit that raised the lever)
+
+---
+
+## Question
+
+All sub-agents inherit the session's model (`ls agents/*.md` less the orchestrator). The mechanism for per-agent tiering exists and is measured; the cost lever is the largest one left that no byte-cut touches. Which roles, if any, move — and on what evidence?
+
+## Candidates, ordered by how mechanical the role's judgement is
+
+1. **reconciler** — verifies claimed record states against ground truth with grep/read/git; since 10.13.0 its inventory is live-scope only. The most checklist-shaped role.
+2. **reviewer** — one dispatch per unit of work; a quality drop here costs the most, so it moves last if at all.
+
+Two further candidates this record named, `taskplanner` and `coderev`, no longer exist: the first was deleted at v11 and the second merged into `reviewer`.
+
+## The measurement this needs (why this record is filed open)
+
+Not another probe: live evidence. After a few sessions on ≥ v10.15.0, run one reconciliation with the candidate on `model: haiku` (a one-line frontmatter change in a work tree, `claude --plugin-dir .`) against the same workbench state as a same-day run on the session model, and compare the two reconciliation history files: discrepancies found, discrepancies missed, wrong claims. The transcript names the model actually used (`subagents/*.jsonl`); the dispatch result and the agent's own say-so do not. Two clean candidate runs are the bar for moving a role; one miss a session model catches is the bar for moving it back.
+
+## Constraints
+
+- Verification is transcript-based, per the analysis; a tiering change ships only with its transcript evidence cited.
+- The two-session shape applies: a frontmatter change is live only after `fusion --update` and a restart.
+- Nothing here touches the orchestrator, shaper, curator or editor: judgement-heavy, user-facing, or gate-holding roles are out of scope for the first round by construction.
+
+---
+**Reconciliation 260905-2015 (reconciler, HEAD `5b84b13a`) — marker unchanged at `_o_`, no answer on
+disk.** No agent prompt carries a `model:` frontmatter key: `grep -l '^model:' agents/*.md` is empty,
+so every sub-agent still inherits the session's model and no tiering has been tried. The live evidence
+this record asks for — two candidate runs against the same workbench state, verified from the
+transcripts — does not exist anywhere in the tree. No `Answer located:` line.
+
+The first candidate this record names is the reconciler, and this pass is the kind of run it means. It
+was made on the session model and is therefore a control rather than evidence.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_o_`, no answer on disk.** Still no `model:` key in any of the eleven prompts, and no transcript-verified candidate run exists in the tree; the only later mention is the curator survey `260911-1218-curator-run.md`, which rules nothing. This pass ran on the session model and is again a control. No `Answer located:` line.
+
+---
+Answer located: 260923-0800-reconciler-haiku-versus-session-model.md `## Result` — one candidate run on haiku (transcript-verified) beside a same-state session-model control: not clean, it missed both drift items the control found and made 16 wrong claims, so it is not one of the two clean candidate runs the bar asks for; the ruling stays the user's.
+
+---
+Answered: 260923-0800-reconciler-haiku-versus-session-model.md `## Result` — no role moves: the reconciler (now state-auditor) stays on the session model after a haiku candidate run missed both drifted records and made 16 wrong claims; ruled by user, Kai Stalmann <ks@qantr.com>
+---
+Implemented: `agents/` — no prompt carries a `model:` key, so every agent runs on the session model

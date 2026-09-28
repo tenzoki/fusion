@@ -10,7 +10,7 @@ The user invoked `/fusion:discuss`. **You are the first partner** — this body 
 
 **This body performs that procedure and no other.** It runs no other pass, dispatches no other agent, and commits nothing.
 
-Every user-facing sentence below is rendered in the project's chat language, and the record in the artifact language (`rules/fusion-workbench-conventions.md` `## Project language`).
+Every user-facing sentence below is rendered in the project's chat language, and the record in the artefact language (`rules/fusion-workbench-conventions.md` `## Project language`).
 
 ## Step 1 — Roots and paths
 
@@ -43,7 +43,7 @@ One structure carries the whole state of a discussion: it is the payload of ever
 
 So a round is three acts: read the file, build the dispatch from it, rewrite it whole. `--infer` and the stopping check read the same bytes. Killing the session after round three then leaves a record carrying three rounds by construction, not by your having remembered to project hidden state onto disk.
 
-**The four claim sections carry the verdict.** The section an entry block sits in *is* its verdict, which is why no block carries a verdict field: written twice, the two copies have somewhere to drift. Every claim appears in exactly one of the four sections.
+**The four claim sections carry the result.** The section an entry block sits in *is* its result, which is why no block carries a result field: written twice, the two copies have somewhere to drift. Every claim appears in exactly one of the four sections.
 
 One entry-block shape, used in all four:
 
@@ -62,13 +62,13 @@ One entry-block shape, used in all four:
 
 The identifier is short, stable and unique within the discussion (`C1`, `C2`, …), so a later round can name an earlier claim. **Never renumber**: an identifier that moves breaks every reference already written to it.
 
-**The three verdict classes, and there is no fourth:**
+**The three result classes, and there is no fourth:**
 
 1. **Checked.** The consultant opened the underlying source and the claim holds.
 2. **Refuted.** The consultant opened the underlying source and the claim does not hold.
 3. **Not decidable from the inputs at hand.** The entry names the input that would decide it.
 
-Disagreement is not a fourth class. The verdict is the consultant's finding; open dissent records that you refuse it and neither side concedes. Keeping the two apart is what keeps the three classes exhaustive and the stopping rule's count unambiguous.
+Disagreement is not a fourth class. The result is the consultant's finding; open dissent records that you refuse it and neither side concedes. Keeping the two apart is what keeps the three classes exhaustive and the stopping rule's count unambiguous.
 
 **Conceding is allowed and wanted.** A concession that does not name the claim that falls and the evidence that felled it is not recorded as one, because without those two the entry says only that somebody stopped arguing.
 
@@ -114,7 +114,7 @@ The template, with the entry block of Step 3 inside every claim section:
 
 ## What held up
 
-<One entry block per claim whose verdict is checked.>
+<One entry block per claim whose result is checked.>
 
 ## What fell
 
@@ -147,22 +147,22 @@ Then four blocks, in this order:
 
 1. **The register, verbatim.** The four claim sections exactly as they stand after the previous round, pasted in full — not summarised and not pointed at. The consultant has no chat and reads only what the dispatch carries. In round one this is the claims you open with.
 2. **The material.** Paths, commit hashes, and the point in the conversation the discussion came from. Name them and let the consultant open them; do not quote your own conclusions from them.
-3. **The return contract.** One verdict per entry, from the three classes: a citation for checked and for refuted, the missing input for undecidable. It may advance claims of its own, which enter at a verdict in the same round.
+3. **The return contract.** One result per entry, from the three classes: a citation for checked and for refuted, the missing input for undecidable. It may advance claims of its own, which enter at a result in the same round.
 4. **The symmetry statement.** A claim that holds up is a complete and cost-free result, and nothing in this dispatch or in the record rewards a refutation over a confirmation.
 
 **These instructions close the dispatch, and each is stated rather than left to be inferred:**
 
 - **Write no file.** The consultant's own prompt gives it a consultation-report mode and a store to write into; during a discussion it writes nothing at all.
-- **You have no `AskUserQuestion`.** It runs non-interactively as a sub-agent, so a question it cannot resolve is an undecidable verdict naming the missing input — the third class doing the job it exists for.
-- **Do not acknowledge and wait.** Your prompt's startup procedure assumes a session you hold directly. There is no second turn: the verdicts come back in this one.
+- **You have no `AskUserQuestion`.** It runs non-interactively as a child run, so a question it cannot resolve is an undecidable result naming the missing input — the third class doing the job it exists for.
+- **Do not acknowledge and wait.** Your prompt's startup procedure assumes a session you hold directly. There is no second turn: the results come back in this one.
 
-Wait for it. When it returns, fold the verdicts into the register: move each entry into the section its verdict names, set `**Last moved:**` on every entry whose verdict changed, add the claims the consultant advanced, and record your own concessions and any open dissent. Then **rewrite the whole file** from the register and set `**Rounds:**` to the count now run. The rewrite happens every round and before the stopping check, never after it.
+Wait for it. When it returns, fold the results into the register: move each entry into the section its result names, set `**Last moved:**` on every entry whose result changed, add the claims the consultant advanced, and record your own concessions and any open dissent. Then **rewrite the whole file** from the register and set `**Rounds:**` to the count now run. The rewrite happens every round and before the stopping check, never after it.
 
 ## Step 6 — The stopping rule
 
 Evaluated after the rewrite, from the register alone. **Condition A is evaluated before condition B.**
 
-**Condition A, convergence.** The register holds no entry with the undecidable verdict, and that round produced no new refutation: no entry entered at refuted, and no entry moved to refuted from another verdict.
+**Condition A, convergence.** The register holds no entry with the undecidable result, and that round produced no new refutation: no entry entered at refuted, and no entry moved to refuted from another result.
 
 **Condition B, the ceiling.** The round count reaches eight.
 
@@ -198,5 +198,5 @@ Commit nothing. Tell the user in one line that the record is uncommitted.
 - **Dispatches `fusion:consultant`** and nothing else, once per round. No other agent, no sub-dispatch of its own.
 - **Commits nothing** and pushes nothing.
 - **Decides nothing.** The record holds what was disputed, what survived, what was given up and a recommendation that binds nothing.
-- **Claims no work item and changes no status.** Where the store goes is the Origin Rule's answer, resolved once at Step 1: a discussion started under an item's directive lands in that item's container.
-- **Judges no verdict on the consultant's behalf.** A claim you believe and it refuted is refuted with your position recorded as open dissent — not quietly re-filed under what held up.
+- **Claims no work package and changes no status.** Where the store goes is the Origin Rule's answer, resolved once at Step 1: a discussion started under an item's brief lands in that item's container.
+- **Overrides no result on the consultant's behalf.** A claim you believe and it refuted is refuted with your position recorded as open dissent — not quietly re-filed under what held up.

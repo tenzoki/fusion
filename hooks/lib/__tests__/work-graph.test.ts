@@ -82,11 +82,16 @@ function record(dir: string, status: string, deps: string[] | null, close = "---
 
 function build(): string {
   const root = mkdtempSync(join(tmpdir(), "work-graph-"));
-  const circles = join(root, "fusion-workbench", "circles");
+  const packages = join(root, "fusion-workbench", "work-packages");
   for (const [dir, [status, deps]] of Object.entries(FIXTURE)) {
-    mkdirSync(join(circles, dir), { recursive: true });
-    writeFileSync(join(circles, dir, `${dir}.md`), record(dir, status, deps));
+    mkdirSync(join(packages, dir), { recursive: true });
+    writeFileSync(join(packages, dir, `${dir}.md`), record(dir, status, deps));
   }
+  // A mixed window tree: the rest stands under the legacy root, and a package
+  // under both roots is one package, read where it now lives (terminal there).
+  const circles = join(root, "fusion-workbench", "circles");
+  mkdirSync(join(circles, "260101-0009-closed"), { recursive: true });
+  writeFileSync(join(circles, "260101-0009-closed", "260101-0009-closed.md"), record("260101-0009-closed", "open", null));
   mkdirSync(join(circles, UNCLOSED), { recursive: true });
   writeFileSync(join(circles, UNCLOSED, `${UNCLOSED}.md`), record(UNCLOSED, "open", null, ""));
   // A terminal Circle record: a container holding no record of its own name.
@@ -148,7 +153,7 @@ describe("computeWorkGraph over a fixture store", () => {
     expect(report.unreadableHead).toBe(1);
   });
 
-  it("returns verdict=empty for a root with no circles/", () => {
+  it("returns verdict=empty for a root with no container root", () => {
     expect(computeWorkGraph(join(root, "nowhere"))).toMatchObject({ items: 0, verdict: "empty" });
   });
 

@@ -84,6 +84,10 @@
 // be absolved of growth somebody was about to choose to make, while this one
 // asks for room and leaves every byte of that growth on the books.
 //
+// A rename re-keys the entry and moves no floor: it is none of the three events
+// here, nor the fourth `fixtures/dispatch-path.baseline` carries for that bound
+// alone (`c34c7896`), and not a head-room raise; the new key keeps the old figure.
+//
 // NONE OF THE FOUR IS THE SILENT RAISE THIS SECTION EXISTS TO PREVENT, for one
 // reason: each names itself, in the terms its own paragraph sets. Between them
 // neither number moves — a reference that followed the measurement would measure

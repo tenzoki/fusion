@@ -64,7 +64,7 @@ import { readFileSync } from "node:fs";
 import { failOpen } from "./lib/fail-open.js";
 /** Every line the helper writes to stderr carries this prefix. */
 const PREFIX = "fusion-identity: ";
-/** The first line `announce_mint()` writes, and the gate for saying anything. */
+/** The first line `announce_mint()` writes, and the condition for saying anything. */
 const MINT = "fusion-identity: minted ";
 /**
  * The announcement inside a `bin/fusion-identity` run's merged output, or

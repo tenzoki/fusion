@@ -21,7 +21,7 @@ cites only the conventions file.
 
 ## The name namespace
 
-`<name>` is an **agent** (`agents/<name>.md`) or a **skill** (`skills/<name>/SKILL.md`). The two share one flat namespace, and **every consumer asks under its own name**: `fusion-paths coder`, `fusion-paths memo`, `fusion-paths cadence`.
+`<name>` is an **agent** (`agents/<name>.md`) or a **skill** (`skills/<name>/SKILL.md`). The two share one flat namespace, and **every consumer asks under its own name**: `fusion-paths code-implementer`, `fusion-paths memo`, `fusion-paths cadence`.
 
 A skill is its own consumer, not a guest in an agent's key set. The alternative — a skill resolving under whichever agent hosts its session — does not work, and not marginally: `/fusion:cadence` writes its digest to `$OUT_MEMO` and reads `$SCAN_HISTORY`, and no agent's prompt names `$OUT_MEMO` at all — a memo is written for the user, not for an agent. There is no agent name that resolves that skill's write. Making one work would mean adding the key to an agent whose prompt performs no such write, which breaks the rule under *Emission is per-consumer* below and turns a key set into "whatever some skill in this session might want".
 
@@ -31,7 +31,7 @@ A name is a lowercase slug. It resolves to exactly one prompt file; a name that 
 
 ## The second argument, and what it is for
 
-`fusion-paths <name> [<item-dir>]`. The second argument names the work item in scope; with
+`fusion-paths <name> [<item-dir>]`. The second argument names the work package in scope; with
 no second argument the resolver reads this checkout's claim instead. The operative half —
 the signature, what a claim is, what two claimed items produce, and why a checkout holding
 none is answered rather than refused — is the *Contract* subsection of
@@ -40,19 +40,19 @@ here. What belongs to this file is what the argument is **for**, which that cont
 not say.
 
 **It selects between two candidate stores for one kind, and that is its whole purpose.**
-Every artifact kind has a store inside a work item's container and a store under `shared/`
+Every artefact kind has a store inside a work package's container and a store under `shared/`
 (`rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)`), so a write has
 two candidate destinations and something has to pick. The claim is how an agent picks for
 itself. The argument is how a **dispatcher** picks on its behalf, and it buys exactly one
 thing the claim cannot: writing into an item this checkout has not claimed. Two prompts
-carry a dispatch parameter for it, `planner` and `shaper`, rostered in
+carry a dispatch parameter for it, `implementation-planner` and `requirements-designer`, rostered in
 `README-agents.md` `## Dispatch parameters`; each passes its value straight through to the
 resolver.
 
 **The argument left and came back, and a reader should take that as one rule rather than as
 a reversal.** It named an existing *Circle* directory until the Circle container was cut,
 went with it because one store per kind leaves nothing to select between, and returned
-naming a work-item directory when the per-work-item container was restored. The rule under
+naming a work-package directory when the per-work-package container was restored. The rule under
 both moves is the same: the argument is present exactly when a kind has two stores, and
 absent when it has one. None of the Circle's other machinery came back with it — no state
 marker on the directory's record, no portfolio layer, no pointer file.
@@ -73,17 +73,18 @@ the two.
 **One consumer names the layout literally in order to move it, and only one:**
 `/fusion:migrate`. Every other consumer asks the resolver which store a kind maps to.
 Migrate is the transition *between* layouts, so it must name both sides, and the resolver
-cannot help it with either. The old sides have no keys: the pre-v4 type folders at the
-workbench root, a flat `circles/*.md` that never had a directory of its own, and a record
-stating its state in a filename marker. The new side would resolve, but migrate's own input
+cannot help it with either. The old sides are the v11 store names, `circles/`, `planning/`
+and `consult/`: no `OUT_*` key names them, and a `SCAN_*` key lists one only while it exists,
+which is exactly what the move ends. The pre-v4 shapes it names only to refuse them, with the
+`v11.11.1` route. The new side would resolve, but migrate's own input
 is a tree the resolver's answers do not describe — it is reading files where they used to
 be in order to move them where they now belong. Its store paths are literal, and that is
 correct.
 
-**`/fusion:setup` is the second exemption the path-literal gate carries, and it is not this
-one.** Setup names the pre-v4 type folders in the probe that refuses them, and it `mkdir`s
-the current stores; neither act is a transition between layouts, and neither could be
-expressed as a resolver key — one is about a layout that has no keys, the other creates the
+**`/fusion:setup` is the second exemption the path-literal check carries, and it is not this
+one.** Setup `mkdir`s the stores it scaffolds and, for the window, names the v11 stores its
+probe reports; neither act is a transition between layouts, and neither could be expressed
+as a resolver key — the report is about names no key writes, the `mkdir` creates the
 directories the keys name. The two exemptions are enumerated in
 `hooks/lib/__tests__/path-literal-lint.test.ts` and recorded in
 `rules/fusion-workbench-conventions.md`, in the *Store-directory path literals* paragraph
@@ -92,25 +93,28 @@ above its layout tree.
 ## The key table
 
 **One kind, two candidate stores, and the resolver picks between them.** A write key and its
-matching read key name the same *kind*; what each carries depends on whether a work item is
+matching read key name the same *kind*; what each carries depends on whether a work package is
 in scope. An `OUT_*` resolves under that item's container, or under `shared/` when none is.
 A `SCAN_*` names **both** stores, container first and the shared one second, and collapses
 to the shared store alone when nothing is in scope. `<scope>` below stands for whichever
 base the resolver chose, so one row states both readings. Four rows carry a literal instead,
-and each says why it has no second candidate.
+and each says why it has no second candidate. Until v13.0.0 a `SCAN_*` also lists a renamed
+store's v11 name, and an item container under the v11 root, wherever that directory exists;
+no `OUT_*` ever names one (`rules/fusion-workbench-conventions.md`
+`### Transition window (v12.0.0 to v13.0.0)`).
 
 | Key | Read key | Value | Notes |
 |---|---|---|---|
 | `WORKBENCH` | — | Absolute path to `fusion-workbench/` | Always emitted, and the only absolute path. Resolved via `bin/fusion-workbench-root`. |
-| `OUT_PLAN` | `SCAN_PLANS` | `<scope>/planning` | Spec and plan writes. |
-| `OUT_HISTORY` | `SCAN_HISTORY` | `<scope>/history` | **Legacy: the history store is closed to writes** (`rules/fusion-workbench-conventions.md` `## Session history`). No agent names it. The arm survives only while the last skill bodies naming it do, and goes with them. `/fusion:cadence` is the consumer the read key is emitted for; a reader of it says so rather than reporting an empty stretch as a quiet week. |
+| `OUT_PLAN` | `SCAN_PLANS` | `<scope>/plans` | Spec and plan writes. |
+| — | `SCAN_HISTORY` | `<scope>/history` | **Legacy: the history store is closed to writes** (`rules/fusion-workbench-conventions.md` `## Session history`). No agent names it. The `OUT_HISTORY` arm went with the last prompt naming it; the read arm goes with the last skill body naming it. `/fusion:cadence` is the consumer the read key is emitted for; a reader of it says so rather than reporting an empty stretch as a quiet week. |
 | `OUT_ISSUE` | `SCAN_ISSUES` | `<scope>/issues` | Defect filing. |
 | `OUT_DECISION` | `SCAN_DECISIONS` | `<scope>/decisions` | Decision-record filing. |
 | `OUT_REVIEW` | `SCAN_REVIEWS` | `<scope>/reviews` | Review writes, both review domains. |
 | `OUT_ANALYSIS` | `SCAN_ANALYSES` | `<scope>/analyses` | Analysis writes. |
 | `OUT_DISCUSSION` | — | `<scope>/discussions` | Discussion-record writes. No read key, for the reason the `OUT_MEMO` row gives: no prompt reads past discussions in this version, so nothing would name a `SCAN_DISCUSSIONS`. Never defined rather than retired. |
-| `OUT_CONSULT` | — | `shared/consult` | Literal: a consultation answers to nobody's directive, so no container holds one. `SCAN_CONSULT` was retired on 2026-09-10 with its last consumer; the store and its reports stay. |
-| `OUT_BACKLOG` | `SCAN_BACKLOG` | `circles` | Literal, and it is the container store itself rather than a directory inside one container. A work item's record lives in its own container (`rules/fusion-workbench-conventions.md` `## Backlog entries — work items`), so the pair names the store whole and a consumer walks it at depth 2. |
+| `OUT_CONSULT` | — | `shared/consultations` | Literal: a consultation answers to nobody's directive, so no container holds one. `SCAN_CONSULT` was retired on 2026-09-10 with its last consumer; the store and its reports stay. |
+| `OUT_PACKAGES` | `SCAN_PACKAGES` | `work-packages` | Literal, and it is the container store itself rather than a directory inside one container. A work package's record lives in its own container (`rules/fusion-workbench-conventions.md` `## Work packages`), so the pair names the store whole and a consumer walks it at depth 2. |
 | `OUT_FORUM` | `SCAN_FORUM` | `shared/forum` | Literal: a message is addressed to another checkout, not to a unit of work. |
 | `OUT_MEMO` | — | `shared/memos` | Literal, for the same reason. A memo is written for the user, so nothing reads memos and no read key exists. |
 
@@ -119,9 +123,9 @@ container. It named the active Circle, or was absent when none was, and was how 
 told the two apart. Nothing asks a question of that shape now: the resolver decides scope
 and hands over finished values, so a consumer never learns whether an item was in scope and
 never branches on it. **Three store keys went with it, and none returned.** `OUT_CIRCLE` and
-`SCAN_CIRCLES` named the `circles/` container — the container has keys again, but they are
+`SCAN_CIRCLES` named the `circles/` container — the container has keys again, but they were
 `OUT_BACKLOG` and `SCAN_BACKLOG`, the names every prompt already used, so no consumer had to
-learn one. `PORTFOLIO` named the ranking file the portfolio layer regenerated, and that
+learn one; v12 renamed them `OUT_PACKAGES` and `SCAN_PACKAGES` with the store. `PORTFOLIO` named the ranking file the portfolio layer regenerated, and that
 layer has no writer at all.
 
 ### Retiring a key, and the worked case for it
@@ -140,7 +144,7 @@ them". Nor is the retirement silent: a later prompt naming either key exits 4 ag
 ORDER check in `bin/fusion-paths`, naming the prompt, the key, and both places to add it
 back. `OUT_CIRCLE`, `SCAN_CIRCLES` and `PORTFOLIO` were retired the same way when the
 Circle container was cut, and the two that named `circles/` show the criterion surviving
-that store's return: the directory is written to again, under `OUT_BACKLOG`, and the retired
+that store's return: the container store is written to again, under `OUT_PACKAGES`, and the retired
 keys stayed retired because no prompt names them.
 
 **Three kinds have a write key and no read key** — memos, consultations and discussions —
@@ -156,7 +160,7 @@ look better with it.
 
 ## Emission is per-consumer, and derived from the prompt
 
-The resolver emits only the keys a consumer needs — a coder gets no `OUT_PLAN`, an editor gets no `OUT_ISSUE`. This table defines what each key *means*; **the prompt defines which keys a consumer gets.**
+The resolver emits only the keys a consumer needs — a code-implementer gets no `OUT_PLAN`, a document-editor gets no `OUT_ISSUE`. This table defines what each key *means*; **the prompt defines which keys a consumer gets.**
 
 **The key set is not declared anywhere. It is read out of the prompt.** `bin/fusion-paths <name>` greps `agents/<name>.md` or `skills/<name>/SKILL.md` for its own `$OUT_*` and `$SCAN_*` references, and those references *are* the set. `WORKBENCH` is emitted unconditionally and belongs to no set. A prompt that names no key gets `WORKBENCH` alone — a true answer, not a failure.
 

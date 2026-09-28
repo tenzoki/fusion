@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# fusion-edge-answers — what prior curator runs already asked the user about a
-# work-item edge.
+# fusion-edge-answers — what prior policy-curator runs already asked the user about a
+# work-package edge.
 #
 # Usage:
 #   fusion-edge-answers
@@ -18,14 +18,14 @@
 #
 # The row is four fixed columns — the outcome value, the dependent, the target,
 # the field the edge would be written into. The outcome column carries one of
-# the five values `agents/curator.md` `## The run file` authors — `applied`,
+# the five values `agents/policy-curator.md` `## The run file` authors — `applied`,
 # `skipped`, `not-offered`, `stale`, `failed` — or one of two that are not
 # outcome values at all: `none`, the entry carries no outcome row, and
 # `unreadable`, its row carries no vocabulary word. Both say no answer was read.
 #
-# WHAT IT IS FOR. `agents/curator.md` `### The suppression read` must not
+# WHAT IT IS FOR. `agents/policy-curator.md` `### The suppression read` must not
 # re-propose an edge the user already answered, and the record of those answers
-# is every curator run file in the workbench: 975 220 bytes over 15 files on
+# is every policy-curator run file in the workbench: 975 220 bytes over 15 files on
 # fusion's own tree at 2026-09-18, of which exactly ONE carries an edge entry,
 # each run adding 60 to 170 KB. This program reads that corpus so an agent does
 # not have to
@@ -34,15 +34,15 @@
 #
 # WHAT IT DOES NOT PRINT, AND THAT ABSENCE IS THE RULING. Not the entry's
 # consequence group. The suppression key reads the outcome value alone, because
-# `not-offered` names the entry the gate never put; a key that read the group
+# `not-offered` names the entry the approval never put; a key that read the group
 # line beside the outcome line would be the drifting second copy the ruling
 # removed. And not the decision: which of the seven values suppresses and which
 # re-proposes is authored in `### The suppression read` and nowhere here. This
-# program reports and gates nothing — no exit code carries the verdict, the
+# program reports and blocks nothing — no exit code carries the result, the
 # stdout-verdict rule every other reporting helper in this directory carries.
 #
 # THE CORPUS IS EVERY RUN FILE, WITH NOTHING EXCLUDED — not bounded by the
-# curator's evidence anchor, not resolved through $SCAN_ANALYSES, and `archive/`
+# policy-curator's evidence anchor, not resolved through $SCAN_ANALYSES, and `archive/`
 # read like the live tree. A run file records a refusal whatever its age,
 # whichever item was claimed when it was written, and whether or not its
 # container has since been archived; a bound that drops one drops it silently.

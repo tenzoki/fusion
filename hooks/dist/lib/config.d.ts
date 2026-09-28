@@ -15,7 +15,7 @@
  * below, so restating one in a shipped JSON file is the thing this module has
  * always refused to do. A layer that carries nothing is a claim rather than a
  * capability, which is what the protected list and the escalation counter were
- * each removed for. Decision `260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`, answered option 1 at the plan gate.
+ * each removed for. Decision `260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`, answered option 1 at the plan approval.
  *
  * ## The settings
  *
@@ -101,7 +101,7 @@
  * value replaces rather than merges. What the leaf walk changed, when it was
  * written for a loader with six guard leaves, was the granularity at which
  * "declared" is read, from the whole top-level object down to the leaf.
- * Decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, answered option 1 at the plan gate on 2026-08-04.
+ * Decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, answered option 1 at the plan approval on 2026-08-04.
  *
  * The walk was kept as the shape rather than collapsed into a single `??`
  * through the release in which `orchestrator.maxTurns` was the only thing it

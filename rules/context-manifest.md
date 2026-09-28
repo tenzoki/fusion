@@ -35,8 +35,8 @@ in the consuming project. `bin/fusion-rules` already discovers `./rules/`, so th
 manifest sits with the same-root files the helper already reads. It is optional:
 its absence is the no-regression default.
 
-The manifest never ships in the plugin. It is authored per consuming project and
-carries that project's own topic map. The plugin ships only the mechanism (this
+The manifest never ships in the module. It is authored per consuming project and
+carries that project's own topic map. The module ships only the mechanism (this
 doc + the `bin/fusion-rules` extension).
 
 ## Schema
@@ -50,7 +50,7 @@ can parse it with `awk` and no YAML runtime dependency.
 # ./rules/context-manifest.yaml   (in the consuming project, not the plugin)
 units:
   - path: .claude/rules/ONTO-ENG-RULES.md   # a rule file  (exactly one of path|skill)
-    agents: [ontocoder, reviewer, planner]  # or [*] for every agent
+    agents: [data-implementer, reviewer, implementation-planner]  # or [*] for every agent
     topics: [ontology]                       # or [always] to load regardless of topic
     note: "UEOF/UIF engineering rules"       # optional, ignored by the helper
 
@@ -60,7 +60,7 @@ units:
     note: "on-demand framework body-of-knowledge"
 
   - path: .claude/rules/CODING-HYGIENE.md
-    agents: [coder, reviewer, planner]
+    agents: [code-implementer, reviewer, implementation-planner]
     topics: [always]                          # loaded for these agents on every topic
 ```
 
@@ -94,7 +94,7 @@ old set followed by the topic-scoped additions.
 ## Topic resolution (locked)
 
 The topic is **not** a per-invocation user argument in the standard flow. It is
-**derived from the work item this checkout has claimed**. Resolution order:
+**derived from the work package this checkout has claimed**. Resolution order:
 
 1. **Explicit CLI topic** — if `fusion-rules <agent> <topic>` is called with a
    second argument, `resolvedTopics = {<topic>}` (comma-separated accepted). This
@@ -108,19 +108,19 @@ The topic is **not** a per-invocation user argument in the standard flow. It is
    tokens in the item's own filename: the basename with the `YYMMDD-HHMM-` stamp
    stripped and the `.md` suffix dropped, split on `-`. An item
    `YYMMDD-HHMM-ontology-refactor.md` yields `{ontology, refactor}`, matching any
-   unit tagged `ontology` or `refactor`. A work item is a directory whose record
+   unit tagged `ontology` or `refactor`. A work package is a directory whose record
    carries the directory's own name, so that basename is the container's name too
    and a reader can derive the topic from either.
 4. **Nothing claimed by this checkout** — `resolvedTopics` is empty; only
    `[always]` units match.
 
 **Which item is claimed is not decided here, and this file does not define it.**
-`bin/fusion-rules` asks `bin/fusion-claimed-item`, which is the single
+`bin/fusion-rules` asks `bin/fusion-claimed-package`, which is the single
 implementation of that criterion and the one `bin/fusion-paths` calls from the
 same Setup step for its own reason; the criterion itself — the `**Status:**` and
 `**Claim:**` fields, and the refusal to pick when two items are claimed — is the *Contract*
 subsection of `rules/fusion-workbench-conventions.md` `## Path Resolution`, over the grammar
-`rules/fusion-workbench-conventions.md` `## Backlog entries — work items` defines. This
+`rules/fusion-workbench-conventions.md` `## Work packages` defines. This
 paragraph carried a second statement of
 that scan until 2026-09-11. Two statements of one criterion drift, and the drift
 is invisible because each reads plausibly on its own, which is the same reason the
@@ -131,8 +131,8 @@ non-zero from that helper resolves **no** topic and lets the emission carry on,
 where `bin/fusion-paths` stops the caller on 1 and refuses on 3. The asymmetry is
 the cost of being wrong: a topic buys optional manifest units, so a missing one
 costs an agent a few files it then does not read, while a path decides where an
-artifact is written and a wrong one files a plan into another item's container in
-silence. In particular `bin/fusion-claimed-item`'s exit 3 is **not** re-raised as
+artefact is written and a wrong one files a plan into another item's container in
+silence. In particular `bin/fusion-claimed-package`'s exit 3 is **not** re-raised as
 `bin/fusion-rules`' own exit 3, which means a malformed manifest and nothing else
 (the exit-code table at the end of this file): read an exit 3 against the helper
 that returned it.
@@ -140,7 +140,7 @@ that returned it.
 **A claim is a field, not a pointer, and that is what the topic is derived from.**
 The active Circle was this source until the Circle container was cut, and it was a
 pointer file: one read, and every session in the checkout saw the same topic. The
-per-work-item container came back on 2026-09-11 and the pointer did not. So what
+per-work-package container came back on 2026-09-11 and the pointer did not. So what
 resolves is "what is *this checkout* working on": an item another checkout claimed
 is not this checkout's topic, and when the checkout identifier cannot be read at
 all, no topic resolves rather than a guessed one, because guessing would hand an

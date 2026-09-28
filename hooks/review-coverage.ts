@@ -11,7 +11,7 @@
  * Called through `bin/fusion-review-coverage` by `agents/orchestrator.md` at
  * `## Review coverage` (the read before the closing review's dispatch is
  * written: `carried=` and the `uncovered` lines set that review's scope), at
- * `## Closing a work item` step 2 (the same read, once more, before the review
+ * `## Closing a work package` step 2 (the same read, once more, before the review
  * is routed), at `## Ending the session` (the summary's review-coverage section
  * is read off this output, never recalled), and by anyone at a terminal who
  * wants to know which commits no reviewer has opened.
@@ -47,9 +47,9 @@
  *
  * **Finding an uncovered range is not an error exit**, and the reason is the
  * one the deleted session-state drift reader established: its predecessor
- * handed a verdict to an exit code and cried wolf on its commonest path (issue
+ * handed a result to an exit code and cried wolf on its commonest path (issue
  * `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`), and a check whose status is ignored is the failure it exists
- * to catch arriving one level up. Nor is it a release gate — whether a release
+ * to catch arriving one level up. Nor is it a release check — whether a release
  * may go out over an uncovered range is an unfiled decision belonging beside
  * `260810-0710_*_…`, and this program blocks nothing.
  */

@@ -225,7 +225,7 @@ export interface Project {
 /** Files every throwaway project starts with. Relative paths, root-anchored. */
 const SEED_FILES: Record<string, string> = {
   // Ordinary project files. Nothing here is special to the guard: the
-  // protected-path half is gone, so `rules/x.md`, `agents/coder.md`,
+  // protected-path half is gone, so `rules/x.md`, `agents/code-implementer.md`,
   // `rules/retired/.keep` and `.claude/rules/local.md` — which seeded every
   // project purely because the shipped list named `rules/**` and `agents/**`,
   // and because the `FUSION_ALLOW_RULES_WRITE` exemption needed rule roots to
@@ -777,7 +777,7 @@ export interface DispatchPayload {
   sessionId?: string;
   /** Pairs `task_start` with `task_done`; the row's `task` field. */
   toolUseId?: string;
-  /** `fusion:coder` and the like; the row's `agent` field, colon-stripped. */
+  /** `fusion:code-implementer` and the like; the row's `agent` field, colon-stripped. */
   subagentType?: string;
   /** The row's `detail` field. */
   description?: string;

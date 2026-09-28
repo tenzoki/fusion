@@ -244,7 +244,7 @@ interface ConditionalEmission {
 function conditionalEmissions(): ConditionalEmission[] {
   const text = read("bin/fusion-rules");
   const flagAgents = new Map<string, string[]>();
-  for (const m of text.matchAll(/^\s*([a-z|]+)\)\s*IS_([A-Z_]+)_AGENT=1/gm)) {
+  for (const m of text.matchAll(/^\s*([a-z|-]+)\)\s*IS_([A-Z_]+)_AGENT=1/gm)) {
     flagAgents.set(`IS_${m[2]}_AGENT`, m[1].split("|"));
   }
   const out: ConditionalEmission[] = [];
@@ -255,7 +255,7 @@ function conditionalEmissions(): ConditionalEmission[] {
     const emit = line.match(/^\s+emit_if_exists "\$PLUGIN_RULES_DIR\/([a-z-]+\.md)"/);
     if (!emit || condition === null) continue;
     const flag = condition.match(/IS_[A-Z_]+_AGENT/)?.[0];
-    const literal = condition.match(/"\$AGENT" = "([a-z]+)"/)?.[1];
+    const literal = condition.match(/"\$AGENT" = "([a-z-]+)"/)?.[1];
     const agents = flag ? flagAgents.get(flag) : literal ? [literal] : undefined;
     if (!agents) continue;
     out.push({

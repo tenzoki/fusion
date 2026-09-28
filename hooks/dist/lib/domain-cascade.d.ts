@@ -62,7 +62,7 @@ export declare function parseCondition(src: string): Expr;
  * The pair is derived from DOMAINS rather than spelled out, so it moved with
  * the removal instead of staying pinned to a name that no longer exists.
  *
- * Exported because "how many files hold one" is the reach gate's question as
+ * Exported because "how many files hold one" is the reach check's question as
  * much as "which block do I run" is this module's.
  */
 export declare function cascadeBlocks(markdown: string): string[];
@@ -154,19 +154,19 @@ export interface ReachCase {
         readonly withWindow: number;
     };
 }
-/** A path the gate does not read, and what reading it would yield today. */
+/** A path the check does not read, and what reading it would yield today. */
 export interface ReachExclusion {
     /** Path or glob, relative to the plugin root. */
     glob: string;
-    /** Measured, not assumed: does the gate select anything in these files? */
+    /** Measured, not assumed: does the check select anything in these files? */
     measured: "clean" | "fires";
     /** Why it is out of the scanned set, in terms the measurement supports. */
     note: string;
 }
 /**
- * What the reach gate scans, catches, misses, and leaves out — the single
+ * What the reach check scans, catches, misses, and leaves out — the single
  * authoring home for all four. Every field is checked in
- * `domain-cascade.test.ts`: `fileSet` is what the gate actually enumerates,
+ * `domain-cascade.test.ts`: `fileSet` is what the check actually enumerates,
  * each `covered` probe must fire, each `holes` probe must not, each `excluded`
  * glob must measure what it claims, and `README-hooks.md` must carry
  * `describeReach()` verbatim.

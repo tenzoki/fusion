@@ -5,7 +5,7 @@
 # current orchestrator session, with a heartbeat (file mtime). Since v10.8.0
 # the heartbeat is machine-written: the PostToolUse hook refreshes the mtime
 # on every tool call, rate-limited to once per 60s, while the marker exists
-# (hooks/lib/orchestrator-events.ts carries gate and residual); the `heartbeat`
+# (hooks/lib/orchestrator-events.ts carries condition and residual); the `heartbeat`
 # subcommand below stays for manual use and for installed copies predating the
 # hook. Used by /fusion:setup to WARN the user when a second orchestrator is
 # started against the same project — fusion has no concurrency lock and
@@ -77,7 +77,7 @@ case "$cmd" in
     agent="${2:-fusion:orchestrator}"
     cat > "$marker" <<EOF
 # Fusion active-session marker. mtime is the heartbeat.
-# Removed on clean shutdown; refreshed at each orchestrator Turn.
+# Removed on clean shutdown; refreshed by the PostToolUse hook.
 agent: $agent
 started_at: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 cwd: $(pwd -P)

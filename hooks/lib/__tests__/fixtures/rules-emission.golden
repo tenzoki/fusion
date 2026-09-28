@@ -14,82 +14,82 @@
 # profiles are out of scope — they vary per consuming project.
 
 [analyst]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  design-diagrams.md 5270
-  total 89114
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  design-diagrams.md 5305
+  total 88493
 
-[coder]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  total 83844
+[code-implementer]
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  total 83188
 
 [consultant]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  user-facing-output.md 10921
-  total 94765
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  user-facing-output.md 11109
+  total 94297
 
-[curator]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  user-facing-output.md 10921
-  total 94765
+[data-implementer]
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  total 83188
 
-[editor]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  user-facing-output.md 10921
-  project-language.md 5754
-  total 100519
+[document-editor]
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  user-facing-output.md 11109
+  project-language.md 5772
+  total 100069
 
-[ontocoder]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  total 83844
+[implementation-planner]
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  decision-record-examples.md 5014
+  design-diagrams.md 5305
+  total 93507
 
 [orchestrator]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  user-facing-output.md 10921
-  decision-record-examples.md 4971
-  commit-lock.md 11244
-  total 110980
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  user-facing-output.md 11109
+  decision-record-examples.md 5014
+  commit-lock.md 11284
+  total 110595
 
-[planner]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  decision-record-examples.md 4971
-  design-diagrams.md 5270
-  total 94085
+[policy-curator]
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  user-facing-output.md 11109
+  total 94297
 
-[reconciler]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  decision-record-examples.md 4971
-  total 88815
+[requirements-designer]
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  user-facing-output.md 11109
+  decision-record-examples.md 5014
+  design-diagrams.md 5305
+  total 104616
 
 [reviewer]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
   review-contract.md 6801
-  total 90645
+  total 89989
 
-[shaper]
-  agent-setup.md 4360
-  fusion-workbench-conventions.md 69134
-  critical-stance.md 10350
-  user-facing-output.md 10921
-  decision-record-examples.md 4971
-  design-diagrams.md 5270
-  total 105006
+[state-auditor]
+  agent-setup.md 4367
+  fusion-workbench-conventions.md 68432
+  critical-stance.md 10389
+  decision-record-examples.md 5014
+  total 88202
