@@ -23,6 +23,15 @@
 //               route (decision 260928-1735, option 1)
 //   set-mode    a package's mode, `autonomous` only with a resolving source
 //               in the user's word
+//   set-dependencies
+//               a package's `depends_on`, replaced whole: every target a
+//               package of this workbench, none the package itself, and no
+//               cycle through it; the conditions are evaluated at dispatch
+//               time and by `reconcile`, never here
+//   adopt-plan  a plan record bound into a package's `active_documents` at
+//               the narrative revision accepted, as its one plan (replacing
+//               the one before) or as one more spec, with the record's
+//               `acceptance` naming the package
 //
 // Every other operation of the table answers `operation-unknown/not-implemented`
 // with a detail naming the package that lands it (`LANDS_IN`).
@@ -42,6 +51,7 @@
 // ---------------------------------------------------------------------------
 
 import { existsSync, readFileSync, statSync } from "node:fs";
+import { canonical } from "../journal.js";
 import { mutate, read, recoveryBlocked, type KernelOptions, type PlanContext, type PlanFunction, type Planned, type PlannedWrite, type ReadView } from "../kernel.js";
 import { allowed, stateRules, transitions, type TransitionPayload as RulePayload } from "../transitions.js";
 import {
@@ -70,12 +80,15 @@ import {
   PROTOCOL_SCHEMA_ID,
   fail,
   isOperation,
+  type AdoptPlanRequest,
   type ClaimRequest,
   type CreateRequest,
   type ListRequest,
+  type RecordRef,
   type ReleaseRequest,
   type Request,
   type Response,
+  type SetDependenciesRequest,
   type SetModeRequest,
   type ShowRequest,
   type TransitionPayload,
@@ -138,6 +151,10 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
       return mutate(wb, req, releasePlan(req), kernel);
     case "set-mode":
       return mutate(wb, req, setModePlan(req), kernel);
+    case "set-dependencies":
+      return mutate(wb, req, setDependenciesPlan(req), kernel);
+    case "adopt-plan":
+      return mutate(wb, req, adoptPlanPlan(req), kernel);
     default:
       return notImplemented((req as Request).op);
   }
@@ -712,6 +729,35 @@ function releasePlan(req: ReleaseRequest): PlanFunction {
   });
 }
 
+// --- the package operations' common entry ---------------------------------------------
+
+const isTerminal = (kind: string, state: unknown): boolean => typeof state === "string" && (transitions().kinds[kind]?.terminal.includes(state) ?? false);
+
+/**
+ * The package a package operation changes: read, at the caller's expected
+ * revision, a package and not a record, and live. A terminal record is
+ * history: no header change is written into it after its terminal
+ * transition (conventions, `## Terminal states are history`), so every
+ * operation over it is refused, whatever it would write.
+ */
+function livePackage(ctx: PlanContext, req: { record: { path: string }; expected_revision: string }, op: string, does: string): Result<Pair> {
+  const r = ctx.readPair(req.record.path);
+  if (!r.ok) return r;
+  const pair = r.value;
+  const cas = ctx.cas(pair, req.expected_revision);
+  if (!cas.ok) return cas;
+  if (pair.kind !== "package") return refusal("schema-invalid", "not-a-package", `${req.record.path} is a ${pair.kind} record; ${op} ${does}`);
+  const status = pair.control.status;
+  if (isTerminal("package", status)) return refusal("conflict", "package-terminal", `the package is ${String(status)}, which is terminal; its record is history and ${op} writes nothing into it`);
+  return r;
+}
+
+/** One control record's write: its bytes and revision, from a value the caller has validated. */
+function recordWrite(path: string, value: Record<string, unknown>): PlannedWrite & { revision: string } {
+  const bytes = Buffer.from(serialise(value), "utf-8");
+  return { path, bytes, revision: revisionOf(bytes) };
+}
+
 // --- set-mode -----------------------------------------------------------------------
 
 /**
@@ -725,20 +771,9 @@ function releasePlan(req: ReleaseRequest): PlanFunction {
  */
 function setModePlan(req: SetModeRequest): PlanFunction {
   return (ctx: PlanContext): Result<Planned> => {
-    const r = ctx.readPair(req.record.path);
+    const r = livePackage(ctx, req, "set-mode", "sets a package's mode");
     if (!r.ok) return r;
     const pair = r.value;
-    const cas = ctx.cas(pair, req.expected_revision);
-    if (!cas.ok) return cas;
-    if (pair.kind !== "package") {
-      return { ok: false, error: { class: "schema-invalid", reason: "not-a-package", detail: `${req.record.path} is a ${pair.kind} record; set-mode sets a package's mode` } };
-    }
-    // A terminal record is history: no header change is written into it after
-    // its terminal transition (conventions, `## Terminal states are history`).
-    const status = pair.control.status;
-    if (typeof status === "string" && (transitions().kinds["package"]?.terminal.includes(status) ?? false)) {
-      return { ok: false, error: { class: "conflict", reason: "package-terminal", detail: `the package is ${status}, which is terminal; its mode is history and set-mode writes nothing into it` } };
-    }
     const { value, source } = req.mode;
     if (isObject(source) && source.kind === "legacy") {
       return { ok: false, error: { class: "schema-invalid", reason: "legacy-source-on-set-mode", detail: "a legacy mode source is kept by an import only; set-mode takes the user's word or a record" } };
@@ -764,6 +799,262 @@ function setModePlan(req: SetModeRequest): PlanFunction {
         writes: [{ path: req.record.path, bytes }],
         result: { operation_id: req.operation_id, path: req.record.path, mode: next.mode, revision, previous_revision: req.expected_revision },
         revisions: { [req.record.path]: revision },
+      },
+    };
+  };
+}
+
+// --- set-dependencies ---------------------------------------------------------------
+//
+// The request's list replaces the package's `depends_on` whole, an empty list
+// included. Each target must resolve in this workbench to a package; what a
+// condition asks of its target (`terminal`, `succeeded`) is not evaluated
+// here: an unmet condition blocks dispatch and changes no state
+// (`codec/contract/dependencies.json`), so it is dispatch time's question and
+// `reconcile` reports it.
+//
+// The cycle check is over the workbench's whole `depends_on` graph with this
+// package's edges replaced by the new list, and it refuses a cycle through
+// this package. Only this package's outgoing edges change, so every cycle the
+// new list could close runs through it; a cycle elsewhere is one this request
+// neither makes nor can break, and refusing on it would block every
+// set-dependencies in the workbench until somebody else acted, so it is
+// `reconcile`'s to report. A package file the strict reader refuses, or one a
+// blocked intent names, contributes no edges: what it depends on is not
+// decided, and `validate` and `reconcile` report it.
+
+/** A control file of an evidence record, by its name: the walk admits it, `readPair` does not yet read its kind. */
+const isEvidenceFile = (path: string): boolean => path.endsWith(".evidence.json");
+
+/** The package a `record_ref` names, resolved in this workbench: a record kind or an evidence record is `not-a-package`. */
+function resolvePackage(ctx: PlanContext, ref: RecordRef, role: string): Result<Pair> {
+  const hit = resolveRecordRef(ctx, ref);
+  if (!hit.ok) return hit;
+  if (isEvidenceFile(hit.value.path)) return refusal("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the evidence record ${hit.value.path}; it must be a package`);
+  const pair = ctx.readPair(hit.value.path);
+  if (!pair.ok) return pair;
+  if (pair.value.kind !== "package") return refusal("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; it must be a package`);
+  return pair;
+}
+
+/** Every package's `depends_on` targets in this workbench, by package id: the edges the cycle check walks. */
+function dependencyEdges(ctx: PlanContext): Map<string, string[]> {
+  const edges = new Map<string, string[]>();
+  for (const path of controlFiles(ctx.wb, ctx.wb.root)) {
+    if (!path.endsWith("/package.json") && path !== "package.json") continue;
+    const r = ctx.readPair(path);
+    if (!r.ok || r.value.kind !== "package" || typeof r.value.control.id !== "string") continue;
+    const deps = Array.isArray(r.value.control.depends_on) ? r.value.control.depends_on : [];
+    const targets = deps.flatMap((d) => (isObject(d) && isObject(d.target) && d.target.workbench_id === ctx.wb.id && typeof d.target.record_id === "string" ? [d.target.record_id] : []));
+    edges.set(r.value.control.id, targets);
+  }
+  return edges;
+}
+
+/** A path of ids from `start` back to `start` along `edges`, first found in edge order, or null when there is none. */
+function cycleThrough(start: string, edges: ReadonlyMap<string, readonly string[]>): string[] | null {
+  const seen = new Set<string>([start]);
+  const path = [start];
+  const visit = (node: string): boolean => {
+    for (const next of edges.get(node) ?? []) {
+      if (next === start) return true;
+      if (seen.has(next)) continue;
+      seen.add(next);
+      path.push(next);
+      if (visit(next)) return true;
+      path.pop();
+    }
+    return false;
+  };
+  return visit(start) ? [...path, start] : null;
+}
+
+function setDependenciesPlan(req: SetDependenciesRequest): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    const r = livePackage(ctx, req, "set-dependencies", "sets a package's dependencies");
+    if (!r.ok) return r;
+    const pkg = r.value;
+    const self = pkg.control.id as string;
+
+    // Distinct by record_id: the schema's uniqueItems catches identical entries only.
+    const counted = new Map<string, number>();
+    for (const e of req.depends_on) counted.set(e.target.record_id, (counted.get(e.target.record_id) ?? 0) + 1);
+    const twice = [...counted].filter(([, n]) => n > 1).map(([id]) => id);
+    if (twice.length > 0) return refusal("schema-invalid", "duplicate-target", `depends_on names ${twice.join(", ")} more than once; one edge per target`);
+
+    for (const e of req.depends_on) {
+      if (e.target.record_id === self && e.target.workbench_id === ctx.wb.id) {
+        return refusal("conflict", "self-dependency", `depends_on names the package itself, ${self}`);
+      }
+      const target = resolvePackage(ctx, e.target, "dependency target");
+      if (!target.ok) return target;
+    }
+
+    const edges = dependencyEdges(ctx);
+    edges.set(self, req.depends_on.map((e) => e.target.record_id));
+    const cycle = cycleThrough(self, edges);
+    if (cycle !== null) return refusal("conflict", "cycle", `depends_on would close the cycle ${cycle.join(" -> ")}`);
+
+    const next = { ...pkg.control, depends_on: req.depends_on };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after set-dependencies is not a valid package");
+    if (!v.ok) return v;
+    const w = recordWrite(req.record.path, next);
+    return {
+      ok: true,
+      value: {
+        writes: [w],
+        result: { operation_id: req.operation_id, path: req.record.path, depends_on: req.depends_on, revision: w.revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: w.revision },
+      },
+    };
+  };
+}
+
+// --- adopt-plan ---------------------------------------------------------------------
+//
+// Binds a plan-kind record into a package's `active_documents` at the exact
+// narrative revision the caller accepted, and writes the binding's other half
+// into the record: `control.acceptance` names the package and that revision.
+// A record is adopted by one package in one role, which the record's single
+// `acceptance` field says.
+//
+// `role: plan` (the default) replaces the package's plan entry, never
+// appends to it: the package schema allows one (`maxContains: 1`). A plan it
+// replaces moves its `record_ref` into `references`, as the conventions
+// move a replaced plan to `**Cross-references:**`, and its record's
+// `acceptance` is cleared: three writes in one intent. The replaced record's
+// `acceptance` is cleared only while it names this package; a replaced ref
+// that no longer resolves (the record was removed, or it is foreign) has no
+// acceptance here to clear, and is still moved. A replaced plan record in a
+// terminal state (closed or deferred) is not written either: a terminal record
+// is history, and nothing is written into it after its terminal transition
+// (conventions, `## Terminal states are history`), the rule `livePackage`
+// applies to packages; its ref is still moved. Each of these is two writes.
+// Re-adopting the plan in force at a new revision rewrites its own entry and
+// moves nothing: two writes.
+//
+// `role: spec` adds an entry, any number of them, distinct by record_id:
+// re-adopting a spec replaces its entry. Two writes.
+
+const PLAN_ROLE = "plan";
+
+interface ActiveDocument {
+  ref: RecordRef;
+  role: "spec" | "plan";
+  revision: string;
+}
+
+const sameRecord = (a: unknown, id: string): boolean => isObject(a) && a.record_id === id;
+
+/** `acceptance` naming this package, by id and workbench. */
+const acceptedBy = (acceptance: unknown, pkg: Pair): boolean =>
+  isObject(acceptance) && isObject(acceptance.ref) && acceptance.ref.record_id === pkg.control.id && acceptance.ref.workbench_id === pkg.control.workbench_id;
+
+/** A plan record with its control's `acceptance` replaced. */
+const withAcceptance = (doc: Pair, acceptance: unknown): Record<string, unknown> => ({ ...doc.control, control: { ...(doc.control.control as Record<string, unknown>), acceptance } });
+
+/**
+ * The record a replaced plan entry names, when there is one here to clear:
+ * `null` when its ref no longer resolves in this workbench, when its record
+ * is terminal (history, never written), or when it no longer names this
+ * package.
+ */
+function replacedRecord(ctx: PlanContext, ref: RecordRef, pkg: Pair): Result<Pair | null> {
+  const hit = resolveRecordRef(ctx, ref);
+  if (!hit.ok) return hit.error.reason === "record-not-found" || hit.error.reason === "foreign-workbench" ? { ok: true, value: null } : hit;
+  if (isEvidenceFile(hit.value.path)) return { ok: true, value: null };
+  const pair = ctx.readPair(hit.value.path);
+  if (!pair.ok) return pair;
+  if (pair.value.kind !== "plan") return { ok: true, value: null };
+  const control = pair.value.control.control as Record<string, unknown> | undefined;
+  if (isTerminal("plan", control?.state)) return { ok: true, value: null };
+  return { ok: true, value: acceptedBy(control?.acceptance, pkg) ? pair.value : null };
+}
+
+function adoptPlanPlan(req: AdoptPlanRequest): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    const r = livePackage(ctx, req, "adopt-plan", "binds a document into a package");
+    if (!r.ok) return r;
+    const pkg = r.value;
+    const role = req.role ?? PLAN_ROLE;
+    const docId = req.plan.record_id;
+
+    // The document: a plan-kind record of this workbench, live, at the revision accepted.
+    const hit = resolveRecordRef(ctx, req.plan);
+    if (!hit.ok) return hit;
+    const notAPlan = (what: string): Result<never> => refusal("unresolved-reference", "not-a-plan", `${docId} is ${what}; adopt-plan binds a plan record, as a ${role}`);
+    if (isEvidenceFile(hit.value.path)) return notAPlan(`the evidence record ${hit.value.path}`);
+    const got = ctx.readPair(hit.value.path);
+    if (!got.ok) return got;
+    const doc = got.value;
+    if (doc.kind !== "plan") return notAPlan(`the ${doc.kind} record ${doc.path}`);
+    const control = (doc.control.control ?? {}) as Record<string, unknown>;
+    if (isTerminal("plan", control.state)) {
+      return refusal("conflict", "plan-terminal", `${doc.path} is ${String(control.state)}, which is terminal; a closed or deferred plan is history and is not adopted`);
+    }
+    if (doc.narrative === null || doc.narrative.sha256 === null) {
+      return refusal("unresolved-reference", "narrative-missing", `${doc.path} names ${doc.narrative === null ? "no narrative" : `${doc.narrative.path}, which does not exist`}; its revision cannot be accepted`);
+    }
+    if (doc.narrative.sha256 !== req.revision) {
+      return refusal("conflict", "plan-revision-mismatch", `${doc.narrative.path} is ${doc.narrative.sha256}; the request accepts ${req.revision}`);
+    }
+    const acceptance = control.acceptance;
+    if (acceptance !== null && acceptance !== undefined && !acceptedBy(acceptance, pkg)) {
+      const holder = isObject(acceptance) && isObject(acceptance.ref) ? String(acceptance.ref.record_id) : JSON.stringify(acceptance);
+      return refusal("conflict", "plan-adopted-elsewhere", `${doc.path} is adopted by the package ${holder}; a record is adopted by one package`);
+    }
+
+    const docs = (Array.isArray(pkg.control.active_documents) ? pkg.control.active_documents : []) as ActiveDocument[];
+    const otherRole = docs.find((d) => sameRecord(d.ref, docId) && d.role !== role);
+    if (otherRole !== undefined) {
+      return refusal("conflict", "role-conflict", `${docId} is this package's ${otherRole.role} already; a record is adopted in one role`);
+    }
+
+    const entry: ActiveDocument = { ref: req.plan, role, revision: req.revision };
+    const at = docs.findIndex((d) => d.role === role && (role === PLAN_ROLE || sameRecord(d.ref, docId)));
+    const nextDocs = at < 0 ? [...docs, entry] : docs.map((d, i) => (i === at ? entry : d));
+
+    // The plan it replaces, when it is another record: into references, its acceptance cleared.
+    const replaced = role === PLAN_ROLE && at >= 0 && !sameRecord(docs[at]?.ref, docId) ? (docs[at] as ActiveDocument).ref : null;
+    let references = (Array.isArray(pkg.control.references) ? pkg.control.references : []) as unknown[];
+    let cleared: Pair | null = null;
+    if (replaced !== null) {
+      if (!references.some((x) => canonical(x) === canonical(replaced))) references = [...references, replaced];
+      const old = replacedRecord(ctx, replaced, pkg);
+      if (!old.ok) return old;
+      cleared = old.value;
+    }
+
+    const nextPkg = { ...pkg.control, active_documents: nextDocs, references };
+    const nextDoc = withAcceptance(doc, { ref: { workbench_id: pkg.control.workbench_id, record_id: pkg.control.id }, revision: req.revision });
+    const checks: Array<[Record<string, unknown>, string, string]> = [
+      [nextDoc, RECORD_SCHEMA_ID, `the ${role} record after adopt-plan is not valid`],
+      [nextPkg, PACKAGE_SCHEMA_ID, "the record after adopt-plan is not a valid package"],
+    ];
+    const nextOld = cleared === null ? null : withAcceptance(cleared, null);
+    if (nextOld !== null) checks.push([nextOld, RECORD_SCHEMA_ID, "the replaced plan record after adopt-plan is not valid"]);
+    for (const [value, schemaId, what] of checks) {
+      const v = ctx.validateResult(schemaId, value, what);
+      if (!v.ok) return v;
+    }
+
+    // The documents first, the package last.
+    const writes = [recordWrite(doc.path, nextDoc), ...(cleared !== null && nextOld !== null ? [recordWrite(cleared.path, nextOld)] : []), recordWrite(req.record.path, nextPkg)];
+    const pkgWrite = writes[writes.length - 1] as PlannedWrite & { revision: string };
+    return {
+      ok: true,
+      value: {
+        writes: writes.map(({ path, bytes }) => ({ path, bytes })),
+        result: {
+          operation_id: req.operation_id,
+          path: req.record.path,
+          role,
+          document: { path: doc.path, revision: (writes[0] as { revision: string }).revision, narrative: doc.narrative },
+          replaced,
+          revision: pkgWrite.revision,
+          previous_revision: req.expected_revision,
+        },
+        revisions: Object.fromEntries(writes.map((w) => [w.path, w.revision])),
       },
     };
   };

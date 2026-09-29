@@ -781,3 +781,83 @@ describe("the read protocol", () => {
     expect(pendingIds(wb)).toEqual([]);
   });
 });
+
+// --- a three-write replacement adopt-plan at every cut ------------------------------------------
+
+describe("a three-write replacement adopt-plan cut at every point of CUTS", () => {
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const OPEN_ID = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
+  const CONTAINER = "work-packages/260928-1200-parser-fix";
+  const PLANS = { a: "aaaaaaaa-0000-4000-8000-00000000000a", b: "bbbbbbbb-0000-4000-8000-00000000000b" } as const;
+  const control = (k: "a" | "b"): string => `${CONTAINER}/plans/260929-110${k === "a" ? 1 : 2}-plan-${k}.record.json`;
+  const narrative = (k: "a" | "b"): string => `${CONTAINER}/plans/260929-110${k === "a" ? 1 : 2}-plan-${k}.md`;
+
+  /** Plans A and B created, A adopted by the open package: the state the replacement starts from, with fixed ids. */
+  const seed = async (root: string): Promise<void> => {
+    for (const k of ["a", "b"] as const) {
+      const created = await dispatch({
+        op: "create",
+        workbench: root,
+        operation_id: `c${k.repeat(7)}-0000-4000-8000-000000000001`,
+        id: PLANS[k],
+        kind: "plan",
+        filed_by: ACTOR,
+        origin: { kind: "package", ref: { workbench_id: WB_ID, record_id: OPEN_ID } },
+        scope: { container: CONTAINER, store: "plans" },
+        narrative: { path: narrative(k), content: `# Plan ${k}\n` },
+        payload: { state: "open", steps: [], criteria: [], acceptance: null },
+      });
+      expect(created.ok, JSON.stringify(created)).toBe(true);
+    }
+    const adopted = await dispatch(adoptB(root, { operation_id: "cccccccc-0000-4000-8000-000000000002", plan: { workbench_id: WB_ID, record_id: PLANS.a }, revision: revision(root, narrative("a")) }));
+    expect(adopted.ok, JSON.stringify(adopted)).toBe(true);
+  };
+  const adoptB = (root: string, over: Record<string, unknown> = {}): Record<string, unknown> & MutationRequest => ({
+    op: "adopt-plan",
+    workbench: root,
+    operation_id: OP_ID,
+    record: { path: OPEN },
+    expected_revision: revision(root, OPEN),
+    actor: ACTOR,
+    plan: { workbench_id: WB_ID, record_id: PLANS.b },
+    revision: revision(root, narrative("b")),
+    ...over,
+  });
+  /** The three files in the order the plan function writes them: the new plan, the replaced one, the package. */
+  const FILES = [control("b"), control("a"), OPEN];
+
+  for (const cut of cutsFor(3)) {
+    it(`${cut}: a read recovers to the three-file post state; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id on the old revision is revision-mismatch`, async () => {
+      const clean = fresh();
+      await seed(clean);
+      const cleanAnswer = await dispatch(adoptB(clean));
+      expect(cleanAnswer.ok, JSON.stringify(cleanAnswer)).toBe(true);
+
+      const root = fresh();
+      await seed(root);
+      const req = adoptB(root);
+      const pre = FILES.map((f) => bytesOf(root, f));
+      await expect(dispatch(req, { kernel: { faults: { cutAt: cut } } })).rejects.toBeInstanceOf(CutReached);
+      expect(journalEntries(root), "the intent is pending after the cut").toEqual([OP_ID]);
+      const landed = cut === "after-intent" ? 0 : cut === "after-answer" ? 3 : Number(cut.slice("after-write:".length)) + 1;
+      FILES.forEach((f, i) => {
+        const expected = i < landed ? bytesOf(clean, f) : (pre[i] as Buffer);
+        expect(bytesOf(root, f).equals(expected), `${f} before recovery: ${i < landed ? "post" : "pre"}`).toBe(true);
+      });
+
+      // A read recovers: all three files at the bytes the uncut run wrote.
+      const shown = okResult(await dispatch({ op: "show", workbench: root, record: { path: OPEN } }));
+      expect(shown.revision).toBe(revision(clean, OPEN));
+      expect(journalEntries(root), "recovered: the intent left the journal").toEqual([]);
+      for (const f of FILES) expect(bytesOf(root, f).equals(bytesOf(clean, f)), `${f} after recovery`).toBe(true);
+      expect((controlOf(root, OPEN).active_documents as unknown[]).length).toBe(1);
+      expect(((controlOf(root, control("a")).control as Record<string, unknown>).acceptance)).toBeNull();
+
+      const again = await dispatch(req);
+      expect(JSON.stringify(again)).toBe(JSON.stringify(cleanAnswer));
+      expect(await dispatch({ ...req, role: "spec" })).toMatchObject({ ok: false, error: { class: "conflict", reason: "operation-id-reused" } });
+      expect(await dispatch({ ...req, operation_id: OTHER_ID })).toMatchObject({ ok: false, error: { class: "conflict", reason: "revision-mismatch" } });
+      for (const f of FILES) expect(bytesOf(root, f).equals(bytesOf(clean, f)), `${f}: executed once`).toBe(true);
+    });
+  }
+});

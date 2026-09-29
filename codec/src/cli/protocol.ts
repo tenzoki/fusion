@@ -55,12 +55,10 @@ export const OPERATIONS = [
 export type Operation = (typeof OPERATIONS)[number];
 
 /** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
-export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode"];
+export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan"];
 
 /** The package that lands each operation not yet answered: the detail of its `not-implemented` refusal. */
 export const LANDS_IN: Partial<Record<Operation, string>> = {
-  "set-dependencies": "FJ02",
-  "adopt-plan": "FJ02",
   "attach-evidence": "FJ02",
   reconcile: "FJ02",
   migration: "FJ04",
@@ -210,7 +208,10 @@ export interface SetDependenciesRequest extends Mutation<"set-dependencies"> {
 
 export interface AdoptPlanRequest extends Mutation<"adopt-plan"> {
   plan: RecordRef;
+  /** The hash of the plan narrative as accepted. */
   revision: string;
+  /** The `active_documents` role the record is bound in; absent means `plan`. */
+  role?: "spec" | "plan";
 }
 
 export interface AttachEvidenceRequest extends Mutation<"attach-evidence"> {

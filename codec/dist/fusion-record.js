@@ -8022,9 +8022,6 @@ import { fileURLToPath as fileURLToPath3 } from "node:url";
 // src/cli/ops.ts
 import { existsSync as existsSync3, readFileSync as readFileSync6, statSync as statSync3 } from "node:fs";
 
-// src/kernel.ts
-import { readdirSync as readdirSync4, readFileSync as readFileSync4 } from "node:fs";
-
 // src/journal.ts
 import { randomBytes as randomBytes2 } from "node:crypto";
 import { existsSync as existsSync2, mkdirSync as mkdirSync2, readdirSync as readdirSync3, readFileSync as readFileSync3, renameSync as renameSync2, rmSync as rmSync2, statSync as statSync2 } from "node:fs";
@@ -8959,6 +8956,9 @@ function replayAnswer(wb, req) {
   return { ok: true, value: stored.value.response };
 }
 
+// src/kernel.ts
+import { readdirSync as readdirSync4, readFileSync as readFileSync4 } from "node:fs";
+
 // src/cli/protocol.ts
 var PROTOCOL_SCHEMA_ID = "urn:fusion:schema:fusion.protocol/v1";
 var OPERATIONS = [
@@ -8977,10 +8977,8 @@ var OPERATIONS = [
   "reconcile",
   "migration"
 ];
-var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode"];
+var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan"];
 var LANDS_IN = {
-  "set-dependencies": "FJ02",
-  "adopt-plan": "FJ02",
   "attach-evidence": "FJ02",
   reconcile: "FJ02",
   migration: "FJ04"
@@ -9329,6 +9327,10 @@ async function dispatch(request, options = {}) {
       return mutate(wb, req, releasePlan(req), kernel);
     case "set-mode":
       return mutate(wb, req, setModePlan(req), kernel);
+    case "set-dependencies":
+      return mutate(wb, req, setDependenciesPlan(req), kernel);
+    case "adopt-plan":
+      return mutate(wb, req, adoptPlanPlan(req), kernel);
     default:
       return notImplemented(req.op);
   }
@@ -9727,20 +9729,27 @@ function releasePlan(req) {
     return { ok: false, error: { class: "conflict", reason: "not-claimed", detail: `${what} is ${String(state)}; release gives up the claim of a package that is ${from.join(" or ")}` } };
   });
 }
+var isTerminal = (kind, state) => typeof state === "string" && (transitions().kinds[kind]?.terminal.includes(state) ?? false);
+function livePackage(ctx, req, op, does) {
+  const r = ctx.readPair(req.record.path);
+  if (!r.ok) return r;
+  const pair = r.value;
+  const cas = ctx.cas(pair, req.expected_revision);
+  if (!cas.ok) return cas;
+  if (pair.kind !== "package") return refusal("schema-invalid", "not-a-package", `${req.record.path} is a ${pair.kind} record; ${op} ${does}`);
+  const status = pair.control.status;
+  if (isTerminal("package", status)) return refusal("conflict", "package-terminal", `the package is ${String(status)}, which is terminal; its record is history and ${op} writes nothing into it`);
+  return r;
+}
+function recordWrite(path, value) {
+  const bytes = Buffer.from(serialise(value), "utf-8");
+  return { path, bytes, revision: revisionOf(bytes) };
+}
 function setModePlan(req) {
   return (ctx) => {
-    const r = ctx.readPair(req.record.path);
+    const r = livePackage(ctx, req, "set-mode", "sets a package's mode");
     if (!r.ok) return r;
     const pair = r.value;
-    const cas = ctx.cas(pair, req.expected_revision);
-    if (!cas.ok) return cas;
-    if (pair.kind !== "package") {
-      return { ok: false, error: { class: "schema-invalid", reason: "not-a-package", detail: `${req.record.path} is a ${pair.kind} record; set-mode sets a package's mode` } };
-    }
-    const status = pair.control.status;
-    if (typeof status === "string" && (transitions().kinds["package"]?.terminal.includes(status) ?? false)) {
-      return { ok: false, error: { class: "conflict", reason: "package-terminal", detail: `the package is ${status}, which is terminal; its mode is history and set-mode writes nothing into it` } };
-    }
     const { value, source } = req.mode;
     if (isObject4(source) && source.kind === "legacy") {
       return { ok: false, error: { class: "schema-invalid", reason: "legacy-source-on-set-mode", detail: "a legacy mode source is kept by an import only; set-mode takes the user's word or a record" } };
@@ -9763,6 +9772,173 @@ function setModePlan(req) {
         writes: [{ path: req.record.path, bytes }],
         result: { operation_id: req.operation_id, path: req.record.path, mode: next.mode, revision, previous_revision: req.expected_revision },
         revisions: { [req.record.path]: revision }
+      }
+    };
+  };
+}
+var isEvidenceFile = (path) => path.endsWith(".evidence.json");
+function resolvePackage(ctx, ref, role) {
+  const hit = resolveRecordRef(ctx, ref);
+  if (!hit.ok) return hit;
+  if (isEvidenceFile(hit.value.path)) return refusal("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the evidence record ${hit.value.path}; it must be a package`);
+  const pair = ctx.readPair(hit.value.path);
+  if (!pair.ok) return pair;
+  if (pair.value.kind !== "package") return refusal("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; it must be a package`);
+  return pair;
+}
+function dependencyEdges(ctx) {
+  const edges = /* @__PURE__ */ new Map();
+  for (const path of controlFiles(ctx.wb, ctx.wb.root)) {
+    if (!path.endsWith("/package.json") && path !== "package.json") continue;
+    const r = ctx.readPair(path);
+    if (!r.ok || r.value.kind !== "package" || typeof r.value.control.id !== "string") continue;
+    const deps = Array.isArray(r.value.control.depends_on) ? r.value.control.depends_on : [];
+    const targets = deps.flatMap((d) => isObject4(d) && isObject4(d.target) && d.target.workbench_id === ctx.wb.id && typeof d.target.record_id === "string" ? [d.target.record_id] : []);
+    edges.set(r.value.control.id, targets);
+  }
+  return edges;
+}
+function cycleThrough(start, edges) {
+  const seen = /* @__PURE__ */ new Set([start]);
+  const path = [start];
+  const visit = (node) => {
+    for (const next of edges.get(node) ?? []) {
+      if (next === start) return true;
+      if (seen.has(next)) continue;
+      seen.add(next);
+      path.push(next);
+      if (visit(next)) return true;
+      path.pop();
+    }
+    return false;
+  };
+  return visit(start) ? [...path, start] : null;
+}
+function setDependenciesPlan(req) {
+  return (ctx) => {
+    const r = livePackage(ctx, req, "set-dependencies", "sets a package's dependencies");
+    if (!r.ok) return r;
+    const pkg = r.value;
+    const self = pkg.control.id;
+    const counted = /* @__PURE__ */ new Map();
+    for (const e of req.depends_on) counted.set(e.target.record_id, (counted.get(e.target.record_id) ?? 0) + 1);
+    const twice = [...counted].filter(([, n]) => n > 1).map(([id]) => id);
+    if (twice.length > 0) return refusal("schema-invalid", "duplicate-target", `depends_on names ${twice.join(", ")} more than once; one edge per target`);
+    for (const e of req.depends_on) {
+      if (e.target.record_id === self && e.target.workbench_id === ctx.wb.id) {
+        return refusal("conflict", "self-dependency", `depends_on names the package itself, ${self}`);
+      }
+      const target = resolvePackage(ctx, e.target, "dependency target");
+      if (!target.ok) return target;
+    }
+    const edges = dependencyEdges(ctx);
+    edges.set(self, req.depends_on.map((e) => e.target.record_id));
+    const cycle = cycleThrough(self, edges);
+    if (cycle !== null) return refusal("conflict", "cycle", `depends_on would close the cycle ${cycle.join(" -> ")}`);
+    const next = { ...pkg.control, depends_on: req.depends_on };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after set-dependencies is not a valid package");
+    if (!v.ok) return v;
+    const w = recordWrite(req.record.path, next);
+    return {
+      ok: true,
+      value: {
+        writes: [w],
+        result: { operation_id: req.operation_id, path: req.record.path, depends_on: req.depends_on, revision: w.revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: w.revision }
+      }
+    };
+  };
+}
+var PLAN_ROLE = "plan";
+var sameRecord = (a, id) => isObject4(a) && a.record_id === id;
+var acceptedBy = (acceptance, pkg) => isObject4(acceptance) && isObject4(acceptance.ref) && acceptance.ref.record_id === pkg.control.id && acceptance.ref.workbench_id === pkg.control.workbench_id;
+var withAcceptance = (doc, acceptance) => ({ ...doc.control, control: { ...doc.control.control, acceptance } });
+function replacedRecord(ctx, ref, pkg) {
+  const hit = resolveRecordRef(ctx, ref);
+  if (!hit.ok) return hit.error.reason === "record-not-found" || hit.error.reason === "foreign-workbench" ? { ok: true, value: null } : hit;
+  if (isEvidenceFile(hit.value.path)) return { ok: true, value: null };
+  const pair = ctx.readPair(hit.value.path);
+  if (!pair.ok) return pair;
+  if (pair.value.kind !== "plan") return { ok: true, value: null };
+  const control = pair.value.control.control;
+  if (isTerminal("plan", control?.state)) return { ok: true, value: null };
+  return { ok: true, value: acceptedBy(control?.acceptance, pkg) ? pair.value : null };
+}
+function adoptPlanPlan(req) {
+  return (ctx) => {
+    const r = livePackage(ctx, req, "adopt-plan", "binds a document into a package");
+    if (!r.ok) return r;
+    const pkg = r.value;
+    const role = req.role ?? PLAN_ROLE;
+    const docId = req.plan.record_id;
+    const hit = resolveRecordRef(ctx, req.plan);
+    if (!hit.ok) return hit;
+    const notAPlan = (what) => refusal("unresolved-reference", "not-a-plan", `${docId} is ${what}; adopt-plan binds a plan record, as a ${role}`);
+    if (isEvidenceFile(hit.value.path)) return notAPlan(`the evidence record ${hit.value.path}`);
+    const got = ctx.readPair(hit.value.path);
+    if (!got.ok) return got;
+    const doc = got.value;
+    if (doc.kind !== "plan") return notAPlan(`the ${doc.kind} record ${doc.path}`);
+    const control = doc.control.control ?? {};
+    if (isTerminal("plan", control.state)) {
+      return refusal("conflict", "plan-terminal", `${doc.path} is ${String(control.state)}, which is terminal; a closed or deferred plan is history and is not adopted`);
+    }
+    if (doc.narrative === null || doc.narrative.sha256 === null) {
+      return refusal("unresolved-reference", "narrative-missing", `${doc.path} names ${doc.narrative === null ? "no narrative" : `${doc.narrative.path}, which does not exist`}; its revision cannot be accepted`);
+    }
+    if (doc.narrative.sha256 !== req.revision) {
+      return refusal("conflict", "plan-revision-mismatch", `${doc.narrative.path} is ${doc.narrative.sha256}; the request accepts ${req.revision}`);
+    }
+    const acceptance = control.acceptance;
+    if (acceptance !== null && acceptance !== void 0 && !acceptedBy(acceptance, pkg)) {
+      const holder = isObject4(acceptance) && isObject4(acceptance.ref) ? String(acceptance.ref.record_id) : JSON.stringify(acceptance);
+      return refusal("conflict", "plan-adopted-elsewhere", `${doc.path} is adopted by the package ${holder}; a record is adopted by one package`);
+    }
+    const docs = Array.isArray(pkg.control.active_documents) ? pkg.control.active_documents : [];
+    const otherRole = docs.find((d) => sameRecord(d.ref, docId) && d.role !== role);
+    if (otherRole !== void 0) {
+      return refusal("conflict", "role-conflict", `${docId} is this package's ${otherRole.role} already; a record is adopted in one role`);
+    }
+    const entry = { ref: req.plan, role, revision: req.revision };
+    const at = docs.findIndex((d) => d.role === role && (role === PLAN_ROLE || sameRecord(d.ref, docId)));
+    const nextDocs = at < 0 ? [...docs, entry] : docs.map((d, i) => i === at ? entry : d);
+    const replaced = role === PLAN_ROLE && at >= 0 && !sameRecord(docs[at]?.ref, docId) ? docs[at].ref : null;
+    let references = Array.isArray(pkg.control.references) ? pkg.control.references : [];
+    let cleared = null;
+    if (replaced !== null) {
+      if (!references.some((x) => canonical(x) === canonical(replaced))) references = [...references, replaced];
+      const old = replacedRecord(ctx, replaced, pkg);
+      if (!old.ok) return old;
+      cleared = old.value;
+    }
+    const nextPkg = { ...pkg.control, active_documents: nextDocs, references };
+    const nextDoc = withAcceptance(doc, { ref: { workbench_id: pkg.control.workbench_id, record_id: pkg.control.id }, revision: req.revision });
+    const checks = [
+      [nextDoc, RECORD_SCHEMA_ID, `the ${role} record after adopt-plan is not valid`],
+      [nextPkg, PACKAGE_SCHEMA_ID, "the record after adopt-plan is not a valid package"]
+    ];
+    const nextOld = cleared === null ? null : withAcceptance(cleared, null);
+    if (nextOld !== null) checks.push([nextOld, RECORD_SCHEMA_ID, "the replaced plan record after adopt-plan is not valid"]);
+    for (const [value, schemaId, what] of checks) {
+      const v = ctx.validateResult(schemaId, value, what);
+      if (!v.ok) return v;
+    }
+    const writes = [recordWrite(doc.path, nextDoc), ...cleared !== null && nextOld !== null ? [recordWrite(cleared.path, nextOld)] : [], recordWrite(req.record.path, nextPkg)];
+    const pkgWrite = writes[writes.length - 1];
+    return {
+      ok: true,
+      value: {
+        writes: writes.map(({ path, bytes }) => ({ path, bytes })),
+        result: {
+          operation_id: req.operation_id,
+          path: req.record.path,
+          role,
+          document: { path: doc.path, revision: writes[0].revision, narrative: doc.narrative },
+          replaced,
+          revision: pkgWrite.revision,
+          previous_revision: req.expected_revision
+        },
+        revisions: Object.fromEntries(writes.map((w) => [w.path, w.revision]))
       }
     };
   };

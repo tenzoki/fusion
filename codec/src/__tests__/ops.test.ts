@@ -17,7 +17,20 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { dispatch } from "../cli/ops.js";
-import { OPERATIONS, IMPLEMENTED_OPERATIONS, LANDS_IN, type ClaimRequest, type CreateRequest, type ReleaseRequest, type Response, type SetModeRequest, type TransitionRequest } from "../cli/protocol.js";
+import {
+  OPERATIONS,
+  IMPLEMENTED_OPERATIONS,
+  LANDS_IN,
+  type AdoptPlanRequest,
+  type ClaimRequest,
+  type CreateRequest,
+  type RecordRef,
+  type ReleaseRequest,
+  type Response,
+  type SetDependenciesRequest,
+  type SetModeRequest,
+  type TransitionRequest,
+} from "../cli/protocol.js";
 import { installInlined } from "../cli/schemas.js";
 import { CutReached } from "../kernel.js";
 import { revisionOf, serialise } from "../store.js";
@@ -1206,5 +1219,415 @@ describe("main.ts on dist/fusion-record.js", () => {
     const r = run([], JSON.stringify({ op: "inspect" }));
     expect(r.status).toBe(0);
     expect(parse(r.stdout)).toMatchObject({ ok: false, error: { class: "unknown-scope", reason: "workbench-unspecified" } });
+  });
+});
+
+// --- set-dependencies and adopt-plan ----------------------------------------------------
+
+describe("set-dependencies and adopt-plan", () => {
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const OPEN_ID = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
+  const DONE_ID = "b6e23b92-0f65-4a35-89c9-2a53e4ac37c0";
+  const ISSUE_ID = "d068e1ae-3f62-429a-880a-2785763aaf01";
+  const CONTAINER = "work-packages/260928-1200-parser-fix";
+  const P1 = "11111111-1111-4111-8111-111111111111";
+  const P2 = "22222222-2222-4222-8222-222222222222";
+  const PLAN_A = "aaaaaaaa-0000-4000-8000-00000000000a";
+  const PLAN_B = "bbbbbbbb-0000-4000-8000-00000000000b";
+  const SPEC_1 = "cccccccc-0000-4000-8000-00000000000c";
+  const SPEC_2 = "dddddddd-0000-4000-8000-00000000000d";
+  const refTo = (record_id: string): RecordRef => ({ workbench_id: WB_ID, record_id });
+
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+  const detailOf = (r: Response): string => (r.ok ? "" : (r.error.detail ?? ""));
+  const parsed = (path: string): Record<string, unknown> => {
+    const p = strictParse(bytesOf(path));
+    if (!p.ok) throw new Error(p.detail);
+    return p.value as Record<string, unknown>;
+  };
+  const controlOfRecord = (path: string): Record<string, unknown> => parsed(path).control as Record<string, unknown>;
+  const journal = (): string[] => (existsSync(join(root, ".json-state", "journal")) ? readdirSync(join(root, ".json-state", "journal")) : []);
+  const answered = (id: string): boolean => existsSync(join(root, ".json-state", "ops", `${id}.json`));
+  /** A refusal wrote nothing: every named file at its bytes before, no answer, no pending intent. */
+  const unchanged = (before: Record<string, Buffer>, id: string, label: string): void => {
+    for (const [path, bytes] of Object.entries(before)) expect(bytesOf(path).equals(bytes), `${label}: ${path}`).toBe(true);
+    expect(answered(id), `${label}: answer`).toBe(false);
+    expect(journal(), `${label}: journal`).toEqual([]);
+  };
+  const snapshot = (...paths: string[]): Record<string, Buffer> => Object.fromEntries(paths.map((p) => [p, bytesOf(p)]));
+  const writeAt = (path: string, text: string): void => {
+    mkdirSync(join(root, path, ".."), { recursive: true });
+    writeFileSync(join(root, path), text);
+  };
+
+  /** A new open package, created through the kernel; its control path. */
+  const newPackage = async (id: string, stem: string): Promise<string> => {
+    const r = await dispatch({
+      op: "create",
+      workbench: root,
+      operation_id: randomUUID(),
+      id,
+      kind: "package",
+      filed_by: ACTOR,
+      origin: { kind: "user-request", ref: null },
+      scope: { container: null, store: "work-packages" },
+      narrative: { path: `work-packages/${stem}/${stem}.md`, content: `# ${stem}\n` },
+      payload: { domain: "code" },
+    } satisfies CreateRequest);
+    expect(r.ok, JSON.stringify(r)).toBe(true);
+    return `work-packages/${stem}/package.json`;
+  };
+  /** A new open plan record in the open package's container, with its body; its control and narrative paths. */
+  const newPlan = async (id: string, stem: string): Promise<{ control: string; narrative: string }> => {
+    const narrative = `${CONTAINER}/plans/${stem}.md`;
+    const r = await dispatch({
+      op: "create",
+      workbench: root,
+      operation_id: randomUUID(),
+      id,
+      kind: "plan",
+      filed_by: ACTOR,
+      origin: { kind: "package", ref: refTo(OPEN_ID) },
+      scope: { container: CONTAINER, store: "plans" },
+      narrative: { path: narrative, content: `# ${stem}\n\n1. The one step.\n` },
+      payload: { state: "open", steps: [{ id: "s1", state: "open" }], criteria: [], acceptance: null },
+    } satisfies CreateRequest);
+    expect(r.ok, JSON.stringify(r)).toBe(true);
+    return { control: `${CONTAINER}/plans/${stem}.record.json`, narrative };
+  };
+
+  const depsRequest = (path: string, depends_on: SetDependenciesRequest["depends_on"], over: Partial<SetDependenciesRequest> = {}): SetDependenciesRequest => ({
+    op: "set-dependencies",
+    workbench: root,
+    operation_id: randomUUID(),
+    record: { path },
+    expected_revision: revision(path),
+    actor: ACTOR,
+    depends_on,
+    ...over,
+  });
+  const on = (record_id: string, condition: "terminal" | "succeeded" = "terminal"): SetDependenciesRequest["depends_on"][number] => ({ target: refTo(record_id), condition });
+
+  const adoptRequest = (planId: string, narrative: string, over: Partial<AdoptPlanRequest> = {}): AdoptPlanRequest => ({
+    op: "adopt-plan",
+    workbench: root,
+    operation_id: randomUUID(),
+    record: { path: OPEN },
+    expected_revision: revision(OPEN),
+    actor: ACTOR,
+    plan: refTo(planId),
+    revision: revision(narrative),
+    ...over,
+  });
+  const acceptanceBy = (pkgId: string, narrative: string): Record<string, unknown> => ({ ref: refTo(pkgId), revision: revision(narrative) });
+  const validAll = async (label: string): Promise<void> => {
+    expect(okResult(await dispatch({ op: "validate", workbench: root })), label).toMatchObject({ valid: true, findings: [] });
+  };
+
+  // --- set-dependencies: targets ---
+
+  it("targets that resolve to packages land whatever their state and condition: the conditions are not evaluated; the list replaces the stored one; replays", async () => {
+    const p1 = await newPackage(P1, "260929-1101-first");
+    // A done target under `succeeded` whose outcome binds no accepted evidence, and an open target: both unmet, both land.
+    const depends_on = [on(DONE_ID, "succeeded"), on(P1, "succeeded")];
+    const req = depsRequest(OPEN, depends_on);
+    const first = await dispatch(req);
+    expect(okResult(first)).toEqual({ operation_id: req.operation_id, path: OPEN, depends_on, revision: revision(OPEN), previous_revision: req.expected_revision });
+    expect(first.ok && first.revisions).toEqual({ [OPEN]: revision(OPEN) });
+    expect(parsed(OPEN).depends_on).toEqual(depends_on);
+    expect(parsed(p1).status, "the target is untouched").toBe("open");
+    await validAll("after set-dependencies");
+
+    expect(await dispatch(req)).toEqual(first);
+    expect(errorOf(await dispatch({ ...req, depends_on: [] }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+
+    // Replaced whole, never merged.
+    okResult(await dispatch(depsRequest(OPEN, [on(DONE_ID)])));
+    expect(parsed(OPEN).depends_on).toEqual([on(DONE_ID)]);
+    okResult(await dispatch(depsRequest(OPEN, [])));
+    expect(parsed(OPEN).depends_on).toEqual([]);
+  });
+
+  it("targets that do not resolve, that are records, that are evidence records, that are foreign: refused, nothing written", async () => {
+    const plan = await newPlan(PLAN_A, "260929-1102-plan-a");
+    const evidence = { ...fixture("evidence/accept-prior-enforced.json"), id: "eeeeeeee-0000-4000-8000-00000000000e" };
+    writeAt("shared/reviews/260929-1103-review.evidence.json", `${JSON.stringify(evidence, null, 2)}\n`);
+    const cases: Array<[string, SetDependenciesRequest["depends_on"], { class: string; reason: string }]> = [
+      ["an id no control file carries", [on("99999999-0000-4000-8000-000000000009")], { class: "unresolved-reference", reason: "record-not-found" }],
+      ["an issue record", [on(ISSUE_ID)], { class: "unresolved-reference", reason: "not-a-package" }],
+      ["a plan record", [on(PLAN_A)], { class: "unresolved-reference", reason: "not-a-package" }],
+      ["an evidence record", [on(evidence.id as string)], { class: "unresolved-reference", reason: "not-a-package" }],
+      ["a package of another workbench", [{ target: { workbench_id: "0e0e0e0e-0000-4000-8000-000000000000", record_id: DONE_ID }, condition: "terminal" }], { class: "unresolved-reference", reason: "foreign-workbench" }],
+      ["a good target before a bad one", [on(DONE_ID), on(ISSUE_ID)], { class: "unresolved-reference", reason: "not-a-package" }],
+    ];
+    const before = snapshot(OPEN, plan.control);
+    for (const [label, depends_on, expected] of cases) {
+      const req = depsRequest(OPEN, depends_on);
+      expect(errorOf(await dispatch(req)), label).toEqual(expected);
+      unchanged(before, req.operation_id, label);
+    }
+  });
+
+  it("the package itself is conflict/self-dependency; two edges to one target are schema-invalid/duplicate-target", async () => {
+    const before = snapshot(OPEN);
+    for (const depends_on of [[on(OPEN_ID)], [on(DONE_ID), on(OPEN_ID, "succeeded")]]) {
+      const req = depsRequest(OPEN, depends_on);
+      const r = await dispatch(req);
+      expect(errorOf(r)).toEqual({ class: "conflict", reason: "self-dependency" });
+      expect(detailOf(r)).toContain(OPEN_ID);
+      unchanged(before, req.operation_id, "self");
+    }
+    const dup = depsRequest(OPEN, [on(DONE_ID, "terminal"), on(DONE_ID, "succeeded")]);
+    expect(errorOf(await dispatch(dup))).toEqual({ class: "schema-invalid", reason: "duplicate-target" });
+    unchanged(before, dup.operation_id, "duplicate");
+    // Identical entries never reach the operation: the protocol schema's uniqueItems refuses the request.
+    expect(errorOf(await dispatch(depsRequest(OPEN, [on(DONE_ID), on(DONE_ID)])))).toEqual({ class: "schema-invalid", reason: "request" });
+  });
+
+  // --- set-dependencies: cycles ---
+
+  it("a two-node cycle is conflict/cycle naming both ids, and nothing is written", async () => {
+    const p1 = await newPackage(P1, "260929-1101-first");
+    okResult(await dispatch(depsRequest(p1, [on(OPEN_ID)])));
+    const before = snapshot(OPEN, p1);
+    const req = depsRequest(OPEN, [on(DONE_ID), on(P1, "succeeded")]);
+    const r = await dispatch(req);
+    expect(errorOf(r)).toEqual({ class: "conflict", reason: "cycle" });
+    expect(detailOf(r)).toContain(`${OPEN_ID} -> ${P1} -> ${OPEN_ID}`);
+    unchanged(before, req.operation_id, "two-node");
+  });
+
+  it("a three-node cycle is conflict/cycle naming the three ids in edge order, and nothing is written", async () => {
+    const p1 = await newPackage(P1, "260929-1101-first");
+    const p2 = await newPackage(P2, "260929-1102-second");
+    okResult(await dispatch(depsRequest(p1, [on(P2)])));
+    okResult(await dispatch(depsRequest(p2, [on(OPEN_ID)])));
+    const before = snapshot(OPEN, p1, p2);
+    const req = depsRequest(OPEN, [on(P1)]);
+    const r = await dispatch(req);
+    expect(errorOf(r)).toEqual({ class: "conflict", reason: "cycle" });
+    expect(detailOf(r)).toContain(`${OPEN_ID} -> ${P1} -> ${P2} -> ${OPEN_ID}`);
+    unchanged(before, req.operation_id, "three-node");
+    // The same three nodes closed from P2's end: P1 -> P2 stands, OPEN -> P1 lands once P2 no longer points back.
+    okResult(await dispatch(depsRequest(p2, [])));
+    okResult(await dispatch(depsRequest(OPEN, [on(P1)])));
+    const closing = await dispatch(depsRequest(p2, [on(OPEN_ID)]));
+    expect(errorOf(closing)).toEqual({ class: "conflict", reason: "cycle" });
+    expect(detailOf(closing)).toContain(`${P2} -> ${OPEN_ID} -> ${P1} -> ${P2}`);
+  });
+
+  it("a cycle the request neither makes nor can break (not through this package) does not refuse it; a cycle through it does", async () => {
+    const p1 = await newPackage(P1, "260929-1101-first");
+    const p2 = await newPackage(P2, "260929-1102-second");
+    okResult(await dispatch(depsRequest(p1, [on(P2)])));
+    // P2 -> P1 by hand: the cycle P1 -> P2 -> P1 exists before the request.
+    writeFileSync(join(root, p2), serialise({ ...parsed(p2), depends_on: [on(P1)] }));
+    const r = await dispatch(depsRequest(OPEN, [on(P1)]));
+    expect(okResult(r).depends_on).toEqual([on(P1)]);
+    // Setting P1's list through the kernel meets the cycle through P1.
+    const again = await dispatch(depsRequest(p1, [on(P2), on(DONE_ID)]));
+    expect(errorOf(again)).toEqual({ class: "conflict", reason: "cycle" });
+    expect(detailOf(again)).toContain(`${P1} -> ${P2} -> ${P1}`);
+  });
+
+  it("a terminal package, a record and a stale revision are refused before any target is read", async () => {
+    const r1 = depsRequest(DONE, [on(OPEN_ID)]);
+    expect(errorOf(await dispatch(r1))).toEqual({ class: "conflict", reason: "package-terminal" });
+    expect(errorOf(await dispatch(depsRequest(ISSUE, [on(OPEN_ID)])))).toEqual({ class: "schema-invalid", reason: "not-a-package" });
+    expect(errorOf(await dispatch(depsRequest(OPEN, [on(DONE_ID)], { expected_revision: revision(DONE) })))).toEqual({ class: "conflict", reason: "revision-mismatch" });
+    unchanged(snapshot(OPEN, DONE, ISSUE), r1.operation_id, "refusals");
+  });
+
+  // --- adopt-plan ---
+
+  it("a plan adopted by a package without one: the entry and the record's acceptance, two writes in one intent; replays", async () => {
+    const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+    const req = adoptRequest(PLAN_A, a.narrative);
+    const first = await dispatch(req);
+    expect(okResult(first)).toEqual({
+      operation_id: req.operation_id,
+      path: OPEN,
+      role: "plan",
+      document: { path: a.control, revision: revision(a.control), narrative: { path: a.narrative, sha256: revision(a.narrative) } },
+      replaced: null,
+      revision: revision(OPEN),
+      previous_revision: req.expected_revision,
+    });
+    expect(first.ok && first.revisions).toEqual({ [a.control]: revision(a.control), [OPEN]: revision(OPEN) });
+    expect(parsed(OPEN).active_documents).toEqual([{ ref: refTo(PLAN_A), role: "plan", revision: revision(a.narrative) }]);
+    expect(controlOfRecord(a.control).acceptance).toEqual(acceptanceBy(OPEN_ID, a.narrative));
+    for (const path of [OPEN, a.control]) expect(bytesOf(path).toString("utf-8"), `${path}: deterministic bytes`).toBe(serialise(parsed(path)));
+    await validAll("after adopt-plan");
+
+    expect(await dispatch(req)).toEqual(first);
+    expect(errorOf(await dispatch({ ...req, role: "spec" }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+  });
+
+  it("a replacement adopt-plan lands all three files: one plan entry, the replaced ref in references, the replaced record's acceptance cleared; maxContains is never reached", async () => {
+    const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+    const b = await newPlan(PLAN_B, "260929-1103-plan-b");
+    okResult(await dispatch(adoptRequest(PLAN_A, a.narrative)));
+    const req = adoptRequest(PLAN_B, b.narrative);
+    const r = await dispatch(req);
+    expect(okResult(r)).toMatchObject({ role: "plan", replaced: refTo(PLAN_A), revision: revision(OPEN) });
+    expect(r.ok && r.revisions).toEqual({ [b.control]: revision(b.control), [a.control]: revision(a.control), [OPEN]: revision(OPEN) });
+    const pkg = parsed(OPEN);
+    expect(pkg.active_documents).toEqual([{ ref: refTo(PLAN_B), role: "plan", revision: revision(b.narrative) }]);
+    expect(pkg.references).toEqual([refTo(PLAN_A)]);
+    expect(controlOfRecord(a.control).acceptance).toBeNull();
+    expect(controlOfRecord(b.control).acceptance).toEqual(acceptanceBy(OPEN_ID, b.narrative));
+    await validAll("after the replacement");
+    expect(await dispatch(req)).toEqual(r);
+
+    // Replacing back: the entry is replaced again, never appended; references carry each replaced ref once.
+    okResult(await dispatch(adoptRequest(PLAN_A, a.narrative)));
+    const again = parsed(OPEN);
+    expect((again.active_documents as Array<{ role: string }>).filter((d) => d.role === "plan")).toHaveLength(1);
+    expect(again.references).toEqual([refTo(PLAN_A), refTo(PLAN_B)]);
+    okResult(await dispatch(adoptRequest(PLAN_B, b.narrative)));
+    expect(parsed(OPEN).references, "a ref already there is not added twice").toEqual([refTo(PLAN_A), refTo(PLAN_B)]);
+    await validAll("after replacing back and forth");
+  });
+
+  it("the revision check: a narrative edited after show is conflict/plan-revision-mismatch naming both hashes, nothing written; the new hash lands", async () => {
+    const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+    const shown = okResult(await dispatch({ op: "show", workbench: root, record: { path: a.control } }));
+    const accepted = (shown.narrative as { sha256: string }).sha256;
+    writeFileSync(join(root, a.narrative), `${bytesOf(a.narrative).toString("utf-8")}2. A step added after show.\n`);
+    const req = adoptRequest(PLAN_A, a.narrative, { revision: accepted });
+    const before = snapshot(OPEN, a.control);
+    const r = await dispatch(req);
+    expect(errorOf(r)).toEqual({ class: "conflict", reason: "plan-revision-mismatch" });
+    expect(detailOf(r)).toContain(accepted);
+    expect(detailOf(r)).toContain(revision(a.narrative));
+    unchanged(before, req.operation_id, "stale narrative revision");
+    okResult(await dispatch(adoptRequest(PLAN_A, a.narrative)));
+    expect(controlOfRecord(a.control).acceptance).toEqual(acceptanceBy(OPEN_ID, a.narrative));
+  });
+
+  for (const state of transitions().kinds["plan"]?.terminal ?? []) {
+    it(`a plan record in the terminal state ${state} is conflict/plan-terminal, nothing written`, async () => {
+      const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+      okResult(await dispatch({ op: "transition", workbench: root, operation_id: randomUUID(), record: { path: a.control }, expected_revision: revision(a.control), actor: ACTOR, to: state, reason: "terminal target" } satisfies TransitionRequest));
+      const req = adoptRequest(PLAN_A, a.narrative);
+      const before = snapshot(OPEN, a.control);
+      expect(errorOf(await dispatch(req))).toEqual({ class: "conflict", reason: "plan-terminal" });
+      unchanged(before, req.operation_id, state);
+    });
+  }
+
+  for (const state of transitions().kinds["plan"]?.terminal ?? []) {
+    it(`a replaced plan record already ${state} is history and not written: two writes, its ref still moved, the new plan adopted`, async () => {
+      const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+      const b = await newPlan(PLAN_B, "260929-1103-plan-b");
+      okResult(await dispatch(adoptRequest(PLAN_A, a.narrative)));
+      okResult(await dispatch({ op: "transition", workbench: root, operation_id: randomUUID(), record: { path: a.control }, expected_revision: revision(a.control), actor: ACTOR, to: state, reason: "terminal before replacement" } satisfies TransitionRequest));
+      const old = bytesOf(a.control);
+      const r = await dispatch(adoptRequest(PLAN_B, b.narrative));
+      expect(okResult(r)).toMatchObject({ role: "plan", replaced: refTo(PLAN_A) });
+      expect(r.ok && r.revisions).toEqual({ [b.control]: revision(b.control), [OPEN]: revision(OPEN) });
+      expect(bytesOf(a.control).equals(old), `the ${state} plan's bytes are unchanged`).toBe(true);
+      expect(controlOfRecord(a.control)).toMatchObject({ state, acceptance: acceptanceBy(OPEN_ID, a.narrative) });
+      expect(parsed(OPEN)).toMatchObject({ active_documents: [{ ref: refTo(PLAN_B), role: "plan", revision: revision(b.narrative) }], references: [refTo(PLAN_A)] });
+      expect(controlOfRecord(b.control).acceptance).toEqual(acceptanceBy(OPEN_ID, b.narrative));
+      await validAll(`${state} and replaced`);
+    });
+  }
+
+  it("a plan adopted by another package is conflict/plan-adopted-elsewhere naming the holder", async () => {
+    const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+    const p1 = await newPackage(P1, "260929-1101-first");
+    okResult(await dispatch(adoptRequest(PLAN_A, a.narrative)));
+    const req = adoptRequest(PLAN_A, a.narrative, { record: { path: p1 }, expected_revision: revision(p1) });
+    const before = snapshot(OPEN, p1, a.control);
+    const r = await dispatch(req);
+    expect(errorOf(r)).toEqual({ class: "conflict", reason: "plan-adopted-elsewhere" });
+    expect(detailOf(r)).toContain(OPEN_ID);
+    unchanged(before, req.operation_id, "elsewhere");
+    // ... and as a spec there too: the record's one acceptance says who holds it.
+    expect(errorOf(await dispatch({ ...req, operation_id: randomUUID(), role: "spec" }))).toEqual({ class: "conflict", reason: "plan-adopted-elsewhere" });
+  });
+
+  it("a document that is no plan record is refused: an issue or a package is not-a-plan, an unknown id record-not-found, a foreign one foreign-workbench", async () => {
+    const any = "work-packages/260928-1200-parser-fix/260928-1200-parser-fix.md";
+    const cases: Array<[string, RecordRef, { class: string; reason: string }]> = [
+      ["an issue record", refTo(ISSUE_ID), { class: "unresolved-reference", reason: "not-a-plan" }],
+      ["a package", refTo(DONE_ID), { class: "unresolved-reference", reason: "not-a-plan" }],
+      ["an unknown id", refTo("99999999-0000-4000-8000-000000000009"), { class: "unresolved-reference", reason: "record-not-found" }],
+      ["another workbench", { workbench_id: "0e0e0e0e-0000-4000-8000-000000000000", record_id: ISSUE_ID }, { class: "unresolved-reference", reason: "foreign-workbench" }],
+    ];
+    const before = snapshot(OPEN, ISSUE, DONE);
+    for (const [label, plan, expected] of cases) {
+      const req = adoptRequest(PLAN_A, any, { plan });
+      expect(errorOf(await dispatch(req)), label).toEqual(expected);
+      unchanged(before, req.operation_id, label);
+    }
+  });
+
+  it("specs are adopted alongside the plan, any number, distinct by record_id: two writes each; a record is adopted in one role", async () => {
+    const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+    const s1 = await newPlan(SPEC_1, "260929-1104-spec-one");
+    const s2 = await newPlan(SPEC_2, "260929-1105-spec-two");
+    okResult(await dispatch(adoptRequest(PLAN_A, a.narrative)));
+    for (const [id, s] of [[SPEC_1, s1], [SPEC_2, s2]] as const) {
+      const r = await dispatch(adoptRequest(id, s.narrative, { role: "spec" }));
+      expect(okResult(r)).toMatchObject({ role: "spec", replaced: null });
+      expect(r.ok && r.revisions).toEqual({ [s.control]: revision(s.control), [OPEN]: revision(OPEN) });
+      expect(controlOfRecord(s.control).acceptance).toEqual(acceptanceBy(OPEN_ID, s.narrative));
+    }
+    const entries = (): unknown => parsed(OPEN).active_documents;
+    expect(entries()).toEqual([
+      { ref: refTo(PLAN_A), role: "plan", revision: revision(a.narrative) },
+      { ref: refTo(SPEC_1), role: "spec", revision: revision(s1.narrative) },
+      { ref: refTo(SPEC_2), role: "spec", revision: revision(s2.narrative) },
+    ]);
+    // Re-adopting a spec at a new revision replaces its own entry, in place.
+    writeFileSync(join(root, s1.narrative), "# spec one, revised\n");
+    okResult(await dispatch(adoptRequest(SPEC_1, s1.narrative, { role: "spec" })));
+    expect((entries() as Array<{ revision: string }>)[1]?.revision).toBe(revision(s1.narrative));
+    expect((entries() as unknown[]).length).toBe(3);
+    expect(parsed(OPEN).references, "a spec replaces nothing").toEqual([]);
+    await validAll("plan and two specs");
+
+    // One role per record, whichever way round.
+    const before = snapshot(OPEN, a.control, s1.control);
+    for (const req of [adoptRequest(PLAN_A, a.narrative, { role: "spec" }), adoptRequest(SPEC_1, s1.narrative, { role: "plan" }), adoptRequest(SPEC_1, s1.narrative)]) {
+      expect(errorOf(await dispatch(req)), JSON.stringify(req.plan)).toEqual({ class: "conflict", reason: "role-conflict" });
+      unchanged(before, req.operation_id, "role-conflict");
+    }
+  });
+
+  it("re-adopting the plan in force at a new revision rewrites its entry and moves nothing: two writes", async () => {
+    const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+    okResult(await dispatch(adoptRequest(PLAN_A, a.narrative)));
+    writeFileSync(join(root, a.narrative), "# plan a, revised\n");
+    const r = await dispatch(adoptRequest(PLAN_A, a.narrative));
+    expect(okResult(r)).toMatchObject({ replaced: null });
+    expect(r.ok && r.revisions).toEqual({ [a.control]: revision(a.control), [OPEN]: revision(OPEN) });
+    expect(parsed(OPEN)).toMatchObject({ active_documents: [{ ref: refTo(PLAN_A), role: "plan", revision: revision(a.narrative) }], references: [] });
+    expect(controlOfRecord(a.control).acceptance).toEqual(acceptanceBy(OPEN_ID, a.narrative));
+  });
+
+  it("a replaced plan whose record is gone is still moved into references; there is no acceptance to clear, so two writes", async () => {
+    const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+    const b = await newPlan(PLAN_B, "260929-1103-plan-b");
+    okResult(await dispatch(adoptRequest(PLAN_A, a.narrative)));
+    rmSync(join(root, a.control));
+    const r = await dispatch(adoptRequest(PLAN_B, b.narrative));
+    expect(okResult(r)).toMatchObject({ replaced: refTo(PLAN_A) });
+    expect(r.ok && r.revisions).toEqual({ [b.control]: revision(b.control), [OPEN]: revision(OPEN) });
+    expect(parsed(OPEN).references).toEqual([refTo(PLAN_A)]);
+  });
+
+  it("a terminal package, a record and a stale revision are refused", async () => {
+    const a = await newPlan(PLAN_A, "260929-1102-plan-a");
+    expect(errorOf(await dispatch(adoptRequest(PLAN_A, a.narrative, { record: { path: DONE }, expected_revision: revision(DONE) })))).toEqual({ class: "conflict", reason: "package-terminal" });
+    expect(errorOf(await dispatch(adoptRequest(PLAN_A, a.narrative, { record: { path: ISSUE }, expected_revision: revision(ISSUE) })))).toEqual({ class: "schema-invalid", reason: "not-a-package" });
+    expect(errorOf(await dispatch(adoptRequest(PLAN_A, a.narrative, { expected_revision: revision(DONE) })))).toEqual({ class: "conflict", reason: "revision-mismatch" });
+    expect(controlOfRecord(a.control).acceptance).toBeNull();
   });
 });
