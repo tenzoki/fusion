@@ -164,6 +164,13 @@ export interface TransitionPayload {
   implementation_ref?: string | Reference | null;
   superseded_by?: RecordRef | null;
   deferral?: Deferral | null;
+  /**
+   * Plan progress (Prior's FJ02 response 18): updates keyed by the id of a
+   * step or criterion the stored plan already has. Read on a plan record
+   * only, refused on any other kind; never adds, removes or reorders an entry.
+   */
+  steps?: Array<{ id: string; state: "open" | "in_progress" | "done" }>;
+  criteria?: Array<{ id: string; met: boolean | null }>;
 }
 
 export interface TransitionRequest extends Mutation<"transition"> {

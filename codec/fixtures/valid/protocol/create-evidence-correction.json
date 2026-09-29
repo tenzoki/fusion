@@ -1,0 +1,49 @@
+{
+  "op": "create",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "1f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a",
+  "id": "8d2a6c1e-4f3b-4a9d-b7e5-2c6f0a9d3e18",
+  "kind": "evidence",
+  "scope": {
+    "container": "work-packages/260928-1200-parser-fix",
+    "store": "reviews"
+  },
+  "payload": {
+    "schema": "fusion.evidence/v1",
+    "id": "8d2a6c1e-4f3b-4a9d-b7e5-2c6f0a9d3e18",
+    "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+    "subject": {
+      "git_tree": "80655da8d80aaaf92ce5357e7828dc09adb00993",
+      "git_range": null
+    },
+    "brief_revision": "sha256:0c6dd73506e6b9100f9bc0293d2a627e32ff98d96892527a4acf3e9169a40838",
+    "plan_revision": "sha256:7fb8b999cde5f3cedf35a0de8ae7f0d413d3525561ad227ea475b3ef99a089e2",
+    "role": {
+      "profile": "reviewer",
+      "version": "12.0.0"
+    },
+    "host": "claude-code",
+    "execution_policy": "claude-guided",
+    "verdict": "accept",
+    "uncertainties": [],
+    "checks": [
+      {
+        "id": "tests-green",
+        "result": "pass",
+        "detail": null
+      }
+    ],
+    "report": {
+      "path": "work-packages/260928-1200-parser-fix/reviews/260928-1800-parser-fix-review.md",
+      "sha256": "sha256:e8813cae7ea240770b384467c32327fb02ad54356fa02717921bcb21ac6e1e75",
+      "kind": "review"
+    },
+    "predecessor": {
+      "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+      "record_id": "3b8e2f4a-6c1d-4e7f-9a2b-5d0c8e1f7a36",
+      "revision": "sha256:99968dd11b9f3e521abbff5728a7ae95c05875bfa42291065e4fa8e57a1d092f"
+    },
+    "accepted_at": "2026-09-28T18:30:00+02:00",
+    "extensions": {}
+  }
+}

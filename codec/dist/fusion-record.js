@@ -9329,6 +9329,16 @@ function stateRules(kind, state, payload = {}) {
       return { ok: true };
   }
 }
+function stepAllowed(from, to) {
+  const table = transitions().kinds["plan"];
+  if (table === void 0 || table.step_states === void 0 || table.step_edges === void 0) {
+    return refuse3("schema-invalid", "the table carries no plan step vocabulary");
+  }
+  if (!table.step_states.includes(from)) return refuse3("schema-invalid", `"${from}" is not a plan step state`);
+  if (!table.step_states.includes(to)) return refuse3("schema-invalid", `"${to}" is not a plan step state`);
+  if (!table.step_edges.some((e) => e.from === from && e.to === to)) return refuse3("conflict", `plan step: no edge ${from} -> ${to}`);
+  return { ok: true };
+}
 function dependencySatisfied(condition, target) {
   const table = dependencies();
   const rule = table.conditions[condition];
@@ -9400,6 +9410,7 @@ async function dispatch(request, options = {}) {
     case "validate":
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
     case "create":
+      if (req.kind === "evidence") return fail("operation-unknown", "not-implemented", "create of kind evidence is specified (Prior's FJ02 response 19) and lands in FJ02b step 3");
       return mutate(wb, req, createPlan(req), kernel);
     case "transition":
       return mutate(wb, req, transitionPlan(req), kernel);
@@ -9527,6 +9538,26 @@ function validateOp(wb, req, view) {
   const findings = paths.flatMap((p) => [...blockedFindingOf(wb, p, view), ...findingsOf(wb, p)]);
   return { ok: true, result: { workbench: wb.root, state: wb.state, checked: paths.length, valid: findings.length === 0, findings } };
 }
+var PROGRESS = [
+  { field: "steps", noun: "step", value: "state" },
+  { field: "criteria", noun: "criterion", value: "met" }
+];
+function repeatedIds(entries) {
+  if (!Array.isArray(entries)) return [];
+  const seen = /* @__PURE__ */ new Set();
+  const twice = /* @__PURE__ */ new Set();
+  for (const e of entries) {
+    if (!isObject4(e) || typeof e.id !== "string") continue;
+    if (seen.has(e.id)) twice.add(e.id);
+    seen.add(e.id);
+  }
+  return [...twice];
+}
+function uniqueIds(noun, field2, entries, where) {
+  const twice = repeatedIds(entries);
+  if (twice.length === 0) return { ok: true, value: void 0 };
+  return refusal("schema-invalid", `duplicate-${noun}-id`, `${where} ${field2}: the id ${twice.join(", ")} appears more than once; a ${noun} is updated by its id, which must name one entry`);
+}
 var COMMON_SCHEMA_ID = "urn:fusion:schema:fusion.common/v1";
 var STORE_OF = { package: "work-packages", issue: "issues", plan: "plans", discussion: "discussions", decision: "decisions" };
 var PACKAGE_PAYLOAD = ["domain", "references"];
@@ -9643,6 +9674,12 @@ function newRecord(ctx, req) {
     const sets = off.map((k) => `${k} ${k in payload ? JSON.stringify(payload[k]) : "absent"}`).join(", ");
     return refusal("schema-invalid", "not-initial-state", `a new ${req.kind} record starts at ${JSON.stringify(fixed)}; the payload has ${sets}`);
   }
+  if (req.kind === "plan") {
+    for (const { field: field2, noun } of PROGRESS) {
+      const unique = uniqueIds(noun, field2, payload[field2], "the new plan's");
+      if (!unique.ok) return unique;
+    }
+  }
   const next = { schema: schemaField(RECORD_SCHEMA_ID), ...common, kind: req.kind, references: [], control: { ...payload } };
   return { ok: true, value: { next, schemaId: RECORD_SCHEMA_ID } };
 }
@@ -9708,6 +9745,12 @@ function transitionPlan(req, precheck) {
       if (!p.ok) return p;
     }
     const payload = req.payload ?? {};
+    if (pair.kind !== "plan") {
+      const carried = PROGRESS.filter(({ field: field2 }) => payload[field2] !== void 0).map(({ field: field2 }) => field2);
+      if (carried.length > 0) {
+        return refusal("schema-invalid", "payload-field-not-admitted", `${req.record.path} is a ${pair.kind} record; ${carried.join(" and ")} ${carried.length > 1 ? "are" : "is"} plan progress, read on a plan record only`);
+      }
+    }
     const moved = pair.kind === "package" ? movePackage(pair, req.to, payload) : moveRecord(ctx, pair, req.to, payload);
     if (!moved.ok) return moved;
     const { from, next, schemaId } = moved.value;
@@ -9759,6 +9802,10 @@ function moveRecord(ctx, pair, to, payload) {
     fields = { disposition };
   } else if (kind === "decision") {
     for (const f of DECISION_FIELDS) fields[f] = f in payload ? payload[f] ?? null : control[f] ?? null;
+  } else if (kind === "plan") {
+    const progressed = planProgress(control, from, to, payload);
+    if (!progressed.ok) return progressed;
+    return { ok: true, value: { from, next: { ...pair.control, control: { ...control, state: to, ...progressed.value } }, schemaId: RECORD_SCHEMA_ID } };
   }
   const rule = allowed(kind, from, to, fields);
   if (!rule.ok) return refused(rule);
@@ -9772,6 +9819,58 @@ function moveRecord(ctx, pair, to, payload) {
     }
   }
   return { ok: true, value: { from, next: { ...pair.control, control: { ...control, state: to, ...fields } }, schemaId: RECORD_SCHEMA_ID } };
+}
+function planProgress(control, from, to, payload) {
+  const carried = PROGRESS.filter(({ field: field2 }) => payload[field2] !== void 0);
+  if (to !== from || carried.length === 0) {
+    const rule = allowed("plan", from, to);
+    if (!rule.ok) return refused(rule);
+  } else if (isTerminal("plan", from)) {
+    return refused({ class: "conflict", reason: `plan: ${from} is terminal (${transitions().kinds["plan"]?.reopen ?? "no edge leaves it"}); plan progress is never written into it` });
+  }
+  const arrays = [];
+  for (const { field: field2, noun, value } of carried) {
+    const stored = Array.isArray(control[field2]) ? control[field2] : [];
+    const updates = payload[field2];
+    for (const [entries, where] of [
+      [stored, "the stored plan's"],
+      [updates, "the payload's"]
+    ]) {
+      const unique = uniqueIds(noun, field2, entries, where);
+      if (!unique.ok) return unique;
+    }
+    const known = new Set(stored.map((e) => e.id));
+    const unknown = updates.filter((u) => !known.has(u.id)).map((u) => u.id);
+    if (unknown.length > 0) {
+      return refusal("unresolved-reference", `unknown-${noun}-id`, `the payload's ${field2} names ${unknown.join(", ")}, which the stored plan lacks; plan progress updates the ${field2} it has and never adds one`);
+    }
+    arrays.push({ field: field2, value, stored, updates });
+  }
+  const byId = (entries) => new Map(entries.map((e) => [e.id, e]));
+  let changed = false;
+  for (const { field: field2, value, stored, updates } of arrays) {
+    const was = byId(stored);
+    for (const u of updates) {
+      const before = was.get(u.id)[value];
+      if (before === u[value]) continue;
+      changed = true;
+      if (field2 !== "steps") continue;
+      const rule = stepAllowed(String(before), String(u[value]));
+      if (!rule.ok) return { ok: false, error: { class: rule.class, reason: "transition-refused", detail: `step ${u.id}: ${rule.reason}` } };
+    }
+  }
+  if (to === from && !changed) {
+    return refused({ class: "conflict", reason: `plan: to is the stored state ${from} and the payload changes no step or criterion; staying in a state is admitted for plan progress only` });
+  }
+  const fields = {};
+  for (const { field: field2, value, stored, updates } of arrays) {
+    const next = byId(updates);
+    fields[field2] = stored.map((e) => {
+      const u = next.get(e.id);
+      return u === void 0 ? e : { ...e, [value]: u[value] };
+    });
+  }
+  return { ok: true, value: fields };
 }
 function resolveReference(ctx, value) {
   if (!isObject4(value)) return { ok: true, value: void 0 };
@@ -11607,7 +11706,7 @@ var protocol_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.protocol/v1",
   title: "fusion.protocol/v1",
-  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there.",
+  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there.",
   type: "object",
   required: ["op"],
   properties: {
@@ -11702,6 +11801,32 @@ var protocol_schema_default = {
     {
       type: "object",
       additionalProperties: false,
+      required: ["op", "operation_id", "id", "kind", "scope", "payload"],
+      properties: {
+        op: { const: "create" },
+        workbench: { $ref: "#/$defs/workbench" },
+        operation_id: { $ref: "#/$defs/operation_id" },
+        id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        kind: { const: "evidence", description: "Selects this branch (Prior's FJ02 response 19, the sole write route for a new fusion.evidence/v1 record); the record create branch's kind enum lacks evidence, so the two are disjoint. An evidence record has no filer, origin or narrative." },
+        scope: {
+          type: "object",
+          description: "Where the record is filed: the container directory (workbench-relative) or null for shared/, and the reviews store within it.",
+          additionalProperties: false,
+          required: ["container", "store"],
+          properties: {
+            container: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" }] },
+            store: { const: "reviews" }
+          }
+        },
+        payload: {
+          $ref: "urn:fusion:schema:fusion.evidence/v1",
+          description: "The complete evidence record; the codec writes exactly these bytes, serialised, and adds nothing."
+        }
+      }
+    },
+    {
+      type: "object",
+      additionalProperties: false,
       required: ["op", "operation_id", "record", "expected_revision", "actor", "to", "reason"],
       properties: {
         op: { const: "transition" },
@@ -11764,7 +11889,17 @@ var protocol_schema_default = {
             answer_ref: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" }] },
             implementation_ref: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/git_commit" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" }] },
             superseded_by: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }] },
-            deferral: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.record/v1#/$defs/deferral" }] }
+            deferral: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.record/v1#/$defs/deferral" }] },
+            steps: {
+              type: "array",
+              description: "Plan progress (Prior's FJ02 response 18): read on a plan record only, and refused on any other kind. Each entry is an update keyed by the id of a step the stored record already has; it never adds, removes or reorders an entry, and an entry left out keeps its value and position. to may equal a live plan's current state when an entry changes a value.",
+              items: { $ref: "urn:fusion:schema:fusion.record/v1#/$defs/plan_step" }
+            },
+            criteria: {
+              type: "array",
+              description: "Criterion re-evaluation (Prior's FJ02 response 18): read on a plan record only, and refused on any other kind. Each entry is an update keyed by the id of a criterion the stored record already has; it never adds, removes or reorders an entry, and an entry left out keeps its value and position. to may equal a live plan's current state when an entry changes a value.",
+              items: { $ref: "urn:fusion:schema:fusion.record/v1#/$defs/plan_criterion" }
+            }
           }
         }
       }
@@ -12209,29 +12344,13 @@ var record_schema_default = {
           type: "array",
           description: "Stable step anchors replacing the [OPEN] [IN PROGRESS] [DONE] marks; the step texts stay in the narrative.",
           uniqueItems: true,
-          items: {
-            type: "object",
-            additionalProperties: false,
-            required: ["id", "state"],
-            properties: {
-              id: { type: "string", minLength: 1 },
-              state: { type: "string", enum: ["open", "in_progress", "done"] }
-            }
-          }
+          items: { $ref: "#/$defs/plan_step" }
         },
         criteria: {
           type: "array",
           description: "Acceptance criteria anchors; met is null until somebody evaluated the criterion.",
           uniqueItems: true,
-          items: {
-            type: "object",
-            additionalProperties: false,
-            required: ["id", "met"],
-            properties: {
-              id: { type: "string", minLength: 1 },
-              met: { type: ["boolean", "null"] }
-            }
-          }
+          items: { $ref: "#/$defs/plan_criterion" }
         },
         acceptance: {
           description: "The package that adopted this plan and the exact plan revision it adopted; null while unadopted.",
@@ -12248,6 +12367,26 @@ var record_schema_default = {
             }
           ]
         }
+      }
+    },
+    plan_step: {
+      type: "object",
+      description: "One step anchor of a plan. One definition, referenced by plan_control.steps and by the transition payload of fusion.protocol/v1.",
+      additionalProperties: false,
+      required: ["id", "state"],
+      properties: {
+        id: { type: "string", minLength: 1 },
+        state: { type: "string", enum: ["open", "in_progress", "done"] }
+      }
+    },
+    plan_criterion: {
+      type: "object",
+      description: "One acceptance criterion anchor of a plan. One definition, referenced by plan_control.criteria and by the transition payload of fusion.protocol/v1.",
+      additionalProperties: false,
+      required: ["id", "met"],
+      properties: {
+        id: { type: "string", minLength: 1 },
+        met: { type: ["boolean", "null"] }
       }
     },
     discussion_control: {

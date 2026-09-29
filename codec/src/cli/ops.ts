@@ -18,7 +18,10 @@
 //               narrative when the request carries its body, in one intent
 //   transition  a package or an issue, plan, discussion or decision record:
 //               `allowed()` over the tables, as a plan function the kernel
-//               runs under the caller's expected revision
+//               runs under the caller's expected revision; on a live plan
+//               also plan progress, `payload.steps` and `payload.criteria`
+//               applied as updates keyed by id, with or without a state
+//               change (Prior's FJ02 response 18)
 //   claim       `transition` into the state the table's `claim` edges enter,
 //   release     and out along its `release` edges: the transition plan
 //               function with defaults and clearer refusals, never a second
@@ -77,7 +80,7 @@ import {
   type ReadContext,
   type ReadView,
 } from "../kernel.js";
-import { allowed, dependencySatisfied, stateRules, transitions, type Outcome, type TransitionPayload as RulePayload } from "../transitions.js";
+import { allowed, dependencySatisfied, stateRules, stepAllowed, transitions, type Outcome, type TransitionPayload as RulePayload } from "../transitions.js";
 import {
   EVIDENCE_SUFFIX,
   KINDS,
@@ -173,6 +176,10 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
     case "validate":
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
     case "create":
+      // The protocol admits `kind: evidence` (its own branch, Prior's request
+      // 19); until its plan function lands (FJ02b step 3) it is refused
+      // typed, since `createPlan` reads a narrative an evidence create lacks.
+      if ((req as { kind: unknown }).kind === "evidence") return fail("operation-unknown", "not-implemented", "create of kind evidence is specified (Prior's FJ02 response 19) and lands in FJ02b step 3");
       return mutate(wb, req, createPlan(req), kernel);
     case "transition":
       return mutate(wb, req, transitionPlan(req), kernel);
@@ -337,6 +344,41 @@ function validateOp(wb: Workbench, req: ValidateRequest, view: ReadView): Respon
   const paths = req.record !== undefined ? [req.record.path] : controlFiles(wb, wb.root);
   const findings = paths.flatMap((p) => [...blockedFindingOf(wb, p, view), ...findingsOf(wb, p)]);
   return { ok: true, result: { workbench: wb.root, state: wb.state, checked: paths.length, valid: findings.length === 0, findings } };
+}
+
+// --- a plan's steps and criteria, keyed by id ------------------------------------
+//
+// A plan's `steps` and `criteria` are anchors keyed by a stable `id`; the
+// record schema's `uniqueItems` refuses two identical entries but not two
+// entries sharing an id. Plan progress updates an entry by its id, which is
+// only well-defined over unique ids, so one check refuses a repeat wherever
+// such an array enters: a new plan's arrays at `create`, and at `transition`
+// the stored arrays and the payload's (Prior's FJ02 response 18).
+
+/** The two progress arrays of a plan, the noun their refusals name, and the field an entry's update writes. */
+const PROGRESS: ReadonlyArray<{ field: "steps" | "criteria"; noun: string; value: "state" | "met" }> = [
+  { field: "steps", noun: "step", value: "state" },
+  { field: "criteria", noun: "criterion", value: "met" },
+];
+
+/** The ids `entries` carries more than once, in first-seen order; an entry without a string id is the schema's to judge. */
+function repeatedIds(entries: unknown): string[] {
+  if (!Array.isArray(entries)) return [];
+  const seen = new Set<string>();
+  const twice = new Set<string>();
+  for (const e of entries) {
+    if (!isObject(e) || typeof e.id !== "string") continue;
+    if (seen.has(e.id)) twice.add(e.id);
+    seen.add(e.id);
+  }
+  return [...twice];
+}
+
+/** `schema-invalid/duplicate-<noun>-id` when `entries` repeats an id; `where` says whose array it is. */
+function uniqueIds(noun: string, field: string, entries: unknown, where: string): Result<void> {
+  const twice = repeatedIds(entries);
+  if (twice.length === 0) return { ok: true, value: undefined };
+  return refusal("schema-invalid", `duplicate-${noun}-id`, `${where} ${field}: the id ${twice.join(", ")} appears more than once; a ${noun} is updated by its id, which must name one entry`);
 }
 
 // --- create -----------------------------------------------------------------------
@@ -510,6 +552,12 @@ function newRecord(ctx: PlanContext, req: CreateRequest): Result<{ next: Record<
     const sets = off.map((k) => `${k} ${k in payload ? JSON.stringify(payload[k]) : "absent"}`).join(", ");
     return refusal("schema-invalid", "not-initial-state", `a new ${req.kind} record starts at ${JSON.stringify(fixed)}; the payload has ${sets}`);
   }
+  if (req.kind === "plan") {
+    for (const { field, noun } of PROGRESS) {
+      const unique = uniqueIds(noun, field, payload[field], "the new plan's");
+      if (!unique.ok) return unique;
+    }
+  }
   const next = { schema: schemaField(RECORD_SCHEMA_ID), ...common, kind: req.kind, references: [], control: { ...payload } };
   return { ok: true, value: { next, schemaId: RECORD_SCHEMA_ID } };
 }
@@ -608,6 +656,15 @@ function transitionPlan(req: TransitionRequest, precheck?: (pair: Pair) => Resul
     }
 
     const payload = req.payload ?? {};
+    // Plan progress, check 1: `steps` and `criteria` write data, unlike the
+    // rule-only fields a kind that has no rule about them ignores, so on
+    // another kind they are refused rather than dropped (settled choice 4).
+    if (pair.kind !== "plan") {
+      const carried = PROGRESS.filter(({ field }) => payload[field] !== undefined).map(({ field }) => field);
+      if (carried.length > 0) {
+        return refusal("schema-invalid", "payload-field-not-admitted", `${req.record.path} is a ${pair.kind} record; ${carried.join(" and ")} ${carried.length > 1 ? "are" : "is"} plan progress, read on a plan record only`);
+      }
+    }
     const moved = pair.kind === "package" ? movePackage(pair, req.to, payload) : moveRecord(ctx, pair, req.to, payload);
     if (!moved.ok) return moved;
     const { from, next, schemaId } = moved.value;
@@ -677,6 +734,10 @@ function moveRecord(ctx: PlanContext, pair: Pair, to: string, payload: Transitio
     fields = { disposition };
   } else if (kind === "decision") {
     for (const f of DECISION_FIELDS) fields[f] = f in payload ? (payload[f] ?? null) : (control[f] ?? null);
+  } else if (kind === "plan") {
+    const progressed = planProgress(control, from, to, payload);
+    if (!progressed.ok) return progressed;
+    return { ok: true, value: { from, next: { ...pair.control, control: { ...control, state: to, ...progressed.value } }, schemaId: RECORD_SCHEMA_ID } };
   }
   const rule = allowed(kind, from, to, fields as RulePayload);
   if (!rule.ok) return refused(rule);
@@ -691,6 +752,85 @@ function moveRecord(ctx: PlanContext, pair: Pair, to: string, payload: Transitio
     }
   }
   return { ok: true, value: { from, next: { ...pair.control, control: { ...control, state: to, ...fields } }, schemaId: RECORD_SCHEMA_ID } };
+}
+
+type ProgressEntry = Record<string, unknown> & { id: string };
+
+/**
+ * A plan's transition, checks 2 to 7 of plan progress (Prior's FJ02 response
+ * 18; check 1, the two fields on another kind, is `transitionPlan`'s): the
+ * control fields the move writes besides `state`, which are the progress
+ * arrays the payload carries and nothing else. `acceptance` and the record's
+ * `references` are never written here, so an adoption and its bindings stay
+ * as they are.
+ *
+ * `to` equal to the stored state is admitted only when the payload carries
+ * progress into a live plan and changes a value: the exception is for
+ * progress, never a general self-transition, and a terminal plan is history.
+ * Every other `to` is the table's edge, exactly as a move without progress.
+ */
+function planProgress(control: Record<string, unknown>, from: string, to: string, payload: TransitionPayload): Result<Record<string, unknown>> {
+  const carried = PROGRESS.filter(({ field }) => payload[field] !== undefined);
+
+  // 2. The state.
+  if (to !== from || carried.length === 0) {
+    const rule = allowed("plan", from, to);
+    if (!rule.ok) return refused(rule);
+  } else if (isTerminal("plan", from)) {
+    return refused({ class: "conflict", reason: `plan: ${from} is terminal (${transitions().kinds["plan"]?.reopen ?? "no edge leaves it"}); plan progress is never written into it` });
+  }
+
+  // 3. Every id unique on both sides, and every id the payload names one the stored plan has.
+  const arrays: Array<{ field: string; value: string; stored: ProgressEntry[]; updates: ProgressEntry[] }> = [];
+  for (const { field, noun, value } of carried) {
+    const stored = (Array.isArray(control[field]) ? control[field] : []) as ProgressEntry[];
+    const updates = payload[field] as ProgressEntry[];
+    for (const [entries, where] of [
+      [stored, "the stored plan's"],
+      [updates, "the payload's"],
+    ] as const) {
+      const unique = uniqueIds(noun, field, entries, where);
+      if (!unique.ok) return unique;
+    }
+    const known = new Set(stored.map((e) => e.id));
+    const unknown = updates.filter((u) => !known.has(u.id)).map((u) => u.id);
+    if (unknown.length > 0) {
+      return refusal("unresolved-reference", `unknown-${noun}-id`, `the payload's ${field} names ${unknown.join(", ")}, which the stored plan lacks; plan progress updates the ${field} it has and never adds one`);
+    }
+    arrays.push({ field, value, stored, updates });
+  }
+
+  // 4. Each step whose state changes moves along the step table; an entry equal to the stored one is not checked.
+  // 5. A criterion takes any `met` the schema admits: re-evaluation has no direction.
+  const byId = (entries: ProgressEntry[]): Map<string, ProgressEntry> => new Map(entries.map((e) => [e.id, e]));
+  let changed = false;
+  for (const { field, value, stored, updates } of arrays) {
+    const was = byId(stored);
+    for (const u of updates) {
+      const before = (was.get(u.id) as ProgressEntry)[value];
+      if (before === u[value]) continue;
+      changed = true;
+      if (field !== "steps") continue;
+      const rule = stepAllowed(String(before), String(u[value]));
+      if (!rule.ok) return { ok: false, error: { class: rule.class, reason: "transition-refused", detail: `step ${u.id}: ${rule.reason}` } };
+    }
+  }
+
+  // 6. A move to the stored state that changes nothing is no move.
+  if (to === from && !changed) {
+    return refused({ class: "conflict", reason: `plan: to is the stored state ${from} and the payload changes no step or criterion; staying in a state is admitted for plan progress only` });
+  }
+
+  // 7. The stored arrays with the named entries' values replaced in place; order and every other entry untouched.
+  const fields: Record<string, unknown> = {};
+  for (const { field, value, stored, updates } of arrays) {
+    const next = byId(updates);
+    fields[field] = stored.map((e) => {
+      const u = next.get(e.id);
+      return u === undefined ? e : { ...e, [value]: u[value] };
+    });
+  }
+  return { ok: true, value: fields };
 }
 
 /**

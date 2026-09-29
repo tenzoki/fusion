@@ -22,7 +22,7 @@ const FIXTURES_DIR = fileURLToPath(new URL("../../fixtures/", import.meta.url));
 const SCHEMA_FILE = fileURLToPath(new URL("../../schemas/protocol.schema.json", import.meta.url));
 
 interface Branch {
-  properties: { op: { const: string } };
+  properties: { op: { const: string }; kind?: { const?: string; enum?: string[] } };
   additionalProperties: boolean;
   required: string[];
 }
@@ -49,7 +49,24 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     const s = schema();
     expect(OPERATIONS).toHaveLength(14);
     expect(s.properties.op.enum).toEqual([...OPERATIONS]);
-    expect(s.oneOf.map((b) => b.properties.op.const)).toEqual([...OPERATIONS]);
+    // One branch per operation in the table's order, except create, which
+    // carries two adjacent ones: the record create and the evidence create
+    // (FJ02b settled choice 1, Prior's request 19).
+    const expected = OPERATIONS.flatMap((op) => (op === "create" ? [op, op] : [op]));
+    expect(s.oneOf.map((b) => b.properties.op.const)).toEqual(expected);
+  });
+
+  it("the two create branches are disjoint on kind: the evidence branch's is const evidence, the record branch's enum lacks it", () => {
+    const creates = schema().oneOf.filter((b) => b.properties.op.const === "create");
+    expect(creates).toHaveLength(2);
+    const [record, evidence] = creates as [Branch, Branch];
+    expect(evidence.properties.kind?.const).toBe("evidence");
+    expect(evidence.properties.kind?.enum).toBeUndefined();
+    expect(evidence.required).toContain("kind");
+    expect(record.properties.kind?.const).toBeUndefined();
+    expect(record.properties.kind?.enum).toEqual(["package", "issue", "plan", "discussion", "decision"]);
+    expect(record.properties.kind?.enum).not.toContain("evidence");
+    expect(record.required).toContain("kind");
   });
 
   it("every branch is closed: additionalProperties false, op required", () => {

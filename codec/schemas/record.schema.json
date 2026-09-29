@@ -271,29 +271,13 @@
           "type": "array",
           "description": "Stable step anchors replacing the [OPEN] [IN PROGRESS] [DONE] marks; the step texts stay in the narrative.",
           "uniqueItems": true,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id", "state"],
-            "properties": {
-              "id": { "type": "string", "minLength": 1 },
-              "state": { "type": "string", "enum": ["open", "in_progress", "done"] }
-            }
-          }
+          "items": { "$ref": "#/$defs/plan_step" }
         },
         "criteria": {
           "type": "array",
           "description": "Acceptance criteria anchors; met is null until somebody evaluated the criterion.",
           "uniqueItems": true,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id", "met"],
-            "properties": {
-              "id": { "type": "string", "minLength": 1 },
-              "met": { "type": ["boolean", "null"] }
-            }
-          }
+          "items": { "$ref": "#/$defs/plan_criterion" }
         },
         "acceptance": {
           "description": "The package that adopted this plan and the exact plan revision it adopted; null while unadopted.",
@@ -310,6 +294,26 @@
             }
           ]
         }
+      }
+    },
+    "plan_step": {
+      "type": "object",
+      "description": "One step anchor of a plan. One definition, referenced by plan_control.steps and by the transition payload of fusion.protocol/v1.",
+      "additionalProperties": false,
+      "required": ["id", "state"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "state": { "type": "string", "enum": ["open", "in_progress", "done"] }
+      }
+    },
+    "plan_criterion": {
+      "type": "object",
+      "description": "One acceptance criterion anchor of a plan. One definition, referenced by plan_control.criteria and by the transition payload of fusion.protocol/v1.",
+      "additionalProperties": false,
+      "required": ["id", "met"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "met": { "type": ["boolean", "null"] }
       }
     },
     "discussion_control": {

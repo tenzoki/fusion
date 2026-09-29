@@ -1345,6 +1345,24 @@
     "note": "The record selector admits an evidence record's file, <name>.evidence.json, beside package.json and <name>.record.json."
   },
   {
+    "path": "valid/protocol/transition-plan-progress.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "transition of a plan carrying payload.steps and payload.criteria, updates keyed by id in the shapes record.schema.json holds at $defs/plan_step and $defs/plan_criterion (Prior's FJ02 response 18)."
+  },
+  {
+    "path": "valid/protocol/create-evidence.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "create of kind evidence, its own branch: scope names the reviews store and payload is the complete fusion.evidence/v1 record, here a first record with predecessor null (Prior's FJ02 response 19)."
+  },
+  {
+    "path": "valid/protocol/create-evidence-correction.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "create of kind evidence for a correction: the payload's predecessor is a revision-pinned record_ref over the same report."
+  },
+  {
     "path": "invalid/protocol/inspect-unknown-key.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "invalid",
@@ -1476,5 +1494,40 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "A deferral names its target and who ruled; one without ruled_by is refused."
+  },
+  {
+    "path": "invalid/protocol/transition-plan-step-state-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A step's state in the payload is open, in_progress or done, as $defs/plan_step holds it; blocked is refused."
+  },
+  {
+    "path": "invalid/protocol/transition-plan-criterion-met-string.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A criterion's met in the payload is true, false or null, as $defs/plan_criterion holds it; a string is refused."
+  },
+  {
+    "path": "invalid/protocol/create-evidence-without-scope.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "create of kind evidence requires scope."
+  },
+  {
+    "path": "invalid/protocol/create-evidence-payload-not-evidence.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The payload of create of kind evidence is a complete fusion.evidence/v1 record; one without report is refused."
+  },
+  {
+    "path": "invalid/protocol/create-evidence-with-narrative.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "create of kind evidence carrying narrative matches neither create branch: the evidence branch does not admit narrative and the record branch's kind has no evidence."
   }
 ]

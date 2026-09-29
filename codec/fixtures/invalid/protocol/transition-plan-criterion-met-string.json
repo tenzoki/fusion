@@ -1,0 +1,33 @@
+{
+  "op": "transition",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "0f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a",
+  "record": {
+    "path": "work-packages/260928-1200-parser-fix/plans/260928-1300-parser-fix-plan.record.json"
+  },
+  "expected_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actor": {
+    "actor": "code-implementer",
+    "person": null
+  },
+  "to": "in_progress",
+  "reason": "Step s1 done, step s2 started, criterion c1 met.",
+  "payload": {
+    "steps": [
+      {
+        "id": "s1",
+        "state": "done"
+      },
+      {
+        "id": "s2",
+        "state": "in_progress"
+      }
+    ],
+    "criteria": [
+      {
+        "id": "c1",
+        "met": "yes"
+      }
+    ]
+  }
+}

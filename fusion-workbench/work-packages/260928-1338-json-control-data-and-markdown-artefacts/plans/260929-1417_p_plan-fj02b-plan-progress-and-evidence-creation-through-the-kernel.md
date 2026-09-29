@@ -98,7 +98,7 @@ Coherence check: six nodes, seven edges, four layers in reading order, no cycle,
 
 ## Implementation Steps
 
-1. [IN PROGRESS] **The protocol and record schemas widened, with the fixtures that pin each widening**
+1. [DONE] **The protocol and record schemas widened, with the fixtures that pin each widening**
    - Executor: `data-implementer`
    - Files: `codec/schemas/protocol.schema.json`, `codec/schemas/record.schema.json`, new fixtures under `codec/fixtures/valid/protocol/` and `codec/fixtures/invalid/protocol/`, `codec/fixtures/manifest.json`
    - Changes, `record.schema.json`: `plan_control.properties.steps.items` moves to `$defs/plan_step` and `criteria.items` to `$defs/plan_criterion`, each referenced from where it stood, as FJ02 step 1 hoisted `$defs/deferral`; no property order changes, so every plan fixture and every plan record serialises to the same bytes.
@@ -107,7 +107,8 @@ Coherence check: six nodes, seven edges, four layers in reading order, no cycle,
    - Acceptance: `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` green with `fixtures: 226 manifest entries` printed; `store.test.ts`'s serialisation cases over every valid fixture pass byte for byte; `round-trip-cli.test.ts`, `round-trip-cli-fj02.test.ts` and `prior-handback.test.ts` green without regeneration; `git diff --stat -- codec/fixtures/valid codec/fixtures/protocol-session codec/fixtures/protocol-session-fj02 codec/fixtures/workbench codec/fixtures/prior-handback` shows no changed file; `npm run build` run and the rebuilt bundle part of the commit, which is step 2's (committed together, see Approach). No expected red.
    - Dependencies: none.
 
-2. **Plan progress through `transition`, and unique step and criterion ids at `create`**
+   - Done 2026-09-29: `plan_step` and `plan_criterion` hoisted into `$defs` with every existing fixture's bytes unchanged; the transition payload admits `steps` and `criteria`; evidence creation is its own `oneOf` branch of `create`; eight fixtures, manifest 226 entries (59 valid, 167 invalid); bundle 514 900 bytes, sha256:b1240612a53235f607bdd82674e4466632d2e180a4719156f24b88c2bf1078cb. One red the plan did not foresee: `protocol.test.ts` line 52 asserts one `oneOf` branch per operation, and `create` now has two; step 2 changes that assertion, and the two steps are committed together.
+2. [DONE] **Plan progress through `transition`, and unique step and criterion ids at `create`**
    - Executor: `code-implementer`
    - Files: `codec/src/cli/ops.ts`, `codec/src/cli/protocol.ts`, `codec/src/__tests__/ops.test.ts`
    - Changes, `protocol.ts`: `TransitionPayload` gains `steps?: Array<{id: string; state: "open" | "in_progress" | "done"}>` and `criteria?: Array<{id: string; met: boolean | null}>`.
@@ -117,7 +118,9 @@ Coherence check: six nodes, seven edges, four layers in reading order, no cycle,
    - Source: Prior `docs/design/fusion-fj02-prior-response.md` `## 18. Plan steps and criteria: use transition`.
    - Dependencies: 1.
 
-3. **`create(kind: evidence)`, and the seed helper on the real route**
+   - Done 2026-09-29: `planProgress` in `codec/src/cli/ops.ts` runs checks 2 to 7, `transitionPlan` check 1; `uniqueIds` is the one helper for the stored arrays, the payload arrays and `create`. `codec/src/__tests__/ops.test.ts` gains `describe("transition: plan progress")`, 16 cases, no existing case edited; `codec/src/__tests__/protocol.test.ts` asserts `create`'s two adjacent branches, disjoint on `kind` (step 1's red cleared). `CODEC_REQUIRE_GOLDENS=1 npm test` exit 0 (16 files, 980 tests, 226 manifest entries), `npm run typecheck` exit 0; the three recorded sets and the handback unchanged. Bundle 519 932 bytes, sha256:ed46655200617eea5e2fa491b3c8d47a4485b5dc291b465cff451044516488bd. Two things the plan did not name: a stored array's repeated id is checked only when the payload updates that array, so a move without progress lands as before; and `dispatch` refuses `create(kind: evidence)` as `operation-unknown/not-implemented` until step 3, because `createPlan` threw on it (it reads `narrative.path`), not the scope refusal the Risks table assumed. Step 3 replaces that guard with the route.
+
+3. [IN PROGRESS] **`create(kind: evidence)`, and the seed helper on the real route**
    - Executor: `code-implementer`
    - Files: `codec/src/cli/ops.ts`, `codec/src/cli/protocol.ts`, `codec/src/store.ts` (only if a helper the step needs is not yet exported), `codec/src/__tests__/ops.test.ts`, `codec/src/__tests__/helpers/seed.ts`
    - Changes, `protocol.ts`: `CreateEvidenceRequest` (`op: "create"`, `kind: "evidence"`, `operation_id`, `id`, `scope`, `payload`) joins the `Request` union beside `CreateRequest`; the comment names request 19.

@@ -2421,3 +2421,362 @@ describe("reconcile", () => {
     }
   });
 });
+
+// --- plan progress (FJ02b step 2, Prior's FJ02 response 18) -----------------------------
+
+describe("transition: plan progress", () => {
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const OPEN_ID = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
+  const CONTAINER = "work-packages/260928-1200-parser-fix";
+  const PLAN_ID = "f1f1f1f1-0000-4000-8000-000000000001";
+  const STEM = "260929-1500-progress-plan";
+  const PLAN = `${CONTAINER}/plans/${STEM}.record.json`;
+  const NARRATIVE = `${CONTAINER}/plans/${STEM}.md`;
+  const STEPS = [
+    { id: "s1", state: "open" },
+    { id: "s2", state: "open" },
+    { id: "s3", state: "open" },
+  ] as const;
+  const CRITERIA = [
+    { id: "c1", met: null },
+    { id: "c2", met: null },
+  ] as const;
+  const STALE = "sha256:" + "0".repeat(64);
+  type Progress = NonNullable<TransitionRequest["payload"]>;
+
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+  const detailOf = (r: Response): string => (r.ok ? "" : (r.error.detail ?? ""));
+  const parsed = (path: string): Record<string, unknown> => {
+    const p = strictParse(bytesOf(path));
+    if (!p.ok) throw new Error(p.detail);
+    return p.value as Record<string, unknown>;
+  };
+  const controlOf = (path = PLAN): Record<string, unknown> => parsed(path).control as Record<string, unknown>;
+  const answered = (id: string): boolean => existsSync(join(root, ".json-state", "ops", `${id}.json`));
+  const journal = (): string[] => (existsSync(join(root, ".json-state", "journal")) ? readdirSync(join(root, ".json-state", "journal")) : []);
+  /** A refusal wrote nothing: every named file at its bytes before, no answer, no pending intent. */
+  const unchanged = (before: Record<string, Buffer>, id: string, label: string): void => {
+    for (const [path, bytes] of Object.entries(before)) expect(bytesOf(path).equals(bytes), `${label}: ${path}`).toBe(true);
+    expect(answered(id), `${label}: answer`).toBe(false);
+    expect(journal(), `${label}: journal`).toEqual([]);
+  };
+  const snapshot = (...paths: string[]): Record<string, Buffer> => Object.fromEntries(paths.map((p) => [p, bytesOf(p)]));
+
+  const createPlanRequest = (over: Partial<CreateRequest> = {}): CreateRequest => ({
+    op: "create",
+    workbench: root,
+    operation_id: randomUUID(),
+    id: PLAN_ID,
+    kind: "plan",
+    filed_by: ACTOR,
+    origin: { kind: "package", ref: { workbench_id: WB_ID, record_id: OPEN_ID } },
+    scope: { container: CONTAINER, store: "plans" },
+    narrative: { path: NARRATIVE, content: `# ${STEM}\n\n1. First.\n2. Second.\n3. Third.\n` },
+    payload: { state: "open", steps: [...STEPS], criteria: [...CRITERIA], acceptance: null },
+    ...over,
+  });
+  /** The plan every case starts from, created through the kernel: open, steps s1 s2 s3 open, criteria c1 c2 null. */
+  const newPlan = async (): Promise<void> => {
+    okResult(await dispatch(createPlanRequest()));
+  };
+  /** A transition of the plan, or of `over.record`, at its stored revision unless `over` names one. */
+  const progress = (to: string, payload: Progress, over: Partial<TransitionRequest> = {}): TransitionRequest => {
+    const path = over.record?.path ?? PLAN;
+    return transitionRequest({ operation_id: randomUUID(), record: { path }, expected_revision: over.expected_revision ?? revision(path), to, reason: "plan progress", payload, ...over });
+  };
+  /** Dispatches `req`, asserts FJ02's answer shape and a valid, deterministic record; the stored control after. */
+  const lands = async (req: TransitionRequest, label = req.to): Promise<Record<string, unknown>> => {
+    const from = controlOf(req.record.path).state;
+    const before = revision(req.record.path);
+    const r = await dispatch(req);
+    const result = okResult(r);
+    expect(Object.keys(result), label).toEqual(["operation_id", "path", "from", "to", "revision", "previous_revision"]);
+    expect(result, label).toEqual({ operation_id: req.operation_id, path: req.record.path, from, to: req.to, revision: revision(req.record.path), previous_revision: before });
+    if (r.ok) expect(r.revisions, label).toEqual({ [req.record.path]: revision(req.record.path) });
+    expect(bytesOf(req.record.path).toString("utf-8"), `${label}: deterministic bytes`).toBe(serialise(parsed(req.record.path)));
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: req.record.path } })), label).toMatchObject({ valid: true, findings: [] });
+    return controlOf(req.record.path);
+  };
+  /** Refused with `expected`, nothing written. */
+  const refusedWith = async (req: TransitionRequest, expected: { class: string; reason: string }, label: string): Promise<Response> => {
+    const before = snapshot(req.record.path);
+    const r = await dispatch(req);
+    expect(errorOf(r), label).toEqual(expected);
+    unchanged(before, req.operation_id, label);
+    return r;
+  };
+
+  // --- landing ---
+
+  it("a state change carrying steps and criteria lands both; the rest of the record is untouched", async () => {
+    await newPlan();
+    const before = parsed(PLAN);
+    const control = await lands(progress("in_progress", { steps: [{ id: "s1", state: "in_progress" }], criteria: [{ id: "c2", met: true }] }));
+    expect(control).toEqual({
+      state: "in_progress",
+      steps: [{ id: "s1", state: "in_progress" }, STEPS[1], STEPS[2]],
+      criteria: [CRITERIA[0], { id: "c2", met: true }],
+      acceptance: null,
+    });
+    const after = parsed(PLAN);
+    for (const key of Object.keys(before).filter((k) => k !== "control")) expect(after[key], key).toEqual(before[key]);
+    expect(Object.keys(after)).toEqual(Object.keys(before));
+  });
+
+  it("a progress-only update lands with to equal to open and with to equal to in_progress", async () => {
+    await newPlan();
+    let control = await lands(progress("open", { steps: [{ id: "s1", state: "in_progress" }] }), "open -> open");
+    expect(control.state).toBe("open");
+    expect(control.steps).toEqual([{ id: "s1", state: "in_progress" }, STEPS[1], STEPS[2]]);
+    await lands(progress("in_progress", {}), "open -> in_progress, no progress");
+    control = await lands(progress("in_progress", { steps: [{ id: "s1", state: "done" }, { id: "s2", state: "in_progress" }], criteria: [{ id: "c1", met: true }] }), "in_progress -> in_progress");
+    expect(control).toMatchObject({ state: "in_progress", steps: [{ id: "s1", state: "done" }, { id: "s2", state: "in_progress" }, STEPS[2]], criteria: [{ id: "c1", met: true }, CRITERIA[1]] });
+  });
+
+  it("omitted entries keep their value and their position, compared field by field with the stored record", async () => {
+    await newPlan();
+    await lands(progress("in_progress", { steps: [{ id: "s1", state: "done" }, { id: "s3", state: "in_progress" }], criteria: [{ id: "c2", met: false }] }));
+    const before = controlOf();
+    // The update names the entries in the reverse of their stored order: the stored order stays.
+    const control = await lands(progress("in_progress", { steps: [{ id: "s3", state: "done" }], criteria: [{ id: "c1", met: true }] }));
+    const steps = control.steps as Array<Record<string, unknown>>;
+    const criteria = control.criteria as Array<Record<string, unknown>>;
+    const stepsBefore = before.steps as Array<Record<string, unknown>>;
+    const criteriaBefore = before.criteria as Array<Record<string, unknown>>;
+    expect(steps.map((s) => s.id)).toEqual(["s1", "s2", "s3"]);
+    expect(criteria.map((c) => c.id)).toEqual(["c1", "c2"]);
+    for (const i of [0, 1]) for (const key of ["id", "state"]) expect(steps[i]?.[key], `steps[${i}].${key}`).toBe(stepsBefore[i]?.[key]);
+    expect(steps[2]).toEqual({ id: "s3", state: "done" });
+    for (const key of ["id", "met"]) expect(criteria[1]?.[key], `criteria[1].${key}`).toBe(criteriaBefore[1]?.[key]);
+    expect(criteria[0]).toEqual({ id: "c1", met: true });
+    expect(control.acceptance).toBe(before.acceptance);
+  });
+
+  it("an included entry equal to the stored one is admitted, beside one that changes, and changes nothing itself", async () => {
+    await newPlan();
+    const control = await lands(progress("open", { steps: [STEPS[0], { id: "s2", state: "done" }], criteria: [CRITERIA[0]] }));
+    expect(control.steps).toEqual([STEPS[0], { id: "s2", state: "done" }, STEPS[2]]);
+    expect(control.criteria).toEqual([...CRITERIA]);
+  });
+
+  it("a criterion moves null -> true -> false -> null: re-evaluation has no direction", async () => {
+    await newPlan();
+    for (const met of [true, false, null]) {
+      const control = await lands(progress("open", { criteria: [{ id: "c1", met }] }), `c1 to ${String(met)}`);
+      expect(control.criteria).toEqual([{ id: "c1", met }, CRITERIA[1]]);
+    }
+  });
+
+  // --- replay and CAS ---
+
+  it("an identical replay returns the stored answer, also after the plan moved on; a divergent one is operation-id-reused", async () => {
+    await newPlan();
+    const req = progress("open", { steps: [{ id: "s1", state: "in_progress" }] });
+    const first = await dispatch(req);
+    okResult(first);
+    const bytes = bytesOf(PLAN);
+    expect(await dispatch(req)).toEqual(first);
+    expect(bytesOf(PLAN).equals(bytes)).toBe(true);
+    await lands(progress("in_progress", { steps: [{ id: "s1", state: "done" }] }));
+    const moved = bytesOf(PLAN);
+    expect(await dispatch(req), "the answer is the stored one").toEqual(first);
+    expect(bytesOf(PLAN).equals(moved), "and the replay wrote nothing").toBe(true);
+    expect(errorOf(await dispatch({ ...req, payload: { steps: [{ id: "s2", state: "in_progress" }] } }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+    expect(errorOf(await dispatch({ ...req, payload: { steps: [{ id: "s1", state: "in_progress" }], criteria: [{ id: "c1", met: true }] } }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+    expect(bytesOf(PLAN).equals(moved)).toBe(true);
+  });
+
+  it("a stale expected_revision is conflict/revision-mismatch, nothing written", async () => {
+    await newPlan();
+    const r = await refusedWith(progress("open", { steps: [{ id: "s1", state: "done" }] }, { expected_revision: STALE }), { class: "conflict", reason: "revision-mismatch" }, "stale");
+    expect(detailOf(r)).toBe(`stored ${revision(PLAN)} expected ${STALE}`);
+  });
+
+  // --- forbidden step edges ---
+
+  it("done -> open and in_progress -> open are conflict/transition-refused naming the step, nothing written", async () => {
+    await newPlan();
+    await lands(progress("open", { steps: [{ id: "s1", state: "done" }, { id: "s2", state: "in_progress" }] }));
+    for (const [id, from] of [
+      ["s1", "done"],
+      ["s2", "in_progress"],
+    ] as const) {
+      const r = await refusedWith(progress("open", { steps: [{ id, state: "open" }] }), { class: "conflict", reason: "transition-refused" }, `${id} ${from} -> open`);
+      expect(detailOf(r)).toContain(`step ${id}`);
+      expect(detailOf(r)).toContain(`${from} -> open`);
+    }
+    // done -> in_progress is no step edge either, and a state change does not carry a forbidden step through.
+    const r = await refusedWith(progress("in_progress", { steps: [{ id: "s1", state: "in_progress" }] }), { class: "conflict", reason: "transition-refused" }, "s1 done -> in_progress with a state change");
+    expect(detailOf(r)).toContain("step s1");
+  });
+
+  // --- duplicate and unknown ids ---
+
+  it("a payload naming an id twice is duplicate-step-id or duplicate-criterion-id; an id the plan lacks is unknown-step-id or unknown-criterion-id; nothing written", async () => {
+    await newPlan();
+    const cases: Array<[string, Progress, { class: string; reason: string }]> = [
+      ["a step named twice", { steps: [{ id: "s2", state: "in_progress" }, { id: "s2", state: "done" }] }, { class: "schema-invalid", reason: "duplicate-step-id" }],
+      ["a step named twice with the same value", { steps: [{ id: "s2", state: "in_progress" }, { id: "s2", state: "in_progress" }] }, { class: "schema-invalid", reason: "duplicate-step-id" }],
+      ["a criterion named twice", { criteria: [{ id: "c1", met: true }, { id: "c1", met: false }] }, { class: "schema-invalid", reason: "duplicate-criterion-id" }],
+      ["a step the plan lacks", { steps: [{ id: "s9", state: "in_progress" }] }, { class: "unresolved-reference", reason: "unknown-step-id" }],
+      ["a criterion the plan lacks", { criteria: [{ id: "c9", met: true }] }, { class: "unresolved-reference", reason: "unknown-criterion-id" }],
+      ["a known step beside an unknown one", { steps: [{ id: "s1", state: "done" }, { id: "s9", state: "done" }] }, { class: "unresolved-reference", reason: "unknown-step-id" }],
+    ];
+    for (const [label, payload, expected] of cases) {
+      for (const to of ["open", "in_progress"]) {
+        const r = await refusedWith(progress(to, payload), expected, `${label}, to ${to}`);
+        if (expected.reason.startsWith("unknown")) expect(detailOf(r), label).toMatch(/[sc]9/);
+      }
+    }
+  });
+
+  it("a stored plan whose steps or criteria repeat an id (written by hand) refuses progress on that array; a move without progress lands as before", async () => {
+    await newPlan();
+    const hand = parsed(PLAN);
+    const control = hand.control as Record<string, unknown>;
+    // Two entries sharing an id but not identical: the record schema's uniqueItems admits them.
+    writeFileSync(join(root, PLAN), serialise({ ...hand, control: { ...control, steps: [STEPS[0], { id: "s1", state: "done" }, STEPS[2]], criteria: [CRITERIA[0], { id: "c1", met: true }] } }));
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: PLAN } }))).toMatchObject({ valid: true });
+    const r = await refusedWith(progress("open", { steps: [{ id: "s3", state: "done" }] }), { class: "schema-invalid", reason: "duplicate-step-id" }, "stored steps");
+    expect(detailOf(r)).toContain("stored");
+    await refusedWith(progress("in_progress", { criteria: [{ id: "c1", met: false }] }), { class: "schema-invalid", reason: "duplicate-criterion-id" }, "stored criteria");
+    const moved = await lands(progress("in_progress", {}), "no progress");
+    expect(moved.steps, "a move without progress reads no array").toEqual([STEPS[0], { id: "s1", state: "done" }, STEPS[2]]);
+  });
+
+  it("create refuses a new plan whose steps or criteria repeat an id, after the initial-state check; nothing written", async () => {
+    const cases: Array<[string, Record<string, unknown>, { class: string; reason: string }]> = [
+      ["steps", { state: "open", steps: [STEPS[0], { id: "s1", state: "in_progress" }], criteria: [], acceptance: null }, { class: "schema-invalid", reason: "duplicate-step-id" }],
+      ["criteria", { state: "open", steps: [], criteria: [CRITERIA[0], { id: "c1", met: true }], acceptance: null }, { class: "schema-invalid", reason: "duplicate-criterion-id" }],
+      ["a later state and a repeat", { state: "in_progress", steps: [STEPS[0], { id: "s1", state: "done" }], criteria: [], acceptance: null }, { class: "schema-invalid", reason: "not-initial-state" }],
+    ];
+    for (const [label, payload, expected] of cases) {
+      const req = createPlanRequest({ payload });
+      expect(errorOf(await dispatch(req)), label).toEqual(expected);
+      expect(existsSync(join(root, PLAN)), `${label}: control`).toBe(false);
+      expect(existsSync(join(root, NARRATIVE)), `${label}: narrative`).toBe(false);
+      expect(answered(req.operation_id), `${label}: answer`).toBe(false);
+      expect(journal(), `${label}: journal`).toEqual([]);
+    }
+    await newPlan();
+    expect(controlOf()).toEqual({ state: "open", steps: [...STEPS], criteria: [...CRITERIA], acceptance: null });
+  });
+
+  // --- terminal refusal, and no general self-transition ---
+
+  it("a closed and a deferred plan refuse a progress-only update and a state change carrying progress; nothing written", async () => {
+    for (const terminal of ["closed", "deferred"]) {
+      await newPlan();
+      await lands(progress(terminal, {}), `open -> ${terminal}`);
+      for (const [to, payload] of [
+        [terminal, { steps: [{ id: "s1", state: "done" }] }],
+        [terminal, { criteria: [{ id: "c1", met: true }] }],
+        ["in_progress", { steps: [{ id: "s1", state: "done" }] }],
+      ] as Array<[string, Progress]>) {
+        const r = await refusedWith(progress(to, payload), { class: "conflict", reason: "transition-refused" }, `${terminal} -> ${to}`);
+        expect(detailOf(r)).toContain(`${terminal} is terminal`);
+      }
+      // A fresh copy for the other terminal state: the plan id is taken now.
+      rmSync(root, { recursive: true, force: true });
+      cpSync(FIXTURE, root, { recursive: true });
+    }
+  });
+
+  it("a progress-only update that changes nothing is refused: the exception is for progress, never a general self-transition", async () => {
+    await newPlan();
+    const nothing: Array<[string, Progress]> = [
+      ["no payload", {}],
+      ["empty arrays", { steps: [], criteria: [] }],
+      ["entries equal to the stored ones", { steps: [STEPS[0]], criteria: [CRITERIA[1]] }],
+    ];
+    for (const [label, payload] of nothing) {
+      await refusedWith(progress("open", payload), { class: "conflict", reason: "transition-refused" }, label);
+    }
+  });
+
+  it("steps or criteria on an issue, a decision or a package are schema-invalid/payload-field-not-admitted, nothing written; the same move without them lands", async () => {
+    const decision = createPlanRequest({
+      id: "f2f2f2f2-0000-4000-8000-000000000002",
+      kind: "decision",
+      scope: { container: CONTAINER, store: "decisions" },
+      narrative: { path: `${CONTAINER}/decisions/260929-1500-a-decision.md`, content: "# A decision\n" },
+      payload: { state: "open", answer_ref: null, implementation_ref: null, superseded_by: null, deferral: null },
+    });
+    okResult(await dispatch(decision));
+    const DECISION = `${CONTAINER}/decisions/260929-1500-a-decision.record.json`;
+    const moves: Array<[string, string, Progress, Progress]> = [
+      [ISSUE, "in_progress", {}, { steps: [{ id: "s1", state: "done" }] }],
+      [DECISION, "answered", { answer_ref: "260809-1400-fixture-format-consultation.md" }, { criteria: [{ id: "c1", met: true }] }],
+      [OPEN, "claimed", { claim: CLAIM }, { steps: [{ id: "s1", state: "done" }], criteria: [{ id: "c1", met: true }] }],
+    ];
+    for (const [path, to, base, extra] of moves) {
+      const req = progress(to, { ...base, ...extra }, { record: { path }, expected_revision: revision(path) });
+      const r = await refusedWith(req, { class: "schema-invalid", reason: "payload-field-not-admitted" }, path);
+      expect(detailOf(r)).toContain("plan");
+      okResult(await dispatch(progress(to, base, { record: { path }, expected_revision: revision(path) })));
+    }
+  });
+
+  // --- route equivalence, and the bindings an adopted plan carries ---
+
+  it("the progress-only and the state-changing route refuse a stale revision and a terminal record in the same class", async () => {
+    await newPlan();
+    const routes: Array<[string, string]> = [
+      ["progress-only", "open"],
+      ["state-changing", "in_progress"],
+    ];
+    for (const [label, to] of routes) {
+      await refusedWith(progress(to, { steps: [{ id: "s1", state: "done" }] }, { expected_revision: STALE }), { class: "conflict", reason: "revision-mismatch" }, `${label}, stale`);
+    }
+    await lands(progress("closed", {}));
+    for (const [label, to] of [
+      ["progress-only", "closed"],
+      ["state-changing", "in_progress"],
+    ]) {
+      await refusedWith(progress(to as string, { steps: [{ id: "s1", state: "done" }] }), { class: "conflict", reason: "transition-refused" }, `${label}, terminal`);
+      await refusedWith(progress(to as string, { steps: [{ id: "s1", state: "done" }] }, { expected_revision: STALE }), { class: "conflict", reason: "revision-mismatch" }, `${label}, terminal and stale`);
+    }
+  });
+
+  it("an adopted plan keeps its acceptance, the package's entry and its revision binding; reconcile reports an evidence binding against that plan fresh after progress", async () => {
+    await newPlan();
+    const adopt: AdoptPlanRequest = {
+      op: "adopt-plan",
+      workbench: root,
+      operation_id: randomUUID(),
+      record: { path: OPEN },
+      expected_revision: revision(OPEN),
+      actor: ACTOR,
+      plan: { workbench_id: WB_ID, record_id: PLAN_ID },
+      revision: revision(NARRATIVE),
+    };
+    okResult(await dispatch(adopt));
+    const ev = await seedEvidence(root, { package: OPEN });
+    expect(ev.record.plan_revision, "the evidence was produced against the plan in force").toBe(revision(NARRATIVE));
+    okResult(
+      await dispatch({ op: "attach-evidence", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: ACTOR, evidence: ev.binding } satisfies AttachEvidenceRequest),
+    );
+    const acceptance = controlOf().acceptance;
+    expect(acceptance).toEqual({ ref: { workbench_id: WB_ID, record_id: OPEN_ID }, revision: revision(NARRATIVE) });
+    const references = parsed(PLAN).references;
+    const pkg = snapshot(OPEN, NARRATIVE, ev.path, ev.report);
+
+    await lands(progress("in_progress", { steps: [{ id: "s1", state: "in_progress" }], criteria: [{ id: "c1", met: false }] }));
+    const control = await lands(progress("in_progress", { steps: [{ id: "s1", state: "done" }], criteria: [{ id: "c1", met: true }] }));
+
+    expect(control.acceptance, "acceptance").toEqual(acceptance);
+    expect(parsed(PLAN).references, "references").toEqual(references);
+    for (const [path, bytes] of Object.entries(pkg)) expect(bytesOf(path).equals(bytes), `${path} untouched`).toBe(true);
+    const entry = (parsed(OPEN).active_documents as Array<Record<string, unknown>>).find((d) => d.role === "plan");
+    expect(entry).toEqual({ ref: { workbench_id: WB_ID, record_id: PLAN_ID }, role: "plan", revision: revision(NARRATIVE) });
+
+    // The scratch workbench's done package carries a stale binding of its own; this package's one binding is the question.
+    const report = okResult(await dispatch({ op: "reconcile", workbench: root, scope: CONTAINER })) as { evidence: Array<{ path: string; record_id: string; status: string }>; records: unknown[] };
+    expect(report.evidence).toEqual([expect.objectContaining({ path: OPEN, at: "/evidence/0", record_id: ev.id, revision: ev.revision, status: "fresh" })]);
+    expect(report.records).toEqual([]);
+  });
+});
