@@ -32,3 +32,6 @@ A read through the codec is not a promise of zero writes: when the first listing
 ## Recommendation
 
 Option 1. It states what is the case and draws the one line that can be held mechanically: the programs that run without being asked do not call the codec. Option 2 stays available as a request to Prior if a reader ever appears that must not write.
+
+---
+Answered: Prior `docs/design/fusion-fj03a-prior-plan-response.md` `## C. Explicit recovery policy; automatic hooks do not invoke the codec` at Prior `b2a931b` — option 1: a helper that was called explicitly may finish a committed intent, and the automatic hooks never call the codec, indirect subprocess calls included; the user gave the Prior side's acceptance as the answer on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>

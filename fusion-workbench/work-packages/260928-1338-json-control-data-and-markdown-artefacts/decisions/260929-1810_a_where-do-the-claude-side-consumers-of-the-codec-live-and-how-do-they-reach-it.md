@@ -33,3 +33,6 @@ FJ03 makes fusion's own helpers read control data from JSON. Through FJ02b the c
 ## Recommendation
 
 Option 1. It keeps the boundary the two answered codec decisions drew: the codec is the shared contract, a host reaches it through the protocol, and nothing host-specific enters it. The cost is measured and bounded, and an additive `list` detail stays available as a later request to Prior if the spawn count proves too high in use. The test room it needs is the subject of the growth-bound record cited above.
+
+---
+Answered: Prior `docs/design/fusion-fj03a-prior-plan-response.md` `## A. One protocol client, one process per request` at Prior `b2a931b` — option 1: one client under `hooks/lib/`, one codec process per request, the bundle unchanged; a typed refusal and an unanswered call stay distinct and neither is read as an empty store or as no claim; the user gave the Prior side's acceptance as the answer on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>

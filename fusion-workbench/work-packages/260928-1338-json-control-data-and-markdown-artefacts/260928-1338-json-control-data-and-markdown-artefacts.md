@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** claimed
 **Claim:** 114caf11 — Kai Stalmann <ks@qantr.com>, 260928-1338
-**Active spec/plan:** 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md (plan, filed and not yet approved; no spec)
+**Active spec/plan:** 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md (plan, approved 2026-09-29; no spec)
 **Cross-references:** 260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md (FJ00, closed 2026-09-28), 260928-1550_*_plan-fj01-codec-port-bundle-wrapper-and-first-record-round-trip.md (FJ01, closed 2026-09-28), 260928-2110_*_plan-fj01b-fj00-follow-up-prior-rulings-applied-and-the-contract-frozen.md (FJ01b, closed 2026-09-28), 260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md (FJ02, closed 2026-09-29), 260929-1417_*_plan-fj02b-plan-progress-and-evidence-creation-through-the-kernel.md (FJ02b, closed 2026-09-29), 260927-2304-fusion-dual-host-design-review.md, 260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 260922-1038-prior-mapping.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 

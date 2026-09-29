@@ -34,3 +34,6 @@ The ruling of 2026-09-27 (the first record cited above, answered) says the growt
 ## Recommendation
 
 Option 2 first, then option 1 for the measured remainder. Each step replaces what it retires and reports its net growth; what remains after the replacement is raised to the line under the 2026-09-27 ruling and logged. That keeps the raise as small as the work allows and keeps the ruling's reach explicit: the user confirms it once, here, for the surfaces FJ03 touches.
+
+---
+Answered: Prior `docs/design/fusion-fj03a-prior-plan-response.md` `## B. Replace retired tests, then adjust the measured remainder` at Prior `b2a931b` — option 2 first, then option 1 for the measured remainder: retired tests are replaced, the remaining net growth is raised with before and after figures in `README-hooks.md`, the baseline kept, and no further approval is needed for that measured raise; the user gave the Prior side's acceptance as the answer on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>
