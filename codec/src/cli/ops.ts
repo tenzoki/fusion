@@ -28,14 +28,16 @@
 // state of the workbench. A throw is a defect in this file.
 // ---------------------------------------------------------------------------
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { canonical } from "../journal.js";
 import { allowed, stateRules, transitions, type TransitionPayload as RulePayload } from "../transitions.js";
 import {
   KINDS,
   PACKAGE_SCHEMA_ID,
   STATE_DIR,
   SUPPORTED_FEATURES,
+  controlFiles,
   describeErrors,
   openWorkbench,
   readPair,
@@ -143,29 +145,6 @@ function inspect(wb: Workbench): Response {
 
 // --- list ---------------------------------------------------------------------
 
-const isControlFile = (name: string): boolean => name === "package.json" || name.endsWith(".record.json");
-
-/** Every control file under `dir`, workbench-relative with forward slashes, sorted; dot entries skipped. */
-function controlFiles(wb: Workbench, dir: string): string[] {
-  const out: string[] = [];
-  const walk = (d: string): void => {
-    let entries;
-    try {
-      entries = readdirSync(d, { withFileTypes: true });
-    } catch {
-      return;
-    }
-    for (const e of entries) {
-      if (e.name.startsWith(".")) continue;
-      const abs = join(d, e.name);
-      if (e.isDirectory()) walk(abs);
-      else if (e.isFile() && isControlFile(e.name)) out.push(relative(wb.root, abs).split("\\").join("/"));
-    }
-  };
-  walk(dir);
-  return out.sort();
-}
-
 const stateOf = (pair: Pair): unknown =>
   pair.kind === "package" ? pair.control.status : ((pair.control.control as Record<string, unknown> | undefined)?.state ?? null);
 
@@ -258,15 +237,6 @@ interface StoredAnswer {
 
 const opsDir = (wb: Workbench): string => join(wb.root, STATE_DIR, "ops");
 const answerPath = (wb: Workbench, id: string): string => join(opsDir(wb), `${id}.json`);
-
-/** JSON with every object's keys sorted, so that two requests compare by content. */
-function canonical(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
-  if (typeof value === "object" && value !== null) {
-    return `{${Object.keys(value).sort().map((k) => `${JSON.stringify(k)}:${canonical((value as Record<string, unknown>)[k])}`).join(",")}}`;
-  }
-  return JSON.stringify(value);
-}
 
 function storedAnswer(wb: Workbench, req: TransitionRequest): Response | null {
   const file = answerPath(wb, req.operation_id);

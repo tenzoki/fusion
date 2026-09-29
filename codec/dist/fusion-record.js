@@ -8020,12 +8020,28 @@ import { readFileSync as readFileSync5 } from "node:fs";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 
 // src/cli/ops.ts
-import { existsSync as existsSync2, mkdirSync as mkdirSync2, readdirSync as readdirSync2, readFileSync as readFileSync4, statSync as statSync2 } from "node:fs";
+import { existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync4, statSync as statSync2 } from "node:fs";
 import { join as join3, relative as relative2 } from "node:path";
 
-// src/transitions.ts
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+// src/store.ts
+import { createHash, randomBytes } from "node:crypto";
+import {
+  closeSync,
+  existsSync,
+  fstatSync,
+  fsyncSync,
+  linkSync,
+  mkdirSync,
+  openSync,
+  readdirSync as readdirSync2,
+  readFileSync as readFileSync2,
+  renameSync,
+  statSync,
+  unlinkSync,
+  writeSync
+} from "node:fs";
+import { hostname } from "node:os";
+import { basename, dirname, isAbsolute, join as join2, relative, resolve } from "node:path";
 
 // src/strict-json.ts
 var MAX_RECORD_BYTES = 1048576;
@@ -8187,119 +8203,19 @@ function decodeKey(raw) {
   }
 }
 
-// src/transitions.ts
-var CONTRACT_DIR = fileURLToPath(new URL("../contract/", import.meta.url));
-function readTable(file) {
-  const abs = CONTRACT_DIR + file;
-  const parsed = strictParse(readFileSync(abs));
-  if (!parsed.ok) throw new Error(`${abs}: ${parsed.reason}: ${parsed.detail}`);
-  return parsed.value;
-}
-var transitionsTable;
-var dependenciesTable;
-var transitions = () => transitionsTable ??= readTable("transitions.json");
-function useTables(t, d) {
-  transitionsTable = t;
-  dependenciesTable = d;
-}
-var kinds = () => Object.keys(transitions().kinds);
-var refuse2 = (cls, reason) => ({ ok: false, class: cls, reason });
-var isObject = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
-function allowed(kind, from, to, payload = {}) {
-  const table = transitions().kinds[kind];
-  if (table === void 0) return refuse2("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
-  if (!table.states.includes(from)) return refuse2("schema-invalid", `"${from}" is not a ${kind} state`);
-  if (!table.states.includes(to)) return refuse2("schema-invalid", `"${to}" is not a ${kind} state`);
-  const edge = table.edges.find((e) => e.from === from && e.to === to);
-  if (edge === void 0) {
-    const why = table.terminal.includes(from) ? `${from} is terminal (${table.reopen})` : `no edge ${from} -> ${to} in the table`;
-    return refuse2("conflict", `${kind}: ${why}`);
-  }
-  switch (kind) {
-    case "package":
-      return packageRules(table, to, payload);
-    case "issue":
-      return issueRules(table, to, payload);
-    case "decision":
-      return decisionRules(edge, payload);
-    default:
-      return { ok: true };
-  }
-}
-function packageRules(table, to, payload) {
-  const claimRule = table.claim?.[to];
-  const hasClaim = isObject(payload.claim);
-  if (claimRule === "required" && !hasClaim) return refuse2("schema-invalid", `package: ${to} requires a claim`);
-  if (claimRule === "forbidden" && payload.claim != null) return refuse2("schema-invalid", `package: ${to} carries no claim`);
-  const terminal = table.terminal.includes(to);
-  const outcome = payload.outcome ?? null;
-  if (!terminal) {
-    if (outcome !== null) return refuse2("schema-invalid", `package: outcome is null while ${to}`);
-    return { ok: true };
-  }
-  if (!isObject(outcome)) return refuse2("schema-invalid", `package: ${to} requires an outcome`);
-  const classes = table.outcome_classes?.[to] ?? [];
-  if (!classes.includes(outcome.class)) {
-    return refuse2("schema-invalid", `package: ${to} admits the outcome classes ${classes.join(", ")}, not "${outcome.class}"`);
-  }
-  return { ok: true };
-}
-function issueRules(table, to, payload) {
-  const terminal = table.terminal.includes(to);
-  const hasDisposition = isObject(payload.disposition);
-  if (terminal && !hasDisposition) return refuse2("schema-invalid", `issue: ${to} requires a disposition`);
-  if (!terminal && payload.disposition != null) return refuse2("schema-invalid", `issue: disposition is null while ${to}`);
-  return { ok: true };
-}
-function decisionRules(edge, payload) {
-  if (edge.requires === void 0) return { ok: true };
-  const value = payload[edge.requires];
-  if (value === void 0 || value === null) return refuse2("schema-invalid", `decision: ${edge.to} requires ${edge.requires}`);
-  return { ok: true };
-}
-function stateRules(kind, state, payload = {}) {
-  const table = transitions().kinds[kind];
-  if (table === void 0) return refuse2("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
-  if (!table.states.includes(state)) return refuse2("schema-invalid", `"${state}" is not a ${kind} state`);
-  switch (kind) {
-    case "package":
-      return packageRules(table, state, payload);
-    case "issue":
-      return issueRules(table, state, payload);
-    default:
-      return { ok: true };
-  }
-}
-
-// src/store.ts
-import { createHash } from "node:crypto";
-import {
-  closeSync,
-  existsSync,
-  fsyncSync,
-  mkdirSync,
-  openSync,
-  readFileSync as readFileSync3,
-  renameSync,
-  statSync,
-  unlinkSync,
-  writeSync
-} from "node:fs";
-import { basename, dirname, isAbsolute, join as join2, relative, resolve, sep } from "node:path";
-
 // src/validate.ts
 var import__ = __toESM(require__(), 1);
 var import_ajv_formats = __toESM(require_dist(), 1);
-import { readFileSync as readFileSync2, readdirSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { fileURLToPath as fileURLToPath2 } from "node:url";
-var SCHEMA_DIR = fileURLToPath2(new URL("../schemas/", import.meta.url));
+import { fileURLToPath } from "node:url";
+var SCHEMA_DIR = fileURLToPath(new URL("../schemas/", import.meta.url));
 var SCHEMA_FILE_SUFFIX = ".schema.json";
 function loadSchemas(dir = SCHEMA_DIR) {
   const documents = [];
   for (const file of listSchemaFiles(dir)) {
     const abs = join(dir, file);
-    const parsed = strictParse(readFileSync2(abs));
+    const parsed = strictParse(readFileSync(abs));
     if (!parsed.ok) throw new Error(`${abs}: ${parsed.reason}: ${parsed.detail}`);
     documents.push({ source: abs, value: parsed.value });
   }
@@ -8387,7 +8303,7 @@ var err = (cls, reason, detail, errors) => ({
   ok: false,
   error: { class: cls, reason, detail, ...errors !== void 0 ? { errors } : {} }
 });
-var isObject2 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+var isObject = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
 var revisionOf = (bytes) => "sha256:" + createHash("sha256").update(bytes).digest("hex");
 function openWorkbench(root, set = schemas()) {
   const abs = resolve(root);
@@ -8404,7 +8320,7 @@ function openWorkbench(root, set = schemas()) {
     ok: true,
     value: { root: abs, state: "unsupported", id: null, manifest: manifest2, diagnosis }
   });
-  const parsed = strictParse(readFileSync3(manifestPath));
+  const parsed = strictParse(readFileSync2(manifestPath));
   if (!parsed.ok) return unsupported({ class: "schema-invalid", reason: parsed.reason, detail: `${WORKBENCH_MANIFEST}: ${parsed.detail}` }, null);
   const manifest = parsed.value;
   const schema = manifest.schema;
@@ -8443,7 +8359,7 @@ function readPair(wb, path, set = schemas()) {
   if (!abs.ok) return abs;
   let bytes;
   try {
-    bytes = readFileSync3(abs.value);
+    bytes = readFileSync2(abs.value);
   } catch (e) {
     if (e.code === "ENOENT") return err("unresolved-reference", "record-not-found", `${path} does not exist in ${wb.root}`);
     throw e;
@@ -8466,13 +8382,33 @@ function kindOf(schemaId, control) {
 }
 function narrativeOf(wb, control) {
   const n = control.narrative;
-  if (!isObject2(n) || typeof n.path !== "string") return null;
+  if (!isObject(n) || typeof n.path !== "string") return null;
   const abs = resolveInside(wb, n.path);
   if (!abs.ok || !existsSync(abs.value)) return { path: n.path, sha256: null };
-  return { path: n.path, sha256: revisionOf(readFileSync3(abs.value)) };
+  return { path: n.path, sha256: revisionOf(readFileSync2(abs.value)) };
+}
+var isControlFile = (name) => name === "package.json" || name.endsWith(".record.json") || name.endsWith(".evidence.json");
+function controlFiles(wb, dir) {
+  const out = [];
+  const walk = (d) => {
+    let entries;
+    try {
+      entries = readdirSync2(d, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const e of entries) {
+      if (e.name.startsWith(".")) continue;
+      const abs = join2(d, e.name);
+      if (e.isDirectory()) walk(abs);
+      else if (e.isFile() && isControlFile(e.name)) out.push(relative(wb.root, abs).split("\\").join("/"));
+    }
+  };
+  walk(dir);
+  return out.sort();
 }
 function serialise(value, set = schemas()) {
-  if (!isObject2(value) || typeof value.schema !== "string") throw new Error("a control record is an object with a string schema field");
+  if (!isObject(value) || typeof value.schema !== "string") throw new Error("a control record is an object with a string schema field");
   const schemaId = SCHEMA_ID_PREFIX + value.schema;
   const doc = set.document(schemaId);
   if (doc === void 0) throw new Error(`no schema ${schemaId} loaded`);
@@ -8484,7 +8420,7 @@ function order(value, at, set) {
     const items = merged(at, value, set).items;
     return value.map((v) => items === void 0 ? v : order(v, items, set));
   }
-  if (!isObject2(value)) return value;
+  if (!isObject(value)) return value;
   const { properties } = merged(at, value, set);
   const out = {};
   for (const [key, node] of properties) {
@@ -8500,8 +8436,8 @@ function merged(at, value, set) {
   const visit = (loc) => {
     const resolved = deref(loc, set);
     const node = resolved.node;
-    if (!isObject2(node)) return;
-    if (isObject2(node.properties)) {
+    if (!isObject(node)) return;
+    if (isObject(node.properties)) {
       for (const key of Object.keys(node.properties)) {
         if (!result.properties.has(key)) result.properties.set(key, { node: node.properties[key], base: resolved.base });
       }
@@ -8520,7 +8456,7 @@ function merged(at, value, set) {
 }
 function matches(loc, value, set) {
   const node = loc.node;
-  if (!isObject2(node)) return false;
+  if (!isObject(node)) return false;
   const types = Array.isArray(node.type) ? node.type : typeof node.type === "string" ? [node.type] : null;
   const actual = jsonType(value);
   if (types !== null && !types.some((t) => t === actual || t === "number" && actual === "integer")) return false;
@@ -8528,12 +8464,12 @@ function matches(loc, value, set) {
     const inner = merged(loc, value, set);
     if (inner.properties.size > 0 && actual !== "object") return false;
   }
-  if (isObject2(value)) {
+  if (isObject(value)) {
     const required = Array.isArray(node.required) ? node.required : [];
     if (!required.every((k) => typeof k === "string" && k in value)) return false;
-    if (isObject2(node.properties)) {
+    if (isObject(node.properties)) {
       for (const [k, p] of Object.entries(node.properties)) {
-        if (isObject2(p) && "const" in p && k in value && value[k] !== p.const) return false;
+        if (isObject(p) && "const" in p && k in value && value[k] !== p.const) return false;
       }
     }
     if (Array.isArray(node.allOf)) {
@@ -8553,7 +8489,7 @@ function deref(loc, set) {
   let current2 = loc;
   for (let hops = 0; hops < 32; hops++) {
     const node = current2.node;
-    if (!isObject2(node) || typeof node.$ref !== "string") return current2;
+    if (!isObject(node) || typeof node.$ref !== "string") return current2;
     const [docPart, pointer = ""] = node.$ref.split("#", 2);
     const base = docPart.length > 0 ? docPart : current2.base;
     const doc = set.document(base);
@@ -8561,7 +8497,7 @@ function deref(loc, set) {
     let target = doc;
     for (const seg of pointer.split("/").filter((s) => s.length > 0)) {
       const key = seg.replace(/~1/g, "/").replace(/~0/g, "~");
-      target = isObject2(target) ? target[key] : void 0;
+      target = isObject(target) ? target[key] : void 0;
     }
     if (target === void 0) throw new Error(`$ref ${node.$ref} does not resolve`);
     current2 = { node: target, base };
@@ -8575,12 +8511,12 @@ async function writeControl(wb, path, value, expectedRevision, options = {}) {
   if (!abs.ok) return abs;
   const text = serialise(value);
   const bytes = Buffer.from(text, "utf-8");
-  const lock = await acquireLock(wb, path, options);
+  const lock = await acquireLock(wb, options);
   if (!lock.ok) return lock;
   try {
     let stored;
     try {
-      stored = readFileSync3(abs.value);
+      stored = readFileSync2(abs.value);
     } catch (e) {
       if (e.code === "ENOENT") return err("unresolved-reference", "record-not-found", `${path} does not exist in ${wb.root}`);
       throw e;
@@ -8593,26 +8529,21 @@ async function writeControl(wb, path, value, expectedRevision, options = {}) {
     releaseLock(lock.value);
   }
 }
-function replaceAtomically(target, bytes) {
-  const dir = dirname(target);
-  const temp = join2(dir, `.${basename(target)}.${process.pid}.${Math.random().toString(36).slice(2, 10)}.tmp`);
-  const fd = openSync(temp, "w", 420);
+var tempBeside = (target) => join2(dirname(target), `.${basename(target)}.${process.pid}.${randomBytes(4).toString("hex")}.tmp`);
+function writeAll(fd, bytes) {
+  let offset = 0;
+  while (offset < bytes.byteLength) offset += writeSync(fd, bytes, offset, bytes.byteLength - offset);
+}
+function writeDurably(path, bytes) {
+  const fd = openSync(path, "wx", 420);
   try {
-    let offset = 0;
-    while (offset < bytes.byteLength) offset += writeSync(fd, bytes, offset, bytes.byteLength - offset);
+    writeAll(fd, bytes);
     fsyncSync(fd);
   } finally {
     closeSync(fd);
   }
-  try {
-    renameSync(temp, target);
-  } catch (e) {
-    try {
-      unlinkSync(temp);
-    } catch {
-    }
-    throw e;
-  }
+}
+function fsyncDirectory(dir) {
   try {
     const dfd = openSync(dir, "r");
     try {
@@ -8623,95 +8554,293 @@ function replaceAtomically(target, bytes) {
   } catch {
   }
 }
-var held = /* @__PURE__ */ new Set();
+function replaceAtomically(target, bytes) {
+  const temp = tempBeside(target);
+  writeDurably(temp, bytes);
+  try {
+    renameSync(temp, target);
+  } catch (e) {
+    unlinkQuietly(temp);
+    throw e;
+  }
+  fsyncDirectory(dirname(target));
+}
+function linkComplete(target, bytes) {
+  for (; ; ) {
+    const temp = tempBeside(target);
+    writeDurably(temp, bytes);
+    try {
+      linkSync(temp, target);
+      fsyncDirectory(dirname(target));
+      return true;
+    } catch (e) {
+      const code = e.code;
+      if (code === "EEXIST") return false;
+      if (code !== "ENOENT") throw e;
+    } finally {
+      unlinkQuietly(temp);
+    }
+  }
+}
+function unlinkQuietly(path) {
+  try {
+    unlinkSync(path);
+  } catch {
+  }
+}
+function unlinkIfHolds(path, bytes) {
+  try {
+    if (readFileSync2(path).equals(bytes)) unlinkSync(path);
+  } catch {
+  }
+}
+var SELF_IGNORE = "*\n";
+function ensureSelfIgnore(wb) {
+  const dir = join2(wb.root, STATE_DIR);
+  mkdirSync(dir, { recursive: true });
+  const file = join2(dir, ".gitignore");
+  let current2;
+  try {
+    current2 = readFileSync2(file);
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+    current2 = null;
+  }
+  const wanted = Buffer.from(SELF_IGNORE, "utf-8");
+  if (current2 === null) linkComplete(file, wanted);
+  else if (!current2.equals(wanted)) replaceAtomically(file, wanted);
+}
+var LOCK_FILE = "write.lock";
+var TAKEOVER_INFIX = ".takeover.";
+var held = /* @__PURE__ */ new Map();
 var exitHookInstalled = false;
 var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-var lockPathFor = (wb, path) => join2(wb.root, STATE_DIR, `${createHash("sha256").update(path.split(sep).join("/")).digest("hex")}.lock`);
-async function acquireLock(wb, path, options) {
-  const lock = lockPathFor(wb, path);
-  mkdirSync(dirname(lock), { recursive: true });
+var hexOf = (bytes) => createHash("sha256").update(bytes).digest("hex");
+var lockPathFor = (wb) => join2(wb.root, STATE_DIR, LOCK_FILE);
+function lockContent(now) {
+  return Buffer.from(`pid: ${process.pid}
+host: ${hostname()}
+nonce: ${randomBytes(8).toString("hex")}
+acquired_at: ${new Date(now()).toISOString()}
+`, "utf-8");
+}
+function judge(path, nowMs) {
+  let bytes;
+  let mtimeMs;
+  try {
+    const fd = openSync(path, "r");
+    try {
+      mtimeMs = fstatSync(fd).mtimeMs;
+      bytes = readFileSync2(fd);
+    } finally {
+      closeSync(fd);
+    }
+  } catch (e) {
+    if (e.code === "ENOENT") return { state: "gone" };
+    throw e;
+  }
+  const text = bytes.toString("utf-8");
+  const host = /^host: (.*)$/m.exec(text)?.[1];
+  if (host !== void 0 && host !== hostname()) return { state: "live", bytes };
+  const pidMatch = /^pid: ([0-9]+)$/m.exec(text);
+  const pid = pidMatch === null ? null : Number(pidMatch[1]);
+  if (pid !== null && Number.isSafeInteger(pid) && pid > 0) return { state: alive(pid) ? "live" : "stale", bytes };
+  return { state: nowMs - mtimeMs >= LOCK_STALE_MS ? "stale" : "live", bytes };
+}
+function alive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return e.code !== "ESRCH";
+  }
+}
+function takeOver(path, stale, own, now, depth = 0) {
+  if (depth > 4) return false;
+  const claim = `${path}${TAKEOVER_INFIX}${hexOf(stale)}`;
+  const claimBytes = lockContent(now);
+  if (!linkComplete(claim, claimBytes)) {
+    const j = judge(claim, now());
+    if (j.state !== "stale") return false;
+    if (!takeOver(claim, j.bytes, claimBytes, now, depth + 1)) return false;
+  }
+  try {
+    let current2;
+    try {
+      current2 = readFileSync2(path);
+    } catch {
+      return false;
+    }
+    if (!current2.equals(stale)) return false;
+    const temp = tempBeside(path);
+    writeDurably(temp, own);
+    try {
+      renameSync(temp, path);
+    } catch (e) {
+      unlinkQuietly(temp);
+      throw e;
+    }
+    fsyncDirectory(dirname(path));
+    return true;
+  } finally {
+    unlinkIfHolds(claim, claimBytes);
+  }
+}
+async function acquireLock(wb, options = {}) {
+  ensureSelfIgnore(wb);
+  const lock = lockPathFor(wb);
   const now = options.now ?? Date.now;
   const waitMs = options.waitMs ?? LOCK_STALE_MS + 5e3;
   const pollMs = options.pollMs ?? 50;
   const started = now();
   for (; ; ) {
-    try {
-      const fd = openSync(lock, "wx", 420);
-      try {
-        writeSync(fd, `pid: ${process.pid}
-acquired_at: ${new Date(now()).toISOString()}
-`);
-      } finally {
-        closeSync(fd);
-      }
-      held.add(lock);
-      installExitHook();
-      return { ok: true, value: lock };
-    } catch (e) {
-      if (e.code !== "EEXIST") throw e;
-    }
-    if (isStale(lock, now())) {
-      try {
-        unlinkSync(lock);
-      } catch {
-      }
-      continue;
+    const own = lockContent(now);
+    if (linkComplete(lock, own)) return hold(lock, own, now());
+    const j = judge(lock, now());
+    if (j.state === "gone") continue;
+    if (j.state === "stale") {
+      await options.lockHooks?.afterJudge?.({ path: lock, bytes: j.bytes });
+      const mine = lockContent(now);
+      if (takeOver(lock, j.bytes, mine, now)) return hold(lock, mine, now());
     }
     if (now() - started >= waitMs) {
-      return err("conflict", "lock-timeout", `${path} is locked by another writer (${describeHolder(lock)}) and was not released within ${waitMs} ms`);
+      return err("conflict", "lock-timeout", `the workbench write lock ${STATE_DIR}/${LOCK_FILE} is held by another writer (${describeHolder(lock)}) and was not released within ${waitMs} ms`);
     }
     await sleep(pollMs);
   }
 }
-function releaseLock(lock) {
-  held.delete(lock);
-  try {
-    unlinkSync(lock);
-  } catch {
+function hold(lock, bytes, nowMs) {
+  held.set(lock, bytes);
+  installExitHook();
+  const dir = dirname(lock);
+  const ownClaim = `${LOCK_FILE}${TAKEOVER_INFIX}${hexOf(bytes)}`;
+  for (const name of readdirSync2(dir)) {
+    const abs = join2(dir, name);
+    if (name.startsWith(`${LOCK_FILE}${TAKEOVER_INFIX}`) && !name.startsWith(ownClaim)) {
+      unlinkQuietly(abs);
+    } else if (name.startsWith(".") && name.endsWith(".tmp")) {
+      try {
+        const st = statSync(abs);
+        if (st.isFile() && nowMs - st.mtimeMs >= LOCK_STALE_MS) unlinkQuietly(abs);
+      } catch {
+      }
+    }
   }
+  return { ok: true, value: { path: lock, bytes } };
+}
+function releaseLock(lock) {
+  held.delete(lock.path);
+  unlinkIfHolds(lock.path, lock.bytes);
 }
 function installExitHook() {
   if (exitHookInstalled) return;
   exitHookInstalled = true;
   process.on("exit", () => {
-    for (const lock of held) {
-      try {
-        unlinkSync(lock);
-      } catch {
-      }
-    }
+    for (const [lock, bytes] of held) unlinkIfHolds(lock, bytes);
   });
-}
-function isStale(lock, nowMs) {
-  let mtime;
-  try {
-    mtime = statSync(lock).mtimeMs;
-  } catch {
-    return false;
-  }
-  if (nowMs - mtime < LOCK_STALE_MS) return false;
-  const pid = holderPid(lock);
-  if (pid === null) return true;
-  try {
-    process.kill(pid, 0);
-    return false;
-  } catch (e) {
-    return e.code === "ESRCH";
-  }
-}
-function holderPid(lock) {
-  try {
-    const m = /^pid: ([0-9]+)$/m.exec(readFileSync3(lock, "utf-8"));
-    return m === null ? null : Number(m[1]);
-  } catch {
-    return null;
-  }
 }
 function describeHolder(lock) {
   try {
-    return readFileSync3(lock, "utf-8").trim().split("\n").join(", ");
+    const text = readFileSync2(lock, "utf-8").trim();
+    const fields = text.length === 0 ? "records nothing" : text.split("\n").join(", ");
+    return /^host: /m.test(text) ? fields : `${fields}, no host recorded: read as ${hostname()}`;
   } catch {
     return "holder unknown";
+  }
+}
+
+// src/journal.ts
+function canonical(value) {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+  if (typeof value === "object" && value !== null) {
+    return `{${Object.keys(value).sort().map((k) => `${JSON.stringify(k)}:${canonical(value[k])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+// src/transitions.ts
+import { readFileSync as readFileSync3 } from "node:fs";
+import { fileURLToPath as fileURLToPath2 } from "node:url";
+var CONTRACT_DIR = fileURLToPath2(new URL("../contract/", import.meta.url));
+function readTable(file) {
+  const abs = CONTRACT_DIR + file;
+  const parsed = strictParse(readFileSync3(abs));
+  if (!parsed.ok) throw new Error(`${abs}: ${parsed.reason}: ${parsed.detail}`);
+  return parsed.value;
+}
+var transitionsTable;
+var dependenciesTable;
+var transitions = () => transitionsTable ??= readTable("transitions.json");
+function useTables(t, d) {
+  transitionsTable = t;
+  dependenciesTable = d;
+}
+var kinds = () => Object.keys(transitions().kinds);
+var refuse2 = (cls, reason) => ({ ok: false, class: cls, reason });
+var isObject2 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+function allowed(kind, from, to, payload = {}) {
+  const table = transitions().kinds[kind];
+  if (table === void 0) return refuse2("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
+  if (!table.states.includes(from)) return refuse2("schema-invalid", `"${from}" is not a ${kind} state`);
+  if (!table.states.includes(to)) return refuse2("schema-invalid", `"${to}" is not a ${kind} state`);
+  const edge = table.edges.find((e) => e.from === from && e.to === to);
+  if (edge === void 0) {
+    const why = table.terminal.includes(from) ? `${from} is terminal (${table.reopen})` : `no edge ${from} -> ${to} in the table`;
+    return refuse2("conflict", `${kind}: ${why}`);
+  }
+  switch (kind) {
+    case "package":
+      return packageRules(table, to, payload);
+    case "issue":
+      return issueRules(table, to, payload);
+    case "decision":
+      return decisionRules(edge, payload);
+    default:
+      return { ok: true };
+  }
+}
+function packageRules(table, to, payload) {
+  const claimRule = table.claim?.[to];
+  const hasClaim = isObject2(payload.claim);
+  if (claimRule === "required" && !hasClaim) return refuse2("schema-invalid", `package: ${to} requires a claim`);
+  if (claimRule === "forbidden" && payload.claim != null) return refuse2("schema-invalid", `package: ${to} carries no claim`);
+  const terminal = table.terminal.includes(to);
+  const outcome = payload.outcome ?? null;
+  if (!terminal) {
+    if (outcome !== null) return refuse2("schema-invalid", `package: outcome is null while ${to}`);
+    return { ok: true };
+  }
+  if (!isObject2(outcome)) return refuse2("schema-invalid", `package: ${to} requires an outcome`);
+  const classes = table.outcome_classes?.[to] ?? [];
+  if (!classes.includes(outcome.class)) {
+    return refuse2("schema-invalid", `package: ${to} admits the outcome classes ${classes.join(", ")}, not "${outcome.class}"`);
+  }
+  return { ok: true };
+}
+function issueRules(table, to, payload) {
+  const terminal = table.terminal.includes(to);
+  const hasDisposition = isObject2(payload.disposition);
+  if (terminal && !hasDisposition) return refuse2("schema-invalid", `issue: ${to} requires a disposition`);
+  if (!terminal && payload.disposition != null) return refuse2("schema-invalid", `issue: disposition is null while ${to}`);
+  return { ok: true };
+}
+function decisionRules(edge, payload) {
+  if (edge.requires === void 0) return { ok: true };
+  const value = payload[edge.requires];
+  if (value === void 0 || value === null) return refuse2("schema-invalid", `decision: ${edge.to} requires ${edge.requires}`);
+  return { ok: true };
+}
+function stateRules(kind, state, payload = {}) {
+  const table = transitions().kinds[kind];
+  if (table === void 0) return refuse2("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
+  if (!table.states.includes(state)) return refuse2("schema-invalid", `"${state}" is not a ${kind} state`);
+  switch (kind) {
+    case "package":
+      return packageRules(table, state, payload);
+    case "issue":
+      return issueRules(table, state, payload);
+    default:
+      return { ok: true };
   }
 }
 
@@ -8802,26 +8931,6 @@ function inspect(wb) {
     }
   };
 }
-var isControlFile = (name) => name === "package.json" || name.endsWith(".record.json");
-function controlFiles(wb, dir) {
-  const out = [];
-  const walk = (d) => {
-    let entries;
-    try {
-      entries = readdirSync2(d, { withFileTypes: true });
-    } catch {
-      return;
-    }
-    for (const e of entries) {
-      if (e.name.startsWith(".")) continue;
-      const abs = join3(d, e.name);
-      if (e.isDirectory()) walk(abs);
-      else if (e.isFile() && isControlFile(e.name)) out.push(relative2(wb.root, abs).split("\\").join("/"));
-    }
-  };
-  walk(dir);
-  return out.sort();
-}
 var stateOf = (pair) => pair.kind === "package" ? pair.control.status : pair.control.control?.state ?? null;
 function scopeDir(wb, scope) {
   if (scope === void 0) return { ok: true, dir: wb.root };
@@ -8886,13 +8995,6 @@ function validateOp(wb, req) {
 }
 var opsDir = (wb) => join3(wb.root, STATE_DIR, "ops");
 var answerPath = (wb, id) => join3(opsDir(wb), `${id}.json`);
-function canonical(value) {
-  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
-  if (typeof value === "object" && value !== null) {
-    return `{${Object.keys(value).sort().map((k) => `${JSON.stringify(k)}:${canonical(value[k])}`).join(",")}}`;
-  }
-  return JSON.stringify(value);
-}
 function storedAnswer(wb, req) {
   const file = answerPath(wb, req.operation_id);
   if (!existsSync2(file)) return null;

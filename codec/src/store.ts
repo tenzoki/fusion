@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------
 // The record-pair store and the local write discipline of spec section 6.
 //
-// Three questions, three functions:
+// Four questions, four functions:
 //
 //   openWorkbench(root)                     what kind of workbench is this?
 //   readPair(wb, path)                      the control record, its revision, its narrative
 //   writeControl(wb, path, value, expected) replace the control record, if it is still the one read
+//   acquireLock(wb) / releaseLock(lock)     the one workbench write lock every writer takes
 //
 // `openWorkbench` reads `workbench.json` when present (spec 4.1). A manifest
 // with an unknown schema or a required feature this codec lacks is reported
@@ -15,15 +16,35 @@
 // `unsupported-format/legacy-workbench`.
 //
 // The revision of a record is `sha256:` over the exact stored bytes, returned
-// beside the record and never written into it. `writeControl` is the whole of
-// FJ01's mutation: a local exclusive lock on the record (`.json-state/<sha of
-// path>.lock`, created with O_EXCL, released on exit, stale after 60 s by
-// mtime when its holder is gone, the rule `bin/fusion-commit-lock` applies),
-// a re-read of the stored bytes under the lock and a refusal
+// beside the record and never written into it. `writeControl` is FJ01's
+// mutation, kept until the kernel replaces it (FJ02 step 3): the workbench
+// write lock, a re-read of the stored bytes under it and a refusal
 // `conflict/revision-mismatch` when their hash is not the one the caller read,
 // the deterministic serialisation to a temp file in the same directory, an
-// fsync, an atomic rename. No journal: the one write is one file, and the
-// multi-file journal the spec asks for is FJ02's.
+// fsync, an atomic rename. The journal that makes a multi-file operation
+// recoverable is `journal.ts`.
+//
+// The lock is ONE file for the whole workbench, `.json-state/write.lock`
+// (decision 260928-2251, option 1), and its protocol is the FJ02 plan's
+// (discussion 260929-0709, claims C9, C10, C21):
+//
+//   - It is created by linking a complete file (pid, host, nonce, time) to the
+//     name, so a lock this codec writes always records its PID.
+//   - A holder is judged by what the lock records. Another host's lock is
+//     never stale. A lock of this host, or one recording no host (FJ01's
+//     format, and the hand-made lock of Prior's live-owner regression), is
+//     stale the moment its PID is dead, with no age condition, and live while
+//     the PID answers. Only a lock recording no PID at all falls back to the
+//     60 s age rule.
+//   - A stale lock is never unlinked. The one waiter that creates the claim
+//     `write.lock.takeover.<hash of the stale bytes>` renames its own lock over
+//     the name, after checking the name still holds those bytes. Ownership
+//     moves only by an exclusive create, so no waiter can remove a lock it did
+//     not judge.
+//
+// `.json-state/` is class L: every lock first makes sure it holds a
+// `.gitignore` of `*`, so a tracked workbench never lists it and a clone
+// never carries a foreign lock or intent.
 //
 // The serialisation is deterministic so that two writers of the same value
 // produce the same bytes and so the same revision: two-space indent, LF, a
@@ -37,20 +58,25 @@
 // that leaves the root: a record outside the workbench is `unknown-scope`.
 // ---------------------------------------------------------------------------
 
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import {
   closeSync,
   existsSync,
+  fstatSync,
   fsyncSync,
+  linkSync,
   mkdirSync,
   openSync,
+  readdirSync,
   readFileSync,
   renameSync,
+  rmSync,
   statSync,
   unlinkSync,
   writeSync,
 } from "node:fs";
-import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { hostname } from "node:os";
+import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
 import type { ErrorClass } from "./cli/protocol.js";
 import { strictParse } from "./strict-json.js";
 import { schemas, type SchemaSet, type ValidationError } from "./validate.js";
@@ -62,9 +88,9 @@ export const RECORD_SCHEMA_ID = "urn:fusion:schema:fusion.record/v1";
 export const SCHEMA_ID_PREFIX = "urn:fusion:schema:";
 /** The features this codec can honour in `required_features` (spec 4.1). */
 export const SUPPORTED_FEATURES: readonly string[] = ["json-control-v1"];
-/** Local state, class L, never tracked: locks and operation answers. */
+/** Local state, class L, never tracked: the write lock, the journal, operation answers. */
 export const STATE_DIR = ".json-state";
-/** A lock older than this whose holder is gone is reaped, as `bin/fusion-commit-lock` does. */
+/** The age after which a lock recording no PID is stale; a lock temp file older than this is dead. */
 export const LOCK_STALE_MS = 60_000;
 
 export interface StoreError {
@@ -219,6 +245,36 @@ function narrativeOf(wb: Workbench, control: Record<string, unknown>): Pair["nar
   return { path: n.path, sha256: revisionOf(readFileSync(abs.value)) };
 }
 
+// --- the walk -------------------------------------------------------------------
+
+/**
+ * A control file by its name: a package, a record, or an evidence record.
+ * Evidence is admitted to the walk ahead of `readPair` learning its kind, so
+ * that every lookup over the walk sees every control file.
+ */
+export const isControlFile = (name: string): boolean => name === "package.json" || name.endsWith(".record.json") || name.endsWith(".evidence.json");
+
+/** Every control file under `dir`, workbench-relative with forward slashes, sorted; dot entries skipped. */
+export function controlFiles(wb: Workbench, dir: string): string[] {
+  const out: string[] = [];
+  const walk = (d: string): void => {
+    let entries;
+    try {
+      entries = readdirSync(d, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const e of entries) {
+      if (e.name.startsWith(".")) continue;
+      const abs = join(d, e.name);
+      if (e.isDirectory()) walk(abs);
+      else if (e.isFile() && isControlFile(e.name)) out.push(relative(wb.root, abs).split("\\").join("/"));
+    }
+  };
+  walk(dir);
+  return out.sort();
+}
+
 // --- the serialisation ----------------------------------------------------------
 
 /**
@@ -360,6 +416,8 @@ export interface WriteOptions {
   pollMs?: number;
   /** The clock, for tests. */
   now?: () => number;
+  /** Test-only pause points in `acquireLock`; `main.ts` passes none. */
+  lockHooks?: LockHooks;
 }
 
 export interface Written {
@@ -380,7 +438,7 @@ export async function writeControl(wb: Workbench, path: string, value: unknown, 
   const text = serialise(value);
   const bytes = Buffer.from(text, "utf-8");
 
-  const lock = await acquireLock(wb, path, options);
+  const lock = await acquireLock(wb, options);
   if (!lock.ok) return lock;
   try {
     let stored: Buffer;
@@ -399,30 +457,26 @@ export async function writeControl(wb: Workbench, path: string, value: unknown, 
   }
 }
 
-/** Writes `bytes` to a temp file beside `target`, fsyncs it, and renames it over `target`. */
-export function replaceAtomically(target: string, bytes: Uint8Array): void {
-  const dir = dirname(target);
-  const temp = join(dir, `.${basename(target)}.${process.pid}.${Math.random().toString(36).slice(2, 10)}.tmp`);
-  const fd = openSync(temp, "w", 0o644);
+const tempBeside = (target: string): string => join(dirname(target), `.${basename(target)}.${process.pid}.${randomBytes(4).toString("hex")}.tmp`);
+
+function writeAll(fd: number, bytes: Uint8Array): void {
+  let offset = 0;
+  while (offset < bytes.byteLength) offset += writeSync(fd, bytes, offset, bytes.byteLength - offset);
+}
+
+/** Creates `path`, which must not exist, with `bytes`, and fsyncs it before returning. */
+export function writeDurably(path: string, bytes: Uint8Array): void {
+  const fd = openSync(path, "wx", 0o644);
   try {
-    let offset = 0;
-    while (offset < bytes.byteLength) offset += writeSync(fd, bytes, offset, bytes.byteLength - offset);
+    writeAll(fd, bytes);
     fsyncSync(fd);
   } finally {
     closeSync(fd);
   }
-  try {
-    renameSync(temp, target);
-  } catch (e) {
-    try {
-      unlinkSync(temp);
-    } catch {
-      /* the rename failed and the temp file is what it left; nothing more to do */
-    }
-    throw e;
-  }
-  // The rename is durable once the directory entry is; best effort, since not
-  // every platform lets a directory be fsynced.
+}
+
+/** The rename is durable once the directory entry is; best effort, since not every platform lets a directory be fsynced. */
+export function fsyncDirectory(dir: string): void {
   try {
     const dfd = openSync(dir, "r");
     try {
@@ -435,106 +489,282 @@ export function replaceAtomically(target: string, bytes: Uint8Array): void {
   }
 }
 
+/** Writes `bytes` to a temp file beside `target`, fsyncs it, and renames it over `target`. */
+export function replaceAtomically(target: string, bytes: Uint8Array): void {
+  const temp = tempBeside(target);
+  writeDurably(temp, bytes);
+  try {
+    renameSync(temp, target);
+  } catch (e) {
+    unlinkQuietly(temp);
+    throw e;
+  }
+  fsyncDirectory(dirname(target));
+}
+
+/**
+ * Gives `target` the complete `bytes` in one step, or reports that the name is
+ * taken: a durable temp file is linked to the name, which is atomic and fails
+ * on an existing name, so no reader ever sees the file half written.
+ */
+function linkComplete(target: string, bytes: Uint8Array): boolean {
+  for (;;) {
+    const temp = tempBeside(target);
+    writeDurably(temp, bytes);
+    try {
+      linkSync(temp, target);
+      fsyncDirectory(dirname(target));
+      return true;
+    } catch (e) {
+      const code = (e as NodeJS.ErrnoException).code;
+      if (code === "EEXIST") return false;
+      // The holder's sweep removed the temp file between the write and the
+      // link (it is removed only once older than LOCK_STALE_MS): write anew.
+      if (code !== "ENOENT") throw e;
+    } finally {
+      unlinkQuietly(temp);
+    }
+  }
+}
+
+function unlinkQuietly(path: string): void {
+  try {
+    unlinkSync(path);
+  } catch {
+    /* already gone */
+  }
+}
+
+/** Unlinks `path` only while it still holds `bytes`: a file this process did not write is never removed. */
+function unlinkIfHolds(path: string, bytes: Uint8Array): void {
+  try {
+    if (readFileSync(path).equals(bytes)) unlinkSync(path);
+  } catch {
+    /* gone already */
+  }
+}
+
+// --- the self-ignore ----------------------------------------------------------
+
+/** The content of `.json-state/.gitignore`: the directory ignores itself, `.gitignore` included (class L). */
+export const SELF_IGNORE = "*\n";
+
+/**
+ * Makes sure `.json-state/` exists and holds a `.gitignore` of exactly `*`.
+ * Absent: created by linking a complete file, so a crash never leaves it
+ * empty, and a concurrent creator's `EEXIST` is success. Present with other
+ * bytes (an empty file a non-atomic writer left, an edit): replaced
+ * atomically. Present and correct: nothing is written. It runs on every lock,
+ * so a `.json-state/` another writer created without it gains it at the first
+ * lock taken here.
+ */
+export function ensureSelfIgnore(wb: Workbench): void {
+  const dir = join(wb.root, STATE_DIR);
+  mkdirSync(dir, { recursive: true });
+  const file = join(dir, ".gitignore");
+  let current: Buffer | null;
+  try {
+    current = readFileSync(file);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+    current = null;
+  }
+  const wanted = Buffer.from(SELF_IGNORE, "utf-8");
+  if (current === null) linkComplete(file, wanted);
+  else if (!current.equals(wanted)) replaceAtomically(file, wanted);
+}
+
 // --- the lock -----------------------------------------------------------------
 
-const held = new Set<string>();
+/** The one workbench-wide write lock, under `STATE_DIR`. */
+export const LOCK_FILE = "write.lock";
+/** A takeover claim on a stale lock instance is `<lock>.takeover.<hex sha256 of its bytes>`. */
+export const TAKEOVER_INFIX = ".takeover.";
+
+export interface LockHooks {
+  /** Runs after a waiter judged the lock stale and before it claims the takeover, for the race test. */
+  afterJudge?: (judged: { path: string; bytes: Buffer }) => Promise<void> | void;
+}
+
+/** A lock this process holds: where, and the bytes it wrote, which name the instance. */
+export interface HeldLock {
+  path: string;
+  bytes: Buffer;
+}
+
+const held = new Map<string, Buffer>();
 let exitHookInstalled = false;
 
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
-export const lockPathFor = (wb: Workbench, path: string): string =>
-  join(wb.root, STATE_DIR, `${createHash("sha256").update(path.split(sep).join("/")).digest("hex")}.lock`);
+const hexOf = (bytes: Uint8Array): string => createHash("sha256").update(bytes).digest("hex");
 
-async function acquireLock(wb: Workbench, path: string, options: WriteOptions): Promise<Result<string>> {
-  const lock = lockPathFor(wb, path);
-  mkdirSync(dirname(lock), { recursive: true });
+export const lockPathFor = (wb: Workbench): string => join(wb.root, STATE_DIR, LOCK_FILE);
+
+/** What every lock and every claim this codec writes records; the nonce makes each instance's bytes unique. */
+function lockContent(now: () => number): Buffer {
+  return Buffer.from(`pid: ${process.pid}\nhost: ${hostname()}\nnonce: ${randomBytes(8).toString("hex")}\nacquired_at: ${new Date(now()).toISOString()}\n`, "utf-8");
+}
+
+type Judgement = { state: "gone" } | { state: "live"; bytes: Buffer } | { state: "stale"; bytes: Buffer };
+
+/**
+ * Whether the holder `path` records is alive, from what the file records.
+ * Another host's lock is never stale: a PID means nothing off the host that
+ * recorded it. A lock of this host, or one recording no host, is stale when
+ * its PID is dead (`ESRCH`) and live when the PID answers or the answer is
+ * `EPERM`. A lock recording no PID is stale only once older than
+ * `LOCK_STALE_MS`.
+ */
+function judge(path: string, nowMs: number): Judgement {
+  let bytes: Buffer;
+  let mtimeMs: number;
+  try {
+    const fd = openSync(path, "r");
+    try {
+      mtimeMs = fstatSync(fd).mtimeMs;
+      bytes = readFileSync(fd);
+    } finally {
+      closeSync(fd);
+    }
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return { state: "gone" };
+    throw e;
+  }
+  const text = bytes.toString("utf-8");
+  const host = /^host: (.*)$/m.exec(text)?.[1];
+  if (host !== undefined && host !== hostname()) return { state: "live", bytes };
+  const pidMatch = /^pid: ([0-9]+)$/m.exec(text);
+  const pid = pidMatch === null ? null : Number(pidMatch[1]);
+  // pid 0 would signal this process group; it names no holder.
+  if (pid !== null && Number.isSafeInteger(pid) && pid > 0) return { state: alive(pid) ? "live" : "stale", bytes };
+  return { state: nowMs - mtimeMs >= LOCK_STALE_MS ? "stale" : "live", bytes };
+}
+
+function alive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return (e as NodeJS.ErrnoException).code !== "ESRCH";
+  }
+}
+
+/**
+ * Replaces the stale instance `stale` at `path` with `own`, never unlinking
+ * it. Only the process that creates the claim `<path>.takeover.<hash of
+ * stale>` may replace that instance, and it does so by renaming `own` over
+ * `path` after checking `path` still holds `stale`. A claim whose own holder
+ * is dead is taken over the same way, one level up. Returns whether `own` is
+ * now at `path`; false means start again.
+ */
+function takeOver(path: string, stale: Buffer, own: Buffer, now: () => number, depth = 0): boolean {
+  if (depth > 4) return false;
+  const claim = `${path}${TAKEOVER_INFIX}${hexOf(stale)}`;
+  const claimBytes = lockContent(now);
+  if (!linkComplete(claim, claimBytes)) {
+    const j = judge(claim, now());
+    if (j.state !== "stale") return false; // another waiter is taking over, or just finished
+    if (!takeOver(claim, j.bytes, claimBytes, now, depth + 1)) return false;
+  }
+  try {
+    let current: Buffer;
+    try {
+      current = readFileSync(path);
+    } catch {
+      return false; // gone meanwhile: the next exclusive create decides
+    }
+    if (!current.equals(stale)) return false;
+    const temp = tempBeside(path);
+    writeDurably(temp, own);
+    try {
+      renameSync(temp, path);
+    } catch (e) {
+      unlinkQuietly(temp);
+      throw e;
+    }
+    fsyncDirectory(dirname(path));
+    return true;
+  } finally {
+    unlinkIfHolds(claim, claimBytes);
+  }
+}
+
+/**
+ * Takes the workbench write lock, waiting on a live holder until `waitMs`
+ * and then answering `conflict/lock-timeout` naming it. Every mutation and
+ * every recovery goes through here.
+ */
+export async function acquireLock(wb: Workbench, options: WriteOptions = {}): Promise<Result<HeldLock>> {
+  ensureSelfIgnore(wb);
+  const lock = lockPathFor(wb);
   const now = options.now ?? Date.now;
   const waitMs = options.waitMs ?? LOCK_STALE_MS + 5_000;
   const pollMs = options.pollMs ?? 50;
   const started = now();
   for (;;) {
-    try {
-      const fd = openSync(lock, "wx", 0o644);
-      try {
-        writeSync(fd, `pid: ${process.pid}\nacquired_at: ${new Date(now()).toISOString()}\n`);
-      } finally {
-        closeSync(fd);
-      }
-      held.add(lock);
-      installExitHook();
-      return { ok: true, value: lock };
-    } catch (e) {
-      if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
-    }
-    if (isStale(lock, now())) {
-      try {
-        unlinkSync(lock);
-      } catch {
-        /* another waiter reaped it first */
-      }
-      continue;
+    const own = lockContent(now);
+    if (linkComplete(lock, own)) return hold(lock, own, now());
+    const j = judge(lock, now());
+    if (j.state === "gone") continue; // released between the create and the read
+    if (j.state === "stale") {
+      await options.lockHooks?.afterJudge?.({ path: lock, bytes: j.bytes });
+      const mine = lockContent(now);
+      if (takeOver(lock, j.bytes, mine, now)) return hold(lock, mine, now());
     }
     if (now() - started >= waitMs) {
-      return err("conflict", "lock-timeout", `${path} is locked by another writer (${describeHolder(lock)}) and was not released within ${waitMs} ms`);
+      return err("conflict", "lock-timeout", `the workbench write lock ${STATE_DIR}/${LOCK_FILE} is held by another writer (${describeHolder(lock)}) and was not released within ${waitMs} ms`);
     }
     await sleep(pollMs);
   }
 }
 
-function releaseLock(lock: string): void {
-  held.delete(lock);
-  try {
-    unlinkSync(lock);
-  } catch {
-    /* already gone: reaped as stale by a waiter after this process stalled */
+/**
+ * Records the lock as held, then clears what dead waiters left: takeover
+ * claims on any instance but the one now held (a claim on a replaced
+ * instance is never honoured, since its re-check fails, but it would stay),
+ * and temp files older than `LOCK_STALE_MS`.
+ */
+function hold(lock: string, bytes: Buffer, nowMs: number): Result<HeldLock> {
+  held.set(lock, bytes);
+  installExitHook();
+  const dir = dirname(lock);
+  const ownClaim = `${LOCK_FILE}${TAKEOVER_INFIX}${hexOf(bytes)}`;
+  for (const name of readdirSync(dir)) {
+    const abs = join(dir, name);
+    if (name.startsWith(`${LOCK_FILE}${TAKEOVER_INFIX}`) && !name.startsWith(ownClaim)) {
+      unlinkQuietly(abs);
+    } else if (name.startsWith(".") && name.endsWith(".tmp")) {
+      try {
+        const st = statSync(abs);
+        if (st.isFile() && nowMs - st.mtimeMs >= LOCK_STALE_MS) unlinkQuietly(abs);
+      } catch {
+        /* gone already */
+      }
+    }
   }
+  return { ok: true, value: { path: lock, bytes } };
+}
+
+/** Releases a lock this process holds; a lock that is no longer this instance is left alone. */
+export function releaseLock(lock: HeldLock): void {
+  held.delete(lock.path);
+  unlinkIfHolds(lock.path, lock.bytes);
 }
 
 function installExitHook(): void {
   if (exitHookInstalled) return;
   exitHookInstalled = true;
   process.on("exit", () => {
-    for (const lock of held) {
-      try {
-        unlinkSync(lock);
-      } catch {
-        /* nothing to release */
-      }
-    }
+    for (const [lock, bytes] of held) unlinkIfHolds(lock, bytes);
   });
-}
-
-/** Older than `LOCK_STALE_MS` by mtime, and its recorded holder is not running (or none is recorded). */
-function isStale(lock: string, nowMs: number): boolean {
-  let mtime: number;
-  try {
-    mtime = statSync(lock).mtimeMs;
-  } catch {
-    return false; // gone between the EEXIST and now: the next open decides
-  }
-  if (nowMs - mtime < LOCK_STALE_MS) return false;
-  const pid = holderPid(lock);
-  if (pid === null) return true;
-  try {
-    process.kill(pid, 0);
-    return false; // alive
-  } catch (e) {
-    return (e as NodeJS.ErrnoException).code === "ESRCH";
-  }
-}
-
-function holderPid(lock: string): number | null {
-  try {
-    const m = /^pid: ([0-9]+)$/m.exec(readFileSync(lock, "utf-8"));
-    return m === null ? null : Number(m[1]);
-  } catch {
-    return null;
-  }
 }
 
 function describeHolder(lock: string): string {
   try {
-    return readFileSync(lock, "utf-8").trim().split("\n").join(", ");
+    const text = readFileSync(lock, "utf-8").trim();
+    const fields = text.length === 0 ? "records nothing" : text.split("\n").join(", ");
+    return /^host: /m.test(text) ? fields : `${fields}, no host recorded: read as ${hostname()}`;
   } catch {
     return "holder unknown";
   }
