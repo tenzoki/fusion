@@ -10264,7 +10264,7 @@ var protocol_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.protocol/v1",
   title: "fusion.protocol/v1",
-  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. FJ01 implements inspect, list, show, validate and transition; the other nine are validated here and answered operation-unknown/not-implemented-in-fj01 until their packages land. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there.",
+  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there.",
   type: "object",
   required: ["op"],
   properties: {
@@ -10343,7 +10343,16 @@ var protocol_schema_default = {
             store: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/token" }
           }
         },
-        narrative: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/narrative" },
+        narrative: {
+          type: "object",
+          description: "The Markdown half of the new pair: its path, as the common narrative's, and optionally its body. With content the operation writes both files; without it the narrative must already exist.",
+          additionalProperties: false,
+          required: ["path"],
+          properties: {
+            path: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/narrative/properties/path" },
+            content: { type: "string", description: "The exact bytes of the narrative, as a UTF-8 string." }
+          }
+        },
         payload: { type: "object", description: "The kind-specific control fields the new record starts with." }
       }
     },
@@ -10409,9 +10418,10 @@ var protocol_schema_default = {
                 }
               ]
             },
-            answer_ref: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }] },
-            implementation_ref: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/git_commit" }] },
-            superseded_by: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }] }
+            answer_ref: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" }] },
+            implementation_ref: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/git_commit" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" }] },
+            superseded_by: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }] },
+            deferral: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.record/v1#/$defs/deferral" }] }
           }
         }
       }
@@ -10514,7 +10524,8 @@ var protocol_schema_default = {
         expected_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
         actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
         plan: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
-        revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256", description: "The hash of the plan narrative as accepted." }
+        revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256", description: "The hash of the plan narrative as accepted." },
+        role: { type: "string", enum: ["spec", "plan"], description: "The active_documents role the record is bound in; absent means plan." }
       }
     },
     {
@@ -10572,9 +10583,9 @@ var protocol_schema_default = {
         path: {
           allOf: [
             { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
-            { type: "string", pattern: "(^|/)(package|[^/]+\\.record)\\.json$" }
+            { type: "string", pattern: "(^|/)(package|[^/]+\\.record|[^/]+\\.evidence)\\.json$" }
           ],
-          description: "The control file of the pair, workbench-relative: work-packages/<d>/package.json or <store>/<name>.record.json."
+          description: "The control file of the pair, workbench-relative: work-packages/<d>/package.json or <store>/<name>.record.json. The pattern also admits an evidence record's file, <store>/<name>.evidence.json, a correction's <basename>.<n>.evidence.json included; inspect's kinds say whether the codec reads that kind."
         }
       }
     }
@@ -10948,29 +10959,7 @@ var record_schema_default = {
           description: "The Deferred: line's target and ruler, in the shape the conventions spell (Deferred: <target> \u2014 <reason>; ruled by <actor>, <person>); the reason stays Markdown. null in every state but deferred.",
           oneOf: [
             { type: "null" },
-            {
-              type: "object",
-              additionalProperties: false,
-              required: ["ruled_by", "target"],
-              properties: {
-                target: {
-                  description: "A resolvable record, artefact, foreign or legacy citation, or a named external release or undertaking such as v1.x; a phrase never becomes a manufactured record id.",
-                  oneOf: [
-                    { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" },
-                    {
-                      type: "object",
-                      additionalProperties: false,
-                      required: ["kind", "name"],
-                      properties: {
-                        kind: { const: "external" },
-                        name: { type: "string", minLength: 1 }
-                      }
-                    }
-                  ]
-                },
-                ruled_by: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" }
-              }
-            }
+            { $ref: "#/$defs/deferral" }
           ]
         }
       },
@@ -10996,6 +10985,30 @@ var record_schema_default = {
           then: { type: "object", properties: { implementation_ref: { type: "null" }, superseded_by: { type: "null" }, deferral: { type: "object" } } }
         }
       ]
+    },
+    deferral: {
+      type: "object",
+      description: "A deferred decision's target and who ruled (spec section 4.3, Prior's FJ01b response item 13). One definition, referenced by decision_control.deferral and by the transition payload of fusion.protocol/v1.",
+      additionalProperties: false,
+      required: ["ruled_by", "target"],
+      properties: {
+        target: {
+          description: "A resolvable record, artefact, foreign or legacy citation, or a named external release or undertaking such as v1.x; a phrase never becomes a manufactured record id.",
+          oneOf: [
+            { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" },
+            {
+              type: "object",
+              additionalProperties: false,
+              required: ["kind", "name"],
+              properties: {
+                kind: { const: "external" },
+                name: { type: "string", minLength: 1 }
+              }
+            }
+          ]
+        },
+        ruled_by: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" }
+      }
     }
   }
 };

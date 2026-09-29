@@ -1,0 +1,20 @@
+{
+  "op": "adopt-plan",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "0f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a",
+  "record": {
+    "path": "work-packages/260928-1200-parser-fix/package.json"
+  },
+  "expected_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actor": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "plan": {
+    "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+    "record_id": "c4e2a7d1-8b3f-4a6e-9d2c-5f1a7b3e8c4d",
+    "display": "260928-1100-parser-fix-spec.md"
+  },
+  "revision": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "role": "spec"
+}

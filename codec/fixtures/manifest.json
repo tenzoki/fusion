@@ -1258,7 +1258,7 @@
     "path": "valid/protocol/create.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
-    "note": "create with a pre-assigned id, the filer, the origin and the scope (spec section 6 row create). Answered operation-unknown/not-implemented-in-fj01."
+    "note": "create with a pre-assigned id, the filer, the origin and the scope (spec section 6 row create)."
   },
   {
     "path": "valid/protocol/transition.json",
@@ -1270,49 +1270,79 @@
     "path": "valid/protocol/claim.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
-    "note": "claim as its own operation (spec section 6). Answered operation-unknown/not-implemented-in-fj01."
+    "note": "claim as its own operation (spec section 6)."
   },
   {
     "path": "valid/protocol/release.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
-    "note": "release with a reason. Answered operation-unknown/not-implemented-in-fj01."
+    "note": "release with a reason."
   },
   {
     "path": "valid/protocol/set-mode.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
-    "note": "set-mode with a user-word source. Answered operation-unknown/not-implemented-in-fj01."
+    "note": "set-mode with a user-word source."
   },
   {
     "path": "valid/protocol/set-dependencies.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
-    "note": "set-dependencies with one succeeded edge. Answered operation-unknown/not-implemented-in-fj01."
+    "note": "set-dependencies with one succeeded edge."
   },
   {
     "path": "valid/protocol/adopt-plan.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
-    "note": "adopt-plan binds the plan record at the accepted narrative hash. Answered operation-unknown/not-implemented-in-fj01."
+    "note": "adopt-plan binds the plan record at the accepted narrative hash."
   },
   {
     "path": "valid/protocol/attach-evidence.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
-    "note": "attach-evidence with a revision-pinned evidence_ref. Answered operation-unknown/not-implemented-in-fj01."
+    "note": "attach-evidence with a revision-pinned evidence_ref."
   },
   {
     "path": "valid/protocol/reconcile.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
-    "note": "reconcile over the whole workbench. Answered operation-unknown/not-implemented-in-fj01."
+    "note": "reconcile over the whole workbench."
   },
   {
     "path": "valid/protocol/migration.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
-    "note": "migration survey needs no plan. Answered operation-unknown/not-implemented-in-fj01."
+    "note": "migration survey needs no plan; migration lands in FJ04."
+  },
+  {
+    "path": "valid/protocol/create-with-content.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "create of a package carrying its Markdown body in narrative.content, so one request writes both halves of the pair; content is optional and create.json, without it, still validates."
+  },
+  {
+    "path": "valid/protocol/transition-decision-deferred.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "transition of a decision to deferred with payload.deferral naming an external target and who ruled, the one definition record.schema.json holds at $defs/deferral."
+  },
+  {
+    "path": "valid/protocol/transition-decision-answered-by-citation.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "transition of a decision to answered whose answer_ref is a legacy citation string: the payload admits any reference, as decision_control does, not only a record_ref."
+  },
+  {
+    "path": "valid/protocol/adopt-plan-role-spec.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "adopt-plan with role spec binds a spec record; role is optional and absent means plan."
+  },
+  {
+    "path": "valid/protocol/show-evidence.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "The record selector admits an evidence record's file, <name>.evidence.json, beside package.json and <name>.record.json."
   },
   {
     "path": "invalid/protocol/inspect-unknown-key.json",
@@ -1425,5 +1455,26 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "op is required."
+  },
+  {
+    "path": "invalid/protocol/create-content-not-string.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "narrative.content is the Markdown body as one string; a list of lines is refused."
+  },
+  {
+    "path": "invalid/protocol/adopt-plan-role-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "adopt-plan's role is spec or plan."
+  },
+  {
+    "path": "invalid/protocol/transition-deferral-without-ruler.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A deferral names its target and who ruled; one without ruled_by is refused."
   }
 ]

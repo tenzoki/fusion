@@ -364,29 +364,7 @@
           "description": "The Deferred: line's target and ruler, in the shape the conventions spell (Deferred: <target> — <reason>; ruled by <actor>, <person>); the reason stays Markdown. null in every state but deferred.",
           "oneOf": [
             { "type": "null" },
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["ruled_by", "target"],
-              "properties": {
-                "target": {
-                  "description": "A resolvable record, artefact, foreign or legacy citation, or a named external release or undertaking such as v1.x; a phrase never becomes a manufactured record id.",
-                  "oneOf": [
-                    { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/reference" },
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": ["kind", "name"],
-                      "properties": {
-                        "kind": { "const": "external" },
-                        "name": { "type": "string", "minLength": 1 }
-                      }
-                    }
-                  ]
-                },
-                "ruled_by": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" }
-              }
-            }
+            { "$ref": "#/$defs/deferral" }
           ]
         }
       },
@@ -412,6 +390,30 @@
           "then": { "type": "object", "properties": { "implementation_ref": { "type": "null" }, "superseded_by": { "type": "null" }, "deferral": { "type": "object" } } }
         }
       ]
+    },
+    "deferral": {
+      "type": "object",
+      "description": "A deferred decision's target and who ruled (spec section 4.3, Prior's FJ01b response item 13). One definition, referenced by decision_control.deferral and by the transition payload of fusion.protocol/v1.",
+      "additionalProperties": false,
+      "required": ["ruled_by", "target"],
+      "properties": {
+        "target": {
+          "description": "A resolvable record, artefact, foreign or legacy citation, or a named external release or undertaking such as v1.x; a phrase never becomes a manufactured record id.",
+          "oneOf": [
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/reference" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "name"],
+              "properties": {
+                "kind": { "const": "external" },
+                "name": { "type": "string", "minLength": 1 }
+              }
+            }
+          ]
+        },
+        "ruled_by": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" }
+      }
     }
   }
 }
