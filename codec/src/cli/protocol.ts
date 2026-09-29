@@ -55,11 +55,10 @@ export const OPERATIONS = [
 export type Operation = (typeof OPERATIONS)[number];
 
 /** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
-export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"];
+export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"];
 
 /** The package that lands each operation not yet answered: the detail of its `not-implemented` refusal. */
 export const LANDS_IN: Partial<Record<Operation, string>> = {
-  reconcile: "FJ02",
   migration: "FJ04",
 };
 
@@ -218,6 +217,7 @@ export interface AttachEvidenceRequest extends Mutation<"attach-evidence"> {
 }
 
 export interface ReconcileRequest extends Base<"reconcile"> {
+  /** A store or a container, workbench-relative, as `list` takes it; absent is the whole workbench. */
   scope?: string;
 }
 

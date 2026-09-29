@@ -288,17 +288,39 @@ function hashOrNull(abs: string): string | null {
   }
 }
 
+/** The read half of the plan context: what a body under `read` may ask, as a plan function asks it under the lock. */
+export type ReadContext = Pick<PlanContext, "wb" | "readPair" | "resolveRecordId" | "resolveArtefact">;
+
 function planContext(wb: Workbench, blocked: readonly Blocked[]): PlanContext {
+  return {
+    ...readContext(wb, blocked),
+    cas(pair, expected) {
+      if (pair.revision !== expected) return no("conflict", "revision-mismatch", `stored ${pair.revision} expected ${expected}`);
+      return ok(undefined);
+    },
+    validateResult(schemaId, value, what) {
+      const v = validate(schemaId, value);
+      if (v.ok) return ok(undefined);
+      if (v.class === "unsupported-format") return no("unsupported-format", "unknown-schema", `no schema ${v.schemaId}`);
+      return { ok: false, error: { class: "schema-invalid", reason: "result-invalid", detail: `${what}: ${describeErrors(v.errors)}`, errors: v.errors } };
+    },
+  };
+}
+
+/**
+ * The reads a plan function and a read body share, over the blocked intents
+ * each was given: a pair (a path a blocked intent names is `recovery-blocked`),
+ * an id resolved by walking every control file, an artefact at its hash.
+ * `reconcile` resolves every reference it reports through the same functions a
+ * mutation resolves them through, so the two never disagree on what resolves.
+ */
+export function readContext(wb: Workbench, blocked: readonly Blocked[]): ReadContext {
   return {
     wb,
     readPair(path) {
       const b = blockedOn(blocked, path);
       if (b !== undefined) return { ok: false, error: recoveryBlocked(b) };
       return readPair(wb, path);
-    },
-    cas(pair, expected) {
-      if (pair.revision !== expected) return no("conflict", "revision-mismatch", `stored ${pair.revision} expected ${expected}`);
-      return ok(undefined);
     },
     resolveRecordId(id) {
       const hits: string[] = [];
@@ -321,12 +343,6 @@ function planContext(wb: Workbench, blocked: readonly Blocked[]): PlanContext {
       if (current === null) return no("unresolved-reference", "artefact-missing", `${ref.path} does not exist in ${wb.root}`);
       if (current !== ref.sha256) return no("missing-evidence", "artefact-changed", `${ref.path} is ${current}, the reference names ${ref.sha256}`);
       return ok({ path: ref.path, sha256: current });
-    },
-    validateResult(schemaId, value, what) {
-      const v = validate(schemaId, value);
-      if (v.ok) return ok(undefined);
-      if (v.class === "unsupported-format") return no("unsupported-format", "unknown-schema", `no schema ${v.schemaId}`);
-      return { ok: false, error: { class: "schema-invalid", reason: "result-invalid", detail: `${what}: ${describeErrors(v.errors)}`, errors: v.errors } };
     },
   };
 }

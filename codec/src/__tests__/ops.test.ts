@@ -12,7 +12,7 @@
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -35,7 +35,7 @@ import {
 } from "../cli/protocol.js";
 import { installInlined } from "../cli/schemas.js";
 import { CutReached, mutate } from "../kernel.js";
-import { openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
+import { lockPathFor, openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
 import { MAX_RECORD_BYTES, strictParse } from "../strict-json.js";
 import { transitions } from "../transitions.js";
 import { loadSchemas } from "../validate.js";
@@ -1907,5 +1907,517 @@ describe("attach-evidence, evidence records in the walk, and evidence checked on
     const r = await dispatch(transitionRequest({ record: { path: ev.path }, expected_revision: ev.revision, to: "closed", payload: {} }));
     expect(errorOf(r)).toEqual({ class: "conflict", reason: "evidence-immutable" });
     expect(bytesOf(ev.path).equals(before[ev.path] as Buffer)).toBe(true);
+  });
+});
+
+// --- reconcile -------------------------------------------------------------------------
+//
+// One case per section with its finding provoked on the temp copy, and the
+// section 9 checks the step pins: historical markers do not change the JSON
+// decision, merge conflicts, and local locks are not cross-checkout
+// protection. Every case also holds that reconcile repairs nothing.
+
+describe("reconcile", () => {
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const OPEN_ID = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
+  const DONE_ID = "b6e23b92-0f65-4a35-89c9-2a53e4ac37c0";
+  const ISSUE_ID = "d068e1ae-3f62-429a-880a-2785763aaf01";
+  const MISSING_EVIDENCE = "51f3db37-ef6a-4e92-88d8-6b695df10327";
+  const CONTAINER = "work-packages/260928-1200-parser-fix";
+  const OPEN_NARRATIVE = `${CONTAINER}/260928-1200-parser-fix.md`;
+  const ISSUE_NARRATIVE = "shared/issues/260928-1400-parser-fails-on-empty-input.md";
+  const refTo = (record_id: string): RecordRef => ({ workbench_id: WB_ID, record_id });
+
+  type Report = {
+    workbench: string;
+    state: string;
+    scope: string | null;
+    checked: number;
+    intents: Array<{ operation_id: string; op: string; files: Array<{ path: string; state: string }> }>;
+    records: Array<{ path: string; class: string; reason: string; detail: string }>;
+    references: Array<{ path: string; at: string; status: string; target?: string; class?: string; reason?: string }>;
+    evidence: Array<{ path: string; at: string; record_id: string; revision: string; policy: string; status: string; class?: string; reason?: string }>;
+    dependencies: Array<Record<string, unknown>>;
+    narratives: Array<{ path: string; narrative: string; class: string; reason: string; line: string; line_number: number }>;
+  };
+  const reconcile = async (scope?: string, at: string = root): Promise<Report> => okResult(await dispatch({ op: "reconcile", workbench: at, ...(scope !== undefined ? { scope } : {}) })) as unknown as Report;
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+  const parsed = (path: string): Record<string, unknown> => {
+    const p = strictParse(bytesOf(path));
+    if (!p.ok) throw new Error(p.detail);
+    return p.value as Record<string, unknown>;
+  };
+  const writeAt = (path: string, bytes: string | Buffer): void => {
+    mkdirSync(join(root, path, ".."), { recursive: true });
+    writeFileSync(join(root, path), bytes);
+  };
+  /** A control record changed by hand, as a pull or an editor would leave it: the operations' checks never ran on it. */
+  const rewrite = (path: string, change: (c: Record<string, unknown>) => Record<string, unknown>): void => writeAt(path, serialise(change(parsed(path))));
+  /** Every file of the workbench with its bytes, `.json-state/` included: reconcile repairs nothing. */
+  const everything = (at: string = root): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const walk = (dir: string, rel: string): void => {
+      for (const e of readdirSync(dir, { withFileTypes: true })) {
+        const p = rel === "" ? e.name : `${rel}/${e.name}`;
+        if (e.isDirectory()) walk(join(dir, e.name), p);
+        else out[p] = readFileSync(join(dir, e.name)).toString("base64");
+      }
+    };
+    walk(at, "");
+    return out;
+  };
+  const move = async (path: string, to: string, payload: TransitionRequest["payload"] = {}): Promise<Response> =>
+    dispatch(transitionRequest({ operation_id: randomUUID(), record: { path }, expected_revision: revision(path), to, reason: `move to ${to}`, payload }));
+
+  /** A new open package, created through the kernel with the given origin; its control path. */
+  const newPackage = async (id: string, stem: string, origin: CreateRequest["origin"] = { kind: "user-request", ref: null }): Promise<string> => {
+    okResult(
+      await dispatch({
+        op: "create",
+        workbench: root,
+        operation_id: randomUUID(),
+        id,
+        kind: "package",
+        filed_by: ACTOR,
+        origin,
+        scope: { container: null, store: "work-packages" },
+        narrative: { path: `work-packages/${stem}/${stem}.md`, content: `# ${stem}\n` },
+        payload: { domain: "code" },
+      } satisfies CreateRequest),
+    );
+    return `work-packages/${stem}/package.json`;
+  };
+  const newPlan = async (id: string, stem: string): Promise<{ control: string; narrative: string }> => {
+    const narrative = `${CONTAINER}/plans/${stem}.md`;
+    okResult(
+      await dispatch({
+        op: "create",
+        workbench: root,
+        operation_id: randomUUID(),
+        id,
+        kind: "plan",
+        filed_by: ACTOR,
+        origin: { kind: "package", ref: refTo(OPEN_ID) },
+        scope: { container: CONTAINER, store: "plans" },
+        narrative: { path: narrative, content: `# ${stem}\n` },
+        payload: { state: "open", steps: [{ id: "s1", state: "open" }], criteria: [], acceptance: null },
+      } satisfies CreateRequest),
+    );
+    return { control: `${CONTAINER}/plans/${stem}.record.json`, narrative };
+  };
+  const adopt = (planId: string, narrative: string, operation_id: string = randomUUID()): AdoptPlanRequest => ({
+    op: "adopt-plan",
+    workbench: root,
+    operation_id,
+    record: { path: OPEN },
+    expected_revision: revision(OPEN),
+    actor: ACTOR,
+    plan: refTo(planId),
+    revision: revision(narrative),
+  });
+  const setDeps = async (path: string, depends_on: SetDependenciesRequest["depends_on"]): Promise<Response> =>
+    dispatch({ op: "set-dependencies", workbench: root, operation_id: randomUUID(), record: { path }, expected_revision: revision(path), actor: ACTOR, depends_on } satisfies SetDependenciesRequest);
+  const attach = async (path: string, evidence: EvidenceRef): Promise<Response> =>
+    dispatch({ op: "attach-evidence", workbench: root, operation_id: randomUUID(), record: { path }, expected_revision: revision(path), actor: ACTOR, evidence } satisfies AttachEvidenceRequest);
+
+  // --- the whole report on the scratch workbench ---
+
+  it("the scratch workbench: every section, deterministic, nothing written, no clock value and no absolute path but the echoed root", async () => {
+    const before = everything();
+    const report = await reconcile();
+    expect(report).toEqual({
+      workbench: root,
+      state: "json-control",
+      scope: null,
+      checked: 3,
+      intents: [],
+      records: [],
+      references: [
+        { path: ISSUE, at: "/references/0", status: "resolved", target: OPEN },
+        { path: DONE, at: "/active_documents/0/ref", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" },
+        { path: DONE, at: "/evidence/0/ref", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" },
+        { path: DONE, at: "/outcome/evidence/0/ref", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" },
+      ],
+      evidence: ["/evidence/0", "/outcome/evidence/0"].map((at) => ({
+        path: DONE,
+        at,
+        record_id: MISSING_EVIDENCE,
+        revision: "sha256:ee9f013094faaf0ba88e8ac54d7aecb82e7cc6c8b48a3b2bf7d6905f86354d09",
+        policy: "prior-enforced",
+        status: "stale",
+        class: "unresolved-reference",
+        reason: "record-not-found",
+      })),
+      dependencies: [],
+      // The open package's narrative carries **Status:** open; the done package's **Status:** done is history and not read.
+      narratives: [{ path: OPEN, narrative: OPEN_NARRATIVE, class: "conflict", reason: "status-copy-in-narrative", line: "**Status:** open", line_number: 4 }],
+    });
+    const text = JSON.stringify(report);
+    expect(text.split(root).length - 1, "the root appears once, as workbench").toBe(1);
+    expect(text, "no clock value").not.toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/);
+    expect(await reconcile()).toEqual(report);
+    expect(everything(), "reconcile wrote nothing").toEqual(before);
+    // validate's finding set is FJ01's on the same workbench (the recorded 06-validate).
+    expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ checked: 3, valid: true, findings: [] });
+  });
+
+  it("after the recorded 02-transition the claimed package's narrative still carries **Status:** open, and reconcile reports it", async () => {
+    okResult(await dispatch(transitionRequest()));
+    expect((await reconcile()).narratives).toEqual([{ path: OPEN, narrative: OPEN_NARRATIVE, class: "conflict", reason: "status-copy-in-narrative", line: "**Status:** open", line_number: 4 }]);
+  });
+
+  it("scope narrows the walk as list's does; a missing scope is unknown-scope/scope-missing", async () => {
+    const scoped = await reconcile("shared/issues");
+    expect(scoped).toMatchObject({ scope: "shared/issues", checked: 1, narratives: [], evidence: [] });
+    expect(scoped.references.map((r) => r.path)).toEqual([ISSUE]);
+    expect((await reconcile(CONTAINER)).checked).toBe(1);
+    expect(errorOf(await dispatch({ op: "reconcile", workbench: root, scope: "shared/plans" }))).toEqual({ class: "unknown-scope", reason: "scope-missing" });
+  });
+
+  it("the bundle answers reconcile as dispatch does", async () => {
+    const r = spawnSync(process.execPath, [BUNDLE], { input: JSON.stringify({ op: "reconcile", workbench: root }), encoding: "utf-8" });
+    expect(r.status, r.stderr).toBe(0);
+    expect(JSON.parse(r.stdout)).toEqual(await dispatch({ op: "reconcile", workbench: root }));
+  });
+
+  // --- intents ---
+
+  it("intents: a blocked intent with every file state (post, pre, diverged) and its operation; nothing repaired; a recoverable one is recovered by the read and not reported", async () => {
+    const a = await newPlan("aaaaaaaa-0000-4000-8000-00000000000a", "260929-1102-plan-a");
+    const b = await newPlan("bbbbbbbb-0000-4000-8000-00000000000b", "260929-1103-plan-b");
+    okResult(await dispatch(adopt("aaaaaaaa-0000-4000-8000-00000000000a", a.narrative)));
+    // The replacement writes the new plan, the replaced plan, the package: cut after the first, then the package edited by hand.
+    const id = "9a9a9a9a-0000-4000-8000-000000000001";
+    await expect(dispatch(adopt("bbbbbbbb-0000-4000-8000-00000000000b", b.narrative, id), { kernel: { faults: { cutAt: "after-write:0" } } })).rejects.toBeInstanceOf(CutReached);
+    rewrite(OPEN, (c) => ({ ...c, domain: "data" }));
+
+    const before = everything();
+    const report = await reconcile();
+    expect(report.intents).toEqual([
+      {
+        operation_id: id,
+        op: "adopt-plan",
+        files: [
+          { path: b.control, state: "post" },
+          { path: a.control, state: "pre" },
+          { path: OPEN, state: "diverged" },
+        ],
+      },
+    ]);
+    expect(report.records.filter((f) => f.reason === "recovery-blocked").map((f) => f.path).sort()).toEqual([OPEN, a.control, b.control].sort());
+    expect(everything(), "the intent and every file it names stand as they were").toEqual(before);
+    expect((await reconcile("shared/issues")).intents, "no path of the intent is in scope").toEqual([]);
+
+    // A pending intent whose files are all at pre or post may be a live writer's: the read takes the lock, recovers it, and it is gone.
+    rmSync(join(root, ".json-state", "journal", id), { recursive: true });
+    const issueMove = transitionRequest({ operation_id: "9a9a9a9a-0000-4000-8000-000000000002", record: { path: ISSUE }, expected_revision: revision(ISSUE), to: "in_progress", payload: {} });
+    await expect(dispatch(issueMove, { kernel: { faults: { cutAt: "after-intent" } } })).rejects.toBeInstanceOf(CutReached);
+    expect((parsed(ISSUE).control as Record<string, unknown>).state).toBe("open");
+    const after = await reconcile();
+    expect(after.intents).toEqual([]);
+    expect((parsed(ISSUE).control as Record<string, unknown>).state, "recovered by the read").toBe("in_progress");
+    expect(existsSync(join(root, ".json-state", "journal", issueMove.operation_id))).toBe(false);
+  });
+
+  // --- records ---
+
+  it("records: every validate finding, and an evidence file outside a reviews/ store, which validate does not report", async () => {
+    const outside = await seedEvidence(root, { package: OPEN, id: "e7e7e7e7-0000-4000-8000-000000000301", basename: "260929-1301-review", dir: `${CONTAINER}/analyses` });
+    const shared = await seedEvidence(root, { package: OPEN, id: "e7e7e7e7-0000-4000-8000-000000000302", basename: "260929-1302-review", dir: "shared/reviews" });
+    const inContainer = await seedEvidence(root, { package: OPEN, id: "e7e7e7e7-0000-4000-8000-000000000303", basename: "260929-1303-review" });
+    expect(inContainer.path).toBe(`${CONTAINER}/reviews/260929-1303-review.evidence.json`);
+    const open = fixture("package/open.json");
+    writeFileSync(join(root, OPEN), serialise({ ...open, status: "claimed" })); // claimed without a claim
+    unlinkSync(join(root, ISSUE_NARRATIVE));
+
+    const report = await reconcile();
+    const validated = okResult(await dispatch({ op: "validate", workbench: root })).findings as Report["records"];
+    const placement = report.records.filter((f) => f.reason === "evidence-outside-reviews");
+    expect(placement.map((f) => [f.path, f.class])).toEqual([[outside.path, "unknown-scope"]]);
+    expect(report.records.filter((f) => f.reason !== "evidence-outside-reviews"), "the rest is validate's findings, in validate's order").toEqual(validated);
+    expect(validated.map((f) => `${f.path} ${f.class}/${f.reason}`).sort()).toEqual([`${ISSUE} unresolved-reference/narrative-missing`, `${OPEN} schema-invalid/schema`].sort());
+    expect(validated.some((f) => f.path === outside.path), "validate keeps its finding set").toBe(false);
+    expect(report.records.some((f) => f.path === shared.path || f.path === inContainer.path)).toBe(false);
+    // A record the schema refuses is reported here and contributes to no other section.
+    expect(report.references.some((r) => r.path === OPEN)).toBe(false);
+    expect(report.narratives.some((n) => n.path === OPEN)).toBe(false);
+  });
+
+  // --- references ---
+
+  it("references: resolved, unresolved, ambiguous, foreign and unchecked, over every field that carries one", async () => {
+    // Another control file carrying the issue's id makes a reference to that id ambiguous.
+    writeAt("shared/issues/260928-1401-duplicate.record.json", bytesOf(ISSUE));
+    const foreignWb = "0e0e0e0e-0000-4000-8000-000000000000";
+    const artefact = { path: OPEN_NARRATIVE, sha256: revision(OPEN_NARRATIVE), kind: "other" };
+    rewrite(ISSUE, (c) => ({
+      ...c,
+      references: [
+        { ...refTo(OPEN_ID), display: "260928-1200-parser-fix.md" },
+        refTo("99999999-0000-4000-8000-000000000009"),
+        refTo(ISSUE_ID),
+        { workbench_id: foreignWb, record_id: OPEN_ID },
+        { project: "menue-rs", citation: "260905-2054-reconciliation.md" },
+        "260928-1200-parser-fix.md",
+        artefact,
+        { ...artefact, sha256: "sha256:" + "0".repeat(64) },
+        { path: "shared/reviews/260929-1300-absent.md", sha256: "sha256:" + "0".repeat(64), kind: "review" },
+      ],
+    }));
+    // The record kinds' own reference fields, from their fixtures, each beside a narrative.
+    const placed: Record<string, string> = {};
+    for (const name of ["decision-deferred", "decision-implemented", "plan-in-progress", "discussion-closed", "issue-closed"]) {
+      const record = fixture(`record/${name}.json`);
+      const narrative = (record.narrative as { path: string }).path;
+      const control = narrative.replace(/\.md$/, ".record.json");
+      writeAt(narrative, `# ${name}\n`);
+      writeAt(control, serialise(record));
+      placed[name] = control;
+    }
+    // A package's origin and its mode's source.
+    const p1 = await newPackage("11111111-1111-4111-8111-111111111111", "260929-1101-first", { kind: "package", ref: refTo(OPEN_ID) });
+    const word = { path: "shared/memos/260929-0900-the-users-word.md", sha256: "", kind: "memo" };
+    writeAt(word.path, "Run it autonomously.\n");
+    word.sha256 = revision(word.path);
+    okResult(await dispatch({ op: "set-mode", workbench: root, operation_id: randomUUID(), record: { path: p1 }, expected_revision: revision(p1), actor: ACTOR, mode: { value: "autonomous", source: { kind: "user-word", ref: word } } } satisfies SetModeRequest));
+
+    const report = await reconcile();
+    expect(report.records, "every file is valid").toEqual([]);
+    const of = (path: string): Array<[string, string, string]> =>
+      report.references.filter((r) => r.path === path).map((r) => [r.at, r.status, r.target ?? `${r.class}/${r.reason}`] as [string, string, string]).map(([at, status, x]) => [at, status, status === "foreign" || status === "unchecked" ? "" : x]);
+    expect(of(ISSUE)).toEqual([
+      ["/references/0", "resolved", OPEN],
+      ["/references/1", "unresolved", "unresolved-reference/record-not-found"],
+      ["/references/2", "ambiguous", "conflict/ambiguous-reference"],
+      ["/references/3", "foreign", ""],
+      ["/references/4", "foreign", ""],
+      ["/references/5", "unchecked", ""],
+      ["/references/6", "resolved", OPEN_NARRATIVE],
+      ["/references/7", "unresolved", "missing-evidence/artefact-changed"],
+      ["/references/8", "unresolved", "unresolved-reference/artefact-missing"],
+    ]);
+    expect(of(placed["decision-deferred"] as string)).toEqual([["/control/deferral/target", "unchecked", ""]]);
+    expect(of(placed["decision-implemented"] as string)).toEqual([
+      ["/control/answer_ref", "unresolved", "unresolved-reference/artefact-missing"],
+      ["/control/implementation_ref", "unchecked", ""],
+    ]);
+    expect(of(placed["plan-in-progress"] as string)).toEqual([
+      ["/references/0", "unresolved", "unresolved-reference/record-not-found"],
+      ["/control/acceptance/ref", "unresolved", "unresolved-reference/record-not-found"],
+    ]);
+    expect(of(placed["discussion-closed"] as string)).toEqual([
+      ["/control/outcome_refs/0", "unresolved", "unresolved-reference/record-not-found"],
+      ["/control/outcome_refs/1", "unchecked", ""],
+    ]);
+    expect(of(placed["issue-closed"] as string)).toEqual([["/control/disposition/reason_ref", "unchecked", ""]]);
+    expect(of(p1)).toEqual([
+      ["/origin/ref", "resolved", OPEN],
+      ["/mode/source/ref", "resolved", word.path],
+    ]);
+
+    // The user's word edited afterwards: the source no longer resolves at its hash.
+    writeAt(word.path, "Run it autonomously, but ask first.\n");
+    expect((await reconcile()).references.find((r) => r.path === p1 && r.at === "/mode/source/ref")).toMatchObject({ status: "unresolved", class: "missing-evidence", reason: "artefact-changed" });
+  });
+
+  // --- evidence ---
+
+  it("evidence: fresh after attach and after status changes alone, stale once the brief changes, and a binding naming no record", async () => {
+    const ev = await seedEvidence(root, { package: OPEN, id: "e7e7e7e7-0000-4000-8000-000000000401", basename: "260929-1401-review" });
+    okResult(await attach(OPEN, ev.binding));
+    const mine = async (): Promise<Report["evidence"]> => (await reconcile()).evidence.filter((e) => e.path === OPEN);
+    expect(await mine()).toEqual([{ path: OPEN, at: "/evidence/0", record_id: ev.id, revision: ev.revision, policy: "claude-guided", status: "fresh" }]);
+
+    okResult(await move(OPEN, "paused"));
+    okResult(await move(OPEN, "open"));
+    expect((await mine()).map((e) => e.status), "a status change alone").toEqual(["fresh"]);
+
+    writeFileSync(join(root, OPEN_NARRATIVE), `${bytesOf(OPEN_NARRATIVE).toString("utf-8")}\nOne more requirement.\n`);
+    expect(await mine()).toEqual([{ path: OPEN, at: "/evidence/0", record_id: ev.id, revision: ev.revision, policy: "claude-guided", status: "stale", class: "missing-evidence", reason: "brief-changed" }]);
+    expect(parsed(OPEN).evidence, "nothing repaired").toEqual([ev.binding]);
+    // The done package's bindings name a record that exists nowhere.
+    expect((await reconcile()).evidence.filter((e) => e.path === DONE).map((e) => `${e.at} ${e.status} ${e.class}/${e.reason}`)).toEqual([
+      "/evidence/0 stale unresolved-reference/record-not-found",
+      "/outcome/evidence/0 stale unresolved-reference/record-not-found",
+    ]);
+  });
+
+  // --- dependencies ---
+
+  it("dependencies: every edge through dependencySatisfied against the target's live JSON, satisfied or unmet with the reason", async () => {
+    const P1 = "11111111-1111-4111-8111-111111111111";
+    const P2 = "22222222-2222-4222-8222-222222222222";
+    const p1 = await newPackage(P1, "260929-1101-first");
+    const p2 = await newPackage(P2, "260929-1102-second");
+    // P2 done, completed, with accepted evidence bound at its revision: what `succeeded` asks.
+    okResult(await move(p2, "claimed", { claim: CLAIM }));
+    const ev = await seedEvidence(root, { package: p2, id: "e7e7e7e7-0000-4000-8000-000000000501", basename: "260929-1501-review" });
+    okResult(await move(p2, "done", { outcome: { class: "completed", reason: "all criteria met", evidence: [ev.binding] } }));
+
+    okResult(await setDeps(OPEN, [{ target: refTo(DONE_ID), condition: "succeeded" }, { target: refTo(P1), condition: "terminal" }, { target: refTo(P2), condition: "succeeded" }]));
+    okResult(await setDeps(p1, [{ target: refTo(DONE_ID), condition: "terminal" }]));
+    const edges = async (): Promise<Array<Record<string, unknown>>> => (await reconcile()).dependencies;
+    expect(await edges()).toEqual([
+      { path: OPEN, at: "/depends_on/0", target: DONE_ID, condition: "succeeded", status: "unmet", class: "unresolved-reference", reason: "dependency-unmet", detail: `succeeded: the outcome binds evidence ${MISSING_EVIDENCE}, which was not supplied` },
+      { path: OPEN, at: "/depends_on/1", target: P1, condition: "terminal", status: "unmet", class: "conflict", reason: "dependency-unmet", detail: "terminal: the target is open, not done or dropped" },
+      { path: OPEN, at: "/depends_on/2", target: P2, condition: "succeeded", status: "satisfied" },
+      { path: p1, at: "/depends_on/0", target: DONE_ID, condition: "terminal", status: "satisfied" },
+    ]);
+
+    // The evidence P2's outcome binds changed by hand: its revision moved, so the binding is stale and `succeeded` unmet.
+    writeFileSync(join(root, ev.path), `${bytesOf(ev.path).toString("utf-8")} `);
+    expect((await edges())[2]).toMatchObject({ target: P2, status: "unmet", class: "missing-evidence", reason: "dependency-unmet" });
+    // A target edited by hand to an id no control file carries.
+    rewrite(p1, (c) => ({ ...c, depends_on: [{ target: refTo("99999999-0000-4000-8000-000000000009"), condition: "terminal" }] }));
+    expect((await edges())[3]).toEqual({ path: p1, at: "/depends_on/0", target: "99999999-0000-4000-8000-000000000009", condition: "terminal", status: "unmet", class: "unresolved-reference", reason: "record-not-found" });
+    expect(parsed(p1).depends_on, "nothing repaired").toEqual([{ target: refTo("99999999-0000-4000-8000-000000000009"), condition: "terminal" }]);
+  });
+
+  it("dependencies: a cycle no set-dependencies closed (a merge or a hand edit) is reported with its ids; it blocks no other set-dependencies; scope reports it only when a package of the scope is on it", async () => {
+    const ids = ["11111111-1111-4111-8111-111111111111", "22222222-2222-4222-8222-222222222222", "33333333-3333-4333-8333-333333333333", "44444444-4444-4444-8444-444444444444", "55555555-5555-4555-8555-555555555555", "66666666-6666-4666-8666-666666666666"];
+    const [P1, P2, P3, P4, P5, P6] = ids as [string, string, string, string, string, string];
+    const p: string[] = [];
+    for (const [i, id] of ids.entries()) p.push(await newPackage(id, `260929-110${i + 1}-package-${i + 1}`));
+    const [p1, p2, p3, p4, p5, p6] = p as [string, string, string, string, string, string];
+    // P1 -> P2 through the operation; P2 -> P1 as a merge would bring it.
+    okResult(await setDeps(p1, [{ target: refTo(P2), condition: "terminal" }]));
+    const on = (id: string): SetDependenciesRequest["depends_on"] => [{ target: refTo(id), condition: "terminal" }];
+    rewrite(p2, (c) => ({ ...c, depends_on: on(P1) }));
+    // P3 -> P4 -> P5 -> P3, and P6 -> P6, all by hand.
+    rewrite(p3, (c) => ({ ...c, depends_on: on(P4) }));
+    rewrite(p4, (c) => ({ ...c, depends_on: on(P5) }));
+    rewrite(p5, (c) => ({ ...c, depends_on: on(P3) }));
+    rewrite(p6, (c) => ({ ...c, depends_on: on(P6) }));
+
+    // The foreign cycles do not run through the open package: its set-dependencies lands.
+    okResult(await setDeps(OPEN, [{ target: refTo(P1), condition: "terminal" }]));
+    // One that would close a cycle through the package being set is still refused there, and writes nothing.
+    const p2Before = bytesOf(p2);
+    expect(errorOf(await setDeps(p2, on(P1)))).toEqual({ class: "conflict", reason: "cycle" });
+    expect(bytesOf(p2).equals(p2Before)).toBe(true);
+
+    const cycles = (await reconcile()).dependencies.filter((d) => d.status === "cycle");
+    expect(cycles).toEqual([
+      { status: "cycle", ids: [P1, P2, P1] },
+      { status: "cycle", ids: [P3, P4, P5, P3] },
+      { status: "cycle", ids: [P6, P6] },
+    ]);
+    expect((await reconcile(CONTAINER)).dependencies.filter((d) => d.status === "cycle"), "the open package is on none").toEqual([]);
+    expect((await reconcile(p4.slice(0, p4.lastIndexOf("/")))).dependencies.filter((d) => d.status === "cycle")).toEqual([{ status: "cycle", ids: [P3, P4, P5, P3] }]);
+    expect(parsed(p2).depends_on, "nothing repaired").toEqual(on(P1));
+  });
+
+  // --- narratives: the section 9 check on status copies and historical markers ---
+
+  it("narratives: every status line in the head of a live narrative; nothing after the first section heading or inside a fence", async () => {
+    writeFileSync(
+      join(root, OPEN_NARRATIVE),
+      [
+        "# Parser fix",
+        "",
+        "---",
+        "**Domain:** code",
+        "**Status:** open",
+        "**Claim:** a216a4b9 — kai, 260929-1200",
+        "**Mode:** autonomous",
+        "**Active spec/plan:** 260929-1102_*_plan-a.md",
+        "**Depends-on:** 260927-0900-strict-reader.md",
+        "**Filed by:** user, kai",
+        "```",
+        "**Status:** quoted, not a head line",
+        "```",
+        "---",
+        "",
+        "## Directive",
+        "",
+        "**Status:** below the head",
+        "",
+      ].join("\n"),
+    );
+    expect((await reconcile()).narratives.map((n) => [n.line_number, n.line])).toEqual([
+      [5, "**Status:** open"],
+      [6, "**Claim:** a216a4b9 — kai, 260929-1200"],
+      [7, "**Mode:** autonomous"],
+      [8, "**Active spec/plan:** 260929-1102_*_plan-a.md"],
+      [9, "**Depends-on:** 260927-0900-strict-reader.md"],
+    ]);
+  });
+
+  it("historical markers do not change the JSON decision: a _c_-named record open in its JSON is open to show, list and reconcile; a terminal record's narrative is not read", async () => {
+    const stem = "shared/issues/260928-1500_c_old-marker";
+    const record = { ...fixture("record/issue-open.json"), id: "c0c0c0c0-0000-4000-8000-000000000001", narrative: { path: `${stem}.md` }, references: [] };
+    writeAt(`${stem}.md`, "# Old marker\n\n**Status:** closed\n");
+    writeAt(`${stem}.record.json`, serialise(record));
+    // A record closed in its JSON whose narrative still says open: history, not read.
+    const closed = fixture("record/issue-closed.json");
+    const closedNarrative = (closed.narrative as { path: string }).path;
+    writeAt(closedNarrative, "# Stats file stale\n\n**Status:** open\n");
+    writeAt(closedNarrative.replace(/\.md$/, ".record.json"), serialise(closed));
+
+    const shown = okResult(await dispatch({ op: "show", workbench: root, record: { path: `${stem}.record.json` } }));
+    expect((shown.control as { control: { state: string } }).control.state).toBe("open");
+    const listed = okResult(await dispatch({ op: "list", workbench: root, scope: "shared/issues" })).records as Array<Record<string, unknown>>;
+    expect(listed.find((r) => r.path === `${stem}.record.json`)?.status).toBe("open");
+    const report = await reconcile();
+    expect(report.narratives.map((n) => [n.path, n.line])).toEqual([
+      [`${stem}.record.json`, "**Status:** closed"],
+      [OPEN, "**Status:** open"],
+    ]);
+    expect(report.records, "the marker in the name is no finding").toEqual([]);
+  });
+
+  // --- merge conflicts ---
+
+  it("merge conflicts: a control file with markers is schema-invalid/syntax under records and refused a mutation; a narrative with markers is schema-invalid/conflict-markers; the other records are reported normally", async () => {
+    const issueText = bytesOf(ISSUE).toString("utf-8");
+    const conflicted = issueText.replace('    "state": "open",\n', '<<<<<<< HEAD\n    "state": "open",\n=======\n    "state": "in_progress",\n>>>>>>> origin/main\n');
+    expect(conflicted).not.toBe(issueText);
+    writeFileSync(join(root, ISSUE), conflicted);
+    writeFileSync(join(root, OPEN_NARRATIVE), "# Parser fix\n\n<<<<<<< HEAD\n**Status:** open\n=======\n**Status:** claimed\n>>>>>>> origin/main\n");
+
+    const report = await reconcile();
+    expect(report.records.map((f) => `${f.path} ${f.class}/${f.reason}`)).toEqual([`${ISSUE} schema-invalid/syntax`]);
+    expect(report.narratives).toEqual([{ path: OPEN, narrative: OPEN_NARRATIVE, class: "schema-invalid", reason: "conflict-markers", line: "<<<<<<< HEAD", line_number: 3 }]);
+    expect(report.references.map((r) => r.path), "the other records' references are reported").toEqual([DONE, DONE, DONE]);
+    expect(report.evidence.map((e) => e.path)).toEqual([DONE, DONE]);
+
+    const before = bytesOf(ISSUE);
+    const r = await dispatch(transitionRequest({ record: { path: ISSUE }, expected_revision: revisionOf(before), to: "in_progress", payload: {} }));
+    expect(errorOf(r)).toEqual({ class: "schema-invalid", reason: "syntax" });
+    expect(bytesOf(ISSUE).equals(before)).toBe(true);
+  });
+
+  // --- local locks ---
+
+  it("local locks are not cross-checkout protection: a lock held in one copy stops nothing in another, and reconcile in the first reports nothing about it", async () => {
+    const other = mkdtempSync(join(tmpdir(), "codec-ops-other-"));
+    try {
+      cpSync(FIXTURE, other, { recursive: true });
+      const before = await reconcile();
+      const opened = openWorkbench(root);
+      if (!opened.ok) throw new Error(opened.error.detail);
+      const lock = lockPathFor(opened.value);
+      mkdirSync(join(lock, ".."), { recursive: true });
+      const content = `pid: ${process.pid}\nhost: ${hostname()}\nnonce: 00\nacquired_at: 2026-09-29T12:00:00Z\n`;
+      writeFileSync(lock, content, { flag: "wx" });
+
+      // The other checkout's write takes its own lock and lands.
+      const otherOpen = readFileSync(join(other, OPEN));
+      const landed = await dispatch({ ...transitionRequest(), workbench: other, expected_revision: revisionOf(otherOpen) }, { kernel: { waitMs: 300, pollMs: 10 } });
+      okResult(landed);
+      expect(readFileSync(join(other, OPEN)).equals(otherOpen)).toBe(false);
+      // Here the lock stops a write.
+      expect(errorOf(await dispatch(transitionRequest(), { kernel: { waitMs: 300, pollMs: 10 } }))).toEqual({ class: "conflict", reason: "lock-timeout" });
+
+      expect(await reconcile(), "reconcile here reports nothing about the other copy").toEqual(before);
+      expect(readFileSync(lock, "utf-8"), "and leaves the lock alone").toBe(content);
+      unlinkSync(lock);
+    } finally {
+      rmSync(other, { recursive: true, force: true });
+    }
   });
 });

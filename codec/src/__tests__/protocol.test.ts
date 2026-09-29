@@ -68,8 +68,9 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     }
   });
 
-  it("the answered operations are the read set, transition, and the operations landed on the kernel so far", () => {
-    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"]);
+  it("the answered operations are every operation of the table but migration", () => {
+    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"]);
+    expect(OPERATIONS.filter((o) => !IMPLEMENTED_OPERATIONS.includes(o))).toEqual(["migration"]);
     for (const op of IMPLEMENTED_OPERATIONS) expect(isOperation(op)).toBe(true);
     expect(isOperation("delete")).toBe(false);
     expect(isOperation(42)).toBe(false);

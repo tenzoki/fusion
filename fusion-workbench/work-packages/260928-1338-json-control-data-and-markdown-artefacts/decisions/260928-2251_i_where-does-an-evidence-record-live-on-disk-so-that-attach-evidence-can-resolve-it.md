@@ -36,3 +36,6 @@ Option 1. It is the pairing rule the workbench already has, applied to the one c
 
 ---
 Answered: 260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md step 7 — option 1: `<basename>.evidence.json` beside its report `<basename>.md` in a `reviews/` store, `report.path` checked to name that neighbour, a correction over an unchanged report named `<basename>.<n>.evidence.json` from n = 2; approved with the revised plan on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: cc3d82b0 — codec/src/store.ts reads `<basename>.evidence.json` beside its report and a correction as `<basename>.<n>.evidence.json` from n = 2; codec/src/cli/ops.ts `bindEvidence` checks the neighbour rule for attach-evidence and the transition to done (FJ02 step 7).

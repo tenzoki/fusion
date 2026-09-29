@@ -3866,49 +3866,49 @@ var require_fast_uri = __commonJS({
       schemelessOptions.skipEscape = true;
       return serialize(resolved, schemelessOptions);
     }
-    function resolveComponent(base, relative3, options, skipNormalization) {
+    function resolveComponent(base, relative4, options, skipNormalization) {
       const target = {};
       if (!skipNormalization) {
         base = parse(serialize(base, options), options);
-        relative3 = parse(serialize(relative3, options), options);
+        relative4 = parse(serialize(relative4, options), options);
       }
       options = options || {};
-      if (!options.tolerant && relative3.scheme) {
-        target.scheme = relative3.scheme;
-        target.userinfo = relative3.userinfo;
-        target.host = relative3.host;
-        target.port = relative3.port;
-        target.path = removeDotSegments(relative3.path || "");
-        target.query = relative3.query;
+      if (!options.tolerant && relative4.scheme) {
+        target.scheme = relative4.scheme;
+        target.userinfo = relative4.userinfo;
+        target.host = relative4.host;
+        target.port = relative4.port;
+        target.path = removeDotSegments(relative4.path || "");
+        target.query = relative4.query;
       } else {
-        if (relative3.userinfo !== void 0 || relative3.host !== void 0 || relative3.port !== void 0) {
-          target.userinfo = relative3.userinfo;
-          target.host = relative3.host;
-          target.port = relative3.port;
-          target.path = removeDotSegments(relative3.path || "");
-          target.query = relative3.query;
+        if (relative4.userinfo !== void 0 || relative4.host !== void 0 || relative4.port !== void 0) {
+          target.userinfo = relative4.userinfo;
+          target.host = relative4.host;
+          target.port = relative4.port;
+          target.path = removeDotSegments(relative4.path || "");
+          target.query = relative4.query;
         } else {
-          if (!relative3.path) {
+          if (!relative4.path) {
             target.path = base.path;
-            if (relative3.query !== void 0) {
-              target.query = relative3.query;
+            if (relative4.query !== void 0) {
+              target.query = relative4.query;
             } else {
               target.query = base.query;
             }
           } else {
-            if (relative3.path[0] === "/") {
-              target.path = removeDotSegments(relative3.path);
+            if (relative4.path[0] === "/") {
+              target.path = removeDotSegments(relative4.path);
             } else {
               if ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path) {
-                target.path = "/" + relative3.path;
+                target.path = "/" + relative4.path;
               } else if (!base.path) {
-                target.path = relative3.path;
+                target.path = relative4.path;
               } else {
-                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative3.path;
+                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative4.path;
               }
               target.path = removeDotSegments(target.path);
             }
-            target.query = relative3.query;
+            target.query = relative4.query;
           }
           target.userinfo = base.userinfo;
           target.host = base.host;
@@ -3916,7 +3916,7 @@ var require_fast_uri = __commonJS({
         }
         target.scheme = base.scheme;
       }
-      target.fragment = relative3.fragment;
+      target.fragment = relative4.fragment;
       return target;
     }
     function equal(uriA, uriB, options) {
@@ -8021,6 +8021,7 @@ import { fileURLToPath as fileURLToPath3 } from "node:url";
 
 // src/cli/ops.ts
 import { existsSync as existsSync3, readFileSync as readFileSync6, statSync as statSync3 } from "node:fs";
+import { relative as relative3 } from "node:path";
 
 // src/journal.ts
 import { randomBytes as randomBytes2 } from "node:crypto";
@@ -9018,9 +9019,8 @@ var OPERATIONS = [
   "reconcile",
   "migration"
 ];
-var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"];
+var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"];
 var LANDS_IN = {
-  reconcile: "FJ02",
   migration: "FJ04"
 };
 var fail = (cls, reason, detail, errors) => ({
@@ -9132,15 +9132,26 @@ function hashOrNull(abs) {
 }
 function planContext(wb, blocked) {
   return {
+    ...readContext(wb, blocked),
+    cas(pair, expected) {
+      if (pair.revision !== expected) return no("conflict", "revision-mismatch", `stored ${pair.revision} expected ${expected}`);
+      return ok(void 0);
+    },
+    validateResult(schemaId, value, what) {
+      const v = validate(schemaId, value);
+      if (v.ok) return ok(void 0);
+      if (v.class === "unsupported-format") return no("unsupported-format", "unknown-schema", `no schema ${v.schemaId}`);
+      return { ok: false, error: { class: "schema-invalid", reason: "result-invalid", detail: `${what}: ${describeErrors(v.errors)}`, errors: v.errors } };
+    }
+  };
+}
+function readContext(wb, blocked) {
+  return {
     wb,
     readPair(path) {
       const b = blockedOn(blocked, path);
       if (b !== void 0) return { ok: false, error: recoveryBlocked(b) };
       return readPair(wb, path);
-    },
-    cas(pair, expected) {
-      if (pair.revision !== expected) return no("conflict", "revision-mismatch", `stored ${pair.revision} expected ${expected}`);
-      return ok(void 0);
     },
     resolveRecordId(id) {
       const hits = [];
@@ -9161,12 +9172,6 @@ function planContext(wb, blocked) {
       if (current2 === null) return no("unresolved-reference", "artefact-missing", `${ref.path} does not exist in ${wb.root}`);
       if (current2 !== ref.sha256) return no("missing-evidence", "artefact-changed", `${ref.path} is ${current2}, the reference names ${ref.sha256}`);
       return ok({ path: ref.path, sha256: current2 });
-    },
-    validateResult(schemaId, value, what) {
-      const v = validate(schemaId, value);
-      if (v.ok) return ok(void 0);
-      if (v.class === "unsupported-format") return no("unsupported-format", "unknown-schema", `no schema ${v.schemaId}`);
-      return { ok: false, error: { class: "schema-invalid", reason: "result-invalid", detail: `${what}: ${describeErrors(v.errors)}`, errors: v.errors } };
     }
   };
 }
@@ -9251,6 +9256,7 @@ function readTable(file) {
 var transitionsTable;
 var dependenciesTable;
 var transitions = () => transitionsTable ??= readTable("transitions.json");
+var dependencies = () => dependenciesTable ??= readTable("dependencies.json");
 function useTables(t, d) {
   transitionsTable = t;
   dependenciesTable = d;
@@ -9323,6 +9329,42 @@ function stateRules(kind, state, payload = {}) {
       return { ok: true };
   }
 }
+function dependencySatisfied(condition, target) {
+  const table = dependencies();
+  const rule = table.conditions[condition];
+  if (rule === void 0) {
+    return refuse3("schema-invalid", `unknown depends_on condition "${condition}"; the table knows ${Object.keys(table.conditions).join(", ")}`);
+  }
+  if (!rule.target_status.includes(target.status)) {
+    return refuse3("conflict", `${condition}: the target is ${target.status}, not ${rule.target_status.join(" or ")}`);
+  }
+  if (rule.outcome_class !== null) {
+    const cls = target.outcome?.class;
+    if (cls === void 0 || !rule.outcome_class.includes(cls)) {
+      return refuse3("missing-evidence", `${condition}: the target's outcome class is ${cls ?? "absent"}, not ${rule.outcome_class.join(" or ")}`);
+    }
+  }
+  if (rule.evidence === null) return { ok: true };
+  const bindings = target.outcome?.evidence ?? [];
+  const means = rule.evidence.accepted_means;
+  let accepted = 0;
+  for (const b of bindings) {
+    const record = target.evidence_records?.[b.ref.record_id];
+    if (record === void 0) {
+      return refuse3("unresolved-reference", `${condition}: the outcome binds evidence ${b.ref.record_id}, which was not supplied`);
+    }
+    if (!means.verdict.includes(record.verdict)) continue;
+    if (means.revision_matches && record.revision !== b.ref.revision) continue;
+    accepted++;
+  }
+  if (accepted < rule.evidence.min_accepted) {
+    return refuse3(
+      "missing-evidence",
+      `${condition}: ${accepted} accepted evidence binding(s) at a current revision, ${rule.evidence.min_accepted} required`
+    );
+  }
+  return { ok: true };
+}
 
 // src/cli/ops.ts
 var fromStore = (e) => fail(e.class, e.reason, e.detail, e.errors);
@@ -9373,6 +9415,8 @@ async function dispatch(request, options = {}) {
       return mutate(wb, req, adoptPlanPlan(req), kernel);
     case "attach-evidence":
       return mutate(wb, req, attachEvidencePlan(req), kernel);
+    case "reconcile":
+      return readable(wb) ?? reading(wb, (view) => reconcile(wb, req, view), kernel);
     default:
       return notImplemented(req.op);
   }
@@ -10058,6 +10102,189 @@ function attachEvidencePlan(req) {
         revisions: { [req.record.path]: w.revision }
       }
     };
+  };
+}
+var REVIEWS_STORE = "reviews";
+var EVIDENCE_PLACE = new RegExp(`^(shared|${STORE_OF.package}/[^/]+)/${REVIEWS_STORE}/[^/]+$`);
+function placementFinding(path) {
+  if (!path.endsWith(EVIDENCE_SUFFIX) || EVIDENCE_PLACE.test(path)) return null;
+  return {
+    path,
+    class: "unknown-scope",
+    reason: "evidence-outside-reviews",
+    detail: `${path} is an evidence record outside a ${REVIEWS_STORE}/ store; it lives beside its report in <container>/${REVIEWS_STORE}/ or shared/${REVIEWS_STORE}/`
+  };
+}
+var field = (v, key) => isObject4(v) ? v[key] : void 0;
+function referenceSites(pair) {
+  const sites = [];
+  const add = (at, value) => {
+    if (value !== null && value !== void 0) sites.push({ at, value });
+  };
+  const each = (at, items, key) => {
+    if (!Array.isArray(items)) return;
+    items.forEach((item, i) => add(key === void 0 ? `${at}/${i}` : `${at}/${i}/${key}`, key === void 0 ? item : field(item, key)));
+  };
+  const c = pair.control;
+  if (pair.kind === "evidence") {
+    add("/predecessor", c.predecessor);
+    return sites;
+  }
+  if (pair.kind === "package") {
+    add("/origin/ref", field(c.origin, "ref"));
+    const source = field(c.mode, "source");
+    if (field(source, "kind") === "user-word") add("/mode/source/ref", field(source, "ref"));
+    else if (field(source, "kind") !== "legacy") add("/mode/source", source);
+    each("/depends_on", c.depends_on, "target");
+    each("/active_documents", c.active_documents, "ref");
+    each("/references", c.references);
+    each("/evidence", c.evidence, "ref");
+    each("/outcome/evidence", field(c.outcome, "evidence"), "ref");
+    return sites;
+  }
+  each("/references", c.references);
+  const control = c.control;
+  if (pair.kind === "issue") add("/control/disposition/reason_ref", field(field(control, "disposition"), "reason_ref"));
+  else if (pair.kind === "plan") add("/control/acceptance/ref", field(field(control, "acceptance"), "ref"));
+  else if (pair.kind === "discussion") each("/control/outcome_refs", field(control, "outcome_refs"));
+  else if (pair.kind === "decision") {
+    for (const f of DECISION_FIELDS) add(f === "deferral" ? "/control/deferral/target" : `/control/${f}`, f === "deferral" ? field(field(control, f), "target") : field(control, f));
+  }
+  return sites;
+}
+function referenceEntry(ctx, path, at, value) {
+  if (!isObject4(value)) return { path, at, status: "unchecked" };
+  if (typeof value.record_id === "string") {
+    const hit = resolveRecordRef(ctx, { workbench_id: value.workbench_id, record_id: value.record_id });
+    if (hit.ok) return { path, at, status: "resolved", target: hit.value.path };
+    if (hit.error.reason === "foreign-workbench") return { path, at, status: "foreign" };
+    return { path, at, status: hit.error.reason === "ambiguous-reference" ? "ambiguous" : "unresolved", class: hit.error.class, reason: hit.error.reason };
+  }
+  if (typeof value.path === "string" && typeof value.sha256 === "string") {
+    const hit = ctx.resolveArtefact({ path: value.path, sha256: value.sha256 });
+    return hit.ok ? { path, at, status: "resolved", target: hit.value.path } : { path, at, status: "unresolved", class: hit.error.class, reason: hit.error.reason };
+  }
+  if (typeof value.project === "string") return { path, at, status: "foreign" };
+  return { path, at, status: "unchecked" };
+}
+function evidenceEntries(ctx, pkg) {
+  const bound = pkg.control.evidence;
+  const outcome = pkg.control.outcome;
+  const sites = [
+    ["/evidence", bound],
+    ["/outcome/evidence", outcome?.evidence ?? []]
+  ];
+  return sites.flatMap(
+    ([at, bindings]) => bindings.map((binding, i) => {
+      const base = { path: pkg.path, at: `${at}/${i}`, record_id: binding.ref.record_id, revision: binding.ref.revision, policy: binding.policy };
+      const r = bindEvidence(ctx, pkg, binding);
+      return r.ok ? { ...base, status: "fresh" } : { ...base, status: "stale", class: r.error.class, reason: r.error.reason };
+    })
+  );
+}
+function evidenceRecords(ctx, outcome) {
+  const out = {};
+  for (const b of outcome?.evidence ?? []) {
+    const hit = resolveRecordRef(ctx, b.ref);
+    if (!hit.ok) continue;
+    const ev = ctx.readPair(hit.value.path);
+    if (!ev.ok || ev.value.kind !== "evidence") continue;
+    out[b.ref.record_id] = { verdict: String(ev.value.control.verdict), revision: ev.value.revision };
+  }
+  return out;
+}
+function edgeEntries(ctx, pkg) {
+  const edges = pkg.control.depends_on;
+  return edges.map((edge, i) => {
+    const base = { path: pkg.path, at: `/depends_on/${i}`, target: edge.target.record_id, condition: edge.condition };
+    const target = resolvePackage(ctx, edge.target, "dependency target");
+    if (!target.ok) return { ...base, status: "unmet", class: target.error.class, reason: target.error.reason };
+    const t = target.value.control;
+    const outcome = isObject4(t.outcome) ? t.outcome : null;
+    const rule = dependencySatisfied(edge.condition, { status: String(t.status), outcome, evidence_records: evidenceRecords(ctx, outcome) });
+    return rule.ok ? { ...base, status: "satisfied" } : { ...base, status: "unmet", class: rule.class, reason: "dependency-unmet", detail: rule.reason };
+  });
+}
+function cyclesOf(edges) {
+  const covered = /* @__PURE__ */ new Set();
+  const out = [];
+  for (const id of [...edges.keys()].sort()) {
+    if (covered.has(id)) continue;
+    const cycle = cycleThrough(id, edges);
+    if (cycle === null) continue;
+    for (const n of cycle) covered.add(n);
+    out.push(cycle);
+  }
+  return out;
+}
+var STATUS_COPY = /^\*\*(Status|Claim|Mode|Depends-on|Active spec\/plan):\*\*/;
+var CONFLICT_START = /^<{7}( |$)/;
+var CONFLICT_END = /^>{7}( |$)/;
+var FENCE = /^(```|~~~)/;
+var SECTION = /^## /;
+function narrativeEntries(wb, pair, view) {
+  const narrative = pair.narrative;
+  if (narrative === null || narrative.sha256 === null) return [];
+  if (isTerminal(pair.kind, stateOf(pair))) return [];
+  if (view.blockedOn(narrative.path) !== void 0) return [];
+  const abs = resolveInside(wb, narrative.path);
+  if (!abs.ok) return [];
+  const lines = readFileSync6(abs.value, "utf-8").split(/\r?\n/);
+  const entry = (cls, reason, i) => ({ path: pair.path, narrative: narrative.path, class: cls, reason, line: lines[i], line_number: i + 1 });
+  const start = lines.findIndex((l) => CONFLICT_START.test(l));
+  if (start >= 0 && lines.some((l) => CONFLICT_END.test(l))) return [entry("schema-invalid", "conflict-markers", start)];
+  const out = [];
+  let fenced = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (FENCE.test(line)) fenced = !fenced;
+    else if (!fenced && SECTION.test(line)) break;
+    else if (!fenced && STATUS_COPY.test(line)) out.push(entry("conflict", "status-copy-in-narrative", i));
+  }
+  return out;
+}
+function reconcile(wb, req, view) {
+  const scope = scopeDir(wb, req.scope);
+  if (!scope.ok) return scope.response;
+  const within = req.scope === void 0 ? null : relative3(wb.root, scope.dir).split("\\").join("/");
+  const inScope = (path) => within === null || path === within || path.startsWith(`${within}/`);
+  const ctx = readContext(wb, view.blocked);
+  const intents = [];
+  for (const b of view.blocked) {
+    if (!b.paths.some(inScope)) continue;
+    const r = readIntent(wb, b.operation_id);
+    if (!r.ok) return fromStore(r.error);
+    if (r.value === null) continue;
+    intents.push({ operation_id: b.operation_id, op: r.value.intent.op, files: r.value.intent.writes.map((w) => ({ path: w.path, state: fileState(wb, w) })) });
+  }
+  const paths = controlFiles(wb, scope.dir);
+  const records = [];
+  const references = [];
+  const evidence = [];
+  const dependencies2 = [];
+  const narratives = [];
+  const scopedPackages = /* @__PURE__ */ new Set();
+  for (const path of paths) {
+    records.push(...blockedFindingOf(wb, path, view), ...findingsOf(wb, path));
+    const placed = placementFinding(path);
+    if (placed !== null) records.push(placed);
+    const r = ctx.readPair(path);
+    if (!r.ok || !validate(r.value.schemaId, r.value.control).ok) continue;
+    const pair = r.value;
+    for (const { at, value } of referenceSites(pair)) references.push(referenceEntry(ctx, path, at, value));
+    if (pair.kind === "package") {
+      scopedPackages.add(pair.control.id);
+      evidence.push(...evidenceEntries(ctx, pair));
+      dependencies2.push(...edgeEntries(ctx, pair));
+    }
+    narratives.push(...narrativeEntries(wb, pair, view));
+  }
+  for (const ids of cyclesOf(dependencyEdges(ctx))) {
+    if (ids.some((id) => scopedPackages.has(id))) dependencies2.push({ status: "cycle", ids });
+  }
+  return {
+    ok: true,
+    result: { workbench: wb.root, state: wb.state, scope: req.scope ?? null, checked: paths.length, intents, records, references, evidence, dependencies: dependencies2, narratives }
   };
 }
 

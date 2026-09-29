@@ -39,6 +39,10 @@
 //               exact revision, through `bindEvidence`, which the package
 //               transition to `done` also runs for every `outcome.evidence`
 //               entry
+//   reconcile   the deviations shown, nothing repaired: blocked intents, the
+//               `validate` findings, every reference and whether it resolves,
+//               every evidence binding, every dependency edge and cycle, and
+//               status copies in live narratives
 //
 // Every other operation of the table answers `operation-unknown/not-implemented`
 // with a detail naming the package that lands it (`LANDS_IN`).
@@ -58,10 +62,24 @@
 // ---------------------------------------------------------------------------
 
 import { existsSync, readFileSync, statSync } from "node:fs";
-import { canonical } from "../journal.js";
-import { mutate, read, recoveryBlocked, type KernelOptions, type PlanContext, type PlanFunction, type Planned, type PlannedWrite, type ReadView } from "../kernel.js";
-import { allowed, stateRules, transitions, type TransitionPayload as RulePayload } from "../transitions.js";
+import { relative } from "node:path";
+import { canonical, fileState, readIntent, type FileState } from "../journal.js";
 import {
+  mutate,
+  read,
+  readContext,
+  recoveryBlocked,
+  type KernelOptions,
+  type PlanContext,
+  type PlanFunction,
+  type Planned,
+  type PlannedWrite,
+  type ReadContext,
+  type ReadView,
+} from "../kernel.js";
+import { allowed, dependencySatisfied, stateRules, transitions, type Outcome, type TransitionPayload as RulePayload } from "../transitions.js";
+import {
+  EVIDENCE_SUFFIX,
   KINDS,
   PACKAGE_SCHEMA_ID,
   RECORD_SCHEMA_ID,
@@ -96,6 +114,7 @@ import {
   type CreateRequest,
   type EvidenceRef,
   type ListRequest,
+  type ReconcileRequest,
   type RecordRef,
   type ReleaseRequest,
   type Request,
@@ -169,6 +188,8 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
       return mutate(wb, req, adoptPlanPlan(req), kernel);
     case "attach-evidence":
       return mutate(wb, req, attachEvidencePlan(req), kernel);
+    case "reconcile":
+      return readable(wb) ?? reading(wb, (view) => reconcile(wb, req, view), kernel);
     default:
       return notImplemented((req as Request).op);
   }
@@ -857,7 +878,7 @@ function setModePlan(req: SetModeRequest): PlanFunction {
 // decided, and `validate` and `reconcile` report it.
 
 /** The package a `record_ref` names, resolved in this workbench: a record kind or an evidence record is `not-a-package`. */
-function resolvePackage(ctx: PlanContext, ref: RecordRef, role: string): Result<Pair> {
+function resolvePackage(ctx: Pick<PlanContext, "wb" | "readPair" | "resolveRecordId">, ref: RecordRef, role: string): Result<Pair> {
   const hit = resolveRecordRef(ctx, ref);
   if (!hit.ok) return hit;
   const pair = ctx.readPair(hit.value.path);
@@ -867,7 +888,7 @@ function resolvePackage(ctx: PlanContext, ref: RecordRef, role: string): Result<
 }
 
 /** Every package's `depends_on` targets in this workbench, by package id: the edges the cycle check walks. */
-function dependencyEdges(ctx: PlanContext): Map<string, string[]> {
+function dependencyEdges(ctx: Pick<PlanContext, "wb" | "readPair">): Map<string, string[]> {
   const edges = new Map<string, string[]>();
   for (const path of controlFiles(ctx.wb, ctx.wb.root)) {
     if (!path.endsWith("/package.json") && path !== "package.json") continue;
@@ -1094,8 +1115,7 @@ function adoptPlanPlan(req: AdoptPlanRequest): PlanFunction {
 // binding claims. `bindEvidence` is the one check of such a binding, and it
 // runs wherever one is written or relied on: `attach-evidence` before it
 // appends the binding, the package transition to `done` for every
-// `outcome.evidence` entry, and `reconcile` (FJ02 step 8) to report a stale
-// one. A binding holds while the evidence record is the one bound (the id
+// `outcome.evidence` entry, and `reconcile` to report a stale one. A binding holds while the evidence record is the one bound (the id
 // resolves to an evidence file whose stored bytes hash to the pinned
 // revision), sits beside the report it names (the naming rule, C2), belongs
 // to this workbench, was produced under the policy the binding claims (an
@@ -1185,5 +1205,323 @@ function attachEvidencePlan(req: AttachEvidenceRequest): PlanFunction {
         revisions: { [req.record.path]: w.revision },
       },
     };
+  };
+}
+
+// --- reconcile ----------------------------------------------------------------------
+//
+// The deviations shown, nothing repaired (spec section 6, "Abweichungen
+// zeigen"). A read under the kernel's read protocol, so it takes the lock and
+// recovers only when a pending intent may still belong to a live writer; an
+// intent left blocked is reported and never resolved. Six sections, each one
+// kind of statement:
+//
+//   intents       every pending intent left blocked: the operation it belongs
+//                 to, and where each file it names stands (post, pre, diverged)
+//   records       every `validate` finding, so one call covers both, and an
+//                 evidence file outside a `reviews/` store (decision
+//                 260928-2251: evidence lives beside its report in a
+//                 container's `reviews/` or in `shared/reviews/`)
+//   references    every reference a control record carries and whether it
+//                 resolves here: resolved, unresolved, ambiguous, foreign, or
+//                 unchecked (a legacy citation, a git commit, a named external
+//                 target, none of which this kernel resolves)
+//   evidence      every binding of a package, `evidence` and `outcome.evidence`,
+//                 through `bindEvidence`: fresh, or stale with the refusal
+//   dependencies  every `depends_on` edge through `dependencySatisfied` against
+//                 the target's live JSON, satisfied or unmet; then every cycle
+//                 of the workbench's graph, including one no single
+//                 `set-dependencies` closed (that operation refuses only a
+//                 cycle through the package it sets, so a merge or a hand edit
+//                 can leave one)
+//   narratives    a status line (`**Status:**`, `**Claim:**`, `**Mode:**`,
+//                 `**Depends-on:**`, `**Active spec/plan:**`) in the head of a
+//                 live record's narrative, and a narrative that is a
+//                 merge-conflict file; a terminal record's narrative is history
+//                 and is not read
+//
+// A record whose control file the strict reader or its schema refuses is
+// reported under `records` and contributes to no other section: what it says
+// is not decided. Scope narrows the walk as `list`'s does; references still
+// resolve against the whole workbench, an intent is reported when a path it
+// names is in scope, and a cycle when a package of the scope is on it. The
+// report carries no clock value and no absolute path but the echoed
+// `workbench`: a resolution failure is reported by class and reason, since the
+// detail of a missing record names the root.
+
+/** The store an evidence record lives in, in a container or in `shared/`. */
+const REVIEWS_STORE = "reviews";
+const EVIDENCE_PLACE = new RegExp(`^(shared|${STORE_OF.package}/[^/]+)/${REVIEWS_STORE}/[^/]+$`);
+
+/** An evidence file outside a `reviews/` store: a finding of `reconcile` only, so `validate`'s set is FJ01's (C18). */
+function placementFinding(path: string): Finding | null {
+  if (!path.endsWith(EVIDENCE_SUFFIX) || EVIDENCE_PLACE.test(path)) return null;
+  return {
+    path,
+    class: "unknown-scope",
+    reason: "evidence-outside-reviews",
+    detail: `${path} is an evidence record outside a ${REVIEWS_STORE}/ store; it lives beside its report in <container>/${REVIEWS_STORE}/ or shared/${REVIEWS_STORE}/`,
+  };
+}
+
+interface IntentEntry {
+  operation_id: string;
+  op: string;
+  files: Array<{ path: string; state: FileState }>;
+}
+
+type ReferenceStatus = "resolved" | "unresolved" | "ambiguous" | "foreign" | "unchecked";
+
+interface ReferenceEntry {
+  path: string;
+  /** A JSON pointer into the control record. */
+  at: string;
+  status: ReferenceStatus;
+  /** The control file or artefact it resolves to. */
+  target?: string;
+  class?: StoreError["class"];
+  reason?: string;
+}
+
+interface EvidenceEntry {
+  path: string;
+  at: string;
+  record_id: string;
+  revision: string;
+  policy: string;
+  status: "fresh" | "stale";
+  class?: StoreError["class"];
+  reason?: string;
+}
+
+interface EdgeEntry {
+  path: string;
+  at: string;
+  target: string;
+  condition: string;
+  status: "satisfied" | "unmet";
+  class?: StoreError["class"];
+  reason?: string;
+  detail?: string;
+}
+
+interface CycleEntry {
+  status: "cycle";
+  /** The package ids around the cycle, the first repeated last. */
+  ids: string[];
+}
+
+interface NarrativeEntry {
+  path: string;
+  narrative: string;
+  class: StoreError["class"];
+  reason: string;
+  line: string;
+  line_number: number;
+}
+
+const field = (v: unknown, key: string): unknown => (isObject(v) ? v[key] : undefined);
+
+/** Every place a control record carries a reference, as a JSON pointer and the value there; an absent or null one is no site. */
+function referenceSites(pair: Pair): Array<{ at: string; value: unknown }> {
+  const sites: Array<{ at: string; value: unknown }> = [];
+  const add = (at: string, value: unknown): void => {
+    if (value !== null && value !== undefined) sites.push({ at, value });
+  };
+  const each = (at: string, items: unknown, key?: string): void => {
+    if (!Array.isArray(items)) return;
+    items.forEach((item, i) => add(key === undefined ? `${at}/${i}` : `${at}/${i}/${key}`, key === undefined ? item : field(item, key)));
+  };
+  const c = pair.control;
+  if (pair.kind === "evidence") {
+    add("/predecessor", c.predecessor); // the report is `records`' question, through `validate`
+    return sites;
+  }
+  if (pair.kind === "package") {
+    add("/origin/ref", field(c.origin, "ref"));
+    const source = field(c.mode, "source");
+    // A legacy source is the imported header line, which names nothing.
+    if (field(source, "kind") === "user-word") add("/mode/source/ref", field(source, "ref"));
+    else if (field(source, "kind") !== "legacy") add("/mode/source", source);
+    each("/depends_on", c.depends_on, "target");
+    each("/active_documents", c.active_documents, "ref");
+    each("/references", c.references);
+    each("/evidence", c.evidence, "ref");
+    each("/outcome/evidence", field(c.outcome, "evidence"), "ref");
+    return sites;
+  }
+  each("/references", c.references);
+  const control = c.control;
+  if (pair.kind === "issue") add("/control/disposition/reason_ref", field(field(control, "disposition"), "reason_ref"));
+  else if (pair.kind === "plan") add("/control/acceptance/ref", field(field(control, "acceptance"), "ref"));
+  else if (pair.kind === "discussion") each("/control/outcome_refs", field(control, "outcome_refs"));
+  else if (pair.kind === "decision") {
+    for (const f of DECISION_FIELDS) add(f === "deferral" ? "/control/deferral/target" : `/control/${f}`, f === "deferral" ? field(field(control, f), "target") : field(control, f));
+  }
+  return sites;
+}
+
+/** One reference, resolved through the functions a mutation resolves it through. */
+function referenceEntry(ctx: ReadContext, path: string, at: string, value: unknown): ReferenceEntry {
+  if (!isObject(value)) return { path, at, status: "unchecked" }; // a legacy citation string or a git commit
+  if (typeof value.record_id === "string") {
+    const hit = resolveRecordRef(ctx, { workbench_id: value.workbench_id, record_id: value.record_id });
+    if (hit.ok) return { path, at, status: "resolved", target: hit.value.path };
+    if (hit.error.reason === "foreign-workbench") return { path, at, status: "foreign" };
+    return { path, at, status: hit.error.reason === "ambiguous-reference" ? "ambiguous" : "unresolved", class: hit.error.class, reason: hit.error.reason };
+  }
+  if (typeof value.path === "string" && typeof value.sha256 === "string") {
+    const hit = ctx.resolveArtefact({ path: value.path, sha256: value.sha256 });
+    return hit.ok ? { path, at, status: "resolved", target: hit.value.path } : { path, at, status: "unresolved", class: hit.error.class, reason: hit.error.reason };
+  }
+  if (typeof value.project === "string") return { path, at, status: "foreign" };
+  return { path, at, status: "unchecked" }; // a named external target
+}
+
+/** Every binding a package makes, `evidence` then `outcome.evidence`, through `bindEvidence`. */
+function evidenceEntries(ctx: ReadContext, pkg: Pair): EvidenceEntry[] {
+  const bound = pkg.control.evidence as EvidenceRef[];
+  const outcome = pkg.control.outcome as { evidence: EvidenceRef[] } | null;
+  const sites: Array<[string, EvidenceRef[]]> = [
+    ["/evidence", bound],
+    ["/outcome/evidence", outcome?.evidence ?? []],
+  ];
+  return sites.flatMap(([at, bindings]) =>
+    bindings.map((binding, i): EvidenceEntry => {
+      const base = { path: pkg.path, at: `${at}/${i}`, record_id: binding.ref.record_id, revision: binding.ref.revision, policy: binding.policy };
+      const r = bindEvidence(ctx, pkg, binding);
+      return r.ok ? { ...base, status: "fresh" } : { ...base, status: "stale", class: r.error.class, reason: r.error.reason };
+    }),
+  );
+}
+
+/** The evidence records an outcome binds, as `dependencySatisfied` reads them; one that does not resolve to an evidence record is left out, and the condition reports it. */
+function evidenceRecords(ctx: ReadContext, outcome: Outcome | null): Record<string, { verdict: string; revision: string }> {
+  const out: Record<string, { verdict: string; revision: string }> = {};
+  for (const b of outcome?.evidence ?? []) {
+    const hit = resolveRecordRef(ctx, b.ref);
+    if (!hit.ok) continue;
+    const ev = ctx.readPair(hit.value.path);
+    if (!ev.ok || ev.value.kind !== "evidence") continue;
+    out[b.ref.record_id] = { verdict: String(ev.value.control.verdict), revision: ev.value.revision };
+  }
+  return out;
+}
+
+/** Every `depends_on` edge of a package against its target's live JSON: a target that does not resolve to a package here is unmet. */
+function edgeEntries(ctx: ReadContext, pkg: Pair): EdgeEntry[] {
+  const edges = pkg.control.depends_on as SetDependenciesRequest["depends_on"];
+  return edges.map((edge, i): EdgeEntry => {
+    const base = { path: pkg.path, at: `/depends_on/${i}`, target: edge.target.record_id, condition: edge.condition };
+    const target = resolvePackage(ctx, edge.target, "dependency target");
+    if (!target.ok) return { ...base, status: "unmet", class: target.error.class, reason: target.error.reason };
+    const t = target.value.control;
+    const outcome = isObject(t.outcome) ? (t.outcome as unknown as Outcome) : null;
+    const rule = dependencySatisfied(edge.condition, { status: String(t.status), outcome, evidence_records: evidenceRecords(ctx, outcome) });
+    return rule.ok ? { ...base, status: "satisfied" } : { ...base, status: "unmet", class: rule.class, reason: "dependency-unmet", detail: rule.reason };
+  });
+}
+
+/**
+ * The cycles of the graph, each once: for every package id in sorted order
+ * that no cycle reported so far passes through, the first cycle through it in
+ * edge order. So every package that lies on a cycle lies on a reported one.
+ */
+function cyclesOf(edges: ReadonlyMap<string, readonly string[]>): string[][] {
+  const covered = new Set<string>();
+  const out: string[][] = [];
+  for (const id of [...edges.keys()].sort()) {
+    if (covered.has(id)) continue;
+    const cycle = cycleThrough(id, edges);
+    if (cycle === null) continue;
+    for (const n of cycle) covered.add(n);
+    out.push(cycle);
+  }
+  return out;
+}
+
+const STATUS_COPY = /^\*\*(Status|Claim|Mode|Depends-on|Active spec\/plan):\*\*/;
+const CONFLICT_START = /^<{7}( |$)/;
+const CONFLICT_END = /^>{7}( |$)/;
+const FENCE = /^(```|~~~)/;
+const SECTION = /^## /;
+
+/**
+ * A live record's narrative: a merge-conflict file is one finding and nothing
+ * else is read from it; otherwise every status line in its head (the lines
+ * before the first `## ` heading, fenced blocks skipped) is a copy of what the
+ * JSON holds. A terminal record's narrative is not read: its markers are
+ * history. A missing narrative, or one a blocked intent names, is `records`'.
+ */
+function narrativeEntries(wb: Workbench, pair: Pair, view: ReadView): NarrativeEntry[] {
+  const narrative = pair.narrative;
+  if (narrative === null || narrative.sha256 === null) return [];
+  if (isTerminal(pair.kind, stateOf(pair))) return [];
+  if (view.blockedOn(narrative.path) !== undefined) return [];
+  const abs = resolveInside(wb, narrative.path);
+  if (!abs.ok) return [];
+  const lines = readFileSync(abs.value, "utf-8").split(/\r?\n/);
+  const entry = (cls: StoreError["class"], reason: string, i: number): NarrativeEntry => ({ path: pair.path, narrative: narrative.path, class: cls, reason, line: lines[i] as string, line_number: i + 1 });
+
+  const start = lines.findIndex((l) => CONFLICT_START.test(l));
+  if (start >= 0 && lines.some((l) => CONFLICT_END.test(l))) return [entry("schema-invalid", "conflict-markers", start)];
+
+  const out: NarrativeEntry[] = [];
+  let fenced = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] as string;
+    if (FENCE.test(line)) fenced = !fenced;
+    else if (!fenced && SECTION.test(line)) break;
+    else if (!fenced && STATUS_COPY.test(line)) out.push(entry("conflict", "status-copy-in-narrative", i));
+  }
+  return out;
+}
+
+function reconcile(wb: Workbench, req: ReconcileRequest, view: ReadView): Response {
+  const scope = scopeDir(wb, req.scope);
+  if (!scope.ok) return scope.response;
+  const within = req.scope === undefined ? null : relative(wb.root, scope.dir).split("\\").join("/");
+  const inScope = (path: string): boolean => within === null || path === within || path.startsWith(`${within}/`);
+  const ctx = readContext(wb, view.blocked);
+
+  const intents: IntentEntry[] = [];
+  for (const b of view.blocked) {
+    if (!b.paths.some(inScope)) continue;
+    const r = readIntent(wb, b.operation_id);
+    if (!r.ok) return fromStore(r.error); // as every read answers an unreadable intent
+    if (r.value === null) continue; // removed since the listing: the after-snapshot differs and the read runs again
+    intents.push({ operation_id: b.operation_id, op: r.value.intent.op, files: r.value.intent.writes.map((w) => ({ path: w.path, state: fileState(wb, w) })) });
+  }
+
+  const paths = controlFiles(wb, scope.dir);
+  const records: Finding[] = [];
+  const references: ReferenceEntry[] = [];
+  const evidence: EvidenceEntry[] = [];
+  const dependencies: Array<EdgeEntry | CycleEntry> = [];
+  const narratives: NarrativeEntry[] = [];
+  const scopedPackages = new Set<string>();
+  for (const path of paths) {
+    records.push(...blockedFindingOf(wb, path, view), ...findingsOf(wb, path));
+    const placed = placementFinding(path);
+    if (placed !== null) records.push(placed);
+
+    const r = ctx.readPair(path);
+    if (!r.ok || !validate(r.value.schemaId, r.value.control).ok) continue; // reported under records
+    const pair = r.value;
+    for (const { at, value } of referenceSites(pair)) references.push(referenceEntry(ctx, path, at, value));
+    if (pair.kind === "package") {
+      scopedPackages.add(pair.control.id as string);
+      evidence.push(...evidenceEntries(ctx, pair));
+      dependencies.push(...edgeEntries(ctx, pair));
+    }
+    narratives.push(...narrativeEntries(wb, pair, view));
+  }
+  for (const ids of cyclesOf(dependencyEdges(ctx))) {
+    if (ids.some((id) => scopedPackages.has(id))) dependencies.push({ status: "cycle", ids });
+  }
+
+  return {
+    ok: true,
+    result: { workbench: wb.root, state: wb.state, scope: req.scope ?? null, checked: paths.length, intents, records, references, evidence, dependencies, narratives },
   };
 }
