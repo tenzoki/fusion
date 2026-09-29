@@ -34,3 +34,6 @@ Option 1. The table's column documents the op a caller should reach for, and `cl
 
 ---
 Answered: Prior: docs/design/fusion-fj01-prior-response.md `## Claim/release decision for FJ02` (at Prior c512c4c) — option 1: transition stays the general edge walker, claim and release land in FJ02 as named operations over the same edges, and every check (authorizer, checkout and person binding, claim ownership, allowed edge, evidence, expected revision, operation-id binding) runs in one kernel for both entry points; the recorded protocol session stays valid; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 6225a8cb — claim and release run the transition plan function through the one kernel, with the same refusals on both routes (FJ02 step 4).

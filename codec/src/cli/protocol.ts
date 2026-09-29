@@ -55,11 +55,10 @@ export const OPERATIONS = [
 export type Operation = (typeof OPERATIONS)[number];
 
 /** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
-export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "transition", "claim", "release", "set-mode"];
+export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode"];
 
 /** The package that lands each operation not yet answered: the detail of its `not-implemented` refusal. */
 export const LANDS_IN: Partial<Record<Operation, string>> = {
-  create: "FJ02",
   "set-dependencies": "FJ02",
   "adopt-plan": "FJ02",
   "attach-evidence": "FJ02",
@@ -187,7 +186,9 @@ export interface CreateRequest extends Base<"create"> {
   origin: { kind: "user-request" | "package" | "campaign" | "legacy-unknown"; ref: RecordRef | null };
   /** The container the pair goes into, or null for `shared/`, and the store within it. */
   scope: { container: string | null; store: string };
-  narrative: { path: string };
+  /** With `content` the operation writes both halves of the pair; without it the narrative must already exist. */
+  narrative: { path: string; content?: string };
+  /** A package's `domain` and `references`; a record's `control` in its kind's initial state. */
   payload: Record<string, unknown>;
 }
 

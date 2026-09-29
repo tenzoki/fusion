@@ -8016,11 +8016,11 @@ var require_dist = __commonJS({
 });
 
 // src/cli/main.ts
-import { readFileSync as readFileSync6 } from "node:fs";
+import { readFileSync as readFileSync7 } from "node:fs";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 
 // src/cli/ops.ts
-import { statSync as statSync3 } from "node:fs";
+import { existsSync as existsSync3, readFileSync as readFileSync6, statSync as statSync3 } from "node:fs";
 
 // src/kernel.ts
 import { readdirSync as readdirSync4, readFileSync as readFileSync4 } from "node:fs";
@@ -8374,12 +8374,12 @@ function readPair(wb, path, set = schemas()) {
   const parsed = strictParse(bytes);
   if (!parsed.ok) return err("schema-invalid", parsed.reason, `${path}: ${parsed.detail}`);
   const control = parsed.value;
-  const schemaField = control.schema;
-  if (typeof schemaField !== "string") return err("schema-invalid", "schema-field-missing", `${path}: no string "schema" field`);
-  const schemaId = SCHEMA_ID_PREFIX + schemaField;
-  if (set.document(schemaId) === void 0) return err("unsupported-format", "unknown-schema", `${path} declares ${schemaField}; loaded: ${set.ids().join(", ")}`);
+  const schemaField2 = control.schema;
+  if (typeof schemaField2 !== "string") return err("schema-invalid", "schema-field-missing", `${path}: no string "schema" field`);
+  const schemaId = SCHEMA_ID_PREFIX + schemaField2;
+  if (set.document(schemaId) === void 0) return err("unsupported-format", "unknown-schema", `${path} declares ${schemaField2}; loaded: ${set.ids().join(", ")}`);
   const kind = kindOf(schemaId, control);
-  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a pair is a package or an issue, plan, discussion or decision record`);
+  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField2}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a pair is a package or an issue, plan, discussion or decision record`);
   return { ok: true, value: { path, kind, schemaId, control, bytes, revision: revisionOf(bytes), narrative: narrativeOf(wb, control) } };
 }
 function kindOf(schemaId, control) {
@@ -8977,9 +8977,8 @@ var OPERATIONS = [
   "reconcile",
   "migration"
 ];
-var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "transition", "claim", "release", "set-mode"];
+var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode"];
 var LANDS_IN = {
-  create: "FJ02",
   "set-dependencies": "FJ02",
   "adopt-plan": "FJ02",
   "attach-evidence": "FJ02",
@@ -9320,6 +9319,8 @@ async function dispatch(request, options = {}) {
       return readable(wb) ?? reading(wb, (view) => show(wb, req, view), kernel);
     case "validate":
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
+    case "create":
+      return mutate(wb, req, createPlan(req), kernel);
     case "transition":
       return mutate(wb, req, transitionPlan(req), kernel);
     case "claim":
@@ -9436,6 +9437,171 @@ function validateOp(wb, req, view) {
   const findings = paths.flatMap((p) => [...blockedFindingOf(wb, p, view), ...findingsOf(wb, p)]);
   return { ok: true, result: { workbench: wb.root, state: wb.state, checked: paths.length, valid: findings.length === 0, findings } };
 }
+var COMMON_SCHEMA_ID = "urn:fusion:schema:fusion.common/v1";
+var STORE_OF = { package: "work-packages", issue: "issues", plan: "plans", discussion: "discussions", decision: "decisions" };
+var PACKAGE_PAYLOAD = ["domain", "references"];
+var INITIAL_CONTROL = {
+  issue: { keys: ["state", "disposition"], fixed: { state: "open", disposition: null } },
+  plan: { keys: ["state", "steps", "criteria", "acceptance"], fixed: { state: "open", acceptance: null } },
+  discussion: { keys: ["state", "participants", "outcome_refs"], fixed: { state: "open" } },
+  decision: {
+    keys: ["state", "answer_ref", "implementation_ref", "superseded_by", "deferral"],
+    fixed: { state: "open", answer_ref: null, implementation_ref: null, superseded_by: null, deferral: null }
+  }
+};
+var refusal = (cls, reason, detail) => ({ ok: false, error: { class: cls, reason, detail } });
+function markerlessName() {
+  const doc = schemas().document(COMMON_SCHEMA_ID);
+  const pattern = doc?.$defs?.["legacy_markerless_citation"]?.pattern;
+  if (typeof pattern !== "string") throw new Error(`${COMMON_SCHEMA_ID}: $defs.legacy_markerless_citation.pattern is not a string`);
+  return new RegExp(pattern);
+}
+function fileHash(wb, path) {
+  const abs = resolveInside(wb, path);
+  if (!abs.ok) return abs;
+  if (!existsSync3(abs.value)) return { ok: true, value: null };
+  if (!statSync3(abs.value).isFile()) return refusal("unknown-scope", "not-a-file", `${path} is a directory in ${wb.root}`);
+  return { ok: true, value: revisionOf(readFileSync6(abs.value)) };
+}
+function pairPaths(ctx, req) {
+  const { kind, scope } = req;
+  const narrative = req.narrative.path;
+  const store = STORE_OF[kind];
+  const mismatch = (why) => refusal("unknown-scope", "store-kind-mismatch", `create ${kind}: ${why}`);
+  if (scope.store !== store) return mismatch(`a ${kind} is filed in ${store}/; the scope names ${scope.store}/`);
+  const slash = narrative.lastIndexOf("/");
+  const dir = narrative.slice(0, Math.max(slash, 0));
+  const name = narrative.slice(slash + 1);
+  const stem = name.slice(0, -".md".length);
+  let control;
+  if (kind === "package") {
+    if (scope.container !== null) return mismatch(`a package is its own directory in ${store}/, never inside the container ${scope.container}`);
+    if (dir !== `${store}/${stem}`) return mismatch(`a package's narrative is ${store}/<d>/<d>.md; the request names ${narrative}`);
+    control = `${dir}/package.json`;
+  } else {
+    const expected = scope.container === null ? `shared/${store}` : `${scope.container}/${store}`;
+    if (dir !== expected) return mismatch(`a ${kind} filed in ${expected}/ has its narrative there; the request names ${narrative}`);
+    if (scope.container !== null) {
+      const holder = `${scope.container}/package.json`;
+      const pkg = ctx.readPair(holder);
+      if (!pkg.ok && pkg.error.reason !== "record-not-found") return pkg;
+      if (!pkg.ok || pkg.value.kind !== "package") return refusal("unknown-scope", "container-missing", `${scope.container} is not a package directory: ${holder} ${pkg.ok ? `is a ${pkg.value.kind} record` : "does not exist"}`);
+    }
+    control = `${dir}/${stem}.record.json`;
+  }
+  if (!markerlessName().test(name)) {
+    return refusal("schema-invalid", "narrative-name", `${name} is not a marker-free name (YYMMDD-HHMM-<topic>.md, no underscore): a new record carries its state in JSON, never in its file name`);
+  }
+  return { ok: true, value: { control, narrative } };
+}
+function checkOrigin(ctx, origin) {
+  if (origin.kind === "legacy-unknown") return refusal("schema-invalid", "origin-legacy-on-create", "legacy-unknown is kept by an import that could not recover the origin; a record created now names its own");
+  if (origin.kind === "user-request") {
+    return origin.ref === null ? { ok: true, value: void 0 } : refusal("schema-invalid", "origin-ref-not-admitted", "a user-request origin carries ref null: the user's request is the mandate, no record is");
+  }
+  if (origin.ref === null) return refusal("schema-invalid", "origin-ref-required", `a ${origin.kind} origin names the package whose scope the new record decomposes; its ref is null`);
+  const hit = resolveRecordRef(ctx, origin.ref);
+  if (!hit.ok) return hit;
+  const pair = ctx.readPair(hit.value.path);
+  if (!pair.ok) return pair;
+  if (pair.value.kind !== "package") {
+    const campaign = origin.kind === "campaign" ? " (campaign records are not addressable in FJ02, so a campaign origin resolves against packages only)" : "";
+    return refusal("unresolved-reference", "not-a-package", `the ${origin.kind} origin ${origin.ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; an origin resolves to a package${campaign}`);
+  }
+  return { ok: true, value: void 0 };
+}
+var schemaField = (schemaId) => schemaId.slice(SCHEMA_ID_PREFIX.length);
+function newRecord(ctx, req) {
+  const payload = req.payload;
+  const admitted = req.kind === "package" ? PACKAGE_PAYLOAD : INITIAL_CONTROL[req.kind].keys;
+  const extra = Object.keys(payload).filter((k) => !admitted.includes(k));
+  if (extra.length > 0) {
+    const whose = req.kind === "package" ? "the rest of a new package (status open, no claim, mode ordinary) is the kernel's" : `a ${req.kind} payload is its control object`;
+    return refusal("schema-invalid", "payload-field-not-admitted", `a ${req.kind} payload admits ${admitted.join(", ")}; it carries ${extra.join(", ")}, and ${whose}`);
+  }
+  const common = {
+    id: req.id,
+    workbench_id: ctx.wb.id,
+    narrative: { path: req.narrative.path },
+    filed_by: req.filed_by,
+    provenance: { source: "created", legacy_fields: {} },
+    extensions: {}
+  };
+  if (req.kind === "package") {
+    if (payload.domain === void 0 || payload.domain === null) {
+      return refusal("schema-invalid", "domain-required", "a package payload carries its domain; null is kept only for a package imported without one");
+    }
+    const next2 = {
+      schema: schemaField(PACKAGE_SCHEMA_ID),
+      ...common,
+      domain: payload.domain,
+      status: "open",
+      claim: null,
+      mode: { value: "ordinary", source: null },
+      origin: req.origin,
+      depends_on: [],
+      active_documents: [],
+      references: payload.references ?? [],
+      evidence: [],
+      outcome: null
+    };
+    return { ok: true, value: { next: next2, schemaId: PACKAGE_SCHEMA_ID } };
+  }
+  const { fixed } = INITIAL_CONTROL[req.kind];
+  const off = Object.keys(fixed).filter((k) => payload[k] !== fixed[k]);
+  if (off.length > 0) {
+    const sets = off.map((k) => `${k} ${k in payload ? JSON.stringify(payload[k]) : "absent"}`).join(", ");
+    return refusal("schema-invalid", "not-initial-state", `a new ${req.kind} record starts at ${JSON.stringify(fixed)}; the payload has ${sets}`);
+  }
+  const next = { schema: schemaField(RECORD_SCHEMA_ID), ...common, kind: req.kind, references: [], control: { ...payload } };
+  return { ok: true, value: { next, schemaId: RECORD_SCHEMA_ID } };
+}
+function createPlan(req) {
+  return (ctx) => {
+    const paths = pairPaths(ctx, req);
+    if (!paths.ok) return paths;
+    const { control, narrative } = paths.value;
+    const stored = fileHash(ctx.wb, control);
+    if (!stored.ok) return stored;
+    if (stored.value !== null) return refusal("conflict", "record-exists", `${control} exists; create never replaces a record`);
+    const writes = [];
+    let narrativeHash;
+    const content = req.narrative.content;
+    const standing = fileHash(ctx.wb, narrative);
+    if (!standing.ok) return standing;
+    if (content !== void 0) {
+      if (standing.value !== null) return refusal("conflict", "narrative-exists", `${narrative} exists; with narrative.content create writes both halves of a new pair and never replaces a narrative`);
+      const bytes2 = Buffer.from(content, "utf-8");
+      if (bytes2.toString("utf-8") !== content) return refusal("schema-invalid", "narrative-not-utf8", "narrative.content holds a lone surrogate, which has no UTF-8 encoding");
+      writes.push({ path: narrative, bytes: bytes2 });
+      narrativeHash = revisionOf(bytes2);
+    } else {
+      if (standing.value === null) return refusal("unresolved-reference", "narrative-missing", `${narrative} does not exist; without narrative.content create requires it`);
+      narrativeHash = standing.value;
+    }
+    const taken = ctx.resolveRecordId(req.id);
+    if (taken.ok) return refusal("conflict", "id-in-use", `the id ${req.id} is carried by ${taken.value.path}`);
+    if (taken.error.reason !== "record-not-found") return refusal("conflict", "id-in-use", taken.error.detail);
+    const origin = checkOrigin(ctx, req.origin);
+    if (!origin.ok) return origin;
+    const built = newRecord(ctx, req);
+    if (!built.ok) return built;
+    const { next, schemaId } = built.value;
+    const v = ctx.validateResult(schemaId, next, `the ${req.kind} record create would write is not valid`);
+    if (!v.ok) return v;
+    const bytes = Buffer.from(serialise(next), "utf-8");
+    const revision = revisionOf(bytes);
+    writes.push({ path: control, bytes });
+    return {
+      ok: true,
+      value: {
+        writes,
+        result: { operation_id: req.operation_id, path: control, kind: req.kind, revision, narrative: { path: narrative, sha256: narrativeHash } },
+        revisions: { [control]: revision }
+      }
+    };
+  };
+}
 var isObject4 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
 function transitionPlan(req, precheck) {
   return (ctx) => {
@@ -9510,10 +9676,7 @@ function moveRecord(ctx, pair, to, payload) {
 function resolveReference(ctx, value) {
   if (!isObject4(value)) return { ok: true, value: void 0 };
   if (typeof value.record_id === "string") {
-    if (ctx.wb.id !== null && value.workbench_id !== ctx.wb.id) {
-      return { ok: false, error: { class: "unresolved-reference", reason: "foreign-workbench", detail: `the reference names workbench ${JSON.stringify(value.workbench_id)}; this workbench is ${ctx.wb.id}` } };
-    }
-    const r = ctx.resolveRecordId(value.record_id);
+    const r = resolveRecordRef(ctx, { workbench_id: value.workbench_id, record_id: value.record_id });
     return r.ok ? { ok: true, value: void 0 } : r;
   }
   if (typeof value.path === "string" && typeof value.sha256 === "string") {
@@ -9521,6 +9684,12 @@ function resolveReference(ctx, value) {
     return r.ok ? { ok: true, value: void 0 } : r;
   }
   return { ok: true, value: void 0 };
+}
+function resolveRecordRef(ctx, ref) {
+  if (ctx.wb.id !== null && ref.workbench_id !== ctx.wb.id) {
+    return { ok: false, error: { class: "unresolved-reference", reason: "foreign-workbench", detail: `the reference names workbench ${JSON.stringify(ref.workbench_id)}; this workbench is ${ctx.wb.id}` } };
+  }
+  return ctx.resolveRecordId(ref.record_id);
 }
 function operationEdges(op) {
   const edges = (transitions().kinds["package"]?.edges ?? []).filter((e) => e.operation === op);
@@ -11779,7 +11948,7 @@ ${USAGE}
   let bytes;
   if (args.file !== null) {
     try {
-      bytes = readFileSync6(args.file);
+      bytes = readFileSync7(args.file);
     } catch (e) {
       process.stderr.write(`fusion-record: cannot read ${args.file}: ${e instanceof Error ? e.message : String(e)}
 ${USAGE}

@@ -11,16 +11,17 @@
 
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { dispatch } from "../cli/ops.js";
-import { OPERATIONS, IMPLEMENTED_OPERATIONS, LANDS_IN, type ClaimRequest, type ReleaseRequest, type Response, type SetModeRequest, type TransitionRequest } from "../cli/protocol.js";
+import { OPERATIONS, IMPLEMENTED_OPERATIONS, LANDS_IN, type ClaimRequest, type CreateRequest, type ReleaseRequest, type Response, type SetModeRequest, type TransitionRequest } from "../cli/protocol.js";
 import { installInlined } from "../cli/schemas.js";
+import { CutReached } from "../kernel.js";
 import { revisionOf, serialise } from "../store.js";
-import { strictParse } from "../strict-json.js";
+import { MAX_RECORD_BYTES, strictParse } from "../strict-json.js";
 import { transitions } from "../transitions.js";
 import { loadSchemas } from "../validate.js";
 
@@ -738,7 +739,7 @@ describe("claim, release and set-mode over the shared kernel", () => {
   }
 
   it("the scratch open package never becomes autonomous by any route but set-mode with provenance", async () => {
-    // create (step 5) is the other route a package enters by; its origin cases pin it there.
+    // create is the other route a package enters by; its true-origin case in `describe("create")` pins it there.
     const ordinary = { value: "ordinary", source: null };
     const expectOrdinary = (label: string): void => expect(packageIn(root).mode, label).toEqual(ordinary);
     expect(errorOf(await dispatch(transitionRequest({ payload: { claim: CLAIM, mode: { value: "autonomous", source: null } } as TransitionRequest["payload"] })))).toEqual({ class: "schema-invalid", reason: "request" });
@@ -755,6 +756,372 @@ describe("claim, release and set-mode over the shared kernel", () => {
     expectOrdinary("after set-mode without provenance");
     expect((await dispatch(setModeRequest(root, { value: "autonomous", source: { kind: "user-word", ref: userWordFile() } }, { operation_id: randomUUID() }))).ok).toBe(true);
     expect((packageIn(root).mode as { value: string }).value).toBe("autonomous");
+  });
+});
+
+// --- create ------------------------------------------------------------------------------
+
+describe("create", () => {
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const OPEN_ID = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
+  const ISSUE_ID = "d068e1ae-3f62-429a-880a-2785763aaf01";
+  const CONTAINER = "work-packages/260928-1200-parser-fix";
+  const FROM_OPEN: CreateRequest["origin"] = { kind: "package", ref: { workbench_id: WB_ID, record_id: OPEN_ID } };
+  const USER_REQUEST: CreateRequest["origin"] = { kind: "user-request", ref: null };
+  const AGENT = { actor: "implementation-planner", person: null };
+  const KINDS: Array<CreateRequest["kind"]> = ["package", "issue", "plan", "discussion", "decision"];
+  const STORE: Record<CreateRequest["kind"], string> = { package: "work-packages", issue: "issues", plan: "plans", discussion: "discussions", decision: "decisions" };
+  const ID: Record<CreateRequest["kind"], string> = {
+    package: "3b8e1f4a-6c2d-4e7f-9a1b-2c3d4e5f6a7b",
+    issue: "7a1c2e3f-4d5b-4c6a-8b7d-9e0f1a2b3c4d",
+    plan: "8a1c2e3f-4d5b-4c6a-8b7d-9e0f1a2b3c4d",
+    discussion: "9a1c2e3f-4d5b-4c6a-8b7d-9e0f1a2b3c4d",
+    decision: "aa1c2e3f-4d5b-4c6a-8b7d-9e0f1a2b3c4d",
+  };
+  /** Each kind's payload as a caller sends it: a package's domain, a record's control in its initial state. */
+  const PAYLOAD: Record<CreateRequest["kind"], Record<string, unknown>> = {
+    package: { domain: "code" },
+    issue: { state: "open", disposition: null },
+    plan: { state: "open", steps: [{ id: "s1", state: "open" }], criteria: [{ id: "c1", met: null }], acceptance: null },
+    discussion: { state: "open", participants: [ACTOR], outcome_refs: [] },
+    decision: { state: "open", answer_ref: null, implementation_ref: null, superseded_by: null, deferral: null },
+  };
+  const contentOf = (kind: string): string => `# A new ${kind}\n\nFiled by the FJ02 create tests.\n`;
+
+  /** A create of `kind`; a record goes into the open package's container unless `at.container` says otherwise; `at.content` null sends no body. */
+  const createRequest = (kind: CreateRequest["kind"], over: Partial<CreateRequest> = {}, at: { container?: string | null; stem?: string; content?: string | null } = {}): CreateRequest => {
+    const stem = at.stem ?? (kind === "package" ? "260929-0900-journal-recovery" : `260929-1000-new-${kind}`);
+    const container = kind === "package" ? null : at.container === undefined ? CONTAINER : at.container;
+    const dir = kind === "package" ? `work-packages/${stem}` : `${container ?? "shared"}/${STORE[kind]}`;
+    const content = at.content === undefined ? contentOf(kind) : at.content;
+    const path = `${dir}/${stem}.md`;
+    return {
+      op: "create",
+      workbench: root,
+      operation_id: OP_ID,
+      id: ID[kind],
+      kind,
+      filed_by: ACTOR,
+      origin: kind === "package" ? USER_REQUEST : FROM_OPEN,
+      scope: { container, store: STORE[kind] },
+      narrative: content === null ? { path } : { path, content },
+      payload: PAYLOAD[kind],
+      ...over,
+    };
+  };
+  const controlOf = (req: CreateRequest): string => {
+    const path = req.narrative.path;
+    return req.kind === "package" ? path.replace(/[^/]+\.md$/, "package.json") : path.replace(/\.md$/, ".record.json");
+  };
+  const parsed = (path: string): Record<string, unknown> => {
+    const p = strictParse(bytesOf(path));
+    if (!p.ok) throw new Error(p.detail);
+    return p.value as Record<string, unknown>;
+  };
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+  const journal = (): string[] => (existsSync(join(root, ".json-state", "journal")) ? readdirSync(join(root, ".json-state", "journal")) : []);
+  const answered = (id: string): boolean => existsSync(join(root, ".json-state", "ops", `${id}.json`));
+  /** A refusal wrote nothing: neither half of the pair, no answer, no pending intent. */
+  const nothingWritten = (req: CreateRequest, label: string): void => {
+    expect(existsSync(join(root, controlOf(req))), `${label}: control`).toBe(false);
+    if (req.narrative.content !== undefined) expect(existsSync(join(root, req.narrative.path)), `${label}: narrative`).toBe(false);
+    expect(answered(req.operation_id), `${label}: answer`).toBe(false);
+    expect(journal(), `${label}: journal`).toEqual([]);
+  };
+  const writeNarrative = (path: string, text: string): void => {
+    mkdirSync(join(root, path, ".."), { recursive: true });
+    writeFileSync(join(root, path), text);
+  };
+
+  /** What a landed create must have written and answered, for the request that made it. */
+  const expectLanded = async (req: CreateRequest, r: Response, narrativeBytes: Buffer, label: string): Promise<void> => {
+    const control = controlOf(req);
+    expect(r.ok, `${label}: ${JSON.stringify(r)}`).toBe(true);
+    if (!r.ok) return;
+    expect(r.result, label).toEqual({ operation_id: req.operation_id, path: control, kind: req.kind, revision: revision(control), narrative: { path: req.narrative.path, sha256: revisionOf(narrativeBytes) } });
+    expect(r.revisions, label).toEqual({ [control]: revision(control) });
+    expect(bytesOf(req.narrative.path).equals(narrativeBytes), `${label}: the narrative's bytes`).toBe(true);
+    const record = parsed(control);
+    expect(bytesOf(control).toString("utf-8"), `${label}: deterministic bytes`).toBe(serialise(record));
+    expect(record, label).toMatchObject({
+      id: req.id,
+      workbench_id: WB_ID,
+      narrative: { path: req.narrative.path },
+      filed_by: req.filed_by,
+      provenance: { source: "created", legacy_fields: {} },
+      extensions: {},
+    });
+    if (req.kind === "package") {
+      expect(record, label).toMatchObject({
+        schema: "fusion.package/v1",
+        domain: req.payload.domain,
+        status: "open",
+        claim: null,
+        mode: { value: "ordinary", source: null },
+        origin: req.origin,
+        depends_on: [],
+        active_documents: [],
+        references: req.payload.references ?? [],
+        evidence: [],
+        outcome: null,
+      });
+    } else {
+      expect(record, label).toMatchObject({ schema: "fusion.record/v1", kind: req.kind, references: [], control: req.payload });
+    }
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: control } })), label).toMatchObject({ checked: 1, valid: true, findings: [] });
+  };
+  const land = async (req: CreateRequest, label = `${req.kind}`): Promise<Response> => {
+    const r = await dispatch(req);
+    await expectLanded(req, r, req.narrative.content !== undefined ? Buffer.from(req.narrative.content, "utf-8") : bytesOf(req.narrative.path), label);
+    return r;
+  };
+
+  // --- every kind ---
+
+  for (const kind of KINDS) {
+    it(`${kind}, with content: one operation writes both halves; the record is the kernel's, deterministic and valid`, async () => {
+      const places: Array<string | null> = kind === "package" ? [null] : [CONTAINER, null];
+      for (const container of places) {
+        const req = createRequest(kind, { operation_id: randomUUID(), id: randomUUID() }, { container });
+        expect(existsSync(join(root, req.narrative.path)), "the narrative is new").toBe(false);
+        await land(req, `${kind} in ${container ?? "shared"}`);
+      }
+      const all = okResult(await dispatch({ op: "validate", workbench: root }));
+      expect(all).toMatchObject({ checked: 3 + places.length, valid: true, findings: [] });
+    });
+
+    it(`${kind}, without content: the narrative already there is left as it is, and the control file is the one write`, async () => {
+      const req = createRequest(kind, {}, { content: null });
+      writeNarrative(req.narrative.path, "# Written before the record\n");
+      const before = bytesOf(req.narrative.path);
+      const mtime = statSync(join(root, req.narrative.path)).mtimeMs;
+      await land(req);
+      expect(bytesOf(req.narrative.path).equals(before)).toBe(true);
+      expect(statSync(join(root, req.narrative.path)).mtimeMs, "the narrative was not rewritten").toBe(mtime);
+    });
+  }
+
+  it("a create into a container that exists but lacks the store directory creates it", async () => {
+    for (const kind of ["issue", "plan", "discussion", "decision"] as const) {
+      expect(existsSync(join(root, CONTAINER, STORE[kind])), `${CONTAINER}/${STORE[kind]} before`).toBe(false);
+      await land(createRequest(kind, { operation_id: randomUUID() }));
+      expect(statSync(join(root, CONTAINER, STORE[kind])).isDirectory()).toBe(true);
+    }
+  });
+
+  it("a package payload's references are carried; its domain is required and never null", async () => {
+    const references = ["260928-1200-parser-fix.md", { workbench_id: WB_ID, record_id: ISSUE_ID }];
+    await land(createRequest("package", { payload: { domain: "data", references } }));
+    for (const payload of [{}, { domain: null }, { references: [] }]) {
+      const req = createRequest("package", { operation_id: randomUUID(), id: randomUUID(), payload }, { stem: "260929-0901-no-domain" });
+      expect(errorOf(await dispatch(req)), JSON.stringify(payload)).toEqual({ class: "schema-invalid", reason: "domain-required" });
+      nothingWritten(req, JSON.stringify(payload));
+    }
+  });
+
+  // --- replay ---
+
+  it("an identical retry returns the stored answer and touches nothing; a divergent one is operation-id-reused; a fresh id is record-exists", async () => {
+    const req = createRequest("package");
+    const first = await land(req);
+    const control = controlOf(req);
+    const mtimes = [statSync(join(root, control)).mtimeMs, statSync(join(root, req.narrative.path)).mtimeMs];
+    expect(await dispatch(req)).toEqual(first);
+    expect([statSync(join(root, control)).mtimeMs, statSync(join(root, req.narrative.path)).mtimeMs]).toEqual(mtimes);
+    const divergent = { ...req, narrative: { ...req.narrative, content: `${req.narrative.content ?? ""}one line more\n` } };
+    expect(errorOf(await dispatch(divergent))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+    // The same pair under a fresh operation id: the kernel's absence check, never a second creation.
+    const again = await dispatch({ ...req, operation_id: randomUUID() });
+    expect(errorOf(again)).toEqual({ class: "conflict", reason: "record-exists" });
+    expect(errorOf(await dispatch({ ...req, operation_id: randomUUID(), id: randomUUID() }))).toEqual({ class: "conflict", reason: "record-exists" });
+    expect([statSync(join(root, control)).mtimeMs, statSync(join(root, req.narrative.path)).mtimeMs]).toEqual(mtimes);
+  });
+
+  /** A package create whose request serialises to `bytes` exactly, its content the padding. */
+  const createOfSize = (bytes: number, over: Partial<CreateRequest> = {}, stem?: string): CreateRequest => {
+    const base = createRequest("package", over, { content: "", stem });
+    const overhead = Buffer.byteLength(JSON.stringify(base), "utf-8");
+    // The final newline serialises as the two bytes `\n`.
+    const req = { ...base, narrative: { ...base.narrative, content: `${"x".repeat(bytes - overhead - 2)}\n` } };
+    expect(Buffer.byteLength(JSON.stringify(req), "utf-8")).toBe(bytes);
+    return req;
+  };
+  const runBundle = (req: unknown): Response => {
+    const { FUSION_WORKBENCH: _drop, ...env } = process.env;
+    const r = spawnSync(process.execPath, [BUNDLE], { input: JSON.stringify(req), encoding: "utf-8", env, maxBuffer: 4 * MAX_RECORD_BYTES });
+    expect(r.status, r.stderr).toBe(0);
+    return JSON.parse(r.stdout) as Response;
+  };
+
+  it("a request within 16 bytes of the 1 MiB request cap lands through the bundle; its stored answer reads back; identical and divergent retries (C12)", () => {
+    const req = createOfSize(MAX_RECORD_BYTES - 16);
+    const first = runBundle(req);
+    expect(first.ok, JSON.stringify(first).slice(0, 400)).toBe(true);
+    expect(bytesOf(req.narrative.path).toString("utf-8")).toBe(req.narrative.content);
+    expect(journal()).toEqual([]);
+    // The stored answer carries the request's digest, never its body, and is read back by the strict reader.
+    const answer = readFileSync(join(root, ".json-state", "ops", `${OP_ID}.json`));
+    expect(answer.byteLength).toBeLessThan(4096);
+    const stored = strictParse(answer);
+    expect(stored.ok).toBe(true);
+    if (stored.ok) expect(Object.keys(stored.value as object).sort()).toEqual(["op", "operation_id", "request_digest", "response"]);
+    expect(runBundle(req)).toEqual(first);
+    const content = req.narrative.content ?? "";
+    const divergent = { ...req, narrative: { ...req.narrative, content: `${content.slice(0, -2)}y\n` } };
+    expect(runBundle(divergent)).toMatchObject({ ok: false, error: { class: "conflict", reason: "operation-id-reused" } });
+    // One byte over the cap is refused before any operation runs.
+    const over = createOfSize(MAX_RECORD_BYTES + 1, { operation_id: randomUUID(), id: randomUUID() }, "260929-0902-over-cap");
+    expect(runBundle(over)).toMatchObject({
+      ok: false,
+      error: { class: "schema-invalid", reason: "too-large" },
+    });
+    expect(existsSync(join(root, "work-packages", "260929-0902-over-cap"))).toBe(false);
+  });
+
+  it("the same near-cap create cut after its intent: the intent and its staged narrative read back, and recovery lands the pair", async () => {
+    const req = createOfSize(MAX_RECORD_BYTES - 16);
+    await expect(dispatch(req, { kernel: { faults: { cutAt: "after-intent" } } })).rejects.toBeInstanceOf(CutReached);
+    expect(journal()).toEqual([OP_ID]);
+    expect(existsSync(join(root, req.narrative.path))).toBe(false);
+    const shown = okResult(await dispatch({ op: "show", workbench: root, record: { path: controlOf(req) } }));
+    expect(shown.narrative).toEqual({ path: req.narrative.path, sha256: revisionOf(Buffer.from(req.narrative.content ?? "", "utf-8")) });
+    expect(journal()).toEqual([]);
+    const retry = await dispatch(req);
+    expect(okResult(retry)).toMatchObject({ operation_id: OP_ID, path: controlOf(req), revision: revision(controlOf(req)) });
+  });
+
+  // --- true origin (spec section 9: package formation by agents; no invented autonomous) ---
+
+  it("an agent filing under a package origin that resolves lands with mode ordinary whatever the payload attempts, and filed_by as sent", async () => {
+    const base = createRequest("package", { filed_by: AGENT, origin: FROM_OPEN });
+    const attempts: Array<[string, Record<string, unknown>]> = [
+      ["mode", { domain: "code", mode: { value: "autonomous", source: { kind: "user-word", ref: { workbench_id: WB_ID, record_id: ISSUE_ID } } } }],
+      ["status", { domain: "code", status: "claimed" }],
+      ["claim", { domain: "code", claim: CLAIM }],
+      ["origin", { domain: "code", origin: USER_REQUEST }],
+    ];
+    for (const [field, payload] of attempts) {
+      const req = { ...base, operation_id: randomUUID(), payload };
+      const r = await dispatch(req);
+      expect(errorOf(r), field).toEqual({ class: "schema-invalid", reason: "payload-field-not-admitted" });
+      if (!r.ok) expect(r.error.detail, field).toContain(field);
+      nothingWritten(req, field);
+    }
+    expect(errorOf(await dispatch({ ...base, mode: { value: "autonomous", source: null } }))).toEqual({ class: "schema-invalid", reason: "request" });
+    await land(base);
+    const record = parsed(controlOf(base));
+    expect(record.mode).toEqual({ value: "ordinary", source: null });
+    expect(record.filed_by).toEqual(AGENT);
+    expect(record.origin).toEqual(FROM_OPEN);
+    // A record an agent files under a package origin carries no origin field; the origin was checked all the same.
+    await land(createRequest("issue", { operation_id: randomUUID(), filed_by: AGENT }));
+  });
+
+  it("an origin that does not resolve to a package of this workbench is refused and nothing is written", async () => {
+    const dangling = { workbench_id: WB_ID, record_id: "00000000-0000-4000-8000-00000000dead" };
+    const cases: Array<[string, CreateRequest["origin"], { class: string; reason: string }]> = [
+      ["a dangling package ref", { kind: "package", ref: dangling }, { class: "unresolved-reference", reason: "record-not-found" }],
+      ["a foreign package ref", { kind: "package", ref: { ...dangling, workbench_id: "00000000-0000-4000-8000-000000000000" } }, { class: "unresolved-reference", reason: "foreign-workbench" }],
+      ["a package ref to an issue", { kind: "package", ref: { workbench_id: WB_ID, record_id: ISSUE_ID } }, { class: "unresolved-reference", reason: "not-a-package" }],
+      ["a campaign ref to an issue", { kind: "campaign", ref: { workbench_id: WB_ID, record_id: ISSUE_ID } }, { class: "unresolved-reference", reason: "not-a-package" }],
+      ["a package origin without a ref", { kind: "package", ref: null }, { class: "schema-invalid", reason: "origin-ref-required" }],
+      ["a user request with a ref", { kind: "user-request", ref: { workbench_id: WB_ID, record_id: OPEN_ID } }, { class: "schema-invalid", reason: "origin-ref-not-admitted" }],
+      ["legacy-unknown", { kind: "legacy-unknown", ref: null }, { class: "schema-invalid", reason: "origin-legacy-on-create" }],
+    ];
+    for (const kind of ["package", "issue"] as const) {
+      for (const [label, origin, expected] of cases) {
+        const req = createRequest(kind, { operation_id: randomUUID(), origin });
+        const r = await dispatch(req);
+        expect(errorOf(r), `${kind}: ${label}`).toEqual(expected);
+        if (!r.ok && origin.kind === "campaign") expect(r.error.detail).toContain("campaign records are not addressable in FJ02");
+        nothingWritten(req, `${kind}: ${label}`);
+      }
+    }
+    // A campaign origin resolves against packages only, and one that names a package lands.
+    await land(createRequest("package", { origin: { kind: "campaign", ref: { workbench_id: WB_ID, record_id: OPEN_ID } } }));
+  });
+
+  // --- where the pair goes ---
+
+  it("scope, kind and path must agree, a container must be a package directory, and a new name is marker-free", async () => {
+    const issue = createRequest("issue");
+    const cases: Array<[string, CreateRequest, { class: string; reason: string }]> = [
+      ["an issue into the plans store", { ...issue, scope: { container: CONTAINER, store: "plans" } }, { class: "unknown-scope", reason: "store-kind-mismatch" }],
+      ["an issue whose narrative is outside its scope", { ...issue, narrative: { ...issue.narrative, path: `${CONTAINER}/plans/260929-1000-new-issue.md` } }, { class: "unknown-scope", reason: "store-kind-mismatch" }],
+      ["an issue whose narrative is in shared/ while the scope names a container", { ...issue, narrative: { ...issue.narrative, path: "shared/issues/260929-1000-new-issue.md" } }, { class: "unknown-scope", reason: "store-kind-mismatch" }],
+      ["a package inside a container", createRequest("package", { scope: { container: CONTAINER, store: "work-packages" } }), { class: "unknown-scope", reason: "store-kind-mismatch" }],
+      ["a package whose narrative is not <d>/<d>.md", createRequest("package", { narrative: { path: "work-packages/260929-0900-journal-recovery/260929-0901-other.md", content: "x\n" } }), { class: "unknown-scope", reason: "store-kind-mismatch" }],
+      ["a container that does not exist", createRequest("issue", {}, { container: "work-packages/260929-1111-absent" }), { class: "unknown-scope", reason: "container-missing" }],
+      ["a container without a package record", createRequest("issue", {}, { container: "shared" }), { class: "unknown-scope", reason: "container-missing" }],
+      ["a marker-bearing record name", createRequest("issue", {}, { stem: "260929-1000_o_empty-input" }), { class: "schema-invalid", reason: "narrative-name" }],
+      ["a marker-bearing package name", createRequest("package", {}, { stem: "260929-0900_o_journal-recovery" }), { class: "schema-invalid", reason: "narrative-name" }],
+      ["a name without its stamp", createRequest("issue", {}, { stem: "empty-input" }), { class: "schema-invalid", reason: "narrative-name" }],
+    ];
+    for (const [label, req, expected] of cases) {
+      const r = await dispatch({ ...req, operation_id: randomUUID() });
+      expect(errorOf(r), label).toEqual(expected);
+      expect(journal(), label).toEqual([]);
+      expect(existsSync(join(root, req.narrative.path)), label).toBe(false);
+    }
+  });
+
+  it("the id, the control file and the narrative: id-in-use, record-exists, narrative-exists, narrative-missing", async () => {
+    const taken = createRequest("issue", { id: OPEN_ID });
+    expect(errorOf(await dispatch(taken))).toEqual({ class: "conflict", reason: "id-in-use" });
+    nothingWritten(taken, "id-in-use");
+
+    const withBody = createRequest("issue", { operation_id: randomUUID() });
+    writeNarrative(withBody.narrative.path, "# Already here\n");
+    expect(errorOf(await dispatch(withBody))).toEqual({ class: "conflict", reason: "narrative-exists" });
+    expect(bytesOf(withBody.narrative.path).toString("utf-8")).toBe("# Already here\n");
+    expect(existsSync(join(root, controlOf(withBody)))).toBe(false);
+
+    const withoutBody = createRequest("plan", { operation_id: randomUUID() }, { content: null });
+    expect(errorOf(await dispatch(withoutBody))).toEqual({ class: "unresolved-reference", reason: "narrative-missing" });
+    nothingWritten(withoutBody, "narrative-missing");
+
+    // A control file standing without a create: record-exists, whatever the narrative.
+    const standing = createRequest("decision", { operation_id: randomUUID() });
+    writeNarrative(controlOf(standing), readFileSync(join(root, ISSUE)).toString("utf-8"));
+    expect(errorOf(await dispatch(standing))).toEqual({ class: "conflict", reason: "record-exists" });
+    expect(existsSync(join(root, standing.narrative.path))).toBe(false);
+  });
+
+  it("a record payload is its control in the kind's initial state; anything else is refused and nothing is written", async () => {
+    const cases: Array<[string, CreateRequest["kind"], Record<string, unknown>, { class: string; reason: string }]> = [
+      ["a closed issue", "issue", { state: "closed", disposition: { kind: "fixed", reason_ref: null } }, { class: "schema-invalid", reason: "not-initial-state" }],
+      ["an issue without its disposition", "issue", { state: "open" }, { class: "schema-invalid", reason: "not-initial-state" }],
+      ["an issue carrying a candidate", "issue", { state: "open", disposition: null, candidate: {} }, { class: "schema-invalid", reason: "payload-field-not-admitted" }],
+      ["a plan in progress", "plan", { ...PAYLOAD.plan, state: "in_progress" }, { class: "schema-invalid", reason: "not-initial-state" }],
+      ["an adopted plan", "plan", { ...PAYLOAD.plan, acceptance: { ref: { workbench_id: WB_ID, record_id: OPEN_ID }, revision: revision(OPEN) } }, { class: "schema-invalid", reason: "not-initial-state" }],
+      ["a closed discussion", "discussion", { ...PAYLOAD.discussion, state: "closed" }, { class: "schema-invalid", reason: "not-initial-state" }],
+      ["an answered decision", "decision", { ...PAYLOAD.decision, state: "answered", answer_ref: "260928-1200-parser-fix.md" }, { class: "schema-invalid", reason: "not-initial-state" }],
+      ["an open decision with an answer", "decision", { ...PAYLOAD.decision, answer_ref: "260928-1200-parser-fix.md" }, { class: "schema-invalid", reason: "not-initial-state" }],
+      ["a discussion whose participants are not actors", "discussion", { ...PAYLOAD.discussion, participants: ["kai"] }, { class: "schema-invalid", reason: "result-invalid" }],
+      ["a plan without steps", "plan", { state: "open", criteria: [], acceptance: null }, { class: "schema-invalid", reason: "result-invalid" }],
+    ];
+    for (const [label, kind, payload, expected] of cases) {
+      const req = createRequest(kind, { operation_id: randomUUID(), payload });
+      expect(errorOf(await dispatch(req)), label).toEqual(expected);
+      nothingWritten(req, label);
+    }
+  });
+
+  it("content with a lone surrogate, which has no UTF-8 encoding, is refused rather than written altered", async () => {
+    const req = createRequest("issue", {}, { content: "# Broken \ud800 body\n" });
+    expect(errorOf(await dispatch(req))).toEqual({ class: "schema-invalid", reason: "narrative-not-utf8" });
+    nothingWritten(req, "lone surrogate");
+  });
+
+  it("the valid fixtures create.json and create-with-content.json land on the scratch workbench", async () => {
+    const issue = { ...fixture("protocol/create.json"), workbench: root } as unknown as CreateRequest;
+    writeNarrative(issue.narrative.path, "# Empty input\n");
+    await land(issue, "create.json");
+    await land({ ...fixture("protocol/create-with-content.json"), workbench: root, operation_id: randomUUID() } as unknown as CreateRequest, "create-with-content.json");
   });
 });
 

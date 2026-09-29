@@ -12,6 +12,8 @@
 //   show        one pair: control, revision, narrative hash
 //   validate    strict parse, schema, and the state rules `transitions.ts`
 //               owns, for one pair or the whole workbench
+//   create      a new pair: the control record the kernel builds, and the
+//               narrative when the request carries its body, in one intent
 //   transition  a package or an issue, plan, discussion or decision record:
 //               `allowed()` over the tables, as a plan function the kernel
 //               runs under the caller's expected revision
@@ -39,13 +41,14 @@
 // state of the workbench. A throw is a defect in this file.
 // ---------------------------------------------------------------------------
 
-import { statSync } from "node:fs";
-import { mutate, read, recoveryBlocked, type KernelOptions, type PlanContext, type PlanFunction, type Planned, type ReadView } from "../kernel.js";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { mutate, read, recoveryBlocked, type KernelOptions, type PlanContext, type PlanFunction, type Planned, type PlannedWrite, type ReadView } from "../kernel.js";
 import { allowed, stateRules, transitions, type TransitionPayload as RulePayload } from "../transitions.js";
 import {
   KINDS,
   PACKAGE_SCHEMA_ID,
   RECORD_SCHEMA_ID,
+  SCHEMA_ID_PREFIX,
   SUPPORTED_FEATURES,
   controlFiles,
   describeErrors,
@@ -68,6 +71,7 @@ import {
   fail,
   isOperation,
   type ClaimRequest,
+  type CreateRequest,
   type ListRequest,
   type ReleaseRequest,
   type Request,
@@ -124,6 +128,8 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
       return readable(wb) ?? reading(wb, (view) => show(wb, req, view), kernel);
     case "validate":
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
+    case "create":
+      return mutate(wb, req, createPlan(req), kernel);
     case "transition":
       return mutate(wb, req, transitionPlan(req), kernel);
     case "claim":
@@ -272,6 +278,237 @@ function validateOp(wb: Workbench, req: ValidateRequest, view: ReadView): Respon
   return { ok: true, result: { workbench: wb.root, state: wb.state, checked: paths.length, valid: findings.length === 0, findings } };
 }
 
+// --- create -----------------------------------------------------------------------
+//
+// A new pair in one journaled operation. The kernel builds the control record,
+// never the payload alone: identity, workbench, narrative, filer, provenance
+// `created`, and for a package `open`, no claim, mode `ordinary` with no
+// source, no dependencies, documents or evidence. What the payload may add is
+// a package's `domain` and `references`, and a record's `control` in its
+// kind's initial state. So a created package is never `autonomous`: that is
+// `set-mode`'s, on the user's word.
+//
+// With `narrative.content` both files are writes of one intent, the narrative
+// first, so a crash leaves either nothing, a narrative the next request rolls
+// forward into the pair, or the pair; the walk never finds a control file
+// whose narrative is still to come. Without it the narrative must already be
+// there and the operation writes the control file alone.
+
+const COMMON_SCHEMA_ID = "urn:fusion:schema:fusion.common/v1";
+
+type CreateKind = CreateRequest["kind"];
+type RecordKind = Exclude<CreateKind, "package">;
+
+/** The store each kind is filed in: a package is its own directory in `work-packages/`, a record sits in its kind's store. */
+const STORE_OF: Readonly<Record<CreateKind, string>> = { package: "work-packages", issue: "issues", plan: "plans", discussion: "discussions", decision: "decisions" };
+
+/** What a package payload may carry; every other field of a new package is the kernel's. */
+const PACKAGE_PAYLOAD: readonly string[] = ["domain", "references"];
+
+/**
+ * A record payload is its `control` object in the kind's initial state: the
+ * keys it may carry, and the values creation fixes. The keys not fixed (a
+ * plan's steps and criteria, a discussion's participants and outcome
+ * references) are the caller's, and the record schema judges their shape.
+ */
+const INITIAL_CONTROL: Readonly<Record<RecordKind, { keys: readonly string[]; fixed: Readonly<Record<string, unknown>> }>> = {
+  issue: { keys: ["state", "disposition"], fixed: { state: "open", disposition: null } },
+  plan: { keys: ["state", "steps", "criteria", "acceptance"], fixed: { state: "open", acceptance: null } },
+  discussion: { keys: ["state", "participants", "outcome_refs"], fixed: { state: "open" } },
+  decision: {
+    keys: ["state", "answer_ref", "implementation_ref", "superseded_by", "deferral"],
+    fixed: { state: "open", answer_ref: null, implementation_ref: null, superseded_by: null, deferral: null },
+  },
+};
+
+const refusal = <T>(cls: StoreError["class"], reason: string, detail: string): Result<T> => ({ ok: false, error: { class: cls, reason, detail } });
+
+/** The basename a new record takes: `common.schema.json`'s `legacy_markerless_citation`, read from the loaded schema. */
+function markerlessName(): RegExp {
+  const doc = schemas().document(COMMON_SCHEMA_ID) as { $defs?: Record<string, { pattern?: unknown } | undefined> } | undefined;
+  const pattern = doc?.$defs?.["legacy_markerless_citation"]?.pattern;
+  if (typeof pattern !== "string") throw new Error(`${COMMON_SCHEMA_ID}: $defs.legacy_markerless_citation.pattern is not a string`);
+  return new RegExp(pattern);
+}
+
+/** The hash of the file at `path`, `null` when nothing stands there, and a refusal when a directory does. */
+function fileHash(wb: Workbench, path: string): Result<string | null> {
+  const abs = resolveInside(wb, path);
+  if (!abs.ok) return abs;
+  if (!existsSync(abs.value)) return { ok: true, value: null };
+  if (!statSync(abs.value).isFile()) return refusal("unknown-scope", "not-a-file", `${path} is a directory in ${wb.root}`);
+  return { ok: true, value: revisionOf(readFileSync(abs.value)) };
+}
+
+/**
+ * Where the pair goes, when scope, kind and path agree: a package's narrative
+ * is `work-packages/<d>/<d>.md` and its control file `package.json` beside it;
+ * a record's narrative is `<container>/<store>/<stem>.md`, or
+ * `shared/<store>/<stem>.md` without a container, and its control file
+ * `<stem>.record.json` beside it. A container is a package directory.
+ */
+function pairPaths(ctx: PlanContext, req: CreateRequest): Result<{ control: string; narrative: string }> {
+  const { kind, scope } = req;
+  const narrative = req.narrative.path;
+  const store = STORE_OF[kind];
+  const mismatch = (why: string): Result<never> => refusal("unknown-scope", "store-kind-mismatch", `create ${kind}: ${why}`);
+  if (scope.store !== store) return mismatch(`a ${kind} is filed in ${store}/; the scope names ${scope.store}/`);
+  const slash = narrative.lastIndexOf("/");
+  const dir = narrative.slice(0, Math.max(slash, 0));
+  const name = narrative.slice(slash + 1);
+  const stem = name.slice(0, -".md".length);
+  let control: string;
+  if (kind === "package") {
+    if (scope.container !== null) return mismatch(`a package is its own directory in ${store}/, never inside the container ${scope.container}`);
+    if (dir !== `${store}/${stem}`) return mismatch(`a package's narrative is ${store}/<d>/<d>.md; the request names ${narrative}`);
+    control = `${dir}/package.json`;
+  } else {
+    const expected = scope.container === null ? `shared/${store}` : `${scope.container}/${store}`;
+    if (dir !== expected) return mismatch(`a ${kind} filed in ${expected}/ has its narrative there; the request names ${narrative}`);
+    if (scope.container !== null) {
+      const holder = `${scope.container}/package.json`;
+      const pkg = ctx.readPair(holder);
+      if (!pkg.ok && pkg.error.reason !== "record-not-found") return pkg;
+      if (!pkg.ok || pkg.value.kind !== "package") return refusal("unknown-scope", "container-missing", `${scope.container} is not a package directory: ${holder} ${pkg.ok ? `is a ${pkg.value.kind} record` : "does not exist"}`);
+    }
+    control = `${dir}/${stem}.record.json`;
+  }
+  if (!markerlessName().test(name)) {
+    return refusal("schema-invalid", "narrative-name", `${name} is not a marker-free name (YYMMDD-HHMM-<topic>.md, no underscore): a new record carries its state in JSON, never in its file name`);
+  }
+  return { ok: true, value: { control, narrative } };
+}
+
+/**
+ * The true origin. A user request is its own mandate and names no record. A
+ * package or campaign origin names the package whose scope the new record
+ * decomposes, and it must resolve in this workbench to a package; campaign
+ * records are not addressable in FJ02, so a campaign origin resolves against
+ * packages only. `legacy-unknown` is what an import records when it cannot
+ * recover the origin; a record created now knows its own.
+ */
+function checkOrigin(ctx: PlanContext, origin: CreateRequest["origin"]): Result<void> {
+  if (origin.kind === "legacy-unknown") return refusal("schema-invalid", "origin-legacy-on-create", "legacy-unknown is kept by an import that could not recover the origin; a record created now names its own");
+  if (origin.kind === "user-request") {
+    return origin.ref === null ? { ok: true, value: undefined } : refusal("schema-invalid", "origin-ref-not-admitted", "a user-request origin carries ref null: the user's request is the mandate, no record is");
+  }
+  if (origin.ref === null) return refusal("schema-invalid", "origin-ref-required", `a ${origin.kind} origin names the package whose scope the new record decomposes; its ref is null`);
+  const hit = resolveRecordRef(ctx, origin.ref);
+  if (!hit.ok) return hit;
+  const pair = ctx.readPair(hit.value.path);
+  if (!pair.ok) return pair;
+  if (pair.value.kind !== "package") {
+    const campaign = origin.kind === "campaign" ? " (campaign records are not addressable in FJ02, so a campaign origin resolves against packages only)" : "";
+    return refusal("unresolved-reference", "not-a-package", `the ${origin.kind} origin ${origin.ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; an origin resolves to a package${campaign}`);
+  }
+  return { ok: true, value: undefined };
+}
+
+const schemaField = (schemaId: string): string => schemaId.slice(SCHEMA_ID_PREFIX.length);
+
+/** The record the kernel writes: every field fixed at creation, and what the payload may add to them. */
+function newRecord(ctx: PlanContext, req: CreateRequest): Result<{ next: Record<string, unknown>; schemaId: string }> {
+  const payload = req.payload;
+  const admitted = req.kind === "package" ? PACKAGE_PAYLOAD : INITIAL_CONTROL[req.kind].keys;
+  const extra = Object.keys(payload).filter((k) => !admitted.includes(k));
+  if (extra.length > 0) {
+    const whose = req.kind === "package" ? "the rest of a new package (status open, no claim, mode ordinary) is the kernel's" : `a ${req.kind} payload is its control object`;
+    return refusal("schema-invalid", "payload-field-not-admitted", `a ${req.kind} payload admits ${admitted.join(", ")}; it carries ${extra.join(", ")}, and ${whose}`);
+  }
+  const common = {
+    id: req.id,
+    workbench_id: ctx.wb.id,
+    narrative: { path: req.narrative.path },
+    filed_by: req.filed_by,
+    provenance: { source: "created", legacy_fields: {} },
+    extensions: {},
+  };
+  if (req.kind === "package") {
+    if (payload.domain === undefined || payload.domain === null) {
+      return refusal("schema-invalid", "domain-required", "a package payload carries its domain; null is kept only for a package imported without one");
+    }
+    const next = {
+      schema: schemaField(PACKAGE_SCHEMA_ID),
+      ...common,
+      domain: payload.domain,
+      status: "open",
+      claim: null,
+      mode: { value: "ordinary", source: null },
+      origin: req.origin,
+      depends_on: [],
+      active_documents: [],
+      references: payload.references ?? [],
+      evidence: [],
+      outcome: null,
+    };
+    return { ok: true, value: { next, schemaId: PACKAGE_SCHEMA_ID } };
+  }
+  const { fixed } = INITIAL_CONTROL[req.kind];
+  const off = Object.keys(fixed).filter((k) => payload[k] !== fixed[k]);
+  if (off.length > 0) {
+    const sets = off.map((k) => `${k} ${k in payload ? JSON.stringify(payload[k]) : "absent"}`).join(", ");
+    return refusal("schema-invalid", "not-initial-state", `a new ${req.kind} record starts at ${JSON.stringify(fixed)}; the payload has ${sets}`);
+  }
+  const next = { schema: schemaField(RECORD_SCHEMA_ID), ...common, kind: req.kind, references: [], control: { ...payload } };
+  return { ok: true, value: { next, schemaId: RECORD_SCHEMA_ID } };
+}
+
+function createPlan(req: CreateRequest): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    const paths = pairPaths(ctx, req);
+    if (!paths.ok) return paths;
+    const { control, narrative } = paths.value;
+
+    // The control file first: a fresh-id retry of a landed create meets the
+    // pair it made, whatever else it would also meet.
+    const stored = fileHash(ctx.wb, control);
+    if (!stored.ok) return stored;
+    if (stored.value !== null) return refusal("conflict", "record-exists", `${control} exists; create never replaces a record`);
+
+    const writes: PlannedWrite[] = [];
+    let narrativeHash: string;
+    const content = req.narrative.content;
+    const standing = fileHash(ctx.wb, narrative);
+    if (!standing.ok) return standing;
+    if (content !== undefined) {
+      if (standing.value !== null) return refusal("conflict", "narrative-exists", `${narrative} exists; with narrative.content create writes both halves of a new pair and never replaces a narrative`);
+      const bytes = Buffer.from(content, "utf-8");
+      // A lone surrogate has no UTF-8 encoding and would be written as U+FFFD: not the bytes sent.
+      if (bytes.toString("utf-8") !== content) return refusal("schema-invalid", "narrative-not-utf8", "narrative.content holds a lone surrogate, which has no UTF-8 encoding");
+      writes.push({ path: narrative, bytes });
+      narrativeHash = revisionOf(bytes);
+    } else {
+      if (standing.value === null) return refusal("unresolved-reference", "narrative-missing", `${narrative} does not exist; without narrative.content create requires it`);
+      narrativeHash = standing.value;
+    }
+
+    const taken = ctx.resolveRecordId(req.id);
+    if (taken.ok) return refusal("conflict", "id-in-use", `the id ${req.id} is carried by ${taken.value.path}`);
+    if (taken.error.reason !== "record-not-found") return refusal("conflict", "id-in-use", taken.error.detail);
+
+    const origin = checkOrigin(ctx, req.origin);
+    if (!origin.ok) return origin;
+
+    const built = newRecord(ctx, req);
+    if (!built.ok) return built;
+    const { next, schemaId } = built.value;
+    const v = ctx.validateResult(schemaId, next, `the ${req.kind} record create would write is not valid`);
+    if (!v.ok) return v;
+
+    const bytes = Buffer.from(serialise(next), "utf-8");
+    const revision = revisionOf(bytes);
+    writes.push({ path: control, bytes });
+    return {
+      ok: true,
+      value: {
+        writes,
+        result: { operation_id: req.operation_id, path: control, kind: req.kind, revision, narrative: { path: narrative, sha256: narrativeHash } },
+        revisions: { [control]: revision },
+      },
+    };
+  };
+}
+
 // --- transition -----------------------------------------------------------------
 
 interface Moved {
@@ -395,10 +632,7 @@ function moveRecord(ctx: PlanContext, pair: Pair, to: string, payload: Transitio
 function resolveReference(ctx: PlanContext, value: unknown): Result<void> {
   if (!isObject(value)) return { ok: true, value: undefined };
   if (typeof value.record_id === "string") {
-    if (ctx.wb.id !== null && value.workbench_id !== ctx.wb.id) {
-      return { ok: false, error: { class: "unresolved-reference", reason: "foreign-workbench", detail: `the reference names workbench ${JSON.stringify(value.workbench_id)}; this workbench is ${ctx.wb.id}` } };
-    }
-    const r = ctx.resolveRecordId(value.record_id);
+    const r = resolveRecordRef(ctx, { workbench_id: value.workbench_id, record_id: value.record_id });
     return r.ok ? { ok: true, value: undefined } : r;
   }
   if (typeof value.path === "string" && typeof value.sha256 === "string") {
@@ -406,6 +640,14 @@ function resolveReference(ctx: PlanContext, value: unknown): Result<void> {
     return r.ok ? { ok: true, value: undefined } : r;
   }
   return { ok: true, value: undefined };
+}
+
+/** A `record_ref` resolved to the one control file of this workbench that carries its id. */
+function resolveRecordRef(ctx: PlanContext, ref: { workbench_id: unknown; record_id: string }): Result<{ path: string; id: string }> {
+  if (ctx.wb.id !== null && ref.workbench_id !== ctx.wb.id) {
+    return { ok: false, error: { class: "unresolved-reference", reason: "foreign-workbench", detail: `the reference names workbench ${JSON.stringify(ref.workbench_id)}; this workbench is ${ctx.wb.id}` } };
+  }
+  return ctx.resolveRecordId(ref.record_id);
 }
 
 // --- claim and release ------------------------------------------------------------------

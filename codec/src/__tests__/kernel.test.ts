@@ -198,6 +198,57 @@ describe("a one-write transition cut at every point of CUTS", () => {
   });
 });
 
+// --- a two-write create at every cut -------------------------------------------------------
+
+const NEW_NARRATIVE = "work-packages/260929-0900-journal-recovery/260929-0900-journal-recovery.md";
+const NEW_CONTROL = "work-packages/260929-0900-journal-recovery/package.json";
+
+/** A package with its Markdown body: two writes in one intent, the narrative first. */
+const createRequest = (root: string, over: Record<string, unknown> = {}): Record<string, unknown> & MutationRequest => ({
+  op: "create",
+  workbench: root,
+  operation_id: OP_ID,
+  id: "3b8e1f4a-6c2d-4e7f-9a1b-2c3d4e5f6a7b",
+  kind: "package",
+  filed_by: ACTOR,
+  origin: { kind: "user-request", ref: null },
+  scope: { container: null, store: "work-packages" },
+  narrative: { path: NEW_NARRATIVE, content: "# Journal recovery\n\nAn interrupted operation is recovered from what is on disk alone.\n" },
+  payload: { domain: "code" },
+  ...over,
+});
+
+describe("a two-write create cut at every point of CUTS", () => {
+  /** What each cut leaves before any recovery: [narrative, control] present. */
+  const leftBehind = (cut: string): [boolean, boolean] => (cut === "after-intent" ? [false, false] : cut === "after-write:0" ? [true, false] : [true, true]);
+
+  for (const cut of cutsFor(2)) {
+    it(`${cut}: no half pair survives a recovery; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id is record-exists`, async () => {
+      const clean = fresh();
+      const cleanAnswer = await dispatch(createRequest(clean));
+      expect(cleanAnswer.ok, JSON.stringify(cleanAnswer)).toBe(true);
+
+      const root = fresh();
+      const req = createRequest(root);
+      await expect(dispatch(req, { kernel: { faults: { cutAt: cut } } })).rejects.toBeInstanceOf(CutReached);
+      expect(journalEntries(root), "the intent is pending after the cut").toEqual([OP_ID]);
+      expect([existsSync(join(root, NEW_NARRATIVE)), existsSync(join(root, NEW_CONTROL))], "the narrative is written first").toEqual(leftBehind(cut));
+
+      // A read recovers: the whole pair, at the bytes the uncut run wrote.
+      const listed = okResult(await dispatch({ op: "list", workbench: root, scope: "work-packages" }));
+      expect((listed.records as Array<{ path: string }>).map((r) => r.path)).toContain(NEW_CONTROL);
+      expect(journalEntries(root), "recovered: the intent left the journal").toEqual([]);
+      for (const path of [NEW_NARRATIVE, NEW_CONTROL]) expect(bytesOf(root, path).equals(bytesOf(clean, path)), path).toBe(true);
+
+      const again = await dispatch(req);
+      expect(JSON.stringify(again)).toBe(JSON.stringify(cleanAnswer));
+      expect(await dispatch({ ...req, payload: { domain: "data" } })).toMatchObject({ ok: false, error: { class: "conflict", reason: "operation-id-reused" } });
+      expect(await dispatch({ ...req, operation_id: OTHER_ID })).toMatchObject({ ok: false, error: { class: "conflict", reason: "record-exists" } });
+      for (const path of [NEW_NARRATIVE, NEW_CONTROL]) expect(bytesOf(root, path).equals(bytesOf(clean, path)), `${path}: created once`).toBe(true);
+    });
+  }
+});
+
 // --- recovery through a real process ------------------------------------------------------
 
 describe("recovery through the committed bundle", () => {
