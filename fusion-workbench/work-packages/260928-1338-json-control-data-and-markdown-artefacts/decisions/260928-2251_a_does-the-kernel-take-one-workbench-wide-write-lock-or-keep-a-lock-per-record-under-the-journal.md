@@ -32,3 +32,6 @@ FJ01's `writeControl` locks one record at a time: `.json-state/<sha256 of the re
 ## Recommendation
 
 Option 1. The journal's whole argument is that recovery and the operation that follows it happen under one exclusion, and one lock is that exclusion stated once. The concurrency option 2 preserves is not one either host uses: Prior runs one process per request under a deadline, and the Claude side runs one agent's helper call at a time. The cost is one line in Prior's regression, which `REQUESTS.md` names.
+
+---
+Answered: 260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md step 2 — option 1: one workbench-wide `.json-state/write.lock`, a dead recorded holder reaped at once, the age rule only where no PID is recorded, a lock recorded on another host never reaped, takeover only through an exclusive takeover file; approved with the revised plan on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>.
