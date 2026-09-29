@@ -15,6 +15,12 @@
 //   transition  a package or an issue, plan, discussion or decision record:
 //               `allowed()` over the tables, as a plan function the kernel
 //               runs under the caller's expected revision
+//   claim       `transition` into the state the table's `claim` edges enter,
+//   release     and out along its `release` edges: the transition plan
+//               function with defaults and clearer refusals, never a second
+//               route (decision 260928-1735, option 1)
+//   set-mode    a package's mode, `autonomous` only with a resolving source
+//               in the user's word
 //
 // Every other operation of the table answers `operation-unknown/not-implemented`
 // with a detail naming the package that lands it (`LANDS_IN`).
@@ -61,9 +67,12 @@ import {
   PROTOCOL_SCHEMA_ID,
   fail,
   isOperation,
+  type ClaimRequest,
   type ListRequest,
+  type ReleaseRequest,
   type Request,
   type Response,
+  type SetModeRequest,
   type ShowRequest,
   type TransitionPayload,
   type TransitionRequest,
@@ -117,6 +126,12 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
     case "transition":
       return mutate(wb, req, transitionPlan(req), kernel);
+    case "claim":
+      return mutate(wb, req, claimPlan(req), kernel);
+    case "release":
+      return mutate(wb, req, releasePlan(req), kernel);
+    case "set-mode":
+      return mutate(wb, req, setModePlan(req), kernel);
     default:
       return notImplemented((req as Request).op);
   }
@@ -272,14 +287,24 @@ const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "obj
  * the table's edge and target-state rules, the references the payload brings
  * resolved, and the record after the move validated against its schema.
  * The answer's shape is FJ01's for every kind.
+ *
+ * `precheck` is how `claim` and `release` enter: it runs after the caller's
+ * revision and before the table, and may only refuse. Everything after it,
+ * the edge, the claim rule, the `claimed_at` check, the result's schema, the
+ * write and the operation-id binding, is this function's for both entry
+ * points alike.
  */
-function transitionPlan(req: TransitionRequest): PlanFunction {
+function transitionPlan(req: TransitionRequest, precheck?: (pair: Pair) => Result<void>): PlanFunction {
   return (ctx: PlanContext): Result<Planned> => {
     const r = ctx.readPair(req.record.path);
     if (!r.ok) return r;
     const pair = r.value;
     const cas = ctx.cas(pair, req.expected_revision);
     if (!cas.ok) return cas;
+    if (precheck !== undefined) {
+      const p = precheck(pair);
+      if (!p.ok) return p;
+    }
 
     const payload = req.payload ?? {};
     const moved = pair.kind === "package" ? movePackage(pair, req.to, payload) : moveRecord(ctx, pair, req.to, payload);
@@ -306,13 +331,24 @@ const refused = (rule: { class: StoreError["class"]; reason: string }): Result<n
 
 function movePackage(pair: Pair, to: string, payload: TransitionPayload): Result<Moved> {
   const from = pair.control.status as string;
-  const terminal = transitions().kinds["package"]?.terminal.includes(to) ?? false;
+  const table = transitions().kinds["package"];
+  const terminal = table?.terminal.includes(to) ?? false;
   // A live target state carries no claim unless the payload brings one; a
   // terminal state keeps the historical claim unless the payload says otherwise.
   const claim = "claim" in payload ? (payload.claim ?? null) : terminal ? (pair.control.claim ?? null) : null;
   const outcome = payload.outcome ?? null;
   const rule = allowed("package", from, to, { claim, outcome });
   if (!rule.ok) return refused(rule);
+  // A claim made now carries the time it was made: the caller knows it and
+  // the kernel never guesses it (C8, C20). The check is here and not in
+  // `packageRules`, which the state rules of a record at rest share: an
+  // imported claim may carry a null time (spec line 211) and such a record
+  // still moves out of its state. So it applies to a move into a state whose
+  // claim rule is `required` only, which no edge re-enters: every such move
+  // makes a new claim, whichever of `claim` and `transition` asked for it.
+  if (table?.claim?.[to] === "required" && isObject(claim) && claim.claimed_at === null) {
+    return { ok: false, error: { class: "schema-invalid", reason: "claimed-at-required", detail: `package: a move into ${to} makes a new claim, whose claimed_at is known to the caller and never guessed; it is null` } };
+  }
   return { ok: true, value: { from, next: { ...pair.control, status: to, claim, outcome }, schemaId: PACKAGE_SCHEMA_ID } };
 }
 
@@ -370,4 +406,123 @@ function resolveReference(ctx: PlanContext, value: unknown): Result<void> {
     return r.ok ? { ok: true, value: undefined } : r;
   }
   return { ok: true, value: undefined };
+}
+
+// --- claim and release ------------------------------------------------------------------
+//
+// Both are `transitionPlan` with the target and the claim filled in from the
+// request (decision 260928-1735, option 1: one kernel for both entry points).
+// What each adds is a precheck with a clearer message, in the class the
+// table gives `transition` for the same input: a second claim is a conflict
+// either way, and so is a release of what is not claimed. The one place the
+// two routes differ in outcome is release of a paused package: the table
+// gives `paused -> open` to `transition`, not to `release`, so `transition`
+// lands it and `release` refuses it, since a paused package holds no claim to
+// give up. Neither route is less checked than the other.
+//
+// Ownership is not decided here. The kernel receives no identity it may
+// authorise on (`actor.person` is attribution, never authorisation): the host
+// reads the claim through `show`, decides whether the caller holds it, and
+// sends that record's revision, which the kernel's CAS makes binding. Whether
+// that meets Prior's shared-enforcement condition is asked as request 22 of
+// the FJ02 plan (discussion 260929-0709, C16 and C23); an answer requiring a
+// kernel check re-cuts this code with a new request field.
+
+/** The one state the table's package edges of `op` enter, and the states they leave. */
+function operationEdges(op: "claim" | "release"): { to: string; from: string[] } {
+  const edges = (transitions().kinds["package"]?.edges ?? []).filter((e) => e.operation === op);
+  const targets = [...new Set(edges.map((e) => e.to))];
+  if (targets.length !== 1) throw new Error(`contract/transitions.json: the package edges of ${op} enter ${targets.join(", ") || "no state"}; exactly one is expected`);
+  return { to: targets[0] as string, from: edges.map((e) => e.from) };
+}
+
+/** The transition a claim or release stands for: the request's own id, record, revision and actor. */
+function asTransition(req: ClaimRequest | ReleaseRequest, to: string, reason: string, payload: TransitionPayload): TransitionRequest {
+  return {
+    op: "transition",
+    ...(req.workbench !== undefined ? { workbench: req.workbench } : {}),
+    operation_id: req.operation_id,
+    record: req.record,
+    expected_revision: req.expected_revision,
+    actor: req.actor,
+    to,
+    reason,
+    payload,
+  };
+}
+
+function claimPlan(req: ClaimRequest): PlanFunction {
+  const { to } = operationEdges("claim");
+  return transitionPlan(asTransition(req, to, "claim", { claim: req.claim }), (pair) => {
+    if (pair.kind !== "package" || pair.control.status !== to) return { ok: true, value: undefined };
+    const held = isObject(pair.control.claim) ? `checkout ${String(pair.control.claim.checkout_id)}` : "no recorded checkout";
+    return { ok: false, error: { class: "conflict", reason: "already-claimed", detail: `the package is already ${to}, held by ${held}; a second claim is a conflict` } };
+  });
+}
+
+function releasePlan(req: ReleaseRequest): PlanFunction {
+  const { to, from } = operationEdges("release");
+  return transitionPlan(asTransition(req, to, req.reason, { claim: null }), (pair) => {
+    const state = stateOf(pair);
+    if (pair.kind === "package" && typeof state === "string" && from.includes(state)) return { ok: true, value: undefined };
+    const what = pair.kind === "package" ? "the package" : `the ${pair.kind} record`;
+    return { ok: false, error: { class: "conflict", reason: "not-claimed", detail: `${what} is ${String(state)}; release gives up the claim of a package that is ${from.join(" or ")}` } };
+  });
+}
+
+// --- set-mode -----------------------------------------------------------------------
+
+/**
+ * A package's mode. `autonomous` is written on the user's word only: its
+ * source is a `user-word` object whose reference resolves, or a record
+ * reference that resolves, and the package schema refuses it with none. A
+ * `legacy` source is what an import keeps, never what an operation writes.
+ * `ordinary` writes `source: null`, and a request that brings a source with
+ * it is refused rather than having the source dropped. A package in a
+ * terminal status is refused whatever the mode: its record is history.
+ */
+function setModePlan(req: SetModeRequest): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    const r = ctx.readPair(req.record.path);
+    if (!r.ok) return r;
+    const pair = r.value;
+    const cas = ctx.cas(pair, req.expected_revision);
+    if (!cas.ok) return cas;
+    if (pair.kind !== "package") {
+      return { ok: false, error: { class: "schema-invalid", reason: "not-a-package", detail: `${req.record.path} is a ${pair.kind} record; set-mode sets a package's mode` } };
+    }
+    // A terminal record is history: no header change is written into it after
+    // its terminal transition (conventions, `## Terminal states are history`).
+    const status = pair.control.status;
+    if (typeof status === "string" && (transitions().kinds["package"]?.terminal.includes(status) ?? false)) {
+      return { ok: false, error: { class: "conflict", reason: "package-terminal", detail: `the package is ${status}, which is terminal; its mode is history and set-mode writes nothing into it` } };
+    }
+    const { value, source } = req.mode;
+    if (isObject(source) && source.kind === "legacy") {
+      return { ok: false, error: { class: "schema-invalid", reason: "legacy-source-on-set-mode", detail: "a legacy mode source is kept by an import only; set-mode takes the user's word or a record" } };
+    }
+    if (value === "ordinary" && source !== null) {
+      return { ok: false, error: { class: "schema-invalid", reason: "source-on-ordinary", detail: "set-mode writes ordinary with source null; the request brings a source" } };
+    }
+
+    const next = { ...pair.control, mode: { value, source } };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after set-mode is not a valid package");
+    if (!v.ok) return v;
+    // The schema has fixed the source's shape: null, a record_ref, or a user-word object around one of two references.
+    if (isObject(source)) {
+      const resolved = resolveReference(ctx, source.kind === "user-word" ? source.ref : source);
+      if (!resolved.ok) return resolved;
+    }
+
+    const bytes = Buffer.from(serialise(next), "utf-8");
+    const revision = revisionOf(bytes);
+    return {
+      ok: true,
+      value: {
+        writes: [{ path: req.record.path, bytes }],
+        result: { operation_id: req.operation_id, path: req.record.path, mode: next.mode, revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: revision },
+      },
+    };
+  };
 }

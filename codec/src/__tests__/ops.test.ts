@@ -10,16 +10,18 @@
 // ---------------------------------------------------------------------------
 
 import { spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { dispatch } from "../cli/ops.js";
-import { OPERATIONS, IMPLEMENTED_OPERATIONS, LANDS_IN, type Response, type TransitionRequest } from "../cli/protocol.js";
+import { OPERATIONS, IMPLEMENTED_OPERATIONS, LANDS_IN, type ClaimRequest, type ReleaseRequest, type Response, type SetModeRequest, type TransitionRequest } from "../cli/protocol.js";
 import { installInlined } from "../cli/schemas.js";
 import { revisionOf, serialise } from "../store.js";
 import { strictParse } from "../strict-json.js";
+import { transitions } from "../transitions.js";
 import { loadSchemas } from "../validate.js";
 
 const FIXTURE = fileURLToPath(new URL("../../fixtures/workbench/", import.meta.url));
@@ -420,6 +422,342 @@ describe("transition", () => {
   });
 });
 
+// --- claim, release and set-mode (FJ02 step 4) ------------------------------------------
+
+describe("claim, release and set-mode over the shared kernel", () => {
+  // Second copies of the scratch workbench, for the cases that run the same
+  // input through two entry points and compare what each left behind.
+  const copies: string[] = [];
+  afterEach(() => {
+    for (const d of copies.splice(0)) rmSync(d, { recursive: true, force: true });
+  });
+  const copy = (): string => {
+    const d = mkdtempSync(join(tmpdir(), "codec-ops-copy-"));
+    cpSync(FIXTURE, d, { recursive: true });
+    copies.push(d);
+    return d;
+  };
+
+  const PACKAGE = transitions().kinds["package"]!;
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const STALE = "sha256:" + "0".repeat(64);
+  /** A claim another checkout holds, for the combinations with a standing claim. */
+  const STANDING = { checkout_id: "b327b5c0", person: "someone else", claimed_at: "2026-09-28T12:00:00+02:00" };
+  /** The one state the table's edges of `op` enter, read from the table as the operations read it. */
+  const targetOf = (op: string): string => {
+    const targets = [...new Set(PACKAGE.edges.filter((e) => e.operation === op).map((e) => e.to))];
+    expect(targets, `the ${op} edges of transitions.json`).toHaveLength(1);
+    return targets[0] as string;
+  };
+
+  const bytesIn = (dir: string, path = OPEN): Buffer => readFileSync(join(dir, path));
+  const revisionIn = (dir: string, path = OPEN): string => revisionOf(bytesIn(dir, path));
+  const packageIn = (dir: string): Record<string, unknown> => {
+    const p = strictParse(bytesIn(dir));
+    if (!p.ok) throw new Error(p.detail);
+    return p.value as Record<string, unknown>;
+  };
+  /** Rewrites the open package of `dir` at rest in `status` with `claim` standing, and the outcome a terminal status needs. */
+  const seed = (dir: string, status: string, claim: unknown): void => {
+    const p = strictParse(readFileSync(join(FIXTURE, OPEN)));
+    if (!p.ok) throw new Error(p.detail);
+    const terminal = PACKAGE.terminal.includes(status);
+    const outcome = terminal ? { class: PACKAGE.outcome_classes?.[status]?.[0], reason: "seeded at rest", evidence: [] } : null;
+    writeFileSync(join(dir, OPEN), serialise({ ...(p.value as Record<string, unknown>), status, claim, outcome }));
+  };
+
+  const claimRequest = (dir: string, over: Partial<ClaimRequest> = {}): ClaimRequest => ({
+    op: "claim",
+    workbench: dir,
+    operation_id: OP_ID,
+    record: { path: OPEN },
+    expected_revision: revisionIn(dir),
+    actor: ACTOR,
+    claim: CLAIM,
+    ...over,
+  });
+  const releaseRequest = (dir: string, over: Partial<ReleaseRequest> = {}): ReleaseRequest => ({
+    op: "release",
+    workbench: dir,
+    operation_id: OP_ID,
+    record: { path: OPEN },
+    expected_revision: revisionIn(dir),
+    actor: ACTOR,
+    reason: "session ended",
+    ...over,
+  });
+  const transitionIn = (dir: string, to: string, payload: TransitionRequest["payload"], over: Partial<TransitionRequest> = {}): TransitionRequest =>
+    transitionRequest({ workbench: dir, expected_revision: revisionIn(dir), to, payload, ...over });
+  const setModeRequest = (dir: string, mode: SetModeRequest["mode"], over: Partial<SetModeRequest> = {}): SetModeRequest => ({
+    op: "set-mode",
+    workbench: dir,
+    operation_id: OP_ID,
+    record: { path: OPEN },
+    expected_revision: revisionIn(dir),
+    actor: ACTOR,
+    mode,
+    ...over,
+  });
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+
+  // --- the shared-enforcement proof (C20) ---
+
+  it("the shared-enforcement proof: claim and transition to claimed write byte-identical records and answer alike", async () => {
+    const other = copy();
+    const viaClaim = await dispatch(claimRequest(root));
+    const viaTransition = await dispatch(transitionIn(other, "claimed", { claim: CLAIM }));
+    expect(viaClaim.ok, JSON.stringify(viaClaim)).toBe(true);
+    expect(viaClaim).toEqual(viaTransition);
+    expect(okResult(viaClaim).revision).toBe(revisionIn(other));
+    expect(bytesIn(root).equals(bytesIn(other)), "the two routes wrote the same bytes").toBe(true);
+    // The operation id is bound to the request that used it, whichever route that was.
+    expect(await dispatch(claimRequest(root, { expected_revision: okResult(viaClaim).previous_revision as string }))).toEqual(viaClaim);
+    expect(errorOf(await dispatch(transitionIn(root, "claimed", { claim: CLAIM })))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+  });
+
+  it("the shared-enforcement proof: a stale revision, a claimed package, a malformed claim and claimed_at null are refused in one class on both routes", async () => {
+    const a = copy();
+    const b = copy();
+    const pristine = bytesIn(a);
+    const same = async (claimReq: ClaimRequest, transitionReq: TransitionRequest, expected: { class: string; claim: string; transition: string }): Promise<void> => {
+      const before = [bytesIn(a), bytesIn(b)];
+      const viaClaim = errorOf(await dispatch(claimReq));
+      const viaTransition = errorOf(await dispatch(transitionReq));
+      expect(viaClaim).toEqual({ class: expected.class, reason: expected.claim });
+      expect(viaTransition).toEqual({ class: expected.class, reason: expected.transition });
+      expect(bytesIn(a).equals(before[0] as Buffer) && bytesIn(b).equals(before[1] as Buffer), "a refusal writes nothing").toBe(true);
+    };
+    const nullTime = { ...CLAIM, claimed_at: null };
+
+    await same(claimRequest(a, { expected_revision: STALE }), transitionIn(b, "claimed", { claim: CLAIM }, { expected_revision: STALE }), { class: "conflict", claim: "revision-mismatch", transition: "revision-mismatch" });
+    await same(claimRequest(a, { claim: { ...CLAIM, checkout_id: "A216A4B9" } }), transitionIn(b, "claimed", { claim: { ...CLAIM, checkout_id: "A216A4B9" } }), { class: "schema-invalid", claim: "request", transition: "request" });
+    await same(claimRequest(a, { claim: nullTime }), transitionIn(b, "claimed", { claim: nullTime }), { class: "schema-invalid", claim: "claimed-at-required", transition: "claimed-at-required" });
+    expect(bytesIn(a).equals(pristine)).toBe(true);
+
+    // From paused, the table's other edge into claimed.
+    expect((await dispatch(transitionIn(a, "paused", {}, { operation_id: randomUUID() }))).ok).toBe(true);
+    expect((await dispatch(transitionIn(b, "paused", {}, { operation_id: randomUUID() }))).ok).toBe(true);
+    await same(claimRequest(a, { operation_id: randomUUID(), claim: nullTime }), transitionIn(b, "claimed", { claim: nullTime }, { operation_id: randomUUID() }), { class: "schema-invalid", claim: "claimed-at-required", transition: "claimed-at-required" });
+
+    // A second claim on a claimed package: the table's conflict, with the holder named by claim.
+    expect((await dispatch(claimRequest(a, { operation_id: randomUUID() }))).ok).toBe(true);
+    expect((await dispatch(transitionIn(b, "claimed", { claim: CLAIM }, { operation_id: randomUUID() }))).ok).toBe(true);
+    expect(bytesIn(a).equals(bytesIn(b))).toBe(true);
+    const second = await dispatch(claimRequest(a, { operation_id: randomUUID(), claim: STANDING }));
+    expect(second.ok).toBe(false);
+    if (!second.ok) expect(second.error.detail).toContain(`checkout ${CLAIM.checkout_id}`);
+    await same(claimRequest(a, { operation_id: randomUUID(), claim: STANDING }), transitionIn(b, "claimed", { claim: STANDING }, { operation_id: randomUUID() }), { class: "conflict", claim: "already-claimed", transition: "transition-refused" });
+  });
+
+  // --- every package status and claim combination (spec section 9), at the operation level ---
+
+  it("claim over every package status with and without a standing claim: the class the table gives, and transition's for the same input", async () => {
+    const target = targetOf("claim");
+    let combinations = 0;
+    for (const status of PACKAGE.states) {
+      for (const standing of [null, STANDING]) {
+        const label = `claim from ${status} with${standing === null ? "out" : ""} a standing claim`;
+        const other = copy();
+        seed(root, status, standing);
+        seed(other, status, standing);
+        const id = randomUUID();
+        const viaClaim = await dispatch(claimRequest(root, { operation_id: id }));
+        const viaTransition = await dispatch(transitionIn(other, target, { claim: CLAIM }, { operation_id: id }));
+        const edge = PACKAGE.edges.find((e) => e.from === status && e.to === target);
+        if (edge !== undefined) {
+          expect(edge.operation, label).toBe("claim");
+          expect(viaClaim.ok, `${label}: ${JSON.stringify(viaClaim)}`).toBe(true);
+          expect(viaClaim, label).toEqual(viaTransition);
+          expect(bytesIn(root).equals(bytesIn(other)), label).toBe(true);
+          expect(packageIn(root).claim, label).toEqual(CLAIM);
+        } else {
+          const before = bytesIn(root);
+          expect(errorOf(viaClaim), label).toEqual({ class: "conflict", reason: status === target ? "already-claimed" : "transition-refused" });
+          expect(errorOf(viaTransition), label).toEqual({ class: "conflict", reason: "transition-refused" });
+          expect(bytesIn(root).equals(before), label).toBe(true);
+        }
+        combinations++;
+      }
+    }
+    expect(combinations).toBe(PACKAGE.states.length * 2);
+  });
+
+  it("release over every package status with and without a standing claim: the class the table gives, and transition's for the same input", async () => {
+    const target = targetOf("release");
+    let combinations = 0;
+    for (const status of PACKAGE.states) {
+      for (const standing of [null, STANDING]) {
+        const label = `release from ${status} with${standing === null ? "out" : ""} a standing claim`;
+        const other = copy();
+        seed(root, status, standing);
+        seed(other, status, standing);
+        const id = randomUUID();
+        const before = bytesIn(root);
+        const viaRelease = await dispatch(releaseRequest(root, { operation_id: id }));
+        const viaTransition = await dispatch(transitionIn(other, target, { claim: null }, { operation_id: id }));
+        const edge = PACKAGE.edges.find((e) => e.from === status && e.to === target);
+        if (edge?.operation === "release") {
+          expect(viaRelease.ok, `${label}: ${JSON.stringify(viaRelease)}`).toBe(true);
+          expect(viaRelease, label).toEqual(viaTransition);
+          expect(bytesIn(root).equals(bytesIn(other)), label).toBe(true);
+          expect(packageIn(root).claim, label).toBeNull();
+        } else {
+          expect(errorOf(viaRelease), label).toEqual({ class: "conflict", reason: "not-claimed" });
+          expect(bytesIn(root).equals(before), label).toBe(true);
+          if (edge === undefined) {
+            expect(errorOf(viaTransition), label).toEqual({ class: "conflict", reason: "transition-refused" });
+          } else {
+            // The table gives this edge to transition, not to release: a
+            // package that holds no claim has none to give up.
+            expect(edge.operation, label).toBe("transition");
+            expect(viaTransition.ok, `${label}: ${JSON.stringify(viaTransition)}`).toBe(true);
+          }
+        }
+        combinations++;
+      }
+    }
+    expect(combinations).toBe(PACKAGE.states.length * 2);
+  });
+
+  it("a package at rest in claimed with claimed_at null, as an import may leave it, still moves to paused by transition and to open by release", async () => {
+    const imported = { ...STANDING, claimed_at: null };
+    seed(root, "claimed", imported);
+    const paused = await dispatch(transitionRequest({ operation_id: randomUUID(), expected_revision: revision(OPEN), to: "paused", payload: {} }));
+    expect(paused.ok, JSON.stringify(paused)).toBe(true);
+    expect(packageIn(root)).toMatchObject({ status: "paused", claim: null });
+
+    seed(root, "claimed", imported);
+    const released = await dispatch(releaseRequest(root, { operation_id: randomUUID() }));
+    expect(released.ok, JSON.stringify(released)).toBe(true);
+    expect(okResult(released)).toMatchObject({ from: "claimed", to: "open" });
+    expect(packageIn(root)).toMatchObject({ status: "open", claim: null });
+  });
+
+  it("claim and release answer transition's response shape, replay by operation_id, and refuse a divergent reuse", async () => {
+    const claimed = await dispatch(claimRequest(root));
+    expect(Object.keys(okResult(claimed))).toEqual(["operation_id", "path", "from", "to", "revision", "previous_revision"]);
+    expect(okResult(claimed)).toMatchObject({ from: "open", to: "claimed", revision: revision(OPEN) });
+    const releaseId = randomUUID();
+    const req = releaseRequest(root, { operation_id: releaseId });
+    const released = await dispatch(req);
+    expect(okResult(released)).toMatchObject({ operation_id: releaseId, from: "claimed", to: "open", revision: revision(OPEN) });
+    expect(await dispatch(req)).toEqual(released);
+    expect(errorOf(await dispatch({ ...req, reason: "another reason" }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: OPEN } })).valid).toBe(true);
+  });
+
+  it("claim on a record kind is refused in transition's class; release of a record kind is not-claimed", async () => {
+    const issueRevision = revision(ISSUE);
+    expect(errorOf(await dispatch(claimRequest(root, { record: { path: ISSUE }, expected_revision: issueRevision })))).toEqual({ class: "schema-invalid", reason: "transition-refused" });
+    expect(errorOf(await dispatch(releaseRequest(root, { record: { path: ISSUE }, expected_revision: issueRevision })))).toEqual({ class: "conflict", reason: "not-claimed" });
+    expect(revision(ISSUE)).toBe(issueRevision);
+  });
+
+  // --- set-mode ---
+
+  /** The user's word in a file of the workbench, as an artefact reference to it. */
+  const userWordFile = (): { path: string; sha256: string; kind: "memo" } => {
+    const path = "shared/memos/260929-0900-autonomy.md";
+    mkdirSync(join(root, "shared", "memos"), { recursive: true });
+    writeFileSync(join(root, path), "Run the parser fix autonomously.\n");
+    return { path, sha256: revision(path), kind: "memo" };
+  };
+  const issueId = (): string => {
+    const p = strictParse(bytesOf(ISSUE));
+    if (!p.ok) throw new Error(p.detail);
+    return (p.value as { id: string }).id;
+  };
+
+  it("set-mode autonomous with a user-word artefact that resolves lands, validates, and replays; ordinary then writes source null", async () => {
+    const source = { kind: "user-word", ref: userWordFile() };
+    const req = setModeRequest(root, { value: "autonomous", source });
+    const r = await dispatch(req);
+    const result = okResult(r);
+    expect(result).toEqual({ operation_id: OP_ID, path: OPEN, mode: { value: "autonomous", source }, revision: revision(OPEN), previous_revision: req.expected_revision });
+    if (r.ok) expect(r.revisions).toEqual({ [OPEN]: revision(OPEN) });
+    expect(packageIn(root).mode).toEqual({ value: "autonomous", source });
+    expect(bytesOf(OPEN).toString("utf-8")).toBe(serialise(packageIn(root)));
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: OPEN } })).valid).toBe(true);
+    expect(await dispatch(req)).toEqual(r);
+
+    const ordinary = await dispatch(setModeRequest(root, { value: "ordinary", source: null }, { operation_id: randomUUID() }));
+    expect(ordinary.ok, JSON.stringify(ordinary)).toBe(true);
+    expect(packageIn(root).mode).toEqual({ value: "ordinary", source: null });
+  });
+
+  it("set-mode autonomous with a user-word record reference, or a bare record reference, that resolves lands", async () => {
+    const ref = { workbench_id: WB_ID, record_id: issueId() };
+    expect((await dispatch(setModeRequest(root, { value: "autonomous", source: { kind: "user-word", ref } }))).ok).toBe(true);
+    expect((await dispatch(setModeRequest(root, { value: "autonomous", source: ref }, { operation_id: randomUUID() }))).ok).toBe(true);
+    expect(packageIn(root).mode).toEqual({ value: "autonomous", source: ref });
+  });
+
+  it("set-mode refuses a dangling, foreign or changed source, a null source, a legacy source and a source on ordinary, and writes nothing", async () => {
+    const artefact = userWordFile();
+    const dangling = { workbench_id: WB_ID, record_id: "00000000-0000-4000-8000-00000000dead" };
+    const cases: Array<[string, SetModeRequest["mode"], { class: string; reason: string }]> = [
+      ["a dangling user-word record", { value: "autonomous", source: { kind: "user-word", ref: dangling } }, { class: "unresolved-reference", reason: "record-not-found" }],
+      ["a dangling bare record", { value: "autonomous", source: dangling }, { class: "unresolved-reference", reason: "record-not-found" }],
+      ["a foreign record", { value: "autonomous", source: { kind: "user-word", ref: { ...dangling, workbench_id: "00000000-0000-4000-8000-000000000000" } } }, { class: "unresolved-reference", reason: "foreign-workbench" }],
+      ["a missing artefact", { value: "autonomous", source: { kind: "user-word", ref: { ...artefact, path: "shared/memos/absent.md" } } }, { class: "unresolved-reference", reason: "artefact-missing" }],
+      ["a changed artefact", { value: "autonomous", source: { kind: "user-word", ref: { ...artefact, sha256: STALE } } }, { class: "missing-evidence", reason: "artefact-changed" }],
+      ["a null source", { value: "autonomous", source: null }, { class: "schema-invalid", reason: "result-invalid" }],
+      ["a legacy source", { value: "autonomous", source: { kind: "legacy", raw: "**Mode:** autonomous" } }, { class: "schema-invalid", reason: "legacy-source-on-set-mode" }],
+      ["a legacy source on ordinary", { value: "ordinary", source: { kind: "legacy", raw: "**Mode:** ordinary" } }, { class: "schema-invalid", reason: "legacy-source-on-set-mode" }],
+      ["a source on ordinary", { value: "ordinary", source: { kind: "user-word", ref: artefact } }, { class: "schema-invalid", reason: "source-on-ordinary" }],
+    ];
+    const before = bytesOf(OPEN);
+    for (const [label, mode, expected] of cases) {
+      expect(errorOf(await dispatch(setModeRequest(root, mode, { operation_id: randomUUID() }))), label).toEqual(expected);
+      expect(bytesOf(OPEN).equals(before), label).toBe(true);
+    }
+    expect(errorOf(await dispatch(setModeRequest(root, { value: "autonomous", source: { kind: "user-word", ref: artefact } }, { expected_revision: STALE })))).toEqual({ class: "conflict", reason: "revision-mismatch" });
+    expect(errorOf(await dispatch(setModeRequest(root, { value: "ordinary", source: null }, { record: { path: ISSUE }, expected_revision: revision(ISSUE) })))).toEqual({ class: "schema-invalid", reason: "not-a-package" });
+    expect(existsSync(join(root, ".json-state", "ops", `${OP_ID}.json`)), "a refusal is not stored").toBe(false);
+  });
+
+  for (const status of PACKAGE.terminal) {
+    it(`set-mode on a package at rest in ${status} is conflict/package-terminal, whatever the mode, and writes nothing`, async () => {
+      seed(root, status, CLAIM);
+      const before = bytesOf(OPEN);
+      const modes: Array<SetModeRequest["mode"]> = [
+        { value: "autonomous", source: { kind: "user-word", ref: userWordFile() } },
+        { value: "ordinary", source: null },
+      ];
+      for (const mode of modes) {
+        const r = await dispatch(setModeRequest(root, mode, { operation_id: randomUUID() }));
+        expect(errorOf(r), mode.value).toEqual({ class: "conflict", reason: "package-terminal" });
+        if (!r.ok) expect(r.error.detail).toContain(`the package is ${status}`);
+        expect(bytesOf(OPEN).equals(before), mode.value).toBe(true);
+      }
+    });
+  }
+
+  it("the scratch open package never becomes autonomous by any route but set-mode with provenance", async () => {
+    // create (step 5) is the other route a package enters by; its origin cases pin it there.
+    const ordinary = { value: "ordinary", source: null };
+    const expectOrdinary = (label: string): void => expect(packageIn(root).mode, label).toEqual(ordinary);
+    expect(errorOf(await dispatch(transitionRequest({ payload: { claim: CLAIM, mode: { value: "autonomous", source: null } } as TransitionRequest["payload"] })))).toEqual({ class: "schema-invalid", reason: "request" });
+    expect(errorOf(await dispatch({ ...claimRequest(root), mode: { value: "autonomous", source: null } }))).toEqual({ class: "schema-invalid", reason: "request" });
+    expectOrdinary("refused requests");
+    expect((await dispatch(claimRequest(root))).ok).toBe(true);
+    expectOrdinary("after claim");
+    expect((await dispatch(releaseRequest(root, { operation_id: randomUUID() }))).ok).toBe(true);
+    expectOrdinary("after release");
+    expect((await dispatch(transitionRequest({ operation_id: randomUUID(), expected_revision: revision(OPEN), to: "paused", payload: {} }))).ok).toBe(true);
+    expectOrdinary("after transition");
+    expect(errorOf(await dispatch(setModeRequest(root, { value: "autonomous", source: null }, { operation_id: randomUUID() })))).toMatchObject({ class: "schema-invalid" });
+    expect(errorOf(await dispatch(setModeRequest(root, { value: "autonomous", source: { kind: "legacy", raw: "**Mode:** autonomous" } }, { operation_id: randomUUID() })))).toMatchObject({ class: "schema-invalid" });
+    expectOrdinary("after set-mode without provenance");
+    expect((await dispatch(setModeRequest(root, { value: "autonomous", source: { kind: "user-word", ref: userWordFile() } }, { operation_id: randomUUID() }))).ok).toBe(true);
+    expect((packageIn(root).mode as { value: string }).value).toBe("autonomous");
+  });
+});
+
 // --- main.ts, spawned on the committed bundle ------------------------------------------
 
 describe("main.ts on dist/fusion-record.js", () => {
@@ -467,6 +805,16 @@ describe("main.ts on dist/fusion-record.js", () => {
     expect(a.ok, first.stdout).toBe(true);
     expect(parse(run([], JSON.stringify(req)).stdout)).toEqual(a);
     expect(parse(run([], JSON.stringify({ ...req, reason: "x" })).stdout)).toMatchObject({ ok: false, error: { reason: "operation-id-reused" } });
+  });
+
+  it("claim and release through the bundle land; a claim with claimed_at null is refused there too", () => {
+    const base = { workbench: root, record: { path: OPEN }, actor: ACTOR };
+    const refused = parse(run([], JSON.stringify({ ...base, op: "claim", operation_id: OP_ID, expected_revision: revision(OPEN), claim: { ...CLAIM, claimed_at: null } })).stdout);
+    expect(refused).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "claimed-at-required" } });
+    const claimed = parse(run([], JSON.stringify({ ...base, op: "claim", operation_id: OP_ID, expected_revision: revision(OPEN), claim: CLAIM })).stdout);
+    expect(claimed).toMatchObject({ ok: true, result: { from: "open", to: "claimed" } });
+    const released = parse(run([], JSON.stringify({ ...base, op: "release", operation_id: "1f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a", expected_revision: revision(OPEN), reason: "done for today" })).stdout);
+    expect(released).toMatchObject({ ok: true, result: { from: "claimed", to: "open", revision: revision(OPEN) } });
   });
 
   it("a request that is not strict JSON is answered schema-invalid on stdout, exit 0", () => {

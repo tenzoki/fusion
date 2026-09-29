@@ -8977,12 +8977,9 @@ var OPERATIONS = [
   "reconcile",
   "migration"
 ];
-var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "transition"];
+var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "transition", "claim", "release", "set-mode"];
 var LANDS_IN = {
   create: "FJ02",
-  claim: "FJ02",
-  release: "FJ02",
-  "set-mode": "FJ02",
   "set-dependencies": "FJ02",
   "adopt-plan": "FJ02",
   "attach-evidence": "FJ02",
@@ -9325,6 +9322,12 @@ async function dispatch(request, options = {}) {
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
     case "transition":
       return mutate(wb, req, transitionPlan(req), kernel);
+    case "claim":
+      return mutate(wb, req, claimPlan(req), kernel);
+    case "release":
+      return mutate(wb, req, releasePlan(req), kernel);
+    case "set-mode":
+      return mutate(wb, req, setModePlan(req), kernel);
     default:
       return notImplemented(req.op);
   }
@@ -9434,13 +9437,17 @@ function validateOp(wb, req, view) {
   return { ok: true, result: { workbench: wb.root, state: wb.state, checked: paths.length, valid: findings.length === 0, findings } };
 }
 var isObject4 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
-function transitionPlan(req) {
+function transitionPlan(req, precheck) {
   return (ctx) => {
     const r = ctx.readPair(req.record.path);
     if (!r.ok) return r;
     const pair = r.value;
     const cas = ctx.cas(pair, req.expected_revision);
     if (!cas.ok) return cas;
+    if (precheck !== void 0) {
+      const p = precheck(pair);
+      if (!p.ok) return p;
+    }
     const payload = req.payload ?? {};
     const moved = pair.kind === "package" ? movePackage(pair, req.to, payload) : moveRecord(ctx, pair, req.to, payload);
     if (!moved.ok) return moved;
@@ -9463,11 +9470,15 @@ function transitionPlan(req) {
 var refused = (rule) => ({ ok: false, error: { class: rule.class, reason: "transition-refused", detail: rule.reason } });
 function movePackage(pair, to, payload) {
   const from = pair.control.status;
-  const terminal = transitions().kinds["package"]?.terminal.includes(to) ?? false;
+  const table = transitions().kinds["package"];
+  const terminal = table?.terminal.includes(to) ?? false;
   const claim = "claim" in payload ? payload.claim ?? null : terminal ? pair.control.claim ?? null : null;
   const outcome = payload.outcome ?? null;
   const rule = allowed("package", from, to, { claim, outcome });
   if (!rule.ok) return refused(rule);
+  if (table?.claim?.[to] === "required" && isObject4(claim) && claim.claimed_at === null) {
+    return { ok: false, error: { class: "schema-invalid", reason: "claimed-at-required", detail: `package: a move into ${to} makes a new claim, whose claimed_at is known to the caller and never guessed; it is null` } };
+  }
   return { ok: true, value: { from, next: { ...pair.control, status: to, claim, outcome }, schemaId: PACKAGE_SCHEMA_ID } };
 }
 var DECISION_FIELDS = ["answer_ref", "implementation_ref", "superseded_by", "deferral"];
@@ -9510,6 +9521,82 @@ function resolveReference(ctx, value) {
     return r.ok ? { ok: true, value: void 0 } : r;
   }
   return { ok: true, value: void 0 };
+}
+function operationEdges(op) {
+  const edges = (transitions().kinds["package"]?.edges ?? []).filter((e) => e.operation === op);
+  const targets = [...new Set(edges.map((e) => e.to))];
+  if (targets.length !== 1) throw new Error(`contract/transitions.json: the package edges of ${op} enter ${targets.join(", ") || "no state"}; exactly one is expected`);
+  return { to: targets[0], from: edges.map((e) => e.from) };
+}
+function asTransition(req, to, reason, payload) {
+  return {
+    op: "transition",
+    ...req.workbench !== void 0 ? { workbench: req.workbench } : {},
+    operation_id: req.operation_id,
+    record: req.record,
+    expected_revision: req.expected_revision,
+    actor: req.actor,
+    to,
+    reason,
+    payload
+  };
+}
+function claimPlan(req) {
+  const { to } = operationEdges("claim");
+  return transitionPlan(asTransition(req, to, "claim", { claim: req.claim }), (pair) => {
+    if (pair.kind !== "package" || pair.control.status !== to) return { ok: true, value: void 0 };
+    const held2 = isObject4(pair.control.claim) ? `checkout ${String(pair.control.claim.checkout_id)}` : "no recorded checkout";
+    return { ok: false, error: { class: "conflict", reason: "already-claimed", detail: `the package is already ${to}, held by ${held2}; a second claim is a conflict` } };
+  });
+}
+function releasePlan(req) {
+  const { to, from } = operationEdges("release");
+  return transitionPlan(asTransition(req, to, req.reason, { claim: null }), (pair) => {
+    const state = stateOf(pair);
+    if (pair.kind === "package" && typeof state === "string" && from.includes(state)) return { ok: true, value: void 0 };
+    const what = pair.kind === "package" ? "the package" : `the ${pair.kind} record`;
+    return { ok: false, error: { class: "conflict", reason: "not-claimed", detail: `${what} is ${String(state)}; release gives up the claim of a package that is ${from.join(" or ")}` } };
+  });
+}
+function setModePlan(req) {
+  return (ctx) => {
+    const r = ctx.readPair(req.record.path);
+    if (!r.ok) return r;
+    const pair = r.value;
+    const cas = ctx.cas(pair, req.expected_revision);
+    if (!cas.ok) return cas;
+    if (pair.kind !== "package") {
+      return { ok: false, error: { class: "schema-invalid", reason: "not-a-package", detail: `${req.record.path} is a ${pair.kind} record; set-mode sets a package's mode` } };
+    }
+    const status = pair.control.status;
+    if (typeof status === "string" && (transitions().kinds["package"]?.terminal.includes(status) ?? false)) {
+      return { ok: false, error: { class: "conflict", reason: "package-terminal", detail: `the package is ${status}, which is terminal; its mode is history and set-mode writes nothing into it` } };
+    }
+    const { value, source } = req.mode;
+    if (isObject4(source) && source.kind === "legacy") {
+      return { ok: false, error: { class: "schema-invalid", reason: "legacy-source-on-set-mode", detail: "a legacy mode source is kept by an import only; set-mode takes the user's word or a record" } };
+    }
+    if (value === "ordinary" && source !== null) {
+      return { ok: false, error: { class: "schema-invalid", reason: "source-on-ordinary", detail: "set-mode writes ordinary with source null; the request brings a source" } };
+    }
+    const next = { ...pair.control, mode: { value, source } };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after set-mode is not a valid package");
+    if (!v.ok) return v;
+    if (isObject4(source)) {
+      const resolved = resolveReference(ctx, source.kind === "user-word" ? source.ref : source);
+      if (!resolved.ok) return resolved;
+    }
+    const bytes = Buffer.from(serialise(next), "utf-8");
+    const revision = revisionOf(bytes);
+    return {
+      ok: true,
+      value: {
+        writes: [{ path: req.record.path, bytes }],
+        result: { operation_id: req.operation_id, path: req.record.path, mode: next.mode, revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: revision }
+      }
+    };
+  };
 }
 
 // contract/dependencies.json

@@ -55,14 +55,11 @@ export const OPERATIONS = [
 export type Operation = (typeof OPERATIONS)[number];
 
 /** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
-export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "transition"];
+export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "transition", "claim", "release", "set-mode"];
 
 /** The package that lands each operation not yet answered: the detail of its `not-implemented` refusal. */
 export const LANDS_IN: Partial<Record<Operation, string>> = {
   create: "FJ02",
-  claim: "FJ02",
-  release: "FJ02",
-  "set-mode": "FJ02",
   "set-dependencies": "FJ02",
   "adopt-plan": "FJ02",
   "attach-evidence": "FJ02",
@@ -121,7 +118,7 @@ interface Mutation<Op extends Operation> extends Base<Op> {
   actor: Actor;
 }
 
-// --- the five operations FJ01 answered ----------------------------------------
+// --- the reads, and transition ------------------------------------------------
 
 export type InspectRequest = Base<"inspect">;
 
@@ -180,7 +177,7 @@ export interface TransitionRequest extends Mutation<"transition"> {
   payload?: TransitionPayload;
 }
 
-// --- the nine operations FJ02 and FJ04 land -------------------------------------
+// --- the operations FJ02 and FJ04 land ------------------------------------------
 
 export interface CreateRequest extends Base<"create"> {
   operation_id: string;
