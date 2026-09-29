@@ -26,9 +26,12 @@ import {
   TAKEOVER_INFIX,
   acquireLock,
   controlFiles,
+  evidenceName,
+  evidenceNaming,
   lockPathFor,
   openWorkbench,
   readPair,
+  reportProblem,
   releaseLock,
   revisionOf,
   serialise,
@@ -174,6 +177,81 @@ describe("readPair", () => {
     expect(readPair(wb, OPEN)).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "unknown-schema" } });
     writeFileSync(join(root, OPEN), readFileSync(join(VALID, "campaign", "minimal.json")));
     expect(readPair(wb, OPEN)).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "not-a-pair-kind" } });
+  });
+});
+
+// --- evidence on disk (FJ02 step 7) ------------------------------------------------
+
+describe("evidence records: the kind, the report, the naming rule", () => {
+  const DIR = "work-packages/260928-1200-parser-fix/reviews";
+  const EVIDENCE = `${DIR}/260929-1200-review.evidence.json`;
+  const REPORT = `${DIR}/260929-1200-review.md`;
+  const REPORT_BYTES = Buffer.from("# Review\n\nVerdict: accept.\n", "utf-8");
+  /** The valid fixture as an evidence record of this workbench, naming `reportPath` at the hash of REPORT_BYTES, written at `at`. */
+  const writeEvidence = (at: string, reportPath: string): void => {
+    const fixture = strictParse(readFileSync(join(VALID, "evidence", "accept-prior-enforced.json")));
+    if (!fixture.ok) throw new Error(fixture.detail);
+    const record = { ...(fixture.value as Record<string, unknown>), report: { path: reportPath, sha256: sha(REPORT_BYTES), kind: "review" } };
+    mkdirSync(join(root, dirname(at)), { recursive: true });
+    writeFileSync(join(root, at), serialise(record));
+  };
+  const pairAt = (path: string) => {
+    const r = readPair(open(), path);
+    if (!r.ok) throw new Error(`${r.error.class}/${r.error.reason}: ${r.error.detail}`);
+    return r.value;
+  };
+
+  it("readPair reads a fusion.evidence/v1 file as kind evidence: no narrative, and the report's path, named hash and hash on disk", () => {
+    writeEvidence(EVIDENCE, REPORT);
+    writeFileSync(join(root, REPORT), REPORT_BYTES);
+    const pair = pairAt(EVIDENCE);
+    expect(pair.kind).toBe("evidence");
+    expect(pair.schemaId).toBe("urn:fusion:schema:fusion.evidence/v1");
+    expect(pair.narrative).toBeNull();
+    expect(pair.report).toEqual({ path: REPORT, sha256: sha(REPORT_BYTES), stored: sha(REPORT_BYTES) });
+    expect(pair.revision).toBe(sha(readFileSync(join(root, EVIDENCE))));
+    // Every other kind carries no report.
+    expect(pairAt(OPEN).report).toBeNull();
+    expect(pairAt(ISSUE).report).toBeNull();
+  });
+
+  it("the report's hash on disk is null when nothing stands there, and differs from the named one after an edit", () => {
+    writeEvidence(EVIDENCE, REPORT);
+    expect(pairAt(EVIDENCE).report?.stored).toBeNull();
+    expect(reportProblem(pairAt(EVIDENCE))).toMatchObject({ class: "unresolved-reference", reason: "report-missing" });
+    writeFileSync(join(root, REPORT), "# Review, edited\n");
+    expect(pairAt(EVIDENCE).report?.stored).toBe(sha(Buffer.from("# Review, edited\n")));
+    expect(reportProblem(pairAt(EVIDENCE))).toMatchObject({ class: "missing-evidence", reason: "report-changed" });
+    writeFileSync(join(root, REPORT), REPORT_BYTES);
+    expect(reportProblem(pairAt(EVIDENCE))).toBeNull();
+  });
+
+  it("every name ending .evidence.json has one reading: a last segment from 2 is the correction counter, anything else the basename's", () => {
+    expect(evidenceName(`${DIR}/260929-1200-review.evidence.json`)).toEqual({ basename: "260929-1200-review", correction: null, report: `${DIR}/260929-1200-review.md` });
+    expect(evidenceName(`${DIR}/260929-1200-review.2.evidence.json`)).toEqual({ basename: "260929-1200-review", correction: 2, report: `${DIR}/260929-1200-review.md` });
+    expect(evidenceName(`${DIR}/260929-1200-review.10.evidence.json`)).toMatchObject({ basename: "260929-1200-review", correction: 10 });
+    expect(evidenceName(`${DIR}/260929-1200-review.1.evidence.json`)).toMatchObject({ basename: "260929-1200-review.1", correction: null });
+    expect(evidenceName(`${DIR}/260929-1200-review.02.evidence.json`)).toMatchObject({ basename: "260929-1200-review.02", correction: null });
+    expect(evidenceName("review.evidence.json")).toEqual({ basename: "review", correction: null, report: "review.md" });
+    expect(evidenceName(`${DIR}/260929-1200-review.record.json`)).toBeNull();
+  });
+
+  it("the naming rule (C2): report.path must name the neighbouring <basename>.md; a correction names the same report", () => {
+    const cases: Array<[string, string, string | null]> = [
+      ["the first record, its neighbour", EVIDENCE, null],
+      ["a correction, the same report", `${DIR}/260929-1200-review.2.evidence.json`, null],
+      ["a report in another directory", EVIDENCE, "report-not-neighbour"],
+      ["a report of another basename", EVIDENCE, "report-not-neighbour"],
+      ["an evidence record under a record's name", `${DIR}/260929-1200-review.record.json`, "report-not-neighbour"],
+    ];
+    const reports = [REPORT, REPORT, `shared/reviews/260929-1200-review.md`, `${DIR}/260929-1300-other.md`, REPORT];
+    cases.forEach(([label, at, reason], i) => {
+      writeEvidence(at, reports[i] as string);
+      const problem = evidenceNaming(pairAt(at));
+      if (reason === null) expect(problem, label).toBeNull();
+      else expect(problem, label).toMatchObject({ class: "unknown-scope", reason });
+      unlinkSync(join(root, at));
+    });
   });
 });
 

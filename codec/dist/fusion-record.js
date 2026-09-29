@@ -8357,7 +8357,9 @@ function resolveInside(wb, path) {
   if (rel.length === 0 || rel.startsWith("..") || isAbsolute(rel)) return err("unknown-scope", "path-outside-workbench", `${path} leaves ${wb.root}`);
   return { ok: true, value: abs };
 }
-var KINDS = ["package", "issue", "plan", "discussion", "decision"];
+var KINDS = ["package", "issue", "plan", "discussion", "decision", "evidence"];
+var RECORD_KINDS = ["issue", "plan", "discussion", "decision"];
+var EVIDENCE_SCHEMA_ID = "urn:fusion:schema:fusion.evidence/v1";
 function readPair(wb, path, set = schemas()) {
   const abs = resolveInside(wb, path);
   if (!abs.ok) return abs;
@@ -8376,13 +8378,23 @@ function readPair(wb, path, set = schemas()) {
   const schemaId = SCHEMA_ID_PREFIX + schemaField2;
   if (set.document(schemaId) === void 0) return err("unsupported-format", "unknown-schema", `${path} declares ${schemaField2}; loaded: ${set.ids().join(", ")}`);
   const kind = kindOf(schemaId, control);
-  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField2}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a pair is a package or an issue, plan, discussion or decision record`);
-  return { ok: true, value: { path, kind, schemaId, control, bytes, revision: revisionOf(bytes), narrative: narrativeOf(wb, control) } };
+  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField2}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a control file is a package, an issue, plan, discussion or decision record, or an evidence record`);
+  const evidence = kind === "evidence";
+  return {
+    ok: true,
+    value: { path, kind, schemaId, control, bytes, revision: revisionOf(bytes), narrative: evidence ? null : narrativeOf(wb, control), report: evidence ? reportOf(wb, control) : null }
+  };
 }
 function kindOf(schemaId, control) {
   if (schemaId === PACKAGE_SCHEMA_ID) return "package";
-  if (schemaId === RECORD_SCHEMA_ID && typeof control.kind === "string" && KINDS.includes(control.kind)) return control.kind;
+  if (schemaId === EVIDENCE_SCHEMA_ID) return "evidence";
+  if (schemaId === RECORD_SCHEMA_ID && typeof control.kind === "string" && RECORD_KINDS.includes(control.kind)) return control.kind;
   return null;
+}
+function storedHash(wb, path) {
+  const abs = resolveInside(wb, path);
+  if (!abs.ok || !existsSync(abs.value) || !statSync(abs.value).isFile()) return null;
+  return revisionOf(readFileSync2(abs.value));
 }
 function narrativeOf(wb, control) {
   const n = control.narrative;
@@ -8391,7 +8403,36 @@ function narrativeOf(wb, control) {
   if (!abs.ok || !existsSync(abs.value)) return { path: n.path, sha256: null };
   return { path: n.path, sha256: revisionOf(readFileSync2(abs.value)) };
 }
-var isControlFile = (name) => name === "package.json" || name.endsWith(".record.json") || name.endsWith(".evidence.json");
+function reportOf(wb, control) {
+  const r = control.report;
+  if (!isObject(r) || typeof r.path !== "string") return null;
+  return { path: r.path, sha256: typeof r.sha256 === "string" ? r.sha256 : null, stored: storedHash(wb, r.path) };
+}
+var EVIDENCE_SUFFIX = ".evidence.json";
+var EVIDENCE_NAME = /^(.*?)(?:\.([2-9]|[1-9][0-9]+))?\.evidence\.json$/;
+function evidenceName(path) {
+  const slash = path.lastIndexOf("/");
+  const dir = slash < 0 ? "" : path.slice(0, slash + 1);
+  const m = EVIDENCE_NAME.exec(path.slice(slash + 1));
+  if (m === null) return null;
+  const basename2 = m[1];
+  return { basename: basename2, correction: m[2] === void 0 ? null : Number(m[2]), report: `${dir}${basename2}.md` };
+}
+function evidenceNaming(pair) {
+  const name = evidenceName(pair.path);
+  const named = pair.report?.path ?? null;
+  if (name !== null && named === name.report) return null;
+  const form = name === null ? `${pair.path} is not named <basename>${EVIDENCE_SUFFIX}` : `${pair.path} pairs with ${name.report}`;
+  return { class: "unknown-scope", reason: "report-not-neighbour", detail: `${form}; its report.path names ${named === null ? "no path" : named}` };
+}
+function reportProblem(pair) {
+  const report = pair.report;
+  if (report === null) return { class: "unresolved-reference", reason: "report-missing", detail: `${pair.path} names no report path` };
+  if (report.stored === null) return { class: "unresolved-reference", reason: "report-missing", detail: `the report ${report.path} does not exist` };
+  if (report.stored !== report.sha256) return { class: "missing-evidence", reason: "report-changed", detail: `the report ${report.path} is ${report.stored}; the evidence record names ${String(report.sha256)}` };
+  return null;
+}
+var isControlFile = (name) => name === "package.json" || name.endsWith(".record.json") || name.endsWith(EVIDENCE_SUFFIX);
 function controlFiles(wb, dir) {
   const out = [];
   const walk = (d) => {
@@ -8977,9 +9018,8 @@ var OPERATIONS = [
   "reconcile",
   "migration"
 ];
-var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan"];
+var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"];
 var LANDS_IN = {
-  "attach-evidence": "FJ02",
   reconcile: "FJ02",
   migration: "FJ04"
 };
@@ -9331,6 +9371,8 @@ async function dispatch(request, options = {}) {
       return mutate(wb, req, setDependenciesPlan(req), kernel);
     case "adopt-plan":
       return mutate(wb, req, adoptPlanPlan(req), kernel);
+    case "attach-evidence":
+      return mutate(wb, req, attachEvidencePlan(req), kernel);
     default:
       return notImplemented(req.op);
   }
@@ -9393,10 +9435,10 @@ function show(wb, req, view) {
   if (blocked !== void 0) return fromStore(recoveryBlocked(blocked));
   const r = readPair(wb, req.record.path);
   if (!r.ok) return fromStore(r.error);
-  const { path, kind, control, revision, narrative } = r.value;
+  const { path, kind, control, revision, narrative, report } = r.value;
   const narrativeBlocked = narrative === null ? void 0 : view.blockedOn(narrative.path);
   if (narrativeBlocked !== void 0) return fromStore(recoveryBlocked(narrativeBlocked));
-  return { ok: true, result: { path, kind, control, revision, narrative } };
+  return { ok: true, result: { path, kind, control, revision, narrative, ...kind === "evidence" ? { report } : {} } };
 }
 function findingsOf(wb, path) {
   const r = readPair(wb, path);
@@ -9413,7 +9455,9 @@ function findingsOf(wb, path) {
     const rules = stateRules(pair.kind, state, rulePayload(pair));
     if (!rules.ok) findings.push({ path, class: rules.class, reason: "state-rules", detail: rules.reason });
   }
-  if (pair.narrative === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-unnamed", detail: "the record names no narrative" });
+  if (pair.kind === "evidence") {
+    for (const e of [reportProblem(pair), evidenceNaming(pair)]) if (e !== null) findings.push({ path, class: e.class, reason: e.reason, detail: e.detail });
+  } else if (pair.narrative === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-unnamed", detail: "the record names no narrative" });
   else if (pair.narrative.sha256 === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-missing", detail: `${pair.narrative.path} does not exist` });
   if (wb.id !== null && pair.control.workbench_id !== wb.id) {
     findings.push({ path, class: "unknown-scope", reason: "foreign-workbench-id", detail: `the record carries workbench_id ${JSON.stringify(pair.control.workbench_id)}; this workbench is ${wb.id}` });
@@ -9612,6 +9656,9 @@ function transitionPlan(req, precheck) {
     const pair = r.value;
     const cas = ctx.cas(pair, req.expected_revision);
     if (!cas.ok) return cas;
+    if (pair.kind === "evidence") {
+      return refusal("conflict", "evidence-immutable", `${req.record.path} is an evidence record, which has no lifecycle and is immutable once accepted (spec 4.4); a correction is a new record naming it as predecessor`);
+    }
     if (precheck !== void 0) {
       const p = precheck(pair);
       if (!p.ok) return p;
@@ -9623,6 +9670,13 @@ function transitionPlan(req, precheck) {
     const what = pair.kind === "package" ? "the record after the transition is not a valid package" : `the record after the transition is not a valid ${pair.kind} record`;
     const v = ctx.validateResult(schemaId, next, what);
     if (!v.ok) return v;
+    if (pair.kind === "package" && req.to === EVIDENCE_CHECKED_ON) {
+      const outcome = next.outcome;
+      for (const binding of outcome?.evidence ?? []) {
+        const bound = bindEvidence(ctx, pair, binding);
+        if (!bound.ok) return bound;
+      }
+    }
     const bytes = Buffer.from(serialise(next), "utf-8");
     const revision = revisionOf(bytes);
     return {
@@ -9776,11 +9830,9 @@ function setModePlan(req) {
     };
   };
 }
-var isEvidenceFile = (path) => path.endsWith(".evidence.json");
 function resolvePackage(ctx, ref, role) {
   const hit = resolveRecordRef(ctx, ref);
   if (!hit.ok) return hit;
-  if (isEvidenceFile(hit.value.path)) return refusal("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the evidence record ${hit.value.path}; it must be a package`);
   const pair = ctx.readPair(hit.value.path);
   if (!pair.ok) return pair;
   if (pair.value.kind !== "package") return refusal("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; it must be a package`);
@@ -9856,7 +9908,6 @@ var withAcceptance = (doc, acceptance) => ({ ...doc.control, control: { ...doc.c
 function replacedRecord(ctx, ref, pkg) {
   const hit = resolveRecordRef(ctx, ref);
   if (!hit.ok) return hit.error.reason === "record-not-found" || hit.error.reason === "foreign-workbench" ? { ok: true, value: null } : hit;
-  if (isEvidenceFile(hit.value.path)) return { ok: true, value: null };
   const pair = ctx.readPair(hit.value.path);
   if (!pair.ok) return pair;
   if (pair.value.kind !== "plan") return { ok: true, value: null };
@@ -9874,7 +9925,6 @@ function adoptPlanPlan(req) {
     const hit = resolveRecordRef(ctx, req.plan);
     if (!hit.ok) return hit;
     const notAPlan = (what) => refusal("unresolved-reference", "not-a-plan", `${docId} is ${what}; adopt-plan binds a plan record, as a ${role}`);
-    if (isEvidenceFile(hit.value.path)) return notAPlan(`the evidence record ${hit.value.path}`);
     const got = ctx.readPair(hit.value.path);
     if (!got.ok) return got;
     const doc = got.value;
@@ -9939,6 +9989,73 @@ function adoptPlanPlan(req) {
           previous_revision: req.expected_revision
         },
         revisions: Object.fromEntries(writes.map((w) => [w.path, w.revision]))
+      }
+    };
+  };
+}
+var EVIDENCE_CHECKED_ON = "done";
+function activePlanRevision(pkg) {
+  const docs = Array.isArray(pkg.control.active_documents) ? pkg.control.active_documents : [];
+  const plan = docs.find((d) => isObject4(d) && d.role === PLAN_ROLE);
+  return isObject4(plan) && typeof plan.revision === "string" ? plan.revision : null;
+}
+function bindEvidence(ctx, pkg, binding) {
+  const id = binding.ref.record_id;
+  const hit = resolveRecordRef(ctx, binding.ref);
+  if (!hit.ok) return hit;
+  const got = ctx.readPair(hit.value.path);
+  if (!got.ok) return got;
+  const ev = got.value;
+  if (ev.kind !== "evidence") return refusal("unresolved-reference", "not-evidence", `${id} is the ${ev.kind} record ${ev.path}; an evidence binding names a fusion.evidence/v1 record`);
+  if (ev.revision !== binding.ref.revision) {
+    return refusal("missing-evidence", "evidence-revision-mismatch", `${ev.path} is stored at ${ev.revision}; the binding names ${binding.ref.revision}`);
+  }
+  const v = validate(EVIDENCE_SCHEMA_ID, ev.control);
+  if (!v.ok) return refusal("schema-invalid", "evidence-invalid", `${ev.path}: ${v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`}`);
+  const naming = evidenceNaming(ev);
+  if (naming !== null) return { ok: false, error: naming };
+  const record = ev.control;
+  if (ctx.wb.id !== null && record.workbench_id !== ctx.wb.id) {
+    return refusal("unknown-scope", "foreign-workbench-id", `${ev.path} carries workbench_id ${JSON.stringify(record.workbench_id)}; this workbench is ${ctx.wb.id}`);
+  }
+  if (record.execution_policy !== binding.policy) {
+    return refusal("schema-invalid", "policy-mismatch", `${ev.path} was produced ${String(record.execution_policy)}; the binding claims ${binding.policy}, and a binding never changes the policy a result was produced under`);
+  }
+  const brief = pkg.narrative?.sha256 ?? null;
+  if (record.brief_revision !== brief) {
+    return refusal("missing-evidence", "brief-changed", `${ev.path} was produced against the brief at ${String(record.brief_revision)}; ${pkg.narrative === null ? "the package names no brief" : `${pkg.narrative.path} is ${brief ?? "absent"}`} now`);
+  }
+  if (record.plan_revision !== null) {
+    const plan = activePlanRevision(pkg);
+    if (plan === null) return refusal("missing-evidence", "no-active-plan", `${ev.path} was produced against the plan at ${String(record.plan_revision)}; the package has no plan in force`);
+    if (plan !== record.plan_revision) return refusal("missing-evidence", "plan-changed", `${ev.path} was produced against the plan at ${String(record.plan_revision)}; the plan in force is at ${plan}`);
+  }
+  const report = reportProblem(ev);
+  if (report !== null) return { ok: false, error: report };
+  return { ok: true, value: ev };
+}
+function attachEvidencePlan(req) {
+  return (ctx) => {
+    const r = livePackage(ctx, req, "attach-evidence", "binds evidence to a package");
+    if (!r.ok) return r;
+    const pkg = r.value;
+    const bound = Array.isArray(pkg.control.evidence) ? pkg.control.evidence : [];
+    const { record_id, revision: at } = req.evidence.ref;
+    if (bound.some((b) => isObject4(b.ref) && b.ref.record_id === record_id && b.ref.revision === at)) {
+      return refusal("conflict", "evidence-already-bound", `the package binds ${record_id} at ${at} already`);
+    }
+    const ev = bindEvidence(ctx, pkg, req.evidence);
+    if (!ev.ok) return ev;
+    const next = { ...pkg.control, evidence: [...bound, req.evidence] };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after attach-evidence is not a valid package");
+    if (!v.ok) return v;
+    const w = recordWrite(req.record.path, next);
+    return {
+      ok: true,
+      value: {
+        writes: [w],
+        result: { operation_id: req.operation_id, path: req.record.path, evidence: req.evidence, evidence_record: ev.value.path, revision: w.revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: w.revision }
       }
     };
   };

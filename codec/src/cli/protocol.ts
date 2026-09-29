@@ -55,11 +55,10 @@ export const OPERATIONS = [
 export type Operation = (typeof OPERATIONS)[number];
 
 /** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
-export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan"];
+export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"];
 
 /** The package that lands each operation not yet answered: the detail of its `not-implemented` refusal. */
 export const LANDS_IN: Partial<Record<Operation, string>> = {
-  "attach-evidence": "FJ02",
   reconcile: "FJ02",
   migration: "FJ04",
 };

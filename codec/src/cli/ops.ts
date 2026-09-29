@@ -7,11 +7,13 @@
 // with a shape the schema refuses. The operations answered:
 //
 //   inspect     the workbench's manifest state, the schema ids, the features
-//   list        the record pairs under a store or a container, with kind,
-//               status and revision
-//   show        one pair: control, revision, narrative hash
+//   list        the control files under a store or a container, with kind,
+//               status (null for an evidence record) and revision
+//   show        one pair: control, revision, narrative hash; an evidence
+//               record with its report instead of a narrative
 //   validate    strict parse, schema, and the state rules `transitions.ts`
-//               owns, for one pair or the whole workbench
+//               owns, for one pair or the whole workbench; for an evidence
+//               record its report and the naming rule instead of a narrative
 //   create      a new pair: the control record the kernel builds, and the
 //               narrative when the request carries its body, in one intent
 //   transition  a package or an issue, plan, discussion or decision record:
@@ -32,6 +34,11 @@
 //               the narrative revision accepted, as its one plan (replacing
 //               the one before) or as one more spec, with the record's
 //               `acceptance` naming the package
+//   attach-evidence
+//               an evidence record bound into a package's `evidence` at its
+//               exact revision, through `bindEvidence`, which the package
+//               transition to `done` also runs for every `outcome.evidence`
+//               entry
 //
 // Every other operation of the table answers `operation-unknown/not-implemented`
 // with a detail naming the package that lands it (`LANDS_IN`).
@@ -60,10 +67,13 @@ import {
   RECORD_SCHEMA_ID,
   SCHEMA_ID_PREFIX,
   SUPPORTED_FEATURES,
+  EVIDENCE_SCHEMA_ID,
   controlFiles,
   describeErrors,
+  evidenceNaming,
   openWorkbench,
   readPair,
+  reportProblem,
   resolveInside,
   revisionOf,
   serialise,
@@ -81,8 +91,10 @@ import {
   fail,
   isOperation,
   type AdoptPlanRequest,
+  type AttachEvidenceRequest,
   type ClaimRequest,
   type CreateRequest,
+  type EvidenceRef,
   type ListRequest,
   type RecordRef,
   type ReleaseRequest,
@@ -155,6 +167,8 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
       return mutate(wb, req, setDependenciesPlan(req), kernel);
     case "adopt-plan":
       return mutate(wb, req, adoptPlanPlan(req), kernel);
+    case "attach-evidence":
+      return mutate(wb, req, attachEvidencePlan(req), kernel);
     default:
       return notImplemented((req as Request).op);
   }
@@ -233,10 +247,11 @@ function show(wb: Workbench, req: ShowRequest, view: ReadView): Response {
   if (blocked !== undefined) return fromStore(recoveryBlocked(blocked));
   const r = readPair(wb, req.record.path);
   if (!r.ok) return fromStore(r.error);
-  const { path, kind, control, revision, narrative } = r.value;
+  const { path, kind, control, revision, narrative, report } = r.value;
   const narrativeBlocked = narrative === null ? undefined : view.blockedOn(narrative.path);
   if (narrativeBlocked !== undefined) return fromStore(recoveryBlocked(narrativeBlocked));
-  return { ok: true, result: { path, kind, control, revision, narrative } };
+  // `report` for an evidence record only, so every other kind's answer keeps FJ01's shape.
+  return { ok: true, result: { path, kind, control, revision, narrative, ...(kind === "evidence" ? { report } : {}) } };
 }
 
 // --- validate -----------------------------------------------------------------
@@ -248,7 +263,13 @@ export interface Finding {
   detail: string;
 }
 
-/** The findings against one pair: the strict reader's, the schema's, the state rules', the narrative's, the workbench id's. */
+/**
+ * The findings against one pair: the strict reader's, the schema's, the
+ * state rules', the narrative's, the workbench id's. An evidence record names
+ * no narrative; its findings in that place are its report's and the naming
+ * rule's, and only an evidence file can carry them, so a workbench without
+ * one reads exactly as before (the recorded `06-validate`, C18).
+ */
 function findingsOf(wb: Workbench, path: string): Finding[] {
   const r = readPair(wb, path);
   if (!r.ok) return [{ path, class: r.error.class, reason: r.error.reason, detail: r.error.detail }];
@@ -264,7 +285,9 @@ function findingsOf(wb: Workbench, path: string): Finding[] {
     const rules = stateRules(pair.kind, state, rulePayload(pair));
     if (!rules.ok) findings.push({ path, class: rules.class, reason: "state-rules", detail: rules.reason });
   }
-  if (pair.narrative === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-unnamed", detail: "the record names no narrative" });
+  if (pair.kind === "evidence") {
+    for (const e of [reportProblem(pair), evidenceNaming(pair)]) if (e !== null) findings.push({ path, class: e.class, reason: e.reason, detail: e.detail });
+  } else if (pair.narrative === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-unnamed", detail: "the record names no narrative" });
   else if (pair.narrative.sha256 === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-missing", detail: `${pair.narrative.path} does not exist` });
   if (wb.id !== null && pair.control.workbench_id !== wb.id) {
     findings.push({ path, class: "unknown-scope", reason: "foreign-workbench-id", detail: `the record carries workbench_id ${JSON.stringify(pair.control.workbench_id)}; this workbench is ${wb.id}` });
@@ -555,6 +578,9 @@ function transitionPlan(req: TransitionRequest, precheck?: (pair: Pair) => Resul
     const pair = r.value;
     const cas = ctx.cas(pair, req.expected_revision);
     if (!cas.ok) return cas;
+    if (pair.kind === "evidence") {
+      return refusal("conflict", "evidence-immutable", `${req.record.path} is an evidence record, which has no lifecycle and is immutable once accepted (spec 4.4); a correction is a new record naming it as predecessor`);
+    }
     if (precheck !== undefined) {
       const p = precheck(pair);
       if (!p.ok) return p;
@@ -567,6 +593,13 @@ function transitionPlan(req: TransitionRequest, precheck?: (pair: Pair) => Resul
     const what = pair.kind === "package" ? "the record after the transition is not a valid package" : `the record after the transition is not a valid ${pair.kind} record`;
     const v = ctx.validateResult(schemaId, next, what);
     if (!v.ok) return v;
+    if (pair.kind === "package" && req.to === EVIDENCE_CHECKED_ON) {
+      const outcome = next.outcome as { evidence?: EvidenceRef[] } | null;
+      for (const binding of outcome?.evidence ?? []) {
+        const bound = bindEvidence(ctx, pair, binding);
+        if (!bound.ok) return bound;
+      }
+    }
 
     const bytes = Buffer.from(serialise(next), "utf-8");
     const revision = revisionOf(bytes);
@@ -660,7 +693,7 @@ function resolveReference(ctx: PlanContext, value: unknown): Result<void> {
 }
 
 /** A `record_ref` resolved to the one control file of this workbench that carries its id. */
-function resolveRecordRef(ctx: PlanContext, ref: { workbench_id: unknown; record_id: string }): Result<{ path: string; id: string }> {
+function resolveRecordRef(ctx: Pick<PlanContext, "wb" | "resolveRecordId">, ref: { workbench_id: unknown; record_id: string }): Result<{ path: string; id: string }> {
   if (ctx.wb.id !== null && ref.workbench_id !== ctx.wb.id) {
     return { ok: false, error: { class: "unresolved-reference", reason: "foreign-workbench", detail: `the reference names workbench ${JSON.stringify(ref.workbench_id)}; this workbench is ${ctx.wb.id}` } };
   }
@@ -823,14 +856,10 @@ function setModePlan(req: SetModeRequest): PlanFunction {
 // blocked intent names, contributes no edges: what it depends on is not
 // decided, and `validate` and `reconcile` report it.
 
-/** A control file of an evidence record, by its name: the walk admits it, `readPair` does not yet read its kind. */
-const isEvidenceFile = (path: string): boolean => path.endsWith(".evidence.json");
-
 /** The package a `record_ref` names, resolved in this workbench: a record kind or an evidence record is `not-a-package`. */
 function resolvePackage(ctx: PlanContext, ref: RecordRef, role: string): Result<Pair> {
   const hit = resolveRecordRef(ctx, ref);
   if (!hit.ok) return hit;
-  if (isEvidenceFile(hit.value.path)) return refusal("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the evidence record ${hit.value.path}; it must be a package`);
   const pair = ctx.readPair(hit.value.path);
   if (!pair.ok) return pair;
   if (pair.value.kind !== "package") return refusal("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; it must be a package`);
@@ -962,7 +991,6 @@ const withAcceptance = (doc: Pair, acceptance: unknown): Record<string, unknown>
 function replacedRecord(ctx: PlanContext, ref: RecordRef, pkg: Pair): Result<Pair | null> {
   const hit = resolveRecordRef(ctx, ref);
   if (!hit.ok) return hit.error.reason === "record-not-found" || hit.error.reason === "foreign-workbench" ? { ok: true, value: null } : hit;
-  if (isEvidenceFile(hit.value.path)) return { ok: true, value: null };
   const pair = ctx.readPair(hit.value.path);
   if (!pair.ok) return pair;
   if (pair.value.kind !== "plan") return { ok: true, value: null };
@@ -983,7 +1011,6 @@ function adoptPlanPlan(req: AdoptPlanRequest): PlanFunction {
     const hit = resolveRecordRef(ctx, req.plan);
     if (!hit.ok) return hit;
     const notAPlan = (what: string): Result<never> => refusal("unresolved-reference", "not-a-plan", `${docId} is ${what}; adopt-plan binds a plan record, as a ${role}`);
-    if (isEvidenceFile(hit.value.path)) return notAPlan(`the evidence record ${hit.value.path}`);
     const got = ctx.readPair(hit.value.path);
     if (!got.ok) return got;
     const doc = got.value;
@@ -1055,6 +1082,107 @@ function adoptPlanPlan(req: AdoptPlanRequest): PlanFunction {
           previous_revision: req.expected_revision,
         },
         revisions: Object.fromEntries(writes.map((w) => [w.path, w.revision])),
+      },
+    };
+  };
+}
+
+// --- evidence -----------------------------------------------------------------------
+//
+// A package binds an evidence record through an `evidence_ref`: the record's
+// id at the exact revision of its stored bytes, and the execution policy the
+// binding claims. `bindEvidence` is the one check of such a binding, and it
+// runs wherever one is written or relied on: `attach-evidence` before it
+// appends the binding, the package transition to `done` for every
+// `outcome.evidence` entry, and `reconcile` (FJ02 step 8) to report a stale
+// one. A binding holds while the evidence record is the one bound (the id
+// resolves to an evidence file whose stored bytes hash to the pinned
+// revision), sits beside the report it names (the naming rule, C2), belongs
+// to this workbench, was produced under the policy the binding claims (an
+// import never upgrades claude-guided, and neither does a binding), was
+// produced against the brief as it stands now and, when it names one,
+// against the plan revision in force, and its report is on disk at the hash
+// it names. The package's status is not read: a status change alone never
+// makes a binding stale, a brief change does (spec section 9).
+
+/** The package state whose transition checks every binding its outcome carries. */
+const EVIDENCE_CHECKED_ON = "done";
+
+/** What `bindEvidence` reads: under the lock for a mutation, under the read protocol for `reconcile`. */
+export type EvidenceContext = Pick<PlanContext, "wb" | "readPair" | "resolveRecordId">;
+
+/** The revision of the plan in force: the `role: plan` entry of the package's `active_documents`, or null when it has none. */
+function activePlanRevision(pkg: Pair): string | null {
+  const docs = Array.isArray(pkg.control.active_documents) ? pkg.control.active_documents : [];
+  const plan = docs.find((d) => isObject(d) && d.role === PLAN_ROLE);
+  return isObject(plan) && typeof plan.revision === "string" ? plan.revision : null;
+}
+
+/** Checks `binding` against the evidence record it names and the package `pkg` as it stands; the record when the binding holds. */
+export function bindEvidence(ctx: EvidenceContext, pkg: Pair, binding: EvidenceRef): Result<Pair> {
+  const id = binding.ref.record_id;
+  const hit = resolveRecordRef(ctx, binding.ref);
+  if (!hit.ok) return hit;
+  const got = ctx.readPair(hit.value.path);
+  if (!got.ok) return got;
+  const ev = got.value;
+  if (ev.kind !== "evidence") return refusal("unresolved-reference", "not-evidence", `${id} is the ${ev.kind} record ${ev.path}; an evidence binding names a fusion.evidence/v1 record`);
+  if (ev.revision !== binding.ref.revision) {
+    return refusal("missing-evidence", "evidence-revision-mismatch", `${ev.path} is stored at ${ev.revision}; the binding names ${binding.ref.revision}`);
+  }
+  const v = validate(EVIDENCE_SCHEMA_ID, ev.control);
+  if (!v.ok) return refusal("schema-invalid", "evidence-invalid", `${ev.path}: ${v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`}`);
+  const naming = evidenceNaming(ev);
+  if (naming !== null) return { ok: false, error: naming };
+  const record = ev.control;
+  if (ctx.wb.id !== null && record.workbench_id !== ctx.wb.id) {
+    return refusal("unknown-scope", "foreign-workbench-id", `${ev.path} carries workbench_id ${JSON.stringify(record.workbench_id)}; this workbench is ${ctx.wb.id}`);
+  }
+  if (record.execution_policy !== binding.policy) {
+    return refusal("schema-invalid", "policy-mismatch", `${ev.path} was produced ${String(record.execution_policy)}; the binding claims ${binding.policy}, and a binding never changes the policy a result was produced under`);
+  }
+  const brief = pkg.narrative?.sha256 ?? null;
+  if (record.brief_revision !== brief) {
+    return refusal("missing-evidence", "brief-changed", `${ev.path} was produced against the brief at ${String(record.brief_revision)}; ${pkg.narrative === null ? "the package names no brief" : `${pkg.narrative.path} is ${brief ?? "absent"}`} now`);
+  }
+  if (record.plan_revision !== null) {
+    const plan = activePlanRevision(pkg);
+    if (plan === null) return refusal("missing-evidence", "no-active-plan", `${ev.path} was produced against the plan at ${String(record.plan_revision)}; the package has no plan in force`);
+    if (plan !== record.plan_revision) return refusal("missing-evidence", "plan-changed", `${ev.path} was produced against the plan at ${String(record.plan_revision)}; the plan in force is at ${plan}`);
+  }
+  const report = reportProblem(ev);
+  if (report !== null) return { ok: false, error: report };
+  return { ok: true, value: ev };
+}
+
+/**
+ * Appends a binding to a live package's `evidence`, once `bindEvidence`
+ * holds. The same record at the same revision bound twice is a conflict; the
+ * package schema's `uniqueItems` would catch the identical entry only.
+ */
+function attachEvidencePlan(req: AttachEvidenceRequest): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    const r = livePackage(ctx, req, "attach-evidence", "binds evidence to a package");
+    if (!r.ok) return r;
+    const pkg = r.value;
+    const bound = (Array.isArray(pkg.control.evidence) ? pkg.control.evidence : []) as EvidenceRef[];
+    const { record_id, revision: at } = req.evidence.ref;
+    if (bound.some((b) => isObject(b.ref) && b.ref.record_id === record_id && b.ref.revision === at)) {
+      return refusal("conflict", "evidence-already-bound", `the package binds ${record_id} at ${at} already`);
+    }
+    const ev = bindEvidence(ctx, pkg, req.evidence);
+    if (!ev.ok) return ev;
+
+    const next = { ...pkg.control, evidence: [...bound, req.evidence] };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after attach-evidence is not a valid package");
+    if (!v.ok) return v;
+    const w = recordWrite(req.record.path, next);
+    return {
+      ok: true,
+      value: {
+        writes: [w],
+        result: { operation_id: req.operation_id, path: req.record.path, evidence: req.evidence, evidence_record: ev.value.path, revision: w.revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: w.revision },
       },
     };
   };

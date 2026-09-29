@@ -16,12 +16,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { dispatch } from "../cli/ops.js";
+import { bindEvidence, dispatch } from "../cli/ops.js";
 import {
   OPERATIONS,
   IMPLEMENTED_OPERATIONS,
   LANDS_IN,
   type AdoptPlanRequest,
+  type AttachEvidenceRequest,
+  type EvidenceRef,
   type ClaimRequest,
   type CreateRequest,
   type RecordRef,
@@ -32,11 +34,12 @@ import {
   type TransitionRequest,
 } from "../cli/protocol.js";
 import { installInlined } from "../cli/schemas.js";
-import { CutReached } from "../kernel.js";
-import { revisionOf, serialise } from "../store.js";
+import { CutReached, mutate } from "../kernel.js";
+import { openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
 import { MAX_RECORD_BYTES, strictParse } from "../strict-json.js";
 import { transitions } from "../transitions.js";
 import { loadSchemas } from "../validate.js";
+import { seedCorrection, seedEvidence, trySeedCorrection, type SeedOptions, type Seeded } from "./helpers/seed.js";
 
 const FIXTURE = fileURLToPath(new URL("../../fixtures/workbench/", import.meta.url));
 const VALID = fileURLToPath(new URL("../../fixtures/valid/", import.meta.url));
@@ -1629,5 +1632,280 @@ describe("set-dependencies and adopt-plan", () => {
     expect(errorOf(await dispatch(adoptRequest(PLAN_A, a.narrative, { record: { path: ISSUE }, expected_revision: revision(ISSUE) })))).toEqual({ class: "schema-invalid", reason: "not-a-package" });
     expect(errorOf(await dispatch(adoptRequest(PLAN_A, a.narrative, { expected_revision: revision(DONE) })))).toEqual({ class: "conflict", reason: "revision-mismatch" });
     expect(controlOfRecord(a.control).acceptance).toBeNull();
+  });
+});
+
+// --- attach-evidence, and evidence on done (FJ02 step 7) ------------------------------
+
+describe("attach-evidence, evidence records in the walk, and evidence checked on done", () => {
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const OPEN_ID = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
+  const OPEN_NARRATIVE = "work-packages/260928-1200-parser-fix/260928-1200-parser-fix.md";
+  const CONTAINER = "work-packages/260928-1200-parser-fix";
+
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+  const parsed = (path: string): Record<string, unknown> => {
+    const p = strictParse(bytesOf(path));
+    if (!p.ok) throw new Error(p.detail);
+    return p.value as Record<string, unknown>;
+  };
+  const answered = (id: string): boolean => existsSync(join(root, ".json-state", "ops", `${id}.json`));
+  const journal = (): string[] => (existsSync(join(root, ".json-state", "journal")) ? readdirSync(join(root, ".json-state", "journal")) : []);
+  const snapshot = (...paths: string[]): Record<string, Buffer> => Object.fromEntries(paths.map((p) => [p, bytesOf(p)]));
+  const unchanged = (before: Record<string, Buffer>, id: string, label: string): void => {
+    for (const [path, bytes] of Object.entries(before)) expect(bytesOf(path).equals(bytes), `${label}: ${path}`).toBe(true);
+    expect(answered(id), `${label}: answer`).toBe(false);
+    expect(journal(), `${label}: journal`).toEqual([]);
+  };
+
+  let seq = 0;
+  /** A fresh evidence id and basename per seed, so one case can seed several side by side. */
+  const seed = async (over: Partial<SeedOptions> = {}): Promise<Seeded> => {
+    seq += 1;
+    const n = String(seq).padStart(2, "0");
+    return seedEvidence(root, { package: OPEN, id: `e7e7e7e7-0000-4000-8000-0000000001${n}`, basename: `260929-12${n}-review`, ...over });
+  };
+  const attachRequest = (evidence: EvidenceRef, over: Partial<AttachEvidenceRequest> = {}): AttachEvidenceRequest => ({
+    op: "attach-evidence",
+    workbench: root,
+    operation_id: randomUUID(),
+    record: { path: OPEN },
+    expected_revision: revision(OPEN),
+    actor: ACTOR,
+    evidence,
+    ...over,
+  });
+  const move = async (to: string, payload: TransitionRequest["payload"] = {}): Promise<Response> =>
+    dispatch(transitionRequest({ operation_id: randomUUID(), expected_revision: revision(OPEN), to, reason: `move to ${to}`, payload }));
+
+  /**
+   * `bindEvidence` run directly, inside a mutation that writes nothing, so it
+   * reads the package and the evidence through the kernel's own context, as
+   * `attach-evidence`, the `done` transition and `reconcile` do.
+   */
+  const probe = async (binding: EvidenceRef): Promise<Result<Pair>> => {
+    const wb = openWorkbench(root);
+    if (!wb.ok) throw new Error(wb.error.detail);
+    let out: Result<Pair> | undefined;
+    const r = await mutate(wb.value, { op: "probe", operation_id: randomUUID() }, (ctx) => {
+      const pkg = ctx.readPair(OPEN);
+      if (!pkg.ok) return pkg;
+      out = bindEvidence(ctx, pkg.value, binding);
+      return { ok: true, value: { writes: [], result: null } };
+    });
+    expect(r.ok, JSON.stringify(r)).toBe(true);
+    if (out === undefined) throw new Error("the probe never ran");
+    return out;
+  };
+  const reasonOf = (r: Result<Pair>): string => (r.ok ? "fresh" : `${r.error.class}/${r.error.reason}`);
+
+  // --- attach ---
+
+  it("attach lands: the binding appended, deterministic bytes, the evidence file validated with the rest; replays; a divergent replay is operation-id-reused", async () => {
+    const ev = await seed();
+    const req = attachRequest(ev.binding);
+    const first = await dispatch(req);
+    expect(okResult(first)).toEqual({ operation_id: req.operation_id, path: OPEN, evidence: ev.binding, evidence_record: ev.path, revision: revision(OPEN), previous_revision: req.expected_revision });
+    expect(first.ok && first.revisions).toEqual({ [OPEN]: revision(OPEN) });
+    expect(parsed(OPEN).evidence).toEqual([ev.binding]);
+    expect(bytesOf(OPEN).toString("utf-8")).toBe(serialise(parsed(OPEN)));
+    expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ checked: 4, valid: true, findings: [] });
+
+    expect(await dispatch(req)).toEqual(first);
+    expect(errorOf(await dispatch({ ...req, evidence: { ...ev.binding, policy: "prior-enforced" } }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+  });
+
+  it("the same record at the same revision bound twice is conflict/evidence-already-bound, nothing written", async () => {
+    const ev = await seed();
+    okResult(await dispatch(attachRequest(ev.binding)));
+    const req = attachRequest(ev.binding);
+    const before = snapshot(OPEN);
+    expect(errorOf(await dispatch(req))).toEqual({ class: "conflict", reason: "evidence-already-bound" });
+    unchanged(before, req.operation_id, "twice");
+  });
+
+  it("each refusal of bindEvidence with the one field changed: nothing written", async () => {
+    const good = await seed();
+    const foreign = "0e0e0e0e-0000-4000-8000-000000000000";
+    const cases: Array<[string, () => Promise<EvidenceRef>, { class: string; reason: string }]> = [
+      ["an id no control file carries", async () => ({ ...good.binding, ref: { ...good.binding.ref, record_id: "99999999-0000-4000-8000-000000000009" } }), { class: "unresolved-reference", reason: "record-not-found" }],
+      ["a ref of another workbench", async () => ({ ...good.binding, ref: { ...good.binding.ref, workbench_id: foreign } }), { class: "unresolved-reference", reason: "foreign-workbench" }],
+      ["the id of a package", async () => ({ ...good.binding, ref: { ...good.binding.ref, record_id: OPEN_ID } }), { class: "unresolved-reference", reason: "not-evidence" }],
+      ["a revision other than the stored bytes'", async () => ({ ...good.binding, ref: { ...good.binding.ref, revision: "sha256:" + "0".repeat(64) } }), { class: "missing-evidence", reason: "evidence-revision-mismatch" }],
+      ["a record the evidence schema refuses", async () => (await seed({ over: { verdict: "maybe" } })).binding, { class: "schema-invalid", reason: "evidence-invalid" }],
+      ["a report in another directory", async () => (await seed({ reportPath: "shared/reviews/260929-1299-review.md" })).binding, { class: "unknown-scope", reason: "report-not-neighbour" }],
+      ["a report of another basename", async () => (await seed({ reportPath: `${CONTAINER}/reviews/260929-1299-other.md` })).binding, { class: "unknown-scope", reason: "report-not-neighbour" }],
+      ["a record of another workbench", async () => (await seed({ over: { workbench_id: foreign } })).binding, { class: "unknown-scope", reason: "foreign-workbench-id" }],
+      ["a binding claiming prior-enforced for a claude-guided result", async () => ({ ...good.binding, policy: "prior-enforced" }), { class: "schema-invalid", reason: "policy-mismatch" }],
+      ["a binding claiming claude-guided for a prior-enforced result", async () => ({ ...(await seed({ policy: "prior-enforced" })).binding, policy: "claude-guided" }), { class: "schema-invalid", reason: "policy-mismatch" }],
+      ["a brief revision other than the narrative's now", async () => (await seed({ over: { brief_revision: "sha256:" + "1".repeat(64) } })).binding, { class: "missing-evidence", reason: "brief-changed" }],
+      ["a plan revision, and no plan in force", async () => (await seed({ over: { plan_revision: "sha256:" + "2".repeat(64) } })).binding, { class: "missing-evidence", reason: "no-active-plan" }],
+      [
+        "a report edited after the record",
+        async () => {
+          const ev = await seed();
+          writeFileSync(join(root, ev.report), "# Review, edited afterwards\n");
+          return ev.binding;
+        },
+        { class: "missing-evidence", reason: "report-changed" },
+      ],
+      [
+        "a report removed",
+        async () => {
+          const ev = await seed();
+          unlinkSync(join(root, ev.report));
+          return ev.binding;
+        },
+        { class: "unresolved-reference", reason: "report-missing" },
+      ],
+    ];
+    for (const [label, binding, expected] of cases) {
+      const evidence = await binding();
+      const req = attachRequest(evidence);
+      const before = snapshot(OPEN);
+      expect(errorOf(await dispatch(req)), label).toEqual(expected);
+      unchanged(before, req.operation_id, label);
+    }
+    // The unchanged one still binds: every refusal above came from its one field.
+    okResult(await dispatch(attachRequest(good.binding)));
+  });
+
+  it("plan_revision: bound against the plan in force; a plan at another revision is missing-evidence/plan-changed", async () => {
+    const PLAN = "aaaaaaaa-0000-4000-8000-00000000000a";
+    const narrative = `${CONTAINER}/plans/260929-1102-plan-a.md`;
+    okResult(
+      await dispatch({
+        op: "create",
+        workbench: root,
+        operation_id: randomUUID(),
+        id: PLAN,
+        kind: "plan",
+        filed_by: ACTOR,
+        origin: { kind: "package", ref: { workbench_id: WB_ID, record_id: OPEN_ID } },
+        scope: { container: CONTAINER, store: "plans" },
+        narrative: { path: narrative, content: "# plan a\n" },
+        payload: { state: "open", steps: [{ id: "s1", state: "open" }], criteria: [], acceptance: null },
+      } satisfies CreateRequest),
+    );
+    okResult(await dispatch({ op: "adopt-plan", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: ACTOR, plan: { workbench_id: WB_ID, record_id: PLAN }, revision: revision(narrative) } satisfies AdoptPlanRequest));
+    const fresh = await seed();
+    expect(fresh.record.plan_revision, "the seed reads the plan in force").toBe(revision(narrative));
+    const stale = await seed({ over: { plan_revision: "sha256:" + "3".repeat(64) } });
+    const req = attachRequest(stale.binding);
+    const before = snapshot(OPEN);
+    expect(errorOf(await dispatch(req))).toEqual({ class: "missing-evidence", reason: "plan-changed" });
+    unchanged(before, req.operation_id, "plan-changed");
+    okResult(await dispatch(attachRequest(fresh.binding)));
+  });
+
+  it("a terminal package, a record and a stale revision are refused before the evidence is read", async () => {
+    const ev = await seed();
+    expect(errorOf(await dispatch(attachRequest(ev.binding, { record: { path: DONE }, expected_revision: revision(DONE) })))).toEqual({ class: "conflict", reason: "package-terminal" });
+    expect(errorOf(await dispatch(attachRequest(ev.binding, { record: { path: ISSUE }, expected_revision: revision(ISSUE) })))).toEqual({ class: "schema-invalid", reason: "not-a-package" });
+    expect(errorOf(await dispatch(attachRequest(ev.binding, { expected_revision: revision(DONE) })))).toEqual({ class: "conflict", reason: "revision-mismatch" });
+    expect(parsed(OPEN).evidence).toEqual([]);
+  });
+
+  // --- the naming rule and the correction form (C2) ---
+
+  it("a correction <basename>.2.evidence.json over the unchanged report binds beside the first; one named with the first record's name is conflict/record-exists", async () => {
+    const first = await seed();
+    okResult(await dispatch(attachRequest(first.binding)));
+    const firstBytes = bytesOf(first.path);
+    const reportBytes = bytesOf(first.report);
+
+    const taken = await trySeedCorrection(root, first, { id: "e7e7e7e7-0000-4000-8000-0000000002ff", fileName: `${first.basename}.evidence.json` });
+    expect(taken.ok).toBe(false);
+    if (!taken.ok) expect(taken.response).toMatchObject({ ok: false, error: { class: "conflict", reason: "record-exists" } });
+    expect(bytesOf(first.path).equals(firstBytes), "the first record is immutable").toBe(true);
+
+    const correction = await seedCorrection(root, first);
+    expect(correction.path).toBe(`${first.dir}/${first.basename}.2.evidence.json`);
+    expect(correction.report).toBe(first.report);
+    expect(correction.record.predecessor).toEqual({ workbench_id: WB_ID, record_id: first.id, revision: first.revision });
+    expect(bytesOf(first.report).equals(reportBytes), "the report is unchanged").toBe(true);
+    okResult(await dispatch(attachRequest(correction.binding)));
+    expect(parsed(OPEN).evidence).toEqual([first.binding, correction.binding]);
+    expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ checked: 5, valid: true });
+  });
+
+  // --- show, list and validate on an evidence file ---
+
+  it("show answers an evidence file with its report and no narrative; list shows it with status null", async () => {
+    const ev = await seed();
+    const shown = okResult(await dispatch({ op: "show", workbench: root, record: { path: ev.path } }));
+    expect(shown).toEqual({ path: ev.path, kind: "evidence", control: ev.record, revision: ev.revision, narrative: null, report: { path: ev.report, sha256: revision(ev.report), stored: revision(ev.report) } });
+    // Every other kind keeps FJ01's answer shape: no report key.
+    expect(Object.keys(okResult(await dispatch({ op: "show", workbench: root, record: { path: OPEN } })))).toEqual(["path", "kind", "control", "revision", "narrative"]);
+    const records = okResult(await dispatch({ op: "list", workbench: root })).records as Array<Record<string, unknown>>;
+    expect(records.find((r) => r.path === ev.path)).toEqual({ path: ev.path, kind: "evidence", id: ev.id, status: null, revision: ev.revision, narrative: null });
+  });
+
+  it("validate on an evidence file: valid beside its report; report-changed, report-missing and report-not-neighbour are findings (C2)", async () => {
+    const ev = await seed();
+    const one = async (path: string): Promise<string[]> => {
+      const result = okResult(await dispatch({ op: "validate", workbench: root, record: { path } }));
+      expect(result.checked).toBe(1);
+      return (result.findings as Array<{ class: string; reason: string }>).map((f) => `${f.class}/${f.reason}`);
+    };
+    expect(await one(ev.path)).toEqual([]);
+    writeFileSync(join(root, ev.report), "# Review, edited\n");
+    expect(await one(ev.path)).toEqual(["missing-evidence/report-changed"]);
+    unlinkSync(join(root, ev.report));
+    expect(await one(ev.path)).toEqual(["unresolved-reference/report-missing"]);
+    const elsewhere = await seed({ reportPath: "shared/reviews/260929-1299-review.md" });
+    expect(await one(elsewhere.path)).toEqual(["unknown-scope/report-not-neighbour"]);
+    const otherName = await seed({ reportPath: `${CONTAINER}/reviews/260929-1299-other.md` });
+    expect(await one(otherName.path)).toEqual(["unknown-scope/report-not-neighbour"]);
+  });
+
+  // --- the section 9 check, and done ---
+
+  it("a brief change makes bound evidence stale while a status change alone does not (spec section 9)", async () => {
+    const ev = await seed();
+    okResult(await dispatch(attachRequest(ev.binding)));
+    expect(reasonOf(await probe(ev.binding)), "just attached").toBe("fresh");
+
+    // Status changes alone: open -> paused -> open -> claimed. The package's revision moves; the binding does not go stale.
+    const packageRevision = revision(OPEN);
+    okResult(await move("paused"));
+    okResult(await move("open"));
+    okResult(await move("claimed", { claim: CLAIM }));
+    expect(revision(OPEN)).not.toBe(packageRevision);
+    expect(parsed(OPEN).status).toBe("claimed");
+    expect(reasonOf(await probe(ev.binding)), "after the status changes").toBe("fresh");
+
+    // A brief change: the narrative edited.
+    writeFileSync(join(root, OPEN_NARRATIVE), `${bytesOf(OPEN_NARRATIVE).toString("utf-8")}\nOne more requirement.\n`);
+    expect(reasonOf(await probe(ev.binding)), "after the brief changed").toBe("missing-evidence/brief-changed");
+    const before = snapshot(OPEN);
+    const done = await move("done", { outcome: { class: "completed", reason: "all criteria met", evidence: [ev.binding] } });
+    expect(errorOf(done)).toEqual({ class: "missing-evidence", reason: "brief-changed" });
+    expect(bytesOf(OPEN).equals(before[OPEN] as Buffer)).toBe(true);
+  });
+
+  it("done: an outcome binding fresh evidence lands; one binding it at the wrong revision is refused and the record untouched", async () => {
+    const ev = await seed();
+    okResult(await move("claimed", { claim: CLAIM }));
+    const before = snapshot(OPEN);
+    const wrong = { ...ev.binding, ref: { ...ev.binding.ref, revision: "sha256:" + "0".repeat(64) } };
+    const refused = await move("done", { outcome: { class: "completed", reason: "all criteria met", evidence: [wrong] } });
+    expect(errorOf(refused)).toEqual({ class: "missing-evidence", reason: "evidence-revision-mismatch" });
+    expect(bytesOf(OPEN).equals(before[OPEN] as Buffer)).toBe(true);
+    const landed = await move("done", { outcome: { class: "completed", reason: "all criteria met", evidence: [ev.binding] } });
+    expect(okResult(landed)).toMatchObject({ from: "claimed", to: "done" });
+    expect(parsed(OPEN)).toMatchObject({ status: "done", outcome: { evidence: [ev.binding] } });
+  });
+
+  it("an evidence record has no lifecycle: a transition of it is conflict/evidence-immutable and it is untouched", async () => {
+    const ev = await seed();
+    const before = snapshot(ev.path);
+    const r = await dispatch(transitionRequest({ record: { path: ev.path }, expected_revision: ev.revision, to: "closed", payload: {} }));
+    expect(errorOf(r)).toEqual({ class: "conflict", reason: "evidence-immutable" });
+    expect(bytesOf(ev.path).equals(before[ev.path] as Buffer)).toBe(true);
   });
 });

@@ -5,6 +5,7 @@
 //
 //   openWorkbench(root)                     what kind of workbench is this?
 //   readPair(wb, path)                      the control record, its revision, its narrative
+//                                           (an evidence record: its report)
 //   serialise(value)                        the deterministic bytes a control record is stored as
 //   acquireLock(wb) / releaseLock(lock)     the one workbench write lock every writer takes
 //
@@ -191,8 +192,13 @@ export function resolveInside(wb: Workbench, path: string): Result<string> {
 
 // --- the pair -----------------------------------------------------------------
 
-export const KINDS = ["package", "issue", "plan", "discussion", "decision"] as const;
+export const KINDS = ["package", "issue", "plan", "discussion", "decision", "evidence"] as const;
 export type Kind = (typeof KINDS)[number];
+
+/** The record kinds a `fusion.record/v1` file declares in its `kind` field. */
+const RECORD_KINDS: readonly string[] = ["issue", "plan", "discussion", "decision"];
+
+export const EVIDENCE_SCHEMA_ID = "urn:fusion:schema:fusion.evidence/v1";
 
 export interface Pair {
   /** Workbench-relative path of the control file, as given. */
@@ -202,8 +208,15 @@ export interface Pair {
   control: Record<string, unknown>;
   bytes: Buffer;
   revision: string;
-  /** The narrative the control record names; `sha256` null when the file is absent. Null when the record names none. */
+  /** The narrative the control record names; `sha256` null when the file is absent. Null when the record names none, as an evidence record never does. */
   narrative: { path: string; sha256: string | null } | null;
+  /**
+   * An evidence record's report: the path and hash its `report` artefact
+   * reference names, and the hash of the file on disk now, `stored` null when
+   * nothing stands there. Null for every other kind, and for an evidence
+   * record whose `report` is not an object with a string path.
+   */
+  report: { path: string; sha256: string | null; stored: string | null } | null;
 }
 
 /** Reads one control record. Strict parse only; schema validity is `validate`'s question, not the reader's. */
@@ -225,14 +238,26 @@ export function readPair(wb: Workbench, path: string, set: SchemaSet = schemas()
   const schemaId = SCHEMA_ID_PREFIX + schemaField;
   if (set.document(schemaId) === undefined) return err("unsupported-format", "unknown-schema", `${path} declares ${schemaField}; loaded: ${set.ids().join(", ")}`);
   const kind = kindOf(schemaId, control);
-  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a pair is a package or an issue, plan, discussion or decision record`);
-  return { ok: true, value: { path, kind, schemaId, control, bytes, revision: revisionOf(bytes), narrative: narrativeOf(wb, control) } };
+  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a control file is a package, an issue, plan, discussion or decision record, or an evidence record`);
+  const evidence = kind === "evidence";
+  return {
+    ok: true,
+    value: { path, kind, schemaId, control, bytes, revision: revisionOf(bytes), narrative: evidence ? null : narrativeOf(wb, control), report: evidence ? reportOf(wb, control) : null },
+  };
 }
 
 function kindOf(schemaId: string, control: Record<string, unknown>): Kind | null {
   if (schemaId === PACKAGE_SCHEMA_ID) return "package";
-  if (schemaId === RECORD_SCHEMA_ID && typeof control.kind === "string" && (KINDS as readonly string[]).includes(control.kind)) return control.kind as Kind;
+  if (schemaId === EVIDENCE_SCHEMA_ID) return "evidence";
+  if (schemaId === RECORD_SCHEMA_ID && typeof control.kind === "string" && RECORD_KINDS.includes(control.kind)) return control.kind as Kind;
   return null;
+}
+
+/** The hash of the regular file at a workbench-relative path, null when nothing readable stands there. */
+function storedHash(wb: Workbench, path: string): string | null {
+  const abs = resolveInside(wb, path);
+  if (!abs.ok || !existsSync(abs.value) || !statSync(abs.value).isFile()) return null;
+  return revisionOf(readFileSync(abs.value));
 }
 
 function narrativeOf(wb: Workbench, control: Record<string, unknown>): Pair["narrative"] {
@@ -243,14 +268,67 @@ function narrativeOf(wb: Workbench, control: Record<string, unknown>): Pair["nar
   return { path: n.path, sha256: revisionOf(readFileSync(abs.value)) };
 }
 
+function reportOf(wb: Workbench, control: Record<string, unknown>): Pair["report"] {
+  const r = control.report;
+  if (!isObject(r) || typeof r.path !== "string") return null;
+  return { path: r.path, sha256: typeof r.sha256 === "string" ? r.sha256 : null, stored: storedHash(wb, r.path) };
+}
+
+// --- evidence on disk -------------------------------------------------------------
+//
+// An evidence record sits beside the Markdown report it records (decision
+// 260928-2251, option 1): `<basename>.evidence.json` beside `<basename>.md`.
+// A correction over an unchanged report cannot take that name, which the
+// first record holds and which is immutable (spec 4.4), so it is
+// `<basename>.<n>.evidence.json`, `n` a decimal integer from 2 with no leading
+// zero, naming the same report. Every name ending `.evidence.json` has exactly
+// one reading: a last dotted segment that is such an `n` is the counter, and
+// anything else (`.1`, `.02`) belongs to the basename. The pairing alone does
+// not make the record's `report.path` name its neighbour (discussion
+// 260929-0709, C2), so `evidenceNaming` checks it.
+
+export const EVIDENCE_SUFFIX = ".evidence.json";
+const EVIDENCE_NAME = /^(.*?)(?:\.([2-9]|[1-9][0-9]+))?\.evidence\.json$/;
+
+/** How an evidence file's name reads: its basename, its correction counter (null for the first record), and the report it must name. */
+export interface EvidenceName {
+  basename: string;
+  correction: number | null;
+  report: string;
+}
+
+/** The reading of an evidence file's workbench-relative path, or null when it does not end in `.evidence.json`. */
+export function evidenceName(path: string): EvidenceName | null {
+  const slash = path.lastIndexOf("/");
+  const dir = slash < 0 ? "" : path.slice(0, slash + 1);
+  const m = EVIDENCE_NAME.exec(path.slice(slash + 1));
+  if (m === null) return null;
+  const basename = m[1] as string;
+  return { basename, correction: m[2] === undefined ? null : Number(m[2]), report: `${dir}${basename}.md` };
+}
+
+/** `unknown-scope/report-not-neighbour` unless the evidence record's `report.path` names the report its file name pairs it with. */
+export function evidenceNaming(pair: Pair): StoreError | null {
+  const name = evidenceName(pair.path);
+  const named = pair.report?.path ?? null;
+  if (name !== null && named === name.report) return null;
+  const form = name === null ? `${pair.path} is not named <basename>${EVIDENCE_SUFFIX}` : `${pair.path} pairs with ${name.report}`;
+  return { class: "unknown-scope", reason: "report-not-neighbour", detail: `${form}; its report.path names ${named === null ? "no path" : named}` };
+}
+
+/** `unresolved-reference/report-missing` or `missing-evidence/report-changed` unless the report is on disk at the hash the record names. */
+export function reportProblem(pair: Pair): StoreError | null {
+  const report = pair.report;
+  if (report === null) return { class: "unresolved-reference", reason: "report-missing", detail: `${pair.path} names no report path` };
+  if (report.stored === null) return { class: "unresolved-reference", reason: "report-missing", detail: `the report ${report.path} does not exist` };
+  if (report.stored !== report.sha256) return { class: "missing-evidence", reason: "report-changed", detail: `the report ${report.path} is ${report.stored}; the evidence record names ${String(report.sha256)}` };
+  return null;
+}
+
 // --- the walk -------------------------------------------------------------------
 
-/**
- * A control file by its name: a package, a record, or an evidence record.
- * Evidence is admitted to the walk ahead of `readPair` learning its kind, so
- * that every lookup over the walk sees every control file.
- */
-export const isControlFile = (name: string): boolean => name === "package.json" || name.endsWith(".record.json") || name.endsWith(".evidence.json");
+/** A control file by its name: a package, a record, or an evidence record. */
+export const isControlFile = (name: string): boolean => name === "package.json" || name.endsWith(".record.json") || name.endsWith(EVIDENCE_SUFFIX);
 
 /** Every control file under `dir`, workbench-relative with forward slashes, sorted; dot entries skipped. */
 export function controlFiles(wb: Workbench, dir: string): string[] {
