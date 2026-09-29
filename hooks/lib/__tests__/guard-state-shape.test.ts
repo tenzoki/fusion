@@ -65,9 +65,8 @@ import { dirname, resolve } from "node:path";
 import {
   CASE_TIMEOUT,
   COVERAGE_SENTENCE_MARKERS,
-  REPO_ROOT,
   REVIEW_PAYLOAD,
-  guardStateEntries,
+  guardStateWritten,
   openCoverageGap,
   openCoverageWindowWithNoGap,
   readEvents,
@@ -258,8 +257,8 @@ describe("the dispatch row is gated on the payload's session identifier alone", 
     () => {
       withProject(({ root }) => {
         expect(existsSync(resolve(root, AGENTSTATE))).toBe(false);
-        // The shell's SessionStart export blanked, so `bin/fusion-identity` decides, and the plugin root is this tree, whose `bin/fusion-rules` knows the v12 names; the scratch root is no git tree, so it owes no half, and each half is an ABSENT key, never an empty one.
-        runDispatch(root, { ...DISPATCH, sessionId: "sid-project-scoped" }, { FUSION_PERSON: "", FUSION_CHECKOUT: "", FUSION_PLUGIN_ROOT: REPO_ROOT });
+        // The shell's SessionStart export blanked, so `bin/fusion-identity` decides; the scratch root is no git tree, so it owes no half, and each half is an ABSENT key, never an empty one.
+        runDispatch(root, { ...DISPATCH, sessionId: "sid-project-scoped" }, { FUSION_PERSON: "", FUSION_CHECKOUT: "" });
 
         const rows = dispatchRows(root);
         expect(rows, "the gate admitted nothing").toHaveLength(1);
@@ -273,13 +272,11 @@ describe("the dispatch row is gated on the payload's session identifier alone", 
         expect(Object.keys(rows[0])).not.toContain("person");
         expect(Object.keys(rows[0])).not.toContain("checkout");
 
-        // What the ordinary dispatch path writes under `.guard-state/` is the
-        // byte measurement's two memo files and NOTHING else — in particular no
+        // The ordinary dispatch path writes NOTHING under `.guard-state/`: no
         // `events.jsonl`, which is the advisory an absent identifier earns and
-        // this payload carried one. The exact set is the discrimination; the
-        // directory's absence stopped being one when the measurement landed
-        // (`lib/dispatch-bytes.ts`).
-        expect(guardStateEntries(root).filter((f) => f !== "rule-sizes.json" && f !== "byte-baseline.json")).toEqual([]);
+        // this payload carried one, and no memo file, since the byte
+        // measurement that kept two left the route on 2026-09-29.
+        expect(guardStateWritten(root)).toBe(false);
       });
     },
     CASE_TIMEOUT,

@@ -245,10 +245,10 @@ const AGENT_HEAD_ROOM = 18_000;
 /** 20 000 derived, plus the two 2026-09-11 raises and the two on 2026-09-16 and 2026-09-17, logged in `README-hooks.md`. */
 const SKILL_HEAD_ROOM = 39_260;
 /**
- * 2 500 derived, plus the 2026-09-11 raise and the three on 2026-09-16, logged
- * in `README-hooks.md` — and a ninth raise of +190 on 2026-09-18, justified
- * here rather than there because a raise nobody can trace is what this bound
- * exists to prevent.
+ * 2 500 derived, plus the 2026-09-11 raise, the three on 2026-09-16 and the
+ * +423 of 2026-09-29, logged in `README-hooks.md` — and a ninth raise of +190
+ * on 2026-09-18, justified here rather than there because a raise nobody can
+ * trace is what this bound exists to prevent.
  *
  * WHO, WHEN, FOR WHAT. Kai Stalmann authorised it on 2026-09-18, in the
  * dispatch that built `bin/fusion-edge-answers` under the ruling on
@@ -259,7 +259,7 @@ const SKILL_HEAD_ROOM = 39_260;
  * raise as the remedy and the authorisation reaches nothing else — the same
  * dispatch left `AGENT_HEAD_ROOM` and `SKILL_HEAD_ROOM` unraised and said so.
  */
-const TEST_LINE_HEAD_ROOM = 3_030;
+const TEST_LINE_HEAD_ROOM = 3_453;
 
 const SURFACES: Surface[] = [
   {

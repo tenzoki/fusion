@@ -86,24 +86,44 @@
  * and stays unadvised, because its subject is the orchestrator's own session
  * marker rather than a row in this log.
  *
- * ## What a task_start row measures
+ * ## What a task_start row carries beyond the dispatch's identity
  *
- * A `task_start` row carries two things beyond the dispatch's identity: the byte
- * cost of what the dispatch loads (`bytes_prompt`, `bytes_rules`,
- * `bytes_claude_md`, `bytes_total`, and `bytes_delta` against the project's own
- * armed baseline), and `work_item`, the basename a `**Work-item:**` line in the
- * dispatch prompt claims. `lib/dispatch-bytes.ts` is the authoring home for all
- * of it — where each figure comes from, why the rule count runs the helper
- * rather than reproducing its emission list, what the memo is keyed on, and
- * where the line between "absent" and "zero" falls.
+ * One field: `work_item`, the basename a `**Work-item:**` line in the dispatch
+ * prompt claims, and no key at all when the prompt claims none.
+ * `workItemFromPrompt` below reads it off the payload. It does not go on
+ * `task_done`, which names the same dispatch.
  *
- * Two consequences belong here rather than there. Neither field goes on
- * `task_done`: the row names the same dispatch and a second measurement would
- * cost a second set of stats for a reader that already holds the first. And the
- * dispatch path now writes `.guard-state/rule-sizes.json` and
- * `.guard-state/byte-baseline.json`, which is a departure from the
- * writes-no-guard-state property that path held until this measurement existed —
- * `hooks/guard.ts`'s header states the widened form.
+ * ## The byte measurement left this route on 2026-09-29
+ *
+ * From 2026-09-10 a `task_start` row also carried five byte fields
+ * (`bytes_prompt`, `bytes_rules`, `bytes_claude_md`, `bytes_total`,
+ * `bytes_delta`), and taking them meant running `bin/fusion-rules <agent>` from
+ * inside the PreToolUse hook. Where a project has a context manifest that
+ * helper runs `bin/fusion-claimed-package`, the scope resolver the JSON
+ * cutover puts on the codec, and a read through the codec may finish a
+ * committed intent. A program that runs unasked must not reach that, so the
+ * measurement was removed whole, its warm-cache return included, and not
+ * narrowed to a figure that would have meant something else under the same
+ * field names (decision
+ * `260929-1919_*_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md`,
+ * option 2).
+ *
+ * What holds since:
+ *
+ *   - A new row carries none of the five fields. No zero and no last-known
+ *     value stands in for them, and no advisory reports their absence, which
+ *     is intended and would otherwise be reported on every dispatch.
+ *   - A row written before carries them and stays as written. The two files
+ *     the measurement kept, `.guard-state/rule-sizes.json` and
+ *     `.guard-state/byte-baseline.json`, are neither read, updated nor deleted
+ *     by anything on this route. They are no substitute for a measurement: a
+ *     later explicit one defines its own comparison before it reuses them.
+ *   - A reader takes rows with and without the fields, and reads an absent
+ *     field as "not measured", never as zero bytes.
+ *   - The one helper this module starts is `bin/fusion-identity`.
+ *     `lib/__tests__/hook-route-exclusion.test.ts` runs the commands
+ *     `hooks/hooks.json` configures against logging stubs and fails when the
+ *     rule helper, the claimed-package helper or the codec is reached.
  *
  * ## Identity: env first, then the one implementation, never a re-derivation
  *
@@ -215,6 +235,20 @@ export interface SubagentStopInput {
  * any entry exists and correctly emits nothing (PostToolUse owns that row).
  */
 export declare function emitSubagentStop(input: SubagentStopInput): void;
+/**
+ * The basename a dispatch prompt claims, or undefined when it claims none.
+ *
+ * Read off `tool_input.prompt`, the field the dispatch prompt arrives in. The
+ * value is reduced to a basename because that is what the field is defined to
+ * carry, and surrounding backticks are stripped because every basename this
+ * project writes in prose is written inside them.
+ *
+ * **This does not read the work-package store.** The line the dispatch carries
+ * names one item; a scan would return a SET, and a set rendered in a panel is
+ * the work queue arriving through another door. The item's own record stays
+ * the only authority on its status and claim.
+ */
+export declare function workItemFromPrompt(toolInput: Record<string, unknown> | undefined): string | undefined;
 /**
  * Append one machine-written dispatch row. No-op without a workbench, and
  * gated by `eventRowsAdmitted`. An absent identifier is advised rather than

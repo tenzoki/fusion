@@ -20,17 +20,19 @@
  *      writer that cannot forget, and why the check widened from
  *      orchestrator-scoped to project-scoped. Dispatch calls take this branch
  *      alone: they are not "guarded calls", so they see no configuration
- *      diagnostic. What they DO write under `.guard-state/` is now three things
- *      and no others. A payload carrying no session identifier earns one
+ *      diagnostic. What they DO write under `.guard-state/` is one thing and
+ *      no other. A payload carrying no session identifier earns one
  *      `guard_advisory` in `events.jsonl`, because the alternative is the silent
  *      drop that let the model-written rows stand on zero identifiers for a
- *      whole release without anything noticing. And the byte measurement that
- *      rides the row keeps two memo files, `rule-sizes.json` and
- *      `byte-baseline.json` — the first so the warm path spawns no subprocess,
- *      the second so a project's rows are measured against that project's own
- *      first row. `lib/dispatch-bytes.ts` carries both. The Bash and write-tool
- *      paths are untouched by all three: their own zero-side-effect property is
- *      a statement about those branches, not about this one.
+ *      whole release without anything noticing. From 2026-09-10 to 2026-09-29
+ *      a byte measurement rode the row and kept two memo files there,
+ *      `rule-sizes.json` and `byte-baseline.json`. It left this route because
+ *      taking it started `bin/fusion-rules` from a hook, and
+ *      `lib/orchestrator-events.ts` carries the account. Files of those two
+ *      names in a project are left as they stand and are not read. The Bash
+ *      and write-tool paths are untouched by the advisory: their own
+ *      zero-side-effect property is a statement about those branches, not
+ *      about this one.
  *
  * The name is historical and is kept because the event vocabulary, the state
  * directory and the monitor panel all carry it. Nothing here guards anything.

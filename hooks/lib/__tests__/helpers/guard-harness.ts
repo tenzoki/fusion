@@ -50,7 +50,6 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
-  readdirSync,
   realpathSync,
   rmSync,
   symlinkSync,
@@ -1030,17 +1029,6 @@ export function readOrchestratorEvents(root: string): Record<string, unknown>[] 
  */
 export function guardStateWritten(root: string): boolean {
   return existsSync(stateDir(root));
-}
-
-/**
- * What the run left under `.guard-state/`, sorted. The dispatch path is no
- * longer silent there — the byte measurement keeps two memo files — so a case
- * about that path names the exact set instead of asserting the directory is
- * absent, which is the same discrimination one step weaker.
- */
-export function guardStateEntries(root: string): string[] {
-  if (!existsSync(stateDir(root))) return [];
-  return readdirSync(stateDir(root)).sort();
 }
 
 /** Generous per-case budget: each case is a process start, ~0.2s in practice. */

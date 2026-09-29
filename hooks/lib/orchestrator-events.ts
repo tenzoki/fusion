@@ -86,24 +86,44 @@
  * and stays unadvised, because its subject is the orchestrator's own session
  * marker rather than a row in this log.
  *
- * ## What a task_start row measures
+ * ## What a task_start row carries beyond the dispatch's identity
  *
- * A `task_start` row carries two things beyond the dispatch's identity: the byte
- * cost of what the dispatch loads (`bytes_prompt`, `bytes_rules`,
- * `bytes_claude_md`, `bytes_total`, and `bytes_delta` against the project's own
- * armed baseline), and `work_item`, the basename a `**Work-item:**` line in the
- * dispatch prompt claims. `lib/dispatch-bytes.ts` is the authoring home for all
- * of it — where each figure comes from, why the rule count runs the helper
- * rather than reproducing its emission list, what the memo is keyed on, and
- * where the line between "absent" and "zero" falls.
+ * One field: `work_item`, the basename a `**Work-item:**` line in the dispatch
+ * prompt claims, and no key at all when the prompt claims none.
+ * `workItemFromPrompt` below reads it off the payload. It does not go on
+ * `task_done`, which names the same dispatch.
  *
- * Two consequences belong here rather than there. Neither field goes on
- * `task_done`: the row names the same dispatch and a second measurement would
- * cost a second set of stats for a reader that already holds the first. And the
- * dispatch path now writes `.guard-state/rule-sizes.json` and
- * `.guard-state/byte-baseline.json`, which is a departure from the
- * writes-no-guard-state property that path held until this measurement existed —
- * `hooks/guard.ts`'s header states the widened form.
+ * ## The byte measurement left this route on 2026-09-29
+ *
+ * From 2026-09-10 a `task_start` row also carried five byte fields
+ * (`bytes_prompt`, `bytes_rules`, `bytes_claude_md`, `bytes_total`,
+ * `bytes_delta`), and taking them meant running `bin/fusion-rules <agent>` from
+ * inside the PreToolUse hook. Where a project has a context manifest that
+ * helper runs `bin/fusion-claimed-package`, the scope resolver the JSON
+ * cutover puts on the codec, and a read through the codec may finish a
+ * committed intent. A program that runs unasked must not reach that, so the
+ * measurement was removed whole, its warm-cache return included, and not
+ * narrowed to a figure that would have meant something else under the same
+ * field names (decision
+ * `260929-1919_*_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md`,
+ * option 2).
+ *
+ * What holds since:
+ *
+ *   - A new row carries none of the five fields. No zero and no last-known
+ *     value stands in for them, and no advisory reports their absence, which
+ *     is intended and would otherwise be reported on every dispatch.
+ *   - A row written before carries them and stays as written. The two files
+ *     the measurement kept, `.guard-state/rule-sizes.json` and
+ *     `.guard-state/byte-baseline.json`, are neither read, updated nor deleted
+ *     by anything on this route. They are no substitute for a measurement: a
+ *     later explicit one defines its own comparison before it reuses them.
+ *   - A reader takes rows with and without the fields, and reads an absent
+ *     field as "not measured", never as zero bytes.
+ *   - The one helper this module starts is `bin/fusion-identity`.
+ *     `lib/__tests__/hook-route-exclusion.test.ts` runs the commands
+ *     `hooks/hooks.json` configures against logging stubs and fails when the
+ *     rule helper, the claimed-package helper or the codec is reached.
  *
  * ## Identity: env first, then the one implementation, never a re-derivation
  *
@@ -137,11 +157,6 @@ import {
 } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  DispatchByteFields,
-  measureDispatchBytes,
-  workItemFromPrompt,
-} from "./dispatch-bytes.js";
 import { emitEvent } from "./events.js";
 import { findWorkbenchRoot } from "./workbench-root.js";
 
@@ -434,10 +449,10 @@ export function emitSubagentStop(input: SubagentStopInput): void {
 /**
  * One machine row. Field order matches the model-written rows for a human diff.
  *
- * The `work_item` and `bytes_*` fields are written on `task_start` only — see
- * `## What a task_start row measures` at the foot of this module.
+ * `work_item` is written on `task_start` only. The row has no byte fields; see
+ * `## The byte measurement left this route on 2026-09-29` in the header.
  */
-interface OrchestratorEventRow extends DispatchByteFields {
+interface OrchestratorEventRow {
   ts: string;
   event: "task_start" | "task_done";
   task?: string;
@@ -455,6 +470,29 @@ function agentName(toolInput: Record<string, unknown> | undefined): string | und
   if (typeof raw !== "string" || raw === "") return undefined;
   const colon = raw.lastIndexOf(":");
   return colon === -1 ? raw : raw.slice(colon + 1);
+}
+
+/**
+ * The basename a dispatch prompt claims, or undefined when it claims none.
+ *
+ * Read off `tool_input.prompt`, the field the dispatch prompt arrives in. The
+ * value is reduced to a basename because that is what the field is defined to
+ * carry, and surrounding backticks are stripped because every basename this
+ * project writes in prose is written inside them.
+ *
+ * **This does not read the work-package store.** The line the dispatch carries
+ * names one item; a scan would return a SET, and a set rendered in a panel is
+ * the work queue arriving through another door. The item's own record stays
+ * the only authority on its status and claim.
+ */
+export function workItemFromPrompt(toolInput: Record<string, unknown> | undefined): string | undefined {
+  const prompt = toolInput?.prompt;
+  if (typeof prompt !== "string" || prompt === "") return undefined;
+  const match = /^\*\*Work-item:\*\*[ \t]*(.+?)[ \t]*$/m.exec(prompt);
+  if (match === null) return undefined;
+  const value = match[1].replace(/^`+|`+$/g, "").trim();
+  const basename = value.slice(value.lastIndexOf("/") + 1);
+  return basename === "" ? undefined : basename;
 }
 
 /**
@@ -484,24 +522,12 @@ export function emitDispatchEvent(
     typeof description === "string" && description !== "" ? description.slice(0, 200) : undefined;
   const agent = agentName(input.tool_input);
 
-  // The dispatch's own measurements, on `task_start` and nowhere else. Both are
-  // absent-rather-than-empty: a dispatch naming no work package writes no
-  // `work_item` key, and an unmeasurable rule emission writes no `bytes_rules`
-  // and no `bytes_total` — and says so, in one advisory.
-  let bytes: DispatchByteFields = {};
-  let workItem: string | undefined;
-  if (event === "task_start" && agent !== undefined) {
-    workItem = workItemFromPrompt(input.tool_input);
-    const measured = measureDispatchBytes(root, agent);
-    bytes = measured.fields;
-    if (measured.advisory !== undefined) {
-      try {
-        emitEvent("guard_advisory", undefined, undefined, measured.advisory);
-      } catch {
-        // An advisory that cannot be written may not cost the row it is about.
-      }
-    }
-  }
+  // The claimed work package, on `task_start` and nowhere else, and
+  // absent-rather-than-empty: a dispatch naming none writes no `work_item` key.
+  // Read off the payload alone. Nothing is measured here and no helper is
+  // started for it; the header says why the byte fields are gone.
+  const workItem =
+    event === "task_start" && agent !== undefined ? workItemFromPrompt(input.tool_input) : undefined;
 
   const row: OrchestratorEventRow = {
     ts: utcStamp(),
@@ -512,7 +538,6 @@ export function emitDispatchEvent(
     ...(sessionId && { session_id: sessionId }),
     ...(detail && { detail }),
     ...(workItem && { work_item: workItem }),
-    ...bytes,
   };
 
   appendFileSync(
