@@ -1,9 +1,10 @@
 // ---------------------------------------------------------------------------
-// The dispatcher: one validated request in, one response out, over the store.
+// The dispatcher: one validated request in, one response out, over the store
+// and the kernel.
 //
 // `dispatch` validates the request against the protocol schema first, so
 // every operation below reads typed arguments and no operation can be reached
-// with a shape the schema refuses. The five FJ01 operations:
+// with a shape the schema refuses. The operations answered:
 //
 //   inspect     the workbench's manifest state, the schema ids, the features
 //   list        the record pairs under a store or a container, with kind,
@@ -11,48 +12,51 @@
 //   show        one pair: control, revision, narrative hash
 //   validate    strict parse, schema, and the state rules `transitions.ts`
 //               owns, for one pair or the whole workbench
-//   transition  package records only: `allowed()` over the tables, then
-//               `writeControl` under the caller's expected revision
+//   transition  a package or an issue, plan, discussion or decision record:
+//               `allowed()` over the tables, as a plan function the kernel
+//               runs under the caller's expected revision
 //
-// The other nine answer `operation-unknown/not-implemented-in-fj01`.
+// Every other operation of the table answers `operation-unknown/not-implemented`
+// with a detail naming the package that lands it (`LANDS_IN`).
 //
-// A `transition` is replayable by its `operation_id`: the answer of a landed
-// write is stored under `.json-state/ops/<operation_id>.json` beside the
-// request that produced it, a repeat of the same request returns that answer
-// without touching the record, and the same id with a different request is
-// `conflict/operation-id-reused`. Only landed writes are stored: a refusal
-// changed nothing, so a retry is an ordinary first attempt.
+// Reads run under the kernel's read protocol (`read`), mutations through its
+// one sequence (`mutate`), which also makes them replayable by
+// `operation_id`: the answer of a landed operation is stored under
+// `.json-state/ops/<operation_id>.json` with the digest of the request that
+// produced it, a repeat of the same request returns that answer without
+// touching a record, and the same id with a different request is
+// `conflict/operation-id-reused`. A refusal changed nothing and is not
+// stored, so a retry is an ordinary first attempt.
 //
 // Every answer to a request that reached an operation is `ok: true` or
 // `ok: false` with one of the spec's typed errors; nothing here throws for a
 // state of the workbench. A throw is a defect in this file.
 // ---------------------------------------------------------------------------
 
-import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
-import { canonical } from "../journal.js";
+import { statSync } from "node:fs";
+import { mutate, read, recoveryBlocked, type KernelOptions, type PlanContext, type PlanFunction, type Planned, type ReadView } from "../kernel.js";
 import { allowed, stateRules, transitions, type TransitionPayload as RulePayload } from "../transitions.js";
 import {
   KINDS,
   PACKAGE_SCHEMA_ID,
-  STATE_DIR,
+  RECORD_SCHEMA_ID,
   SUPPORTED_FEATURES,
   controlFiles,
   describeErrors,
   openWorkbench,
   readPair,
-  replaceAtomically,
   resolveInside,
-  writeControl,
+  revisionOf,
+  serialise,
   type Pair,
+  type Result,
   type StoreError,
   type Workbench,
-  type WriteOptions,
 } from "../store.js";
-import { strictParse } from "../strict-json.js";
 import { schemas, validate } from "../validate.js";
 import {
   IMPLEMENTED_OPERATIONS,
+  LANDS_IN,
   OPERATIONS,
   PROTOCOL_SCHEMA_ID,
   fail,
@@ -61,6 +65,7 @@ import {
   type Request,
   type Response,
   type ShowRequest,
+  type TransitionPayload,
   type TransitionRequest,
   type ValidateRequest,
 } from "./protocol.js";
@@ -68,11 +73,14 @@ import {
 export interface DispatchOptions {
   /** Used when the request names no `workbench`: what `bin/fusion-record` exports as `FUSION_WORKBENCH`. */
   defaultWorkbench?: string;
-  /** Passed through to `writeControl`, for the lock tests. */
-  write?: WriteOptions;
+  /** Passed through to the kernel: the lock's wait, and in tests its fault points. `main.ts` passes none. */
+  kernel?: KernelOptions;
 }
 
 const fromStore = (e: StoreError): Response => fail(e.class, e.reason, e.detail, e.errors);
+
+const notImplemented = (op: Request["op"]): Response =>
+  fail("operation-unknown", "not-implemented", `${op} is specified (spec section 6) and lands in ${LANDS_IN[op] ?? "a later package"}`);
 
 /** Validates `request` and routes it. Never throws for a state of the request or the workbench. */
 export async function dispatch(request: unknown, options: DispatchOptions = {}): Promise<Response> {
@@ -89,29 +97,28 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
     return fail("schema-invalid", "request", describeErrors(v.errors), v.errors);
   }
   const req = request as Request;
-  if (!IMPLEMENTED_OPERATIONS.includes(req.op)) {
-    return fail("operation-unknown", "not-implemented-in-fj01", `${req.op} is specified (spec section 6) and lands in a later package`);
-  }
+  if (!IMPLEMENTED_OPERATIONS.includes(req.op)) return notImplemented(req.op);
 
   const root = req.workbench ?? options.defaultWorkbench;
   if (root === undefined) return fail("unknown-scope", "workbench-unspecified", "the request names no workbench and FUSION_WORKBENCH is not set");
   const opened = openWorkbench(root);
   if (!opened.ok) return fromStore(opened.error);
   const wb = opened.value;
+  const kernel = options.kernel ?? {};
 
   switch (req.op) {
     case "inspect":
       return inspect(wb);
     case "list":
-      return readable(wb) ?? list(wb, req);
+      return readable(wb) ?? reading(wb, (view) => list(wb, req, view), kernel);
     case "show":
-      return readable(wb) ?? show(wb, req);
+      return readable(wb) ?? reading(wb, (view) => show(wb, req, view), kernel);
     case "validate":
-      return readable(wb) ?? validateOp(wb, req);
+      return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
     case "transition":
-      return transition(wb, req, options.write);
+      return mutate(wb, req, transitionPlan(req), kernel);
     default:
-      return fail("operation-unknown", "not-implemented-in-fj01", `${(req as Request).op} lands in a later package`);
+      return notImplemented((req as Request).op);
   }
 }
 
@@ -119,6 +126,12 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
 function readable(wb: Workbench): Response | null {
   if (wb.state === "unsupported" && wb.diagnosis !== null) return fromStore(wb.diagnosis);
   return null;
+}
+
+/** A read under the kernel's read protocol; a read that finds no consistent state answers as the kernel says. */
+async function reading(wb: Workbench, body: (view: ReadView) => Response, options: KernelOptions): Promise<Response> {
+  const r = await read(wb, body, options);
+  return r.ok ? r.value : fromStore(r.error);
 }
 
 // --- inspect ------------------------------------------------------------------
@@ -162,10 +175,12 @@ function scopeDir(wb: Workbench, scope: string | undefined): { ok: true; dir: st
   return { ok: true, dir: abs.value };
 }
 
-function list(wb: Workbench, req: ListRequest): Response {
+function list(wb: Workbench, req: ListRequest, view: ReadView): Response {
   const scope = scopeDir(wb, req.scope);
   if (!scope.ok) return scope.response;
   const records = controlFiles(wb, scope.dir).map((path) => {
+    const b = view.blockedOn(path);
+    if (b !== undefined) return { path, problem: recoveryBlocked(b) };
     const r = readPair(wb, path);
     if (!r.ok) return { path, problem: r.error };
     return { path, kind: r.value.kind, id: r.value.control.id ?? null, status: stateOf(r.value), revision: r.value.revision, narrative: r.value.narrative };
@@ -175,10 +190,14 @@ function list(wb: Workbench, req: ListRequest): Response {
 
 // --- show ---------------------------------------------------------------------
 
-function show(wb: Workbench, req: ShowRequest): Response {
+function show(wb: Workbench, req: ShowRequest, view: ReadView): Response {
+  const blocked = view.blockedOn(req.record.path);
+  if (blocked !== undefined) return fromStore(recoveryBlocked(blocked));
   const r = readPair(wb, req.record.path);
   if (!r.ok) return fromStore(r.error);
   const { path, kind, control, revision, narrative } = r.value;
+  const narrativeBlocked = narrative === null ? undefined : view.blockedOn(narrative.path);
+  if (narrativeBlocked !== undefined) return fromStore(recoveryBlocked(narrativeBlocked));
   return { ok: true, result: { path, kind, control, revision, narrative } };
 }
 
@@ -215,87 +234,140 @@ function findingsOf(wb: Workbench, path: string): Finding[] {
   return findings;
 }
 
+/** A pending intent left blocked on this pair's control file or its narrative is a finding: its state is not decided. */
+function blockedFindingOf(wb: Workbench, path: string, view: ReadView): Finding[] {
+  if (view.blocked.length === 0) return [];
+  const r = readPair(wb, path);
+  const narrative = r.ok ? r.value.narrative?.path : undefined;
+  const b = view.blockedOn(path) ?? (narrative === undefined ? undefined : view.blockedOn(narrative));
+  if (b === undefined) return [];
+  const e = recoveryBlocked(b);
+  return [{ path, class: e.class, reason: e.reason, detail: e.detail }];
+}
+
 function rulePayload(pair: Pair): RulePayload {
   if (pair.kind === "package") return { claim: pair.control.claim, outcome: (pair.control.outcome as RulePayload["outcome"]) ?? null };
   const c = pair.control.control as Record<string, unknown> | undefined;
   return { disposition: c?.disposition, answer_ref: c?.answer_ref, implementation_ref: c?.implementation_ref, superseded_by: c?.superseded_by };
 }
 
-function validateOp(wb: Workbench, req: ValidateRequest): Response {
+function validateOp(wb: Workbench, req: ValidateRequest, view: ReadView): Response {
   const paths = req.record !== undefined ? [req.record.path] : controlFiles(wb, wb.root);
-  const findings = paths.flatMap((p) => findingsOf(wb, p));
+  const findings = paths.flatMap((p) => [...blockedFindingOf(wb, p, view), ...findingsOf(wb, p)]);
   return { ok: true, result: { workbench: wb.root, state: wb.state, checked: paths.length, valid: findings.length === 0, findings } };
 }
 
 // --- transition -----------------------------------------------------------------
 
-interface StoredAnswer {
-  operation_id: string;
-  request: unknown;
-  response: Response;
+interface Moved {
+  from: string;
+  next: Record<string, unknown>;
+  schemaId: string;
 }
 
-const opsDir = (wb: Workbench): string => join(wb.root, STATE_DIR, "ops");
-const answerPath = (wb: Workbench, id: string): string => join(opsDir(wb), `${id}.json`);
+const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
 
-function storedAnswer(wb: Workbench, req: TransitionRequest): Response | null {
-  const file = answerPath(wb, req.operation_id);
-  if (!existsSync(file)) return null;
-  const parsed = strictParse(readFileSync(file));
-  if (!parsed.ok) return fail("conflict", "operation-record-unreadable", `${relative(wb.root, file)}: ${parsed.reason}: ${parsed.detail}`);
-  const stored = parsed.value as StoredAnswer;
-  if (canonical(stored.request) !== canonical(req)) {
-    return fail("conflict", "operation-id-reused", `operation_id ${req.operation_id} was already used for a different request`);
-  }
-  return stored.response;
+/**
+ * `transition` as a plan function: the pair, the caller's expected revision,
+ * the table's edge and target-state rules, the references the payload brings
+ * resolved, and the record after the move validated against its schema.
+ * The answer's shape is FJ01's for every kind.
+ */
+function transitionPlan(req: TransitionRequest): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    const r = ctx.readPair(req.record.path);
+    if (!r.ok) return r;
+    const pair = r.value;
+    const cas = ctx.cas(pair, req.expected_revision);
+    if (!cas.ok) return cas;
+
+    const payload = req.payload ?? {};
+    const moved = pair.kind === "package" ? movePackage(pair, req.to, payload) : moveRecord(ctx, pair, req.to, payload);
+    if (!moved.ok) return moved;
+    const { from, next, schemaId } = moved.value;
+    const what = pair.kind === "package" ? "the record after the transition is not a valid package" : `the record after the transition is not a valid ${pair.kind} record`;
+    const v = ctx.validateResult(schemaId, next, what);
+    if (!v.ok) return v;
+
+    const bytes = Buffer.from(serialise(next), "utf-8");
+    const revision = revisionOf(bytes);
+    return {
+      ok: true,
+      value: {
+        writes: [{ path: req.record.path, bytes }],
+        result: { operation_id: req.operation_id, path: req.record.path, from, to: req.to, revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: revision },
+      },
+    };
+  };
 }
 
-async function transition(wb: Workbench, req: TransitionRequest, write?: WriteOptions): Promise<Response> {
-  if (wb.state === "legacy") return fail("unsupported-format", "legacy-workbench", `${wb.root} carries no workbench.json; reads are allowed, mutation is not (spec 4.1)`);
-  if (wb.state === "unsupported" && wb.diagnosis !== null) return fromStore(wb.diagnosis);
+const refused = (rule: { class: StoreError["class"]; reason: string }): Result<never> => ({ ok: false, error: { class: rule.class, reason: "transition-refused", detail: rule.reason } });
 
-  const replay = storedAnswer(wb, req);
-  if (replay !== null) return replay;
-
-  const r = readPair(wb, req.record.path);
-  if (!r.ok) return fromStore(r.error);
-  const pair = r.value;
-  if (pair.kind !== "package") {
-    return fail("operation-unknown", "not-implemented-in-fj01", `transition of a ${pair.kind} record lands in a later package; FJ01 moves packages only`);
-  }
-  if (pair.revision !== req.expected_revision) {
-    return fail("conflict", "revision-mismatch", `stored ${pair.revision} expected ${req.expected_revision}`);
-  }
-
+function movePackage(pair: Pair, to: string, payload: TransitionPayload): Result<Moved> {
   const from = pair.control.status as string;
-  const table = transitions().kinds["package"];
-  const terminal = table?.terminal.includes(req.to) ?? false;
-  const payload = req.payload ?? {};
+  const terminal = transitions().kinds["package"]?.terminal.includes(to) ?? false;
   // A live target state carries no claim unless the payload brings one; a
   // terminal state keeps the historical claim unless the payload says otherwise.
   const claim = "claim" in payload ? (payload.claim ?? null) : terminal ? (pair.control.claim ?? null) : null;
   const outcome = payload.outcome ?? null;
+  const rule = allowed("package", from, to, { claim, outcome });
+  if (!rule.ok) return refused(rule);
+  return { ok: true, value: { from, next: { ...pair.control, status: to, claim, outcome }, schemaId: PACKAGE_SCHEMA_ID } };
+}
 
-  const rule = allowed("package", from, req.to, { claim, outcome });
-  if (!rule.ok) return fail(rule.class, "transition-refused", rule.reason);
+/** The decision fields a transition may set; a field the payload leaves out keeps its stored value, and the schema judges the result. */
+const DECISION_FIELDS = ["answer_ref", "implementation_ref", "superseded_by", "deferral"] as const;
 
-  const next = { ...pair.control, status: req.to, claim, outcome };
-  const v = validate(PACKAGE_SCHEMA_ID, next);
-  if (!v.ok) {
-    if (v.class === "unsupported-format") return fail("unsupported-format", "unknown-schema", `no schema ${v.schemaId}`);
-    return fail("schema-invalid", "result-invalid", `the record after the transition is not a valid package: ${describeErrors(v.errors)}`, v.errors);
+function moveRecord(ctx: PlanContext, pair: Pair, to: string, payload: TransitionPayload): Result<Moved> {
+  const kind = pair.kind;
+  const control = (pair.control.control ?? {}) as Record<string, unknown>;
+  const from = control.state as string;
+  const terminal = transitions().kinds[kind]?.terminal.includes(to) ?? false;
+  let fields: Record<string, unknown> = {};
+
+  if (kind === "issue") {
+    // As the package claim: a live state carries none, a terminal one keeps
+    // what it has unless the payload brings one.
+    const disposition = "disposition" in payload ? (payload.disposition ?? null) : terminal ? (control.disposition ?? null) : null;
+    fields = { disposition };
+  } else if (kind === "decision") {
+    for (const f of DECISION_FIELDS) fields[f] = f in payload ? (payload[f] ?? null) : (control[f] ?? null);
   }
+  const rule = allowed(kind, from, to, fields as RulePayload);
+  if (!rule.ok) return refused(rule);
 
-  const w = await writeControl(wb, req.record.path, next, req.expected_revision, write);
-  if (!w.ok) return fromStore(w.error);
+  if (kind === "decision") {
+    for (const f of DECISION_FIELDS) {
+      if (!(f in payload)) continue; // a stored value was resolved when it was set
+      const value = fields[f];
+      const target = f === "deferral" && isObject(value) ? value.target : value;
+      const resolved = resolveReference(ctx, target);
+      if (!resolved.ok) return resolved;
+    }
+  }
+  return { ok: true, value: { from, next: { ...pair.control, control: { ...control, state: to, ...fields } }, schemaId: RECORD_SCHEMA_ID } };
+}
 
-  const response: Response = {
-    ok: true,
-    result: { operation_id: req.operation_id, path: req.record.path, from, to: req.to, revision: w.value.revision, previous_revision: req.expected_revision },
-    revisions: { [req.record.path]: w.value.revision },
-  };
-  const record: StoredAnswer = { operation_id: req.operation_id, request: req, response };
-  mkdirSync(opsDir(wb), { recursive: true });
-  replaceAtomically(answerPath(wb, req.operation_id), Buffer.from(JSON.stringify(record, null, 2) + "\n", "utf-8"));
-  return response;
+/**
+ * A reference the payload brings, resolved when it can be: a `record_ref`
+ * to one control file of this workbench, an `artefact_ref` to a file at its
+ * hash. A legacy citation string, a git commit, a foreign reference and a
+ * named external target are carried unresolved; this kernel has nothing to
+ * resolve them against.
+ */
+function resolveReference(ctx: PlanContext, value: unknown): Result<void> {
+  if (!isObject(value)) return { ok: true, value: undefined };
+  if (typeof value.record_id === "string") {
+    if (ctx.wb.id !== null && value.workbench_id !== ctx.wb.id) {
+      return { ok: false, error: { class: "unresolved-reference", reason: "foreign-workbench", detail: `the reference names workbench ${JSON.stringify(value.workbench_id)}; this workbench is ${ctx.wb.id}` } };
+    }
+    const r = ctx.resolveRecordId(value.record_id);
+    return r.ok ? { ok: true, value: undefined } : r;
+  }
+  if (typeof value.path === "string" && typeof value.sha256 === "string") {
+    const r = ctx.resolveArtefact({ path: value.path, sha256: value.sha256 });
+    return r.ok ? { ok: true, value: undefined } : r;
+  }
+  return { ok: true, value: undefined };
 }

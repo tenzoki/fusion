@@ -239,42 +239,67 @@ function isIntent(v: unknown): v is Intent {
 export function readIntents(wb: Workbench): Result<PendingIntent[]> {
   const out: PendingIntent[] = [];
   for (const name of pendingIds(wb)) {
-    const rel = `${STATE_DIR}/${JOURNAL_DIR}/${name}`;
-    const unreadable = (why: string): Result<PendingIntent[]> => err("conflict", "journal-unreadable", `${rel}: ${why}`);
-    const abs = join(journalDir(wb), name);
-    if (!statSync(abs).isDirectory()) return unreadable("not an intent directory");
-    let intentBytes: Buffer;
-    try {
-      intentBytes = readFileSync(join(abs, INTENT_FILE));
-    } catch (e) {
-      if ((e as NodeJS.ErrnoException).code === "ENOENT") return unreadable(`${INTENT_FILE} is missing`);
-      throw e;
-    }
-    const parsed = strictParse(intentBytes);
-    if (!parsed.ok) return unreadable(`${INTENT_FILE}: ${parsed.reason}: ${parsed.detail}`);
-    const intent = parsed.value;
-    if (!isIntent(intent)) return unreadable(`${INTENT_FILE} is not an intent`);
-    if (intent.operation_id !== name) return unreadable(`${INTENT_FILE} names operation ${intent.operation_id}`);
-    const contents = new Map<string, Buffer>();
-    for (const w of intent.writes) {
-      if (!resolveInside(wb, w.path).ok) return unreadable(`a write names ${JSON.stringify(w.path)}, which is not inside the workbench`);
-      const staged = stagedName(w.after);
-      const file = join(abs, staged);
-      let size: number;
-      try {
-        size = statSync(file).size;
-      } catch (e) {
-        if ((e as NodeJS.ErrnoException).code === "ENOENT") return unreadable(`the staged post-bytes ${staged} of ${w.path} are missing`);
-        throw e;
-      }
-      if (size > MAX_RECORD_BYTES) return unreadable(`the staged post-bytes ${staged} are ${size} bytes, over the ${MAX_RECORD_BYTES}-byte cap`);
-      const bytes = readFileSync(file);
-      if (revisionOf(bytes) !== w.after) return unreadable(`the staged file ${staged} does not hash to its name`);
-      contents.set(w.path, bytes);
-    }
-    out.push({ intent, contents });
+    const one = readIntent(wb, name);
+    if (!one.ok) return one;
+    if (one.value !== null) out.push(one.value);
   }
   return { ok: true, value: out };
+}
+
+/**
+ * The committed intent `journal/<name>/`, read whole as `readIntents` reads
+ * each; `null` when no entry of that name exists. The replay lookup consults
+ * it by the request's id before `ops/` (C13), and a lock-free reader
+ * classifies a pending intent through it (C22), so a reader racing the
+ * writer's removal sees `null` or an unreadable entry that is gone on a
+ * second look, never a throw.
+ */
+export function readIntent(wb: Workbench, name: string): Result<PendingIntent | null> {
+  const rel = `${STATE_DIR}/${JOURNAL_DIR}/${name}`;
+  const unreadable = (why: string): Result<PendingIntent | null> => err("conflict", "journal-unreadable", `${rel}: ${why}`);
+  const abs = join(journalDir(wb), name);
+  try {
+    if (!statSync(abs).isDirectory()) return unreadable("not an intent directory");
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return { ok: true, value: null };
+    throw e;
+  }
+  let intentBytes: Buffer;
+  try {
+    intentBytes = readFileSync(join(abs, INTENT_FILE));
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return unreadable(`${INTENT_FILE} is missing`);
+    throw e;
+  }
+  const parsed = strictParse(intentBytes);
+  if (!parsed.ok) return unreadable(`${INTENT_FILE}: ${parsed.reason}: ${parsed.detail}`);
+  const intent = parsed.value;
+  if (!isIntent(intent)) return unreadable(`${INTENT_FILE} is not an intent`);
+  if (intent.operation_id !== name) return unreadable(`${INTENT_FILE} names operation ${intent.operation_id}`);
+  const contents = new Map<string, Buffer>();
+  for (const w of intent.writes) {
+    if (!resolveInside(wb, w.path).ok) return unreadable(`a write names ${JSON.stringify(w.path)}, which is not inside the workbench`);
+    const staged = stagedName(w.after);
+    const file = join(abs, staged);
+    let size: number;
+    try {
+      size = statSync(file).size;
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === "ENOENT") return unreadable(`the staged post-bytes ${staged} of ${w.path} are missing`);
+      throw e;
+    }
+    if (size > MAX_RECORD_BYTES) return unreadable(`the staged post-bytes ${staged} are ${size} bytes, over the ${MAX_RECORD_BYTES}-byte cap`);
+    let bytes: Buffer;
+    try {
+      bytes = readFileSync(file);
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === "ENOENT") return unreadable(`the staged post-bytes ${staged} of ${w.path} are missing`);
+      throw e;
+    }
+    if (revisionOf(bytes) !== w.after) return unreadable(`the staged file ${staged} does not hash to its name`);
+    contents.set(w.path, bytes);
+  }
+  return { ok: true, value: { intent, contents } };
 }
 
 // --- the file state and recovery ----------------------------------------------------

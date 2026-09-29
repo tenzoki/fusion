@@ -14,6 +14,9 @@ import { hostname, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { dispatch } from "../cli/ops.js";
+import type { Response } from "../cli/protocol.js";
+import type { KernelOptions } from "../kernel.js";
 import { strictParse } from "../strict-json.js";
 import {
   LOCK_FILE,
@@ -29,7 +32,6 @@ import {
   releaseLock,
   revisionOf,
   serialise,
-  writeControl,
   type HeldLock,
   type Workbench,
 } from "../store.js";
@@ -74,16 +76,14 @@ describe("openWorkbench", () => {
     expect(wb.root).toBe(root);
   });
 
-  it("without workbench.json the workbench is legacy: readable, not mutable (spec 4.1)", async () => {
+  // The refusal to mutate a legacy workbench is the kernel's: kernel.test.ts.
+  it("without workbench.json the workbench is legacy and readable (spec 4.1)", () => {
     unlinkSync(join(root, "workbench.json"));
     const wb = open();
     expect(wb.state).toBe("legacy");
     expect(wb.manifest).toBeNull();
     const pair = readPair(wb, OPEN);
     expect(pair.ok).toBe(true);
-    if (!pair.ok) return;
-    const w = await writeControl(wb, OPEN, pair.value.control, pair.value.revision);
-    expect(w).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "legacy-workbench" } });
   });
 
   it("an unknown manifest schema is unsupported-format/unknown-schema, with the raw manifest attached", () => {
@@ -222,153 +222,13 @@ describe("serialise", () => {
   });
 });
 
-// --- writeControl ----------------------------------------------------------------
+// --- the revision ------------------------------------------------------------------
+//
+// The CAS and lock cases that drove FJ01's `writeControl` moved to
+// kernel.test.ts with the function's removal (FJ02 step 3): the kernel is the
+// one write path, so they are asserted through it.
 
-describe("writeControl", () => {
-  it("writes the deterministic bytes, returns their revision, and the record reads back", async () => {
-    const wb = open();
-    const before = readPair(wb, OPEN);
-    if (!before.ok) throw new Error(before.error.detail);
-    const next = { ...before.value.control, status: "paused" };
-    const w = await writeControl(wb, OPEN, next, before.value.revision);
-    expect(w.ok, JSON.stringify(w)).toBe(true);
-    if (!w.ok) return;
-    const stored = readFileSync(join(root, OPEN));
-    expect(w.value.revision).toBe(sha(stored));
-    expect(w.value.revision).not.toBe(before.value.revision);
-    expect(stored.toString("utf-8")).toBe(serialise(next));
-    const after = readPair(wb, OPEN);
-    expect(after.ok && after.value.control.status).toBe("paused");
-    expect(after.ok && after.value.revision).toBe(w.value.revision);
-  });
-
-  it("write, read, write again: identical bytes and the same revision", async () => {
-    const wb = open();
-    const first = readPair(wb, OPEN);
-    if (!first.ok) throw new Error(first.error.detail);
-    const w1 = await writeControl(wb, OPEN, { ...first.value.control, status: "paused" }, first.value.revision);
-    if (!w1.ok) throw new Error(w1.error.detail);
-    const second = readPair(wb, OPEN);
-    if (!second.ok) throw new Error(second.error.detail);
-    const w2 = await writeControl(wb, OPEN, second.value.control, second.value.revision);
-    if (!w2.ok) throw new Error(w2.error.detail);
-    expect(w2.value.revision).toBe(w1.value.revision);
-    expect(readFileSync(join(root, OPEN)).equals(w1.value.bytes)).toBe(true);
-  });
-
-  it("refuses conflict/revision-mismatch when the stored bytes are not the ones read, and leaves the file alone", async () => {
-    const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
-    const stale = "sha256:" + "0".repeat(64);
-    const w = await writeControl(wb, OPEN, { ...pair.value.control, status: "paused" }, stale);
-    expect(w).toMatchObject({ ok: false, error: { class: "conflict", reason: "revision-mismatch" } });
-    if (w.ok) return;
-    expect(w.error.detail).toBe(`stored ${pair.value.revision} expected ${stale}`);
-    expect(readFileSync(join(root, OPEN)).equals(pair.value.bytes)).toBe(true);
-    expect(readdirSync(join(root, "work-packages/260928-1200-parser-fix")).filter((f) => f.endsWith(".tmp"))).toEqual([]);
-  });
-
-  it("a second writer with the revision the first one replaced is refused", async () => {
-    const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
-    const a = await writeControl(wb, OPEN, { ...pair.value.control, status: "paused" }, pair.value.revision);
-    expect(a.ok).toBe(true);
-    const b = await writeControl(wb, OPEN, { ...pair.value.control, status: "dropped" }, pair.value.revision);
-    expect(b).toMatchObject({ ok: false, error: { class: "conflict", reason: "revision-mismatch" } });
-  });
-
-  it("a missing record under the lock is unresolved-reference", async () => {
-    const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
-    const w = await writeControl(wb, "work-packages/absent/package.json", pair.value.control, pair.value.revision);
-    expect(w).toMatchObject({ ok: false, error: { class: "unresolved-reference", reason: "record-not-found" } });
-  });
-
-  it("takes the lock under .json-state/, and releases it after the write", async () => {
-    const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
-    const lock = lockPathFor(wb);
-    expect(lock.startsWith(join(root, STATE_DIR) + "/")).toBe(true);
-    expect(lock.endsWith(".lock")).toBe(true);
-    const w = await writeControl(wb, OPEN, pair.value.control, pair.value.revision);
-    expect(w.ok).toBe(true);
-    expect(existsSync(lock)).toBe(false);
-    expect(existsSync(join(root, STATE_DIR))).toBe(true);
-  });
-
-  it("waits on a live lock and proceeds once it is released", async () => {
-    const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
-    const lock = lockPathFor(wb);
-    mkdirSync(dirname(lock), { recursive: true });
-    writeFileSync(lock, `pid: ${process.pid}\nacquired_at: ${new Date().toISOString()}\n`, { flag: "wx" });
-    const started = Date.now();
-    const pending = writeControl(wb, OPEN, { ...pair.value.control, status: "paused" }, pair.value.revision, { pollMs: 10 });
-    await new Promise((r) => setTimeout(r, 300));
-    expect(readFileSync(join(root, OPEN)).equals(pair.value.bytes), "wrote through a live lock").toBe(true);
-    unlinkSync(lock);
-    const w = await pending;
-    expect(w.ok, JSON.stringify(w)).toBe(true);
-    expect(Date.now() - started).toBeGreaterThanOrEqual(250);
-    expect(existsSync(lock)).toBe(false);
-  });
-
-  it("answers conflict/lock-timeout when a live lock is never released", async () => {
-    const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
-    const lock = lockPathFor(wb);
-    mkdirSync(dirname(lock), { recursive: true });
-    writeFileSync(lock, `pid: ${process.pid}\nacquired_at: ${new Date().toISOString()}\n`, { flag: "wx" });
-    const w = await writeControl(wb, OPEN, pair.value.control, pair.value.revision, { waitMs: 100, pollMs: 10 });
-    expect(w).toMatchObject({ ok: false, error: { class: "conflict", reason: "lock-timeout" } });
-    expect(existsSync(lock), "the timeout must not steal the lock").toBe(true);
-    unlinkSync(lock);
-  });
-
-  it(`reaps a lock older than ${LOCK_STALE_MS / 1000} s by mtime whose holder is gone, and one that records no holder`, async () => {
-    const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
-    const lock = lockPathFor(wb);
-    const old = (Date.now() - 2 * LOCK_STALE_MS) / 1000;
-    mkdirSync(dirname(lock), { recursive: true });
-
-    writeFileSync(lock, "", { flag: "wx" });
-    utimesSync(lock, old, old);
-    const w1 = await writeControl(wb, OPEN, { ...pair.value.control, status: "paused" }, pair.value.revision, { waitMs: 500, pollMs: 10 });
-    expect(w1.ok, JSON.stringify(w1)).toBe(true);
-    if (!w1.ok) return;
-
-    // A dead holder: a pid no process has. 2^22 is above the default Linux
-    // pid_max and macOS's limit, so `kill -0` on it is ESRCH.
-    writeFileSync(lock, `pid: ${2 ** 22 + 1}\nacquired_at: 2026-01-01T00:00:00.000Z\n`, { flag: "wx" });
-    utimesSync(lock, old, old);
-    const w2 = await writeControl(wb, OPEN, { ...pair.value.control, status: "open" }, w1.value.revision, { waitMs: 500, pollMs: 10 });
-    expect(w2.ok, JSON.stringify(w2)).toBe(true);
-    expect(existsSync(lock)).toBe(false);
-  });
-
-  it("does not reap a lock that is old but whose holder is still running", async () => {
-    const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
-    const lock = lockPathFor(wb);
-    const old = (Date.now() - 2 * LOCK_STALE_MS) / 1000;
-    mkdirSync(dirname(lock), { recursive: true });
-    writeFileSync(lock, `pid: ${process.pid}\nacquired_at: 2026-01-01T00:00:00.000Z\n`, { flag: "wx" });
-    utimesSync(lock, old, old);
-    const w = await writeControl(wb, OPEN, pair.value.control, pair.value.revision, { waitMs: 100, pollMs: 10 });
-    expect(w).toMatchObject({ ok: false, error: { class: "conflict", reason: "lock-timeout" } });
-    expect(existsSync(lock)).toBe(true);
-    unlinkSync(lock);
-  });
-
+describe("revisionOf", () => {
   it("the revision helper is sha256 over the exact bytes", () => {
     expect(revisionOf(Buffer.from("{}\n"))).toBe("sha256:" + createHash("sha256").update("{}\n").digest("hex"));
   });
@@ -387,6 +247,27 @@ const hex = (bytes: Uint8Array): string => createHash("sha256").update(bytes).di
 const stateEntries = (): string[] => readdirSync(join(root, STATE_DIR)).sort();
 const takeoverClaims = (): string[] => stateEntries().filter((n) => n.startsWith(`${LOCK_FILE}${TAKEOVER_INFIX}`));
 const hourAgo = (): number => (Date.now() - 3_600_000) / 1000;
+
+let opSeq = 0;
+/**
+ * A write through the kernel, the one write path since FJ01's `writeControl`
+ * was removed (FJ02 step 3): the open package moved to `paused` under its
+ * current revision, with the lock options given.
+ */
+const pauseOpen = (kernel: KernelOptions = {}, wbRoot: string = root): Promise<Response> =>
+  dispatch(
+    {
+      op: "transition",
+      workbench: wbRoot,
+      operation_id: `00000000-0000-4000-8000-${String(++opSeq).padStart(12, "0")}`,
+      record: { path: OPEN },
+      expected_revision: sha(readFileSync(join(wbRoot, OPEN))),
+      actor: { actor: "user", person: "kai" },
+      to: "paused",
+      reason: "a lock test",
+    },
+    { kernel },
+  );
 
 interface Deferred {
   promise: Promise<void>;
@@ -415,14 +296,12 @@ describe("the workbench write lock", () => {
 
   it("a lock of this host whose PID is dead is replaced at once, with no age condition (C9)", async () => {
     const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
     const lock = lockPathFor(wb);
     mkdirSync(dirname(lock), { recursive: true });
     // Fresh mtime: under FJ01's rule this lock blocked every writer for 60 s.
     writeFileSync(lock, `pid: ${deadPid()}\nhost: ${hostname()}\nnonce: 00\nacquired_at: ${new Date().toISOString()}\n`, { flag: "wx" });
     const started = Date.now();
-    const w = await writeControl(wb, OPEN, { ...pair.value.control, status: "paused" }, pair.value.revision, { waitMs: 2_000, pollMs: 10 });
+    const w = await pauseOpen({ waitMs: 2_000, pollMs: 10 });
     expect(w.ok, JSON.stringify(w)).toBe(true);
     expect(Date.now() - started).toBeLessThan(2_000);
     expect(existsSync(lock)).toBe(false);
@@ -431,12 +310,10 @@ describe("the workbench write lock", () => {
 
   it("FJ01's lock content with a dead PID and a fresh mtime (no host line: read as this host's) is replaced at once too", async () => {
     const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
     const lock = lockPathFor(wb);
     mkdirSync(dirname(lock), { recursive: true });
     writeFileSync(lock, `pid: ${deadPid()}\nacquired_at: ${new Date().toISOString()}\n`, { flag: "wx" });
-    const w = await writeControl(wb, OPEN, { ...pair.value.control, status: "paused" }, pair.value.revision, { waitMs: 2_000, pollMs: 10 });
+    const w = await pauseOpen({ waitMs: 2_000, pollMs: 10 });
     expect(w.ok, JSON.stringify(w)).toBe(true);
   });
 
@@ -455,7 +332,7 @@ describe("the workbench write lock", () => {
     writeFileSync(lock, content, { flag: "wx" });
     utimesSync(lock, hourAgo(), hourAgo());
     const started = Date.now();
-    const w = await writeControl(wb, OPEN, { ...pair.value.control, status: "paused" }, pair.value.revision, { waitMs: 300, pollMs: 10 });
+    const w = await pauseOpen({ waitMs: 300, pollMs: 10 });
     expect(w).toMatchObject({ ok: false, error: { class: "conflict", reason: "lock-timeout" } });
     expect(Date.now() - started).toBeGreaterThanOrEqual(300);
     expect(readFileSync(lock, "utf-8")).toBe(content);
@@ -465,14 +342,12 @@ describe("the workbench write lock", () => {
 
   it("a lock naming another host is never replaced, whatever its PID and age, and the timeout names the host", async () => {
     const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
     const lock = lockPathFor(wb);
     mkdirSync(dirname(lock), { recursive: true });
     const content = `pid: ${deadPid()}\nhost: other-checkout.invalid\nnonce: 00\nacquired_at: 2026-01-01T00:00:00.000Z\n`;
     writeFileSync(lock, content, { flag: "wx" });
     utimesSync(lock, hourAgo(), hourAgo());
-    const w = await writeControl(wb, OPEN, pair.value.control, pair.value.revision, { waitMs: 200, pollMs: 10 });
+    const w = await pauseOpen({ waitMs: 200, pollMs: 10 });
     expect(w).toMatchObject({ ok: false, error: { class: "conflict", reason: "lock-timeout" } });
     if (!w.ok) expect(w.error.detail).toContain("host: other-checkout.invalid");
     expect(readFileSync(lock, "utf-8")).toBe(content);
@@ -481,17 +356,15 @@ describe("the workbench write lock", () => {
 
   it(`a lock recording no PID is waited on while young and replaced once older than ${LOCK_STALE_MS / 1000} s`, async () => {
     const wb = open();
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
     const lock = lockPathFor(wb);
     mkdirSync(dirname(lock), { recursive: true });
     writeFileSync(lock, "acquired_at: 2026-01-01T00:00:00.000Z\n", { flag: "wx" });
-    const young = await writeControl(wb, OPEN, pair.value.control, pair.value.revision, { waitMs: 150, pollMs: 10 });
+    const young = await pauseOpen({ waitMs: 150, pollMs: 10 });
     expect(young).toMatchObject({ ok: false, error: { class: "conflict", reason: "lock-timeout" } });
     expect(existsSync(lock)).toBe(true);
     const old = (Date.now() - 2 * LOCK_STALE_MS) / 1000;
     utimesSync(lock, old, old);
-    const w = await writeControl(wb, OPEN, { ...pair.value.control, status: "paused" }, pair.value.revision, { waitMs: 1_000, pollMs: 10 });
+    const w = await pauseOpen({ waitMs: 1_000, pollMs: 10 });
     expect(w.ok, JSON.stringify(w)).toBe(true);
     expect(existsSync(lock)).toBe(false);
   });
@@ -680,9 +553,8 @@ describe("the self-ignore of .json-state/ (class L)", () => {
     mkdirSync(join(root, STATE_DIR, "ops"), { recursive: true });
     writeFileSync(join(root, STATE_DIR, "ops", "00000000-0000-4000-8000-000000000000.json"), "{}\n");
     expect(existsSync(gitignore())).toBe(false);
-    const pair = readPair(wb, OPEN);
-    if (!pair.ok) throw new Error(pair.error.detail);
-    const w = await writeControl(wb, OPEN, pair.value.control, pair.value.revision);
+    expect(wb.state).toBe("json-control");
+    const w = await pauseOpen();
     expect(w.ok, JSON.stringify(w)).toBe(true);
     expect(readFileSync(gitignore(), "utf-8")).toBe(SELF_IGNORE);
   });
@@ -695,12 +567,9 @@ describe("the self-ignore of .json-state/ (class L)", () => {
       writeFileSync(join(repo, ".gitignore"), "!fusion-workbench/**\n!.json-state/\n!*.json\n");
       const wbRoot = join(repo, "fusion-workbench");
       cpSync(FIXTURE, wbRoot, { recursive: true });
-      const opened = openWorkbench(wbRoot);
-      if (!opened.ok) throw new Error(opened.error.detail);
-      const pair = readPair(opened.value, OPEN);
-      if (!pair.ok) throw new Error(pair.error.detail);
-      const w = await writeControl(opened.value, OPEN, { ...pair.value.control, status: "paused" }, pair.value.revision);
+      const w = await pauseOpen({}, wbRoot);
       expect(w.ok, JSON.stringify(w)).toBe(true);
+      // The kernel's write left its stored answer under .json-state/ops/.
       // Something for git to see in there besides the .gitignore itself.
       mkdirSync(join(wbRoot, STATE_DIR, "ops"), { recursive: true });
       writeFileSync(join(wbRoot, STATE_DIR, "ops", "00000000-0000-4000-8000-000000000000.json"), "{}\n");

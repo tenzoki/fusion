@@ -1294,21 +1294,21 @@ var require_errors = __commonJS({
     function extendErrors({ gen, keyword, schemaValue, data, errsCount, it }) {
       if (errsCount === void 0)
         throw new Error("ajv implementation error");
-      const err2 = gen.name("err");
+      const err3 = gen.name("err");
       gen.forRange("i", errsCount, names_1.default.errors, (i) => {
-        gen.const(err2, (0, codegen_1._)`${names_1.default.vErrors}[${i}]`);
-        gen.if((0, codegen_1._)`${err2}.instancePath === undefined`, () => gen.assign((0, codegen_1._)`${err2}.instancePath`, (0, codegen_1.strConcat)(names_1.default.instancePath, it.errorPath)));
-        gen.assign((0, codegen_1._)`${err2}.schemaPath`, (0, codegen_1.str)`${it.errSchemaPath}/${keyword}`);
+        gen.const(err3, (0, codegen_1._)`${names_1.default.vErrors}[${i}]`);
+        gen.if((0, codegen_1._)`${err3}.instancePath === undefined`, () => gen.assign((0, codegen_1._)`${err3}.instancePath`, (0, codegen_1.strConcat)(names_1.default.instancePath, it.errorPath)));
+        gen.assign((0, codegen_1._)`${err3}.schemaPath`, (0, codegen_1.str)`${it.errSchemaPath}/${keyword}`);
         if (it.opts.verbose) {
-          gen.assign((0, codegen_1._)`${err2}.schema`, schemaValue);
-          gen.assign((0, codegen_1._)`${err2}.data`, data);
+          gen.assign((0, codegen_1._)`${err3}.schema`, schemaValue);
+          gen.assign((0, codegen_1._)`${err3}.data`, data);
         }
       });
     }
     exports.extendErrors = extendErrors;
     function addError(gen, errObj) {
-      const err2 = gen.const("err", errObj);
-      gen.if((0, codegen_1._)`${names_1.default.vErrors} === null`, () => gen.assign(names_1.default.vErrors, (0, codegen_1._)`[${err2}]`), (0, codegen_1._)`${names_1.default.vErrors}.push(${err2})`);
+      const err3 = gen.const("err", errObj);
+      gen.if((0, codegen_1._)`${names_1.default.vErrors} === null`, () => gen.assign(names_1.default.vErrors, (0, codegen_1._)`[${err3}]`), (0, codegen_1._)`${names_1.default.vErrors}.push(${err3})`);
       gen.code((0, codegen_1._)`${names_1.default.errors}++`);
     }
     function returnErrors(it, errs) {
@@ -8016,12 +8016,19 @@ var require_dist = __commonJS({
 });
 
 // src/cli/main.ts
-import { readFileSync as readFileSync5 } from "node:fs";
+import { readFileSync as readFileSync6 } from "node:fs";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 
 // src/cli/ops.ts
-import { existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync4, statSync as statSync2 } from "node:fs";
-import { join as join3, relative as relative2 } from "node:path";
+import { statSync as statSync3 } from "node:fs";
+
+// src/kernel.ts
+import { readdirSync as readdirSync4, readFileSync as readFileSync4 } from "node:fs";
+
+// src/journal.ts
+import { randomBytes as randomBytes2 } from "node:crypto";
+import { existsSync as existsSync2, mkdirSync as mkdirSync2, readdirSync as readdirSync3, readFileSync as readFileSync3, renameSync as renameSync2, rmSync as rmSync2, statSync as statSync2 } from "node:fs";
+import { dirname as dirname2, join as join3, relative as relative2 } from "node:path";
 
 // src/store.ts
 import { createHash, randomBytes } from "node:crypto";
@@ -8504,31 +8511,6 @@ function deref(loc, set) {
   }
   throw new Error("$ref chain longer than 32 hops");
 }
-async function writeControl(wb, path, value, expectedRevision, options = {}) {
-  if (wb.state === "legacy") return err("unsupported-format", "legacy-workbench", `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`);
-  if (wb.state === "unsupported") return err("unsupported-format", wb.diagnosis?.reason ?? "unsupported", wb.diagnosis?.detail ?? "the manifest is unsupported");
-  const abs = resolveInside(wb, path);
-  if (!abs.ok) return abs;
-  const text = serialise(value);
-  const bytes = Buffer.from(text, "utf-8");
-  const lock = await acquireLock(wb, options);
-  if (!lock.ok) return lock;
-  try {
-    let stored;
-    try {
-      stored = readFileSync2(abs.value);
-    } catch (e) {
-      if (e.code === "ENOENT") return err("unresolved-reference", "record-not-found", `${path} does not exist in ${wb.root}`);
-      throw e;
-    }
-    const current2 = revisionOf(stored);
-    if (current2 !== expectedRevision) return err("conflict", "revision-mismatch", `stored ${current2} expected ${expectedRevision}`);
-    replaceAtomically(abs.value, bytes);
-    return { ok: true, value: { revision: revisionOf(bytes), bytes } };
-  } finally {
-    releaseLock(lock.value);
-  }
-}
 var tempBeside = (target) => join2(dirname(target), `.${basename(target)}.${process.pid}.${randomBytes(4).toString("hex")}.tmp`);
 function writeAll(fd, bytes) {
   let offset = 0;
@@ -8750,6 +8732,22 @@ function describeHolder(lock) {
 }
 
 // src/journal.ts
+var JOURNAL_DIR = "journal";
+var OPS_DIR = "ops";
+var INTENT_FILE = "intent.json";
+var err2 = (cls, reason, detail) => ({ ok: false, error: { class: cls, reason, detail } });
+var isObject2 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+var SHA256 = /^sha256:[0-9a-f]{64}$/;
+var OPERATION_ID = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
+var journalDir = (wb) => join3(wb.root, STATE_DIR, JOURNAL_DIR);
+var opsDir = (wb) => join3(wb.root, STATE_DIR, OPS_DIR);
+var answerPath = (wb, id) => join3(opsDir(wb), `${id}.json`);
+var intentDir = (wb, id) => join3(journalDir(wb), id);
+var stagedName = (hash) => hash.slice("sha256:".length);
+var nonce = () => `${process.pid}.${randomBytes2(4).toString("hex")}`;
+function checkId(id) {
+  if (!OPERATION_ID.test(id)) throw new Error(`operation id ${JSON.stringify(id)} cannot name a journal entry`);
+}
 function canonical(value) {
   if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
   if (typeof value === "object" && value !== null) {
@@ -8757,91 +8755,208 @@ function canonical(value) {
   }
   return JSON.stringify(value);
 }
-
-// src/transitions.ts
-import { readFileSync as readFileSync3 } from "node:fs";
-import { fileURLToPath as fileURLToPath2 } from "node:url";
-var CONTRACT_DIR = fileURLToPath2(new URL("../contract/", import.meta.url));
-function readTable(file) {
-  const abs = CONTRACT_DIR + file;
-  const parsed = strictParse(readFileSync3(abs));
-  if (!parsed.ok) throw new Error(`${abs}: ${parsed.reason}: ${parsed.detail}`);
-  return parsed.value;
-}
-var transitionsTable;
-var dependenciesTable;
-var transitions = () => transitionsTable ??= readTable("transitions.json");
-function useTables(t, d) {
-  transitionsTable = t;
-  dependenciesTable = d;
-}
-var kinds = () => Object.keys(transitions().kinds);
-var refuse2 = (cls, reason) => ({ ok: false, class: cls, reason });
-var isObject2 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
-function allowed(kind, from, to, payload = {}) {
-  const table = transitions().kinds[kind];
-  if (table === void 0) return refuse2("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
-  if (!table.states.includes(from)) return refuse2("schema-invalid", `"${from}" is not a ${kind} state`);
-  if (!table.states.includes(to)) return refuse2("schema-invalid", `"${to}" is not a ${kind} state`);
-  const edge = table.edges.find((e) => e.from === from && e.to === to);
-  if (edge === void 0) {
-    const why = table.terminal.includes(from) ? `${from} is terminal (${table.reopen})` : `no edge ${from} -> ${to} in the table`;
-    return refuse2("conflict", `${kind}: ${why}`);
+var requestDigest = (req) => revisionOf(Buffer.from(canonical(req), "utf-8"));
+function commitIntent(wb, intent, contents) {
+  checkId(intent.operation_id);
+  const staged = /* @__PURE__ */ new Map();
+  for (const w of intent.writes) {
+    const inside = resolveInside(wb, w.path);
+    if (!inside.ok) return inside;
+    const bytes = contents.get(w.path);
+    if (bytes === void 0 || revisionOf(bytes) !== w.after) throw new Error(`the post-bytes given for ${w.path} do not hash to ${w.after}`);
+    if (bytes.byteLength > MAX_RECORD_BYTES) {
+      return err2("schema-invalid", "too-large", `${w.path}: ${bytes.byteLength} bytes after the operation; the strict reader's cap is ${MAX_RECORD_BYTES} bytes (1 MiB), so it could not be read back`);
+    }
+    staged.set(stagedName(w.after), bytes);
   }
-  switch (kind) {
-    case "package":
-      return packageRules(table, to, payload);
-    case "issue":
-      return issueRules(table, to, payload);
-    case "decision":
-      return decisionRules(edge, payload);
-    default:
-      return { ok: true };
+  const intentBytes = Buffer.from(JSON.stringify(intent, null, 2) + "\n", "utf-8");
+  if (intentBytes.byteLength > MAX_RECORD_BYTES) {
+    return err2("schema-invalid", "too-large", `the intent of ${intent.operation_id} is ${intentBytes.byteLength} bytes; the strict reader's cap is ${MAX_RECORD_BYTES} bytes (1 MiB)`);
+  }
+  const dir = journalDir(wb);
+  mkdirSync2(dir, { recursive: true });
+  const target = intentDir(wb, intent.operation_id);
+  if (existsSync2(target)) return err2("conflict", "intent-exists", `${STATE_DIR}/${JOURNAL_DIR}/${intent.operation_id} is already a pending intent; it is never replaced`);
+  const temp = join3(dir, `.${intent.operation_id}.${nonce()}.tmp`);
+  mkdirSync2(temp);
+  try {
+    writeDurably(join3(temp, INTENT_FILE), intentBytes);
+    for (const [name, bytes] of staged) writeDurably(join3(temp, name), bytes);
+    fsyncDirectory(temp);
+    renameSync2(temp, target);
+  } catch (e) {
+    rmSync2(temp, { recursive: true, force: true });
+    throw e;
+  }
+  fsyncDirectory(dir);
+  return { ok: true, value: void 0 };
+}
+function removeIntent(wb, id) {
+  checkId(id);
+  const dir = journalDir(wb);
+  const gone = join3(dir, `.${id}.${nonce()}.done`);
+  renameSync2(intentDir(wb, id), gone);
+  fsyncDirectory(dir);
+  rmSync2(gone, { recursive: true, force: true });
+}
+function sweep(wb) {
+  const removed = [];
+  for (const dir of [journalDir(wb), opsDir(wb)]) {
+    let names;
+    try {
+      names = readdirSync3(dir);
+    } catch (e) {
+      if (e.code === "ENOENT") continue;
+      throw e;
+    }
+    for (const name of names.filter((n) => n.startsWith(".")).sort()) {
+      rmSync2(join3(dir, name), { recursive: true, force: true });
+      removed.push(relative2(wb.root, join3(dir, name)).split("\\").join("/"));
+    }
+  }
+  return removed;
+}
+function pendingIds(wb) {
+  try {
+    return readdirSync3(journalDir(wb)).filter((n) => !n.startsWith(".")).sort();
+  } catch (e) {
+    if (e.code === "ENOENT") return [];
+    throw e;
   }
 }
-function packageRules(table, to, payload) {
-  const claimRule = table.claim?.[to];
-  const hasClaim = isObject2(payload.claim);
-  if (claimRule === "required" && !hasClaim) return refuse2("schema-invalid", `package: ${to} requires a claim`);
-  if (claimRule === "forbidden" && payload.claim != null) return refuse2("schema-invalid", `package: ${to} carries no claim`);
-  const terminal = table.terminal.includes(to);
-  const outcome = payload.outcome ?? null;
-  if (!terminal) {
-    if (outcome !== null) return refuse2("schema-invalid", `package: outcome is null while ${to}`);
-    return { ok: true };
-  }
-  if (!isObject2(outcome)) return refuse2("schema-invalid", `package: ${to} requires an outcome`);
-  const classes = table.outcome_classes?.[to] ?? [];
-  if (!classes.includes(outcome.class)) {
-    return refuse2("schema-invalid", `package: ${to} admits the outcome classes ${classes.join(", ")}, not "${outcome.class}"`);
-  }
-  return { ok: true };
+function isWrite(v) {
+  return isObject2(v) && typeof v.path === "string" && (v.before === null || typeof v.before === "string" && SHA256.test(v.before)) && typeof v.after === "string" && SHA256.test(v.after);
 }
-function issueRules(table, to, payload) {
-  const terminal = table.terminal.includes(to);
-  const hasDisposition = isObject2(payload.disposition);
-  if (terminal && !hasDisposition) return refuse2("schema-invalid", `issue: ${to} requires a disposition`);
-  if (!terminal && payload.disposition != null) return refuse2("schema-invalid", `issue: disposition is null while ${to}`);
-  return { ok: true };
+function isIntent(v) {
+  return isObject2(v) && typeof v.operation_id === "string" && typeof v.op === "string" && typeof v.request_digest === "string" && SHA256.test(v.request_digest) && Array.isArray(v.writes) && v.writes.every(isWrite) && isObject2(v.response) && typeof v.created_at === "string";
 }
-function decisionRules(edge, payload) {
-  if (edge.requires === void 0) return { ok: true };
-  const value = payload[edge.requires];
-  if (value === void 0 || value === null) return refuse2("schema-invalid", `decision: ${edge.to} requires ${edge.requires}`);
-  return { ok: true };
-}
-function stateRules(kind, state, payload = {}) {
-  const table = transitions().kinds[kind];
-  if (table === void 0) return refuse2("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
-  if (!table.states.includes(state)) return refuse2("schema-invalid", `"${state}" is not a ${kind} state`);
-  switch (kind) {
-    case "package":
-      return packageRules(table, state, payload);
-    case "issue":
-      return issueRules(table, state, payload);
-    default:
-      return { ok: true };
+function readIntents(wb) {
+  const out = [];
+  for (const name of pendingIds(wb)) {
+    const one = readIntent(wb, name);
+    if (!one.ok) return one;
+    if (one.value !== null) out.push(one.value);
   }
+  return { ok: true, value: out };
+}
+function readIntent(wb, name) {
+  const rel = `${STATE_DIR}/${JOURNAL_DIR}/${name}`;
+  const unreadable = (why) => err2("conflict", "journal-unreadable", `${rel}: ${why}`);
+  const abs = join3(journalDir(wb), name);
+  try {
+    if (!statSync2(abs).isDirectory()) return unreadable("not an intent directory");
+  } catch (e) {
+    if (e.code === "ENOENT") return { ok: true, value: null };
+    throw e;
+  }
+  let intentBytes;
+  try {
+    intentBytes = readFileSync3(join3(abs, INTENT_FILE));
+  } catch (e) {
+    if (e.code === "ENOENT") return unreadable(`${INTENT_FILE} is missing`);
+    throw e;
+  }
+  const parsed = strictParse(intentBytes);
+  if (!parsed.ok) return unreadable(`${INTENT_FILE}: ${parsed.reason}: ${parsed.detail}`);
+  const intent = parsed.value;
+  if (!isIntent(intent)) return unreadable(`${INTENT_FILE} is not an intent`);
+  if (intent.operation_id !== name) return unreadable(`${INTENT_FILE} names operation ${intent.operation_id}`);
+  const contents = /* @__PURE__ */ new Map();
+  for (const w of intent.writes) {
+    if (!resolveInside(wb, w.path).ok) return unreadable(`a write names ${JSON.stringify(w.path)}, which is not inside the workbench`);
+    const staged = stagedName(w.after);
+    const file = join3(abs, staged);
+    let size;
+    try {
+      size = statSync2(file).size;
+    } catch (e) {
+      if (e.code === "ENOENT") return unreadable(`the staged post-bytes ${staged} of ${w.path} are missing`);
+      throw e;
+    }
+    if (size > MAX_RECORD_BYTES) return unreadable(`the staged post-bytes ${staged} are ${size} bytes, over the ${MAX_RECORD_BYTES}-byte cap`);
+    let bytes;
+    try {
+      bytes = readFileSync3(file);
+    } catch (e) {
+      if (e.code === "ENOENT") return unreadable(`the staged post-bytes ${staged} of ${w.path} are missing`);
+      throw e;
+    }
+    if (revisionOf(bytes) !== w.after) return unreadable(`the staged file ${staged} does not hash to its name`);
+    contents.set(w.path, bytes);
+  }
+  return { ok: true, value: { intent, contents } };
+}
+function fileState(wb, write) {
+  const abs = resolveInside(wb, write.path);
+  if (!abs.ok) throw new Error(`${write.path}: ${abs.error.detail}`);
+  let hash;
+  try {
+    hash = revisionOf(readFileSync3(abs.value));
+  } catch (e) {
+    const code = e.code;
+    if (code === "EISDIR") return "diverged";
+    if (code !== "ENOENT") throw e;
+    hash = null;
+  }
+  if (hash !== null && hash === write.after) return "post";
+  if (hash === write.before) return "pre";
+  return "diverged";
+}
+function applyWrites(wb, writes, contents) {
+  for (const w of writes) {
+    const abs = resolveInside(wb, w.path);
+    if (!abs.ok) throw new Error(`${w.path}: ${abs.error.detail}`);
+    const bytes = contents.get(w.path);
+    if (bytes === void 0) throw new Error(`no post-bytes for ${w.path}`);
+    mkdirSync2(dirname2(abs.value), { recursive: true });
+    replaceAtomically(abs.value, bytes);
+  }
+}
+function recover(wb, pending) {
+  const { intent, contents } = pending;
+  const states = intent.writes.map((w) => ({ w, state: fileState(wb, w) }));
+  const blocked = states.filter((s) => s.state === "diverged").map((s) => s.w);
+  if (blocked.length > 0) return { landed: false, blocked };
+  applyWrites(
+    wb,
+    states.filter((s) => s.state === "pre").map((s) => s.w),
+    contents
+  );
+  if (!existsSync2(answerPath(wb, intent.operation_id))) {
+    writeAnswer(wb, { operation_id: intent.operation_id, op: intent.op, request_digest: intent.request_digest, response: intent.response });
+  }
+  removeIntent(wb, intent.operation_id);
+  return { landed: true };
+}
+function writeAnswer(wb, answer) {
+  checkId(answer.operation_id);
+  mkdirSync2(opsDir(wb), { recursive: true });
+  replaceAtomically(answerPath(wb, answer.operation_id), Buffer.from(JSON.stringify(answer, null, 2) + "\n", "utf-8"));
+}
+function readAnswer(wb, id) {
+  checkId(id);
+  const file = answerPath(wb, id);
+  if (!existsSync2(file)) return { ok: true, value: null };
+  const rel = relative2(wb.root, file);
+  const parsed = strictParse(readFileSync3(file));
+  if (!parsed.ok) return err2("conflict", "operation-record-unreadable", `${rel}: ${parsed.reason}: ${parsed.detail}`);
+  const v = parsed.value;
+  if (isObject2(v) && isObject2(v.response) && typeof v.request_digest === "string" && typeof v.op === "string") {
+    return { ok: true, value: { operation_id: id, op: v.op, request_digest: v.request_digest, response: v.response } };
+  }
+  if (isObject2(v) && isObject2(v.response) && isObject2(v.request)) {
+    return { ok: true, value: { operation_id: id, op: String(v.request.op), request_digest: requestDigest(v.request), response: v.response } };
+  }
+  return err2("conflict", "operation-record-unreadable", `${rel}: neither a stored answer nor FJ01's {operation_id, request, response}`);
+}
+function replayAnswer(wb, req) {
+  const stored = readAnswer(wb, req.operation_id);
+  if (!stored.ok) return stored;
+  if (stored.value === null) return { ok: true, value: null };
+  if (stored.value.request_digest !== requestDigest(req)) {
+    return err2("conflict", "operation-id-reused", `operation_id ${req.operation_id} was already used for a different request`);
+  }
+  return { ok: true, value: stored.value.response };
 }
 
 // src/cli/protocol.ts
@@ -8863,14 +8978,321 @@ var OPERATIONS = [
   "migration"
 ];
 var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "transition"];
+var LANDS_IN = {
+  create: "FJ02",
+  claim: "FJ02",
+  release: "FJ02",
+  "set-mode": "FJ02",
+  "set-dependencies": "FJ02",
+  "adopt-plan": "FJ02",
+  "attach-evidence": "FJ02",
+  reconcile: "FJ02",
+  migration: "FJ04"
+};
 var fail = (cls, reason, detail, errors) => ({
   ok: false,
   error: { class: cls, reason, ...detail !== void 0 ? { detail } : {}, ...errors !== void 0 ? { errors } : {} }
 });
 var isOperation = (op) => typeof op === "string" && OPERATIONS.includes(op);
 
+// src/kernel.ts
+var CutReached = class extends Error {
+  constructor(cut) {
+    super(`fault injection: the operation was cut at ${cut}`);
+    this.cut = cut;
+    this.name = "CutReached";
+  }
+};
+var blockedOf = (p, diverged) => ({
+  operation_id: p.intent.operation_id,
+  paths: p.intent.writes.map((w) => w.path),
+  diverged: diverged.map((w) => w.path)
+});
+function recoveryBlocked(b) {
+  const files = b.diverged.join(", ");
+  const verb = b.diverged.length === 1 ? "is" : "are";
+  return {
+    class: "operation-unknown",
+    reason: "recovery-blocked",
+    detail: `operation ${b.operation_id} is pending in .json-state/journal/${b.operation_id} and cannot land: ${files} ${verb} at neither the pre- nor the post-bytes it names (edited by hand, or changed by a pull); restore the file to its pre-bytes, or remove the intent directory and accept what landed`
+  };
+}
+var blockedOn = (blocked, path) => blocked.find((b) => b.paths.includes(path));
+var refuse2 = (e) => fail(e.class, e.reason, e.detail, e.errors);
+var ok = (value) => ({ ok: true, value });
+var no = (cls, reason, detail) => ({ ok: false, error: { class: cls, reason, detail } });
+async function mutate(wb, req, plan, options = {}) {
+  if (wb.state === "legacy") return fail("unsupported-format", "legacy-workbench", `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`);
+  if (wb.state === "unsupported") return fail("unsupported-format", wb.diagnosis?.reason ?? "unsupported", wb.diagnosis?.detail ?? "the manifest is unsupported");
+  const faults = options.faults;
+  const point = async (at) => {
+    await faults?.pause?.(at);
+    if (faults?.cutAt === at) throw new CutReached(at);
+  };
+  const lock = await acquireLock(wb, options);
+  if (!lock.ok) return refuse2(lock.error);
+  try {
+    await faults?.pause?.("locked");
+    sweep(wb);
+    const pending = readIntents(wb);
+    if (!pending.ok) return refuse2(pending.error);
+    const blocked = [];
+    for (const p of pending.value) {
+      const r = recover(wb, p);
+      if (!r.landed) blocked.push(blockedOf(p, r.blocked));
+    }
+    const digest = requestDigest(req);
+    const own = pending.value.find((p) => p.intent.operation_id === req.operation_id);
+    const ownBlocked = blocked.find((b) => b.operation_id === req.operation_id);
+    if (own !== void 0 && ownBlocked !== void 0) {
+      return own.intent.request_digest === digest ? refuse2(recoveryBlocked(ownBlocked)) : reused(req.operation_id);
+    }
+    const replay = replayAnswer(wb, req);
+    if (!replay.ok) return refuse2(replay.error);
+    if (replay.value !== null) return replay.value;
+    const planned = await plan(planContext(wb, blocked));
+    if (!planned.ok) return refuse2(planned.error);
+    for (const w of planned.value.writes) {
+      const b = blockedOn(blocked, w.path);
+      if (b !== void 0) return refuse2(recoveryBlocked(b));
+    }
+    const writes = [];
+    const contents = /* @__PURE__ */ new Map();
+    for (const w of planned.value.writes) {
+      const abs = resolveInside(wb, w.path);
+      if (!abs.ok) return refuse2(abs.error);
+      if (contents.has(w.path)) throw new Error(`the plan of ${req.op} writes ${w.path} twice`);
+      writes.push({ path: w.path, before: hashOrNull(abs.value), after: revisionOf(w.bytes) });
+      contents.set(w.path, w.bytes);
+    }
+    const response = {
+      ok: true,
+      result: planned.value.result,
+      ...planned.value.revisions !== void 0 ? { revisions: planned.value.revisions } : {}
+    };
+    const now = options.now ?? Date.now;
+    const intent = { operation_id: req.operation_id, op: req.op, request_digest: digest, writes, response, created_at: new Date(now()).toISOString() };
+    const committed = commitIntent(wb, intent, contents);
+    if (!committed.ok) return refuse2(committed.error);
+    await point("after-intent");
+    for (let i = 0; i < writes.length; i++) {
+      applyWrites(wb, [writes[i]], contents);
+      await point(`after-write:${i}`);
+    }
+    writeAnswer(wb, { operation_id: req.operation_id, op: req.op, request_digest: digest, response });
+    await point("after-answer");
+    removeIntent(wb, req.operation_id);
+    return response;
+  } finally {
+    releaseLock(lock.value);
+  }
+}
+var reused = (id) => fail("conflict", "operation-id-reused", `operation_id ${id} was already used for a different request`);
+function hashOrNull(abs) {
+  try {
+    return revisionOf(readFileSync4(abs));
+  } catch (e) {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  }
+}
+function planContext(wb, blocked) {
+  return {
+    wb,
+    readPair(path) {
+      const b = blockedOn(blocked, path);
+      if (b !== void 0) return { ok: false, error: recoveryBlocked(b) };
+      return readPair(wb, path);
+    },
+    cas(pair, expected) {
+      if (pair.revision !== expected) return no("conflict", "revision-mismatch", `stored ${pair.revision} expected ${expected}`);
+      return ok(void 0);
+    },
+    resolveRecordId(id) {
+      const hits = [];
+      for (const path of controlFiles(wb, wb.root)) {
+        const abs = resolveInside(wb, path);
+        if (!abs.ok) continue;
+        const parsed = strictParse(readFileSync4(abs.value));
+        if (parsed.ok && parsed.value.id === id) hits.push(path);
+      }
+      if (hits.length === 0) return no("unresolved-reference", "record-not-found", `no control file in ${wb.root} carries the id ${id}`);
+      if (hits.length > 1) return no("conflict", "ambiguous-reference", `the id ${id} is carried by ${hits.join(", ")}`);
+      return ok({ path: hits[0], id });
+    },
+    resolveArtefact(ref) {
+      const abs = resolveInside(wb, ref.path);
+      if (!abs.ok) return abs;
+      const current2 = hashOrNull(abs.value);
+      if (current2 === null) return no("unresolved-reference", "artefact-missing", `${ref.path} does not exist in ${wb.root}`);
+      if (current2 !== ref.sha256) return no("missing-evidence", "artefact-changed", `${ref.path} is ${current2}, the reference names ${ref.sha256}`);
+      return ok({ path: ref.path, sha256: current2 });
+    },
+    validateResult(schemaId, value, what) {
+      const v = validate(schemaId, value);
+      if (v.ok) return ok(void 0);
+      if (v.class === "unsupported-format") return no("unsupported-format", "unknown-schema", `no schema ${v.schemaId}`);
+      return { ok: false, error: { class: "schema-invalid", reason: "result-invalid", detail: `${what}: ${describeErrors(v.errors)}`, errors: v.errors } };
+    }
+  };
+}
+var NO_VIEW = { blocked: [], blockedOn: () => void 0 };
+function answeredIds(wb) {
+  try {
+    return readdirSync4(opsDir(wb)).filter((n) => !n.startsWith(".") && n.endsWith(".json")).map((n) => n.slice(0, -".json".length));
+  } catch (e) {
+    if (e.code === "ENOENT") return [];
+    throw e;
+  }
+}
+async function snapshot(wb, phase, faults) {
+  const journal = pendingIds(wb);
+  await faults?.pause?.(`read:${phase}:between-listings`);
+  const ops = answeredIds(wb);
+  return { journal, key: [.../* @__PURE__ */ new Set([...journal, ...ops])].sort().join("\n") };
+}
+function classify(wb, ids) {
+  const blocked = [];
+  for (const id of ids) {
+    const r = readIntent(wb, id);
+    if (!r.ok || r.value === null) {
+      if (!pendingIds(wb).includes(id)) return { kind: "changed" };
+      if (!r.ok) return { kind: "unreadable", error: r.error };
+      continue;
+    }
+    const diverged = r.value.intent.writes.filter((w) => fileState(wb, w) === "diverged");
+    if (diverged.length === 0) return { kind: "live" };
+    blocked.push(blockedOf(r.value, diverged));
+  }
+  return { kind: "stable", blocked };
+}
+async function recoverUnderLock(wb, options) {
+  const lock = await acquireLock(wb, options);
+  if (!lock.ok) return lock;
+  try {
+    sweep(wb);
+    const pending = readIntents(wb);
+    if (!pending.ok) return pending;
+    for (const p of pending.value) recover(wb, p);
+    return ok(void 0);
+  } finally {
+    releaseLock(lock.value);
+  }
+}
+async function read(wb, body, options = {}) {
+  if (wb.state !== "json-control") return ok(await body(NO_VIEW));
+  const now = options.now ?? Date.now;
+  const waitMs = options.waitMs ?? LOCK_STALE_MS + 5e3;
+  const started = now();
+  for (; ; ) {
+    const before = await snapshot(wb, "before", options.faults);
+    const c = before.journal.length === 0 ? { kind: "stable", blocked: [] } : classify(wb, before.journal);
+    if (c.kind === "unreadable") return { ok: false, error: c.error };
+    if (c.kind === "live") {
+      const remaining = Math.max(0, waitMs - (now() - started));
+      const r = await recoverUnderLock(wb, { ...options, waitMs: remaining });
+      if (!r.ok) return r;
+    } else if (c.kind === "stable") {
+      const blocked = c.blocked;
+      const value = await body({ blocked, blockedOn: (path) => blockedOn(blocked, path) });
+      const after = await snapshot(wb, "after", options.faults);
+      if (after.key === before.key) return ok(value);
+    }
+    if (now() - started >= waitMs) {
+      return no("conflict", "lock-timeout", `no consistent read of ${wb.root} within ${waitMs} ms: operations kept starting or landing under it`);
+    }
+  }
+}
+
+// src/transitions.ts
+import { readFileSync as readFileSync5 } from "node:fs";
+import { fileURLToPath as fileURLToPath2 } from "node:url";
+var CONTRACT_DIR = fileURLToPath2(new URL("../contract/", import.meta.url));
+function readTable(file) {
+  const abs = CONTRACT_DIR + file;
+  const parsed = strictParse(readFileSync5(abs));
+  if (!parsed.ok) throw new Error(`${abs}: ${parsed.reason}: ${parsed.detail}`);
+  return parsed.value;
+}
+var transitionsTable;
+var dependenciesTable;
+var transitions = () => transitionsTable ??= readTable("transitions.json");
+function useTables(t, d) {
+  transitionsTable = t;
+  dependenciesTable = d;
+}
+var kinds = () => Object.keys(transitions().kinds);
+var refuse3 = (cls, reason) => ({ ok: false, class: cls, reason });
+var isObject3 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+function allowed(kind, from, to, payload = {}) {
+  const table = transitions().kinds[kind];
+  if (table === void 0) return refuse3("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
+  if (!table.states.includes(from)) return refuse3("schema-invalid", `"${from}" is not a ${kind} state`);
+  if (!table.states.includes(to)) return refuse3("schema-invalid", `"${to}" is not a ${kind} state`);
+  const edge = table.edges.find((e) => e.from === from && e.to === to);
+  if (edge === void 0) {
+    const why = table.terminal.includes(from) ? `${from} is terminal (${table.reopen})` : `no edge ${from} -> ${to} in the table`;
+    return refuse3("conflict", `${kind}: ${why}`);
+  }
+  switch (kind) {
+    case "package":
+      return packageRules(table, to, payload);
+    case "issue":
+      return issueRules(table, to, payload);
+    case "decision":
+      return decisionRules(edge, payload);
+    default:
+      return { ok: true };
+  }
+}
+function packageRules(table, to, payload) {
+  const claimRule = table.claim?.[to];
+  const hasClaim = isObject3(payload.claim);
+  if (claimRule === "required" && !hasClaim) return refuse3("schema-invalid", `package: ${to} requires a claim`);
+  if (claimRule === "forbidden" && payload.claim != null) return refuse3("schema-invalid", `package: ${to} carries no claim`);
+  const terminal = table.terminal.includes(to);
+  const outcome = payload.outcome ?? null;
+  if (!terminal) {
+    if (outcome !== null) return refuse3("schema-invalid", `package: outcome is null while ${to}`);
+    return { ok: true };
+  }
+  if (!isObject3(outcome)) return refuse3("schema-invalid", `package: ${to} requires an outcome`);
+  const classes = table.outcome_classes?.[to] ?? [];
+  if (!classes.includes(outcome.class)) {
+    return refuse3("schema-invalid", `package: ${to} admits the outcome classes ${classes.join(", ")}, not "${outcome.class}"`);
+  }
+  return { ok: true };
+}
+function issueRules(table, to, payload) {
+  const terminal = table.terminal.includes(to);
+  const hasDisposition = isObject3(payload.disposition);
+  if (terminal && !hasDisposition) return refuse3("schema-invalid", `issue: ${to} requires a disposition`);
+  if (!terminal && payload.disposition != null) return refuse3("schema-invalid", `issue: disposition is null while ${to}`);
+  return { ok: true };
+}
+function decisionRules(edge, payload) {
+  if (edge.requires === void 0) return { ok: true };
+  const value = payload[edge.requires];
+  if (value === void 0 || value === null) return refuse3("schema-invalid", `decision: ${edge.to} requires ${edge.requires}`);
+  return { ok: true };
+}
+function stateRules(kind, state, payload = {}) {
+  const table = transitions().kinds[kind];
+  if (table === void 0) return refuse3("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
+  if (!table.states.includes(state)) return refuse3("schema-invalid", `"${state}" is not a ${kind} state`);
+  switch (kind) {
+    case "package":
+      return packageRules(table, state, payload);
+    case "issue":
+      return issueRules(table, state, payload);
+    default:
+      return { ok: true };
+  }
+}
+
 // src/cli/ops.ts
 var fromStore = (e) => fail(e.class, e.reason, e.detail, e.errors);
+var notImplemented = (op) => fail("operation-unknown", "not-implemented", `${op} is specified (spec section 6) and lands in ${LANDS_IN[op] ?? "a later package"}`);
 async function dispatch(request, options = {}) {
   if (typeof request !== "object" || request === null || Array.isArray(request)) {
     return fail("schema-invalid", "request-not-an-object", "a request is one JSON object");
@@ -8885,32 +9307,35 @@ async function dispatch(request, options = {}) {
     return fail("schema-invalid", "request", describeErrors(v.errors), v.errors);
   }
   const req = request;
-  if (!IMPLEMENTED_OPERATIONS.includes(req.op)) {
-    return fail("operation-unknown", "not-implemented-in-fj01", `${req.op} is specified (spec section 6) and lands in a later package`);
-  }
+  if (!IMPLEMENTED_OPERATIONS.includes(req.op)) return notImplemented(req.op);
   const root = req.workbench ?? options.defaultWorkbench;
   if (root === void 0) return fail("unknown-scope", "workbench-unspecified", "the request names no workbench and FUSION_WORKBENCH is not set");
   const opened = openWorkbench(root);
   if (!opened.ok) return fromStore(opened.error);
   const wb = opened.value;
+  const kernel = options.kernel ?? {};
   switch (req.op) {
     case "inspect":
       return inspect(wb);
     case "list":
-      return readable(wb) ?? list(wb, req);
+      return readable(wb) ?? reading(wb, (view) => list(wb, req, view), kernel);
     case "show":
-      return readable(wb) ?? show(wb, req);
+      return readable(wb) ?? reading(wb, (view) => show(wb, req, view), kernel);
     case "validate":
-      return readable(wb) ?? validateOp(wb, req);
+      return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
     case "transition":
-      return transition(wb, req, options.write);
+      return mutate(wb, req, transitionPlan(req), kernel);
     default:
-      return fail("operation-unknown", "not-implemented-in-fj01", `${req.op} lands in a later package`);
+      return notImplemented(req.op);
   }
 }
 function readable(wb) {
   if (wb.state === "unsupported" && wb.diagnosis !== null) return fromStore(wb.diagnosis);
   return null;
+}
+async function reading(wb, body, options) {
+  const r = await read(wb, body, options);
+  return r.ok ? r.value : fromStore(r.error);
 }
 function inspect(wb) {
   return {
@@ -8938,27 +9363,33 @@ function scopeDir(wb, scope) {
   if (!abs.ok) return { ok: false, response: fromStore(abs.error) };
   let isDir = false;
   try {
-    isDir = statSync2(abs.value).isDirectory();
+    isDir = statSync3(abs.value).isDirectory();
   } catch {
     isDir = false;
   }
   if (!isDir) return { ok: false, response: fail("unknown-scope", "scope-missing", `${scope} is not a directory in ${wb.root}`) };
   return { ok: true, dir: abs.value };
 }
-function list(wb, req) {
+function list(wb, req, view) {
   const scope = scopeDir(wb, req.scope);
   if (!scope.ok) return scope.response;
   const records = controlFiles(wb, scope.dir).map((path) => {
+    const b = view.blockedOn(path);
+    if (b !== void 0) return { path, problem: recoveryBlocked(b) };
     const r = readPair(wb, path);
     if (!r.ok) return { path, problem: r.error };
     return { path, kind: r.value.kind, id: r.value.control.id ?? null, status: stateOf(r.value), revision: r.value.revision, narrative: r.value.narrative };
   });
   return { ok: true, result: { workbench: wb.root, scope: req.scope ?? null, records } };
 }
-function show(wb, req) {
+function show(wb, req, view) {
+  const blocked = view.blockedOn(req.record.path);
+  if (blocked !== void 0) return fromStore(recoveryBlocked(blocked));
   const r = readPair(wb, req.record.path);
   if (!r.ok) return fromStore(r.error);
   const { path, kind, control, revision, narrative } = r.value;
+  const narrativeBlocked = narrative === null ? void 0 : view.blockedOn(narrative.path);
+  if (narrativeBlocked !== void 0) return fromStore(recoveryBlocked(narrativeBlocked));
   return { ok: true, result: { path, kind, control, revision, narrative } };
 }
 function findingsOf(wb, path) {
@@ -8983,68 +9414,102 @@ function findingsOf(wb, path) {
   }
   return findings;
 }
+function blockedFindingOf(wb, path, view) {
+  if (view.blocked.length === 0) return [];
+  const r = readPair(wb, path);
+  const narrative = r.ok ? r.value.narrative?.path : void 0;
+  const b = view.blockedOn(path) ?? (narrative === void 0 ? void 0 : view.blockedOn(narrative));
+  if (b === void 0) return [];
+  const e = recoveryBlocked(b);
+  return [{ path, class: e.class, reason: e.reason, detail: e.detail }];
+}
 function rulePayload(pair) {
   if (pair.kind === "package") return { claim: pair.control.claim, outcome: pair.control.outcome ?? null };
   const c = pair.control.control;
   return { disposition: c?.disposition, answer_ref: c?.answer_ref, implementation_ref: c?.implementation_ref, superseded_by: c?.superseded_by };
 }
-function validateOp(wb, req) {
+function validateOp(wb, req, view) {
   const paths = req.record !== void 0 ? [req.record.path] : controlFiles(wb, wb.root);
-  const findings = paths.flatMap((p) => findingsOf(wb, p));
+  const findings = paths.flatMap((p) => [...blockedFindingOf(wb, p, view), ...findingsOf(wb, p)]);
   return { ok: true, result: { workbench: wb.root, state: wb.state, checked: paths.length, valid: findings.length === 0, findings } };
 }
-var opsDir = (wb) => join3(wb.root, STATE_DIR, "ops");
-var answerPath = (wb, id) => join3(opsDir(wb), `${id}.json`);
-function storedAnswer(wb, req) {
-  const file = answerPath(wb, req.operation_id);
-  if (!existsSync2(file)) return null;
-  const parsed = strictParse(readFileSync4(file));
-  if (!parsed.ok) return fail("conflict", "operation-record-unreadable", `${relative2(wb.root, file)}: ${parsed.reason}: ${parsed.detail}`);
-  const stored = parsed.value;
-  if (canonical(stored.request) !== canonical(req)) {
-    return fail("conflict", "operation-id-reused", `operation_id ${req.operation_id} was already used for a different request`);
-  }
-  return stored.response;
+var isObject4 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+function transitionPlan(req) {
+  return (ctx) => {
+    const r = ctx.readPair(req.record.path);
+    if (!r.ok) return r;
+    const pair = r.value;
+    const cas = ctx.cas(pair, req.expected_revision);
+    if (!cas.ok) return cas;
+    const payload = req.payload ?? {};
+    const moved = pair.kind === "package" ? movePackage(pair, req.to, payload) : moveRecord(ctx, pair, req.to, payload);
+    if (!moved.ok) return moved;
+    const { from, next, schemaId } = moved.value;
+    const what = pair.kind === "package" ? "the record after the transition is not a valid package" : `the record after the transition is not a valid ${pair.kind} record`;
+    const v = ctx.validateResult(schemaId, next, what);
+    if (!v.ok) return v;
+    const bytes = Buffer.from(serialise(next), "utf-8");
+    const revision = revisionOf(bytes);
+    return {
+      ok: true,
+      value: {
+        writes: [{ path: req.record.path, bytes }],
+        result: { operation_id: req.operation_id, path: req.record.path, from, to: req.to, revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: revision }
+      }
+    };
+  };
 }
-async function transition(wb, req, write) {
-  if (wb.state === "legacy") return fail("unsupported-format", "legacy-workbench", `${wb.root} carries no workbench.json; reads are allowed, mutation is not (spec 4.1)`);
-  if (wb.state === "unsupported" && wb.diagnosis !== null) return fromStore(wb.diagnosis);
-  const replay = storedAnswer(wb, req);
-  if (replay !== null) return replay;
-  const r = readPair(wb, req.record.path);
-  if (!r.ok) return fromStore(r.error);
-  const pair = r.value;
-  if (pair.kind !== "package") {
-    return fail("operation-unknown", "not-implemented-in-fj01", `transition of a ${pair.kind} record lands in a later package; FJ01 moves packages only`);
-  }
-  if (pair.revision !== req.expected_revision) {
-    return fail("conflict", "revision-mismatch", `stored ${pair.revision} expected ${req.expected_revision}`);
-  }
+var refused = (rule) => ({ ok: false, error: { class: rule.class, reason: "transition-refused", detail: rule.reason } });
+function movePackage(pair, to, payload) {
   const from = pair.control.status;
-  const table = transitions().kinds["package"];
-  const terminal = table?.terminal.includes(req.to) ?? false;
-  const payload = req.payload ?? {};
+  const terminal = transitions().kinds["package"]?.terminal.includes(to) ?? false;
   const claim = "claim" in payload ? payload.claim ?? null : terminal ? pair.control.claim ?? null : null;
   const outcome = payload.outcome ?? null;
-  const rule = allowed("package", from, req.to, { claim, outcome });
-  if (!rule.ok) return fail(rule.class, "transition-refused", rule.reason);
-  const next = { ...pair.control, status: req.to, claim, outcome };
-  const v = validate(PACKAGE_SCHEMA_ID, next);
-  if (!v.ok) {
-    if (v.class === "unsupported-format") return fail("unsupported-format", "unknown-schema", `no schema ${v.schemaId}`);
-    return fail("schema-invalid", "result-invalid", `the record after the transition is not a valid package: ${describeErrors(v.errors)}`, v.errors);
+  const rule = allowed("package", from, to, { claim, outcome });
+  if (!rule.ok) return refused(rule);
+  return { ok: true, value: { from, next: { ...pair.control, status: to, claim, outcome }, schemaId: PACKAGE_SCHEMA_ID } };
+}
+var DECISION_FIELDS = ["answer_ref", "implementation_ref", "superseded_by", "deferral"];
+function moveRecord(ctx, pair, to, payload) {
+  const kind = pair.kind;
+  const control = pair.control.control ?? {};
+  const from = control.state;
+  const terminal = transitions().kinds[kind]?.terminal.includes(to) ?? false;
+  let fields = {};
+  if (kind === "issue") {
+    const disposition = "disposition" in payload ? payload.disposition ?? null : terminal ? control.disposition ?? null : null;
+    fields = { disposition };
+  } else if (kind === "decision") {
+    for (const f of DECISION_FIELDS) fields[f] = f in payload ? payload[f] ?? null : control[f] ?? null;
   }
-  const w = await writeControl(wb, req.record.path, next, req.expected_revision, write);
-  if (!w.ok) return fromStore(w.error);
-  const response = {
-    ok: true,
-    result: { operation_id: req.operation_id, path: req.record.path, from, to: req.to, revision: w.value.revision, previous_revision: req.expected_revision },
-    revisions: { [req.record.path]: w.value.revision }
-  };
-  const record = { operation_id: req.operation_id, request: req, response };
-  mkdirSync2(opsDir(wb), { recursive: true });
-  replaceAtomically(answerPath(wb, req.operation_id), Buffer.from(JSON.stringify(record, null, 2) + "\n", "utf-8"));
-  return response;
+  const rule = allowed(kind, from, to, fields);
+  if (!rule.ok) return refused(rule);
+  if (kind === "decision") {
+    for (const f of DECISION_FIELDS) {
+      if (!(f in payload)) continue;
+      const value = fields[f];
+      const target = f === "deferral" && isObject4(value) ? value.target : value;
+      const resolved = resolveReference(ctx, target);
+      if (!resolved.ok) return resolved;
+    }
+  }
+  return { ok: true, value: { from, next: { ...pair.control, control: { ...control, state: to, ...fields } }, schemaId: RECORD_SCHEMA_ID } };
+}
+function resolveReference(ctx, value) {
+  if (!isObject4(value)) return { ok: true, value: void 0 };
+  if (typeof value.record_id === "string") {
+    if (ctx.wb.id !== null && value.workbench_id !== ctx.wb.id) {
+      return { ok: false, error: { class: "unresolved-reference", reason: "foreign-workbench", detail: `the reference names workbench ${JSON.stringify(value.workbench_id)}; this workbench is ${ctx.wb.id}` } };
+    }
+    const r = ctx.resolveRecordId(value.record_id);
+    return r.ok ? { ok: true, value: void 0 } : r;
+  }
+  if (typeof value.path === "string" && typeof value.sha256 === "string") {
+    const r = ctx.resolveArtefact({ path: value.path, sha256: value.sha256 });
+    return r.ok ? { ok: true, value: void 0 } : r;
+  }
+  return { ok: true, value: void 0 };
 }
 
 // contract/dependencies.json
@@ -11227,7 +11692,7 @@ ${USAGE}
   let bytes;
   if (args.file !== null) {
     try {
-      bytes = readFileSync5(args.file);
+      bytes = readFileSync6(args.file);
     } catch (e) {
       process.stderr.write(`fusion-record: cannot read ${args.file}: ${e instanceof Error ? e.message : String(e)}
 ${USAGE}

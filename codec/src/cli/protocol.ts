@@ -4,12 +4,14 @@
 // lays it out.
 //
 // The fourteen operations of the spec's table are the request union below,
-// each with its argument shape. FJ01 implements five of them (`inspect`,
-// `list`, `show`, `validate`, `transition`) and answers the other nine with
-// `operation-unknown/not-implemented-in-fj01`, so that a caller written
-// against the whole table gets a typed refusal and never a parse error. The
-// shapes of the nine are the contract those later packages fill in; they are
-// validated today so that a request against them fails for the right reason.
+// each with its argument shape. `IMPLEMENTED_OPERATIONS` names the ones this
+// codec answers, and `inspect` reports it; every other one is answered
+// `operation-unknown/not-implemented` with a detail naming the package that
+// lands it (`LANDS_IN`), so that a caller written against the whole table gets
+// a typed refusal and never a parse error. The token names no package, so it
+// stays true as packages land. The shapes of the operations not yet answered
+// are the contract their packages fill in; they are validated today so that a
+// request against them fails for the right reason.
 //
 // A request is validated against `schemas/protocol.schema.json` (the seventh
 // schema, `$id` `urn:fusion:schema:fusion.protocol/v1`) before it is
@@ -52,8 +54,21 @@ export const OPERATIONS = [
 
 export type Operation = (typeof OPERATIONS)[number];
 
-/** The operations FJ01 answers with a result; the rest answer `operation-unknown`. */
+/** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
 export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "transition"];
+
+/** The package that lands each operation not yet answered: the detail of its `not-implemented` refusal. */
+export const LANDS_IN: Partial<Record<Operation, string>> = {
+  create: "FJ02",
+  claim: "FJ02",
+  release: "FJ02",
+  "set-mode": "FJ02",
+  "set-dependencies": "FJ02",
+  "adopt-plan": "FJ02",
+  "attach-evidence": "FJ02",
+  reconcile: "FJ02",
+  migration: "FJ04",
+};
 
 /** The typed error classes of spec section 6, in the spec's order. */
 export const ERROR_CLASSES = [
@@ -106,7 +121,7 @@ interface Mutation<Op extends Operation> extends Base<Op> {
   actor: Actor;
 }
 
-// --- the five FJ01 operations ------------------------------------------------
+// --- the five operations FJ01 answered ----------------------------------------
 
 export type InspectRequest = Base<"inspect">;
 
@@ -124,14 +139,39 @@ export interface ValidateRequest extends Base<"validate"> {
   record?: RecordSelector;
 }
 
+/**
+ * A cross-reference in the common schema's union: a record, an artefact, a
+ * foreign reference, or a legacy citation string.
+ */
+export type Reference = RecordRef | ArtefactRef | ForeignRef | string;
+
+export interface ArtefactRef {
+  path: string;
+  sha256: string;
+  kind: string;
+}
+
+export interface ForeignRef {
+  project: string;
+  citation: string;
+}
+
+/** A deferred decision's target (a reference, or a named external target) and who ruled. */
+export interface Deferral {
+  target: Reference | { kind: "external"; name: string };
+  ruled_by: Actor;
+}
+
 /** What the target state may need to see, in the record's own field shapes. */
 export interface TransitionPayload {
   claim?: { checkout_id: string; person: string | null; claimed_at: string | null } | null;
   outcome?: { class: string; reason: string; evidence: EvidenceRef[] } | null;
-  disposition?: { kind: string; reason_ref: unknown } | null;
-  answer_ref?: RecordRef | null;
-  implementation_ref?: string | null;
+  disposition?: { kind: string; reason_ref: Reference | null } | null;
+  answer_ref?: Reference | null;
+  /** A git commit (a hex object name) or a reference. */
+  implementation_ref?: string | Reference | null;
   superseded_by?: RecordRef | null;
+  deferral?: Deferral | null;
 }
 
 export interface TransitionRequest extends Mutation<"transition"> {
@@ -140,7 +180,7 @@ export interface TransitionRequest extends Mutation<"transition"> {
   payload?: TransitionPayload;
 }
 
-// --- the nine later operations, shapes only ----------------------------------
+// --- the nine operations FJ02 and FJ04 land -------------------------------------
 
 export interface CreateRequest extends Base<"create"> {
   operation_id: string;
@@ -209,7 +249,7 @@ export type Request =
 
 export interface ProtocolError {
   class: ErrorClass;
-  /** A short token naming the refusal within its class (`revision-mismatch`, `not-implemented-in-fj01`, ...). */
+  /** A short token naming the refusal within its class (`revision-mismatch`, `not-implemented`, ...). */
   reason: string;
   detail?: string;
   /** Present on a `schema-invalid` answer that came from the validator. */

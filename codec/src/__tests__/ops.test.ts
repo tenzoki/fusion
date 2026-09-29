@@ -1,22 +1,22 @@
 // ---------------------------------------------------------------------------
-// The dispatcher and the five FJ01 operations over the scratch workbench, and
-// `main.ts` by spawning `node` on the committed bundle.
+// The dispatcher and the operations it answers over the scratch workbench,
+// and `main.ts` by spawning `node` on the committed bundle.
 //
 // Every case copies `fixtures/workbench/` to a fresh temp directory and never
-// writes into `codec/fixtures/`. The nine deferred operations are driven from
-// their valid request fixtures, so the refusal is asserted on the exact shape
-// the schema admits. The spawn cases run `dist/fusion-record.js`, which
+// writes into `codec/fixtures/`. The operations not yet answered are driven
+// from their valid request fixtures, so the refusal is asserted on the exact
+// shape the schema admits. The spawn cases run `dist/fusion-record.js`, which
 // `npm test` builds first; a missing bundle fails with the remedy named.
 // ---------------------------------------------------------------------------
 
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { dispatch } from "../cli/ops.js";
-import { OPERATIONS, IMPLEMENTED_OPERATIONS, type Response, type TransitionRequest } from "../cli/protocol.js";
+import { OPERATIONS, IMPLEMENTED_OPERATIONS, LANDS_IN, type Response, type TransitionRequest } from "../cli/protocol.js";
 import { installInlined } from "../cli/schemas.js";
 import { revisionOf, serialise } from "../store.js";
 import { strictParse } from "../strict-json.js";
@@ -104,11 +104,17 @@ describe("dispatch: the request itself", () => {
   });
 
   for (const op of OPERATIONS.filter((o) => !IMPLEMENTED_OPERATIONS.includes(o))) {
-    it(`${op}: the valid fixture request is answered operation-unknown/not-implemented-in-fj01`, async () => {
+    it(`${op}: the valid fixture request is answered operation-unknown/not-implemented, the detail naming the package that lands it`, async () => {
       const req = { ...fixture(`protocol/${op}.json`), workbench: root };
-      expect(await dispatch(req)).toMatchObject({ ok: false, error: { class: "operation-unknown", reason: "not-implemented-in-fj01" } });
+      const r = await dispatch(req);
+      expect(r).toMatchObject({ ok: false, error: { class: "operation-unknown", reason: "not-implemented" } });
+      if (!r.ok) expect(r.error.detail).toContain(`${op} is specified (spec section 6) and lands in ${LANDS_IN[op]}`);
     });
   }
+
+  it("migration lands in FJ04", () => {
+    expect(LANDS_IN.migration).toBe("FJ04");
+  });
 });
 
 // --- inspect ------------------------------------------------------------------------
@@ -299,9 +305,109 @@ describe("transition", () => {
     expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: OPEN } })).valid).toBe(true);
   });
 
-  it("a record kind other than package is operation-unknown/not-implemented-in-fj01", async () => {
-    const r = await dispatch(transitionRequest({ record: { path: ISSUE }, expected_revision: revision(ISSUE), to: "in_progress", payload: {} }));
-    expect(r).toMatchObject({ ok: false, error: { class: "operation-unknown", reason: "not-implemented-in-fj01" } });
+  // --- the record kinds (FJ02 step 3): one case per kind, and the decision's references ---
+
+  /** The record kinds' starting records: the valid fixtures, written into the temp copy with a narrative beside each. */
+  const seedRecord = (fixtureRel: string, store: string, stem: string): string => {
+    const value = fixture(fixtureRel);
+    const narrative = `shared/${store}/${stem}.md`;
+    const path = `shared/${store}/${stem}.record.json`;
+    mkdirSync(join(root, "shared", store), { recursive: true });
+    writeFileSync(join(root, narrative), `# ${stem}\n`);
+    writeFileSync(join(root, path), serialise({ ...value, narrative: { path: narrative } }));
+    return path;
+  };
+  const controlOf = (path: string): Record<string, unknown> => {
+    const p = strictParse(bytesOf(path));
+    if (!p.ok) throw new Error(p.detail);
+    return (p.value as { control: Record<string, unknown> }).control;
+  };
+  const recordMove = async (path: string, to: string, payload: TransitionRequest["payload"], id: string): Promise<Response> =>
+    dispatch(transitionRequest({ operation_id: id, record: { path }, expected_revision: revision(path), to, reason: `move to ${to}`, payload }));
+  /** Asserts FJ01's response shape for a record kind, and that the record is valid and at `to`. */
+  const landed = async (r: Response, path: string, from: string, to: string, id: string): Promise<void> => {
+    const result = okResult(r);
+    expect(Object.keys(result)).toEqual(["operation_id", "path", "from", "to", "revision", "previous_revision"]);
+    expect(result).toMatchObject({ operation_id: id, path, from, to, revision: revision(path) });
+    if (r.ok) expect(r.revisions).toEqual({ [path]: revision(path) });
+    expect(controlOf(path).state).toBe(to);
+    const stored = strictParse(bytesOf(path));
+    if (!stored.ok) throw new Error(stored.detail);
+    expect(bytesOf(path).toString("utf-8"), "the stored bytes are the deterministic serialisation").toBe(serialise(stored.value));
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path } })).valid).toBe(true);
+  };
+
+  it("issue: open to closed with a fixed disposition lands; closing without one is refused and the record untouched", async () => {
+    const before = bytesOf(ISSUE);
+    expect(await recordMove(ISSUE, "closed", {}, "5a0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a")).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "transition-refused" } });
+    expect(bytesOf(ISSUE).equals(before)).toBe(true);
+    const id = "5b0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a";
+    const disposition = { kind: "fixed", reason_ref: "260928-1200-parser-fix.md" };
+    await landed(await recordMove(ISSUE, "closed", { disposition }, id), ISSUE, "open", "closed", id);
+    expect(controlOf(ISSUE).disposition).toEqual(disposition);
+  });
+
+  it("plan: open to in_progress moves the state only; steps and criteria stay as stored", async () => {
+    const path = seedRecord("record/plan-open-unadopted.json", "plans", "260929-1000-a-plan");
+    const steps = controlOf(path).steps;
+    const id = "5c0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a";
+    await landed(await recordMove(path, "in_progress", {}, id), path, "open", "in_progress", id);
+    expect(controlOf(path).steps).toEqual(steps);
+  });
+
+  it("discussion: open to closed", async () => {
+    const path = seedRecord("record/discussion-open.json", "discussions", "260929-1000-a-discussion");
+    const id = "5d0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a";
+    await landed(await recordMove(path, "closed", {}, id), path, "open", "closed", id);
+  });
+
+  it("decision: open to deferred with a deferral to an external target; without one it is refused", async () => {
+    const path = seedRecord("record/decision-open.json", "decisions", "260929-1000-a-decision");
+    expect(await recordMove(path, "deferred", {}, "5e0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a")).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "transition-refused" } });
+    const deferral = { target: { kind: "external" as const, name: "v1.x" }, ruled_by: ACTOR };
+    const id = "5f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a";
+    await landed(await recordMove(path, "deferred", { deferral }, id), path, "open", "deferred", id);
+    expect(controlOf(path)).toMatchObject({ deferral, answer_ref: null, implementation_ref: null, superseded_by: null });
+  });
+
+  it("decision: open to answered by a citation string (carried unresolved), then to implemented by a reference that resolves", async () => {
+    const path = seedRecord("record/decision-open.json", "decisions", "260929-1000-a-decision");
+    const answered = "6a0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a";
+    await landed(await recordMove(path, "answered", { answer_ref: "260809-1400-fixture-format-consultation.md" }, answered), path, "open", "answered", answered);
+    expect(controlOf(path).answer_ref).toBe("260809-1400-fixture-format-consultation.md");
+
+    // implementation_ref as a reference, not a commit hash: the widened
+    // protocol payload (git_commit | reference), end to end.
+    const wbId = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+    const dangling = { workbench_id: wbId, record_id: "00000000-0000-4000-8000-00000000dead" };
+    const before = bytesOf(path);
+    expect(await recordMove(path, "implemented", { implementation_ref: dangling }, "6b0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a")).toMatchObject({ ok: false, error: { class: "unresolved-reference", reason: "record-not-found" } });
+    expect(await recordMove(path, "implemented", { implementation_ref: { ...dangling, workbench_id: "00000000-0000-4000-8000-000000000000" } }, "6b1d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a")).toMatchObject({ ok: false, error: { class: "unresolved-reference", reason: "foreign-workbench" } });
+    expect(bytesOf(path).equals(before), "a refused reference writes nothing").toBe(true);
+    const ref = { workbench_id: wbId, record_id: "591d5bf4-2219-46b6-a0d3-cbdb28d6af16", display: "260928-1200-parser-fix.md" };
+    const implemented = "6c0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a";
+    await landed(await recordMove(path, "implemented", { implementation_ref: ref }, implemented), path, "answered", "implemented", implemented);
+    expect(controlOf(path)).toMatchObject({ implementation_ref: ref, answer_ref: "260809-1400-fixture-format-consultation.md" });
+  });
+
+  it("decision: implementation_ref as a git commit, and an artefact reference checked against the bytes on disk", async () => {
+    const path = seedRecord("record/decision-open.json", "decisions", "260929-1000-a-decision");
+    const note = "shared/decisions/260929-1000-a-decision.md";
+    const artefact = { path: note, sha256: revision(note), kind: "decision" };
+    expect(await recordMove(path, "answered", { answer_ref: { ...artefact, sha256: "sha256:" + "0".repeat(64) } }, "6d0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a")).toMatchObject({ ok: false, error: { class: "missing-evidence", reason: "artefact-changed" } });
+    expect(await recordMove(path, "answered", { answer_ref: { ...artefact, path: "shared/decisions/absent.md" } }, "6d1d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a")).toMatchObject({ ok: false, error: { class: "unresolved-reference", reason: "artefact-missing" } });
+    const id = "6e0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a";
+    await landed(await recordMove(path, "implemented", { implementation_ref: "20942d0c" }, id), path, "open", "implemented", id);
+    expect(controlOf(path).implementation_ref).toBe("20942d0c");
+  });
+
+  it("decision: a state the target forbids a field in is refused by the record schema, and nothing is written", async () => {
+    const path = seedRecord("record/decision-open.json", "decisions", "260929-1000-a-decision");
+    const before = bytesOf(path);
+    // answered carries no implementation_ref (record.schema.json decision_control).
+    const r = await recordMove(path, "answered", { answer_ref: "260809-1400-fixture-format-consultation.md", implementation_ref: "20942d0c" }, "6f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a");
+    expect(r).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "result-invalid" } });
+    expect(bytesOf(path).equals(before)).toBe(true);
   });
 
   it("a legacy workbench refuses mutation with unsupported-format/legacy-workbench", async () => {

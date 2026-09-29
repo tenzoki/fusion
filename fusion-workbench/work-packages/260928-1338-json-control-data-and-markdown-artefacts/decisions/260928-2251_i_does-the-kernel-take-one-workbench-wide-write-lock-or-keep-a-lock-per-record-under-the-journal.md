@@ -35,3 +35,6 @@ Option 1. The journal's whole argument is that recovery and the operation that f
 
 ---
 Answered: 260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md step 2 — option 1: one workbench-wide `.json-state/write.lock`, a dead recorded holder reaped at once, the age rule only where no PID is recorded, a lock recorded on another host never reaped, takeover only through an exclusive takeover file; approved with the revised plan on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 20942d0c — codec/src/store.ts takes one `.json-state/write.lock` recording pid, host and nonce, reaps a dead holder on this host at once, never one of another host, and takes over only through an exclusive claim and a re-check (FJ02 step 2).

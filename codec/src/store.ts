@@ -5,7 +5,7 @@
 //
 //   openWorkbench(root)                     what kind of workbench is this?
 //   readPair(wb, path)                      the control record, its revision, its narrative
-//   writeControl(wb, path, value, expected) replace the control record, if it is still the one read
+//   serialise(value)                        the deterministic bytes a control record is stored as
 //   acquireLock(wb) / releaseLock(lock)     the one workbench write lock every writer takes
 //
 // `openWorkbench` reads `workbench.json` when present (spec 4.1). A manifest
@@ -16,13 +16,11 @@
 // `unsupported-format/legacy-workbench`.
 //
 // The revision of a record is `sha256:` over the exact stored bytes, returned
-// beside the record and never written into it. `writeControl` is FJ01's
-// mutation, kept until the kernel replaces it (FJ02 step 3): the workbench
-// write lock, a re-read of the stored bytes under it and a refusal
-// `conflict/revision-mismatch` when their hash is not the one the caller read,
-// the deterministic serialisation to a temp file in the same directory, an
-// fsync, an atomic rename. The journal that makes a multi-file operation
-// recoverable is `journal.ts`.
+// beside the record and never written into it. Nothing here changes a
+// record: the one write path is the kernel (`kernel.ts`, FJ02 step 3), which
+// takes the lock below, checks the caller's revision, and writes through the
+// journal (`journal.ts`) by temp file, fsync and atomic rename
+// (`replaceAtomically`).
 //
 // The lock is ONE file for the whole workbench, `.json-state/write.lock`
 // (decision 260928-2251, option 1), and its protocol is the FJ02 plan's
@@ -418,43 +416,6 @@ export interface WriteOptions {
   now?: () => number;
   /** Test-only pause points in `acquireLock`; `main.ts` passes none. */
   lockHooks?: LockHooks;
-}
-
-export interface Written {
-  revision: string;
-  bytes: Buffer;
-}
-
-/**
- * Replaces the control record at `path` with `value`, provided the stored
- * bytes still hash to `expectedRevision`. The value is validated by the
- * caller; here it is serialised, so an unknown schema throws.
- */
-export async function writeControl(wb: Workbench, path: string, value: unknown, expectedRevision: string, options: WriteOptions = {}): Promise<Result<Written>> {
-  if (wb.state === "legacy") return err("unsupported-format", "legacy-workbench", `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`);
-  if (wb.state === "unsupported") return err("unsupported-format", wb.diagnosis?.reason ?? "unsupported", wb.diagnosis?.detail ?? "the manifest is unsupported");
-  const abs = resolveInside(wb, path);
-  if (!abs.ok) return abs;
-  const text = serialise(value);
-  const bytes = Buffer.from(text, "utf-8");
-
-  const lock = await acquireLock(wb, options);
-  if (!lock.ok) return lock;
-  try {
-    let stored: Buffer;
-    try {
-      stored = readFileSync(abs.value);
-    } catch (e) {
-      if ((e as NodeJS.ErrnoException).code === "ENOENT") return err("unresolved-reference", "record-not-found", `${path} does not exist in ${wb.root}`);
-      throw e;
-    }
-    const current = revisionOf(stored);
-    if (current !== expectedRevision) return err("conflict", "revision-mismatch", `stored ${current} expected ${expectedRevision}`);
-    replaceAtomically(abs.value, bytes);
-    return { ok: true, value: { revision: revisionOf(bytes), bytes } };
-  } finally {
-    releaseLock(lock.value);
-  }
 }
 
 const tempBeside = (target: string): string => join(dirname(target), `.${basename(target)}.${process.pid}.${randomBytes(4).toString("hex")}.tmp`);

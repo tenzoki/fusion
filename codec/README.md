@@ -54,10 +54,10 @@ inlined schemas do not compile; nothing on stderr except on 2 and 3. A
 `workbench` the request leaves out is taken from `FUSION_WORKBENCH`. The
 request shapes are `schemas/protocol.schema.json` (`fusion.protocol/v1`), one
 branch per operation of spec section 6's table; the errors are the spec's
-eight typed classes. FJ01 implements `inspect`, `list`, `show`, `validate` and
-`transition` (package records, compare-and-swap on the stored-bytes revision,
-replayable by `operation_id`); the other nine answer
-`operation-unknown/not-implemented-in-fj01`.
+eight typed classes. `inspect` reports which operations answer
+(`operations.implemented`) and which do not yet (`operations.deferred`); an
+operation not yet answered is refused `operation-unknown/not-implemented`, with
+a detail naming the package that lands it.
 
 ## The two closed vocabularies
 
@@ -86,9 +86,9 @@ never by its file format.
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |
 | `scripts/build.mjs` | esbuild, pinned exactly, `--bundle --platform=node --format=esm --target=node20`, JSON inlined, staging path then atomic rename into `dist/`; a second run writes nothing |
 | `src/cli/protocol.ts` | The request union over the fourteen operations, the response envelope and the eight error classes; `src/cli/schemas.ts` inlines the contract for the bundle |
-| `src/cli/ops.ts` | `dispatch(request)`: validates against the protocol schema, then the five operations over the store |
+| `src/cli/ops.ts` | `dispatch(request)`: validates against the protocol schema, then the operations it answers, reads under the kernel's read protocol and every mutation through the kernel (`src/kernel.ts`) |
 | `src/cli/main.ts` | The entry point: stdin or `--file` in, stdout out, the exit codes above |
-| `src/store.ts` | `openWorkbench` (spec 4.1: json-control, legacy, unsupported), `readPair` (control, `sha256:` revision of the stored bytes, narrative hash), `writeControl` (local `.json-state/` lock, CAS on the revision, deterministic serialisation in the schemas' `properties` order, temp file, fsync, atomic rename) |
+| `src/store.ts` | `openWorkbench` (spec 4.1: json-control, legacy, unsupported), `readPair` (control, `sha256:` revision of the stored bytes, narrative hash), `serialise` (deterministic, in the schemas' `properties` order), the one workbench write lock `.json-state/write.lock`, and `replaceAtomically` (temp file, fsync, atomic rename); it writes no record itself |
 | `src/strict-json.ts` | The strict reader: bytes in, one JSON object or a typed refusal out (spec §4 limits) |
 | `src/validate.ts` | Loads every schema under `schemas/` (or the inlined set) into one Ajv instance and validates a value against a schema `$id` |
 | `src/transitions.ts` | `allowed(kind, from, to, payload)` and `dependencySatisfied(condition, target)` over `contract/transitions.json` and `contract/dependencies.json`; a typed refusal, never a state change |
