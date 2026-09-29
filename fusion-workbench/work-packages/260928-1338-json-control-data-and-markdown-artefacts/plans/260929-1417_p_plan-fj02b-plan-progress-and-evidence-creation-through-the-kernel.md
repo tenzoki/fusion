@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-29
 **Revised:** 2026-09-29, after the Prior side's review of this plan at `8e1a714d`, which accepts it with the four choices of the Approach. Two corrections applied: the correction counter's guarantee is narrowed to what holds (a suffix freed by a hand deletion can be chosen again), and a correction under the same basename requires the predecessor's report hash (`conflict/predecessor-report-changed` otherwise).
-**Status:** Ready for Review
+**Status:** Approved by the user on 2026-09-29 after the Prior side's review at 8e1a714d, all six steps to run without a further question; in progress
 **Spec:** none as a requirements-designer spec. The inputs are the Prior side's FJ02 response, read-only at Prior `38acd95`: `docs/design/fusion-fj02-prior-response.md`, sections 18, 19, 21 and `## Recovery and rollout consequences`; and `concept/fusion-json-workbench-spec.md` section 6 at the same commit, whose operation table now names both extensions ("bestätigte Erweiterung") and whose added bullets restate the rulings on 18, 19, 21 and 22. The user ruled on 2026-09-29 that this is a plan of its own before FJ03.
 **Cross-references:** 260928-1338-json-control-data-and-markdown-artefacts.md, 260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md (closed; its `## Open Questions` carry Prior's answers and the request 21 correction), 260928-2110_*_plan-fj01b-fj00-follow-up-prior-rulings-applied-and-the-contract-frozen.md (closed; the shape this plan follows), 260929-0709_*_fj02-kernel-plan-and-three-open-choices.md (closed discussion; C2 is the evidence naming rule step 3 extends), 260928-2251_*_where-does-an-evidence-record-live-on-disk-so-that-attach-evidence-can-resolve-it.md (implemented; step 3 adds the write route its layout lacked)
 **Survey commit:** fusion `9a3684d7` on `fj-json-workbench`. `codec/` is unchanged since `72a7051b` except for the `## FJ02` section of `codec/fixtures/prior/REQUESTS.md` (`git diff --stat 72a7051b HEAD -- codec`: that one file). `codec/dist/fusion-record.js`: 511 869 bytes, `sha256:9048e883e1a522597f782224cff7c1d444cc21ec5348c26dd9916fed68f3cc02` (`wc -c`, `shasum -a 256` at the survey), the digest Prior pinned in its response 17. Prior `38acd95`, read-only. The suite and hook figures below are FJ02's closing figures, not re-run for this survey.
@@ -98,7 +98,7 @@ Coherence check: six nodes, seven edges, four layers in reading order, no cycle,
 
 ## Implementation Steps
 
-1. **The protocol and record schemas widened, with the fixtures that pin each widening**
+1. [IN PROGRESS] **The protocol and record schemas widened, with the fixtures that pin each widening**
    - Executor: `data-implementer`
    - Files: `codec/schemas/protocol.schema.json`, `codec/schemas/record.schema.json`, new fixtures under `codec/fixtures/valid/protocol/` and `codec/fixtures/invalid/protocol/`, `codec/fixtures/manifest.json`
    - Changes, `record.schema.json`: `plan_control.properties.steps.items` moves to `$defs/plan_step` and `criteria.items` to `$defs/plan_criterion`, each referenced from where it stood, as FJ02 step 1 hoisted `$defs/deferral`; no property order changes, so every plan fixture and every plan record serialises to the same bytes.
