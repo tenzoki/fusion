@@ -46,3 +46,6 @@ No other automatic hook entry reaches `bin/fusion-claimed-package`, `bin/fusion-
 - The recovery record stands as answered unless it is superseded by a record of its own.
 - Whatever is chosen is pinned by a test that follows subprocess routes, not imports alone.
 - `agents/`, `skills/` and `rules/` stay untouched in FJ03a.
+
+---
+Answered: Prior `docs/design/fusion-fj03a-followup-decisions.md` `## Dispatch measurement: option 2` at Prior `ddd4973` — option 2: the byte measurement leaves the automatic dispatch hook; `task_start` rows are still written, without the five `bytes_*` fields; historical rows and the local baseline and cache files stay intact; no replacement measurement is needed for FJ03a, and the recovery rule stands; the user gave the Prior side's follow-up as the answer on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>

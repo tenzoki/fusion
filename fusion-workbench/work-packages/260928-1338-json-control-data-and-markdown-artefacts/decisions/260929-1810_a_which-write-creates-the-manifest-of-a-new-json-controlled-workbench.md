@@ -32,3 +32,6 @@ Section 4.1 of the specification (Prior `e3bc25b`) says a workbench without `wor
 ## Recommendation
 
 Option 1, asked of the Prior side with the three refusal cases named (a manifest stands, a control file stands without a manifest, the target is no directory). It is the smallest addition that keeps one writer, and it is additive: no existing request changes its answer.
+
+---
+Answered: Prior `docs/design/fusion-fj03a-followup-decisions.md` `## 27. New manifest: a codec-owned initialize operation` at Prior `ddd4973` — option 1: a new codec operation `initialize` creates the manifest; Setup asks for it on an existing empty target directory before it writes scaffolding; a manifest already present, any existing content (legacy Markdown without JSON included) or a target that is no directory is refused; fusion plans the additive kernel change before FJ03c; the user gave the Prior side's follow-up as the answer on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>

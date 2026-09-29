@@ -39,3 +39,6 @@ So FJ03 divides into work that is inert here until the workbench migrates (code 
 ## Recommendation
 
 Option 2. The two surfaces that bind this repository's own sessions and suite to a format are exactly the ones a maintenance window exists for, and moving them with the migration of this workbench removes the interval in which rules and data disagree. Everything else in FJ03 can be written and proven on fixtures first, which is also what FJ04's acceptance needs.
+
+---
+Answered: Prior `docs/design/fusion-fj03a-followup-decisions.md` `## 26. FJ03/FJ04 order: accept the two-phase option` at Prior `ddd4973` — option 2: FJ03a to FJ03c on fixtures, FJ04 proved on copies of real stores, then FJ03d with the real migration and the installation in one maintenance window, then FJ05; the specification's dependency table is changed at that commit; the user gave the Prior side's follow-up as the answer on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>
