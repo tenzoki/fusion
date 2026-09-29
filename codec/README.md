@@ -107,8 +107,17 @@ stored, `{operation_id, request, response}`, is still read, by digesting its
 `request`. An identical retry returns the stored response byte for byte; the
 same id with a different request is `conflict/operation-id-reused`; a fresh id
 against the old revision is `conflict/revision-mismatch`, so nothing runs
-twice. `ops/` is not pruned in FJ02 (Prior's request 21 asks whether it should
-be bounded).
+twice. `ops/` is never pruned. A revision is the hash of the stored bytes, so
+a record can return to bytes it held before: a `claim` followed by a `release`
+leaves a package at the revision it had before the claim. A replayed old
+operation whose answer had been deleted would then pass the CAS and land a
+second time. `src/__tests__/kernel.test.ts` pins this through the bundle
+(`stored answers are never pruned: content revisions return`), and Prior's
+`TestCodecFJ02RetainedAnswerPreventsABAReplay` pins it on the Prior side. Any
+future pruning needs two things first: durable protection against old
+operation ids, for which Prior names retained request-digest tombstones or a
+retired id namespace, and a revised read protocol, because the one described
+below relies on `ops/` only growing.
 
 **Recovery** decides each file a pending intent names by three hashes,
 tested post first so that a write that changes nothing reads as landed: at its

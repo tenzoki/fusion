@@ -3,7 +3,8 @@
 // recovery in-process and through a spawned bundle, blocked intents and the
 // replay of their ids, the lock through the kernel (the CAS and lock cases of
 // FJ01's `writeControl`, moved here with its removal), concurrent and killed
-// processes, a pull, and the read protocol's retries.
+// processes, a pull, the read protocol's retries, and why no stored answer is
+// pruned (FJ02b plan step 4).
 //
 // Every case works on a fresh copy of `fixtures/workbench/`; nothing here
 // writes into `codec/fixtures/`. The cuts are enumerated from the kernel's
@@ -860,4 +861,109 @@ describe("a three-write replacement adopt-plan cut at every point of CUTS", () =
       for (const f of FILES) expect(bytesOf(root, f).equals(bytesOf(clean, f)), `${f}: executed once`).toBe(true);
     });
   }
+});
+
+// --- retention: no stored answer is pruned --------------------------------------------------------
+
+// The fusion twin of Prior's `TestCodecFJ02RetainedAnswerPreventsABAReplay`
+// (Prior's response 21 to the FJ02 requests). A revision is the hash of the
+// stored bytes, so it names content and never a moment: `01-create`,
+// `02-claim` and `03-release` of the recorded FJ02 session leave the package
+// at the bytes `01` wrote, which is the revision `02` expects. After `03` the
+// one thing that tells a late copy of `02` from a first attempt is its stored
+// answer. The cases send the recorded requests to the committed bundle and
+// delete that one answer, on a temp copy, to show what pruning would do. The
+// CAS is shown intact beside it, so the defect is the return of old bytes.
+//
+// The `<workbench>` substitution is the recorded session's own
+// (`round-trip-cli-fj02.test.ts`); that file exports nothing and importing a
+// test file would run its session, so the one line is repeated here until the
+// shared helper exists.
+
+const SESSION = fileURLToPath(new URL("../../fixtures/protocol-session-fj02/", import.meta.url));
+const PLACEHOLDER = "<workbench>";
+
+describe("stored answers are never pruned: content revisions return", () => {
+  type Recorded = "01-create" | "02-claim" | "03-release";
+  const recorded = (name: Recorded, half: "request" | "response"): string => readFileSync(join(SESSION, `${name}.${half}.json`), "utf-8");
+  const request = (name: Recorded): Record<string, unknown> => JSON.parse(recorded(name, "request")) as Record<string, unknown>;
+  const answered = (name: Recorded): Record<string, unknown> => okResult(JSON.parse(recorded(name, "response")) as Response);
+
+  const PKG = String(answered("01-create").path);
+  /** The revision 01 answered, and the one the package returns to after 03. */
+  const CREATED = String(answered("01-create").revision);
+  /** The revision 02 answered: the package claimed. */
+  const CLAIMED = String(answered("02-claim").revision);
+  const ids = (["01-create", "02-claim", "03-release"] as const).map((n) => String(request(n).operation_id));
+  const CLAIM_ID = ids[1] as string;
+
+  /** The root as it stands inside a JSON string. */
+  const inJson = (root: string): string => JSON.stringify(root).slice(1, -1);
+
+  /** One request line to the committed bundle, the placeholder replaced by `root`; its stdout, the root recorded as the placeholder. */
+  const send = (root: string, line: string): string => {
+    const run = spawnSync(process.execPath, [BUNDLE], { input: line.split(PLACEHOLDER).join(inJson(root)), encoding: "utf-8", env: baseEnv });
+    expect(run.status, run.stderr).toBe(0);
+    expect(run.stderr).toBe("");
+    return run.stdout.split(inJson(root)).join(PLACEHOLDER);
+  };
+
+  /** What `show` reports of the package, through the bundle. */
+  const shown = (root: string): { status: unknown; revision: unknown } => {
+    const r = okResult(JSON.parse(send(root, JSON.stringify({ op: "show", workbench: PLACEHOLDER, record: { path: PKG } }))) as Response);
+    return { status: (r.control as Record<string, unknown>).status, revision: r.revision };
+  };
+
+  /** A fresh copy on which the recorded 01, 02 and 03 ran, each answering its recorded bytes. */
+  const released = (): string => {
+    const root = fresh();
+    for (const name of ["01-create", "02-claim", "03-release"] as const) expect(send(root, recorded(name, "request")), name).toBe(recorded(name, "response"));
+    expect(revision(root, PKG), "after 03 the package is at the revision 01 answered").toBe(CREATED);
+    return root;
+  };
+
+  const answerOf = (root: string, id: string): string => join(root, STATE_DIR, "ops", `${id}.json`);
+
+  it("01, 02 and 03 as recorded, on two copies: each package is back at the bytes and the revision 01 answered, which is the one 02 expects", () => {
+    expect(request("02-claim").expected_revision).toBe(CREATED);
+    expect(CLAIMED).not.toBe(CREATED);
+    const copies = [released(), released()] as const;
+    for (const root of copies) {
+      expect(shown(root)).toEqual({ status: "open", revision: CREATED });
+      expect(opsEntries(root)).toEqual(ids.map((id) => `${id}.json`).sort());
+      expect(journalEntries(root)).toEqual([]);
+    }
+    expect(bytesOf(copies[0], PKG).equals(bytesOf(copies[1], PKG))).toBe(true);
+  });
+
+  it("the answer retained: the replayed 02 answers the recorded bytes and lands nothing; the package stays open at 01's revision", () => {
+    const root = released();
+    const bytes = bytesOf(root, PKG);
+    expect(existsSync(answerOf(root, CLAIM_ID))).toBe(true);
+    expect(send(root, recorded("02-claim", "request"))).toBe(recorded("02-claim", "response"));
+    expect(shown(root)).toEqual({ status: "open", revision: CREATED });
+    expect(bytesOf(root, PKG).equals(bytes), "the stored answer was returned; the old claim did not run").toBe(true);
+  });
+
+  it("only 02's answer deleted: the replayed 02 passes the CAS and lands a second time; the package is claimed at 02's recorded revision", () => {
+    const root = released();
+    unlinkSync(answerOf(root, CLAIM_ID));
+    expect(opsEntries(root), "the one file deleted, and nothing else").toEqual([ids[0], ids[2]].map((id) => `${id}.json`).sort());
+    const again = JSON.parse(send(root, recorded("02-claim", "request"))) as Response;
+    expect(again.ok, JSON.stringify(again)).toBe(true);
+    // The defect this case documents: a claim that was released is held again, by a request as old as the claim.
+    expect(shown(root)).toEqual({ status: "claimed", revision: CLAIMED });
+    expect(controlOf(root, PKG).claim).toEqual(request("02-claim").claim);
+  });
+
+  it("the CAS is intact where the answers were kept: a release under a fresh operation id against 02's revision is conflict/revision-mismatch", () => {
+    const root = released();
+    expect(send(root, recorded("02-claim", "request")), "the replay, as in the retained case").toBe(recorded("02-claim", "response"));
+    const stale: Record<string, unknown> = { ...request("03-release"), operation_id: OTHER_ID };
+    expect(ids).not.toContain(OTHER_ID);
+    expect(stale.expected_revision).toBe(CLAIMED);
+    expect(JSON.parse(send(root, JSON.stringify(stale)))).toMatchObject({ ok: false, error: { class: "conflict", reason: "revision-mismatch", detail: `stored ${CREATED} expected ${CLAIMED}` } });
+    expect(shown(root)).toEqual({ status: "open", revision: CREATED });
+    expect(opsEntries(root), "a refusal stores no answer").toEqual(ids.map((id) => `${id}.json`).sort());
+  });
 });
