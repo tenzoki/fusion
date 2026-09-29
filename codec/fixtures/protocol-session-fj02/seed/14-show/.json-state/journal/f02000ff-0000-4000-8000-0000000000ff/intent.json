@@ -1,0 +1,27 @@
+{
+  "operation_id": "f02000ff-0000-4000-8000-0000000000ff",
+  "op": "transition",
+  "request_digest": "sha256:794eb7b5941180fbdb67a32ce7f5a67e47dbba74526067ba3a11a1414c16ac9c",
+  "writes": [
+    {
+      "path": "shared/issues/260928-1400-parser-fails-on-empty-input.record.json",
+      "before": "sha256:c1f9186fd079809c99b3e4449caf750efc6fbf9e5bf5d6df064f9cc5ff46bf47",
+      "after": "sha256:891dd9f0377508ed44d59ccb3e670c34bdb564c2ab4fae3eb9801f14b3c4a817"
+    }
+  ],
+  "response": {
+    "ok": true,
+    "result": {
+      "operation_id": "f02000ff-0000-4000-8000-0000000000ff",
+      "path": "shared/issues/260928-1400-parser-fails-on-empty-input.record.json",
+      "from": "open",
+      "to": "in_progress",
+      "revision": "sha256:891dd9f0377508ed44d59ccb3e670c34bdb564c2ab4fae3eb9801f14b3c4a817",
+      "previous_revision": "sha256:c1f9186fd079809c99b3e4449caf750efc6fbf9e5bf5d6df064f9cc5ff46bf47"
+    },
+    "revisions": {
+      "shared/issues/260928-1400-parser-fails-on-empty-input.record.json": "sha256:891dd9f0377508ed44d59ccb3e670c34bdb564c2ab4fae3eb9801f14b3c4a817"
+    }
+  },
+  "created_at": "2026-09-29T14:00:00.000Z"
+}
