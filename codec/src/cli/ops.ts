@@ -15,7 +15,10 @@
 //               owns, for one pair or the whole workbench; for an evidence
 //               record its report and the naming rule instead of a narrative
 //   create      a new pair: the control record the kernel builds, and the
-//               narrative when the request carries its body, in one intent
+//               narrative when the request carries its body, in one intent;
+//               with `kind: evidence` one immutable evidence record beside a
+//               report already on disk, at the path the codec chooses
+//               (Prior's FJ02 response 19)
 //   transition  a package or an issue, plan, discussion or decision record:
 //               `allowed()` over the tables, as a plan function the kernel
 //               runs under the caller's expected revision; on a live plan
@@ -64,7 +67,7 @@
 // state of the workbench. A throw is a defect in this file.
 // ---------------------------------------------------------------------------
 
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { relative } from "node:path";
 import { canonical, fileState, readIntent, type FileState } from "../journal.js";
 import {
@@ -91,6 +94,7 @@ import {
   EVIDENCE_SCHEMA_ID,
   controlFiles,
   describeErrors,
+  evidenceName,
   evidenceNaming,
   openWorkbench,
   readPair,
@@ -114,6 +118,7 @@ import {
   type AdoptPlanRequest,
   type AttachEvidenceRequest,
   type ClaimRequest,
+  type CreateEvidenceRequest,
   type CreateRequest,
   type EvidenceRef,
   type ListRequest,
@@ -176,11 +181,7 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
     case "validate":
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
     case "create":
-      // The protocol admits `kind: evidence` (its own branch, Prior's request
-      // 19); until its plan function lands (FJ02b step 3) it is refused
-      // typed, since `createPlan` reads a narrative an evidence create lacks.
-      if ((req as { kind: unknown }).kind === "evidence") return fail("operation-unknown", "not-implemented", "create of kind evidence is specified (Prior's FJ02 response 19) and lands in FJ02b step 3");
-      return mutate(wb, req, createPlan(req), kernel);
+      return mutate(wb, req, req.kind === "evidence" ? createEvidencePlan(req) : createPlan(req), kernel);
     case "transition":
       return mutate(wb, req, transitionPlan(req), kernel);
     case "claim":
@@ -613,6 +614,137 @@ function createPlan(req: CreateRequest): PlanFunction {
         writes,
         result: { operation_id: req.operation_id, path: control, kind: req.kind, revision, narrative: { path: narrative, sha256: narrativeHash } },
         revisions: { [control]: revision },
+      },
+    };
+  };
+}
+
+// --- create of an evidence record ---------------------------------------------------
+//
+// The sole write route for a new evidence record (Prior's FJ02 response 19),
+// into the layout decision 260928-2251 set: the record beside the Markdown
+// report it records, in a container's `reviews/` or in `shared/reviews/`. The
+// report is the reviewer's file and is already on disk; the kernel writes the
+// record alone, `serialise(payload)`, and adds nothing to it. Every check
+// below refuses with nothing written, in this order: the id the envelope and
+// the payload carry; the payload's workbench; the report's directory against
+// the scope, and the container a package directory; the report's name; the
+// report on disk at the payload's hash; the id in use nowhere; the
+// predecessor; the chosen path free.
+//
+// The path is a function of the report and the predecessor. A record without
+// a predecessor, or whose predecessor names another report, is the report's
+// first record, `<basename>.evidence.json`; a collision there is
+// `record-exists` and never read as a correction. A predecessor naming the
+// same report makes a correction, `<basename>.<n>.evidence.json`, admitted
+// only over an unchanged report: the predecessor's `report.sha256` must equal
+// the payload's, and the file on disk has that hash by the report check. The
+// same report path does not mean an unchanged report, and a changed report
+// takes a new basename.
+//
+// Nothing here reads `host`, `execution_policy` or `verdict`. The kernel
+// receives no caller identity it may authorise on, so a label a caller writes
+// (`host: prior`, `prior-enforced`, `accept`) confers nothing and is stored as
+// sent (Prior's FJ02 response 19); `bindEvidence` checks policy agreement and
+// freshness on its own, at `attach-evidence` and at a package's move to `done`.
+
+/**
+ * The correction counter for `basename` in `dir`: one above the highest
+ * counter present in the directory as it stands, 2 when none is. It is read
+ * under the write lock and frozen in the intent and the stored answer, so an
+ * identical retry answers the same path, and it never collides with a file
+ * that stands. That is the whole guarantee: no durable counter is kept, so a
+ * suffix freed by a hand deletion of the highest file can be chosen again,
+ * while a gap below the highest is not refilled.
+ */
+function nextCorrection(wb: Workbench, dir: string, basename: string): Result<number> {
+  const abs = resolveInside(wb, dir);
+  if (!abs.ok) return abs;
+  let highest = 1;
+  for (const entry of readdirSync(abs.value)) {
+    const name = evidenceName(`${dir}/${entry}`);
+    if (name !== null && name.basename === basename && name.correction !== null) highest = Math.max(highest, name.correction);
+  }
+  return { ok: true, value: highest + 1 };
+}
+
+function createEvidencePlan(req: CreateEvidenceRequest): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    const payload = req.payload;
+    const report = payload.report;
+    if (payload.id !== req.id) return refusal("schema-invalid", "id-mismatch", `the envelope's id is ${req.id}; the payload's is ${payload.id}`);
+    if (payload.workbench_id !== ctx.wb.id) {
+      return refusal("unknown-scope", "foreign-workbench-id", `the payload carries workbench_id ${payload.workbench_id}; this workbench is ${String(ctx.wb.id)}`);
+    }
+
+    // The report sits in the scope's reviews/ store, in a package directory or in shared/.
+    const { container } = req.scope;
+    const dir = `${container ?? "shared"}/${REVIEWS_STORE}`;
+    const slash = report.path.lastIndexOf("/");
+    if (report.path.slice(0, Math.max(slash, 0)) !== dir) {
+      return refusal("unknown-scope", "store-kind-mismatch", `create evidence: the scope's store is ${dir}/, and an evidence record sits beside its report there; the report is ${report.path}`);
+    }
+    if (container !== null) {
+      const holder = `${container}/package.json`;
+      const pkg = ctx.readPair(holder);
+      if (!pkg.ok && pkg.error.reason !== "record-not-found") return pkg;
+      if (!pkg.ok || pkg.value.kind !== "package") return refusal("unknown-scope", "container-missing", `${container} is not a package directory: ${holder} ${pkg.ok ? `is a ${pkg.value.kind} record` : "does not exist"}`);
+    }
+
+    // The report's name: marker-free, and `<basename>.evidence.json` must read back as its first record.
+    const name = report.path.slice(slash + 1);
+    const basename = name.endsWith(".md") ? name.slice(0, -".md".length) : null;
+    const first = `${dir}/${basename ?? name}${EVIDENCE_SUFFIX}`;
+    const reading = evidenceName(first);
+    if (basename === null || !markerlessName().test(name) || reading === null || reading.correction !== null || reading.report !== report.path) {
+      return refusal("schema-invalid", "report-name", `${name} is not a report name an evidence record can pair with: a marker-free YYMMDD-HHMM-<topic>.md whose last dotted segment is no correction counter, so that ${first} reads back as its first record`);
+    }
+
+    // The report on disk at the payload's hash, judged as `validate` judges a stored record.
+    const stored = fileHash(ctx.wb, report.path);
+    if (!stored.ok) return stored;
+    const bytes = Buffer.from(serialise(payload), "utf-8");
+    const revision = revisionOf(bytes);
+    const candidate: Pair = { path: first, kind: "evidence", schemaId: EVIDENCE_SCHEMA_ID, control: payload, bytes, revision, narrative: null, report: { path: report.path, sha256: report.sha256, stored: stored.value } };
+    const problem = reportProblem(candidate);
+    if (problem !== null) return { ok: false, error: problem };
+
+    const taken = ctx.resolveRecordId(req.id);
+    if (taken.ok) return refusal("conflict", "id-in-use", `the id ${req.id} is carried by ${taken.value.path}`);
+    if (taken.error.reason !== "record-not-found") return refusal("conflict", "id-in-use", taken.error.detail);
+
+    let path = first;
+    if (payload.predecessor !== null) {
+      const hit = resolveRecordRef(ctx, payload.predecessor);
+      if (!hit.ok) return hit;
+      const got = ctx.readPair(hit.value.path);
+      if (!got.ok) return got;
+      const pred = got.value;
+      if (pred.kind !== "evidence") return refusal("unresolved-reference", "not-evidence", `the predecessor ${payload.predecessor.record_id} is the ${pred.kind} record ${pred.path}; a correction names an evidence record`);
+      const pinned = payload.predecessor.revision;
+      if (pinned !== undefined && pred.revision !== pinned) {
+        return refusal("missing-evidence", "evidence-revision-mismatch", `the predecessor ${pred.path} is stored at ${pred.revision}; the payload pins ${pinned}`);
+      }
+      if (pred.report?.path === report.path) {
+        if (pred.report.sha256 !== report.sha256) {
+          return refusal("conflict", "predecessor-report-changed", `the predecessor ${pred.path} records ${report.path} at ${String(pred.report.sha256)}; this record names ${report.sha256}. A correction under the same basename is over an unchanged report; a changed report takes a new basename`);
+        }
+        const n = nextCorrection(ctx.wb, dir, basename);
+        if (!n.ok) return n;
+        path = `${dir}/${basename}.${n.value}${EVIDENCE_SUFFIX}`;
+      }
+    }
+
+    const standing = fileHash(ctx.wb, path);
+    if (!standing.ok) return standing;
+    if (standing.value !== null) return refusal("conflict", "record-exists", `${path} exists; an evidence record is immutable once accepted, and a record without a predecessor naming this report is its first record, never a correction`);
+
+    return {
+      ok: true,
+      value: {
+        writes: [{ path, bytes }],
+        result: { operation_id: req.operation_id, path, kind: "evidence", revision, report: { path: report.path, sha256: report.sha256 } },
+        revisions: { [path]: revision },
       },
     };
   };

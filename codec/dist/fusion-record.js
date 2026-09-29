@@ -8020,7 +8020,7 @@ import { readFileSync as readFileSync7 } from "node:fs";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 
 // src/cli/ops.ts
-import { existsSync as existsSync3, readFileSync as readFileSync6, statSync as statSync3 } from "node:fs";
+import { existsSync as existsSync3, readdirSync as readdirSync5, readFileSync as readFileSync6, statSync as statSync3 } from "node:fs";
 import { relative as relative3 } from "node:path";
 
 // src/journal.ts
@@ -9410,8 +9410,7 @@ async function dispatch(request, options = {}) {
     case "validate":
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
     case "create":
-      if (req.kind === "evidence") return fail("operation-unknown", "not-implemented", "create of kind evidence is specified (Prior's FJ02 response 19) and lands in FJ02b step 3");
-      return mutate(wb, req, createPlan(req), kernel);
+      return mutate(wb, req, req.kind === "evidence" ? createEvidencePlan(req) : createPlan(req), kernel);
     case "transition":
       return mutate(wb, req, transitionPlan(req), kernel);
     case "claim":
@@ -9725,6 +9724,87 @@ function createPlan(req) {
         writes,
         result: { operation_id: req.operation_id, path: control, kind: req.kind, revision, narrative: { path: narrative, sha256: narrativeHash } },
         revisions: { [control]: revision }
+      }
+    };
+  };
+}
+function nextCorrection(wb, dir, basename2) {
+  const abs = resolveInside(wb, dir);
+  if (!abs.ok) return abs;
+  let highest = 1;
+  for (const entry of readdirSync5(abs.value)) {
+    const name = evidenceName(`${dir}/${entry}`);
+    if (name !== null && name.basename === basename2 && name.correction !== null) highest = Math.max(highest, name.correction);
+  }
+  return { ok: true, value: highest + 1 };
+}
+function createEvidencePlan(req) {
+  return (ctx) => {
+    const payload = req.payload;
+    const report = payload.report;
+    if (payload.id !== req.id) return refusal("schema-invalid", "id-mismatch", `the envelope's id is ${req.id}; the payload's is ${payload.id}`);
+    if (payload.workbench_id !== ctx.wb.id) {
+      return refusal("unknown-scope", "foreign-workbench-id", `the payload carries workbench_id ${payload.workbench_id}; this workbench is ${String(ctx.wb.id)}`);
+    }
+    const { container } = req.scope;
+    const dir = `${container ?? "shared"}/${REVIEWS_STORE}`;
+    const slash = report.path.lastIndexOf("/");
+    if (report.path.slice(0, Math.max(slash, 0)) !== dir) {
+      return refusal("unknown-scope", "store-kind-mismatch", `create evidence: the scope's store is ${dir}/, and an evidence record sits beside its report there; the report is ${report.path}`);
+    }
+    if (container !== null) {
+      const holder = `${container}/package.json`;
+      const pkg = ctx.readPair(holder);
+      if (!pkg.ok && pkg.error.reason !== "record-not-found") return pkg;
+      if (!pkg.ok || pkg.value.kind !== "package") return refusal("unknown-scope", "container-missing", `${container} is not a package directory: ${holder} ${pkg.ok ? `is a ${pkg.value.kind} record` : "does not exist"}`);
+    }
+    const name = report.path.slice(slash + 1);
+    const basename2 = name.endsWith(".md") ? name.slice(0, -".md".length) : null;
+    const first = `${dir}/${basename2 ?? name}${EVIDENCE_SUFFIX}`;
+    const reading2 = evidenceName(first);
+    if (basename2 === null || !markerlessName().test(name) || reading2 === null || reading2.correction !== null || reading2.report !== report.path) {
+      return refusal("schema-invalid", "report-name", `${name} is not a report name an evidence record can pair with: a marker-free YYMMDD-HHMM-<topic>.md whose last dotted segment is no correction counter, so that ${first} reads back as its first record`);
+    }
+    const stored = fileHash(ctx.wb, report.path);
+    if (!stored.ok) return stored;
+    const bytes = Buffer.from(serialise(payload), "utf-8");
+    const revision = revisionOf(bytes);
+    const candidate = { path: first, kind: "evidence", schemaId: EVIDENCE_SCHEMA_ID, control: payload, bytes, revision, narrative: null, report: { path: report.path, sha256: report.sha256, stored: stored.value } };
+    const problem = reportProblem(candidate);
+    if (problem !== null) return { ok: false, error: problem };
+    const taken = ctx.resolveRecordId(req.id);
+    if (taken.ok) return refusal("conflict", "id-in-use", `the id ${req.id} is carried by ${taken.value.path}`);
+    if (taken.error.reason !== "record-not-found") return refusal("conflict", "id-in-use", taken.error.detail);
+    let path = first;
+    if (payload.predecessor !== null) {
+      const hit = resolveRecordRef(ctx, payload.predecessor);
+      if (!hit.ok) return hit;
+      const got = ctx.readPair(hit.value.path);
+      if (!got.ok) return got;
+      const pred = got.value;
+      if (pred.kind !== "evidence") return refusal("unresolved-reference", "not-evidence", `the predecessor ${payload.predecessor.record_id} is the ${pred.kind} record ${pred.path}; a correction names an evidence record`);
+      const pinned = payload.predecessor.revision;
+      if (pinned !== void 0 && pred.revision !== pinned) {
+        return refusal("missing-evidence", "evidence-revision-mismatch", `the predecessor ${pred.path} is stored at ${pred.revision}; the payload pins ${pinned}`);
+      }
+      if (pred.report?.path === report.path) {
+        if (pred.report.sha256 !== report.sha256) {
+          return refusal("conflict", "predecessor-report-changed", `the predecessor ${pred.path} records ${report.path} at ${String(pred.report.sha256)}; this record names ${report.sha256}. A correction under the same basename is over an unchanged report; a changed report takes a new basename`);
+        }
+        const n = nextCorrection(ctx.wb, dir, basename2);
+        if (!n.ok) return n;
+        path = `${dir}/${basename2}.${n.value}${EVIDENCE_SUFFIX}`;
+      }
+    }
+    const standing = fileHash(ctx.wb, path);
+    if (!standing.ok) return standing;
+    if (standing.value !== null) return refusal("conflict", "record-exists", `${path} exists; an evidence record is immutable once accepted, and a record without a predecessor naming this report is its first record, never a correction`);
+    return {
+      ok: true,
+      value: {
+        writes: [{ path, bytes }],
+        result: { operation_id: req.operation_id, path, kind: "evidence", revision, report: { path: report.path, sha256: report.sha256 } },
+        revisions: { [path]: revision }
       }
     };
   };

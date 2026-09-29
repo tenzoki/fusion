@@ -195,6 +195,37 @@ export interface CreateRequest extends Base<"create"> {
   payload: Record<string, unknown>;
 }
 
+/**
+ * The fields of a `fusion.evidence/v1` record the codec reads when it creates
+ * one; the evidence schema is the whole shape, validated with the request.
+ * `host`, `execution_policy` and `verdict` are left out on purpose: creation
+ * stores them as sent and derives nothing from them.
+ */
+export interface EvidencePayload {
+  schema: string;
+  id: string;
+  workbench_id: string;
+  report: ArtefactRef;
+  predecessor: RecordRef | null;
+  [field: string]: unknown;
+}
+
+/**
+ * `create` of an evidence record, its own branch of the protocol (Prior's FJ02
+ * request and response 19): the sole write route for a new evidence record,
+ * written beside a report already on disk at its declared hash. The codec
+ * chooses the file's path and returns it in the answer.
+ */
+export interface CreateEvidenceRequest extends Base<"create"> {
+  operation_id: string;
+  id: string;
+  kind: "evidence";
+  /** The container the record goes into, or null for `shared/`, and its `reviews` store. */
+  scope: { container: string | null; store: "reviews" };
+  /** The complete record; the codec writes exactly these fields, serialised, and adds nothing. */
+  payload: EvidencePayload;
+}
+
 export interface ClaimRequest extends Mutation<"claim"> {
   claim: { checkout_id: string; person: string | null; claimed_at: string | null };
 }
@@ -240,6 +271,7 @@ export type Request =
   | ShowRequest
   | ValidateRequest
   | CreateRequest
+  | CreateEvidenceRequest
   | TransitionRequest
   | ClaimRequest
   | ReleaseRequest

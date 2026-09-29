@@ -10,22 +10,22 @@
 // narrative as it stands, and `plan_revision` from the plan in force (the
 // `role: plan` entry of `active_documents`), null when there is none.
 //
-// The pair lands as one journaled operation through the kernel's `mutate`,
-// under the evidence id as its operation id: the report first, then the
-// record, so a crash never leaves a record naming a report still to come. No
-// operation of FJ02 writes an evidence record (Prior's request 19 asks how a
-// Claude-side reviewer will), so this plan function is the only writer, and
-// it refuses what an evidence writer must: an existing record name is
-// `conflict/record-exists` (the first record is immutable, spec 4.4, so a
-// correction over an unchanged report takes `<basename>.<n>.evidence.json`),
-// an existing report `conflict/report-exists`. Only ever run on a temp copy.
+// The report is written as a plain file: a reviewer writes Markdown, and the
+// kernel is the one writer of fusion JSON, not of reports. The record goes
+// through the real route, `create` with `kind: evidence` (Prior's FJ02
+// response 19), under the evidence id as its operation id, and the kernel
+// chooses its path: `seedEvidence` sends a first record, `seedCorrection` a
+// correction naming its predecessor. `placeEvidence` writes a pair as plain
+// files with no check at all: it stands for a record that arrived by hand
+// edit or by a pull, and serves only the cases whose record `create` refuses.
+// Only ever run on a temp copy.
 // ---------------------------------------------------------------------------
 
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import type { EvidenceRef, Response } from "../../cli/protocol.js";
-import { mutate, type PlanFunction, type PlannedWrite } from "../../kernel.js";
-import { openWorkbench, revisionOf, serialise } from "../../store.js";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { dispatch } from "../../cli/ops.js";
+import type { CreateEvidenceRequest, EvidencePayload, EvidenceRef, Response } from "../../cli/protocol.js";
+import { revisionOf, serialise } from "../../store.js";
 import { strictParse } from "../../strict-json.js";
 
 export const EVIDENCE_ID = "e7e7e7e7-0000-4000-8000-000000000001";
@@ -34,6 +34,7 @@ export const SEED_BASENAME = "260929-1200-review";
 const SUBJECT_TREE = "0566591299a5f2c11f2573973ffc894791d20ee7";
 const ACCEPTED_AT = "2026-09-29T12:00:00Z";
 const CORRECTED_AT = "2026-09-29T13:00:00Z";
+const REVIEWS = "/reviews";
 
 export interface SeedOptions {
   /** The package the evidence is produced for: its control path, workbench-relative. */
@@ -51,11 +52,7 @@ export interface SeedOptions {
 }
 
 export interface CorrectionOptions {
-  /** The correction counter; default 2. */
-  n?: number;
   id?: string;
-  /** The file name, overriding `<basename>.<n>.evidence.json`: the case that tries the first record's own name. */
-  fileName?: string;
   over?: Record<string, unknown>;
 }
 
@@ -90,22 +87,7 @@ function against(root: string, pkgPath: string): { brief_revision: string; plan_
   return { brief_revision: revisionOf(readFileSync(join(root, narrative))), plan_revision: docs.find((d) => d.role === "plan")?.revision ?? null };
 }
 
-/** Writes `writes` through the kernel, refusing an existing evidence name or report as the header says; the kernel's answer. */
-async function land(root: string, id: string, evidencePath: string, writes: PlannedWrite[], reportIsNew: boolean): Promise<Response> {
-  const opened = openWorkbench(root);
-  if (!opened.ok) throw new Error(opened.error.detail);
-  const plan: PlanFunction = () => {
-    if (existsSync(join(root, evidencePath))) return { ok: false, error: { class: "conflict", reason: "record-exists", detail: `${evidencePath} exists; an evidence record is immutable once accepted` } };
-    const report = writes[0]?.path;
-    if (reportIsNew && report !== undefined && existsSync(join(root, report))) return { ok: false, error: { class: "conflict", reason: "report-exists", detail: `${report} exists` } };
-    const evidence = writes[writes.length - 1] as PlannedWrite;
-    return { ok: true, value: { writes, result: { path: evidencePath, revision: revisionOf(evidence.bytes) } } };
-  };
-  const digestable = { op: "seed-evidence", operation_id: id, writes: writes.map((w) => ({ path: w.path, sha256: revisionOf(w.bytes) })) };
-  return mutate(opened.value, digestable, plan);
-}
-
-/** What a landed seed hands back; the binding names this workbench, whatever `workbench_id` the record carries. */
+/** What a landed or placed seed hands back; the binding names this workbench, whatever `workbench_id` the record carries. */
 function seeded(root: string, path: string, record: Record<string, unknown>, bytes: Buffer, from: { package: string; basename: string; dir: string }): Seeded {
   const revision = revisionOf(bytes);
   const id = record.id as string;
@@ -120,17 +102,10 @@ function seeded(root: string, path: string, record: Record<string, unknown>, byt
   };
 }
 
-/** Seeds `<dir>/<basename>.evidence.json` and its report for `options.package`; throws when the kernel refuses. */
-export async function seedEvidence(root: string, options: SeedOptions): Promise<Seeded> {
-  const r = await trySeedEvidence(root, options);
-  if (!r.ok) throw new Error(JSON.stringify(r.response));
-  return r.seeded;
-}
-
-/** As `seedEvidence`, returning the kernel's refusal instead of throwing on it. */
-export async function trySeedEvidence(root: string, options: SeedOptions): Promise<{ ok: true; seeded: Seeded } | { ok: false; response: Response }> {
+/** A first record for `options.package`, its report's bytes, and where both go. */
+function firstRecord(root: string, options: SeedOptions): { record: Record<string, unknown>; reportBytes: Buffer; dir: string; basename: string } {
   const pkgDir = options.package.slice(0, options.package.lastIndexOf("/"));
-  const dir = options.dir ?? `${pkgDir}/reviews`;
+  const dir = options.dir ?? `${pkgDir}${REVIEWS}`;
   const basename = options.basename ?? SEED_BASENAME;
   const reportPath = options.reportPath ?? `${dir}/${basename}.md`;
   const pkgNarrative = (parsed(root, options.package).narrative as { path: string }).path;
@@ -153,34 +128,98 @@ export async function trySeedEvidence(root: string, options: SeedOptions): Promi
     extensions: {},
     ...options.over,
   };
-  const bytes = Buffer.from(serialise(record), "utf-8");
-  const path = `${dir}/${basename}.evidence.json`;
-  const response = await land(root, record.id as string, path, [{ path: reportPath, bytes: reportBytes }, { path, bytes }], true);
-  if (!response.ok) return { ok: false, response };
-  return { ok: true, seeded: seeded(root, path, record, bytes, { package: options.package, basename, dir }) };
+  return { record, reportBytes, dir, basename };
+}
+
+/** Writes `bytes` at `path` under `root`, its directory made. */
+function writeAt(root: string, path: string, bytes: Buffer): void {
+  mkdirSync(dirname(join(root, path)), { recursive: true });
+  writeFileSync(join(root, path), bytes);
 }
 
 /**
- * Seeds a correction of `first` over its unchanged report: a new record naming
- * `first` as predecessor, named `<basename>.<n>.evidence.json` beside it, with
- * `brief_revision` and `plan_revision` read afresh. Writes the record alone.
+ * The record sent through `create(kind: evidence)` into the reviews store its
+ * report sits in: `shared/` for `shared/reviews`, else the container the store
+ * belongs to. A report outside a reviews store is sent with its own directory
+ * as the container, and `create` refuses it.
+ */
+async function create(root: string, record: Record<string, unknown>): Promise<Response> {
+  const reportDir = dirname((record.report as { path: string }).path);
+  const container = reportDir === `shared${REVIEWS}` ? null : reportDir.endsWith(REVIEWS) ? reportDir.slice(0, -REVIEWS.length) : reportDir;
+  const request: CreateEvidenceRequest = {
+    op: "create",
+    workbench: root,
+    operation_id: record.id as string,
+    id: record.id as string,
+    kind: "evidence",
+    scope: { container, store: "reviews" },
+    payload: record as EvidencePayload,
+  };
+  return dispatch(request);
+}
+
+/** The path the kernel's answer names, or the refusal. */
+const answeredPath = (r: Response): string | null => (r.ok ? (r.result as { path: string }).path : null);
+
+/** Creates the first record for `options.package` beside its report; throws when the kernel refuses. */
+export async function seedEvidence(root: string, options: SeedOptions): Promise<Seeded> {
+  const r = await trySeedEvidence(root, options);
+  if (!r.ok) throw new Error(JSON.stringify(r.response));
+  return r.seeded;
+}
+
+/**
+ * As `seedEvidence`, returning the kernel's refusal instead of throwing on it.
+ * The report is written unless it already stands at the same bytes; a report
+ * standing at other bytes is never overwritten, since a record may name it.
+ */
+export async function trySeedEvidence(root: string, options: SeedOptions): Promise<{ ok: true; seeded: Seeded } | { ok: false; response: Response }> {
+  const { record, reportBytes, dir, basename } = firstRecord(root, options);
+  const reportPath = (record.report as { path: string }).path;
+  if (existsSync(join(root, reportPath))) {
+    if (!readFileSync(join(root, reportPath)).equals(reportBytes)) throw new Error(`${reportPath} exists with other bytes; the seed never rewrites a report`);
+  } else writeAt(root, reportPath, reportBytes);
+  const response = await create(root, record);
+  const path = answeredPath(response);
+  if (path === null) return { ok: false, response };
+  return { ok: true, seeded: seeded(root, path, record, readFileSync(join(root, path)), { package: options.package, basename, dir }) };
+}
+
+/**
+ * Writes the pair `seedEvidence` would send as two plain files, with no check
+ * at all: a record that arrived by hand edit or by a pull. Only for the cases
+ * whose record `create` refuses (a verdict outside the schema, a report
+ * elsewhere or of another basename, another workbench's id, a file outside
+ * `reviews/`), so that the consumers' own checks can be shown refusing it.
+ */
+export function placeEvidence(root: string, options: SeedOptions): Seeded {
+  const { record, reportBytes, dir, basename } = firstRecord(root, options);
+  const bytes = Buffer.from(serialise(record), "utf-8");
+  const path = `${dir}/${basename}.evidence.json`;
+  writeAt(root, (record.report as { path: string }).path, reportBytes);
+  writeAt(root, path, bytes);
+  return seeded(root, path, record, bytes, { package: options.package, basename, dir });
+}
+
+/**
+ * Sends a correction of `first` over its report as it stands: a new record
+ * naming `first` as predecessor at its stored revision, with `brief_revision`
+ * and `plan_revision` read afresh. The kernel chooses its path.
  */
 export async function trySeedCorrection(root: string, first: Seeded, options: CorrectionOptions = {}): Promise<{ ok: true; seeded: Seeded } | { ok: false; response: Response }> {
-  const pkgFields = against(root, first.package);
   const record: Record<string, unknown> = {
     ...first.record,
     id: options.id ?? CORRECTION_ID,
-    ...pkgFields,
+    ...against(root, first.package),
     report: { ...(first.record.report as Record<string, unknown>), sha256: revisionOf(readFileSync(join(root, first.report))) },
     predecessor: { workbench_id: first.binding.ref.workbench_id, record_id: first.id, revision: first.revision },
     accepted_at: CORRECTED_AT,
     ...options.over,
   };
-  const bytes = Buffer.from(serialise(record), "utf-8");
-  const path = `${first.dir}/${options.fileName ?? `${first.basename}.${options.n ?? 2}.evidence.json`}`;
-  const response = await land(root, record.id as string, path, [{ path, bytes }], false);
-  if (!response.ok) return { ok: false, response };
-  return { ok: true, seeded: seeded(root, path, record, bytes, { package: first.package, basename: first.basename, dir: first.dir }) };
+  const response = await create(root, record);
+  const path = answeredPath(response);
+  if (path === null) return { ok: false, response };
+  return { ok: true, seeded: seeded(root, path, record, readFileSync(join(root, path)), { package: first.package, basename: first.basename, dir: first.dir }) };
 }
 
 export async function seedCorrection(root: string, first: Seeded, options: CorrectionOptions = {}): Promise<Seeded> {

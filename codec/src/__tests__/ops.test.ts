@@ -25,7 +25,9 @@ import {
   type AttachEvidenceRequest,
   type EvidenceRef,
   type ClaimRequest,
+  type CreateEvidenceRequest,
   type CreateRequest,
+  type EvidencePayload,
   type RecordRef,
   type ReleaseRequest,
   type Response,
@@ -39,7 +41,7 @@ import { lockPathFor, openWorkbench, revisionOf, serialise, type Pair, type Resu
 import { MAX_RECORD_BYTES, strictParse } from "../strict-json.js";
 import { transitions } from "../transitions.js";
 import { loadSchemas } from "../validate.js";
-import { seedCorrection, seedEvidence, trySeedCorrection, type SeedOptions, type Seeded } from "./helpers/seed.js";
+import { placeEvidence, seedCorrection, seedEvidence, trySeedCorrection, type SeedOptions, type Seeded } from "./helpers/seed.js";
 
 const FIXTURE = fileURLToPath(new URL("../../fixtures/workbench/", import.meta.url));
 const VALID = fileURLToPath(new URL("../../fixtures/valid/", import.meta.url));
@@ -1669,6 +1671,12 @@ describe("attach-evidence, evidence records in the walk, and evidence checked on
     const n = String(seq).padStart(2, "0");
     return seedEvidence(root, { package: OPEN, id: `e7e7e7e7-0000-4000-8000-0000000001${n}`, basename: `260929-12${n}-review`, ...over });
   };
+  /** As `seed`, the pair placed by hand: for the records `create` refuses, which a consumer must refuse on its own. */
+  const place = async (over: Partial<SeedOptions> = {}): Promise<Seeded> => {
+    seq += 1;
+    const n = String(seq).padStart(2, "0");
+    return placeEvidence(root, { package: OPEN, id: `e7e7e7e7-0000-4000-8000-0000000001${n}`, basename: `260929-12${n}-review`, ...over });
+  };
   const attachRequest = (evidence: EvidenceRef, over: Partial<AttachEvidenceRequest> = {}): AttachEvidenceRequest => ({
     op: "attach-evidence",
     workbench: root,
@@ -1736,10 +1744,10 @@ describe("attach-evidence, evidence records in the walk, and evidence checked on
       ["a ref of another workbench", async () => ({ ...good.binding, ref: { ...good.binding.ref, workbench_id: foreign } }), { class: "unresolved-reference", reason: "foreign-workbench" }],
       ["the id of a package", async () => ({ ...good.binding, ref: { ...good.binding.ref, record_id: OPEN_ID } }), { class: "unresolved-reference", reason: "not-evidence" }],
       ["a revision other than the stored bytes'", async () => ({ ...good.binding, ref: { ...good.binding.ref, revision: "sha256:" + "0".repeat(64) } }), { class: "missing-evidence", reason: "evidence-revision-mismatch" }],
-      ["a record the evidence schema refuses", async () => (await seed({ over: { verdict: "maybe" } })).binding, { class: "schema-invalid", reason: "evidence-invalid" }],
-      ["a report in another directory", async () => (await seed({ reportPath: "shared/reviews/260929-1299-review.md" })).binding, { class: "unknown-scope", reason: "report-not-neighbour" }],
-      ["a report of another basename", async () => (await seed({ reportPath: `${CONTAINER}/reviews/260929-1299-other.md` })).binding, { class: "unknown-scope", reason: "report-not-neighbour" }],
-      ["a record of another workbench", async () => (await seed({ over: { workbench_id: foreign } })).binding, { class: "unknown-scope", reason: "foreign-workbench-id" }],
+      ["a record the evidence schema refuses", async () => (await place({ over: { verdict: "maybe" } })).binding, { class: "schema-invalid", reason: "evidence-invalid" }],
+      ["a report in another directory", async () => (await place({ reportPath: "shared/reviews/260929-1299-review.md" })).binding, { class: "unknown-scope", reason: "report-not-neighbour" }],
+      ["a report of another basename", async () => (await place({ reportPath: `${CONTAINER}/reviews/260929-1299-other.md` })).binding, { class: "unknown-scope", reason: "report-not-neighbour" }],
+      ["a record of another workbench", async () => (await place({ over: { workbench_id: foreign } })).binding, { class: "unknown-scope", reason: "foreign-workbench-id" }],
       ["a binding claiming prior-enforced for a claude-guided result", async () => ({ ...good.binding, policy: "prior-enforced" }), { class: "schema-invalid", reason: "policy-mismatch" }],
       ["a binding claiming claude-guided for a prior-enforced result", async () => ({ ...(await seed({ policy: "prior-enforced" })).binding, policy: "claude-guided" }), { class: "schema-invalid", reason: "policy-mismatch" }],
       ["a brief revision other than the narrative's now", async () => (await seed({ over: { brief_revision: "sha256:" + "1".repeat(64) } })).binding, { class: "missing-evidence", reason: "brief-changed" }],
@@ -1812,13 +1820,13 @@ describe("attach-evidence, evidence records in the walk, and evidence checked on
 
   // --- the naming rule and the correction form (C2) ---
 
-  it("a correction <basename>.2.evidence.json over the unchanged report binds beside the first; one named with the first record's name is conflict/record-exists", async () => {
+  it("a correction <basename>.2.evidence.json over the unchanged report binds beside the first; one without a predecessor meets the first record's name and is conflict/record-exists", async () => {
     const first = await seed();
     okResult(await dispatch(attachRequest(first.binding)));
     const firstBytes = bytesOf(first.path);
     const reportBytes = bytesOf(first.report);
 
-    const taken = await trySeedCorrection(root, first, { id: "e7e7e7e7-0000-4000-8000-0000000002ff", fileName: `${first.basename}.evidence.json` });
+    const taken = await trySeedCorrection(root, first, { id: "e7e7e7e7-0000-4000-8000-0000000002ff", over: { predecessor: null } });
     expect(taken.ok).toBe(false);
     if (!taken.ok) expect(taken.response).toMatchObject({ ok: false, error: { class: "conflict", reason: "record-exists" } });
     expect(bytesOf(first.path).equals(firstBytes), "the first record is immutable").toBe(true);
@@ -1857,9 +1865,9 @@ describe("attach-evidence, evidence records in the walk, and evidence checked on
     expect(await one(ev.path)).toEqual(["missing-evidence/report-changed"]);
     unlinkSync(join(root, ev.report));
     expect(await one(ev.path)).toEqual(["unresolved-reference/report-missing"]);
-    const elsewhere = await seed({ reportPath: "shared/reviews/260929-1299-review.md" });
+    const elsewhere = await place({ reportPath: "shared/reviews/260929-1299-review.md" });
     expect(await one(elsewhere.path)).toEqual(["unknown-scope/report-not-neighbour"]);
-    const otherName = await seed({ reportPath: `${CONTAINER}/reviews/260929-1299-other.md` });
+    const otherName = await place({ reportPath: `${CONTAINER}/reviews/260929-1299-other.md` });
     expect(await one(otherName.path)).toEqual(["unknown-scope/report-not-neighbour"]);
   });
 
@@ -2126,7 +2134,7 @@ describe("reconcile", () => {
   // --- records ---
 
   it("records: every validate finding, and an evidence file outside a reviews/ store, which validate does not report", async () => {
-    const outside = await seedEvidence(root, { package: OPEN, id: "e7e7e7e7-0000-4000-8000-000000000301", basename: "260929-1301-review", dir: `${CONTAINER}/analyses` });
+    const outside = placeEvidence(root, { package: OPEN, id: "e7e7e7e7-0000-4000-8000-000000000301", basename: "260929-1301-review", dir: `${CONTAINER}/analyses` });
     const shared = await seedEvidence(root, { package: OPEN, id: "e7e7e7e7-0000-4000-8000-000000000302", basename: "260929-1302-review", dir: "shared/reviews" });
     const inContainer = await seedEvidence(root, { package: OPEN, id: "e7e7e7e7-0000-4000-8000-000000000303", basename: "260929-1303-review" });
     expect(inContainer.path).toBe(`${CONTAINER}/reviews/260929-1303-review.evidence.json`);
@@ -2778,5 +2786,306 @@ describe("transition: plan progress", () => {
     const report = okResult(await dispatch({ op: "reconcile", workbench: root, scope: CONTAINER })) as { evidence: Array<{ path: string; record_id: string; status: string }>; records: unknown[] };
     expect(report.evidence).toEqual([expect.objectContaining({ path: OPEN, at: "/evidence/0", record_id: ev.id, revision: ev.revision, status: "fresh" })]);
     expect(report.records).toEqual([]);
+  });
+});
+
+// --- create of an evidence record (FJ02b step 3, Prior's FJ02 response 19) ---------------
+
+describe("create: evidence", () => {
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const OPEN_ID = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
+  const CONTAINER = "work-packages/260928-1200-parser-fix";
+  const OPEN_NARRATIVE = `${CONTAINER}/260928-1200-parser-fix.md`;
+  const REVIEWS = `${CONTAINER}/reviews`;
+  const BASENAME = "260929-1600-review";
+  const REPORT = `${REVIEWS}/${BASENAME}.md`;
+  const FIRST = `${REVIEWS}/${BASENAME}.evidence.json`;
+  const at = (n: number): string => `${REVIEWS}/${BASENAME}.${n}.evidence.json`;
+  const REPORT_TEXT = "# Review of the parser fix\n\nVerdict: accept. Every check passed.\n";
+  const OTHER_TEXT = "# Review of the parser fix, rewritten\n\nVerdict: revise.\n";
+  const ZERO = "sha256:" + "0".repeat(64);
+  const evidenceId = (n: number): string => `e8e8e8e8-0000-4000-8000-${String(n).padStart(12, "0")}`;
+
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+  const detailOf = (r: Response): string => (r.ok ? "" : (r.error.detail ?? ""));
+  const parsed = (path: string): Record<string, unknown> => {
+    const p = strictParse(bytesOf(path));
+    if (!p.ok) throw new Error(p.detail);
+    return p.value as Record<string, unknown>;
+  };
+  const answered = (id: string): boolean => existsSync(join(root, ".json-state", "ops", `${id}.json`));
+  const journal = (): string[] => (existsSync(join(root, ".json-state", "journal")) ? readdirSync(join(root, ".json-state", "journal")) : []);
+  const writeAt = (path: string, text: string): void => {
+    mkdirSync(join(root, path, ".."), { recursive: true });
+    writeFileSync(join(root, path), text);
+  };
+  /** Every file under the workbench but `.json-state/`, with its bytes: what a refusal must leave as it was. */
+  const tree = (): Map<string, string> => {
+    const out = new Map<string, string>();
+    const walk = (dir: string, rel: string): void => {
+      for (const e of readdirSync(dir, { withFileTypes: true })) {
+        if (rel === "" && e.name === ".json-state") continue;
+        const r = rel === "" ? e.name : `${rel}/${e.name}`;
+        if (e.isDirectory()) walk(join(dir, e.name), r);
+        else out.set(r, revisionOf(readFileSync(join(dir, e.name))));
+      }
+    };
+    walk(root, "");
+    return out;
+  };
+
+  /** A complete evidence record for the scratch open package over `REPORT` as it stands, with `over` applied. */
+  const payloadOf = (id: string, over: Record<string, unknown> = {}): Record<string, unknown> => ({
+    schema: "fusion.evidence/v1",
+    id,
+    workbench_id: WB_ID,
+    subject: { git_tree: "0566591299a5f2c11f2573973ffc894791d20ee7", git_range: null },
+    brief_revision: revision(OPEN_NARRATIVE),
+    plan_revision: null,
+    role: { profile: "reviewer", version: "12.0.0" },
+    host: "claude-code",
+    execution_policy: "claude-guided",
+    verdict: "accept",
+    uncertainties: [],
+    checks: [{ id: "tests-green", result: "pass", detail: null }],
+    report: { path: REPORT, sha256: existsSync(join(root, REPORT)) ? revision(REPORT) : ZERO, kind: "review" },
+    predecessor: null,
+    accepted_at: "2026-09-29T16:00:00Z",
+    extensions: {},
+    ...over,
+  });
+  const createRequest = (payload: Record<string, unknown>, over: Partial<CreateEvidenceRequest> = {}): CreateEvidenceRequest => ({
+    op: "create",
+    workbench: root,
+    operation_id: randomUUID(),
+    id: payload.id as string,
+    kind: "evidence",
+    scope: { container: CONTAINER, store: "reviews" },
+    payload: payload as EvidencePayload,
+    ...over,
+  });
+  /** The predecessor reference to the evidence file at `path`, pinned at its stored revision. */
+  const predecessorOf = (path: string): RecordRef => ({ workbench_id: WB_ID, record_id: parsed(path).id as string, revision: revision(path) });
+  /** A correction of the record at `of` over the report as it stands. */
+  const correctionOf = (n: number, of: string, over: Record<string, unknown> = {}): Record<string, unknown> => payloadOf(evidenceId(n), { predecessor: predecessorOf(of), accepted_at: "2026-09-29T17:00:00Z", ...over });
+
+  /** Dispatches `req`, asserts the answer's shape and that the file holds `serialise(payload)`; the answer's path. */
+  const lands = async (req: CreateEvidenceRequest, path: string, label = path): Promise<Response> => {
+    expect(existsSync(join(root, path)), `${label}: nothing stood at the path before`).toBe(false);
+    const r = await dispatch(req);
+    const result = okResult(r);
+    expect(Object.keys(result), label).toEqual(["operation_id", "path", "kind", "revision", "report"]);
+    expect(result, label).toEqual({ operation_id: req.operation_id, path, kind: "evidence", revision: revision(path), report: { path: req.payload.report.path, sha256: req.payload.report.sha256 } });
+    if (r.ok) expect(r.revisions, label).toEqual({ [path]: revision(path) });
+    expect(bytesOf(path).toString("utf-8"), `${label}: exactly the payload, serialised`).toBe(serialise(req.payload));
+    return r;
+  };
+  /** Refused with `expected`: no file under the workbench changed or appeared, no answer, no pending intent. */
+  const refusedWith = async (req: CreateEvidenceRequest, expected: { class: string; reason: string }, label: string): Promise<Response> => {
+    const before = tree();
+    const r = await dispatch(req);
+    expect(errorOf(r), label).toEqual(expected);
+    expect(tree(), `${label}: the workbench`).toEqual(before);
+    expect(answered(req.operation_id), `${label}: answer`).toBe(false);
+    expect(journal(), `${label}: journal`).toEqual([]);
+    return r;
+  };
+  const reviews = (): string[] => readdirSync(join(root, REVIEWS)).sort();
+
+  // --- creation and replay ---
+
+  it("a first record lands at <basename>.evidence.json as serialise(payload); show and validate read it; the report is not written", async () => {
+    writeAt(REPORT, REPORT_TEXT);
+    const reportBytes = bytesOf(REPORT);
+    const payload = payloadOf(evidenceId(1));
+    await lands(createRequest(payload), FIRST);
+    expect(reviews()).toEqual([`${BASENAME}.evidence.json`, `${BASENAME}.md`]);
+    expect(bytesOf(REPORT).equals(reportBytes), "the report is the reviewer's file").toBe(true);
+    const shown = okResult(await dispatch({ op: "show", workbench: root, record: { path: FIRST } }));
+    expect(shown).toEqual({ path: FIRST, kind: "evidence", control: payload, revision: revision(FIRST), narrative: null, report: { path: REPORT, sha256: revision(REPORT), stored: revision(REPORT) } });
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: FIRST } }))).toMatchObject({ checked: 1, valid: true, findings: [] });
+    expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ valid: true });
+  });
+
+  it("an identical replay returns the same answer; a divergent one is operation-id-reused; a fresh operation id with the same evidence id is id-in-use; nothing written by any", async () => {
+    writeAt(REPORT, REPORT_TEXT);
+    const req = createRequest(payloadOf(evidenceId(1)));
+    const first = await lands(req, FIRST);
+    const bytes = bytesOf(FIRST);
+    expect(await dispatch(req)).toEqual(first);
+    expect(bytesOf(FIRST).equals(bytes)).toBe(true);
+    expect(reviews()).toEqual([`${BASENAME}.evidence.json`, `${BASENAME}.md`]);
+
+    const before = tree();
+    expect(errorOf(await dispatch({ ...req, payload: { ...req.payload, verdict: "revise" } }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+    expect(tree()).toEqual(before);
+    await refusedWith(createRequest(payloadOf(evidenceId(1))), { class: "conflict", reason: "id-in-use" }, "the same evidence id under a fresh operation id");
+  });
+
+  // --- correction and suffix freezing ---
+
+  it("corrections over the unchanged report take .2, then .3, then one above the highest; an identical replay of the first correction after later ones still answers .2", async () => {
+    writeAt(REPORT, REPORT_TEXT);
+    await lands(createRequest(payloadOf(evidenceId(1))), FIRST);
+    const firstBytes = bytesOf(FIRST);
+    const reportBytes = bytesOf(REPORT);
+
+    const c2 = createRequest(correctionOf(2, FIRST));
+    const answer2 = await lands(c2, at(2), ".2");
+    expect(bytesOf(FIRST).equals(firstBytes), "the predecessor is never modified").toBe(true);
+    expect(bytesOf(REPORT).equals(reportBytes), "the report is never rewritten").toBe(true);
+    await lands(createRequest(correctionOf(3, FIRST)), at(3), ".3");
+    // A correction of a correction names the same report: one above the highest present.
+    await lands(createRequest(correctionOf(4, at(2))), at(4), ".4, correcting .2");
+
+    const listed = reviews();
+    expect(await dispatch(c2), "the suffix frozen in the stored answer").toEqual(answer2);
+    expect(reviews(), "the replay allocated nothing").toEqual(listed);
+    expect(bytesOf(FIRST).equals(firstBytes)).toBe(true);
+    expect(bytesOf(REPORT).equals(reportBytes)).toBe(true);
+    for (const path of [FIRST, at(2), at(3), at(4)]) {
+      expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path } })), path).toMatchObject({ valid: true, findings: [] });
+    }
+  });
+
+  it("the narrowed guarantee: with the highest correction deleted by hand the next takes its suffix again; a gap below the highest is not refilled; no chosen path collides with a file that stands", async () => {
+    writeAt(REPORT, REPORT_TEXT);
+    await lands(createRequest(payloadOf(evidenceId(1))), FIRST);
+    await lands(createRequest(correctionOf(2, FIRST)), at(2));
+    const c3 = createRequest(correctionOf(3, FIRST));
+    const answer3 = await lands(c3, at(3));
+
+    unlinkSync(join(root, at(3)));
+    // `lands` asserts nothing stood at the path before the request.
+    await lands(createRequest(correctionOf(5, FIRST)), at(3), ".3 chosen again");
+    expect(parsed(at(3)).id, "the file at .3 is the new record").toBe(evidenceId(5));
+    // The stored answer of the first .3 still names it; a replay answers it and writes nothing.
+    const bytes = bytesOf(at(3));
+    expect(await dispatch(c3)).toEqual(answer3);
+    expect(bytesOf(at(3)).equals(bytes)).toBe(true);
+
+    unlinkSync(join(root, at(2)));
+    await lands(createRequest(correctionOf(6, FIRST)), at(4), "the gap at .2 is not refilled");
+  });
+
+  // --- the two review corrections: a changed report under the same basename ---
+
+  it("a correction under the same basename over a changed report is refused, nothing written: naming the new hash is predecessor-report-changed, naming the old one report-changed", async () => {
+    writeAt(REPORT, REPORT_TEXT);
+    await lands(createRequest(payloadOf(evidenceId(1))), FIRST);
+    const hashA = revision(REPORT);
+    const firstBytes = bytesOf(FIRST);
+    writeAt(REPORT, OTHER_TEXT);
+    const hashB = revision(REPORT);
+    expect(hashB).not.toBe(hashA);
+
+    const newHash = await refusedWith(createRequest(correctionOf(2, FIRST, { report: { path: REPORT, sha256: hashB, kind: "review" } })), { class: "conflict", reason: "predecessor-report-changed" }, "the new evidence names hash B");
+    expect(detailOf(newHash)).toContain(hashA);
+    expect(detailOf(newHash)).toContain(hashB);
+    await refusedWith(createRequest(correctionOf(3, FIRST, { report: { path: REPORT, sha256: hashA, kind: "review" } })), { class: "missing-evidence", reason: "report-changed" }, "the new evidence names hash A, the file is at B");
+    expect(bytesOf(FIRST).equals(firstBytes), "the predecessor").toBe(true);
+    expect(revision(REPORT), "the report as the reviewer left it").toBe(hashB);
+    expect(reviews()).toEqual([`${BASENAME}.evidence.json`, `${BASENAME}.md`]);
+  });
+
+  it("a correction whose predecessor names another report takes that report's first-record name", async () => {
+    writeAt(REPORT, REPORT_TEXT);
+    await lands(createRequest(payloadOf(evidenceId(1))), FIRST);
+    const REPORT2 = `${REVIEWS}/260929-1601-review.md`;
+    writeAt(REPORT2, OTHER_TEXT);
+    await lands(createRequest(correctionOf(2, FIRST, { report: { path: REPORT2, sha256: revision(REPORT2), kind: "review" } })), `${REVIEWS}/260929-1601-review.evidence.json`);
+  });
+
+  it("predecessor null at a taken name is conflict/record-exists, never read as a correction", async () => {
+    writeAt(REPORT, REPORT_TEXT);
+    await lands(createRequest(payloadOf(evidenceId(1))), FIRST);
+    const r = await refusedWith(createRequest(payloadOf(evidenceId(2))), { class: "conflict", reason: "record-exists" }, "predecessor null over the same report");
+    expect(detailOf(r)).toContain(FIRST);
+  });
+
+  // --- wrong report, hash, scope and id ---
+
+  it("each refusal of the check list with the one field changed, nothing written; the unchanged request then lands", async () => {
+    writeAt(REPORT, REPORT_TEXT);
+    await lands(createRequest(payloadOf(evidenceId(1))), FIRST);
+    const good = (): Record<string, unknown> => correctionOf(2, FIRST);
+    const reportAt = (path: string): Record<string, unknown> => ({ report: { path, sha256: revision(path), kind: "review" } });
+    const NOWHERE = "work-packages/260929-1600-no-package";
+    for (const [path, text] of [
+      [`${CONTAINER}/analyses/${BASENAME}.md`, REPORT_TEXT],
+      [`shared/reviews/${BASENAME}.md`, REPORT_TEXT],
+      [`${NOWHERE}/reviews/${BASENAME}.md`, REPORT_TEXT],
+      [`${REVIEWS}/260929-1602-review.2.md`, REPORT_TEXT],
+      [`${REVIEWS}/260929-1603_o_review.md`, REPORT_TEXT],
+      [`${REVIEWS}/260929-1604-review.txt`, REPORT_TEXT],
+    ] as const) {
+      writeAt(path, text);
+    }
+    const foreign = "0e0e0e0e-0000-4000-8000-000000000000";
+    const cases: Array<[string, () => CreateEvidenceRequest, { class: string; reason: string }]> = [
+      ["the envelope's id and the payload's disagree", () => createRequest(good(), { id: evidenceId(9) }), { class: "schema-invalid", reason: "id-mismatch" }],
+      ["another workbench's id in the payload", () => createRequest({ ...good(), workbench_id: foreign }), { class: "unknown-scope", reason: "foreign-workbench-id" }],
+      ["a report outside the scope's reviews/ store", () => createRequest({ ...good(), ...reportAt(`${CONTAINER}/analyses/${BASENAME}.md`) }), { class: "unknown-scope", reason: "store-kind-mismatch" }],
+      ["a report in shared/reviews/ under a container's scope", () => createRequest({ ...good(), ...reportAt(`shared/reviews/${BASENAME}.md`) }), { class: "unknown-scope", reason: "store-kind-mismatch" }],
+      ["the container's report under the shared scope", () => createRequest(good(), { scope: { container: null, store: "reviews" } }), { class: "unknown-scope", reason: "store-kind-mismatch" }],
+      ["a container that is no package", () => createRequest({ ...good(), ...reportAt(`${NOWHERE}/reviews/${BASENAME}.md`) }, { scope: { container: NOWHERE, store: "reviews" } }), { class: "unknown-scope", reason: "container-missing" }],
+      ["a report basename ending in .2", () => createRequest({ ...good(), ...reportAt(`${REVIEWS}/260929-1602-review.2.md`) }), { class: "schema-invalid", reason: "report-name" }],
+      ["a report name carrying a state marker", () => createRequest({ ...good(), ...reportAt(`${REVIEWS}/260929-1603_o_review.md`) }), { class: "schema-invalid", reason: "report-name" }],
+      ["a report that is no Markdown file", () => createRequest({ ...good(), ...reportAt(`${REVIEWS}/260929-1604-review.txt`) }), { class: "schema-invalid", reason: "report-name" }],
+      ["a report absent", () => createRequest({ ...good(), report: { path: `${REVIEWS}/260929-1605-review.md`, sha256: ZERO, kind: "review" } }), { class: "unresolved-reference", reason: "report-missing" }],
+      ["a report at another hash", () => createRequest({ ...good(), report: { path: REPORT, sha256: ZERO, kind: "review" } }), { class: "missing-evidence", reason: "report-changed" }],
+      ["a predecessor no control file carries", () => createRequest({ ...good(), predecessor: { workbench_id: WB_ID, record_id: evidenceId(99) } }), { class: "unresolved-reference", reason: "record-not-found" }],
+      ["a predecessor of another workbench", () => createRequest({ ...good(), predecessor: { ...predecessorOf(FIRST), workbench_id: foreign } }), { class: "unresolved-reference", reason: "foreign-workbench" }],
+      ["a predecessor that is no evidence record", () => createRequest({ ...good(), predecessor: { workbench_id: WB_ID, record_id: OPEN_ID } }), { class: "unresolved-reference", reason: "not-evidence" }],
+      ["a predecessor pinned at another revision", () => createRequest({ ...good(), predecessor: { ...predecessorOf(FIRST), revision: ZERO } }), { class: "missing-evidence", reason: "evidence-revision-mismatch" }],
+    ];
+    for (const [label, req, expected] of cases) await refusedWith(req(), expected, label);
+    // Every refusal above came from its one field.
+    await lands(createRequest(good()), at(2), "the unchanged correction");
+    // A predecessor without a pinned revision resolves by id alone.
+    const { revision: _pinned, ...unpinned } = predecessorOf(FIRST);
+    await lands(createRequest(correctionOf(3, FIRST, { predecessor: unpinned })), at(3), "an unpinned predecessor");
+  });
+
+  it("a record into shared/reviews/ lands under the shared scope", async () => {
+    const SHARED = `shared/reviews/${BASENAME}.md`;
+    writeAt(SHARED, REPORT_TEXT);
+    await lands(createRequest(payloadOf(evidenceId(1), { report: { path: SHARED, sha256: revision(SHARED), kind: "review" } }), { scope: { container: null, store: "reviews" } }), `shared/reviews/${BASENAME}.evidence.json`);
+  });
+
+  // --- host labels ---
+
+  it("host prior, prior-enforced and accept land as sent and confer nothing: attach checks policy and freshness on its own; a claude-guided record stays claude-guided", async () => {
+    writeAt(REPORT, REPORT_TEXT);
+    const labelled = payloadOf(evidenceId(1), { host: "prior", execution_policy: "prior-enforced", verdict: "accept" });
+    await lands(createRequest(labelled), FIRST);
+    expect(parsed(FIRST), "stored as sent, nothing added or upgraded").toEqual(labelled);
+    const REPORT2 = `${REVIEWS}/260929-1601-review.md`;
+    writeAt(REPORT2, OTHER_TEXT);
+    const guided = payloadOf(evidenceId(2), { report: { path: REPORT2, sha256: revision(REPORT2), kind: "review" } });
+    const GUIDED = `${REVIEWS}/260929-1601-review.evidence.json`;
+    await lands(createRequest(guided), GUIDED);
+    expect(parsed(GUIDED).execution_policy).toBe("claude-guided");
+
+    const attach = (path: string, policy: EvidenceRef["policy"]): AttachEvidenceRequest => ({
+      op: "attach-evidence",
+      workbench: root,
+      operation_id: randomUUID(),
+      record: { path: OPEN },
+      expected_revision: revision(OPEN),
+      actor: ACTOR,
+      evidence: { ref: { workbench_id: WB_ID, record_id: parsed(path).id as string, revision: revision(path) }, policy },
+    });
+    const pkg = bytesOf(OPEN);
+    expect(errorOf(await dispatch(attach(FIRST, "claude-guided")))).toEqual({ class: "schema-invalid", reason: "policy-mismatch" });
+    expect(errorOf(await dispatch(attach(GUIDED, "prior-enforced"))), "a binding never upgrades claude-guided").toEqual({ class: "schema-invalid", reason: "policy-mismatch" });
+    writeFileSync(join(root, OPEN_NARRATIVE), `${bytesOf(OPEN_NARRATIVE).toString("utf-8")}\nOne more requirement.\n`);
+    expect(errorOf(await dispatch(attach(FIRST, "prior-enforced"))), "the label does not make stale evidence fresh").toEqual({ class: "missing-evidence", reason: "brief-changed" });
+    expect(bytesOf(OPEN).equals(pkg), "no binding was written").toBe(true);
+    expect(parsed(GUIDED).execution_policy).toBe("claude-guided");
   });
 });
