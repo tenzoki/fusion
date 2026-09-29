@@ -29,9 +29,10 @@ and `bin/`, and drops `codec/node_modules` as it drops `hooks/node_modules`.
 What an installed copy runs is the bundle, `dist/fusion-record.js`, and
 nothing else in it; what an installed copy carries for a reader or for the
 Prior side is `schemas/`, `contract/` and `fixtures/` (the language-neutral
-fixture index, the Prior DTO pairs, the scratch workbench, the two recorded
-protocol sessions under `fixtures/protocol-session/` (FJ01) and
-`fixtures/protocol-session-fj02/` (FJ02), and Prior's FJ01 handback under
+fixture index, the Prior DTO pairs, the scratch workbench, the three recorded
+protocol sessions under `fixtures/protocol-session/` (FJ01),
+`fixtures/protocol-session-fj02/` (FJ02) and
+`fixtures/protocol-session-fj02b/` (FJ02b), and Prior's FJ01 handback under
 `fixtures/prior-handback/`). `src/`, `scripts/`,
 `package.json` and the tests are copied because the copy is whole, and are
 unused at runtime: nothing in an install compiles, tests or imports them.
@@ -54,8 +55,8 @@ Exit 0 for an answered request whatever its `ok`, 2 on usage, 3 when the
 inlined schemas do not compile; nothing on stderr except on 2 and 3. A
 `workbench` the request leaves out is taken from `FUSION_WORKBENCH`. The
 request shapes are `schemas/protocol.schema.json` (`fusion.protocol/v1`), one
-branch per operation of spec section 6's table; the errors are the spec's
-eight typed classes. `inspect` reports which operations answer
+branch per operation of spec section 6's table and a second branch of `create`
+for `kind: evidence`; the errors are the spec's eight typed classes. `inspect` reports which operations answer
 (`operations.implemented`) and which do not yet (`operations.deferred`); an
 operation not yet answered is refused `operation-unknown/not-implemented`, with
 a detail naming the package that lands it.
@@ -70,6 +71,34 @@ the one operation still deferred: it lands in FJ04 and is refused
 `operation-unknown/not-implemented` until then. Every mutation runs through
 the kernel below, and `claim` and `release` are `transition` with defaults and
 clearer refusals, never a second route to the files.
+
+FJ02b added the two extensions Prior approved in its FJ02 response, both as
+plan functions over the same kernel, so replay, the compare-and-swap, the
+journal and recovery apply to them unchanged.
+
+**Plan progress** is `transition` on a plan record with `payload.steps` and
+`payload.criteria` (response 18). Each entry is an update keyed by the `id` of
+a step or criterion the stored plan already has: the named entries are
+replaced in place, an entry left out keeps its value and its position, and no
+entry is added, removed or reordered. `to` may equal the plan's current state
+when the plan is live and an entry changes a value, so progress needs no
+state change; a terminal plan takes none, and a move to the stored state that
+changes nothing is refused (`conflict/transition-refused` for both). A step
+moves along the step edges of `contract/transitions.json` (`done` back to
+`open` is `conflict/transition-refused`, the detail naming the step); a
+criterion takes any `met` the schema admits, `null` again included. An id named
+twice, in the payload or in the stored array the payload updates, is
+`schema-invalid/duplicate-step-id` or `duplicate-criterion-id`, and `create`
+refuses a new plan that repeats one; an id the plan lacks is
+`unresolved-reference/unknown-step-id` or `unknown-criterion-id`. `steps` or
+`criteria` sent for a record that is not a plan is
+`schema-invalid/payload-field-not-admitted`, not ignored, because the two
+fields write data. `acceptance` and the record's `references` are never
+written by progress, and the answer has the shape of every `transition`.
+
+**Evidence creation** is `create` with `kind: evidence` (response 19), the
+sole write route for a new evidence record; `## Evidence records on disk`
+below describes it.
 
 ## The kernel and the journal
 
@@ -179,7 +208,12 @@ seen. A pending intent the first listing finds is classified without the lock
 by hashing the files it names: a blocked one is stable and an ordinary member
 of both listings, so it never sends later reads through the lock; only an
 intent whose files are all at pre or post, which may belong to a live writer,
-makes the reader take the lock, recover and read again.
+makes the reader take the lock, recover and read again. A read may therefore
+finish a committed intent, a multi-file one included, and is not a promise of
+zero physical writes. The operation name confers no authority: a host
+authorises that recovery on its own, apart from a read-only role, which must
+not receive it because the request it sends is a read (Prior's FJ02 response,
+`## Recovery and rollout consequences`).
 
 ## Evidence records on disk
 
@@ -196,8 +230,55 @@ revision, names its neighbouring report and that report is on disk at the
 named hash, belongs to this workbench, carries the binding's execution policy,
 and was produced against the package narrative as it stands and against the
 plan in force (`missing-evidence/brief-changed`, `plan-changed`,
-`no-active-plan`). No FJ02 operation writes an evidence record; Prior's request
-19 asks how a reviewer will.
+`no-active-plan`).
+
+**`create` with `kind: evidence` is the sole write route for a new evidence
+record** (FJ02b, Prior's FJ02 response 19). The request is a branch of its
+own: `{op, workbench?, operation_id, id, kind: "evidence", scope: {container,
+store: "reviews"}, payload}`, where `payload` is the complete
+`fusion.evidence/v1` record. The report is the reviewer's file and is already
+on disk; the kernel writes the record alone, the payload serialised, and adds
+nothing to it. The checks run in this order, and each refuses with nothing
+written:
+
+| Check | Refusal |
+|---|---|
+| The payload's `id` is the envelope's `id` | `schema-invalid/id-mismatch` |
+| The payload's `workbench_id` is this workbench's | `unknown-scope/foreign-workbench-id` |
+| The report's directory is the scope's `reviews/` store | `unknown-scope/store-kind-mismatch` |
+| The scope's container is a package directory | `unknown-scope/container-missing` |
+| The report's basename is marker-free, ends in `.md`, and `<basename>.evidence.json` reads back as a first record of that basename (a basename ending in `.2` would read as a correction counter) | `schema-invalid/report-name` |
+| The report is on disk, at the hash the payload names | `unresolved-reference/report-missing`, `missing-evidence/report-changed` |
+| The `id` is carried by no record of the workbench | `conflict/id-in-use` |
+| The predecessor, when set, resolves to an evidence record of this workbench, at its pinned revision when one is given | `unresolved-reference/…`, `unresolved-reference/not-evidence`, `missing-evidence/evidence-revision-mismatch` |
+| A predecessor naming the same `report.path` names the same `report.sha256` as the payload | `conflict/predecessor-report-changed` |
+| No file stands at the chosen path | `conflict/record-exists` |
+
+**The kernel chooses the path.** A record without a predecessor, or whose
+predecessor names another report, is the report's first record,
+`<basename>.evidence.json`; a file already standing there is
+`conflict/record-exists` and is never read as a correction. A predecessor
+naming the same report makes a correction, `<basename>.<n>.evidence.json`. A
+correction under the same basename is admitted only over an unchanged report:
+the same path does not mean the same bytes, so the predecessor's
+`report.sha256` must equal the payload's, and a changed report takes a new
+basename.
+
+**The counter `n` is one above the highest counter present in the directory
+as it stands, and 2 when none is.** It is read under the write lock and frozen
+in the intent and the stored answer, so an identical retry answers the same
+path even after a later correction has landed, and it never collides with a
+file that stands. That is the whole guarantee. No durable counter is kept: a
+suffix freed by a hand deletion of the highest file can be chosen again, while
+a gap below the highest is not refilled.
+
+The answer is `{operation_id, path, kind: "evidence", revision, report: {path,
+sha256}}`: `create`'s shape with the report in place of the narrative, and
+`path` the file the kernel chose. Nothing in creation reads `host`,
+`execution_policy` or `verdict`. The kernel receives no caller identity it may
+authorise on, so a label a caller writes confers nothing and is stored as
+sent; `attach-evidence` and a package's move to `done` check policy agreement
+and freshness on their own.
 
 ## What `reconcile` reports
 
@@ -236,12 +317,13 @@ never by its file format.
 |---|---|
 | `schemas/*.schema.json` | JSON Schema (draft 2020-12), one file per contract, each keyed by its `$id` |
 | `contract/` | The transition, dependency and Prior-mapping tables as data; `prior-mapping.json` is the contract as the Prior side ruled it (Prior `c512c4c`, reviewing `dbd1aa1`), every row confirmed |
-| `fixtures/manifest.json` | The language-neutral fixture index: every fixture outside `fixtures/prior/`, `fixtures/workbench/`, `fixtures/protocol-session/`, `fixtures/prior-handback/` and `fixtures/protocol-session-fj02/` (the five `fixtures.test.ts` exempts), with the schema it is checked against and the outcome expected. Prior's Go side reads this same file and asserts the same outcomes; its shape is `fixtures/manifest.schema.json` |
+| `fixtures/manifest.json` | The language-neutral fixture index: every fixture outside `fixtures/prior/`, `fixtures/workbench/`, `fixtures/protocol-session/`, `fixtures/prior-handback/`, `fixtures/protocol-session-fj02/` and `fixtures/protocol-session-fj02b/` (the six `fixtures.test.ts` exempts), with the schema it is checked against and the outcome expected. Prior's Go side reads this same file and asserts the same outcomes; its shape is `fixtures/manifest.schema.json` |
 | `fixtures/valid/`, `fixtures/invalid/`, `fixtures/bytes/` | The fixtures the manifest indexes |
 | `fixtures/prior/` | Round-trip fixtures for the Prior DTO mapping; not indexed by the manifest. The 13 `prior.json` are Go-emitted goldens (`go-golden@dbd1aa1`, taken at Prior `c512c4c`), copied byte for byte and never edited here; each `fusion.json` beside one is the codec's import of it, and `UPDATE_PRIOR_FIXTURES=1 npm test` regenerates it when the mapping changes on purpose |
 | `fixtures/prior-handback/` | Prior's FJ01 handback: the five files after Prior's own `claimed → paused` transition through the pinned bundle (the record, its revision, the `show` response, the `transition` request and response), counterchecked by `prior-handback.test.ts`; not indexed by the manifest |
 | `fixtures/protocol-session/` | The FJ01 recorded session: six request/response pairs through `bin/fusion-record` over a copy of the scratch workbench, byte for byte, gated by `round-trip-cli.test.ts` and regenerated only under `UPDATE_PROTOCOL_SESSION=1`; its `README.md` is the replay procedure for the Prior side; not indexed by the manifest |
 | `fixtures/protocol-session-fj02/` | The FJ02 recorded session: fifteen pairs covering every operation FJ02 answers, the replay of a `create`, a divergent replay and a read that recovers a pending intent, with the files no operation writes under `seed/<nn>-<op>/` (a memo, an evidence pair, a pending intent directory), each copied onto the workbench just before its exchange; gated by `round-trip-cli-fj02.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02=1`, replay procedure in its `README.md`; not indexed by the manifest |
+| `fixtures/protocol-session-fj02b/` | The FJ02b recorded session: twenty pairs covering plan progress through `transition` (with and without a state change, its replay, and the refusals for a stale revision, a forbidden step edge, a repeated id, an unknown id and a closed plan) and `create` of `kind: evidence` (a first record, two corrections, the replay of the first correction after the second landed, and the refusals for a taken name, a report at another hash and a correction over a changed report), with the report no operation writes under `seed/11-create/` and its replacement under `seed/20-create/`, each copied onto the workbench just before its exchange; gated by `round-trip-cli-fj02b.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02B=1`, replay procedure in its `README.md`; not indexed by the manifest |
 | `fixtures/workbench/` | A minimal v12-shaped scratch workbench (`workbench.json`, `.fusion-setup`, two package pairs, one shared issue pair) the store and CLI suites copy to a temp directory before every case; not indexed by the manifest |
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |
 | `scripts/build.mjs` | esbuild, pinned exactly, `--bundle --platform=node --format=esm --target=node20`, JSON inlined, staging path then atomic rename into `dist/`; a second run writes nothing |
@@ -256,8 +338,9 @@ never by its file format.
 | `src/transitions.ts` | `allowed(kind, from, to, payload)` and `dependencySatisfied(condition, target)` over `contract/transitions.json` and `contract/dependencies.json`; a typed refusal, never a state change |
 | `src/references.ts` | Parses the three prose citation forms and the structured `record_ref`, `artefact_ref` and `foreign_ref` shapes into one union and renders them back; resolves nothing against a file system |
 | `src/prior/` | The Prior DTO mapping, both directions, row by row from `contract/prior-mapping.json`: `candidates.ts`, `packages.ts`, `campaign.ts`; `gojson.ts` reproduces Go's `encoding/json` bytes so that `computePriorRevision` equals Prior's stored revision |
-| `src/__tests__/` | One suite per module, plus `fixtures.test.ts` over the manifest, the two recorded-session gates and `prior-handback.test.ts` |
-| `src/__tests__/helpers/seed.ts` | Seeds a temp workbench with a deterministic evidence record and its report (and a correction beside it on request), through the kernel's `mutate`: the only writer of an evidence record in FJ02, used by the evidence and `reconcile` cases and by the FJ02 recorder, which checks its `seed/09-attach-evidence/` against it |
+| `src/__tests__/` | One suite per module, plus `fixtures.test.ts` over the manifest, the three recorded-session gates (`round-trip-cli.test.ts`, `round-trip-cli-fj02.test.ts`, `round-trip-cli-fj02b.test.ts`) and `prior-handback.test.ts` |
+| `src/__tests__/helpers/seed.ts` | Seeds a temp workbench with a deterministic evidence record and its report (and a correction on request): the report is written as a plain file and the record is created through `create` with `kind: evidence`, the kernel choosing its path. `placeEvidence` writes a pair by hand, with no check, only for the cases whose record `create` refuses. Used by the evidence and `reconcile` cases and by the FJ02 recorder, which checks its `seed/09-attach-evidence/` against it |
+| `src/__tests__/helpers/session.ts` | The machinery the FJ02 and FJ02b recorders share: the wrapper spawned once per exchange over a temp copy of the scratch workbench, the `<workbench>` substitution, a `seed/<nn>-<op>/` set copied just before its exchange, the file listing and the bytes a comparison reads, and the regeneration switch. It holds no assertion about a session; the FJ01 recorder keeps its own copy |
 
 ## Working in it
 

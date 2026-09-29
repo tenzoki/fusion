@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"conflict","reason":"transition-refused","detail":"plan: closed is terminal (never: closed and deferred are terminal (conventions, ## Terminal states are history); continuation files a new record that cites the terminal one); plan progress is never written into it"}}

@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"conflict","reason":"record-exists","detail":"work-packages/260929-1500-fj02b-session/reviews/260929-1600-fj02b-session-review.evidence.json exists; an evidence record is immutable once accepted, and a record without a predecessor naming this report is its first record, never a correction"}}

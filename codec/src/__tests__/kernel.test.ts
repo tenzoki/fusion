@@ -28,6 +28,7 @@ import { commitIntent, journalDir, opsDir, pendingIds, requestDigest, type Inten
 import { CUTS, CutReached, cutsFor, mutate, read, type KernelOptions, type MutationRequest, type PlanFunction } from "../kernel.js";
 import { LOCK_STALE_MS, STATE_DIR, lockPathFor, openWorkbench, revisionOf, serialise, type Workbench } from "../store.js";
 import { strictParse } from "../strict-json.js";
+import { PLACEHOLDER, fromPlaceholder, toPlaceholder } from "./helpers/session.js";
 
 const FIXTURE = fileURLToPath(new URL("../../fixtures/workbench/", import.meta.url));
 const VALID = fileURLToPath(new URL("../../fixtures/valid/", import.meta.url));
@@ -875,13 +876,11 @@ describe("a three-write replacement adopt-plan cut at every point of CUTS", () =
 // delete that one answer, on a temp copy, to show what pruning would do. The
 // CAS is shown intact beside it, so the defect is the return of old bytes.
 //
-// The `<workbench>` substitution is the recorded session's own
-// (`round-trip-cli-fj02.test.ts`); that file exports nothing and importing a
-// test file would run its session, so the one line is repeated here until the
-// shared helper exists.
+// The `<workbench>` substitution is the recorded sessions' own, taken from the
+// helper their recorders share (`helpers/session.ts`), so the recorded bytes
+// are replayed here by the rule they were recorded under.
 
 const SESSION = fileURLToPath(new URL("../../fixtures/protocol-session-fj02/", import.meta.url));
-const PLACEHOLDER = "<workbench>";
 
 describe("stored answers are never pruned: content revisions return", () => {
   type Recorded = "01-create" | "02-claim" | "03-release";
@@ -897,15 +896,12 @@ describe("stored answers are never pruned: content revisions return", () => {
   const ids = (["01-create", "02-claim", "03-release"] as const).map((n) => String(request(n).operation_id));
   const CLAIM_ID = ids[1] as string;
 
-  /** The root as it stands inside a JSON string. */
-  const inJson = (root: string): string => JSON.stringify(root).slice(1, -1);
-
   /** One request line to the committed bundle, the placeholder replaced by `root`; its stdout, the root recorded as the placeholder. */
   const send = (root: string, line: string): string => {
-    const run = spawnSync(process.execPath, [BUNDLE], { input: line.split(PLACEHOLDER).join(inJson(root)), encoding: "utf-8", env: baseEnv });
+    const run = spawnSync(process.execPath, [BUNDLE], { input: fromPlaceholder(root, line), encoding: "utf-8", env: baseEnv });
     expect(run.status, run.stderr).toBe(0);
     expect(run.stderr).toBe("");
-    return run.stdout.split(inJson(root)).join(PLACEHOLDER);
+    return toPlaceholder(root, run.stdout);
   };
 
   /** What `show` reports of the package, through the bundle. */

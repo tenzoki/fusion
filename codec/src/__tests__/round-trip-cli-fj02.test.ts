@@ -56,25 +56,15 @@
 // substitution records as `<workbench>`.
 // ---------------------------------------------------------------------------
 
-import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { dirname, join, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { cpSync, existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { dispatch } from "../cli/ops.js";
-import type { AdoptPlanRequest, AttachEvidenceRequest, ClaimRequest, CreateRequest, ReconcileRequest, ReleaseRequest, Response, SetDependenciesRequest, SetModeRequest, ShowRequest, TransitionRequest } from "../cli/protocol.js";
+import type { AdoptPlanRequest, AttachEvidenceRequest, ClaimRequest, CreateRequest, ReconcileRequest, ReleaseRequest, SetDependenciesRequest, SetModeRequest, ShowRequest, TransitionRequest } from "../cli/protocol.js";
 import { requestDigest, type Intent } from "../journal.js";
 import { revisionOf } from "../store.js";
 import { seedEvidence, type Seeded } from "./helpers/seed.js";
-
-const CODEC_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const WRAPPER = resolve(CODEC_DIR, "../bin/fusion-record");
-const FIXTURE = join(CODEC_DIR, "fixtures", "workbench");
-const SESSION = join(CODEC_DIR, "fixtures", "protocol-session-fj02");
-const SEED = join(SESSION, "seed");
-const UPDATE = process.env.UPDATE_PROTOCOL_SESSION_FJ02 === "1";
-const PLACEHOLDER = "<workbench>";
+import { FIXTURE, PLACEHOLDER, bytesAt, filesUnder, openSession, parse, requestBytes } from "./helpers/session.js";
 
 // --- the fixed literals ----------------------------------------------------------
 
@@ -131,92 +121,18 @@ type Name = (typeof NAMES)[number];
 /** The exchanges a seed directory precedes, and what it holds. */
 const SEEDED: readonly Name[] = ["05-set-mode", "09-attach-evidence", "14-show"];
 
-// --- the exchange machinery, as round-trip-cli.test.ts has it ---------------------------
+// --- the exchange machinery, shared with the FJ02b recorder (helpers/session.ts) ---------
 
-interface Exchange {
-  name: Name;
-  request: Record<string, unknown>;
-  stdout: string;
-  stderr: string;
-  status: number | null;
-}
+const session = openSession<Name>({ directory: "protocol-session-fj02", updateVariable: "UPDATE_PROTOCOL_SESSION_FJ02", tmpPrefix: "codec-round-trip-fj02-" });
+const { exchanges, expectedSeeds, exchange, byName, result, record, replay, revisionAt, seedBefore } = session;
+const SESSION = session.dir;
+const SEED = session.seedDir;
+const UPDATE = session.update;
 
 let tmp: string;
-let project: string;
 let root: string;
-const exchanges: Exchange[] = [];
-
-const rootInJson = (): string => JSON.stringify(root).slice(1, -1);
-const record = (text: string): string => text.split(rootInJson()).join(PLACEHOLDER);
-const replay = (text: string): string => text.split(PLACEHOLDER).join(rootInJson());
-
-const requestBytes = (request: object): string => JSON.stringify(request) + "\n";
-const parse = (stdout: string): Response => JSON.parse(stdout) as Response;
-
-function exchange(name: Name, request: object): Exchange {
-  const { FUSION_WORKBENCH: _drop, ...env } = process.env;
-  const r = spawnSync(WRAPPER, [], { input: requestBytes(request), cwd: project, encoding: "utf-8", env });
-  const e: Exchange = { name, request: request as Record<string, unknown>, stdout: r.stdout ?? "", stderr: r.stderr ?? "", status: r.status };
-  exchanges.push(e);
-  return e;
-}
-
-const byName = (name: Name): Exchange => {
-  const e = exchanges.find((x) => x.name === name);
-  if (e === undefined) throw new Error(`no exchange ${name}`);
-  return e;
-};
-
-const result = (e: Exchange): Record<string, unknown> => {
-  const response = parse(e.stdout);
-  expect(response.ok, `${e.name}: ${e.stdout}`).toBe(true);
-  if (!response.ok) throw new Error("unreachable");
-  return response.result as Record<string, unknown>;
-};
-
-const bytesAt = (dir: string, path: string): Buffer => readFileSync(join(dir, path));
-const revisionAt = (path: string): string => revisionOf(bytesAt(root, path));
 
 // --- the seed files ----------------------------------------------------------------------
-
-/** Every regular file under `dir`, relative to it, sorted. */
-function filesUnder(dir: string): string[] {
-  const out: string[] = [];
-  const walk = (d: string): void => {
-    for (const e of readdirSync(d, { withFileTypes: true })) {
-      const abs = join(d, e.name);
-      if (e.isDirectory()) walk(abs);
-      else out.push(relative(dir, abs).split("\\").join("/"));
-    }
-  };
-  if (existsSync(dir)) walk(dir);
-  return out.sort();
-}
-
-/** What each seed directory must hold, computed by the run: path (workbench-relative) to bytes. */
-const expectedSeeds = new Map<Name, Map<string, Buffer>>();
-
-/**
- * Records what `name`'s seed must hold, rewrites it under UPDATE, then copies
- * the committed seed onto the workbench as a replayer copies it. The
- * comparison with what the run computed is a case of its own below, so a
- * stale seed fails there by name; the session runs on the committed bytes.
- */
-function seedBefore(name: Name, files: Map<string, Buffer>): void {
-  expectedSeeds.set(name, files);
-  const dir = join(SEED, name);
-  if (UPDATE) {
-    rmSync(dir, { recursive: true, force: true });
-    for (const [path, bytes] of files) {
-      mkdirSync(dirname(join(dir, path)), { recursive: true });
-      writeFileSync(join(dir, path), bytes);
-    }
-  }
-  for (const path of filesUnder(dir)) {
-    mkdirSync(dirname(join(root, path)), { recursive: true });
-    writeFileSync(join(root, path), bytesAt(dir, path));
-  }
-}
 
 /** The evidence pair `helpers/seed.ts` writes for the new package, on a copy of the workbench as it stands. */
 async function evidenceSeed(): Promise<{ files: Map<string, Buffer>; seeded: Seeded }> {
@@ -289,11 +205,7 @@ const createPackage: CreateRequest = {
 let evidence: Seeded;
 
 beforeAll(async () => {
-  tmp = mkdtempSync(join(tmpdir(), "codec-round-trip-fj02-"));
-  project = join(tmp, "project");
-  root = join(project, "fusion-workbench");
-  mkdirSync(project);
-  cpSync(FIXTURE, root, { recursive: true });
+  ({ tmp, root } = session.start());
   const create01 = { ...createPackage, workbench: root };
   const mutation = (operation_id: string, path: string) => ({ workbench: root, operation_id, record: { path }, expected_revision: revisionAt(path), actor: ACTOR });
 
@@ -345,7 +257,7 @@ beforeAll(async () => {
 }, 120_000);
 
 afterAll(() => {
-  if (tmp !== undefined) rmSync(tmp, { recursive: true, force: true });
+  session.stop();
 });
 
 // --- what each exchange answered ---------------------------------------------------------
@@ -445,16 +357,7 @@ describe(`the recorded session under fixtures/protocol-session-fj02/ (${UPDATE ?
 
   for (const name of NAMES) {
     it(`${name}: the recorded request and response equal the fresh exchange`, () => {
-      const e = byName(name);
-      const requestFile = join(SESSION, `${name}.request.json`);
-      const responseFile = join(SESSION, `${name}.response.json`);
-      const freshRequest = record(requestBytes(e.request));
-      const freshResponse = record(e.stdout);
-      if (UPDATE) {
-        mkdirSync(SESSION, { recursive: true });
-        writeFileSync(requestFile, freshRequest);
-        writeFileSync(responseFile, freshResponse);
-      }
+      const { requestFile, responseFile, freshRequest, freshResponse } = session.fresh(name);
       const missing = [requestFile, responseFile].filter((f) => !existsSync(f));
       expect(missing, `recorded session incomplete: ${missing.join(", ")}.\nFIX: run \`UPDATE_PROTOCOL_SESSION_FJ02=1 npm test -- round-trip-cli-fj02\` in codec/ and commit fixtures/protocol-session-fj02/.`).toEqual([]);
       expect(readFileSync(requestFile, "utf-8"), `${name}.request.json differs from the fresh exchange. If the protocol changed on purpose, regenerate with UPDATE_PROTOCOL_SESSION_FJ02=1 and commit the files; the Prior side replays them.`).toBe(freshRequest);
