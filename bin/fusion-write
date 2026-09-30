@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+# fusion-write — the Claude side's one route to a change of JSON control data.
+#
+# Usage:
+#   fusion-write <subcommand> --record <control path> --actor <token> [flags]
+#   fusion-write log-repair
+#
+# One codec mutation per run, through `hooks/dist/write.js` and the record
+# client, over the workbench found above the working directory. A control path
+# is workbench-relative, the `path` that `show` and `list` answer. `--actor` is
+# who acts, `user` or an agent's name: attribution, never authorisation.
+#
+#   claim             this checkout claims the package
+#   release           --reason <text>
+#   transition        --to <state> --reason <text> [payload flags]
+#   set-mode          --value ordinary | --value autonomous --source <JSON>
+#   set-dependencies  --on <terminal|succeeded>:<control path> (repeatable) | --clear
+#   adopt-plan        --plan <control path> [--role plan|spec]
+#   attach-evidence   --evidence <control path of the evidence record>
+#   log-repair        append rows an earlier run retained; sends no request
+#
+# Payload flags of `transition`, each a JSON value, each read only for the
+# kinds that carry it; any other is a usage error:
+#   package   --claim --outcome
+#   issue     --disposition
+#   plan      --steps --criteria
+#   decision  --answer-ref --implementation-ref --superseded-by --deferral
+# The table is `PAYLOAD_FIELDS` in `hooks/lib/record-write.ts`, held equal to
+# the codec's schemas by `hooks/lib/__tests__/record-write.test.ts`.
+#
+# A re-send, the one route after an unknown outcome, repeats the same
+# arguments with `--operation-id <id> --expected-revision <sha256>` (and
+# `--claimed-at <time>` for claim), exactly as the unknown outcome printed
+# them. It composes no `record_change` row.
+#
+# Output on stdout, `KEY=value`:
+#   landed    result=landed, operation_id=, a path= and revision= pair per
+#             record written, event= (logged | pending | unlogged | none)
+#   refused   result=refused, operation_id=
+#   unknown   result=unknown, operation_id=, expected_revision=, claimed_at=
+#   log-repair  appended=, retained=
+# Every reason on stderr, one line each, prefixed `fusion-write:`.
+#
+# Exit codes:
+#   0  landed. `event=pending` names rows retained in
+#      `.guard-state/record-change-pending.jsonl` for a later run, and
+#      `event=unlogged` a change no row records; neither is resent.
+#      For log-repair: answered, `retained=` counting what is still held.
+#   1  the caller stops: no fusion workbench above the working directory, or
+#      `bin/fusion-identity` exiting 1, its own stop code.
+#   2  usage error. Nothing sent. A payload flag the record's kind does not
+#      carry is found after `show` names the kind, before the mutation.
+#   3  install incomplete: this helper's entry, `bin/fusion-identity` or the
+#      codec bundle is missing, or an internal fault stopped the entry.
+#   4  the workbench or a named record was not read: legacy (with a pending
+#      initialize, which /fusion:setup finishes), unsupported, or a read the
+#      codec refused or left unanswered. Nothing sent.
+#   5  ownership refused. `release` and every `transition` out of `claimed`
+#      need the standing claim to be this checkout's, and `claim` needs this
+#      checkout's identifier; a foreign claim or an unreadable identity
+#      refuses, and no flag overrides it. Nothing sent.
+#   6  the codec refused the mutation, its class and reason on stderr
+#      (`conflict/revision-mismatch` when the record moved after `show`).
+#      Nothing landed; nothing is retried.
+#   7  outcome unknown: no answer arrived, and the change may have landed.
+#      Nothing is retried; the re-send above learns the outcome.
+#
+# Called by a person, a skill block or an agent, never by an automatic hook
+# (`hooks/lib/record-client.ts` `## The recovery declaration`), which
+# `hooks/lib/__tests__/hook-route-exclusion.test.ts` pins with a stub of this
+# file. Ownership is response 22 (a) of `codec/fixtures/prior/REQUESTS.md`,
+# checked on the checkout identity alone, as stated there for Prior.
+
+set -eu
+
+usage() {
+  sed -n '3,6p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
+  printf 'See the header of this script for the flags and the exit table.\n' >&2
+}
+
+case "${1:-}" in
+  ""|-h|--help)
+    usage
+    exit 2
+    ;;
+esac
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ ! -x "$here/fusion-workbench-root" ]; then
+  printf 'fusion-write: %s is missing; the plugin install is incomplete. Nothing sent.\n' "$here/fusion-workbench-root" >&2
+  exit 3
+fi
+root="$("$here/fusion-workbench-root" 2>/dev/null || true)"
+if [ -z "$root" ]; then
+  printf 'fusion-write: no fusion workbench found above %s. Run /fusion:setup at the project root.\n' "$(pwd)" >&2
+  exit 1
+fi
+
+entry="$here/../hooks/dist/write.js"
+if [ ! -f "$entry" ]; then
+  printf 'fusion-write: %s is missing; the plugin install is incomplete. Nothing sent.\n' "$entry" >&2
+  exit 3
+fi
+
+sub="$1"
+shift
+
+if [ "$sub" = "log-repair" ]; then
+  exec node "$entry" log-repair "$root/fusion-workbench" "" "" "$@"
+fi
+
+# --- this checkout ----------------------------------------------------------
+#
+# Read once, here, and handed to the entry: the ownership check, a claim and
+# the rows all use this one reading. Exit 3, 4 and 5 of the identity helper
+# leave a half unread, which the entry receives as "".
+
+if [ ! -x "$here/fusion-identity" ]; then
+  printf 'fusion-write: %s is missing; the plugin install is incomplete. Nothing sent.\n' "$here/fusion-identity" >&2
+  exit 3
+fi
+set +e
+id_out="$("$here/fusion-identity")"
+id_rc=$?
+set -e
+case "$id_rc" in
+  0|3|4|5) ;;
+  1)
+    printf 'fusion-write: bin/fusion-identity stopped, for the reason it printed above. Nothing sent.\n' >&2
+    exit 1
+    ;;
+  *)
+    printf 'fusion-write: bin/fusion-identity exited %s, which this program does not recognise. Nothing sent.\n' "$id_rc" >&2
+    exit 3
+    ;;
+esac
+person="$(printf '%s\n' "$id_out" | sed -n 's/^PERSON=//p' | head -n 1)"
+checkout="$(printf '%s\n' "$id_out" | sed -n 's/^CHECKOUT=//p' | head -n 1)"
+
+exec node "$entry" "$sub" "$root/fusion-workbench" "$person" "$checkout" "$@"

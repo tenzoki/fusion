@@ -54,6 +54,7 @@ bin/*
 !bin/fusion-edge-answers
 !bin/fusion-claude-md-weight
 !bin/fusion-record
+!bin/fusion-write
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
