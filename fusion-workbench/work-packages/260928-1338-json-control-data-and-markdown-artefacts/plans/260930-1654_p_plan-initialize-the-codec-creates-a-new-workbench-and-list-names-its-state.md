@@ -1,6 +1,7 @@
 # Implementation Plan: one qualified codec revision: `initialize`, `list.result.state`, the linear `reconcile`, and the plan/spec role in its report
 
-**Date:** 2026-09-30 (amended the same day for Prior `a15dfc8`)
+**Date:** 2026-09-30 (amended the same day for Prior `a15dfc8`, and again after steps 1 to 7 for Prior `ae1ad78` and `7909838`)
+**Amendment (Prior `ae1ad78`, `7909838`):** `Prior: docs/design/fusion-qualified-revision-contract-response.md` accepts the combined revision and the principle of item 33. Three corrections to `inspect.pending` and to manifest-error precedence are due before the digest is frozen; step 7a carries them, and step 8 records their cases. `## 31` is answered: the codec channel takes 16 MiB, with the final LF included. `## 32` is accepted with details for FJ03c. The lock-temp-file exemption of step 3 is accepted at `7909838`.
 **Status:** Approved 2026-09-30 by the user (with option 3 of the pending decision); in progress.
 **Spec:** none as a requirements-designer spec. Prior's `concept/fusion-json-workbench-spec.md` at Prior `a15dfc8`: section 4.1 ("Formatprüfung für Verbraucher", "Neuanlage", and the "Ergänzung vom 30. September" on the `reconcile` fix and the role), the `initialize` row of section 6 with its replay, recovery and lock paragraphs, and the FJ03c row of section 9. The rulings: `Prior: docs/design/fusion-fj03a-followup-decisions.md` `## 27.` (`ddd4973`); `Prior: docs/design/fusion-fj03a-prior-response.md` `## 28 Format gate now and state in list with initialize` (`ad21e58`); `Prior: docs/design/fusion-initialize-reconcile-plan-amendment.md` (`a15dfc8`), option 1: the `reconcile` fix and the role ride this revision.
 **Cross-references:** 260928-1338-json-control-data-and-markdown-artefacts.md, 260929-1810_*_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md, 260929-1810_*_list-answers-a-legacy-workbench-with-an-empty-list-and-names-no-state.md (closure (a) lands here), 260930-1654_*_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md (open, gates step 3), 260930-1654_*_a-directory-named-workbench-json-makes-the-bundle-throw-and-exit-1-instead-of-answering.md (step 3), 260930-1712_*_the-codecs-reconcile-grows-with-the-square-of-the-record-count-and-outlasts-the-clients-timeout-from-about-1200-records.md (closed by steps 4 and 7), 260930-1646_*_the-sweeps-binding-pass-spawns-one-show-per-package-and-evidence-row-for-data-the-index-already-holds.md (closed by step 6), 260930-1800_*_fold-reconcile-fix-into-initialize-revision.md (discussion; C4, C10 and C2's conditions are used), 260929-1417_*_plan-fj02b-plan-progress-and-evidence-creation-through-the-kernel.md, 260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md, 260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md, 260929-1810_*_what-does-the-claude-side-declare-about-a-read-that-finishes-a-committed-intent.md
@@ -73,7 +74,9 @@ flowchart LR
   S5 --> S6[6 sweep reads the role, no show]
   S3 --> S7[7 measurements at scale]
   S6 --> S7
-  S7 --> S11[11 hand-over and re-pin]
+  S7 --> S7a[7a pending and precedence corrections]
+  S7a --> S8
+  S7a --> S11[11 hand-over and re-pin]
   S8 --> S11
   S9 --> S11
   S10 --> S11
@@ -170,7 +173,30 @@ flowchart LR
    - Dependencies: steps 3 and 6
    - Acceptance: an unscoped `reconcile` at 2 500 records answers within 5 s (`POST_WAIT_MARGIN_MS`) on the reference machine (M2 Max). Each consumer exits 0 within the client's 70 s, with its time recorded. Output bytes are stated against 1 MiB; an answer above it is a finding for item 31 in step 11 and no stop. Issue `260930-1712` is closed with a `Resolved:` line citing steps 4 and 7.
 
-8. **The `initialize` recorded session**
+7a. **The three corrections to `inspect.pending` and manifest-error precedence (Prior `ae1ad78` `## 33`)**
+   - Executor: `code-implementer`
+   - Files: `codec/src/kernel.ts`, `codec/src/cli/ops.ts`, `codec/src/store.ts`, their tests (`kernel`, `ops`, `store`), `codec/dist/fusion-record.js`, `codec/README.md` (`## The CLI`, the `pending` and non-file-manifest paragraphs; `## The kernel and the journal`)
+   - Changes:
+     - **Detection independent of the fresh-target exemption.** `pendingInitialize` reads every committed intent in `.json-state/journal/` whose `op` is `initialize`, whatever else the root holds and whatever `workbench.json` is (absent, divergent bytes, not a file). It reports that intent until it is completed. `state` stays the manifest's. `blocked` comes from the kernel's recovery classification, exported from `kernel.ts` for this purpose, and no longer from a direct `fileState` call.
+     - **Unreadable or contradictory journal data is never `pending: null`.** That covers an intent that does not read, an `initialize` intent whose writes are not exactly the manifest, and staged manifest bytes that do not validate or whose `id` differs from the intent's recorded answer. `inspect` refuses such data `operation-unknown/pending-initialize-unreadable`, and more than one committed `initialize` `operation-unknown/pending-initialize-ambiguous`, the detail naming the intent directories. Both reasons are pinned in step 11.
+     - **`pending: null | {operation_id, id, blocked}`.** `id` is the workbench UUID read from the validated staged manifest.
+     - **Precedence, as distinct envelopes.** A fresh `initialize` (no replay, no blocked intent) over any `workbench.json` entry answers `conflict/manifest-present`. `inspect` answers `ok` with `state: unsupported`, `diagnosis` `schema-invalid/manifest-not-a-file`, and `pending` when one exists. Ordinary reads keep their typed refusal with that diagnosis (`readable`), and other mutations keep `mutate`'s gate refusal. On `initialize`, replay (the stored answer, or `operation-id-reused`) and blocked recovery (`recovery-blocked`) keep their precedence. The README states these four envelopes in place of "every other read and mutation refuses with it".
+     - **The stale comment above `readContext`** in `kernel.ts` (steps 4 and 5 notes) says that `reconcile` resolves through the same functions as a mutation. It is reworded: `reconcile` resolves through its body-local index under the same criterion.
+
+     The tests cover:
+     - the clean committed window;
+     - extra root content beside the intent, with `pending` still named and `state` `legacy`;
+     - a divergent manifest and a non-file manifest, each with `pending` named, `blocked: true` and the state its bytes give;
+     - a blocked intent whose typed `recovery-blocked` answer leaves every file byte-identical;
+     - an unreadable intent, and two committed `initialize` intents, each refused;
+     - reconstruction: `{op, workbench: <target>, operation_id, id}` built from the target and `inspect.pending` alone answers the committed result, while the same built over a copied directory (another path, so another digest) is reported `operation-id-reused` and not worked around;
+     - a successful replay followed by `inspect`: after `workbench.json` is deleted, the replay still answers success and `inspect` answers `legacy`.
+
+     The step does not touch the paused step-8 draft (`helpers/session.ts`, `round-trip-cli-initialize.test.ts`, `fixtures/protocol-session-initialize/`, `fixtures.test.ts`) and commits only its own `codec/README.md` hunks. The draft's hunks stay unstaged, and the scratch-clone proof runs without them.
+   - Dependencies: step 7
+   - Acceptance: codec suite and typecheck green, with the committed-bundle gate green at the commit. FJ01, FJ02 (with step 5's delta), FJ02b and the handback green without regeneration. Each correction is shown red against a broken copy: the single-entry condition restored, an unreadable intent mapped to null, `id` dropped, `manifest-present` ahead of replay. The hook suite as the standing rules say. The bundle's size and digest are in the note.
+
+8. [IN PROGRESS] **The `initialize` recorded session**
    - Executor: `code-implementer`
    - Files: `codec/src/__tests__/helpers/session.ts` (a `base` option, defaulting to the scratch workbench), `codec/src/__tests__/round-trip-cli-initialize.test.ts`, `codec/fixtures/protocol-session-initialize/` (pairs, `base/`, `seed/`, `README.md`), `codec/src/__tests__/fixtures.test.ts`, `codec/README.md` (`## Layout`, `## What ships`)
    - Changes: `<workbench>` stands for a root R of targets: `legacy/` (a `.fusion-setup` and one v12 package), `file` (a regular file), `new/` (made empty by the recorder and the README), and `pending/` and `diverged/` from seeds. The exchanges, with fixed literals:
@@ -193,8 +219,18 @@ flowchart LR
      - 18 `initialize diverged`: `recovery-blocked`.
 
      The recorder also asserts that `legacy/` is unchanged and holds no `.json-state/` after 04, and that `diverged/workbench.json` keeps its bytes. Regeneration only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`.
-   - Dependencies: step 3
-   - Acceptance: the gate green without regeneration; FJ02 (with step 5's delta) and FJ02b green after the helper change; a shell replay over an R path with a space and a comma answers every exchange byte for byte, as recorded in the note.
+
+     **After step 7a (Prior `ae1ad78`).** The step reworks the uncommitted draft in the live tree (18 pairs, `base/`, two seeds, README, the helper's `base` option, the `fixtures.test.ts` and README edits) and does not start over. Changes to the exchange list, renumbered as the draft needs:
+     - exchange 15 carries `pending` with `id`;
+     - an `inspect` of the diverged target shows `pending` with `blocked: true`;
+     - the request of exchange 16 must equal the one rebuilt from the target and 15's `pending` alone, which the recorder asserts;
+     - an `inspect` follows each successful replay, 07 and 13;
+     - new seeded cases: extra root content beside a committed intent (`pending` named), a non-file manifest with an intent (`unsupported`, `pending` blocked), and an unreadable intent (the typed refusal);
+     - the recorder asserts that a blocked answer leaves every file byte-identical.
+
+     **An addition to the replay contract.** A seeded intent stores its request digest, and `initialize` names `workbench` absolutely, so the digest depends on the replay root. The seeds therefore carry `<request-digest:NN-initialize>` placeholders. The replayer substitutes `sha256:` over the canonical request, which is the request line without its newline, since `initialize` requests are written with sorted keys. The README states this, and step 11 hands it to Prior as a rule its replay must adopt.
+   - Dependencies: steps 3 and 7a
+   - Acceptance: the gate green without regeneration; FJ02 (with step 5's delta) and FJ02b green after the helper change; a shell replay over an R path with a space and a comma, with the digest substitution, answers every exchange byte for byte, as recorded in the note.
 
 9. **The installed copy initialises a workbench the FJ03a resolvers read**
    - Executor: `code-implementer`
@@ -213,8 +249,14 @@ flowchart LR
 11. **The hand-over: what landed, the frozen digest, the re-pin**
     - Executor: `analyst`
     - Files: `codec/fixtures/prior/REQUESTS.md`, this plan
-    - Changes: `## One qualified revision (the hand-over)` in the shape of `## FJ02b`, written against the last commit that moved `codec/`, `bin/` or `hooks/`, with the bundle's size and digest there. `### What landed` covers the four changes, the reason names as pinned and what did not change. The evidence is kept apart: step 4's byte identity, step 5's delta, step 7's figures with output bytes. The section adds the `initialize` session, the recovery and rollout consequences (FJ04's survey meets the `pending` window; ordinary intents are still recovered by reads), and items 31 to 33 as they stand. Two requests take the next numbers: a re-snapshot of the shared fixture set with the new manifest counts, and a re-pin with the replay of the FJ01 pairs, the handback, the FJ02 (delta-reviewed), FJ02b and `initialize` sessions and Prior's conformance run, on which FJ03c depends. The plan is marked and closed.
-    - Dependencies: steps 1, 7, 8, 9, and 10 when it runs
+    - Changes: `## One qualified revision (the hand-over)` in the shape of `## FJ02b`, written against the last commit that moved `codec/`, `bin/` or `hooks/`, with the bundle's size and digest there. `### What landed` covers the four changes, the reason names as pinned and what did not change. The evidence is kept apart: step 4's byte identity, step 5's delta, step 7's figures with output bytes. The section adds the `initialize` session, the recovery and rollout consequences (FJ04's survey meets the `pending` window; ordinary intents are still recovered by reads), and items 31 to 33 as they stand. Four statements from Prior's `ae1ad78` and `7909838` go in as well:
+      - the corrected `pending` envelope `null | {operation_id, id, blocked}`, the two new refusals and the four precedence envelopes of step 7a, correcting the step-1 text ("on every operation", the two-field `pending`) without editing it;
+      - item 31 answered by `ae1ad78` (a 16 MiB codec channel, the final LF included; records and requests keep 1 MiB), with step 7's measured sizes kept: `list` at 2 500 records is 1 031 472 bytes, now inside 16 MiB, and `reconcile` 532 814. Paging is due only if a representative migrated store exceeds 16 MiB;
+      - item 32 accepted, with its details left to FJ03c (optional identity fields, `run_id`, the `attach-evidence` and `create(kind: evidence)` change shapes, the idempotence key, no row for `initialize`);
+      - the lock-temp-file exemption accepted at `7909838`, with the race evidence.
+
+      The section also names step 8's digest-placeholder rule as a replay-contract addition Prior must adopt. Two requests take the next numbers: a re-snapshot of the shared fixture set with the new manifest counts, and a re-pin with the replay of the FJ01 pairs, the handback, the FJ02 (delta-reviewed), FJ02b and `initialize` sessions and Prior's conformance run, on which FJ03c depends. The plan is marked and closed.
+    - Dependencies: steps 1, 7, 7a, 8, 9, and 10 when it runs
     - Acceptance: every figure re-taken in a scratch clone; the commit names `REQUESTS.md` and the plan alone.
 
 ## Where this work stops
@@ -222,7 +264,7 @@ flowchart LR
 - `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` and `npm run typecheck` are green at the closing commit, and `committed-bundle.test.ts` was green at every commit that moved code.
 - `initialize` writes exactly the ruled manifest over an empty directory, and every flowchart leaf has a test shown red against a broken copy.
 - A refused `initialize` over a directory without `.json-state/` leaves it byte-identical.
-- `list` answers `state`, and `inspect` answers `pending` (or as the decision was ruled).
+- `list` answers `state`, and `inspect` answers `pending` as `null | {operation_id, id, blocked}`. The field is detected independently of the fresh-target exemption. Unreadable or ambiguous journal data is refused, never `null`. The four precedence envelopes of step 7a each have a test (Prior `ae1ad78` `## 33`).
 - A non-file `workbench.json` is answered, never thrown, and that issue is closed.
 - After step 4 every recorded session and the handback replayed byte for byte.
 - The work-count test holds `reconcile`'s parses linear in records plus references.
@@ -246,7 +288,7 @@ flowchart LR
 ## Data Structures
 
 - `InitializeRequest` `{op, workbench, operation_id, id}`; the answer `{operation_id, id, path, revision}` with `revisions`.
-- `list`: `{workbench, state, scope, records}`. `inspect`: plus `pending` (`null`, or the intent's `operation_id` and `blocked`).
+- `list`: `{workbench, state, scope, records}`. `inspect`: plus `pending` (`null`, or `{operation_id, id, blocked}`; step 7a).
 - Reference entry: `{path, at, role?, status, target?, class?, reason?}`, with `role` on active-document entries only.
 - `mutate` gains the admitted states; `PlanContext` the read-only blocked intents; `reconcile` a body-local ID index.
 
