@@ -33,10 +33,25 @@
  * corpus at any other number, which is what makes a wrong choice cost a line of
  * stdout rather than an argument with this file.
  *
- * ## The corpus, and a duplication this header owns rather than hides
+ * ## The corpus, per format, and a duplication this header owns rather than hides
  *
- * Live (`_o_`/`_p_`) plans in every planning store, requirements-designer specs excluded. That
- * is the same corpus `hooks/lib/__tests__/plan-stopping-section-lint.test.ts`
+ * The live plans, requirements-designer specs excluded, and which plan is
+ * live is the format's question. The caller asks the gate first
+ * (`lib/record-index.ts`) and hands this module its answer:
+ *
+ *   `legacy`        `measurePlanSizes`: live (`_o_`/`_p_`) plans in every
+ *                   planning store, read off the file name (`LIVE_MARKERS`).
+ *   `json-control`  `measureJsonPlanSizes`: every plan record whose `live` is
+ *                   true, measured at its narrative. A marker in the narrative's
+ *                   name is history and decides nothing (section 4.4 of
+ *                   Prior's spec): a live record named `_c_` is measured, a
+ *                   closed one named `_o_` is not. A plan control file that did
+ *                   not read is counted and named, never dropped, since
+ *                   whether it is live is exactly what could not be read.
+ *
+ * `isSpec` reads the narrative's name and first line in both, no control field.
+ *
+ * The legacy corpus is the same one `hooks/lib/__tests__/plan-stopping-section-lint.test.ts`
  * builds for its own check, and the two definitions are separate copies: that
  * one is test-scoped and this one ships, and folding either into the other
  * would move a green check for a reason this step does not have. The residual is
@@ -45,7 +60,7 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
-import { containerRoots, storeDirs } from "./stores.js";
+import { containerRoots, namesOf, RECORD_CONTROL_SUFFIX, storeDirs } from "./stores.js";
 /**
  * The ceiling, in bytes. Chosen, not measured — see the header. Below every
  * plan but one in the corpus fusion carried on 2026-09-10, so the result says
@@ -65,7 +80,8 @@ export function markerOf(base) {
  * A spec is not a plan and the ceiling is not about it.
  */
 export function isSpec(base, firstLine) {
-    const topic = base.replace(/^\d{6}-\d{4}_[a-z]_/, "");
+    // the stamp with a marker, or the marker-free `YYMMDD-HHMM-` a JSON narrative carries
+    const topic = base.replace(/^\d{6}-\d{4}(?:_[a-z]_|-)/, "");
     return topic.startsWith("spec-") || /^#\s+Spec:/.test(firstLine);
 }
 /**
@@ -87,44 +103,66 @@ export function planningStores(root) {
     return stores.filter((s) => existsSync(s)).map((s) => relative(wb, s).split(sep).join("/")).sort();
 }
 /**
- * Measure the live plans under `root`'s workbench against `ceiling`.
+ * Weigh `rels` (workbench-relative live planning files) against `ceiling`.
  *
  * Rows come back largest first, so the reader meets the plan the result is
  * about before the ones it is not. A file that cannot be read is skipped rather
  * than counted as zero: a zero would report a plan as comfortably under a
  * ceiling nobody measured it against.
  */
-export function measurePlanSizes(root, ceiling = DEFAULT_CEILING) {
-    const wb = join(root, "fusion-workbench");
+function weigh(wb, rels, ceiling) {
     const rows = [];
     let skippedSpecs = 0;
+    for (const rel of rels) {
+        const abs = join(wb, rel);
+        let bytes;
+        let firstLine;
+        try {
+            bytes = statSync(abs).size;
+            firstLine = readFileSync(abs, "utf-8").split("\n")[0] ?? "";
+        }
+        catch {
+            continue;
+        }
+        if (isSpec(rel.slice(rel.lastIndexOf("/") + 1), firstLine)) {
+            skippedSpecs += 1;
+            continue;
+        }
+        rows.push({ rel, bytes, over: bytes > ceiling });
+    }
+    rows.sort((a, b) => b.bytes - a.bytes || a.rel.localeCompare(b.rel));
+    const verdict = rows.length === 0 ? "empty" : rows.some((r) => r.over) ? "over" : "under";
+    return { ceiling, rows, skippedSpecs, verdict };
+}
+/** The legacy reader: the live plans under `root`'s workbench by their file-name marker, against `ceiling`. */
+export function measurePlanSizes(root, ceiling = DEFAULT_CEILING) {
+    const wb = join(root, "fusion-workbench");
+    const rels = [];
     for (const store of planningStores(root)) {
         for (const base of readdirSync(join(wb, store)).sort()) {
             if (!base.endsWith(".md"))
                 continue;
             const marker = markerOf(base);
-            if (marker === null || !LIVE_MARKERS.has(marker))
-                continue;
-            const abs = join(wb, store, base);
-            let bytes;
-            let firstLine;
-            try {
-                bytes = statSync(abs).size;
-                firstLine = readFileSync(abs, "utf-8").split("\n")[0] ?? "";
-            }
-            catch {
-                continue;
-            }
-            if (isSpec(base, firstLine)) {
-                skippedSpecs += 1;
-                continue;
-            }
-            rows.push({ rel: `${store}/${base}`, bytes, over: bytes > ceiling });
+            if (marker !== null && LIVE_MARKERS.has(marker))
+                rels.push(`${store}/${base}`);
         }
     }
-    rows.sort((a, b) => b.bytes - a.bytes || a.rel.localeCompare(b.rel));
-    const verdict = rows.length === 0 ? "empty" : rows.some((r) => r.over) ? "over" : "under";
-    return { ceiling, rows, skippedSpecs, verdict };
+    return weigh(wb, rels, ceiling);
+}
+/**
+ * The JSON reader: every plan record of `index` whose `live` is true, at its
+ * narrative, against `ceiling`. Plan control files in `index.unreadable` come
+ * back named, since their liveness is what did not read.
+ */
+export function measureJsonPlanSizes(root, index, ceiling = DEFAULT_CEILING) {
+    const rels = [...index.byControl.values()]
+        .filter((e) => e.kind === "plan" && e.live && e.narrative !== null)
+        .map((e) => e.narrative);
+    const plansStores = namesOf("plans");
+    const unreadable = index.unreadable
+        .filter((u) => u.path.endsWith(RECORD_CONTROL_SUFFIX) && plansStores.includes(u.path.split("/").at(-2) ?? ""))
+        .map((u) => ({ path: u.path, problem: `${u.problem.class}/${u.problem.reason}` }));
+    return { ...weigh(join(root, "fusion-workbench"), rels, ceiling), unreadable };
 }
 /**
  * One output line per plan: the class, the size, the path, and — for a row over

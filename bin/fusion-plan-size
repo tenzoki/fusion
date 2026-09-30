@@ -7,6 +7,7 @@
 # Output on stdout, one KEY=value per line, then one line per live plan,
 # largest first:
 #
+#   format=json-control|legacy
 #   anchor=workbench-root
 #   ceiling=40000
 #   plans=4
@@ -14,13 +15,20 @@
 #   largest=57891
 #   total=195402
 #   skipped-specs=4
+#   unreadable=0                                   (json-control only)
 #   verdict=over
 #     over      57891  work-packages/<dir>/plans/…_p_….md  (17891 over — …)
 #     under     33472  shared/planning/…_o_….md
+#     unreadable  <plan control file>  <class>/<reason>  (json-control only)
 #
-# The corpus is live (_o_ / _p_) plans in every planning store, requirements-designer specs
-# excluded and counted on `skipped-specs=`. A spec is not a plan and the ceiling
-# is not about it.
+# The corpus is the live plans, requirements-designer specs excluded and
+# counted on `skipped-specs=`. A spec is not a plan and the ceiling is not
+# about it. Which plan is live is the format's question, asked through the
+# codec's gate before anything is read and named on the first line: on
+# json-control a plan record whose status is not terminal, measured at its
+# narrative, whatever marker that file's name carries; on legacy the _o_ / _p_
+# marker in every planning store, as before. A plan control file the codec
+# could not read is counted on `unreadable=` and named, never measured.
 #
 # Exit codes:
 #   0  the check ran. `verdict=` says what it found. A plan over the ceiling is
@@ -28,9 +36,14 @@
 #      like the other two.
 #   1  usage error.
 #   2  no fusion workbench above the working directory; nothing to check.
-#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
-#      own code and not 2: "there are no plans to check" is an answer about the
-#      project, and a broken install must never be reported as one.
+#   3  the plugin itself could not run: its compiled hooks or the codec bundle
+#      are missing, so nothing could be asked, or an internal error stopped the
+#      entry. Its own code and not 2: "there are no plans to check" is an
+#      answer about the project, and a broken install must never be reported
+#      as one.
+#   4  the workbench was not read: unsupported by this codec, refused by it
+#      (recovery-blocked among the refusals) or not answered. The cause is on
+#      stderr, NOTHING is on stdout, and it is never `verdict=empty`.
 #
 # ---------------------------------------------------------------------------
 # Why this exists, and what it deliberately does not do

@@ -19,10 +19,12 @@
 
 import { describe, it, expect, afterAll } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
+import { CASE_TIMEOUT, REPO_ROOT } from "./helpers/guard-harness.js";
+import { place, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 import { measurePlanSizes, isSpec, markerOf, DEFAULT_CEILING } from "../plan-size.js";
 
 const script = join(pluginRoot, "bin", "fusion-plan-size");
@@ -94,6 +96,7 @@ describe("plan-size: the ceiling reports and never gates", () => {
     const r = run(root);
 
     expect(r.status).toBe(0);
+    expect(r.stdout.split("\n")[0]).toBe("format=legacy");
     expect(value(r.stdout, "verdict")).toBe("empty");
     expect(value(r.stdout, "plans")).toBe("0");
     expect(value(r.stdout, "largest")).toBe("0");
@@ -162,4 +165,42 @@ describe("plan-size: the corpus", () => {
     expect(isSpec("260909-1843_o_thing.md", "# Spec: thing")).toBe(true);
     expect(isSpec("260909-1843_o_thing.md", "# Implementation Plan: thing")).toBe(false);
   });
+});
+
+// --- a JSON-controlled workbench: a plan is live when its record says so ------
+
+/** A plan pair from the codec's fixture at `rel`: `create` refuses a marker name, so the pair is placed. */
+function placedPlan(p: JsonProject, rel: string, n: number, state: string): void {
+  const fixture = JSON.parse(readFileSync(join(REPO_ROOT, "codec/fixtures/valid/record/plan-open-unadopted.json"), "utf-8"));
+  const control = { ...fixture, id: fixture.id.slice(0, -1) + n, narrative: { path: rel }, control: { ...fixture.control, state } };
+  place(p, rel.replace(/\.md$/, ".record.json"), JSON.stringify(control, null, 2) + "\n");
+  place(p, rel, `# Implementation Plan: x\n${"x".repeat(900)}`);
+}
+
+describe("plan-size on a JSON-controlled workbench", () => {
+  it("measures a live plan named _c_, not a closed one named _o_, and names a plan control that does not read", () => {
+    withJsonProject((p) => {
+      placedPlan(p, "shared/plans/260901-0900_c_live.md", 1, "open");
+      placedPlan(p, "shared/plans/260901-0901_o_closed.md", 2, "closed");
+      place(p, "shared/plans/260901-0902-broken.record.json", "{\n");
+      const r = run(p.root);
+      expect(r.status, r.stderr).toBe(0);
+      const lines = r.stdout.trimEnd().split("\n");
+      expect([lines[0], value(r.stdout, "plans"), value(r.stdout, "unreadable")]).toEqual(["format=json-control", "1", "1"]);
+      expect(lines.filter((l) => l.startsWith("  "))).toEqual([
+        expect.stringMatching(/^ {2}under +925 {2}shared\/plans\/260901-0900_c_live\.md$/),
+        expect.stringMatching(/^ {2}unreadable {2}shared\/plans\/260901-0902-broken\.record\.json {2}\S+\/\S+$/),
+      ]);
+    });
+  }, CASE_TIMEOUT);
+
+  it("exits 4 with nothing on stdout when the workbench is unsupported, never verdict=empty", () => {
+    withJsonProject((p) => {
+      const manifest = JSON.parse(readFileSync(join(p.workbench, "workbench.json"), "utf-8")) as { required_features: string[] };
+      place(p, "workbench.json", JSON.stringify({ ...manifest, required_features: [...manifest.required_features, "json-control-v9"] }));
+      const r = run(p.root);
+      expect([r.status, r.stdout]).toEqual([4, ""]);
+      expect(r.stderr).toMatch(/unsupported .*unknown-feature.* Nothing was measured\.$/m);
+    });
+  }, CASE_TIMEOUT);
 });

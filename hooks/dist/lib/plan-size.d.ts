@@ -33,16 +33,32 @@
  * corpus at any other number, which is what makes a wrong choice cost a line of
  * stdout rather than an argument with this file.
  *
- * ## The corpus, and a duplication this header owns rather than hides
+ * ## The corpus, per format, and a duplication this header owns rather than hides
  *
- * Live (`_o_`/`_p_`) plans in every planning store, requirements-designer specs excluded. That
- * is the same corpus `hooks/lib/__tests__/plan-stopping-section-lint.test.ts`
+ * The live plans, requirements-designer specs excluded, and which plan is
+ * live is the format's question. The caller asks the gate first
+ * (`lib/record-index.ts`) and hands this module its answer:
+ *
+ *   `legacy`        `measurePlanSizes`: live (`_o_`/`_p_`) plans in every
+ *                   planning store, read off the file name (`LIVE_MARKERS`).
+ *   `json-control`  `measureJsonPlanSizes`: every plan record whose `live` is
+ *                   true, measured at its narrative. A marker in the narrative's
+ *                   name is history and decides nothing (section 4.4 of
+ *                   Prior's spec): a live record named `_c_` is measured, a
+ *                   closed one named `_o_` is not. A plan control file that did
+ *                   not read is counted and named, never dropped, since
+ *                   whether it is live is exactly what could not be read.
+ *
+ * `isSpec` reads the narrative's name and first line in both, no control field.
+ *
+ * The legacy corpus is the same one `hooks/lib/__tests__/plan-stopping-section-lint.test.ts`
  * builds for its own check, and the two definitions are separate copies: that
  * one is test-scoped and this one ships, and folding either into the other
  * would move a green check for a reason this step does not have. The residual is
  * recorded here rather than discovered later, the way `bin/fusion-prose-metric`
  * records its own fence-rule duplication.
  */
+import type { RecordIndex } from "./record-index.js";
 /**
  * The ceiling, in bytes. Chosen, not measured — see the header. Below every
  * plan but one in the corpus fusion carried on 2026-09-10, so the result says
@@ -63,6 +79,11 @@ export interface PlanSizeReport {
     skippedSpecs: number;
     /** `over` when at least one row is; `under` with a non-empty corpus; `empty` otherwise. */
     verdict: "over" | "under" | "empty";
+    /** `json-control` only: plan control files that did not read, each with the codec's finding. */
+    unreadable?: Array<{
+        path: string;
+        problem: string;
+    }>;
 }
 /** `YYMMDD-HHMM_S_<topic>.md` — the marker letter, or null if the name is not of that shape. */
 export declare function markerOf(base: string): string | null;
@@ -77,15 +98,14 @@ export declare function isSpec(base: string, firstLine: string): boolean;
  * one, under either name during the window (`./stores.ts`).
  */
 export declare function planningStores(root: string): string[];
-/**
- * Measure the live plans under `root`'s workbench against `ceiling`.
- *
- * Rows come back largest first, so the reader meets the plan the result is
- * about before the ones it is not. A file that cannot be read is skipped rather
- * than counted as zero: a zero would report a plan as comfortably under a
- * ceiling nobody measured it against.
- */
+/** The legacy reader: the live plans under `root`'s workbench by their file-name marker, against `ceiling`. */
 export declare function measurePlanSizes(root: string, ceiling?: number): PlanSizeReport;
+/**
+ * The JSON reader: every plan record of `index` whose `live` is true, at its
+ * narrative, against `ceiling`. Plan control files in `index.unreadable` come
+ * back named, since their liveness is what did not read.
+ */
+export declare function measureJsonPlanSizes(root: string, index: RecordIndex, ceiling?: number): PlanSizeReport;
 /**
  * One output line per plan: the class, the size, the path, and — for a row over
  * the ceiling — what it would take to get under it. Naming the excess rather
