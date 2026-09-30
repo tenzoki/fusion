@@ -9,8 +9,8 @@
  *               (`lib/record-change.ts` `repairRetained`).
  *   gate        `inspect`; only `json-control` admits a write. `legacy` with a
  *               committed `initialize` pending is refused and names Setup,
- *               which finishes it: this client sends no `initialize`, no
- *               migration and no retry.
+ *               which finishes it: a mutation sends no `initialize`, no
+ *               migration and no retry. `initialize` is Setup's alone, below.
  *   show        the record the mutation names, and each record a request
  *               field is read from (the plan of `adopt-plan`, the evidence of
  *               `attach-evidence`, the targets of `set-dependencies`, the
@@ -80,6 +80,31 @@
  * report and the tree; if one moved, the request differs and the codec
  * answers `conflict/operation-id-reused`. No row is composed for a re-send.
  *
+ * ## Initialize, Setup's route to a new workbench
+ *
+ * `initialize` is the one call that sends `initialize`, and `/fusion:setup`
+ * the one caller. It splits on `inspect`, each answer in exactly one row:
+ *
+ *   json-control (a manifest without the marker too)   reused; nothing sent
+ *   legacy, pending not blocked                        the request rebuilt from pending, once
+ *   legacy, pending blocked                            stop; corrected by hand
+ *   legacy, no pending, `.fusion-setup` present        legacy: Setup runs as before, until FJ04
+ *   legacy, no pending, no marker                      a new id and operation id, sent once
+ *   unsupported                                        stop, naming the diagnosis
+ *   refused (pending-initialize-unreadable, -ambiguous
+ *     among them) or unanswered                        stop
+ *
+ * The marker row keeps every workbench Setup wrote before the JSON cutover
+ * setting up as it did: it is not empty, so `initialize` would answer
+ * `target-not-empty`. A pending intent never stands beside the marker (the
+ * marker is an entry, and `initialize` lands only in an empty directory), so
+ * the marker splits nothing the pending rows decide. A refused `initialize`
+ * (`target-not-empty` and `manifest-present` name the entries) and an
+ * unanswered one stop; nothing is retried, and a Setup run again reads the
+ * intent from `pending`. After every answer that landed, `inspect` is asked
+ * again and must be `json-control` under the id sent: a replay answers after
+ * `workbench.json` was deleted, so the answer alone proves nothing.
+ *
  * No automatic hook imports this module or runs `hooks/write.ts`
  * (`lib/record-client.ts` `## The recovery declaration`).
  */
@@ -143,5 +168,20 @@ export declare function parseFlags(sub: string, argv: string[]): {
 } | {
     usage: string;
 };
+/** What Setup's `initialize` call ends in: Setup continues on `ready`, and stops on every other kind. */
+export type Init = {
+    kind: "ready";
+    how: "initialized" | "reused" | "legacy";
+    workbenchId: string | null;
+    operationId?: string;
+} | {
+    kind: "install" | "unread" | "refused" | "unknown";
+    detail: string;
+    operationId?: string;
+};
+/** The file Setup writes last and every agent walks up to; its presence marks a workbench set up before the JSON cutover. */
+export declare const SETUP_MARKER = ".fusion-setup";
+/** Setup's one route to a new workbench, by the table of `## Initialize, Setup's route to a new workbench`. */
+export declare function initialize(workbench: string, ask: Ask): Init;
 /** One write, from the gate to the log. `ask` is the record client's, or a test's stand-in. */
 export declare function write(c: Call, ask: Ask, now?: () => Date): Outcome;

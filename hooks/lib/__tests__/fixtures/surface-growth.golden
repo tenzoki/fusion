@@ -39,9 +39,9 @@
   news/SKILL.md 8223
   post/SKILL.md 6694
   reconcile/SKILL.md 6671
-  setup/SKILL.md 14675
+  setup/SKILL.md 15906
   wp/SKILL.md 4994
-  total 202469
+  total 203700
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -97,7 +97,7 @@
   provenance-header-lint.test.ts 425
   record-change.test.ts 137
   record-client.test.ts 202
-  record-write.test.ts 182
+  record-write.test.ts 251
   reference-resolution-lint.test.ts 1012
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 857
@@ -112,4 +112,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 353
-  total 23348
+  total 23417

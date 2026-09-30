@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { ask, type Answer, type Ask, type CodecRequest } from "../record-client.js";
-import { INITIAL_CONTROL, PAYLOAD_FIELDS, parseFlags, write, type Identity, type Outcome } from "../record-write.js";
+import { ask, gate, type Answer, type Ask, type CodecRequest } from "../record-client.js";
+import { INITIAL_CONTROL, initialize, PAYLOAD_FIELDS, parseFlags, SETUP_MARKER, write, type Identity, type Init, type Outcome } from "../record-write.js";
 import { CASE_TIMEOUT, REPO_ROOT } from "./helpers/guard-harness.js";
-import { BUNDLE, claim, createPackage, must, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
+import { BUNDLE, claim, createPackage, must, place, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
 // ---------------------------------------------------------------------------
 // The write client: the gate, the show, the ownership check of response 22
@@ -163,6 +164,74 @@ describe("creation", () => {
       expect(rows(p).filter((r) => r.kind === "evidence").map((r) => r.change)).toEqual([{ created_kind: "evidence" }]);
     });
   });
+});
+
+describe("initialize, one case per row of Setup's table", () => {
+  const init = (p: JsonProject, through: Ask = real) => {
+    const sent: CodecRequest[] = [];
+    return { o: initialize(p.workbench, (w, r) => (sent.push(r), through(w, r))), ops: () => sent.map((r) => r.op), sent };
+  };
+  /** The first `inspect` answers with `pending` set, as a committed intent would make it. */
+  const pendingOnce = (pending: object): Ask => { let n = 0; return (w, r) => { const a = real(w, r); return r.op === "inspect" && n++ === 0 && a.kind === "result" ? { ...a, result: { ...(a.result as object), pending } } : a; }; };
+  const bare = (p: JsonProject) => rmSync(resolve(p.workbench, SETUP_MARKER));
+  const SEED_OP = "1a1e0017-0000-4000-8000-000000000017", SEED_ID = "1a1ebe17-0000-4000-8000-000000000017";
+
+  it("json-control is reused, the marker there or not, and nothing is sent", () => withJsonProject((p) => {
+    const first = init(p); bare(p);
+    expect([first.o, first.ops(), init(p).o]).toEqual([{ kind: "ready", how: "reused", workbenchId: must(p, { op: "inspect" }).result.id }, ["inspect"], first.o]);
+  }));
+
+  it("legacy with its marker is a workbench set up before the cutover: legacy, nothing sent, nothing written", () => withJsonProject((p) => {
+    const r = init(p);
+    expect([r.o, r.ops(), readdirSync(p.workbench)]).toEqual([{ kind: "ready", how: "legacy", workbenchId: null }, ["inspect"], [SETUP_MARKER]]);
+  }, { legacy: true }));
+
+  it("legacy, no marker, empty: a new workbench, and the re-inspect names its id; .DS_Store and a store are refused by name", () => withJsonProject((p) => {
+    bare(p); const r = init(p); const o = r.o as Init & { kind: "ready" };
+    expect([o.how, r.ops(), gate(p.workbench, { bundle: BUNDLE })]).toEqual(["initialized", ["inspect", "initialize", "inspect"], { state: "json-control", id: o.workbenchId }]);
+    for (const entry of [".DS_Store", "work-packages"]) {
+      rmSync(p.workbench, { recursive: true }); mkdirSync(resolve(p.workbench, entry === ".DS_Store" ? "" : entry), { recursive: true }); if (entry === ".DS_Store") put(p, entry);
+      expect([init(p).o, readdirSync(p.workbench)], entry).toMatchObject([{ kind: "refused", detail: expect.stringMatching(new RegExp(`target-not-empty.*${entry}`)) }, [entry]]);
+    }
+  }, { legacy: true }));
+
+  it("legacy with a pending intent resends it once; blocked, it stops", () => withJsonProject((p) => {
+    bare(p); cpSync(resolve(REPO_ROOT, "codec", "fixtures", "protocol-session-initialize", "seed", "16-inspect", "pending"), p.workbench, { recursive: true });
+    const intent = resolve(p.workbench, ".json-state", "journal", SEED_OP, "intent.json");
+    const digest = `sha256:${createHash("sha256").update(JSON.stringify({ id: SEED_ID, op: "initialize", operation_id: SEED_OP, workbench: p.workbench })).digest("hex")}`;
+    writeFileSync(intent, readFileSync(intent, "utf-8").replace(/<request-digest:[^>]+>/, digest));
+    const blocked = init(p, pendingOnce({ operation_id: SEED_OP, id: SEED_ID, blocked: true }));
+    expect([blocked.o.kind, blocked.ops(), gate(p.workbench, { bundle: BUNDLE })]).toEqual(["unread", ["inspect"], { state: "legacy", pending: { operation_id: SEED_OP, id: SEED_ID, blocked: false } }]);
+    const r = init(p);
+    expect([r.o, r.ops(), r.sent[1]]).toMatchObject([{ kind: "ready", how: "initialized", workbenchId: SEED_ID, operationId: SEED_OP }, ["inspect", "initialize", "inspect"], { operation_id: SEED_OP, id: SEED_ID }]);
+  }, { legacy: true }));
+
+  it("unsupported, a refused or unanswered inspect, and an unanswered initialize stop, and nothing is retried", () => withJsonProject((p) => {
+    const unreadable: Answer = { kind: "refused", class: "operation-unknown", reason: "pending-initialize-ambiguous", detail: "d" };
+    expect([init(p, () => unreadable).o, init(p, () => UNANSWERED).o].map((o) => o.kind)).toEqual(["unread", "unread"]);
+    place(p, "workbench.json", "{}\n");
+    expect(init(p).o).toMatchObject({ kind: "unread", detail: expect.stringContaining("unsupported") });
+    rmSync(resolve(p.workbench, "workbench.json")); bare(p);
+    const lost = init(p, (w, r) => (r.op === "initialize" ? (real(w, r), UNANSWERED) : real(w, r)));
+    expect([lost.o.kind, lost.ops()]).toEqual(["unknown", ["inspect", "initialize"]]);
+    // The intent landed; Setup run again finds json-control and reuses it.
+    expect(init(p).o).toMatchObject({ kind: "ready", how: "reused" });
+  }));
+
+  it("the re-inspect catches a replay answered after workbench.json was deleted", () => withJsonProject((p) => {
+    bare(p); const o = init(p).o as Init & { kind: "ready" };
+    rmSync(resolve(p.workbench, "workbench.json"));
+    const replay = init(p, pendingOnce({ operation_id: o.operationId, id: o.workbenchId, blocked: false }));
+    expect([replay.o, replay.ops()]).toMatchObject([{ kind: "unread", detail: expect.stringContaining("not json-control") }, ["inspect", "initialize", "inspect"]]);
+  }, { legacy: true }));
+
+  it("bin/fusion-write initialize needs no marker and exits by the header's table", () => withJsonProject((p) => {
+    bare(p);
+    const cli = (...a: string[]) => spawnSync(resolve(REPO_ROOT, "bin", "fusion-write"), ["initialize", ...a], { cwd: p.root, encoding: "utf-8" });
+    mkdirSync(resolve(p.root, "crowded", "x"), { recursive: true });
+    const runs = [cli("--workbench", "fusion-workbench"), cli("--workbench", "fusion-workbench"), cli("--workbench"), cli("--workbench", "elsewhere"), cli("--workbench", "crowded")];
+    expect(runs.map((r) => [r.status, r.stdout.split("\n")[0]])).toEqual([[0, "result=initialized"], [0, "result=reused"], [2, ""], [4, "result=unread"], [6, "result=refused"]]);
+  }, { legacy: true }));
 });
 
 describe("bin/fusion-write", () => {

@@ -147,19 +147,28 @@ export declare function defaultBundle(): string;
  * caller cannot send a request that falls back to an ambient default.
  */
 export declare function ask(workbench: string, request: CodecRequest, options?: ClientOptions): Answer;
+/** `inspect.pending`: a committed `initialize` whose intent is still in the journal (`codec/README.md` `## The CLI`). */
+export interface Pending {
+    operation_id: string;
+    id: string;
+    blocked: boolean;
+}
 /**
  * What a consumer learns before it reads anything. Only `json-control` admits
  * a read; every other member names why there is none, and none of them is an
- * empty workbench.
+ * empty workbench. `pending` is carried where no manifest admits a read, for
+ * Setup, which alone sends `initialize`; a reader ignores it.
  */
 export type Gate = {
     state: "json-control";
     id: string;
 } | {
     state: "legacy";
+    pending: Pending | null;
 } | {
     state: "unsupported";
     diagnosis: Refusal | null;
+    pending: Pending | null;
 } | ({
     state: "refused";
 } & Refusal) | {

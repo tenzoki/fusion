@@ -46,7 +46,7 @@ describe("the gate names the workbench's state", () => {
 
   it("refuses a workbench without a manifest as legacy", () => {
     withJsonProject((p) => {
-      expect(gate(p.workbench, { bundle: BUNDLE })).toEqual({ state: "legacy" });
+      expect(gate(p.workbench, { bundle: BUNDLE })).toEqual({ state: "legacy", pending: null });
     }, { legacy: true });
   }, CASE_TIMEOUT);
 

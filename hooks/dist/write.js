@@ -10,6 +10,8 @@
  * program decides nothing about either. The subcommands, their flags and the
  * exit table are the wrapper's header; the sequence is `lib/record-write.ts`.
  * `log-repair` sends no request: it appends rows an earlier call retained.
+ * `initialize` is Setup's: `<workbench>` is the target it names, and
+ * `<person>` and `<checkout>` are "" because nothing it sends carries them.
  *
  * Output: `KEY=value` lines on stdout, reasons on stderr prefixed
  * `fusion-write:`. The library is imported inside the `try`, so a module
@@ -41,6 +43,23 @@ async function main(argv) {
         if (r.detail !== undefined)
             err(r.detail);
         return 0;
+    }
+    if (sub === "initialize") {
+        // The wrapper hands the target as <workbench> and no flags: there is no marker to find it by yet.
+        if (rest.length > 0) {
+            err("initialize takes --workbench <dir> alone");
+            return 2;
+        }
+        const { ask } = await import("./lib/record-client.js");
+        const o = lib.initialize(workbench, ask);
+        const id = o.operationId === undefined ? [] : [`operation_id=${o.operationId}`];
+        if (o.kind === "ready") {
+            out([`result=${o.how}`, ...(o.workbenchId === null ? [] : [`workbench_id=${o.workbenchId}`]), ...id]);
+            return 0;
+        }
+        out([`result=${o.kind}`, ...id]);
+        err(o.detail);
+        return CODES[o.kind];
     }
     const parsed = lib.parseFlags(sub, rest);
     if ("usage" in parsed) {

@@ -218,14 +218,21 @@ export function gate(workbench, options = {}) {
     if (isObject(result) && state === "json-control" && typeof result.id === "string" && result.id !== "") {
         return { state, id: result.id };
     }
+    const p = isObject(result) ? result.pending : undefined;
+    const pending = p === null || p === undefined ? null
+        : isObject(p) && typeof p.operation_id === "string" && typeof p.id === "string" && typeof p.blocked === "boolean" ? { operation_id: p.operation_id, id: p.id, blocked: p.blocked }
+            : undefined;
+    // A pending field this client cannot read is no answer: Setup must not mint a workbench over an intent it misread.
+    if (pending === undefined)
+        return { state: "unanswered", cause: "unparseable", detail: `inspect answered a pending initialize this client does not read: ${JSON.stringify(p)}` };
     if (state === "legacy")
-        return { state };
+        return { state, pending };
     if (isObject(result) && state === "unsupported") {
         const d = result.diagnosis;
         const diagnosis = isObject(d) && typeof d.class === "string" && typeof d.reason === "string"
             ? { class: d.class, reason: d.reason, ...(typeof d.detail === "string" && { detail: d.detail }) }
             : null;
-        return { state, diagnosis };
+        return { state, diagnosis, pending };
     }
     // An answer this client cannot place is no answer: a state added later must
     // not pass as one of the three this module knows.

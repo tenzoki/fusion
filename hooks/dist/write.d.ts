@@ -10,6 +10,8 @@
  * program decides nothing about either. The subcommands, their flags and the
  * exit table are the wrapper's header; the sequence is `lib/record-write.ts`.
  * `log-repair` sends no request: it appends rows an earlier call retained.
+ * `initialize` is Setup's: `<workbench>` is the target it names, and
+ * `<person>` and `<checkout>` are "" because nothing it sends carries them.
  *
  * Output: `KEY=value` lines on stdout, reasons on stderr prefixed
  * `fusion-write:`. The library is imported inside the `try`, so a module

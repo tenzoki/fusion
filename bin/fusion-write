@@ -4,6 +4,7 @@
 # Usage:
 #   fusion-write <subcommand> --actor <token> [--record <control path>] [flags]
 #   fusion-write log-repair
+#   fusion-write initialize --workbench <dir>
 #
 # One codec mutation per run, through `hooks/dist/write.js` and the record
 # client, over the workbench found above the working directory. Every
@@ -28,6 +29,13 @@
 #                     beside its report, against the package's brief and plan, over
 #                     the project's HEAD tree, host claude-code, claude-guided
 #   log-repair        append rows an earlier run retained; sends no request
+#   initialize        /fusion:setup's alone: --workbench names the target, which
+#                     has no marker yet, so no workbench is looked up and no
+#                     identity read. Split on `inspect` (`hooks/lib/record-write.ts`
+#                     `## Initialize, Setup's route to a new workbench`): reused,
+#                     legacy (a pre-JSON workbench, its `.fusion-setup` present),
+#                     the pending intent resent once, or a new one sent once; after
+#                     a landed answer `inspect` must name the id sent
 #
 # Payload flags of `transition`, each a JSON value, each read only for the
 # kinds that carry it; any other is a usage error:
@@ -51,6 +59,9 @@
 #   unknown   result=unknown, operation_id=, then what the re-send repeats:
 #             expected_revision= and claimed_at=, or id= and accepted_at=
 #   log-repair  appended=, retained=
+#   initialize  result=initialized|reused|legacy, workbench_id= (not for legacy),
+#             operation_id= when one was sent; on a stop result=<kind> of the
+#             exit table below, with operation_id= when one was sent
 # Every reason on stderr, one line each, prefixed `fusion-write:`.
 #
 # Exit codes:
@@ -58,6 +69,7 @@
 #      `.guard-state/record-change-pending.jsonl` for a later run, and
 #      `event=unlogged` a change no row records; neither is resent.
 #      For log-repair: answered, `retained=` counting what is still held.
+#      For initialize: Setup continues (initialized, reused or legacy).
 #   1  the caller stops: no fusion workbench above the working directory, or
 #      `bin/fusion-identity` exiting 1, its own stop code.
 #   2  usage error. Nothing sent. A payload flag the record's kind does not
@@ -68,16 +80,20 @@
 #   4  the workbench, a named record or what evidence binds was not read:
 #      legacy (with a pending initialize, which /fusion:setup finishes),
 #      unsupported, a read the codec refused or left unanswered, the report
-#      file, or the project's HEAD tree. Nothing sent.
+#      file, or the project's HEAD tree. Nothing sent. For initialize also a
+#      blocked or unreadable pending intent (corrected by hand), and a landed
+#      answer after which `inspect` does not name the id sent.
 #   5  ownership refused. `release` and every `transition` out of `claimed`
 #      need the standing claim to be this checkout's, and `claim` needs this
 #      checkout's identifier; a foreign claim or an unreadable identity
 #      refuses, and no flag overrides it. Nothing sent.
 #   6  the codec refused the mutation, its class and reason on stderr
-#      (`conflict/revision-mismatch` when the record moved after `show`).
+#      (`conflict/revision-mismatch` when the record moved after `show`;
+#      for initialize `target-not-empty` or `manifest-present`, naming entries).
 #      Nothing landed; nothing is retried.
 #   7  outcome unknown: no answer arrived, and the change may have landed.
-#      Nothing is retried; the re-send above learns the outcome.
+#      Nothing is retried; the re-send above learns the outcome. For
+#      initialize, Setup run again resends the intent `inspect` names.
 #
 # Called by a person, a skill block or an agent, never by an automatic hook
 # (`hooks/lib/record-client.ts` `## The recovery declaration`), which
@@ -88,7 +104,7 @@
 set -eu
 
 usage() {
-  sed -n '3,6p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
+  sed -n '3,7p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
   printf 'See the header of this script for the flags and the exit table.\n' >&2
 }
 
@@ -100,6 +116,21 @@ case "${1:-}" in
 esac
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/write.js"
+
+# Setup's call names a target that has no marker yet, so it comes before the
+# workbench lookup and reads no identity.
+if [ "$1" = "initialize" ]; then
+  if [ "$#" -ne 3 ] || [ "$2" != "--workbench" ] || [ -z "$3" ]; then
+    printf 'fusion-write: initialize takes --workbench <dir> and nothing else. Nothing sent.\n' >&2
+    exit 2
+  fi
+  if [ ! -f "$entry" ]; then
+    printf 'fusion-write: %s is missing; the plugin install is incomplete. Nothing sent.\n' "$entry" >&2
+    exit 3
+  fi
+  exec node "$entry" initialize "$3" "" ""
+fi
 
 if [ ! -x "$here/fusion-workbench-root" ]; then
   printf 'fusion-write: %s is missing; the plugin install is incomplete. Nothing sent.\n' "$here/fusion-workbench-root" >&2
@@ -111,7 +142,6 @@ if [ -z "$root" ]; then
   exit 1
 fi
 
-entry="$here/../hooks/dist/write.js"
 if [ ! -f "$entry" ]; then
   printf 'fusion-write: %s is missing; the plugin install is incomplete. Nothing sent.\n' "$entry" >&2
   exit 3

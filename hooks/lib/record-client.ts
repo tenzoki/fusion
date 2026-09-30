@@ -242,15 +242,23 @@ export function ask(workbench: string, request: CodecRequest, options: ClientOpt
   return readResponse(run.stdout);
 }
 
+/** `inspect.pending`: a committed `initialize` whose intent is still in the journal (`codec/README.md` `## The CLI`). */
+export interface Pending {
+  operation_id: string;
+  id: string;
+  blocked: boolean;
+}
+
 /**
  * What a consumer learns before it reads anything. Only `json-control` admits
  * a read; every other member names why there is none, and none of them is an
- * empty workbench.
+ * empty workbench. `pending` is carried where no manifest admits a read, for
+ * Setup, which alone sends `initialize`; a reader ignores it.
  */
 export type Gate =
   | { state: "json-control"; id: string }
-  | { state: "legacy" }
-  | { state: "unsupported"; diagnosis: Refusal | null }
+  | { state: "legacy"; pending: Pending | null }
+  | { state: "unsupported"; diagnosis: Refusal | null; pending: Pending | null }
   | ({ state: "refused" } & Refusal)
   | { state: "unanswered"; cause: UnansweredCause; detail: string };
 
@@ -273,14 +281,21 @@ export function gate(workbench: string, options: ClientOptions = {}): Gate {
   if (isObject(result) && state === "json-control" && typeof result.id === "string" && result.id !== "") {
     return { state, id: result.id };
   }
-  if (state === "legacy") return { state };
+  const p = isObject(result) ? result.pending : undefined;
+  const pending: Pending | null | undefined =
+    p === null || p === undefined ? null
+    : isObject(p) && typeof p.operation_id === "string" && typeof p.id === "string" && typeof p.blocked === "boolean" ? { operation_id: p.operation_id, id: p.id, blocked: p.blocked }
+    : undefined;
+  // A pending field this client cannot read is no answer: Setup must not mint a workbench over an intent it misread.
+  if (pending === undefined) return { state: "unanswered", cause: "unparseable", detail: `inspect answered a pending initialize this client does not read: ${JSON.stringify(p)}` };
+  if (state === "legacy") return { state, pending };
   if (isObject(result) && state === "unsupported") {
     const d = result.diagnosis;
     const diagnosis: Refusal | null =
       isObject(d) && typeof d.class === "string" && typeof d.reason === "string"
         ? { class: d.class, reason: d.reason, ...(typeof d.detail === "string" && { detail: d.detail }) }
         : null;
-    return { state, diagnosis };
+    return { state, diagnosis, pending };
   }
   // An answer this client cannot place is no answer: a state added later must
   // not pass as one of the three this module knows.

@@ -9,8 +9,8 @@
  *               (`lib/record-change.ts` `repairRetained`).
  *   gate        `inspect`; only `json-control` admits a write. `legacy` with a
  *               committed `initialize` pending is refused and names Setup,
- *               which finishes it: this client sends no `initialize`, no
- *               migration and no retry.
+ *               which finishes it: a mutation sends no `initialize`, no
+ *               migration and no retry. `initialize` is Setup's alone, below.
  *   show        the record the mutation names, and each record a request
  *               field is read from (the plan of `adopt-plan`, the evidence of
  *               `attach-evidence`, the targets of `set-dependencies`, the
@@ -80,12 +80,37 @@
  * report and the tree; if one moved, the request differs and the codec
  * answers `conflict/operation-id-reused`. No row is composed for a re-send.
  *
+ * ## Initialize, Setup's route to a new workbench
+ *
+ * `initialize` is the one call that sends `initialize`, and `/fusion:setup`
+ * the one caller. It splits on `inspect`, each answer in exactly one row:
+ *
+ *   json-control (a manifest without the marker too)   reused; nothing sent
+ *   legacy, pending not blocked                        the request rebuilt from pending, once
+ *   legacy, pending blocked                            stop; corrected by hand
+ *   legacy, no pending, `.fusion-setup` present        legacy: Setup runs as before, until FJ04
+ *   legacy, no pending, no marker                      a new id and operation id, sent once
+ *   unsupported                                        stop, naming the diagnosis
+ *   refused (pending-initialize-unreadable, -ambiguous
+ *     among them) or unanswered                        stop
+ *
+ * The marker row keeps every workbench Setup wrote before the JSON cutover
+ * setting up as it did: it is not empty, so `initialize` would answer
+ * `target-not-empty`. A pending intent never stands beside the marker (the
+ * marker is an entry, and `initialize` lands only in an empty directory), so
+ * the marker splits nothing the pending rows decide. A refused `initialize`
+ * (`target-not-empty` and `manifest-present` name the entries) and an
+ * unanswered one stop; nothing is retried, and a Setup run again reads the
+ * intent from `pending`. After every answer that landed, `inspect` is asked
+ * again and must be `json-control` under the id sent: a replay answers after
+ * `workbench.json` was deleted, so the answer alone proves nothing.
+ *
  * No automatic hook imports this module or runs `hooks/write.ts`
  * (`lib/record-client.ts` `## The recovery declaration`).
  */
 import { spawnSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gate } from "./record-client.js";
@@ -203,16 +228,13 @@ const usage = (detail) => ({ stop: { kind: "usage", detail } });
 const unread = (detail) => ({ stop: { kind: "unread", detail } });
 /** The workbench id, or why no write is admitted. */
 function admitted(workbench, ask) {
-    // `gate` drops `inspect.pending`; the one answer it read is kept here so a pending initialize is named without a second inspect.
-    let inspected;
-    const g = gate(workbench, { ask: (w, r, o) => (inspected = ask(w, r, o)) });
+    const g = gate(workbench, { ask });
     switch (g.state) {
         case "json-control":
             return { ok: g.id };
         case "legacy": {
-            const pending = inspected?.kind === "result" && isObject(inspected.result) ? inspected.result.pending : null;
-            if (isObject(pending))
-                return unread(`${workbench} holds a committed initialize (operation ${String(pending.operation_id)}) whose manifest has not landed. Run /fusion:setup, which finishes it. Nothing was sent: this client neither initializes nor migrates, and retries nothing.`);
+            if (g.pending !== null)
+                return unread(`${workbench} holds a committed initialize (operation ${g.pending.operation_id}) whose manifest has not landed. Run /fusion:setup, which finishes it. Nothing was sent: this client neither initializes nor migrates, and retries nothing.`);
             return unread(`${workbench} is legacy (no workbench.json: its control data is Markdown), so nothing was sent`);
         }
         case "unsupported":
@@ -405,6 +427,43 @@ function creation(c, workbenchId, operationId, see, now) {
         extensions: {},
     };
     return { ok: { request: { ...envelope, kind: "evidence", scope: scopeOf(report), payload }, resend: { "--id": id, "--accepted-at": acceptedAt } } };
+}
+/** The file Setup writes last and every agent walks up to; its presence marks a workbench set up before the JSON cutover. */
+export const SETUP_MARKER = ".fusion-setup";
+/** Setup's one route to a new workbench, by the table of `## Initialize, Setup's route to a new workbench`. */
+export function initialize(workbench, ask) {
+    const wb = resolve(workbench);
+    const g = gate(wb, { ask });
+    const stop = (kind, detail) => ({ kind, detail: `${detail}. Setup stops here, and nothing was sent.` });
+    switch (g.state) {
+        case "json-control":
+            return { kind: "ready", how: "reused", workbenchId: g.id };
+        case "unsupported":
+            return stop("unread", `${wb} is unsupported by this codec${g.diagnosis === null ? "" : ` (${named(g.diagnosis)})`}`);
+        case "refused":
+            return stop("unread", `the codec refused inspect (${named(g)})${g.reason.startsWith("pending-initialize-") ? "; the committed initialize in .json-state/journal/ is to be corrected by hand" : ""}`);
+        case "unanswered":
+            return stop(g.cause === "bundle-missing" ? "install" : "unread", `the codec gave no answer to inspect (${g.cause}: ${g.detail})`);
+    }
+    const pending = g.pending;
+    if (pending?.blocked)
+        return stop("unread", `${wb} holds a committed initialize (operation ${pending.operation_id}) whose manifest stands at neither its old nor its new bytes; the intent is to be corrected by hand`);
+    if (pending === null && existsSync(join(wb, SETUP_MARKER)))
+        return { kind: "ready", how: "legacy", workbenchId: null };
+    const operationId = pending?.operation_id ?? randomUUID();
+    const id = pending?.id ?? randomUUID();
+    const a = ask(wb, { op: "initialize", operation_id: operationId, id });
+    if (a.kind === "refused")
+        return { kind: "refused", operationId, detail: `the codec refused initialize: ${named(refusal(a))}. Nothing landed, nothing is retried, and Setup stops here` };
+    if (a.kind === "unanswered") {
+        if (a.cause === "bundle-missing")
+            return stop("install", `the codec bundle is missing (${a.detail})`);
+        return { kind: "unknown", operationId, detail: `the codec gave no answer to initialize (${a.cause}: ${a.detail}), and it may have landed. Nothing was retried and Setup stops here; run it again, and inspect's pending names the intent it finishes` };
+    }
+    const again = gate(wb, { ask });
+    if (again.state !== "json-control" || again.id !== id)
+        return { kind: "unread", operationId, detail: `initialize answered, and inspect then answers ${again.state}${again.state === "json-control" ? ` under ${again.id}` : ""}, not json-control under ${id}: the manifest is not in place. Setup stops here, and nothing more was sent` };
+    return { kind: "ready", how: "initialized", workbenchId: id, operationId };
 }
 /** One write, from the gate to the log. `ask` is the record client's, or a test's stand-in. */
 export function write(c, ask, now = () => new Date()) {

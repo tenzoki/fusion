@@ -1,6 +1,7 @@
 ---
 description: Run fusion's Setup — create the workspace, write the marker, seed the voice profiles, and name the periodic checks that are due
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
+disable-model-invocation: true
 ---
 
 # Orchestrator Setup
@@ -45,7 +46,17 @@ WB=./fusion-workbench; OLD=0; L=""; for s in circles shared/planning shared/cons
 - **`LEGACY-STORES`** — say the line to the user once, in the chat language, and continue.
 - **`OLD=0`** — nothing out of format here. Continue with the `mkdir` below. Say nothing about it.
 
-Only when `OLD=0`:
+Only when `OLD=0`, create the workbench directory alone and let the codec decide what it is. This is the only `initialize` sent anywhere, and it comes before any other write:
+
+```bash
+mkdir -p ./fusion-workbench && "$FUSION_PLUGIN_ROOT/bin/fusion-write" initialize --workbench ./fusion-workbench; echo "exit=$?"
+```
+
+- **`result=initialized` or `result=reused`, `exit=0`**: the workbench is JSON-controlled (a new one, or one whose earlier run stopped before the marker). Continue.
+- **`result=legacy`, `exit=0`**: a workbench set up before the JSON cutover; its `.fusion-setup` marks it, and its control data stays Markdown until `/fusion:migrate` converts it. Continue exactly as before, and say nothing about it.
+- **Any other exit: stop Setup here and create nothing more.** Say the `fusion-write:` line to the user. On `exit=6` name every entry the codec named: `.DS_Store` and `.gitkeep` count like any file, and a fusion store among them (`work-packages`, `shared`) is a workbench that lost its marker, which is `/fusion:migrate`'s. On `exit=7` the outcome is unknown: run Setup again, and it finishes the intent `inspect` names. Never resend or retry by hand.
+
+Then the stores, in this order before the marker:
 
 ```bash
 mkdir -p ./fusion-workbench/work-packages ./fusion-workbench/shared/plans ./fusion-workbench/shared/issues ./fusion-workbench/shared/decisions ./fusion-workbench/shared/analyses ./fusion-workbench/shared/reviews ./fusion-workbench/shared/investigations ./fusion-workbench/shared/consultations ./fusion-workbench/shared/history ./fusion-workbench/shared/memos ./fusion-workbench/archive ./fusion-workbench/.guard-state
