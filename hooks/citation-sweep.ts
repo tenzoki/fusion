@@ -29,6 +29,35 @@
  *                  project's shipped text); a directory is walked for `*.md`,
  *                  a file is taken as named whatever its extension
  *
+ * ## Two formats, chosen by the gate
+ *
+ * The workbench's format is asked before the corpus is read, through
+ * `lib/record-index.ts` and the codec's `inspect`, and the first line of stdout
+ * names it (`format=`):
+ *
+ *   `json-control`  only the codec writes JSON (Prior's spec, section 1.5), so
+ *                   no codec file is ever in the corpus: a `<path>` naming a
+ *                   control file, the manifest or anything under
+ *                   `.json-state/` is a usage error, and a declared one is
+ *                   left out with a line on stderr. The census gains one
+ *                   `bound=<file>  <role>:<control>[, ...]` line per file in
+ *                   the write set whose bytes a record binds by hash: a plan
+ *                   or spec in a package's `active_documents`, or the report
+ *                   an evidence record names, each read by one `show` of the
+ *                   binding record. Guard (b) thereby names, before `--yes`,
+ *                   every rewrite that would leave an adoption or a review's
+ *                   evidence stale (section 9). Nothing is refused on that
+ *                   ground: the rewrite is revertible under guard (a), and the
+ *                   staleness is the codec's to report. A binding whose
+ *                   target the index does not hold (a reference to nothing, a
+ *                   record the codec could not read) names no file and prints
+ *                   no line; `bin/fusion-citation-check` reports both.
+ *   `legacy`        everything below, byte for byte as before this line
+ *                   existed.
+ *
+ * Any other answer, and any refused or unanswered `show`, stops the run before
+ * a line of stdout (exit 3 or 6 below). None of them is an empty workbench.
+ *
  * ## The declared corpus
  *
  * Since 2026-08-31 the run also reads every file the project DECLARED as
@@ -236,10 +265,11 @@
  * serves the guard and the deduplication, which compare paths rather than name
  * them.
  *
- * Output: one `<file>  rewrites=<n>` line per touched file, then the
+ * Output: the `format=` line, one `<file>  rewrites=<n>` line per touched file, then the
  * residual (every bare stamp the scanner judged, in file order — the corpus
  * order the census lines above them use, and by line within a file; an exempt
- * one is not listed) as `<file>:<line>  '<token>'  <status>`, then
+ * one is not listed) as `<file>:<line>  '<token>'  <status>`, then the
+ * `bound=` lines (`json-control` only, in write-set order), then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
  * package-record=<n> package-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message
@@ -286,7 +316,8 @@
  * `CHAINED_RE`'s lookbehind, so a single pass would leave the second damage for
  * a second run and `--repair` would not be idempotent. Every repair strictly
  * shortens the line, so the walk terminates; the pass bound is belt to that
- * brace. Output: `<file>:<line>  '<from>' -> '<to>'  <class>` per token, then
+ * brace. Output: the `format=` line, `<file>:<line>  '<from>' -> '<to>'  <class>`
+ * per token, the `bound=` lines as the sweep prints them, then
  * `files=<n> repairs=<n> date-field=<n> chained-tail=<n> doubled=<n>
  * spliced-prefix=<n> mode=<dry-run|write>`.
  *
@@ -363,21 +394,26 @@
  * ## Exit codes
  *
  *   0  ran; in a writing mode, wrote.
- *   1  usage error.
+ *   1  usage error, a `<path>` naming a codec file of a JSON-controlled
+ *      workbench among them.
  *   2  no workbench (no `fusion-workbench/.fusion-setup` above cwd and no
  *      `--root`, or `--root` names no workbench).
- *   3  the compiled hooks are missing; `bin/fusion-citation-sweep` raises it
- *      before this file is reached.
+ *   3  the plugin itself could not run: the compiled hooks are missing
+ *      (`bin/fusion-citation-sweep` raises it before this file is reached),
+ *      or the codec bundle is, so nothing could be asked.
  *   4  guard (a) refused: not a git work tree, workbench untracked, an
  *      uncommitted change on a file in this run's corpus, or an extra path
  *      outside the work tree or untracked by it. Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
+ *   6  the workbench was not read: `unsupported`, a refusal of the codec
+ *      (`recovery-blocked` among them), or no answer. The cause is on stderr
+ *      and NOTHING is on stdout; nothing written.
  */
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve, sep } from "node:path";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import {
   BRACKET_SLOT,
   createScanner,
@@ -392,7 +428,10 @@ import {
   type Scanner,
 } from "./lib/citation-scan.js";
 import { loadConfig } from "./lib/config.js";
-import { CONTAINER_ROOT_ALT } from "./lib/stores.js";
+import { isObject, resultOf, type Unread } from "./lib/codec-read.js";
+import { ask as askCodec } from "./lib/record-client.js";
+import { bundleMissing, notReadLine, readRecordIndex, type NotRead, type RecordIndex } from "./lib/record-index.js";
+import { CONTAINER_ROOT_ALT, isControlFile, JSON_STATE_DIR, WORKBENCH_MANIFEST } from "./lib/stores.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 
@@ -716,6 +755,46 @@ function repairsOn(scanner: Scanner, lineText: string, ownBase: string): Repair[
   return out.sort((a, b) => b[3] - a[3]);
 }
 
+// --- a JSON-controlled workbench: the codec's files, and what a record binds --
+
+/** Whether `abs` is a file inside the workbench `root` that only the codec writes: a control file, the manifest, journal state. */
+function isCodecFile(root: string, abs: string): boolean {
+  const rel = relative(real(root), real(abs));
+  if (rel === "" || rel.startsWith("..") || isAbsolute(rel)) return false;
+  return isControlFile(basename(rel)) || rel === WORKBENCH_MANIFEST || rel.split(sep)[0] === JSON_STATE_DIR;
+}
+
+/**
+ * Every workbench-relative file a record binds by hash, each with its bindings
+ * as `<role>:<control>`: a package's `active_documents` entry names a record
+ * by id, whose narrative the index holds, and an evidence record names its
+ * report. One `show` per package and evidence row, since `list` carries
+ * neither; a `show` not answered ends the run, and is never a file bound by
+ * nothing.
+ */
+function boundFiles(root: string, index: RecordIndex): Map<string, string[]> | { unread: Unread } {
+  const bound = new Map<string, string[]>();
+  const bind = (file: unknown, role: string, control: string): void => {
+    if (typeof file === "string") bound.set(file, [...(bound.get(file) ?? []), `${role}:${relOf(dirname(root), join(root, control))}`]);
+  };
+  for (const e of index.byControl.values()) {
+    if (e.kind !== "package" && e.kind !== "evidence") continue;
+    const shown = resultOf(root, { op: "show", record: { path: e.control } }, askCodec);
+    if ("unread" in shown) return shown;
+    const { control, report } = shown.result;
+    if (isObject(report)) bind(report.path, "report", e.control);
+    const docs = isObject(control) && Array.isArray(control.active_documents) ? control.active_documents : [];
+    for (const d of docs) if (isObject(d) && isObject(d.ref)) bind(index.byId.get(String(d.ref.record_id))?.narrative, String(d.role), e.control);
+  }
+  return bound;
+}
+
+/** The stderr line for a workbench that was not read, and its exit: 3 for a missing bundle, else 6. */
+function notRead(u: NotRead, root: string): number {
+  process.stderr.write(`${NAME}: ${notReadLine(u, root)} Nothing was swept.\n`);
+  return bundleMissing(u) ? 3 : 6;
+}
+
 // --- main --------------------------------------------------------------------
 
 const isTestFixture = (abs: string): boolean =>
@@ -725,6 +804,14 @@ function main(argv: string[]): number {
   const opts = parse(argv);
   const { root, repair, extra } = opts;
   const write = opts.write && opts.yes;
+  const projectRoot = dirname(root);
+
+  // the format before anything else is read: see `## Two formats`
+  const read = readRecordIndex(root);
+  if (read.format === "unknown") return notRead(read.unread, root);
+  const json = read.format === "json-control";
+  const bound = json ? boundFiles(root, read.index) : new Map<string, string[]>();
+  if ("unread" in bound) return notRead(bound.unread as NotRead, root);
 
   // the corpus first: guard (a) asks about it, and one list is what keeps the
   // guard and the run from disagreeing about which files will be written
@@ -733,10 +820,10 @@ function main(argv: string[]): number {
     const abs = resolve(p);
     if (!existsSync(abs)) usage(`${p} does not exist`);
     if (statSync(abs).isDirectory()) files.push(...markdownFilesUnder(abs).map((f) => f.abs));
+    else if (json && isCodecFile(root, abs)) usage(`${p} is a file only the codec writes (Prior's spec, section 1.5); the sweep never rewrites one`);
     else files.push(abs);
   }
   // the declared paths join the corpus here, before guard (a) reads it
-  const projectRoot = dirname(root);
   const config = loadConfig({ projectRoot });
   const declared = declaredCitationFiles(projectRoot, config.citations.extraPaths);
   for (const line of [...config.diagnostics, ...declaredCitationNotes(declared)]) {
@@ -746,7 +833,10 @@ function main(argv: string[]): number {
   // the declared half would spell differently, and a file swept twice would be
   // counted twice
   const inCorpus = new Set(files.map(real));
-  for (const f of declared.files) if (!inCorpus.has(real(f.abs))) files.push(f.abs);
+  for (const f of declared.files) {
+    if (json && isCodecFile(root, f.abs)) process.stderr.write(`${NAME}: declared ${relOf(projectRoot, f.abs)} is a file only the codec writes; left out of the corpus\n`);
+    else if (!inCorpus.has(real(f.abs))) files.push(f.abs);
+  }
 
   if (opts.write) {
     const why = refusal(root, extra, files);
@@ -758,8 +848,9 @@ function main(argv: string[]): number {
 
   const scanner = createScanner(root, { exhibits: config.citations.exhibits });
   const mode = write ? "write" : "dry-run";
-  const out: string[] = [];
-  let touched = 0;
+  const out: string[] = [`format=${read.format}`];
+  // the files this run writes, or would: the census's `bound=` lines are asked of them
+  const writeSet: string[] = [];
 
   if (repair) {
     const byClass = { "date-field": 0, "chained-tail": 0, doubled: 0, "spliced-prefix": 0 };
@@ -789,12 +880,12 @@ function main(argv: string[]): number {
         }
       }
       if (n === 0) continue;
-      touched++;
+      writeSet.push(abs);
       repairs += n;
       if (write) writeFileSync(abs, lines.map((l) => l.text).join("\n"));
     }
     const classes = Object.entries(byClass).map(([k, v]) => `${k}=${v}`).join(" ");
-    out.push(`files=${touched} repairs=${repairs} ${classes} mode=${mode}`);
+    out.push(`files=${writeSet.length} repairs=${repairs} ${classes} mode=${mode}`);
   } else {
     let rewrites = 0;
     const byKind = { record: 0, "package-record": 0, "package-dir": 0, "bare-record": 0, "stamp-bare": 0 };
@@ -828,16 +919,22 @@ function main(argv: string[]): number {
       }
       for (const [, , r] of here.sort((a, b) => a[0] - b[0] || a[1] - b[1])) residual.push(r);
       if (n === 0) continue;
-      touched++;
+      writeSet.push(abs);
       rewrites += n;
       out.push(`${rel}  rewrites=${n}`);
       if (write) writeFileSync(abs, lines.map((l) => l.text).join("\n"));
     }
     for (const r of residual) out.push(r);
     const kinds = Object.entries(byKind).map(([k, v]) => `${k}=${v}`).join(" ");
-    out.push(`files=${touched} rewrites=${rewrites} residual=${residual.length} ${kinds} mode=${mode}`);
+    out.push(`files=${writeSet.length} rewrites=${rewrites} residual=${residual.length} ${kinds} mode=${mode}`);
   }
 
+  // before the summary line, which stays last: see `## Two formats`
+  const boundLines = writeSet.flatMap((abs) => {
+    const by = bound.get(relative(root, abs).split(sep).join("/"));
+    return by === undefined ? [] : [`bound=${relOf(projectRoot, abs)}  ${by.join(", ")}`];
+  });
+  out.splice(out.length - 1, 0, ...boundLines);
   process.stdout.write(out.join("\n") + "\n");
   if (opts.write && !opts.yes) {
     process.stderr.write(

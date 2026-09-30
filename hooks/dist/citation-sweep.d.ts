@@ -29,6 +29,35 @@
  *                  project's shipped text); a directory is walked for `*.md`,
  *                  a file is taken as named whatever its extension
  *
+ * ## Two formats, chosen by the gate
+ *
+ * The workbench's format is asked before the corpus is read, through
+ * `lib/record-index.ts` and the codec's `inspect`, and the first line of stdout
+ * names it (`format=`):
+ *
+ *   `json-control`  only the codec writes JSON (Prior's spec, section 1.5), so
+ *                   no codec file is ever in the corpus: a `<path>` naming a
+ *                   control file, the manifest or anything under
+ *                   `.json-state/` is a usage error, and a declared one is
+ *                   left out with a line on stderr. The census gains one
+ *                   `bound=<file>  <role>:<control>[, ...]` line per file in
+ *                   the write set whose bytes a record binds by hash: a plan
+ *                   or spec in a package's `active_documents`, or the report
+ *                   an evidence record names, each read by one `show` of the
+ *                   binding record. Guard (b) thereby names, before `--yes`,
+ *                   every rewrite that would leave an adoption or a review's
+ *                   evidence stale (section 9). Nothing is refused on that
+ *                   ground: the rewrite is revertible under guard (a), and the
+ *                   staleness is the codec's to report. A binding whose
+ *                   target the index does not hold (a reference to nothing, a
+ *                   record the codec could not read) names no file and prints
+ *                   no line; `bin/fusion-citation-check` reports both.
+ *   `legacy`        everything below, byte for byte as before this line
+ *                   existed.
+ *
+ * Any other answer, and any refused or unanswered `show`, stops the run before
+ * a line of stdout (exit 3 or 6 below). None of them is an empty workbench.
+ *
  * ## The declared corpus
  *
  * Since 2026-08-31 the run also reads every file the project DECLARED as
@@ -236,10 +265,11 @@
  * serves the guard and the deduplication, which compare paths rather than name
  * them.
  *
- * Output: one `<file>  rewrites=<n>` line per touched file, then the
+ * Output: the `format=` line, one `<file>  rewrites=<n>` line per touched file, then the
  * residual (every bare stamp the scanner judged, in file order — the corpus
  * order the census lines above them use, and by line within a file; an exempt
- * one is not listed) as `<file>:<line>  '<token>'  <status>`, then
+ * one is not listed) as `<file>:<line>  '<token>'  <status>`, then the
+ * `bound=` lines (`json-control` only, in write-set order), then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
  * package-record=<n> package-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message
@@ -286,7 +316,8 @@
  * `CHAINED_RE`'s lookbehind, so a single pass would leave the second damage for
  * a second run and `--repair` would not be idempotent. Every repair strictly
  * shortens the line, so the walk terminates; the pass bound is belt to that
- * brace. Output: `<file>:<line>  '<from>' -> '<to>'  <class>` per token, then
+ * brace. Output: the `format=` line, `<file>:<line>  '<from>' -> '<to>'  <class>`
+ * per token, the `bound=` lines as the sweep prints them, then
  * `files=<n> repairs=<n> date-field=<n> chained-tail=<n> doubled=<n>
  * spliced-prefix=<n> mode=<dry-run|write>`.
  *
@@ -363,15 +394,20 @@
  * ## Exit codes
  *
  *   0  ran; in a writing mode, wrote.
- *   1  usage error.
+ *   1  usage error, a `<path>` naming a codec file of a JSON-controlled
+ *      workbench among them.
  *   2  no workbench (no `fusion-workbench/.fusion-setup` above cwd and no
  *      `--root`, or `--root` names no workbench).
- *   3  the compiled hooks are missing; `bin/fusion-citation-sweep` raises it
- *      before this file is reached.
+ *   3  the plugin itself could not run: the compiled hooks are missing
+ *      (`bin/fusion-citation-sweep` raises it before this file is reached),
+ *      or the codec bundle is, so nothing could be asked.
  *   4  guard (a) refused: not a git work tree, workbench untracked, an
  *      uncommitted change on a file in this run's corpus, or an extra path
  *      outside the work tree or untracked by it. Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
+ *   6  the workbench was not read: `unsupported`, a refusal of the codec
+ *      (`recovery-blocked` among them), or no answer. The cause is on stderr
+ *      and NOTHING is on stdout; nothing written.
  */
 export {};

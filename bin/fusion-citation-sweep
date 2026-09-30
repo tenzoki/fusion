@@ -49,6 +49,16 @@
 # hooks/lib/__tests__/workbench-citation-lint.test.ts does NOT read the
 # declaration, on purpose, and is not to be made to.
 #
+# The workbench's format is asked first, through the codec's inspect, and the
+# first stdout line names it (format=). On json-control only the codec writes
+# JSON: a <path> naming a control file, the manifest or anything under
+# .json-state/ is a usage error (exit 1), a declared one is left out with a
+# line on stderr, and the census gains one `bound=<file>  <role>:<control>`
+# line per file in the write set whose bytes a record binds by hash (a plan or
+# spec a package adopted, a report an evidence record names), so guard (b)
+# names every rewrite that would leave a binding stale before --yes. Nothing is
+# refused on that ground. On legacy the output is as before, plus format=.
+#
 # No fusion pipeline or workflow runs this helper. `/fusion:cleanup` prints the
 # checker's result (bin/fusion-citation-check) and stops there; a person runs
 # the sweep by hand, --dry-run first, then --write --yes on a clean tree so
@@ -58,12 +68,16 @@
 #   0  ran; in a writing mode, wrote.
 #   1  usage error.
 #   2  no fusion workbench above the working directory and no --root.
-#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
-#      own code and not 2: "there is no workbench" is an answer about the
-#      project, and a broken install must never be reported as one.
+#   3  the plugin's compiled hooks or its codec bundle are missing, so nothing
+#      could be asked. Its own code and not 2: "there is no workbench" is an
+#      answer about the project, and a broken install must never be reported
+#      as one.
 #   4  guard (a) refused; nothing written.
 #   5  guard (b) refused (--write without --yes); the census was printed,
 #      nothing written.
+#   6  the workbench was not read: unsupported, a refusal of the codec
+#      (recovery-blocked among them), or no answer. The cause is on stderr,
+#      nothing is on stdout, nothing written.
 #
 # The work is hooks/dist/citation-sweep.js, resolved relative to this script
 # rather than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree

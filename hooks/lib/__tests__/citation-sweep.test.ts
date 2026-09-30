@@ -8,13 +8,16 @@
  */
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
+import { createHash, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
-import { TEST_DIST, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { HOOKS_DIR, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { createScanner, GATE_KINDS, type CitationHit, type Lines } from "../citation-scan.js";
+import { createPackage, must, place, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
-const ENTRY = join(TEST_DIST, "citation-sweep.js");
+// The shared build, as `fusion-citation-check.test.ts` runs it: the entry reaches the codec bundle relative to itself.
+const ENTRY = join(HOOKS_DIR, "dist", "citation-sweep.js");
 
 function sweep(cwd: string, wb: string, ...args: string[]) {
   return spawnSync(process.execPath, [ENTRY, "--root", wb, ...args], { cwd, encoding: "utf-8" });
@@ -60,11 +63,11 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     writeFileSync(doc, before.join("\n"));
     // no git here: the guards are exercised below, and the scratch tree is not a repo
     const run = sweep(wb, wb, "--dry-run");
-    const out = run.stdout.trim().split("\n");
+    const [format, ...out] = run.stdout.trim().split("\n");
     rmSync(wb, { recursive: true, force: true });
     expect(run.status, run.stderr).toBe(0);
     // every row names the file relative to the PROJECT ROOT, not to cwd (here the workbench)
-    expect(out[0]).toBe("fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=2");
+    expect([format, out[0]]).toEqual(["format=legacy", "fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=2"]);
     expect(out[1]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260202-0202' {2}resolved$/);
     expect(out[2]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260101-0101' {2}ambiguous$/);
     expect(out[3]).toBe("files=1 rewrites=2 residual=2 record=1 package-record=0 package-dir=0 bare-record=1 stamp-bare=0 mode=dry-run");
@@ -222,7 +225,7 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
       const run = sweep(root, wb, "--write");
       expect(run.status).toBe(5);
       expect(readFileSync(doc, "utf-8")).toBe(DIRTY_DOC);
-      expect(run.stdout.trim().split("\n")[0]).toBe("fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=1");
+      expect(run.stdout.trim().split("\n").slice(0, 2)).toEqual(["format=legacy", "fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=1"]);
       expect(last(run)).toMatch(/^files=1 rewrites=1 .* mode=dry-run$/);
       expect(run.stderr.trim()).toBe(
         "fusion-citation-sweep: refused (no --yes): the census above is what --write would change; pass --yes to write it; nothing written",
@@ -455,6 +458,49 @@ describe("citation-sweep --repair undoes the retired stamp-bare rewrite, token b
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
+  }, CASE_TIMEOUT);
+});
+
+// --- a JSON-controlled workbench: the gate, the codec's files, the bindings ---
+
+const ACTOR = { actor: "user", person: null };
+const CITE = "see `work-packages/260101-0001-alpha/260101-0001-alpha.md`\n";
+const hash = (p: JsonProject, rel: string) => `sha256:${createHash("sha256").update(readFileSync(join(p.workbench, rel))).digest("hex")}`;
+
+describe("citation-sweep on a JSON-controlled workbench", () => {
+  it("names before --yes each rewrite of an adopted plan and of a report an evidence record binds, and no unbound file", () => {
+    withJsonProject((p) => {
+      const pkg = createPackage(p, "260101-0001-alpha");
+      const [planId, evId, workbench_id] = [randomUUID(), randomUUID(), String(must(p, { op: "inspect" }).result.id)];
+      const [plan, report] = [`${pkg.dir}/plans/260101-0002-plan.md`, `${pkg.dir}/reviews/260101-0003-reviewer-alpha.md`];
+      must(p, { op: "create", operation_id: randomUUID(), id: planId, kind: "plan", filed_by: ACTOR, origin: { kind: "package", ref: { workbench_id, record_id: pkg.id } }, scope: { container: pkg.dir, store: "plans" }, narrative: { path: plan, content: CITE }, payload: { state: "open", steps: [{ id: "s1", state: "open" }], criteria: [], acceptance: null } });
+      const { revision } = must(p, { op: "show", record: { path: pkg.path } }).result;
+      must(p, { op: "adopt-plan", operation_id: randomUUID(), record: { path: pkg.path }, expected_revision: revision, actor: ACTOR, plan: { workbench_id, record_id: planId }, revision: hash(p, plan) });
+      for (const rel of [report, `${pkg.dir}/analyses/260101-0004-unbound.md`]) place(p, rel, CITE);
+      must(p, { op: "create", operation_id: randomUUID(), id: evId, kind: "evidence", scope: { container: pkg.dir, store: "reviews" }, payload: { schema: "fusion.evidence/v1", id: evId, workbench_id, subject: { git_tree: "0".repeat(40), git_range: null }, brief_revision: hash(p, pkg.narrative), plan_revision: null, role: { profile: "reviewer", version: "12.0.0" }, host: "claude-code", execution_policy: "claude-guided", verdict: "accept", uncertainties: [], checks: [{ id: "t", result: "pass", detail: null }], report: { path: report, sha256: hash(p, report), kind: "review" }, predecessor: null, accepted_at: "2026-09-30T12:00:00Z", extensions: {} } });
+      const run = sweep(p.root, p.workbench, "--dry-run");
+      expect(run.status, run.stderr).toBe(0);
+      const lines = run.stdout.trim().split("\n");
+      expect([lines[0], lines.at(-1)]).toEqual(["format=json-control", "files=3 rewrites=3 residual=0 record=0 package-record=3 package-dir=0 bare-record=0 stamp-bare=0 mode=dry-run"]);
+      expect(lines.filter((l) => l.startsWith("bound="))).toEqual([
+        `bound=fusion-workbench/${plan}  plan:fusion-workbench/${pkg.path}`,
+        `bound=fusion-workbench/${report}  report:fusion-workbench/${report.replace(/\.md$/, ".evidence.json")}`,
+      ]);
+    });
+  }, CASE_TIMEOUT);
+
+  it("refuses a <path> naming a control file, exit 1, and stops on an unsupported workbench, exit 6 with nothing on stdout", () => {
+    withJsonProject((p) => {
+      const pkg = createPackage(p, "260101-0001-alpha");
+      const refused = sweep(p.root, p.workbench, join(p.workbench, pkg.path));
+      expect([refused.status, refused.stdout]).toEqual([1, ""]);
+      expect(refused.stderr).toMatch(/package\.json is a file only the codec writes/);
+      const manifest = JSON.parse(readFileSync(join(p.workbench, "workbench.json"), "utf-8")) as { required_features: string[] };
+      place(p, "workbench.json", JSON.stringify({ ...manifest, required_features: [...manifest.required_features, "json-control-v9"] }));
+      const unread = sweep(p.root, p.workbench);
+      expect([unread.status, unread.stdout]).toEqual([6, ""]);
+      expect(unread.stderr).toMatch(/unsupported .*unknown-feature.* Nothing was swept\.$/m);
+    });
   }, CASE_TIMEOUT);
 });
 
