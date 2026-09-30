@@ -2,7 +2,8 @@
 // "Keine Installation aus dem Source-Checkout nötig": `install.sh` installs a
 // tarball-shaped copy of the tree into a scratch home, and the installed
 // `bin/fusion-record` answers a `show` on the scratch workbench with `node`
-// the only runtime (FJ01 step 7; the spec's row FJ01).
+// the only runtime (FJ01 step 7; the spec's row FJ01). So do the two helpers
+// that read scope and order from JSON (FJ03a step 5).
 //
 // ## What is installed
 //
@@ -25,7 +26,26 @@
 // checks only presence) and `curl` (copies the local tarball built from the
 // extract to the `-o` target and never opens a socket). What the installer
 // then sees is the tarball it would have downloaded, and what the wrapper
-// then runs is `node` alone: no `npm`, no `node_modules`, no `git`.
+// then runs is `node` alone: no `npm`, no `node_modules`, no `git` (the scope
+// case below adds `git` for `bin/fusion-identity`, and says so).
+//
+// ## The helpers that read through the record client (FJ03a step 5)
+//
+// `bin/fusion-claimed-package` and `bin/fusion-work-order` do not go through
+// `bin/fusion-record`: each execs a compiled entry under `hooks/dist/`, whose
+// record client resolves the bundle relative to itself. Two cases run them
+// from the installed copy, so what is proven is the install's helpers, its
+// `hooks/dist/` and its bundle resolution, and not a copy a test holds. Each
+// project is a `git init` directory whose workbench starts from the manifest
+// and the setup marker of the INSTALLED `codec/fixtures/workbench/`; every
+// package in it is written by the kernel, through the installed
+// `bin/fusion-record` (`create`, `claim`, `set-dependencies`), as
+// `hooks/lib/__tests__/helpers/json-workbench.ts` does for the hook suite.
+// `bin/fusion-work-order` runs on the one PATH directory above. The scope
+// helper asks `bin/fusion-identity` which checkout this is, and that program
+// calls `git` and a few more coreutils; they sit in a second directory that
+// is on PATH for the scope case and for preparing a project, and for nothing
+// else. `node` stays the only runtime in both.
 //
 // ## Loud, never silent
 //
@@ -52,6 +72,8 @@ const WORKING_TREE_FILES = ["install.sh", "bin/fusion-record", ".gitignore"];
 const HOST_TOOLS = ["bash", "tar", "cp", "rm", "mkdir", "cat", "chmod", "find", "head", "sed", "mktemp", "dirname"];
 /** GNU tar spawns `gzip` for `-z`; bsdtar does not. Linked when present, not required. */
 const OPTIONAL_TOOLS = ["gzip"];
+/** What `bin/fusion-identity` calls beyond HOST_TOOLS; on PATH for the scope case and for preparing a project. */
+const IDENTITY_TOOLS = ["git", "od", "tr", "grep", "sort", "wc", "ls"];
 
 interface Install {
   tmp: string;
@@ -160,6 +182,86 @@ afterAll(() => {
 /** The environment the installed wrapper is run with: the isolated PATH and nothing of the test's own. */
 const installedEnv = (extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv => ({ PATH: install.path, HOME: join(install.tmp, "home-dir"), ...extra });
 
+/** The isolated PATH plus a second directory holding IDENTITY_TOOLS, built on first use. A tool absent from the host fails the case by name. */
+function identityEnv(): NodeJS.ProcessEnv {
+  const dir = join(install.tmp, "path-identity");
+  if (!existsSync(dir)) {
+    mkdirSync(dir);
+    for (const tool of IDENTITY_TOOLS) {
+      const abs = findOnHostPath(tool);
+      if (abs === null) throw new Error(`${tool} is not on this host's PATH; bin/fusion-identity needs it`);
+      symlinkSync(abs, join(dir, tool));
+    }
+  }
+  return installedEnv({ PATH: `${install.path}${delimiter}${dir}` });
+}
+
+interface Project {
+  root: string;
+  /** Ids are counted per project and never random. */
+  next: number;
+}
+interface Package {
+  stem: string;
+  path: string;
+  id: string;
+}
+
+/**
+ * A `git init` project under the scratch directory whose workbench holds the
+ * setup marker and, unless `legacy`, the manifest of the installed fixture
+ * workbench, and nothing else: the packages come from the kernel.
+ */
+function project(name: string, options: { legacy?: boolean } = {}): Project {
+  const root = join(install.tmp, name);
+  const workbench = join(root, "fusion-workbench");
+  mkdirSync(workbench, { recursive: true });
+  const fixture = join(install.home, "codec", "fixtures", "workbench");
+  cpSync(join(fixture, ".fusion-setup"), join(workbench, ".fusion-setup"));
+  if (options.legacy !== true) cpSync(join(fixture, "workbench.json"), join(workbench, "workbench.json"));
+  for (const args of [["init", "-q"], ["config", "user.name", "Install Test"], ["config", "user.email", "install-test@example.invalid"]]) {
+    const git = run("git", args, { cwd: root, env: identityEnv() });
+    if (git.status !== 0) throw new Error(`git ${args.join(" ")} failed in ${root}: ${output(git)}`);
+  }
+  return { root, next: 1 };
+}
+
+const uuid = (p: Project): string => `f03a0005-0000-4000-8000-${String(p.next++).padStart(12, "0")}`;
+const ACTOR = { actor: "user", person: null };
+
+/** One request through the INSTALLED wrapper, the workbench found by its walk-up; anything but a result fails the case, naming the answer. */
+function record(p: Project, request: Record<string, unknown>): Record<string, unknown> {
+  const r = run(join(install.home, "bin", "fusion-record"), [], { cwd: p.root, input: JSON.stringify(request) + "\n", env: installedEnv() });
+  const answer = r.status === 0 ? (JSON.parse(r.stdout) as { ok: boolean; result?: Record<string, unknown> }) : null;
+  if (answer === null || answer.ok !== true || answer.result === undefined) throw new Error(`${String(request.op)} was not answered with a result (exit ${r.status}): ${r.stdout || r.stderr}`);
+  return answer.result;
+}
+
+function createPackage(p: Project, stem: string): Package {
+  const pkg: Package = { stem, path: `work-packages/${stem}/package.json`, id: uuid(p) };
+  record(p, {
+    op: "create",
+    operation_id: uuid(p),
+    id: pkg.id,
+    kind: "package",
+    filed_by: ACTOR,
+    origin: { kind: "user-request", ref: null },
+    scope: { container: null, store: "work-packages" },
+    narrative: { path: `work-packages/${stem}/${stem}.md`, content: `# ${stem}\n\n## Directive\n\nA package the install test filed.\n` },
+    payload: { domain: "code" },
+  });
+  return pkg;
+}
+
+/** A mutation of `pkg` at the revision it stands at. */
+function mutate(p: Project, pkg: Package, op: string, fields: Record<string, unknown>): void {
+  const { revision } = record(p, { op: "show", record: { path: pkg.path } });
+  record(p, { op, operation_id: uuid(p), record: { path: pkg.path }, expected_revision: revision, actor: ACTOR, ...fields });
+}
+
+/** A helper of the installed copy, run in `cwd`. */
+const helper = (name: string, cwd: string, env: NodeJS.ProcessEnv) => run(join(install.home, "bin", name), [], { cwd, env });
+
 describe("install.sh from a tarball-shaped copy of the tree", () => {
   it("the preparation succeeded", () => {
     expect(install.failure, install.failure ?? "").toBeNull();
@@ -211,6 +313,54 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     expect(walked.status, walked.stderr).toBe(0);
     expect(walked.stdout).toBe(explicit.stdout);
   });
+
+  it("the installed bin/fusion-claimed-package names the package this checkout claimed, from JSON, and refuses a legacy workbench by name", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = project("scope-project");
+    const identity = helper("fusion-identity", p.root, identityEnv());
+    expect(identity.status, identity.stderr).toBe(0);
+    const checkout = /^CHECKOUT=([0-9a-f]{8})$/m.exec(identity.stdout)?.[1];
+    expect(checkout, identity.stdout).toBeDefined();
+
+    // Nothing filed yet: an empty answer, which is a real one.
+    const none = helper("fusion-claimed-package", p.root, identityEnv());
+    expect([none.status, none.stdout], none.stderr).toEqual([0, ""]);
+
+    // Two claimed packages, one of them another checkout's.
+    const other = checkout === "0badc0de" ? "0badc0df" : "0badc0de";
+    const [theirs, ours] = ["260930-0900-held-elsewhere", "260930-0901-held-here"].map((stem) => createPackage(p, stem));
+    mutate(p, theirs, "claim", { claim: { checkout_id: other, person: null, claimed_at: "2026-09-30T09:00:00Z" } });
+    mutate(p, ours, "claim", { claim: { checkout_id: checkout, person: null, claimed_at: "2026-09-30T09:01:00Z" } });
+    const one = helper("fusion-claimed-package", p.root, identityEnv());
+    expect(one.status, one.stderr).toBe(0);
+    expect(one.stdout).toBe(`PACKAGE=work-packages/${ours.stem}/${ours.stem}.md\nCONTAINER=work-packages/${ours.stem}\n`);
+
+    const legacy = helper("fusion-claimed-package", project("scope-legacy", { legacy: true }).root, identityEnv());
+    expect([legacy.status, legacy.stdout], legacy.stderr).toEqual([3, ""]);
+    expect(legacy.stderr).toContain("is legacy");
+  }, 60_000);
+
+  it("the installed bin/fusion-work-order prints the order over the codec's edges, with node the only runtime, and refuses a legacy workbench by name", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = project("order-project");
+    const [first, second] = ["260930-0910-first", "260930-0911-second"].map((stem) => createPackage(p, stem));
+    const { id } = record(p, { op: "inspect" });
+    mutate(p, second, "set-dependencies", { depends_on: [{ target: { workbench_id: id, record_id: first.id }, condition: "terminal" }] });
+
+    // The one PATH directory of the install: no git, no npm.
+    const order = helper("fusion-work-order", p.root, installedEnv());
+    expect(order.status, order.stderr).toBe(0);
+    const value = (key: string) => order.stdout.split("\n").find((l) => l.startsWith(`${key}=`))?.slice(key.length + 1);
+    expect(["items", "edges", "unmet-edges", "unresolved-edges", "cycles", "ready", "unreadable-head", "verdict"].map(value)).toEqual(["2", "1", "0", "0", "0", "1", "0", "acyclic"]);
+    const rows = order.stdout.split("\n").filter((l) => l.startsWith("  ")).map((l) => l.trim().split(/\s+/).slice(3));
+    expect(rows).toEqual([["ready", first.stem], ["blocked", second.stem]]);
+
+    const legacy = helper("fusion-work-order", project("order-legacy", { legacy: true }).root, installedEnv());
+    expect([legacy.status, legacy.stdout], legacy.stderr).toEqual([4, ""]);
+    expect(legacy.stderr).toContain("is legacy");
+  }, 60_000);
 
   it("the installer warns, in the guard.js words, when the source carries no codec bundle", () => {
     expect(install.failure).toBeNull();

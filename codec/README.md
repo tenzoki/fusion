@@ -13,14 +13,31 @@ decision record
 `260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md`:
 a separate package, so that the growth bounds on the shipped text and on the
 hook suite keep measuring what they were derived for. No agent prompt reads a
-byte of this directory and no hook runs it.
+byte of this directory and no event hook runs it.
 
 **What ships is one file.** FJ01 (the codec-port decision, option 1: one Node
 bundle for both hosts) added `dist/fusion-record.js`: `src/cli/main.ts` and
 everything it imports, the seven schemas and the two contract tables inlined,
 bundled by esbuild at an exact pinned version and committed. Both hosts run it
-with plain `node`; neither needs `node_modules`. The Claude side reaches it
-through `bin/fusion-record` and Prior spawns it.
+with plain `node`; neither needs `node_modules`. Prior spawns it. The Claude
+side reaches it two ways. `bin/fusion-record` is the wrapper a person or a
+skill sends one request through. The helpers under `bin/` that answer from
+control data run the bundle through the record client,
+`hooks/lib/record-client.ts`, one process per request and no retry:
+`bin/fusion-claimed-package`, the `<item-dir>` check of `bin/fusion-paths`
+and `bin/fusion-work-order` (FJ03a), each by way of a compiled entry under
+`hooks/dist/` that resolves the bundle relative to itself, so an install and a
+work tree each run their own. Each asks `inspect` first and reads on only when
+the workbench is `json-control`; a legacy or unsupported one is refused by
+name, never read as empty.
+
+**No event hook runs the bundle, by import or by subprocess.** A read may
+finish a committed intent (`## The kernel and the journal`), and that is
+admitted for a helper somebody called and for nothing else: the SessionStart,
+PreToolUse, PostToolUse and SubagentStop commands of `hooks/hooks.json`, and
+every `bin/` helper one of them starts, stay off the record client.
+`hooks/lib/__tests__/hook-route-exclusion.test.ts` pins that on the configured
+commands, and `README-hooks.md` `## Concept` carries the declaration.
 
 ## What ships
 
@@ -40,7 +57,9 @@ unused at runtime: nothing in an install compiles, tests or imports them.
 warns when `codec/dist/fusion-record.js` is absent, in the words it uses for a
 missing `hooks/dist/guard.js`; `src/__tests__/install.test.ts` installs a
 `git archive` of the tree into a scratch home with an isolated `PATH` and
-proves `bin/fusion-record` answers there with `node` the only runtime.
+proves that `bin/fusion-record`, `bin/fusion-claimed-package` and
+`bin/fusion-work-order` answer there with `node` the only runtime, the two
+helpers over a workbench the installed kernel wrote.
 
 ## The CLI
 

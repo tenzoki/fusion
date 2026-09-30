@@ -10,10 +10,14 @@
 # response is one JSON object on stdout, followed by a newline. The request
 # shapes are `codec/schemas/protocol.schema.json` (`fusion.protocol/v1`), one
 # branch per operation of the spec's section 6 table; the errors are the
-# spec's typed classes. FJ01 answers `inspect`, `list`, `show`, `validate` and
-# `transition` (package records only, compare-and-swap on the stored-bytes
-# revision, replayable by `operation_id`); every other operation is answered
-# `operation-unknown/not-implemented-in-fj01`. Every answer is on stdout with
+# spec's typed classes. At this revision the bundle answers `inspect`, `list`,
+# `show`, `validate`, `create`, `transition`, `claim`, `release`, `set-mode`,
+# `set-dependencies`, `adopt-plan`, `attach-evidence` and `reconcile`; every
+# mutation is a compare-and-swap on the stored-bytes revision, replayable by
+# `operation_id`. `migration` is deferred and answered
+# `operation-unknown/not-implemented`. That list is a copy: ask `inspect`,
+# whose `operations.implemented` and `operations.deferred` name what the
+# bundle beside this script answers. Every answer is on stdout with
 # exit 0, whatever its `ok`: a refused request, a stale revision, a record
 # that does not exist are all ANSWERS, in JSON, and never a shell error.
 #
