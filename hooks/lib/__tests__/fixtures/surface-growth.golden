@@ -84,7 +84,7 @@
   helpers/json-workbench.ts 157
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 614
-  hook-route-exclusion.test.ts 314
+  hook-route-exclusion.test.ts 329
   hooks-wiring.test.ts 136
   identity-mint-notice.test.ts 118
   legacy-halt-clearing.test.ts 213
@@ -95,7 +95,7 @@
   plan-size.test.ts 206
   plan-stopping-section-lint.test.ts 257
   provenance-header-lint.test.ts 425
-  record-client.test.ts 196
+  record-client.test.ts 202
   reference-resolution-lint.test.ts 1012
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 857
@@ -110,4 +110,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 121
   workbench-citation-lint.test.ts 353
-  total 22970
+  total 22991

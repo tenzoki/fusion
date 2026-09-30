@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
-import { ask, gate, type Answer } from "../record-client.js";
+import { ask, CODEC_WAIT_MS, DEFAULT_TIMEOUT_MS, gate, MAX_RESPONSE_BYTES, POST_WAIT_MARGIN_MS, type Answer } from "../record-client.js";
 import { CASE_TIMEOUT, HOOKS_DIR, TEST_DIST } from "./helpers/guard-harness.js";
 import { BUNDLE, claim, createPackage, must, place, send, setDependencies, transition, withJsonProject } from "./helpers/json-workbench.js";
 
@@ -92,20 +92,26 @@ describe("a refusal and an unanswered call stay two answers", () => {
     });
   }, CASE_TIMEOUT);
 
-  it("is unanswered/unparseable when the child exits 0 without output", () => {
-    withStandIn("process.exit(0);\n", (bundle) => {
-      expect(ask("/nowhere", { op: "inspect" }, { bundle })).toMatchObject({ kind: "unanswered", cause: "unparseable" });
-    });
-  }, CASE_TIMEOUT);
-
-  it("is unanswered/exit when the child exits non-zero, with its stderr line in the detail", () => {
+  it("is unanswered/exit when the child exits non-zero, with its stderr line in the detail, or outgrows the response bound", () => {
     withStandIn('process.stderr.write("the schemas do not load\\n"); process.exit(3);\n', (bundle) => {
       const answer = ask("/nowhere", { op: "inspect" }, { bundle });
       expect(answer).toMatchObject({ kind: "unanswered", cause: "exit" });
       expect((answer as { detail: string }).detail).toContain("exited 3");
       expect((answer as { detail: string }).detail).toContain("the schemas do not load");
     });
+    // An answer past MAX_RESPONSE_BYTES is `exit` too, and never a truncated result.
+    withStandIn(`process.stdout.write("x".repeat(${MAX_RESPONSE_BYTES + 1}));\n`, (bundle) => {
+      expect(ask("/nowhere", { op: "inspect" }, { bundle })).toMatchObject({ kind: "unanswered", cause: "exit", detail: expect.stringContaining("ENOBUFS") });
+    });
   }, CASE_TIMEOUT);
+
+  it("waits out every default wait the codec's source states, by the stated margin", () => {
+    const source = (file: string): string => readFileSync(resolve(HOOKS_DIR, "..", "codec", "src", file), "utf-8");
+    const ms = (text: string | undefined): number => Number((text ?? "NaN").replace(/_/g, ""));
+    const stale = ms(/export const LOCK_STALE_MS = ([\d_]+);/.exec(source("store.ts"))?.[1]);
+    const waits = ["kernel.ts", "store.ts"].flatMap((f) => [...source(f).matchAll(/waitMs = options\.waitMs \?\? (?:LOCK_STALE_MS \+ ([\d_]+)|[^;]+);/g)].map((m) => stale + ms(m[1])));
+    expect([waits, DEFAULT_TIMEOUT_MS]).toEqual([[CODEC_WAIT_MS, CODEC_WAIT_MS], CODEC_WAIT_MS + POST_WAIT_MARGIN_MS]);
+  });
 
   it("is unanswered/timeout when the child does not answer in time, and asks once", () => {
     withStandIn('require("node:fs").appendFileSync(__dirname + "/starts", "x"); setTimeout(() => {}, 60000);\n', (bundle) => {
@@ -115,8 +121,8 @@ describe("a refusal and an unanswered call stay two answers", () => {
     });
   }, CASE_TIMEOUT);
 
-  it("is unanswered/unparseable for output that is not the one-line envelope", () => {
-    for (const out of ['{"ok":true}', '{"ok":true,"result":1}\n{"ok":true,"result":2}\n', "not json\n", '{"ok":false,"error":{"class":"conflict"}}\n']) {
+  it("is unanswered/unparseable for output that is not the one-line envelope, none at all included", () => {
+    for (const out of ["", '{"ok":true}', '{"ok":true,"result":1}\n{"ok":true,"result":2}\n', "not json\n", '{"ok":false,"error":{"class":"conflict"}}\n']) {
       withStandIn(`process.stdout.write(${JSON.stringify(out)});\n`, (bundle) => {
         expect(ask("/nowhere", { op: "inspect" }, { bundle }), JSON.stringify(out)).toMatchObject({ kind: "unanswered", cause: "unparseable" });
       });

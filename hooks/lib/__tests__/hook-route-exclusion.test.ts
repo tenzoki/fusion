@@ -142,7 +142,8 @@ const DISPATCH_INPUT = {
 /** The payloads one tool of a matcher is run with. A dispatch is run completed and backgrounded. */
 function payloads(event: string, tool: string | undefined, root: string): object[] {
   const head = { session_id: "sid-route", hook_event_name: event };
-  if (tool === undefined) return [{ ...head, source: "startup", agent_id: "agent-route", agent_type: "fusion:code-implementer" }];
+  // Every SessionStart source, since the entry branches on it.
+  if (tool === undefined) return ["startup", "resume", "clear", "compact"].map((source) => ({ ...head, source, agent_id: "agent-route", agent_type: "fusion:code-implementer" }));
   if (tool === "Task" || tool === "Agent") {
     const call = { ...head, tool_name: tool, tool_use_id: `toolu_${tool}`, tool_input: DISPATCH_INPUT };
     if (event !== "PostToolUse") return [call];
@@ -151,8 +152,9 @@ function payloads(event: string, tool: string | undefined, root: string): object
       { ...call, tool_response: { status: "async_launched", agentId: "agent-route" } },
     ];
   }
-  const input = tool === "Bash" ? { command: "true" } : { file_path: resolve(root, "notes.txt"), notebook_path: resolve(root, "notes.txt") };
-  return [{ ...head, tool_name: tool, tool_input: input }];
+  if (tool === "Bash") return [{ ...head, tool_name: tool, tool_input: { command: "true" } }];
+  // A write beside the workbench and one inside it, since the tracker tells the two apart.
+  return [resolve(root, "notes.txt"), resolve(root, "fusion-workbench", "notes.md")].map((f) => ({ ...head, tool_name: tool, tool_input: { file_path: f, notebook_path: f } }));
 }
 
 /** Run the PreToolUse commands for both names of the dispatch tool; return the rows they wrote. */
@@ -289,13 +291,26 @@ describe("every other configured hook command stays off the same helpers", () =>
     expect(existsSync(resolve(TEST_DIST, "lib", "record-client.js")), "the record client is not in this build").toBe(true);
     expect([...modules], "an automatic hook imports the record client").not.toContain("lib/record-client.js");
 
-    // What each starts: `lib/git.js` runs git; `lib/orchestrator-events.js` runs
-    // `bin/fusion-identity`; `session-start.js` runs `bin/fusion-count-sources`.
-    // A fourth name here is a new subprocess on an automatic route: follow it
-    // to what it starts before this list is touched.
+    // A fourth module, or a new program below, is a new subprocess on an automatic route.
     const spawning = [...modules].filter((m) => /["']node:child_process["']/.test(readFileSync(resolve(TEST_DIST, m), "utf-8"))).sort();
     expect(spawning).toEqual(["lib/git.js", "lib/orchestrator-events.js", "session-start.js"]);
+    // What each starts, one entry per call site, on every branch whether a payload takes it or not.
+    const started = spawning.map((m) => [m, programsStarted(readFileSync(resolve(TEST_DIST, m), "utf-8"))]);
+    expect(started).toEqual([["lib/git.js", ["git"]], ["lib/orchestrator-events.js", ["bin/fusion-identity"]], ["session-start.js", ["bin/fusion-count-sources"]]]);
   });
+
+  /** Per `node:child_process` call, its first argument (a literal, or what a local was declared as) as a program; an unread import matches no call. */
+  function programsStarted(source: string): string[] {
+    const names = /import\s*\{([^}]*)\}\s*from\s*["']node:child_process["']/.exec(source)?.[1].split(",").map((n) => n.trim().split(/\s+as\s+/).pop()) ?? [];
+    const call = new RegExp(`(?<![.\\w$])(?:${names.join("|") || "$^"})\\(\\s*((?:[^,()]|\\([^()]*\\))+)`, "g");
+    return [...source.matchAll(call)].map((c) => {
+      const arg = c[1].trim();
+      const expr = /^[\w$]+$/.test(arg) ? (new RegExp(`(?:const|let|var)\\s+${arg}\\s*=\\s*([^;]+);`).exec(source)?.[1] ?? arg) : arg;
+      const literals = [...expr.matchAll(/["']([^"']+)["']/g)].map((m) => m[1]);
+      const bin = literals.lastIndexOf("bin");
+      return bin >= 0 ? ["bin", ...literals.slice(bin + 1)].join("/") : literals.join("/") || expr;
+    });
+  }
 });
 
 describe("a helper somebody calls keeps its behaviour", () => {

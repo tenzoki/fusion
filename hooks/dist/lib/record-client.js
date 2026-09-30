@@ -42,7 +42,9 @@
  *     and detail. The request was read and declined; nothing is known about
  *     the store beyond what the refusal says.
  *   - `unanswered`: no answer arrived that this module can read, for one of
- *     four causes: `bundle-missing`, `exit`, `timeout`, `unparseable`.
+ *     four causes: `bundle-missing`, `exit`, `timeout`, `unparseable`. An
+ *     answer past `MAX_RESPONSE_BYTES` is `exit`: the child is stopped and
+ *     the detail names `ENOBUFS`.
  *
  * **A caller never reads `refused` or `unanswered` as "no records" or as
  * "nothing claimed".** Both mean the question was not answered, and a consumer
@@ -62,10 +64,29 @@
  *
  * ## The timeout sits above the codec's own
  *
- * The codec gives up on the write lock after 65 s and answers
- * `conflict/lock-timeout`, which is typed and names the holder. The default
- * here is 70 s, so that answer arrives first and `timeout` is left for a child
- * that stopped answering.
+ * The codec gives up on the write lock, and on a consistent read, after
+ * `CODEC_WAIT_MS` and answers `conflict/lock-timeout`, which is typed and names
+ * the holder. It checks that deadline between steps and never during one:
+ * `read` in `codec/src/kernel.ts` tests it after an iteration (two journal
+ * snapshots and the request's body), and `acquireLock` in `codec/src/store.ts`
+ * after a poll of 50 ms, whereupon a mutation or a reader's recovery does its
+ * work under the lock. So the typed answer can arrive as late as the wait plus
+ * the process start plus one such step, which is at most one uncontended call
+ * from end to end. `POST_WAIT_MARGIN_MS` covers that, and `timeout` is left
+ * for a child that stopped answering. `lib/__tests__/record-client.test.ts`
+ * reads the wait off the codec's source and holds the two equal.
+ *
+ * The margin's size is a measurement, taken 2026-09-30 through this client on
+ * an M2 Max over 2 500 records (1 250 packages, each with an adopted plan),
+ * the scale request 31 of `codec/fixtures/prior/REQUESTS.md` expects: `inspect`
+ * 0.18 s, `show` 0.19 s, `list` and `validate` 0.43 s (0.84 s on a first
+ * run), `create`, `adopt-plan` and `transition` 0.24 to 0.67 s. 5 s is six
+ * times the worst of them. **It does not cover `reconcile`**, whose body
+ * resolves every reference by reading every control file and so grows with
+ * the square of the record count: 2.1 s at 200 records, 47 s at 1 000, 310 s
+ * at 2 500, past this whole timeout from about 1 200 records even with nobody
+ * holding the lock. No constant here fixes that; it is the codec's, filed as
+ * `260930-1712_*_the-codecs-reconcile-grows-with-the-square-of-the-record-count-and-outlasts-the-clients-timeout-from-about-1200-records.md`.
  *
  * ## The bundle is resolved relative to this module
  *
@@ -81,10 +102,13 @@ import { spawnSync } from "node:child_process";
 import { statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-/** Above the codec's 65 s lock wait; see `## The timeout sits above the codec's own`. */
-export const DEFAULT_TIMEOUT_MS = 70_000;
-/** The largest response read. A larger one is `unanswered`, never truncated into a result. */
-const MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
+/** The codec's default wait: `LOCK_STALE_MS + 5_000` in `codec/src/store.ts` and `codec/src/kernel.ts`, a copy the test holds equal. */
+export const CODEC_WAIT_MS = 65_000;
+/** Process start plus one step past the codec's wait, measured; see `## The timeout sits above the codec's own`. */
+export const POST_WAIT_MARGIN_MS = 5_000;
+export const DEFAULT_TIMEOUT_MS = CODEC_WAIT_MS + POST_WAIT_MARGIN_MS;
+/** The largest response read. A larger one stops the child and is `unanswered/exit`, never truncated into a result. */
+export const MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
 /** dist layout: `<plugin>/hooks/dist/lib/record-client.js` → `<plugin>/codec/dist/fusion-record.js`. */
 export function defaultBundle() {
     return resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "codec", "dist", "fusion-record.js");
