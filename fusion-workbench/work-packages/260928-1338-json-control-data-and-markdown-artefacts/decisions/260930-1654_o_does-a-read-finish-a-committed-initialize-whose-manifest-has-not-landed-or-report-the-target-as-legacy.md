@@ -21,17 +21,17 @@ The specification does not settle which answer is right. Section 6 at Prior `ad2
 2. **Every read finishes it.** Whenever `.json-state/journal/` holds a pending intent, every read (`inspect` included) runs the read protocol whatever the manifest state, and reopens the workbench after recovery.
    - Pros: no read ever reports a state that a committed intent has already decided; one read protocol for every state.
    - Cons: `inspect`, the gate both hosts call first, becomes a read that may write, on a legacy-state target too; Prior's authorisation of recovery effects then has to cover its gate call; the read path of every operation changes for a window that only `initialize` creates.
-3. **Reads do not finish it, and `inspect` reports it.** `inspect` gains an additive `pending` entry naming a committed `initialize` (its operation id, and whether it is blocked); the state stays `legacy`.
-   - Pros: no write from a read; Setup and Prior's host see the pending state and retry `initialize` knowingly.
-   - Cons: a new field in an answer both hosts parse; the target still needs an `initialize` request to finish.
+3. **Option 1's write-free core, plus a codec-owned report of the window on `inspect`.** No read finishes a pending `initialize`, exactly as option 1. `inspect` gains one additive field (working name `pending`) that is non-null in one window only: the state is `legacy`, and the target's only entry is a `.json-state/` holding a committed `initialize` intent. It names the intent's operation id and whether it is blocked. The state stays `legacy`, and only an `initialize` request finishes the intent.
+   - Pros: every read stays write-free. The knowledge of which entries are exempt stays in the codec (`initialContent` and `store.ts`'s constants): Setup and Prior's provisioning route read one field and never re-spell the exemption to decide between `initialize` and FJ04.
+   - Cons: a new field in an answer both hosts parse, and one more `inspect` fixture case; the target still needs an `initialize` request to finish.
 
 ## Constraints
 
 - A read creates no new initialisation (section 4.1); a diverged file is never overwritten and is reported as blocked recovery.
 - The consumer gate (response 28) proceeds only on `json-control`; all three options keep a pending initialisation away from every consumer.
 - The Claude side admits recovery on the explicit route only (the recovery declaration, item 30); no automatic hook reaches the codec under any option.
-- This is a contract question both hosts replay, so it goes to Prior as request 33 of `codec/fixtures/prior/REQUESTS.md` as well.
+- Not finishing is inside the specification's permission and needs no Prior ruling: section 6 says reads *may* reconstruct (`Prior: concept/fusion-json-workbench-spec.md` at `ad21e58`, the `inspect`/`list`/`show`/`validate` row, "dürfen zuvor rekonstruiert werden"; and "Lesen kann einen committeten Intent fertigstellen" in the paragraph on `recovery-blocked`). Verified by reading the committed object. Whatever is chosen is stated to Prior as a fusion decision in request 33, which Prior may object to before the freeze, and it binds Prior's provisioning route to act on what `inspect` reports for the window.
 
 ## Recommendation
 
-Option 1. It adds no behaviour to any read, and the state it reports is the one section 4.1 defines. The cost falls on the two callers that decide between `initialize` and FJ04 (Setup in FJ03d, and FJ04's survey), and each already has to inspect the target's contents under Prior's ruling on request 27.
+Option 3 (revised on a second opinion, 2026-09-30, before approval; the first draft recommended option 1). Verified: `read` in `codec/src/kernel.ts` already runs every state but `json-control` once without recovery (the early return at the head of `read`), and `inspect` runs outside `read`, so the write-free core needs no change to either. Inferred, not measured: without a codec-owned report, each host has to rebuild the exemption list to tell "a pending initialisation" from "a legacy store for FJ04", and two copies of that list would drift the way the Claude side's two reader-helper copies did (`260930-1446_*_scope-and-work-graph-each-carry-their-own-copy-of-the-reader-helpers.md`). Option 3 keeps the list in one place for one additive field.
