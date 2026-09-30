@@ -115,6 +115,7 @@ import {
   type StoreError,
   type Workbench,
 } from "../store.js";
+import { strictParse } from "../strict-json.js";
 import { schemas, validate } from "../validate.js";
 import {
   IMPLEMENTED_OPERATIONS,
@@ -1780,7 +1781,7 @@ function referenceSites(pair: Pair): Array<{ at: string; value: unknown }> {
   return sites;
 }
 
-/** One reference, resolved through the functions a mutation resolves it through. */
+/** One reference, resolved as a mutation resolves it: an id through `indexedContext`, which answers what the kernel's walk answers. */
 function referenceEntry(ctx: ReadContext, path: string, at: string, value: unknown): ReferenceEntry {
   if (!isObject(value)) return { path, at, status: "unchecked" }; // a legacy citation string or a git commit
   if (typeof value.record_id === "string") {
@@ -1896,12 +1897,57 @@ function narrativeEntries(wb: Workbench, pair: Pair, view: ReadView): NarrativeE
   return out;
 }
 
+/**
+ * `ctx` with `resolveRecordId` answered from one walk of the workbench, taken
+ * on the first call, where the kernel's resolver walks and parses every
+ * control file per call: that made `reconcile` quadratic in the record count
+ * (issue 260930-1712). The index answers what the kernel's walk answers over
+ * the same files: `controlFiles` in its sorted order, a file the strict reader
+ * refuses skipped, no blocked-intent filter, the ambiguous detail listing the
+ * hits in walk order, and the kernel's two refusals word for word.
+ *
+ * It serves one run of `reconcile`'s body and nothing else. A mutation
+ * resolves through the kernel's own walk, since an index kept across its
+ * writes could go stale inside it (discussion 260930-1800, C10); and `read`
+ * runs the body again after a consistency retry or a recovery, so every
+ * attempt builds its own index over the view it reads (Prior `a15dfc8`).
+ */
+export function indexedContext(ctx: ReadContext): ReadContext {
+  const { wb } = ctx;
+  let index: Map<string, string[]> | null = null;
+  const build = (): Map<string, string[]> => {
+    const hits = new Map<string, string[]>();
+    for (const path of controlFiles(wb, wb.root)) {
+      const abs = resolveInside(wb, path);
+      if (!abs.ok) continue;
+      const parsed = strictParse(readFileSync(abs.value));
+      if (!parsed.ok) continue;
+      const id = (parsed.value as Record<string, unknown>).id;
+      if (typeof id !== "string") continue;
+      const carriers = hits.get(id);
+      if (carriers === undefined) hits.set(id, [path]);
+      else carriers.push(path);
+    }
+    return hits;
+  };
+  return {
+    ...ctx,
+    resolveRecordId(id) {
+      index ??= build();
+      const hits = index.get(id) ?? [];
+      if (hits.length === 0) return refusal("unresolved-reference", "record-not-found", `no control file in ${wb.root} carries the id ${id}`);
+      if (hits.length > 1) return refusal("conflict", "ambiguous-reference", `the id ${id} is carried by ${hits.join(", ")}`);
+      return { ok: true, value: { path: hits[0] as string, id } };
+    },
+  };
+}
+
 function reconcile(wb: Workbench, req: ReconcileRequest, view: ReadView): Response {
   const scope = scopeDir(wb, req.scope);
   if (!scope.ok) return scope.response;
   const within = req.scope === undefined ? null : relative(wb.root, scope.dir).split("\\").join("/");
   const inScope = (path: string): boolean => within === null || path === within || path.startsWith(`${within}/`);
-  const ctx = readContext(wb, view.blocked);
+  const ctx = indexedContext(readContext(wb, view.blocked));
 
   const intents: IntentEntry[] = [];
   for (const b of view.blocked) {

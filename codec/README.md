@@ -382,6 +382,15 @@ conflict markers). A terminal record's narrative is not read: its markers are
 history. The report carries no clock value and no absolute path but the echoed
 `workbench` root.
 
+Record ids resolve through one index per read attempt, built from a single walk
+of the control files the first time an id is asked for, so an unscoped
+`reconcile` grows with records plus references rather than their product
+(issue 260930-1712). The index answers what a mutation's resolver answers over
+the same files, the ambiguous detail's order included, and it lives in
+`reconcile` alone: mutations still walk the store per id, and a retried read
+builds a new index over the view it retries on. `ops.test.ts` counts the walks
+and parses of one call at two store sizes.
+
 ## The two closed vocabularies
 
 Two token sets that FJ00 left open were closed at FJ01b, as the decision

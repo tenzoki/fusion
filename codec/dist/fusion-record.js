@@ -10555,12 +10555,41 @@ function narrativeEntries(wb, pair, view) {
   }
   return out;
 }
+function indexedContext(ctx) {
+  const { wb } = ctx;
+  let index = null;
+  const build = () => {
+    const hits = /* @__PURE__ */ new Map();
+    for (const path of controlFiles(wb, wb.root)) {
+      const abs = resolveInside(wb, path);
+      if (!abs.ok) continue;
+      const parsed = strictParse(readFileSync6(abs.value));
+      if (!parsed.ok) continue;
+      const id = parsed.value.id;
+      if (typeof id !== "string") continue;
+      const carriers = hits.get(id);
+      if (carriers === void 0) hits.set(id, [path]);
+      else carriers.push(path);
+    }
+    return hits;
+  };
+  return {
+    ...ctx,
+    resolveRecordId(id) {
+      index ??= build();
+      const hits = index.get(id) ?? [];
+      if (hits.length === 0) return refusal("unresolved-reference", "record-not-found", `no control file in ${wb.root} carries the id ${id}`);
+      if (hits.length > 1) return refusal("conflict", "ambiguous-reference", `the id ${id} is carried by ${hits.join(", ")}`);
+      return { ok: true, value: { path: hits[0], id } };
+    }
+  };
+}
 function reconcile(wb, req, view) {
   const scope = scopeDir(wb, req.scope);
   if (!scope.ok) return scope.response;
   const within = req.scope === void 0 ? null : relative3(wb.root, scope.dir).split("\\").join("/");
   const inScope = (path) => within === null || path === within || path.startsWith(`${within}/`);
-  const ctx = readContext(wb, view.blocked);
+  const ctx = indexedContext(readContext(wb, view.blocked));
   const intents = [];
   for (const b of view.blocked) {
     if (!b.paths.some(inScope)) continue;

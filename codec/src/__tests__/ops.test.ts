@@ -15,8 +15,8 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, 
 import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { bindEvidence, dispatch } from "../cli/ops.js";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { bindEvidence, dispatch, indexedContext } from "../cli/ops.js";
 import {
   OPERATIONS,
   IMPLEMENTED_OPERATIONS,
@@ -36,12 +36,23 @@ import {
   type TransitionRequest,
 } from "../cli/protocol.js";
 import { installInlined } from "../cli/schemas.js";
-import { CutReached, mutate } from "../kernel.js";
-import { lockPathFor, openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
+import { CutReached, mutate, readContext } from "../kernel.js";
+import { controlFiles, lockPathFor, openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
 import { MAX_RECORD_BYTES, strictParse } from "../strict-json.js";
 import { transitions } from "../transitions.js";
 import { loadSchemas } from "../validate.js";
 import { placeEvidence, seedCorrection, seedEvidence, trySeedCorrection, type SeedOptions, type Seeded } from "./helpers/seed.js";
+
+// Pass-through spies, so `reconcile`'s work can be counted (whole-store walks,
+// strict parses) without changing what any case sees.
+vi.mock("../store.js", async (importOriginal) => {
+  const store = await importOriginal<typeof import("../store.js")>();
+  return { ...store, controlFiles: vi.fn(store.controlFiles) };
+});
+vi.mock("../strict-json.js", async (importOriginal) => {
+  const strict = await importOriginal<typeof import("../strict-json.js")>();
+  return { ...strict, strictParse: vi.fn(strict.strictParse) };
+});
 
 const FIXTURE = fileURLToPath(new URL("../../fixtures/workbench/", import.meta.url));
 const VALID = fileURLToPath(new URL("../../fixtures/valid/", import.meta.url));
@@ -2629,6 +2640,99 @@ describe("reconcile", () => {
     const r = await dispatch(transitionRequest({ record: { path: ISSUE }, expected_revision: revisionOf(before), to: "in_progress", payload: {} }));
     expect(errorOf(r)).toEqual({ class: "schema-invalid", reason: "syntax" });
     expect(bytesOf(ISSUE).equals(before)).toBe(true);
+  });
+
+  // --- one id index per read attempt (plan 260930-1654 step 4) ---
+
+  /** `n` packages written by hand, each referencing its neighbours, itself and a missing id, and depending on the one before. */
+  const packagesWithReferences = (n: number): void => {
+    const open = fixture("package/open.json");
+    const idOf = (i: number): string => `00000000-0000-4000-8000-${String(i).padStart(12, "0")}`;
+    for (let i = 0; i < n; i++) {
+      const stem = `260930-2${String(i).padStart(3, "0")}-count-${i}`;
+      const narrative = `work-packages/${stem}/${stem}.md`;
+      writeAt(narrative, `# ${stem}\n`);
+      writeAt(
+        `work-packages/${stem}/package.json`,
+        serialise({
+          ...open,
+          id: idOf(i),
+          narrative: { path: narrative },
+          depends_on: [{ target: refTo(idOf((i + n - 1) % n)), condition: "terminal" }],
+          references: [refTo(idOf((i + n - 1) % n)), refTo(idOf((i + 1) % n)), refTo(idOf(i)), refTo(`ffffffff-0000-4000-8000-${String(i).padStart(12, "0")}`)],
+        }),
+      );
+    }
+  };
+  /** One unscoped reconcile: its report, and the whole-store walks and strict parses it made. */
+  const counted = async (): Promise<{ report: Report; walks: number; parses: number }> => {
+    const walk = vi.mocked(controlFiles);
+    const parse = vi.mocked(strictParse);
+    walk.mockClear();
+    parse.mockClear();
+    const report = await reconcile();
+    return { report, walks: walk.mock.calls.filter(([wb, dir]) => dir === wb.root).length, parses: parse.mock.calls.length };
+  };
+
+  it("work count: one reconcile walks the store a fixed number of times and parses linearly in records plus references, not their product", async () => {
+    const N = 8;
+    packagesWithReferences(N);
+    const atN = await counted();
+    expect(atN.report.records, "every file is valid").toEqual([]);
+    rmSync(join(root, "work-packages"), { recursive: true });
+    cpSync(join(FIXTURE, "work-packages"), join(root, "work-packages"), { recursive: true });
+    packagesWithReferences(2 * N);
+    const at2N = await counted();
+    expect(at2N.report.records).toEqual([]);
+
+    // Each package adds five reference sites (four references and its edge's target), each resolving an id, and one edge.
+    expect(at2N.report.references.length).toBe(atN.report.references.length + 5 * N);
+    expect(at2N.report.dependencies.length).toBe(atN.report.dependencies.length + N);
+    const figures = `walks ${atN.walks} and ${at2N.walks}, parses ${atN.parses} and ${at2N.parses}, at N and 2N`;
+    expect(at2N.parses, figures).toBeLessThanOrEqual(2 * atN.parses + 3);
+    expect(at2N.walks, `whole-store walks do not grow with the store: ${figures}`).toBe(atN.walks);
+  });
+
+  it("the index is rebuilt per read attempt: a record landing during the first attempt is resolved by the retry", async () => {
+    const LATE = "12121212-0000-4000-8000-000000000001";
+    rewrite(OPEN, (c) => ({ ...c, references: [refTo(LATE)] }));
+    expect((await reconcile()).references.find((r) => r.path === OPEN)).toMatchObject({ status: "unresolved", reason: "record-not-found" });
+
+    let attempts = 0;
+    let late = "";
+    const r = await dispatch(
+      { op: "reconcile", workbench: root },
+      {
+        kernel: {
+          faults: {
+            pause: async (point) => {
+              if (point !== "read:after:between-listings") return;
+              attempts++;
+              if (attempts === 1) late = await newPackage(LATE, "260930-2100-late");
+            },
+          },
+        },
+      },
+    );
+    expect(attempts, "the answer of the landed create moved the snapshot, so the body ran again").toBe(2);
+    const report = okResult(r) as unknown as Report;
+    expect(report.references.find((e) => e.path === OPEN)).toEqual({ path: OPEN, at: "/references/0", status: "resolved", target: late });
+  });
+
+  it("the index answers what the kernel's walk answers: hits in walk order, a refused file skipped, no blocked-intent filter", async () => {
+    // The issue's id carried three times, one copy sorting before the original; a copy of the open package the strict reader refuses.
+    writeAt("shared/issues/260928-1300-first-copy.record.json", bytesOf(ISSUE));
+    writeAt("shared/issues/260928-1401-second-copy.record.json", bytesOf(ISSUE));
+    writeAt("shared/issues/260928-1402-refused.record.json", `${bytesOf(ISSUE).toString("utf-8")}\n<<<<<<< HEAD\n`);
+    const opened = openWorkbench(root);
+    if (!opened.ok) throw new Error(opened.error.detail);
+    const blocked = [{ operation_id: OP_ID, paths: [OPEN], diverged: [OPEN] }];
+    const kernel = readContext(opened.value, blocked);
+    const indexed = indexedContext(kernel);
+    for (const id of [OPEN_ID, DONE_ID, ISSUE_ID, MISSING_EVIDENCE]) expect(indexed.resolveRecordId(id), id).toEqual(kernel.resolveRecordId(id));
+    expect(indexed.resolveRecordId(OPEN_ID), "a path a blocked intent names still resolves").toEqual({ ok: true, value: { path: OPEN, id: OPEN_ID } });
+    const ambiguous = indexed.resolveRecordId(ISSUE_ID);
+    expect(ambiguous.ok ? "" : ambiguous.error.detail).toBe(`the id ${ISSUE_ID} is carried by shared/issues/260928-1300-first-copy.record.json, ${ISSUE}, shared/issues/260928-1401-second-copy.record.json`);
   });
 
   // --- local locks ---
