@@ -24,8 +24,8 @@ import { build } from "esbuild";
 import { afterEach, describe, expect, it } from "vitest";
 import { dispatch } from "../cli/ops.js";
 import type { Response, TransitionRequest } from "../cli/protocol.js";
-import { commitIntent, journalDir, opsDir, pendingIds, requestDigest, type Intent, type Write } from "../journal.js";
-import { CUTS, CutReached, cutsFor, mutate, read, type KernelOptions, type MutationRequest, type PlanFunction } from "../kernel.js";
+import { commitIntent, journalDir, opsDir, pendingIds, readIntent, requestDigest, type Intent, type Write } from "../journal.js";
+import { CUTS, CutReached, blockedIntent, cutsFor, mutate, read, type KernelOptions, type MutationRequest, type PlanFunction } from "../kernel.js";
 import { LOCK_STALE_MS, STATE_DIR, lockPathFor, openWorkbench, revisionOf, serialise, type Workbench } from "../store.js";
 import { strictParse } from "../strict-json.js";
 import { PLACEHOLDER, fromPlaceholder, toPlaceholder } from "./helpers/session.js";
@@ -1071,11 +1071,30 @@ describe("initialize through the kernel", () => {
     const bytes = Buffer.from(serialise({ schema: "fusion.workbench/v1", id: WB_NEW, required_features: ["json-control-v1"], migration: null, extensions: {} }), "utf-8");
     // Hand-written: it names pre-bytes the absent manifest does not have, so the absence is at neither.
     const writes: Write[] = [{ path: "workbench.json", before: revisionOf(Buffer.from("other")), after: revisionOf(bytes) }];
-    const intent: Intent = { operation_id: OP_ID, op: "initialize", request_digest: requestDigest(init(dir)), writes, response: { ok: true, result: {} }, created_at: new Date().toISOString() };
+    const response: Response = { ok: true, result: { operation_id: OP_ID, id: WB_NEW, path: "workbench.json", revision: revisionOf(bytes) }, revisions: { "workbench.json": revisionOf(bytes) } };
+    const intent: Intent = { operation_id: OP_ID, op: "initialize", request_digest: requestDigest(init(dir)), writes, response, created_at: new Date().toISOString() };
     expect(commitIntent(wb, intent, new Map([["workbench.json", bytes]])).ok).toBe(true);
-    expect(okResult(await dispatch({ op: "inspect", workbench: dir }))).toMatchObject({ state: "legacy", pending: { operation_id: OP_ID, blocked: true } });
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir })).pending).toEqual({ operation_id: OP_ID, id: WB_NEW, blocked: true });
     expect(await dispatch(init(dir))).toMatchObject({ ok: false, error: { reason: "recovery-blocked" } });
     expect(await dispatch(init(dir, { operation_id: OTHER_ID }))).toMatchObject({ ok: false, error: { reason: "recovery-blocked" } });
     expect(existsSync(join(dir, "workbench.json"))).toBe(false);
+  });
+
+  it("blockedIntent is the recovery classification: null at pre or post, the diverged path otherwise, as inspect.pending reports it", async () => {
+    const dir = emptyTarget();
+    await expect(dispatch(init(dir), { kernel: { faults: { cutAt: "after-intent" } } })).rejects.toBeInstanceOf(CutReached);
+    const intentOf = () => {
+      const r = readIntent(open(dir), OP_ID);
+      if (!r.ok || r.value === null) throw new Error("the intent does not read");
+      return r.value;
+    };
+    expect(blockedIntent(open(dir), intentOf()), "absent: at pre").toBeNull();
+    writeFileSync(join(dir, "workbench.json"), '{"written":"by hand"}\n');
+    expect(blockedIntent(open(dir), intentOf())).toEqual({ operation_id: OP_ID, paths: ["workbench.json"], diverged: ["workbench.json"] });
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir })).pending).toMatchObject({ blocked: true });
+    unlinkSync(join(dir, "workbench.json"));
+    const landed = await dispatch(init(dir));
+    expect(landed.ok).toBe(true);
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir })).pending, "the intent left the journal").toBeNull();
   });
 });

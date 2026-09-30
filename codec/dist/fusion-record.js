@@ -9087,6 +9087,10 @@ function recoveryBlocked(b) {
   };
 }
 var blockedOn = (blocked, path) => blocked.find((b) => b.paths.includes(path));
+function blockedIntent(wb, p) {
+  const diverged = p.intent.writes.filter((w) => fileState(wb, w) === "diverged");
+  return diverged.length === 0 ? null : blockedOf(p, diverged);
+}
 var refuse2 = (e) => fail(e.class, e.reason, e.detail, e.errors);
 var ok = (value) => ({ ok: true, value });
 var no = (cls, reason, detail) => ({ ok: false, error: { class: cls, reason, detail } });
@@ -9240,9 +9244,9 @@ function classify(wb, ids) {
       if (!r.ok) return { kind: "unreadable", error: r.error };
       continue;
     }
-    const diverged = r.value.intent.writes.filter((w) => fileState(wb, w) === "diverged");
-    if (diverged.length === 0) return { kind: "live" };
-    blocked.push(blockedOf(r.value, diverged));
+    const b = blockedIntent(wb, r.value);
+    if (b === null) return { kind: "live" };
+    blocked.push(b);
   }
   return { kind: "stable", blocked };
 }
@@ -9483,6 +9487,8 @@ async function reading(wb, body, options) {
   return r.ok ? r.value : fromStore(r.error);
 }
 function inspect(wb) {
+  const pending = pendingInitialize(wb);
+  if (!pending.ok) return fromStore(pending.error);
   return {
     ok: true,
     result: {
@@ -9491,7 +9497,7 @@ function inspect(wb) {
       id: wb.id,
       manifest: wb.manifest,
       diagnosis: wb.diagnosis,
-      pending: pendingInitialize(wb),
+      pending: pending.value,
       schemas: schemas().ids(),
       features: [...SUPPORTED_FEATURES],
       kinds: [...KINDS],
@@ -9581,15 +9587,39 @@ function initializePlan(req) {
   };
 }
 function pendingInitialize(wb) {
-  if (wb.state !== "legacy") return null;
-  const entries = initialContent(wb.root);
-  const prefix = `${STATE_DIR}/${JOURNAL_DIR}/`;
-  const only = entries.length === 1 ? entries[0] : null;
-  if (only === null || !only.startsWith(prefix)) return null;
-  const intent = readIntent(wb, only.slice(prefix.length));
-  if (!intent.ok || intent.value === null || intent.value.intent.op !== "initialize") return null;
-  const { operation_id, writes } = intent.value.intent;
-  return { operation_id, blocked: writes.some((w) => fileState(wb, w) === "diverged") };
+  const dirOf = (id) => `${STATE_DIR}/${JOURNAL_DIR}/${id}`;
+  const unreadable = (id, why) => ({
+    ok: false,
+    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${dirOf(id)}: ${why}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` }
+  });
+  const found = [];
+  for (const name of pendingIds(wb)) {
+    const r = readIntent(wb, name);
+    if ((!r.ok || r.value === null) && !pendingIds(wb).includes(name)) continue;
+    if (!r.ok) return unreadable(name, r.error.detail);
+    if (r.value === null) continue;
+    const { intent, contents } = r.value;
+    if (intent.op !== "initialize") continue;
+    const write = intent.writes.length === 1 ? intent.writes[0] : void 0;
+    if (write === void 0 || write.path !== WORKBENCH_MANIFEST) {
+      return unreadable(name, `an initialize intent writes ${intent.writes.map((w) => w.path).join(", ") || "nothing"}, not exactly ${WORKBENCH_MANIFEST}`);
+    }
+    const parsed = strictParse(contents.get(WORKBENCH_MANIFEST));
+    if (!parsed.ok) return unreadable(name, `the staged ${WORKBENCH_MANIFEST}: ${parsed.reason}: ${parsed.detail}`);
+    const v = validate(WORKBENCH_SCHEMA_ID, parsed.value);
+    if (!v.ok) return unreadable(name, `the staged ${WORKBENCH_MANIFEST} is not valid: ${v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`}`);
+    const id = parsed.value.id;
+    const answered = intent.response.ok ? intent.response.result?.id : void 0;
+    if (answered !== id) return unreadable(name, `the staged ${WORKBENCH_MANIFEST} carries id ${id}, and the intent's recorded answer ${answered === void 0 ? "names none" : `names ${JSON.stringify(answered)}`}`);
+    found.push({ operation_id: intent.operation_id, id, blocked: blockedIntent(wb, r.value) !== null });
+  }
+  if (found.length > 1) {
+    return {
+      ok: false,
+      error: { class: "operation-unknown", reason: "pending-initialize-ambiguous", detail: `more than one committed initialize is pending: ${found.map((p) => dirOf(p.operation_id)).join(", ")}; one pending field cannot name them, so they are to be resolved by hand` }
+    };
+  }
+  return { ok: true, value: found[0] ?? null };
 }
 var stateOf = (pair) => pair.kind === "package" ? pair.control.status : pair.control.control?.state ?? null;
 function scopeDir(wb, scope) {

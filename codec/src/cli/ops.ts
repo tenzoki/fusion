@@ -72,9 +72,10 @@
 
 import { existsSync, lstatSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import { JOURNAL_DIR, OPS_DIR, canonical, fileState, readIntent, type FileState } from "../journal.js";
+import { JOURNAL_DIR, OPS_DIR, canonical, fileState, pendingIds, readIntent, type FileState } from "../journal.js";
 import {
   EVERY_STATE,
+  blockedIntent,
   mutate,
   read,
   readContext,
@@ -230,6 +231,8 @@ async function reading(wb: Workbench, body: (view: ReadView) => Response, option
 // --- inspect ------------------------------------------------------------------
 
 function inspect(wb: Workbench): Response {
+  const pending = pendingInitialize(wb);
+  if (!pending.ok) return fromStore(pending.error);
   return {
     ok: true,
     result: {
@@ -238,7 +241,7 @@ function inspect(wb: Workbench): Response {
       id: wb.id,
       manifest: wb.manifest,
       diagnosis: wb.diagnosis,
-      pending: pendingInitialize(wb),
+      pending: pending.value,
       schemas: schemas().ids(),
       features: [...SUPPORTED_FEATURES],
       kinds: [...KINDS],
@@ -367,22 +370,64 @@ function initializePlan(req: InitializeRequest): PlanFunction {
   };
 }
 
+/** `inspect.pending`: the committed `initialize`, the workbench UUID its manifest carries, and whether recovery is blocked. */
+export interface PendingInitialize {
+  operation_id: string;
+  id: string;
+  blocked: boolean;
+}
+
 /**
- * `inspect.pending` (decision 260930-1654, option 3; Prior item 33): the
- * committed `initialize` a legacy target holds when that intent is its only
- * entry, the exemption aside, with whether it is blocked; null otherwise. No
- * read finishes that intent; an `initialize` request does, under the lock.
+ * `inspect.pending` (decision 260930-1654, option 3; Prior item 33 as
+ * corrected at Prior `ae1ad78`): the committed `initialize` in
+ * `.json-state/journal/`, until its intent leaves the journal, whatever else
+ * the root holds and whatever `workbench.json` is. It reports the operation
+ * and is no permission to initialize afresh; `state` stays the manifest's.
+ * `id` is read from the staged manifest after it validates, and `blocked` is
+ * the kernel's recovery classification (`blockedIntent`). Journal data that
+ * cannot be read, or contradicts itself, is refused and never answered
+ * `null`: a committed entry that does not read (its `op` is then unknown), an
+ * `initialize` whose writes are not exactly the manifest, a staged manifest
+ * that does not validate or carries another id than the intent's recorded
+ * answer (`pending-initialize-unreadable`); and more than one committed
+ * `initialize` (`pending-initialize-ambiguous`), since one field cannot name
+ * two. No read finishes the intent; an `initialize` request does, under the lock.
  */
-function pendingInitialize(wb: Workbench): { operation_id: string; blocked: boolean } | null {
-  if (wb.state !== "legacy") return null;
-  const entries = initialContent(wb.root);
-  const prefix = `${STATE_DIR}/${JOURNAL_DIR}/`;
-  const only = entries.length === 1 ? (entries[0] as string) : null;
-  if (only === null || !only.startsWith(prefix)) return null;
-  const intent = readIntent(wb, only.slice(prefix.length));
-  if (!intent.ok || intent.value === null || intent.value.intent.op !== "initialize") return null;
-  const { operation_id, writes } = intent.value.intent;
-  return { operation_id, blocked: writes.some((w) => fileState(wb, w) === "diverged") };
+function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
+  const dirOf = (id: string): string => `${STATE_DIR}/${JOURNAL_DIR}/${id}`;
+  const unreadable = (id: string, why: string): Result<PendingInitialize | null> => ({
+    ok: false,
+    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${dirOf(id)}: ${why}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` },
+  });
+  const found: PendingInitialize[] = [];
+  for (const name of pendingIds(wb)) {
+    const r = readIntent(wb, name);
+    // Gone since the listing: its writer finished, and it is pending no more.
+    if ((!r.ok || r.value === null) && !pendingIds(wb).includes(name)) continue;
+    if (!r.ok) return unreadable(name, r.error.detail);
+    if (r.value === null) continue;
+    const { intent, contents } = r.value;
+    if (intent.op !== "initialize") continue;
+    const write = intent.writes.length === 1 ? intent.writes[0] : undefined;
+    if (write === undefined || write.path !== WORKBENCH_MANIFEST) {
+      return unreadable(name, `an initialize intent writes ${intent.writes.map((w) => w.path).join(", ") || "nothing"}, not exactly ${WORKBENCH_MANIFEST}`);
+    }
+    const parsed = strictParse(contents.get(WORKBENCH_MANIFEST) as Buffer);
+    if (!parsed.ok) return unreadable(name, `the staged ${WORKBENCH_MANIFEST}: ${parsed.reason}: ${parsed.detail}`);
+    const v = validate(WORKBENCH_SCHEMA_ID, parsed.value);
+    if (!v.ok) return unreadable(name, `the staged ${WORKBENCH_MANIFEST} is not valid: ${v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`}`);
+    const id = (parsed.value as Record<string, unknown>).id as string;
+    const answered = intent.response.ok ? (intent.response.result as Record<string, unknown> | undefined)?.id : undefined;
+    if (answered !== id) return unreadable(name, `the staged ${WORKBENCH_MANIFEST} carries id ${id}, and the intent's recorded answer ${answered === undefined ? "names none" : `names ${JSON.stringify(answered)}`}`);
+    found.push({ operation_id: intent.operation_id, id, blocked: blockedIntent(wb, r.value) !== null });
+  }
+  if (found.length > 1) {
+    return {
+      ok: false,
+      error: { class: "operation-unknown", reason: "pending-initialize-ambiguous", detail: `more than one committed initialize is pending: ${found.map((p) => dirOf(p.operation_id)).join(", ")}; one pending field cannot name them, so they are to be resolved by hand` },
+    };
+  }
+  return { ok: true, value: found[0] ?? null };
 }
 
 // --- list ---------------------------------------------------------------------

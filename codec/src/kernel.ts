@@ -195,6 +195,18 @@ export function recoveryBlocked(b: Blocked): StoreError {
 
 const blockedOn = (blocked: readonly Blocked[], path: string): Blocked | undefined => blocked.find((b) => b.paths.includes(path));
 
+/**
+ * The recovery classification of one committed intent, without the lock: the
+ * intent is blocked when a file it names is at neither its pre- nor its
+ * post-bytes, and null when every file is at one of them (landed, or a live
+ * writer's). Lock-free readers classify through this, and so does
+ * `inspect.pending`, so the two never disagree on what is blocked.
+ */
+export function blockedIntent(wb: Workbench, p: PendingIntent): Blocked | null {
+  const diverged = p.intent.writes.filter((w) => fileState(wb, w) === "diverged");
+  return diverged.length === 0 ? null : blockedOf(p, diverged);
+}
+
 // --- mutate -------------------------------------------------------------------------------
 
 const refuse = (e: StoreError): Response => fail(e.class, e.reason, e.detail, e.errors);
@@ -329,8 +341,11 @@ function planContext(wb: Workbench, blocked: readonly Blocked[]): PlanContext {
  * The reads a plan function and a read body share, over the blocked intents
  * each was given: a pair (a path a blocked intent names is `recovery-blocked`),
  * an id resolved by walking every control file, an artefact at its hash.
- * `reconcile` resolves every reference it reports through the same functions a
- * mutation resolves them through, so the two never disagree on what resolves.
+ * `reconcile` resolves record ids through its body-local index instead
+ * (`indexedContext` in `cli/ops.ts`), one walk per read attempt under this
+ * resolver's criterion: the same sorted walk, strict-refused files skipped,
+ * no blocked filter, the same refusals. So the two never disagree on what
+ * resolves.
  */
 export function readContext(wb: Workbench, blocked: readonly Blocked[]): ReadContext {
   return {
@@ -417,9 +432,9 @@ function classify(wb: Workbench, ids: readonly string[]): Classified {
       if (!r.ok) return { kind: "unreadable", error: r.error };
       continue;
     }
-    const diverged = r.value.intent.writes.filter((w) => fileState(wb, w) === "diverged");
-    if (diverged.length === 0) return { kind: "live" };
-    blocked.push(blockedOf(r.value, diverged));
+    const b = blockedIntent(wb, r.value);
+    if (b === null) return { kind: "live" };
+    blocked.push(b);
   }
   return { kind: "stable", blocked };
 }
@@ -444,10 +459,11 @@ async function recoverUnderLock(wb: Workbench, options: KernelOptions): Promise<
  * returned, retrying while an operation starts or lands during it. After
  * `options.waitMs` without a consistent read the answer is
  * `conflict/lock-timeout`, as a writer's would be. On a workbench not under
- * JSON control the body runs once, without recovery. The one intent that can
- * stand there is a committed `initialize` whose manifest has not landed, and
- * no read finishes it: an `initialize` request does, and `inspect` names the
- * window as `pending` (decision 260930-1654, option 3; Prior item 33).
+ * JSON control the body runs once, without recovery. The intent expected there
+ * is a committed `initialize` whose manifest has not landed (or stands at
+ * other bytes), and no read finishes it: an `initialize` request does, and
+ * `inspect` names it as `pending` (decision 260930-1654, option 3; Prior item
+ * 33, as corrected at Prior `ae1ad78`).
  */
 export async function read<T>(wb: Workbench, body: (view: ReadView) => T | Promise<T>, options: KernelOptions = {}): Promise<Result<T>> {
   if (wb.state !== "json-control") return ok(await body(NO_VIEW));
