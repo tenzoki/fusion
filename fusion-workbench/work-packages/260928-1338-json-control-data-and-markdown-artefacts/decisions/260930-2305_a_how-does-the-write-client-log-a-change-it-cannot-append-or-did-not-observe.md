@@ -32,3 +32,6 @@ Prior accepted the `record_change` row at `ae1ad78` (`Prior: docs/design/fusion-
 ## Recommendation
 
 Option 1. It replaces "is this a replay" by "did this call observe this answer", which the writer knows, and every remaining gap is one Prior named as acceptable.
+
+---
+Answered: plan `260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md` — option 1 — the client logs only responses it observed itself, retains rows it could not append under .guard-state/ keyed by (workbench_id, operation_id, path, revision) and appends them later, and leaves a resend without retained rows unlogged, as Prior ae1ad78 ## 32 permits; fusion rules this and informs Prior; the user approved it with the FJ03c plan on 2026-09-30; ruled by user, Kai Stalmann <ks@qantr.com>

@@ -32,3 +32,6 @@ Row 9 of section 7 of the specification (Prior `930eb26`, unchanged since `79098
 ## Recommendation
 
 Inference, not measured beyond the one scratch run above: option 2, because it is the reading of row 9's own words and rewrites no terminal bytes. It is asked of Prior as request 36 in the FJ03c plan's step 1, and whichever option Prior accepts decides whether the codec half is a plan of its own.
+
+---
+Answered: plan `260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md` — option 2 — archive/ leaves JSON control (legacy read mode), the exclusion covering references, dependencies and evidence bindings, put to the Prior side as request 36; until it answers the archive skill moves no control file; the user approved it with the FJ03c plan on 2026-09-30; ruled by user, Kai Stalmann <ks@qantr.com>

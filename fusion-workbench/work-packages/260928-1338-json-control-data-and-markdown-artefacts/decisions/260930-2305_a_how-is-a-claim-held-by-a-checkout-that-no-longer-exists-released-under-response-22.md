@@ -31,3 +31,6 @@
 ## Recommendation
 
 Option 2, asked of Prior as request 38 in the FJ03c plan's step 1. Until it is answered, FJ03d's text must not promise a takeover.
+
+---
+Answered: plan `260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md` — option 2 — a codec-owned takeover bound to the user's explicit consent, put to the Prior side as request 38; FJ03c does not wait for the answer; the user approved it with the FJ03c plan on 2026-09-30; ruled by user, Kai Stalmann <ks@qantr.com>

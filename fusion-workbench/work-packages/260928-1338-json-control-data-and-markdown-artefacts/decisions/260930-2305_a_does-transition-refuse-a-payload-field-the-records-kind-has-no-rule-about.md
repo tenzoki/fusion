@@ -31,3 +31,6 @@ Item 25 of `codec/fixtures/prior/REQUESTS.md` left one question to FJ03c: the `t
 ## Recommendation
 
 Option 3. The Claude side's half is decidable now and costs one table and one test. Whether the shared codec should refuse is a question for both hosts, and asking it costs nothing until a revision moves the digest for another reason.
+
+---
+Answered: plan `260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md` — the recommended option — the Claude-side client never sends a field the record kind has no rule about (a table bound to the codec schemas by test); whether the codec itself refuses such fields is put to the Prior side as request 37; the user approved it with the FJ03c plan on 2026-09-30; ruled by user, Kai Stalmann <ks@qantr.com>
