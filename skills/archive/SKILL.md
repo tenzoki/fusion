@@ -24,6 +24,7 @@ The user invoked `/fusion:archive`. Move a curated set of workbench artefacts ou
 ## Step 1 — Resolve paths, read the tracking rule
 
 ```bash
+echo '{"op":"inspect"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" | grep -o '"state":"[a-z-]*"' | head -n 1
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" archive
 
 # The rule this skill is the named consumer of. No emission reaches a skill, so read it here.
@@ -41,6 +42,8 @@ else
   echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)} — rules/workbench-tracking.md not read"
 fi
 ```
+
+The first line is the workbench's format. `"state":"json-control"` adds the hold of `## On a JSON-controlled workbench` after the citation check; any other line, or none, is this body exactly as written.
 
 **Read that file in full before Step 2**, the way an agent reads every path `fusion-rules` emits: its record-versus-live-state split is what decides which workbench entries this workflow must preserve rather than discard. If the block prints `UNRESOLVED` or the file as not read, say so and continue — the tier tables below still apply, but the classification behind them is then unread and is not written from memory (`bin/fusion-source-root`'s header, exit 2).
 
@@ -247,6 +250,22 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
    ```
 
 9. **Report.** Print archive path, item count, file count, manifest path. Any collision needs the user's attention — it means an artefact stayed put. Remind the user that archives are local and not committed automatically; they can `git add` the archive directory if they want the snapshot in version control.
+
+## On a JSON-controlled workbench
+
+A record here is a pair, its Markdown and the control file the codec writes beside it (`package.json`, `<name>.record.json`, `<name>.evidence.json`), and the control file names its narrative by workbench path, so a `mv` would leave the pair unresolvable. **Until request 36 is answered, this workflow moves no control file.** Run this after Step 4 and before Step 5, over `$KEEP`:
+
+```bash
+hc() { find "$@" \( -name package.json -o -name '*.record.json' -o -name '*.evidence.json' \) -print 2>/dev/null | head -n 1; }; R="held (archival of JSON pairs awaits request 36)"
+for p in $SCAN_PACKAGES; do find "$WORKBENCH/$p" -mindepth 1 -maxdepth 1 -type d 2>/dev/null; done | sort | while IFS= read -r d; do [ -n "$(hc "$d")" ] && echo "  $R: ${d#"$WORKBENCH"/}"; done
+K=""; while IFS= read -r f; do [ -n "$f" ] || continue; if [ -d "$f" ]; then h="$(hc "$f")"; else s="$(basename "${f%.md}")"; h="$(hc "$(dirname "$f")" -maxdepth 1 \( -name package.json -o -name "$s" -o -name "$s.record.json" -o -name "$s.evidence.json" -o -name "$s.*.evidence.json" \))"; fi; if [ -n "$h" ]; then echo "  $R: ${f#"$WORKBENCH"/}"; else K="$K$f
+"; fi; done <<EOF
+$KEEP
+EOF
+KEEP="$K"
+```
+
+A container holding a control file is held and named, never a `**Status:**` fault at Step 3. Every held line is reported at Step 5 and in the manifest as a safety filter; the rest of the flow is unchanged.
 
 ## Guardrails
 
