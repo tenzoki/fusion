@@ -11,3 +11,6 @@ Evidence:
 - `create` resolves its new id through the same loop, which is why it takes 0.43 to 0.67 s at 2 500 records against 0.24 s for `transition`.
 
 Acceptance: an unscoped `reconcile` over the 2 500-record fixture answers inside the client's `POST_WAIT_MARGIN_MS` (5 s), and its answer is byte-identical to today's. The fix is in the codec (an id index built once per read), so it is the Prior side's to rule on before the bundle moves.
+
+---
+Resolved: `reconcile` answers from one record-id index per read attempt (plan 260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md, step 4, `de3a135c`), with every recorded answer byte unchanged; step 7 measured it over a store rebuilt by `codec/scripts/bench-fixture.mjs` through the bundle at `f3923b23`: 0.26, 0.35, 0.48 and 0.89 s median at 200, 500, 1 000 and 2 500 records (maximum 1.14 s at 2 500, M2 Max, Node 25.7.0, machine not idle), and the four consumers at 2 500 records each exit 0 within 4.5 s. Figures and answer sizes in that step's note.
