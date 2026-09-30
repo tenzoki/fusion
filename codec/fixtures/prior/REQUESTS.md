@@ -477,3 +477,72 @@ The measurement, taken on 2026-09-30 through the bundle above, run with an empty
 This repository's own workbench is the first one that will meet the bound. It holds 2 442 Markdown files under `fusion-workbench/` outside `archive/`, and 3 049 with `archive/` included. What it will list after migration is an extrapolation, not a measurement. Not every Markdown file becomes a record: reports and analyses without machine-read state stay Markdown (section 2.2 of the specification), and a terminal record outside the archive receives at most extracted metadata (section 2.1). But if every file outside `archive/` became a record at 460 bytes a row, the answer would be about 1 123 000 bytes, over the 1 048 576 of 1 MiB. Whether `archive/` enters `list` after migration is only half established. The codec's walk (`controlFiles` in `codec/src/store.ts`) descends into every directory except dot entries, so an unscoped `list` lists whatever control files `archive/` holds. The specification keeps `archive/` as historical storage with no mass rewrite, and archives a pair's two files together (section 3, the layout tree and the paragraph under it, at Prior `ad21e58`). So the existing archive would not enter `list` at migration, but every pair archived after it would.
 
 The question: does Prior's 1 MiB bound apply to answers from the codec? If it does, how is `list` on a large workbench to be served: a higher bound for the codec channel, paging in `list`, or a scope the readers can use? A scope is not a way out as the readers stand: on a JSON-controlled workbench whose container store does not exist yet, `list` with `scope: "work-packages"` is refused `unknown-scope/scope-missing` (item 5(a) above). The answer is needed before FJ04's real migrations, and it does not block FJ03b.
+
+## FJ03b (questions before the observers)
+
+**Written against:** fusion commit `b1dcd3c6` on branch `fj-json-workbench` (2026-09-30), the head of the branch when this text was written. The FJ03b plan (`260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md`) names `c6c25d3e`; the review follow-up has landed since, at `b1dcd3c6`, and moved files under `hooks/` and `bin/` but none under `codec/`. It read Prior at commit `ad21e58`, the head of the Prior checkout, with no Prior commit after it on any ref; the specification is quoted from that commit's object. `codec/dist/fusion-record.js` is the FJ02b bundle unmoved, 524 930 bytes, `sha256:5f116c6436175a6b8e1cb08aa2625d2e2f68ef193657b00eb1891ea8d3b965bd`, on disk and in the blob at `b1dcd3c6`.
+
+FJ03b is the second of the four parts the FJ03 section above cuts. It carries three rows of section 7 in code: row 7 ("Hooks/root/status-/citation-/staging-Verbraucher"), row 8 ("Monitor und Events") and row 10 ("Stores/Path-Lints/Tracking"). It also carries the check and sweep half of row 9 ("Zitierprüfung, Sweep, Archivierung"). Its plan splits every consumer by route, and `hooks/hooks.json` fixes the route of each.
+
+- **The automatic route** is the six compiled entries `hooks/hooks.json` runs (`session-start`, `session-id`, `identity-notice`, `guard`, `tracker`, `subagent-stop`) and the shell lines beside them. It learns the JSON surfaces as names and reads no record. Staging drift classifies `workbench.json`, `.json-state/` and the three control-file shapes (`package.json`, `*.record.json`, `*.evidence.json`) by path. It gains one fault, `pair-split`, for a pair of which exactly one half is staged. The citation index leaves out control files and `.json-state/`, so a pair is one citable artefact. The names are held in one place and pinned equal to the codec's constants in `codec/src/store.ts`. No entry on this route opens a control file or reaches the codec, so the recovery declaration confirmed under item 30 stands as worded.
+- **The explicit route** is `bin/fusion-citation-check`, `bin/fusion-citation-sweep` and `bin/fusion-plan-size`, which a person or an agent calls. All three read through one new module, `hooks/lib/record-index.ts`. It asks the gate and sends `list` without a scope. It takes each row's validity from the one criterion the review follow-up put in `hooks/lib/codec-read.ts`. It takes liveness from the `terminal` set of `codec/contract/transitions.json`, the table the kernel reads. The index is built per call and persisted nowhere. On a JSON-controlled workbench an old marker basename, a new marker-free name and a UUID reference resolve to the same record, and two files matching one citation are a conflict (section 4.4). Before `--yes`, the sweep names every rewrite that would make a bound plan adoption or evidence record stale, and it refuses nothing on that ground.
+- **The monitor** reads event rows and nothing else. Item 32 is about its row.
+
+**What FJ03b leaves as it is.** None of these files changed between `c6c25d3e` and `b1dcd3c6`. `hooks/lib/review-coverage.ts` reads `**Reviewed-range:**` of review reports, which stay Markdown (section 2.2). `hooks/lib/edge-answers.ts` reads curator-run reports. `hooks/lib/workbench-root.ts` walks up to `.fusion-setup`, which a JSON workbench keeps (section 3, class R3). `hooks/session-start.ts` counts sources outside the workbench. The lints that read this repository's own workbench are FJ03d's under item 26, and so is the rule text with the layout tree and the tracking classes. The archive half of row 9 is FJ03c's.
+
+**Why the explicit checkers keep a legacy branch where FJ03a's resolvers refuse.** A scope resolver that read a legacy workbench as empty would answer "nothing claimed" and fall silently to the shared store, which row 1 forbids. So FJ03a refuses legacy by name, with exit 3 or exit 4. The checkers of FJ03b answer questions that have a correct legacy answer today, and section 9's FJ03b row asks for exactly that: "aktive Legacy-Sitzungen behalten passende Regeln und Leser". The order paragraph under that table adds that, during FJ03b and FJ03c, the rules and live predicates which active legacy sessions read from the work tree stay format-compatible. So each checker gates, with three outcomes:
+
+- `json-control`: it reads the JSON.
+- `legacy`: it runs the entry's existing reader unchanged and prints a `format=legacy` line first.
+- `unsupported`, a typed refusal (`recovery-blocked` among them) or no answer: it refuses by name, with nothing on stdout. The exit code is new: 4 for the check and the plan-size check, 6 for the sweep, whose codes 4 and 5 are its two guards.
+
+FJ03d removes each legacy branch or narrows it to archive read mode, in the window item 26 records. The evidence that the legacy readers are kept is a diff. The four helpers, staging drift included, run over this repository's own legacy workbench before and after FJ03b, and the only permitted difference is the added `format=legacy` line.
+
+**FJ03b does not depend on item 31.** At `b1dcd3c6` two readers send an unscoped `list`, `hooks/lib/scope.ts` and `hooks/lib/work-graph.ts`. FJ03b adds three consumers of it, the three checkers above, and all three go through `hooks/lib/record-index.ts`. An answer to item 31 that brings paging or a usable scope therefore changes one module on FJ03b's side. FJ03b is not held for it.
+
+### 32. The `record_change` row the monitor reads, and whether Prior writes it
+
+**Closes:** fusion decision `260930-1451_*_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md`, answered by the user on 2026-09-30 (option 1, with the corrections folded in before approval); the shape FJ03c's write client writes; and, on the Prior side, the host half of row 8 of section 7 ("neue Ereignisse mit Host-/Record-Bezug"). Preferred form: a reply to (a) to (c) below. The row is stated for information. Fusion answered the record and FJ03b's readers do not wait for the reply. FJ03c's writer does, since FJ03c is already gated on this item.
+
+**Why the monitor takes its status from events.** Row 8 asks for "Status aus JSON". The monitor cannot ask the codec as the helpers do. `bin/monitor` is a bash-wrapped Python server that `/fusion:setup` copies verbatim into the workbench and the user starts by hand. It polls every 2 s (`INTERVAL=2`) and has no plugin root at poll time. A monitor that ran the codec would send reads that may finish a committed intent on its own schedule, which the declaration of item 30 does not admit. The hooks cannot supply the status either, since no automatic hook reads a control file or reaches the codec. So the panel answers a narrower question: the last observed change of the running work item, by which host, at which revision. An explicit mutation route writes it after the codec has answered. The panel says "observed", not "current". A hand edit, a change made before the row kind existed, or a write by a host that logs nothing stays invisible until the next logged change. The current state stays the answer of `bin/fusion-work-order`, which a person calls.
+
+**The row.** One JSON object on one line, appended to `fusion-workbench/orchestrator-events.jsonl`. **There is one row per record written, not one per operation.**
+
+| Field | Value | Taken from |
+|---|---|---|
+| `ts` | the fixed-width UTC stamp, below | the writer's clock |
+| `event` | `"record_change"` | fixed |
+| `host` | `"claude"`, or `"prior"` if Prior writes rows | the writer |
+| `op` | the request's `op` | the request |
+| `operation_id` | the request's `operation_id`; the rows of one operation share it | the request |
+| `workbench_id` | the manifest's id | the gate's `inspect` |
+| `record_id` | the record's id | the writer's `show` before the mutation, which the ownership check of response 22 requires anyway; for `create`, the id in the request, fixed in advance |
+| `path` | the workbench-relative control path, as the protocol's `record_selector` defines it | the request, or the answer |
+| `kind` | the record's kind (`package`, `issue`, `plan`, `discussion`, `decision`, `evidence`), never the operation's | that `show`; for `create`, the request |
+| `revision` | this path's entry in the answer's `revisions` map | the answer |
+| `change` | per operation, below | the answer and the request |
+| `person`, `checkout`, `session_id` | who wrote it | the host's identity; see (b) |
+
+No answer carries a `record_id`. Requests name a record by `path`. The results of `transition`, `set-mode`, `set-dependencies` and `adopt-plan` carry `path` and `revision` (`codec/src/cli/ops.ts`), and `claim` and `release` answer as the transition they are. That is why the id comes from the writer's `show`. Nothing is read from disk to write a row.
+
+`change`, per operation:
+
+| Operation | `change` |
+|---|---|
+| `transition`, `claim`, `release` | `{from, to}` |
+| `create` | `{created: <status>}` |
+| `set-mode` | `{mode}` |
+| `set-dependencies` | `{depends_on: <count>}` |
+| `adopt-plan` | `{adopted: <role>}` on the package row, `{adopted_as: <role>}` on the document row, `{replaced_by: <record_id>}` on the replaced plan's row |
+
+A row that moves no status carries no `from` or `to`; it does not repeat the old status. `adopt-plan` writes the package, the document and, where it replaces a live plan, that plan, in one intent, so it gives two or three rows sharing one `operation_id`. Each row's `revision` is that path's entry in `revisions`. `attach-evidence` is a mutation the bundle answers today (it writes the package alone) and the ruling defines no `change` for it. Fusion sets that `change` in FJ03c's plan, before any row is written.
+
+**What the monitor does with it.** The panel's work item is a container basename that the dispatch hook copies from the prompt (`task_start.work_item`). A row matches exactly when its `path` is `work-packages/<work_item>/package.json`. The panel shows the newest matching row that carries `change.to` or `change.created`, as "last observed: `<status>` at `<revision, 12 hex>` by `<host>`, `<hh:mm>`", or "no observed change" when none matches. Rows that move no status appear on the event log page and never as status. The monitor keeps only this checkout's rows for everything else (`_read_events`). It reads `record_change` rows in a pass of their own before that filter, so a newer row from another checkout or with `host: "prior"` wins. Old rows, the retired kinds and the gate strings render as before, and nothing rewrites the log.
+
+**The timestamp, and how a line reaches the log.** The monitor orders rows by the raw `ts` string, with a stable sort, so rows sharing a `ts` keep file order. A revision hash gives no order and is never used for one. Ordering by the raw string is correct only while every writer writes the same form. That form is the log's: `YYYY-MM-DDTHH:MM:SS`, UTC, 19 characters, no fraction and no designator (`utcStamp` in `hooks/lib/orchestrator-events.ts`). All 5 157 rows of the log at `b1dcd3c6` carry it. It is not the `Z`-suffixed millisecond form of `Date.toISOString()`, which the guard's own log under `.guard-state/` uses. A Prior writer has to use exactly this form. The log is class R2 (`rules/workbench-tracking.md`): tracked, appended by every checkout, never rewritten, and merged by git with `merge=union`. A writer appends whole newline-terminated lines and never rewrites or reorders the file.
+
+Three questions:
+
+- **(a)** Will Prior's host append `record_change` rows to the same log, with `host: "prior"`, for the mutations it sends through the codec? If it will not, the monitor shows only Claude-side changes. A Prior-written transition then stays invisible until the next Claude-side row for that record, which is the limitation the ruling accepts.
+- **(b)** Which fields does Prior need beyond the table, and which can it not fill? In particular: on the Claude side `person` and `checkout` come from `bin/fusion-identity`, and `session_id` from the hook payload. The Prior host has neither a `.checkout-id` nor a Claude session. Will it fill the three with values of its own, write them `null`, or leave them out? The panel reads only `ts`, `event`, `host`, `path`, `kind`, `revision` and `change`, and joins on `path`.
+- **(c)** Please confirm the `ts` form above for Prior's rows. And if Prior binds evidence through `attach-evidence`, say whether it would write a row for it, so that FJ03c's `change` for that operation serves both hosts.
