@@ -154,6 +154,10 @@ CHECKOUT_STORE_DIR = os.path.join(BASE_DIR, "shared", "checkouts")
 # is the only field that tells the two apart.
 SESSION_START_WRITER = "session-start-hook"
 
+# The row an explicit write route appends after the codec answered, one per
+# record written. Read apart from every other row: see _record_changes().
+RECORD_CHANGE = "record_change"
+
 
 def _hhmm(ts):
     """The HH:MM of an event timestamp, or None. The emit convention writes a
@@ -463,6 +467,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .event-type.coherence_review { color: var(--cyan); }
   .event-type.rebalance_artifact, .event-type.rebalance_grounding, .event-type.rebalance_directive { color: var(--purple); }
   .event-type.bounded_closure_proposed { color: var(--orange); }
+  .event-type.record_change { color: var(--cyan); }
   .event-detail { color: var(--fg2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* YAML state view */
   .yaml-content {
@@ -516,7 +521,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
 <div id="events" class="page">
   <div class="events-section">
-    <h3>Event Log (last <span id="max-events-label">MAX_EVENTS_PLACEHOLDER</span> events)</h3>
+    <h3>Event Log (last <span id="max-events-label">MAX_EVENTS_PLACEHOLDER</span> events, and the last MAX_EVENTS_PLACEHOLDER observed record changes)</h3>
     <div id="events-content" class="event-list">
       <div class="no-file">Waiting for events...<span>Polling every INTERVAL_PLACEHOLDER seconds</span></div>
     </div>
@@ -806,16 +811,42 @@ HTML_PAGE = r"""<!DOCTYPE html>
     return String(d);
   }
 
+  // A record_change row names a record and the host that wrote it, not an
+  // agent: host, kind, path, then the move. `from -> to` where it moved a
+  // status, `created <status>` where it created one, and the change's own
+  // fields otherwise (a mode, a dependency count, an adoption).
+  function formatChange(ev) {
+    var c = (ev.change && typeof ev.change === 'object') ? ev.change : {};
+    var move = ('to' in c) ? (c.from || '?') + ' -> ' + c.to
+      : ('created' in c) ? 'created ' + c.created : formatDetail(c);
+    return (ev.host || '?') + ' ' + (ev.kind || '?') + ' ' + (ev.path || '?') + ': ' + move;
+  }
+
+  // The event log page's rows: this session's window and the record changes,
+  // each its own window server-side, merged on the raw ts string. The sort is
+  // stable, so a tie keeps the session row first and record rows in file order.
+  function mergeByTs(a, b) {
+    return a.concat(b).sort(function(x, y) {
+      var p = (x && x.ts) || '', q = (y && y.ts) || '';
+      return p < q ? -1 : (p > q ? 1 : 0);
+    });
+  }
+
   function formatEvent(ev) {
     var timePart = formatLocalTime(ev.ts || '');
     var evType = ev.event || 'unknown';
-    var detail = formatDetail(ev.detail);
-    if (ev.task) detail = '[' + ev.task + '] ' + detail;
-    // Events without an explicit agent field are by definition orchestrator-
-    // emitted (session_start, gate_hit, commit, turn_*, reconciliation, …).
-    // Default rather than render an unlabeled row, so every event displays
-    // <agent>: <detail> uniformly.
-    detail = (ev.agent || 'orchestrator') + ': ' + detail;
+    var detail;
+    if (evType === 'record_change') {
+      detail = formatChange(ev);
+    } else {
+      detail = formatDetail(ev.detail);
+      if (ev.task) detail = '[' + ev.task + '] ' + detail;
+      // Events without an explicit agent field are by definition orchestrator-
+      // emitted (session_start, gate_hit, commit, turn_*, reconciliation, …).
+      // Default rather than render an unlabeled row, so every event displays
+      // <agent>: <detail> uniformly.
+      detail = (ev.agent || 'orchestrator') + ': ' + detail;
+    }
 
     return '<div class="event-row">' +
       '<span class="event-ts">' + escapeHtml(timePart) + '</span>' +
@@ -1126,12 +1157,13 @@ HTML_PAGE = r"""<!DOCTYPE html>
         }
         var evHtml = '';
         var evContent = document.getElementById('events-content');
-        if (data.events && data.events.length > 0) {
-          var evStr = JSON.stringify(data.events);
+        var evRows = mergeByTs(data.events || [], data.record_changes || []);
+        if (evRows.length > 0) {
+          var evStr = JSON.stringify(evRows);
           if (evStr !== lastEvents) {
             lastEvents = evStr;
-            for (var i = data.events.length - 1; i >= 0; i--) {
-              evHtml += formatEvent(data.events[i]);
+            for (var i = evRows.length - 1; i >= 0; i--) {
+              evHtml += formatEvent(evRows[i]);
             }
             evContent.innerHTML = evHtml;
           }
@@ -1463,10 +1495,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
         Split out because the dashboard panel below has to see a task_start
         that the last MAX_EVENTS no longer holds: a dispatch that has been
         running for a hundred events is exactly the one the panel most needs to
-        name, and truncating first would render it as idle."""
+        name, and truncating first would render it as idle.
+
+        A record_change row is never in it, this checkout's own included: those
+        rows are read by _record_changes below, in a pass of their own, so the
+        mode, the session and the dispatch readings here see exactly the rows
+        they saw before the kind existed."""
         mine = self._read_checkout_id()
         events = []
         for ev in _EVENTS_TAIL.rows():
+            if isinstance(ev, dict) and ev.get("event") == RECORD_CHANGE:
+                continue
             if mine is not None and isinstance(ev, dict):
                 wrote = ev.get("checkout")
                 if wrote and wrote != mine:
@@ -1474,6 +1513,55 @@ class Handler(http.server.BaseHTTPRequestHandler):
             events.append(ev)
         events.sort(key=lambda e: (e.get("ts") or "") if isinstance(e, dict) else "")
         return events
+
+    def _record_changes(self):
+        """Every record_change row in the log, whoever wrote it, oldest first.
+
+        WHY OUTSIDE THE CHECKOUT FILTER. A record_change row says what an
+        explicit write route observed after the codec answered: one row per
+        record written, naming the record, its host and its revision. Its
+        subject is the record, not a session, so a change another checkout
+        made, or the Prior host (`host: "prior"`, no checkout of ours), is as
+        much this panel's business as one of our own. The filter above answers
+        which session a line belongs to, and that question does not arise here.
+
+        ORDER. By the raw `ts` string, stable, so rows sharing a stamp keep file
+        order. That is correct only while every writer stamps the fixed-width
+        UTC form, which the decision record on this row kind requires of every
+        host. A revision hash gives no order and is never used for one. This
+        monitor reads no record and runs no codec: the log is its only source,
+        so what it shows is the last OBSERVED change, never the current one."""
+        rows = [ev for ev in _EVENTS_TAIL.rows()
+                if isinstance(ev, dict) and ev.get("event") == RECORD_CHANGE]
+        rows.sort(key=lambda e: e.get("ts") or "")
+        return rows
+
+    def _last_observed(self, changes, item):
+        """The dashboard line naming the last observed status of `item`.
+
+        A row matches exactly when its `path` is the item's package control
+        file: no prefix, no id, no archived path, since `item` is the container
+        basename the dispatch prompt named and the path is the one join both
+        sides can spell. Only a row whose `change` carries `to` (a transition,
+        claim or release) or `created` counts as status; a set-mode,
+        set-dependencies or adopt-plan row of the same item moves none and is
+        left to the event log page."""
+        path = "work-packages/%s/package.json" % item
+        found = None
+        for ev in changes:
+            change = ev.get("change")
+            if ev.get("path") != path or not isinstance(change, dict):
+                continue
+            if "to" in change or "created" in change:
+                found = ev
+        if found is None:
+            return "  Last observed: no observed change"
+        change = found["change"]
+        status = change["to"] if "to" in change else change["created"]
+        revision = str(found.get("revision") or "").split(":", 1)[-1][:12]
+        return "  Last observed: `%s` at `%s` by `%s`, `%s`" % (
+            status, revision or "unrecorded", found.get("host") or "unrecorded",
+            _hhmm(found.get("ts")) or "unrecorded")
 
     def _hook_session_start(self, events):
         """The newest hook-written session_start row among `events`, or None.
@@ -1492,7 +1580,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 found = ev
         return found
 
-    def _derive_dashboard(self, events):
+    def _derive_dashboard(self, events, changes=()):
         """The dashboard panel's markdown, derived from the event log.
 
         What it renders, and why each part is what it is (fusion plan step B4,
@@ -1506,6 +1594,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
             prompt named. Where the dispatch named none the panel says so in a
             line of its own: an empty slot would read as a lost value rather
             than as an absent one.
+          - THE LAST OBSERVED STATUS of that work item, from `changes`, the
+            record_change rows _record_changes read outside the checkout
+            filter; _last_observed says which row counts. Labelled observed
+            because a hand edit or an unlogged write never reaches the log.
           - THE COUNTERS are counts over this same log, scoped to the session
             identifier: dispatches from paired rows, commits from `commit` rows.
             There is NO error counter. `task_error` is model-written and the
@@ -1571,6 +1663,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             item = running.get("work_item")
             out.append("  Work item: %s" % item if item
                        else "  Work item: the dispatch named none.")
+            if item:
+                out.append(self._last_observed(changes, item))
         out += [
             "",
             "## Up Next",
@@ -1610,7 +1704,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             # fallback until 2026-09-10 and went with the Turn loop that wrote
             # it; a fallback to a file nothing writes renders an empty panel
             # that looks like a read.
-            content = self._derive_dashboard(scoped)
+            changes = self._record_changes()
+            content = self._derive_dashboard(scoped, changes)
             exists = content is not None
             age = self._file_age(EVENTS_JSONL)
 
@@ -1620,6 +1715,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "age": age,
                 "mode": self._parse_mode(events),
                 "events": events,
+                # Their own window, so a burst of another checkout's record
+                # changes cannot push this session's rows out of `events`.
+                "record_changes": changes[-MAX_EVENTS:],
                 "warnings": self._read_warnings(),
                 # Null where the project keeps no checkout registry, which is
                 # the case the header renders as it always did.

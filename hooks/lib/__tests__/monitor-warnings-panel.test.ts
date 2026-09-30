@@ -1220,3 +1220,67 @@ describe("bin/monitor — the event window", () => {
     expect(await servedEvents(wb)).toEqual([...own(5, 49), ...own(51, 104), "o50"]);
   });
 });
+
+// --- record_change rows (FJ03b step 6), fixture rows only: read outside the
+// checkout filter, the running item's last observed status, the log page's row.
+type Row = Record<string, unknown>;
+const ITEM = "260930-0900-x";
+const PKG = `work-packages/${ITEM}/package.json`;
+const rc = (hhmm: string, change: Row, o: Row = {}): Row => ({
+  ts: `2026-09-30T${hhmm}:00`, event: "record_change", host: "claude", op: "transition", operation_id: `op-${hhmm}`, kind: "package",
+  path: PKG, revision: `sha256:${hhmm.replace(":", "")}${"0".repeat(60)}`, change, checkout: "5e8248d7", ...o,
+});
+async function observed(...rows: Row[]): Promise<{ line: string; changes: Row[]; events: Row[] }> {
+  const own = { checkout: "5e8248d7", session_id: "s1" };
+  const head = [
+    { ts: "2026-09-30T09:00:00", event: "session_start", writer: "session-start-hook", ...own },
+    { ts: "2026-09-30T09:01:00", event: "task_start", task: "t1", agent: "code-implementer", work_item: ITEM, ...own },
+  ];
+  const wb = seedWorkbench([]);
+  writeFileSync(join(wb, "orchestrator-events.jsonl"), [...head, ...rows].map((r) => JSON.stringify(r)).join("\n") + "\n");
+  writeFileSync(join(wb, ".checkout-id"), "5e8248d7\n");
+  const { url } = await startMonitor(wb);
+  const d = (await (await fetch(`${url}/api/dashboard`)).json()) as { dashboard: string; record_changes: Row[]; events: Row[] };
+  return { line: d.dashboard.split("\n").find((l) => l.includes("Last observed")) ?? "", changes: d.record_changes, events: d.events };
+}
+
+describe("bin/monitor — record_change rows", () => {
+  it("shows the running item's newest status row, not an older one nor another item's", async () => {
+    const { line } = await observed(rc("09:02", { from: "open", to: "claimed" }), rc("09:03", { from: "claimed", to: "in-progress" }),
+      rc("09:04", { from: "open", to: "closed" }, { path: "work-packages/260930-0800-y/package.json" }));
+    expect(line).toBe("  Last observed: `in-progress` at `090300000000` by `claude`, `09:03`");
+  });
+
+  it("takes a newer row from another checkout, and one from the Prior host, past the checkout filter", async () => {
+    const theirs = rc("09:03", { from: "claimed", to: "blocked" }, { checkout: "4f21ab90" });
+    expect((await observed(rc("09:02", { from: "open", to: "claimed" }), theirs)).line).toContain("`blocked` at `090300000000`");
+    const prior = rc("09:04", { from: "blocked", to: "open" }, { host: "prior", checkout: undefined });
+    expect((await observed(theirs, prior)).line).toBe("  Last observed: `open` at `090400000000` by `prior`, `09:04`");
+  });
+
+  it("keeps the transition's status when a set-mode row follows it, and says so where no row names the item", async () => {
+    const { line, changes } = await observed(rc("09:02", { from: "open", to: "claimed" }), rc("09:03", { mode: "solo" }, { op: "set-mode" }));
+    expect([line, changes.length]).toEqual(["  Last observed: `claimed` at `090200000000` by `claude`, `09:02`", 2]);
+    expect((await observed()).line).toBe("  Last observed: no observed change");
+  });
+
+  it("serves the three rows of one adopt-plan under one operation_id in file order, none as status nor as a session row", async () => {
+    const op = { op: "adopt-plan", operation_id: "op-adopt" };
+    const plan = (stem: string) => ({ ...op, kind: "plan", path: `work-packages/${ITEM}/plans/${stem}.record.json` });
+    const { line, changes, events } = await observed(rc("09:02", { created: "open" }, { op: "create" }), rc("09:05", { adopted: "plan" }, op),
+      rc("09:05", { adopted_as: "plan" }, plan("p2")), rc("09:05", { replaced_by: "r2" }, plan("p1")));
+    expect(line).toBe("  Last observed: `open` at `090200000000` by `claude`, `09:02`");
+    expect(changes.filter((c) => c.operation_id === "op-adopt").map((c) => Object.keys(c.change as Row)[0])).toEqual(["adopted", "adopted_as", "replaced_by"]);
+    expect(events.map((e) => e.event)).toEqual(["session_start", "task_start"]);
+  });
+
+  it("renders a record_change row on the log page, and each historical kind as before", async () => {
+    const page = await indexPage(seedWorkbench([]));
+    const body = page.slice(page.indexOf("function formatDetail("), page.indexOf("// Parse an event timestamp as UTC"));
+    const fmt = new Function("escapeHtml", "formatLocalTime", `${body}\nreturn formatEvent;`)((t: string) => t, (t: string) => t) as (e: Row) => string;
+    expect(fmt(rc("09:02", { from: "open", to: "claimed" }, { host: "prior" }))).toContain(`>prior package ${PKG}: open -> claimed<`);
+    const old: [Row, string][] = [[{ event: "task_start", task: "t1", agent: "code-implementer", detail: "x", bytes_prompt: 10 }, "code-implementer: [t1] x"],
+      [{ event: "guard_block", detail: "b" }, "orchestrator: b"], [{ event: "gate_hit", detail: { gate: "approval" } }, "orchestrator: gate=approval"], [{ event: "turn_start", detail: "t" }, "orchestrator: t"]];
+    for (const [ev, want] of old) expect(fmt({ ts: "2026-08-25T09:00:00", ...ev })).toContain(`>${want}<`);
+  });
+});

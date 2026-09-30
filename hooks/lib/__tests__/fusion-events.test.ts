@@ -6,7 +6,6 @@ import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import {
   measurePresence,
-  countTurns,
   renderParty,
   measureDispatchDurations,
   renderDispatch,
@@ -96,6 +95,12 @@ describe("presence, the figures and the order", () => {
       { event: "task_start", person: JANE, checkout: "4f21ab90", ts: "2026-08-24T09:30:00", work_item: "260824-0530-x" },
       start({ person: KAI, checkout: "9c30ee11", ts: "2026-08-25T07:40:00" }))));
     expect(r.parties.map((p) => p.circle)).toEqual(["none on record", "260824-0530-x"]);
+  });
+
+  it("answers the same with a record_change row from a further checkout in the log (FJ03b step 6)", () => {
+    const base = log(start({ person: JANE, checkout: "4f21ab90" }), { event: "task_start", person: JANE, checkout: "4f21ab90", ts: "2026-08-25T09:30:00", work_item: "260824-0530-x" });
+    const row = { event: "record_change", host: "prior", person: KAI, checkout: "9c30ee11", ts: "2026-08-25T10:00:00", path: "work-packages/260825-0000-z/package.json", change: { from: "open", to: "claimed" } };
+    expect(presence(base + log(row))).toEqual(presence(base));
   });
 
   it("widens otherCheckouts to every other checkout and prints no people count when the reading person is unreadable", () => {
@@ -189,10 +194,6 @@ describe("renderParty appends the registry's alias as a sixth field", () => {
     expect(fields[5]).toBe("-");
   });
 });
-
-const HF = "circles/260825-2023-x/history/s.md";
-const S = (o: Row): Row => ({ event: "session_start", history_file: HF, ...o });
-const T = (o: Row): Row => ({ event: "turn_start", ...o });
 
 /* --- The entry point, as `bin/fusion-events` runs it ----------------------- */
 

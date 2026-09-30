@@ -66,7 +66,7 @@
   fusion-claimed-package.test.ts 212
   fusion-commit-lock.test.ts 454
   fusion-count-sources.test.ts 413
-  fusion-events.test.ts 437
+  fusion-events.test.ts 438
   fusion-forum.test.ts 251
   fusion-identity.test.ts 225
   fusion-paths.test.ts 727
@@ -89,7 +89,7 @@
   identity-mint-notice.test.ts 118
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 164
-  monitor-warnings-panel.test.ts 1222
+  monitor-warnings-panel.test.ts 1286
   path-literal-lint.test.ts 325
   paths.test.ts 31
   plan-size.test.ts 206
@@ -110,4 +110,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 121
   workbench-citation-lint.test.ts 353
-  total 22905
+  total 22970
