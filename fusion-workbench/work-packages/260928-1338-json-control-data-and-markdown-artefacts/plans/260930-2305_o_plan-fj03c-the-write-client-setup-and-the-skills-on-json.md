@@ -2,9 +2,9 @@
 
 **Date:** 2026-09-30
 **Status:** Draft
-**Spec:** none as a requirements-designer spec. Prior's `concept/fusion-json-workbench-spec.md` at Prior `7909838`: section 6 (the operation table, response 22 (a), the recovery paragraph), section 7 rows 5, 6 and 9 and the event paragraph, section 9's FJ03c row ("Host-Ownership geprüft; alle unterstützten Steueränderungen durch Codec-Operationen; Neuanlage ohne zweiten Manifest-Schreiber") and its closing sentence that tests exercise the shipped skill blocks. The rulings: `Prior: docs/design/fusion-qualified-revision-contract-response.md` `## 32` (`ae1ad78`); the FJ03 cut and items 25, 27, 32 and 35 of `codec/fixtures/prior/REQUESTS.md`.
+**Spec:** none as a requirements-designer spec. Prior's `concept/fusion-json-workbench-spec.md` at Prior `930eb26` (the passages cited here read as at `7909838`; `930eb26` changed only the status line, the `initialize` qualification and section 9's conformance paragraph): section 6 (the operation table, response 22 (a), the recovery paragraph), section 7 rows 5, 6 and 9 and the event paragraph, section 9's FJ03c row ("Host-Ownership geprüft; alle unterstützten Steueränderungen durch Codec-Operationen; Neuanlage ohne zweiten Manifest-Schreiber") and its closing sentence that tests exercise the shipped skill blocks. The rulings: `Prior: docs/design/fusion-qualified-revision-contract-response.md` `## 32` (`ae1ad78`); the FJ03 cut and items 25, 27, 32 and 35 of `codec/fixtures/prior/REQUESTS.md`.
 **Cross-references:** 260928-1338-json-control-data-and-markdown-artefacts.md, 260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md, 260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md, 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260930-1451_*_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md, 260930-1654_*_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md, 260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md, 260930-2305_*_does-transition-refuse-a-payload-field-the-records-kind-has-no-rule-about.md, 260930-2305_*_how-is-a-json-controlled-pair-archived-when-its-control-record-names-its-narrative-by-workbench-path.md, 260930-2305_*_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md, 260930-2305_*_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md
-**Planned against:** fusion `8dfaf018` (`git diff --stat bc3b04a8 8dfaf018 -- codec bin hooks skills` names `REQUESTS.md` alone); bundle 534 131 bytes, `sha256:bde8f3c952bd111695dbac510d3c0802566080e07c2ba3b6396d9c2c807844d1`; Prior `7909838`, no later commit on any ref. Growth room at dispatch: `skills/` 25 559 bytes, `agents/` 3 806 bytes, hook tests 0 lines; each step re-reads them from `surface-growth-bound.test.ts`.
+**Planned against:** fusion `8dfaf018` (`git diff --stat bc3b04a8 8dfaf018 -- codec bin hooks skills` names `REQUESTS.md` alone); bundle 534 131 bytes, `sha256:bde8f3c952bd111695dbac510d3c0802566080e07c2ba3b6396d9c2c807844d1`; Prior `930eb26` (2026-09-30 23:05), no later commit on any ref; it closes requests 34 and 35 against that digest (`Prior: docs/design/fusion-initialize-prior-response.md`). Growth room at dispatch: `skills/` 25 559 bytes, `agents/` 3 806 bytes, hook tests 0 lines; each step re-reads them from `surface-growth-bound.test.ts`.
 **Decidability:** Can a skill's executable block decide ownership and write safely through the client with no second source of truth, from the inputs a skill has? **Ownership: yes.** The block calls one helper, which reads the claim from `show` and this checkout from `bin/fusion-identity`, the criterion `bin/fusion-claimed-package` already uses, and sends `show`'s revision as `expected_revision`. **The revision race: yes, decided by the codec, not the client.** A record that moved between `show` and the mutation is `conflict/revision-mismatch`, and the client never retries. What the Claude side cannot decide is whether a caller is authentic beyond its checkout identity. It has no authentication and no host generation (item 30), and the plan states this rather than approximating it. **The log: no, as posed.** Whether an answer is a replay is not decidable from the answer, because stored answers come back byte for byte. The mechanism changes to "did this call observe this answer", which the writer knows: it minted the operation id, it holds the log key, and it retains rows it could not append. A re-send with nothing retained stays unlogged, the branch Prior permits (`260930-2305_*_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md`). **Archival of a pair: not decidable from the host's inputs.** Measured: a pair moved by `mv` keeps `narrative.path` at its old path, and `validate` turns `valid: false`. Only the codec may rewrite a control file, so the mechanism changes to a contract answer (request 36), and until then the archive block moves no control file. There is no second source: the payload field table is pinned to the codec's schemas, states come from `codec/contract/transitions.json`, and the `pending` window comes from `inspect`.
 
 ## Directive
@@ -86,7 +86,7 @@ A failed append retains the rows in `.guard-state/record-change-pending.jsonl` w
 
 ## Implementation Steps
 
-Steps 2 to 10 wait for request 35: Prior re-pinned `sha256:bde8f3c9…44d1` and reported conformance green. Step 1 does not wait.
+Every step touching `skills/` reports the skills byte room after the step, re-read from `surface-growth-bound.test.ts`.
 
 ```mermaid
 flowchart TD
@@ -115,8 +115,8 @@ flowchart TD
 1. **Requests 36 to 38, and two statements, to the Prior side**
    - Executor: `analyst`
    - Files: `codec/fixtures/prior/REQUESTS.md`
-   - Changes: the analyst drafts `## FJ03c (questions before the write paths)` in its scratchpad, and the orchestrator appends it and commits it (the initialize step 1 departure). The section is stamped with the fusion head, Prior's head and the digest above, and it states each record's option as the user ruled it at approval. **36**, archival of a JSON pair: the measurement, the three options, fusion's proposal (option 2 of the archival record), and the question whether the codec half is a revision of its own. **37**, foreign payload fields: the Claude client never sends one. Asked: should the codec refuse them in the next revision that moves the digest? **38**, a takeover under response 22: option 2 of the takeover record, asked. Two statements for information, open to objection: how the writer logs, as the logging record states it; and the Claude side's caller binding, which is the checkout identity and no host generation, checked for exactly the operations response 22 names.
-   - Dependencies: none (independent of request 35).
+   - Changes: the analyst drafts `## FJ03c (questions before the write paths)` in its scratchpad, and the orchestrator appends it and commits it (the initialize step 1 departure). The section is stamped with the fusion head, Prior `930eb26` and the digest above, and it states each record's option as the user ruled it at approval. **36**, archival of a JSON pair: the measurement, the three options, fusion's proposal (option 2 of the archival record), and the question whether the codec half is a revision of its own. It carries the caveat of option 2: a live evidence record, or a by-id reference from a terminal record, into an archived package would then answer `record-not-found`, so the exclusion covers evidence records and their bindings as well as references and dependencies. **37**, foreign payload fields: the Claude client never sends one. Asked: should the codec refuse them in the next revision that moves the digest? **38**, a takeover under response 22: option 2 of the takeover record, asked. Two statements for information, open to objection: how the writer logs, as the logging record states it; and the Claude side's caller binding, which is the checkout identity and no host generation, checked for exactly the operations response 22 names.
+   - Dependencies: none.
    - Acceptance: the commit changes `REQUESTS.md` alone; every figure is re-taken.
 
 2. **The `record_change` writer**
@@ -130,7 +130,8 @@ flowchart TD
      - `initialize` gives no row;
      - `adopt-plan` gives two or three rows with distinct ids;
      - a missing identity half is absent, never null.
-   - Dependencies: none (execution waits for request 35).
+   - Note to record: `.guard-state/record-change-pending.jsonl` stays unnamed in `rules/workbench-tracking.md`, which classifies each `.guard-state/` file separately, until FJ03d; FJ03c edits no `rules/`. The window is stated in the step note and in step 10.
+   - Dependencies: none.
    - Acceptance: `cd hooks && npm test` green but for the known monitor wildcard-bind case (`260928-1520_*_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.md`); any other red stops the step. `hook-route-exclusion.test.ts` green without an edit.
 
 3. **The write client, the mutations on existing records, ownership**
@@ -158,7 +159,7 @@ flowchart TD
 5. **`initialize`, and Setup's Step 0 on it**
    - Executor: `code-implementer`
    - Files: `hooks/lib/record-client.ts` (`gate` carries `pending` additively), `hooks/lib/record-write.ts`, `skills/setup/SKILL.md`, tests
-   - Changes: the Setup table of `## Approach`. Step 0 becomes: the existing v11 store-name probe; `mkdir -p` of the workbench directory alone; `fusion-write initialize`, whose outcome decides whether Setup continues; then the stores, `.guard-state/`, the marker and `stilwerk/`, in that order. The rest of Setup is unchanged. The skills byte delta is reported.
+   - Changes: the Setup table of `## Approach`. Step 0 becomes: the existing v11 store-name probe; `mkdir -p` of the workbench directory alone; `fusion-write initialize`, whose outcome decides whether Setup continues; then the stores, `.guard-state/`, the marker and `stilwerk/`, in that order. The rest of Setup is unchanged. The skills byte delta and the room left after the step are reported; the table must fit in what the block replaces or the raise is logged.
    - Tests: one case per row of the table, each red against a broken copy. Refused entries are named, and `.DS_Store` is refused by design. The re-inspect catches a replay after `workbench.json` was deleted.
    - Dependencies: 3.
    - Acceptance: as step 2's; the skills bound is green, or its raise is logged.
@@ -172,21 +173,21 @@ flowchart TD
      - check `gitignore`: `workbench.json` joins the R3 list and `.json-state` the class L list, as staging drift already classifies them.
      - classified unchanged, one line each in the step note: reconcile (it writes nothing; the state-auditor is FJ03d's), cadence (it reads `*.md` only, so a pair counts once), curate, cleanup, memo, post, news and commit (no control data). `help` is FJ03d's and `migrate` FJ04's.
    - Dependencies: 4.
-   - Acceptance: the path-literal lint and the skills bound are green, or the raise is logged; the byte delta is reported.
+   - Acceptance: the path-literal lint and the skills bound are green, or the raise is logged; the byte delta and the room left after the step are reported.
 
 7. **The archive block holds control files**
    - Executor: `code-implementer`
    - Files: `skills/archive/SKILL.md`
    - Changes: on `json-control` (read through `bin/fusion-citation-check`'s `format=` line or the gate), the block holds every candidate pair and every container holding a control file. Each is named with the reason "archival of JSON pairs awaits request 36", and nothing else in the flow changes.
-   - Dependencies: none (execution waits for request 35).
-   - Acceptance: a fixture run moves no control file; the skills bound is green.
+   - Dependencies: none.
+   - Acceptance: a fixture run moves no control file; the skills bound is green, and the room left after the step is reported (`archive` stands at about 24 435 bytes before it).
 
 8. **JSON archival, per Prior's answer to request 36**
    - Executor: `code-implementer`
    - Files: `skills/archive/SKILL.md` and, if the answer keeps the codec untouched, the helper and its test
-   - Changes: selection from `list` with the kind's `terminal` set, plus exclusion by `reconcile`'s references and dependencies from live records. Pairs and containers move whole, and a move that fails half-way is undone. If the answer needs a codec change, that change is a plan of its own, and this step waits for its qualification or is moved out (`## Where this work stops`).
+   - Changes: selection from `list` with the kind's `terminal` set, plus exclusion by `reconcile`'s references, dependencies and evidence bindings from live records, and any exclusion Prior's answer adds. Pairs and containers move whole, and a move that fails half-way is undone. If the answer needs a codec change, that change is a plan of its own, and this step waits for its qualification or is moved out (`## Where this work stops`).
    - Dependencies: 1 (the answer), 7.
-   - Acceptance: after an archive run, `validate` over the fixture is `valid: true`.
+   - Acceptance: after an archive run, `validate` over the fixture is `valid: true`; the skills room left after the step is reported.
 
 9. **The installed copy runs the shipped blocks**
    - Executor: `code-implementer`
@@ -198,13 +199,13 @@ flowchart TD
 10. **The hand-over**
     - Executor: `analyst`
     - Files: `codec/fixtures/prior/REQUESTS.md`
-    - Changes: `## FJ03c (the write paths)`: the commits; what landed; items 36 to 38 as they stand; the recovery and rollout consequences, with FJ03c's client as the first Claude-side writer and no FJ01 writer. It states that the bundle and every pinned path are unchanged, so no re-pin is asked, and gives the growth raises as logged.
+    - Changes: `## FJ03c (the write paths)`: the commits; what landed; items 36 to 38 as they stand; the recovery and rollout consequences, with FJ03c's client as the first Claude-side writer and no FJ01 writer. It states that the bundle and every pinned path are unchanged, so no re-pin is asked, gives the growth raises as logged, and names the retained-rows file as unclassified in the tracking rule until FJ03d.
     - Dependencies: 9, and 8 landed or moved out.
     - Acceptance: the commit changes `REQUESTS.md` alone.
 
 ## Where this work stops
 
-- Precondition for steps 2 to 10: Prior reported request 35 green against `sha256:bde8f3c9…44d1`. Step 1 is exempt.
+- Precondition for steps 2 to 10, met: Prior closed requests 34 and 35 green against `sha256:bde8f3c9…44d1` at Prior `930eb26` (`Prior: docs/design/fusion-initialize-prior-response.md`).
 - Every supported mutation reaches the codec from the Claude side through `bin/fusion-write` alone, and no skill writes a control field in Markdown.
 - `release` and every `transition` out of `claimed` are refused for any checkout but the holder, with a test per case.
 - The writer tests for delayed logging, duplicate delivery, a failed append and a re-send each fail against a broken copy.
@@ -247,4 +248,4 @@ The unit tests of steps 2 to 5 go through the real bundle over scratch workbench
 ## Open Questions
 
 - [ ] The four decision records filed with this plan: `260930-2305_*_does-transition-refuse-a-payload-field-the-records-kind-has-no-rule-about.md`, `260930-2305_*_how-is-a-json-controlled-pair-archived-when-its-control-record-names-its-narrative-by-workbench-path.md`, `260930-2305_*_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md`, `260930-2305_*_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md`. Step 1 states the ruled options.
-- [ ] Request 35 is not yet answered; steps 2 to 10 wait for it.
+- [ ] For the user at approval, not decided here: (a) add `bin/fusion-write` to `STUBBED` in `hooks/lib/__tests__/hook-route-exclusion.test.ts` (one test line against room 0, logged as a raise) so that an automatic route that only appends a log row through it is caught too, or keep the test unchanged; (b) may `/fusion:setup` and `/fusion:wp`, which the model can invoke (no skill sets `disable-model-invocation`), now send codec mutations, or do those two skills get `disable-model-invocation: true`?

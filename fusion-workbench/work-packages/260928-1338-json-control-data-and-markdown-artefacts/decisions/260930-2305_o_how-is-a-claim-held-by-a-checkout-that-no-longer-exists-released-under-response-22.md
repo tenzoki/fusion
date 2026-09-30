@@ -9,7 +9,7 @@
 
 ## Question
 
-`rules/fusion-workbench-conventions.md` `## Work packages` says "A takeover overwrites the field": another checkout may take a claimed item at the user's word. Under JSON control three texts close that route. Response 22, as section 6 of the specification records it at Prior `7909838`, makes claim ownership a host duty for `release` and every `transition` out of `claimed`, "ohne schwächeren Nebenweg". `codec/contract/transitions.json` says "a second claim on a claimed package is a conflict". And the kernel carries no takeover edge. So a package claimed by a checkout that was deleted, or by a machine that is gone, can be moved by nobody through the write client. FJ03c's client refuses a non-owner; the question is what the user does instead, and FJ03d has to know before it rewrites the conventions' sentence.
+`rules/fusion-workbench-conventions.md` `## Work packages` says "A takeover overwrites the field": another checkout may take a claimed item at the user's word. Under JSON control three texts close that route. Response 22, as section 6 of the specification records it at Prior `930eb26`, makes claim ownership a host duty for `release` and every `transition` out of `claimed`, "ohne schwächeren Nebenweg". `codec/contract/transitions.json` says "a second claim on a claimed package is a conflict". And the kernel carries no takeover edge. So a package claimed by a checkout that was deleted, or by a machine that is gone, can be moved by nobody through the write client. FJ03c's client refuses a non-owner; the question is what the user does instead, and FJ03d has to know before it rewrites the conventions' sentence.
 
 ## Options
 
