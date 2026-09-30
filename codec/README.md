@@ -371,8 +371,9 @@ the whole workbench or a scope as `list` takes one, in these sections:
 `intents` (each pending intent left blocked, with each file's
 `post | pre | diverged`); `records` (every `validate` finding, and an evidence
 record outside a `reviews/` store); `references` (every reference site in
-packages and records: `resolved`, `unresolved`, `ambiguous`, `foreign`, or
-`unchecked` for a legacy citation string); `evidence` (every binding: `fresh`,
+packages and records, each entry `{path, at, role?, status, target?, class?,
+reason?}`: `resolved`, `unresolved`, `ambiguous`, `foreign`, or `unchecked`
+for a legacy citation string); `evidence` (every binding: `fresh`,
 or the reason it would be refused); `dependencies` (every `depends_on` edge
 against the target's live control data: `satisfied`, `unmet` with the reason,
 and every cycle through a package in scope); `narratives` (a `**Status:**`,
@@ -390,6 +391,18 @@ the same files, the ambiguous detail's order included, and it lives in
 `reconcile` alone: mutations still walk the store per id, and a retried read
 builds a new index over the view it retries on. `ops.test.ts` counts the walks
 and parses of one call at two store sizes.
+
+An entry at `/active_documents/<i>/ref` carries `role`, right after `at`: the
+stored `active_documents[i].role` of the package at `path`, `plan` or `spec`,
+whatever the entry's `status`. It is taken from the binding at its source,
+never from the target's kind, name or position, so an unresolved or ambiguous
+binding carries its role and still no `target`. No other entry carries one.
+A reader such as the citation sweep learns each binding's role from this one
+report, with no `show` per package. This moved two fields of the recorded FJ02
+answer `fixtures/protocol-session-fj02/15-reconcile.response.json`; that file
+stays as recorded, and `15-reconcile.role-delta.json` beside it names the two
+added fields, which the FJ02 gate applies to the recorded bytes (Prior
+`a15dfc8`).
 
 ## The two closed vocabularies
 
@@ -415,7 +428,7 @@ never by its file format.
 | `fixtures/prior/` | Round-trip fixtures for the Prior DTO mapping; not indexed by the manifest. The 13 `prior.json` are Go-emitted goldens (`go-golden@dbd1aa1`, taken at Prior `c512c4c`), copied byte for byte and never edited here; each `fusion.json` beside one is the codec's import of it, and `UPDATE_PRIOR_FIXTURES=1 npm test` regenerates it when the mapping changes on purpose |
 | `fixtures/prior-handback/` | Prior's FJ01 handback: the five files after Prior's own `claimed → paused` transition through the pinned bundle (the record, its revision, the `show` response, the `transition` request and response), counterchecked by `prior-handback.test.ts`; not indexed by the manifest |
 | `fixtures/protocol-session/` | The FJ01 recorded session: six request/response pairs through `bin/fusion-record` over a copy of the scratch workbench, byte for byte, gated by `round-trip-cli.test.ts` and regenerated only under `UPDATE_PROTOCOL_SESSION=1`; its `README.md` is the replay procedure for the Prior side; not indexed by the manifest |
-| `fixtures/protocol-session-fj02/` | The FJ02 recorded session: fifteen pairs covering every operation FJ02 answers, the replay of a `create`, a divergent replay and a read that recovers a pending intent, with the files no operation writes under `seed/<nn>-<op>/` (a memo, an evidence pair, a pending intent directory), each copied onto the workbench just before its exchange; gated by `round-trip-cli-fj02.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02=1`, replay procedure in its `README.md`; not indexed by the manifest |
+| `fixtures/protocol-session-fj02/` | The FJ02 recorded session: fifteen pairs covering every operation FJ02 answers, the replay of a `create`, a divergent replay and a read that recovers a pending intent, with the files no operation writes under `seed/<nn>-<op>/` (a memo, an evidence pair, a pending intent directory), each copied onto the workbench just before its exchange, and `15-reconcile.role-delta.json`, the two reviewed fields the current answer adds to the historical `15-reconcile.response.json`; gated by `round-trip-cli-fj02.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02=1` (15's response never), replay procedure in its `README.md`; not indexed by the manifest |
 | `fixtures/protocol-session-fj02b/` | The FJ02b recorded session: twenty pairs covering plan progress through `transition` (with and without a state change, its replay, and the refusals for a stale revision, a forbidden step edge, a repeated id, an unknown id and a closed plan) and `create` of `kind: evidence` (a first record, two corrections, the replay of the first correction after the second landed, and the refusals for a taken name, a report at another hash and a correction over a changed report), with the report no operation writes under `seed/11-create/` and its replacement under `seed/20-create/`, each copied onto the workbench just before its exchange; gated by `round-trip-cli-fj02b.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02B=1`, replay procedure in its `README.md`; not indexed by the manifest |
 | `fixtures/workbench/` | A minimal v12-shaped scratch workbench (`workbench.json`, `.fusion-setup`, two package pairs, one shared issue pair) the store and CLI suites copy to a temp directory before every case; not indexed by the manifest |
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |

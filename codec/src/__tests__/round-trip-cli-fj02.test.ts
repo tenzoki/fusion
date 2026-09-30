@@ -54,6 +54,14 @@
 // revision is `sha256:` over deterministic bytes. No response carries a
 // host, a PID or a lock nonce; `reconcile` echoes the root, which the
 // substitution records as `<workbench>`.
+//
+// ## The one reviewed delta: `15-reconcile.role-delta.json`
+//
+// `15-reconcile.response.json` is the historical expectation, recorded before
+// `reconcile` reported each active-document binding's role, and it is never
+// rewritten, not even under the update variable. The current answer is those
+// bytes with exactly the fields the delta file names added, each after the
+// field it names (Prior `a15dfc8`). Every other exchange is byte for byte.
 // ---------------------------------------------------------------------------
 
 import { cpSync, existsSync, readdirSync, readFileSync } from "node:fs";
@@ -121,6 +129,19 @@ type Name = (typeof NAMES)[number];
 /** The exchanges a seed directory precedes, and what it holds. */
 const SEEDED: readonly Name[] = ["05-set-mode", "09-attach-evidence", "14-show"];
 
+/** The one exchange whose recorded response is historical, and the file naming what the current answer adds to it. */
+const DELTA_OF: Name = "15-reconcile";
+const DELTA_NAME = `${DELTA_OF}.role-delta.json`;
+
+interface Delta {
+  exchange: string;
+  recorded: string;
+  why: string;
+  /** The JSON pointer of the array whose entries the delta changes. */
+  list: string;
+  adds: Array<{ entry: { path: string; at: string }; field: string; after: string; value: unknown }>;
+}
+
 // --- the exchange machinery, shared with the FJ02b recorder (helpers/session.ts) ---------
 
 const session = openSession<Name>({ directory: "protocol-session-fj02", updateVariable: "UPDATE_PROTOCOL_SESSION_FJ02", tmpPrefix: "codec-round-trip-fj02-" });
@@ -185,6 +206,44 @@ async function intentSeed(): Promise<Map<string, Buffer>> {
     [`${dir}/intent.json`, Buffer.from(JSON.stringify(intent, null, 2) + "\n", "utf-8")],
     [`${dir}/${revisionOf(post).slice("sha256:".length)}`, post],
   ]);
+}
+
+// --- the reviewed delta -------------------------------------------------------------------
+
+type Entry = Record<string, unknown>;
+
+/** The array a JSON pointer of plain keys names; the delta addresses one. */
+function listAt(doc: unknown, pointer: string): Entry[] {
+  const at = pointer.split("/").slice(1).reduce<unknown>((v, key) => (v !== null && typeof v === "object" ? (v as Record<string, unknown>)[key] : undefined), doc);
+  if (!Array.isArray(at)) throw new Error(`${pointer} names no array`);
+  return at as Entry[];
+}
+
+/**
+ * The recorded bytes with exactly the delta applied: each named field inserted
+ * after the field it names, in the one entry that `path` and `at` pick out.
+ * The recorded bytes must round-trip through JSON unchanged, an entry must be
+ * picked out exactly once, and a field must be new to it, so nothing but the
+ * named fields can differ.
+ */
+function applyDelta(recorded: string, delta: Delta): string {
+  const doc = JSON.parse(recorded) as unknown;
+  if (JSON.stringify(doc) + "\n" !== recorded) throw new Error("the recorded response does not round-trip through JSON");
+  const list = listAt(doc, delta.list);
+  for (const add of delta.adds) {
+    const hits = list.map((e, i) => [e, i] as const).filter(([e]) => e.path === add.entry.path && e.at === add.entry.at);
+    if (hits.length !== 1) throw new Error(`${add.entry.path} ${add.entry.at}: ${hits.length} entries, not one`);
+    const [entry, i] = hits[0] as readonly [Entry, number];
+    if (add.field in entry) throw new Error(`${add.entry.path} ${add.entry.at} already carries ${add.field}`);
+    if (!(add.after in entry)) throw new Error(`${add.entry.path} ${add.entry.at} carries no ${add.after}`);
+    const next: Entry = {};
+    for (const [k, v] of Object.entries(entry)) {
+      next[k] = v;
+      if (k === add.after) next[add.field] = add.value;
+    }
+    list[i] = next;
+  }
+  return JSON.stringify(doc) + "\n";
 }
 
 // --- the session -----------------------------------------------------------------------
@@ -336,6 +395,17 @@ describe("the fifteen FJ02 exchanges through bin/fusion-record", () => {
     expect(r.records).toEqual([]);
     expect(JSON.stringify(r.narratives)).toContain("status-copy-in-narrative");
   });
+
+  it("15 reconcile: both active-document bindings carry role plan after at, resolved and unresolved alike; no other entry carries a role", () => {
+    const refs = (result(byName("15-reconcile")).references ?? []) as Entry[];
+    const bindings = refs.filter((e) => /^\/active_documents\/\d+\/ref$/.test(String(e.at)));
+    expect(bindings.map((e) => [e.path, e.status, e.role])).toEqual([
+      ["work-packages/260927-0900-strict-reader/package.json", "unresolved", "plan"],
+      [PKG, "resolved", "plan"],
+    ]);
+    for (const e of bindings) expect(Object.keys(e).slice(0, 3)).toEqual(["path", "at", "role"]);
+    expect(refs.filter((e) => !bindings.includes(e)).some((e) => "role" in e)).toBe(false);
+  });
 });
 
 // --- the recorded session ------------------------------------------------------------------
@@ -355,7 +425,7 @@ describe(`the recorded session under fixtures/protocol-session-fj02/ (${UPDATE ?
     expect(record(byName("15-reconcile").stdout)).toContain(PLACEHOLDER);
   });
 
-  for (const name of NAMES) {
+  for (const name of NAMES.filter((n) => n !== DELTA_OF)) {
     it(`${name}: the recorded request and response equal the fresh exchange`, () => {
       const { requestFile, responseFile, freshRequest, freshResponse } = session.fresh(name);
       const missing = [requestFile, responseFile].filter((f) => !existsSync(f));
@@ -364,6 +434,44 @@ describe(`the recorded session under fixtures/protocol-session-fj02/ (${UPDATE ?
       expect(readFileSync(responseFile, "utf-8"), `${name}.response.json differs from the fresh exchange. If the protocol changed on purpose, regenerate with UPDATE_PROTOCOL_SESSION_FJ02=1 and commit the files; the Prior side replays them.`).toBe(freshResponse);
     });
   }
+
+  // The historical response of 15 is never rewritten, so `session.fresh`, which rewrites under the update variable, is not called for it.
+  describe(`${DELTA_OF}: the recorded response with exactly the reviewed delta, ${DELTA_NAME}`, () => {
+    const requestFile = join(SESSION, `${DELTA_OF}.request.json`);
+    const responseFile = join(SESSION, `${DELTA_OF}.response.json`);
+    const delta = (): Delta => JSON.parse(readFileSync(join(SESSION, DELTA_NAME), "utf-8")) as Delta;
+    const expected = (): string => applyDelta(readFileSync(responseFile, "utf-8"), delta());
+    const fresh = (): string => record(byName(DELTA_OF).stdout);
+
+    it("the recorded request equals the fresh one", () => {
+      expect(readFileSync(requestFile, "utf-8")).toBe(record(requestBytes(byName(DELTA_OF).request)));
+    });
+
+    it("the fresh answer is the recorded bytes with the delta applied, byte for byte", () => {
+      expect(fresh(), `the answer differs from ${DELTA_OF}.response.json with ${DELTA_NAME} applied. The recorded response is historical and is not regenerated; a change to the answer is a reviewed change to ${DELTA_NAME}, and the Prior side compares it at the re-pin.`).toBe(expected());
+    });
+
+    it("the delta is the role on every active-document binding of the recorded answer, after at, and nothing else", () => {
+      const d = delta();
+      expect(d).toMatchObject({ exchange: DELTA_OF, recorded: `${DELTA_OF}.response.json`, list: "/result/references" });
+      const recorded = listAt(JSON.parse(readFileSync(responseFile, "utf-8")), d.list);
+      const bindings = recorded.filter((e) => /^\/active_documents\/\d+\/ref$/.test(String(e.at))).map((e) => ({ path: e.path, at: e.at }));
+      expect(d.adds.map((a) => a.entry)).toEqual(bindings);
+      for (const a of d.adds) expect([a.field, a.after, a.value]).toEqual(["role", "at", "plan"]);
+    });
+
+    it("the gate is red against an answer carrying one field less or one field more", () => {
+      /** The fresh answer with one change made to its references. */
+      const changed = (change: (refs: Entry[]) => void): string => {
+        const doc = JSON.parse(fresh()) as unknown;
+        change(listAt(doc, "/result/references"));
+        return JSON.stringify(doc) + "\n";
+      };
+      expect(changed(() => undefined), "unchanged").toBe(expected());
+      expect(changed((refs) => delete (refs.find((e) => "role" in e) as Entry).role), "one field less").not.toBe(expected());
+      expect(changed((refs) => ((refs.find((e) => !("role" in e)) as Entry).role = "plan")), "one field more").not.toBe(expected());
+    });
+  });
 
   for (const name of SEEDED) {
     it(`seed/${name}/ holds exactly the bytes that produce it`, () => {
@@ -387,9 +495,9 @@ describe(`the recorded session under fixtures/protocol-session-fj02/ (${UPDATE ?
     expect(revisionOf(readFileSync(join(dir, staged)))).toBe(`sha256:${staged}`);
   });
 
-  it("the recorded set is exactly the fifteen pairs, a README and seed/", () => {
+  it("the recorded set is exactly the fifteen pairs, the one delta, a README and seed/", () => {
     const files = readdirSync(SESSION).sort();
-    const expected = ["README.md", "seed", ...NAMES.flatMap((n) => [`${n}.request.json`, `${n}.response.json`])].sort();
+    const expected = ["README.md", "seed", DELTA_NAME, ...NAMES.flatMap((n) => [`${n}.request.json`, `${n}.response.json`])].sort();
     expect(files).toEqual(expected);
     expect(readdirSync(SEED).sort()).toEqual([...SEEDED].sort());
   });

@@ -29,7 +29,8 @@ for byte (FJ02 step 9). Fifteen exchanges over a fresh copy of
 each, one line, a trailing newline. `codec/src/__tests__/round-trip-cli-fj02.test.ts`
 runs the fifteen against a fresh copy of the scratch workbench on every test
 run and fails when a fresh exchange, or a seed file, differs from the recorded
-one; the files are regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02=1`.
+one; the files are regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02=1`,
+except `15-reconcile.response.json`, which is never regenerated (below).
 
 ## The one substitution: `<workbench>`
 
@@ -82,6 +83,34 @@ wrote resolves; the dependency of 08 is `satisfied` because P ended `done` with
 outcome `completed`; `checked` is 6 (the three scratch pairs, P, L and the
 evidence record).
 
+## The one reviewed delta: `15-reconcile.role-delta.json`
+
+`15-reconcile.response.json` is the answer as recorded before `reconcile`
+reported the role of each active-document binding. The current codec adds
+`"role":"plan"` right after `at` to exactly two of its ten reference entries,
+the two at `/active_documents/0/ref`: the unresolved plan binding of
+`260927-0900-strict-reader` (it names a record the scratch workbench does not
+hold) and the resolved one of P (the plan 07 adopted). Both stored bindings
+are `role: plan`. The role is copied from the binding and never inferred from
+the target, so the unresolved entry carries it too, still with no `target`.
+
+Prior asked for the two changes of this revision to be kept apart
+(`Prior: docs/design/fusion-initialize-reconcile-plan-amendment.md` at
+`a15dfc8`): the `reconcile` index changed no byte of any recorded answer,
+while the role changes only these reviewed fields. So the recorded file stays
+the historical expectation and is not edited, and the delta file beside it
+names each added field by entry (`path` and `at` within
+`/result/references`), the field it follows and its value. The gate applies
+exactly that delta to the recorded bytes and compares the fresh answer with
+the result, byte for byte; an answer with one field more or one less fails
+it. The update variable rewrites every other recorded file but never this
+response: a later change to the answer is a reviewed change to the delta
+file, and Prior compares it at the re-pin.
+
+To replay 15 by hand, apply the delta to the recorded response (insert each
+field after the one it names, in the one entry its `path` and `at` pick out,
+and serialise without whitespace) and compare with that.
+
 ## Replaying
 
 1. Copy `codec/fixtures/workbench/` to a directory of your own, W, absolute.
@@ -92,7 +121,8 @@ evidence record).
    `bin/fusion-record < request`, or `node codec/dist/fusion-record.js <
    request` from an installed fusion copy.
 3. Read stdout, replace W with `<workbench>`, and compare with the recorded
-   response, byte for byte. Exit is 0 for all fifteen.
+   response, byte for byte; for 15, with the recorded response plus the delta
+   above. Exit is 0 for all fifteen.
 
 Order matters: every mutation names the revision the exchange before it left;
 12 is 01's replay out of `W/.json-state/ops/<operation_id>.json` and 13 is

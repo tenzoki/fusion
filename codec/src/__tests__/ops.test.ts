@@ -2186,7 +2186,7 @@ describe("reconcile", () => {
     checked: number;
     intents: Array<{ operation_id: string; op: string; files: Array<{ path: string; state: string }> }>;
     records: Array<{ path: string; class: string; reason: string; detail: string }>;
-    references: Array<{ path: string; at: string; status: string; target?: string; class?: string; reason?: string }>;
+    references: Array<{ path: string; at: string; role?: string; status: string; target?: string; class?: string; reason?: string }>;
     evidence: Array<{ path: string; at: string; record_id: string; revision: string; policy: string; status: string; class?: string; reason?: string }>;
     dependencies: Array<Record<string, unknown>>;
     narratives: Array<{ path: string; narrative: string; class: string; reason: string; line: string; line_number: number }>;
@@ -2289,7 +2289,7 @@ describe("reconcile", () => {
       records: [],
       references: [
         { path: ISSUE, at: "/references/0", status: "resolved", target: OPEN },
-        { path: DONE, at: "/active_documents/0/ref", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" },
+        { path: DONE, at: "/active_documents/0/ref", role: "plan", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" },
         { path: DONE, at: "/evidence/0/ref", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" },
         { path: DONE, at: "/outcome/evidence/0/ref", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" },
       ],
@@ -2473,6 +2473,46 @@ describe("reconcile", () => {
     // The user's word edited afterwards: the source no longer resolves at its hash.
     writeAt(word.path, "Run it autonomously, but ask first.\n");
     expect((await reconcile()).references.find((r) => r.path === p1 && r.at === "/mode/source/ref")).toMatchObject({ status: "unresolved", class: "missing-evidence", reason: "artefact-changed" });
+  });
+
+  it("the role: every active-document binding carries its stored role after at, resolved, unresolved and ambiguous alike, and no target it did not resolve to; no other entry carries one", async () => {
+    // A plan binding and a spec binding, both plan-kind records, adopted through the kernel.
+    const plan = await newPlan("aaaaaaaa-0000-4000-8000-0000000000a1", "260929-1111-the-plan");
+    const spec = await newPlan("aaaaaaaa-0000-4000-8000-0000000000a2", "260929-1112-the-spec");
+    okResult(await dispatch(adopt("aaaaaaaa-0000-4000-8000-0000000000a1", plan.narrative)));
+    okResult(await dispatch({ ...adopt("aaaaaaaa-0000-4000-8000-0000000000a2", spec.narrative), role: "spec" }));
+    // Two more spec bindings by hand: one naming no record, one naming an id two control files carry.
+    const twice = await newPlan("aaaaaaaa-0000-4000-8000-0000000000a3", "260929-1113-carried-twice");
+    writeAt(`${CONTAINER}/plans/260929-1114-a-copy.record.json`, bytesOf(twice.control));
+    const missing = "aaaaaaaa-0000-4000-8000-0000000000a4";
+    const at = revision(spec.narrative);
+    rewrite(OPEN, (c) => ({
+      ...c,
+      active_documents: [...(c.active_documents as unknown[]), { ref: refTo(missing), role: "spec", revision: at }, { ref: refTo("aaaaaaaa-0000-4000-8000-0000000000a3"), role: "spec", revision: at }],
+      references: [refTo(ISSUE_ID)],
+    }));
+
+    const report = await reconcile();
+    expect(report.records.filter((f) => f.path === OPEN && f.class === "schema-invalid"), "the package stays schema-valid, so its references are reported").toEqual([]);
+    const mine = report.references.filter((r) => r.path === OPEN);
+    expect(mine).toEqual([
+      { path: OPEN, at: "/active_documents/0/ref", role: "plan", status: "resolved", target: plan.control },
+      { path: OPEN, at: "/active_documents/1/ref", role: "spec", status: "resolved", target: spec.control },
+      { path: OPEN, at: "/active_documents/2/ref", role: "spec", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" },
+      { path: OPEN, at: "/active_documents/3/ref", role: "spec", status: "ambiguous", class: "conflict", reason: "ambiguous-reference" },
+      { path: OPEN, at: "/references/0", status: "resolved", target: ISSUE },
+    ]);
+    // The placement: role right after at, the rest in the order the entry always had.
+    expect(mine.map((r) => Object.keys(r))).toEqual([
+      ["path", "at", "role", "status", "target"],
+      ["path", "at", "role", "status", "target"],
+      ["path", "at", "role", "status", "class", "reason"],
+      ["path", "at", "role", "status", "class", "reason"],
+      ["path", "at", "status", "target"],
+    ]);
+    const binding = /^\/active_documents\/\d+\/ref$/;
+    expect(report.references.filter((r) => !binding.test(r.at) && "role" in r), "no role outside a binding").toEqual([]);
+    expect(report.references.filter((r) => binding.test(r.at) && !("role" in r)), "no binding without its role").toEqual([]);
   });
 
   // --- evidence ---

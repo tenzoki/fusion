@@ -1,0 +1,10 @@
+{
+  "exchange": "15-reconcile",
+  "recorded": "15-reconcile.response.json",
+  "why": "The role of each active-document binding in reconcile's references (Prior a15dfc8, option 1; REQUESTS.md, 'The role in reconcile's references'). The recorded response is the historical expectation and is not edited; the current answer is those bytes with exactly these fields added.",
+  "list": "/result/references",
+  "adds": [
+    { "entry": { "path": "work-packages/260927-0900-strict-reader/package.json", "at": "/active_documents/0/ref" }, "field": "role", "after": "at", "value": "plan" },
+    { "entry": { "path": "work-packages/260929-0900-fj02-session/package.json", "at": "/active_documents/0/ref" }, "field": "role", "after": "at", "value": "plan" }
+  ]
+}

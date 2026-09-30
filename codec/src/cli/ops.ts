@@ -1696,6 +1696,8 @@ interface ReferenceEntry {
   path: string;
   /** A JSON pointer into the control record. */
   at: string;
+  /** On an `/active_documents/<i>/ref` entry alone, whatever its status: the binding's stored role, when that is `plan` or `spec`. */
+  role?: ActiveDocument["role"];
   status: ReferenceStatus;
   /** The control file or artefact it resolves to. */
   target?: string;
@@ -1742,9 +1744,16 @@ interface NarrativeEntry {
 
 const field = (v: unknown, key: string): unknown => (isObject(v) ? v[key] : undefined);
 
+/** A place a control record carries a reference; `binding` is the `active_documents` entry that carries it, when one does. */
+interface ReferenceSite {
+  at: string;
+  value: unknown;
+  binding?: unknown;
+}
+
 /** Every place a control record carries a reference, as a JSON pointer and the value there; an absent or null one is no site. */
-function referenceSites(pair: Pair): Array<{ at: string; value: unknown }> {
-  const sites: Array<{ at: string; value: unknown }> = [];
+function referenceSites(pair: Pair): ReferenceSite[] {
+  const sites: ReferenceSite[] = [];
   const add = (at: string, value: unknown): void => {
     if (value !== null && value !== undefined) sites.push({ at, value });
   };
@@ -1764,7 +1773,12 @@ function referenceSites(pair: Pair): Array<{ at: string; value: unknown }> {
     if (field(source, "kind") === "user-word") add("/mode/source/ref", field(source, "ref"));
     else if (field(source, "kind") !== "legacy") add("/mode/source", source);
     each("/depends_on", c.depends_on, "target");
-    each("/active_documents", c.active_documents, "ref");
+    if (Array.isArray(c.active_documents)) {
+      c.active_documents.forEach((binding, i) => {
+        const value = field(binding, "ref");
+        if (value !== null && value !== undefined) sites.push({ at: `/active_documents/${i}/ref`, value, binding });
+      });
+    }
     each("/references", c.references);
     each("/evidence", c.evidence, "ref");
     each("/outcome/evidence", field(c.outcome, "evidence"), "ref");
@@ -1781,21 +1795,30 @@ function referenceSites(pair: Pair): Array<{ at: string; value: unknown }> {
   return sites;
 }
 
-/** One reference, resolved as a mutation resolves it: an id through `indexedContext`, which answers what the kernel's walk answers. */
-function referenceEntry(ctx: ReadContext, path: string, at: string, value: unknown): ReferenceEntry {
-  if (!isObject(value)) return { path, at, status: "unchecked" }; // a legacy citation string or a git commit
+/**
+ * One reference, resolved as a mutation resolves it: an id through
+ * `indexedContext`, which answers what the kernel's walk answers. An
+ * active-document binding's entry carries its stored `role` after `at`, taken
+ * from the binding at its source and never from the target, so an unresolved
+ * or ambiguous binding carries it too, with no `target` (Prior `a15dfc8`).
+ */
+function referenceEntry(ctx: ReadContext, path: string, site: ReferenceSite): ReferenceEntry {
+  const { value } = site;
+  const role = site.binding === undefined ? undefined : field(site.binding, "role");
+  const head: Pick<ReferenceEntry, "path" | "at" | "role"> = { path, at: site.at, ...(role === "plan" || role === "spec" ? { role } : {}) };
+  if (!isObject(value)) return { ...head, status: "unchecked" }; // a legacy citation string or a git commit
   if (typeof value.record_id === "string") {
     const hit = resolveRecordRef(ctx, { workbench_id: value.workbench_id, record_id: value.record_id });
-    if (hit.ok) return { path, at, status: "resolved", target: hit.value.path };
-    if (hit.error.reason === "foreign-workbench") return { path, at, status: "foreign" };
-    return { path, at, status: hit.error.reason === "ambiguous-reference" ? "ambiguous" : "unresolved", class: hit.error.class, reason: hit.error.reason };
+    if (hit.ok) return { ...head, status: "resolved", target: hit.value.path };
+    if (hit.error.reason === "foreign-workbench") return { ...head, status: "foreign" };
+    return { ...head, status: hit.error.reason === "ambiguous-reference" ? "ambiguous" : "unresolved", class: hit.error.class, reason: hit.error.reason };
   }
   if (typeof value.path === "string" && typeof value.sha256 === "string") {
     const hit = ctx.resolveArtefact({ path: value.path, sha256: value.sha256 });
-    return hit.ok ? { path, at, status: "resolved", target: hit.value.path } : { path, at, status: "unresolved", class: hit.error.class, reason: hit.error.reason };
+    return hit.ok ? { ...head, status: "resolved", target: hit.value.path } : { ...head, status: "unresolved", class: hit.error.class, reason: hit.error.reason };
   }
-  if (typeof value.project === "string") return { path, at, status: "foreign" };
-  return { path, at, status: "unchecked" }; // a named external target
+  if (typeof value.project === "string") return { ...head, status: "foreign" };
+  return { ...head, status: "unchecked" }; // a named external target
 }
 
 /** Every binding a package makes, `evidence` then `outcome.evidence`, through `bindEvidence`. */
@@ -1973,7 +1996,7 @@ function reconcile(wb: Workbench, req: ReconcileRequest, view: ReadView): Respon
     const r = ctx.readPair(path);
     if (!r.ok || !validate(r.value.schemaId, r.value.control).ok) continue; // reported under records
     const pair = r.value;
-    for (const { at, value } of referenceSites(pair)) references.push(referenceEntry(ctx, path, at, value));
+    for (const site of referenceSites(pair)) references.push(referenceEntry(ctx, path, site));
     if (pair.kind === "package") {
       scopedPackages.add(pair.control.id as string);
       evidence.push(...evidenceEntries(ctx, pair));

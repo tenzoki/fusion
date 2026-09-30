@@ -10448,7 +10448,12 @@ function referenceSites(pair) {
     if (field(source, "kind") === "user-word") add("/mode/source/ref", field(source, "ref"));
     else if (field(source, "kind") !== "legacy") add("/mode/source", source);
     each("/depends_on", c.depends_on, "target");
-    each("/active_documents", c.active_documents, "ref");
+    if (Array.isArray(c.active_documents)) {
+      c.active_documents.forEach((binding, i) => {
+        const value = field(binding, "ref");
+        if (value !== null && value !== void 0) sites.push({ at: `/active_documents/${i}/ref`, value, binding });
+      });
+    }
     each("/references", c.references);
     each("/evidence", c.evidence, "ref");
     each("/outcome/evidence", field(c.outcome, "evidence"), "ref");
@@ -10464,20 +10469,23 @@ function referenceSites(pair) {
   }
   return sites;
 }
-function referenceEntry(ctx, path, at, value) {
-  if (!isObject4(value)) return { path, at, status: "unchecked" };
+function referenceEntry(ctx, path, site) {
+  const { value } = site;
+  const role = site.binding === void 0 ? void 0 : field(site.binding, "role");
+  const head = { path, at: site.at, ...role === "plan" || role === "spec" ? { role } : {} };
+  if (!isObject4(value)) return { ...head, status: "unchecked" };
   if (typeof value.record_id === "string") {
     const hit = resolveRecordRef(ctx, { workbench_id: value.workbench_id, record_id: value.record_id });
-    if (hit.ok) return { path, at, status: "resolved", target: hit.value.path };
-    if (hit.error.reason === "foreign-workbench") return { path, at, status: "foreign" };
-    return { path, at, status: hit.error.reason === "ambiguous-reference" ? "ambiguous" : "unresolved", class: hit.error.class, reason: hit.error.reason };
+    if (hit.ok) return { ...head, status: "resolved", target: hit.value.path };
+    if (hit.error.reason === "foreign-workbench") return { ...head, status: "foreign" };
+    return { ...head, status: hit.error.reason === "ambiguous-reference" ? "ambiguous" : "unresolved", class: hit.error.class, reason: hit.error.reason };
   }
   if (typeof value.path === "string" && typeof value.sha256 === "string") {
     const hit = ctx.resolveArtefact({ path: value.path, sha256: value.sha256 });
-    return hit.ok ? { path, at, status: "resolved", target: hit.value.path } : { path, at, status: "unresolved", class: hit.error.class, reason: hit.error.reason };
+    return hit.ok ? { ...head, status: "resolved", target: hit.value.path } : { ...head, status: "unresolved", class: hit.error.class, reason: hit.error.reason };
   }
-  if (typeof value.project === "string") return { path, at, status: "foreign" };
-  return { path, at, status: "unchecked" };
+  if (typeof value.project === "string") return { ...head, status: "foreign" };
+  return { ...head, status: "unchecked" };
 }
 function evidenceEntries(ctx, pkg) {
   const bound = pkg.control.evidence;
@@ -10612,7 +10620,7 @@ function reconcile(wb, req, view) {
     const r = ctx.readPair(path);
     if (!r.ok || !validate(r.value.schemaId, r.value.control).ok) continue;
     const pair = r.value;
-    for (const { at, value } of referenceSites(pair)) references.push(referenceEntry(ctx, path, at, value));
+    for (const site of referenceSites(pair)) references.push(referenceEntry(ctx, path, site));
     if (pair.kind === "package") {
       scopedPackages.add(pair.control.id);
       evidence.push(...evidenceEntries(ctx, pair));
