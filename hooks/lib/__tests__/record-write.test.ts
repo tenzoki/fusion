@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { ask, type Answer, type Ask, type CodecRequest } from "../record-client.js";
-import { PAYLOAD_FIELDS, parseFlags, write, type Identity, type Outcome } from "../record-write.js";
+import { INITIAL_CONTROL, PAYLOAD_FIELDS, parseFlags, write, type Identity, type Outcome } from "../record-write.js";
 import { CASE_TIMEOUT, REPO_ROOT } from "./helpers/guard-harness.js";
 import { BUNDLE, claim, createPackage, must, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
@@ -19,20 +19,25 @@ const ME = "5e8248d7";
 const OTHER = "0b0b0b0b";
 const real: Ask = (w, r) => ask(w, r, { bundle: BUNDLE });
 const UNANSWERED: Answer = { kind: "unanswered", cause: "timeout", detail: "stopped" };
+const GIT_ENV = { ...process.env, GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_SYSTEM: "/dev/null" };
+type Wrote = Outcome & { kind: "landed" };
 
 /** One call as `bin/fusion-write` makes it, and every request it sent. */
 function run(p: JsonProject, sub: string, args: string[], identity: Identity = { checkout: ME }, through: Ask = real): { o: Outcome; sent: CodecRequest[] } {
   const sent: CodecRequest[] = [];
   const parsed = parseFlags(sub, args);
   if ("usage" in parsed) return { o: { kind: "usage", detail: parsed.usage }, sent };
-  return { o: write({ ...parsed.call, workbench: p.workbench, identity }, (w, r) => (sent.push(r), through(w, r))), sent };
+  return { o: write({ ...parsed.call, workbench: p.workbench, identity, roleVersion: "12.0.0" }, (w, r) => (sent.push(r), through(w, r))), sent };
 }
 const mutations = (sent: CodecRequest[]): string[] => sent.map((r) => r.op).filter((op) => op !== "inspect" && op !== "show");
 const rows = (p: JsonProject): Record<string, unknown>[] => {
   const log = resolve(p.workbench, "orchestrator-events.jsonl");
   return existsSync(log) ? readFileSync(log, "utf-8").split("\n").filter((l) => l !== "").map((l) => JSON.parse(l)) : [];
 };
-const revisionOf = (p: JsonProject, path: string): unknown => must(p, { op: "show", record: { path } }).result.revision;
+const shown = (p: JsonProject, path: string): Record<string, any> => must(p, { op: "show", record: { path } }).result;
+const put = (p: JsonProject, rel: string, body = `# ${rel}\n`): string => (mkdirSync(dirname(resolve(p.workbench, rel)), { recursive: true }), writeFileSync(resolve(p.workbench, rel), body), rel);
+const schema = (f: string) => JSON.parse(readFileSync(resolve(REPO_ROOT, "codec", "schemas", f), "utf-8"));
+const repo = (p: JsonProject) => [["init", "-q"], ["config", "user.email", "s@example.com"], ["config", "user.name", "Scratch"], ["commit", "-q", "--allow-empty", "-m", "base"]].forEach((a) => spawnSync("git", a, { cwd: p.root, env: GIT_ENV }));
 
 describe("ownership, response 22 (a)", () => {
   it("the owner releases; another checkout, an unreadable identity and a non-claimed source each take their own branch", () => {
@@ -76,8 +81,8 @@ describe("one request, and no retry", () => {
       const lost = run(p, "claim", args, { checkout: ME }, (w, r) => (r.op === "claim" ? (real(w, r), UNANSWERED) : real(w, r)));
       expect([lost.o.kind, mutations(lost.sent), rows(p)]).toEqual(["unknown", ["claim"], []]);
       const u = lost.o as Outcome & { kind: "unknown" };
-      const again = () => run(p, "claim", [...args, "--operation-id", u.operationId, "--expected-revision", u.expectedRevision, "--claimed-at", u.claimedAt!]).o;
-      const expected = { kind: "landed", operationId: u.operationId, revisions: { [pkg.path]: revisionOf(p, pkg.path) }, event: "unlogged" };
+      const again = () => run(p, "claim", [...args, "--operation-id", u.operationId, ...Object.entries(u.resend).flat()]).o;
+      const expected = { kind: "landed", operationId: u.operationId, revisions: { [pkg.path]: shown(p, pkg.path).revision }, event: "unlogged" };
       expect([again(), again(), rows(p)]).toMatchObject([expected, expected, []]);
     });
   });
@@ -92,11 +97,11 @@ describe("what is sent", () => {
         const r = run(p, sub, [...on, ...extra]);
         expect([r.o.kind, mutations(r.sent)], `${sub} ${extra.join(" ")}`).toEqual(["usage", []]);
       }
+      for (const extra of [["--kind", "package"], ["--kind", "issue", "--domain", "code"], ["--kind", "campaign"]]) expect(run(p, "create", [...extra, "--narrative-file", "x.md", "--origin", "user-request", "--actor", "user"]).o.kind, extra.join(" ")).toBe("usage");
     });
   });
 
   it("PAYLOAD_FIELDS is the transition payload read against each kind's control fields in the codec's schemas", () => {
-    const schema = (f: string) => JSON.parse(readFileSync(resolve(REPO_ROOT, "codec", "schemas", f), "utf-8"));
     const payload = schema("protocol.schema.json").oneOf.find((b: { properties: { op: { const?: string } } }) => b.properties.op.const === "transition").properties.payload.properties;
     const kinds: Record<string, object> = { package: schema("package.schema.json").properties };
     for (const k of ["issue", "plan", "decision", "discussion"]) kinds[k] = schema("record.schema.json").$defs[`${k}_control`].properties;
@@ -116,18 +121,62 @@ describe("what is sent", () => {
   });
 });
 
+describe("creation", () => {
+  const KINDS = Object.keys(INITIAL_CONTROL);
+  it("INITIAL_CONTROL is each record kind's one state no edge of transitions.json enters, with every control field its schema requires", () => {
+    const { kinds } = JSON.parse(readFileSync(resolve(REPO_ROOT, "codec", "contract", "transitions.json"), "utf-8"));
+    const create = schema("protocol.schema.json").oneOf.find((b: { properties: { op: { const?: string }; kind: { enum?: string[] } } }) => b.properties.op.const === "create" && b.properties.kind.enum);
+    expect(["package", ...KINDS]).toEqual(create.properties.kind.enum);
+    for (const [k, control] of Object.entries(INITIAL_CONTROL)) {
+      const entered = kinds[k].states.filter((s: string) => !kinds[k].edges.some((e: { to: string }) => e.to === s));
+      expect([entered, Object.keys(control).sort()], k).toEqual([[control.state], [...schema("record.schema.json").$defs[`${k}_control`].required].sort()]);
+    }
+  });
+
+  it("creates a pair of each kind in its initial state, filed by this checkout's person, each with a {created} row", () => {
+    withJsonProject((p) => {
+      const W = "work-packages/261001-0900-w";
+      const create = (kind: string, rel: string, origin: string, ...extra: string[]) => run(p, "create", ["--kind", kind, "--narrative-file", put(p, rel), "--origin", origin, "--actor", "user", ...extra], { checkout: ME, person: "P" }).o as Wrote;
+      const made = [create("package", `${W}/261001-0900-w.md`, "user-request", "--domain", "code"), ...KINDS.map((k) => create(k, `${W}/${k}s/261001-0901-${k}.md`, `${W}/package.json`))];
+      expect(made.map((o) => o.kind)).toEqual(Array(5).fill("landed"));
+      const control = made.map((o) => shown(p, Object.keys(o.revisions)[0]).control);
+      expect(control.map((c) => [c.filed_by, c.status ?? c.control.state])).toEqual(Array(5).fill([{ actor: "user", person: "P" }, "open"]));
+      expect(rows(p).map((r) => [r.kind, r.change, r.person])).toEqual(["package", ...KINDS].map((k) => [k, { created: "open" }, "P"]));
+    });
+  });
+
+  it("evidence binds the package's brief, its plan and the report's bytes: an edited report is report-changed, and its row is {created_kind: evidence}", () => {
+    withJsonProject((p) => {
+      repo(p);
+      const pkg = createPackage(p, "261001-0900-e");
+      const plan = run(p, "create", ["--kind", "plan", "--narrative-file", put(p, `${pkg.dir}/plans/261001-0901-e.md`), "--origin", pkg.path, "--actor", "user"]).o as Wrote;
+      expect(run(p, "adopt-plan", ["--record", pkg.path, "--plan", Object.keys(plan.revisions)[0], "--actor", "user"]).o.kind).toBe("landed");
+      const report = put(p, `${pkg.dir}/reviews/261001-1000-e-review.md`, "# review\n");
+      const ev = Object.keys((run(p, "evidence", ["--record", pkg.path, "--report", report, "--verdict", "accept", "--actor", "reviewer"]).o as Wrote).revisions)[0];
+      const record = shown(p, ev).control;
+      expect([record.plan_revision, record.role, record.host, record.execution_policy]).toEqual([shown(p, pkg.path).control.active_documents[0].revision, { profile: "reviewer", version: "12.0.0" }, "claude-code", "claude-guided"]);
+      const attach = () => run(p, "attach-evidence", ["--record", pkg.path, "--evidence", ev, "--actor", "user"]).o;
+      writeFileSync(resolve(p.workbench, report), "# review, edited\n");
+      expect(attach()).toMatchObject({ kind: "refused", refusal: { class: "missing-evidence", reason: "report-changed" } });
+      writeFileSync(resolve(p.workbench, report), "# review\n");
+      expect(attach().kind).toBe("landed");
+      expect(rows(p).filter((r) => r.kind === "evidence").map((r) => r.change)).toEqual([{ created_kind: "evidence" }]);
+    });
+  });
+});
+
 describe("bin/fusion-write", () => {
   it("prints KEY=value lines and exits by the header's table", () => {
     withJsonProject((p) => {
-      const env = { ...process.env, GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_SYSTEM: "/dev/null" };
-      for (const a of [["init", "-q"], ["config", "user.email", "s@example.com"], ["config", "user.name", "Scratch"]]) spawnSync("git", a, { cwd: p.root, env });
+      repo(p);
       const [mine, theirs] = [createPackage(p, "260930-1300-a"), createPackage(p, "260930-1301-b")];
       claim(p, theirs, OTHER);
-      const cli = (...args: string[]) => spawnSync(resolve(REPO_ROOT, "bin", "fusion-write"), args, { cwd: p.root, env, encoding: "utf-8" });
+      const cli = (...args: string[]) => spawnSync(resolve(REPO_ROOT, "bin", "fusion-write"), args, { cwd: p.root, env: GIT_ENV, encoding: "utf-8" });
       const ok = cli("claim", "--record", mine.path, "--actor", "user");
       expect(ok.stdout.split("\n").map((l) => l.split("=")[0])).toEqual(["result", "operation_id", "path", "revision", "event", ""]);
       const codes = [ok, cli("claim", "--record", mine.path, "--actor", "user"), cli("release", "--record", theirs.path, "--actor", "user", "--reason", "r"), cli("claim", "--bogus"), cli("log-repair")];
-      expect(codes.map((r) => r.status)).toEqual([0, 6, 5, 2, 0]);
+      codes.push(cli("create", "--kind", "issue", "--narrative-file", put(p, `${mine.dir}/issues/261001-0902-i.md`), "--origin", mine.path, "--actor", "user"), cli("evidence", "--record", mine.path, "--report", put(p, `${mine.dir}/reviews/261001-1000-r.md`), "--verdict", "accept", "--actor", "reviewer"));
+      expect(codes.map((r) => r.status)).toEqual([0, 6, 5, 2, 0, 0, 0]);
     });
   }, CASE_TIMEOUT);
 });

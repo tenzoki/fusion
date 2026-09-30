@@ -13,9 +13,10 @@
  *               migration and no retry.
  *   show        the record the mutation names, and each record a request
  *               field is read from (the plan of `adopt-plan`, the evidence of
- *               `attach-evidence`, the targets of `set-dependencies`). Its
- *               revision is the `expected_revision` sent, so the write lands
- *               only against the record this call inspected.
+ *               `attach-evidence`, the targets of `set-dependencies`, the
+ *               origin of `create`, the package of `evidence`). Its revision
+ *               is the `expected_revision` sent, so the write lands only
+ *               against the record this call inspected.
  *   check       ownership, below; and every payload field against the kind
  *               `show` named (`PAYLOAD_FIELDS`).
  *   mutation    one request under a new operation id. The answer is landed,
@@ -45,22 +46,51 @@
  * the schemas. A field outside the target's kind is a usage error, decided
  * after `show` named the kind and before the mutation is sent.
  *
+ * ## Creation
+ *
+ * `create` files a new pair, and `evidence` a reviewer's evidence record
+ * beside its report; both are the codec's `create`, which names no existing
+ * record and so takes no `expected_revision`. The caller writes the Markdown
+ * half first, at a marker-free name it derives, and names it; the codec
+ * writes the control file beside it and refuses a name, store or container
+ * that does not agree. The id is a new UUID, the filer `--actor` with this
+ * checkout's person, the origin the user's request or the package `--origin`
+ * names. A record kind starts at `INITIAL_CONTROL`, held by the test to the
+ * one state of its kind no edge of `codec/contract/transitions.json` enters
+ * and to the control fields its schema requires; a package's payload is its
+ * domain, and the kernel fixes the rest.
+ *
+ * An evidence record is produced against the package `--record` names:
+ * `brief_revision` is its narrative hash in `show`, `plan_revision` the
+ * revision of its `role: plan` binding or null. The report's hash is read
+ * from its bytes, the workbench id is the gate's, the subject is the
+ * project's `HEAD` tree as the call runs, and the role is `--actor` at this
+ * plugin's version. Host `claude-code` and policy `claude-guided` are all
+ * this host can claim; the verdict is the caller's, and the codec judges it.
+ * No `predecessor` is sent, so a second record over one report is
+ * `record-exists`.
+ *
  * ## A re-send
  *
  * An unanswered mutation may have landed. The caller re-sends it explicitly
- * with the operation id and the expected revision the unknown outcome
- * printed (and `claimed_at` for `claim`), so the codec sees the same request
- * and answers its stored bytes. No row is composed for a re-send.
+ * with the operation id and the fields the unknown outcome printed (the
+ * expected revision, `claimed_at` for `claim`, the id for a creation and
+ * `accepted_at` for evidence), so the codec sees the same request and answers
+ * its stored bytes. An evidence re-send re-reads the brief, the plan, the
+ * report and the tree; if one moved, the request differs and the codec
+ * answers `conflict/operation-id-reused`. No row is composed for a re-send.
  *
  * No automatic hook imports this module or runs `hooks/write.ts`
  * (`lib/record-client.ts` `## The recovery declaration`).
  */
 import { type Ask, type Refusal } from "./record-client.js";
 import { type LogEvent } from "./record-change.js";
-export declare const SUBCOMMANDS: readonly ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"];
+export declare const SUBCOMMANDS: readonly ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "create", "evidence"];
 export type Sub = (typeof SUBCOMMANDS)[number];
 /** Per kind, the `transition` payload fields the codec reads; nothing else is sent. */
 export declare const PAYLOAD_FIELDS: Readonly<Record<string, readonly string[]>>;
+/** Per record kind, the control a new record is created with. */
+export declare const INITIAL_CONTROL: Readonly<Record<string, Readonly<Record<string, unknown>>>>;
 export interface Identity {
     person?: string;
     checkout?: string;
@@ -70,6 +100,8 @@ export interface Call {
     workbench: string;
     identity: Identity;
     flags: Map<string, string[]>;
+    /** The version an evidence record's role names. Default: this plugin's, from `.claude-plugin/plugin.json`. */
+    roleVersion?: string;
 }
 export type Outcome = {
     kind: "landed";
@@ -81,12 +113,12 @@ export type Outcome = {
     kind: "usage";
     detail: string;
 }
-/** The bundle is missing: nothing was sent. */
+/** The bundle or the plugin's manifest is missing: nothing was sent. */
  | {
     kind: "install";
     detail: string;
 }
-/** The workbench or a named record was not read: nothing was sent. */
+/** The workbench, a named record or a file the request binds was not read: nothing was sent. */
  | {
     kind: "unread";
     detail: string;
@@ -97,11 +129,12 @@ export type Outcome = {
     kind: "refused";
     operationId: string;
     refusal: Refusal;
-} | {
+}
+/** `resend`: the flags a re-send repeats beside `--operation-id`, with their values. */
+ | {
     kind: "unknown";
     operationId: string;
-    expectedRevision: string;
-    claimedAt?: string;
+    resend: Record<string, string>;
     detail: string;
 };
 /** The subcommand's flags read from `argv`, or the usage error. Values are opaque here. */

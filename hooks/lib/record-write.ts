@@ -13,9 +13,10 @@
  *               migration and no retry.
  *   show        the record the mutation names, and each record a request
  *               field is read from (the plan of `adopt-plan`, the evidence of
- *               `attach-evidence`, the targets of `set-dependencies`). Its
- *               revision is the `expected_revision` sent, so the write lands
- *               only against the record this call inspected.
+ *               `attach-evidence`, the targets of `set-dependencies`, the
+ *               origin of `create`, the package of `evidence`). Its revision
+ *               is the `expected_revision` sent, so the write lands only
+ *               against the record this call inspected.
  *   check       ownership, below; and every payload field against the kind
  *               `show` named (`PAYLOAD_FIELDS`).
  *   mutation    one request under a new operation id. The answer is landed,
@@ -45,23 +46,54 @@
  * the schemas. A field outside the target's kind is a usage error, decided
  * after `show` named the kind and before the mutation is sent.
  *
+ * ## Creation
+ *
+ * `create` files a new pair, and `evidence` a reviewer's evidence record
+ * beside its report; both are the codec's `create`, which names no existing
+ * record and so takes no `expected_revision`. The caller writes the Markdown
+ * half first, at a marker-free name it derives, and names it; the codec
+ * writes the control file beside it and refuses a name, store or container
+ * that does not agree. The id is a new UUID, the filer `--actor` with this
+ * checkout's person, the origin the user's request or the package `--origin`
+ * names. A record kind starts at `INITIAL_CONTROL`, held by the test to the
+ * one state of its kind no edge of `codec/contract/transitions.json` enters
+ * and to the control fields its schema requires; a package's payload is its
+ * domain, and the kernel fixes the rest.
+ *
+ * An evidence record is produced against the package `--record` names:
+ * `brief_revision` is its narrative hash in `show`, `plan_revision` the
+ * revision of its `role: plan` binding or null. The report's hash is read
+ * from its bytes, the workbench id is the gate's, the subject is the
+ * project's `HEAD` tree as the call runs, and the role is `--actor` at this
+ * plugin's version. Host `claude-code` and policy `claude-guided` are all
+ * this host can claim; the verdict is the caller's, and the codec judges it.
+ * No `predecessor` is sent, so a second record over one report is
+ * `record-exists`.
+ *
  * ## A re-send
  *
  * An unanswered mutation may have landed. The caller re-sends it explicitly
- * with the operation id and the expected revision the unknown outcome
- * printed (and `claimed_at` for `claim`), so the codec sees the same request
- * and answers its stored bytes. No row is composed for a re-send.
+ * with the operation id and the fields the unknown outcome printed (the
+ * expected revision, `claimed_at` for `claim`, the id for a creation and
+ * `accepted_at` for evidence), so the codec sees the same request and answers
+ * its stored bytes. An evidence re-send re-reads the brief, the plan, the
+ * report and the tree; if one moved, the request differs and the codec
+ * answers `conflict/operation-id-reused`. No row is composed for a re-send.
  *
  * No automatic hook imports this module or runs `hooks/write.ts`
  * (`lib/record-client.ts` `## The recovery declaration`).
  */
 
-import { randomUUID } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import { createHash, randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { gate, type Answer, type Ask, type Refusal } from "./record-client.js";
 import { composeRows, logObserved, logResend, repairRetained, type LogEvent, type PriorShow } from "./record-change.js";
 import { utcStamp } from "./orchestrator-events.js";
 
-export const SUBCOMMANDS = ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"] as const;
+export const SUBCOMMANDS = ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "create", "evidence"] as const;
 export type Sub = (typeof SUBCOMMANDS)[number];
 
 /** Per kind, the `transition` payload fields the codec reads; nothing else is sent. */
@@ -75,17 +107,45 @@ export const PAYLOAD_FIELDS: Readonly<Record<string, readonly string[]>> = {
 const ALL_PAYLOAD = [...new Set(Object.values(PAYLOAD_FIELDS).flat())];
 const flagOf = (field: string): string => `--${field.replace(/_/g, "-")}`;
 
-/** Flags each subcommand takes, beyond `--record`, `--actor`, `--operation-id` and `--expected-revision`. */
-const FLAGS: Record<Sub, readonly string[]> = {
-  claim: ["--claimed-at"],
-  release: ["--reason"],
-  transition: ["--to", "--reason", ...ALL_PAYLOAD.map(flagOf)],
-  "set-mode": ["--value", "--source"],
-  "set-dependencies": ["--on", "--clear"],
-  "adopt-plan": ["--plan", "--role"],
-  "attach-evidence": ["--evidence"],
+/** Per record kind, the control a new record is created with. */
+export const INITIAL_CONTROL: Readonly<Record<string, Readonly<Record<string, unknown>>>> = {
+  issue: { state: "open", disposition: null },
+  plan: { state: "open", steps: [], criteria: [], acceptance: null },
+  discussion: { state: "open", participants: [], outcome_refs: [] },
+  decision: { state: "open", answer_ref: null, implementation_ref: null, superseded_by: null, deferral: null },
 };
-const COMMON = ["--record", "--actor", "--operation-id", "--expected-revision"];
+const CREATED_KINDS = ["package", ...Object.keys(INITIAL_CONTROL)];
+
+/** The two subcommands that file a new record: nothing to show first, so no expected revision. */
+const CREATING: ReadonlySet<string> = new Set(["create", "evidence"]);
+
+/** Flags each subcommand takes, beyond `--actor` and `--operation-id`. */
+const ON_RECORD = ["--record", "--expected-revision"];
+const FLAGS: Record<Sub, readonly string[]> = {
+  claim: [...ON_RECORD, "--claimed-at"],
+  release: [...ON_RECORD, "--reason"],
+  transition: [...ON_RECORD, "--to", "--reason", ...ALL_PAYLOAD.map(flagOf)],
+  "set-mode": [...ON_RECORD, "--value", "--source"],
+  "set-dependencies": [...ON_RECORD, "--on", "--clear"],
+  "adopt-plan": [...ON_RECORD, "--plan", "--role"],
+  "attach-evidence": [...ON_RECORD, "--evidence"],
+  create: ["--kind", "--narrative-file", "--origin", "--domain", "--id"],
+  evidence: ["--record", "--report", "--verdict", "--id", "--accepted-at"],
+};
+const REQUIRED: Record<Sub, readonly string[]> = {
+  claim: ["--record"],
+  release: ["--record", "--reason"],
+  transition: ["--record", "--to", "--reason"],
+  "set-mode": ["--record", "--value"],
+  "set-dependencies": ["--record"],
+  "adopt-plan": ["--record", "--plan"],
+  "attach-evidence": ["--record", "--evidence"],
+  create: ["--kind", "--narrative-file", "--origin"],
+  evidence: ["--record", "--report", "--verdict"],
+};
+/** What a re-send repeats beside `--operation-id`, as the unknown outcome printed it. */
+const resendFlags = (s: Sub): string[] =>
+  s === "claim" ? ["--expected-revision", "--claimed-at"] : s === "create" ? ["--id"] : s === "evidence" ? ["--id", "--accepted-at"] : ["--expected-revision"];
 const REPEATED = new Set(["--on"]);
 const BARE = new Set(["--clear"]);
 
@@ -99,23 +159,27 @@ export interface Call {
   workbench: string;
   identity: Identity;
   flags: Map<string, string[]>;
+  /** The version an evidence record's role names. Default: this plugin's, from `.claude-plugin/plugin.json`. */
+  roleVersion?: string;
 }
 
 export type Outcome =
   | { kind: "landed"; operationId: string; revisions: Record<string, string>; event: LogEvent; detail?: string }
   | { kind: "usage"; detail: string }
-  /** The bundle is missing: nothing was sent. */
+  /** The bundle or the plugin's manifest is missing: nothing was sent. */
   | { kind: "install"; detail: string }
-  /** The workbench or a named record was not read: nothing was sent. */
+  /** The workbench, a named record or a file the request binds was not read: nothing was sent. */
   | { kind: "unread"; detail: string }
   | { kind: "ownership"; detail: string }
   | { kind: "refused"; operationId: string; refusal: Refusal }
-  | { kind: "unknown"; operationId: string; expectedRevision: string; claimedAt?: string; detail: string };
+  /** `resend`: the flags a re-send repeats beside `--operation-id`, with their values. */
+  | { kind: "unknown"; operationId: string; resend: Record<string, string>; detail: string };
 
 /** The subcommand's flags read from `argv`, or the usage error. Values are opaque here. */
 export function parseFlags(sub: string, argv: string[]): { call: Omit<Call, "workbench" | "identity"> } | { usage: string } {
   if (!(SUBCOMMANDS as readonly string[]).includes(sub)) return { usage: `unknown subcommand ${JSON.stringify(sub)}; one of ${SUBCOMMANDS.join(", ")}` };
-  const known = new Set([...COMMON, ...FLAGS[sub as Sub]]);
+  const s = sub as Sub;
+  const known = new Set(["--actor", "--operation-id", ...FLAGS[s]]);
   const flags = new Map<string, string[]>();
   for (let i = 0; i < argv.length; i++) {
     const f = argv[i];
@@ -125,24 +189,29 @@ export function parseFlags(sub: string, argv: string[]): { call: Omit<Call, "wor
     if (value === undefined) return { usage: `${f} needs a value` };
     flags.set(f, [...(flags.get(f) ?? []), value]);
   }
-  const need = (...fs: string[]) => fs.find((f) => !flags.has(f));
-  const missing = need("--record", "--actor", ...(sub === "transition" ? ["--to", "--reason"] : sub === "release" ? ["--reason"] : sub === "set-mode" ? ["--value"] : sub === "adopt-plan" ? ["--plan"] : sub === "attach-evidence" ? ["--evidence"] : []));
+  const missing = ["--actor", ...REQUIRED[s]].find((f) => !flags.has(f));
   if (missing !== undefined) return { usage: `${sub} needs ${missing}` };
-  if (flags.has("--operation-id") !== flags.has("--expected-revision")) return { usage: "a re-send gives --operation-id and --expected-revision together; a first call gives neither" };
-  if (sub === "claim" && flags.has("--claimed-at") !== flags.has("--operation-id")) return { usage: "--claimed-at belongs to a re-send of claim, and a re-send of claim needs it" };
-  if (sub === "set-mode") {
+  const resend = resendFlags(s);
+  if (resend.some((f) => flags.has(f) !== flags.has("--operation-id"))) return { usage: `a re-send gives --operation-id with ${resend.join(" and ")}, as the unknown outcome printed them; a first call gives none of them` };
+  if (s === "set-mode") {
     const value = flags.get("--value")![0];
     if (value !== "ordinary" && value !== "autonomous") return { usage: "--value is ordinary or autonomous" };
     if ((value === "autonomous") !== flags.has("--source")) return { usage: "autonomous needs --source, the user's word or a record; ordinary takes none" };
   }
-  if (sub === "set-dependencies" && flags.has("--on") === flags.has("--clear")) return { usage: "set-dependencies takes one or more --on <terminal|succeeded>:<control path>, or --clear" };
-  return { call: { sub: sub as Sub, flags } };
+  if (s === "set-dependencies" && flags.has("--on") === flags.has("--clear")) return { usage: "set-dependencies takes one or more --on <terminal|succeeded>:<control path>, or --clear" };
+  if (s === "create") {
+    const kind = flags.get("--kind")![0];
+    if (!CREATED_KINDS.includes(kind)) return { usage: `--kind is one of ${CREATED_KINDS.join(", ")}` };
+    if ((kind === "package") !== flags.has("--domain")) return { usage: "a package is created with its --domain, and a record kind takes none" };
+  }
+  return { call: { sub: s, flags } };
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
 const one = (c: Call, f: string): string | undefined => c.flags.get(f)?.[0];
 const refusal = (a: Answer & { kind: "refused" }): Refusal => ({ class: a.class, reason: a.reason, ...(a.detail !== undefined && { detail: a.detail }) });
 const named = (r: Refusal): string => `${r.class}/${r.reason}${r.detail === undefined ? "" : `: ${r.detail}`}`;
+const message = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
 interface Shown extends PriorShow {
   revision: string;
@@ -163,6 +232,7 @@ function shown(workbench: string, path: string, ask: Ask): Or<Shown> {
 }
 
 const usage = (detail: string): { stop: Outcome } => ({ stop: { kind: "usage", detail } });
+const unread = (detail: string): { stop: Outcome } => ({ stop: { kind: "unread", detail } });
 
 /** The workbench id, or why no write is admitted. */
 function admitted(workbench: string, ask: Ask): Or<string> {
@@ -174,13 +244,13 @@ function admitted(workbench: string, ask: Ask): Or<string> {
       return { ok: g.id };
     case "legacy": {
       const pending = inspected?.kind === "result" && isObject(inspected.result) ? inspected.result.pending : null;
-      if (isObject(pending)) return { stop: { kind: "unread", detail: `${workbench} holds a committed initialize (operation ${String(pending.operation_id)}) whose manifest has not landed. Run /fusion:setup, which finishes it. Nothing was sent: this client neither initializes nor migrates, and retries nothing.` } };
-      return { stop: { kind: "unread", detail: `${workbench} is legacy (no workbench.json: its control data is Markdown), so nothing was sent` } };
+      if (isObject(pending)) return unread(`${workbench} holds a committed initialize (operation ${String(pending.operation_id)}) whose manifest has not landed. Run /fusion:setup, which finishes it. Nothing was sent: this client neither initializes nor migrates, and retries nothing.`);
+      return unread(`${workbench} is legacy (no workbench.json: its control data is Markdown), so nothing was sent`);
     }
     case "unsupported":
-      return { stop: { kind: "unread", detail: `${workbench} is unsupported by this codec${g.diagnosis === null ? "" : ` (${named(g.diagnosis)})`}, so nothing was sent` } };
+      return unread(`${workbench} is unsupported by this codec${g.diagnosis === null ? "" : ` (${named(g.diagnosis)})`}, so nothing was sent`);
     case "refused":
-      return { stop: { kind: "unread", detail: `the codec refused inspect (${named(g)}), so nothing was sent` } };
+      return unread(`the codec refused inspect (${named(g)}), so nothing was sent`);
     case "unanswered":
       return { stop: { kind: g.cause === "bundle-missing" ? "install" : "unread", detail: `the codec gave no answer to inspect (${g.cause}: ${g.detail}), so nothing was sent` } };
   }
@@ -253,7 +323,106 @@ function fieldsOf(c: Call, target: Shown, workbenchId: string, claimedAt: string
       // The binding carries the policy the evidence record was produced under, read off the record.
       return { ok: { evidence: { ref: { ...ref(ev.ok), revision: ev.ok.revision }, policy: ev.ok.control.execution_policy } } };
     }
+    default:
+      throw new Error(`fieldsOf: ${c.sub} is a creation, built by creation()`);
   }
+}
+
+/** The request one call sends, and what its re-send repeats. */
+type Built = { request: { op: string; [field: string]: unknown }; resend: Record<string, string> };
+
+/** A mutation of the record `--record` names, at the revision its `show` answered. */
+function mutation(c: Call, workbenchId: string, operationId: string, see: (path: string) => Or<Shown>, now: () => Date): Or<Built> {
+  const path = one(c, "--record")!;
+  const seen = see(path);
+  if ("stop" in seen) return seen;
+  const refusedOwner = ownership(c, seen.ok);
+  if (refusedOwner !== null) return { stop: refusedOwner };
+  const expectedRevision = one(c, "--expected-revision") ?? seen.ok.revision;
+  const claimedAt = c.sub === "claim" ? (one(c, "--claimed-at") ?? `${utcStamp(now())}Z`) : undefined;
+  const fields = fieldsOf(c, seen.ok, workbenchId, claimedAt, see);
+  if ("stop" in fields) return fields;
+  const request = { op: c.sub, operation_id: operationId, record: { path }, expected_revision: expectedRevision, actor: { actor: one(c, "--actor"), person: c.identity.person ?? null }, ...fields.ok };
+  return { ok: { request, resend: { "--expected-revision": expectedRevision, ...(claimedAt !== undefined && { "--claimed-at": claimedAt }) } } };
+}
+
+/** `<container>/<store>/<name>`, or `shared/<store>/<name>`: where a record or a report is filed. The codec judges the rest. */
+function scopeOf(path: string): { container: string | null; store: string } {
+  const parts = path.split("/");
+  const container = parts.slice(0, -2).join("/");
+  return { container: container === "shared" ? null : container, store: parts[parts.length - 2] ?? "" };
+}
+
+/** dist layout: `<plugin>/hooks/dist/lib/record-write.js` → `<plugin>/.claude-plugin/plugin.json`. */
+function pluginVersion(): string | undefined {
+  try {
+    const v: unknown = JSON.parse(readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", ".claude-plugin", "plugin.json"), "utf-8")).version;
+    return typeof v === "string" && v !== "" ? v : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** The `create` of a new pair, or of an evidence record over its report, reading what it binds. */
+function creation(c: Call, workbenchId: string, operationId: string, see: (path: string) => Or<Shown>, now: () => Date): Or<Built> {
+  const id = one(c, "--id") ?? randomUUID();
+  const envelope = { op: "create", operation_id: operationId, id };
+  if (c.sub === "create") {
+    const kind = one(c, "--kind")!;
+    const narrative = one(c, "--narrative-file")!;
+    const origin = one(c, "--origin")!;
+    let from: Record<string, unknown> = { kind: "user-request", ref: null };
+    if (origin !== "user-request") {
+      const pkg = see(origin);
+      if ("stop" in pkg) return pkg;
+      from = { kind: "package", ref: { workbench_id: workbenchId, record_id: String(pkg.ok.control.id) } };
+    }
+    const scope = kind === "package" ? { container: null, store: "work-packages" } : scopeOf(narrative);
+    const payload = kind === "package" ? { domain: one(c, "--domain") } : structuredClone(INITIAL_CONTROL[kind]);
+    const request = { ...envelope, kind, filed_by: { actor: one(c, "--actor"), person: c.identity.person ?? null }, origin: from, scope, narrative: { path: narrative }, payload };
+    return { ok: { request, resend: { "--id": id } } };
+  }
+
+  const pkgPath = one(c, "--record")!;
+  const pkg = see(pkgPath);
+  if ("stop" in pkg) return pkg;
+  if (pkg.ok.kind !== "package") return usage(`evidence is produced against a package's brief; ${pkgPath} is a ${pkg.ok.kind} record`);
+  const brief = isObject(pkg.ok.narrative) ? pkg.ok.narrative.sha256 : undefined;
+  if (typeof brief !== "string") return unread(`show of ${pkgPath} names no brief hash, so nothing was sent`);
+  const docs = pkg.ok.control.active_documents;
+  const plan = Array.isArray(docs) ? docs.find((d) => isObject(d) && d.role === "plan") : undefined;
+  const report = one(c, "--report")!;
+  let bytes: Buffer;
+  try {
+    bytes = readFileSync(join(c.workbench, report));
+  } catch (e) {
+    return unread(`the report ${report} could not be read (${message(e)}), so nothing was sent`);
+  }
+  const tree = spawnSync("git", ["rev-parse", "HEAD^{tree}"], { cwd: dirname(c.workbench), encoding: "utf-8" });
+  const gitTree = tree.status === 0 ? tree.stdout.trim() : "";
+  if (!/^([0-9a-f]{40}|[0-9a-f]{64})$/.test(gitTree)) return unread(`the project's HEAD tree could not be read (${String(tree.stderr ?? tree.error).trim()}), and evidence names the tree it was produced against; nothing was sent`);
+  const version = c.roleVersion ?? pluginVersion();
+  if (version === undefined) return { stop: { kind: "install", detail: "this plugin's version could not be read from .claude-plugin/plugin.json, and evidence names it; nothing was sent" } };
+  const acceptedAt = one(c, "--accepted-at") ?? `${utcStamp(now())}Z`;
+  const payload = {
+    schema: "fusion.evidence/v1",
+    id,
+    workbench_id: workbenchId,
+    subject: { git_tree: gitTree, git_range: null },
+    brief_revision: brief,
+    plan_revision: isObject(plan) && typeof plan.revision === "string" ? plan.revision : null,
+    role: { profile: one(c, "--actor"), version },
+    host: "claude-code",
+    execution_policy: "claude-guided",
+    verdict: one(c, "--verdict"),
+    uncertainties: [],
+    checks: [],
+    report: { path: report, sha256: `sha256:${createHash("sha256").update(bytes).digest("hex")}`, kind: "review" },
+    predecessor: null,
+    accepted_at: acceptedAt,
+    extensions: {},
+  };
+  return { ok: { request: { ...envelope, kind: "evidence", scope: scopeOf(report), payload }, resend: { "--id": id, "--accepted-at": acceptedAt } } };
 }
 
 /** One write, from the gate to the log. `ask` is the record client's, or a test's stand-in. */
@@ -266,40 +435,32 @@ export function write(c: Call, ask: Ask, now: () => Date = () => new Date()): Ou
   const gated = admitted(c.workbench, ask);
   if ("stop" in gated) return gated.stop;
   const workbenchId = gated.ok;
-  const path = one(c, "--record")!;
   const shows: Record<string, Shown> = {};
   const see = (p: string): Or<Shown> => {
     const s = shown(c.workbench, p, ask);
     if ("ok" in s) shows[p] = s.ok;
     return s;
   };
-  const seen = see(path);
-  if ("stop" in seen) return seen.stop;
-  const target = seen.ok;
-  const refusedOwner = ownership(c, target);
-  if (refusedOwner !== null) return refusedOwner;
 
   const resend = one(c, "--operation-id");
   const operationId = resend ?? randomUUID();
-  const expectedRevision = one(c, "--expected-revision") ?? target.revision;
-  const claimedAt = c.sub === "claim" ? (one(c, "--claimed-at") ?? `${utcStamp(now())}Z`) : undefined;
-  const fields = fieldsOf(c, target, workbenchId, claimedAt, see);
-  if ("stop" in fields) return fields.stop;
+  const built = CREATING.has(c.sub) ? creation(c, workbenchId, operationId, see, now) : mutation(c, workbenchId, operationId, see, now);
+  if ("stop" in built) return built.stop;
+  const { request } = built.ok;
 
-  const request = { op: c.sub, operation_id: operationId, record: { path }, expected_revision: expectedRevision, actor: { actor: one(c, "--actor"), person: c.identity.person ?? null }, ...fields.ok };
   const answer = ask(c.workbench, request);
   if (answer.kind === "refused") return { kind: "refused", operationId, refusal: refusal(answer) };
   if (answer.kind === "unanswered") {
     if (answer.cause === "bundle-missing") return { kind: "install", detail: `the codec bundle is missing (${answer.detail}), so nothing was sent` };
-    return { kind: "unknown", operationId, expectedRevision, ...(claimedAt !== undefined && { claimedAt }), detail: `the codec gave no answer to ${c.sub} (${answer.cause}: ${answer.detail})` };
+    return { kind: "unknown", operationId, resend: built.ok.resend, detail: `the codec gave no answer to ${c.sub} (${answer.cause}: ${answer.detail})` };
   }
   let logged: { event: LogEvent; detail?: string };
   try {
     logged = resend !== undefined
-      ? logResend(c.workbench, c.sub, workbenchId, operationId, answer.revisions)
+      ? logResend(c.workbench, request.op, workbenchId, operationId, answer.revisions)
       : logObserved(c.workbench, composeRows({ request, workbenchId: workbenchId, result: answer.result, revisions: answer.revisions, shows }, { ts: utcStamp(now()), ...c.identity, ...(process.env.FUSION_SESSION_ID && { session_id: process.env.FUSION_SESSION_ID }) }));
   } catch (e) {
-    logged = { event: "unlogged", detail: `the change landed and its rows could not be composed or kept: ${e instanceof Error ? e.message : String(e)}` };
+    logged = { event: "unlogged", detail: `the change landed and its rows could not be composed or kept: ${message(e)}` };
   }
   return { kind: "landed", operationId, revisions: answer.revisions, ...logged };
 }

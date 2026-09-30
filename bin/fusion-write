@@ -2,12 +2,13 @@
 # fusion-write — the Claude side's one route to a change of JSON control data.
 #
 # Usage:
-#   fusion-write <subcommand> --record <control path> --actor <token> [flags]
+#   fusion-write <subcommand> --actor <token> [--record <control path>] [flags]
 #   fusion-write log-repair
 #
 # One codec mutation per run, through `hooks/dist/write.js` and the record
-# client, over the workbench found above the working directory. A control path
-# is workbench-relative, the `path` that `show` and `list` answer. `--actor` is
+# client, over the workbench found above the working directory. Every
+# subcommand but `create` names its record with `--record`. A control path is
+# workbench-relative, the `path` that `show` and `list` answer. `--actor` is
 # who acts, `user` or an agent's name: attribution, never authorisation.
 #
 #   claim             this checkout claims the package
@@ -17,6 +18,15 @@
 #   set-dependencies  --on <terminal|succeeded>:<control path> (repeatable) | --clear
 #   adopt-plan        --plan <control path> [--role plan|spec]
 #   attach-evidence   --evidence <control path of the evidence record>
+#   create            --kind package|issue|plan|discussion|decision
+#                     --narrative-file <workbench path> --origin user-request|<package
+#                     control path> [--domain <token>, a package's alone]. The caller
+#                     writes the Markdown first, at a marker-free name; the codec
+#                     writes the control file beside it, in the kind's initial state
+#   evidence          --record <package control path> --report <workbench path>
+#                     --verdict accept|revise|escalate: a reviewer's evidence record
+#                     beside its report, against the package's brief and plan, over
+#                     the project's HEAD tree, host claude-code, claude-guided
 #   log-repair        append rows an earlier run retained; sends no request
 #
 # Payload flags of `transition`, each a JSON value, each read only for the
@@ -30,14 +40,16 @@
 #
 # A re-send, the one route after an unknown outcome, repeats the same
 # arguments with `--operation-id <id> --expected-revision <sha256>` (and
-# `--claimed-at <time>` for claim), exactly as the unknown outcome printed
+# `--claimed-at <time>` for claim; `--id <uuid>` for create, and with
+# `--accepted-at <time>` for evidence), exactly as the unknown outcome printed
 # them. It composes no `record_change` row.
 #
 # Output on stdout, `KEY=value`:
 #   landed    result=landed, operation_id=, a path= and revision= pair per
 #             record written, event= (logged | pending | unlogged | none)
 #   refused   result=refused, operation_id=
-#   unknown   result=unknown, operation_id=, expected_revision=, claimed_at=
+#   unknown   result=unknown, operation_id=, then what the re-send repeats:
+#             expected_revision= and claimed_at=, or id= and accepted_at=
 #   log-repair  appended=, retained=
 # Every reason on stderr, one line each, prefixed `fusion-write:`.
 #
@@ -50,11 +62,13 @@
 #      `bin/fusion-identity` exiting 1, its own stop code.
 #   2  usage error. Nothing sent. A payload flag the record's kind does not
 #      carry is found after `show` names the kind, before the mutation.
-#   3  install incomplete: this helper's entry, `bin/fusion-identity` or the
-#      codec bundle is missing, or an internal fault stopped the entry.
-#   4  the workbench or a named record was not read: legacy (with a pending
-#      initialize, which /fusion:setup finishes), unsupported, or a read the
-#      codec refused or left unanswered. Nothing sent.
+#   3  install incomplete: this helper's entry, `bin/fusion-identity`, the
+#      codec bundle or (for evidence) the plugin's version is missing, or an
+#      internal fault stopped the entry.
+#   4  the workbench, a named record or what evidence binds was not read:
+#      legacy (with a pending initialize, which /fusion:setup finishes),
+#      unsupported, a read the codec refused or left unanswered, the report
+#      file, or the project's HEAD tree. Nothing sent.
 #   5  ownership refused. `release` and every `transition` out of `claimed`
 #      need the standing claim to be this checkout's, and `claim` needs this
 #      checkout's identifier; a foreign claim or an unreadable identity

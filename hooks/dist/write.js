@@ -60,10 +60,13 @@ async function main(argv) {
             out([`result=refused`, `operation_id=${o.operationId}`]);
             err(`the codec refused ${sub}: ${o.refusal.class}/${o.refusal.reason}${o.refusal.detail === undefined ? "" : `: ${o.refusal.detail}`}. Nothing landed and nothing is retried.`);
             break;
-        case "unknown":
-            out([`result=unknown`, `operation_id=${o.operationId}`, `expected_revision=${o.expectedRevision}`, ...(o.claimedAt !== undefined ? [`claimed_at=${o.claimedAt}`] : [])]);
-            err(`${o.detail}. The ${sub} may have landed; nothing was retried. To learn its outcome, send the same arguments again with --operation-id ${o.operationId} --expected-revision ${o.expectedRevision}${o.claimedAt !== undefined ? ` --claimed-at ${o.claimedAt}` : ""}.`);
+        case "unknown": {
+            // `--expected-revision` prints as `expected_revision=`, `--id` as `id=`: one line per flag the re-send repeats.
+            const again = Object.entries(o.resend);
+            out([`result=unknown`, `operation_id=${o.operationId}`, ...again.map(([f, v]) => `${f.slice(2).replace(/-/g, "_")}=${v}`)]);
+            err(`${o.detail}. The ${sub} may have landed; nothing was retried. To learn its outcome, send the same arguments again with --operation-id ${o.operationId} ${again.map(([f, v]) => `${f} ${v}`).join(" ")}.`);
             break;
+        }
         default:
             err(o.detail);
     }
