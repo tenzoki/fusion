@@ -16,10 +16,13 @@ Every user-facing sentence below is rendered in the project's chat language, and
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"
+echo '{"op":"inspect"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" | grep -o '"state":"[a-z-]*"' | head -n 1
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" discuss
 ```
 
 Halt on a non-zero exit from the first: there is no workbench to write into, and this body creates none — tell the user to run `/fusion:setup` at the project root.
+
+The second line is the workbench's format. On `"state":"json-control"` the record's state lives in a control file the codec writes, and Steps 4 and 8 take their JSON paragraphs; any other line, or none, is this body exactly as written.
 
 Hold the resolver's `KEY=value` output. `$WORKBENCH` is absolute, `$OUT_DISCUSSION` is relative to it, and that pair is the only spelling of the store in this body. On a non-zero exit read the code before acting — the full table is `rules/fusion-workbench-conventions.md` `## Path Resolution` under Exit codes. Exit 1 is no workbench; exit 3 is scope the resolver could not determine, which the user clears; exit 4 is a fusion bug and their workbench is fine. **Never guess a path and never substitute a default**: an empty `$OUT_DISCUSSION` halts the run naming that key, because an empty expansion writes to the workbench root silently.
 
@@ -133,6 +136,15 @@ The template, with the entry block of Step 3 inside every claim section:
 <Qualified, and binding nothing. Written at `--close`.>
 ```
 
+**On JSON the pair carries no marker.** Write the record at `$WORKBENCH/$N`, `$N` being `$OUT_DISCUSSION/<STAMP>-<topic>.md`, with no `**Filed by:**` line, which the control file holds, then create its control file:
+
+```bash
+O="$(dirname "$OUT_DISCUSSION")/package.json"; [ -f "$WORKBENCH/$O" ] || O=user-request
+"$FUSION_PLUGIN_ROOT/bin/fusion-write" create --kind discussion --narrative-file "$N" --origin "$O" --actor <your agent name, or claude>; echo "exit=$?"
+```
+
+On `exit=0` hold its `path=` line beside the record's path: `--close` names it. Any other exit begins nothing: name the record left behind and the `fusion-write:` line to the user, and delete nothing. Rounds then edit the Markdown alone, never the control file.
+
 `**Partners:**` names you and the consultant, so the record says who held which position. `**Cross-references:**` carries storeless wildcard citations in the form `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines.
 
 ## Step 5 — A round
@@ -182,6 +194,14 @@ Prints the register's current conclusions in the chat and **leaves the discussio
 
 Write the recommendation into `## Recommendation`, replace `**Outcome:** still running` with the one the stopping rule produced, and rename the marker `_o_` → `_c_`. **Nothing else.** Only the marker changes; the stamp and the topic stay exactly as they were. Use `git mv` where the file is tracked, `mv` otherwise.
 
+**On JSON nothing is renamed.** Write the two fields into the Markdown, then close the control file you held at Step 4:
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-write" transition --record "<its path= line>" --to closed --reason "<the outcome>" --actor <as at Step 4>; echo "exit=$?"
+```
+
+Any other exit than 0 leaves the discussion open in its control file: say so, with the `fusion-write:` line.
+
 **The recommendation is qualified and says in its own text that it binds nothing.** A decision record may rest on this discussion; the discussion itself decides nothing. The closed state is terminal, so taking the subject up again means beginning a new discussion that cites this one.
 
 Commit nothing. Tell the user in one line that the record is uncommitted.
@@ -194,7 +214,7 @@ Commit nothing. Tell the user in one line that the record is uncommitted.
 
 ## Boundaries
 
-- **Writes one file**, the record, and rewrites it once per round.
+- **Writes one file**, the record, and rewrites it once per round; on JSON the codec writes its control file.
 - **Dispatches `fusion:consultant`** and nothing else, once per round. No other agent, no sub-dispatch of its own.
 - **Commits nothing** and pushes nothing.
 - **Decides nothing.** The record holds what was disputed, what survived, what was given up and a recommendation that binds nothing.

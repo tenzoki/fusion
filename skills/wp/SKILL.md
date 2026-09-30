@@ -2,6 +2,7 @@
 description: File a new work package — one new package in the project backlog at Status open, in the user's own words
 argument-hint: [<title> and a paragraph, or a reference like "this idea"]
 allowed-tools: [Bash, Read, Write, AskUserQuestion]
+disable-model-invocation: true
 ---
 
 # Work package
@@ -11,10 +12,11 @@ File something worth doing later as a **work package**: a direction for the proj
 ## Step 0 — Resolve the store
 
 ```bash
+echo '{"op":"inspect"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" | grep -o '"state":"[a-z-]*"' | head -n 1
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" wp
 ```
 
-Read `WORKBENCH` and `OUT_PACKAGES`. Exit 1 means no workbench above `pwd`: tell the user to run `/fusion:setup` at the project root first. The other codes are `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes.
+The first line is the workbench's format. `"state":"json-control"` files through the codec, `## On a JSON-controlled workbench`; any other line, or none, is the flow below exactly as written. Read `WORKBENCH` and `OUT_PACKAGES`. Exit 1 means no workbench above `pwd`: tell the user to run `/fusion:setup` at the project root first. The other codes are `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes.
 
 **No read key is emitted, deliberately:** a skill's key set is read from its own file, and this workflow files and never lists, re-reads or consolidates the backlog. Consolidating is a maintenance operation the orchestrator performs at the user's word, and a run here that set out to do it has no resolved path to read from.
 
@@ -55,6 +57,26 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 2. Derive the stamp and the `<topic>` slug; check only that the container is free.
 3. `mkdir -p` the container and **create** the record inside it.
 4. Report: a new item at `**Status:** open`, and its path.
+
+## On a JSON-controlled workbench
+
+Status, filer, domain and mode live in the control file the codec writes beside the record, so the record carries the title and `## Directive` alone, no head block. The container and its name are derived and checked as above: `$D` is the container, `$N` the record in it, both relative to `$WORKBENCH`. Write the record first, then:
+
+```bash
+D="$OUT_PACKAGES/<YYMMDD-HHMM>-<topic>"; N="$D/<YYMMDD-HHMM>-<topic>.md"
+"$FUSION_PLUGIN_ROOT/bin/fusion-write" create --kind package --narrative-file "$N" --origin user-request --domain <code|data> --actor user; echo "exit=$?"
+```
+
+The domain is the user's where their content names one, else `domain=` of `"$FUSION_PLUGIN_ROOT/bin/fusion-session-domain"`. **`exit=0`**: filed at `open`; report the record's path. **Any other exit: the record you wrote stays, and no package was filed.** Name its path and the `fusion-write:` line to the user and delete nothing. `exit=7` alone may have filed it, outcome unknown: give the `operation_id=` and `id=` lines and resend nothing yourself.
+
+Only where the user's own words ask for `autonomous`, and after `exit=0`: keep their sentence verbatim in the directive, since the mode cites the record as their word, then:
+
+```bash
+H="$(shasum -a 256 "$WORKBENCH/$N" | cut -d' ' -f1)"
+"$FUSION_PLUGIN_ROOT/bin/fusion-write" set-mode --record "$D/package.json" --value autonomous --source "{\"kind\":\"user-word\",\"ref\":{\"kind\":\"other\",\"path\":\"$N\",\"sha256\":\"sha256:$H\"}}" --actor user; echo "exit=$?"
+```
+
+Any other exit leaves the package filed in the ordinary mode: say so, with the `fusion-write:` line.
 
 ## Guardrails
 
