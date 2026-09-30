@@ -1,0 +1,25 @@
+{
+  "operation_id": "1a1e0020-0000-4000-8000-000000000020",
+  "op": "initialize",
+  "request_digest": "<request-digest:20-initialize>",
+  "writes": [
+    {
+      "path": "workbench.json",
+      "before": null,
+      "after": "sha256:699b69b7e1723f1be3fe52c30708f57262ed25d39d36c15c3820680289ba7a61"
+    }
+  ],
+  "response": {
+    "ok": true,
+    "result": {
+      "operation_id": "1a1e0020-0000-4000-8000-000000000020",
+      "id": "1a1ebe20-0000-4000-8000-000000000020",
+      "path": "workbench.json",
+      "revision": "sha256:699b69b7e1723f1be3fe52c30708f57262ed25d39d36c15c3820680289ba7a61"
+    },
+    "revisions": {
+      "workbench.json": "sha256:699b69b7e1723f1be3fe52c30708f57262ed25d39d36c15c3820680289ba7a61"
+    }
+  },
+  "created_at": "2026-09-30T18:00:00.000Z"
+}

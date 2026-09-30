@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"conflict","reason":"target-not-empty","detail":"initialize writes a new workbench into an empty directory, and <workbench>/legacy holds .fusion-setup, work-packages"}}

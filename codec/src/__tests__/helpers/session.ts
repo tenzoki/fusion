@@ -1,8 +1,9 @@
 // ---------------------------------------------------------------------------
 // The machinery of a recorded session (FJ02b step 5): what the FJ02 recorder
-// (`round-trip-cli-fj02.test.ts`) and the FJ02b recorder
-// (`round-trip-cli-fj02b.test.ts`) share, so that neither carries a copy of
-// the other's. The FJ01 recorder (`round-trip-cli.test.ts`) keeps its own: its
+// (`round-trip-cli-fj02.test.ts`), the FJ02b recorder
+// (`round-trip-cli-fj02b.test.ts`) and the `initialize` recorder
+// (`round-trip-cli-initialize.test.ts`) share, so that none carries a copy of
+// another's. The FJ01 recorder (`round-trip-cli.test.ts`) keeps its own: its
 // recorded bytes are what Prior pinned first, and it is left as it stands.
 //
 // A session is a directory under `fixtures/` holding
@@ -10,7 +11,8 @@
 // a README. What this file holds is how one is run and compared:
 //
 //   - the wrapper `bin/fusion-record` spawned once per exchange, over a temp
-//     copy of the scratch workbench (the wrapper, never `node` on the bundle);
+//     copy of the session's base, the scratch workbench unless the session
+//     names another (the wrapper, never `node` on the bundle);
 //   - the one substitution, the workbench's absolute path recorded as the
 //     literal `<workbench>`;
 //   - a `seed/<nn>-<op>/` set copied onto the workbench root immediately
@@ -37,7 +39,7 @@ import { revisionOf } from "../../store.js";
 
 export const CODEC_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 export const WRAPPER = resolve(CODEC_DIR, "../bin/fusion-record");
-/** The scratch workbench every session starts from a fresh copy of. */
+/** The scratch workbench a session starts from a fresh copy of, unless it names another base. */
 export const FIXTURE = join(CODEC_DIR, "fixtures", "workbench");
 export const PLACEHOLDER = "<workbench>";
 
@@ -90,6 +92,12 @@ export interface SessionOptions {
   updateVariable: string;
   /** The prefix of the temp directory the session runs in. */
   tmpPrefix: string;
+  /**
+   * The directory `start()` copies to the workbench root, absolute; the
+   * scratch workbench, `FIXTURE`, when none is named. The `initialize` session
+   * names its own: a root holding the targets its requests name.
+   */
+  base?: string;
 }
 
 /** Where a started session runs. */
@@ -118,7 +126,7 @@ export interface Session<Name extends string> {
   readonly exchanges: Array<Exchange<Name>>;
   /** What each seed directory must hold, computed by the run: path (workbench-relative) to bytes. */
   readonly expectedSeeds: Map<Name, Map<string, Buffer>>;
-  /** Makes the temp directory and copies the scratch workbench into it. */
+  /** Makes the temp directory and copies the session's base into it. */
   start(): Place;
   /** Removes the temp directory; nothing to do when the session never started. */
   stop(): void;
@@ -176,7 +184,7 @@ export function openSession<Name extends string>(options: SessionOptions): Sessi
       const project = join(tmp, "project");
       const root = join(project, "fusion-workbench");
       mkdirSync(project);
-      cpSync(FIXTURE, root, { recursive: true });
+      cpSync(options.base ?? FIXTURE, root, { recursive: true });
       place = { tmp, project, root };
       return place;
     },

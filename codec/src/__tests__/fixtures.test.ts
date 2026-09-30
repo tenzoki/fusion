@@ -122,9 +122,12 @@ function regularFiles(dir: string, rel = ""): string[] {
 // `prior-handback/` the five files of Prior's own transition (FJ01b step 8,
 // `prior-handback.test.ts` is their gate), `protocol-session-fj02/` the
 // recorded FJ02 operations with their seed files (FJ02 step 9,
-// `round-trip-cli-fj02.test.ts` is their gate) and `protocol-session-fj02b/`
+// `round-trip-cli-fj02.test.ts` is their gate), `protocol-session-fj02b/`
 // the recorded plan progress and evidence creation with their seed files
-// (FJ02b step 5, `round-trip-cli-fj02b.test.ts` is their gate); none is a
+// (FJ02b step 5, `round-trip-cli-fj02b.test.ts` is their gate) and
+// `protocol-session-initialize/` the recorded `initialize`, `list.state` and
+// `inspect.pending` with their base and seed files (the initialize plan's
+// step 8, `round-trip-cli-initialize.test.ts` is their gate); none is a
 // validation fixture, so none is indexed.
 const isIndexed = (rel: string): boolean =>
   rel !== MANIFEST_FILE &&
@@ -134,7 +137,8 @@ const isIndexed = (rel: string): boolean =>
   !rel.startsWith("protocol-session/") &&
   !rel.startsWith("prior-handback/") &&
   !rel.startsWith("protocol-session-fj02/") &&
-  !rel.startsWith("protocol-session-fj02b/");
+  !rel.startsWith("protocol-session-fj02b/") &&
+  !rel.startsWith("protocol-session-initialize/");
 
 describe("fixtures/ coverage", () => {
   it("every fixture file appears in the manifest exactly once, and every manifest path exists", () => {

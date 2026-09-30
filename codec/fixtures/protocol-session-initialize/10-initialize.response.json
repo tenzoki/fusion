@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"conflict","reason":"manifest-present","detail":"<workbench>/new already holds workbench.json, and initialize never replaces a manifest; it holds .json-state/ops/1a1e0006-0000-4000-8000-000000000006.json, workbench.json"}}
