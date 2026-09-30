@@ -95,6 +95,7 @@
   plan-size.test.ts 206
   plan-stopping-section-lint.test.ts 257
   provenance-header-lint.test.ts 425
+  record-change.test.ts 137
   record-client.test.ts 202
   reference-resolution-lint.test.ts 1012
   review-coverage-mandate.test.ts 353
@@ -110,4 +111,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 353
-  total 23029
+  total 23166
