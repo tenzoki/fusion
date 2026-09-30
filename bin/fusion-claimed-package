@@ -43,8 +43,11 @@
 #          this version's codec does not know);
 #        - the codec refused a read, `recovery-blocked` among the reasons, or
 #          gave no answer this program can read;
-#        - a package record did not read, so its status is unknown;
-#        - a package changed between the list and the read of it twice over.
+#        - a package record did not read, by the codec's own validation or
+#          a status outside the five, so its status is unknown;
+#        - a package changed between the list and the read of it twice over;
+#        - an internal fault stopped `hooks/dist/scope.js`, a fusion bug or an
+#          incomplete install, named with its stack.
 #
 # ---------------------------------------------------------------------------
 # The criterion, and where it is read
@@ -104,8 +107,11 @@
 #
 # The consequence is stated rather than smoothed: in a tree that is not a git
 # work tree, a claim somebody wrote is not read, even though the checkout
-# identifier there is minted and readable, and the codec is not asked at all.
-# That is the cost of exit 4 meaning one thing.
+# identifier there is minted and readable. That is the cost of exit 4 meaning
+# one thing. The codec is still asked one thing there, the workbench's format
+# through `inspect`, so a legacy or unsupported workbench is exit 3 by name
+# outside git as inside it: the claim is what a tree without git lacks, not the
+# format (Prior's ruling on request 28, `codec/README.md` `## The CLI`).
 #
 # ---------------------------------------------------------------------------
 # Another checkout's claim is not a match, and not an error
@@ -168,6 +174,20 @@ if [ -z "$root" ]; then
   exit 1
 fi
 
+# --- the entry --------------------------------------------------------------
+#
+# hooks/dist/scope.js, resolved relative to this script rather than through
+# $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run their own
+# build and their own codec bundle. It prints the two lines or nothing, and
+# exits 0 or 3 with the cause on stderr; this script adds nothing to either.
+
+entry="$here/../hooks/dist/scope.js"
+if [ ! -f "$entry" ]; then
+  printf 'fusion-claimed-package: %s is missing, so nothing could be asked and the item in scope is unknown. The plugin install is incomplete.\n' \
+    "$entry" >&2
+  exit 3
+fi
+
 # --- this checkout ----------------------------------------------------------
 #
 # Established before the store is read, because every outcome below except the
@@ -191,6 +211,9 @@ case "$id_rc" in
     exit 1
     ;;
   4)
+    # No claim is held here, but the workbench's format is still asked first:
+    # a legacy or unsupported one is refused by name outside git as inside it.
+    node "$entry" gate "$root/fusion-workbench" || exit $?
     printf 'fusion-claimed-package: not a git work tree, so no claim is held here and no item is in scope.\n' >&2
     exit 0
     ;;
@@ -214,17 +237,5 @@ if [ -z "$checkout" ]; then
 fi
 
 # --- the read ---------------------------------------------------------------
-#
-# hooks/dist/scope.js, resolved relative to this script rather than through
-# $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run their own
-# build and their own codec bundle. It prints the two lines or nothing, and
-# exits 0 or 3 with the cause on stderr; this script adds nothing to either.
-
-entry="$here/../hooks/dist/scope.js"
-if [ ! -f "$entry" ]; then
-  printf 'fusion-claimed-package: %s is missing, so nothing could be asked and the item in scope is unknown. The plugin install is incomplete.\n' \
-    "$entry" >&2
-  exit 3
-fi
 
 exec node "$entry" claimed "$root/fusion-workbench" "$checkout"

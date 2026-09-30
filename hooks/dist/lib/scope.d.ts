@@ -25,11 +25,17 @@
  *                        empty store is what this module must not do. The
  *                        package rows are the ones under the container store
  *                        whose control file is `package.json`, the codec's own
- *                        name for one. A package row that is a `problem` stops
- *                        the read: its status is unknown, so the claimed set
- *                        is undetermined. A problem whose reason is
- *                        `recovery-blocked` is the refusal it is, arriving
- *                        inside an `ok: true` answer.
+ *                        name for one.
+ *   `validate`           without a record. A package row that does not read by
+ *                        `lib/codec-read.ts` `unreadRow` (a `problem` on the
+ *                        row, a finding of the codec's validation against it,
+ *                        no id, a status outside the five) stops the read: its
+ *                        status is unknown, so the claimed set is
+ *                        undetermined, and nothing falls back to "not
+ *                        claimed". The criterion is the order reader's too. A
+ *                        problem or finding whose reason is `recovery-blocked`
+ *                        is the refusal it is, arriving inside an `ok: true`
+ *                        answer.
  *   `show`, per claimed  the record at the revision `list` named. A revision
  *                        that differs is a new observation, not a failed one:
  *                        the store moved between the two reads. The read
@@ -57,26 +63,11 @@
  * `lib/record-client.ts` `## The recovery declaration`, pinned by
  * `lib/__tests__/hook-route-exclusion.test.ts`.
  */
-import { type Ask, type Refusal, type UnansweredCause } from "./record-client.js";
+import { type Ask, type Refusal } from "./record-client.js";
+import { type Unread } from "./codec-read.js";
 /** Why the item in scope could not be determined. Every member names its cause. */
-export type Unknown = {
-    cause: "legacy";
-} | {
-    cause: "unsupported";
-    diagnosis: Refusal | null;
-} | {
-    cause: "unanswered";
-    op: string;
-    how: UnansweredCause;
-    detail: string;
-}
-/** The codec's typed refusal, `recovery-blocked` among them, on `op`. */
- | {
-    cause: "refused";
-    op: string;
-    refusal: Refusal;
-}
-/** A package row of `list` that did not read, or a shown package naming no narrative. */
+export type Unknown = Unread
+/** A package row the codec's validation refuses (`lib/codec-read.ts` `unreadRow`), or a shown package naming no narrative. */
  | {
     cause: "unreadable-package";
     path: string;
@@ -119,8 +110,16 @@ export type Item = ({
  */
 export declare function claimedBy(workbench: string, checkout: string, ask?: Ask): Scope;
 /**
+ * The gate alone, for the one scope answer that reads no package: a project
+ * outside a git work tree holds no claim, and its workbench is still refused
+ * by name when it is not JSON-controlled (Prior's ruling on request 28).
+ * `null` admits it.
+ */
+export declare const formatOf: (workbench: string, ask?: Ask) => Unknown | null;
+/**
  * Whether `dir` names a package of the container store: the gate first, then
- * `show` of `<store>/<dir>/package.json`. A record the codec does not find is
- * `no-package`; every other refusal, and no answer, is `unknown`.
+ * `show` of `<store>/<dir>/package.json`, then `validate` of that record. A
+ * record the codec does not find is `no-package`; a package that does not read
+ * by `unreadRow`, every other refusal, and no answer, is `unknown`.
  */
 export declare function isPackage(workbench: string, dir: string, ask?: Ask): Item;

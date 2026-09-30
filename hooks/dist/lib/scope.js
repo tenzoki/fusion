@@ -25,11 +25,17 @@
  *                        empty store is what this module must not do. The
  *                        package rows are the ones under the container store
  *                        whose control file is `package.json`, the codec's own
- *                        name for one. A package row that is a `problem` stops
- *                        the read: its status is unknown, so the claimed set
- *                        is undetermined. A problem whose reason is
- *                        `recovery-blocked` is the refusal it is, arriving
- *                        inside an `ok: true` answer.
+ *                        name for one.
+ *   `validate`           without a record. A package row that does not read by
+ *                        `lib/codec-read.ts` `unreadRow` (a `problem` on the
+ *                        row, a finding of the codec's validation against it,
+ *                        no id, a status outside the five) stops the read: its
+ *                        status is unknown, so the claimed set is
+ *                        undetermined, and nothing falls back to "not
+ *                        claimed". The criterion is the order reader's too. A
+ *                        problem or finding whose reason is `recovery-blocked`
+ *                        is the refusal it is, arriving inside an `ok: true`
+ *                        answer.
  *   `show`, per claimed  the record at the revision `list` named. A revision
  *                        that differs is a new observation, not a failed one:
  *                        the store moved between the two reads. The read
@@ -57,65 +63,45 @@
  * `lib/record-client.ts` `## The recovery declaration`, pinned by
  * `lib/__tests__/hook-route-exclusion.test.ts`.
  */
-import { basename, dirname } from "node:path";
-import { ask as askCodec, gate } from "./record-client.js";
+import { dirname } from "node:path";
+import { ask as askCodec } from "./record-client.js";
+import { blockedRead, findingsByPath, isObject, isPackageRow, listOf, refusalOf, refusedByGate, resultOf, unreadRow } from "./codec-read.js";
 import { CONTAINER_STORE } from "./stores.js";
-const isObject = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
 const unknown = (u) => ({ kind: "unknown", ...u });
-/** The refusal an answer carries, as one value to name. */
-const refusalOf = (answer) => ({
-    class: answer.class,
-    reason: answer.reason,
-    ...(answer.detail !== undefined && { detail: answer.detail }),
-});
-/** `Refusal` read off a `problem` the codec put in a row; anything else is reported as it came. */
-function problemOf(value) {
-    if (isObject(value) && typeof value.class === "string" && typeof value.reason === "string") {
-        return { class: value.class, reason: value.reason, ...(typeof value.detail === "string" && { detail: value.detail }) };
-    }
-    return { class: "operation-unknown", reason: "problem-unreadable", detail: `the row's problem is ${JSON.stringify(value)}` };
+/** A row that does not read, as the `Unknown` it is: a blocked recovery is the refusal, anything else leaves the status unknown. */
+function unreadable(path, row, findings) {
+    const bad = unreadRow(row, findings);
+    if (bad === null)
+        return null;
+    return blockedRead(bad.op, bad.problem) ?? { cause: "unreadable-package", path, problem: bad.problem };
 }
-/** The gate's non-admitting states, each as the `unknown` it is. */
-function refusedByGate(workbench, ask) {
-    const g = gate(workbench, { ask });
-    switch (g.state) {
-        case "json-control":
-            return null;
-        case "legacy":
-            return { cause: "legacy" };
-        case "unsupported":
-            return { cause: "unsupported", diagnosis: g.diagnosis };
-        case "refused":
-            return { cause: "refused", op: "inspect", refusal: { class: g.class, reason: g.reason, ...(g.detail !== undefined && { detail: g.detail }) } };
-        case "unanswered":
-            return { cause: "unanswered", op: "inspect", how: g.cause, detail: g.detail };
-    }
+/** The codec's validation findings, keyed by path: of the whole workbench, or of `record` alone. */
+function validated(workbench, ask, record) {
+    const answer = resultOf(workbench, { op: "validate", ...(record !== undefined && { record }) }, ask);
+    if ("unread" in answer)
+        return { unknown: answer.unread };
+    const list = listOf("validate", answer.result, "findings");
+    return "unread" in list ? { unknown: list.unread } : { findings: findingsByPath("validate", list.list) };
 }
-/** A row of `list` that is a package of the container store, readable or not. */
-const isPackageRow = (row) => typeof row.path === "string" && row.path.startsWith(`${CONTAINER_STORE}/`) && basename(row.path) === "package.json";
-/** The claimed package rows, or why they cannot be known. */
+/** The claimed package rows, or why they cannot be known. Every package row has to read first. */
 function listClaimed(workbench, ask) {
-    const answer = ask(workbench, { op: "list" });
-    if (answer.kind === "unanswered")
-        return { unknown: { cause: "unanswered", op: "list", how: answer.cause, detail: answer.detail } };
-    if (answer.kind === "refused")
-        return { unknown: { cause: "refused", op: "list", refusal: refusalOf(answer) } };
-    const records = isObject(answer.result) && Array.isArray(answer.result.records) ? answer.result.records : null;
-    if (records === null)
-        return { unknown: { cause: "unanswered", op: "list", how: "unparseable", detail: "the result carries no `records` list" } };
+    const listed = resultOf(workbench, { op: "list" }, ask);
+    if ("unread" in listed)
+        return { unknown: listed.unread };
+    const records = listOf("list", listed.result, "records");
+    if ("unread" in records)
+        return { unknown: records.unread };
+    const v = validated(workbench, ask);
+    if ("unknown" in v)
+        return v;
     const rows = [];
-    for (const row of records) {
+    for (const row of records.list) {
         if (!isObject(row) || !isPackageRow(row))
             continue;
         const path = row.path;
-        if ("problem" in row) {
-            const problem = problemOf(row.problem);
-            // A blocked recovery is a refusal wherever the protocol reports it; a
-            // record that does not read is undetermined status.
-            if (problem.reason === "recovery-blocked")
-                return { unknown: { cause: "refused", op: "list", refusal: problem } };
-            return { unknown: { cause: "unreadable-package", path, problem } };
-        }
+        const u = unreadable(path, row, v.findings);
+        if (u !== null)
+            return { unknown: u };
         if (row.status !== "claimed")
             continue;
         if (typeof row.revision !== "string")
@@ -194,9 +180,17 @@ export function claimedBy(workbench, checkout, ask = askCodec) {
     }
 }
 /**
+ * The gate alone, for the one scope answer that reads no package: a project
+ * outside a git work tree holds no claim, and its workbench is still refused
+ * by name when it is not JSON-controlled (Prior's ruling on request 28).
+ * `null` admits it.
+ */
+export const formatOf = (workbench, ask = askCodec) => refusedByGate(workbench, ask);
+/**
  * Whether `dir` names a package of the container store: the gate first, then
- * `show` of `<store>/<dir>/package.json`. A record the codec does not find is
- * `no-package`; every other refusal, and no answer, is `unknown`.
+ * `show` of `<store>/<dir>/package.json`, then `validate` of that record. A
+ * record the codec does not find is `no-package`; a package that does not read
+ * by `unreadRow`, every other refusal, and no answer, is `unknown`.
  */
 export function isPackage(workbench, dir, ask = askCodec) {
     const gated = refusedByGate(workbench, ask);
@@ -212,9 +206,17 @@ export function isPackage(workbench, dir, ask = askCodec) {
         return { kind: "unknown", cause: "refused", op: "show", refusal: refusalOf(answer) };
     }
     const r = answer.result;
-    const narrative = isObject(r) && isObject(r.narrative) && typeof r.narrative.path === "string" ? r.narrative.path : null;
     if (!isObject(r) || r.kind !== "package")
         return { kind: "no-package", detail: `${path} is not a package record` };
+    // The same criterion `claimedBy` applies to every row: a package the codec's validation refuses is not in scope.
+    const v = validated(workbench, ask, { path });
+    if ("unknown" in v)
+        return { kind: "unknown", ...v.unknown };
+    const control = isObject(r.control) ? r.control : {};
+    const u = unreadable(path, { path, id: control.id, status: control.status }, v.findings);
+    if (u !== null)
+        return { kind: "unknown", ...u };
+    const narrative = isObject(r.narrative) && typeof r.narrative.path === "string" ? r.narrative.path : null;
     if (narrative === null)
         return { kind: "unknown", cause: "unreadable-package", path, problem: { class: "schema-invalid", reason: "narrative-unnamed", detail: `${path} names no narrative` } };
     return { kind: "package", package: narrative, container: `${CONTAINER_STORE}/${dir}` };

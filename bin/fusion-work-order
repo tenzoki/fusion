@@ -77,10 +77,11 @@
 #      two.
 #   1  usage error.
 #   2  no fusion workbench above the working directory; nothing to compute.
-#   3  the plugin's compiled hooks or the codec bundle are missing, so nothing
-#      could be asked. Its own code and not 2: "there are no live work packages"
-#      is an answer about the project, and a broken install must never be
-#      reported as one.
+#   3  the plugin itself could not run (compiled hooks or bundle missing, or an
+#      internal error in the order entry, named on stderr with its stack), so
+#      nothing could be asked. Never Node's own 1, the usage error. Its own code
+#      and not 2: "there are no live work packages" is an answer about the
+#      project, and a broken install must never be reported as one.
 #   4  the workbench was not read: the gate refused it by name (`legacy`, a
 #      workbench without workbench.json whose control data is Markdown, or
 #      `unsupported`, a manifest requiring a feature this codec lacks), or the

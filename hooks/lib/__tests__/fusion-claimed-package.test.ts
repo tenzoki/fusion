@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { cpSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { claimedBy } from "../scope.js";
 import type { Answer, Ask } from "../record-client.js";
@@ -90,32 +90,37 @@ describe("bin/fusion-claimed-package", () => {
     });
   }, CASE_TIMEOUT);
 
-  it("a tree that is not a git work tree is exit 0, even with a claim naming its minted checkout", () => {
-    // Not exit 3: no claim is held where the multi-checkout arrangement does not
-    // reach, so the shared store is the TRUE answer and not a degraded one. The
-    // cost is stated in the header: this claim is not read, and the codec is not asked.
+  it.each([[{}, 0, "not a git work tree"], [{ legacy: true }, 3, "is legacy"]] as const)("outside a git work tree, with %j, the format is gated and the claim naming its minted checkout is not read", (options, status, reason) => {
+    // No claim is held without git, so shared/ is the TRUE answer; a workbench not JSON-controlled is refused all the same.
     withJsonProject((p) => {
-      claim(p, createPackage(p, ALPHA), checkout(p.root));
+      if (!("legacy" in options)) claim(p, createPackage(p, ALPHA), checkout(p.root));
       const r = run(p.root);
-      expect(r.status, r.stderr).toBe(0);
-      expect(r.stdout).toBe("");
-      expect(r.stderr).toContain("not a git work tree");
-    });
+      expect([r.status, r.stdout]).toEqual([status, ""]);
+      expect(r.stderr).toContain(reason);
+    }, options);
   }, CASE_TIMEOUT);
 
-  it("exit 3, naming the record, when a package does not read", () => {
-    // Its status is unknown, so the claimed set is undetermined; a conflict
-    // marker is a state the kernel never writes, so the file is placed by hand.
+  // Each placed by hand, a state the kernel never writes: its status is unknown, so the claimed set is undetermined.
+  const reading = (p: JsonProject, rel: string) => readFileSync(resolve(p.workbench, rel), "utf-8");
+  it.each([
+    ["carries conflict markers", (p: JsonProject, x: { path: string }) => place(p, x.path, `<<<<<<< ours\n${reading(p, x.path)}=======\n>>>>>>> theirs\n`)],
+    ["carries a field the schema refuses", (p: JsonProject, x: { path: string }) => place(p, x.path, reading(p, x.path).replace("{", '{"unexpected": true,'))],
+    ["has lost its narrative", (p: JsonProject, x: { narrative: string }) => rmSync(resolve(p.workbench, x.narrative))],
+    ["carries a status outside the five", (p: JsonProject, x: { path: string }) => place(p, x.path, reading(p, x.path).replace('"claimed"', '"Claimed"'))],
+  ])("exit 3, naming the record, when a claimed package %s", (_, damage) => {
     withJsonProject((p) => {
       const pkg = createPackage(p, ALPHA);
-      claim(p, pkg, mine(p));
-      place(p, pkg.path, `<<<<<<< ours\n${readFileSync(resolve(p.workbench, pkg.path), "utf-8")}=======\n>>>>>>> theirs\n`);
+      claim(p, pkg, mine(p)); damage(p, pkg);
       const r = run(p.root);
-      expect(r.status).toBe(3);
-      expect(r.stdout).toBe("");
+      expect([r.status, r.stdout]).toEqual([3, ""]);
       expect(r.stderr).toContain(`${pkg.path} does not read`);
     });
   }, CASE_TIMEOUT);
+
+  it("exit 3, never Node's 1, when the scope or the order entry cannot load its modules", () => withJsonProject((p) => {
+    for (const entry of ["scope.js", "order.js"]) cpSync(join(pluginRoot, "hooks", "dist", entry), join(p.root, entry));
+    for (const [entry, ...args] of [["scope.js", "claimed", p.workbench, "a1b2c3d4"], ["scope.js", "item", p.workbench, ALPHA], ["order.js"]]) expect(sh(process.execPath, [join(p.root, entry), ...args], p.root)).toMatchObject({ status: 3, stdout: "" });
+  }), CASE_TIMEOUT);
 
   it.each([
     ["legacy", { legacy: true }, (): void => undefined, "is legacy"],
@@ -174,17 +179,17 @@ describe("claimedBy through an injected ask", () => {
   /** An ask answering from `byOp`, counting the calls per op. */
   function asking(byOp: Record<string, (n: number) => Answer>): { ask: Ask; calls: Record<string, number> } {
     const calls: Record<string, number> = {};
-    return { calls, ask: (_wb, req) => (calls[req.op] = (calls[req.op] ?? 0) + 1, byOp[req.op](calls[req.op])) };
+    return { calls, ask: (_wb, req) => (calls[req.op] = (calls[req.op] ?? 0) + 1, ({ validate: () => result({ findings: [] }), ...byOp })[req.op](calls[req.op])) };
   }
 
   it("re-reads once when show names another revision than list, and is store-changing the second time", () => {
-    const listed = result({ records: [{ path: PATH, kind: "package", status: "claimed", revision: "aaa" }] });
+    const listed = result({ records: [{ path: PATH, kind: "package", id: "1", status: "claimed", revision: "aaa" }] });
     const { ask, calls } = asking({ inspect: () => inspect, list: () => listed, show: () => shown("bbb") });
     expect(claimedBy("/wb", "a1b2c3d4", ask)).toEqual({ kind: "unknown", cause: "store-changing", path: PATH, listed: "aaa", shown: "bbb" });
     // One bounded re-read, a new observation of both: not a retry of `show` alone, and no third.
-    expect(calls).toEqual({ inspect: 1, list: 2, show: 2 });
+    expect(calls).toEqual({ inspect: 1, list: 2, validate: 2, show: 2 });
     // And a store that settled on the re-read resolves.
-    const settled = asking({ inspect: () => inspect, list: (n) => (n === 1 ? listed : result({ records: [{ path: PATH, kind: "package", status: "claimed", revision: "bbb" }] })), show: () => shown("bbb") });
+    const settled = asking({ inspect: () => inspect, list: (n) => (n === 1 ? listed : result({ records: [{ path: PATH, kind: "package", id: "1", status: "claimed", revision: "bbb" }] })), show: () => shown("bbb") });
     expect(claimedBy("/wb", "a1b2c3d4", settled.ask)).toMatchObject({ kind: "one", container: `work-packages/${ALPHA}` });
   });
 
@@ -199,7 +204,7 @@ describe("claimedBy through an injected ask", () => {
     const refused: Answer = { kind: "refused", class: "conflict", reason: "lock-timeout", detail: "held by 1234" };
     expect(claimedBy("/wb", "a1b2c3d4", asking({ inspect: () => inspect, list: () => refused }).ask))
       .toEqual({ kind: "unknown", cause: "refused", op: "list", refusal: { class: "conflict", reason: "lock-timeout", detail: "held by 1234" } });
-    const listed = result({ records: [{ path: PATH, kind: "package", status: "claimed", revision: "aaa" }] });
+    const listed = result({ records: [{ path: PATH, kind: "package", id: "1", status: "claimed", revision: "aaa" }] });
     const gone: Answer = { kind: "unanswered", cause: "timeout", detail: "stopped" };
     expect(claimedBy("/wb", "a1b2c3d4", asking({ inspect: () => inspect, list: () => listed, show: () => gone }).ask))
       .toEqual({ kind: "unknown", cause: "unanswered", op: "show", how: "timeout", detail: "stopped" });

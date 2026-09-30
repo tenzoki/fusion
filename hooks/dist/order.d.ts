@@ -44,15 +44,16 @@
  * `ready=` counts the items with no resolved edge and no `unmet=` row;
  * `roots=` counts the items at depth 0, where the order starts. A paused
  * item never counts in `ready=` and still counts at depth 0. An item blocked
- * by an `unmet=` row alone sits at depth 0 too, because the terminal target
- * it waits on is no node.
+ * by an `unmet=` row alone sits at depth 0 too, because the target it waits
+ * on is no node.
  *
  * `unmet-edges=` counts the `unmet=` rows: a condition the codec evaluated
- * against a terminal target and found unmet (`succeeded` on a dropped
- * package is the case). A dependency on a terminal package under `terminal`
- * is satisfied and prints nothing. `unresolved-edges=` counts the entries the
- * codec could not resolve to a listed package, each named with the codec's
- * reason. `unreadable-head=` counts the package rows that did not read, or
+ * and found unmet against a target that is no node, because it is terminal
+ * (`succeeded` on a dropped package), unreadable or unlisted; the dependent
+ * is blocked all the same. A dependency on a terminal package under
+ * `terminal` is satisfied and prints nothing. `unresolved-edges=` counts the
+ * entries the codec could not resolve to a package, each named with the
+ * codec's reason. `unreadable-head=` counts the package rows that did not read, or
  * that `reconcile` reported a finding against, each named with it.
  *
  * ## The `note=` line is mandatory, and it is a user's ruling rather than a
@@ -78,8 +79,11 @@
  *   0  the check ran. `verdict=` says what it found.
  *   1  usage error.
  *   2  no fusion workbench above the working directory; nothing to compute.
- *   3  the codec bundle is not installed, so nothing could be asked (the
- *      wrapper's own 3 covers the compiled hooks).
+ *   3  the plugin itself could not run: the codec bundle is not installed,
+ *      so nothing could be asked (the wrapper's own 3 covers the compiled
+ *      hooks), or an internal error stopped this entry (a module missing
+ *      from an install, or a throw of the reader or `orderOf`), named on
+ *      stderr with its stack and nothing on stdout.
  *   4  the workbench was not read: refused by the gate (`legacy`,
  *      `unsupported`), or the codec refused a read or gave no answer, a
  *      blocked recovery among them wherever the protocol reports it. The

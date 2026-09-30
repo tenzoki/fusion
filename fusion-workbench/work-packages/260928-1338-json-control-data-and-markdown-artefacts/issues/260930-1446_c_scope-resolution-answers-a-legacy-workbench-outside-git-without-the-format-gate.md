@@ -13,3 +13,6 @@ Contract: the plan's `## Directive` ("a workbench that is not JSON-controlled is
 Fix direction: run the gate before the not-a-work-tree answer (for example a `scope.js` subcommand that gates only), keeping exit 0 and no output for a JSON-controlled workbench outside git. Or record a decision that the format gate does not apply where no claim can be held, and state it in the header.
 
 Acceptance: `bin/fusion-claimed-package` and `bin/fusion-paths <agent>` in a project that is not a git work tree, with a workbench lacking `workbench.json`, exit 3 with `legacy` on stderr and nothing on stdout; the same project with a manifest still exits 0 with no output.
+
+---
+Resolved: `bin/fusion-claimed-package` runs `hooks/dist/scope.js gate` (new subcommand, `hooks/lib/scope.ts` `formatOf`) before its not-a-git-work-tree answer, so a legacy or unsupported workbench is exit 3 by name there too, and a JSON-controlled one still exit 0 with no output. Pinned by the not-a-work-tree `it.each` in `hooks/lib/__tests__/fusion-claimed-package.test.ts`; `hooks/lib/__tests__/fusion-paths.test.ts` now seeds its non-git projects with the fixture manifest and stages the compiled hooks in its scratch plugin.

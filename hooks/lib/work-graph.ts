@@ -25,42 +25,43 @@
  *                      None of them is an empty store.
  *   `list`             every control file, without a scope, as `lib/scope.ts`
  *                      sends it (a scoped `list` is refused where the container
- *                      store does not exist yet). The package rows of the
- *                      container store are read: a live `status` (`open`,
- *                      `claimed`, `paused`) is a node, a terminal one (`done`,
- *                      `dropped`) is remembered as a target and is no node, and
- *                      a row that is a `problem`, names no id or carries a
+ *                      store does not exist yet).
+ *   `reconcile`        without a scope, for the same reason, and asked on every
+ *                      read. Its `records` findings are read BEFORE its
+ *                      `dependencies`. Each package row of `list` is then
+ *                      judged by `lib/codec-read.ts` `unreadRow`, the criterion
+ *                      `lib/scope.ts` applies too: a row that is a `problem`,
+ *                      that a finding names, that names no id or that carries a
  *                      status outside the five is `unreadable`, named and
- *                      outside the graph. A `problem` whose reason is
- *                      `recovery-blocked` is the refusal it is and ends the
- *                      read. No live node: the report is empty and `reconcile`
- *                      is not asked.
- *   `reconcile`        without a scope, for the same reason. Its `records`
- *                      findings are read BEFORE its `dependencies`: a finding
- *                      whose reason is `recovery-blocked` against any package
- *                      ends the read with a named failure and no report,
- *                      wherever the protocol put it (Prior's review of the
- *                      FJ03a plan, `## C.`); any other finding against a live
- *                      node moves that node to `unreadable`, because a record
- *                      the codec reports against contributes no edge it has
- *                      decided, and this reader cannot tell from outside which
- *                      findings withheld the edges. Then each `dependencies`
- *                      entry of a live node is placed by the table below.
+ *                      outside the graph, whether its status is live or
+ *                      terminal, because a record the codec reports against
+ *                      contributes nothing it has decided. A `problem` or
+ *                      finding whose reason is `recovery-blocked` ends the read
+ *                      with a named failure and no report, wherever the
+ *                      protocol put it (Prior's review of the FJ03a plan,
+ *                      `## C.`). A live `status` (`open`, `claimed`, `paused`)
+ *                      is a node, a terminal one (`done`, `dropped`) is a
+ *                      target and no node. Then each `dependencies` entry of a
+ *                      node is placed by the table below.
  *
  * ## The table one edge entry falls in, and it is disjoint and complete
  *
- *   entry                             target's row      input to `orderOf`
- *   `satisfied`                       any               no edge, no row
- *   `unmet`, reason `dependency-unmet`  a live node       a resolved edge
- *   `unmet`, reason `dependency-unmet`  a terminal package  an `unmet` row: the
- *                                                       dependent is blocked
- *   `unmet`, reason `dependency-unmet`  no listed package  `unresolved`, reason
- *                                                       `target-unlisted` or
- *                                                       `target-unreadable`
- *   `unmet`, any other reason         none, or no package  `unresolved`, the
+ *   entry                               target            input to `orderOf`
+ *   `satisfied`                         any               no edge, no row
+ *   `unmet`, reason `dependency-unmet`  a node            a resolved edge
+ *   `unmet`, reason `dependency-unmet`  no node: terminal, an `unmet` row: the
+ *                                       unreadable or     dependent is blocked
+ *                                       unlisted
+ *   `unmet`, any other reason           none, or no package  `unresolved`, the
  *                                                       dependent's readiness
  *                                                       untouched
  *
+ * The codec evaluated a `dependency-unmet` entry and found the condition
+ * unmet, so that entry blocks its dependent whatever this read concluded
+ * about the target; `unresolved` is left for the entries the codec itself
+ * could not resolve to a package (the closed FJ03a plan's `## Data
+ * Structures`, and
+ * `260930-1446_*_the-order-reader-reports-a-dependent-ready-when-the-codec-reported-its-edge-to-a-live-package-unmet.md`).
  * A dependency on a terminal package under `condition: terminal` is
  * `satisfied` and prints no row, where the Markdown reader printed
  * `unresolved=` because it could not tell a terminal target from a missing
@@ -93,9 +94,8 @@
  */
 
 import { basename, dirname } from "node:path";
-import { ask as askCodec, gate, type Answer, type Ask, type Refusal } from "./record-client.js";
-import type { Unknown } from "./scope.js";
-import { CONTAINER_STORE } from "./stores.js";
+import { ask as askCodec, type Ask, type Refusal } from "./record-client.js";
+import { blockedRead, findingsByPath, isObject, isPackageRow, listOf, problemOf, refusedByGate, resultOf, unreadRow, type Unread } from "./codec-read.js";
 
 /** The live values of `status`. `done` and `dropped` are not nodes. */
 export type ItemStatus = "open" | "claimed" | "paused";
@@ -120,7 +120,7 @@ export interface ResolvedEdge {
   to: string;
 }
 
-/** An unmet condition on a terminal target: `from` is blocked by a package that is no node. */
+/** An unmet condition on a target that is no node: `to` is its container, or the record id where no row named it. */
 export interface UnmetEdge {
   from: string;
   to: string;
@@ -191,7 +191,7 @@ export interface WorkGraphReport {
 }
 
 /** Why no report could be read; each member names its cause, and none is an empty store. */
-export type Failure = Extract<Unknown, { cause: "legacy" | "unsupported" | "unanswered" | "refused" }>;
+export type Failure = Unread;
 
 export type Read = { kind: "report"; report: WorkGraphReport } | ({ kind: "failed" } & Failure);
 
@@ -395,60 +395,7 @@ export function orderOf(input: OrderInput): WorkGraphReport {
 
 // --- the reader ---------------------------------------------------------------
 
-const isObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
-
 const failed = (f: Failure): Read => ({ kind: "failed", ...f });
-
-/** The refusal an answer carries, as one value to name. */
-const refusalOf = (answer: Answer & { kind: "refused" }): Refusal => ({
-  class: answer.class,
-  reason: answer.reason,
-  ...(answer.detail !== undefined && { detail: answer.detail }),
-});
-
-/** `Refusal` read off a `problem` or a finding the codec put in a row; anything else is reported as it came. */
-function problemOf(value: unknown): Refusal {
-  if (isObject(value) && typeof value.class === "string" && typeof value.reason === "string") {
-    return { class: value.class, reason: value.reason, ...(typeof value.detail === "string" && { detail: value.detail }) };
-  }
-  return { class: "operation-unknown", reason: "problem-unreadable", detail: `the codec's finding is ${JSON.stringify(value)}` };
-}
-
-/** The gate's non-admitting states, each as the failure it is. */
-function refusedByGate(workbench: string, ask: Ask): Failure | null {
-  const g = gate(workbench, { ask });
-  switch (g.state) {
-    case "json-control":
-      return null;
-    case "legacy":
-      return { cause: "legacy" };
-    case "unsupported":
-      return { cause: "unsupported", diagnosis: g.diagnosis };
-    case "refused":
-      return { cause: "refused", op: "inspect", refusal: { class: g.class, reason: g.reason, ...(g.detail !== undefined && { detail: g.detail }) } };
-    case "unanswered":
-      return { cause: "unanswered", op: "inspect", how: g.cause, detail: g.detail };
-  }
-}
-
-/** A row of `list` that is a package of the container store, readable or not. */
-const isPackageRow = (row: Record<string, unknown>): boolean =>
-  typeof row.path === "string" && row.path.startsWith(`${CONTAINER_STORE}/`) && basename(row.path) === "package.json";
-
-/** One `list` or `reconcile` answer's result object, or the failure that stands in for it. */
-function resultOf(workbench: string, op: string, ask: Ask): { result: Record<string, unknown> } | { failure: Failure } {
-  const answer = ask(workbench, { op });
-  if (answer.kind === "unanswered") return { failure: { cause: "unanswered", op, how: answer.cause, detail: answer.detail } };
-  if (answer.kind === "refused") return { failure: { cause: "refused", op, refusal: refusalOf(answer) } };
-  if (!isObject(answer.result)) return { failure: { cause: "unanswered", op, how: "unparseable", detail: `the result of ${op} is no object` } };
-  return { result: answer.result };
-}
-
-/** The list `key` of a result, or the failure that it is missing. */
-function listOf(op: string, result: Record<string, unknown>, key: string): { list: unknown[] } | { failure: Failure } {
-  return Array.isArray(result[key]) ? { list: result[key] } : { failure: { cause: "unanswered", op, how: "unparseable", detail: `the result of ${op} carries no \`${key}\` list` } };
-}
 
 interface Listed {
   path: string;
@@ -458,10 +405,6 @@ interface Listed {
   status: ItemStatus | null;
 }
 
-/** The blocked recovery a finding or problem carries, as the failure that ends the read. */
-const blocked = (op: string, problem: Refusal): Failure | null =>
-  problem.reason === "recovery-blocked" ? { cause: "refused", op, refusal: problem } : null;
-
 /**
  * The ordering report of `workbench`, or why none could be read. `ask` is the
  * record client's by default, and a test's stand-in when injected.
@@ -470,65 +413,42 @@ export function readWorkGraph(workbench: string, ask: Ask = askCodec): Read {
   const gated = refusedByGate(workbench, ask);
   if (gated !== null) return failed(gated);
 
-  // --- list: the nodes, the terminal targets, the rows that did not read ----
-  const listed = resultOf(workbench, "list", ask);
-  if ("failure" in listed) return failed(listed.failure);
+  // --- list and reconcile's findings: which package rows read ---------------
+  const listed = resultOf(workbench, { op: "list" }, ask);
+  if ("unread" in listed) return failed(listed.unread);
   const records = listOf("list", listed.result, "records");
-  if ("failure" in records) return failed(records.failure);
+  if ("unread" in records) return failed(records.unread);
+  const reconciled = resultOf(workbench, { op: "reconcile" }, ask);
+  if ("unread" in reconciled) return failed(reconciled.unread);
+  const findings = listOf("reconcile", reconciled.result, "records");
+  if ("unread" in findings) return failed(findings.unread);
+  const dependencies = listOf("reconcile", reconciled.result, "dependencies");
+  if ("unread" in dependencies) return failed(dependencies.unread);
+  const found = findingsByPath("reconcile", findings.list);
 
   const packages: Listed[] = [];
   const unreadable: Unreadable[] = [];
+  /** Every id a package row names, readable or not, so an unmet edge to an unreadable target names its container. */
+  const dirOf = new Map<string, string>();
   for (const row of records.list) {
     if (!isObject(row) || !isPackageRow(row)) continue;
     const path = row.path as string;
     const dir = basename(dirname(path));
-    if ("problem" in row) {
-      const problem = problemOf(row.problem);
-      const b = blocked("list", problem);
+    if (typeof row.id === "string") dirOf.set(row.id, dir);
+    const bad = unreadRow(row, found);
+    if (bad !== null) {
+      const b = blockedRead(bad.op, bad.problem);
       if (b !== null) return failed(b);
-      unreadable.push({ dir, problem });
+      unreadable.push({ dir, problem: bad.problem });
       continue;
     }
-    const status = row.status;
-    // An allowlist of the five values, not a denylist: a status outside them
-    // is a row this module could not read, named rather than dropped.
-    if (typeof row.id !== "string" || row.id === "") {
-      unreadable.push({ dir, problem: { class: "schema-invalid", reason: "id-unnamed", detail: `${path} names no id` } });
-    } else if (status === "open" || status === "claimed" || status === "paused") {
-      packages.push({ path, dir, id: row.id, status });
-    } else if (status === "done" || status === "dropped") {
-      packages.push({ path, dir, id: row.id, status: null });
-    } else {
-      unreadable.push({ dir, problem: { class: "schema-invalid", reason: "status-unreadable", detail: `${path} carries status ${JSON.stringify(status)}` } });
-    }
+    const status = row.status as ItemStatus | "done" | "dropped";
+    packages.push({ path, dir, id: row.id as string, status: status === "done" || status === "dropped" ? null : status });
   }
   const nodes = new Map<string, Listed>(packages.filter((p) => p.status !== null).map((p) => [p.path, p]));
-  const empty = (): Read => ({ kind: "report", report: orderOf({ nodes: [], edges: [], unmet: [], unresolved: [], unreadable, noDependsOnField: 0 }) });
-  if (nodes.size === 0) return empty();
-
-  // --- reconcile: the findings first, then the edges -----------------------
-  const reconciled = resultOf(workbench, "reconcile", ask);
-  if ("failure" in reconciled) return failed(reconciled.failure);
-  const findings = listOf("reconcile", reconciled.result, "records");
-  if ("failure" in findings) return failed(findings.failure);
-  const dependencies = listOf("reconcile", reconciled.result, "dependencies");
-  if ("failure" in dependencies) return failed(dependencies.failure);
-
-  const packagePaths = new Set(packages.map((p) => p.path));
-  for (const f of findings.list) {
-    if (!isObject(f) || typeof f.path !== "string" || !packagePaths.has(f.path)) continue;
-    const problem = problemOf(f);
-    const b = blocked("reconcile", problem);
-    if (b !== null) return failed(b);
-    const node = nodes.get(f.path);
-    if (node === undefined) continue;
-    nodes.delete(f.path);
-    unreadable.push({ dir: node.dir, problem });
-  }
-  if (nodes.size === 0) return empty();
-
   const byId = new Map<string, Listed>(packages.map((p) => [p.id, p]));
-  const unreadableDirs = new Set(unreadable.map((u) => u.dir));
+
+  // --- the edges, each placed by the table --------------------------------------
   const edges: ResolvedEdge[] = [];
   const unmet: UnmetEdge[] = [];
   const unresolved: UnresolvedEdge[] = [];
@@ -536,24 +456,23 @@ export function readWorkGraph(workbench: string, ask: Ask = askCodec): Read {
   for (const e of dependencies.list) {
     if (!isObject(e) || typeof e.path !== "string" || e.status === "cycle") continue;
     const from = nodes.get(e.path);
-    if (from === undefined) continue; // a terminal package's entries are never read
+    if (from === undefined) continue; // a terminal or unreadable package's entries are never read
     entries.set(e.path, (entries.get(e.path) ?? 0) + 1);
     if (e.status === "satisfied") continue;
     const target = typeof e.target === "string" ? e.target : JSON.stringify(e.target);
-    const reason = typeof e.reason === "string" ? e.reason : "reason-unnamed";
-    const b = blocked("reconcile", { class: typeof e.class === "string" ? e.class : "operation-unknown", reason, ...(typeof e.detail === "string" && { detail: e.detail }) });
+    const problem = problemOf({ class: typeof e.class === "string" ? e.class : "operation-unknown", reason: typeof e.reason === "string" ? e.reason : "reason-unnamed", detail: e.detail });
+    const b = blockedRead("reconcile", problem);
     if (b !== null) return failed(b);
-    if (reason !== "dependency-unmet") {
-      unresolved.push({ from: from.dir, target, reason: `${typeof e.class === "string" ? e.class : "operation-unknown"}/${reason}` });
+    if (problem.reason !== "dependency-unmet") {
+      unresolved.push({ from: from.dir, target, reason: `${problem.class}/${problem.reason}` });
       continue;
     }
+    // The codec evaluated the condition and found it unmet, so the dependent is
+    // blocked whatever this read concluded about the target: an edge when the
+    // target is a node, an `unmet` row when it is terminal, unreadable or unlisted.
     const to = byId.get(target);
     if (to !== undefined && nodes.has(to.path)) edges.push({ from: from.dir, to: to.dir });
-    else if (to !== undefined && to.status === null) unmet.push({ from: from.dir, to: to.dir, condition: String(e.condition), detail: typeof e.detail === "string" ? e.detail : "" });
-    // The codec resolved the target and this read did not list it as a live or
-    // terminal package: it moved to `unreadable` above, or the store changed
-    // between the two reads. Either way the edge is unresolved here.
-    else unresolved.push({ from: from.dir, target, reason: to !== undefined && unreadableDirs.has(to.dir) ? "target-unreadable" : "target-unlisted" });
+    else unmet.push({ from: from.dir, to: dirOf.get(target) ?? target, condition: String(e.condition), detail: problem.detail ?? "" });
   }
 
   return {

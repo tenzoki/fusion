@@ -80,7 +80,7 @@ describe("readWorkGraph through an injected ask", () => {
     const { ask } = asking({ inspect, list, reconcile: reconciled([unmet(mid, "1")], [{ path: path(base), ...blocked }]) });
     expect(readWorkGraph("/wb", ask)).toEqual({ kind: "failed", cause: "refused", op: "reconcile", refusal: blocked });
     // The same finding as a `list` problem row, and as the reason on an edge entry.
-    expect(readWorkGraph("/wb", asking({ inspect, list: result({ records: [row(base, "1"), { path: path(mid), problem: blocked }] }) }).ask)).toMatchObject({ kind: "failed", cause: "refused", op: "list" });
+    expect(readWorkGraph("/wb", asking({ inspect, list: result({ records: [row(base, "1"), { path: path(mid), problem: blocked }] }), reconcile: reconciled([]) }).ask)).toMatchObject({ kind: "failed", cause: "refused", op: "list" });
     expect(readWorkGraph("/wb", asking({ inspect, list, reconcile: reconciled([edge(mid, "1", "unmet", blocked)]) }).ask)).toMatchObject({ kind: "failed", cause: "refused", op: "reconcile", refusal: blocked });
   });
 
@@ -92,13 +92,13 @@ describe("readWorkGraph through an injected ask", () => {
     expect(readWorkGraph("/wb", asking({ inspect: result({ state: "legacy" }) }).ask)).toEqual({ kind: "failed", cause: "legacy" });
   });
 
-  it("places each edge entry by the table, and asks reconcile only when a live node exists", () => {
-    const list = result({ records: [row(base, "1"), row(mid, "2"), row(closed, "3", "dropped"), row(tip, "4", "open"), row(garbage, "5", "garbage"), row(fanA, "6")] });
+  it("places each edge entry by the table, and judges every package row by the codec's findings", () => {
+    const list = result({ records: [row(base, "1"), row(mid, "2"), row(closed, "3", "dropped"), row(tip, "4", "open"), row(garbage, "5", "garbage"), row(fanA, "6"), row(fanB, "7")] });
     const { ask, calls } = asking({
       inspect, list,
       reconcile: reconciled(
         [unmet(mid, "1"), edge(base, "3", "satisfied"), { ...unmet(tip, "3", "succeeded: the target is dropped, not done"), condition: "succeeded" }, unmet(fanA, "6"), edge(closed, "1", "unmet", { reason: "x" }),
-          edge(mid, "9", "unmet", { class: "unresolved-reference", reason: "record-not-found" }), edge(tip, "6", "unmet", { reason: "dependency-unmet" }), { status: "cycle", ids: [] }],
+          edge(mid, "9", "unmet", { class: "unresolved-reference", reason: "record-not-found" }), unmet(fanB, "6"), { status: "cycle", ids: [] }],
         [{ path: path(fanA), class: "schema-invalid", reason: "schema", detail: "bad" }, { path: path(closed), class: "unresolved-reference", reason: "narrative-missing", detail: "" }],
       ),
     });
@@ -106,17 +106,16 @@ describe("readWorkGraph through an injected ask", () => {
     expect(read.kind).toBe("report");
     if (read.kind !== "report") return;
     // `base` under `terminal` on the dropped target: satisfied, no edge, no row. `tip` under
-    // `succeeded` on it: an unmet row. `fanA` is reported against, so it is unreadable and the edge
-    // naming it is `target-unreadable`; `closed` is terminal, so its own entry is never read.
-    expect(read.report.rows.map((r) => [r.dir, r.readiness])).toEqual([[base, "ready"], [mid, "blocked"], [tip, "blocked"]]);
-    expect(read.report.unmetEdges).toEqual([{ from: tip, to: closed, condition: "succeeded", detail: "succeeded: the target is dropped, not done" }]);
-    expect(read.report.unresolvedEdges).toEqual([{ from: mid, target: "9", reason: "unresolved-reference/record-not-found" }, { from: tip, target: "6", reason: "target-unreadable" }]);
-    expect(read.report.unreadable.map((u) => [u.dir, u.problem.reason])).toEqual([[fanA, "schema"], [garbage, "status-unreadable"]]);
+    // `succeeded` on it: an unmet row. `fanA` and `closed` are reported against, so both are
+    // unreadable, and `fanB`, whose only prerequisite is `fanA`, is blocked by the codec's `unmet`.
+    expect(read.report.rows.map((r) => [r.dir, r.readiness])).toEqual([[base, "ready"], [mid, "blocked"], [tip, "blocked"], [fanB, "blocked"]]);
+    expect(read.report.unmetEdges.map((u) => [u.from, u.to, u.condition])).toEqual([[tip, closed, "succeeded"], [fanB, fanA, "terminal"]]);
+    expect(read.report.unresolvedEdges).toEqual([{ from: mid, target: "9", reason: "unresolved-reference/record-not-found" }]);
+    expect(read.report.unreadable.map((u) => [u.dir, u.problem.reason])).toEqual([[fanA, "schema"], [closed, "narrative-missing"], [garbage, "status-unreadable"]]);
     expect([read.report.edges, read.report.noDependsOnField]).toEqual([1, 0]);
     expect(calls).toEqual({ inspect: 1, list: 1, reconcile: 1 });
-    // No live node: the report is empty, and `reconcile` is not asked.
-    const none = asking({ inspect, list: result({ records: [row(closed, "3", "dropped")] }) });
-    expect(readWorkGraph("/wb", none.ask)).toMatchObject({ kind: "report", report: { verdict: "empty" } });
-    expect(none.calls.reconcile).toBeUndefined();
+    // No live node: the report is empty, and a terminal row reported against is still named.
+    const none = asking({ inspect, list: result({ records: [row(closed, "3", "dropped")] }), reconcile: reconciled([], [{ path: path(closed), class: "schema-invalid", reason: "schema" }]) });
+    expect(readWorkGraph("/wb", none.ask)).toMatchObject({ kind: "report", report: { verdict: "empty", unreadableHead: 1 } });
   });
 });

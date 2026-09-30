@@ -44,15 +44,16 @@
  * `ready=` counts the items with no resolved edge and no `unmet=` row;
  * `roots=` counts the items at depth 0, where the order starts. A paused
  * item never counts in `ready=` and still counts at depth 0. An item blocked
- * by an `unmet=` row alone sits at depth 0 too, because the terminal target
- * it waits on is no node.
+ * by an `unmet=` row alone sits at depth 0 too, because the target it waits
+ * on is no node.
  *
  * `unmet-edges=` counts the `unmet=` rows: a condition the codec evaluated
- * against a terminal target and found unmet (`succeeded` on a dropped
- * package is the case). A dependency on a terminal package under `terminal`
- * is satisfied and prints nothing. `unresolved-edges=` counts the entries the
- * codec could not resolve to a listed package, each named with the codec's
- * reason. `unreadable-head=` counts the package rows that did not read, or
+ * and found unmet against a target that is no node, because it is terminal
+ * (`succeeded` on a dropped package), unreadable or unlisted; the dependent
+ * is blocked all the same. A dependency on a terminal package under
+ * `terminal` is satisfied and prints nothing. `unresolved-edges=` counts the
+ * entries the codec could not resolve to a package, each named with the
+ * codec's reason. `unreadable-head=` counts the package rows that did not read, or
  * that `reconcile` reported a finding against, each named with it.
  *
  * ## The `note=` line is mandatory, and it is a user's ruling rather than a
@@ -78,8 +79,11 @@
  *   0  the check ran. `verdict=` says what it found.
  *   1  usage error.
  *   2  no fusion workbench above the working directory; nothing to compute.
- *   3  the codec bundle is not installed, so nothing could be asked (the
- *      wrapper's own 3 covers the compiled hooks).
+ *   3  the plugin itself could not run: the codec bundle is not installed,
+ *      so nothing could be asked (the wrapper's own 3 covers the compiled
+ *      hooks), or an internal error stopped this entry (a module missing
+ *      from an install, or a throw of the reader or `orderOf`), named on
+ *      stderr with its stack and nothing on stdout.
  *   4  the workbench was not read: refused by the gate (`legacy`,
  *      `unsupported`), or the codec refused a read or gave no answer, a
  *      blocked recovery among them wherever the protocol reports it. The
@@ -99,12 +103,9 @@
  */
 
 import { join } from "node:path";
-import { readWorkGraph, type Failure } from "./lib/work-graph.js";
-import { findWorkbenchRoot } from "./lib/workbench-root.js";
-import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
+import type { Failure } from "./lib/work-graph.js";
 
-// The reader may close stdout first; see exitZeroOnStdoutEpipe.
-exitZeroOnStdoutEpipe();
+type Readers = { readWorkGraph: typeof import("./lib/work-graph.js").readWorkGraph; findWorkbenchRoot: typeof import("./lib/workbench-root.js").findWorkbenchRoot };
 
 const USAGE = "usage: fusion-work-order";
 
@@ -172,7 +173,7 @@ function failure(f: Failure, workbench: string): { line: string; code: 3 | 4 } {
   }
 }
 
-function main(argv: string[]): number {
+function main(argv: string[], { readWorkGraph, findWorkbenchRoot }: Readers): number {
   if (argv.length > 0) {
     process.stderr.write(
       `fusion-work-order: unknown argument ${JSON.stringify(argv[0])}\n${USAGE}\n`,
@@ -224,4 +225,15 @@ function main(argv: string[]): number {
   return 0;
 }
 
-process.exitCode = main(process.argv.slice(2));
+// An internal error is 3, "the plugin itself could not run", and never Node's
+// own 1, which is the usage error here. The modules are imported inside the
+// `try`, so one missing from an incomplete install is caught like a throw of
+// the reader or of `orderOf`.
+try {
+  const [{ readWorkGraph }, { findWorkbenchRoot }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/work-graph.js"), import("./lib/workbench-root.js"), import("./lib/fail-open.js")]);
+  exitZeroOnStdoutEpipe(); // the reader may close stdout first
+  process.exitCode = main(process.argv.slice(2), { readWorkGraph, findWorkbenchRoot });
+} catch (e) {
+  process.stderr.write(`fusion-work-order: an internal error stopped the order entry, a fusion bug or an incomplete install and not the workbench's. No order was computed.\n${e instanceof Error ? e.stack : String(e)}\n`);
+  process.exitCode = 3;
+}

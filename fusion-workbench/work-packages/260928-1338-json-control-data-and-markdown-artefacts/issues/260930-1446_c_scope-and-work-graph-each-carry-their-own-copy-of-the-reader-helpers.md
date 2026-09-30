@@ -11,3 +11,6 @@ Evidence: `hooks/lib/scope.ts` defines `isObject`, `refusalOf`, `problemOf`, `re
 Fix direction: export the shared helpers once, from `record-client.ts` or a small `lib/codec-read.ts`, and import them in both readers. Fold the row-validity criterion of the first issue into the same place.
 
 Acceptance: each helper has one definition under `hooks/lib/`; `grep -n "const isPackageRow\|function refusedByGate\|function problemOf" hooks/lib/*.ts` names one site each.
+
+---
+Resolved: `isObject`, `refusalOf`, `problemOf`, `refusedByGate`, `isPackageRow` and the row criterion `unreadRow` are defined once in `hooks/lib/codec-read.ts` and imported by `hooks/lib/scope.ts` and `hooks/lib/work-graph.ts`. `hooks/lib/record-client.ts` keeps its own private `isObject`: that file was outside the dispatch's file list.

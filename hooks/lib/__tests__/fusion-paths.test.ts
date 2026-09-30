@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, chmodSync, rmSync } from "node:fs";
+import { cpSync, mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, chmodSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
@@ -85,8 +85,9 @@ describe("bin/fusion-paths", () => {
     project = mkdtempSync(join(tmpdir(), "fusion-paths-"));
     workbench = join(project, "fusion-workbench");
     mkdirSync(join(workbench, "shared"), { recursive: true });
-    // The marker bin/fusion-workbench-root walks up looking for.
+    // The marker bin/fusion-workbench-root walks up looking for, and the manifest the format gate admits outside git too.
     writeFileSync(join(workbench, ".fusion-setup"), "{}\n");
+    cpSync(join(pluginRoot, "codec", "fixtures", "workbench", "workbench.json"), join(workbench, "workbench.json"));
 
     // A directory guaranteed to sit outside any workbench, for the no-workbench
     // case. mkdtemp under the OS temp dir has no .fusion-setup above it.
@@ -501,8 +502,9 @@ describe("bin/fusion-paths", () => {
   function stage(): string {
     const bin = join(project, "bin");
     mkdirSync(bin, { recursive: true });
-    // The claim helper and the identity helper it calls travel with the script:
-    // a scratch bin/ without them is an incomplete install, which is exit 3.
+    // The claim helper, the identity helper and the compiled entry they call travel with the
+    // script: a scratch plugin without them is an incomplete install, which is exit 3.
+    symlinkSync(join(pluginRoot, "hooks"), join(project, "hooks"));
     for (const helper of ["fusion-paths", "fusion-workbench-root", "fusion-plugin-cwd",
                           "fusion-claimed-package", "fusion-identity", "fusion-stores"]) {
       const dst = join(bin, helper);

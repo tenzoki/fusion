@@ -25,42 +25,43 @@
  *                      None of them is an empty store.
  *   `list`             every control file, without a scope, as `lib/scope.ts`
  *                      sends it (a scoped `list` is refused where the container
- *                      store does not exist yet). The package rows of the
- *                      container store are read: a live `status` (`open`,
- *                      `claimed`, `paused`) is a node, a terminal one (`done`,
- *                      `dropped`) is remembered as a target and is no node, and
- *                      a row that is a `problem`, names no id or carries a
+ *                      store does not exist yet).
+ *   `reconcile`        without a scope, for the same reason, and asked on every
+ *                      read. Its `records` findings are read BEFORE its
+ *                      `dependencies`. Each package row of `list` is then
+ *                      judged by `lib/codec-read.ts` `unreadRow`, the criterion
+ *                      `lib/scope.ts` applies too: a row that is a `problem`,
+ *                      that a finding names, that names no id or that carries a
  *                      status outside the five is `unreadable`, named and
- *                      outside the graph. A `problem` whose reason is
- *                      `recovery-blocked` is the refusal it is and ends the
- *                      read. No live node: the report is empty and `reconcile`
- *                      is not asked.
- *   `reconcile`        without a scope, for the same reason. Its `records`
- *                      findings are read BEFORE its `dependencies`: a finding
- *                      whose reason is `recovery-blocked` against any package
- *                      ends the read with a named failure and no report,
- *                      wherever the protocol put it (Prior's review of the
- *                      FJ03a plan, `## C.`); any other finding against a live
- *                      node moves that node to `unreadable`, because a record
- *                      the codec reports against contributes no edge it has
- *                      decided, and this reader cannot tell from outside which
- *                      findings withheld the edges. Then each `dependencies`
- *                      entry of a live node is placed by the table below.
+ *                      outside the graph, whether its status is live or
+ *                      terminal, because a record the codec reports against
+ *                      contributes nothing it has decided. A `problem` or
+ *                      finding whose reason is `recovery-blocked` ends the read
+ *                      with a named failure and no report, wherever the
+ *                      protocol put it (Prior's review of the FJ03a plan,
+ *                      `## C.`). A live `status` (`open`, `claimed`, `paused`)
+ *                      is a node, a terminal one (`done`, `dropped`) is a
+ *                      target and no node. Then each `dependencies` entry of a
+ *                      node is placed by the table below.
  *
  * ## The table one edge entry falls in, and it is disjoint and complete
  *
- *   entry                             target's row      input to `orderOf`
- *   `satisfied`                       any               no edge, no row
- *   `unmet`, reason `dependency-unmet`  a live node       a resolved edge
- *   `unmet`, reason `dependency-unmet`  a terminal package  an `unmet` row: the
- *                                                       dependent is blocked
- *   `unmet`, reason `dependency-unmet`  no listed package  `unresolved`, reason
- *                                                       `target-unlisted` or
- *                                                       `target-unreadable`
- *   `unmet`, any other reason         none, or no package  `unresolved`, the
+ *   entry                               target            input to `orderOf`
+ *   `satisfied`                         any               no edge, no row
+ *   `unmet`, reason `dependency-unmet`  a node            a resolved edge
+ *   `unmet`, reason `dependency-unmet`  no node: terminal, an `unmet` row: the
+ *                                       unreadable or     dependent is blocked
+ *                                       unlisted
+ *   `unmet`, any other reason           none, or no package  `unresolved`, the
  *                                                       dependent's readiness
  *                                                       untouched
  *
+ * The codec evaluated a `dependency-unmet` entry and found the condition
+ * unmet, so that entry blocks its dependent whatever this read concluded
+ * about the target; `unresolved` is left for the entries the codec itself
+ * could not resolve to a package (the closed FJ03a plan's `## Data
+ * Structures`, and
+ * `260930-1446_*_the-order-reader-reports-a-dependent-ready-when-the-codec-reported-its-edge-to-a-live-package-unmet.md`).
  * A dependency on a terminal package under `condition: terminal` is
  * `satisfied` and prints no row, where the Markdown reader printed
  * `unresolved=` because it could not tell a terminal target from a missing
@@ -92,7 +93,7 @@
  * reaches this module. Two runs over an unchanged store return equal reports.
  */
 import { type Ask, type Refusal } from "./record-client.js";
-import type { Unknown } from "./scope.js";
+import { type Unread } from "./codec-read.js";
 /** The live values of `status`. `done` and `dropped` are not nodes. */
 export type ItemStatus = "open" | "claimed" | "paused";
 /**
@@ -112,7 +113,7 @@ export interface ResolvedEdge {
     from: string;
     to: string;
 }
-/** An unmet condition on a terminal target: `from` is blocked by a package that is no node. */
+/** An unmet condition on a target that is no node: `to` is its container, or the record id where no row named it. */
 export interface UnmetEdge {
     from: string;
     to: string;
@@ -175,9 +176,7 @@ export interface WorkGraphReport {
     verdict: "acyclic" | "cyclic" | "empty";
 }
 /** Why no report could be read; each member names its cause, and none is an empty store. */
-export type Failure = Extract<Unknown, {
-    cause: "legacy" | "unsupported" | "unanswered" | "refused";
-}>;
+export type Failure = Unread;
 export type Read = {
     kind: "report";
     report: WorkGraphReport;

@@ -13,3 +13,6 @@ Contract: the plan's `## Data Structures` table puts `unmet`, reason `dependency
 Fix direction: an edge the codec reported `unmet` with reason `dependency-unmet` blocks its dependent whatever this reader concluded about the target. Where the target left the graph, place it like the terminal case (an `unmet=` row that blocks), or keep the node in the graph and name the finding beside it. `unresolved=` stays for entries the codec itself could not resolve.
 
 Acceptance: over the reproduction above, `b` reads `blocked`, `ready=0`, and no `note=` sentence claims the codec could not resolve `b`'s entry. A test case with a dependent whose only prerequisite is a live package carrying a finding, red against the current reader.
+
+---
+Resolved: `hooks/lib/work-graph.ts` `readWorkGraph`: a `dependency-unmet` entry is a resolved edge when its target is a node and an `unmet=` row that blocks the dependent otherwise (terminal, unreadable or unlisted); `unresolved=` holds only entries the codec could not resolve, so the `note=` sentence is true again. `hooks/lib/__tests__/work-graph.test.ts` "places each edge entry by the table" now carries a dependent whose only prerequisite is a live package with a finding, red against the old reader (`ready`) and green after. The reproduction prints `ready=0`, `b` blocked, no `note=`.
