@@ -35,3 +35,6 @@ The specification does not settle which answer is right. Section 6 at Prior `ad2
 ## Recommendation
 
 Option 3 (revised on a second opinion, 2026-09-30, before approval; the first draft recommended option 1). Verified: `read` in `codec/src/kernel.ts` already runs every state but `json-control` once without recovery (the early return at the head of `read`), and `inspect` runs outside `read`, so the write-free core needs no change to either. Inferred, not measured: without a codec-owned report, each host has to rebuild the exemption list to tell "a pending initialisation" from "a legacy store for FJ04", and two copies of that list would drift the way the Claude side's two reader-helper copies did (`260930-1446_*_scope-and-work-graph-each-carry-their-own-copy-of-the-reader-helpers.md`). Option 3 keeps the list in one place for one additive field.
+
+---
+Answered: this record `## Options` option 3 — no read finishes a pending initialize, and `inspect` carries an additive `pending` field naming the window; submitted to the Prior side openly as a fusion decision in the initialize plan's step 1, as Prior `a15dfc8` asks; the user approved it with the initialize plan on 2026-09-30; ruled by user, Kai Stalmann <ks@qantr.com>
