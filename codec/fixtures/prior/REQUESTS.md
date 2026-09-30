@@ -798,3 +798,116 @@ What the re-pin replays, and what fusion asserts at `bc3b04a8`:
 The re-pin should change these Prior assertions and nothing else: the digest; the FJ02 replay of exchange 15, through the delta; and the new replay. `migration` still answers `operation-unknown/not-implemented`, which `TestCodecPinsScopeAndDomainRefusals` asserts. The lock is still the one `write.lock`. `TestCodecFJ02RetainedAnswerPreventsABAReplay` runs over three exchanges that did not move. A search of `internal/fusionhost` at `7909838` finds no assertion on `inspect`'s operation list, on `pending` or on the shape of a real `list` answer. `TestCodecAggregateResponseBeyondRecordLimit` runs a stand-in bundle and is unaffected. If Prior's replay differs anywhere else, the differing exchange and its stdout are the finding. Prior's provisioning route, its production format gate and its event writing stay Prior's integration work, as `ae1ad78` says, and this request does not ask for them.
 
 FJ03c is planned against this revision, `bc3b04a8` and the bundle digest above, once request 35 is answered green. Item 32's details are settled by `ae1ad78`, as the table above records.
+
+## FJ03c (questions before the write paths)
+
+**Written against:** fusion commit `cdc15532` on branch `fj-json-workbench` (2026-09-30 23:23), the commit that approved the FJ03c plan (`260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md`) and answered its four decisions, and the head of the branch when this text was written. The plan was drafted against `8dfaf018`, and `git diff --stat 8dfaf018 cdc15532 -- codec bin hooks skills` is empty. It read Prior at commit `930eb26` (2026-09-30 23:05), the head of the Prior checkout; `git log --all --oneline 930eb26..` there is empty, so no Prior commit follows it on any ref. Every Prior text below is quoted from that commit's objects. `codec/dist/fusion-record.js` is the qualified bundle unmoved, 534 131 bytes, `sha256:bde8f3c952bd111695dbac510d3c0802566080e07c2ba3b6396d9c2c807844d1`: the same digest on disk and in the blob at `cdc15532`. At `930eb26` Prior closes requests 34 and 35 against that digest (`Prior: docs/design/fusion-initialize-prior-response.md`), which is the qualification the FJ03c row of section 9 names.
+
+FJ03c is the third of the four parts the FJ03 section above cuts. It carries row 5 of section 7 without `/fusion:migrate`, the archive half of row 9 and the write half of row 6. It builds the Claude side's first codec writer, `bin/fusion-write`: one client for every supported mutation, which checks ownership as response 22 (a) asks and writes the `record_change` rows of item 32 as `ae1ad78` accepted them. Four questions came up while it was planned. The user ruled each at the plan's approval on 2026-09-30, in the four records filed beside the plan. Three touch the shared contract and go to Prior as requests 36 to 38. Two are fusion's own, and are stated at the end of this section for Prior to object to.
+
+The measurements below were re-taken for this text on 2026-09-30, through the bundle above, over a scratch workbench made by `initialize` and `create` whose path contains a space and a comma. Nothing in this section moves a byte of the bundle or of any pinned path. FJ03c does not wait for an answer to 37 or 38. Only its archive step (plan step 8) waits for 36.
+
+### 36. Archiving a JSON-controlled pair
+
+**Closes:** fusion decision `260930-2305_*_how-is-a-json-controlled-pair-archived-when-its-control-record-names-its-narrative-by-workbench-path.md`, option 2, ruled by the user on 2026-09-30; the archive half of row 9 of section 7 ("Paare gemeinsam bewegen, Archive im Legacy-Lesemodus"); and step 8 of the FJ03c plan, which waits for this answer. Preferred form: a reply naming the option Prior accepts, and saying whether its codec half is a revision of its own.
+
+The measurement. A package was created with its container, and an issue pair was created in `shared/issues/` and moved `open → closed`. `validate` answered `valid: true` over the two records. Then both files of the issue pair were moved together with `mv` to `archive/260930-2402/shared/issues/`, as `/fusion:archive` moves a candidate today. After that:
+
+- An unscoped `list` still lists the record, at its new control path, with `narrative.path` still `shared/issues/260930-2401-i.md`.
+- `validate` answers `valid: false` with one finding on that record: `unresolved-reference/narrative-missing`, "shared/issues/260930-2401-i.md does not exist".
+- `reconcile` reports the same finding under `records`.
+
+Moving the package's container whole to `archive/260930-2402/work-packages/` adds a second finding of the same reason, on its `package.json`. The cause is the walk: `controlFiles` in `codec/src/store.ts` descends every directory under the root except dot entries, `archive/` included, and a record's `narrative.path` is workbench-relative. Rewriting that field is a write to a control record, which only the codec may make, and no operation of section 6 moves a pair. So the archive skill cannot archive a JSON pair and leave the workbench valid with the inputs it has.
+
+The three options the record weighed:
+
+1. **A codec operation moves the pair.** Journaled and under the lock, it moves both files, or a container whole, and rewrites `narrative.path` (and an evidence record's `report.path`) with a new revision. Its cost: a new operation, a rewrite of the bytes of terminal records, which the contract otherwise treats as history, and a move of a hash-bound report path.
+2. **`archive/` leaves JSON control.** The codec's walk skips `archive/`, and an archived pair is history, read in legacy read mode. The host moves pairs whole. The archive skill excludes every record that a live record references by id, as it already excludes cited files.
+3. **`narrative.path` resolves relative to the control file's directory.** A plain move then keeps a pair valid. But the meaning of a field every pinned session and fixture carries changes, and a package's container makes it ambiguous.
+
+Fusion proposes option 2. It is the reading of row 9's own words and of section 3 ("historische Ablage, keine Massenumschreibung"; "Beide Dateien werden gemeinsam archiviert"), and it rewrites no terminal bytes. Archived records stay citable by basename, as fusion decision `260828-0904_*_is-an-archived-record-a-citation-target.md` has them.
+
+The caveat of option 2, for Prior to weigh. Once the walk skips `archive/`, a by-id reference from a record left in the live tree into an archived record answers `unresolved-reference/record-not-found` in `reconcile`. That is the reason the FJ02 session already answers for an unresolved binding (exchange 15). It covers a live evidence record bound to an archived package, and a terminal record left behind whose `origin` or `references` name an archived one. So the exclusion filter carries the whole burden, and it must cover evidence records and their bindings as well as references and dependencies. Fusion's archive step would take all three from `reconcile` over the live tree and hold back every candidate one of them names. This is inferred from the code and from the scratch run above. No walk that skips `archive/` has been run, since that change is the question.
+
+Asked:
+
+- **(a)** Which option does Prior accept, or which other one?
+- **(b)** Options 1 and 2 both move the digest. Is the codec half a revision of its own, qualified by its own re-pin, or does it ride the next revision that moves the digest anyway (FJ04's `migration`)? Requests 37 and 38 could join whichever revision carries it, so that Prior runs one conformance for all three.
+- **(c)** Under option 2, is an archived pair's JSON still validated anywhere (FJ04's survey, for instance), or is it inert bytes that no operation reads?
+
+Until the answer, FJ03c's archive block moves no control file (plan step 7). It holds back every candidate pair and every container that carries one, names each with the reason, and still archives what is not a record. If the answer needs a codec change, that change is a fusion plan of its own, and FJ03c's step 8 waits for its qualification or moves out of FJ03c.
+
+### 37. Whether the codec refuses a payload field the record's kind has no rule about
+
+**Closes:** fusion decision `260930-2305_*_does-transition-refuse-a-payload-field-the-records-kind-has-no-rule-about.md`, option 3, ruled by the user on 2026-09-30; and the question left open at item 25 and carried forward under item 30 and in the hand-over's table of items 31 to 33. Preferred form: a reply, yes or no, and if yes, the revision that carries it.
+
+The measurement. The `transition` payload is one object that admits nine fields: `answer_ref`, `claim`, `criteria`, `deferral`, `disposition`, `implementation_ref`, `outcome`, `steps` and `superseded_by` (`codec/schemas/protocol.schema.json`, the `transition` branch, whose payload description reads "Only the fields the target state has a rule about are read"). An issue moved `open → closed` with a `disposition`, an `outcome` of class `completed` and `claim: null` in its payload answered `ok: true` with a new revision. `show` afterwards carries `control: {state: "closed", disposition: {…}}`, and neither `outcome` nor `claim` appears anywhere in the record. `create` behaves otherwise: a package created with `mode: "autonomous"` in its payload is `schema-invalid/payload-field-not-admitted` ("a package payload admits domain, references; it carries mode, …"). And FJ02b refuses `steps` and `criteria` on a `transition` of any other kind (item 25, choice 4). So a foreign field is refused on `create`, refused on `transition` for the two fields that write data, and dropped in silence for the other seven.
+
+What fusion does now, which needs nothing of Prior. The Claude-side write client never sends a foreign field. It builds each payload from one table that maps each kind to the fields the codec reads for it:
+
+| Kind | Payload fields the client may send |
+|---|---|
+| package | `claim`, `outcome` |
+| issue | `disposition` |
+| plan | `steps`, `criteria` |
+| decision | `answer_ref`, `implementation_ref`, `superseded_by`, `deferral` |
+| discussion | none |
+
+A test reads `codec/schemas/record.schema.json` and `package.schema.json` and holds the table equal to them, so the table is no second source. A flag the target kind does not carry is a usage error before any request is sent.
+
+Asked: should the codec itself refuse every foreign field on `transition` with `schema-invalid/payload-field-not-admitted`, as it does on `create`, in the next revision that moves the digest for another reason (request 36's, if it has one, or FJ04's)? The refusal would bind both hosts and every hand-built request, which the client's table cannot. It is a behaviour change on a frozen contract: a request that lands today would be refused. Fusion knows of no such request it sends. Does Prior's adapter, or any Prior fixture, send one? Without an answer the silent drop stays in the contract, and nothing on the Claude side depends on it either way.
+
+### 38. A takeover of a stale claim under response 22
+
+**Closes:** fusion decision `260930-2305_*_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md`, option 2, ruled by the user on 2026-09-30. Preferred form: a reply accepting, correcting or refusing the shape below, and naming the revision that would carry it.
+
+The gap. Under response 22 (a) the host decides ownership for `release` and every `transition` out of `claimed`, "ohne schwächeren Nebenweg" (section 6). `codec/contract/transitions.json` says "Only one checkout may hold the claim; a second claim on a claimed package is a conflict", and the kernel carries no takeover edge. The Claude side's checkout identity is eight hex characters minted once into `fusion-workbench/.checkout-id`, class L, which never travels (`bin/fusion-identity`). A package claimed by a checkout that was deleted, or by one on a machine that is gone, can therefore be moved by no Claude-side caller. The client refuses every non-owner, and no flag overrides the check (the second statement below). Such a package stays live for good: a node in the work order and a live citation target. The legacy rule allows a takeover by overwriting the field (`rules/fusion-workbench-conventions.md`, "A takeover overwrites the field"). FJ03d has to rewrite that sentence, and it must not promise what the contract does not carry.
+
+Fusion's proposal. `claim` on a claimed package is admitted only when the request names the previous holder and carries a source of the user's provenance:
+
+- **The previous holder** is the standing claim's `checkout_id`, named in the request. The kernel compares it with the stored claim, and a mismatch is a conflict. With the CAS on `expected_revision`, this binds the takeover to the claim the host inspected.
+- **The source** has the shape `set-mode` already requires for `autonomous`: a `user-word` object whose reference resolves, or a record reference that resolves. A request without one is refused, as a second claim is today.
+- **The record keeps the previous holder**, in the new claim or in the record's provenance, as Prior prefers.
+
+The same CAS, replay and journal apply as to every mutation. The Claude side would send it only on the user's explicit word.
+
+Why the codec, and not the host. Prior's response 22 says that "an explicit administrative recovery/transfer uses its own host authority, not a guessed person or a hidden bypass" (`Prior: docs/design/fusion-fj02-prior-response.md` `## 22. Claim ownership: option (a)`). Prior's host may have such an authority. The Claude side has none beyond a checkout identity and the user in the conversation (the second statement below). A host-side override on the Claude side would therefore be exactly the weaker route the ruling excludes, and the record rejected it for that reason.
+
+Asked:
+
+- **(a)** Does a codec-owned takeover, bound to a named previous holder and the user's provenance, meet response 22 for both hosts?
+- **(b)** If it does: which field keeps the previous holder, what is the `change` of its `record_change` row (`claim`'s `{from, to}` would read `claimed → claimed`), and does it ride the revision of request 36?
+- **(c)** If it does not: what is the Claude side's route for a claim whose checkout is gone? "None" is an answer. FJ03d's text then says so, and a stale package stays `claimed`.
+
+FJ03c does not wait for this answer. Its client refuses a non-owner in every case (plan step 3), and until the answer FJ03d's text promises no takeover.
+
+### Stated for objection: how the Claude-side writer logs `record_change`
+
+**Closes:** fusion decision `260930-2305_*_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md`, option 1, ruled by the user on 2026-09-30. This is fusion's decision, stated for Prior to object to, as item 33 was. Preferred form: an objection before FJ03c's writer lands (plan step 2), or none.
+
+Why a decision was needed. `ae1ad78` `## 32` puts four duties on the writer. A failed append after a successful mutation is reported and never repaired by rerunning the mutation. Pending event work is retained in the host for repair. Repeated rows are identified by `(workbench_id, operation_id, path, revision)`. And "a replay must not create a fresh-timestamp status event for an old transition: preserve the original observation identity/time, or leave it unlogged if that evidence is unavailable". Whether an answer is a replay cannot be decided from the answer, because the codec returns a stored answer byte for byte. So the writer asks a question it can answer from its own inputs: did this call observe this answer?
+
+The procedure:
+
+1. A row is composed only from an answer this call received to an `operation_id` this call minted. It is stamped at that moment, in the log's `YYYY-MM-DDTHH:MM:SS` form (`utcStamp` in `hooks/lib/orchestrator-events.ts`).
+2. There is one row per path in the answer's `revisions`. `record_id` and `kind` come from the `show` before the mutation, or from the request for `create` and for the document and the replaced plan of `adopt-plan`, and never from the package's id. `change` follows the table `ae1ad78` accepted, with `{attached_evidence: …}` and `{created_kind: "evidence"}`. `initialize` gets no row. `person` and `checkout` are left out when `bin/fusion-identity` cannot read them, and `session_id` when there is no session.
+3. Before an append, the writer skips any row whose key the log already holds, terminates a torn last line with a lone LF, and writes whole LF-terminated lines. The log stays class R2: append-only, merged by union, never rewritten.
+4. A failed append retains the rows, with their original `ts`, in `.guard-state/record-change-pending.jsonl`, class L like the rest of that directory. The result reports the mutation's success with `event=pending`, and the mutation is never resent. Every later run of the writer, and `fusion-write log-repair` on its own, appends retained rows by the same key test and then removes them.
+5. A re-send under a caller-given `operation_id`, the explicit route after an unanswered call, appends only rows retained for that id. With none retained, it writes nothing and reports `event=unlogged`.
+
+What stays unlogged: a crash between the answer and the append, and a re-send after a first call that went unanswered. Both are the branch `## 32` permits. No automatic hook writes a row: `hooks/lib/__tests__/hook-route-exclusion.test.ts` holds every command of `hooks/hooks.json` away from the codec, and the approved plan adds `bin/fusion-write` to its stubs. The writer tests `## 32` asks for, delayed logging and duplicate delivery, are in plan step 2, together with a failed append and a re-send. If Prior's writer follows another procedure, the key keeps the two hosts' rows apart, and the row's shape does not change.
+
+### Stated for objection: the Claude side binds a caller by its checkout identity alone
+
+**Closes:** nothing new to answer. It states how the Claude side reads response 22 (a) for its own host, so that Prior can object before FJ03c's client lands (plan step 3). Preferred form: an objection, or none.
+
+Section 6 at `930eb26` words the host duty as "aktueller authentisierter Aufrufer, Checkout-/Owner-Bindung und Host-Generation werden gegen `show` geprüft". Response 22 lists "the current authenticated caller, locally authorized owner and checkout, scope and any applicable current generation/revocation state", and adds that "the standalone adapter must apply its declared guided ownership policy on the same routes". The Claude side's declared policy, which FJ03c's client implements:
+
+- **What is checked.** For `release` and every `transition` out of `claimed` (to `open`, `paused`, `done` or `dropped`), and for nothing else, the standing claim's `checkout_id` in `show` must equal the `CHECKOUT=` line of `bin/fusion-identity`, the helper scope resolution already reads. The revision of that `show` is sent as `expected_revision`. A write that landed in between is `conflict/revision-mismatch`, and the client never retries.
+- **What refuses.** A foreign claim, and an identity that cannot be read. No flag overrides either.
+- **What is not checked, because the Claude side does not have it.** There is no authenticated caller: every Claude-side agent and skill runs as the same local user, and item 30 declared no technical role separation. There is no host generation, lease or revocation state: a claim is no host lease (section 6, "Claim keine Host-Lease"). `actor.person` stays attribution.
+- **A known limit.** The checkout identity is a file under `fusion-workbench/`, class L. A fresh clone mints its own, but a checkout copied as a directory carries the same file, and the two copies then pass each other's check. Response 22 names "copied checkouts" among the cases content CAS does not fence. The Claude side does not close that case, and says so.
+
+If Prior reads section 6 as binding the Claude host to an authenticated caller or a generation it does not have, fusion asks for that objection now. Otherwise this is the policy FJ03c ships, and FJ03d's text states it.
+
+FJ03c's hand-over follows as a section of its own at its closing commit (plan step 10), and cites what of items 36 to 38 has been answered by then.
