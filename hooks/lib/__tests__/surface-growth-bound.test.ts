@@ -246,7 +246,7 @@ const AGENT_HEAD_ROOM = 18_000;
 const SKILL_HEAD_ROOM = 39_260;
 /**
  * 2 500 derived, plus the 2026-09-11 raise, the three on 2026-09-16 and the
- * +423 of 2026-09-29, logged in `README-hooks.md` — and a ninth raise of +190
+ * +423 of 2026-09-29 and the +56 of 2026-09-30, logged in `README-hooks.md` — and a ninth raise of +190
  * on 2026-09-18, justified here rather than there because a raise nobody can
  * trace is what this bound exists to prevent.
  *
@@ -259,7 +259,7 @@ const SKILL_HEAD_ROOM = 39_260;
  * raise as the remedy and the authorisation reaches nothing else — the same
  * dispatch left `AGENT_HEAD_ROOM` and `SKILL_HEAD_ROOM` unraised and said so.
  */
-const TEST_LINE_HEAD_ROOM = 3_453;
+const TEST_LINE_HEAD_ROOM = 3_509;
 
 const SURFACES: Surface[] = [
   {

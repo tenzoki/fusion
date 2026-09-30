@@ -24,6 +24,13 @@
 # it some other way, and a check that shouts about every file teaches the reader
 # to ignore it.
 #
+# On a JSON-controlled workbench a control file (package.json, *.record.json,
+# *.evidence.json) is a `record` wherever its narrative is one; workbench.json
+# and .json-state/ are `in-flight`. When one half of such a pair is staged and
+# the other is not, the unstaged half's row carries PAIR-SPLIT in place of
+# UNSTAGED and names both paths. All of it is read from paths and git status;
+# no control file is opened.
+#
 # Exit codes:
 #   0  the check ran. `verdict=` says what it found. Finding an unstaged record
 #      is NOT a non-zero exit, deliberately — same reason bin/fusion-review-coverage

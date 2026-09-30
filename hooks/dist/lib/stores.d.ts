@@ -58,6 +58,27 @@ export declare const ARCHIVED_CONTAINER_ROOTS: readonly string[];
 export declare const CONTAINER_ROOT_ALT: string;
 /** The record stores' legacy names, for the segment lists that must still recognise them. */
 export declare const WINDOW_LEGACY_RECORD_STORES: readonly string[];
+/** The workbench manifest, at the workbench root. */
+export declare const WORKBENCH_MANIFEST = "workbench.json";
+/** The codec's local journal and lock directory, at the workbench root; ignored by its own `.gitignore`. */
+export declare const JSON_STATE_DIR = ".json-state";
+/** A package's control file, in its container. */
+export declare const PACKAGE_CONTROL = "package.json";
+/** The suffix of an issue, plan, discussion or decision record's control file. */
+export declare const RECORD_CONTROL_SUFFIX = ".record.json";
+/** The suffix of an evidence record, which sits beside the report it records. */
+export declare const EVIDENCE_SUFFIX = ".evidence.json";
+/** A control file, by its file name alone. */
+export declare function isControlFile(name: string): boolean;
+/**
+ * The narrative a control file pairs with, workbench-relative, or null when
+ * `controlPath` names no control file or a package file outside a directory.
+ * `<stem>.record.json` pairs with `<stem>.md`; `<dir>/package.json` with
+ * `<dir>/<basename of dir>.md`; an evidence record with the report its name
+ * reads. Read from the path alone: a record whose `narrative.path` says
+ * otherwise is the codec's finding, not this function's.
+ */
+export declare function narrativeOf(controlPath: string): string | null;
 /**
  * The container roots under the workbench `wb` to walk: the new root always,
  * the legacy root only when it exists on disk. Relative names, not paths.

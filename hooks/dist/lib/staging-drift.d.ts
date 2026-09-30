@@ -94,9 +94,15 @@
  *     terminal record `/fusion:migrate` never touches, so a converted workbench
  *     can still hold one), or anything under an artefact store. These are what
  *     a staging list is supposed to name.
+ *     On a JSON-controlled workbench a control file (`package.json`,
+ *     `*.record.json`, `*.evidence.json`) is a `record` wherever its narrative
+ *     is one, and the unstaged half of a pair whose other half is staged
+ *     carries the fault code `pair-split` (`markSplitPairs`). Both are read
+ *     from paths; no control file is opened.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
- *     R2 and R3, plus the session's own history file. Never a fault.
+ *     R2 and R3, plus the session's own history file, plus `JSON_LIVE_STATE`,
+ *     the JSON manifest and the codec's journal. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
  *     statement that it is **not** a record store and that nothing is claimed
  *     about it. The worked case is `stilwerk/`, the four voice profiles
@@ -194,6 +200,18 @@ export declare const LIVE_PREFIXES: {
     why: string;
 }[];
 /**
+ * The JSON workbench's live state: the manifest (R3, written once by setup
+ * through the codec) and the codec's journal directory (L, ignored by the
+ * `.gitignore` the codec writes into it). A list of its own and not part of
+ * `LIVE_STATE`, because the case above holds that list to
+ * `rules/workbench-tracking.md`, which names no JSON surface yet. FJ03d merges
+ * the two when the rule gains these rows. A trailing `/` marks a directory.
+ */
+export declare const JSON_LIVE_STATE: {
+    entry: string;
+    why: string;
+}[];
+/**
  * Whether a workbench-relative path's **filename** is commit-message-shaped.
  *
  * This is `COMMIT_MESSAGE` applied to the basename and nothing else — no
@@ -242,6 +260,13 @@ export interface StagingRow {
     staged: boolean;
     /** `record`/`commit-message` and not fully staged: what a staging list missed. */
     fault: boolean;
+    /**
+     * The fault code `pair-split`: set on the unstaged half of a control file
+     * and its narrative when both are in `git status` and the other half is
+     * staged, and naming that other half. The class stays `record`, so what a
+     * reader does with the row is unchanged: stage it.
+     */
+    pair?: string;
 }
 export interface StagingReport {
     root: string;

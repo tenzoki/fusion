@@ -94,9 +94,15 @@
  *     terminal record `/fusion:migrate` never touches, so a converted workbench
  *     can still hold one), or anything under an artefact store. These are what
  *     a staging list is supposed to name.
+ *     On a JSON-controlled workbench a control file (`package.json`,
+ *     `*.record.json`, `*.evidence.json`) is a `record` wherever its narrative
+ *     is one, and the unstaged half of a pair whose other half is staged
+ *     carries the fault code `pair-split` (`markSplitPairs`). Both are read
+ *     from paths; no control file is opened.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
- *     R2 and R3, plus the session's own history file. Never a fault.
+ *     R2 and R3, plus the session's own history file, plus `JSON_LIVE_STATE`,
+ *     the JSON manifest and the codec's journal. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
  *     statement that it is **not** a record store and that nothing is claimed
  *     about it. The worked case is `stilwerk/`, the four voice profiles
@@ -137,7 +143,7 @@
 import { basename, resolve, relative, sep } from "node:path";
 import { git, GIT_TIMED_OUT, GIT_TIMEOUT_MS } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
-import { CONTAINER_ROOT_NAMES, LEGACY_STORES, RECORD_STORES, WINDOW_LEGACY_RECORD_STORES } from "./stores.js";
+import { CONTAINER_ROOT_NAMES, isControlFile, JSON_STATE_DIR, LEGACY_STORES, narrativeOf, RECORD_STORES, WINDOW_LEGACY_RECORD_STORES, WORKBENCH_MANIFEST, } from "./stores.js";
 /* ------------------------------------------------------------------ *
  * Layout — root-anchored
  * ------------------------------------------------------------------ */
@@ -224,6 +230,18 @@ export const LIVE_STATE = [
 export const LIVE_PREFIXES = [
     { prefix: ".guard-state/", why: "hook state — written by every guarded tool call" },
     { prefix: ".commit-lock/", why: "the commit lock — held and released around every commit" },
+];
+/**
+ * The JSON workbench's live state: the manifest (R3, written once by setup
+ * through the codec) and the codec's journal directory (L, ignored by the
+ * `.gitignore` the codec writes into it). A list of its own and not part of
+ * `LIVE_STATE`, because the case above holds that list to
+ * `rules/workbench-tracking.md`, which names no JSON surface yet. FJ03d merges
+ * the two when the rule gains these rows. A trailing `/` marks a directory.
+ */
+export const JSON_LIVE_STATE = [
+    { entry: WORKBENCH_MANIFEST, why: "the JSON workbench manifest — written by setup through the codec" },
+    { entry: `${JSON_STATE_DIR}/`, why: "the codec's local journal and write lock — never travels" },
 ];
 /**
  * The artefact stores. A path with one of these as a segment holds authored
@@ -386,6 +404,10 @@ export function classify(rel, sessionHistory) {
         if (rel.startsWith(live.prefix))
             return { klass: "in-flight", why: live.why };
     }
+    for (const live of JSON_LIVE_STATE) {
+        if (live.entry.endsWith("/") ? rel.startsWith(live.entry) : rel === live.entry)
+            return { klass: "in-flight", why: live.why };
+    }
     if (sessionHistory !== "" && rel === sessionHistory) {
         return {
             klass: "in-flight",
@@ -401,6 +423,13 @@ export function classify(rel, sessionHistory) {
     for (const record of ROOT_RECORDS) {
         if (rel === record.path)
             return { klass: "record", why: record.why };
+    }
+    // A control file is a record wherever its narrative would be one: a
+    // container's `package.json` has no store segment and would otherwise fall
+    // to `unclassified`. Decided from the two names; the file is not opened.
+    const narrative = isControlFile(name) ? narrativeOf(rel) : null;
+    if (narrative !== null && classify(narrative, sessionHistory).klass === "record") {
+        return { klass: "record", why: `the control file of ${narrative}` };
     }
     const inContainer = CONTAINER_ROOT_NAMES.includes(segments[0]);
     if (inContainer && name.endsWith("_circle.md")) {
@@ -510,9 +539,30 @@ export function measureStagingDrift(root) {
         }
     }
     rows.sort((a, b) => a.path.localeCompare(b.path));
+    markSplitPairs(rows);
     const faults = rows.filter((r) => r.fault);
     const signature = faults.map((r) => `${r.code}${r.path}`).join(";");
     return { root, why: "", rows, faults, signature };
+}
+/**
+ * Mark `pair-split` on the unstaged half of every control file and narrative
+ * that both appear in `git status` with exactly one of them staged. That
+ * commit would carry a record's control half without its narrative, or the
+ * reverse, so the two halves in HEAD would come from different writes. A change
+ * to one half alone, staged, is clean: the other half did not move. Both
+ * halves unstaged are two plain record faults.
+ */
+function markSplitPairs(rows) {
+    const byPath = new Map(rows.map((r) => [r.path, r]));
+    for (const control of rows) {
+        const narrative = control.klass === "record" && isControlFile(basename(control.path)) ? narrativeOf(control.path) : null;
+        const other = narrative === null ? undefined : byPath.get(narrative);
+        if (other === undefined || other.klass !== "record" || other.staged === control.staged)
+            continue;
+        const [open, done] = control.staged ? [other, control] : [control, other];
+        open.pair = done.path;
+        open.why = `pair-split: ${done.path} is staged and its other half ${open.path} is not — stage both or neither`;
+    }
 }
 /**
  * The throttle record, read as two independent fields.
@@ -579,7 +629,7 @@ export function headMoved(root, previous) {
  * ------------------------------------------------------------------ */
 /** One row: its class, its porcelain code, its path, and why it is classified so. */
 export function renderStagingRow(r) {
-    const tag = r.fault ? "  UNSTAGED" : r.staged ? "  staged" : "";
+    const tag = r.pair !== undefined ? "  PAIR-SPLIT" : r.fault ? "  UNSTAGED" : r.staged ? "  staged" : "";
     return `  ${r.klass.padEnd(14)} ${r.code} ${r.path}${tag}  (${r.why})`;
 }
 /**
@@ -607,7 +657,9 @@ export function stagingSentence(report) {
     const parts = [];
     if (records.length > 0) {
         parts.push(`fusion: HEAD moved and ${records.length} record(s) under ${WB}/ are still uncommitted — ` +
-            records.map((r) => `${r.path} (${r.code.trim() === "??" ? "untracked" : "unstaged"})`).join("; ") +
+            records
+                .map((r) => `${r.path} (${r.pair !== undefined ? `pair-split, its other half ${r.pair} is staged` : r.code.trim() === "??" ? "untracked" : "unstaged"})`)
+                .join("; ") +
             ". No staging list named them, so no commit could carry them.");
     }
     if (messages.length > 0) {

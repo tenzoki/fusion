@@ -25,6 +25,11 @@
  *     in-flight       M orchestrator-events.jsonl  (append-only — …)
  *     unclassified   ?? stilwerk/chat-voice-de.yaml  (not a record store …)
  *
+ * A `record` row whose other half of a JSON pair is staged while it is not
+ * carries `PAIR-SPLIT` in place of `UNSTAGED`, and its reason names both paths:
+ *
+ *     record         ?? work-packages/<dir>/<dir>.md  PAIR-SPLIT  (pair-split: <dir>/package.json is staged …)
+ *
  * **Every entry is printed, in all four classes.** The read is taken on purpose,
  * at a commit and at the session's end, and a deliberate read should be complete: a file this check is
  * silent about is a file the reader has to discover some other way, which is

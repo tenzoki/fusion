@@ -38,15 +38,6 @@ const WORKBENCH_FILES: Record<string, string> = {
     "**Directive:** close the findings\n",
   "fusion-workbench/orchestrator-events.jsonl":
     '{"ts":"2026-08-11T01:00:00","event":"session_start"}\n',
-  "fusion-workbench/agentstate.yaml": [
-    "session:",
-    '  directive: "close the findings"',
-    '  history_file: "shared/history/260811-0100-orchestrator.md"',
-    '  git_head_at_start: "HEAD"',
-    "control:",
-    '  turn_start_head: "HEAD"',
-    "",
-  ].join("\n"),
 };
 
 /** The record a case dirties when it wants a fault that no artifact store owns. */
@@ -482,6 +473,56 @@ describe("staging drift: what it reports without raising an alarm", () => {
     },
     CASE_TIMEOUT,
   );
+});
+
+describe("staging drift: the JSON surfaces, by path alone", () => {
+  // Paths only: the classifier opens no control file, so the bytes are placeholders.
+  const PKG = "work-packages/260930-1500-a";
+  const ISSUE = "shared/issues/260930-1500-b";
+  const JSON_FILES = { ...WORKBENCH_FILES, [`fusion-workbench/${PKG}/package.json`]: "{}\n", [`fusion-workbench/${PKG}/260930-1500-a.md`]: "# a\n", [`fusion-workbench/${ISSUE}.record.json`]: "{}\n", [`fusion-workbench/${ISSUE}.md`]: "# b\n" };
+  const withJson = <T,>(fn: (p: Project) => T): T => withProject(fn, { git: true, files: JSON_FILES });
+
+  it("classifies the manifest and the journal in flight, and a control file as its narrative's record", () => {
+    for (const p of ["workbench.json", ".json-state/ops/x.record.json"]) expect(classify(p, "").klass, p).toBe("in-flight");
+    for (const p of [`${PKG}/package.json`, `${ISSUE}.record.json`, "shared/reviews/260930-1500-r.2.evidence.json"]) {
+      expect(classify(p, ""), p).toMatchObject({ klass: "record", why: expect.stringContaining("the control file of") });
+    }
+    expect(classify("stilwerk/package.json", "").klass).toBe("unclassified");
+  });
+
+  it("names a container's package.json left unstaged as a fault", () => {
+    withJson((project) => {
+      write(project.root, `fusion-workbench/${PKG}/package.json`, '{"v":2}\n');
+      const res = runStagingDrift(project.root);
+      expect(keys(res.stdout).unstaged).toBe("1");
+      expect(row(res.stdout, `${PKG}/package.json`)).toMatch(/^ {2}record\s+M .*UNSTAGED/);
+    });
+  }, CASE_TIMEOUT);
+
+  it("names one pair-split row, both paths in it, for a staged narrative whose control file is not", () => {
+    withJson((project) => {
+      write(project.root, `fusion-workbench/${ISSUE}.md`, "# b\n\nrevised\n");
+      write(project.root, `fusion-workbench/${ISSUE}.record.json`, '{"v":2}\n');
+      git(project.root, "add", `fusion-workbench/${ISSUE}.md`);
+      const res = runStagingDrift(project.root);
+      expect(keys(res.stdout).unstaged).toBe("1");
+      const split = res.stdout.split("\n").filter((l) => l.includes("PAIR-SPLIT"));
+      expect(split).toHaveLength(1);
+      expect(split[0]).toMatch(new RegExp(`^ {2}record\\s+ M ${ISSUE}\\.record\\.json {2}PAIR-SPLIT .*${ISSUE}\\.md is staged`));
+    });
+  }, CASE_TIMEOUT);
+
+  it("calls a staged change to the control file alone clean, and the manifest in flight", () => {
+    withJson((project) => {
+      write(project.root, `fusion-workbench/${PKG}/package.json`, '{"v":2}\n');
+      write(project.root, "fusion-workbench/workbench.json", "{}\n");
+      git(project.root, "add", `fusion-workbench/${PKG}/package.json`);
+      const res = runStagingDrift(project.root);
+      expect(keys(res.stdout).verdict).toBe("clean");
+      expect(res.stdout).not.toContain("PAIR-SPLIT");
+      expect(row(res.stdout, "workbench.json")).toMatch(/^ {2}in-flight/);
+    });
+  }, CASE_TIMEOUT);
 });
 
 describe("staging drift: the trigger is HEAD moving", () => {

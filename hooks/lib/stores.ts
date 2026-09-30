@@ -92,6 +92,58 @@ export const CONTAINER_ROOT_ALT = CONTAINER_ROOT_NAMES.join("|");
 /** The record stores' legacy names, for the segment lists that must still recognise them. */
 export const WINDOW_LEGACY_RECORD_STORES: readonly string[] = RECORD_STORES.flatMap((s) => namesOf(s).slice(1));
 
+/* ------------------------------------------------------------------ *
+ * The JSON surfaces, by name
+ *
+ * A JSON-controlled workbench adds a manifest at its root, a local journal
+ * directory beside it, and one control file beside each narrative. These are
+ * the codec's names (`codec/src/store.ts`), copied rather than imported: the
+ * codec is its own package and the hook build does not resolve its sources.
+ * `fusion-stores.test.ts` reads that file's text and holds each copy equal.
+ * Names only: nothing here opens a file, so an automatic hook may use them.
+ * ------------------------------------------------------------------ */
+
+/** The workbench manifest, at the workbench root. */
+export const WORKBENCH_MANIFEST = "workbench.json";
+
+/** The codec's local journal and lock directory, at the workbench root; ignored by its own `.gitignore`. */
+export const JSON_STATE_DIR = ".json-state";
+
+/** A package's control file, in its container. */
+export const PACKAGE_CONTROL = "package.json";
+
+/** The suffix of an issue, plan, discussion or decision record's control file. */
+export const RECORD_CONTROL_SUFFIX = ".record.json";
+
+/** The suffix of an evidence record, which sits beside the report it records. */
+export const EVIDENCE_SUFFIX = ".evidence.json";
+
+/** `<basename>[.<n>].evidence.json`, `n` a correction counter from 2 with no leading zero: the codec's `EVIDENCE_NAME`. */
+const EVIDENCE_NAME = /^(.*?)(?:\.([2-9]|[1-9][0-9]+))?\.evidence\.json$/;
+
+/** A control file, by its file name alone. */
+export function isControlFile(name: string): boolean {
+  return name === PACKAGE_CONTROL || name.endsWith(RECORD_CONTROL_SUFFIX) || name.endsWith(EVIDENCE_SUFFIX);
+}
+
+/**
+ * The narrative a control file pairs with, workbench-relative, or null when
+ * `controlPath` names no control file or a package file outside a directory.
+ * `<stem>.record.json` pairs with `<stem>.md`; `<dir>/package.json` with
+ * `<dir>/<basename of dir>.md`; an evidence record with the report its name
+ * reads. Read from the path alone: a record whose `narrative.path` says
+ * otherwise is the codec's finding, not this function's.
+ */
+export function narrativeOf(controlPath: string): string | null {
+  const slash = controlPath.lastIndexOf("/");
+  const dir = controlPath.slice(0, slash + 1);
+  const name = controlPath.slice(slash + 1);
+  if (name === PACKAGE_CONTROL) return slash < 0 ? null : `${dir}${dir.slice(0, -1).split("/").pop()}.md`;
+  if (name.endsWith(RECORD_CONTROL_SUFFIX)) return `${dir}${name.slice(0, -RECORD_CONTROL_SUFFIX.length)}.md`;
+  const evidence = EVIDENCE_NAME.exec(name);
+  return evidence === null ? null : `${dir}${evidence[1]}.md`;
+}
+
 /**
  * The container roots under the workbench `wb` to walk: the new root always,
  * the legacy root only when it exists on disk. Relative names, not paths.
