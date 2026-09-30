@@ -304,9 +304,11 @@ import {
   ARCHIVED_CONTAINER_ROOTS,
   CONTAINER_ROOT_ALT,
   CONTAINER_ROOT_NAMES,
+  JSON_STATE_DIR,
   LEGACY_STORES,
   RECORD_STORES,
   WINDOW_LEGACY_RECORD_STORES,
+  isControlFile,
 } from "./stores.js";
 
 // --- shared with the check's other two classes -------------------------------
@@ -1118,17 +1120,28 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
   const present = existsSync(join(workbenchRoot, ".fusion-setup"));
   const exhibitRes = (opts.exhibits ?? []).map(basenameMatcher);
 
+  /**
+   * Every citable file, by basename. A control file is NOT one, and nothing
+   * under the codec's local journal is: on a JSON-controlled workbench a
+   * narrative and the control file beside it are one artefact, so a prefix
+   * citation of the pair (`<stamp>-<topic>` or `<stamp>_*_<slug>` without
+   * `.md`) has one hit where it had two. Decided from the file name alone
+   * (`./stores.ts`), with no format question asked and no JSON opened, so the
+   * PostToolUse hook that reaches this grammar stays off the codec; on a
+   * legacy workbench no file carries one of those names.
+   */
   let wbIndex: WorkbenchEntry[] | null = null;
   function workbenchIndex(): WorkbenchEntry[] {
     if (wbIndex) return wbIndex;
     wbIndex = !present
       ? []
       : readdirSync(workbenchRoot, { recursive: true, withFileTypes: true })
-          .filter((e) => e.isFile())
+          .filter((e) => e.isFile() && !isControlFile(e.name))
           .map((e) => ({
             relDir: relative(workbenchRoot, e.parentPath).split(sep).join("/"),
             base: e.name,
-          }));
+          }))
+          .filter((e) => e.relDir !== JSON_STATE_DIR && !e.relDir.startsWith(`${JSON_STATE_DIR}/`));
     return wbIndex;
   }
 

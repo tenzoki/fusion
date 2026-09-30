@@ -3,8 +3,30 @@
  *
  * The grammar is `lib/citation-scan.ts`; this is its shipped caller, the one
  * decision `260828-0904_*_does-fusion-ship-a-citation-checker-to-consuming-projects.md`
- * asked for. Called through `bin/fusion-citation-check` by `/fusion:cleanup`
- * Step 8 and by anyone at a terminal.
+ * asked for. Called through `bin/fusion-citation-check` by whoever runs it.
+ *
+ * ## Two formats, chosen by the gate
+ *
+ * The workbench's format is asked first, through `lib/record-index.ts` and the
+ * codec's `inspect`, and the first line of stdout names it (`format=`):
+ *
+ *   `json-control`  the verdict scope of a workbench file is its record's
+ *                   `live` (a status outside its kind's terminal set), read
+ *                   from the index and never from a marker in its name; a
+ *                   narrative with no record, a report or a legacy file in the
+ *                   archive, is not live. A citation of a GATE_KINDS kind that
+ *                   matches more than one file is a `conflict` violation, not
+ *                   an undecidable token (Prior's spec, section 4.4). Record
+ *                   references that resolve to no control file are counted
+ *                   in `uuid-unresolved=`, one row each after the violations.
+ *   `legacy`        everything below, byte for byte as before this line
+ *                   existed: the verdict scope is `isLiveRecord`, an
+ *                   ambiguous token is undecidable, and there is no
+ *                   `conflict=` or `uuid-unresolved=` line.
+ *
+ * Any other answer stops the check before a line of stdout (exit 3 or 4
+ * below). The grammar is the same on both formats, and on both it indexes no
+ * control file (`lib/citation-scan.ts` `workbenchIndex`).
  *
  * ## Corpus
  *
@@ -129,17 +151,26 @@
  *
  * ## Output, one `KEY=value` per line, then one row per violation
  *
+ *   format=json-control|legacy
  *   anchor=workbench-root
  *   root=<project directory>
  *   files=<n>            edited-files=<n>
  *   declared-patterns=<n>   declared-files=<n>   declared-exhibits=<n>
  *   tokens=<n>           judged=<n>
  *   resolved=<n>         dangling=<n>        store-prefixed=<n>
+ *   conflict=<n>                                  (json-control only)
  *   edited-violations=<n>   unedited-violations=<n>
  *   unrewritable-violations=<n>
  *   undecidable=<n>      exempt=<n>
+ *   uuid-unresolved=<n>                           (json-control only)
  *   verdict=clean|violations
  *     <file>:<line>  '<token>'  <status>  <scope>  <rewrite>  <problem>
+ *     fusion-workbench/<control>  <pointer>  uuid-unresolved  <class>/<reason>
+ *
+ * On `json-control` the violations are dangling + store-prefixed + conflict,
+ * and `verdict=` reads their edited half as it always has. An unresolved
+ * record reference is a finding about a control file rather than a citation
+ * in a text, and `verdict=` does not read `uuid-unresolved=`.
  *
  * `edited-files` is how many of `files` are in the verdict scope, and
  * `edited-violations` / `unedited-violations` split the printed rows the same
@@ -215,11 +246,18 @@
  *      gives at the same place (issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`).
  *   1  usage error.
  *   2  no fusion workbench above the working directory; nothing to check.
+ *   3  the plugin itself could not run: the codec bundle is not installed,
+ *      so nothing could be asked (the wrapper's own 3 covers the compiled
+ *      hooks), or an internal error stopped this entry, named with its stack.
+ *   4  the workbench was not read: `unsupported`, a refusal of the codec
+ *      (`recovery-blocked` among them, inside an `ok: true` answer too), or
+ *      no answer. The cause is on stderr and NOTHING is on stdout.
  */
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { createScanner, declaredCitationFiles, declaredCitationNotes, markdownFilesUnder, partition, GATE_KINDS, } from "./lib/citation-scan.js";
 import { isLiveRecord } from "./lib/citation-corpus.js";
+import { bundleMissing, notReadLine, readRecordIndex } from "./lib/record-index.js";
 import { loadConfig } from "./lib/config.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
@@ -264,6 +302,12 @@ function row(h, scope, rewrite) {
     const cols = [`${h.file}:${h.line}`, `'${h.token}'`, h.status, scope, rewrite, h.problem];
     return `  ${cols.filter((c) => c !== undefined).join("  ")}`.trimEnd();
 }
+/**
+ * A judged citation matching more than one file, read on a JSON-controlled
+ * workbench as the `conflict` section 4.4 names. The hit keeps its matches;
+ * the status and the problem are what the row prints.
+ */
+const asConflict = (h) => ({ ...h, status: "conflict", problem: `${h.matches.length} artefacts match: ${h.matches.join(", ")}` });
 function main(argv) {
     let undecidable = false;
     for (const a of argv) {
@@ -280,6 +324,13 @@ function main(argv) {
         return 2;
     }
     const workbenchRoot = join(root, "fusion-workbench");
+    // the format before anything else is read: see `## Two formats`
+    const read = readRecordIndex(workbenchRoot);
+    if (read.format === "unknown") {
+        process.stderr.write(`fusion-citation-check: ${notReadLine(read.unread, workbenchRoot)} Nothing was checked.\n`);
+        return bundleMissing(read.unread) ? 3 : 4;
+    }
+    const index = read.format === "json-control" ? read.index : null;
     // the configuration first: the scanner takes the declared exhibits
     const config = loadConfig({ projectRoot: root });
     const scanner = createScanner(workbenchRoot, { exhibits: config.citations.exhibits });
@@ -288,8 +339,8 @@ function main(argv) {
             rel: `fusion-workbench/${f.rel}`,
             abs: f.abs,
             // the one place the workbench half of the verdict scope is decided, on
-            // the workbench-RELATIVE path the predicate is written against
-            edited: isLiveRecord(f.rel),
+            // the workbench-RELATIVE path both readers are keyed on
+            edited: index === null ? isLiveRecord(f.rel) : index.byNarrative.get(f.rel)?.live === true,
         })),
         ...projectFiles(root).map((f) => ({ ...f, edited: true })),
     ];
@@ -316,10 +367,16 @@ function main(argv) {
     const storePrefixed = p.dangling.filter((h) => h.status === "store-prefixed");
     const dangling = p.dangling.filter((h) => h.status !== "store-prefixed");
     const judged = hits.filter((h) => h.status !== "exempt" && GATE_KINDS.includes(h.kind));
-    const violations = [...dangling, ...storePrefixed].sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
+    const isConflict = (h) => index !== null && h.status === "ambiguous" && GATE_KINDS.includes(h.kind);
+    const conflicts = p.undecidable.filter(isConflict).map(asConflict);
+    const undecided = p.undecidable.filter((h) => !isConflict(h));
+    const violations = [...dangling, ...storePrefixed, ...conflicts].sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
     const moves = (h) => editedFile.get(h.file) === true;
     const edited = violations.filter(moves);
+    // the lines only a JSON-controlled workbench prints, so a legacy one reads as it did
+    const json = (line) => (index === null ? [] : [line]);
     const out = [
+        `format=${read.format}`,
         "anchor=workbench-root",
         `root=${relative(process.cwd(), root).split(sep).join("/") || "."}`,
         `files=${files.length}`,
@@ -332,20 +389,33 @@ function main(argv) {
         `resolved=${p.resolved.length}`,
         `dangling=${dangling.length}`,
         `store-prefixed=${storePrefixed.length}`,
+        ...json(`conflict=${conflicts.length}`),
         `edited-violations=${edited.length}`,
         `unedited-violations=${violations.length - edited.length}`,
         `unrewritable-violations=${violations.filter(unrewritable).length}`,
-        `undecidable=${p.undecidable.length}`,
+        `undecidable=${undecided.length}`,
         `exempt=${p.exempt.length}`,
+        ...json(`uuid-unresolved=${index?.unresolvedRefs.length}`),
         `verdict=${edited.length > 0 ? "violations" : "clean"}`,
     ];
     for (const h of violations) {
         out.push(row(h, moves(h) ? "edited" : "not-edited", unrewritable(h) ? "unrewritable" : "rewritable"));
     }
+    for (const r of index?.unresolvedRefs ?? []) {
+        out.push(`  fusion-workbench/${r.path}  ${r.at}  uuid-unresolved  ${r.problem.class}/${r.problem.reason}`);
+    }
     if (undecidable)
-        for (const h of p.undecidable)
+        for (const h of undecided)
             out.push(row(h));
     process.stdout.write(out.join("\n") + "\n");
     return 0;
 }
-process.exitCode = main(process.argv.slice(2));
+// An internal error is 3, "the plugin itself could not run", and never Node's
+// own 1, which is the usage error here.
+try {
+    process.exitCode = main(process.argv.slice(2));
+}
+catch (e) {
+    process.stderr.write(`fusion-citation-check: an internal error stopped the check, a fusion bug or an incomplete install and not the workbench's. Nothing was checked.\n${e instanceof Error ? e.stack : String(e)}\n`);
+    process.exitCode = 3;
+}

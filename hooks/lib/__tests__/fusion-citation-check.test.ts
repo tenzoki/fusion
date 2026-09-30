@@ -16,12 +16,18 @@
  */
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { TEST_DIST, CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { createScanner } from "../citation-scan.js";
+import { readRecordIndex } from "../record-index.js";
+import type { Answer } from "../record-client.js";
+import { HOOKS_DIR, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { createPackage, must, place, send, setDependencies, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
-const ENTRY = join(TEST_DIST, "citation-check.js");
+// The shared build, not the run's staging copy: the entry reaches the codec bundle and the
+// transitions contract relative to itself, and only `hooks/dist/` has a plugin root above it.
+const ENTRY = join(HOOKS_DIR, "dist", "citation-check.js");
 
 function run(cwd: string, ...args: string[]) {
   return spawnSync(process.execPath, [ENTRY, ...args], { cwd, encoding: "utf-8" });
@@ -52,7 +58,7 @@ describe("fusion-citation-check over a scratch consuming project", () => {
       const r = run(root);
       expect(r.status, r.stderr).toBe(0);
       const lines = r.stdout.trimEnd().split("\n");
-      expect(lines.slice(0, 2)).toEqual(["anchor=workbench-root", "root=."]);
+      expect(lines.slice(0, 3)).toEqual(["format=legacy", "anchor=workbench-root", "root=."]);
       expect(lines).toContain("files=5");
       expect(lines).toContain("store-prefixed=1");
       expect(lines).toContain("dangling=1");
@@ -280,5 +286,80 @@ describe("fusion-citation-check reads the non-Markdown paths a project declares"
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
+  }, CASE_TIMEOUT);
+});
+
+// --- a JSON-controlled workbench ----------------------------------------------
+
+const CLOSED = "shared/issues/260901-1000_c_stats-file-stale-after-import";
+const CONTRACT = join(REPO_ROOT, "codec", "contract", "transitions.json");
+const indexOf = (p: JsonProject) => readRecordIndex(p.workbench, (_w, r) => send(p, r), CONTRACT);
+
+/** The codec fixture's closed issue imported as `stem`: a marker name `create` refuses, so the pair is placed. */
+function imported(p: JsonProject, stem: string, text = "# stats\n"): void {
+  place(p, `${stem}.md`, text);
+  place(p, `${stem}.record.json`, readFileSync(join(REPO_ROOT, "codec/fixtures/valid/record/issue-closed.json"), "utf-8").replace(CLOSED, stem));
+}
+
+describe("the record index behind the citation check", () => {
+  it("maps an old marker citation, its wildcard, a marker-free name and a depends_on UUID to their records", () => {
+    withJsonProject((p) => {
+      imported(p, CLOSED);
+      const [a, b] = ["260101-0001-alpha", "260101-0002-beta"].map((s) => createPackage(p, s));
+      setDependencies(p, b, [{ target: a, condition: "terminal" }]);
+      const read = indexOf(p);
+      if (read.format !== "json-control") throw new Error(JSON.stringify(read));
+      const scan = (token: string) => createScanner(p.workbench).scanCitationTokens("x.md", [{ line: 1, text: `\`${token}\`` }])[0].matches;
+      const idOf = (token: string) => scan(token).map((m) => read.index.byNarrative.get(m)?.id);
+      const uuid = ((must(p, { op: "show", record: { path: b.path } }).result.control as { depends_on: Array<{ target: { record_id: string } }> }).depends_on[0].target.record_id);
+      const closed = ["260901-1000_c_stats-file-stale-after-import.md", "260901-1000_*_stats-file-stale-after-import.md"];
+      expect(closed.map(idOf)).toEqual([["35ffe909-d52c-4e5b-889d-604c43751f9d"], ["35ffe909-d52c-4e5b-889d-604c43751f9d"]]);
+      expect([idOf("260101-0001-alpha.md"), [read.index.byId.get(uuid)?.id]]).toEqual([[a.id], [a.id]]);
+      // a prefix citation of the pair, without `.md`, has one hit: the control file is no artefact
+      expect(scan("260901-1000_*_stats-file")).toEqual([`${CLOSED}.md`]);
+      expect([read.index.byNarrative.get(`${CLOSED}.md`)?.live, read.index.byNarrative.get(a.narrative)?.live]).toEqual([false, true]);
+    });
+  }, CASE_TIMEOUT);
+
+  it("ends the read on a blocked recovery inside an ok: true answer, and is never an empty index", () => {
+    const blocked = { class: "operation-unknown", reason: "recovery-blocked", detail: "operation x is pending" };
+    const answers: Record<string, Answer> = { inspect: { kind: "result", result: { state: "json-control", id: "w" }, revisions: {} }, list: { kind: "result", result: { records: [{ path: "p/package.json", problem: blocked }] }, revisions: {} }, reconcile: { kind: "result", result: { records: [], references: [] }, revisions: {} } };
+    expect(readRecordIndex("/wb", (_w, r) => answers[r.op], CONTRACT)).toEqual({ format: "unknown", unread: { cause: "refused", op: "list", refusal: blocked } });
+  });
+});
+
+describe("fusion-citation-check on a JSON-controlled workbench", () => {
+  it("scopes the verdict by the record's status, and reports a conflict and an unresolved UUID", () => {
+    withJsonProject((p) => {
+      // closed in its JSON, `_o_` in its name: the name decides nothing
+      imported(p, CLOSED.replace("_c_", "_o_"), "cites `260199-9999_*_gone.md`\n");
+      for (const store of ["issues", "decisions"]) place(p, `shared/${store}/260101-0003-dup.md`, "# dup\n");
+      writeFileSync(join(p.root, "CLAUDE.md"), "see `260101-0003-dup.md`\n");
+      const pkg = createPackage(p, "260101-0001-alpha");
+      const control = JSON.parse(readFileSync(join(p.workbench, pkg.path), "utf-8"));
+      // a UUID naming no record, which `set-dependencies` refuses to write, so placed
+      control.depends_on = [{ target: { workbench_id: control.workbench_id, record_id: "f03a0000-0000-4000-8000-000000000099" }, condition: "terminal" }];
+      place(p, pkg.path, JSON.stringify(control, null, 2) + "\n");
+      const r = run(p.root);
+      expect(r.status, r.stderr).toBe(0);
+      const lines = r.stdout.trimEnd().split("\n");
+      expect(lines[0]).toBe("format=json-control");
+      for (const l of ["edited-files=2", "dangling=1", "conflict=1", "edited-violations=1", "unedited-violations=1", "undecidable=0", "uuid-unresolved=1", "verdict=violations"]) expect(lines).toContain(l);
+      expect(lines.filter((l) => l.startsWith("  "))).toEqual([
+        "  CLAUDE.md:1  '260101-0003-dup.md'  conflict  edited  rewritable  2 artefacts match: shared/decisions/260101-0003-dup.md, shared/issues/260101-0003-dup.md",
+        `  fusion-workbench/${CLOSED.replace("_c_", "_o_")}.md:1  '260199-9999_*_gone.md'  dangling  not-edited  rewritable  no record anywhere in the workbench matches this citation`,
+        `  fusion-workbench/${pkg.path}  /depends_on/0/target  uuid-unresolved  unresolved-reference/record-not-found`,
+      ]);
+    });
+  }, CASE_TIMEOUT);
+
+  it("exits 4 with nothing on stdout when the workbench is unsupported", () => {
+    withJsonProject((p) => {
+      const manifest = JSON.parse(readFileSync(join(p.workbench, "workbench.json"), "utf-8")) as { required_features: string[] };
+      place(p, "workbench.json", JSON.stringify({ ...manifest, required_features: [...manifest.required_features, "json-control-v9"] }));
+      const r = run(p.root);
+      expect([r.status, r.stdout]).toEqual([4, ""]);
+      expect(r.stderr).toMatch(/unsupported .*unknown-feature/);
+    });
   }, CASE_TIMEOUT);
 });
