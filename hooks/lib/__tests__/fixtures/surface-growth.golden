@@ -52,7 +52,7 @@
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
   config.test.ts 950
-  context-manifest.test.ts 517
+  context-manifest.test.ts 507
   declared-citation-paths.test.ts 84
   deliverable-language-lint.test.ts 136
   derivable-enumerations-lint.test.ts 476
@@ -63,13 +63,13 @@
   fenced-code-exemption.test.ts 206
   fusion-checkout-name.test.ts 202
   fusion-citation-check.test.ts 284
-  fusion-claimed-package.test.ts 194
+  fusion-claimed-package.test.ts 207
   fusion-commit-lock.test.ts 454
   fusion-count-sources.test.ts 413
   fusion-events.test.ts 437
   fusion-forum.test.ts 251
   fusion-identity.test.ts 225
-  fusion-paths.test.ts 728
+  fusion-paths.test.ts 725
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
   fusion-stores.test.ts 17

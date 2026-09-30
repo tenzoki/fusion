@@ -87,10 +87,12 @@
 #     - a `skill` unit emits a `skill:<name>` pointer line (invoked on demand).
 #   The topic is resolved (see resolve_topics below): an explicit CLI <topic>
 #   argument wins; otherwise it is derived from the work package this checkout has
-#   claimed, which bin/fusion-claimed-package answers and this script does not
-#   decide for itself — an explicit `Topic:`/`Tags:` line in the item, else the
-#   item filename's slug keywords; with nothing claimed here, and on every
-#   non-zero from that helper, only `[always]` units match. A malformed manifest fails LOUDLY with exit 3 rather than silently
+#   claimed, which bin/fusion-claimed-package answers from the package's JSON
+#   control record through the codec and this script does not decide for
+#   itself — an explicit `Topic:`/`Tags:` line in the item's narrative, else the
+#   narrative filename's slug keywords; with nothing claimed here, and on every
+#   non-zero from that helper (a workbench it refuses by name, legacy or
+#   unsupported, included), only `[always]` units match. A malformed manifest fails LOUDLY with exit 3 rather than silently
 #   emitting a partial set (HYG-NO-SILENT-FAIL). The full schema, predicate, and
 #   resolution order are authored once in rules/context-manifest.md.
 #

@@ -1,9 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, copyFileSync, chmodSync } from "node:fs";
+import { appendFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, copyFileSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { agentNames, pluginRoot } from "./helpers/citation-scan.js";
+import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { claim, createPackage, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
 // ---------------------------------------------------------------------------
 // Context-manifest tests (Circle B).
@@ -60,18 +62,20 @@ function writeManifest(dir: string, body: string): void {
   writeFileSync(join(dir, "rules", "context-manifest.yaml"), body);
 }
 
+/** `rules/` and the files a `path` unit may point at (existence is not required
+ *  by the helper, but keeping them real mirrors a genuine project). */
+function seed(p: string): void {
+  mkdirSync(join(p, "rules"), { recursive: true });
+  mkdirSync(join(p, ".claude", "rules"), { recursive: true });
+  for (const f of ["ONTO-ENG-RULES.md", "READER.md", "CODING-HYGIENE.md"]) {
+    writeFileSync(join(p, ".claude", "rules", f), `# ${f}\n`);
+  }
+}
+
 beforeEach(() => {
   emptyProject = mkdtempSync(join(tmpdir(), "ctx-empty-"));
   manifestProject = mkdtempSync(join(tmpdir(), "ctx-manifest-"));
-  for (const p of [emptyProject, manifestProject]) {
-    mkdirSync(join(p, "rules"), { recursive: true });
-    mkdirSync(join(p, ".claude", "rules"), { recursive: true });
-    // Files a `path` unit may point at (existence is not required by the helper,
-    // but keeping them real mirrors a genuine project).
-    for (const f of ["ONTO-ENG-RULES.md", "READER.md", "CODING-HYGIENE.md"]) {
-      writeFileSync(join(p, ".claude", "rules", f), `# ${f}\n`);
-    }
-  }
+  for (const p of [emptyProject, manifestProject]) seed(p);
 });
 
 afterEach(() => {
@@ -81,10 +85,10 @@ afterEach(() => {
 });
 
 /**
- * File a work item in `dir`'s workbench, in its own container, claimed by
- * `claim`. Three properties of the setup are load-bearing, and each is what
- * `bin/fusion-claimed-package` reads: the record lives INSIDE the container and is
- * named after it; the checkout identifier is pinned rather than minted, because
+ * A consuming project with the sample manifest whose workbench is
+ * JSON-controlled, so that `bin/fusion-claimed-package` reads the claim off the
+ * package's JSON record through the codec. Two properties of the setup are
+ * load-bearing: the checkout identifier is pinned rather than minted, because
  * the claim is compared by equality on those eight hex characters and a test
  * that let `bin/fusion-identity` mint one would assert against a value it does
  * not know; and the tree is a git work tree WITH an identity, because outside
@@ -93,26 +97,24 @@ afterEach(() => {
  */
 const CHECKOUT = "a1b2c3d4";
 
-function makeItem(dir: string, slug: string, body: string, claim: string): void {
-  const wb = join(dir, "fusion-workbench");
-  const container = join(wb, "circles", slug);
-  mkdirSync(container, { recursive: true });
-  writeFileSync(join(wb, ".fusion-setup"), "{}\n");
-  writeFileSync(join(wb, ".checkout-id"), `${CHECKOUT}\n`);
-  for (const a of [["init", "-q"], ["config", "user.email", "t@e.com"], ["config", "user.name", "T"]])
-    execFileSync("git", a, { cwd: dir, stdio: "ignore" });
-  writeFileSync(
-    join(container, `${slug}.md`),
-    `${body}**Status:** claimed\n**Claim:** ${claim} — Tester <t@example.com>, 260910-1200\n`,
-  );
+function withClaimProject<T>(fn: (p: JsonProject) => T, options: { legacy?: boolean } = {}): T {
+  return withJsonProject((p) => {
+    seed(p.root);
+    writeManifest(p.root, SAMPLE_MANIFEST);
+    writeFileSync(join(p.workbench, ".checkout-id"), `${CHECKOUT}\n`);
+    for (const a of [["init", "-q"], ["config", "user.email", "t@e.com"], ["config", "user.name", "T"]])
+      execFileSync("git", a, { cwd: p.root, stdio: "ignore" });
+    return fn(p);
+  }, options);
 }
 
-const makeClaimedItem = (dir: string, slug: string, body: string) =>
-  makeItem(dir, slug, body, CHECKOUT);
-
-/** The same item, claimed by somebody else. */
-const makeForeignItem = (dir: string, slug: string, body: string) =>
-  makeItem(dir, slug, body, "99887766");
+/** A package the kernel wrote, claimed by `by`. `head` is appended to its narrative, the file the
+ *  helper reads a `Topic:`/`Tags:` line from, as a person editing it would; the control record is untouched. */
+function claimed(p: JsonProject, slug: string, by = CHECKOUT, head = ""): void {
+  const pkg = createPackage(p, slug);
+  claim(p, pkg, by);
+  if (head !== "") appendFileSync(join(p.workbench, pkg.narrative), head);
+}
 
 const SAMPLE_MANIFEST = [
   "# fixture manifest",
@@ -269,77 +271,56 @@ describe("context-manifest: emit predicate (agent-match AND topic-match)", () =>
 });
 
 describe("context-manifest: topic resolution from the claimed work item", () => {
-  beforeEach(() => writeManifest(manifestProject, SAMPLE_MANIFEST));
+  const ONTO = ".claude/rules/ONTO-ENG-RULES.md";
 
   it("derives topic keywords from the item's slug when no CLI topic is given", () => {
     // slug 'ontology-refactor' → keywords {ontology, refactor} → matches the ontology unit.
-    makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
-    const out = lines(run(manifestProject, "data-implementer").stdout);
-    expect(out).toContain(".claude/rules/ONTO-ENG-RULES.md");
-  });
+    withClaimProject((p) => {
+      claimed(p, "260718-1924-ontology-refactor");
+      expect(lines(run(p.root, "data-implementer").stdout)).toContain(ONTO);
+      // Ask for llm-pipeline as code-implementer → READER, NOT the slug-derived ontology unit.
+      expect(lines(run(p.root, "code-implementer", "llm-pipeline").stdout), "an explicit CLI topic overrides the slug").toContain(".claude/rules/READER.md");
+    });
+  }, CASE_TIMEOUT);
 
-  it("an explicit CLI topic overrides the item's slug", () => {
-    makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
-    // Ask for llm-pipeline as code-implementer → READER, NOT the slug-derived ontology unit.
-    const out = lines(run(manifestProject, "code-implementer", "llm-pipeline").stdout);
-    expect(out).toContain(".claude/rules/READER.md");
-  });
-
-  it("an explicit Topic: line in the item overrides the slug", () => {
-    // slug says 'plain' (no keyword match), but the item pins topic unite-framework.
-    makeClaimedItem(
-      manifestProject,
-      "260718-1924-plain",
-      "# c\n**Domain:** code\n**Topic:** unite-framework\n",
-    );
-    const out = lines(run(manifestProject, "code-implementer").stdout);
-    expect(out).toContain("skill:unite-bok-sc-skill");
-  });
-
-  it("a Tags: line (multi-value) in the item resolves each tag", () => {
-    makeClaimedItem(manifestProject, "260718-1924-plain", "# c\n**Tags:** ontology, unite-framework\n");
-    const planner = lines(run(manifestProject, "implementation-planner").stdout);
-    expect(planner, "implementation-planner in ontology unit").toContain(".claude/rules/ONTO-ENG-RULES.md");
-    const coder = lines(run(manifestProject, "code-implementer").stdout);
-    expect(coder, "code-implementer in unite-framework skill").toContain("skill:unite-bok-sc-skill");
-  });
+  it("an explicit Topic: line in the narrative overrides the slug, and a Tags: line resolves each tag", () => {
+    // slug says 'plain' (no keyword match), but the narrative pins topic unite-framework.
+    withClaimProject((p) => {
+      claimed(p, "260718-1924-plain", CHECKOUT, "**Topic:** unite-framework\n");
+      expect(lines(run(p.root, "code-implementer").stdout)).toContain("skill:unite-bok-sc-skill");
+    });
+    withClaimProject((p) => {
+      claimed(p, "260718-1924-plain", CHECKOUT, "**Tags:** ontology, unite-framework\n");
+      expect(lines(run(p.root, "implementation-planner").stdout), "implementation-planner in ontology unit").toContain(ONTO);
+      expect(lines(run(p.root, "code-implementer").stdout), "code-implementer in unite-framework skill").toContain("skill:unite-bok-sc-skill");
+    });
+  }, CASE_TIMEOUT);
 
   it("nothing claimed → only [always] units match (empty topic set)", () => {
-    // manifestProject has a manifest but no item store at all.
-    const out = lines(run(manifestProject, "code-implementer").stdout);
-    expect(out).toContain(".claude/rules/CODING-HYGIENE.md"); // [always]
-    expect(out).not.toContain(".claude/rules/READER.md");     // topic'd, no topic resolved
-  });
+    // A manifest and no package at all.
+    withClaimProject((p) => {
+      const out = lines(run(p.root, "code-implementer").stdout);
+      expect(out).toContain(".claude/rules/CODING-HYGIENE.md"); // [always]
+      expect(out).not.toContain(".claude/rules/READER.md");     // topic'd, no topic resolved
+    });
+  }, CASE_TIMEOUT);
 
-  it("an item claimed by another checkout resolves no topic", () => {
-    // The whole reason the claim is compared on the checkout: what is resolved
-    // is what THIS checkout is working on. Another checkout's claim is not an
-    // answer about this one, and reading it would hand an agent somebody
-    // else's rules.
-    makeForeignItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
-    const r = run(manifestProject, "data-implementer");
-    expect(r.status, "a foreign claim is an ordinary answer, not a fault").toBe(0);
-    expect(lines(r.stdout)).not.toContain(".claude/rules/ONTO-ENG-RULES.md");
-    // And the same item DOES resolve for the checkout that holds it, so the
-    // absence above is the comparison working rather than the read failing.
-    makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n**Domain:** data\n");
-    expect(lines(run(manifestProject, "data-implementer").stdout)).toContain(
-      ".claude/rules/ONTO-ENG-RULES.md",
-    );
-  });
-
-  it("an unclaimed item resolves no topic, even when it is the only one", () => {
-    // Both halves are tested, not just the status: an item nobody has claimed
-    // is not this checkout's work however few of them there are.
-    const slug = "260718-1924-ontology-refactor";
-    makeClaimedItem(manifestProject, slug, "# c\n");
-    writeFileSync(
-      join(manifestProject, "fusion-workbench", "circles", slug, `${slug}.md`),
-      "# c\n**Status:** open\n",
-    );
-    const out = lines(run(manifestProject, "data-implementer").stdout);
-    expect(out).not.toContain(".claude/rules/ONTO-ENG-RULES.md");
-  });
+  it("an item claimed by another checkout resolves no topic, and an unclaimed one neither", () => {
+    // The whole reason the claim is compared on the checkout: what is resolved is what THIS checkout
+    // is working on. Another checkout's claim is not an answer about this one, and reading it would
+    // hand an agent somebody else's rules. Both halves are tested, not just the status.
+    withClaimProject((p) => {
+      claimed(p, "260718-1924-ontology-refactor", "99887766");
+      createPackage(p, "260718-1925-ontology-cleanup");
+      const r = run(p.root, "data-implementer");
+      expect(r.status, "a foreign claim is an ordinary answer, not a fault").toBe(0);
+      expect(lines(r.stdout)).not.toContain(ONTO);
+      // And the store DOES resolve for the checkout that holds a package in it,
+      // so the absence above is the comparison working rather than the read failing.
+      claimed(p, "260718-1926-ontology-review");
+      expect(lines(run(p.root, "data-implementer").stdout)).toContain(ONTO);
+    });
+  }, CASE_TIMEOUT);
 
   it("two claimed items resolve no topic, and the helper's reason is not swallowed", () => {
     // `bin/fusion-paths` refuses this case with exit 3 rather than picking one.
@@ -347,16 +328,25 @@ describe("context-manifest: topic resolution from the claimed work item", () => 
     // topic buys optional units while a path decides where an artifact lands.
     // And it is NOT re-raised as this script's exit 3, which means a malformed
     // manifest and nothing else.
-    makeClaimedItem(manifestProject, "260718-1924-ontology-refactor", "# c\n");
-    makeClaimedItem(manifestProject, "260718-1930-second-claim", "# c\n");
-    const r = run(manifestProject, "data-implementer");
-    expect(r.status, "a refused claim is not this script's own failure").toBe(0);
-    expect(lines(r.stdout), "the slug of one of them must not become the topic")
-      .not.toContain(".claude/rules/ONTO-ENG-RULES.md");
-    expect(r.stderr, "the helper's own reason must reach the user").toContain(
-      "which one is in scope cannot be determined",
-    );
-  });
+    withClaimProject((p) => {
+      claimed(p, "260718-1924-ontology-refactor");
+      claimed(p, "260718-1930-second-claim");
+      const r = run(p.root, "data-implementer");
+      expect(r.status, "a refused claim is not this script's own failure").toBe(0);
+      expect(lines(r.stdout), "the slug of one of them must not become the topic").not.toContain(ONTO);
+      expect(r.stderr, "the helper's own reason must reach the user").toContain("which one is in scope cannot be determined");
+    });
+  }, CASE_TIMEOUT);
+
+  it("a workbench the helper refuses by name resolves no topic: exit 0, the state on stderr", () => {
+    // The same asymmetry: a legacy workbench is the resolver's exit 3 and a degraded topic here.
+    withClaimProject((p) => {
+      const r = run(p.root, "code-implementer");
+      expect(r.status).toBe(0);
+      expect(lines(r.stdout)).toContain(".claude/rules/CODING-HYGIENE.md");
+      expect(r.stderr).toContain("legacy");
+    }, { legacy: true });
+  }, CASE_TIMEOUT);
 });
 
 describe("context-manifest: HYG-NO-SILENT-FAIL — malformed manifest fails loudly (exit 3)", () => {

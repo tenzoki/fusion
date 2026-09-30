@@ -4,6 +4,8 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, chmod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
+import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { claim, createPackage, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
 // bin/fusion-paths is a bash script, so the tests drive the real one through
 // child_process against a throwaway workbench, as an agent's Setup step does.
@@ -162,130 +164,125 @@ describe("bin/fusion-paths", () => {
   // The scope branch. A scratch project under the OS temp directory is not a
   // git work tree, so every case above resolves to shared/ through the one path
   // that is a TRUE answer rather than a degraded one — which is why they need no
-  // setup. The cases here build the git identity the claim is compared against.
+  // setup. The cases here run in a JSON-controlled workbench the kernel wrote,
+  // inside a git work tree with the identity the claim is compared against.
   describe("an item in scope", () => {
-    /** A git work tree with an identity, returning this checkout's own hex. */
-    function withIdentity(): string {
-      const git = (...a: string[]) => execFileSync("git", a, { cwd: project, stdio: "ignore" });
-      git("init", "-q");
-      git("config", "user.email", "s@example.com");
-      git("config", "user.name", "Scratch Person");
-      const out = execFileSync(join(pluginRoot, "bin", "fusion-identity"), [], {
-        cwd: project, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });
-      return /^CHECKOUT=(.*)$/m.exec(out)![1];
+    const ALPHA = "260910-1000-alpha";
+    const BETA = "260910-1100-beta";
+
+    /** A JSON project in a git work tree with an identity; `fn` gets it and this checkout's hex. */
+    function withScope<T>(fn: (p: JsonProject, mine: string) => T, options: { legacy?: boolean } = {}): T {
+      return withJsonProject((p) => {
+        for (const a of [["init", "-q"], ["config", "user.email", "s@example.com"], ["config", "user.name", "Scratch Person"]])
+          execFileSync("git", a, { cwd: p.root, stdio: "ignore" });
+        const out = execFileSync(join(pluginRoot, "bin", "fusion-identity"), [], { cwd: p.root, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });
+        return fn(p, /^CHECKOUT=(.*)$/m.exec(out)![1]);
+      }, options);
     }
 
-    /** One work package: the container under `root`, and the record named after it. */
-    function item(slug: string, status: string, claim?: string, root = "work-packages"): void {
-      mkdirSync(join(workbench, root, slug), { recursive: true });
-      writeFileSync(join(workbench, root, slug, `${slug}.md`), [
-        `# ${slug}`, "", "---", "**Domain:** code", `**Status:** ${status}`,
-        ...(claim === undefined ? [] : [`**Claim:** ${claim}`]),
-        "**Filed by:** user, Scratch Person", "", "---", "",
-      ].join("\n"));
-    }
-
-    /** The claimed item, plus one open item nobody holds. */
-    function claimAlpha(): void {
-      item("260910-1000-alpha", "claimed", `${withIdentity()} — Scratch Person, 260910-1000`);
-      item("260910-1100-beta", "open");
+    /** The claimed item alpha, plus one open item nobody holds. */
+    function claimAlpha(p: JsonProject, mine: string): void {
+      claim(p, createPackage(p, ALPHA), mine);
+      createPackage(p, BETA);
     }
 
     it("puts every OUT_* in the claimed item's container and every SCAN_* in both", () => {
-      claimAlpha();
-      const r = run(project, "state-auditor");
-      expect(r.status, r.stderr).toBe(0);
-      const p = parse(r.stdout);
-      expect(p.OUT_ISSUE).toBe("work-packages/260910-1000-alpha/issues");
-      expect(p.OUT_DECISION).toBe("work-packages/260910-1000-alpha/decisions");
-      // Container first, then the shared store. The order is contract: a
-      // consumer that shows the first hit shows the item's own.
-      expect(p.SCAN_ISSUES).toBe("work-packages/260910-1000-alpha/issues shared/issues");
-      expect(p.SCAN_PLANS.split(" ")).toHaveLength(2);
-      // The container store itself is not per-item, and stays whole.
-      const o = run(project, "orchestrator").stdout;
-      expect(parse(o).SCAN_PACKAGES).toBe("work-packages");
-      expect(r.stdout + o, "a migrated workbench's output names no v11 store").not.toMatch(/circles|planning|consult\b/);
-    });
+      withScope((p, mine) => {
+        claimAlpha(p, mine);
+        const r = run(p.root, "state-auditor");
+        expect(r.status, r.stderr).toBe(0);
+        const v = parse(r.stdout);
+        expect(v.OUT_ISSUE).toBe(`work-packages/${ALPHA}/issues`);
+        expect(v.OUT_DECISION).toBe(`work-packages/${ALPHA}/decisions`);
+        // Container first, then the shared store. The order is contract: a
+        // consumer that shows the first hit shows the item's own.
+        expect(v.SCAN_ISSUES).toBe(`work-packages/${ALPHA}/issues shared/issues`);
+        expect(v.SCAN_PLANS.split(" ")).toHaveLength(2);
+        // The container store itself is not per-item, and stays whole.
+        const o = run(p.root, "orchestrator").stdout;
+        expect(parse(o).SCAN_PACKAGES).toBe("work-packages");
+        expect(r.stdout + o, "a migrated workbench's output names no v11 store").not.toMatch(/circles|planning|consult\b/);
+        // The `discuss` key resolves to the item's own store too (its shared half is pinned above).
+        expect(parse(run(p.root, "discuss").stdout).OUT_DISCUSSION).toBe(`work-packages/${ALPHA}/discussions`);
+      });
+    }, CASE_TIMEOUT);
 
-    it("reads a legacy-only workbench: the claim under the v11 root, every OUT_* in a new store", () => {
-      item("260910-1000-alpha", "claimed", `${withIdentity()} — Scratch Person, 260910-1000`, "circles");
-      mkdirSync(join(workbench, "circles", "260910-1000-alpha", "planning"));
-      mkdirSync(join(workbench, "shared", "planning"));
-      const r = run(project, "orchestrator");
-      expect(r.status, r.stderr).toBe(0);
-      const p = parse(r.stdout);
-      expect(p.OUT_ISSUE).toBe("work-packages/260910-1000-alpha/issues");
-      expect(p.OUT_PACKAGES).toBe("work-packages");
-      expect(p.SCAN_PACKAGES).toBe("work-packages circles");
-      expect(p.SCAN_PLANS).toBe(
-        "work-packages/260910-1000-alpha/plans circles/260910-1000-alpha/planning shared/plans shared/planning");
-      expect(parse(run(project, "implementation-planner", "260910-1000-alpha").stdout).OUT_PLAN).toBe("work-packages/260910-1000-alpha/plans");
-    });
-
-    it("reads a mixed workbench: both roots walked, a legacy name listed only where it exists", () => {
-      claimAlpha();
-      item("260901-0900-old", "open", undefined, "circles");
-      mkdirSync(join(workbench, "shared", "consult"));
-      const p = parse(run(project, "orchestrator").stdout);
-      expect(p.SCAN_PACKAGES).toBe("work-packages circles");
-      expect(p.SCAN_PLANS).toBe("work-packages/260910-1000-alpha/plans shared/plans");
-      expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consultations");
-    });
-
-    it("resolves OUT_DISCUSSION to the item's own store, in both scopes", () => {
-      // The key-set block below pins that `discuss` gets the key; this pins what
-      // it RESOLVES to. No read key exists by ruling: the `## Out of Scope` of
-      // `260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`.
-      expect(parse(run(project, "discuss").stdout).OUT_DISCUSSION).toBe("shared/discussions");
-      claimAlpha();
-      expect(parse(run(project, "discuss").stdout).OUT_DISCUSSION)
-        .toBe("work-packages/260910-1000-alpha/discussions");
-    });
+    it("lists a v11 store name beside the new one only where that directory exists, and writes to none", () => {
+      // The transition-window read of `SCAN_*` is this script's own and stays; a claim under the v11 root is no longer read.
+      withScope((p, mine) => {
+        claimAlpha(p, mine);
+        mkdirSync(join(p.workbench, "circles", ALPHA, "planning"), { recursive: true });
+        mkdirSync(join(p.workbench, "shared", "planning"), { recursive: true });
+        const v = parse(run(p.root, "orchestrator").stdout);
+        expect(v.OUT_ISSUE).toBe(`work-packages/${ALPHA}/issues`);
+        expect(v.SCAN_PACKAGES).toBe("work-packages circles");
+        expect(v.SCAN_PLANS).toBe(`work-packages/${ALPHA}/plans circles/${ALPHA}/planning shared/plans shared/planning`);
+        expect(parse(run(p.root, "consultant").stdout).OUT_CONSULT).toBe("shared/consultations");
+      });
+    }, CASE_TIMEOUT);
 
     it("takes the second argument over the claim", () => {
       // How a dispatcher sends an agent into an item this checkout does not
       // hold. The claimed item exists and is deliberately not the answer.
-      claimAlpha();
-      const p = parse(run(project, "implementation-planner", "260910-1100-beta").stdout);
-      expect(p.OUT_PLAN).toBe("work-packages/260910-1100-beta/plans");
-    });
+      withScope((p, mine) => {
+        claimAlpha(p, mine);
+        expect(parse(run(p.root, "implementation-planner", BETA).stdout).OUT_PLAN).toBe(`work-packages/${BETA}/plans`);
+      });
+    }, CASE_TIMEOUT);
 
     it.each([
-      ["names no directory in the container store", ["260910-9999-absent"]],
-      ["is a path rather than a directory name", ["work-packages/260910-1100-beta"]],
+      ["names no package in the container store", ["260910-9999-absent"]],
+      ["is a directory there and no package", ["260910-1200-gamma"]],
+      ["is a path rather than a directory name", [`work-packages/${BETA}`]],
       ["could escape the container store", ["../../etc"]],
       ["is empty", [""]],
-      ["is joined by a third argument", ["260910-1100-beta", "extra"]],
+      ["is joined by a third argument", [BETA, "extra"]],
     ])("exits 1 — the caller's mistake, not the workbench's — when it %s", (_, args) => {
       // Never 3: the scope is determinable and the caller named an item that is
       // not there; the user's workbench has nothing to repair.
-      const r = run(project, "implementation-planner", ...args);
-      expect(r.status).toBe(1);
-      expect(r.stdout).toBe("");
-    });
+      withScope((p) => {
+        mkdirSync(join(p.workbench, "work-packages", "260910-1200-gamma"), { recursive: true });
+        const r = run(p.root, "implementation-planner", ...args);
+        expect(r.status).toBe(1);
+        expect(r.stdout).toBe("");
+      });
+    }, CASE_TIMEOUT);
 
     it("refuses two claimed items with exit 3 and no output", () => {
       // `bin/fusion-claimed-package`'s own test drives the criterion; this pins
       // that the 3 arrives whole — no output, and no fall back to shared/.
-      const mine = withIdentity();
-      item("260910-1000-alpha", "claimed", `${mine} — Scratch Person, 260910-1000`);
-      item("260910-1100-beta", "claimed", `${mine} — Scratch Person, 260910-1100`);
-      const r = run(project, "implementation-planner");
-      expect(r.status).toBe(3);
-      expect(r.stdout).toBe("");
-      expect(r.stderr, "the helper's reason reaches the user").toContain("260910-1100-beta");
-    });
+      withScope((p, mine) => {
+        claim(p, createPackage(p, ALPHA), mine);
+        claim(p, createPackage(p, BETA), mine);
+        const r = run(p.root, "implementation-planner");
+        expect(r.status).toBe(3);
+        expect(r.stdout).toBe("");
+        expect(r.stderr, "the helper's reason reaches the user").toContain(BETA);
+      });
+    }, CASE_TIMEOUT);
 
     it("exits 3 when this checkout's identifier cannot be read inside a work tree", () => {
       // Unreadable inside a work tree is an answer this run failed to obtain; no
       // work tree at all is the shared store being TRUE (every other case here).
-      withIdentity();
-      writeFileSync(join(workbench, ".checkout-id"), "not-hex\n");
-      const r = run(project, "implementation-planner");
-      expect(r.status).toBe(3);
-      expect(r.stdout).toBe("");
-    });
+      withScope((p) => {
+        writeFileSync(join(p.workbench, ".checkout-id"), "not-hex\n");
+        const r = run(p.root, "implementation-planner");
+        expect(r.status).toBe(3);
+        expect(r.stdout).toBe("");
+      });
+    }, CASE_TIMEOUT);
+
+    it("exits 3, the state named, on a legacy workbench — with and without a named item", () => {
+      // Refused by name in both branches, and never resolved to shared/ as if nothing were claimed.
+      withScope((p) => {
+        for (const args of [[], [ALPHA]]) {
+          const r = run(p.root, "implementation-planner", ...args);
+          expect(r.status, args.join()).toBe(3);
+          expect(r.stdout).toBe("");
+          expect(r.stderr).toContain("legacy");
+        }
+      }, { legacy: true });
+    }, CASE_TIMEOUT);
   });
 
   describe("the package keys", () => {

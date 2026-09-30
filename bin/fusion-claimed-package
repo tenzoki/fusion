@@ -7,17 +7,14 @@
 # Takes no arguments. Output on stdout, in the KEY=value shape
 # `bin/fusion-paths` established: either both lines below, or nothing at all.
 #
-#   PACKAGE=<root>/<stamp>-<slug>/<stamp>-<slug>.md
-#   CONTAINER=<root>/<stamp>-<slug>
+#   PACKAGE=work-packages/<stamp>-<slug>/<stamp>-<slug>.md
+#   CONTAINER=work-packages/<stamp>-<slug>
 #
-#   PACKAGE    the work package record, workbench-relative.
-#   CONTAINER  the directory holding it, workbench-relative. Derivable from
+#   PACKAGE    the work package's narrative, workbench-relative: the file an
+#              agent reads, and the one `bin/fusion-rules` reads a Topic: or
+#              Tags: line from. Its control data is the `package.json` beside it.
+#   CONTAINER  the directory holding both, workbench-relative. Derivable from
 #              PACKAGE and printed anyway, so no caller re-implements the dirname.
-#
-# <root> is the container store the record stands under: its name, or during
-# the v12 transition window its v11 name, both read from `bin/fusion-stores`.
-# The scan walks every root of the two that exists, and a claim under either
-# counts; so do two claims across them, which is exit 3 like two under one.
 #
 # Every reason on stderr, one line each, plus whatever `bin/fusion-identity`
 # writes there: its stderr is passed through rather than swallowed, and a
@@ -34,11 +31,36 @@
 #      or `user.email` is unset, or no runnable `git` at all).
 #   2  usage error: an argument was given, or -h/--help. Nothing on stdout.
 #   3  the item in scope cannot be determined. Nothing on stdout, and NEVER a
-#      fall back to the shared store. Two causes, and the message says which:
-#      two or more items carry a claim naming this checkout, every one of them
-#      named on stderr; or this checkout's own identifier could not be read
-#      inside a git work tree (`bin/fusion-identity` exiting 3 or 5, or that
-#      helper or `bin/fusion-stores` missing from the install).
+#      fall back to the shared store. The message names the cause, which is
+#      one of:
+#        - two or more packages carry a claim naming this checkout, every one
+#          of them named on stderr;
+#        - this checkout's own identifier could not be read inside a git work
+#          tree (`bin/fusion-identity` exiting 3 or 5, or that helper or the
+#          compiled entry `hooks/dist/scope.js` missing from the install);
+#        - the workbench is `legacy` (Markdown control data, no
+#          `workbench.json`) or `unsupported` (a manifest requiring a feature
+#          this version's codec does not know);
+#        - the codec refused a read, `recovery-blocked` among the reasons, or
+#          gave no answer this program can read;
+#        - a package record did not read, so its status is unknown;
+#        - a package changed between the list and the read of it twice over.
+#
+# ---------------------------------------------------------------------------
+# The criterion, and where it is read
+#
+# A package is this checkout's when its `status` is `claimed` and its
+# `claim.checkout_id` equals the eight hex characters `bin/fusion-identity`
+# prints as CHECKOUT=. Both come out of the package's JSON control record,
+# read through the codec (`codec/dist/fusion-record.js`) by way of the record
+# client and `hooks/lib/scope.ts`; nothing here or there reads a head line of
+# the narrative. The read is `inspect`, then `list`, then `show` of each
+# claimed row at the revision `list` named, with one bounded re-read when a
+# revision moved in between; that module's header carries the sequence and
+# what each answer of the codec means. A workbench that is not JSON-controlled
+# is refused by name, never read as empty: `bin/fusion-stores` and the v11
+# container root are no longer consulted, because a JSON-controlled workbench
+# has the store-name migration behind it.
 #
 # ---------------------------------------------------------------------------
 # One criterion, one implementation
@@ -53,12 +75,6 @@
 # deliberately does not reach it through `bin/fusion-paths`: that resolver
 # derives a key set from a CONSUMER PROMPT and `fusion-rules` has no prompt of
 # its own, so a third helper is the only place the two can share.
-#
-# The store is read from `bin/fusion-stores` rather than resolved through
-# `bin/fusion-paths`, for that same reason and no other: this program is not a
-# consumer with a prompt to derive a key set from. `rules/fusion-workbench-conventions.md`
-# `## Work packages` is the definition of both the store and the
-# record's name, and this program applies it rather than restating it.
 #
 # ---------------------------------------------------------------------------
 # Ambiguity is refused, never resolved
@@ -87,9 +103,9 @@
 # from its 4, and why this program must not merge them back.
 #
 # The consequence is stated rather than smoothed: in a tree that is not a git
-# work tree, a `**Claim:**` somebody wrote by hand is not read, even though the
-# checkout identifier there is minted and readable. That is the cost of exit 4
-# meaning one thing.
+# work tree, a claim somebody wrote is not read, even though the checkout
+# identifier there is minted and readable, and the codec is not asked at all.
+# That is the cost of exit 4 meaning one thing.
 #
 # ---------------------------------------------------------------------------
 # Another checkout's claim is not a match, and not an error
@@ -112,6 +128,11 @@
 # passes the 1 and the 3 straight through instead of answering with the shared
 # store. The one thing no caller may do with a non-zero is treat it as "none
 # claimed": that is exit 0 with no output, and it is a different answer.
+#
+# This program is called by a person or from an agent's Setup, never by an
+# automatic hook: a read through the codec may finish a committed intent, and
+# that is admitted for a helper somebody called and for nothing else
+# (`hooks/lib/record-client.ts` `## The recovery declaration`).
 
 set -eu
 
@@ -150,7 +171,7 @@ fi
 # --- this checkout ----------------------------------------------------------
 #
 # Established before the store is read, because every outcome below except the
-# scan itself is decided by which code the identity helper returned.
+# read itself is decided by which code the identity helper returned.
 
 if [ ! -x "$here/fusion-identity" ]; then
   printf 'fusion-claimed-package: %s is missing, so this checkout cannot be identified and the item in scope is unknown.\n' \
@@ -192,65 +213,18 @@ if [ -z "$checkout" ]; then
   exit 3
 fi
 
-# --- the scan ---------------------------------------------------------------
+# --- the read ---------------------------------------------------------------
 #
-# A container directory whose own name, plus `.md`, is the record inside it.
-# Both head fields are tested, because a Status that says claimed with no Claim
-# beside it names no holder, and a Claim left on a `done` item names a holder
-# who has finished. `find` drives the loop so an empty or absent store yields no
-# input rather than an unexpanded glob.
+# hooks/dist/scope.js, resolved relative to this script rather than through
+# $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run their own
+# build and their own codec bundle. It prints the two lines or nothing, and
+# exits 0 or 3 with the cause on stderr; this script adds nothing to either.
 
-if [ ! -x "$here/fusion-stores" ]; then
-  printf 'fusion-claimed-package: %s is missing, so the container store and the item in scope are unknown.\n' \
-    "$here/fusion-stores" >&2
-  exit 3
-fi
-CONTAINER_STORE=''
-LEGACY_CONTAINER_STORE=''
-while IFS='=' read -r key val; do
-  case "$key" in
-    CONTAINER_STORE|LEGACY_CONTAINER_STORE) printf -v "$key" '%s' "$val" ;;
-  esac
-done <<EOF
-$("$here/fusion-stores")
-EOF
-if [ -z "$CONTAINER_STORE" ]; then
-  printf 'fusion-claimed-package: bin/fusion-stores named no container store, so the item in scope is unknown.\n' >&2
+entry="$here/../hooks/dist/scope.js"
+if [ ! -f "$entry" ]; then
+  printf 'fusion-claimed-package: %s is missing, so nothing could be asked and the item in scope is unknown. The plugin install is incomplete.\n' \
+    "$entry" >&2
   exit 3
 fi
 
-matches=''
-n=0
-
-for store_root in $CONTAINER_STORE $LEGACY_CONTAINER_STORE; do
-  store="$root/fusion-workbench/$store_root"
-  [ -d "$store" ] || continue
-  while IFS= read -r dir; do
-    [ -n "$dir" ] || continue
-    base="$(basename "$dir")"
-    record="$dir/$base.md"
-    [ -f "$record" ] || continue
-    grep -qE '^\*\*Status:\*\*[[:space:]]*claimed[[:space:]]*$' "$record" 2>/dev/null || continue
-    grep -qE "^\*\*Claim:\*\*[[:space:]]*$checkout([[:space:]]|$)" "$record" 2>/dev/null || continue
-    matches="$matches$store_root/$base
-"
-    n=$((n + 1))
-  done <<EOF
-$(find "$store" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
-EOF
-done
-
-if [ "$n" -eq 0 ]; then
-  exit 0
-fi
-
-if [ "$n" -gt 1 ]; then
-  printf 'fusion-claimed-package: %s work packages carry a claim naming this checkout (%s), so which one is in scope cannot be determined:\n' \
-    "$n" "$checkout" >&2
-  printf '%s' "$matches" | awk -F/ '{ printf "  %s/%s/%s.md\n", $1, $2, $2 }' >&2
-  printf 'fusion-claimed-package: nothing is resolved and nothing falls back to the shared store. Leave one **Status:** claimed and set the others back to open.\n' >&2
-  exit 3
-fi
-
-container="$(printf '%s' "$matches" | head -n 1)"
-printf 'PACKAGE=%s/%s.md\nCONTAINER=%s\n' "$container" "$(basename "$container")" "$container"
+exec node "$entry" claimed "$root/fusion-workbench" "$checkout"

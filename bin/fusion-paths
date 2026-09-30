@@ -7,11 +7,14 @@
 # The two share one flat namespace: each consumer asks for its own keys under
 # its own name — `fusion-paths code-implementer`, `fusion-paths memo`.
 #
-# <item-dir> names the work package in scope, as a directory name that must
-# already exist in the container store, under its name or, during the v12
-# transition window, its v11 name. It is how a dispatcher sends an agent into an
-# item other than the one this checkout holds. With no second argument the item
-# in scope is this checkout's own claim, read through bin/fusion-claimed-package
+# <item-dir> names the work package in scope, as the directory's own name in
+# the container store; it must hold a package record (`package.json`) the codec
+# reads, and a directory alone is not one. It is how a dispatcher sends an
+# agent into an item other than the one this checkout holds. The check is
+# `hooks/dist/scope.js item`, the same module that answers the claim below,
+# and it is answered from JSON control data: a workbench that is not
+# JSON-controlled is refused by name. With no second argument the item in
+# scope is this checkout's own claim, read through bin/fusion-claimed-package
 # — the single implementation of that criterion, which bin/fusion-rules also
 # calls. This script does not re-derive it.
 #
@@ -41,13 +44,17 @@
 # resolver's own). Callers key on the code, so no code carries two meanings:
 #   0  success
 #   1  usage error (missing name, more than two arguments, or an <item-dir>
-#      that names no directory in the container store — a caller's mistake,
-#      not a fault in the workbench), or no workbench found above pwd
+#      that names no package record in the container store — a caller's
+#      mistake, not a fault in the workbench), or no workbench found above pwd
 #   2  unknown name (no such agent and no such skill)
 #   3  the item in scope cannot be determined: this checkout holds two or more
-#      claimed items, or its own identifier could not be read inside a git work
-#      tree. No output, and NEVER a fall back to shared/ — that answer is exit
-#      0, and it is a different answer.
+#      claimed items, its own identifier could not be read inside a git work
+#      tree, or the workbench is refused by name (legacy or unsupported, a read
+#      the codec refused or did not answer, a package record that does not
+#      read: the header of bin/fusion-claimed-package lists them). With an
+#      <item-dir>, the same refusals of the workbench. No output, and NEVER a
+#      fall back to shared/ — that answer is exit 0, and it is a different
+#      answer.
 #   4  internal error: the prompt names a key this resolver cannot order or
 #      value, one name is both an agent and a skill, or bin/fusion-stores is
 #      missing or names no container store
@@ -323,9 +330,11 @@ fi
 #
 #    Two ways in. A caller that NAMES an item overrides everything: it is how a
 #    dispatcher sends an agent into an item other than the one this checkout
-#    holds, and the named directory must already exist, because a container is
+#    holds, and the named package must already exist, because a package is
 #    created by whoever files the item and not as a side effect of resolving a
-#    path. A caller that names none gets this checkout's own claim.
+#    path. A caller that names none gets this checkout's own claim. Both are
+#    read from JSON control data through the codec, by hooks/dist/scope.js,
+#    and never by this script.
 #
 #    The criterion behind that claim is NOT implemented here. It lives once, in
 #    bin/fusion-claimed-package, which bin/fusion-rules calls from the same Setup
@@ -343,15 +352,30 @@ if [ "$HAVE_ITEM_ARG" = 1 ]; then
       exit 1
       ;;
   esac
-  if [ ! -d "$WORKBENCH/$CONTAINER_STORE/$ITEM_ARG" ] &&
-     { [ -z "$LEGACY_CONTAINER_STORE" ] || [ ! -d "$WORKBENCH/$LEGACY_CONTAINER_STORE/$ITEM_ARG" ]; }; then
-    # Exit 1 and not 3: the scope is perfectly determinable, the caller just
-    # named an item that is not there. Nothing in the workbench is at fault and
-    # the user must not be sent to repair it.
-    echo "fusion-paths: no work package directory '$ITEM_ARG' in the container store under $WORKBENCH. The second argument names a package that must already exist." >&2
-    exit 1
+  # The entry answers `item` from the package's JSON record: exit 0 when the
+  # directory holds one, 1 when it holds none (the scope is perfectly
+  # determinable, the caller just named an item that is not there, and the
+  # user must not be sent to repair the workbench), 3 when the workbench is
+  # refused by name. Its reasons go to stderr on their own, so nothing is
+  # captured here. Resolved relative to this script, as bin/fusion-claimed-package
+  # resolves it, so an install copy and a work tree each run their own build.
+  SCOPE_ENTRY="$SCRIPT_DIR/../hooks/dist/scope.js"
+  if [ ! -f "$SCOPE_ENTRY" ]; then
+    echo "fusion-paths: $SCOPE_ENTRY is missing, so whether '$ITEM_ARG' is a work package is unknown. The plugin install is incomplete." >&2
+    exit 3
   fi
-  SCOPE_DIR="$ITEM_ARG"
+  set +e
+  node "$SCOPE_ENTRY" item "$WORKBENCH" "$ITEM_ARG"
+  ITEM_RC=$?
+  set -e
+  case "$ITEM_RC" in
+    0) SCOPE_DIR="$ITEM_ARG" ;;
+    1) exit 1 ;;
+    *)
+      echo "fusion-paths: the item in scope cannot be determined (hooks/dist/scope.js exited $ITEM_RC), so no path is resolved and nothing falls back to shared/." >&2
+      exit 3
+      ;;
+  esac
 else
   CLAIMED="$SCRIPT_DIR/fusion-claimed-package"
   if [ ! -x "$CLAIMED" ]; then
