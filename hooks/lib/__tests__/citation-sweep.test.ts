@@ -11,6 +11,7 @@ import { spawnSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { tmpdir } from "node:os";
 import { HOOKS_DIR, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { createScanner, GATE_KINDS, type CitationHit, type Lines } from "../citation-scan.js";
@@ -467,23 +468,42 @@ const ACTOR = { actor: "user", person: null };
 const CITE = "see `work-packages/260101-0001-alpha/260101-0001-alpha.md`\n";
 const hash = (p: JsonProject, rel: string) => `sha256:${createHash("sha256").update(readFileSync(join(p.workbench, rel))).digest("hex")}`;
 
+/** The sweep, and every op it sent the codec: a preload wraps `spawnSync` before the entry's imports bind it. */
+function sweepCounted(p: JsonProject, ...args: string[]) {
+  const [preload, log] = [join(p.root, "count.mjs"), join(p.root, "ops.log")];
+  writeFileSync(preload, `import cp from "node:child_process"; import { syncBuiltinESMExports } from "node:module"; import { appendFileSync } from "node:fs";
+const real = cp.spawnSync; cp.spawnSync = (c, a, o) => { if (String(a?.[0]).endsWith("fusion-record.js")) appendFileSync(${JSON.stringify(log)}, JSON.parse(o.input).op + "\\n"); return real(c, a, o); }; syncBuiltinESMExports();\n`);
+  const run = spawnSync(process.execPath, ["--import", pathToFileURL(preload).href, ENTRY, "--root", p.workbench, ...args], { cwd: p.root, encoding: "utf-8" });
+  return { run, ops: existsSync(log) ? readFileSync(log, "utf-8").trim().split("\n") : [] };
+}
+
 describe("citation-sweep on a JSON-controlled workbench", () => {
-  it("names before --yes each rewrite of an adopted plan and of a report an evidence record binds, and no unbound file", () => {
+  it("names before --yes each rewrite of a plan and a spec adopted, and of a report an evidence record binds, and no unbound file, asking the codec three times", () => {
     withJsonProject((p) => {
-      const pkg = createPackage(p, "260101-0001-alpha");
-      const [planId, evId, workbench_id] = [randomUUID(), randomUUID(), String(must(p, { op: "inspect" }).result.id)];
-      const [plan, report] = [`${pkg.dir}/plans/260101-0002-plan.md`, `${pkg.dir}/reviews/260101-0003-reviewer-alpha.md`];
-      must(p, { op: "create", operation_id: randomUUID(), id: planId, kind: "plan", filed_by: ACTOR, origin: { kind: "package", ref: { workbench_id, record_id: pkg.id } }, scope: { container: pkg.dir, store: "plans" }, narrative: { path: plan, content: CITE }, payload: { state: "open", steps: [{ id: "s1", state: "open" }], criteria: [], acceptance: null } });
-      const { revision } = must(p, { op: "show", record: { path: pkg.path } }).result;
-      must(p, { op: "adopt-plan", operation_id: randomUUID(), record: { path: pkg.path }, expected_revision: revision, actor: ACTOR, plan: { workbench_id, record_id: planId }, revision: hash(p, plan) });
+      const [pkg, beta] = [createPackage(p, "260101-0001-alpha"), createPackage(p, "260101-0005-beta")];
+      const [evId, workbench_id] = [randomUUID(), String(must(p, { op: "inspect" }).result.id)];
+      const adopt = (owner: typeof pkg, plan: string, role: "plan" | "spec"): string => {
+        const id = randomUUID();
+        must(p, { op: "create", operation_id: randomUUID(), id, kind: "plan", filed_by: ACTOR, origin: { kind: "package", ref: { workbench_id, record_id: owner.id } }, scope: { container: owner.dir, store: "plans" }, narrative: { path: plan, content: CITE }, payload: { state: "open", steps: [{ id: "s1", state: "open" }], criteria: [], acceptance: null } });
+        const { revision } = must(p, { op: "show", record: { path: owner.path } }).result;
+        must(p, { op: "adopt-plan", operation_id: randomUUID(), record: { path: owner.path }, expected_revision: revision, actor: ACTOR, plan: { workbench_id, record_id: id }, role, revision: hash(p, plan) });
+        return plan.replace(/\.md$/, ".record.json");
+      };
+      const [plan, spec, report] = [`${pkg.dir}/plans/260101-0002-plan.md`, `${pkg.dir}/plans/260101-0006-spec.md`, `${pkg.dir}/reviews/260101-0003-reviewer-alpha.md`];
+      adopt(pkg, plan, "plan");
+      adopt(pkg, spec, "spec");
+      // beta's plan loses its record: the binding is unresolved and names no file, while the narrative stays in the write set
+      rmSync(join(p.workbench, adopt(beta, `${beta.dir}/plans/260101-0007-plan.md`, "plan")));
       for (const rel of [report, `${pkg.dir}/analyses/260101-0004-unbound.md`]) place(p, rel, CITE);
       must(p, { op: "create", operation_id: randomUUID(), id: evId, kind: "evidence", scope: { container: pkg.dir, store: "reviews" }, payload: { schema: "fusion.evidence/v1", id: evId, workbench_id, subject: { git_tree: "0".repeat(40), git_range: null }, brief_revision: hash(p, pkg.narrative), plan_revision: null, role: { profile: "reviewer", version: "12.0.0" }, host: "claude-code", execution_policy: "claude-guided", verdict: "accept", uncertainties: [], checks: [{ id: "t", result: "pass", detail: null }], report: { path: report, sha256: hash(p, report), kind: "review" }, predecessor: null, accepted_at: "2026-09-30T12:00:00Z", extensions: {} } });
-      const run = sweep(p.root, p.workbench, "--dry-run");
+      const { run, ops } = sweepCounted(p, "--dry-run");
       expect(run.status, run.stderr).toBe(0);
+      expect(ops).toEqual(["inspect", "list", "reconcile"]);
       const lines = run.stdout.trim().split("\n");
-      expect([lines[0], lines.at(-1)]).toEqual(["format=json-control", "files=3 rewrites=3 residual=0 record=0 package-record=3 package-dir=0 bare-record=0 stamp-bare=0 mode=dry-run"]);
+      expect([lines[0], lines.at(-1)]).toEqual(["format=json-control", "files=5 rewrites=5 residual=0 record=0 package-record=5 package-dir=0 bare-record=0 stamp-bare=0 mode=dry-run"]);
       expect(lines.filter((l) => l.startsWith("bound="))).toEqual([
         `bound=fusion-workbench/${plan}  plan:fusion-workbench/${pkg.path}`,
+        `bound=fusion-workbench/${spec}  spec:fusion-workbench/${pkg.path}`,
         `bound=fusion-workbench/${report}  report:fusion-workbench/${report.replace(/\.md$/, ".evidence.json")}`,
       ]);
     });

@@ -259,7 +259,7 @@ const SKILL_HEAD_ROOM = 39_260;
  * raise as the remedy and the authorisation reaches nothing else — the same
  * dispatch left `AGENT_HEAD_ROOM` and `SKILL_HEAD_ROOM` unraised and said so.
  */
-const TEST_LINE_HEAD_ROOM = 3_763;
+const TEST_LINE_HEAD_ROOM = 3_783;
 
 const SURFACES: Surface[] = [
   {

@@ -36,7 +36,11 @@
  *                     `unreadRow` is `unreadable`, named, and in no map. Its
  *                     `references` give `unresolvedRefs`: every record
  *                     reference, a `depends_on` target among them, that
- *                     resolves to no control file (`record-not-found`).
+ *                     resolves to no control file (`record-not-found`), and
+ *                     `bindings`: per control file, its
+ *                     `/active_documents/<i>/ref` entries with the `role`
+ *                     the codec copies from the stored binding, whatever
+ *                     their status, and the `target` of a resolved one.
  *
  * `unreadRow` is written for a package row, and its status check is the
  * package vocabulary. A record of another kind is held to its own: the states
@@ -85,7 +89,11 @@ export interface RecordIndex {
   unreadable: Array<{ path: string; problem: Refusal }>;
   /** Record references resolving to nothing: the control file, the JSON pointer, the codec's reason. */
   unresolvedRefs: Array<{ path: string; at: string; problem: Refusal }>;
+  /** A control file's active-document bindings, from `reconcile`: `target` is the control path of a resolved one, else null. */
+  bindings: Map<string, Array<{ role: string | null; status: string; target: string | null }>>;
 }
+
+const ACTIVE_DOCUMENT_REF = /^\/active_documents\/\d+\/ref$/;
 
 /** Why no index was read. `legacy` is not among them: it is a format, with a reader of its own. */
 export type NotRead = Exclude<Unread, { cause: "legacy" }>;
@@ -130,7 +138,7 @@ export function readRecordIndex(workbench: string, ask: Ask = askCodec, contract
   const found = findingsByPath("reconcile", findings.list);
   const kinds = (JSON.parse(readFileSync(contract, "utf-8")) as { kinds: Kinds }).kinds;
 
-  const index: RecordIndex = { byNarrative: new Map(), byId: new Map(), byControl: new Map(), unreadable: [], unresolvedRefs: [] };
+  const index: RecordIndex = { byNarrative: new Map(), byId: new Map(), byControl: new Map(), unreadable: [], unresolvedRefs: [], bindings: new Map() };
   for (const row of records.list) {
     if (!isObject(row) || typeof row.path !== "string") continue;
     const bad = unreadable(row, found, kinds);
@@ -150,6 +158,10 @@ export function readRecordIndex(workbench: string, ask: Ask = askCodec, contract
     if (narrative !== null) index.byNarrative.set(narrative, entry);
   }
   for (const r of references.list) {
+    if (isObject(r) && typeof r.path === "string" && ACTIVE_DOCUMENT_REF.test(String(r.at))) {
+      const binding = { role: typeof r.role === "string" ? r.role : null, status: String(r.status), target: r.status === "resolved" && typeof r.target === "string" ? r.target : null };
+      index.bindings.set(r.path, [...(index.bindings.get(r.path) ?? []), binding]);
+    }
     if (!isObject(r) || r.status !== "unresolved" || r.reason !== "record-not-found" || typeof r.path !== "string") continue;
     index.unresolvedRefs.push({ path: r.path, at: String(r.at), problem: { class: String(r.class), reason: r.reason } });
   }

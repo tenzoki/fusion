@@ -42,21 +42,24 @@
  *                   left out with a line on stderr. The census gains one
  *                   `bound=<file>  <role>:<control>[, ...]` line per file in
  *                   the write set whose bytes a record binds by hash: a plan
- *                   or spec in a package's `active_documents`, or the report
- *                   an evidence record names, each read by one `show` of the
- *                   binding record. Guard (b) thereby names, before `--yes`,
+ *                   or spec in a package's `active_documents`, read off
+ *                   `reconcile`'s references with its role, or the report
+ *                   an evidence record names, its neighbour by name. No
+ *                   request beyond the index's three is sent, however many
+ *                   records there are. Guard (b) thereby names, before `--yes`,
  *                   every rewrite that would leave an adoption or a review's
  *                   evidence stale (section 9). Nothing is refused on that
  *                   ground: the rewrite is revertible under guard (a), and the
  *                   staleness is the codec's to report. A binding whose
  *                   target the index does not hold (a reference to nothing, a
  *                   record the codec could not read) names no file and prints
- *                   no line; `bin/fusion-citation-check` reports both.
+ *                   no line; `bin/fusion-citation-check` reports both. Nor
+ *                   does a binding `reconcile` found ambiguous.
  *   `legacy`        everything below, byte for byte as before this line
  *                   existed.
  *
- * Any other answer, and any refused or unanswered `show`, stops the run before
- * a line of stdout (exit 3 or 6 below). None of them is an empty workbench.
+ * Any other answer stops the run before a line of stdout (exit 3 or 6 below).
+ * None of them is an empty workbench.
  *
  * ## The declared corpus
  *

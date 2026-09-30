@@ -36,7 +36,11 @@
  *                     `unreadRow` is `unreadable`, named, and in no map. Its
  *                     `references` give `unresolvedRefs`: every record
  *                     reference, a `depends_on` target among them, that
- *                     resolves to no control file (`record-not-found`).
+ *                     resolves to no control file (`record-not-found`), and
+ *                     `bindings`: per control file, its
+ *                     `/active_documents/<i>/ref` entries with the `role`
+ *                     the codec copies from the stored binding, whatever
+ *                     their status, and the `target` of a resolved one.
  *
  * `unreadRow` is written for a package row, and its status check is the
  * package vocabulary. A record of another kind is held to its own: the states
@@ -86,6 +90,12 @@ export interface RecordIndex {
         at: string;
         problem: Refusal;
     }>;
+    /** A control file's active-document bindings, from `reconcile`: `target` is the control path of a resolved one, else null. */
+    bindings: Map<string, Array<{
+        role: string | null;
+        status: string;
+        target: string | null;
+    }>>;
 }
 /** Why no index was read. `legacy` is not among them: it is a format, with a reader of its own. */
 export type NotRead = Exclude<Unread, {

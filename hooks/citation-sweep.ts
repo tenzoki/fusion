@@ -42,21 +42,24 @@
  *                   left out with a line on stderr. The census gains one
  *                   `bound=<file>  <role>:<control>[, ...]` line per file in
  *                   the write set whose bytes a record binds by hash: a plan
- *                   or spec in a package's `active_documents`, or the report
- *                   an evidence record names, each read by one `show` of the
- *                   binding record. Guard (b) thereby names, before `--yes`,
+ *                   or spec in a package's `active_documents`, read off
+ *                   `reconcile`'s references with its role, or the report
+ *                   an evidence record names, its neighbour by name. No
+ *                   request beyond the index's three is sent, however many
+ *                   records there are. Guard (b) thereby names, before `--yes`,
  *                   every rewrite that would leave an adoption or a review's
  *                   evidence stale (section 9). Nothing is refused on that
  *                   ground: the rewrite is revertible under guard (a), and the
  *                   staleness is the codec's to report. A binding whose
  *                   target the index does not hold (a reference to nothing, a
  *                   record the codec could not read) names no file and prints
- *                   no line; `bin/fusion-citation-check` reports both.
+ *                   no line; `bin/fusion-citation-check` reports both. Nor
+ *                   does a binding `reconcile` found ambiguous.
  *   `legacy`        everything below, byte for byte as before this line
  *                   existed.
  *
- * Any other answer, and any refused or unanswered `show`, stops the run before
- * a line of stdout (exit 3 or 6 below). None of them is an empty workbench.
+ * Any other answer stops the run before a line of stdout (exit 3 or 6 below).
+ * None of them is an empty workbench.
  *
  * ## The declared corpus
  *
@@ -428,10 +431,8 @@ import {
   type Scanner,
 } from "./lib/citation-scan.js";
 import { loadConfig } from "./lib/config.js";
-import { isObject, resultOf, type Unread } from "./lib/codec-read.js";
-import { ask as askCodec } from "./lib/record-client.js";
 import { bundleMissing, notReadLine, readRecordIndex, type NotRead, type RecordIndex } from "./lib/record-index.js";
-import { CONTAINER_ROOT_ALT, isControlFile, JSON_STATE_DIR, WORKBENCH_MANIFEST } from "./lib/stores.js";
+import { CONTAINER_ROOT_ALT, isControlFile, JSON_STATE_DIR, narrativeOf, WORKBENCH_MANIFEST } from "./lib/stores.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 
@@ -766,25 +767,23 @@ function isCodecFile(root: string, abs: string): boolean {
 
 /**
  * Every workbench-relative file a record binds by hash, each with its bindings
- * as `<role>:<control>`: a package's `active_documents` entry names a record
- * by id, whose narrative the index holds, and an evidence record names its
- * report. One `show` per package and evidence row, since `list` carries
- * neither; a `show` not answered ends the run, and is never a file bound by
- * nothing.
+ * as `<role>:<control>`, from the index alone and with no request of its own. A
+ * package's binding is `reconcile`'s `/active_documents/<i>/ref` entry, which
+ * carries the stored role and a resolved one's target, whose narrative the
+ * index holds. An evidence record's report is its neighbour by the naming rule
+ * (`narrativeOf`), which the kernel refuses any record to break
+ * (`report-not-neighbour`), and the index holds only records that read.
  */
-function boundFiles(root: string, index: RecordIndex): Map<string, string[]> | { unread: Unread } {
+function boundFiles(root: string, index: RecordIndex): Map<string, string[]> {
   const bound = new Map<string, string[]>();
-  const bind = (file: unknown, role: string, control: string): void => {
+  const bind = (file: string | null | undefined, role: string, control: string): void => {
     if (typeof file === "string") bound.set(file, [...(bound.get(file) ?? []), `${role}:${relOf(dirname(root), join(root, control))}`]);
   };
   for (const e of index.byControl.values()) {
-    if (e.kind !== "package" && e.kind !== "evidence") continue;
-    const shown = resultOf(root, { op: "show", record: { path: e.control } }, askCodec);
-    if ("unread" in shown) return shown;
-    const { control, report } = shown.result;
-    if (isObject(report)) bind(report.path, "report", e.control);
-    const docs = isObject(control) && Array.isArray(control.active_documents) ? control.active_documents : [];
-    for (const d of docs) if (isObject(d) && isObject(d.ref)) bind(index.byId.get(String(d.ref.record_id))?.narrative, String(d.role), e.control);
+    if (e.kind === "evidence") bind(narrativeOf(e.control), "report", e.control);
+    if (e.kind !== "package") continue;
+    // a role outside plan/spec is a schema finding, and such a package is not in `byControl`
+    for (const b of index.bindings.get(e.control) ?? []) if (b.target !== null && b.role !== null) bind(index.byControl.get(b.target)?.narrative, b.role, e.control);
   }
   return bound;
 }
@@ -811,7 +810,6 @@ function main(argv: string[]): number {
   if (read.format === "unknown") return notRead(read.unread, root);
   const json = read.format === "json-control";
   const bound = json ? boundFiles(root, read.index) : new Map<string, string[]>();
-  if ("unread" in bound) return notRead(bound.unread as NotRead, root);
 
   // the corpus first: guard (a) asks about it, and one list is what keeps the
   // guard and the run from disagreeing about which files will be written

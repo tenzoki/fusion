@@ -36,7 +36,11 @@
  *                     `unreadRow` is `unreadable`, named, and in no map. Its
  *                     `references` give `unresolvedRefs`: every record
  *                     reference, a `depends_on` target among them, that
- *                     resolves to no control file (`record-not-found`).
+ *                     resolves to no control file (`record-not-found`), and
+ *                     `bindings`: per control file, its
+ *                     `/active_documents/<i>/ref` entries with the `role`
+ *                     the codec copies from the stored binding, whatever
+ *                     their status, and the `target` of a resolved one.
  *
  * `unreadRow` is written for a package row, and its status check is the
  * package vocabulary. A record of another kind is held to its own: the states
@@ -65,6 +69,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ask as askCodec } from "./record-client.js";
 import { blockedRead, findingsByPath, isObject, listOf, refusedByGate, resultOf, unreadRow } from "./codec-read.js";
+const ACTIVE_DOCUMENT_REF = /^\/active_documents\/\d+\/ref$/;
 /** dist layout: `<plugin>/hooks/dist/lib/record-index.js` → `<plugin>/codec/contract/transitions.json`. */
 export function defaultContract() {
     return resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "codec", "contract", "transitions.json");
@@ -104,7 +109,7 @@ export function readRecordIndex(workbench, ask = askCodec, contract = defaultCon
         return unknown(references.unread);
     const found = findingsByPath("reconcile", findings.list);
     const kinds = JSON.parse(readFileSync(contract, "utf-8")).kinds;
-    const index = { byNarrative: new Map(), byId: new Map(), byControl: new Map(), unreadable: [], unresolvedRefs: [] };
+    const index = { byNarrative: new Map(), byId: new Map(), byControl: new Map(), unreadable: [], unresolvedRefs: [], bindings: new Map() };
     for (const row of records.list) {
         if (!isObject(row) || typeof row.path !== "string")
             continue;
@@ -127,6 +132,10 @@ export function readRecordIndex(workbench, ask = askCodec, contract = defaultCon
             index.byNarrative.set(narrative, entry);
     }
     for (const r of references.list) {
+        if (isObject(r) && typeof r.path === "string" && ACTIVE_DOCUMENT_REF.test(String(r.at))) {
+            const binding = { role: typeof r.role === "string" ? r.role : null, status: String(r.status), target: r.status === "resolved" && typeof r.target === "string" ? r.target : null };
+            index.bindings.set(r.path, [...(index.bindings.get(r.path) ?? []), binding]);
+        }
         if (!isObject(r) || r.status !== "unresolved" || r.reason !== "record-not-found" || typeof r.path !== "string")
             continue;
         index.unresolvedRefs.push({ path: r.path, at: String(r.at), problem: { class: String(r.class), reason: r.reason } });
