@@ -80,6 +80,23 @@ for `kind: evidence`; the errors are the spec's eight typed classes. `inspect` r
 operation not yet answered is refused `operation-unknown/not-implemented`, with
 a detail naming the package that lands it.
 
+**The format gate is the host's obligation** (Prior response 28). Before
+deriving JSON scope, work order or dispatch decisions from codec records, the
+host calls `inspect` for that workbench and proceeds only on
+`state: json-control`. Legacy, unsupported, unknown, refused and unanswered
+results stop that consumer; they never mean an empty store or no claim. The
+gate sits at the start of a consumer operation, not as a hidden extra request
+inside every transport call. A successful inspection is no lock and no
+permanent authorisation: later refusals, revision changes and blocked recovery
+must still be handled. `inspect` itself, diagnostic inspection of legacy data
+and the explicit initialization and migration workflows do not require a
+JSON-controlled workbench. The gate is needed because `list` today answers a
+legacy workbench `ok: true` with `records: []` and no `state`;
+`list.result.state` arrives with the bundle revision that adds `initialize`,
+and does not waive the gate. Fusion honours it in `gate` in
+`hooks/lib/record-client.ts`, which `hooks/lib/scope.ts` and
+`hooks/lib/work-graph.ts` call first in each of their consumer operations.
+
 FJ01 answered `inspect`, `list`, `show`, `validate` and `transition` on a
 package. FJ02 answers the rest of the table but one: `create` (with
 `narrative.content` it writes both halves of the pair, without it the
