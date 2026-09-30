@@ -47,6 +47,11 @@
 // is on PATH for the scope case and for preparing a project, and for nothing
 // else. `node` stays the only runtime in both.
 //
+// A third case (FJ03b step 7) runs the citation check, the plan-size check, a
+// sweep dry run and staging drift the same way, all four on that second PATH,
+// since staging drift reads `git status`. It asserts the format they read, one
+// artefact under two names, and one PAIR-SPLIT row.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -55,6 +60,7 @@
 // ---------------------------------------------------------------------------
 
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
@@ -360,6 +366,50 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     const legacy = helper("fusion-work-order", project("order-legacy", { legacy: true }).root, installedEnv());
     expect([legacy.status, legacy.stdout], legacy.stderr).toEqual([4, ""]);
     expect(legacy.stderr).toContain("is legacy");
+  }, 60_000);
+
+  it("the installed citation check, plan-size check, sweep and staging drift answer from JSON, with node the only runtime beside what bin/fusion-identity needs", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = project("observers-project");
+    const [alpha, beta] = ["260930-0920-alpha", "260930-0921-beta"].map((stem) => createPackage(p, stem));
+    const workbench_id = record(p, { op: "inspect" }).id;
+    mutate(p, beta, "set-dependencies", { depends_on: [{ target: { workbench_id, record_id: alpha.id }, condition: "terminal" }] });
+    // A live plan of alpha's, adopted, citing alpha through a store segment: one violation the sweep would rewrite.
+    const plan = { path: `work-packages/${alpha.stem}/plans/260930-0922-plan.md`, id: uuid(p) };
+    record(p, { op: "create", operation_id: uuid(p), id: plan.id, kind: "plan", filed_by: ACTOR, origin: { kind: "package", ref: { workbench_id, record_id: alpha.id } }, scope: { container: `work-packages/${alpha.stem}`, store: "plans" }, narrative: { path: plan.path, content: `# Implementation Plan: x\n\nsee \`work-packages/${alpha.stem}/${alpha.stem}.md\`\n` }, payload: { state: "open", steps: [{ id: "s1", state: "open" }], criteria: [], acceptance: null } });
+    const planBytes = readFileSync(join(p.root, "fusion-workbench", plan.path));
+    mutate(p, alpha, "adopt-plan", { plan: { workbench_id, record_id: plan.id }, revision: `sha256:${createHash("sha256").update(planBytes).digest("hex")}` });
+    // One artefact under two names: its file name, and the prefix a `.record.json` beside it would make ambiguous.
+    writeFileSync(join(p.root, "CLAUDE.md"), "the plan `260930-0922-plan.md`, by prefix `260930-0922-plan`\n");
+    const installed = (name: string, ...args: string[]) => run(join(install.home, "bin", name), args, { cwd: p.root, env: identityEnv() });
+    const git = (...args: string[]) => run("git", args, { cwd: p.root, env: identityEnv() }).status;
+    const value = (out: string, key: string) => out.split("\n").find((l) => l.startsWith(`${key}=`))?.slice(key.length + 1);
+
+    const check = installed("fusion-citation-check");
+    expect(check.status, check.stderr).toBe(0);
+    expect(check.stdout.split("\n")[0]).toBe("format=json-control");
+    // resolved: CLAUDE.md's two, and each brief's title naming its own package
+    expect(["resolved", "dangling", "conflict", "store-prefixed", "edited-violations", "uuid-unresolved", "verdict"].map((k) => value(check.stdout, k))).toEqual(["4", "0", "0", "1", "1", "0", "violations"]);
+
+    const size = installed("fusion-plan-size");
+    expect(size.status, size.stderr).toBe(0);
+    expect([size.stdout.split("\n")[0], value(size.stdout, "plans"), value(size.stdout, "unreadable")]).toEqual(["format=json-control", "1", "0"]);
+
+    const sweep = installed("fusion-citation-sweep", "--dry-run");
+    expect(sweep.status, sweep.stderr).toBe(0);
+    const swept = sweep.stdout.trim().split("\n");
+    expect([swept[0], swept.filter((l) => l.startsWith("bound="))]).toEqual(["format=json-control", [`bound=fusion-workbench/${plan.path}  plan:fusion-workbench/${alpha.path}`]]);
+
+    // A pair half staged: alpha's brief edited and staged, its control file moved by a claim and not.
+    expect([git("add", "-A"), git("commit", "-q", "-m", "filed")]).toEqual([0, 0]);
+    writeFileSync(join(p.root, "fusion-workbench", `work-packages/${alpha.stem}/${alpha.stem}.md`), `# ${alpha.stem}\n\n## Directive\n\nRevised.\n`);
+    mutate(p, alpha, "claim", { claim: { checkout_id: "0badc0de", person: null, claimed_at: "2026-09-30T09:20:00Z" } });
+    expect(git("add", `fusion-workbench/work-packages/${alpha.stem}/${alpha.stem}.md`)).toBe(0);
+    const drift = installed("fusion-staging-drift");
+    expect(drift.status, drift.stderr).toBe(0);
+    expect(value(drift.stdout, "unstaged")).toBe("1");
+    expect(drift.stdout.split("\n").filter((l) => l.includes("PAIR-SPLIT"))).toEqual([expect.stringMatching(new RegExp(`^ {2}record\\s+ M ${alpha.path}  PAIR-SPLIT .*${alpha.stem}\\.md is staged`))]);
   }, 60_000);
 
   it("the installer warns, in the guard.js words, when the source carries no codec bundle", () => {
