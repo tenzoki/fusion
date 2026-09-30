@@ -25,7 +25,7 @@
  *                      None of them is an empty store.
  *   `list`             every control file, without a scope, as `lib/scope.ts`
  *                      sends it (a scoped `list` is refused where the container
- *                      store does not exist yet).
+ *                      store does not exist yet), its `state` read as there.
  *   `reconcile`        without a scope, for the same reason, and asked on every
  *                      read. Its `records` findings are read BEFORE its
  *                      `dependencies`. Each package row of `list` is then

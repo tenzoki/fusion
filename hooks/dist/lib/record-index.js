@@ -30,7 +30,8 @@
  * ## The sequence
  *
  *   gate (`inspect`)  through `lib/codec-read.ts` `refusedByGate`.
- *   `list`            without a scope, as `lib/scope.ts` sends it.
+ *   `list`            without a scope, as `lib/scope.ts` sends it; a `legacy`
+ *                     `state` after the gate is `legacy` here too.
  *   `reconcile`       without a scope. Its `records` are the codec's findings
  *                     per control file, and a row judged against them by
  *                     `unreadRow` is `unreadable`, named, and in no map. Its
@@ -68,7 +69,7 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ask as askCodec } from "./record-client.js";
-import { blockedRead, findingsByPath, isObject, listOf, refusedByGate, resultOf, unreadRow } from "./codec-read.js";
+import { blockedRead, findingsByPath, isObject, listedRecords, listOf, refusedByGate, resultOf, unreadRow } from "./codec-read.js";
 const ACTIVE_DOCUMENT_REF = /^\/active_documents\/\d+\/ref$/;
 /** dist layout: `<plugin>/hooks/dist/lib/record-index.js` → `<plugin>/codec/contract/transitions.json`. */
 export function defaultContract() {
@@ -88,14 +89,12 @@ function unreadable(row, found, kinds) {
  * transitions file, beside the compiled module by default.
  */
 export function readRecordIndex(workbench, ask = askCodec, contract = defaultContract()) {
+    // `legacy`, from the gate or from `list`'s `state` after it, is a format and not a failure.
+    const unknown = (unread) => (unread.cause === "legacy" ? { format: "legacy" } : { format: "unknown", unread });
     const gated = refusedByGate(workbench, ask);
     if (gated !== null)
-        return gated.cause === "legacy" ? { format: "legacy" } : { format: "unknown", unread: gated };
-    const unknown = (unread) => ({ format: "unknown", unread: unread });
-    const listed = resultOf(workbench, { op: "list" }, ask);
-    if ("unread" in listed)
-        return unknown(listed.unread);
-    const records = listOf("list", listed.result, "records");
+        return unknown(gated);
+    const records = listedRecords(workbench, ask);
     if ("unread" in records)
         return unknown(records.unread);
     const reconciled = resultOf(workbench, { op: "reconcile" }, ask);

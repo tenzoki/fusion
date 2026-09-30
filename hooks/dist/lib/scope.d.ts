@@ -25,7 +25,10 @@
  *                        empty store is what this module must not do. The
  *                        package rows are the ones under the container store
  *                        whose control file is `package.json`, the codec's own
- *                        name for one.
+ *                        name for one. Its `state` is read by
+ *                        `lib/codec-read.ts` `listedRecords`: `legacy` after
+ *                        the gate is `legacy`, anything but `json-control`
+ *                        is `unanswered`.
  *   `validate`           without a record. A package row that does not read by
  *                        `lib/codec-read.ts` `unreadRow` (a `problem` on the
  *                        row, a finding of the codec's validation against it,

@@ -25,7 +25,10 @@
  *                        empty store is what this module must not do. The
  *                        package rows are the ones under the container store
  *                        whose control file is `package.json`, the codec's own
- *                        name for one.
+ *                        name for one. Its `state` is read by
+ *                        `lib/codec-read.ts` `listedRecords`: `legacy` after
+ *                        the gate is `legacy`, anything but `json-control`
+ *                        is `unanswered`.
  *   `validate`           without a record. A package row that does not read by
  *                        `lib/codec-read.ts` `unreadRow` (a `problem` on the
  *                        row, a finding of the codec's validation against it,
@@ -66,7 +69,7 @@
 
 import { dirname } from "node:path";
 import { ask as askCodec, type Ask, type Refusal } from "./record-client.js";
-import { blockedRead, findingsByPath, isObject, isPackageRow, listOf, refusalOf, refusedByGate, resultOf, unreadRow, type Findings, type Unread } from "./codec-read.js";
+import { blockedRead, findingsByPath, isObject, isPackageRow, listedRecords, listOf, refusalOf, refusedByGate, resultOf, unreadRow, type Findings, type Unread } from "./codec-read.js";
 import { CONTAINER_STORE } from "./stores.js";
 
 /** Why the item in scope could not be determined. Every member names its cause. */
@@ -118,9 +121,7 @@ interface Listed {
 
 /** The claimed package rows, or why they cannot be known. Every package row has to read first. */
 function listClaimed(workbench: string, ask: Ask): { rows: Listed[] } | { unknown: Unknown } {
-  const listed = resultOf(workbench, { op: "list" }, ask);
-  if ("unread" in listed) return { unknown: listed.unread };
-  const records = listOf("list", listed.result, "records");
+  const records = listedRecords(workbench, ask);
   if ("unread" in records) return { unknown: records.unread };
   const v = validated(workbench, ask);
   if ("unknown" in v) return v;

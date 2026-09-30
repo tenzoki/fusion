@@ -173,6 +173,7 @@ describe("claimedBy through an injected ask", () => {
   const PATH = `work-packages/${ALPHA}/package.json`;
   const result = (result: unknown): Answer => ({ kind: "result", result, revisions: {} });
   const inspect = result({ state: "json-control", id: "0b1d5f4a-6c1e-4d9a-9f2a-1e0c3b6d8a7f" });
+  const listing = (records: unknown[], state: unknown = "json-control"): Answer => result({ state, records });
   const shown = (revision: string): Answer =>
     result({ path: PATH, kind: "package", revision, control: { status: "claimed", claim: { checkout_id: "a1b2c3d4" } }, narrative: { path: `work-packages/${ALPHA}/${ALPHA}.md` } });
 
@@ -183,28 +184,33 @@ describe("claimedBy through an injected ask", () => {
   }
 
   it("re-reads once when show names another revision than list, and is store-changing the second time", () => {
-    const listed = result({ records: [{ path: PATH, kind: "package", id: "1", status: "claimed", revision: "aaa" }] });
+    const listed = listing([{ path: PATH, kind: "package", id: "1", status: "claimed", revision: "aaa" }]);
     const { ask, calls } = asking({ inspect: () => inspect, list: () => listed, show: () => shown("bbb") });
     expect(claimedBy("/wb", "a1b2c3d4", ask)).toEqual({ kind: "unknown", cause: "store-changing", path: PATH, listed: "aaa", shown: "bbb" });
     // One bounded re-read, a new observation of both: not a retry of `show` alone, and no third.
     expect(calls).toEqual({ inspect: 1, list: 2, validate: 2, show: 2 });
     // And a store that settled on the re-read resolves.
-    const settled = asking({ inspect: () => inspect, list: (n) => (n === 1 ? listed : result({ records: [{ path: PATH, kind: "package", id: "1", status: "claimed", revision: "bbb" }] })), show: () => shown("bbb") });
+    const settled = asking({ inspect: () => inspect, list: (n) => (n === 1 ? listed : listing([{ path: PATH, kind: "package", id: "1", status: "claimed", revision: "bbb" }])), show: () => shown("bbb") });
     expect(claimedBy("/wb", "a1b2c3d4", settled.ask)).toMatchObject({ kind: "one", container: `work-packages/${ALPHA}` });
   });
 
   it("stops on a blocked recovery reported inside an ok: true list answer, as the refusal it is", () => {
     const problem = { class: "operation-unknown", reason: "recovery-blocked", detail: "operation x is pending" };
-    const { ask, calls } = asking({ inspect: () => inspect, list: () => result({ records: [{ path: PATH, problem }] }), show: () => shown("aaa") });
+    const { ask, calls } = asking({ inspect: () => inspect, list: () => listing([{ path: PATH, problem }]), show: () => shown("aaa") });
     expect(claimedBy("/wb", "a1b2c3d4", ask)).toEqual({ kind: "unknown", cause: "refused", op: "list", refusal: problem });
     expect(calls.show, "nothing was read past the finding").toBeUndefined();
+  });
+
+  it("reads a legacy list state after a json-control gate as legacy, and any other state as no answer, never as nothing claimed", () => {
+    expect(claimedBy("/wb", "a1b2c3d4", asking({ inspect: () => inspect, list: () => listing([], "legacy") }).ask)).toEqual({ kind: "unknown", cause: "legacy" });
+    expect(claimedBy("/wb", "a1b2c3d4", asking({ inspect: () => inspect, list: () => result({ records: [] }) }).ask)).toMatchObject({ kind: "unknown", cause: "unanswered", op: "list", how: "unparseable" });
   });
 
   it("hands a typed refusal and an unanswered call on as what they are, never as nothing claimed", () => {
     const refused: Answer = { kind: "refused", class: "conflict", reason: "lock-timeout", detail: "held by 1234" };
     expect(claimedBy("/wb", "a1b2c3d4", asking({ inspect: () => inspect, list: () => refused }).ask))
       .toEqual({ kind: "unknown", cause: "refused", op: "list", refusal: { class: "conflict", reason: "lock-timeout", detail: "held by 1234" } });
-    const listed = result({ records: [{ path: PATH, kind: "package", id: "1", status: "claimed", revision: "aaa" }] });
+    const listed = listing([{ path: PATH, kind: "package", id: "1", status: "claimed", revision: "aaa" }]);
     const gone: Answer = { kind: "unanswered", cause: "timeout", detail: "stopped" };
     expect(claimedBy("/wb", "a1b2c3d4", asking({ inspect: () => inspect, list: () => listed, show: () => gone }).ask))
       .toEqual({ kind: "unknown", cause: "unanswered", op: "show", how: "timeout", detail: "stopped" });

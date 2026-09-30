@@ -30,7 +30,8 @@
  * ## The sequence
  *
  *   gate (`inspect`)  through `lib/codec-read.ts` `refusedByGate`.
- *   `list`            without a scope, as `lib/scope.ts` sends it.
+ *   `list`            without a scope, as `lib/scope.ts` sends it; a `legacy`
+ *                     `state` after the gate is `legacy` here too.
  *   `reconcile`       without a scope. Its `records` are the codec's findings
  *                     per control file, and a row judged against them by
  *                     `unreadRow` is `unreadable`, named, and in no map. Its

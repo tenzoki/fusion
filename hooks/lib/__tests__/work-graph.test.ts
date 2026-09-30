@@ -61,6 +61,7 @@ describe("readWorkGraph through an injected ask", () => {
   const path = (dir: string) => `work-packages/${dir}/package.json`;
   const result = (result: unknown): Answer => ({ kind: "result", result, revisions: {} });
   const inspect = result({ state: "json-control", id: ID });
+  const listing = (records: unknown[], state: unknown = "json-control"): Answer => result({ state, records });
   const row = (dir: string, id: string, status = "open") => ({ path: path(dir), kind: "package", id, status, revision: "r" });
   const edge = (dir: string, target: string, status: "satisfied" | "unmet", more: Record<string, unknown> = {}) => ({ path: path(dir), at: "/depends_on/0", target, condition: "terminal", status, ...more });
   const unmet = (dir: string, target: string, detail = "terminal: the target is open, not done or dropped") => edge(dir, target, "unmet", { class: "conflict", reason: "dependency-unmet", detail });
@@ -76,24 +77,29 @@ describe("readWorkGraph through an injected ask", () => {
   it("stops on a blocked recovery reported inside an ok: true reconcile answer, as the refusal it is", () => {
     // Prior's `## C.`: the findings are read before the dependencies, and a blocked package
     // ends the read with a named failure and no report, however clean the edges look.
-    const list = result({ records: [row(base, "1"), row(mid, "2")] });
+    const list = listing([row(base, "1"), row(mid, "2")]);
     const { ask } = asking({ inspect, list, reconcile: reconciled([unmet(mid, "1")], [{ path: path(base), ...blocked }]) });
     expect(readWorkGraph("/wb", ask)).toEqual({ kind: "failed", cause: "refused", op: "reconcile", refusal: blocked });
     // The same finding as a `list` problem row, and as the reason on an edge entry.
-    expect(readWorkGraph("/wb", asking({ inspect, list: result({ records: [row(base, "1"), { path: path(mid), problem: blocked }] }), reconcile: reconciled([]) }).ask)).toMatchObject({ kind: "failed", cause: "refused", op: "list" });
+    expect(readWorkGraph("/wb", asking({ inspect, list: listing([row(base, "1"), { path: path(mid), problem: blocked }]), reconcile: reconciled([]) }).ask)).toMatchObject({ kind: "failed", cause: "refused", op: "list" });
     expect(readWorkGraph("/wb", asking({ inspect, list, reconcile: reconciled([edge(mid, "1", "unmet", blocked)]) }).ask)).toMatchObject({ kind: "failed", cause: "refused", op: "reconcile", refusal: blocked });
   });
 
   it("hands a typed refusal, an unanswered call and a refused gate on as what they are, never as an empty store", () => {
-    const list = result({ records: [row(base, "1")] });
+    const list = listing([row(base, "1")]);
     const refused: Answer = { kind: "refused", class: "conflict", reason: "lock-timeout", detail: "held by 1234" };
     expect(readWorkGraph("/wb", asking({ inspect, list, reconcile: refused }).ask)).toEqual({ kind: "failed", cause: "refused", op: "reconcile", refusal: { class: "conflict", reason: "lock-timeout", detail: "held by 1234" } });
     expect(readWorkGraph("/wb", asking({ inspect, list: { kind: "unanswered", cause: "timeout", detail: "stopped" } }).ask)).toEqual({ kind: "failed", cause: "unanswered", op: "list", how: "timeout", detail: "stopped" });
     expect(readWorkGraph("/wb", asking({ inspect: result({ state: "legacy" }) }).ask)).toEqual({ kind: "failed", cause: "legacy" });
   });
 
+  it("fails a legacy list state after a json-control gate as legacy, and any other state as no answer, never as an empty store", () => {
+    expect(readWorkGraph("/wb", asking({ inspect, list: listing([], "legacy"), reconcile: reconciled([]) }).ask)).toEqual({ kind: "failed", cause: "legacy" });
+    expect(readWorkGraph("/wb", asking({ inspect, list: listing([], "unsupported"), reconcile: reconciled([]) }).ask)).toMatchObject({ kind: "failed", cause: "unanswered", op: "list", how: "unparseable" });
+  });
+
   it("places each edge entry by the table, and judges every package row by the codec's findings", () => {
-    const list = result({ records: [row(base, "1"), row(mid, "2"), row(closed, "3", "dropped"), row(tip, "4", "open"), row(garbage, "5", "garbage"), row(fanA, "6"), row(fanB, "7")] });
+    const list = listing([row(base, "1"), row(mid, "2"), row(closed, "3", "dropped"), row(tip, "4", "open"), row(garbage, "5", "garbage"), row(fanA, "6"), row(fanB, "7")]);
     const { ask, calls } = asking({
       inspect, list,
       reconcile: reconciled(
@@ -115,7 +121,7 @@ describe("readWorkGraph through an injected ask", () => {
     expect([read.report.edges, read.report.noDependsOnField]).toEqual([1, 0]);
     expect(calls).toEqual({ inspect: 1, list: 1, reconcile: 1 });
     // No live node: the report is empty, and a terminal row reported against is still named.
-    const none = asking({ inspect, list: result({ records: [row(closed, "3", "dropped")] }), reconcile: reconciled([], [{ path: path(closed), class: "schema-invalid", reason: "schema" }]) });
+    const none = asking({ inspect, list: listing([row(closed, "3", "dropped")]), reconcile: reconciled([], [{ path: path(closed), class: "schema-invalid", reason: "schema" }]) });
     expect(readWorkGraph("/wb", none.ask)).toMatchObject({ kind: "report", report: { verdict: "empty", unreadableHead: 1 } });
   });
 });

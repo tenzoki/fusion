@@ -21,7 +21,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { createScanner } from "../citation-scan.js";
 import { readRecordIndex } from "../record-index.js";
-import type { Answer } from "../record-client.js";
+import type { Answer, Ask } from "../record-client.js";
 import { HOOKS_DIR, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { createPackage, must, place, send, setDependencies, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
@@ -321,10 +321,16 @@ describe("the record index behind the citation check", () => {
     });
   }, CASE_TIMEOUT);
 
+  const answering = (listed: unknown): Ask => (_w, r) => ({ inspect: { kind: "result", result: { state: "json-control", id: "w" }, revisions: {} }, list: { kind: "result", result: listed, revisions: {} }, reconcile: { kind: "result", result: { records: [], references: [] }, revisions: {} } } as Record<string, Answer>)[r.op];
+
   it("ends the read on a blocked recovery inside an ok: true answer, and is never an empty index", () => {
     const blocked = { class: "operation-unknown", reason: "recovery-blocked", detail: "operation x is pending" };
-    const answers: Record<string, Answer> = { inspect: { kind: "result", result: { state: "json-control", id: "w" }, revisions: {} }, list: { kind: "result", result: { records: [{ path: "p/package.json", problem: blocked }] }, revisions: {} }, reconcile: { kind: "result", result: { records: [], references: [] }, revisions: {} } };
-    expect(readRecordIndex("/wb", (_w, r) => answers[r.op], CONTRACT)).toEqual({ format: "unknown", unread: { cause: "refused", op: "list", refusal: blocked } });
+    expect(readRecordIndex("/wb", answering({ state: "json-control", records: [{ path: "p/package.json", problem: blocked }] }), CONTRACT)).toEqual({ format: "unknown", unread: { cause: "refused", op: "list", refusal: blocked } });
+  });
+
+  it("reads a legacy list state after a json-control gate as the legacy format, and any other state as no answer, never as an empty index", () => {
+    expect(readRecordIndex("/wb", answering({ state: "legacy", records: [] }), CONTRACT)).toEqual({ format: "legacy" });
+    expect(readRecordIndex("/wb", answering({ records: [] }), CONTRACT)).toMatchObject({ format: "unknown", unread: { cause: "unanswered", op: "list", how: "unparseable" } });
   });
 });
 

@@ -65,6 +65,17 @@ export declare function listOf(op: string, result: Record<string, unknown>, key:
 } | {
     unread: Unread;
 };
+/**
+ * The rows of an unscoped `list`, once its `state` admits them. The gate stays
+ * first and `state` does not waive it (`codec/README.md` `## The CLI`); it
+ * closes the window between the two: `legacy` is a manifest lost after the
+ * gate, and any other value, an absent one included, is no answer.
+ */
+export declare function listedRecords(workbench: string, ask: Ask): {
+    list: unknown[];
+} | {
+    unread: Unread;
+};
 /** What the codec's validation found, per control file: `op` is the operation that reported it. */
 export type Findings = Map<string, {
     op: string;

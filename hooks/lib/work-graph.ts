@@ -25,7 +25,7 @@
  *                      None of them is an empty store.
  *   `list`             every control file, without a scope, as `lib/scope.ts`
  *                      sends it (a scoped `list` is refused where the container
- *                      store does not exist yet).
+ *                      store does not exist yet), its `state` read as there.
  *   `reconcile`        without a scope, for the same reason, and asked on every
  *                      read. Its `records` findings are read BEFORE its
  *                      `dependencies`. Each package row of `list` is then
@@ -95,7 +95,7 @@
 
 import { basename, dirname } from "node:path";
 import { ask as askCodec, type Ask, type Refusal } from "./record-client.js";
-import { blockedRead, findingsByPath, isObject, isPackageRow, listOf, problemOf, refusedByGate, resultOf, unreadRow, type Unread } from "./codec-read.js";
+import { blockedRead, findingsByPath, isObject, isPackageRow, listedRecords, listOf, problemOf, refusedByGate, resultOf, unreadRow, type Unread } from "./codec-read.js";
 
 /** The live values of `status`. `done` and `dropped` are not nodes. */
 export type ItemStatus = "open" | "claimed" | "paused";
@@ -414,9 +414,7 @@ export function readWorkGraph(workbench: string, ask: Ask = askCodec): Read {
   if (gated !== null) return failed(gated);
 
   // --- list and reconcile's findings: which package rows read ---------------
-  const listed = resultOf(workbench, { op: "list" }, ask);
-  if ("unread" in listed) return failed(listed.unread);
-  const records = listOf("list", listed.result, "records");
+  const records = listedRecords(workbench, ask);
   if ("unread" in records) return failed(records.unread);
   const reconciled = resultOf(workbench, { op: "reconcile" }, ask);
   if ("unread" in reconciled) return failed(reconciled.unread);

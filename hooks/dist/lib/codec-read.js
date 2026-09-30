@@ -71,6 +71,23 @@ export function resultOf(workbench, request, ask) {
 export function listOf(op, result, key) {
     return Array.isArray(result[key]) ? { list: result[key] } : { unread: { cause: "unanswered", op, how: "unparseable", detail: `the result of ${op} carries no \`${key}\` list` } };
 }
+/**
+ * The rows of an unscoped `list`, once its `state` admits them. The gate stays
+ * first and `state` does not waive it (`codec/README.md` `## The CLI`); it
+ * closes the window between the two: `legacy` is a manifest lost after the
+ * gate, and any other value, an absent one included, is no answer.
+ */
+export function listedRecords(workbench, ask) {
+    const listed = resultOf(workbench, { op: "list" }, ask);
+    if ("unread" in listed)
+        return listed;
+    const state = listed.result.state;
+    if (state === "legacy")
+        return { unread: { cause: "legacy" } };
+    if (state !== "json-control")
+        return { unread: { cause: "unanswered", op: "list", how: "unparseable", detail: `the result of list carries state ${JSON.stringify(state)}` } };
+    return listOf("list", listed.result, "records");
+}
 /** The findings list of `op` keyed by path. A `recovery-blocked` finding wins over any other on its path. */
 export function findingsByPath(op, list) {
     const out = new Map();
