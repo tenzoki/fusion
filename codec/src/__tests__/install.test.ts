@@ -59,6 +59,17 @@
 // as an empty JSON one. The same request over a v12 directory is refused and
 // leaves it byte-identical, with no `.json-state/`.
 //
+// A fifth case (FJ03c step 9) runs the skill blocks the install SHIPS, read
+// out of its `skills/*/SKILL.md` and run by `bash` verbatim, placeholders
+// filled and nothing else changed: Setup's Step 0 twice (it initialises, then
+// reuses), wp's gate and filing block, discuss's roots, begin and close. Between
+// them `bin/fusion-write` claims, is refused a release in a copy of the project
+// holding another checkout identifier (exit 5), releases and files a reviewer's
+// evidence. The log then holds one `record_change` row per landed revision,
+// matched by key, and a re-send, twice, adds none. The blocks run on the second
+// PATH plus `date` and `awk` (SKILL_TOOLS); wp's `autonomous` block is not run,
+// since it hashes with `shasum`, a perl program.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -87,6 +98,8 @@ const HOST_TOOLS = ["bash", "tar", "cp", "rm", "mkdir", "cat", "chmod", "find", 
 const OPTIONAL_TOOLS = ["gzip"];
 /** What `bin/fusion-identity` calls beyond HOST_TOOLS; on PATH for the scope case and for preparing a project. */
 const IDENTITY_TOOLS = ["git", "od", "tr", "grep", "sort", "wc", "ls"];
+/** What the shipped skill blocks call beyond both lists: discuss's stamp, and `bin/fusion-session-domain`'s `awk`. */
+const SKILL_TOOLS = ["date", "awk"];
 
 interface Install {
   tmp: string;
@@ -275,6 +288,58 @@ function mutate(p: Project, pkg: Package, op: string, fields: Record<string, unk
 
 /** A helper of the installed copy, run in `cwd`. */
 const helper = (name: string, cwd: string, env: NodeJS.ProcessEnv) => run(join(install.home, "bin", name), [], { cwd, env });
+
+/** identityEnv plus a third directory holding SKILL_TOOLS, and the plugin root the skill blocks name. */
+function skillEnv(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
+  const dir = join(install.tmp, "path-skill");
+  if (!existsSync(dir)) {
+    mkdirSync(dir);
+    for (const tool of SKILL_TOOLS) {
+      const abs = findOnHostPath(tool);
+      if (abs === null) throw new Error(`${tool} is not on this host's PATH; a shipped skill block needs it`);
+      symlinkSync(abs, join(dir, tool));
+    }
+  }
+  const base = identityEnv();
+  return { ...base, PATH: `${base.PATH}${delimiter}${dir}`, FUSION_PLUGIN_ROOT: install.home, ...extra };
+}
+
+/** The ```bash blocks of the section of an INSTALLED `skills/<skill>/SKILL.md` whose `## ` heading starts with `heading`, verbatim. A `## ` line inside a fence (a template's) ends no section. */
+function shippedBlocks(skill: string, heading: string): string[] {
+  const blocks: string[] = [];
+  let inSection = false;
+  let fence: string[] | null = null;
+  for (const line of readFileSync(join(install.home, "skills", skill, "SKILL.md"), "utf-8").split("\n")) {
+    if (fence !== null) {
+      if (line !== "```") fence.push(line);
+      else {
+        if (inSection && fence[0] === "```bash") blocks.push(fence.slice(1).join("\n") + "\n");
+        fence = null;
+      }
+    } else if (line.startsWith("```")) fence = [line];
+    else if (line.startsWith("## ")) {
+      if (inSection) break;
+      inSection = line.startsWith(heading);
+    }
+  }
+  if (!inSection) throw new Error(`skills/${skill}/SKILL.md has no section ${heading}`);
+  return blocks;
+}
+
+/** A block with each placeholder replaced; a placeholder the block lacks, or one left over, fails the case by name. */
+function fill(block: string, values: Record<string, string>): string {
+  let out = block;
+  for (const [placeholder, value] of Object.entries(values)) {
+    if (!out.includes(placeholder)) throw new Error(`the shipped block no longer carries ${placeholder}:\n${block}`);
+    out = out.replaceAll(placeholder, value);
+  }
+  const left = /<[A-Za-z][^<>\n]*>/.exec(out);
+  if (left !== null) throw new Error(`the shipped block carries a placeholder this case does not fill, ${left[0]}:\n${block}`);
+  return out;
+}
+
+/** The first `key=` value of KEY=value output. */
+const kv = (out: string, key: string): string | undefined => out.split("\n").find((l) => l.startsWith(`${key}=`))?.slice(key.length + 1);
 
 /** Every entry under `dir`, relative and sorted, a directory as `dir` and anything else by the digest of its bytes. */
 function tree(dir: string): string[] {
@@ -469,6 +534,129 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     expect(tree(v12Workbench)).toEqual(before);
     expect(existsSync(join(v12Workbench, ".json-state"))).toBe(false);
   }, 60_000);
+
+  it("the shipped Setup, wp and discuss blocks run verbatim on the installed copy, and bin/fusion-write logs one record_change row per landed revision", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = project("skills-project", { empty: true });
+    const env = skillEnv();
+    const block = (b: string, extra: NodeJS.ProcessEnv = {}, cwd = p.root) => run("bash", ["-c", b], { cwd, env: { ...env, ...extra } });
+    const write = (args: string[], cwd = p.root) => run(join(install.home, "bin", "fusion-write"), args, { cwd, env });
+    const log = join(p.root, "fusion-workbench", "orchestrator-events.jsonl");
+    const rows = () => (existsSync(log) ? readFileSync(log, "utf-8").split("\n").filter((l) => l.length > 0).map((l) => JSON.parse(l) as Record<string, unknown>).filter((r) => r.event === "record_change") : []);
+    /** Each landed call, with the `change` its rows carry. */
+    const landed: { op: string; out: string; change: unknown }[] = [];
+    const wrote = (op: string, out: string, change: unknown) => landed.push({ op, out, change });
+
+    // Setup's Step 0, every block of it in order (pwd, the probe, initialize, the stores, the marker), twice.
+    const setup = shippedBlocks("setup", "## Step 0 —");
+    expect(setup.length).toBe(5);
+    const [first, again] = [0, 1].map(() => setup.map((b) => block(fill(b, {}))));
+    for (const r of [...first, ...again]) expect(r.status, r.stderr).toBe(0);
+    expect([first[1].stdout, kv(first[2].stdout, "result"), kv(first[2].stdout, "exit"), kv(first[4].stdout, "marker")], first[2].stderr).toEqual(["OLD=0\n", "initialized", "0", "written"]);
+    const workbenchId = kv(first[2].stdout, "workbench_id");
+    expect(workbenchId).toMatch(/^[0-9a-f-]{36}$/);
+    expect([kv(again[2].stdout, "result"), kv(again[2].stdout, "workbench_id"), kv(again[2].stdout, "exit"), kv(again[4].stdout, "marker")]).toEqual(["reused", workbenchId, "0", "unchanged"]);
+    expect(rows()).toEqual([]);
+
+    // wp: the gate and the resolver, then the filing block over the record the prose has written first.
+    const [wpGate, ...wpRest] = shippedBlocks("wp", "## Step 0 —");
+    expect(wpRest).toEqual([]);
+    const gated = block(wpGate);
+    expect(gated.status, gated.stderr).toBe(0);
+    expect(gated.stdout.split("\n")[0]).toBe('"state":"json-control"');
+    const WORKBENCH = kv(gated.stdout, "WORKBENCH")!;
+    const OUT_PACKAGES = kv(gated.stdout, "OUT_PACKAGES")!;
+    const stem = "261001-1000-install-test-package";
+    const pkg = `${OUT_PACKAGES}/${stem}/package.json`;
+    mkdirSync(join(WORKBENCH, OUT_PACKAGES, stem), { recursive: true });
+    writeFileSync(join(WORKBENCH, OUT_PACKAGES, stem, `${stem}.md`), `# Install test package\n\n## Directive\n\nA package the shipped wp block filed.\n`);
+    const wpJson = shippedBlocks("wp", "## On a JSON-controlled workbench");
+    expect(wpJson.length).toBe(2);
+    const filed = block(fill(wpJson[0], { "<YYMMDD-HHMM>-<topic>": stem, "<code|data>": "code" }), { WORKBENCH, OUT_PACKAGES });
+    expect([kv(filed.stdout, "result"), kv(filed.stdout, "path"), kv(filed.stdout, "exit")], filed.stderr).toEqual(["landed", pkg, "0"]);
+    wrote("create", filed.stdout, { created: "open" });
+
+    // claim by this checkout, which bin/fusion-claimed-package then names.
+    const claimed = write(["claim", "--record", pkg, "--actor", "user"]);
+    expect([claimed.status, kv(claimed.stdout, "result")], claimed.stderr).toEqual([0, "landed"]);
+    wrote("claim", claimed.stdout, { from: "open", to: "claimed" });
+    const checkout = readFileSync(join(WORKBENCH, ".checkout-id"), "utf-8").trim();
+    const scope = helper("fusion-claimed-package", p.root, identityEnv());
+    expect([scope.status, scope.stdout], scope.stderr).toEqual([0, `PACKAGE=${OUT_PACKAGES}/${stem}/${stem}.md\nCONTAINER=${OUT_PACKAGES}/${stem}\n`]);
+
+    // A second checkout, a copy of the project holding another identifier, is refused the release and changes nothing.
+    const second = join(install.tmp, "skills-project-second");
+    cpSync(p.root, second, { recursive: true });
+    writeFileSync(join(second, "fusion-workbench", ".checkout-id"), `${checkout === "0badc0de" ? "0badc0df" : "0badc0de"}\n`);
+    const secondBefore = tree(join(second, "fusion-workbench"));
+    const foreign = write(["release", "--record", pkg, "--reason", "not mine to release", "--actor", "user"], second);
+    expect([foreign.status, foreign.stdout], foreign.stderr).toEqual([5, ""]);
+    expect(foreign.stderr).toContain(`claimed by checkout ${checkout}`);
+    expect(tree(join(second, "fusion-workbench"))).toEqual(secondBefore);
+
+    // release by the owner; the scope helper then names nothing.
+    const released = write(["release", "--record", pkg, "--reason", "handed back", "--actor", "user"]);
+    expect([released.status, kv(released.stdout, "result")], released.stderr).toEqual([0, "landed"]);
+    wrote("release", released.stdout, { from: "claimed", to: "open" });
+    expect(helper("fusion-claimed-package", p.root, identityEnv()).stdout).toBe("");
+
+    // A reviewer's evidence over a report, bound to the project's HEAD tree.
+    const report = `${OUT_PACKAGES}/${stem}/reviews/261001-1010-review.md`;
+    mkdirSync(dirname(join(WORKBENCH, report)), { recursive: true });
+    writeFileSync(join(WORKBENCH, report), "# Review\n\nAccepted.\n");
+    const git = (...args: string[]) => run("git", args, { cwd: p.root, env: identityEnv() }).status;
+    expect([git("add", "-A"), git("commit", "-q", "-m", "filed")]).toEqual([0, 0]);
+    const evidence = write(["evidence", "--record", pkg, "--report", report, "--verdict", "accept", "--actor", "reviewer"]);
+    expect([evidence.status, kv(evidence.stdout, "result")], evidence.stderr).toEqual([0, "landed"]);
+    wrote("create", evidence.stdout, { created_kind: "evidence" });
+
+    // discuss: its roots, the begin block over the record the prose has written, then the close block.
+    const [roots, ...rootsRest] = shippedBlocks("discuss", "## Step 1 —");
+    expect(rootsRest).toEqual([]);
+    const resolved = block(roots);
+    expect(resolved.status, resolved.stderr).toBe(0);
+    expect(resolved.stdout.split("\n")[1]).toBe('"state":"json-control"');
+    const OUT_DISCUSSION = kv(resolved.stdout, "OUT_DISCUSSION")!;
+    const begin = shippedBlocks("discuss", "## Step 4 —");
+    expect(begin.length).toBe(2);
+    const stamped = block(begin[0]);
+    expect([stamped.status, kv(stamped.stdout, "PERSON"), kv(stamped.stdout, "CHECKOUT"), kv(stamped.stdout, "domain")], stamped.stderr).toEqual([0, "Install Test <install-test@example.invalid>", checkout, "code"]);
+    const N = `${OUT_DISCUSSION}/261001-1020-install-test-discussion.md`;
+    mkdirSync(join(WORKBENCH, OUT_DISCUSSION), { recursive: true });
+    writeFileSync(join(WORKBENCH, N), "# Install test discussion\n\n---\n**Rounds:** 0\n**Outcome:** still running\n\n---\n\n## Question\n\nDoes the shipped block run?\n");
+    const begun = block(fill(begin[1], { "<your agent name, or claude>": "claude" }), { WORKBENCH, OUT_DISCUSSION, N });
+    expect([kv(begun.stdout, "result"), kv(begun.stdout, "exit")], begun.stderr).toEqual(["landed", "0"]);
+    wrote("create", begun.stdout, { created: "open" });
+    const discussion = kv(begun.stdout, "path")!;
+    writeFileSync(join(WORKBENCH, N), "# Install test discussion\n\n---\n**Rounds:** 1\n**Outcome:** converged\n\n---\n\n## Question\n\nDoes the shipped block run?\n\n## Recommendation\n\nIt does; this binds nothing.\n");
+    const [close, ...closeRest] = shippedBlocks("discuss", "## Step 8 —");
+    expect(closeRest).toEqual([]);
+    const closed = block(fill(close, { "<its path= line>": discussion, "<the outcome>": "converged", "<as at Step 4>": "claude" }));
+    expect([kv(closed.stdout, "result"), kv(closed.stdout, "exit")], closed.stderr).toEqual(["landed", "0"]);
+    wrote("transition", closed.stdout, { from: "open", to: "closed" });
+
+    // Exactly one row per landed revision, by key, in order, naming this checkout and person.
+    const expected = landed.flatMap(({ op, out, change }) => {
+      const lines = out.split("\n");
+      const paths = lines.filter((l) => l.startsWith("path=")).map((l) => l.slice(5));
+      const revisions = lines.filter((l) => l.startsWith("revision=")).map((l) => l.slice(9));
+      expect(paths.length).toBe(revisions.length);
+      return paths.map((path, i) => ({ op, key: `${workbenchId} ${kv(out, "operation_id")} ${path} ${revisions[i]}`, change, checkout, person: "Install Test <install-test@example.invalid>" }));
+    });
+    expect(expected.length).toBe(6);
+    const logged = () => rows().map((r) => ({ op: r.op, key: `${String(r.workbench_id)} ${String(r.operation_id)} ${String(r.path)} ${String(r.revision)}`, change: r.change, checkout: r.checkout, person: r.person }));
+    expect(logged()).toEqual(expected);
+
+    // The re-send of the close, twice: the stored answer, logged already, and not one byte more in the log.
+    const logBytes = readFileSync(log);
+    for (let i = 0; i < 2; i++) {
+      const resent = write(["transition", "--record", discussion, "--to", "closed", "--reason", "converged", "--actor", "claude", "--operation-id", kv(closed.stdout, "operation_id")!, "--expected-revision", kv(begun.stdout, "revision")!]);
+      expect([resent.status, kv(resent.stdout, "result"), kv(resent.stdout, "operation_id"), kv(resent.stdout, "revision"), kv(resent.stdout, "event")], resent.stderr).toEqual([0, "landed", kv(closed.stdout, "operation_id"), kv(closed.stdout, "revision"), "logged"]);
+      expect(readFileSync(log).equals(logBytes)).toBe(true);
+    }
+    expect(record(p, { op: "validate" }).valid).toBe(true);
+  }, 120_000);
 
   it("the installer warns, in the guard.js words, when the source carries no codec bundle", () => {
     expect(install.failure).toBeNull();
