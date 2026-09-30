@@ -35,3 +35,6 @@ Option 1. It states what is the case and draws the one line that can be held mec
 
 ---
 Answered: Prior `docs/design/fusion-fj03a-prior-plan-response.md` `## C. Explicit recovery policy; automatic hooks do not invoke the codec` at Prior `b2a931b` — option 1: a helper that was called explicitly may finish a committed intent, and the automatic hooks never call the codec, indirect subprocess calls included; the user gave the Prior side's acceptance as the answer on 2026-09-29; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: 16a6387e — the declaration landed in the header of `hooks/lib/record-client.ts` and in `README-hooks.md` `## Concept`, with `hooks/lib/__tests__/hook-route-exclusion.test.ts` pinning that no automatic hook reaches the codec; the Prior side confirmed the landed text as the accepted policy in `Prior: docs/design/fusion-fj03a-prior-response.md` `## 30 Landed recovery declaration confirmed` at Prior `ad21e58`, noting that Prior's own authorisation callback must still cover recovery effects.

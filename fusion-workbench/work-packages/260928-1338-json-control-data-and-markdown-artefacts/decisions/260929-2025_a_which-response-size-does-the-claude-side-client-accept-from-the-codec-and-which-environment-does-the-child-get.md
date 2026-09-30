@@ -33,3 +33,6 @@ Both hold at the step's commit and both are tested as they stand. The choice is 
 - The bundle does not move in FJ03a.
 - A too-large or malformed answer is never read as an empty store or as no claim.
 - The client sends one request and reads one response; it does not retry.
+
+---
+Answered: this record `## Options` option 3, narrowed, with the request carried as `codec/fixtures/prior/REQUESTS.md` `### 31.` — the child keeps an empty environment (Prior's adapter already sets `cmd.Env = []string{}` in `internal/fusionhost/codec_process.go` at Prior `ddd4973`, so both hosts agree); the client keeps 16 MiB as a guard against a defective child and not as a contract figure, fusion choosing no contract bound alone; the Prior side is asked whether its 1 MiB (`internal/strictjson/reader.go`, `MaxBytes = 1 << 20`) applies to codec responses and how an unscoped `list` over a large workbench is served, wanted before FJ04's real migrations and not blocking FJ03b; no code changes; ruled by user, Kai Stalmann <ks@qantr.com>
