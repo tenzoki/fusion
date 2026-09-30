@@ -51,3 +51,6 @@ So "the current status of record X" is not something the monitor can decide from
 ## Recommendation
 
 Option 1. It is the only option that answers a decidable question: "what was the last observed change of X, by which host, at which revision", taken at the moment of the write from the codec's answer and from the `show` and the gate that came before it. It keeps the confirmed declaration as it stands. The current state of a package stays available through `bin/fusion-work-order`, which a person calls. If the Prior side wants a live status panel, option 3 can be added later without undoing anything in option 1.
+
+---
+Answered: this record `## Options` option 1, with the corrections folded in before approval — only explicit write paths append a `record_change` row, one per record written, from the gate, the writer's prior `show` and the codec's answer; `change` is defined per operation; `ts` is the fixed-width UTC form; the monitor reads `record_change` rows outside its checkout filter and shows the last observed change; the user approved it together with the FJ03b plan on 2026-09-30; ruled by user, Kai Stalmann <ks@qantr.com>

@@ -82,14 +82,14 @@ Coherence check: every edge is a dependency a step declares below, and none decl
 
 ## Implementation Steps
 
-1. **`REQUESTS.md`: the question FJ03b has for the Prior side**
+1. [IN PROGRESS] **`REQUESTS.md`: the question FJ03b has for the Prior side**
    - Executor: `analyst`
    - Files: `codec/fixtures/prior/REQUESTS.md`
    - Changes: a section `## FJ03b (questions before the observers)`, written against `c6c25d3e` and Prior `ad21e58`, numbered on from 31. It states what FJ03b carries of rows 7 to 10 and which consumers it leaves as they are (`## Current State`, the unaffected list), and why the explicit checkers keep a named legacy branch where FJ03a's resolvers refuse: section 9's FJ03b row. (32) Fusion's `record_change` row shape, for information, as the decision record `260930-1451_*_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md` is answered: one row per record written, `record_id` taken from the writer's prior `show`, `change` defined per operation. The questions are whether Prior will append to the same log with `host: "prior"` and which fields it needs. The item also states that a Prior writer must use the same fixed-width UTC `ts`, since the monitor orders rows by the raw string. FJ03c's writer waits for the reply; FJ03b's readers do not. One paragraph says FJ03b does not depend on item 31. It adds three consumers of an unscoped `list`, all through `hooks/lib/record-index.ts`, so an answer that brings paging changes that one module.
    - Acceptance: the item names the record it closes; every figure re-verified by command; `git diff --stat` for the step shows this one file.
    - Dependencies: the decision record answered (it is fusion's to answer; the item informs and asks, it does not wait).
 
-2. **The JSON surface names, and staging drift over them**
+2. [IN PROGRESS] **The JSON surface names, and staging drift over them**
    - Executor: `code-implementer`
    - Files: `hooks/lib/stores.ts`, `hooks/lib/staging-drift.ts`, `hooks/staging-drift.ts` (output text only where a new code prints), `bin/fusion-staging-drift` (header), `hooks/lib/__tests__/staging-drift.test.ts`, `hooks/lib/__tests__/fusion-stores.test.ts`, `README-hooks.md`
    - Changes, `stores.ts`: `WORKBENCH_MANIFEST`, `JSON_STATE_DIR`, `isControlFile(name)` (`package.json`, `*.record.json`, `*.evidence.json`) and `narrativeOf(controlPath)` (`<stem>.record.json` to `<stem>.md`, `package.json` to `<dir>.md` in its directory, `<stem>[.<n>].evidence.json` to the report `<stem>.md`). One home, beside the store names.
