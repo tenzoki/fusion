@@ -14,6 +14,9 @@
 //   validate    strict parse, schema, and the state rules `transitions.ts`
 //               owns, for one pair or the whole workbench; for an evidence
 //               record its report and the naming rule instead of a narrative
+//   initialize  the manifest of a new workbench, written into an existing
+//               directory holding nothing but the codec's own state
+//               (Prior's request 27); every other target is refused by name
 //   create      a new pair: the control record the kernel builds, and the
 //               narrative when the request carries its body, in one intent;
 //               with `kind: evidence` one immutable evidence record beside a
@@ -67,10 +70,11 @@
 // state of the workbench. A throw is a defect in this file.
 // ---------------------------------------------------------------------------
 
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { relative } from "node:path";
-import { canonical, fileState, readIntent, type FileState } from "../journal.js";
+import { existsSync, lstatSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { join, relative } from "node:path";
+import { JOURNAL_DIR, OPS_DIR, canonical, fileState, readIntent, type FileState } from "../journal.js";
 import {
+  EVERY_STATE,
   mutate,
   read,
   readContext,
@@ -90,12 +94,16 @@ import {
   PACKAGE_SCHEMA_ID,
   RECORD_SCHEMA_ID,
   SCHEMA_ID_PREFIX,
+  STATE_DIR,
   SUPPORTED_FEATURES,
   EVIDENCE_SCHEMA_ID,
+  WORKBENCH_MANIFEST,
+  WORKBENCH_SCHEMA_ID,
   controlFiles,
   describeErrors,
   evidenceName,
   evidenceNaming,
+  lockProtocolOwns,
   openWorkbench,
   readPair,
   reportProblem,
@@ -121,6 +129,7 @@ import {
   type CreateEvidenceRequest,
   type CreateRequest,
   type EvidenceRef,
+  type InitializeRequest,
   type ListRequest,
   type ReconcileRequest,
   type RecordRef,
@@ -180,6 +189,8 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
       return readable(wb) ?? reading(wb, (view) => show(wb, req, view), kernel);
     case "validate":
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
+    case "initialize":
+      return initialize(wb, req, kernel);
     case "create":
       return mutate(wb, req, req.kind === "evidence" ? createEvidencePlan(req) : createPlan(req), kernel);
     case "transition":
@@ -226,6 +237,7 @@ function inspect(wb: Workbench): Response {
       id: wb.id,
       manifest: wb.manifest,
       diagnosis: wb.diagnosis,
+      pending: pendingInitialize(wb),
       schemas: schemas().ids(),
       features: [...SUPPORTED_FEATURES],
       kinds: [...KINDS],
@@ -235,6 +247,141 @@ function inspect(wb: Workbench): Response {
       },
     },
   };
+}
+
+// --- initialize -----------------------------------------------------------------
+//
+// `initialize` writes `workbench.json` into an existing directory that holds
+// nothing, through the kernel's one sequence, and refuses every other target by
+// name (Prior's request 27; `codec/fixtures/prior/REQUESTS.md`, "One qualified
+// revision"). One content check decides the target, `initialContent`, and it
+// runs at two sites. Under the lock, after recovery and the replay lookup,
+// in the plan function, which reads the directory and never the state the
+// workbench was opened with, since recovery may have landed a manifest since.
+// And once before the lock when `.json-state` is not a directory: no intent,
+// stored answer or lock can exist there, so the lock path would answer the
+// same, and a refused target keeps its bytes and gains no `.json-state/`.
+//
+// The one exempt entry is a `.json-state/` directory holding only what the
+// lock protocol owns (`lockProtocolOwns`) and a `journal/` and an `ops/` with no
+// entry but the dot-named ones the sweep removes. Nothing else is guessed at:
+// `.DS_Store`, `.gitkeep`, a marker, an empty store directory is an entry.
+
+/** At most this many entries are named in a refusal's detail. */
+const NAMED_ENTRIES = 5;
+
+const isDirectoryEntry = (path: string): boolean | null => {
+  try {
+    return lstatSync(path).isDirectory();
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw e;
+  }
+};
+
+const namesIn = (dir: string): string[] => {
+  try {
+    return readdirSync(dir);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw e;
+  }
+};
+
+/**
+ * Every entry of the directory `root` the exemption does not cover,
+ * root-relative and sorted; empty means `initialize` may write. An entry
+ * inside `.json-state/` is named by its path there, a committed intent as
+ * `.json-state/journal/<operation_id>`.
+ */
+function initialContent(root: string): string[] {
+  const found: string[] = [];
+  for (const name of namesIn(root)) {
+    const state = join(root, name);
+    if (name !== STATE_DIR || isDirectoryEntry(state) !== true) {
+      found.push(name);
+      continue;
+    }
+    for (const inner of namesIn(state)) {
+      const rel = `${STATE_DIR}/${inner}`;
+      if (inner === JOURNAL_DIR || inner === OPS_DIR) {
+        const isDir = isDirectoryEntry(join(state, inner));
+        if (isDir === false) found.push(rel);
+        // A dot-named entry is the sweep's: an intent being built or removed, a temp file.
+        else if (isDir === true) for (const n of namesIn(join(state, inner))) if (!n.startsWith(".")) found.push(`${rel}/${n}`);
+      } else if (!lockProtocolOwns(state, inner)) {
+        found.push(rel);
+      }
+    }
+  }
+  return found.sort();
+}
+
+/** The refusal the content check answers, or null when the target is empty but for the exemption. */
+function contentRefusal(root: string, entries: readonly string[]): StoreError | null {
+  if (entries.length === 0) return null;
+  const named = entries.slice(0, NAMED_ENTRIES).join(", ") + (entries.length > NAMED_ENTRIES ? ` and ${entries.length - NAMED_ENTRIES} more` : "");
+  if (entries.includes(WORKBENCH_MANIFEST)) {
+    return { class: "conflict", reason: "manifest-present", detail: `${root} already holds ${WORKBENCH_MANIFEST}, and initialize never replaces a manifest; it holds ${named}` };
+  }
+  return { class: "conflict", reason: "target-not-empty", detail: `initialize writes a new workbench into an empty directory, and ${root} holds ${named}` };
+}
+
+/** The manifest's `required_features`: the feature this contract introduces, never whatever else this codec may support later. */
+const INITIAL_FEATURES: readonly string[] = ["json-control-v1"];
+
+async function initialize(wb: Workbench, req: InitializeRequest, options: KernelOptions): Promise<Response> {
+  const stateDir = (): boolean => isDirectoryEntry(join(wb.root, STATE_DIR)) === true;
+  if (!stateDir()) {
+    const refused = contentRefusal(wb.root, initialContent(wb.root));
+    // A `.json-state/` that appeared meanwhile is a concurrent writer's (on
+    // such a target only `initialize` takes the lock), so what this check saw
+    // may be that writer's work in flight: the lock path answers instead.
+    if (refused !== null && !stateDir()) return fromStore(refused);
+  }
+  return mutate(wb, req, initializePlan(req), options, EVERY_STATE);
+}
+
+function initializePlan(req: InitializeRequest): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    // Another operation's blocked intent stops this one before the directory is judged.
+    const blocked = ctx.blocked[0];
+    if (blocked !== undefined) return { ok: false, error: recoveryBlocked(blocked) };
+    const refused = contentRefusal(ctx.wb.root, initialContent(ctx.wb.root));
+    if (refused !== null) return { ok: false, error: refused };
+
+    const manifest = { schema: schemaField(WORKBENCH_SCHEMA_ID), id: req.id, required_features: [...INITIAL_FEATURES], migration: null, extensions: {} };
+    const v = ctx.validateResult(WORKBENCH_SCHEMA_ID, manifest, "the manifest initialize would write is not valid");
+    if (!v.ok) return v;
+    const bytes = Buffer.from(serialise(manifest), "utf-8");
+    const revision = revisionOf(bytes);
+    return {
+      ok: true,
+      value: {
+        writes: [{ path: WORKBENCH_MANIFEST, bytes }],
+        result: { operation_id: req.operation_id, id: req.id, path: WORKBENCH_MANIFEST, revision },
+        revisions: { [WORKBENCH_MANIFEST]: revision },
+      },
+    };
+  };
+}
+
+/**
+ * `inspect.pending` (decision 260930-1654, option 3; Prior item 33): the
+ * committed `initialize` a legacy target holds when that intent is its only
+ * entry, the exemption aside, with whether it is blocked; null otherwise. No
+ * read finishes that intent; an `initialize` request does, under the lock.
+ */
+function pendingInitialize(wb: Workbench): { operation_id: string; blocked: boolean } | null {
+  if (wb.state !== "legacy") return null;
+  const entries = initialContent(wb.root);
+  const prefix = `${STATE_DIR}/${JOURNAL_DIR}/`;
+  const only = entries.length === 1 ? (entries[0] as string) : null;
+  if (only === null || !only.startsWith(prefix)) return null;
+  const intent = readIntent(wb, only.slice(prefix.length));
+  if (!intent.ok || intent.value === null || intent.value.intent.op !== "initialize") return null;
+  const { operation_id, writes } = intent.value.intent;
+  return { operation_id, blocked: writes.some((w) => fileState(wb, w) === "diverged") };
 }
 
 // --- list ---------------------------------------------------------------------
@@ -266,7 +413,7 @@ function list(wb: Workbench, req: ListRequest, view: ReadView): Response {
     if (!r.ok) return { path, problem: r.error };
     return { path, kind: r.value.kind, id: r.value.control.id ?? null, status: stateOf(r.value), revision: r.value.revision, narrative: r.value.narrative };
   });
-  return { ok: true, result: { workbench: wb.root, scope: req.scope ?? null, records } };
+  return { ok: true, result: { workbench: wb.root, state: wb.state, scope: req.scope ?? null, records } };
 }
 
 // --- show ---------------------------------------------------------------------

@@ -3,7 +3,7 @@
 // out, both JSON, as Prior's `concept/fusion-json-workbench-spec.md` section 6
 // lays it out.
 //
-// The fourteen operations of the spec's table are the request union below,
+// The fifteen operations of the spec's table are the request union below,
 // each with its argument shape. `IMPLEMENTED_OPERATIONS` names the ones this
 // codec answers, and `inspect` reports it; every other one is answered
 // `operation-unknown/not-implemented` with a detail naming the package that
@@ -40,6 +40,7 @@ export const OPERATIONS = [
   "list",
   "show",
   "validate",
+  "initialize",
   "create",
   "transition",
   "claim",
@@ -55,7 +56,7 @@ export const OPERATIONS = [
 export type Operation = (typeof OPERATIONS)[number];
 
 /** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
-export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"];
+export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"];
 
 /** The package that lands each operation not yet answered: the detail of its `not-implemented` refusal. */
 export const LANDS_IN: Partial<Record<Operation, string>> = {
@@ -181,6 +182,18 @@ export interface TransitionRequest extends Mutation<"transition"> {
 
 // --- the operations FJ02 and FJ04 land ------------------------------------------
 
+/**
+ * `initialize` (Prior's request 27): the manifest of a new workbench, written
+ * by the codec into an existing empty directory. `workbench` is required on
+ * this branch and `id` is the new workbench's UUID; the codec composes the
+ * manifest itself, so a request carrying one is `schema-invalid/request`.
+ */
+export interface InitializeRequest extends Base<"initialize"> {
+  workbench: string;
+  operation_id: string;
+  id: string;
+}
+
 export interface CreateRequest extends Base<"create"> {
   operation_id: string;
   id: string;
@@ -270,6 +283,7 @@ export type Request =
   | ListRequest
   | ShowRequest
   | ValidateRequest
+  | InitializeRequest
   | CreateRequest
   | CreateEvidenceRequest
   | TransitionRequest

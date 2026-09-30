@@ -1363,6 +1363,12 @@
     "note": "create of kind evidence for a correction: the payload's predecessor is a revision-pinned record_ref over the same report."
   },
   {
+    "path": "valid/protocol/initialize.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "initialize names the target directory, an operation_id and the new workbench's id, and nothing else: the codec composes the manifest it writes."
+  },
+  {
     "path": "invalid/protocol/inspect-unknown-key.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "invalid",
@@ -1465,7 +1471,7 @@
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "An op outside the fourteen of spec section 6 matches no branch. The dispatcher answers operation-unknown before validation; the schema alone says schema-invalid."
+    "note": "An op outside the fifteen of spec section 6 matches no branch. The dispatcher answers operation-unknown before validation; the schema alone says schema-invalid."
   },
   {
     "path": "invalid/protocol/op-missing.json",
@@ -1529,5 +1535,33 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "create of kind evidence carrying narrative matches neither create branch: the evidence branch does not admit narrative and the record branch's kind has no evidence."
+  },
+  {
+    "path": "invalid/protocol/initialize-without-workbench.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "initialize requires workbench: its branch does not take FUSION_WORKBENCH in its place."
+  },
+  {
+    "path": "invalid/protocol/initialize-without-operation-id.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "initialize is a mutation and carries an operation_id."
+  },
+  {
+    "path": "invalid/protocol/initialize-id-not-uuid.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "initialize's id is the new workbench's UUID; a name is refused."
+  },
+  {
+    "path": "invalid/protocol/initialize-manifest-field.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A manifest sent by the caller is refused: the codec writes the manifest and no host serialises one."
   }
 ]

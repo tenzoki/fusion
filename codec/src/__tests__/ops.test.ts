@@ -190,6 +190,238 @@ describe("list", () => {
   });
 });
 
+// --- initialize, list.state, inspect.pending ----------------------------------------------
+//
+// Prior's request 27 and response 28, one case per ruled case (the initialize
+// plan's step 3). The processes, the cuts and the stale lock are the kernel
+// suite's; here the flowchart's leaves through `dispatch`.
+
+describe("initialize", () => {
+  const INIT_ID = "2c4e6a8b-1d3f-4a5b-9c7d-0e1f2a3b4c5d";
+  const WB_NEW = "6b8d0f2a-3c5e-4b7d-8f9a-1b2c3d4e5f60";
+  const OTHER_OP = "3c4e6a8b-1d3f-4a5b-9c7d-0e1f2a3b4c5d";
+  /** A target directory inside the case's temp root, made empty unless `entries` names files to put there. */
+  const target = (name = "new", entries: Record<string, string> = {}): string => {
+    const dir = join(root, name);
+    mkdirSync(dir);
+    for (const [rel, content] of Object.entries(entries)) {
+      mkdirSync(join(dir, rel, ".."), { recursive: true });
+      writeFileSync(join(dir, rel), content);
+    }
+    return dir;
+  };
+  const init = (workbench: string, over: Record<string, unknown> = {}) => ({ op: "initialize", workbench, operation_id: INIT_ID, id: WB_NEW, ...over });
+  /** Every file and directory under `dir`, path to bytes (a directory as `<dir>`): what "unchanged" is compared on. */
+  const tree = (dir: string): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const walk = (d: string, rel: string): void => {
+      for (const n of readdirSync(d).sort()) {
+        const abs = join(d, n);
+        const r = rel === "" ? n : `${rel}/${n}`;
+        if (statSync(abs).isDirectory()) {
+          out[r] = "<dir>";
+          walk(abs, r);
+        } else out[r] = readFileSync(abs).toString("base64");
+      }
+    };
+    walk(dir, "");
+    return out;
+  };
+  const MANIFEST = `{\n  "schema": "fusion.workbench/v1",\n  "id": "${WB_NEW}",\n  "required_features": [\n    "json-control-v1"\n  ],\n  "migration": null,\n  "extensions": {}\n}\n`;
+
+  it("over an empty directory writes exactly the ruled manifest and answers {operation_id, id, path, revision} with revisions", async () => {
+    const dir = target();
+    const r = await dispatch(init(dir));
+    const rev = revisionOf(Buffer.from(MANIFEST, "utf-8"));
+    expect(r).toEqual({ ok: true, result: { operation_id: INIT_ID, id: WB_NEW, path: "workbench.json", revision: rev }, revisions: { "workbench.json": rev } });
+    expect(readFileSync(join(dir, "workbench.json"), "utf-8")).toBe(MANIFEST);
+    expect(readdirSync(join(dir, ".json-state", "journal"))).toEqual([]);
+    expect(readdirSync(join(dir, ".json-state", "ops"))).toEqual([`${INIT_ID}.json`]);
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir }))).toMatchObject({ state: "json-control", id: WB_NEW, pending: null });
+  });
+
+  it("a non-empty legacy target is target-not-empty, the detail naming the first entries sorted; it stays byte-identical and gains no .json-state/", async () => {
+    const dir = target("legacy", {
+      ".fusion-setup": '{"version":"12.0.0"}\n',
+      "work-packages/260901-0900-a/260901-0900-a.md": "# a\n",
+      "shared/plans/.gitkeep": "",
+      "stilwerk/chat-voice-de.yaml": "x: 1\n",
+      "monitor": "binary",
+      "orchestrator-events.jsonl": "",
+    });
+    const before = tree(dir);
+    const r = await dispatch(init(dir));
+    expect(r).toMatchObject({ ok: false, error: { class: "conflict", reason: "target-not-empty" } });
+    if (!r.ok) expect(r.error.detail).toContain("holds .fusion-setup, monitor, orchestrator-events.jsonl, shared, stilwerk and 1 more");
+    expect(tree(dir)).toEqual(before);
+    expect(existsSync(join(dir, ".json-state"))).toBe(false);
+    // Scaffolding is not guessed at: one .DS_Store is an entry.
+    const ds = target("ds", { ".DS_Store": "" });
+    expect(await dispatch(init(ds))).toMatchObject({ ok: false, error: { reason: "target-not-empty" } });
+    expect(readdirSync(ds)).toEqual([".DS_Store"]);
+    // A .json-state that is not a directory is such an entry, refused before any lock.
+    const file = target("state-file", { ".json-state": "" });
+    const rf = await dispatch(init(file));
+    expect(rf).toMatchObject({ ok: false, error: { reason: "target-not-empty" } });
+    if (!rf.ok) expect(rf.error.detail).toContain("holds .json-state");
+    expect(statSync(join(file, ".json-state")).isFile()).toBe(true);
+  });
+
+  it("a manifest that is valid, unsupported, or a directory is manifest-present, before the lock and under it", async () => {
+    // Valid, and under JSON control: the scratch workbench, which carries .json-state/ after a write.
+    expect(await dispatch(init(root))).toMatchObject({ ok: false, error: { class: "conflict", reason: "manifest-present" } });
+    expect(okResult(await dispatch(transitionRequest())).to).toBe("claimed");
+    expect(existsSync(join(root, ".json-state"))).toBe(true);
+    const r = await dispatch(init(root, { operation_id: OTHER_OP }));
+    expect(r).toMatchObject({ ok: false, error: { class: "conflict", reason: "manifest-present" } });
+    if (!r.ok) expect(r.error.detail).toContain("workbench.json");
+    // Unsupported: a feature this codec lacks.
+    const unsupported = target("unsupported", { "workbench.json": readFileSync(join(VALID, "workbench", "extra-feature.json"), "utf-8") });
+    expect(await dispatch(init(unsupported))).toMatchObject({ ok: false, error: { reason: "manifest-present" } });
+    // A directory named workbench.json (issue 260930-1654).
+    const dirManifest = target("dir-manifest");
+    mkdirSync(join(dirManifest, "workbench.json"));
+    expect(await dispatch(init(dirManifest))).toMatchObject({ ok: false, error: { reason: "manifest-present" } });
+    for (const t of [unsupported, dirManifest]) expect(existsSync(join(t, ".json-state")), t).toBe(false);
+  });
+
+  it("a regular file or a missing target is unknown-scope/workbench-missing", async () => {
+    const file = join(root, "a-file");
+    writeFileSync(file, "");
+    expect(await dispatch(init(file))).toMatchObject({ ok: false, error: { class: "unknown-scope", reason: "workbench-missing" } });
+    expect(await dispatch(init(join(root, "absent")))).toMatchObject({ ok: false, error: { class: "unknown-scope", reason: "workbench-missing" } });
+    expect(existsSync(join(root, "absent"))).toBe(false);
+  });
+
+  it("the request: workbench required, a manifest field refused, an id that is no UUID refused", async () => {
+    const dir = target();
+    const { workbench: _w, ...noWorkbench } = init(dir);
+    expect(await dispatch(noWorkbench, { defaultWorkbench: dir })).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "request" } });
+    expect(await dispatch(init(dir, { manifest: { schema: "fusion.workbench/v1" } }))).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "request" } });
+    expect(await dispatch(init(dir, { id: "not-a-uuid" }))).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "request" } });
+    expect(readdirSync(dir)).toEqual([]);
+  });
+
+  it("the same request answers the stored bytes, after a later create too; a changed request under the id is operation-id-reused", async () => {
+    const dir = target();
+    const first = await dispatch(init(dir));
+    expect(first.ok).toBe(true);
+    expect(await dispatch(init(dir))).toEqual(first);
+    const created = await dispatch({
+      op: "create",
+      workbench: dir,
+      operation_id: OTHER_OP,
+      id: "4d4e6a8b-1d3f-4a5b-9c7d-0e1f2a3b4c5d",
+      kind: "package",
+      filed_by: ACTOR,
+      origin: { kind: "user-request", ref: null },
+      scope: { container: null, store: "work-packages" },
+      narrative: { path: "work-packages/260930-1700-first/260930-1700-first.md", content: "# first\n" },
+      payload: { domain: "code" },
+    });
+    expect(created.ok, JSON.stringify(created)).toBe(true);
+    expect(await dispatch(init(dir))).toEqual(first);
+    expect(await dispatch(init(dir, { id: "7b8d0f2a-3c5e-4b7d-8f9a-1b2c3d4e5f60" }))).toMatchObject({ ok: false, error: { class: "conflict", reason: "operation-id-reused" } });
+    expect(readFileSync(join(dir, "workbench.json"), "utf-8")).toBe(MANIFEST);
+  });
+
+  it("a stored answer of another operation in ops/ is an entry: target-not-empty, and nothing is written", async () => {
+    const dir = target("answered", { [`.json-state/ops/${OTHER_OP}.json`]: '{"operation_id":"x"}\n' });
+    const r = await dispatch(init(dir));
+    expect(r).toMatchObject({ ok: false, error: { class: "conflict", reason: "target-not-empty" } });
+    if (!r.ok) expect(r.error.detail).toContain(`.json-state/ops/${OTHER_OP}.json`);
+    expect(existsSync(join(dir, "workbench.json"))).toBe(false);
+  });
+
+  it("the exemption: a .json-state/ with the self-ignore, an empty journal/ and ops/, and the sweep's dot entries lands", async () => {
+    const dir = target("exempt", { ".json-state/.gitignore": "*\n", [`.json-state/journal/.${OTHER_OP}.1.2.tmp/intent.json`]: "{}", ".json-state/ops/.x.tmp": "" });
+    expect((await dispatch(init(dir))).ok).toBe(true);
+    // Anything else inside .json-state/ is an entry, named by its path there.
+    const other = target("stray", { ".json-state/notes.txt": "" });
+    const r = await dispatch(init(other));
+    expect(r).toMatchObject({ ok: false, error: { reason: "target-not-empty" } });
+    if (!r.ok) expect(r.error.detail).toContain(".json-state/notes.txt");
+  });
+});
+
+describe("inspect.pending and list.state", () => {
+  const INIT_ID = "2c4e6a8b-1d3f-4a5b-9c7d-0e1f2a3b4c5d";
+  const WB_NEW = "6b8d0f2a-3c5e-4b7d-8f9a-1b2c3d4e5f60";
+  const empty = (name: string): string => {
+    const dir = join(root, name);
+    mkdirSync(dir);
+    return dir;
+  };
+  const init = (workbench: string, operation_id = INIT_ID) => ({ op: "initialize", workbench, operation_id, id: WB_NEW });
+
+  it("pending is null on a JSON workbench, on an empty directory and on a v12 one; it names a committed initialize, not blocked", async () => {
+    expect(okResult(await dispatch({ op: "inspect", workbench: root })).pending).toBeNull();
+    const dir = empty("new");
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir }))).toMatchObject({ state: "legacy", pending: null });
+    await expect(dispatch(init(dir), { kernel: { faults: { cutAt: "after-intent" } } })).rejects.toBeInstanceOf(CutReached);
+    // No read finishes it: inspect and list answer legacy, and the intent stands.
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir }))).toMatchObject({ state: "legacy", pending: { operation_id: INIT_ID, blocked: false } });
+    expect(okResult(await dispatch({ op: "list", workbench: dir }))).toMatchObject({ state: "legacy", records: [] });
+    expect(readdirSync(join(dir, ".json-state", "journal"))).toEqual([INIT_ID]);
+    expect(existsSync(join(dir, "workbench.json"))).toBe(false);
+    // The intent's own request finishes it and answers the committed result.
+    const done = await dispatch(init(dir));
+    expect(done).toMatchObject({ ok: true, result: { operation_id: INIT_ID, id: WB_NEW, path: "workbench.json" } });
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir }))).toMatchObject({ state: "json-control", pending: null });
+  });
+
+  it("another initialize over the pending window lands the committed intent first and is then manifest-present", async () => {
+    const dir = empty("new");
+    await expect(dispatch(init(dir), { kernel: { faults: { cutAt: "after-intent" } } })).rejects.toBeInstanceOf(CutReached);
+    const other = await dispatch({ ...init(dir, "5c4e6a8b-1d3f-4a5b-9c7d-0e1f2a3b4c5d"), id: "7b8d0f2a-3c5e-4b7d-8f9a-1b2c3d4e5f60" });
+    expect(other).toMatchObject({ ok: false, error: { class: "conflict", reason: "manifest-present" } });
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir }))).toMatchObject({ state: "json-control", id: WB_NEW });
+  });
+
+  it("pending is null when the committed intent is not the only entry, or not an initialize", async () => {
+    const dir = empty("new");
+    await expect(dispatch(init(dir), { kernel: { faults: { cutAt: "after-intent" } } })).rejects.toBeInstanceOf(CutReached);
+    writeFileSync(join(dir, ".DS_Store"), "");
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir })).pending).toBeNull();
+    unlinkSync(join(dir, ".DS_Store"));
+    const intent = join(dir, ".json-state", "journal", INIT_ID, "intent.json");
+    const p = strictParse(readFileSync(intent));
+    if (!p.ok) throw new Error(p.detail);
+    writeFileSync(intent, JSON.stringify({ ...(p.value as Record<string, unknown>), op: "create" }, null, 2) + "\n");
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir })).pending).toBeNull();
+  });
+
+  it("list answers state: legacy with records [] on an empty and a v12 directory, json-control with records [] after initialize; unsupported stays refused", async () => {
+    const dir = empty("new");
+    expect(okResult(await dispatch({ op: "list", workbench: dir }))).toEqual({ workbench: dir, state: "legacy", scope: null, records: [] });
+    const v12 = empty("v12");
+    mkdirSync(join(v12, "work-packages", "260901-0900-a"), { recursive: true });
+    writeFileSync(join(v12, "work-packages", "260901-0900-a", "260901-0900-a.md"), "# a\n");
+    writeFileSync(join(v12, ".fusion-setup"), "{}\n");
+    expect(okResult(await dispatch({ op: "list", workbench: v12 }))).toMatchObject({ state: "legacy", records: [] });
+    expect((await dispatch(init(dir))).ok).toBe(true);
+    expect(okResult(await dispatch({ op: "list", workbench: dir }))).toEqual({ workbench: dir, state: "json-control", scope: null, records: [] });
+    expect(okResult(await dispatch({ op: "list", workbench: root })).state).toBe("json-control");
+    writeFileSync(join(dir, "workbench.json"), readFileSync(join(VALID, "workbench", "extra-feature.json")));
+    expect(await dispatch({ op: "list", workbench: dir })).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "unknown-feature" } });
+  });
+
+  it("a directory named workbench.json: inspect shows manifest-not-a-file, every other read refuses with it, and the bundle answers with exit 0", async () => {
+    unlinkSync(join(root, "workbench.json"));
+    mkdirSync(join(root, "workbench.json"));
+    expect(okResult(await dispatch({ op: "inspect", workbench: root }))).toMatchObject({ state: "unsupported", pending: null, diagnosis: { class: "schema-invalid", reason: "manifest-not-a-file" } });
+    for (const req of [{ op: "list" }, { op: "show", record: { path: OPEN } }, { op: "validate" }, { op: "reconcile" }]) {
+      expect(await dispatch({ ...req, workbench: root }), req.op).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "manifest-not-a-file" } });
+    }
+    expect(await dispatch(transitionRequest())).toMatchObject({ ok: false, error: { reason: "manifest-not-a-file" } });
+    const { FUSION_WORKBENCH: _drop, ...env } = process.env;
+    const r = spawnSync(process.execPath, [BUNDLE], { input: JSON.stringify({ op: "inspect", workbench: root }), encoding: "utf-8", env });
+    expect(r.status, r.stderr).toBe(0);
+    expect(r.stderr).toBe("");
+    expect(JSON.parse(r.stdout)).toMatchObject({ ok: true, result: { state: "unsupported", diagnosis: { reason: "manifest-not-a-file" } } });
+  });
+});
+
 // --- show ---------------------------------------------------------------------------
 
 describe("show", () => {

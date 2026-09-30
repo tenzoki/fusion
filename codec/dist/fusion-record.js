@@ -8020,8 +8020,8 @@ import { readFileSync as readFileSync7 } from "node:fs";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 
 // src/cli/ops.ts
-import { existsSync as existsSync3, readdirSync as readdirSync5, readFileSync as readFileSync6, statSync as statSync3 } from "node:fs";
-import { relative as relative3 } from "node:path";
+import { existsSync as existsSync3, lstatSync as lstatSync2, readdirSync as readdirSync5, readFileSync as readFileSync6, statSync as statSync3 } from "node:fs";
+import { join as join4, relative as relative3 } from "node:path";
 
 // src/journal.ts
 import { randomBytes as randomBytes2 } from "node:crypto";
@@ -8036,6 +8036,7 @@ import {
   fstatSync,
   fsyncSync,
   linkSync,
+  lstatSync,
   mkdirSync,
   openSync,
   readdirSync as readdirSync2,
@@ -8320,11 +8321,14 @@ function openWorkbench(root, set = schemas()) {
   }
   if (!isDir) return err("unknown-scope", "workbench-missing", `${abs} is not a directory`);
   const manifestPath = join2(abs, WORKBENCH_MANIFEST);
-  if (!existsSync(manifestPath)) return { ok: true, value: { root: abs, state: "legacy", id: null, manifest: null, diagnosis: null } };
+  if (!entryExists(manifestPath)) return { ok: true, value: { root: abs, state: "legacy", id: null, manifest: null, diagnosis: null } };
   const unsupported = (diagnosis, manifest2) => ({
     ok: true,
     value: { root: abs, state: "unsupported", id: null, manifest: manifest2, diagnosis }
   });
+  if (!isRegularFile(manifestPath)) {
+    return unsupported({ class: "schema-invalid", reason: "manifest-not-a-file", detail: `${WORKBENCH_MANIFEST} in ${abs} is not a regular file` }, null);
+  }
   const parsed = strictParse(readFileSync2(manifestPath));
   if (!parsed.ok) return unsupported({ class: "schema-invalid", reason: parsed.reason, detail: `${WORKBENCH_MANIFEST}: ${parsed.detail}` }, null);
   const manifest = parsed.value;
@@ -8349,6 +8353,22 @@ function openWorkbench(root, set = schemas()) {
     );
   }
   return { ok: true, value: { root: abs, state: "json-control", id: manifest.id, manifest, diagnosis: null } };
+}
+function entryExists(path) {
+  try {
+    lstatSync(path);
+    return true;
+  } catch (e) {
+    if (e.code === "ENOENT") return false;
+    throw e;
+  }
+}
+function isRegularFile(path) {
+  try {
+    return statSync(path).isFile();
+  } catch {
+    return false;
+  }
 }
 var describeErrors = (errors) => errors.map((e) => `${e.instancePath || "/"} ${e.keyword}: ${e.message}`).join("; ");
 function resolveInside(wb, path) {
@@ -8551,6 +8571,7 @@ function deref(loc, set) {
   throw new Error("$ref chain longer than 32 hops");
 }
 var tempBeside = (target) => join2(dirname(target), `.${basename(target)}.${process.pid}.${randomBytes(4).toString("hex")}.tmp`);
+var TEMP_NAME = /^\.(.+)\.[0-9]+\.[0-9a-f]{8}\.tmp$/;
 function writeAll(fd, bytes) {
   let offset = 0;
   while (offset < bytes.byteLength) offset += writeSync(fd, bytes, offset, bytes.byteLength - offset);
@@ -8616,10 +8637,11 @@ function unlinkIfHolds(path, bytes) {
   }
 }
 var SELF_IGNORE = "*\n";
+var SELF_IGNORE_FILE = ".gitignore";
 function ensureSelfIgnore(wb) {
   const dir = join2(wb.root, STATE_DIR);
   mkdirSync(dir, { recursive: true });
-  const file = join2(dir, ".gitignore");
+  const file = join2(dir, SELF_IGNORE_FILE);
   let current2;
   try {
     current2 = readFileSync2(file);
@@ -8759,6 +8781,18 @@ function installExitHook() {
   process.on("exit", () => {
     for (const [lock, bytes] of held) unlinkIfHolds(lock, bytes);
   });
+}
+function lockProtocolOwns(stateDir, name) {
+  const owned = (n) => n === LOCK_FILE || n.startsWith(`${LOCK_FILE}${TAKEOVER_INFIX}`);
+  if (owned(name)) return true;
+  const temp = TEMP_NAME.exec(name)?.[1];
+  if (temp !== void 0) return owned(temp) || temp === SELF_IGNORE_FILE;
+  if (name !== SELF_IGNORE_FILE) return false;
+  try {
+    return readFileSync2(join2(stateDir, name)).equals(Buffer.from(SELF_IGNORE, "utf-8"));
+  } catch {
+    return false;
+  }
 }
 function describeHolder(lock) {
   try {
@@ -9008,6 +9042,7 @@ var OPERATIONS = [
   "list",
   "show",
   "validate",
+  "initialize",
   "create",
   "transition",
   "claim",
@@ -9019,7 +9054,7 @@ var OPERATIONS = [
   "reconcile",
   "migration"
 ];
-var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"];
+var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"];
 var LANDS_IN = {
   migration: "FJ04"
 };
@@ -9055,9 +9090,14 @@ var blockedOn = (blocked, path) => blocked.find((b) => b.paths.includes(path));
 var refuse2 = (e) => fail(e.class, e.reason, e.detail, e.errors);
 var ok = (value) => ({ ok: true, value });
 var no = (cls, reason, detail) => ({ ok: false, error: { class: cls, reason, detail } });
-async function mutate(wb, req, plan, options = {}) {
-  if (wb.state === "legacy") return fail("unsupported-format", "legacy-workbench", `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`);
-  if (wb.state === "unsupported") return fail("unsupported-format", wb.diagnosis?.reason ?? "unsupported", wb.diagnosis?.detail ?? "the manifest is unsupported");
+var JSON_CONTROL_ONLY = ["json-control"];
+var EVERY_STATE = ["json-control", "legacy", "unsupported"];
+async function mutate(wb, req, plan, options = {}, admits = JSON_CONTROL_ONLY) {
+  if (!admits.includes(wb.state)) {
+    if (wb.state === "legacy") return fail("unsupported-format", "legacy-workbench", `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`);
+    if (wb.state === "unsupported") return fail("unsupported-format", wb.diagnosis?.reason ?? "unsupported", wb.diagnosis?.detail ?? "the manifest is unsupported");
+    throw new Error(`mutate: ${req.op} admits ${admits.join(", ")}, and the workbench is ${wb.state}`);
+  }
   const faults = options.faults;
   const point = async (at) => {
     await faults?.pause?.(at);
@@ -9133,6 +9173,7 @@ function hashOrNull(abs) {
 function planContext(wb, blocked) {
   return {
     ...readContext(wb, blocked),
+    blocked,
     cas(pair, expected) {
       if (pair.revision !== expected) return no("conflict", "revision-mismatch", `stored ${pair.revision} expected ${expected}`);
       return ok(void 0);
@@ -9409,6 +9450,8 @@ async function dispatch(request, options = {}) {
       return readable(wb) ?? reading(wb, (view) => show(wb, req, view), kernel);
     case "validate":
       return readable(wb) ?? reading(wb, (view) => validateOp(wb, req, view), kernel);
+    case "initialize":
+      return initialize(wb, req, kernel);
     case "create":
       return mutate(wb, req, req.kind === "evidence" ? createEvidencePlan(req) : createPlan(req), kernel);
     case "transition":
@@ -9448,6 +9491,7 @@ function inspect(wb) {
       id: wb.id,
       manifest: wb.manifest,
       diagnosis: wb.diagnosis,
+      pending: pendingInitialize(wb),
       schemas: schemas().ids(),
       features: [...SUPPORTED_FEATURES],
       kinds: [...KINDS],
@@ -9457,6 +9501,95 @@ function inspect(wb) {
       }
     }
   };
+}
+var NAMED_ENTRIES = 5;
+var isDirectoryEntry = (path) => {
+  try {
+    return lstatSync2(path).isDirectory();
+  } catch (e) {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  }
+};
+var namesIn = (dir) => {
+  try {
+    return readdirSync5(dir);
+  } catch (e) {
+    if (e.code === "ENOENT") return [];
+    throw e;
+  }
+};
+function initialContent(root) {
+  const found = [];
+  for (const name of namesIn(root)) {
+    const state = join4(root, name);
+    if (name !== STATE_DIR || isDirectoryEntry(state) !== true) {
+      found.push(name);
+      continue;
+    }
+    for (const inner of namesIn(state)) {
+      const rel = `${STATE_DIR}/${inner}`;
+      if (inner === JOURNAL_DIR || inner === OPS_DIR) {
+        const isDir = isDirectoryEntry(join4(state, inner));
+        if (isDir === false) found.push(rel);
+        else if (isDir === true) {
+          for (const n of namesIn(join4(state, inner))) if (!n.startsWith(".")) found.push(`${rel}/${n}`);
+        }
+      } else if (!lockProtocolOwns(state, inner)) {
+        found.push(rel);
+      }
+    }
+  }
+  return found.sort();
+}
+function contentRefusal(root, entries) {
+  if (entries.length === 0) return null;
+  const named = entries.slice(0, NAMED_ENTRIES).join(", ") + (entries.length > NAMED_ENTRIES ? ` and ${entries.length - NAMED_ENTRIES} more` : "");
+  if (entries.includes(WORKBENCH_MANIFEST)) {
+    return { class: "conflict", reason: "manifest-present", detail: `${root} already holds ${WORKBENCH_MANIFEST}, and initialize never replaces a manifest; it holds ${named}` };
+  }
+  return { class: "conflict", reason: "target-not-empty", detail: `initialize writes a new workbench into an empty directory, and ${root} holds ${named}` };
+}
+var INITIAL_FEATURES = ["json-control-v1"];
+async function initialize(wb, req, options) {
+  const stateDir = () => isDirectoryEntry(join4(wb.root, STATE_DIR)) === true;
+  if (!stateDir()) {
+    const refused2 = contentRefusal(wb.root, initialContent(wb.root));
+    if (refused2 !== null && !stateDir()) return fromStore(refused2);
+  }
+  return mutate(wb, req, initializePlan(req), options, EVERY_STATE);
+}
+function initializePlan(req) {
+  return (ctx) => {
+    const blocked = ctx.blocked[0];
+    if (blocked !== void 0) return { ok: false, error: recoveryBlocked(blocked) };
+    const refused2 = contentRefusal(ctx.wb.root, initialContent(ctx.wb.root));
+    if (refused2 !== null) return { ok: false, error: refused2 };
+    const manifest = { schema: schemaField(WORKBENCH_SCHEMA_ID), id: req.id, required_features: [...INITIAL_FEATURES], migration: null, extensions: {} };
+    const v = ctx.validateResult(WORKBENCH_SCHEMA_ID, manifest, "the manifest initialize would write is not valid");
+    if (!v.ok) return v;
+    const bytes = Buffer.from(serialise(manifest), "utf-8");
+    const revision = revisionOf(bytes);
+    return {
+      ok: true,
+      value: {
+        writes: [{ path: WORKBENCH_MANIFEST, bytes }],
+        result: { operation_id: req.operation_id, id: req.id, path: WORKBENCH_MANIFEST, revision },
+        revisions: { [WORKBENCH_MANIFEST]: revision }
+      }
+    };
+  };
+}
+function pendingInitialize(wb) {
+  if (wb.state !== "legacy") return null;
+  const entries = initialContent(wb.root);
+  const prefix = `${STATE_DIR}/${JOURNAL_DIR}/`;
+  const only = entries.length === 1 ? entries[0] : null;
+  if (only === null || !only.startsWith(prefix)) return null;
+  const intent = readIntent(wb, only.slice(prefix.length));
+  if (!intent.ok || intent.value === null || intent.value.intent.op !== "initialize") return null;
+  const { operation_id, writes } = intent.value.intent;
+  return { operation_id, blocked: writes.some((w) => fileState(wb, w) === "diverged") };
 }
 var stateOf = (pair) => pair.kind === "package" ? pair.control.status : pair.control.control?.state ?? null;
 function scopeDir(wb, scope) {
@@ -9482,7 +9615,7 @@ function list(wb, req, view) {
     if (!r.ok) return { path, problem: r.error };
     return { path, kind: r.value.kind, id: r.value.control.id ?? null, status: stateOf(r.value), revision: r.value.revision, narrative: r.value.narrative };
   });
-  return { ok: true, result: { workbench: wb.root, scope: req.scope ?? null, records } };
+  return { ok: true, result: { workbench: wb.root, state: wb.state, scope: req.scope ?? null, records } };
 }
 function show(wb, req, view) {
   const blocked = view.blockedOn(req.record.path);
@@ -11786,13 +11919,13 @@ var protocol_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.protocol/v1",
   title: "fusion.protocol/v1",
-  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there.",
+  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there.",
   type: "object",
   required: ["op"],
   properties: {
     op: {
       type: "string",
-      enum: ["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "migration"]
+      enum: ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "migration"]
     }
   },
   oneOf: [
@@ -11833,6 +11966,17 @@ var protocol_schema_default = {
         op: { const: "validate" },
         workbench: { $ref: "#/$defs/workbench" },
         record: { $ref: "#/$defs/record_selector" }
+      }
+    },
+    {
+      type: "object",
+      additionalProperties: false,
+      required: ["op", "workbench", "operation_id", "id"],
+      properties: {
+        op: { const: "initialize" },
+        workbench: { $ref: "#/$defs/workbench" },
+        operation_id: { $ref: "#/$defs/operation_id" },
+        id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid", description: "The new workbench's UUID, written as the manifest's id." }
       }
     },
     {

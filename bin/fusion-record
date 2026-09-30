@@ -11,10 +11,10 @@
 # shapes are `codec/schemas/protocol.schema.json` (`fusion.protocol/v1`), one
 # branch per operation of the spec's section 6 table; the errors are the
 # spec's typed classes. At this revision the bundle answers `inspect`, `list`,
-# `show`, `validate`, `create`, `transition`, `claim`, `release`, `set-mode`,
-# `set-dependencies`, `adopt-plan`, `attach-evidence` and `reconcile`; every
-# mutation is a compare-and-swap on the stored-bytes revision, replayable by
-# `operation_id`. `migration` is deferred and answered
+# `show`, `validate`, `initialize`, `create`, `transition`, `claim`, `release`,
+# `set-mode`, `set-dependencies`, `adopt-plan`, `attach-evidence` and
+# `reconcile`; every mutation is a compare-and-swap on the stored-bytes
+# revision, replayable by `operation_id`. `migration` is deferred and answered
 # `operation-unknown/not-implemented`. That list is a copy: ask `inspect`,
 # whose `operations.implemented` and `operations.deferred` name what the
 # bundle beside this script answers. Every answer is on stdout with

@@ -90,21 +90,23 @@ inside every transport call. A successful inspection is no lock and no
 permanent authorisation: later refusals, revision changes and blocked recovery
 must still be handled. `inspect` itself, diagnostic inspection of legacy data
 and the explicit initialization and migration workflows do not require a
-JSON-controlled workbench. The gate is needed because `list` today answers a
-legacy workbench `ok: true` with `records: []` and no `state`;
-`list.result.state` arrives with the bundle revision that adds `initialize`,
-and does not waive the gate. Fusion honours it in `gate` in
+JSON-controlled workbench. `list` answers `{workbench, state, scope,
+records}`, `state` being `json-control` or `legacy` as `inspect` reports it (an
+unsupported workbench is still refused), and a legacy workbench `ok: true` with
+`records: []`. That `state` (Prior response 28, closure (a)) does not waive the
+gate: a consumer still calls `inspect` first. Fusion honours it in `gate` in
 `hooks/lib/record-client.ts`, which `hooks/lib/scope.ts` and
 `hooks/lib/work-graph.ts` call first in each of their consumer operations.
 
 FJ01 answered `inspect`, `list`, `show`, `validate` and `transition` on a
-package. FJ02 answers the rest of the table but one: `create` (with
+package. FJ02 answers the rest of the table as it then stood but one: `create` (with
 `narrative.content` it writes both halves of the pair, without it the
 narrative must already exist), `transition` on every record kind, `claim`,
 `release`, `set-mode`, `set-dependencies`, `adopt-plan` (`role: plan`, the
 default, or `role: spec`), `attach-evidence` and `reconcile`. `migration` is
 the one operation still deferred: it lands in FJ04 and is refused
-`operation-unknown/not-implemented` until then. Every mutation runs through
+`operation-unknown/not-implemented` until then. `initialize` joined the table
+later, after `validate`; it is described below. Every mutation runs through
 the kernel below, and `claim` and `release` are `transition` with defaults and
 clearer refusals, never a second route to the files.
 
@@ -136,11 +138,50 @@ written by progress, and the answer has the shape of every `transition`.
 sole write route for a new evidence record; `## Evidence records on disk`
 below describes it.
 
+**`initialize`** (Prior request 27) writes `workbench.json`, the manifest of a
+new workbench, into an existing directory that holds nothing:
+`{op: "initialize", workbench, operation_id, id}`, `workbench` required on this
+branch, `id` the new workbench's UUID. The codec composes the manifest
+(`fusion.workbench/v1`, the caller's `id`, `required_features:
+["json-control-v1"]`, `migration: null`, `extensions: {}`), so a request
+carrying one is `schema-invalid/request`. The answer is `{operation_id, id,
+path: "workbench.json", revision}` with `revisions`, and a replay of the same
+request answers those bytes, after later writes too. It runs through the kernel
+below like every mutation and refuses every other target by name: a target
+that is absent or no directory is `unknown-scope/workbench-missing`; a
+`workbench.json` entry of any kind, valid, unsupported or a directory, is
+`conflict/manifest-present`; any other entry is `conflict/target-not-empty`,
+the detail naming the first entries, sorted. The one exempt entry is a
+`.json-state/` holding only what the lock protocol owns (the lock, takeover
+claims, the self-ignore holding `*`, and their temp files) and a `journal/` and
+`ops/` with no entry but the sweep's dot-named ones; a stored answer of another
+operation is an entry. `.DS_Store`, `.gitkeep`, a marker or an empty store
+directory is an entry like any other. When `.json-state` is not a directory
+the check runs before the lock, so a refused target keeps its bytes and gains
+no `.json-state/`. `/fusion:setup` does not call it yet (FJ03d).
+
+**`inspect.pending`** is `null`, or `{operation_id, blocked}` naming a committed
+`initialize` whose manifest has not landed: the state is then `legacy`, and the
+intent is the target's only entry but the exemption. No read finishes that
+intent; an `initialize` request does, under the lock: the same request answers
+the committed result, another lands it first and is then
+`conflict/manifest-present` (decision
+`260930-1654_*_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md`,
+option 3; Prior item 33). A caller deciding between `initialize` and FJ04 reads
+this field and does not re-derive the exemption.
+
+A `workbench.json` that is not a regular file, a directory or a dangling link,
+is `unsupported` with `schema-invalid/manifest-not-a-file`: `inspect` shows it,
+every other read and mutation refuses with it, and `initialize` answers
+`manifest-present`.
+
 ## The kernel and the journal
 
 `src/kernel.ts` is the one writer of fusion JSON. `mutate` runs every
-operation in one order: the workbench state (a legacy or unsupported
-workbench refuses); the workbench write lock; a sweep of the transient entries
+operation in one order: the workbench state, against the states the operation
+admits (a legacy or unsupported workbench refuses every operation but
+`initialize`, which admits every state and whose plan function judges the
+directory itself, under the lock); the workbench write lock; a sweep of the transient entries
 in `.json-state/journal/` and `.json-state/ops/`; the recovery of every pending
 intent; the replay lookup, which consults a pending intent under the request's
 `operation_id` before the stored answer; the operation's own plan function,
@@ -250,6 +291,13 @@ zero physical writes. The operation name confers no authority: a host
 authorises that recovery on its own, apart from a read-only role, which must
 not receive it because the request it sends is a read (Prior's FJ02 response,
 `## Recovery and rollout consequences`).
+
+**One intent no read finishes.** A read of a workbench that is not under JSON
+control runs once, without recovery. The one intent that can stand in such a
+workbench is a committed `initialize` whose manifest has not landed, so no read
+finishes it: `inspect` names it as `pending`, and an `initialize` request
+finishes it under the lock. Every other committed intent is recovered by reads
+as described above.
 
 ## Evidence records on disk
 
@@ -363,7 +411,7 @@ never by its file format.
 | `fixtures/workbench/` | A minimal v12-shaped scratch workbench (`workbench.json`, `.fusion-setup`, two package pairs, one shared issue pair) the store and CLI suites copy to a temp directory before every case; not indexed by the manifest |
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |
 | `scripts/build.mjs` | esbuild, pinned exactly, `--bundle --platform=node --format=esm --target=node20`, JSON inlined, staging path then atomic rename into `dist/`; a second run writes nothing |
-| `src/cli/protocol.ts` | The request union over the fourteen operations, the response envelope and the eight error classes; `src/cli/schemas.ts` inlines the contract for the bundle |
+| `src/cli/protocol.ts` | The request union over the fifteen operations, the response envelope and the eight error classes; `src/cli/schemas.ts` inlines the contract for the bundle |
 | `src/cli/ops.ts` | `dispatch(request)`: validates against the protocol schema, then the operations it answers, reads under the kernel's read protocol and every mutation through the kernel (`src/kernel.ts`) |
 | `src/cli/main.ts` | The entry point: stdin or `--file` in, stdout out, the exit codes above |
 | `src/store.ts` | `openWorkbench` (spec 4.1: json-control, legacy, unsupported), `readPair` (control, `sha256:` revision of the stored bytes, narrative hash; for an evidence record the report's path and hashes instead), the walk over every control file (`package.json`, `*.record.json`, `*.evidence.json`), the evidence naming rule, `serialise` (deterministic, in the schemas' `properties` order), the one workbench write lock `.json-state/write.lock` with its takeover and the self-ignore, and `replaceAtomically` (temp file, fsync, atomic rename); it writes no record itself |

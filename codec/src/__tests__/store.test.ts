@@ -9,7 +9,7 @@
 
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, utimesSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, symlinkSync, unlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { hostname, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,6 +29,7 @@ import {
   evidenceName,
   evidenceNaming,
   lockPathFor,
+  lockProtocolOwns,
   openWorkbench,
   readPair,
   reportProblem,
@@ -115,6 +116,53 @@ describe("openWorkbench", () => {
   it("a root that is not a directory is unknown-scope/workbench-missing", () => {
     expect(openWorkbench(join(root, "absent"))).toMatchObject({ ok: false, error: { class: "unknown-scope", reason: "workbench-missing" } });
     expect(openWorkbench(join(root, "workbench.json"))).toMatchObject({ ok: false, error: { class: "unknown-scope" } });
+  });
+
+  // Issue 260930-1654 (a directory named workbench.json): the bundle threw
+  // EISDIR and exited 1. Every manifest entry is a value, never a throw.
+  it("a workbench.json that is not a regular file is unsupported with schema-invalid/manifest-not-a-file: a directory, a dangling link", () => {
+    unlinkSync(join(root, "workbench.json"));
+    mkdirSync(join(root, "workbench.json"));
+    const dir = open();
+    expect(dir.state).toBe("unsupported");
+    expect(dir.manifest).toBeNull();
+    expect(dir.diagnosis).toMatchObject({ class: "schema-invalid", reason: "manifest-not-a-file" });
+    rmSync(join(root, "workbench.json"), { recursive: true });
+    symlinkSync(join(root, "nowhere.json"), join(root, "workbench.json"));
+    expect(open().diagnosis).toMatchObject({ class: "schema-invalid", reason: "manifest-not-a-file" });
+  });
+
+  it("a workbench.json linked to a regular manifest reads through the link, as before", () => {
+    renameSync(join(root, "workbench.json"), join(root, "manifest.json"));
+    symlinkSync(join(root, "manifest.json"), join(root, "workbench.json"));
+    expect(open().state).toBe("json-control");
+  });
+});
+
+describe("lockProtocolOwns: the lock protocol's own entries of .json-state/", () => {
+  it("the lock, a takeover claim, the self-ignore holding exactly *, and the temp files the protocol writes for them", () => {
+    const state = join(root, STATE_DIR);
+    mkdirSync(state, { recursive: true });
+    writeFileSync(join(state, ".gitignore"), SELF_IGNORE);
+    expect(lockProtocolOwns(state, LOCK_FILE)).toBe(true);
+    expect(lockProtocolOwns(state, `${LOCK_FILE}${TAKEOVER_INFIX}${"a".repeat(64)}`)).toBe(true);
+    expect(lockProtocolOwns(state, ".gitignore")).toBe(true);
+    expect(lockProtocolOwns(state, `.${LOCK_FILE}.4242.0a1b2c3d.tmp`)).toBe(true);
+    expect(lockProtocolOwns(state, `.${LOCK_FILE}${TAKEOVER_INFIX}${"a".repeat(64)}.4242.0a1b2c3d.tmp`)).toBe(true);
+    // The temp name is a dot before the target's own name, so the self-ignore's starts with two.
+    expect(lockProtocolOwns(state, "..gitignore.4242.0a1b2c3d.tmp")).toBe(true);
+    expect(lockProtocolOwns(state, ".gitignore.4242.0a1b2c3d.tmp")).toBe(false);
+  });
+
+  it("a self-ignore with other bytes, a stranger's temp file, and any other name are not the protocol's", () => {
+    const state = join(root, STATE_DIR);
+    mkdirSync(state, { recursive: true });
+    writeFileSync(join(state, ".gitignore"), "*.lock\n");
+    expect(lockProtocolOwns(state, ".gitignore")).toBe(false);
+    expect(lockProtocolOwns(state, ".workbench.json.4242.0a1b2c3d.tmp")).toBe(false);
+    expect(lockProtocolOwns(state, `.${LOCK_FILE}.tmp`)).toBe(false);
+    expect(lockProtocolOwns(state, "journal")).toBe(false);
+    expect(lockProtocolOwns(state, ".DS_Store")).toBe(false);
   });
 });
 

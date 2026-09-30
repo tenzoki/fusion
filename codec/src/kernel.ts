@@ -7,7 +7,10 @@
 //   read(wb, body, options)          one consistent lock-free read
 //
 // `mutate` runs, in this order and for every operation alike: the workbench
-// state (legacy or unsupported refuses); the workbench write lock; `sweep`;
+// state, against the states the operation admits (`json-control` alone for
+// every operation but `initialize`, which admits every state and decides on
+// the directory's content under the lock instead); the workbench write lock;
+// `sweep`;
 // the recovery of every pending intent; the replay lookup, which consults
 // `journal/<id>/` before `ops/<id>.json` (discussion 260929-0709, C13); the
 // operation's own plan function; the durable intent; each write by temp file,
@@ -77,6 +80,7 @@ import {
   type Result,
   type StoreError,
   type Workbench,
+  type WorkbenchState,
   type WriteOptions,
 } from "./store.js";
 import { strictParse } from "./strict-json.js";
@@ -139,6 +143,8 @@ export interface Planned {
 /** What a plan function may ask, all of it under the lock. */
 export interface PlanContext {
   readonly wb: Workbench;
+  /** The intents recovery left blocked, read-only: `initialize` refuses on any of them before it reads the directory. */
+  readonly blocked: readonly Blocked[];
   /** A pair, or `recovery-blocked` when a blocked intent names its path. */
   readPair(path: string): Result<Pair>;
   /** `conflict/revision-mismatch` unless the pair's stored bytes hash to `expected`. */
@@ -195,15 +201,26 @@ const refuse = (e: StoreError): Response => fail(e.class, e.reason, e.detail, e.
 const ok = <T>(value: T): Result<T> => ({ ok: true, value });
 const no = <T>(cls: StoreError["class"], reason: string, detail: string): Result<T> => ({ ok: false, error: { class: cls, reason, detail } });
 
+/** The states an ordinary mutation admits: a workbench under JSON control. */
+export const JSON_CONTROL_ONLY: readonly WorkbenchState[] = ["json-control"];
+/** The states `initialize` admits: all of them, since its plan function reads the directory itself. */
+export const EVERY_STATE: readonly WorkbenchState[] = ["json-control", "legacy", "unsupported"];
+
 /**
  * Runs one mutation through the sequence the header describes and returns
  * its answer. A refusal writes nothing and stores nothing, so a retry is an
- * ordinary first attempt. Throws only for a defect or an I/O failure, and for
- * `CutReached` when a test asked for a cut.
+ * ordinary first attempt. `admits` names the states the operation runs on;
+ * the state was read when the workbench was opened, before the lock, so a
+ * plan function that admits more than `json-control` must not rely on it.
+ * Throws only for a defect or an I/O failure, and for `CutReached` when a
+ * test asked for a cut.
  */
-export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunction, options: KernelOptions = {}): Promise<Response> {
-  if (wb.state === "legacy") return fail("unsupported-format", "legacy-workbench", `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`);
-  if (wb.state === "unsupported") return fail("unsupported-format", wb.diagnosis?.reason ?? "unsupported", wb.diagnosis?.detail ?? "the manifest is unsupported");
+export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunction, options: KernelOptions = {}, admits: readonly WorkbenchState[] = JSON_CONTROL_ONLY): Promise<Response> {
+  if (!admits.includes(wb.state)) {
+    if (wb.state === "legacy") return fail("unsupported-format", "legacy-workbench", `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`);
+    if (wb.state === "unsupported") return fail("unsupported-format", wb.diagnosis?.reason ?? "unsupported", wb.diagnosis?.detail ?? "the manifest is unsupported");
+    throw new Error(`mutate: ${req.op} admits ${admits.join(", ")}, and the workbench is ${wb.state}`);
+  }
 
   const faults = options.faults;
   const point = async (at: Cut): Promise<void> => {
@@ -294,6 +311,7 @@ export type ReadContext = Pick<PlanContext, "wb" | "readPair" | "resolveRecordId
 function planContext(wb: Workbench, blocked: readonly Blocked[]): PlanContext {
   return {
     ...readContext(wb, blocked),
+    blocked,
     cas(pair, expected) {
       if (pair.revision !== expected) return no("conflict", "revision-mismatch", `stored ${pair.revision} expected ${expected}`);
       return ok(undefined);
@@ -425,8 +443,11 @@ async function recoverUnderLock(wb: Workbench, options: KernelOptions): Promise<
  * Runs `body` over one consistent state of the workbench and returns what it
  * returned, retrying while an operation starts or lands during it. After
  * `options.waitMs` without a consistent read the answer is
- * `conflict/lock-timeout`, as a writer's would be. A workbench not under JSON
- * control has no journal this codec wrote: the body runs once.
+ * `conflict/lock-timeout`, as a writer's would be. On a workbench not under
+ * JSON control the body runs once, without recovery. The one intent that can
+ * stand there is a committed `initialize` whose manifest has not landed, and
+ * no read finishes it: an `initialize` request does, and `inspect` names the
+ * window as `pending` (decision 260930-1654, option 3; Prior item 33).
  */
 export async function read<T>(wb: Workbench, body: (view: ReadView) => T | Promise<T>, options: KernelOptions = {}): Promise<Result<T>> {
   if (wb.state !== "json-control") return ok(await body(NO_VIEW));

@@ -12,9 +12,11 @@
 // `openWorkbench` reads `workbench.json` when present (spec 4.1). A manifest
 // with an unknown schema or a required feature this codec lacks is reported
 // as `unsupported`, with the diagnosis attached rather than thrown, because
-// inspection may show raw data while mutation is refused. No manifest at all
-// is the `legacy` state: reads are allowed, mutation is refused with
-// `unsupported-format/legacy-workbench`.
+// inspection may show raw data while mutation is refused; so is a
+// `workbench.json` entry that is not a regular file
+// (`schema-invalid/manifest-not-a-file`). No manifest entry at all is the
+// `legacy` state: reads are allowed, mutation is refused with
+// `unsupported-format/legacy-workbench`, and only `initialize` writes one.
 //
 // The revision of a record is `sha256:` over the exact stored bytes, returned
 // beside the record and never written into it. Nothing here changes a
@@ -64,6 +66,7 @@ import {
   fstatSync,
   fsyncSync,
   linkSync,
+  lstatSync,
   mkdirSync,
   openSync,
   readdirSync,
@@ -141,13 +144,17 @@ export function openWorkbench(root: string, set: SchemaSet = schemas()): Result<
   if (!isDir) return err("unknown-scope", "workbench-missing", `${abs} is not a directory`);
 
   const manifestPath = join(abs, WORKBENCH_MANIFEST);
-  if (!existsSync(manifestPath)) return { ok: true, value: { root: abs, state: "legacy", id: null, manifest: null, diagnosis: null } };
+  // The entry itself decides presence, so a dangling link is an entry too.
+  if (!entryExists(manifestPath)) return { ok: true, value: { root: abs, state: "legacy", id: null, manifest: null, diagnosis: null } };
 
   const unsupported = (diagnosis: StoreError, manifest: unknown): Result<Workbench> => ({
     ok: true,
     value: { root: abs, state: "unsupported", id: null, manifest, diagnosis },
   });
 
+  if (!isRegularFile(manifestPath)) {
+    return unsupported({ class: "schema-invalid", reason: "manifest-not-a-file", detail: `${WORKBENCH_MANIFEST} in ${abs} is not a regular file` }, null);
+  }
   const parsed = strictParse(readFileSync(manifestPath));
   if (!parsed.ok) return unsupported({ class: "schema-invalid", reason: parsed.reason, detail: `${WORKBENCH_MANIFEST}: ${parsed.detail}` }, null);
   const manifest = parsed.value as Record<string, unknown>;
@@ -172,6 +179,26 @@ export function openWorkbench(root: string, set: SchemaSet = schemas()): Result<
     );
   }
   return { ok: true, value: { root: abs, state: "json-control", id: manifest.id as string, manifest, diagnosis: null } };
+}
+
+/** Whether anything stands at `path`, a link included whatever it points at. */
+function entryExists(path: string): boolean {
+  try {
+    lstatSync(path);
+    return true;
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw e;
+  }
+}
+
+/** Whether `path` reads as a regular file, through a link as `readFileSync` reads it. */
+function isRegularFile(path: string): boolean {
+  try {
+    return statSync(path).isFile();
+  } catch {
+    return false;
+  }
 }
 
 export const describeErrors = (errors: ValidationError[]): string => errors.map((e) => `${e.instancePath || "/"} ${e.keyword}: ${e.message}`).join("; ");
@@ -497,6 +524,8 @@ export interface WriteOptions {
 }
 
 const tempBeside = (target: string): string => join(dirname(target), `.${basename(target)}.${process.pid}.${randomBytes(4).toString("hex")}.tmp`);
+/** The name `tempBeside` gives a temp file, read back: the target's basename, or null for any other name. */
+const TEMP_NAME = /^\.(.+)\.[0-9]+\.[0-9a-f]{8}\.tmp$/;
 
 function writeAll(fd: number, bytes: Uint8Array): void {
   let offset = 0;
@@ -587,6 +616,8 @@ function unlinkIfHolds(path: string, bytes: Uint8Array): void {
 
 /** The content of `.json-state/.gitignore`: the directory ignores itself, `.gitignore` included (class L). */
 export const SELF_IGNORE = "*\n";
+/** The self-ignore's file name in `STATE_DIR`. */
+export const SELF_IGNORE_FILE = ".gitignore";
 
 /**
  * Makes sure `.json-state/` exists and holds a `.gitignore` of exactly `*`.
@@ -600,7 +631,7 @@ export const SELF_IGNORE = "*\n";
 export function ensureSelfIgnore(wb: Workbench): void {
   const dir = join(wb.root, STATE_DIR);
   mkdirSync(dir, { recursive: true });
-  const file = join(dir, ".gitignore");
+  const file = join(dir, SELF_IGNORE_FILE);
   let current: Buffer | null;
   try {
     current = readFileSync(file);
@@ -797,6 +828,27 @@ function installExitHook(): void {
   process.on("exit", () => {
     for (const [lock, bytes] of held) unlinkIfHolds(lock, bytes);
   });
+}
+
+/**
+ * Whether the entry `name` of `STATE_DIR` belongs to the lock protocol: the
+ * lock, a takeover claim, the self-ignore holding exactly `SELF_IGNORE`, or a
+ * temp file `tempBeside` wrote for one of the three. A waiter's temp file
+ * stands in the directory for a moment while another process holds the lock,
+ * so a caller that asks "does this directory hold anything but the lock
+ * protocol's own entries" must not count it. `initialize` asks exactly that.
+ */
+export function lockProtocolOwns(stateDir: string, name: string): boolean {
+  const owned = (n: string): boolean => n === LOCK_FILE || n.startsWith(`${LOCK_FILE}${TAKEOVER_INFIX}`);
+  if (owned(name)) return true;
+  const temp = TEMP_NAME.exec(name)?.[1];
+  if (temp !== undefined) return owned(temp) || temp === SELF_IGNORE_FILE;
+  if (name !== SELF_IGNORE_FILE) return false;
+  try {
+    return readFileSync(join(stateDir, name)).equals(Buffer.from(SELF_IGNORE, "utf-8"));
+  } catch {
+    return false;
+  }
 }
 
 function describeHolder(lock: string): string {

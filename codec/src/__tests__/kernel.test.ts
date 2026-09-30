@@ -963,3 +963,119 @@ describe("stored answers are never pruned: content revisions return", () => {
     expect(opsEntries(root), "a refusal stores no answer").toEqual(ids.map((id) => `${id}.json`).sort());
   });
 });
+
+// --- initialize through the kernel -----------------------------------------------------------
+//
+// The initialize plan's step 3: `mutate` with every state admitted, the
+// content check under the lock, competing initializers in one process and in
+// two, interruption before and after the commit point, and a diverged manifest.
+
+describe("initialize through the kernel", () => {
+  const WB_NEW = "6b8d0f2a-3c5e-4b7d-8f9a-1b2c3d4e5f60";
+  const WB_OTHER = "7b8d0f2a-3c5e-4b7d-8f9a-1b2c3d4e5f60";
+  /** A fresh empty directory: the target `initialize` lands on. */
+  const emptyTarget = (): string => {
+    const dir = mkdtempSync(join(tmpdir(), "codec-init-"));
+    roots.push(dir);
+    return dir;
+  };
+  const init = (dir: string, over: Record<string, unknown> = {}): Record<string, unknown> & MutationRequest => ({ op: "initialize", workbench: dir, operation_id: OP_ID, id: WB_NEW, ...over });
+  const manifestId = (dir: string): unknown => controlOf(dir, "workbench.json").id;
+
+  it("mutate refuses a legacy or unsupported workbench unless the operation admits it: the gate is a parameter", async () => {
+    const dir = emptyTarget();
+    const plan: PlanFunction = () => ({ ok: true, value: { writes: [], result: "planned" } });
+    expect(await mutate(open(dir), { op: "create", operation_id: OP_ID }, plan)).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "legacy-workbench" } });
+    expect(existsSync(join(dir, STATE_DIR)), "refused before the lock").toBe(false);
+    expect(await mutate(open(dir), { op: "initialize", operation_id: OP_ID }, plan, {}, ["legacy"])).toEqual({ ok: true, result: "planned" });
+  });
+
+  it("two initializers in one process, the first paused holding the lock: exactly one lands, the manifest id is the winner's, the other is manifest-present", async () => {
+    const dir = emptyTarget();
+    const locked = deferred();
+    const go = deferred();
+    const first = dispatch(init(dir), { kernel: { faults: { pause: async (p) => { if (p === "locked") { locked.resolve(); await go.promise; } } } } });
+    await locked.promise;
+    const second = dispatch(init(dir, { operation_id: OTHER_ID, id: WB_OTHER }), { kernel: { pollMs: 5 } });
+    await sleep(100);
+    expect(existsSync(join(dir, "workbench.json")), "the second waits on the lock").toBe(false);
+    go.resolve();
+    const [a, b] = await Promise.all([first, second]);
+    expect(a).toMatchObject({ ok: true, result: { id: WB_NEW } });
+    expect(b).toMatchObject({ ok: false, error: { class: "conflict", reason: "manifest-present" } });
+    expect(manifestId(dir)).toBe(WB_NEW);
+    expect(opsEntries(dir)).toEqual([`${OP_ID}.json`]);
+  });
+
+  it("two bundle processes at once over one empty directory: exactly one lands and the manifest id is the winner's", async () => {
+    for (let round = 0; round < 3; round++) {
+      const dir = emptyTarget();
+      const [ra, rb] = await Promise.all([runAsync([BUNDLE], JSON.stringify(init(dir))), runAsync([BUNDLE], JSON.stringify(init(dir, { operation_id: OTHER_ID, id: WB_OTHER })))]);
+      expect([ra.code, rb.code]).toEqual([0, 0]);
+      const answers = [JSON.parse(ra.stdout), JSON.parse(rb.stdout)] as Response[];
+      expect(answers.filter((r) => r.ok), JSON.stringify(answers)).toHaveLength(1);
+      expect(answers.filter((r) => !r.ok)).toMatchObject([{ ok: false, error: { class: "conflict", reason: "manifest-present" } }]);
+      const winner = answers[0]?.ok === true ? 0 : 1;
+      expect(manifestId(dir)).toBe(winner === 0 ? WB_NEW : WB_OTHER);
+      expect(journalEntries(dir)).toEqual([]);
+    }
+  });
+
+  it("before the commit point: a stale lock of a dead PID and a dot-named half-built intent do not stop it", async () => {
+    const dir = emptyTarget();
+    mkdirSync(join(dir, STATE_DIR, "journal", `.${OTHER_ID}.4242.deadbeef.tmp`), { recursive: true });
+    writeFileSync(join(dir, STATE_DIR, "journal", `.${OTHER_ID}.4242.deadbeef.tmp`, "intent.json"), "{ half");
+    writeFileSync(lockPathFor(open(dir)), `pid: ${deadPid()}\nhost: ${hostname()}\nnonce: 00\nacquired_at: ${new Date().toISOString()}\n`);
+    const r = await dispatch(init(dir));
+    expect(r).toMatchObject({ ok: true, result: { id: WB_NEW, path: "workbench.json" } });
+    expect(journalEntries(dir), "swept").toEqual([]);
+    expect(existsSync(lockPathFor(open(dir)))).toBe(false);
+  });
+
+  for (const cut of cutsFor(1)) {
+    it(`${cut}: the identical request answers the uncut bytes and the manifest is written once; another id is then manifest-present`, async () => {
+      const clean = emptyTarget();
+      const cleanAnswer = await dispatch(init(clean));
+      expect(cleanAnswer.ok).toBe(true);
+
+      const dir = emptyTarget();
+      await expect(dispatch(init(dir), { kernel: { faults: { cutAt: cut } } })).rejects.toBeInstanceOf(CutReached);
+      expect(journalEntries(dir)).toEqual([OP_ID]);
+      expect(open(dir).state).toBe(cut === "after-intent" ? "legacy" : "json-control");
+      expect(JSON.stringify(await dispatch(init(dir)))).toBe(JSON.stringify(cleanAnswer));
+      expect(journalEntries(dir)).toEqual([]);
+      expect(bytesOf(dir, "workbench.json").equals(bytesOf(clean, "workbench.json"))).toBe(true);
+      expect(await dispatch(init(dir, { operation_id: OTHER_ID, id: WB_OTHER }))).toMatchObject({ ok: false, error: { class: "conflict", reason: "manifest-present" } });
+      expect(manifestId(dir)).toBe(WB_NEW);
+    });
+  }
+
+  it("a diverged manifest under the committed intent is recovery-blocked for the same request and another one, and never overwritten", async () => {
+    const dir = emptyTarget();
+    await expect(dispatch(init(dir), { kernel: { faults: { cutAt: "after-intent" } } })).rejects.toBeInstanceOf(CutReached);
+    const hand = '{"written":"by hand"}\n';
+    writeFileSync(join(dir, "workbench.json"), hand);
+    const same = await dispatch(init(dir));
+    expect(same).toMatchObject({ ok: false, error: { class: "operation-unknown", reason: "recovery-blocked" } });
+    if (!same.ok) expect(same.error.detail).toContain("workbench.json");
+    expect(await dispatch(init(dir, { id: WB_OTHER }))).toMatchObject({ ok: false, error: { class: "conflict", reason: "operation-id-reused" } });
+    // Another operation id: the other intent is blocked, so it is refused before the directory is judged.
+    expect(await dispatch(init(dir, { operation_id: OTHER_ID, id: WB_OTHER }))).toMatchObject({ ok: false, error: { class: "operation-unknown", reason: "recovery-blocked" } });
+    expect(readFileSync(join(dir, "workbench.json"), "utf-8")).toBe(hand);
+    expect(journalEntries(dir)).toEqual([OP_ID]);
+  });
+
+  it("inspect.pending names a blocked committed initialize: an intent whose manifest stands at neither its pre- nor its post-bytes", async () => {
+    const dir = emptyTarget();
+    const wb = open(dir);
+    const bytes = Buffer.from(serialise({ schema: "fusion.workbench/v1", id: WB_NEW, required_features: ["json-control-v1"], migration: null, extensions: {} }), "utf-8");
+    // Hand-written: it names pre-bytes the absent manifest does not have, so the absence is at neither.
+    const writes: Write[] = [{ path: "workbench.json", before: revisionOf(Buffer.from("other")), after: revisionOf(bytes) }];
+    const intent: Intent = { operation_id: OP_ID, op: "initialize", request_digest: requestDigest(init(dir)), writes, response: { ok: true, result: {} }, created_at: new Date().toISOString() };
+    expect(commitIntent(wb, intent, new Map([["workbench.json", bytes]])).ok).toBe(true);
+    expect(okResult(await dispatch({ op: "inspect", workbench: dir }))).toMatchObject({ state: "legacy", pending: { operation_id: OP_ID, blocked: true } });
+    expect(await dispatch(init(dir))).toMatchObject({ ok: false, error: { reason: "recovery-blocked" } });
+    expect(await dispatch(init(dir, { operation_id: OTHER_ID }))).toMatchObject({ ok: false, error: { reason: "recovery-blocked" } });
+    expect(existsSync(join(dir, "workbench.json"))).toBe(false);
+  });
+});

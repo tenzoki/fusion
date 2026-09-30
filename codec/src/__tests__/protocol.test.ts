@@ -45,9 +45,10 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     expect(schemas().document(PROTOCOL_SCHEMA_ID)).toBeDefined();
   });
 
-  it("names the fourteen operations of spec section 6, in the table's order, in both the enum and the branches", () => {
+  it("names the fifteen operations of spec section 6, in the table's order, in both the enum and the branches", () => {
     const s = schema();
-    expect(OPERATIONS).toHaveLength(14);
+    expect(OPERATIONS).toHaveLength(15);
+    expect(OPERATIONS.indexOf("initialize")).toBe(OPERATIONS.indexOf("validate") + 1);
     expect(s.properties.op.enum).toEqual([...OPERATIONS]);
     // One branch per operation in the table's order, except create, which
     // carries two adjacent ones: the record create and the evidence create
@@ -77,7 +78,7 @@ describe("the protocol schema is the seventh schema of the default set", () => {
   });
 
   it("every mutation branch requires an operation_id; every read branch forbids one", () => {
-    const mutations = ["create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"];
+    const mutations = ["initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"];
     for (const b of schema().oneOf) {
       const op = b.properties.op.const;
       const hasId = b.required.includes("operation_id");
@@ -85,8 +86,14 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     }
   });
 
+  it("the initialize branch requires the workbench and the new workbench's id, and admits no manifest", () => {
+    const branch = schema().oneOf.find((b) => b.properties.op.const === "initialize");
+    expect(branch?.required.slice().sort()).toEqual(["id", "op", "operation_id", "workbench"]);
+    expect(Object.keys(branch?.properties ?? {}).sort()).toEqual(["id", "op", "operation_id", "workbench"]);
+  });
+
   it("the answered operations are every operation of the table but migration", () => {
-    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"]);
+    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"]);
     expect(OPERATIONS.filter((o) => !IMPLEMENTED_OPERATIONS.includes(o))).toEqual(["migration"]);
     for (const op of IMPLEMENTED_OPERATIONS) expect(isOperation(op)).toBe(true);
     expect(isOperation("delete")).toBe(false);
