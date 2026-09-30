@@ -52,6 +52,13 @@
 // since staging drift reads `git status`. It asserts the format they read, one
 // artefact under two names, and one PAIR-SPLIT row.
 //
+// A fourth case (initialize plan, step 9) starts from an EMPTY
+// `fusion-workbench/`: the installed `bin/fusion-record` writes the manifest
+// with `initialize`, and only then does the test write `.fusion-setup`, in
+// the order Setup will take. The two FJ03a helpers then read that workbench
+// as an empty JSON one. The same request over a v12 directory is refused and
+// leaves it byte-identical, with no `.json-state/`.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -61,7 +68,7 @@
 
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -216,15 +223,16 @@ interface Package {
 /**
  * A `git init` project under the scratch directory whose workbench holds the
  * setup marker and, unless `legacy`, the manifest of the installed fixture
- * workbench, and nothing else: the packages come from the kernel.
+ * workbench, and nothing else: the packages come from the kernel. `empty`
+ * leaves the workbench an empty directory, marker and manifest both absent.
  */
-function project(name: string, options: { legacy?: boolean } = {}): Project {
+function project(name: string, options: { legacy?: boolean; empty?: boolean } = {}): Project {
   const root = join(install.tmp, name);
   const workbench = join(root, "fusion-workbench");
   mkdirSync(workbench, { recursive: true });
   const fixture = join(install.home, "codec", "fixtures", "workbench");
-  cpSync(join(fixture, ".fusion-setup"), join(workbench, ".fusion-setup"));
-  if (options.legacy !== true) cpSync(join(fixture, "workbench.json"), join(workbench, "workbench.json"));
+  if (options.empty !== true) cpSync(join(fixture, ".fusion-setup"), join(workbench, ".fusion-setup"));
+  if (options.legacy !== true && options.empty !== true) cpSync(join(fixture, "workbench.json"), join(workbench, "workbench.json"));
   for (const args of [["init", "-q"], ["config", "user.name", "Install Test"], ["config", "user.email", "install-test@example.invalid"]]) {
     const git = run("git", args, { cwd: root, env: identityEnv() });
     if (git.status !== 0) throw new Error(`git ${args.join(" ")} failed in ${root}: ${output(git)}`);
@@ -267,6 +275,13 @@ function mutate(p: Project, pkg: Package, op: string, fields: Record<string, unk
 
 /** A helper of the installed copy, run in `cwd`. */
 const helper = (name: string, cwd: string, env: NodeJS.ProcessEnv) => run(join(install.home, "bin", name), [], { cwd, env });
+
+/** Every entry under `dir`, relative and sorted, a directory as `dir` and anything else by the digest of its bytes. */
+function tree(dir: string): string[] {
+  return (readdirSync(dir, { recursive: true }) as string[])
+    .map((rel) => `${rel} ${lstatSync(join(dir, rel)).isDirectory() ? "dir" : createHash("sha256").update(readFileSync(join(dir, rel))).digest("hex")}`)
+    .sort();
+}
 
 describe("install.sh from a tarball-shaped copy of the tree", () => {
   it("the preparation succeeded", () => {
@@ -410,6 +425,49 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     expect(drift.status, drift.stderr).toBe(0);
     expect(value(drift.stdout, "unstaged")).toBe("1");
     expect(drift.stdout.split("\n").filter((l) => l.includes("PAIR-SPLIT"))).toEqual([expect.stringMatching(new RegExp(`^ {2}record\\s+ M ${alpha.path}  PAIR-SPLIT .*${alpha.stem}\\.md is staged`))]);
+  }, 60_000);
+
+  it("the installed bin/fusion-record initialises an empty workbench the two FJ03a helpers read, and refuses a v12 directory leaving it byte-identical", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = project("initialize-project", { empty: true });
+    const workbench = join(p.root, "fusion-workbench");
+    expect(readdirSync(workbench)).toEqual([]);
+
+    // initialize names its target; no marker stands yet for a walk-up to find.
+    const request = { op: "initialize", workbench, operation_id: uuid(p), id: uuid(p) };
+    const landed = record(p, request);
+    const manifestBytes = readFileSync(join(workbench, "workbench.json"));
+    expect(landed).toEqual({ operation_id: request.operation_id, id: request.id, path: "workbench.json", revision: `sha256:${createHash("sha256").update(manifestBytes).digest("hex")}` });
+    expect(JSON.parse(manifestBytes.toString("utf-8"))).toEqual({ schema: "fusion.workbench/v1", id: request.id, required_features: ["json-control-v1"], migration: null, extensions: {} });
+
+    // Setup's order: the marker after the manifest. From here the wrapper and the helpers find the workbench by walking up.
+    cpSync(join(install.home, "codec", "fixtures", "workbench", ".fusion-setup"), join(workbench, ".fusion-setup"));
+    const inspected = record(p, { op: "inspect" });
+    expect([inspected.state, inspected.id, inspected.pending]).toEqual(["json-control", request.id, null]);
+
+    const claimed = helper("fusion-claimed-package", p.root, identityEnv());
+    expect([claimed.status, claimed.stdout], claimed.stderr).toEqual([0, ""]);
+    const order = helper("fusion-work-order", p.root, installedEnv());
+    expect(order.status, order.stderr).toBe(0);
+    const value = (key: string) => order.stdout.split("\n").find((l) => l.startsWith(`${key}=`))?.slice(key.length + 1);
+    expect([value("items"), value("edges"), value("verdict")]).toEqual(["0", "0", "empty"]);
+
+    // A v12 workbench: the marker and one package's Markdown. Refused by name, every byte kept, no `.json-state/`.
+    const v12 = project("initialize-v12", { empty: true });
+    const v12Workbench = join(v12.root, "fusion-workbench");
+    cpSync(join(install.home, "codec", "fixtures", "workbench", ".fusion-setup"), join(v12Workbench, ".fusion-setup"));
+    const stem = "260930-0930-v12-package";
+    mkdirSync(join(v12Workbench, "work-packages", stem), { recursive: true });
+    writeFileSync(join(v12Workbench, "work-packages", stem, `${stem}.md`), `# ${stem}\n\n---\n**Domain:** code\n**Status:** open\n**Filed by:** user\n\n---\n\n## Directive\n\nA v12 package.\n`);
+    const before = tree(v12Workbench);
+    const refused = run(join(install.home, "bin", "fusion-record"), [], { cwd: v12.root, input: JSON.stringify({ op: "initialize", workbench: v12Workbench, operation_id: uuid(v12), id: uuid(v12) }) + "\n", env: installedEnv() });
+    expect(refused.status, refused.stderr).toBe(0);
+    const answer = JSON.parse(refused.stdout) as { ok: boolean; error?: { class: string; reason: string; detail: string } };
+    expect([answer.ok, answer.error?.class, answer.error?.reason], refused.stdout).toEqual([false, "conflict", "target-not-empty"]);
+    expect(answer.error?.detail).toContain(".fusion-setup, work-packages");
+    expect(tree(v12Workbench)).toEqual(before);
+    expect(existsSync(join(v12Workbench, ".json-state"))).toBe(false);
   }, 60_000);
 
   it("the installer warns, in the guard.js words, when the source carries no codec bundle", () => {
