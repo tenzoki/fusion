@@ -1,125 +1,117 @@
 /**
- * The order the work-package store imposes on itself — computed per run, stored
- * nowhere.
+ * The order the work-package store imposes on itself, read from JSON control
+ * data through the codec, computed per run and stored nowhere.
  *
- * A work package's `**Depends-on:**` field carries the prerequisite relation and
- * carries nothing else: an entry there asserts that the named item reaches
- * `done` or `dropped` before this item may start, and every citation that binds
- * an item without ordering it sits in `**Cross-references:**`, which this module
- * never reads (`rules/fusion-workbench-conventions.md`
- * `## Work packages`). Nothing here reads the text of a value to
- * learn what a writer meant; the field a basename sits in is the whole of the
- * grammar.
+ * Two halves. `readWorkGraph` asks the codec and builds the input; `orderOf`
+ * is pure and computes over it: Tarjan for the cycles, Kahn over the
+ * condensation for the order, depth and the transitive blocking count, and
+ * the paused override on readiness. Nothing here reads a `**Status:**` or
+ * `**Depends-on:**` line, and nothing here evaluates a dependency condition:
+ * `reconcile` reports every `depends_on` edge as the codec's own rule
+ * evaluates it, and this module consumes that report. Step 4 of
+ * `260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md`.
  *
- * Binding decision for the field's meaning:
- * `260908-2018_*_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md`.
  * Binding decision for a helper computing an order at all:
  * `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md`
- * (option 3) — a helper may READ the store and REPORT an order, and the report
- * is a report. No agent asserts a ranking, no marker records one, and the user
- * overrides the figures wherever he wants to.
+ * (option 3): a helper may READ the store and REPORT an order, and the report
+ * is a report. No agent asserts a ranking, no marker records one, the user
+ * overrides the figures wherever he wants to, and the report authorises no
+ * dispatch.
  *
- * ## The graph spans live work packages only, and two kinds of record are outside it
+ * ## The sequence, and what each answer of the codec means here
  *
- * A NODE IS A WORK-ITEM RECORD WHOSE `**Status:**` IS LIVE — `open`, `claimed`
- * or `paused`. The node set is the live half of the status partition and was
- * never the enumeration `{open, claimed}`: that was the complete list of the
- * live values on the day this module was written, and `paused` joined it on
- * 2026-09-15 (`260915-2028_*_what-shape-does-the-work-items-fifth-status-value-take.md`,
- * option 1). The test stays an ALLOWLIST, so a record whose `**Status:**` is
- * unreadable or garbage is outside the node set rather than admitted to it.
- * `done` and `dropped` are terminal, and a terminal item is not a node: its
- * outgoing entries are never read, and an entry naming it resolves to nothing
- * and is reported as a dangle. That is the user's ruling at approval G1, recorded in
- * `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`
- * — the record as filed asked about an edge's target and was answered on the
- * dependent side, the target and resolution sides following by implication.
- * **Its accepted consequence, stated at the approval and repeated here because a
- * later reader will otherwise read the figures as more than they are**: `depth`
- * and `blocks` measure unfinished work only, so the graph is blind to what has
- * closed. An item whose whole chain of prerequisites is done and an item that
- * never had one score identically.
+ *   gate (`inspect`)   anything but `json-control` fails the read by name:
+ *                      `legacy`, `unsupported`, `refused`, `unanswered`.
+ *                      None of them is an empty store.
+ *   `list`             every control file, without a scope, as `lib/scope.ts`
+ *                      sends it (a scoped `list` is refused where the container
+ *                      store does not exist yet). The package rows of the
+ *                      container store are read: a live `status` (`open`,
+ *                      `claimed`, `paused`) is a node, a terminal one (`done`,
+ *                      `dropped`) is remembered as a target and is no node, and
+ *                      a row that is a `problem`, names no id or carries a
+ *                      status outside the five is `unreadable`, named and
+ *                      outside the graph. A `problem` whose reason is
+ *                      `recovery-blocked` is the refusal it is and ends the
+ *                      read. No live node: the report is empty and `reconcile`
+ *                      is not asked.
+ *   `reconcile`        without a scope, for the same reason. Its `records`
+ *                      findings are read BEFORE its `dependencies`: a finding
+ *                      whose reason is `recovery-blocked` against any package
+ *                      ends the read with a named failure and no report,
+ *                      wherever the protocol put it (Prior's review of the
+ *                      FJ03a plan, `## C.`); any other finding against a live
+ *                      node moves that node to `unreadable`, because a record
+ *                      the codec reports against contributes no edge it has
+ *                      decided, and this reader cannot tell from outside which
+ *                      findings withheld the edges. Then each `dependencies`
+ *                      entry of a live node is placed by the table below.
  *
- * A TERMINAL CIRCLE RECORD — `circles/<dir>/_<m>_circle.md` — is outside for a
- * different reason, and it is not a migration remnant waiting to be converted.
- * It is the other record form the container store holds permanently
- * (`CIRCLE_RECORD_RE` in `./citation-corpus.ts`, whose header carries why both
- * forms stand in one tree by design): a Circle carries its state in a filename
- * marker and has no `**Status:**` field, no `**Depends-on:**` field and no
- * grammar this module could read. In fusion's own workbench those records are
- * the large majority of the containers, and the ratio only ever moves one way.
- * The node set is `ITEM_RECORD_RE` and nothing else, imported rather than
- * re-spelled so that this module and the citation check cannot drift on what a
- * work-package record is.
+ * ## The table one edge entry falls in, and it is disjoint and complete
  *
- * `archive/**` IS NEVER OPENED. Only the container roots are read, so an
- * entry naming an item that was archived resolves to nothing and is reported by
- * name, exactly like an entry naming an item that never existed. That is the
- * `3b-i` half of the same ruling.
+ *   entry                             target's row      input to `orderOf`
+ *   `satisfied`                       any               no edge, no row
+ *   `unmet`, reason `dependency-unmet`  a live node       a resolved edge
+ *   `unmet`, reason `dependency-unmet`  a terminal package  an `unmet` row: the
+ *                                                       dependent is blocked
+ *   `unmet`, reason `dependency-unmet`  no listed package  `unresolved`, reason
+ *                                                       `target-unlisted` or
+ *                                                       `target-unreadable`
+ *   `unmet`, any other reason         none, or no package  `unresolved`, the
+ *                                                       dependent's readiness
+ *                                                       untouched
  *
- * ## What it does not do
- *
- * It computes and returns. It writes no file, keeps no cache, builds no index
- * and touches nothing on disk but the records it reads. Two runs over an
- * unchanged store return equal reports, which is what makes the figures safe to
- * print and safe to ignore.
- *
- * It carries no result in any exit code, because it is a library and has none;
- * its caller prints `verdict=` as a line of stdout, the stdout-verdict rule
- * `lib/plan-size.ts`, `lib/staging-drift.ts` and `lib/review-coverage.ts` all
- * carry.
+ * A dependency on a terminal package under `condition: terminal` is
+ * `satisfied` and prints no row, where the Markdown reader printed
+ * `unresolved=` because it could not tell a terminal target from a missing
+ * one. A dependency on a dropped package under `succeeded` is `unmet` with the
+ * codec's reason and blocks the dependent without adding a node: the target
+ * is terminal and the graph spans live packages only (the G1 ruling,
+ * `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`),
+ * so `depth` and `blocks` still measure unfinished work only.
  *
  * ## Two figures describe what the store does NOT say
  *
- * `noDependsOnField` counts the nodes carrying no `**Depends-on:**` field at
- * all. An absent field and a genuinely prerequisite-free item are
- * indistinguishable — the grammar says the field is absent when there is
- * nothing to say. `unresolvedEdges` names every entry that resolved to no
- * node, and an item whose only entries are there reads `ready`: correct where
- * the entry names a terminal item (the G1 ruling above), and an unmet
- * prerequisite where it names live work in a form the grammar does not define
- * (a container name, a missing `.md`, a typo, an archived target), which the
- * literal lookup cannot tell apart. So `readiness` is optimistic by up to those
- * two counts, and nothing here measures by how much. Both costs were accepted
- * at user gates rather than designed away, and the caller is obliged to say so
- * whenever either count is above zero.
+ * `noDependsOnField` counts the live nodes whose `depends_on` is empty. An
+ * empty list is no claim of independence: nobody is obliged to write a
+ * prerequisite down. `unresolvedEdges` names every entry the codec could not
+ * resolve to a package, and a dependent whose only entries are there reads
+ * `ready`. So `readiness` is optimistic by up to those two counts, nothing
+ * here measures by how much, and an unresolved prerequisite is no proof that
+ * the dependency condition holds (Prior's review, `## Order output and
+ * activation`). The caller is obliged to say so whenever either count is
+ * above zero.
  *
- * A third figure, `unreadableHead`, describes what this module could NOT read:
- * an item-form record whose head yields no `**Status:**` in the five-value
- * vocabulary. It is reported by name and never guessed at.
+ * ## What it does not do
+ *
+ * It computes and returns. It writes no file, keeps no cache and sends no
+ * mutation; it deletes no intent and repairs no diverged file, and whatever
+ * the codec finds pending it reports, and the report ends the read. A read
+ * may still finish a committed intent, which is the codec's and is declared in
+ * `lib/record-client.ts` `## The recovery declaration`; no automatic hook
+ * reaches this module. Two runs over an unchanged store return equal reports.
  */
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
-import { ITEM_RECORD_RE } from "./citation-corpus.js";
-import { containerRoots } from "./stores.js";
+import { basename, dirname } from "node:path";
+import { ask as askCodec, gate, type Answer, type Ask, type Refusal } from "./record-client.js";
+import type { Unknown } from "./scope.js";
+import { CONTAINER_STORE } from "./stores.js";
 
-/** The live values of `**Status:**`. `done` and `dropped` are not nodes. */
+/** The live values of `status`. `done` and `dropped` are not nodes. */
 export type ItemStatus = "open" | "claimed" | "paused";
 
 /**
- * Three-valued and derived, never configured. Every node is non-terminal, so
- * every resolved out-edge is an unmet prerequisite and a node is `ready`
- * exactly when it has none.
- *
- * `paused` is the node's own status and overrides both of the derived values,
- * because `ready` is an invitation to pick the item up and that status exists
- * to withdraw the invitation. Until 2026-09-15 this comment said a third value
- * would be an unreachable branch, and that was TRUE of the node set it was
- * written against: every live value then was pickable. What changed is the node
- * set, not the reasoning — `paused` is live but unpickable, which is a case the
- * two derived values cannot express.
+ * Three-valued and derived, never configured. A node is `ready` exactly when
+ * it has no resolved edge and no `unmet` row; `paused` is the node's own
+ * status and overrides both, because `ready` is an invitation to pick the
+ * item up and that status exists to withdraw the invitation.
  */
 export type Readiness = "ready" | "blocked" | "paused";
 
 export interface WorkItemNode {
   /** The container directory name, `YYMMDD-HHMM-<slug>`. */
   dir: string;
-  /** The record basename, `<dir>.md` — the form a `**Depends-on:**` entry takes. */
-  base: string;
   status: ItemStatus;
-  /** The field's entries as written, in file order; empty when the field is absent. */
-  dependsOn: string[];
 }
 
 /** `from` depends on `to`: "from may start after to". Both are container names. */
@@ -128,16 +120,32 @@ export interface ResolvedEdge {
   to: string;
 }
 
-/** An entry naming no node — an item archived, terminal, misspelt or never filed. */
+/** An unmet condition on a terminal target: `from` is blocked by a package that is no node. */
+export interface UnmetEdge {
+  from: string;
+  to: string;
+  condition: string;
+  /** The codec's reason, as `dependencySatisfied` phrased it. */
+  detail: string;
+}
+
+/** An entry the codec could not resolve to a listed package. */
 export interface UnresolvedEdge {
   from: string;
-  /** The entry exactly as the field carries it, so the reader sees what to fix. */
-  entry: string;
+  /** The `record_id` the entry names, so the reader sees what to fix. */
+  target: string;
+  reason: string;
+}
+
+/** A package row outside the graph because it did not read, with the codec's finding. */
+export interface Unreadable {
+  dir: string;
+  problem: Refusal;
 }
 
 /** One strongly connected component of size above one, or a self-edge. */
 export interface CycleGroup {
-  /** Container names, basename ascending. */
+  /** Container names, ascending. */
   members: string[];
 }
 
@@ -153,24 +161,39 @@ export interface ItemFigures {
 
 export type ItemRow = WorkItemNode & ItemFigures;
 
+/** What `readWorkGraph` builds and `orderOf` computes over. */
+export interface OrderInput {
+  nodes: WorkItemNode[];
+  edges: ResolvedEdge[];
+  unmet: UnmetEdge[];
+  unresolved: UnresolvedEdge[];
+  unreadable: Unreadable[];
+  noDependsOnField: number;
+}
+
 export interface WorkGraphReport {
-  /** Nodes: live items only. */
+  /** Nodes: live packages only. */
   items: number;
   /** Resolved edges, one per distinct `(from, to)` pair. */
   edges: number;
+  unmetEdges: UnmetEdge[];
   unresolvedEdges: UnresolvedEdge[];
   cycles: CycleGroup[];
   /** One row per node, prerequisites first. */
   rows: ItemRow[];
-  /** Nodes carrying no `**Depends-on:**` field at all — see the header. */
+  /** Live nodes whose `depends_on` is empty; see the header. */
   noDependsOnField: number;
-  /** Item-form records whose head yields no readable `**Status:**`, by container name. */
-  unreadable: string[];
+  unreadable: Unreadable[];
   /** `unreadable.length`, the figure the caller prints beside `noDependsOnField`. */
   unreadableHead: number;
   /** `empty` when there are no nodes; `cyclic` when any cycle was found. */
   verdict: "acyclic" | "cyclic" | "empty";
 }
+
+/** Why no report could be read; each member names its cause, and none is an empty store. */
+export type Failure = Extract<Unknown, { cause: "legacy" | "unsupported" | "unanswered" | "refused" }>;
+
+export type Read = { kind: "report"; report: WorkGraphReport } | ({ kind: "failed" } & Failure);
 
 /** Code-unit comparison, so the order is the same in every locale. */
 function ascending(a: string, b: string): number {
@@ -178,48 +201,9 @@ function ascending(a: string, b: string): number {
 }
 
 /**
- * The head block: the lines between the record's opening `---` and whichever
- * comes first, its closing `---` or a body section heading.
- *
- * BOUNDED ON PURPOSE. A record's prose quotes its own field names — the item
- * that carries this store's only `**Depends-on:**` value explains in its body
- * what the field is for — so a field scan over the whole file would read a
- * sentence about the grammar as an instance of it. The H1 title above the
- * opening `---` is not a section heading and does not end anything.
- */
-function headBlock(text: string): string[] {
-  const head: string[] = [];
-  let opened = false;
-  for (const line of text.split("\n")) {
-    if (line.trim() === "---") {
-      if (opened) break;
-      opened = true;
-      continue;
-    }
-    if (/^#{2,6}\s/.test(line)) break;
-    if (opened) head.push(line);
-  }
-  return head;
-}
-
-/** One head field's value, or null when the field is absent. */
-function headField(head: string[], name: string): string | null {
-  const re = new RegExp(`^\\*\\*${name}:\\*\\*\\s*(.*)$`);
-  for (const line of head) {
-    const m = re.exec(line.trim());
-    if (m) return m[1].trim();
-  }
-  return null;
-}
-
-/**
  * Tarjan's strongly connected components over `out`, returning a component id
- * per node. Ids come back in reverse topological order of the condensation;
- * nothing downstream relies on that, because Kahn re-derives the order with the
- * tie-break the report needs.
- *
- * Recursive, and the recursion depth is the number of live work packages — a
- * backlog, not a data set.
+ * per node. Recursive, and the recursion depth is the number of live work
+ * packages: a backlog, not a data set.
  */
 function stronglyConnected(out: number[][]): number[] {
   const n = out.length;
@@ -263,122 +247,44 @@ function stronglyConnected(out: number[][]): number[] {
 }
 
 /**
- * Read `root`'s work-package store and return the ordering report.
- *
- * `root` is the project root — the directory holding `fusion-workbench/`, which
- * is what `findWorkbenchRoot` returns and what the callers of `lib/plan-size.ts`
- * and `lib/staging-drift.ts` pass. A root with no workbench, or a workbench with
- * no container root, is a real answer and not a failure: zero items and
- * `verdict=empty`.
- *
- * A container holding no record of its own name is skipped in silence — that is
- * every terminal Circle container, and there is nothing to report about one.
- * Two further kinds of record are outside the node set, FOR DIFFERENT REASONS,
- * and only one of them is silent. A terminal item (`done`, `dropped`) is outside
- * by the user's ruling at G1, and nothing is reported. An item-form record whose
- * head yields no readable `**Status:**` — the field absent, or a value outside
- * the five — is outside because a parse failed, and that is reported: the
- * record is named in `unreadable`, so a reader can tell "no live items" from
- * "one live item this module could not read". `/fusion:archive` reports the
- * same condition as a workbench-state fault, and the two consumers of one field
- * must not disagree on whether it is worth saying.
+ * The ordering report over `input`. Pure: no disk, no codec, and equal
+ * inputs give equal reports. Every `from` and `to` of an edge names a node of
+ * `input.nodes`; the reader guarantees it, and a violation is a bug here
+ * rather than a state of the store, so it throws.
  */
-export function computeWorkGraph(root: string): WorkGraphReport {
-  const wb = join(root, "fusion-workbench");
-  const nodes: WorkItemNode[] = [];
-  const unreadable: string[] = [];
-  const seen = new Set<string>();
-  let noDependsOnField = 0;
+export function orderOf(input: OrderInput): WorkGraphReport {
+  const nodes = [...input.nodes].sort((a, b) => ascending(a.dir, b.dir));
+  const byDir = new Map<string, number>();
+  nodes.forEach((n, i) => byDir.set(n.dir, i));
+  const at = (dir: string): number => {
+    const i = byDir.get(dir);
+    if (i === undefined) throw new Error(`work-graph: ${dir} is on an edge and is no node`);
+    return i;
+  };
 
-  for (const top of containerRoots(wb)) {
-    const rootDir = join(wb, top);
-    if (!existsSync(rootDir)) continue;
-    for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue;
-      const base = `${entry.name}.md`;
-      // The new root is read first, so a package standing under both roots
-      // mid-migration is one node, read where it now lives.
-      if (seen.has(entry.name) || !ITEM_RECORD_RE.test(`${top}/${entry.name}/${base}`)) continue;
-      seen.add(entry.name);
-
-      let text: string;
-      try {
-        text = readFileSync(join(rootDir, entry.name, base), "utf-8");
-      } catch {
-        continue;
-      }
-
-      const head = headBlock(text);
-      const status = headField(head, "Status");
-      // An allowlist of the live values, not a denylist of the terminal ones:
-      // a terminal status is outside by ruling and silent; anything else is a
-      // head this module could not read, and that is named rather than dropped.
-      if (status === "done" || status === "dropped") continue;
-      if (status !== "open" && status !== "claimed" && status !== "paused") {
-        unreadable.push(entry.name);
-        continue;
-      }
-
-      const raw = headField(head, "Depends-on");
-      if (raw === null) noDependsOnField += 1;
-      const dependsOn =
-        raw === null
-          ? []
-          : raw
-              .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s.length > 0);
-
-      nodes.push({ dir: entry.name, base, status, dependsOn });
-    }
-  }
-
-  nodes.sort((a, b) => ascending(a.base, b.base));
-  unreadable.sort(ascending);
-
-  // --- edges ---------------------------------------------------------------
-  // Resolution is a lookup in the node map and never a citation scan: the
-  // scanner resolves against the whole workbench, where a decision record
-  // sharing a basename would resolve an entry that names no work package at all.
-  // An entry is compared literally, so a name written in any other form than
-  // the basename the grammar defines is reported rather than guessed at.
-  const byBase = new Map<string, number>();
-  nodes.forEach((n, i) => byBase.set(n.base, i));
-
+  // --- edges, one per distinct pair -----------------------------------------
   const out: number[][] = nodes.map(() => []);
-  const unresolvedEdges: UnresolvedEdge[] = [];
   const seenEdge = new Set<string>();
-  const seenDangle = new Set<string>();
   let edges = 0;
-
-  nodes.forEach((n, i) => {
-    for (const entry of n.dependsOn) {
-      const j = byBase.get(entry);
-      if (j === undefined) {
-        const key = `${n.dir} ${entry}`;
-        if (seenDangle.has(key)) continue;
-        seenDangle.add(key);
-        unresolvedEdges.push({ from: n.dir, entry });
-        continue;
-      }
-      const key = `${i} ${j}`;
-      if (seenEdge.has(key)) continue;
-      seenEdge.add(key);
-      out[i].push(j);
-      edges += 1;
-    }
-  });
-
-  unresolvedEdges.sort(
-    (a, b) => ascending(a.from, b.from) || ascending(a.entry, b.entry),
-  );
+  for (const e of input.edges) {
+    const [i, j] = [at(e.from), at(e.to)];
+    const key = `${i} ${j}`;
+    if (seenEdge.has(key)) continue;
+    seenEdge.add(key);
+    out[i].push(j);
+    edges += 1;
+  }
+  const unmetFrom = new Set(input.unmet.map((u) => at(u.from)));
+  const unmetEdges = [...input.unmet].sort((a, b) => ascending(a.from, b.from) || ascending(a.to, b.to));
+  const unresolvedEdges = [...input.unresolved].sort((a, b) => ascending(a.from, b.from) || ascending(a.target, b.target));
+  const unreadable = [...input.unreadable].sort((a, b) => ascending(a.dir, b.dir));
 
   // --- components ----------------------------------------------------------
   const comp = stronglyConnected(out);
   const componentCount = comp.length === 0 ? 0 : Math.max(...comp) + 1;
   const members: number[][] = Array.from({ length: componentCount }, () => []);
   nodes.forEach((_, i) => members[comp[i]].push(i));
-  for (const m of members) m.sort((a, b) => ascending(nodes[a].base, nodes[b].base));
+  for (const m of members) m.sort((a, b) => ascending(nodes[a].dir, nodes[b].dir));
 
   /** Prerequisite components of each component, self excluded. */
   const prereqs: Set<number>[] = Array.from({ length: componentCount }, () => new Set());
@@ -393,7 +299,7 @@ export function computeWorkGraph(root: string): WorkGraphReport {
   });
 
   // --- Kahn over the condensation, prerequisites first ---------------------
-  // Ties break on the component's smallest member basename, which is
+  // Ties break on the component's smallest member name, which is
   // chronological then lexical for a `YYMMDD-HHMM-` name and identical across
   // runs. The condensation is a DAG, so every component is emitted.
   const remaining = prereqs.map((p) => p.size);
@@ -404,7 +310,7 @@ export function computeWorkGraph(root: string): WorkGraphReport {
   while (pending.size > 0) {
     let pick = -1;
     for (const c of pending) {
-      if (pick === -1 || ascending(nodes[members[c][0]].base, nodes[members[pick][0]].base) < 0) {
+      if (pick === -1 || ascending(nodes[members[c][0]].dir, nodes[members[pick][0]].dir) < 0) {
         pick = c;
       }
     }
@@ -463,7 +369,7 @@ export function computeWorkGraph(root: string): WorkGraphReport {
         readiness:
           nodes[i].status === "paused"
             ? "paused"
-            : out[i].length === 0
+            : out[i].length === 0 && !unmetFrom.has(i)
               ? "ready"
               : "blocked",
       });
@@ -476,12 +382,189 @@ export function computeWorkGraph(root: string): WorkGraphReport {
   return {
     items: nodes.length,
     edges,
+    unmetEdges,
     unresolvedEdges,
     cycles,
     rows,
-    noDependsOnField,
+    noDependsOnField: input.noDependsOnField,
     unreadable,
     unreadableHead: unreadable.length,
     verdict,
+  };
+}
+
+// --- the reader ---------------------------------------------------------------
+
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const failed = (f: Failure): Read => ({ kind: "failed", ...f });
+
+/** The refusal an answer carries, as one value to name. */
+const refusalOf = (answer: Answer & { kind: "refused" }): Refusal => ({
+  class: answer.class,
+  reason: answer.reason,
+  ...(answer.detail !== undefined && { detail: answer.detail }),
+});
+
+/** `Refusal` read off a `problem` or a finding the codec put in a row; anything else is reported as it came. */
+function problemOf(value: unknown): Refusal {
+  if (isObject(value) && typeof value.class === "string" && typeof value.reason === "string") {
+    return { class: value.class, reason: value.reason, ...(typeof value.detail === "string" && { detail: value.detail }) };
+  }
+  return { class: "operation-unknown", reason: "problem-unreadable", detail: `the codec's finding is ${JSON.stringify(value)}` };
+}
+
+/** The gate's non-admitting states, each as the failure it is. */
+function refusedByGate(workbench: string, ask: Ask): Failure | null {
+  const g = gate(workbench, { ask });
+  switch (g.state) {
+    case "json-control":
+      return null;
+    case "legacy":
+      return { cause: "legacy" };
+    case "unsupported":
+      return { cause: "unsupported", diagnosis: g.diagnosis };
+    case "refused":
+      return { cause: "refused", op: "inspect", refusal: { class: g.class, reason: g.reason, ...(g.detail !== undefined && { detail: g.detail }) } };
+    case "unanswered":
+      return { cause: "unanswered", op: "inspect", how: g.cause, detail: g.detail };
+  }
+}
+
+/** A row of `list` that is a package of the container store, readable or not. */
+const isPackageRow = (row: Record<string, unknown>): boolean =>
+  typeof row.path === "string" && row.path.startsWith(`${CONTAINER_STORE}/`) && basename(row.path) === "package.json";
+
+/** One `list` or `reconcile` answer's result object, or the failure that stands in for it. */
+function resultOf(workbench: string, op: string, ask: Ask): { result: Record<string, unknown> } | { failure: Failure } {
+  const answer = ask(workbench, { op });
+  if (answer.kind === "unanswered") return { failure: { cause: "unanswered", op, how: answer.cause, detail: answer.detail } };
+  if (answer.kind === "refused") return { failure: { cause: "refused", op, refusal: refusalOf(answer) } };
+  if (!isObject(answer.result)) return { failure: { cause: "unanswered", op, how: "unparseable", detail: `the result of ${op} is no object` } };
+  return { result: answer.result };
+}
+
+/** The list `key` of a result, or the failure that it is missing. */
+function listOf(op: string, result: Record<string, unknown>, key: string): { list: unknown[] } | { failure: Failure } {
+  return Array.isArray(result[key]) ? { list: result[key] } : { failure: { cause: "unanswered", op, how: "unparseable", detail: `the result of ${op} carries no \`${key}\` list` } };
+}
+
+interface Listed {
+  path: string;
+  dir: string;
+  id: string;
+  /** A live status makes a node; `null` is a terminal package, a target and no node. */
+  status: ItemStatus | null;
+}
+
+/** The blocked recovery a finding or problem carries, as the failure that ends the read. */
+const blocked = (op: string, problem: Refusal): Failure | null =>
+  problem.reason === "recovery-blocked" ? { cause: "refused", op, refusal: problem } : null;
+
+/**
+ * The ordering report of `workbench`, or why none could be read. `ask` is the
+ * record client's by default, and a test's stand-in when injected.
+ */
+export function readWorkGraph(workbench: string, ask: Ask = askCodec): Read {
+  const gated = refusedByGate(workbench, ask);
+  if (gated !== null) return failed(gated);
+
+  // --- list: the nodes, the terminal targets, the rows that did not read ----
+  const listed = resultOf(workbench, "list", ask);
+  if ("failure" in listed) return failed(listed.failure);
+  const records = listOf("list", listed.result, "records");
+  if ("failure" in records) return failed(records.failure);
+
+  const packages: Listed[] = [];
+  const unreadable: Unreadable[] = [];
+  for (const row of records.list) {
+    if (!isObject(row) || !isPackageRow(row)) continue;
+    const path = row.path as string;
+    const dir = basename(dirname(path));
+    if ("problem" in row) {
+      const problem = problemOf(row.problem);
+      const b = blocked("list", problem);
+      if (b !== null) return failed(b);
+      unreadable.push({ dir, problem });
+      continue;
+    }
+    const status = row.status;
+    // An allowlist of the five values, not a denylist: a status outside them
+    // is a row this module could not read, named rather than dropped.
+    if (typeof row.id !== "string" || row.id === "") {
+      unreadable.push({ dir, problem: { class: "schema-invalid", reason: "id-unnamed", detail: `${path} names no id` } });
+    } else if (status === "open" || status === "claimed" || status === "paused") {
+      packages.push({ path, dir, id: row.id, status });
+    } else if (status === "done" || status === "dropped") {
+      packages.push({ path, dir, id: row.id, status: null });
+    } else {
+      unreadable.push({ dir, problem: { class: "schema-invalid", reason: "status-unreadable", detail: `${path} carries status ${JSON.stringify(status)}` } });
+    }
+  }
+  const nodes = new Map<string, Listed>(packages.filter((p) => p.status !== null).map((p) => [p.path, p]));
+  const empty = (): Read => ({ kind: "report", report: orderOf({ nodes: [], edges: [], unmet: [], unresolved: [], unreadable, noDependsOnField: 0 }) });
+  if (nodes.size === 0) return empty();
+
+  // --- reconcile: the findings first, then the edges -----------------------
+  const reconciled = resultOf(workbench, "reconcile", ask);
+  if ("failure" in reconciled) return failed(reconciled.failure);
+  const findings = listOf("reconcile", reconciled.result, "records");
+  if ("failure" in findings) return failed(findings.failure);
+  const dependencies = listOf("reconcile", reconciled.result, "dependencies");
+  if ("failure" in dependencies) return failed(dependencies.failure);
+
+  const packagePaths = new Set(packages.map((p) => p.path));
+  for (const f of findings.list) {
+    if (!isObject(f) || typeof f.path !== "string" || !packagePaths.has(f.path)) continue;
+    const problem = problemOf(f);
+    const b = blocked("reconcile", problem);
+    if (b !== null) return failed(b);
+    const node = nodes.get(f.path);
+    if (node === undefined) continue;
+    nodes.delete(f.path);
+    unreadable.push({ dir: node.dir, problem });
+  }
+  if (nodes.size === 0) return empty();
+
+  const byId = new Map<string, Listed>(packages.map((p) => [p.id, p]));
+  const unreadableDirs = new Set(unreadable.map((u) => u.dir));
+  const edges: ResolvedEdge[] = [];
+  const unmet: UnmetEdge[] = [];
+  const unresolved: UnresolvedEdge[] = [];
+  const entries = new Map<string, number>([...nodes.keys()].map((p) => [p, 0]));
+  for (const e of dependencies.list) {
+    if (!isObject(e) || typeof e.path !== "string" || e.status === "cycle") continue;
+    const from = nodes.get(e.path);
+    if (from === undefined) continue; // a terminal package's entries are never read
+    entries.set(e.path, (entries.get(e.path) ?? 0) + 1);
+    if (e.status === "satisfied") continue;
+    const target = typeof e.target === "string" ? e.target : JSON.stringify(e.target);
+    const reason = typeof e.reason === "string" ? e.reason : "reason-unnamed";
+    const b = blocked("reconcile", { class: typeof e.class === "string" ? e.class : "operation-unknown", reason, ...(typeof e.detail === "string" && { detail: e.detail }) });
+    if (b !== null) return failed(b);
+    if (reason !== "dependency-unmet") {
+      unresolved.push({ from: from.dir, target, reason: `${typeof e.class === "string" ? e.class : "operation-unknown"}/${reason}` });
+      continue;
+    }
+    const to = byId.get(target);
+    if (to !== undefined && nodes.has(to.path)) edges.push({ from: from.dir, to: to.dir });
+    else if (to !== undefined && to.status === null) unmet.push({ from: from.dir, to: to.dir, condition: String(e.condition), detail: typeof e.detail === "string" ? e.detail : "" });
+    // The codec resolved the target and this read did not list it as a live or
+    // terminal package: it moved to `unreadable` above, or the store changed
+    // between the two reads. Either way the edge is unresolved here.
+    else unresolved.push({ from: from.dir, target, reason: to !== undefined && unreadableDirs.has(to.dir) ? "target-unreadable" : "target-unlisted" });
+  }
+
+  return {
+    kind: "report",
+    report: orderOf({
+      nodes: [...nodes.values()].map((n) => ({ dir: n.dir, status: n.status as ItemStatus })),
+      edges,
+      unmet,
+      unresolved,
+      unreadable,
+      noDependsOnField: [...entries.values()].filter((n) => n === 0).length,
+    }),
   };
 }

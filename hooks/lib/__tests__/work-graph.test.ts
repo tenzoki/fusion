@@ -1,189 +1,122 @@
-/**
- * `computeWorkGraph` against a store on disk — the check the live store cannot be.
- *
- * The computation was proved once, at `0078ecc1`, against a scratch store that
- * step then deleted, so the proof survives only as prose in that commit message.
- * The live store is two nodes and no edges, which passes under several wrong
- * implementations. This fixture is the smallest store that does not: a chain
- * whose topological order is NOT its basename order, a fan-out, a two-member
- * cycle, an entry naming nothing, a `done` item carrying an outgoing entry, and
- * a `paused` item with a dependent.
- *
- * The `done` item is what the G1 ruling turns on and what the real store cannot
- * show: a terminal item is not a node, its own entries go unread, and an entry
- * naming IT dangles like any other unresolved name.
- *
- * Records are written as files rather than handed over as a graph, because the
- * head-block parse is half of what can go wrong. Every fixture record repeats
- * its field name in its body, below the closing `---`, where a scan that ran
- * past the head would read prose as an edge.
- */
+import { describe, expect, it } from "vitest";
+import { orderOf, readWorkGraph, type OrderInput } from "../work-graph.js";
+import type { Answer, Ask } from "../record-client.js";
 
-import { afterAll, describe, expect, it, vi } from "vitest";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { computeWorkGraph } from "../work-graph.js";
+// `orderOf` over the smallest input several wrong implementations fail on: a chain whose order is
+// not its name order, a fan-out, a two-member cycle, a self-edge, a paused node with a dependent, an
+// unmet row on a terminal target, an unresolved entry, an unreadable row. Then `readWorkGraph`
+// through an injected `ask`, for the answers the real bundle is not made to give: the result-level
+// blocked recovery of Prior's `## C.` beside the typed refusals, and each row of the placement table.
 
-// Every path the module reads, captured at the boundary: `archive/**` is never
-// opened is a claim about what it touches, not only about what it returns.
-const { opened } = vi.hoisted(() => ({ opened: [] as string[] }));
-vi.mock("node:fs", async (orig) => {
-  const real = await orig<typeof import("node:fs")>();
-  const note = (f: any) => (p: any, ...a: any[]) => (opened.push(String(p)), f(p, ...a));
-  return {
-    ...real,
-    existsSync: note(real.existsSync),
-    readFileSync: note(real.readFileSync),
-    readdirSync: note(real.readdirSync),
-  };
+const d = (n: number, s: string) => `260101-${String(n).padStart(4, "0")}-${s}`;
+const [base, mid, tip, fanA, fanB, cycA, cycB, dangle, closed, paused, afterPaused, twice, self, waits, garbage] =
+  ["base", "mid", "tip", "fan-a", "fan-b", "cyc-a", "cyc-b", "dangle", "closed", "paused", "after-paused", "twice", "self", "waits", "garbage"].map((s, i) => d([2, 1, 3, 4, 5, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18][i], s));
+const open = (dir: string, status: "open" | "claimed" | "paused" = "open") => ({ dir, status });
+const INPUT: OrderInput = {
+  nodes: [base, mid, tip, fanA, fanB, cycB, dangle, afterPaused, twice, self, waits].map((n) => open(n)).concat(open(cycA, "claimed"), open(paused, "paused")),
+  edges: [[mid, base], [tip, mid], [fanA, base], [fanB, base], [cycA, cycB], [cycB, cycA], [afterPaused, paused], [twice, base], [twice, base], [self, self]].map(([from, to]) => ({ from, to })),
+  unmet: [{ from: waits, to: closed, condition: "succeeded", detail: "succeeded: the target is dropped, not done" }],
+  unresolved: [{ from: dangle, target: "f03a0000-0000-4000-8000-999999999999", reason: "unresolved-reference/record-not-found" }],
+  unreadable: [{ dir: garbage, problem: { class: "schema-invalid", reason: "conflict-markers" } }],
+  noDependsOnField: 2,
+};
+const report = orderOf(INPUT);
+
+describe("orderOf", () => {
+  it("reports the order, the depth, the blocking count and the readiness", () => {
+    expect(report.rows.map((r) => [r.dir, r.depth, r.blocks, r.readiness])).toEqual([
+      [base, 0, 5, "ready"], [mid, 1, 1, "blocked"], [tip, 2, 0, "blocked"], [fanA, 1, 0, "blocked"], [fanB, 1, 0, "blocked"],
+      [cycA, 0, 1, "blocked"], [cycB, 0, 1, "blocked"], [dangle, 0, 0, "ready"], [paused, 0, 1, "paused"], [afterPaused, 1, 0, "blocked"],
+      [twice, 1, 0, "blocked"], [self, 0, 0, "blocked"], [waits, 0, 0, "blocked"],
+    ]);
+    expect(report.rows.map((r) => r.order)).toEqual(report.rows.map((_, i) => i + 1));
+    // `twice` adds one edge, not two; `self` adds one. Without the pair set: 10.
+    expect([report.items, report.edges, report.noDependsOnField, report.verdict]).toEqual([13, 9, 2, "cyclic"]);
+    expect(report.rows.find((r) => r.dir === cycA)?.status).toBe("claimed");
+  });
+
+  it("names each cycle's members, consecutive in the rows", () => {
+    expect(report.cycles).toEqual([{ members: [cycA, cycB] }, { members: [self] }]);
+    expect(report.rows.slice(5, 7).map((r) => r.dir)).toEqual([cycA, cycB]);
+  });
+
+  it("blocks a dependent on an unmet row without making the terminal target a node", () => {
+    // `waits` has no resolved edge and is not ready; `closed` is on no row, and depth stays 0:
+    // the graph still measures unfinished work only.
+    expect(report.rows.map((r) => r.dir)).not.toContain(closed);
+    expect(report.unmetEdges).toEqual(INPUT.unmet);
+    expect(report.unresolvedEdges).toEqual(INPUT.unresolved);
+    expect([report.unreadable, report.unreadableHead]).toEqual([INPUT.unreadable, 1]);
+  });
+
+  it("is pure: an equal input gives an equal report, an empty one verdict=empty, and an edge off the node set throws", () => {
+    expect(JSON.stringify(orderOf({ ...INPUT, nodes: [...INPUT.nodes].reverse() }))).toBe(JSON.stringify(report));
+    expect(orderOf({ nodes: [], edges: [], unmet: [], unresolved: [], unreadable: [], noDependsOnField: 0 })).toMatchObject({ items: 0, verdict: "empty" });
+    expect(() => orderOf({ ...INPUT, edges: [{ from: base, to: closed }] })).toThrow(closed);
+  });
 });
 
-/** dir -> [status, `**Depends-on:**` entries]. `null` = the field is absent. */
-const FIXTURE: Record<string, [string, string[] | null]> = {
-  // The chain, named so that its topological order is not its basename order.
-  "260101-0002-base": ["open", null],
-  "260101-0001-mid": ["open", ["260101-0002-base.md"]],
-  "260101-0003-tip": ["open", ["260101-0001-mid.md"]],
-  // The fan-out, off the same root.
-  "260101-0004-fan-a": ["open", ["260101-0002-base.md"]],
-  "260101-0005-fan-b": ["open", ["260101-0002-base.md"]],
-  // The cycle, and a claimed node so the second live status is exercised.
-  "260101-0006-cyc-a": ["claimed", ["260101-0007-cyc-b.md"]],
-  "260101-0007-cyc-b": ["open", ["260101-0006-cyc-a.md"]],
-  // An entry naming no record at all, and a duplicate of it: one dangle.
-  "260101-0008-dangle": ["open", ["260101-9999-never-filed.md", "260101-9999-never-filed.md"]],
-  // Terminal, and carrying an outgoing entry that must go unread.
-  "260101-0009-closed": ["done", ["260101-0002-base.md"]],
-  // Depends on that terminal item, which therefore resolves to nothing.
-  "260101-0010-after-done": ["open", ["260101-0009-closed.md"]],
-  // Paused: live, so a node, and unlike the terminal item its own entry IS
-  // read. It names that terminal item, so it dangles and adds no edge.
-  "260101-0013-paused": ["paused", ["260101-0009-closed.md"]],
-  "260101-0014-after-paused": ["open", ["260101-0013-paused.md"]],
-  // The same resolvable prerequisite twice: one edge.
-  "260101-0015-twice": ["open", ["260101-0002-base.md", "260101-0002-base.md"]],
-  // Names itself: a one-member cycle.
-  "260101-0016-self": ["open", ["260101-0016-self.md"]],
-  // A head this module cannot read: outside the graph, and NOT silently.
-  "260101-0018-garbage": ["garbage", null],
-};
+describe("readWorkGraph through an injected ask", () => {
+  const ID = "0b1d5f4a-6c1e-4d9a-9f2a-1e0c3b6d8a7f";
+  const path = (dir: string) => `work-packages/${dir}/package.json`;
+  const result = (result: unknown): Answer => ({ kind: "result", result, revisions: {} });
+  const inspect = result({ state: "json-control", id: ID });
+  const row = (dir: string, id: string, status = "open") => ({ path: path(dir), kind: "package", id, status, revision: "r" });
+  const edge = (dir: string, target: string, status: "satisfied" | "unmet", more: Record<string, unknown> = {}) => ({ path: path(dir), at: "/depends_on/0", target, condition: "terminal", status, ...more });
+  const unmet = (dir: string, target: string, detail = "terminal: the target is open, not done or dropped") => edge(dir, target, "unmet", { class: "conflict", reason: "dependency-unmet", detail });
+  const blocked = { class: "operation-unknown", reason: "recovery-blocked", detail: "operation x is pending" };
+  const reconciled = (dependencies: unknown[], records: unknown[] = []) => result({ state: "json-control", intents: [], records, references: [], evidence: [], dependencies, narratives: [] });
 
-const ARCHIVED = "260101-0012-archived";
-// Head opened and never closed, so only the body heading bounds it: a scan past
-// that heading reads the decoy below as an edge, which is what the bound exists for.
-const UNCLOSED = "260101-0017-unclosed";
-
-function record(dir: string, status: string, deps: string[] | null, close = "---"): string {
-  const head = [`# ${dir}`, "", "---", `**Status:** ${status}`];
-  if (deps) head.push(`**Depends-on:** ${deps.join(", ")}`);
-  return [...head, close, "", "## Context", "", `**Depends-on:** ${dir}-decoy.md`, ""].join("\n");
-}
-
-function build(): string {
-  const root = mkdtempSync(join(tmpdir(), "work-graph-"));
-  const packages = join(root, "fusion-workbench", "work-packages");
-  for (const [dir, [status, deps]] of Object.entries(FIXTURE)) {
-    mkdirSync(join(packages, dir), { recursive: true });
-    writeFileSync(join(packages, dir, `${dir}.md`), record(dir, status, deps));
+  /** An ask answering from `byOp`, counting the calls per op. */
+  function asking(byOp: Record<string, Answer>): { ask: Ask; calls: Record<string, number> } {
+    const calls: Record<string, number> = {};
+    return { calls, ask: (_wb, req) => (calls[req.op] = (calls[req.op] ?? 0) + 1, byOp[req.op]) };
   }
-  // A mixed window tree: the rest stands under the legacy root, and a package
-  // under both roots is one package, read where it now lives (terminal there).
-  const circles = join(root, "fusion-workbench", "circles");
-  mkdirSync(join(circles, "260101-0009-closed"), { recursive: true });
-  writeFileSync(join(circles, "260101-0009-closed", "260101-0009-closed.md"), record("260101-0009-closed", "open", null));
-  mkdirSync(join(circles, UNCLOSED), { recursive: true });
-  writeFileSync(join(circles, UNCLOSED, `${UNCLOSED}.md`), record(UNCLOSED, "open", null, ""));
-  // A terminal Circle record: a container holding no record of its own name.
-  mkdirSync(join(circles, "260101-0011-circle"), { recursive: true });
-  writeFileSync(join(circles, "260101-0011-circle", "_c_circle.md"), "# a closed Circle\n");
-  // A live item that is a node in every respect except that it is archived.
-  const arch = join(root, "fusion-workbench", "archive", "circles", ARCHIVED);
-  mkdirSync(arch, { recursive: true });
-  writeFileSync(join(arch, `${ARCHIVED}.md`), record(ARCHIVED, "open", null));
-  return root;
-}
 
-const root = build();
-const report = computeWorkGraph(root);
-afterAll(() => rmSync(root, { recursive: true, force: true }));
-
-/** In printed order: dir, depth, transitive blocks, readiness. */
-const EXPECTED: [string, number, number, string][] = [
-  ["260101-0002-base", 0, 5, "ready"],
-  ["260101-0001-mid", 1, 1, "blocked"],
-  ["260101-0003-tip", 2, 0, "blocked"],
-  ["260101-0004-fan-a", 1, 0, "blocked"],
-  ["260101-0005-fan-b", 1, 0, "blocked"],
-  ["260101-0006-cyc-a", 0, 1, "blocked"],
-  ["260101-0007-cyc-b", 0, 1, "blocked"],
-  ["260101-0008-dangle", 0, 0, "ready"],
-  ["260101-0010-after-done", 0, 0, "ready"],
-  ["260101-0013-paused", 0, 1, "paused"],
-  ["260101-0014-after-paused", 1, 0, "blocked"],
-  ["260101-0015-twice", 1, 0, "blocked"],
-  ["260101-0016-self", 0, 0, "blocked"],
-  ["260101-0017-unclosed", 0, 0, "ready"],
-];
-
-describe("computeWorkGraph over a fixture store", () => {
-  it("reports the order, the depth, the blocking count and the readiness", () => {
-    expect(report.rows.map((r) => [r.dir, r.depth, r.blocks, r.readiness])).toEqual(EXPECTED);
-    expect(report.rows).toHaveLength(14);
-    expect(report.rows.map((r) => r.order)).toEqual([...Array(report.rows.length)].map((_, i) => i + 1));
-    // `mid` sorts first and is emitted second: the order is the graph's, not the name's.
-    expect(report.items).toBe(14);
-    // `twice` adds one edge, not two; `self` adds one. Without `seenEdge`: 10.
-    expect(report.edges).toBe(9);
-    expect(report.noDependsOnField).toBe(2);
-    expect(report.verdict).toBe("cyclic");
+  it("stops on a blocked recovery reported inside an ok: true reconcile answer, as the refusal it is", () => {
+    // Prior's `## C.`: the findings are read before the dependencies, and a blocked package
+    // ends the read with a named failure and no report, however clean the edges look.
+    const list = result({ records: [row(base, "1"), row(mid, "2")] });
+    const { ask } = asking({ inspect, list, reconcile: reconciled([unmet(mid, "1")], [{ path: path(base), ...blocked }]) });
+    expect(readWorkGraph("/wb", ask)).toEqual({ kind: "failed", cause: "refused", op: "reconcile", refusal: blocked });
+    // The same finding as a `list` problem row, and as the reason on an edge entry.
+    expect(readWorkGraph("/wb", asking({ inspect, list: result({ records: [row(base, "1"), { path: path(mid), problem: blocked }] }) }).ask)).toMatchObject({ kind: "failed", cause: "refused", op: "list" });
+    expect(readWorkGraph("/wb", asking({ inspect, list, reconcile: reconciled([edge(mid, "1", "unmet", blocked)]) }).ask)).toMatchObject({ kind: "failed", cause: "refused", op: "reconcile", refusal: blocked });
   });
 
-  it("names the cycle's members and keeps them consecutive", () => {
-    expect(report.cycles).toEqual([
-      { members: ["260101-0006-cyc-a", "260101-0007-cyc-b"] },
-      { members: ["260101-0016-self"] },
-    ]);
-    expect(report.rows[5].dir).toBe("260101-0006-cyc-a");
-    expect(report.rows[6].dir).toBe("260101-0007-cyc-b");
+  it("hands a typed refusal, an unanswered call and a refused gate on as what they are, never as an empty store", () => {
+    const list = result({ records: [row(base, "1")] });
+    const refused: Answer = { kind: "refused", class: "conflict", reason: "lock-timeout", detail: "held by 1234" };
+    expect(readWorkGraph("/wb", asking({ inspect, list, reconcile: refused }).ask)).toEqual({ kind: "failed", cause: "refused", op: "reconcile", refusal: { class: "conflict", reason: "lock-timeout", detail: "held by 1234" } });
+    expect(readWorkGraph("/wb", asking({ inspect, list: { kind: "unanswered", cause: "timeout", detail: "stopped" } }).ask)).toEqual({ kind: "failed", cause: "unanswered", op: "list", how: "timeout", detail: "stopped" });
+    expect(readWorkGraph("/wb", asking({ inspect: result({ state: "legacy" }) }).ask)).toEqual({ kind: "failed", cause: "legacy" });
   });
 
-  it("names an unreadable head and stays silent on a terminal item", () => {
-    expect(report.unreadable).toEqual(["260101-0018-garbage"]);
-    expect(report.unreadableHead).toBe(1);
-  });
-
-  it("returns verdict=empty for a root with no container root", () => {
-    expect(computeWorkGraph(join(root, "nowhere"))).toMatchObject({ items: 0, verdict: "empty" });
-  });
-
-  it("reports an entry naming no node once, by name, and leaves the dependent ready", () => {
-    expect(report.unresolvedEdges).toEqual([
-      { from: "260101-0008-dangle", entry: "260101-9999-never-filed.md" },
-      { from: "260101-0010-after-done", entry: "260101-0009-closed.md" },
-      { from: "260101-0013-paused", entry: "260101-0009-closed.md" },
-    ]);
-    // `after-paused` is absent above, and that absence is the case: a paused
-    // item is a NODE, so the entry naming it resolves. Before it joined the
-    // node set that entry dangled and its dependent printed `ready` — a false
-    // invitation on the one figure a reader picks work off.
-  });
-
-  it("puts a terminal item outside the graph, its outgoing entry unread", () => {
-    expect(report.rows.map((r) => r.dir)).not.toContain("260101-0009-closed");
-    // `closed` names `base` as a prerequisite. If that entry were read, `base`
-    // would block `closed` too and the edge count above would rise.
-    expect(report.rows[0].blocks).toBe(5);
-    expect(report.rows.find((r) => r.dir === "260101-0006-cyc-a")?.status).toBe("claimed");
-  });
-
-  it("opens no path under archive/, and the item archived there is not a node", () => {
-    expect(report.rows.map((r) => r.dir)).not.toContain(ARCHIVED);
-    expect(opened.filter((p) => p.includes("archive"))).toEqual([]);
-    expect(opened.length).toBeGreaterThan(0);
-  });
-
-  it("returns an equal report on a second run over the unchanged store", () => {
-    expect(JSON.stringify(computeWorkGraph(root))).toBe(JSON.stringify(report));
+  it("places each edge entry by the table, and asks reconcile only when a live node exists", () => {
+    const list = result({ records: [row(base, "1"), row(mid, "2"), row(closed, "3", "dropped"), row(tip, "4", "open"), row(garbage, "5", "garbage"), row(fanA, "6")] });
+    const { ask, calls } = asking({
+      inspect, list,
+      reconcile: reconciled(
+        [unmet(mid, "1"), edge(base, "3", "satisfied"), { ...unmet(tip, "3", "succeeded: the target is dropped, not done"), condition: "succeeded" }, unmet(fanA, "6"), edge(closed, "1", "unmet", { reason: "x" }),
+          edge(mid, "9", "unmet", { class: "unresolved-reference", reason: "record-not-found" }), edge(tip, "6", "unmet", { reason: "dependency-unmet" }), { status: "cycle", ids: [] }],
+        [{ path: path(fanA), class: "schema-invalid", reason: "schema", detail: "bad" }, { path: path(closed), class: "unresolved-reference", reason: "narrative-missing", detail: "" }],
+      ),
+    });
+    const read = readWorkGraph("/wb", ask);
+    expect(read.kind).toBe("report");
+    if (read.kind !== "report") return;
+    // `base` under `terminal` on the dropped target: satisfied, no edge, no row. `tip` under
+    // `succeeded` on it: an unmet row. `fanA` is reported against, so it is unreadable and the edge
+    // naming it is `target-unreadable`; `closed` is terminal, so its own entry is never read.
+    expect(read.report.rows.map((r) => [r.dir, r.readiness])).toEqual([[base, "ready"], [mid, "blocked"], [tip, "blocked"]]);
+    expect(read.report.unmetEdges).toEqual([{ from: tip, to: closed, condition: "succeeded", detail: "succeeded: the target is dropped, not done" }]);
+    expect(read.report.unresolvedEdges).toEqual([{ from: mid, target: "9", reason: "unresolved-reference/record-not-found" }, { from: tip, target: "6", reason: "target-unreadable" }]);
+    expect(read.report.unreadable.map((u) => [u.dir, u.problem.reason])).toEqual([[fanA, "schema"], [garbage, "status-unreadable"]]);
+    expect([read.report.edges, read.report.noDependsOnField]).toEqual([1, 0]);
+    expect(calls).toEqual({ inspect: 1, list: 1, reconcile: 1 });
+    // No live node: the report is empty, and `reconcile` is not asked.
+    const none = asking({ inspect, list: result({ records: [row(closed, "3", "dropped")] }) });
+    expect(readWorkGraph("/wb", none.ask)).toMatchObject({ kind: "report", report: { verdict: "empty" } });
+    expect(none.calls.reconcile).toBeUndefined();
   });
 });

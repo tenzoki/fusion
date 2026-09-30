@@ -1,132 +1,140 @@
 /**
- * The order the work-package store imposes on itself — computed per run, stored
- * nowhere.
+ * The order the work-package store imposes on itself, read from JSON control
+ * data through the codec, computed per run and stored nowhere.
  *
- * A work package's `**Depends-on:**` field carries the prerequisite relation and
- * carries nothing else: an entry there asserts that the named item reaches
- * `done` or `dropped` before this item may start, and every citation that binds
- * an item without ordering it sits in `**Cross-references:**`, which this module
- * never reads (`rules/fusion-workbench-conventions.md`
- * `## Work packages`). Nothing here reads the text of a value to
- * learn what a writer meant; the field a basename sits in is the whole of the
- * grammar.
+ * Two halves. `readWorkGraph` asks the codec and builds the input; `orderOf`
+ * is pure and computes over it: Tarjan for the cycles, Kahn over the
+ * condensation for the order, depth and the transitive blocking count, and
+ * the paused override on readiness. Nothing here reads a `**Status:**` or
+ * `**Depends-on:**` line, and nothing here evaluates a dependency condition:
+ * `reconcile` reports every `depends_on` edge as the codec's own rule
+ * evaluates it, and this module consumes that report. Step 4 of
+ * `260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md`.
  *
- * Binding decision for the field's meaning:
- * `260908-2018_*_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md`.
  * Binding decision for a helper computing an order at all:
  * `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md`
- * (option 3) — a helper may READ the store and REPORT an order, and the report
- * is a report. No agent asserts a ranking, no marker records one, and the user
- * overrides the figures wherever he wants to.
+ * (option 3): a helper may READ the store and REPORT an order, and the report
+ * is a report. No agent asserts a ranking, no marker records one, the user
+ * overrides the figures wherever he wants to, and the report authorises no
+ * dispatch.
  *
- * ## The graph spans live work packages only, and two kinds of record are outside it
+ * ## The sequence, and what each answer of the codec means here
  *
- * A NODE IS A WORK-ITEM RECORD WHOSE `**Status:**` IS LIVE — `open`, `claimed`
- * or `paused`. The node set is the live half of the status partition and was
- * never the enumeration `{open, claimed}`: that was the complete list of the
- * live values on the day this module was written, and `paused` joined it on
- * 2026-09-15 (`260915-2028_*_what-shape-does-the-work-items-fifth-status-value-take.md`,
- * option 1). The test stays an ALLOWLIST, so a record whose `**Status:**` is
- * unreadable or garbage is outside the node set rather than admitted to it.
- * `done` and `dropped` are terminal, and a terminal item is not a node: its
- * outgoing entries are never read, and an entry naming it resolves to nothing
- * and is reported as a dangle. That is the user's ruling at approval G1, recorded in
- * `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`
- * — the record as filed asked about an edge's target and was answered on the
- * dependent side, the target and resolution sides following by implication.
- * **Its accepted consequence, stated at the approval and repeated here because a
- * later reader will otherwise read the figures as more than they are**: `depth`
- * and `blocks` measure unfinished work only, so the graph is blind to what has
- * closed. An item whose whole chain of prerequisites is done and an item that
- * never had one score identically.
+ *   gate (`inspect`)   anything but `json-control` fails the read by name:
+ *                      `legacy`, `unsupported`, `refused`, `unanswered`.
+ *                      None of them is an empty store.
+ *   `list`             every control file, without a scope, as `lib/scope.ts`
+ *                      sends it (a scoped `list` is refused where the container
+ *                      store does not exist yet). The package rows of the
+ *                      container store are read: a live `status` (`open`,
+ *                      `claimed`, `paused`) is a node, a terminal one (`done`,
+ *                      `dropped`) is remembered as a target and is no node, and
+ *                      a row that is a `problem`, names no id or carries a
+ *                      status outside the five is `unreadable`, named and
+ *                      outside the graph. A `problem` whose reason is
+ *                      `recovery-blocked` is the refusal it is and ends the
+ *                      read. No live node: the report is empty and `reconcile`
+ *                      is not asked.
+ *   `reconcile`        without a scope, for the same reason. Its `records`
+ *                      findings are read BEFORE its `dependencies`: a finding
+ *                      whose reason is `recovery-blocked` against any package
+ *                      ends the read with a named failure and no report,
+ *                      wherever the protocol put it (Prior's review of the
+ *                      FJ03a plan, `## C.`); any other finding against a live
+ *                      node moves that node to `unreadable`, because a record
+ *                      the codec reports against contributes no edge it has
+ *                      decided, and this reader cannot tell from outside which
+ *                      findings withheld the edges. Then each `dependencies`
+ *                      entry of a live node is placed by the table below.
  *
- * A TERMINAL CIRCLE RECORD — `circles/<dir>/_<m>_circle.md` — is outside for a
- * different reason, and it is not a migration remnant waiting to be converted.
- * It is the other record form the container store holds permanently
- * (`CIRCLE_RECORD_RE` in `./citation-corpus.ts`, whose header carries why both
- * forms stand in one tree by design): a Circle carries its state in a filename
- * marker and has no `**Status:**` field, no `**Depends-on:**` field and no
- * grammar this module could read. In fusion's own workbench those records are
- * the large majority of the containers, and the ratio only ever moves one way.
- * The node set is `ITEM_RECORD_RE` and nothing else, imported rather than
- * re-spelled so that this module and the citation check cannot drift on what a
- * work-package record is.
+ * ## The table one edge entry falls in, and it is disjoint and complete
  *
- * `archive/**` IS NEVER OPENED. Only the container roots are read, so an
- * entry naming an item that was archived resolves to nothing and is reported by
- * name, exactly like an entry naming an item that never existed. That is the
- * `3b-i` half of the same ruling.
+ *   entry                             target's row      input to `orderOf`
+ *   `satisfied`                       any               no edge, no row
+ *   `unmet`, reason `dependency-unmet`  a live node       a resolved edge
+ *   `unmet`, reason `dependency-unmet`  a terminal package  an `unmet` row: the
+ *                                                       dependent is blocked
+ *   `unmet`, reason `dependency-unmet`  no listed package  `unresolved`, reason
+ *                                                       `target-unlisted` or
+ *                                                       `target-unreadable`
+ *   `unmet`, any other reason         none, or no package  `unresolved`, the
+ *                                                       dependent's readiness
+ *                                                       untouched
  *
- * ## What it does not do
- *
- * It computes and returns. It writes no file, keeps no cache, builds no index
- * and touches nothing on disk but the records it reads. Two runs over an
- * unchanged store return equal reports, which is what makes the figures safe to
- * print and safe to ignore.
- *
- * It carries no result in any exit code, because it is a library and has none;
- * its caller prints `verdict=` as a line of stdout, the stdout-verdict rule
- * `lib/plan-size.ts`, `lib/staging-drift.ts` and `lib/review-coverage.ts` all
- * carry.
+ * A dependency on a terminal package under `condition: terminal` is
+ * `satisfied` and prints no row, where the Markdown reader printed
+ * `unresolved=` because it could not tell a terminal target from a missing
+ * one. A dependency on a dropped package under `succeeded` is `unmet` with the
+ * codec's reason and blocks the dependent without adding a node: the target
+ * is terminal and the graph spans live packages only (the G1 ruling,
+ * `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`),
+ * so `depth` and `blocks` still measure unfinished work only.
  *
  * ## Two figures describe what the store does NOT say
  *
- * `noDependsOnField` counts the nodes carrying no `**Depends-on:**` field at
- * all. An absent field and a genuinely prerequisite-free item are
- * indistinguishable — the grammar says the field is absent when there is
- * nothing to say. `unresolvedEdges` names every entry that resolved to no
- * node, and an item whose only entries are there reads `ready`: correct where
- * the entry names a terminal item (the G1 ruling above), and an unmet
- * prerequisite where it names live work in a form the grammar does not define
- * (a container name, a missing `.md`, a typo, an archived target), which the
- * literal lookup cannot tell apart. So `readiness` is optimistic by up to those
- * two counts, and nothing here measures by how much. Both costs were accepted
- * at user gates rather than designed away, and the caller is obliged to say so
- * whenever either count is above zero.
+ * `noDependsOnField` counts the live nodes whose `depends_on` is empty. An
+ * empty list is no claim of independence: nobody is obliged to write a
+ * prerequisite down. `unresolvedEdges` names every entry the codec could not
+ * resolve to a package, and a dependent whose only entries are there reads
+ * `ready`. So `readiness` is optimistic by up to those two counts, nothing
+ * here measures by how much, and an unresolved prerequisite is no proof that
+ * the dependency condition holds (Prior's review, `## Order output and
+ * activation`). The caller is obliged to say so whenever either count is
+ * above zero.
  *
- * A third figure, `unreadableHead`, describes what this module could NOT read:
- * an item-form record whose head yields no `**Status:**` in the five-value
- * vocabulary. It is reported by name and never guessed at.
+ * ## What it does not do
+ *
+ * It computes and returns. It writes no file, keeps no cache and sends no
+ * mutation; it deletes no intent and repairs no diverged file, and whatever
+ * the codec finds pending it reports, and the report ends the read. A read
+ * may still finish a committed intent, which is the codec's and is declared in
+ * `lib/record-client.ts` `## The recovery declaration`; no automatic hook
+ * reaches this module. Two runs over an unchanged store return equal reports.
  */
-/** The live values of `**Status:**`. `done` and `dropped` are not nodes. */
+import { type Ask, type Refusal } from "./record-client.js";
+import type { Unknown } from "./scope.js";
+/** The live values of `status`. `done` and `dropped` are not nodes. */
 export type ItemStatus = "open" | "claimed" | "paused";
 /**
- * Three-valued and derived, never configured. Every node is non-terminal, so
- * every resolved out-edge is an unmet prerequisite and a node is `ready`
- * exactly when it has none.
- *
- * `paused` is the node's own status and overrides both of the derived values,
- * because `ready` is an invitation to pick the item up and that status exists
- * to withdraw the invitation. Until 2026-09-15 this comment said a third value
- * would be an unreachable branch, and that was TRUE of the node set it was
- * written against: every live value then was pickable. What changed is the node
- * set, not the reasoning — `paused` is live but unpickable, which is a case the
- * two derived values cannot express.
+ * Three-valued and derived, never configured. A node is `ready` exactly when
+ * it has no resolved edge and no `unmet` row; `paused` is the node's own
+ * status and overrides both, because `ready` is an invitation to pick the
+ * item up and that status exists to withdraw the invitation.
  */
 export type Readiness = "ready" | "blocked" | "paused";
 export interface WorkItemNode {
     /** The container directory name, `YYMMDD-HHMM-<slug>`. */
     dir: string;
-    /** The record basename, `<dir>.md` — the form a `**Depends-on:**` entry takes. */
-    base: string;
     status: ItemStatus;
-    /** The field's entries as written, in file order; empty when the field is absent. */
-    dependsOn: string[];
 }
 /** `from` depends on `to`: "from may start after to". Both are container names. */
 export interface ResolvedEdge {
     from: string;
     to: string;
 }
-/** An entry naming no node — an item archived, terminal, misspelt or never filed. */
+/** An unmet condition on a terminal target: `from` is blocked by a package that is no node. */
+export interface UnmetEdge {
+    from: string;
+    to: string;
+    condition: string;
+    /** The codec's reason, as `dependencySatisfied` phrased it. */
+    detail: string;
+}
+/** An entry the codec could not resolve to a listed package. */
 export interface UnresolvedEdge {
     from: string;
-    /** The entry exactly as the field carries it, so the reader sees what to fix. */
-    entry: string;
+    /** The `record_id` the entry names, so the reader sees what to fix. */
+    target: string;
+    reason: string;
+}
+/** A package row outside the graph because it did not read, with the codec's finding. */
+export interface Unreadable {
+    dir: string;
+    problem: Refusal;
 }
 /** One strongly connected component of size above one, or a self-edge. */
 export interface CycleGroup {
-    /** Container names, basename ascending. */
+    /** Container names, ascending. */
     members: string[];
 }
 export interface ItemFigures {
@@ -139,43 +147,52 @@ export interface ItemFigures {
     readiness: Readiness;
 }
 export type ItemRow = WorkItemNode & ItemFigures;
+/** What `readWorkGraph` builds and `orderOf` computes over. */
+export interface OrderInput {
+    nodes: WorkItemNode[];
+    edges: ResolvedEdge[];
+    unmet: UnmetEdge[];
+    unresolved: UnresolvedEdge[];
+    unreadable: Unreadable[];
+    noDependsOnField: number;
+}
 export interface WorkGraphReport {
-    /** Nodes: live items only. */
+    /** Nodes: live packages only. */
     items: number;
     /** Resolved edges, one per distinct `(from, to)` pair. */
     edges: number;
+    unmetEdges: UnmetEdge[];
     unresolvedEdges: UnresolvedEdge[];
     cycles: CycleGroup[];
     /** One row per node, prerequisites first. */
     rows: ItemRow[];
-    /** Nodes carrying no `**Depends-on:**` field at all — see the header. */
+    /** Live nodes whose `depends_on` is empty; see the header. */
     noDependsOnField: number;
-    /** Item-form records whose head yields no readable `**Status:**`, by container name. */
-    unreadable: string[];
+    unreadable: Unreadable[];
     /** `unreadable.length`, the figure the caller prints beside `noDependsOnField`. */
     unreadableHead: number;
     /** `empty` when there are no nodes; `cyclic` when any cycle was found. */
     verdict: "acyclic" | "cyclic" | "empty";
 }
+/** Why no report could be read; each member names its cause, and none is an empty store. */
+export type Failure = Extract<Unknown, {
+    cause: "legacy" | "unsupported" | "unanswered" | "refused";
+}>;
+export type Read = {
+    kind: "report";
+    report: WorkGraphReport;
+} | ({
+    kind: "failed";
+} & Failure);
 /**
- * Read `root`'s work-package store and return the ordering report.
- *
- * `root` is the project root — the directory holding `fusion-workbench/`, which
- * is what `findWorkbenchRoot` returns and what the callers of `lib/plan-size.ts`
- * and `lib/staging-drift.ts` pass. A root with no workbench, or a workbench with
- * no container root, is a real answer and not a failure: zero items and
- * `verdict=empty`.
- *
- * A container holding no record of its own name is skipped in silence — that is
- * every terminal Circle container, and there is nothing to report about one.
- * Two further kinds of record are outside the node set, FOR DIFFERENT REASONS,
- * and only one of them is silent. A terminal item (`done`, `dropped`) is outside
- * by the user's ruling at G1, and nothing is reported. An item-form record whose
- * head yields no readable `**Status:**` — the field absent, or a value outside
- * the five — is outside because a parse failed, and that is reported: the
- * record is named in `unreadable`, so a reader can tell "no live items" from
- * "one live item this module could not read". `/fusion:archive` reports the
- * same condition as a workbench-state fault, and the two consumers of one field
- * must not disagree on whether it is worth saying.
+ * The ordering report over `input`. Pure: no disk, no codec, and equal
+ * inputs give equal reports. Every `from` and `to` of an edge names a node of
+ * `input.nodes`; the reader guarantees it, and a violation is a bug here
+ * rather than a state of the store, so it throws.
  */
-export declare function computeWorkGraph(root: string): WorkGraphReport;
+export declare function orderOf(input: OrderInput): WorkGraphReport;
+/**
+ * The ordering report of `workbench`, or why none could be read. `ask` is the
+ * record client's by default, and a test's stand-in when injected.
+ */
+export declare function readWorkGraph(workbench: string, ask?: Ask): Read;
