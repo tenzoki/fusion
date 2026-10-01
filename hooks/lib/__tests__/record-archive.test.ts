@@ -60,12 +60,14 @@ function crashAfterFirst(wb: string): Inventory {
 }
 
 describe("survey: which units may leave", () => {
-  it("the chain is held over two rounds, the incoming reference holds T, live records are held, and a line naming no unit is refused", () => withBase((wb) => {
+  it("the chain is held over two rounds, the incoming reference holds T, live records and full-path prose citations hold, and a line naming no unit is refused", () => withBase((wb) => {
     symlinkSync("../archive/migrations", join(wb, "shared", "old"));
     put(wb, `archive/260925-0900-sweep/${B}`, readFileSync(join(wb, B), "utf-8")); // an older copy of B, only in archive/
-    const o = read(surveyed(wb, [B, C, T, F, P, D, `${D2}/`, A.replace(".record.json", ".md"), "archive/x", D_ISSUE, "shared/old/migration-20260918-session", "shared/nope.md"]));
-    expect(o.kept).toEqual([F, D, D2]);
-    expect(o.held).toEqual({ [B]: ["binding", A, "/references/0", B], [C]: ["binding", B, "/references/0", C], [T]: ["binding", I, "/references/0", T], [P]: ["live", `${P}/package.json`, "-", "open"], [A]: ["live", A, "-", "open"] });
+    const [brief, f] = [A.replace(".record.json", ".md"), F.replace(".record.json", "")]; // A cites F by a relative prefix and D by path, D2 by basename and from archive/
+    writeFileSync(join(wb, brief), `# A\n\nSee ../issues/${f.slice(14)}, fusion-workbench/${D}/, 260914-0900-second-done-package.md and archive/${INTO}/${D2}.\n`);
+    const o = read(surveyed(wb, [B, C, T, F, P, D, `${D2}/`, brief, "archive/x", D_ISSUE, "shared/old/migration-20260918-session", "shared/nope.md"]));
+    expect(o.kept).toEqual([D2]);
+    expect(o.held).toEqual({ [B]: ["binding", A, "/references/0", B], [C]: ["binding", B, "/references/0", C], [T]: ["binding", I, "/references/0", T], [P]: ["live", `${P}/package.json`, "-", "open"], [A]: ["live", A, "-", "open"], [F]: ["citation", brief, "line 3", f], [D]: ["citation", brief, "line 3", D] });
     expect(o.refused).toEqual(["archive/x", D_ISSUE, "shared/old/migration-20260918-session", "shared/nope.md"]);
   }));
 
@@ -142,6 +144,21 @@ describe("recovery: resume and abandon", () => {
     const after = plan("261001-1201-sweep");
     expect([before.inventory.fence !== after.inventory.fence, beginFence(wb, after.inventory, O), fence(wb).operation_id]).toEqual([true, null, after.inventory.fence]);
     expect([abandon(wb, join(wb, inventoryPath("261001-1201-sweep")), O).kind, fence(wb), at(wb, F), resume(wb, join(wb, inventoryPath(INTO)), O).kind]).toEqual(["done", null, true, "usage"]);
+  }));
+
+  it("with no fence standing resume sends no maintenance request: it moves nothing it cannot verify, and closes a verified move and an unfixed one", () => withBase((wb) => {
+    const sent: string[] = [], spy: Options = { ...O, ask: (w, r, x) => (sent.push(r.op), real(w, r, x)) };
+    const first = crashAfterFirst(wb); // F moved, D2 waiting; then the fence's end lands and its answer is lost
+    must(wb, { op: "maintenance", operation_id: randomUUID(), action: "end", fence: first.fence });
+    const brief = join(wb, D2, "260914-0900-second-done-package.md"), kept = readFileSync(brief, "utf-8"), file = join(wb, inventoryPath(INTO));
+    writeFileSync(brief, "edited by hand\n");
+    const astray = resume(wb, file, spy);
+    writeFileSync(brief, kept);
+    moveUnit(wb, first, first.units[1]);
+    const verified = resume(wb, file, spy);
+    planMove(wb, surveyed(wb, [D]).lines.join("\n"), "261001-1201-sweep", O);
+    const unfixed = resume(wb, join(wb, inventoryPath("261001-1201-sweep")), spy);
+    expect([astray.kind, verified.kind, inv(wb).outcome, unfixed.kind, at(wb, `archive/${INTO}/${F}`), sent.filter((op) => op === "maintenance"), fence(wb)]).toEqual(["fence", "done", "moved", "restored", true, [], null]);
   }));
 });
 

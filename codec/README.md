@@ -298,8 +298,12 @@ of its `begin` meets as `maintenance-active` naming its own id, or no fence,
 which a retry of its `end` meets as `maintenance-not-active`; `inspect` tells
 which. The fence outlives the process and its lock. It is local to one
 checkout, since `.json-state/` never travels. A host that set a fence ends it;
-if the host's record of the move is lost, the last resort is deleting
-`.json-state/maintenance.json` by hand after a `validate` and a `reconcile`.
+if the host's record of the move is lost, deleting the fence file is no
+recovery, since a `validate` and a `reconcile` pass a half-moved pair: the
+host recovers a trustworthy record, or restores or verifies a known complete
+state (every pair and evidence group whole, every file at its recorded hash)
+under the fence before removing it, and where neither can be established the
+fence stays and normal work stays blocked (`bin/fusion-archive`).
 
 ## The kernel and the journal
 

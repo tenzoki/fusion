@@ -24,21 +24,40 @@
 #            hashes, moves them to the same paths under `archive/<into>/`,
 #            verifies, and ends the fence. A failure puts every moved file
 #            back and ends the fence.
-#   resume   finishes a move a crash left fenced, when every file stands at
-#            its source or its destination with its recorded hash, and
-#            restores it otherwise; then ends the fence.
+#   resume   matches what `inspect` names against the inventory. Under the
+#            inventory's fence it finishes the move when every file stands
+#            at its source or its destination with its recorded hash, and
+#            restores it otherwise; then ends the fence. With no fence
+#            standing it closes a move whose files all stand verified at
+#            their destinations, and moves nothing otherwise.
 #   abandon  ends the fence of an inventory that records nothing moved.
 #
-# With the inventory lost, the last resort is deleting
-# `fusion-workbench/.json-state/maintenance.json` by hand, after a `validate`
-# and a `reconcile` through `bin/fusion-record` show the store as you expect.
-# The fence is this checkout's alone: `.json-state/` never travels.
+# Recovery limits. `maintenance` bypasses the codec's record journal: the
+# fence is written or removed before its answer is stored, so a crash in that
+# gap promises no replayed success. resume and abandon therefore read the
+# fence through `inspect` and match the inventory; neither sends `begin`, an
+# `end` goes only to a fence `inspect` names as the inventory's, and an
+# unanswered `begin` or `end` is exit 7, never re-sent. With the inventory
+# lost, deleting `.json-state/maintenance.json` is no recovery: `validate`
+# and `reconcile` pass two of the three half-moves the archive session
+# records. Recover a trustworthy inventory, or restore or verify a known
+# complete state under the fence (every pair and evidence group whole, every
+# file at its recorded hash), before the fence is removed; where neither can
+# be established, leave the fence standing and normal work blocked. Normal
+# work is gated on the fence itself: the codec refuses every fresh mutation
+# under it, `bin/fusion-write`'s included. The fence is this checkout's alone:
+# `.json-state/` never travels.
+#
+# A remaining record's narrative that cites a unit by a full workbench path
+# holds it (`citation`); a storeless basename still resolves after the move
+# and holds nothing.
 #
 # Output on stdout, `KEY=value`, fields of one line separated by a tab:
 #   survey   workbench_id=, store= (a digest of every revision), then
 #            candidate=<kind> <source>, held=<kind> <source> <why> <path>
-#            <at> <target> (why: binding, live, unreadable, collision,
-#            not-regular; `-` where a field says nothing), refused=<line>
+#            <at> <target> (why: binding, citation, live, unreadable,
+#            collision, not-regular; a citation's <at> is `line <n>` and its
+#            <target> the cited path; `-` where a field says nothing), refused=<line>
 #            <reason>. kind: package, pair, evidence-group.
 #   move, resume, abandon
 #            inventory=, fence=, store=unchanged|changed (move), held= and
@@ -60,15 +79,17 @@
 #      refused or left unanswered. Any fence this run took is ended.
 #   5  the fence was refused: begin met another fence or a blocked intent;
 #      resume or abandon met a fence of another operation; abandon met a
-#      unit that moved; resume met files waiting with no fence standing.
+#      unit that moved; resume met, with no fence standing, files it could
+#      not verify at their destinations, and moved none.
 #   6  nothing eligible: every unit is held or refused (survey), or none
 #      stayed eligible under the fence (move, which then ended it).
 #   7  the store is left fenced: a restore that did not finish, a fence
 #      that did not end, or a begin that was not answered. resume or
 #      abandon, as stderr names, closes it.
-#   8  restored: a move or its verification failed, or resume met files
-#      astray from the inventory; every moved file is back at its source,
-#      the fence is ended, and nothing was archived.
+#   8  restored: a move or its verification failed, resume met files astray
+#      from the inventory under its fence, or resume found a move stopped
+#      before its units were fixed; every moved file is back at its source,
+#      no fence of it stands, and nothing was archived.
 #
 # Called by a person or an agent, never by an automatic hook
 # (`hooks/lib/record-client.ts` `## The recovery declaration`), which

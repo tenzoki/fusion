@@ -53,9 +53,22 @@
  *                                 named external target binds no local file
  *
  * A control file that does not read (the index's `unreadable`) has bindings
- * nobody can know, so every unit is held. Prose citations hold nothing: a
- * storeless basename still resolves after the move, and a full-path one is
- * not protected (request 40).
+ * nobody can know, so every unit is held.
+ *
+ * Prose binds too, where it names a path. A remaining record's narrative that
+ * cites a unit by a full workbench path holds it, because that path no longer
+ * resolves once the unit moves; Prior accepts no intentional break of such a
+ * citation (its response at `39f6fb8`, ruling 40). The tokens are the citation
+ * grammar's own (`lib/citation-scan.ts`): every token it reports
+ * `store-prefixed` is read as a path, `./` and `../` from the citing file,
+ * `fusion-workbench/` and a bare container directory from the workbench root,
+ * and one rooted in `archive/` names nothing that moves. The file it names
+ * holds, and so does every file the grammar's own lookup of its last segment
+ * finds in that directory (a wildcarded marker, a prefix). The hold line names
+ * the citing narrative, `line <n>`, and the cited path. A storeless basename
+ * holds nothing: the lookup covers `archive/`, so it still resolves. A report,
+ * a forum entry or any other Markdown file names no record and binds nothing
+ * here, and a narrative that does not read stops the survey (exit 4).
  *
  * ## The move
  *
@@ -84,15 +97,45 @@
  *
  * ## Recovery
  *
- * `resume` reads the inventory and the fence: every file at its source or its
- * destination with its recorded hash finishes the move; anything else
- * restores it. `abandon` ends a fence whose inventory records nothing moved,
- * and refuses once a unit moved. With the inventory lost, the last resort is
- * deleting `.json-state/maintenance.json` by hand after a `validate` and a
- * `reconcile` (`codec/README.md` `## The CLI`, `maintenance`). The fence is
- * local to one checkout: a checkout that has not pulled the move can still
- * reference an archived record, and only a `reconcile` after the pull reports
- * it (request 39).
+ * Maintenance bypasses the codec's record journal: `begin` writes the fence
+ * and `end` removes it before its answer is stored, so a crash in that gap
+ * leaves a fence state that no replay reports as a success. Recovery therefore
+ * reads state and never re-sends: `resume` and `abandon` ask `inspect` for the
+ * fence and match it and the files against the durable inventory. Neither
+ * sends `begin`, and each sends `end` only to the fence `inspect` names as
+ * this inventory's. An answer that did not come is never re-sent within the
+ * run; it is exit 7, and the next `resume` reads what landed.
+ *
+ *   phase survey       nothing had moved. The inventory's fence, if it
+ *                      stands, is ended; the inventory is closed
+ *   fence standing     every file at its source or its destination with its
+ *                      recorded hash finishes the move; anything else is
+ *                      put back under the fence, which then ends
+ *   no fence standing  every file at its destination with its hash, and the
+ *                      store verifying, closes the move; anything else moves
+ *                      nothing (exit 5), since files move only under the fence
+ *
+ * `abandon` ends a fence whose inventory records nothing moved, and refuses
+ * once a unit moved.
+ *
+ * With the inventory lost there is no last resort by hand. A `validate` and a
+ * `reconcile` do not show a store whole: two of step 9's three half-moves pass
+ * both. Before the fence is removed, a trustworthy inventory is recovered, or
+ * a known complete state is restored or verified under it: every pair and
+ * evidence group whole, every file at its recorded hash. Where neither can be
+ * established, the fence stays and normal work stays blocked.
+ *
+ * Normal work is gated on the fence itself (Prior's ruling 39(a)). The codec
+ * checks it under its lock on every fresh mutation, so `bin/fusion-write`
+ * meets `conflict/maintenance-active` however its caller read the store.
+ * Only a replay of an operation completed before the fence answers, and it
+ * writes nothing. The readers (`lib/record-index.ts`, `bin/fusion-claimed-package`,
+ * `bin/fusion-work-order`) keep reading under a fence, as 39(a) permits, and
+ * authorise no write; a fence that does not read refuses their `inspect`.
+ * Nothing fences a narrative edited outside the codec. The fence is local to
+ * one checkout: a checkout that has not pulled the move can still reference
+ * an archived record, and only a `reconcile` after the pull reports it
+ * (request 39).
  */
 import { type Ask } from "./record-client.js";
 import { type RecordIndex } from "./record-index.js";
@@ -108,9 +151,9 @@ export interface Unit {
     /** Why it may not leave whatever binds it: a live record, or a file that is not regular. */
     barred: Why | null;
 }
-/** Why a unit stays. `at` and `target` are a binding's pointer and target, `-` for every other reason. */
+/** Why a unit stays. `at` and `target` are a binding's pointer and target, a citation's line and cited path, `-` for every other reason. */
 export interface Why {
-    why: "binding" | "live" | "unreadable" | "collision" | "not-regular";
+    why: "binding" | "citation" | "live" | "unreadable" | "collision" | "not-regular";
     path: string;
     at: string;
     target: string;
@@ -252,7 +295,10 @@ export declare function planMove(wb: string, surveyText: string, into: string, o
 };
 /** `move --survey --into`: the header's `## The move`, end to end. */
 export declare function move(wb: string, surveyText: string, into: string, options?: Options): Outcome;
-/** `resume --inventory`: finish the move when every file is where the inventory allows, restore it otherwise. */
+/**
+ * `resume --inventory`: the header's `## Recovery` table, matched against what
+ * `inspect` names. It sends no `begin`, and `end` only to a fence it saw stand.
+ */
 export declare function resume(wb: string, file: string, options?: Options): Outcome;
 /** `abandon --inventory`: end a fence whose inventory records nothing moved. */
 export declare function abandon(wb: string, file: string, options?: Options): Outcome;

@@ -53,9 +53,22 @@
  *                                 named external target binds no local file
  *
  * A control file that does not read (the index's `unreadable`) has bindings
- * nobody can know, so every unit is held. Prose citations hold nothing: a
- * storeless basename still resolves after the move, and a full-path one is
- * not protected (request 40).
+ * nobody can know, so every unit is held.
+ *
+ * Prose binds too, where it names a path. A remaining record's narrative that
+ * cites a unit by a full workbench path holds it, because that path no longer
+ * resolves once the unit moves; Prior accepts no intentional break of such a
+ * citation (its response at `39f6fb8`, ruling 40). The tokens are the citation
+ * grammar's own (`lib/citation-scan.ts`): every token it reports
+ * `store-prefixed` is read as a path, `./` and `../` from the citing file,
+ * `fusion-workbench/` and a bare container directory from the workbench root,
+ * and one rooted in `archive/` names nothing that moves. The file it names
+ * holds, and so does every file the grammar's own lookup of its last segment
+ * finds in that directory (a wildcarded marker, a prefix). The hold line names
+ * the citing narrative, `line <n>`, and the cited path. A storeless basename
+ * holds nothing: the lookup covers `archive/`, so it still resolves. A report,
+ * a forum entry or any other Markdown file names no record and binds nothing
+ * here, and a narrative that does not read stops the survey (exit 4).
  *
  * ## The move
  *
@@ -84,21 +97,52 @@
  *
  * ## Recovery
  *
- * `resume` reads the inventory and the fence: every file at its source or its
- * destination with its recorded hash finishes the move; anything else
- * restores it. `abandon` ends a fence whose inventory records nothing moved,
- * and refuses once a unit moved. With the inventory lost, the last resort is
- * deleting `.json-state/maintenance.json` by hand after a `validate` and a
- * `reconcile` (`codec/README.md` `## The CLI`, `maintenance`). The fence is
- * local to one checkout: a checkout that has not pulled the move can still
- * reference an archived record, and only a `reconcile` after the pull reports
- * it (request 39).
+ * Maintenance bypasses the codec's record journal: `begin` writes the fence
+ * and `end` removes it before its answer is stored, so a crash in that gap
+ * leaves a fence state that no replay reports as a success. Recovery therefore
+ * reads state and never re-sends: `resume` and `abandon` ask `inspect` for the
+ * fence and match it and the files against the durable inventory. Neither
+ * sends `begin`, and each sends `end` only to the fence `inspect` names as
+ * this inventory's. An answer that did not come is never re-sent within the
+ * run; it is exit 7, and the next `resume` reads what landed.
+ *
+ *   phase survey       nothing had moved. The inventory's fence, if it
+ *                      stands, is ended; the inventory is closed
+ *   fence standing     every file at its source or its destination with its
+ *                      recorded hash finishes the move; anything else is
+ *                      put back under the fence, which then ends
+ *   no fence standing  every file at its destination with its hash, and the
+ *                      store verifying, closes the move; anything else moves
+ *                      nothing (exit 5), since files move only under the fence
+ *
+ * `abandon` ends a fence whose inventory records nothing moved, and refuses
+ * once a unit moved.
+ *
+ * With the inventory lost there is no last resort by hand. A `validate` and a
+ * `reconcile` do not show a store whole: two of step 9's three half-moves pass
+ * both. Before the fence is removed, a trustworthy inventory is recovered, or
+ * a known complete state is restored or verified under it: every pair and
+ * evidence group whole, every file at its recorded hash. Where neither can be
+ * established, the fence stays and normal work stays blocked.
+ *
+ * Normal work is gated on the fence itself (Prior's ruling 39(a)). The codec
+ * checks it under its lock on every fresh mutation, so `bin/fusion-write`
+ * meets `conflict/maintenance-active` however its caller read the store.
+ * Only a replay of an operation completed before the fence answers, and it
+ * writes nothing. The readers (`lib/record-index.ts`, `bin/fusion-claimed-package`,
+ * `bin/fusion-work-order`) keep reading under a fence, as 39(a) permits, and
+ * authorise no write; a fence that does not read refuses their `inspect`.
+ * Nothing fences a narrative edited outside the codec. The fence is local to
+ * one checkout: a checkout that has not pulled the move can still reference
+ * an archived record, and only a `reconcile` after the pull reports it
+ * (request 39).
  */
 
 import { createHash, randomUUID } from "node:crypto";
 import { lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, posix } from "node:path";
 import { ask as askCodec, type Answer, type Ask } from "./record-client.js";
+import { createScanner } from "./citation-scan.js";
 import { isObject, resultOf } from "./codec-read.js";
 import { bundleMissing, defaultContract, notReadLine, readRecordIndex, type RecordIndex } from "./record-index.js";
 import { CONTAINER_STORE, PACKAGE_CONTROL } from "./stores.js";
@@ -118,9 +162,9 @@ export interface Unit {
   barred: Why | null;
 }
 
-/** Why a unit stays. `at` and `target` are a binding's pointer and target, `-` for every other reason. */
+/** Why a unit stays. `at` and `target` are a binding's pointer and target, a citation's line and cited path, `-` for every other reason. */
 export interface Why {
-  why: "binding" | "live" | "unreadable" | "collision" | "not-regular";
+  why: "binding" | "citation" | "live" | "unreadable" | "collision" | "not-regular";
   path: string;
   at: string;
   target: string;
@@ -311,6 +355,30 @@ function targetsOf(wb: string, ask: Ask, shown: Map<string, unknown>) {
   };
 }
 
+/** The workbench path a `store-prefixed` token names, read from the narrative citing it. One under `archive/` or outside the workbench matches no unit. */
+function citedPath(token: string, from: string): string {
+  const [, hops, rooted, rest] = /^((?:\.{1,2}\/)*)(fusion-workbench\/)?(.*)$/.exec(token)!;
+  const p = (rooted === undefined && hops !== "" ? posix.join(posix.dirname(from), hops + rest) : rest).replace(/\/+$/, "");
+  return /^[0-9]{6}-[0-9]{4}-/.test(p) ? `${CONTAINER_STORE}/${p}` : p; // the bare container directory, `<dir>/<store>/…`
+}
+
+/** Every full-path citation in a remaining record's narrative: the header's prose paragraph. Throws on a narrative that does not read. */
+function proseCitations(wb: string, store: Store): Array<{ from: string; line: number; path: string; reaches: string[] }> {
+  const scanner = createScanner(wb);
+  if (!scanner.present) throw new Error(`${wb} carries no .fusion-setup, so no citation in its narratives can be read`);
+  const out: Array<{ from: string; line: number; path: string; reaches: string[] }> = [];
+  for (const { narrative: from } of store.index.byControl.values()) {
+    if (from === null) continue;
+    const lines = readFileSync(join(wb, from), "utf-8").split("\n").map((text, i) => ({ line: i + 1, text }));
+    for (const hit of scanner.scanCitationTokens(from, lines).filter((h) => h.status === "store-prefixed")) {
+      const path = citedPath(hit.token, from);
+      const found = scanner.scanCitationTokens(from, [{ line: 1, text: posix.basename(path) }]).flatMap((h) => h.matches);
+      out.push({ from, line: hit.line, path, reaches: [path, ...found.filter((m) => posix.dirname(m) === posix.dirname(path))] });
+    }
+  }
+  return out;
+}
+
 // --- units and holds ---------------------------------------------------------
 
 const contains = (u: Unit, path: string): boolean => (u.kind === "package" ? path === u.source || path.startsWith(`${u.source}/`) : u.files.includes(path));
@@ -377,18 +445,23 @@ export function holdsOf(wb: string, units: Unit[], store: Store, ask: Ask): Map<
     else if (u.barred !== null) held.set(u.source, u.barred);
   }
   const target = targetsOf(wb, ask, new Map());
+  const cited = proseCitations(wb, store);
   for (;;) {
     const moving = units.filter((u) => !held.has(u.source));
     let grew = false;
+    const hold = (u: Unit, why: Why): void => {
+      if (held.has(u.source)) return;
+      held.set(u.source, why);
+      grew = true;
+    };
     for (const ref of store.references) {
       if (moving.some((u) => contains(u, ref.path))) continue;
       for (const t of target(ref)) {
-        for (const u of moving) {
-          if (held.has(u.source) || !("id" in t ? u.ids.includes(t.id) : contains(u, t.path))) continue;
-          held.set(u.source, { why: "binding", path: ref.path, at: ref.at, target: "id" in t ? t.id : t.path });
-          grew = true;
-        }
+        for (const u of moving.filter((m) => ("id" in t ? m.ids.includes(t.id) : contains(m, t.path)))) hold(u, { why: "binding", path: ref.path, at: ref.at, target: "id" in t ? t.id : t.path });
       }
+    }
+    for (const c of cited.filter((x) => !moving.some((u) => contains(u, x.from)))) {
+      for (const u of moving.filter((m) => c.reaches.some((p) => contains(m, p)))) hold(u, { why: "citation", path: c.from, at: `line ${c.line}`, target: c.path });
     }
     if (!grew) return held;
   }
@@ -678,19 +751,30 @@ function recovering(wb: string, file: string, ask: Ask): { inv: Inventory; stand
   return { inv, standing: state.fence !== null };
 }
 
-/** `resume --inventory`: finish the move when every file is where the inventory allows, restore it otherwise. */
+/**
+ * `resume --inventory`: the header's `## Recovery` table, matched against what
+ * `inspect` names. It sends no `begin`, and `end` only to a fence it saw stand.
+ */
 export function resume(wb: string, file: string, options: Options = {}): Outcome {
   const o = resolved(options);
   const r = recovering(wb, file, o.ask);
   if ("stop" in r) return r.stop;
-  const { inv } = r;
+  const { inv, standing } = r;
   const lines = [`inventory=${inventoryPath(inv.into)}`, `fence=${inv.fence}`];
-  if (inv.phase === "survey") return fallBack(wb, inv, lines, "the move stopped before its units were fixed, so nothing had moved", o);
+  if (inv.phase === "survey") {
+    const ended = standing ? endFence(wb, inv, o.ask) : null;
+    if (ended !== null) return fenced(wb, inv, lines, `nothing had moved, and ${ended}`);
+    close(wb, inv, "restored");
+    return stop("restored", `the move stopped before its units were fixed, so nothing had moved; ${standing ? "its fence is ended" : "no fence of it stands"}`, [...lines, "result=restored"]);
+  }
   const astray = whereabouts(wb, inv);
-  if (astray !== null) return fallBack(wb, inv, lines, `the store does not match the inventory: ${astray}`, o);
-  const waiting = inv.units.flatMap((u) => u.files).some((f) => present(wb, f.path));
-  if (waiting && !r.standing) return stop("fence", "no fence of this inventory stands, and files still wait at their source; nothing moves without the fence", [...lines, "result=refused"]);
-  return carryOut(wb, inv, lines, o);
+  if (standing) return astray === null ? carryOut(wb, inv, lines, o) : fallBack(wb, inv, lines, `the store does not match the inventory: ${astray}`, o);
+  const waiting = inv.units.flatMap((u) => u.files).find((f) => present(wb, f.path));
+  inv.units.forEach((u) => (u.state = "moved"));
+  const unproven = astray ?? (waiting !== undefined ? `${waiting.path} still waits at its source` : verifyMove(wb, inv, o));
+  if (unproven !== null) return stop("fence", `no fence of this inventory stands, and ${unproven}. Files move only under the fence and resume takes none, so nothing was moved. The store stands unfenced and does not match the inventory: recover a trustworthy inventory, or restore or verify a complete state under a fence taken by hand`, [...lines, "result=refused"]);
+  close(wb, inv, "moved");
+  return { kind: "done", lines: [...lines, ...inv.units.map((u) => `moved=${u.kind}\t${u.source}\t${u.destination}`), "result=moved"] };
 }
 
 /** `abandon --inventory`: end a fence whose inventory records nothing moved. */
