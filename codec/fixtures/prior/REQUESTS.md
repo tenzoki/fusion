@@ -984,3 +984,162 @@ The skills surface grew from 202 469 to 209 111 bytes inside its room, which fel
 - **`codec/README.md` still says "`/fusion:setup` does not call it yet (FJ03d)".** Since `ccc8bf5b` Setup does. FJ03c left `codec/` untouched outside the installed-copy test, and the sentence is FJ03d's prose to correct.
 
 FJ03d is planned against `63faa26f` and the bundle digest above. FJ03c does not wait for answers to 36 to 38. The archival work waits for 36, and FJ03d's takeover text waits for 38.
+
+## The archive revision (the contract delta)
+
+**Written against:** fusion commit `6cbfbc82` on branch `fj-json-workbench` (2026-10-01 11:30), the commit that approved the plan this text serves (`261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md`) and answered its two decisions, and the head of the branch when this text was written. The plan was drafted against `01304fc8`, and `git diff --stat 01304fc8 6cbfbc82 -- codec bin hooks skills` is empty, so the code this delta starts from is the code at `01304fc8`. It read Prior at commit `b912302` (2026-10-01 06:38), the head of the Prior checkout; `git log --all --oneline b912302..` there is empty, so no Prior commit follows it on any ref. Every Prior text below is quoted from that commit's objects. `codec/dist/fusion-record.js` is the qualified bundle unmoved, 534 131 bytes, `sha256:bde8f3c952bd111695dbac510d3c0802566080e07c2ba3b6396d9c2c807844d1`, in the blob at `6cbfbc82`. At `b912302`, `Prior: tests/testdata/fusion-fj01/UPSTREAM.json` (173 files, that `bundle_digest`) and `Prior: tests/testdata/fusion-codec/UPSTREAM.json` (271 files, relative to `codec/`) both pin fusion `bc3b04a8`. Hashing each pinned path in the blob at `6cbfbc82` finds none missing and exactly one differing in each pin: this file.
+
+This section is the contract delta for the revision `Prior: docs/design/fusion-fj03c-prior-response.md` asks for at `b912302`: `## 36` accepts option 2 "in a separate codec revision before enabling JSON archival", and `## 37` puts the foreign-field refusal into the same revision. As before, only the changed sections of the contract follow. Everything not named here stays as the earlier sections state it. Nothing below is frozen. The digest is fixed only at the hand-over, and a correction Prior asks for before then lands in this revision. One revision carries five changes and is qualified by one re-pin: the archive boundary, request 37's refusal, a maintenance fence (request 39), a complete binding enumeration in `reconcile` (request 40), and the codec halves of three fusion issues, one of which is request 41. The existing JSON archive hold stays in force until Prior qualifies the new digest (section 3 at `b912302`: "Die bisherige Archivierungssperre für JSON-Paare gilt bis zur Qualifikation der neuen Revision").
+
+New reasons: `unknown-scope/archived-path`, `conflict/maintenance-active` and `schema-invalid/manifest-unreadable`. None of the three occurs under `codec/src`, `codec/contract`, `codec/schemas` or `codec/fixtures` at `6cbfbc82` (`git grep -c` over those paths, 0 files each). `payload-field-not-admitted` gains every foreign kind on `transition`. `record-not-found` gains archived paths and ids.
+
+### The boundary: `archive/` outside the current record store
+
+**One predicate.** `codec/src/store.ts` gains `archived(wb, rel)`. It is true when the lexically normalised workbench-relative path's first segment is `archive`, or when the real path of the path's deepest existing ancestor lies under the real path of the root's `archive/`. The second test is the symlink rule: an in-workbench link such as `shared/old -> ../archive/x` is refused like the path it aliases. Every operation entry that takes a record path or a scope calls the predicate once, from one function beside `resolveInside`. No operation carries its own copy.
+
+**The walk.** `controlFiles` skips the workbench-root `archive/` directory. At `6cbfbc82` it descends every non-dot entry, `archive/` included, and follows no symlink. It feeds `list`, `validate`, `reconcile` and its index, the kernel's `resolveRecordId` and `resolvePackage` in `codec/src/cli/ops.ts`. Both id resolvers walk through it, so they agree on every id. A directory named `archive` below the root, for example `shared/archive/`, stays in the store, as `## 36` asks ("This does not make an arbitrary nested directory named `archive` a second historical store").
+
+| Input | Answer when the predicate holds |
+|---|---|
+| A record path: `show`, `validate`, any mutation's `record`, `adopt-plan`'s plan, `attach-evidence`'s evidence | `unresolved-reference/record-not-found`, in the operation's existing envelope (a finding for `validate`, a refusal elsewhere) |
+| A `list` or `reconcile` scope | `unknown-scope/archived-path` |
+| A `create` scope, its narrative path, or an evidence record's report path | `unknown-scope/archived-path`, before the intent is written |
+| A record id | Not found. An id present only in `archive/` is `record-not-found`, never `ambiguous-reference`, and no fallback search of `archive/` runs |
+| A hash-bound artefact (`resolveArtefact`: `provenance.backup`, a migration receipt) | Unchanged. Historical reads stay supported |
+
+Traversal and outside-workbench refusals stay as they are and are checked first. A replay of a completed pre-archive operation answers its stored bytes and writes nothing. The kernel already guarantees that, and the recorded session below pins it.
+
+**The reason `unknown-scope/archived-path`.** It is the archive-specific reason `## 36` asks for ("refused as `unknown-scope` with a documented archive-specific reason, rather than advertised as a valid empty current store"). Its detail names the path. An unscoped `list` or `reconcile` never answers it. They skip `archive/`.
+
+**Bytes.** No recorded workbench holds an `archive/` (`git ls-tree -r --name-only 6cbfbc82 codec/fixtures | grep -c /archive/` prints 0). The boundary therefore moves no recorded byte.
+
+### Request 37: `transition` refuses a payload field foreign to the target's kind
+
+As `## 37` at `b912302` rules. `transition` refuses any present key outside the target kind's row, a present `null` included, with `schema-invalid/payload-field-not-admitted`. The check runs after the record's kind is read and before any read of the target state's rules, any intent and any write. The record's bytes are unchanged on a refusal.
+
+| Target kind | Admitted `transition` payload fields |
+|---|---|
+| package | `claim`, `outcome` |
+| issue | `disposition` |
+| plan | `steps`, `criteria` |
+| decision | `answer_ref`, `implementation_ref`, `superseded_by`, `deferral` |
+| discussion | none |
+
+- **One table.** The codec holds this table once, derived from the same schema positions the Claude client's `PAYLOAD_FIELDS` test reads (`hooks/lib/record-write.ts`), and a codec test pins it to the table above. The two hosts' tables are therefore one set.
+- **FJ02b's refusal becomes the plan row.** At `6cbfbc82`, `steps` and `criteria` on a non-plan record are refused by a check of their own (`codec/src/cli/ops.ts`, "plan progress, read on a plan record only"). That check becomes the plan row of the table. Its detail wording may change. No recording carries a `payload-field-not-admitted` answer (`git grep -l payload-field-not-admitted 6cbfbc82 -- codec/fixtures` names this file alone).
+- **Within the row, unchanged.** The target state's rules decide, as now. As `## 37` says, this "does not silently add a new rule rejecting every same-kind field unused by a particular target state".
+- **The protocol description.** The `transition` payload's description in `codec/schemas/protocol.schema.json` reads at `6cbfbc82`: "Only the fields the target state has a rule about are read." It becomes: a field outside the target kind's row is refused `payload-field-not-admitted`, a present `null` included; within the row, the target state's rules decide. The payload's shape and the fixtures do not change, because the rule is per kind and the schema cannot express it.
+- **Bytes.** Prior's audit at `b912302` found no recorded transition carrying a foreign-kind field, so no recorded byte moves.
+- **The Claude side.** No behaviour changes. `bin/fusion-write` already never sends a foreign field and keeps its early usage check (exit 2, nothing sent). A hand-built request that bypasses it is now refused (exit 6) where it was dropped before.
+
+### The three fusion issues, and the detail delta for exchange 26
+
+Three issues filed against `01304fc8` have a codec half. Two move no recorded byte. The third moves one detail.
+
+1. **`inspect` over a `.json-state` or a journal that is not a directory** (`261001-0841_*_inspect-throws-and-exits-1-when-json-state-or-its-journal-is-not-a-directory.md`). At `6cbfbc82`, `pendingIds` and `sweep` in `codec/src/journal.ts` catch only `ENOENT`, so `ENOTDIR` throws and the bundle exits 1. After the fix, `inspect` answers `operation-unknown/pending-initialize-unreadable` with the path in the detail, exit 0. `initialize` answers `conflict/target-not-empty` naming the entry, before the sweep, when `.json-state/journal` or `.json-state/ops` exists and is not a directory. Both reasons already exist.
+2. **`isRegularFile`** (`261001-0841_*_isregularfile-reads-every-stat-error-on-workbench-json-as-manifest-not-a-file.md`). Request 41 below.
+3. **The doubled detail.** `pendingInitialize` in `codec/src/cli/ops.ts` passes `readIntent`'s detail, which already starts with the intent's directory, to `unreadable(name, …)`, which prefixes it again. The recorded `codec/fixtures/protocol-session-initialize/26-inspect.response.json` reads:
+
+   > `.json-state/journal/1a1e0026-0000-4000-8000-000000000026: .json-state/journal/1a1e0026-0000-4000-8000-000000000026: intent.json: syntax: …`
+
+   After the fix the prefix appears once: `.json-state/journal/1a1e0026-0000-4000-8000-000000000026: intent.json: syntax: …`, the rest of the detail unchanged. The recording is not edited. Beside it, `26-inspect.detail-delta.json` names the replaced field by pointer (`/error/detail`) and its new value. The gate replays exchange 26 against the recording with exactly that delta applied, by the mechanism of `15-reconcile.role-delta.json`. It is shown red against an answer with one field more or one less.
+
+A test in `codec/src/__tests__/ops.test.ts`, "precedence on initialize: replay and blocked recovery before manifest-present…", builds no blocked intent. It is renamed to what it asserts. The blocked case stays pinned by "a blocked intent: every initialize is a typed refusal" and by exchanges 23 and 25 of the `initialize` session.
+
+### The recorded archive session
+
+A new session, `codec/fixtures/protocol-session-archive/`, carries the cases `## 36` lists ("Cover a terminal issue pair, a whole package, an evidence/report group, incoming references from terminal records, transitive holds, scoped and direct-path exclusion, failed moves, pending recovery and historical replay"). The states between exchanges are built by host moves of the recorder. The codec moves no file.
+
+- A terminal issue pair, a whole package, and an evidence record moved with its report.
+- An incoming reference from a remaining terminal record, answered `record-not-found` once its target is archived.
+- A transitive chain: A references B, B references C. `reconcile` shows every edge that drives the hold.
+- Scoped exclusion (`list` and `reconcile` scoped into `archive/`, `archived-path`) and direct-path exclusion (`show` and `validate` of an archived path, `record-not-found`).
+- A symlink alias into `archive/`, refused like the path it aliases.
+- An archive-only duplicate id, which leaves the current id unambiguous.
+- Three failed moves: control moved without its narrative, narrative moved without its control, and a container whose evidence group was left behind. In each, `inspect` shows the fence standing, `validate` and `reconcile` name the break, and a fresh mutation is refused. The recorder then restores the move, and `end` reopens a store that `validate` passes.
+- Pending recovery: `begin` over a pending intent refused, then the intent settled and the fence taken.
+- Historical replay: a pre-archive `create` replayed after its pair was archived answers its stored bytes and does not recreate the files.
+- Request 37's refusals, one per kind, and `inspect` over a journal that is a file.
+
+The session uses fixed literals and the `initialize` session's digest-placeholder rule wherever a seed carries a request digest, and regenerates only under `UPDATE_PROTOCOL_SESSION_ARCHIVE=1`.
+
+### Recorded bytes this revision moves
+
+Every recorded response file at `6cbfbc82` stays unedited. Each moved exchange gets a reviewed delta file beside its recording, and its gate admits exactly that delta.
+
+| Exchange | What moves | Why | Measured or inferred |
+|---|---|---|---|
+| `protocol-session-initialize/26-inspect` | `/error/detail`, one prefix fewer | the doubled detail above | read from the recording |
+| `protocol-session-fj02/15-reconcile` | `references` gains one entry: `path` `work-packages/260929-0900-fj02-session/reviews/260929-1200-review.evidence.json`, `at` `/report`, `status` `resolved`, `target` its report `…/reviews/260929-1200-review.md` | request 40's `/report` site | inferred from `referenceSites` and the seed's evidence record (healthy report, `predecessor` null); the recording's `records` array is empty. No fixture workbench carries `provenance.backup` (`git grep -c backup` over the recorded workbenches finds none). The implementation step measures and lists the exchanges that moved |
+| `protocol-session-initialize/01`, `08`, `14`, `16`, `18`, `19`, `21`, `22`, `24` (`inspect`, `ok: true`) | `result.maintenance` added; `result.operations.implemented` gains `maintenance` | request 39 | read from the recordings: these nine are every successful recorded `inspect` answer; no other session records an `inspect` |
+
+`15-reconcile` is the only recorded `reconcile` answer at `6cbfbc82`.
+
+### Request 38 is not in this revision
+
+As `## 38` at `b912302` rules ("do not include it in the archive revision"). Until a later revision with host authorisation and `provenance.claim_transfers` is implemented and qualified, there is no Claude-side takeover route. `release` and `transition` keep the foreign-owner refusal and gain no override flag. The maintenance fence of request 39 grants no claim authority.
+
+### 39. A maintenance fence for the host's archive move
+
+**Closes:** fusion decision `261001-1030_*_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md`, option 1, ruled by the user on 2026-10-01 with the plan's approval. This is a contract change, put for answer. Preferred form: an objection before the hand-over that freezes this revision's digest, or none.
+
+**Why.** `## 36` makes the move "an explicit maintenance action": participating writers stop, pending committed writes are settled first, source revisions are rechecked after exclusivity is taken, and normal work does not reopen after a partial move. It adds that "a reference check followed by an uncoordinated `mv` is insufficient". The codec's one workbench-wide lock (`codec/src/store.ts`, `write.lock`) is held for one codec process. A dead holder's lock is taken over as stale. So nothing at `6cbfbc82` fences a move across processes, sessions or hosts, and nothing survives a crash.
+
+**The operation.** A sixteenth operation, `maintenance`, runs through the kernel's one mutation sequence.
+
+- **The request.** `begin` is `{op: "maintenance", workbench, operation_id, action: "begin"}`. `end` is `{op: "maintenance", workbench, operation_id, action: "end", fence}`, where `fence` is the `operation_id` of the `begin` it ends. Each carries its own `operation_id`, because a stored answer is keyed by `operation_id` and a second request under the same id with another digest is `conflict/operation-id-reused`. `maintenance` joins the protocol schema's `op` enum and `OPERATIONS` after `reconcile`, before `migration`, with a `oneOf` branch per action and `additionalProperties: false`.
+- **The fence.** `begin` writes `.json-state/maintenance.json`, `{operation_id, since}`, under the lock. `end` removes it.
+- **The answer.** `{operation_id, action, since}`, with no `revisions`, since the fence writes no record. So the Claude client composes no `record_change` row (item 32).
+- **The order under the lock.** Sweep and recovery first, then the replay lookup, then the fence check, then the operation's plan. A replay of an operation that completed before the fence therefore still answers its stored bytes and writes nothing, as `## 36` requires of historical replay. Any request that is not a replay meets the fence.
+- **`begin`.** Refused `operation-unknown/recovery-blocked` while any intent is pending after recovery. It then writes no fence. A `begin` while a fence stands is refused `conflict/maintenance-active`, whatever its operation id.
+- **While the fence stands.** Every fresh mutation is refused `conflict/maintenance-active` before its intent is written. The detail names the fence's operation id and `since`. `initialize` never meets the fence: a fenced store has a manifest, so `initialize` answers `conflict/manifest-present` before the lock, as its order already states.
+- **`end`.** It removes the fence only when `fence` equals the standing fence's operation id. An `end` naming another fence is refused `conflict/maintenance-active`.
+- **Reads.** Unaffected. `begin` lands only over an empty journal, and no new intent can be written under the fence. Reads under the fence therefore find nothing to recover, which is how this meets `## 36`'s "stop … codec reads that could recover intents" without stopping the reads the move's verification needs.
+- **`inspect`.** Gains one additive field, `maintenance`: `null`, or `{operation_id, since}`. It sits after `pending` in the answer's key order. `operations.implemented` gains `maintenance`, and `deferred` stays `["migration"]`. Both move the nine recorded `inspect` answers in the table above.
+
+**A duty on Prior's host.** A host that resumes normal work over a workbench, or provisions one, reads `inspect.maintenance` first. A standing fence is an archive move in progress or left by a crash. Normal work stays closed until the host that set it resumes or restores the move and ends the fence. No host deletes another host's fence file as routine.
+
+**Recovering a fence, on the Claude side.** The Claude host writes its move inventory, naming the operation id it will use for `begin`, before the fence goes up. A crash after that leaves an inventory that `inspect.maintenance` can be matched against. `bin/fusion-archive resume` finishes or restores the moves and then ends the fence. `abandon` ends a fence whose inventory records nothing moved. If the inventory is lost, the documented last resort is deleting `.json-state/maintenance.json` by hand after a `validate` and a `reconcile`. `bin/fusion-write` maps `conflict/maintenance-active` to a message naming `resume` and `abandon`. None of this is codec behaviour. It is stated so that Prior can see how a fence is closed on this host.
+
+**The limit, stated plainly.** The fence is local to one checkout. It lives under `.json-state/`, which never travels: the codec writes a self-ignoring `.gitignore` there, and the Claude side lists `.json-state/` among `JSON_LIVE_STATE` in `hooks/lib/staging-drift.ts` ("the codec's local journal and write lock — never travels"). Another checkout that has not pulled the move is not fenced. It can add a reference to a record this checkout archived, and push it. A `reconcile` after the pull reports that reference as `record-not-found`. That is the only place it is caught. No mechanism in this revision closes the gap, and fusion proposes none.
+
+Asked:
+
+- **(a)** Does Prior accept the fence as the coordination `## 36` asks for, within one checkout, with the order and the refusals above?
+- **(b)** Does Prior accept the checkout-local limit as stated, or does it require a cross-checkout mechanism before JSON archival is enabled?
+- **(c)** An `end` while no fence stands is not settled by the plan. Fusion's leaning: refuse it typed, under a reason named at the hand-over, and never answer it as success.
+- **(d)** A fence file that exists but does not read is not settled either. Fusion's leaning: it fences, so every fresh mutation is refused, and `inspect` reports it typed rather than as `null`. The exact answer is stated before the fence lands, as an addition to this section, or at the hand-over.
+
+### 40. Notice: `reconcile` enumerates every binding a remaining record makes
+
+**Closes:** fusion decision `261001-1030_*_how-does-the-archive-host-learn-every-binding-the-remaining-records-make.md`, option 1, ruled by the user on 2026-10-01 with the plan's approval. This is a notice, not a permission request. `## 36` at `b912302` already allows "an explicitly recorded additive reconcile delta in the same revision". No reply is needed unless Prior objects.
+
+**The finding it answers.** `## 36` states that `reconcile`'s three arrays "alone are not a complete archive-safety proof at the pinned revision". At `6cbfbc82` that holds. `referenceSites` in `codec/src/cli/ops.ts` gives an evidence record only `/predecessor` (its comment: "the report is `records`' question, through `validate`"), so a healthy report gives no row. No kind gets a row for `provenance.backup`, which `codec/schemas/common.schema.json` types as an `artefact_ref` and which every package and every record of the four record kinds (issue, plan, discussion, decision) carries through `provenance`; it is required there when `provenance.source` is `imported` or `legacy-terminal`. Evidence carries no `provenance`.
+
+**The additive delta.**
+
+- **Two new sites.** `/report` for every evidence record, and `/provenance/backup` for every package and record that carries one. Each is resolved by the existing artefact branch of `referenceEntry`: `resolved` with `target`, or `unresolved` with `class` and `reason`. The entry's shape is unchanged.
+- **Completeness as a test.** A codec test derives every schema position that reaches `record_ref`, `artefact_ref`, `reference`, `evidence_ref` or `narrative`, treating `extensions` and `legacy_fields` as opaque. It holds the site set equal to that derivation, the record's own narrative excepted. A later schema field without a site turns it red. It is shown red against `referenceSites` at `01304fc8`, which lacks the two sites.
+- **What it does not add.** No evidence-to-package id edge is invented, as `## 36` says. No other array changes.
+- **Recorded bytes.** They move only through reviewed delta files, as the table above lists. At `6cbfbc82` that is one entry in FJ02 exchange 15, inferred and to be measured.
+
+**How the Claude host uses it.** It decides archival safety for control-record bindings from one unscoped `reconcile` answer, taken after the fence. It computes the hold set to a fixed point over that answer: a binding into a unit holds the unit, a container inherits every hold on a descendant, and an evidence group moves whole or not at all. A remaining control file that does not read or validate has bindings nobody can know, so the whole selection is held. An `unresolved`, `ambiguous` or `foreign` entry carries no target. The host then reads the value at that entry's own pointer from `show` of the source record and holds every candidate with that id or path. An `unchecked` entry (a legacy citation string, a git commit, a named external target) binds no local file.
+
+**The departure on prose citations, stated openly.** `## 36` lists prose citations among the bindings that must not break ("Which objects must remain outside the archive"), and keeps legacy basename citations supported. Fusion computes no hold for prose citations. A storeless basename citation still resolves after the move, because fusion's citation lookup covers `archive/` (fusion decision `260828-0904_*_is-an-archived-record-a-citation-target.md`, implemented `f1099c5f`). **A full-path citation in prose, for example `shared/issues/<name>.md`, is not protected and breaks when its target is archived.** Fusion accepts that break, and asks Prior to object if its host relies on full-path prose citations into records that may be archived.
+
+### 41. `isRegularFile` answers `schema-invalid/manifest-unreadable` instead of reading every stat error as not-a-file
+
+**Closes:** the codec half of fusion issue `261001-0841_*_isregularfile-reads-every-stat-error-on-workbench-json-as-manifest-not-a-file.md`. This is a contract change, small, put for answer. Preferred form: an objection before the hand-over, or none.
+
+At `6cbfbc82`, `openWorkbench` in `codec/src/store.ts` first asks `entryExists` (an `lstat` that answers `false` on `ENOENT` and rethrows everything else), then `isRegularFile`, a `stat` inside a bare `catch` that returns `false` on any failure. So a `workbench.json` link whose target cannot be stated is diagnosed `schema-invalid/manifest-not-a-file`, which names the wrong cause. Taken for this text on Node 25.7.0 in a scratch directory: a link to itself fails `stat` with `ELOOP`, and a link to a file in a `chmod 000` directory fails `stat` with `EACCES`. `lstat` succeeds on both.
+
+The change:
+
+- **`ENOENT` stays not-a-file.** After `lstat` found the entry, `ENOENT` from `stat` is a dangling link, still `manifest-not-a-file`, as the `initialize` revision intended.
+- **Every other `stat` failure** answers `unsupported` with the new diagnosis `schema-invalid/manifest-unreadable`, its errno in the detail, on every operation, as `manifest-not-a-file` is answered. Never a throw.
+- **Recorded bytes.** None move. The `initialize` session's `manifest-not-a-file` exchange (24) is a directory named `workbench.json`, which `stat` reads.
+- **Not changed here.** `entryExists`'s rethrow of an `lstat` failure other than `ENOENT`, as when the workbench directory itself is not searchable, stays as at `6cbfbc82`.
+
+The alternative weighed was rethrowing as `entryExists` does. Fusion rejects it, because a throw exits 1 with no typed answer, which is the defect class of the `inspect` issue above.
+
+Requests 39 to 41 are answered, or stand unobjected, at the hand-over that follows this revision's recorded session. That hand-over names the frozen digest, each delta file with its exchange, Prior's case list mapped to exchanges, and the re-snapshot and re-pin requests.
