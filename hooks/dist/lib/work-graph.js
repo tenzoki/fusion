@@ -249,7 +249,7 @@ export function computeWorkGraph(root) {
                     .split(",")
                     .map((s) => s.trim())
                     .filter((s) => s.length > 0);
-            nodes.push({ dir: entry.name, base, status, dependsOn });
+            nodes.push({ dir: entry.name, base, status, dependsOn, dependsOnField: raw !== null });
         }
     }
     nodes.sort((a, b) => ascending(a.base, b.base));

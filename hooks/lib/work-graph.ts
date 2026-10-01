@@ -120,6 +120,8 @@ export interface WorkItemNode {
   status: ItemStatus;
   /** The field's entries as written, in file order; empty when the field is absent. */
   dependsOn: string[];
+  /** True when the head carries a `**Depends-on:**` line, even an empty one — the one fact `dependsOn` cannot show. */
+  dependsOnField: boolean;
 }
 
 /** `from` depends on `to`: "from may start after to". Both are container names. */
@@ -329,7 +331,7 @@ export function computeWorkGraph(root: string): WorkGraphReport {
               .map((s) => s.trim())
               .filter((s) => s.length > 0);
 
-      nodes.push({ dir: entry.name, base, status, dependsOn });
+      nodes.push({ dir: entry.name, base, status, dependsOn, dependsOnField: raw !== null });
     }
   }
 

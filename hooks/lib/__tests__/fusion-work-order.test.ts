@@ -35,6 +35,8 @@ const verdict = (cwd: string) => ((r) => [r.status, value(r.stdout, "verdict")])
 // A cycle at depth 0 whose two items both carry the field and resolve; a chain whose root carries none.
 const CYCLIC = { "260101-0001-a": "260101-0002-b.md", "260101-0002-b": "260101-0001-a.md" };
 const ACYCLIC = { "260101-0001-a": "260101-0002-b.md", "260101-0002-b": null };
+const COLS = "order\tdepth\tblocks\treadiness\titem\tstatus\tfield\tdepends-on\tunresolved\tcycle";
+const COUNTS = ["items", "edges", "unresolved-edges", "cycles", "ready", "roots", "no-depends-on-field", "unreadable-head"];
 describe("bin/fusion-work-order: reports, never gates", () => {
   it("exits 0 on a cyclic store, the verdict on stdout", () => {
     expect(verdict(scratch(CYCLIC))).toEqual([0, "cyclic"]);
@@ -53,5 +55,26 @@ describe("bin/fusion-work-order: reports, never gates", () => {
   it("holds roots= equal to ready= on an acyclic store, and apart where a cycle sits at depth 0", () => {
     const [a, c] = [run(scratch(ACYCLIC)).stdout, run(scratch(CYCLIC)).stdout];
     expect([value(a, "roots"), value(a, "ready"), value(c, "roots"), value(c, "ready")]).toEqual(["1", "1", "2", "0"]);
+  });
+  it("prints --format text byte-identical to no argument", () => {
+    const root = scratch(ACYCLIC);
+    expect(run(root, "--format", "text").stdout).toBe(run(root).stdout);
+  });
+  it("prints --format tsv as the hooks/order.ts stream: cycle number, absent field, unresolved cell, paused, escaping", () => {
+    const E = "260101-0005-e", root = scratch({ ...CYCLIC, "260101-0003-c": null, "260101-0004-d": "260101-0003-c.md, x\\y.md", [E]: null });
+    writeFileSync(join(root, "fusion-workbench", "work-packages", E, `${E}.md`), "# e\n\n---\n**Status:** paused\n---\n");
+    const head = ["#format=1", "#anchor=workbench-root", ...[5, 3, 1, 1, 1, 4, 2, 0].map((n, i) => `#${COUNTS[i]}=${n}`), "#verdict=cyclic", `#note=${value(run(root).stdout, "note")}`, COLS];
+    const rows = [["1", "0", "1", "blocked", "260101-0001-a", "open", "present", "260101-0002-b.md", "", "1"],
+      ["2", "0", "1", "blocked", "260101-0002-b", "open", "present", "260101-0001-a.md", "", "1"],
+      ["3", "0", "1", "ready", "260101-0003-c", "open", "absent", "", "", "0"],
+      ["4", "1", "0", "blocked", "260101-0004-d", "open", "present", "260101-0003-c.md,x\\\\y.md", "x\\\\y.md", "0"],
+      ["5", "0", "0", "paused", E, "paused", "absent", "", "", "0"]];
+    expect(run(root, "--format", "tsv").stdout).toBe([...head, ...rows.map((r) => r.join("\t"))].join("\n") + "\n");
+  });
+  it("exits 1 with empty stdout on --format alone, an unknown format and --format=tsv", () => {
+    for (const a of [["--format"], ["--format", "json"], ["--format=tsv"]]) expect(((r) => [r.status, r.stdout])(run(scratch(), ...a))).toEqual([1, ""]);
+  });
+  it("prints the comment block and the header and no row on verdict=empty", () => {
+    expect(run(scratch(), "--format", "tsv").stdout).toBe(["#format=1", "#anchor=workbench-root", ...COUNTS.map((k) => `#${k}=0`), "#verdict=empty", COLS, ""].join("\n"));
   });
 });

@@ -74,7 +74,7 @@
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
   fusion-stores.test.ts 17
-  fusion-work-order.test.ts 57
+  fusion-work-order.test.ts 80
   glob-nomatch-lint.test.ts 140
   guard-bash-integration.test.ts 334
   guard-project-config-integration.test.ts 232
@@ -108,4 +108,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 189
   workbench-citation-lint.test.ts 353
-  total 22258
+  total 22281
