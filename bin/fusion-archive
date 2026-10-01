@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# fusion-archive — the host's archive move over a JSON-controlled workbench.
+#
+# Usage:
+#   fusion-archive survey --candidates <file>
+#   fusion-archive move --survey <file> --into <YYMMDD-HHMM>-<slug>
+#   fusion-archive resume --inventory <file>
+#   fusion-archive abandon --inventory <file>
+#
+# Over the workbench found above the working directory, through
+# `hooks/dist/archive.js` and `hooks/lib/record-archive.ts`, whose header is
+# the account of units, holds, the move and recovery. Reached by explicit
+# calls only; no skill calls it before the archive revision is qualified.
+#
+#   survey   reads <file>, one workbench-relative path per line (blank lines
+#            and `#` lines skipped): a container `work-packages/<dir>`, a
+#            record under `shared/` (its control file or its narrative), or
+#            an evidence group (its report or one of its records). Prints,
+#            per unit, `candidate=` or `held=` with what holds it.
+#   move     takes what survey printed, saved to <file>. Writes the inventory
+#            `archive/<into>/.inventory.json` naming the fence's operation id,
+#            takes the fence (`maintenance begin`), rechecks every unit
+#            against the store under it, fixes the units with their files'
+#            hashes, moves them to the same paths under `archive/<into>/`,
+#            verifies, and ends the fence. A failure puts every moved file
+#            back and ends the fence.
+#   resume   finishes a move a crash left fenced, when every file stands at
+#            its source or its destination with its recorded hash, and
+#            restores it otherwise; then ends the fence.
+#   abandon  ends the fence of an inventory that records nothing moved.
+#
+# With the inventory lost, the last resort is deleting
+# `fusion-workbench/.json-state/maintenance.json` by hand, after a `validate`
+# and a `reconcile` through `bin/fusion-record` show the store as you expect.
+# The fence is this checkout's alone: `.json-state/` never travels.
+#
+# Output on stdout, `KEY=value`, fields of one line separated by a tab:
+#   survey   workbench_id=, store= (a digest of every revision), then
+#            candidate=<kind> <source>, held=<kind> <source> <why> <path>
+#            <at> <target> (why: binding, live, unreadable, collision,
+#            not-regular; `-` where a field says nothing), refused=<line>
+#            <reason>. kind: package, pair, evidence-group.
+#   move, resume, abandon
+#            inventory=, fence=, store=unchanged|changed (move), held= and
+#            refused= of the recheck, moved=<kind> <source> <destination>,
+#            and last result=moved|nothing|restored|refused|unread|fenced|
+#            abandoned
+# Every reason on stderr, prefixed `fusion-archive:`.
+#
+# Exit codes:
+#   0  answered: survey named at least one candidate; move or resume moved
+#      every unit it kept, verified, and ended the fence; abandon ended it.
+#   1  no fusion workbench above the working directory.
+#   2  usage error, or an inventory that does not read, is closed, is of
+#      another workbench, or already stands where move would write one.
+#      Nothing fenced, nothing moved.
+#   3  install incomplete: this helper's entry or the codec bundle is
+#      missing, or an internal fault stopped the entry.
+#   4  the workbench was not read: legacy, unsupported, a read the codec
+#      refused or left unanswered. Any fence this run took is ended.
+#   5  the fence was refused: begin met another fence or a blocked intent;
+#      resume or abandon met a fence of another operation; abandon met a
+#      unit that moved; resume met files waiting with no fence standing.
+#   6  nothing eligible: every unit is held or refused (survey), or none
+#      stayed eligible under the fence (move, which then ended it).
+#   7  the store is left fenced: a restore that did not finish, a fence
+#      that did not end, or a begin that was not answered. resume or
+#      abandon, as stderr names, closes it.
+#   8  restored: a move or its verification failed, or resume met files
+#      astray from the inventory; every moved file is back at its source,
+#      the fence is ended, and nothing was archived.
+#
+# Called by a person or an agent, never by an automatic hook
+# (`hooks/lib/record-client.ts` `## The recovery declaration`), which
+# `hooks/lib/__tests__/hook-route-exclusion.test.ts` pins with a stub of this
+# file.
+
+set -eu
+
+usage() {
+  sed -n '3,8p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
+  printf 'See the header of this script for the output and the exit table.\n' >&2
+}
+
+case "${1:-}" in
+  survey|move|resume|abandon) ;;
+  *)
+    usage
+    exit 2
+    ;;
+esac
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/archive.js"
+
+if [ ! -x "$here/fusion-workbench-root" ]; then
+  printf 'fusion-archive: %s is missing; the plugin install is incomplete. Nothing fenced.\n' "$here/fusion-workbench-root" >&2
+  exit 3
+fi
+root="$("$here/fusion-workbench-root" 2>/dev/null || true)"
+if [ -z "$root" ]; then
+  printf 'fusion-archive: no fusion workbench found above %s. Run /fusion:setup at the project root.\n' "$(pwd)" >&2
+  exit 1
+fi
+if [ ! -f "$entry" ]; then
+  printf 'fusion-archive: %s is missing; the plugin install is incomplete. Nothing fenced.\n' "$entry" >&2
+  exit 3
+fi
+
+sub="$1"
+shift
+exec node "$entry" "$sub" "$root/fusion-workbench" "$@"

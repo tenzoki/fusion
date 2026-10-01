@@ -14,7 +14,9 @@
  * `<person>` and `<checkout>` are "" because nothing it sends carries them.
  *
  * Output: `KEY=value` lines on stdout, reasons on stderr prefixed
- * `fusion-write:`. The library is imported inside the `try`, so a module
+ * `fusion-write:`; a `conflict/maintenance-active` refusal adds a line naming
+ * `bin/fusion-archive resume` and `abandon`, which close the fence. The
+ * library is imported inside the `try`, so a module
  * missing from an install is exit 3 like any internal fault, never Node's
  * own 1, which the wrapper uses for "stop". No automatic hook runs this entry.
  */

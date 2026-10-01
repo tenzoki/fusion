@@ -48,7 +48,7 @@
  * ## Payload fields
  *
  * `PAYLOAD_FIELDS` names, per kind, the `transition` payload fields the
- * codec reads for it; `lib/__tests__/record-write.test.ts` holds it equal to
+ * codec admits for it; `lib/__tests__/record-write.test.ts` holds it equal to
  * the schemas. A field outside the target's kind is a usage error, decided
  * after `show` named the kind and before the mutation is sent.
  *
@@ -123,7 +123,7 @@ import { type Ask, type Refusal } from "./record-client.js";
 import { type LogEvent } from "./record-change.js";
 export declare const SUBCOMMANDS: readonly ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "create", "evidence"];
 export type Sub = (typeof SUBCOMMANDS)[number];
-/** Per kind, the `transition` payload fields the codec reads; nothing else is sent. */
+/** Per kind, the `transition` payload fields the codec admits; nothing else is sent. */
 export declare const PAYLOAD_FIELDS: Readonly<Record<string, readonly string[]>>;
 /** Per record kind, the control a new record is created with. */
 export declare const INITIAL_CONTROL: Readonly<Record<string, Readonly<Record<string, unknown>>>>;

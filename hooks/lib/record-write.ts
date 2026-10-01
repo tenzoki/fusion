@@ -48,7 +48,7 @@
  * ## Payload fields
  *
  * `PAYLOAD_FIELDS` names, per kind, the `transition` payload fields the
- * codec reads for it; `lib/__tests__/record-write.test.ts` holds it equal to
+ * codec admits for it; `lib/__tests__/record-write.test.ts` holds it equal to
  * the schemas. A field outside the target's kind is a usage error, decided
  * after `show` named the kind and before the mutation is sent.
  *
@@ -133,7 +133,7 @@ import { CONTAINER_ROOT_NAMES } from "./stores.js";
 export const SUBCOMMANDS = ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "create", "evidence"] as const;
 export type Sub = (typeof SUBCOMMANDS)[number];
 
-/** Per kind, the `transition` payload fields the codec reads; nothing else is sent. */
+/** Per kind, the `transition` payload fields the codec admits; nothing else is sent. */
 export const PAYLOAD_FIELDS: Readonly<Record<string, readonly string[]>> = {
   package: ["claim", "outcome"],
   issue: ["disposition"],

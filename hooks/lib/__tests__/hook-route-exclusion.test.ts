@@ -31,8 +31,8 @@ import { CASE_TIMEOUT, HOOKS_DIR, REPO_ROOT, TEST_DIST, childEnv, readOrchestrat
 // calls keep the behaviour the hooks no longer share.
 // ---------------------------------------------------------------------------
 
-/** What the stubs stand in for. The last two are `bin/fusion-record` and the write client; the bundle has a stub of its own. */
-const STUBBED = ["fusion-rules", "fusion-claimed-package", "fusion-paths", "fusion-work-order", "fusion-record", "fusion-write"] as const;
+/** What the stubs stand in for. The last three are `bin/fusion-record`, the write client and the archive helper; the bundle has a stub of its own. */
+const STUBBED = ["fusion-rules", "fusion-claimed-package", "fusion-paths", "fusion-work-order", "fusion-record", "fusion-write", "fusion-archive"] as const;
 /** The real rule helper, kept under a name no hook could resolve. */
 const RULES_BY_HAND = "fusion-rules-called-by-hand";
 const BYTE_FIELDS = ["bytes_prompt", "bytes_rules", "bytes_claude_md", "bytes_total", "bytes_delta"];

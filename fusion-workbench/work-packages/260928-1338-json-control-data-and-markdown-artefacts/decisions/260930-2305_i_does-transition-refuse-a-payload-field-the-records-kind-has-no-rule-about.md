@@ -34,3 +34,6 @@ Option 3. The Claude side's half is decidable now and costs one table and one te
 
 ---
 Answered: plan `260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md` — the recommended option — the Claude-side client never sends a field the record kind has no rule about (a table bound to the codec schemas by test); whether the codec itself refuses such fields is put to the Prior side as request 37; the user approved it with the FJ03c plan on 2026-09-30; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: f4ffdeff — transition refuses schema-invalid/payload-field-not-admitted for a field outside the record kind's row, a present null included (TRANSITION_PAYLOAD_FIELDS in codec/src/cli/ops.ts, pinned to the table Prior ruled at b912302); the Claude-side client never sends one (PAYLOAD_FIELDS in hooks/lib/record-write.ts, derived from the same schemas); frozen in the archive revision bundle sha256:ea902c01c4a9b41a94a101d48ef80b4d6456f954353ae96489c3dee0d1548021 handed over in REQUESTS.md request 43

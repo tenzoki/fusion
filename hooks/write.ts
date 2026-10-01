@@ -14,7 +14,9 @@
  * `<person>` and `<checkout>` are "" because nothing it sends carries them.
  *
  * Output: `KEY=value` lines on stdout, reasons on stderr prefixed
- * `fusion-write:`. The library is imported inside the `try`, so a module
+ * `fusion-write:`; a `conflict/maintenance-active` refusal adds a line naming
+ * `bin/fusion-archive resume` and `abandon`, which close the fence. The
+ * library is imported inside the `try`, so a module
  * missing from an install is exit 3 like any internal fault, never Node's
  * own 1, which the wrapper uses for "stop". No automatic hook runs this entry.
  */
@@ -80,6 +82,8 @@ async function main(argv: string[]): Promise<number> {
     case "refused":
       out([`result=refused`, `operation_id=${o.operationId}`]);
       err(`the codec refused ${sub}: ${o.refusal.class}/${o.refusal.reason}${o.refusal.detail === undefined ? "" : `: ${o.refusal.detail}`}. Nothing landed and nothing is retried.`);
+      // The fence stands until the archive move that took it ends it; the inventory under archive/ names it.
+      if (o.refusal.reason === "maintenance-active") err("a maintenance fence stands: an archive move holds the store. `bin/fusion-archive resume --inventory archive/<stamp>-<slug>/.inventory.json` finishes or restores that move, and `bin/fusion-archive abandon --inventory <the same file>` ends a fence that moved nothing.");
       break;
     case "unknown": {
       // `--expected-revision` prints as `expected_revision=`, `--id` as `id=`: one line per flag the re-send repeats.
