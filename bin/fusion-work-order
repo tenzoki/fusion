@@ -86,7 +86,9 @@
 # overrides any figure here at will. The portfolio layer that used to rank work
 # went at v11 and this is not its return.
 #
-# It reports and it blocks nothing. No exit code carries the result, no hook or
+# It reports and it blocks nothing. A person runs it, directly or through
+# /fusion:wp-order, which renders the text format in the chat and ranks nothing.
+# No exit code carries the result, no hook or
 # pipeline step runs this program and no test gates on its verdict — the
 # stdout-verdict rule every other reporting helper in this directory carries,
 # none of them promoted to a blocking check. In every format the exit codes mean
