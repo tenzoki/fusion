@@ -31,4 +31,11 @@ Prior `b912302` (`Prior: docs/design/fusion-fj03c-prior-response.md` `## 36`, "M
 
 ## Recommendation
 
-Option 1. Options 2 and 3 each fail one of Prior's stated conditions, crash persistence and coordination respectively. Option 1 is the only option that both hosts' writers cannot bypass. If the user rules this way, plan step 1 proposes it as request 39, and plan steps 7 and 8 implement it.
+Option 1. Options 2 and 3 each fail one of Prior's stated conditions, crash persistence and coordination respectively. Option 1 is the only option that both hosts' writers cannot bypass. If the user rules this way, plan step 1 proposes it as request 39, a contract change put for answer, and plan steps 7 and 8 implement it.
+
+A second opinion (2026-10-01) agrees with option 1 and adds what recovering a fence requires.
+
+- **Order.** Under the lock the replay lookup comes before the fence check, so a completed operation still replays its stored answer. A second `begin` under another operation id is refused `conflict/maintenance-active`.
+- **Recovery.** The host writes its inventory, naming the fence's operation id, before `begin`. `bin/fusion-archive resume` finishes or restores a run. `bin/fusion-archive abandon` ends a fence with nothing moved. With the inventory lost, the documented last resort is deleting `.json-state/maintenance.json` by hand.
+- **Visibility.** `/fusion:check` reports an active fence. `bin/fusion-write` maps `conflict/maintenance-active` to a message that names `resume` and `abandon`.
+- **The limit, stated in request 39.** The fence is local to one checkout, because `.json-state/` never travels (`JSON_LIVE_STATE` in `hooks/lib/staging-drift.ts`). A checkout that has not pulled the move can add a reference to an archived record. A `reconcile` after the pull is the only place that catches it, and no mechanism closes the gap.

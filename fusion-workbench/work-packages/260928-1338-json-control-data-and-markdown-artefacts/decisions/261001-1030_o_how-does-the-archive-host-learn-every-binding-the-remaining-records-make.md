@@ -28,4 +28,9 @@ Prior `b912302` (`Prior: docs/design/fusion-fj03c-prior-response.md` `## 36`) ru
 
 ## Recommendation
 
-Option 1. It is the only option in which the host decides archival safety from one codec answer without a second parser. The schema-derived test also makes completeness decidable, where Prior's finding showed the enumeration had drifted. If the user rules this way, plan step 1 proposes it as request 40, and plan step 6 implements it.
+Option 1. It is the only option in which the host decides archival safety from one codec answer without a second parser. The schema-derived test also makes completeness decidable, where Prior's finding showed the enumeration had drifted. If the user rules this way, plan step 1 sends it as request 40 and plan step 6 implements it.
+
+A second opinion (2026-10-01) agrees with option 1 and sharpens two points.
+
+- **Request 40 is a notice, not a permission request.** `## 36` already allows the additive delta, so the request tells Prior that recorded answers move and names the delta files of step 6. It does not ask whether they may move.
+- **The departure on prose is stated openly.** Prior lists prose citations among the bindings that must not break (`## 36`, "Which objects must remain outside the archive") and keeps only basename citations supported. Option 1 holds nothing for prose. Basename citations still resolve after the move. A full-path citation in prose is not protected. Request 40 says so.
