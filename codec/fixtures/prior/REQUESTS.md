@@ -1331,3 +1331,268 @@ What it asks Prior to run, and what fusion asserts at `e1bafd2f`:
 A differing answer anywhere else is the finding, with the exchange and its stdout. Prior's own archive host and its gating on `inspect.maintenance` stay Prior's integration work, and this request does not ask for them.
 
 The Claude side's JSON archival (plan step 13: `/fusion:archive` over `bin/fusion-archive`, and `workbench.json` and `.json-state/` reserved in the archive skill's safety filter 1) starts only after request 44 is answered green. Until then the hold of the FJ03c section's item 7 stays in force.
+
+## FJ04 (the contract delta)
+
+**Written against:** fusion commit `acb2fc59` on branch `fj-json-workbench` (2026-10-01 21:40). It is the head of the branch when this text was written, and the commit that recorded the user's go on the measurement part of the plan this text serves (`261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md`, approved at `05e32bf5`). The plan was drafted against `15e4d52e`. `git diff --stat 15e4d52e acb2fc59 -- codec/src codec/schemas codec/contract codec/dist bin` names two test files and nothing else: `codec/src/__tests__/fixtures.test.ts` (the exemption for the legacy fixture below) and `codec/src/__tests__/install.test.ts` (the archive revision's step 13). The codec this delta starts from is therefore the qualified one. It read Prior at commit `590465d` (2026-10-01 16:54), the head of the Prior checkout. `git log --all --oneline 590465d..` there is empty, and the uncommitted files there (the dual-host design drafts, `concept/implementation-plan.md` and Prior's own workbench) answer nothing here. Every Prior text below is quoted from that commit's objects. `codec/dist/fusion-record.js` is the bundle request 44 qualified, unmoved: 543 227 bytes, `sha256:6b26faf2b0f9389fcbb4df1a3dd23881d2ff76cb2cab4c918f2bf969a597b0bf`, in the blob at `acb2fc59`.
+
+This section is the contract delta for FJ04, the work `Prior: docs/design/fusion-archive-correction-prior-response.md` `## Next work` names at `590465d`: "FJ04 should exercise migration on copies of real workbenches: inventory and exact-byte backup, explicit field/ID mapping, interrupted-apply recovery, repeat-run no-op, referential integrity and rollback." It implements the `migration` row of section 6's table ("Separater Modus mit eingefrorenem Plan, Sicherung und Wiederaufnahme") for the maintenance run of section 8. As before, only the changed parts of the contract follow, nothing below is frozen, and the digest is fixed at `## FJ04 (the hand-over)`. One revision carries the operation and is qualified by one re-pin. No real workbench is migrated by it, fusion's own included: section 9 at `590465d` puts that into FJ03d's window ("FJ03d, die Migration der eigenen Workbench und die Aktivierung der neuen Installation erfolgen zusammen bei ruhenden Schreibern"). Fusion's codec steps start after Prior has answered requests 45 to 49, or after the user has ruled in place of an answer.
+
+**Whose figures.** The measurements were taken on scratch copies of three real workbenches: fusion's own, and those of two consuming projects owned by other teams. The two appear below as the second and the third workbench, in aggregate figures only, with no name, file name or excerpt.
+
+New reasons: `schema-invalid/proposal-invalid`, `schema-invalid/duplicate-id`, `unresolved-reference/closure-incomplete`, `conflict/source-changed`, `conflict/migration-planned`, `conflict/plan-file-changed`, `conflict/chunk-id-mismatch`, `conflict/after-state-changed`, `migration-incomplete/blocking-finding`, `migration-incomplete/chunk-out-of-order` and `migration-incomplete/chunks-missing`. None of the eleven occurs under `codec/src`, `codec/contract`, `codec/schemas` or `codec/fixtures` at `acb2fc59` (`git grep -l` over those paths, 0 files each). The class `migration-incomplete` is in section 6's list and in `ERROR_CLASSES` (`codec/src/cli/protocol.ts`), and no refusal uses it at `acb2fc59`; these are its first reasons. `operation-unknown/not-implemented` loses its last operation, and `LANDS_IN` becomes empty.
+
+### What the measurement part found
+
+The plan's part A changed no codec file and moved no digest. Step 1 (`5a9f0f39`) committed `codec/fixtures/legacy-v12/`, a v12 workbench in Markdown holding one of each legacy shape the migration must read. It is synthesised for a fictional project, holds no JSON, and nothing under `codec/src/` imports it. Step 2 (`b9d43fb1`) committed the host's reader and composer, `hooks/lib/legacy-import.ts`. It is pure: it reads a workbench and a byte inventory, composes a mapping proposal and writes nothing. Step 2 ran it over scratch copies, and each source tree hashed equal before and after. All figures were taken on an Apple M2 Max with Node 25.7.0, three runs each, median / max.
+
+| Copy | Files / dirs | Packages live / terminal | Records live / closure | Terminal records left plain | Narratives rewritten | Blocking findings (files) | Reported findings | Compose ms |
+|---|---|---|---|---|---|---|---|---|
+| fusion | 3 111 / 327 | 4 / 38 | 106 / 0 | 1 118 | 40 | 30 (22) | 196 | 66 / 83 |
+| second | 7 942 / 952 | 72 / 38 | 638 / 1 | 931 | 182 | 278 (199) | 514 | 207 / 227 |
+| third, after its store rename on the copy | 2 228 / 198 | 1 / 24 | 148 / 0 | 1 005 | 18 | 60 (59) | 181 | 43 / 47 |
+
+The third workbench still carries the v11 store names. Read as it stands, it gives 27 `legacy-store-name` findings and nothing else, since no other reading is trusted before the rename. Fusion's copy holds four empty container trees. Every composed control object was validated against the codec's own schemas through `codec/src/validate.ts`, unchanged: 21 / 183 / 56 are invalid (fusion / second / third), every one on a narrative that carries a blocking finding (its `filed_by` is null), and none otherwise.
+
+**The intent size.** A scratch harness drove the journal of `codec/src/journal.ts`, unchanged (`commitIntent`, `applyWrites`, `writeAnswer`, `removeIntent`, `readIntents`, `recover`), over a fresh copy per run.
+
+| Measurement | Median | Max |
+|---|---|---|
+| The second workbench's whole write set as one intent: 749 records, 1 680 writes (749 originals, 749 control files serialised by the codec, 182 rewritten narratives), 11.6 MB of post-bytes, largest write 465 KB, `intent.json` 505 KB | 27.7 s | 27.8 s (commit 9.2 s, apply 19.2 s) |
+| Recovery of that intent after a cut at its commit point | 19.7 s | 23.8 s |
+| fusion's write set as one intent, 336 writes | 5.8 s | 6.0 s |
+| The third workbench's write set as one intent, 364 writes | 5.6 s | 7.1 s |
+| One chunk of 50 writes, the worst chunk of the second workbench | 1.42 s | 1.45 s (2.25 s in an earlier three-run series) |
+| One chunk of 100 writes | 4.5 s | 5.0 s (150 writes: 5.5 s max in another series) |
+| Process start plus `inspect` through the Claude client | 0.26 s | 0.37 s |
+| A `verify`-sized re-hash of every planned file | 90 ms | 109 ms |
+
+The Claude client allows 5 s after the codec's 65 s lock wait (`POST_WAIT_MARGIN_MS` and `CODEC_WAIT_MS` in `hooks/lib/record-client.ts`). Even fusion's own workbench exceeds it as one intent. A chunk of 50 writes with process start stays under 2.7 s. Fsync stalls make a chunk's time noisy, which is why the chunk leaves half the allowance. The second workbench takes 34 chunks. The client's timeout is not raised.
+
+Two consequences, measured rather than assumed:
+
+1. **Each chunk is its own request.** About 28 s of work does not fit one request even when cut into intents, so each chunk carries its own operation id, is resumable on its own, and the frozen plan names the chunks. A chunk's recovery is inferred at about 0.7 s (50 writes at the 14 ms per write of the full recovery), not measured.
+2. **The frozen plan is split.** The second workbench's plan metadata alone (rows, UUID map, findings) measured about 969 KB, against the strict reader's cap of 1 048 576 bytes (`MAX_RECORD_BYTES`, `codec/src/strict-json.ts`). Its control bytes add 1.14 MB. One strict JSON file cannot carry the plan, so it is split per chunk.
+
+### Three readings the decisions left open
+
+Step 2 had to fix three readings to compose anything. They are stated here because requests 46 and 48 rest on them.
+
+1. **What a plan step is.** A step is a numbered line at column 0, optionally behind a `##` to `####` heading marker, that carries one of the three marks or stands in an `## Implementation steps` section. A step without a mark is `open`.
+2. **Which head fields of a live package are control.** `Status`, `Claim`, `Mode`, `Active spec/plan` and `Depends-on` leave the narrative. `Domain`, `Filed by` and `Cross-references` stay in it and are mapped as well.
+3. **A terminal package binds nothing.** Its `depends_on`, `active_documents` and `references` are empty. Every head field stays raw in `provenance.legacy_fields`, so a terminal package pulls no record into the closure.
+
+### The operation, phase by phase
+
+`migration` keeps its place in the protocol's `op` enum and in `OPERATIONS`. Its one schema branch becomes one branch per phase, each with `additionalProperties: false`. `rollback` joins the phases. The host reads the v12 Markdown and composes a proposal file. The codec validates it, freezes it, and alone writes every byte of the run.
+
+| Phase | Request | States admitted | Writes | Answer |
+|---|---|---|---|---|
+| `survey` | `{op, workbench, phase}`, no `operation_id` | legacy, json-control | nothing; no `.json-state/` is created | every entry with path, size, sha256 and file kind (file, link, directory); `.json-state/` entries and pending intents; `archive/` listed as history |
+| `plan` | `{op, workbench, operation_id, phase, proposal}` | legacy; json-control only for the second-run no-op | `archive/migrations/<id>/plan.json` (the index) and `archive/migrations/<id>/chunks/<n>.json`, each under 1 MiB | the migration id, the index's path and sha256, each chunk with its path, sha256, operation id and write count, the counts; no `revisions` |
+| `apply` | `{op, workbench, operation_id, phase, plan, chunk}` | legacy | chunk 1 first writes the fence; then one intent of at most 50 writes: originals to `archive/migrations/<id>/originals/<path>`, control files, rewritten live narratives | the chunk, its writes, the fence's id; `revisions` for every control file the chunk wrote |
+| `verify` | `{op, workbench, operation_id, phase, plan}` | legacy, fenced by this migration, every chunk landed | `archive/migrations/<id>/receipt.json`, then `workbench.json` with `migration: {id, source_layout, receipt}` | the checks run, the counts, the receipt's sha256, the manifest's revision |
+| `rollback` | `{op, workbench, operation_id, phase, plan, chunk}` | legacy, fenced by this migration once chunk 1 has landed; json-control only under the after-state rule below | one intent per chunk, in reverse order, restoring originals and removing what the chunk created; `chunk: 0` removes the plan files | what was restored and what was removed |
+
+- **`proposal`** is a workbench-relative path under `.json-state/migration/`, written by the host. `.json-state/` never travels, so the proposal never does either. The codec reads it and never writes it. It is not a control record, so the 1 MiB record cap does not bind it. Fusion proposes a cap of 16 MiB, the answer channel's bound (request 31), refused above it as `schema-invalid/proposal-invalid`. Its size on the second workbench is measured in fusion's `plan` step.
+- **`plan`** in the later phases is the index's path, `archive/migrations/<id>/plan.json`. The archive boundary refuses record paths and scopes under `archive/` (request 36). The plan path is neither: it is read as a hash-bound artefact, which that boundary leaves readable (its table names `provenance.backup` and a migration receipt as unchanged). The migration's own writes under `archive/migrations/<id>/` are not record paths either.
+- **`chunk`** is an integer from 1. In `rollback`, `0` names the plan files themselves.
+- **The migration id** is chosen by the host in the proposal and follows the manifest schema's pattern, `migration-YYYYMMDD-<slug>` (`codec/schemas/workbench.schema.json`). The workbench UUID and every record UUID come from the proposal and are fixed in the index. A resume reuses them (section 3: "Wiederaufnahme verwendet dieselbe UUID").
+- **Each chunk's operation id** comes from a list of caller-chosen UUIDs in the proposal, assigned in order by `plan` and fixed in the index. A list shorter than the chunk count is `schema-invalid/proposal-invalid`. Chunk 1's operation id is the fence's id.
+- **The cut.** `plan` cuts the writes into chunks in narrative-path order. A pair's original, control file and rewrite go into one chunk. A chunk closes at 50 writes, or earlier where its chunk file would reach 1 MiB.
+- **A rewrite is a set of byte deletions.** Every rewrite step 2 composes removes whole control lines or a `[MARK] ` token and changes nothing else (`composeProposal` in `hooks/lib/legacy-import.ts` at `b9d43fb1`). A chunk file therefore carries a rewrite as deletion ranges over the source bytes, bound by the source sha256 before and the after sha256 behind. The codec applies byte ranges and reads no Markdown grammar. The chunk file stays small, and `apply` never needs the proposal again.
+
+**The order under the lock.** Every phase that writes runs through the kernel's one mutation sequence, as request 39 states it: the state gate before the lock, then sweep and recovery, the replay lookup, the fence check, and the operation's plan.
+
+| Phase | After the replay lookup, in order |
+|---|---|
+| `survey` | No lock, no recovery, no replay: a read. It lists a pending intent and does not finish it. |
+| `plan` | A standing fence is `conflict/maintenance-active` when it is another operation's, and `conflict/migration-planned` when another migration's plan files stand. A present manifest naming this migration's receipt answers that receipt as a no-op, and any other present manifest is `conflict/manifest-present`. Then: the proposal read strictly and validated (`proposal-invalid`); every target control validated against its schema (`proposal-invalid`, naming the record); a UUID twice (`duplicate-id`); a control path already present (`conflict/record-exists`); an open blocking finding in the proposal (`blocking-finding`); every `record_ref` resolving to a proposed record (`closure-incomplete`); every source sha256 against disk (`source-changed`). Then the plan files, written in intents of at most 50 files, chunk files first and the index last, with the answer stored alongside the index. |
+| `apply {chunk: n}` | The index against the sha256 the `plan` answer named, and the chunk file against the index (`plan-file-changed`). `operation_id` against the index's id for chunk n (`chunk-id-mismatch`). For n > 1, chunk n−1's answer stored (`chunk-out-of-order`) and the standing fence this migration's (`maintenance-active` otherwise). For n = 1, no fence standing, or chunk 1's own after a crash between the fence and the intent; every source sha256 of the whole plan against disk (`source-changed`); then the fence, written in its own sequence. Then the chunk's own sources against disk (`source-changed`), then one intent with the chunk's writes, originals first. |
+| `verify` | The index (`plan-file-changed`); the fence this migration's; every chunk's answer stored (`chunks-missing`). Every planned file re-hashed against its after sha256 (`source-changed` names the file). Every pair, id, `depends_on` graph and reference read, and `validate` and `reconcile` run over the store as a json-control view. Then one intent writes the receipt, then the manifest, by atomic rename, as its last write. |
+| `rollback {chunk: n}` | The index (`plan-file-changed`); n the highest chunk still landed (`chunk-out-of-order`); every file the chunk wrote hashes as the chunk's after-state (`after-state-changed`). Then one intent restores the rewritten narratives' originals and removes the chunk's control files and originals. `chunk: 0` runs only when no chunk is still landed, and removes the chunk files and the index. |
+
+**The second run.** Every request with a stored answer replays that answer and writes nothing. A `plan` over a store whose manifest names this migration's receipt answers that receipt as a verified no-op: no new UUID and no rewritten answer (section 8.3.7: "Eine zweite Anwendung ist ein überprüfter No-op").
+
+**Rollback after activation.** Section 8.4 admits it "nur ohne spätere Arbeitsänderungen". The host first takes a fence with `maintenance begin`. The first `rollback` then checks the whole store, not only its chunk. Every planned file must hash as the receipt's after-state, and no control file and no stored operation answer may exist that the receipt does not name. Otherwise it is `after-state-changed`, and nothing is written. When the check holds, that first intent also removes `workbench.json` and the receipt, so the store returns to legacy under the standing fence and the remaining chunks roll back as before activation. A later `create` therefore refuses every rollback. Deleting the manifest alone stays no downgrade ("Das Manifest zu löschen ist kein Downgrade"). Here it is removed only together with bytes verified to restore the v12 data.
+
+**The fence on a legacy workbench.** At `acb2fc59`, `maintenance begin` admits only `json-control`. Chunk 1's fence is the same file, `.json-state/maintenance.json`, `{operation_id, since}`, written under a migration on a legacy store. It is what makes section 8.3.4 hold across requests: "Der Migrationsclient bleibt währenddessen exklusiv; normale Arbeit ist gesperrt."
+
+- Ordinary mutations on a fenced legacy store still answer `unsupported-format/legacy-workbench`, since the state gate runs before the lock. After activation and before `end`, they meet the fence, `conflict/maintenance-active`.
+- Only `maintenance end` removes the fence; for a migration's fence it names chunk 1's operation id. The host sends it after setup metadata (section 8.3.5), after a verified run, or after a full rollback. A rollback never removes it, so the fence keeps one remover, as request 39 has it.
+- A crash leaves a fence that `inspect.maintenance` names. The host finds its migration by the index whose chunk 1 carries that id, and `resume` sends the next chunk without an answer under its recorded id. `inspect` gains no field.
+- **A statement of request 39 changes.** Request 39 says reads under a fence "find nothing to recover", because `begin` lands only over an empty journal. A migration's chunks write intents under their own fence. A read may therefore roll a committed chunk forward, as for any FJ02 intent. That is harmless, since it lands exactly what the chunk's request would land.
+
+**Reads never activate.** A committed `verify` intent whose manifest has not landed is not finished by a read. Only the `verify` request under the same operation id finishes it, which mirrors request 33's ruling for `initialize` ("Lesezugriffe aktivieren kein committetes `initialize`, dessen Manifest noch nicht geschrieben ist"). `inspect.pending` names it, with the migration id.
+
+**Removal writes in the journal.** A journal write at `acb2fc59` is `{path, before: sha256 | null, after: sha256}` (`Write` in `codec/src/journal.ts`). It has no way to remove a file, and a rollback must remove control files, originals, plan files, the receipt and the manifest. The write gains `after: null`. Recovery removes the file when it hashes as `before`, and blocks as `recovery-blocked` when it has diverged, as every other write does. Only `rollback` writes such entries. This is a change to the local journal, which never travels, and Prior qualified that journal's recovery, so it is named here.
+
+### Recorded bytes this revision moves
+
+Every recorded response file at `acb2fc59` stays unedited. Each moved exchange gets a reviewed delta file beside its recording, and its gate admits exactly that delta.
+
+| Exchange | What moves | Why | Measured or inferred |
+|---|---|---|---|
+| `protocol-session-initialize/01`, `08`, `14`, `16`, `18`, `19`, `21`, `22`, `24` (`inspect`, `ok: true`) | `/result/operations/implemented` gains `migration` at index 15; `/result/operations/deferred` becomes `[]`. Each delta follows that exchange's `maintenance-delta.json` | `migration` implemented | read from the recordings: each holds `"deferred":["migration"]` |
+| `protocol-session-archive/01`, `13`, `27`, `31`, `38`, `45` (`inspect`, `ok: true`) | the same two changes, as a first delta | the same | read from the recordings |
+| the fifteen above | `/result/schemas` gains the ids of the two new schemas (the split plan and the receipt), if they load into the bundle's one schema set, as fusion intends | the codec validates its plan files against them | inferred; fusion's schema step states it |
+
+These fifteen are every successful recorded `inspect` answer: 17 `inspect.response.json` files are recorded, and the other two (`protocol-session-archive/51` and `protocol-session-initialize/26`) are refusals that do not move. No recorded answer carries `not-implemented` (`git grep -l not-implemented acb2fc59 -- codec/fixtures` names this file alone).
+
+Two shared fixtures, both in Prior's pin of the shared set (`tests/testdata/fusion-codec/fixtures/` at `590465d`):
+
+- `invalid/protocol/migration-phase-unknown.json` uses `phase: "rollback"`, and its manifest note reads "The migration phases are survey, plan, apply and verify." With `rollback` a phase it would turn valid. It is replaced by an unknown phase that stays unknown, with its note.
+- `valid/protocol/migration.json` is `{op, workbench, phase: "survey"}`. It stays valid because `survey` takes no `operation_id`. The new branches add valid and invalid fixtures, which fusion's schema step lists with the manifest count.
+
+### The change Prior's deferred-operation check meets
+
+`TestCodecPinsScopeAndDomainRefusals` in `Prior: internal/fusionhost/codec_process_test.go` at `590465d` sends `{"op": "migration", "phase": "survey", "workbench": …}` over its fixture workbench and fails unless the answer is `operation-unknown/not-implemented` ("deferred op=%s"). Taken for this text through `codec/dist/fusion-record.js` at `acb2fc59`, over a copy of `codec/fixtures/workbench/`: that request answers `{"ok":false,"error":{"class":"operation-unknown","reason":"not-implemented","detail":"migration is specified (spec section 6) and lands in FJ04"}}`. After this revision, the same request is a valid `survey` over a json-control store and answers `ok: true` with its inventory. That assertion therefore turns red at the re-pin, by design. Fusion proposes that Prior replace it with an assertion of the survey answer's shape. No operation stays deferred to pin the not-implemented path, and `inspect.operations.deferred` is `[]`.
+
+### The finding classes, measured, and the repair policy
+
+The composer types every finding `blocking` or `reported` (`FINDINGS` in `hooks/lib/legacy-import.ts` at `b9d43fb1`). A blocking finding stops the frozen plan. A reported one is carried into the index and the receipt, and blocks nothing. Counts are fusion / second / third, with the third read after its store rename:
+
+| Class | Severity | Counts | Meaning |
+|---|---|---|---|
+| `filed-by-missing` | blocking | 0 / 131 / 56 | a record kind that owes the `**Filed by:**` line has none, or the line names no actor |
+| `filed-by-not-owed` | blocking | 21 / 46 / 0 | a live plan or spec without the line: the conventions do not ask it of a plan, and the schema's actor is required and never invented |
+| `filed-by-unreadable` | blocking | 0 / 6 / 0 | the line does not parse |
+| `answered-without-answer-line` | blocking | 1 / 19 / 2 | an `_a_` decision answering in a section or a head instead of an `Answered:` line |
+| `mark-outside-numbered-step` | blocking | 5 in 1 plan / 65 in 10 plans / 0 | a mark on an unnumbered heading, a bullet, an indented or bolded number, or a table cell |
+| `unknown-step-mark` | blocking | 0 / 3 in 2 plans / 0 | a mark outside `OPEN`, `IN PROGRESS`, `DONE` |
+| `duplicate-step-number` | blocking | 3 in 1 plan / 5 in 1 plan / 0 | two steps with one number |
+| `unresolvable-active-document` | blocking | 0 / 2 / 0 | `**Active spec/plan:**` names nothing that resolves |
+| `active-document-role-unclear` | blocking | 0 / 1 / 0 | neither clause nor stem names `spec` or `plan` |
+| `circle-deferred` | blocking | 0 / 0 / 2 | a Circle head `_d_` (request 47) |
+| `legacy-store-name` | blocking | 0 / 0 / 27 before the rename, 0 after | v11 store names; routed to the existing rename |
+| `live-record-in-terminal-container` | reported | 56 / 161 / 50 | a live record under a terminal package |
+| `reference-not-a-citation` | reported | 53 / 163 / 55 | a `**Cross-references:**` token that is no citation; kept in the narrative |
+| `answer-ref-self` | reported | 21 / 66 / 9 | the `Answered:` line cites nothing resolvable (request 49) |
+| `decision-line-disagrees-with-marker` | reported | 33 / 43 / 40 | a decision line contradicts the filename marker, which decides |
+| `status-head-in-live-record` | reported | 14 / 64 / 17 | a `**Status:**` head on a live non-plan record, removed |
+| `circle-head-disagrees-with-marker` | reported | 15 / 12 / 10 | a Circle head says active under a terminal marker, which decides (request 47) |
+| `terminal-value-without-v1-state` | reported | 0 / 5 / 0 | a plan `_s_` left plain, outside the closure |
+| `empty-container-tree` | reported | 4 / 0 / 0 | a container holding only empty directories (request 47) |
+
+Every other class of the table is 0 in all three copies: `closure-incomplete` and section 8.2's own cases (several active plans, invalid claim, unknown state, unresolvable live dependency) among them. In total, blocking findings are 30 / 278 / 60 and reported findings 196 / 514 / 181.
+
+**The repair policy.** A blocking finding is resolved only by a v12 Markdown edit, made before `plan` freezes anything. The codec never repairs. It refuses `migration-incomplete/blocking-finding` while the proposal names any open blocking finding, and judges nothing else about it.
+
+- **In the owner's project, with consent per finding.** A repair runs in the project whose workbench migrates, put to its owner one finding at a time, and is applied only on that person's yes to that finding. Fusion repairs nothing in another team's project. On the copies of this plan, the answers are supplied by the tests or recorded by the analyst.
+- **Never guessed.** A value only the owner has (an actor, a person, a ruler, a role, a mark) is asked. The person of `bin/fusion-identity` may be offered as a choice, never as a default. A class without a repair stays blocking.
+- **Backed up.** A full backup outside the workbench, verified by tree hash, is taken before the first repair.
+- **Logged.** Each repair is preceded by a hash check of its file. It is logged with its pre and post sha256 and the consenting answer in the proposal's repair log, which the frozen index and the receipt carry. The pre-repair bytes are in the external backup, the post-repair bytes in `originals/`.
+
+| Class | Proposed edit |
+|---|---|
+| `filed-by-missing`, `filed-by-not-owed`, `filed-by-unreadable` | `**Filed by:** <actor>, <person>`, both halves asked |
+| `answered-without-answer-line` | an `Answered:` line citing the section that holds the answer, ruler asked |
+| `mark-outside-numbered-step` | the mark moved to the step's numbered line, or removed; the owner picks |
+| `unknown-step-mark` | one of the three marks, picked |
+| `duplicate-step-number` | the later duplicate suffixed (`12` to `12b`), with every in-file citation of it listed |
+| `unresolvable-active-document` | the document named by the owner, or the binding moved to `**Cross-references:**` |
+| `active-document-role-unclear` | the role, picked |
+| `circle-deferred` | a `**Status:**` line on the Circle head, `paused` or `dropped`, picked |
+
+`legacy-store-name` routes to the existing rename (section 8.3.2), which runs first.
+
+### 45. The `migration` operation, in chunks under one fence
+
+**Closes:** fusion decision `261001-1804_*_where-does-the-legacy-markdown-reader-live-and-what-does-the-codecs-migration-operation-take.md`, option 1, ruled by the user on 2026-10-01 with the plan's approval: the host reads the v12 Markdown, only the codec writes. That decision's text has `apply` write "in one journaled intent". Part A's measurement replaced that with chunks, and this request carries the replacement. This is a contract change, put for answer. Preferred form: an answer before fusion's schema step starts.
+
+**Why this split.** Section 8.2 asks the survey for things the codec cannot see, untracked and ignored files, which are git facts. It also asks for things only a reader of fusion's v12 grammar can extract: head fields, Circle markers, step marks and `Answered:` lines. Section 6 says the codec is the one implementation of the transitions. So the host reads and composes, and the codec validates, freezes and writes. No fusion JSON is written outside the codec. Resumption comes from the journal Prior already qualified. Prior qualifies a format-agnostic operation and no grammar it never holds. The codec cannot judge a mapping's meaning, only its form, its hashes and its closure. Host tests per legacy shape and the proof on copies, read back through every shipped reader, cover the meaning.
+
+Asked:
+
+- **(a)** Does Prior accept the operation as the phase table and the order above state it: the proposal by path, the split frozen plan, and the codec as the only writer?
+- **(b)** Does Prior accept chunked intents under one fence as section 8.3.4's "Migrationsjournal erlaubt Wiederaufnahme nach jedem Schreibschnitt"? Each chunk is atomic and recoverable on its own. Between chunks the store is legacy, since it has no manifest, and fenced. Activation is one atomic write after the receipt has verified.
+- **(c)** `survey` as a read with no `operation_id`, leaving no `.json-state/` behind, and the consequence for Prior's deferred-operation check above.
+- **(d)** A committed `verify` is never finished by a read, as request 33 rules for `initialize`.
+- **(e)** Removal writes in the journal, used by `rollback` alone.
+- **(f)** Chunk operation ids from a caller-chosen list in the proposal. The alternative weighed was ids the codec derives. Fusion rejects it, because every mutation's operation id has so far been the caller's (section 6: "eine vom Aufrufer wiederverwendbare `operation_id`").
+- **(g)** Rewrites carried as byte deletions bound by both hashes, which keeps the codec free of the Markdown grammar.
+- **(h)** A 16 MiB cap on the proposal file, the answer channel's bound, since the 1 MiB record cap does not fit a proposal of the second workbench's size.
+
+### 46. The record cut, and the missing route to import one terminal record after activation
+
+**Closes:** fusion decision `261001-1804_*_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md`, option 2, ruled by the user on 2026-10-01 with the plan's approval. This is a ruling on a text that permits two readings, put for answer. Preferred form: an answer before fusion's schema step starts.
+
+**Why.** Section 2.1 converts every package, and the other records "soweit deren Status, Fortschritt oder Annahme heute Maschinen oder Workflows steuert". It adds: "Ein terminaler Record außerhalb des Archivs erhält höchstens extrahierte Metadaten; sein historischer Text bleibt unverändert." "Höchstens" permits both a `legacy-terminal` pair and no pair at all. Fusion reads it as state that steers a workflow today: live state, or state that a live structure binds.
+
+| Artefact | Becomes | Markdown |
+|---|---|---|
+| The item record or Circle head of every container | `package.json`: `imported` when live, `legacy-terminal` when terminal | live: the control head fields removed, held verbatim in `legacy_fields`; terminal: byte-identical |
+| An issue, plan or discussion `_o_`/`_p_`; a decision `_o_`/`_a_` | `<name>.record.json`, `imported` | the control lines removed (a plan's `**Status:**`, step marks); `Answered:` and `Resolved:` prose stays |
+| A terminal record named by a `record_ref`-only field of a record above (`depends_on.target`, `active_documents.ref`, `superseded_by`, a plan's `acceptance.ref`) | `<name>.record.json`, `legacy-terminal` | byte-identical |
+| Every other terminal record, `history/`, reviews, analyses, memos, `archive/` | nothing | unchanged; legacy citations keep resolving |
+
+Filenames keep their markers (section 3). `plan` checks the closure, so a defect in the rule is a refusal, `closure-incomplete`, rather than a hope. Measured: the closure is 0 / 1 / 0 records, and the terminal records left plain number 1 118 / 931 / 1 005. Under option 1, every one of those would have become a pair, and every terminal value without a v1 state (a plan `_s_`, a `_d_` decision without target or ruler) a blocking finding, although nothing reads its state.
+
+**The field mapping of a package**, beside step 2's readings: `claim` is `{checkout_id, person, claimed_at: null}` from the `**Claim:**` line (section 4.2: "Unbekannte historische Zeit darf null sein"). `mode.source` is `{kind: "legacy", raw}`. `origin` is `user-request` when the filer's actor is `user`, else `legacy-unknown`. A terminal item record maps `done` to `legacy-completed` (section 8.3), and `dropped` to outcome `dropped` with the reason "dropped (legacy item record; its narrative states why)".
+
+**The gap.** After activation, no operation imports a single terminal record. `plan` on a json-control store answers its receipt or `conflict/manifest-present`. `create` writes `provenance.source: created` in an initial state only (`schema-invalid/not-initial-state`) and refuses `origin: legacy-unknown` (`schema-invalid/origin-legacy-on-create`). So a `record_ref`-only position can never later name a terminal record that the cut left plain. `references` can still cite it, as a legacy citation string. The need arose once in three workbenches at migration time (the closure's one record).
+
+Asked:
+
+- **(a)** Does Prior accept option 2 as section 2.1's criterion, with the closure checked by `plan`?
+- **(b)** Does Prior want an import route for one `legacy-terminal` pair after activation, or does it confirm that none exists in this revision? Fusion's leaning is to confirm none: a later structural reference to a plain terminal record stays `record-not-found`, and a route, for example a fenced import of one pair with its backup, would be a revision of its own.
+- **(c)** Does Prior accept step 2's readings 2 and 3 (which head fields are control; a terminal package binds nothing) and the field mapping above?
+
+### 47. Circle heads and empty container trees
+
+**Closes:** the Circle part of fusion decision `261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md`, option 1, ruled by the user on 2026-10-01 with the plan's approval. It is put to Prior because a fixed table may touch section 8.2's rule that unknown states are not guessed. Put for answer.
+
+**Why.** A Circle-era container's head is `_c_circle.md`, `_b_circle.md`, `_s_circle.md` or `_d_circle.md`, with no `**Status:**` line. Fusion's own workbench holds 20 `_c_`, 3 `_b_` and 1 `_s_` at `15e4d52e`. The third workbench holds 24 Circle heads, of which 2 are `_d_`. Packages always convert, so these values are mapped under every option of request 46.
+
+| Circle marker | `status` | `outcome` |
+|---|---|---|
+| `_c_` | `done` | `legacy-completed` |
+| `_b_` | `dropped` | `bounded`, reason "closed bounded (legacy Circle marker)" |
+| `_s_` | `dropped` | `dropped`, reason "superseded (legacy Circle marker)" |
+| `_d_` | none: blocking `circle-deferred`; deferred and paused are not the same | — |
+
+The marker decides. A head text that disagrees with it is reported (`circle-head-disagrees-with-marker`: 15 / 12 / 10) and kept raw in `legacy_fields`. An empty container tree (4 in fusion's own workbench, none in the others) holds only empty directories: no file, nothing git tracks. It is not a package. It is reported (`empty-container-tree`) and not migrated.
+
+Asked:
+
+- **(a)** Is a fixed table over fusion's own Circle vocabulary a known state under section 8.2, rather than a guessed one?
+- **(b)** `_b_` maps to `dropped` with outcome `bounded`, as section 4.2 prescribes ("die übrigen terminalen Ergebnisse verwenden `dropped` mit genauer Begründung"), although it reads oddly for work that partly landed.
+- **(c)** `_d_` stays blocking until the owner picks `paused` or `dropped` (the repair above).
+- **(d)** Empty container trees are not migrated.
+
+### 48. Step anchors and criteria, for confirmation
+
+**Closes:** fusion decision `261001-1804_*_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md`, option 1, ruled by the user on 2026-10-01 with the plan's approval. It binds beyond FJ04, since every later plan and FJ03d's rule text inherit the anchor. Put for confirmation. Preferred form: a confirmation or an objection.
+
+**Why.** Section 4.3 maps `[OPEN]`, `[IN PROGRESS]` and `[DONE]` explicitly at import, says marks "werden entfernt oder durch neutrale stabile Schrittanker ersetzt", and blocks the import of a plan with an unclear step structure. Neither text says what an anchor looks like in Markdown.
+
+- **The anchor is the existing step number**: the token before the full stop (`1`, `12a`), taken by step 2's reading 1. The import removes the bracket mark and changes nothing else in the line, so every prose citation of a step ("step 12a") stays true.
+- **States**: `OPEN` to `open`, `IN PROGRESS` to `in_progress`, `DONE` to `done`, and an unmarked step to `open`. The removed marks are kept in `provenance.legacy_fields.step_marks`.
+- **Criteria are `[]` at import.** No v12 grammar marks a criterion, and a plan's `## Where this work stops` clauses stay prose.
+- **Acceptance.** A plan a live package names as its active plan carries `acceptance: {ref: <the package>, revision: <the narrative's sha256 after the rewrite>}`.
+- **An unclear structure blocks that plan**, as section 4.3 says: `mark-outside-numbered-step` (5 in 1 plan / 65 in 10 plans / 0), `unknown-step-mark` (0 / 3 in 2 plans / 0) and `duplicate-step-number` (3 in 1 plan / 5 in 1 plan / 0). Each is resolved only by the owner's consented repair.
+- **Renumbering.** Renumbering a step after import breaks its binding. Under responses 18 to 22, adding, removing or reordering anchors is no state operation. FJ03d's rule text will state this.
+
+Asked: does Prior confirm the number as the anchor, empty criteria at import, and the blocking of an unclear structure until a consented repair?
+
+### 49. `answer_ref` and document roles
+
+**Closes:** the answer and role part of fusion decision `261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md`, option 1, ruled by the user on 2026-10-01 with the plan's approval. Put for answer.
+
+**`answer_ref`.** `answered` requires a non-null `answer_ref` (`codec/schemas/record.schema.json`). Many `Answered:` lines cite their answer in prose, for example a Prior document, which is neither a legacy citation nor a workbench artefact. The import resolves the line in this order:
+
+1. A citation that resolves to a proposed record gives a `record_ref`.
+2. A legacy citation token gives that string, the `legacy_citation` branch of `reference`.
+3. Anything else gives an `artefact_ref` to the record's own original, `archive/migrations/<id>/originals/<path>`, `kind: decision`, with the source sha256. The `Answered:` line is the answer, as fusion's conventions allow. This is reported as `answer-ref-self` (21 / 66 / 9).
+
+The line itself stays prose, and section 4.3 rules out deriving the status from it again. A decision line that contradicts the marker is reported, and the marker decides (`decision-line-disagrees-with-marker`, 33 / 43 / 40). An `_a_` decision with no `Answered:` line at all is blocking (`answered-without-answer-line`, 1 / 19 / 2).
+
+**Document roles.** `**Active spec/plan:**` carries a role in a free clause ("(the spec)", "(plan, part 1 …)"), not in a field. The role is `spec` or `plan` where the clause or the file stem says so unambiguously. Otherwise the finding `active-document-role-unclear` blocks (0 / 1 / 0) until the owner picks. A binding that resolves to nothing blocks (`unresolvable-active-document`, 0 / 2 / 0). `several-active-plans` is 0 in all three. Each binding carries the bound narrative's sha256 after the rewrite.
+
+Asked:
+
+- **(a)** Is an `artefact_ref` to the record's own original under `archive/migrations/<id>/originals/` an acceptable `answer_ref`? It resolves through the hash-bound artefact branch the archive boundary keeps, and request 40's `/provenance/backup` site already reads the same files.
+- **(b)** Does Prior accept a legacy citation string as `answer_ref` where the line cites one?
+- **(c)** Does Prior accept the role rule, with any unclear role blocking until the owner picks?
+
+Requests 45 to 49 are answered, or stand unobjected, before fusion's schema step starts. Where Prior rules otherwise, the plan is amended first. The hand-over that follows the recorded migration session names the frozen digest, each delta file with its exchange, the figures of the proof on copies in aggregate, and the re-snapshot and re-pin requests.
