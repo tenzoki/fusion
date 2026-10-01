@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"operation-unknown","reason":"pending-initialize-unreadable","detail":".json-state/journal: the journal cannot be listed (ENOTDIR); inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand"}}

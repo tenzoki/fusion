@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a4c1e006-0000-4000-8000-000000000006",
+  "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260916-1000-failed-move-unit.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

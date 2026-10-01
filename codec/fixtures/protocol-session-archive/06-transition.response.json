@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"schema-invalid","reason":"payload-field-not-admitted","detail":"work-packages/260922-0900-open-package/package.json is a record of kind package, whose transition payload admits claim, outcome; it carries disposition (admitted on issue)"}}

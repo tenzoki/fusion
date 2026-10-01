@@ -1,0 +1,32 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a4c1e002-0000-4000-8000-000000000002",
+  "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260919-1000-chain-middle.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": null
+  },
+  "references": [
+    {
+      "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+      "record_id": "a4c1e003-0000-4000-8000-000000000003",
+      "display": "260918-1000-chain-tail-legacy.md"
+    }
+  ],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

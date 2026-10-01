@@ -1,0 +1,1 @@
+{"ok":true,"result":{"workbench":"<workbench>","state":"json-control","checked":11,"valid":false,"findings":[{"path":"shared/issues/260916-1000-failed-move-unit.record.json","class":"unresolved-reference","reason":"narrative-missing","detail":"shared/issues/260916-1000-failed-move-unit.md does not exist"}]}}

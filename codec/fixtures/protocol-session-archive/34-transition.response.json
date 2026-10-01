@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"conflict","reason":"maintenance-active","detail":"a maintenance fence stands in .json-state/maintenance.json, set by operation a4c10030-0000-4000-8000-000000000030 since <since:30-maintenance>; every fresh mutation is refused until the maintenance end naming it"}}

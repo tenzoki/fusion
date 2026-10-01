@@ -1,0 +1,27 @@
+{
+  "operation_id": "a4c10014-0000-4000-8000-000000000014",
+  "op": "transition",
+  "request_digest": "<request-digest:14-transition>",
+  "writes": [
+    {
+      "path": "shared/plans/260922-1000-open-plan.record.json",
+      "before": "sha256:8c5f79ead6abf1d06d75b695fc40e3c5aaf29df1af1300e750410ec030bfaa69",
+      "after": "sha256:c5893670edd3b463b3b6c267fe4967c9112a9489859f77c32522a064dd5ed503"
+    }
+  ],
+  "response": {
+    "ok": true,
+    "result": {
+      "operation_id": "a4c10014-0000-4000-8000-000000000014",
+      "path": "shared/plans/260922-1000-open-plan.record.json",
+      "from": "open",
+      "to": "in_progress",
+      "revision": "sha256:c5893670edd3b463b3b6c267fe4967c9112a9489859f77c32522a064dd5ed503",
+      "previous_revision": "sha256:8c5f79ead6abf1d06d75b695fc40e3c5aaf29df1af1300e750410ec030bfaa69"
+    },
+    "revisions": {
+      "shared/plans/260922-1000-open-plan.record.json": "sha256:c5893670edd3b463b3b6c267fe4967c9112a9489859f77c32522a064dd5ed503"
+    }
+  },
+  "created_at": "2026-10-01T11:00:00.000Z"
+}

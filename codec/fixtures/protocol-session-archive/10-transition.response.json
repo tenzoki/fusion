@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"schema-invalid","reason":"payload-field-not-admitted","detail":"shared/discussions/260922-1200-open-discussion.record.json is a record of kind discussion, whose transition payload admits no field; it carries outcome (admitted on package)"}}

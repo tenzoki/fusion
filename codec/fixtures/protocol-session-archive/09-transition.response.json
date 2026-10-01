@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"schema-invalid","reason":"payload-field-not-admitted","detail":"shared/decisions/260922-1100-open-decision.record.json is a record of kind decision, whose transition payload admits answer_ref, implementation_ref, superseded_by, deferral; it carries steps (admitted on plan)"}}

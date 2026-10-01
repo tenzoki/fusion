@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"schema-invalid","reason":"payload-field-not-admitted","detail":"shared/issues/260920-1000-chain-head-open.record.json is a record of kind issue, whose transition payload admits disposition; it carries claim (admitted on package)"}}

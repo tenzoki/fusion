@@ -1,0 +1,59 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "a4c1e015-0000-4000-8000-000000000015",
+  "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+  "domain": "code",
+  "status": "done",
+  "claim": {
+    "checkout_id": "a4c1c0de",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-09-15T09:00:00+02:00"
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260914-0900-second-done-package/260914-0900-second-done-package.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [
+    {
+      "ref": {
+        "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+        "record_id": "a4c1e016-0000-4000-8000-000000000016",
+        "revision": "sha256:91c2ec94cb0303e1347d312d06c33c3af263bea8ca6fae3d50b19fdb61dd4886"
+      },
+      "policy": "claude-guided"
+    }
+  ],
+  "outcome": {
+    "class": "completed",
+    "reason": "The review accepts.",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+          "record_id": "a4c1e016-0000-4000-8000-000000000016",
+          "revision": "sha256:91c2ec94cb0303e1347d312d06c33c3af263bea8ca6fae3d50b19fdb61dd4886"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

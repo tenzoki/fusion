@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a4c1e009-0000-4000-8000-000000000009",
+  "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260922-1100-open-decision.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

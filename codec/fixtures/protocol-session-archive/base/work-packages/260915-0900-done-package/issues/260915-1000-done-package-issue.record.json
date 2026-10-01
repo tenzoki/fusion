@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a4c1e013-0000-4000-8000-000000000013",
+  "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260915-0900-done-package/issues/260915-1000-done-package-issue.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "a4c1e011-0000-4000-8000-000000000011",
+  "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+  "domain": "code",
+  "status": "open",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260922-0900-open-package/260922-0900-open-package.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

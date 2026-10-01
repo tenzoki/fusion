@@ -1,0 +1,33 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a4c1e003-0000-4000-8000-000000000003",
+  "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260918-1000-chain-tail-legacy.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "marker": "_c_"
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20260918-session/backup/shared/issues/260918-1000-chain-tail-legacy.md",
+      "sha256": "sha256:8c4455d5f6a480e83ef27273bc95769cb92530bdd2274cf69c8997a87cc1abf2",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

@@ -127,8 +127,11 @@ function regularFiles(dir: string, rel = ""): string[] {
 // (FJ02b step 5, `round-trip-cli-fj02b.test.ts` is their gate) and
 // `protocol-session-initialize/` the recorded `initialize`, `list.state` and
 // `inspect.pending` with their base and seed files (the initialize plan's
-// step 8, `round-trip-cli-initialize.test.ts` is their gate); none is a
-// validation fixture, so none is indexed.
+// step 8, `round-trip-cli-initialize.test.ts` is their gate) and
+// `protocol-session-archive/` the recorded archive boundary, foreign-field
+// refusals and maintenance fence with their base and seed files (the archive
+// revision plan's step 9, `round-trip-cli-archive.test.ts` is their gate);
+// none is a validation fixture, so none is indexed.
 const isIndexed = (rel: string): boolean =>
   rel !== MANIFEST_FILE &&
   !rel.endsWith(".schema.json") &&
@@ -138,7 +141,8 @@ const isIndexed = (rel: string): boolean =>
   !rel.startsWith("prior-handback/") &&
   !rel.startsWith("protocol-session-fj02/") &&
   !rel.startsWith("protocol-session-fj02b/") &&
-  !rel.startsWith("protocol-session-initialize/");
+  !rel.startsWith("protocol-session-initialize/") &&
+  !rel.startsWith("protocol-session-archive/");
 
 describe("fixtures/ coverage", () => {
   it("every fixture file appears in the manifest exactly once, and every manifest path exists", () => {

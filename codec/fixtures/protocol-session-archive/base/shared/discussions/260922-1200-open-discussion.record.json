@@ -1,0 +1,29 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a4c1e010-0000-4000-8000-000000000010",
+  "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+  "kind": "discussion",
+  "narrative": {
+    "path": "shared/discussions/260922-1200-open-discussion.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "participants": [
+      {
+        "actor": "user",
+        "person": "Kai Stalmann <ks@qantr.com>"
+      }
+    ],
+    "outcome_refs": []
+  }
+}

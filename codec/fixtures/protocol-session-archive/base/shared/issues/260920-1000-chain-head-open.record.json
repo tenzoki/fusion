@@ -1,0 +1,29 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a4c1e001-0000-4000-8000-000000000001",
+  "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260920-1000-chain-head-open.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": null
+  },
+  "references": [
+    {
+      "workbench_id": "a4c1be00-0000-4000-8000-000000000000",
+      "record_id": "a4c1e002-0000-4000-8000-000000000002",
+      "display": "260919-1000-chain-middle.md"
+    }
+  ],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

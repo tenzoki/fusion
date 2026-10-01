@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"schema-invalid","reason":"payload-field-not-admitted","detail":"shared/plans/260922-1000-open-plan.record.json is a record of kind plan, whose transition payload admits steps, criteria; it carries answer_ref (admitted on decision)"}}
