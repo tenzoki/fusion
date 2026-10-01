@@ -967,22 +967,37 @@ export interface Fence {
 const fencePathFor = (wb: Workbench): string => join(wb.root, STATE_DIR, MAINTENANCE_FILE);
 
 /**
- * The standing fence, or null when none stands. A fence file that exists but
- * does not read, does not parse strictly, or is not exactly
+ * The standing fence, or null when none stands. Only an absent entry is no
+ * fence: the entry itself decides presence, as for the manifest, so a dangling
+ * link stands (Prior `39f6fb8`). An entry that stands and is not a regular file
+ * through its link (a dangling link, a link loop, a directory or a link to
+ * one), does not read, does not parse strictly, or is not exactly
  * `{operation_id, since}` with two strings is `operation-unknown/
- * maintenance-unreadable`: it is never read as no fence (request 39 (d)).
+ * maintenance-unreadable`: it is never read as no fence (request 39 (d)). A
+ * link to a fence file reads as that fence, as a link to a manifest reads as
+ * the manifest.
  */
 export function readFence(wb: Workbench): Result<Fence | null> {
   const rel = `${STATE_DIR}/${MAINTENANCE_FILE}`;
   const unreadable = (why: string): Result<never> =>
     err("operation-unknown", "maintenance-unreadable", `${rel} stands and cannot be read as a fence (${why}); it fences every fresh mutation until it is removed by hand, after a validate and a reconcile`);
-  let bytes: Buffer;
+  const path = fencePathFor(wb);
   try {
-    bytes = readFileSync(fencePathFor(wb));
+    lstatSync(path);
   } catch (e) {
     const code = (e as NodeJS.ErrnoException).code;
     if (code === "ENOENT") return { ok: true, value: null };
     return unreadable(code ?? "an error without a code");
+  }
+  const regular = isRegularFile(path);
+  if (!regular.ok) return unreadable(regular.code);
+  if (!regular.value) return unreadable("not a regular file, or a link to none");
+  let bytes: Buffer;
+  try {
+    bytes = readFileSync(path);
+  } catch (e) {
+    // The entry stood a moment ago; gone or not, it is not read as no fence.
+    return unreadable((e as NodeJS.ErrnoException).code ?? "an error without a code");
   }
   const parsed = strictParse(bytes);
   if (!parsed.ok) return unreadable(`${parsed.reason}: ${parsed.detail}`);

@@ -8837,13 +8837,22 @@ var fencePathFor = (wb) => join2(wb.root, STATE_DIR, MAINTENANCE_FILE);
 function readFence(wb) {
   const rel = `${STATE_DIR}/${MAINTENANCE_FILE}`;
   const unreadable = (why) => err("operation-unknown", "maintenance-unreadable", `${rel} stands and cannot be read as a fence (${why}); it fences every fresh mutation until it is removed by hand, after a validate and a reconcile`);
-  let bytes;
+  const path = fencePathFor(wb);
   try {
-    bytes = readFileSync2(fencePathFor(wb));
+    lstatSync(path);
   } catch (e) {
     const code = e.code;
     if (code === "ENOENT") return { ok: true, value: null };
     return unreadable(code ?? "an error without a code");
+  }
+  const regular = isRegularFile(path);
+  if (!regular.ok) return unreadable(regular.code);
+  if (!regular.value) return unreadable("not a regular file, or a link to none");
+  let bytes;
+  try {
+    bytes = readFileSync2(path);
+  } catch (e) {
+    return unreadable(e.code ?? "an error without a code");
   }
   const parsed = strictParse(bytes);
   if (!parsed.ok) return unreadable(`${parsed.reason}: ${parsed.detail}`);

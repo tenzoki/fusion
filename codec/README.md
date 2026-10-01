@@ -284,9 +284,13 @@ and before every plan:
 | `inspect` | `maintenance: null` | `maintenance: {operation_id, since}` | `operation-unknown/maintenance-unreadable` |
 
 `inspect.maintenance` follows `pending`, and `operations.implemented` ends
-with `maintenance`. A file that does not read is one that cannot be read,
+with `maintenance`. Only an absent entry is no fence: the entry itself
+decides presence, as for `workbench.json`, so a dangling link stands. A file
+that does not read is an entry that is not a regular file through its link
+(a dangling link, a link loop, a directory or a link to one), cannot be read,
 does not parse strictly, or is not exactly `{operation_id, since}` with two
-strings; it fences until it is removed (request 39 (d)). `end` with no fence
+strings; it fences until it is removed (request 39 (d), Prior `39f6fb8`). A
+link to a fence file reads as that fence, and its `end` removes the link. `end` with no fence
 standing is refused, never answered as success (request 39 (c)). The fence is
 set before its answer is stored and removed before the `end`'s answer is: a
 process killed between the two leaves the fence it meant to set, which a retry

@@ -11,7 +11,7 @@
 
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, renameSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -4273,6 +4273,66 @@ describe("maintenance: the fence (request 39)", () => {
       expect(listed("journal"), what).toEqual([]);
       expect(listed("ops"), what).toEqual([]);
     }
+  });
+
+  // Prior `39f6fb8`, `TestCodecMaintenanceUnreadableFence`: an entry that stands
+  // at the fence path and is no regular file is a fence that does not read,
+  // never "no fence". The lock's bookkeeping is established first, as there.
+  const unreadableEntries: Array<[string, () => void]> = [
+    ["dangling-symlink", () => symlinkSync("missing-maintenance-target.json", join(root, FENCE_FILE))],
+    ["symlink-to-directory", () => {
+      mkdirSync(join(root, ".json-state", "elsewhere"));
+      symlinkSync("elsewhere", join(root, FENCE_FILE));
+    }],
+    ["directory", () => mkdirSync(join(root, FENCE_FILE))],
+  ];
+  it.each(unreadableEntries)("an entry that stands and is no regular file fences, through dispatch and the bundle, and stays as it was: %s", async (kind, make) => {
+    /** Every entry with its bytes, a link as its target, so a replaced link shows. */
+    const entries = (): Record<string, string> => {
+      const out: Record<string, string> = {};
+      const walk = (dir: string, rel: string): void => {
+        for (const name of readdirSync(dir)) {
+          const p = rel === "" ? name : `${rel}/${name}`;
+          const st = lstatSync(join(dir, name));
+          if (st.isSymbolicLink()) out[p] = `link:${readlinkSync(join(dir, name))}`;
+          else if (st.isDirectory()) walk(join(dir, name), p);
+          else out[p] = readFileSync(join(dir, name)).toString("base64");
+        }
+      };
+      walk(root, "");
+      return out;
+    };
+    const run = (req: object) => JSON.parse(spawnSync(process.execPath, [BUNDLE], { input: JSON.stringify(req), encoding: "utf-8" }).stdout) as Response;
+    expect(errorOf(await dispatch(end(OTHER_ID, AFTER_ID)))).toMatchObject({ class: "conflict", reason: "maintenance-not-active" });
+    make();
+    const before = entries();
+    for (const answer of [await dispatch({ op: "inspect", workbench: root }), run({ op: "inspect", workbench: root })]) {
+      expect(errorOf(answer)).toMatchObject({ class: "operation-unknown", reason: "maintenance-unreadable" });
+    }
+    for (const req of [transitionRequest({ operation_id: OTHER_ID }), begin(OTHER_ID), end()]) {
+      for (const answer of [await dispatch(req), run(req)]) {
+        const e = errorOf(answer);
+        expect({ class: e.class, reason: e.reason }, String(req.op)).toEqual({ class: "conflict", reason: "maintenance-active" });
+        expect(e.detail).toContain(".json-state/maintenance.json stands and cannot be read as a fence");
+      }
+    }
+    expect(entries(), `${kind}: nothing written, the entry itself unchanged`).toEqual(before);
+  });
+
+  it("a link to a fence file reads as that fence, as a link to a manifest reads as the manifest; a link loop does not read", async () => {
+    mkdirSync(join(root, ".json-state"), { recursive: true });
+    writeFileSync(join(root, ".json-state", "kept.json"), JSON.stringify({ operation_id: BEGIN_ID, since: SINCE }));
+    symlinkSync("kept.json", join(root, FENCE_FILE));
+    expect(await inspected()).toEqual({ operation_id: BEGIN_ID, since: SINCE });
+    expect(errorOf(await dispatch(transitionRequest({ operation_id: OTHER_ID })))).toMatchObject({ class: "conflict", reason: "maintenance-active" });
+    okResult(await dispatch(end()));
+    expect(existsSync(join(root, ".json-state", "kept.json")), "end removes the link, not its target").toBe(true);
+    expect(await inspected()).toBeNull();
+
+    symlinkSync("maintenance.json", join(root, FENCE_FILE));
+    const e = errorOf(await dispatch({ op: "inspect", workbench: root }));
+    expect(e).toMatchObject({ class: "operation-unknown", reason: "maintenance-unreadable" });
+    expect(e.detail).toContain("ELOOP");
   });
 
   it("the bundle answers maintenance and the fenced inspect as dispatch does", async () => {
