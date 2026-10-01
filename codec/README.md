@@ -131,9 +131,24 @@ twice, in the payload or in the stored array the payload updates, is
 refuses a new plan that repeats one; an id the plan lacks is
 `unresolved-reference/unknown-step-id` or `unknown-criterion-id`. `steps` or
 `criteria` sent for a record that is not a plan is
-`schema-invalid/payload-field-not-admitted`, not ignored, because the two
-fields write data. `acceptance` and the record's `references` are never
-written by progress, and the answer has the shape of every `transition`.
+`schema-invalid/payload-field-not-admitted`, not ignored: since the archive
+revision that is the plan row of the general rule below. `acceptance` and the
+record's `references` are never written by progress, and the answer has the
+shape of every `transition`.
+
+**Foreign payload fields** (Prior's FJ03c response 37, the archive revision).
+A `transition` payload admits, per target kind, the fields of one row of
+`TRANSITION_PAYLOAD_FIELDS` (`src/cli/ops.ts`): a package `claim` and
+`outcome`, an issue `disposition`, a plan `steps` and `criteria`, a decision
+`answer_ref`, `implementation_ref`, `superseded_by` and `deferral`, a
+discussion none. A present key outside the row, `null` included, is
+`schema-invalid/payload-field-not-admitted`, checked after the caller's
+revision and the record's kind are read and before any rule, intent or write;
+it was dropped in silence before. Within the row the target state's rules
+decide, as before. `ops.test.ts` derives the table from the schema positions
+the Claude client's `PAYLOAD_FIELDS` test reads and pins it to Prior's table.
+The check is the `transition` entry's own: `claim` and `release` compose their
+payload and keep their answers.
 
 **Evidence creation** is `create` with `kind: evidence` (response 19), the
 sole write route for a new evidence record; `## Evidence records on disk`

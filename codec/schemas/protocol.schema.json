@@ -146,7 +146,7 @@
         "reason": { "type": "string", "minLength": 1 },
         "payload": {
           "type": "object",
-          "description": "What the target state may need to see, in the record's own field shapes. Only the fields the target state has a rule about are read.",
+          "description": "What the target state may need to see, in the record's own field shapes. A field outside the target kind's row is refused schema-invalid/payload-field-not-admitted, a present null included; within the row, the target state's rules decide.",
           "additionalProperties": false,
           "properties": {
             "claim": {

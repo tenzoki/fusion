@@ -16,7 +16,7 @@ import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { bindEvidence, dispatch, indexedContext } from "../cli/ops.js";
+import { bindEvidence, dispatch, indexedContext, TRANSITION_PAYLOAD_FIELDS } from "../cli/ops.js";
 import {
   OPERATIONS,
   IMPLEMENTED_OPERATIONS,
@@ -897,6 +897,105 @@ describe("transition", () => {
   it("a missing record is unresolved-reference", async () => {
     expect(await dispatch(transitionRequest({ record: { path: "work-packages/absent/package.json" } }))).toMatchObject({ ok: false, error: { class: "unresolved-reference", reason: "record-not-found" } });
   });
+
+  // --- foreign payload fields (Prior's FJ03c response 37) ---
+
+  const SCHEMAS = fileURLToPath(new URL("../../schemas/", import.meta.url));
+  const schemaFile = (name: string) => JSON.parse(readFileSync(join(SCHEMAS, name), "utf-8"));
+  const journalOf = (): string[] => (existsSync(join(root, ".json-state", "journal")) ? readdirSync(join(root, ".json-state", "journal")) : []);
+  const storedAnswer = (id: string): boolean => existsSync(join(root, ".json-state", "ops", `${id}.json`));
+
+  it("TRANSITION_PAYLOAD_FIELDS is the transition payload read against each kind's control fields in the schemas, and Prior's table at b912302", () => {
+    // The derivation of `hooks/lib/__tests__/record-write.test.ts` for the
+    // client's PAYLOAD_FIELDS, so both hosts' tables are one set.
+    const payload = schemaFile("protocol.schema.json").oneOf.find((b: { properties: { op: { const?: string } } }) => b.properties.op.const === "transition").properties.payload.properties;
+    const kinds: Record<string, object> = { package: schemaFile("package.schema.json").properties };
+    for (const k of ["issue", "plan", "decision", "discussion"]) kinds[k] = schemaFile("record.schema.json").$defs[`${k}_control`].properties;
+    const derived = Object.fromEntries(Object.entries(kinds).map(([k, props]) => [k, Object.keys(payload).filter((f) => f in props)]));
+    expect(TRANSITION_PAYLOAD_FIELDS).toEqual(derived);
+    expect(TRANSITION_PAYLOAD_FIELDS).toEqual({
+      package: ["claim", "outcome"],
+      issue: ["disposition"],
+      plan: ["steps", "criteria"],
+      decision: ["answer_ref", "implementation_ref", "superseded_by", "deferral"],
+      discussion: [],
+    });
+    expect(Object.keys(TRANSITION_PAYLOAD_FIELDS).sort(), "one row per kind the table moves").toEqual(Object.keys(transitions().kinds).sort());
+    expect(Object.values(TRANSITION_PAYLOAD_FIELDS).flat().sort(), "every payload field admitted on some kind").toEqual(Object.keys(payload).sort());
+  });
+
+  /** One record per kind, the move it lands with its own fields, and a foreign field from another row. */
+  const perKind = (): Array<{ kind: string; path: string; to: string; own: TransitionRequest["payload"]; foreign: TransitionRequest["payload"] }> => [
+    { kind: "package", path: OPEN, to: "claimed", own: { claim: CLAIM }, foreign: { disposition: { kind: "fixed", reason_ref: "260928-1200-parser-fix.md" } } },
+    { kind: "issue", path: ISSUE, to: "closed", own: { disposition: { kind: "fixed", reason_ref: "260928-1200-parser-fix.md" } }, foreign: { outcome: { class: "completed", reason: "r", evidence: [] } } },
+    { kind: "plan", path: seedRecord("record/plan-open-unadopted.json", "plans", "260929-1000-a-plan"), to: "in_progress", own: { steps: [{ id: "step-1", state: "done" }] }, foreign: { answer_ref: "260809-1400-fixture-format-consultation.md" } },
+    { kind: "decision", path: seedRecord("record/decision-open.json", "decisions", "260929-1000-a-decision"), to: "answered", own: { answer_ref: "260809-1400-fixture-format-consultation.md" }, foreign: { claim: CLAIM } },
+    { kind: "discussion", path: seedRecord("record/discussion-open.json", "discussions", "260929-1000-a-discussion"), to: "closed", own: {}, foreign: { deferral: { target: { kind: "external", name: "v1.x" }, ruled_by: ACTOR } } },
+  ];
+
+  it("per kind, a field foreign to the kind is schema-invalid/payload-field-not-admitted, a present null too: the record's bytes unchanged, no intent, no stored answer; the move with its own fields then lands", async () => {
+    for (const { kind, path, to, own, foreign } of perKind()) {
+      const field = Object.keys(foreign ?? {})[0] as string;
+      const before = bytesOf(path);
+      const cases: Array<[string, TransitionRequest["payload"]]> = [
+        ["a foreign field", { ...own, ...foreign }],
+        ["a foreign null", { ...own, [field]: null }],
+        ["a foreign field alone", { ...foreign }],
+      ];
+      for (const [label, payload] of cases) {
+        const id = randomUUID();
+        const r = await recordMove(path, to, payload, id);
+        expect(r, `${kind}: ${label}`).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "payload-field-not-admitted" } });
+        if (!r.ok) expect(r.error.detail, `${kind}: ${label}`).toContain(`it carries ${field} (admitted on `);
+        expect(bytesOf(path).equals(before), `${kind}: ${label}: bytes`).toBe(true);
+        expect(journalOf(), `${kind}: ${label}: intent`).toEqual([]);
+        expect(storedAnswer(id), `${kind}: ${label}: answer`).toBe(false);
+      }
+      const id = randomUUID();
+      const moved = await recordMove(path, to, own, id);
+      if (kind === "package") {
+        expect(okResult(moved), kind).toMatchObject({ operation_id: id, from: "open", to });
+        expect(strictParse(bytesOf(path))).toMatchObject({ ok: true, value: { status: to, claim: CLAIM } });
+      } else {
+        await landed(moved, path, "open", to, id);
+      }
+    }
+  });
+
+  it("the refusal comes before the target state's rules and after the revision check", async () => {
+    const before = bytesOf(ISSUE);
+    // An edge the table does not list, carrying a foreign field: the field is refused, not the edge.
+    expect(await recordMove(ISSUE, "claimed", { claim: CLAIM }, randomUUID())).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "payload-field-not-admitted" } });
+    // A move the state rule refuses without its field, carrying a foreign one: the field is refused.
+    expect(await recordMove(ISSUE, "closed", { outcome: null }, randomUUID())).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "payload-field-not-admitted" } });
+    // A stale revision is the caller's first answer, as before.
+    expect(await dispatch(transitionRequest({ operation_id: randomUUID(), record: { path: ISSUE }, expected_revision: "sha256:" + "0".repeat(64), to: "closed", payload: { outcome: null } }))).toMatchObject({ ok: false, error: { class: "conflict", reason: "revision-mismatch" } });
+    expect(bytesOf(ISSUE).equals(before)).toBe(true);
+    expect(journalOf()).toEqual([]);
+  });
+
+  it("every admitted field lands on its own kind", async () => {
+    const lands = async (path: string, to: string, payload: TransitionRequest["payload"], label: string): Promise<void> => {
+      const r = await recordMove(path, to, payload, randomUUID());
+      expect(r.ok, `${label}: ${JSON.stringify(r)}`).toBe(true);
+    };
+    await lands(OPEN, "claimed", { claim: CLAIM }, "package claim");
+    await lands(OPEN, "done", { outcome: { class: "completed", reason: "all criteria met", evidence: [] } }, "package outcome");
+    await lands(ISSUE, "closed", { disposition: { kind: "fixed", reason_ref: "260928-1200-parser-fix.md" } }, "issue disposition");
+    const plan = seedRecord("record/plan-open-unadopted.json", "plans", "260929-1000-a-plan");
+    await lands(plan, "in_progress", { steps: [{ id: "step-1", state: "in_progress" }] }, "plan steps");
+    await lands(plan, "closed", { criteria: [] }, "plan criteria");
+    const decision = seedRecord("record/decision-open.json", "decisions", "260929-1000-a-decision");
+    await lands(decision, "answered", { answer_ref: "260809-1400-fixture-format-consultation.md" }, "decision answer_ref");
+    await lands(decision, "implemented", { implementation_ref: "20942d0c" }, "decision implementation_ref");
+    await lands(decision, "superseded", { superseded_by: { workbench_id: "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964", record_id: "d068e1ae-3f62-429a-880a-2785763aaf01" } }, "decision superseded_by");
+    const deferred = seedRecord("record/decision-open.json", "decisions", "260929-1100-another-decision");
+    await lands(deferred, "deferred", { deferral: { target: { kind: "external", name: "v1.x" }, ruled_by: ACTOR } }, "decision deferral");
+    expect(controlOf(plan)).toMatchObject({ state: "closed", steps: [{ id: "step-1", state: "in_progress" }] });
+    expect(controlOf(decision).superseded_by).toMatchObject({ record_id: "d068e1ae-3f62-429a-880a-2785763aaf01" });
+  });
+  // `claim` and `release` compose their own payload and keep their answers on
+  // a record kind: "claim on a record kind is refused in transition's class".
 });
 
 // --- claim, release and set-mode (FJ02 step 4) ------------------------------------------

@@ -27,8 +27,9 @@
 //               runs under the caller's expected revision; on a live plan
 //               also plan progress, `payload.steps` and `payload.criteria`
 //               applied as updates keyed by id, with or without a state
-//               change (Prior's FJ02 response 18)
-//   claim       `transition` into the state the table's `claim` edges enter,
+//               change (Prior's FJ02 response 18); a payload field foreign
+//               to the record's kind is refused (FJ03c response 37)
+//   claim      `transition` into the state the table's `claim` edges enter,
 //   release     and out along its `release` edges: the transition plan
 //               function with defaults and clearer refusals, never a second
 //               route (decision 260928-1735, option 1)
@@ -196,7 +197,7 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
     case "create":
       return mutate(wb, req, req.kind === "evidence" ? createEvidencePlan(req) : createPlan(req), kernel);
     case "transition":
-      return mutate(wb, req, transitionPlan(req), kernel);
+      return mutate(wb, req, transitionPlan(req, payloadAdmitted(req)), kernel);
     case "claim":
       return mutate(wb, req, claimPlan(req), kernel);
     case "release":
@@ -989,13 +990,52 @@ interface Moved {
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
 
 /**
+ * Per target kind, the `transition` payload fields it admits (Prior's FJ03c
+ * response 37): the payload properties of the protocol schema's `transition`
+ * branch that are control fields of the kind. `ops.test.ts` derives the table
+ * from those schema positions, as the Claude client's `PAYLOAD_FIELDS` test
+ * does, and pins it to Prior's table. Evidence has no row: it is immutable
+ * and refused before the payload is read.
+ */
+export const TRANSITION_PAYLOAD_FIELDS: Readonly<Record<string, readonly string[]>> = {
+  package: ["claim", "outcome"],
+  issue: ["disposition"],
+  plan: ["steps", "criteria"],
+  decision: ["answer_ref", "implementation_ref", "superseded_by", "deferral"],
+  discussion: [],
+};
+
+/**
+ * The `transition` operation's own check on the caller's payload: a present
+ * key outside the target kind's row, `null` included, is refused, never
+ * dropped. It is the precheck of the `transition` entry alone, so it runs
+ * after the record's kind is read and before any rule, intent or write; the
+ * payload `claim` and `release` compose is the kernel's, not the caller's.
+ * Within the row the target state's rules decide, as before.
+ */
+function payloadAdmitted(req: TransitionRequest): (pair: Pair) => Result<void> {
+  return (pair) => {
+    const admitted = TRANSITION_PAYLOAD_FIELDS[pair.kind] ?? [];
+    const foreign = Object.keys(req.payload ?? {}).filter((k) => !admitted.includes(k));
+    if (foreign.length === 0) return { ok: true, value: undefined };
+    const row = admitted.length > 0 ? admitted.join(", ") : "no field";
+    const carried = foreign.map((f) => {
+      const on = Object.keys(TRANSITION_PAYLOAD_FIELDS).filter((k) => TRANSITION_PAYLOAD_FIELDS[k]?.includes(f));
+      return on.length > 0 ? `${f} (admitted on ${on.join(", ")})` : f;
+    });
+    return refusal("schema-invalid", "payload-field-not-admitted", `${req.record.path} is a record of kind ${pair.kind}, whose transition payload admits ${row}; it carries ${carried.join(", ")}`);
+  };
+}
+
+/**
  * `transition` as a plan function: the pair, the caller's expected revision,
  * the table's edge and target-state rules, the references the payload brings
  * resolved, and the record after the move validated against its schema.
  * The answer's shape is FJ01's for every kind.
  *
- * `precheck` is how `claim` and `release` enter: it runs after the caller's
- * revision and before the table, and may only refuse. Everything after it,
+ * `precheck` is each entry's own check: `payloadAdmitted` for `transition`,
+ * the claim and release conditions for `claim` and `release`. It runs after
+ * the caller's revision and before the table, and may only refuse. Everything after it,
  * the edge, the claim rule, the `claimed_at` check, the result's schema, the
  * write and the operation-id binding, is this function's for both entry
  * points alike.
@@ -1016,15 +1056,6 @@ function transitionPlan(req: TransitionRequest, precheck?: (pair: Pair) => Resul
     }
 
     const payload = req.payload ?? {};
-    // Plan progress, check 1: `steps` and `criteria` write data, unlike the
-    // rule-only fields a kind that has no rule about them ignores, so on
-    // another kind they are refused rather than dropped (settled choice 4).
-    if (pair.kind !== "plan") {
-      const carried = PROGRESS.filter(({ field }) => payload[field] !== undefined).map(({ field }) => field);
-      if (carried.length > 0) {
-        return refusal("schema-invalid", "payload-field-not-admitted", `${req.record.path} is a ${pair.kind} record; ${carried.join(" and ")} ${carried.length > 1 ? "are" : "is"} plan progress, read on a plan record only`);
-      }
-    }
     const moved = pair.kind === "package" ? movePackage(pair, req.to, payload) : moveRecord(ctx, pair, req.to, payload);
     if (!moved.ok) return moved;
     const { from, next, schemaId } = moved.value;
@@ -1118,7 +1149,8 @@ type ProgressEntry = Record<string, unknown> & { id: string };
 
 /**
  * A plan's transition, checks 2 to 7 of plan progress (Prior's FJ02 response
- * 18; check 1, the two fields on another kind, is `transitionPlan`'s): the
+ * 18; check 1, the two fields on another kind, is the plan row of
+ * `TRANSITION_PAYLOAD_FIELDS`, which `payloadAdmitted` checks): the
  * control fields the move writes besides `state`, which are the progress
  * arrays the payload carries and nothing else. `acceptance` and the record's
  * `references` are never written here, so an adoption and its bindings stay

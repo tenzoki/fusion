@@ -9465,7 +9465,7 @@ async function dispatch(request, options = {}) {
     case "create":
       return mutate(wb, req, req.kind === "evidence" ? createEvidencePlan(req) : createPlan(req), kernel);
     case "transition":
-      return mutate(wb, req, transitionPlan(req), kernel);
+      return mutate(wb, req, transitionPlan(req, payloadAdmitted(req)), kernel);
     case "claim":
       return mutate(wb, req, claimPlan(req), kernel);
     case "release":
@@ -10004,6 +10004,26 @@ function createEvidencePlan(req) {
   };
 }
 var isObject4 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+var TRANSITION_PAYLOAD_FIELDS = {
+  package: ["claim", "outcome"],
+  issue: ["disposition"],
+  plan: ["steps", "criteria"],
+  decision: ["answer_ref", "implementation_ref", "superseded_by", "deferral"],
+  discussion: []
+};
+function payloadAdmitted(req) {
+  return (pair) => {
+    const admitted = TRANSITION_PAYLOAD_FIELDS[pair.kind] ?? [];
+    const foreign = Object.keys(req.payload ?? {}).filter((k) => !admitted.includes(k));
+    if (foreign.length === 0) return { ok: true, value: void 0 };
+    const row = admitted.length > 0 ? admitted.join(", ") : "no field";
+    const carried = foreign.map((f) => {
+      const on = Object.keys(TRANSITION_PAYLOAD_FIELDS).filter((k) => TRANSITION_PAYLOAD_FIELDS[k]?.includes(f));
+      return on.length > 0 ? `${f} (admitted on ${on.join(", ")})` : f;
+    });
+    return refusal("schema-invalid", "payload-field-not-admitted", `${req.record.path} is a record of kind ${pair.kind}, whose transition payload admits ${row}; it carries ${carried.join(", ")}`);
+  };
+}
 function transitionPlan(req, precheck) {
   return (ctx) => {
     const r = ctx.readPair(req.record.path);
@@ -10019,12 +10039,6 @@ function transitionPlan(req, precheck) {
       if (!p.ok) return p;
     }
     const payload = req.payload ?? {};
-    if (pair.kind !== "plan") {
-      const carried = PROGRESS.filter(({ field: field2 }) => payload[field2] !== void 0).map(({ field: field2 }) => field2);
-      if (carried.length > 0) {
-        return refusal("schema-invalid", "payload-field-not-admitted", `${req.record.path} is a ${pair.kind} record; ${carried.join(" and ")} ${carried.length > 1 ? "are" : "is"} plan progress, read on a plan record only`);
-      }
-    }
     const moved = pair.kind === "package" ? movePackage(pair, req.to, payload) : moveRecord(ctx, pair, req.to, payload);
     if (!moved.ok) return moved;
     const { from, next, schemaId } = moved.value;
@@ -12161,7 +12175,7 @@ var protocol_schema_default = {
         reason: { type: "string", minLength: 1 },
         payload: {
           type: "object",
-          description: "What the target state may need to see, in the record's own field shapes. Only the fields the target state has a rule about are read.",
+          description: "What the target state may need to see, in the record's own field shapes. A field outside the target kind's row is refused schema-invalid/payload-field-not-admitted, a present null included; within the row, the target state's rules decide.",
           additionalProperties: false,
           properties: {
             claim: {
