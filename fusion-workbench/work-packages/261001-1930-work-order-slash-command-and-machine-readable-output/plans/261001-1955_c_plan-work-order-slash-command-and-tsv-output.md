@@ -89,7 +89,7 @@ flowchart TD
      - The skills surface stays inside 39 260 with `SKILL_HEAD_ROOM` unmoved, and `npm test` is green.
    - Verification: `cd /Users/k1/Projects/productive/fusion/hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts; npm test`
 
-3. **`README-hooks.md` and the helper header name the new caller and the format**
+3. **`README-hooks.md` and the helper header name the new caller and the format** [DONE]
    - Executor: `code-implementer`
    - Files: `README-hooks.md` (the `order.ts` row and the `bin/fusion-work-order` roster row), `bin/fusion-work-order` (the "Why this exists" paragraph), `hooks/lib/__tests__/reference-resolution-lint.test.ts` (line 488, if moved)
    - Changes:
@@ -104,7 +104,7 @@ flowchart TD
      - `npm test` is green.
    - Verification: `cd /Users/k1/Projects/productive/fusion/hooks && npm test`
 
-4. **Version bump and whole-tree verification**
+4. **Version bump and whole-tree verification** [DONE]
    - Executor: `code-implementer`
    - Files: `.claude-plugin/plugin.json`
    - Changes: change `version` from `12.0.1` to `12.1.0`. Nothing else.
