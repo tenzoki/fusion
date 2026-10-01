@@ -15,3 +15,7 @@ The TSV tests leave cycle numbering, the #unreadable= lines and tab escaping unp
 **Constraint.** The hook-test surface is at zero margin (22 281 of 22 281 lines at `df38a5dd`). Pinning any of these costs lines. One way that adds no line is to widen the existing literal fixture: add a second cycle, an unreadable record and a second unresolved entry with a tab to the same `scratch()` call and literal, by rewrapping existing lines. Otherwise the gap goes to the user as a head-room question. It is not a reason to edit a baseline.
 
 **Acceptance test.** Each of these changes turns `fusion-work-order.test.ts` red, one at a time: (a) `cycleOf.set(m, 1)` in place of `i + 1`, (b) dropping the `#unreadable=` push in `renderTsv`, (c) dropping the `\t` replacement in `esc`. The surface-growth bound stays green.
+
+## Resolution, 261001
+
+Fixed by `code-implementer` on the user's word after the closing review, in the commit that carries this marker change. `npm test` green (1015 tests); the hook-test surface stayed at 22 281 lines, no head-room or baseline moved; `skills/wp-order/SKILL.md` is 4 425 bytes.

@@ -13,3 +13,7 @@
 **Fix direction.** Reword item 4 so that it doesn't say what the entry names. Say that it resolved to no live item and so blocks nothing *in this computation*. If it names live work in another spelling, it may be a real prerequisite: that is the `note=` caveat. Stay within the skill-body growth bound.
 
 **Acceptance test.** Item 4 of `skills/wp-order/SKILL.md` names no closed list of what an unresolved entry can be, or names all three cases. `npm test` (in `hooks/`) stays green.
+
+## Resolution, 261001
+
+Fixed by `code-implementer` on the user's word after the closing review, in the commit that carries this marker change. `npm test` green (1015 tests); the hook-test surface stayed at 22 281 lines, no head-room or baseline moved; `skills/wp-order/SKILL.md` is 4 425 bytes.

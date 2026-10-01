@@ -60,19 +60,19 @@ describe("bin/fusion-work-order: reports, never gates", () => {
     const root = scratch(ACYCLIC);
     expect(run(root, "--format", "text").stdout).toBe(run(root).stdout);
   });
-  it("prints --format tsv as the hooks/order.ts stream: cycle number, absent field, unresolved cell, paused, escaping", () => {
-    const E = "260101-0005-e", root = scratch({ ...CYCLIC, "260101-0003-c": null, "260101-0004-d": "260101-0003-c.md, x\\y.md", [E]: null });
-    writeFileSync(join(root, "fusion-workbench", "work-packages", E, `${E}.md`), "# e\n\n---\n**Status:** paused\n---\n");
-    const head = ["#format=1", "#anchor=workbench-root", ...[5, 3, 1, 1, 1, 4, 2, 0].map((n, i) => `#${COUNTS[i]}=${n}`), "#verdict=cyclic", `#note=${value(run(root).stdout, "note")}`, COLS];
+  it("prints --format tsv as the hooks/order.ts stream: cycle numbers, self-edge, absent field, unresolved cell, paused, unreadable, escaping", () => {
+    const [E, F, G] = ["260101-0005-e", "260101-0006-f", "260101-0007-g"], root = scratch({ ...CYCLIC, "260101-0003-c": null, "260101-0004-d": "260101-0003-c.md, x\\y.md, w\tz.md, x\\y.md", [E]: null, [F]: `${F}.md`, [G]: null });
+    for (const [d, s] of [[E, "paused"], [G, "bogus"]]) writeFileSync(join(root, "fusion-workbench", "work-packages", d, `${d}.md`), `# ${d}\n\n---\n**Status:** ${s}\n---\n`);
+    const head = ["#format=1", "#anchor=workbench-root", ...[6, 4, 2, 2, 1, 5, 2, 1].map((n, i) => `#${COUNTS[i]}=${n}`), "#verdict=cyclic", `#note=${value(run(root).stdout, "note")}`, `#unreadable=${G}`, COLS];
     const rows = [["1", "0", "1", "blocked", "260101-0001-a", "open", "present", "260101-0002-b.md", "", "1"],
       ["2", "0", "1", "blocked", "260101-0002-b", "open", "present", "260101-0001-a.md", "", "1"],
       ["3", "0", "1", "ready", "260101-0003-c", "open", "absent", "", "", "0"],
-      ["4", "1", "0", "blocked", "260101-0004-d", "open", "present", "260101-0003-c.md,x\\\\y.md", "x\\\\y.md", "0"],
-      ["5", "0", "0", "paused", E, "paused", "absent", "", "", "0"]];
+      ["4", "1", "0", "blocked", "260101-0004-d", "open", "present", "260101-0003-c.md,x\\\\y.md,w\\tz.md,x\\\\y.md", "w\\tz.md,x\\\\y.md", "0"],
+      ["5", "0", "0", "paused", E, "paused", "absent", "", "", "0"], ["6", "0", "0", "blocked", F, "open", "present", `${F}.md`, "", "2"]];
     expect(run(root, "--format", "tsv").stdout).toBe([...head, ...rows.map((r) => r.join("\t"))].join("\n") + "\n");
   });
-  it("exits 1 with empty stdout on --format alone, an unknown format and --format=tsv", () => {
-    for (const a of [["--format"], ["--format", "json"], ["--format=tsv"]]) expect(((r) => [r.status, r.stdout])(run(scratch(), ...a))).toEqual([1, ""]);
+  it("exits 1 with empty stdout on --format alone, an unknown format, --format=tsv and a repeated --format", () => {
+    for (const a of [["--format"], ["--format", "json"], ["--format=tsv"], ["--format", "tsv", "--format", "tsv"]]) expect(((r) => [r.status, r.stdout])(run(scratch(), ...a))).toEqual([1, ""]);
   });
   it("prints the comment block and the header and no row on verdict=empty", () => {
     expect(run(scratch(), "--format", "tsv").stdout).toBe(["#format=1", "#anchor=workbench-root", ...COUNTS.map((k) => `#${k}=0`), "#verdict=empty", COLS, ""].join("\n"));

@@ -14,3 +14,7 @@
 **Fix direction.** Under `verdict=empty`, still render step 3 item 5 (each `unreadable=` row) before stopping. Or say "no live work packages that could be read" and name the rows. Stay within the skill-body growth bound.
 
 **Acceptance test.** Run `/fusion:wp-order` on a store whose only package has an unreadable status. The person sees "no live work packages" *and* the unreadable item named with what it means. `npm test` (in `hooks/`) stays green.
+
+## Resolution, 261001
+
+Fixed by `code-implementer` on the user's word after the closing review, in the commit that carries this marker change. `npm test` green (1015 tests); the hook-test surface stayed at 22 281 lines, no head-room or baseline moved; `skills/wp-order/SKILL.md` is 4 425 bytes.

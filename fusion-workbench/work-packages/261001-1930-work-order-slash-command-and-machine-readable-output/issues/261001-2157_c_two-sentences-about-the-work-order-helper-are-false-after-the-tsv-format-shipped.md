@@ -13,3 +13,7 @@ After `df38a5dd`, two sentences about `bin/fusion-work-order` don't match the tr
 **Fix direction.** README-hooks: replace "and by nothing else" with a clause that names the consumer program route and keeps "no hook calls it and no pipeline step invokes it". Skill: name `hooks/lib/work-graph.ts` as the computation, or drop the clause. The helper header already points there. Keep the reference-resolution pin in step with any path change.
 
 **Acceptance test.** `grep -n 'by nothing else' README-hooks.md` no longer matches the `order.ts` row. `grep -n 'computation in .hooks/order.ts.' skills/wp-order/SKILL.md` returns nothing. `npm test` (in `hooks/`) is green.
+
+## Resolution, 261001
+
+Fixed by `code-implementer` on the user's word after the closing review, in the commit that carries this marker change. `npm test` green (1015 tests); the hook-test surface stayed at 22 281 lines, no head-room or baseline moved; `skills/wp-order/SKILL.md` is 4 425 bytes.

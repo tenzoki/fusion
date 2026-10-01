@@ -7,7 +7,7 @@ allowed-tools: [Bash]
 
 The user invoked `/fusion:wp-order`. This workflow runs the helper `bin/fusion-work-order` and renders what it printed. The command's name differs from the helper's; this is the only helper it wraps.
 
-**The mechanism is not in this body.** The node set, the ordering, depth, blocking count, readiness, the optimism counts and the exit codes are documented in `bin/fusion-work-order`'s own header, and the computation in `hooks/order.ts`; those headers are the authoritative text. What this body carries is the flow and the sentences the user reads.
+**The mechanism is not in this body.** The node set, the ordering, depth, blocking count, readiness, the optimism counts and the exit codes are documented in the headers of `bin/fusion-work-order` and of `hooks/order.ts`, which renders the computation and points to where it is done; those headers are the authoritative text. What this body carries is the flow and the sentences the user reads.
 
 **The order is the helper's computation, not a ranking.** No agent asserts one, and the user overrides any figure at will (`rules/fusion-workbench-conventions.md`, the `**Depends-on:**` paragraph).
 
@@ -47,14 +47,14 @@ No argument: the default text format is the one rendered here. Exit 0 is the onl
 
 ## Step 3: render
 
-**`verdict=empty` is a real answer and never an error.** Say there are no live work packages, and stop.
+**`verdict=empty` is a real answer and never an error.** Say there are no live work packages; if the helper printed `unreadable=` rows, name each as item 5 below says, then stop.
 
 Otherwise, in this order:
 
 1. **The summary figures**, each in words: items, edges, unresolved entries, cycles, ready, roots, items with no prerequisite field, unreadable records, and the verdict (`acyclic` or `cyclic`).
 2. **One line per item, in exactly the order the helper printed**: position, depth, blocking count, readiness word (`ready`, `blocked` or `paused`, as printed) and the item's name. Every item the helper printed appears, and no other.
 3. **Each `cycle=` row**: name its members and say they wait on one another, so none of them can come first by this computation.
-4. **Each `unresolved=` row**: name the item and the entry, and say the entry resolved to no live item, so it blocks nothing here, whether it names a finished item or nothing at all.
+4. **Each `unresolved=` row**: name the item and the entry, and say the entry resolved to no live item, so it blocks nothing in this computation; if it names live work in a spelling the grammar does not define, it may still be a real prerequisite, which is what the `note=` line warns of.
 5. **Each `unreadable=` row**: name the item and say its record head yields no readable status, so it stands outside the order rather than being dropped in silence.
 
 **A `note=` line is repeated in a sentence of its own**, after the figures and never folded into the table or dropped: it says `ready=` is optimistic by the counts it names, and the user's ruling behind it is in the helper header.
