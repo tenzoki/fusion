@@ -7,7 +7,7 @@
 **Planned against:** fusion `15e4d52e`; bundle 543 227 bytes, `sha256:6b26faf2b0f9389fcbb4df1a3dd23881d2ff76cb2cab4c918f2bf969a597b0bf` (request 44, qualified by Prior at `590465d`). Growth room as dispatched: hook tests 0 lines, skills about 18 KB; each step re-reads both from `hooks/lib/__tests__/surface-growth-bound.test.ts`.
 **Growth bound:** the user's ruling of 2026-10-01, given with this plan's approval, extends `260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md` to FJ04. Retired tests are replaced first. `TEST_LINE_HEAD_ROOM` (and the skills head-room) is then raised by exactly the measured remainder, and each raise is logged in `README-hooks.md` `### Growth bounds on the shipped text` with its figure before and after. No baseline moves.
 **Confidentiality:** axibra-1, and krk while it counts as another team's project, may be copied to scratch and measured. Every report (analyses, `REQUESTS.md`, step notes, commit messages) carries aggregate figures only for them: no file name, no content excerpt. fusion's own workbench may be named. Copies named by the user on 2026-10-01: `/Users/kai/Projects/productive/F03_digital-leadership/axibra-4` or `/Users/kai/Projects/productive/F08-KRK/krk` (read-only, copied to scratch); axibra-4 replaces axibra-1 where the steps name it; aggregate figures only for both.
-**Decidability:** Three questions. **(1) Which Markdown artefacts become records?** Once a rule is fixed, it is decidable from the files: marker, store, container head and the structural head fields are all on disk. *Which* rule is not decidable from the texts: §2.1's "höchstens extrahierte Metadaten" permits a `legacy-terminal` pair and permits none. That choice is decision 261001-1804 (record cut), recommended option 2: every package, every live record, and a terminal record only when a `record_ref`-only field of a record names it. Measured: 104 of 1 219 records here (`15e4d52e`), 638 of 1 570 in axibra-1, 148 of 1 153 in krk. The codec's `plan` phase checks the closure, so the rule's completeness is a refusal, not a hope. **(2) Is the run atomic and resumable?** Yes for every codec writer, by a mechanism already qualified. `apply` uses kernel intents carrying the pre-hash and post-bytes of every write. Part A measures whether that is one intent, or chunked intents under one fence, before the contract is fixed. Recovery rolls each intent forward at any cut, and a diverged file blocks it rather than being overwritten. Activation is a separate last write, the manifest's atomic rename. **Not decidable:** whether an old v12 client edits Markdown during the run. No file the codec writes can stop a program that never reads it (§8.1). The mechanism therefore detects instead of predicting. Source hashes are frozen in the plan, and the intent's pre-hashes and `verify`'s full re-hash compare them against disk. A difference stops the run before activation, and quiescence stays a stated precondition. **(3) Is the proof on copies sound?** Yes, by comparison. Each real workbench is copied to scratch, and the source tree hash is taken before and after. Every figure is taken on the copy.
+**Decidability:** Three questions. **(1) Which Markdown artefacts become records?** Once a rule is fixed, it is decidable from the files: marker, store, container head and the structural head fields are all on disk. *Which* rule is not decidable from the texts: §2.1's "höchstens extrahierte Metadaten" permits a `legacy-terminal` pair and permits none. That choice is decision 261001-1804 (record cut), recommended option 2: every package, every live record, and a terminal record only when a `record_ref`-only field of a record names it. Measured: 104 of 1 219 records here (`15e4d52e`), 638 of 1 570 in axibra-1, 148 of 1 153 in krk. The codec's `plan` phase checks the closure, so the rule's completeness is a refusal, not a hope. **(2) Is the run atomic and resumable?** Yes for every codec writer, by a mechanism already qualified. `apply` uses kernel intents carrying the pre-hash and post-bytes of every write. Part A measured one intent over the largest copy at about 28 s, so `apply` runs as chunked intents of 50 writes under one fence, one request each. Recovery rolls each chunk forward at any cut, `resume` sends the next missing chunk, and a diverged file blocks it rather than being overwritten. Activation is a separate last write, the manifest's atomic rename. **Not decidable:** whether an old v12 client edits Markdown during the run. No file the codec writes can stop a program that never reads it (§8.1). The mechanism therefore detects instead of predicting. Source hashes are frozen in the plan, and the intent's pre-hashes and `verify`'s full re-hash compare them against disk. A difference stops the run before activation, and quiescence stays a stated precondition. **(3) Is the proof on copies sound?** Yes, by comparison. Each real workbench is copied to scratch, and the source tree hash is taken before and after. Every figure is taken on the copy.
 
 ## Directive
 
@@ -38,42 +38,46 @@ flowchart TD
     B0[full backup outside the workbench, tree hash verified]
     R[legacy reader: heads, markers, steps, Answered lines]
     C[compose proposal: record cut, UUIDs, control objects, rewritten live narratives, findings]
+    RP[repair: one finding at a time, with consent]
     G[git facts: untracked, ignored, dirty]
   end
   subgraph Codec["codec: migration"]
     S[survey: byte inventory, read-only]
     PL[plan: validate schemas and closure, freeze plan with source and after hashes]
-    A[apply: fence, journaled intent or chunks per part A, originals into the receipt]
+    A[apply per chunk of 50: fence first, one intent each, originals into the receipt]
     V[verify: re-hash all, pairs, ids, graph; receipt; manifest activated last]
     RB[rollback: before activation, or after only with nothing changed]
   end
-  P0 --> B0 --> S
+  P0 --> B0 --> RP
+  RP -->|edited v12 Markdown| R
+  B0 --> S
   S -->|inventory| C
   R -->|fields| C
   G -->|untracked list| C
   C -->|proposal file| PL
   PL -->|frozen plan| A
-  A -->|intent landed| V
+  A -->|all chunks landed| V
   V -->|json-control| E[maintenance end, setup metadata]
   A -.->|divergence or abort| RB
 ```
 
-**The phases, as the contract delta proposes them (request 45):**
+**The phases, as the contract delta proposes them (request 45; chunked per step 2's measurement):**
 
 | Phase | State admitted | Writes | Answer |
 |---|---|---|---|
-| `survey` | legacy, json-control | nothing | every file under the root with size, sha256, kind (regular, link, other), `.json-state/` entries, intents, `archive/` as history (§8.2, fj03c `## 36`) |
-| `plan` | legacy | `archive/migrations/<id>/plan.json` by one intent | migration id, plan path and revision, counts, refusals typed |
-| `apply` | legacy, under its own fence | one intent, or chunked intents as part A decides: originals of every converted or rewritten narrative to `archive/migrations/<id>/originals/`, every control file, every rewritten live narrative, the fence | revisions; an identical replay answers the stored bytes |
-| `verify` | legacy with the fence of this plan | receipt `archive/migrations/<id>/receipt.json`, then `workbench.json` with `migration: {id, source_layout, receipt}` | checks run, counts, the manifest revision |
-| `rollback` | legacy with the fence; json-control only when every file still hashes as the receipt's after-state | restores the originals by one intent, removes control files, receipt, plan, fence | what was restored |
+| `survey` | legacy, json-control | nothing | every file with size, sha256 and kind, `.json-state/` entries, intents, `archive/` as history |
+| `plan` | legacy | `archive/migrations/<id>/plan.json` (index) and `chunks/<n>.json`, each under 1 MiB | migration id, chunk ids, counts, refusals typed |
+| `apply {chunk}` | legacy; chunk 1 writes the fence, every later chunk runs under it | one intent of at most 50 writes: originals to `archive/migrations/<id>/originals/`, control files, rewritten live narratives | revisions; a replay answers the stored bytes |
+| `verify` | legacy, fenced, every chunk landed | the receipt, then `workbench.json` with `migration: {id, source_layout, receipt}` | checks, counts, the manifest revision |
+| `rollback {chunk}` | fenced, chunks in reverse; json-control only when every file hashes as the receipt's after-state | one intent per chunk restoring originals; the last removes plan files and the fence | what was restored |
 
-- **Requests carry `operation_id`.** The proposal and the frozen plan travel by workbench-relative or absolute file path, never on stdin. A plan of 1 000 records exceeds the 1 MiB request bound, and answers stay under 16 MiB (request 31).
-- **The frozen plan fixes everything a resume needs:** the workbench UUID, every record UUID, the `apply` operation id (which is also the fence's id), the source sha256 of every file read, and the expected after-hash of every file written. `plan` serialises each target with the codec's own serialiser.
-- **`plan` refuses** a schema-invalid target, a duplicate UUID, a source hash that differs from disk, an unresolved structural reference (the closure), a proposal with open blocking findings, and any manifest that is present.
-- **Exclusivity.** On a legacy store, `apply` writes `.json-state/maintenance.json` with its own operation id in the same sequence. From then on the existing fence refuses every fresh codec mutation. After activation the host ends it with the existing `maintenance end`, once setup metadata is complete (§8.3.5). A crash between activation and `end` leaves a JSON-controlled store fenced. `inspect.maintenance` names the fence, and `bin/fusion-migrate resume` finishes the run.
-- **Second run.** `verify` or `apply` with the same operation id answers its stored bytes. `plan` on a json-control store whose manifest names a receipt answers that receipt as a verified no-op. It assigns no new UUID and rewrites no mode (§8.3.7).
-- **What the codec cannot judge:** a mapping's meaning. That is covered by host tests over a fixture with every legacy shape, and by the proof on copies, which reads each migrated record back through the shipped readers.
+- **Requests carry `operation_id`; each chunk has its own, fixed in the index.** The proposal and the plan travel by path, never on stdin: a request stays under 1 MiB, an answer under 16 MiB (request 31). Step 2 measured one intent over the largest copy at about 28 s and a 50-write chunk at 1.45 s max. Each request therefore fits the client's 5 s post-wait allowance, and the timeout is never raised.
+- **The frozen plan fixes everything a resume needs:** the workbench and record UUIDs, every chunk's operation id, every source sha256 and after-hash, and the repair log. `resume` sends the next chunk whose answer is not stored.
+- **`plan` refuses** a schema-invalid target, a duplicate UUID, a source hash differing from disk, an unresolved structural reference (the closure), an open blocking finding, and a present manifest.
+- **Exclusivity.** Chunk 1's fence refuses every fresh codec mutation until the host's `maintenance end`, which comes after setup metadata (§8.3.5). A crash in between leaves a fenced store that `inspect.maintenance` names; `bin/fusion-migrate resume` finishes it.
+- **Repair before freezing** (step 8): a blocking finding is resolved only by a v12 Markdown edit the user consented to, finding by finding, after the external backup and before `plan`. Nothing is guessed, and a class without a repair stays blocking.
+- **Second run.** Every request with a stored answer replays it. `plan` on a store whose manifest names a receipt answers that receipt as a no-op (§8.3.7).
+- **What the codec cannot judge:** a mapping's meaning. Host tests per legacy shape and the proof on copies, read back through the shipped readers, cover it.
 
 **The record cut** (decision 261001-1804, record cut, recommended option 2):
 
@@ -88,7 +92,7 @@ Filenames keep their markers (§3). A terminal package's document bindings stay 
 
 ## Implementation Steps
 
-**Two parts.** Part A (steps 1 and 2) changes no codec file and moves no digest. It measures, on the fixture and on the copies, what part B must carry. Its findings decide whether part B starts: the orchestrator puts step 2's note to the user as a go/no-go. Part B (steps 3 to 12) starts only on a go. Its first act sends requests 45 to 49 once, carrying the finding classes part A measured.
+**Two parts.** Part A (steps 1 and 2) changes no codec file and moves no digest. It measures, on the fixture and on the copies, what part B must carry. Its findings decide whether part B starts: the orchestrator puts step 2's note to the user as a go/no-go. Part B (steps 3 to 13) starts only on a go. Its first act sends requests 45 to 49 once, carrying the finding classes part A measured.
 
 ### Part A: go/no-go, no codec change
 
@@ -146,204 +150,219 @@ Filenames keep their markers (§3). A terminal package's document bindings stay 
 
 **Go/no-go.** The user rules on step 2's note. A no-go stops this plan, and the plan is amended before anything else.
 
-### Part B: the codec revision, the host helper and the proof (only on a go)
+### Part B: the codec revision, the repair, the host helper and the proof (go ruled 2026-10-01 on step 2's note, `b9d43fb1`)
 
 3. **The contract delta and requests 45 to 49, to the Prior side**
    - Executor: `analyst`
    - Files: `codec/fixtures/prior/REQUESTS.md` (pure append, drafted in the scratchpad and appended by the orchestrator), this plan
-   - Changes: `## FJ04 (the contract delta)` is stamped against the head commit and Prior `590465d`, with `git log --all --oneline 590465d..` checked, and the bundle digest above. It holds:
-     - the phase table and the request and answer shapes;
-     - step 2's intent choice, with its figures;
-     - the order under the lock for each phase (sweep and recovery, replay, fence, plan);
+   - Changes: `## FJ04 (the contract delta)`, stamped against the head commit, Prior `590465d` (`git log --all --oneline 590465d..` checked) and the bundle digest above. It holds:
+     - the phase table of `## Approach` with the chunk contract;
+     - the order under the lock for each phase;
      - the new reasons;
-     - the moved `inspect` bytes (`operations.implemented` gains `migration`, `deferred` becomes `[]`), with the recorded answers they move;
-     - the change Prior's FJ02 deferred-operation check meets.
+     - the moved `inspect` bytes (`implemented` gains `migration`, `deferred` becomes `[]`) and the recorded answers they move;
+     - the change Prior's FJ02 deferred-operation check meets;
+     - step 2's measurements in aggregate: one intent over the largest copy took 27.7 s median and 27.8 s max for 1 680 writes; a chunk of 50 took 1.45 s max against the 5 s post-wait allowance; the frozen-plan metadata measured about 969 KB against the 1 MiB strict-reader cap, hence the split plan;
+     - step 2's three readings (what a plan step is, which head fields are control, a terminal package's empty bindings).
 
-     The requests, each naming the decision it closes and its preferred form of reply:
-     - **45**: the operation (reader-placement decision).
-     - **46**: the record cut (record-cut decision), with the measured counts. It names the gap that after activation no operation imports a single terminal record: `migration plan` refuses once a manifest stands, and `create` writes `provenance.source: created`. It asks for an import route, or for confirmation that none exists and that a terminal record a later structure must bind stays a legacy citation.
-     - **47**: Circle heads and empty container trees.
-     - **48**: step anchors and criteria.
-     - **49**: `answer_ref` for an `Answered:` line without a resolvable target, and document roles from free clauses.
+     The requests, each naming the decision it closes:
+     - **45**: the operation, chunked.
+     - **46**: the record cut. It names the gap that after activation no operation imports a single terminal record (`plan` refuses once a manifest stands; `create` writes `created`), and asks for an import route or confirmation that none exists.
+     - **47**: Circle heads and empty trees.
+     - **48**: step anchors.
+     - **49**: `answer_ref` and document roles.
 
-     47 and 49 come from the legacy-values decision. Every finding class step 2 measured is carried here once, with aggregate counts.
+     It also carries, once, the measured finding classes (counts per copy, aggregate) and step 8's repair policy: consent per finding, nothing guessed, unrepairable classes stay blocking.
    - Dependencies: step 2 and the go.
-   - Acceptance: the file's prior lines hash equal to the head blob; each new reason occurs 0 times under codec `src`, `contract`, `schemas` and `fixtures` at the stamp commit.
+   - Acceptance: the prior lines hash equal to the head blob; each new reason occurs 0 times under codec `src`, `contract`, `schemas` and `fixtures`; only aggregate figures for the other two projects.
 
 4. **The migration schemas**
    - Executor: `data-implementer`
-   - Files: `codec/schemas/protocol.schema.json` (the `migration` branches), `codec/schemas/migration-plan.schema.json` and `migration-receipt.schema.json` (new, under the names step 3 proposes), `codec/fixtures/valid/`, `codec/fixtures/invalid/`, `codec/fixtures/manifest.json`, `codec/dist/fusion-record.js` (rebuilt, as the schemas are inlined)
-   - Changes: protocol branches with `operation_id`, `additionalProperties: false` and one `oneOf` branch per phase. The two schemas, with valid and invalid fixtures: a missing hash, a duplicate UUID, a write outside the root, an absolute path. Under chunking, a plan names its chunks and their operation ids.
-   - Dependencies: step 3, and the archive plan's step 13 committed, so that one bundle line moves at a time.
-   - Acceptance: `fixtures.test.ts` green with the manifest count stated; `committed-bundle.test.ts` green; every recorded session still byte-identical except the deltas step 7 names.
+   - Files: `codec/schemas/protocol.schema.json` (the `migration` branches), `codec/schemas/migration-plan.schema.json` (index and chunk file) and `migration-receipt.schema.json` (new), `codec/fixtures/valid/`, `codec/fixtures/invalid/`, `codec/fixtures/manifest.json`, `codec/dist/fusion-record.js` (rebuilt; the schemas are inlined)
+   - Changes: one protocol branch per phase, each with `operation_id` and `additionalProperties: false`; `apply` and `rollback` take a `chunk` index. The plan schema has two shapes. The index names the migration and workbench UUIDs, the chunk files with their sha256, each chunk's operation id, the repair log (step 8) and the counts. A chunk file holds at most 50 writes, with source and after hashes and target controls. Invalid fixtures: a missing hash, a duplicate UUID, a write outside the root, an absolute path, a chunk over 50 writes, an index naming a chunk file whose hash differs.
+   - Dependencies: step 3, and the archive plan's step 13 committed.
+   - Acceptance: `fixtures.test.ts` green with the manifest count stated; `committed-bundle.test.ts` green; every recorded session byte-identical except the deltas step 7 names.
 
 5. **Codec: `migration survey` and `plan`**
    - Executor: `code-implementer`
    - Files: `codec/src/cli/ops.ts`, `codec/src/cli/protocol.ts`, `codec/src/kernel.ts` (state gate per phase), `codec/src/migration.ts` (new), `codec/src/__tests__/migration.test.ts` (new), `codec/dist/fusion-record.js`, `codec/README.md`
-   - Changes: `survey` is the read-only inventory and creates no `.json-state/`. `plan` validates the proposal against the plan schema, every target against its kind's schema, closure, uniqueness and source hashes. It then writes the frozen plan by one intent and answers the counts. `inspect` lists `migration` as implemented.
-   - Tests: survey of the fixture byte-identical before and after; each refusal of `## Approach`; replay and changed-request conflict; a source edited between survey and plan refused.
+   - Changes: `survey` is the read-only inventory and creates no `.json-state/`. `plan` reads the proposal by path and validates every target, the closure, uniqueness and every source hash. It cuts the writes into chunks of 50 in narrative-path order, with a pair's control, original and rewrite in one chunk. It writes the index and every chunk file under `archive/migrations/<id>/`, each under 1 MiB, in its own intents, and answers the counts and the chunk ids. `inspect` lists `migration` as implemented.
+   - Tests: survey byte-identical before and after; each refusal of `## Approach`; replay and changed-request conflict; a source edited between survey and plan refused; a workbench just over one chunk; no plan file over 1 MiB on a generated store of the largest copy's size.
    - Dependencies: step 4.
    - Acceptance: codec suite and typecheck green; every other operation's answers byte-identical; the moved `inspect` answers listed for step 7.
 
-6. **Codec: `apply`, `verify`, `rollback`**
+6. **Codec: `apply` per chunk, `verify`, `rollback`**
    - Executor: `code-implementer`
    - Files: as step 5, plus `codec/src/__tests__/kernel.test.ts`
    - Changes:
-     - `apply` re-checks every source hash under the lock and writes the fence. It then commits the intent or intents step 2 chose, with originals first, applies them and stores the answer.
-     - `verify` re-hashes every file the plan names and reads every pair, id, `depends_on` graph (cycles and missing targets) and reference. It runs `validate` and `reconcile` over the result as a json-control view, writes the receipt, and activates the manifest last.
-     - `rollback` follows the table in `## Approach`. After activation it refuses when any file differs from the receipt's after-state.
-   - Tests: an in-process cut after each journal write (after each chunk, if chunked), then a resume finishing; a Markdown source edited after `plan` refused before the intent; a file edited after the commit point is `recovery-blocked` and stays unchanged; a crash after activation and before `end`; replay of each phase; a second `plan` after activation is a no-op naming the receipt; rollback before activation byte-identical to the survey; rollback after a later `create` refused; the manifest never visible before the receipt verifies.
+     - `apply {chunk: n}` runs under the chunk's operation id from the index. The first chunk writes the fence (its id is chunk 1's operation id) in its own sequence, after re-checking every source hash of the plan. Every chunk re-checks its own sources under the lock and commits one intent with that chunk's writes, originals first. A chunk whose predecessor's answer is not stored is refused `migration-incomplete`.
+     - `verify` runs only when every chunk's answer is stored. It re-hashes every planned file, reads every pair, id, `depends_on` graph and reference, and runs `validate` and `reconcile` as a json-control view. It writes the receipt, then activates the manifest last.
+     - `rollback {chunk: n}` restores chunks in reverse order, each by its own intent. The last one removes the plan files and the fence. After activation it is refused when any file differs from the receipt's after-state.
+   - Tests: a cut inside a chunk, then the same request finishing it; a cut between chunks, then the next chunk; a chunk sent out of order refused; a source edited after `plan` refused at its chunk; a file edited after a chunk's commit point blocks recovery and stays unchanged; a crash after activation and before `end`; replay of every request; a second `plan` after activation is a no-op naming the receipt; a full rollback byte-identical to the survey; rollback after a later `create` refused; the manifest never visible before the receipt verifies; each chunk of the generated large store within 5 s on the reference machine.
    - Dependencies: step 5.
-   - Acceptance: as step 5; red against a copy that activates before the receipt is written and against one that overwrites a diverged file.
+   - Acceptance: as step 5; red against a copy that activates with a chunk missing and one that overwrites a diverged file.
 
 7. **The recorded migration session and the inspect deltas**
    - Executor: `code-implementer`
-   - Files: `codec/fixtures/protocol-session-migration/` (pairs, `base/` = the legacy fixture, seeds, README), `codec/src/__tests__/round-trip-cli-migration.test.ts`, delta files beside every recorded `inspect` answer step 5 moved (initialize and archive sessions), their READMEs
-   - Changes: the exchanges, in order:
-     - survey; plan refused over a blocking finding; plan;
-     - apply cut in process, then `inspect` naming the fence;
-     - the same apply finishing, then verify;
-     - a second apply, verify and plan, each a replay or a no-op;
+   - Files: `codec/fixtures/protocol-session-migration/` (pairs, `base/` = the legacy fixture, seeds, README; the recorder resolves the fixture's blocking findings by host edits between exchanges), `codec/src/__tests__/round-trip-cli-migration.test.ts`, delta files beside every recorded `inspect` answer step 5 moved, their READMEs
+   - Changes: a fixture large enough for three chunks. The exchanges, in order:
+     - survey; plan refused over a blocking finding; plan, naming three chunks;
+     - chunk 1 (the fence), then `inspect`;
+     - chunk 2 cut in process and finished by its own request;
+     - chunk 3 sent before chunk 2, refused;
+     - chunk 3; verify;
+     - replays of a chunk, of verify and of plan, each a stored answer or a no-op;
      - `maintenance end`; `list` and `show` of one open and one terminal-but-bound record.
 
-     A second base covers rollback before activation and the refused rollback after a write. Fixed literals; regeneration only under `UPDATE_PROTOCOL_SESSION_MIGRATION=1`.
+     A second base runs a rollback over two landed chunks, and a refused rollback after a write. Regeneration only under `UPDATE_PROTOCOL_SESSION_MIGRATION=1`.
    - Dependencies: step 6.
    - Acceptance: the gate green without regeneration; every older session replays through its deltas and nothing else; a shell replay through `bin/fusion-record` over a root path with a space.
 
-8. **The host migration helper**
+8. **The repair of blocking findings, with consent per finding**
    - Executor: `code-implementer`
-   - Files: `bin/fusion-migrate` (new), `hooks/migrate.ts` (new), `hooks/lib/legacy-import.ts` (the inventory stand-in replaced by `survey`), `hooks/lib/__tests__/migrate.test.ts` (new), `.gitignore` (`!bin/fusion-migrate`), `hooks/lib/__tests__/hook-route-exclusion.test.ts` (stub list, in place), `README-hooks.md` (roster), the growth-bound files
-   - Changes: the subcommands are `survey` (prints the counts per cut row and the findings, writes nothing), `run`, `resume`, `rollback` and `status`. `run` checks its preconditions in this order:
-     - a legacy store name present is refused, with the route to `/fusion:migrate`'s rename (§8.3.2);
-     - the installed codec must answer `migration` as implemented;
-     - a standing fence or a pending intent is refused;
-     - a live `.session-marker` or a running monitor is reported, never assumed quiescent;
-     - untracked and ignored record files are listed (§8.1).
+   - Files: `hooks/lib/legacy-repair.ts` (new), `hooks/lib/__tests__/legacy-repair.test.ts` (new), `hooks/dist/`, `README-hooks.md` (lib row), the growth-bound files
+   - Changes: a module that turns each blocking finding of `hooks/lib/legacy-import.ts` into a proposed v12 Markdown edit, or into a question when the edit needs a value only the user has. It edits only before `plan` freezes anything, one finding per call, and writes nothing on its own initiative. The proposals by class:
 
-     `run` then writes a full backup of the workbench outside it and verifies it by tree hash. It composes the proposal into `.json-state/` scratch and drives `plan`, `apply` and `verify`. It ends the fence after setup metadata and states what each exit means. Distinct exit codes, named in the wrapper. The host writes no fusion JSON.
-   - Tests (real bundle): the fixture migrates, and every shipped reader (`bin/fusion-claimed-package`, `bin/fusion-work-order`, `bin/fusion-citation-check`, `bin/fusion-citation-sweep --dry-run`) exits 0 on the result; a kill at each phase boundary followed by `resume`; a backup that does not verify stops before `plan`; a v11-named twin refused with the route; rollback before activation leaves the tree hash equal to the backup's.
-   - Dependencies: steps 2 and 6.
-   - Acceptance: hook and codec suites green as standing; raises per the head's growth-bound line; the bundle digest unchanged by this step.
+     | Class | Proposed edit |
+     |---|---|
+     | `filed-by-missing`, `filed-by-not-owed`, `filed-by-unreadable` | `**Filed by:** <actor>, <person>` with both halves asked; the helper may offer the `PERSON=` of `bin/fusion-identity` as a choice, never as a default |
+     | `answered-without-answer-line` | an `Answered:` line citing the section that holds the answer, ruler asked |
+     | `mark-outside-numbered-step` | the mark moved to the step's numbered line, or removed; the user picks |
+     | `unknown-step-mark` | one of the three marks, picked |
+     | `duplicate-step-number` | the later duplicate suffixed (`12` → `12b`), with every in-file citation of it listed |
+     | `unresolvable-active-document` | the document named by the user, or the binding moved to `**Cross-references:**` |
+     | `active-document-role-unclear` | the role, picked |
+     | `circle-deferred` | a `**Status:**` line on the Circle head, `paused` or `dropped`, picked |
 
-9. **`/fusion:migrate` drives the JSON migration after the store rename**
+     Every other blocking class has no repair and stays blocking. `legacy-store-name` routes to the rename. Each applied repair is preceded by a hash check of the file, is logged with its pre and post sha256 in the proposal's repair log (carried into the frozen index and the receipt), and re-runs the reader on that file.
+   - Tests: one case per class on the fixture, each red when the edit is applied without consent or a value is defaulted; a refused proposal leaving the file byte-identical; a file changed after the finding refused; the full repair loop over the fixture reaching zero blocking findings with every answer supplied by the test.
+   - Dependencies: step 2 and the go.
+   - Acceptance: hook suite green as standing; raises per the head's growth-bound line; repairs proven on the fixture and on scratch copies only, never on a source project.
+
+9. **The host migration helper**
    - Executor: `code-implementer`
-   - Files: `skills/migrate/SKILL.md`, the growth-bound files
-   - Changes: a JSON phase after the existing rename pass and its commit advice. It runs only when `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-migrate" ]` holds, and otherwise says which install carries it. It shows `survey`'s counts and findings and asks in the skill's existing question shape. On a yes it runs `run` and reports the receipt path. It then states the commit split (originals, pairs, rewrites, manifest) and that other checkouts pull rather than migrate. The FJ03d and FJ04 sentence in the description is updated; the pre-v4 refusal is unchanged.
-   - Dependencies: step 8.
-   - Acceptance: the skills bound green, or the measured remainder raised and logged, with the room left reported; `path-literal-lint` green.
+   - Files: `bin/fusion-migrate` (new), `hooks/migrate.ts` (new), `hooks/lib/legacy-import.ts` (stand-in replaced by `survey`), `hooks/lib/__tests__/migrate.test.ts` (new), `.gitignore` (`!bin/fusion-migrate`), `hooks/lib/__tests__/hook-route-exclusion.test.ts` (stub list, in place), `README-hooks.md` (roster), the growth-bound files
+   - Changes: subcommands `survey` (counts and findings; writes nothing), `repair --list`, `repair --apply <finding> [--value …]`, `run`, `resume`, `rollback` and `status`. `run` checks its preconditions in this order: no legacy store name (routed to the rename), `migration` implemented by the installed codec, no fence or pending intent, a live `.session-marker` or monitor reported, untracked and ignored record files listed. The full external backup, verified by tree hash, is taken **before the first repair**. `run` then refuses while any blocking finding remains and composes the proposal into `.json-state/` scratch. It drives `plan`, then one `apply` request per chunk, then `verify`, then setup metadata, then `maintenance end`. `resume` reads the index and the stored answers and sends the next missing chunk under its recorded id. The host writes no fusion JSON.
+   - Tests (real bundle): the fixture repaired and migrated, with every shipped reader (`bin/fusion-claimed-package`, `bin/fusion-work-order`, `bin/fusion-citation-check`, `bin/fusion-citation-sweep --dry-run`) exiting 0; a kill after each chunk and inside one, then `resume`; a backup that does not verify stops before any repair; a v11-named twin refused with the route; a full rollback giving the backup's tree hash.
+   - Dependencies: steps 6 and 8.
+   - Acceptance: hook and codec suites green as standing; raises per the head line; the digest unchanged.
 
-10. **The installed copy migrates a legacy workbench**
+10. **`/fusion:migrate` drives repair and migration after the store rename**
+    - Executor: `code-implementer`
+    - Files: `skills/migrate/SKILL.md`, the growth-bound files
+    - Changes: a JSON phase after the rename pass, run only when `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-migrate" ]` holds. It shows `survey`'s counts. It then puts **one blocking finding at a time** to the user, with the proposed edit or the question, and applies it only on a yes for that finding. A missing actor or person is asked, never filled. Unrepairable findings are named, and the phase stops while any remains. With none left it asks once, in the skill's question shape, whether to migrate. On a yes it runs `run`, reports the receipt, and states the commit split (repairs, originals and pairs, rewrites, manifest) and that other checkouts pull. The pre-v4 refusal is unchanged.
+    - Dependencies: step 9.
+    - Acceptance: the skills bound green or raised and logged, with the room reported; `path-literal-lint` green.
+
+11. **The installed copy repairs and migrates a legacy workbench**
     - Executor: `code-implementer`
     - Files: `codec/src/__tests__/install.test.ts`
-    - Changes: a seventh case on the existing install. A v11-named copy of the fixture goes through the skill's shipped rename block and then `bin/fusion-migrate run`. Through the installed helpers, one open and one terminal record are read back (§8.3.7). `bin/fusion-write` claims the open package. A second `run` is a no-op naming the receipt. An interrupted run resumes.
-    - Dependencies: steps 7, 8 and 9.
-    - Acceptance: `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` and `npm run typecheck` green, with the case run and not skipped.
+    - Changes: a seventh case. A v11-named fixture copy goes through the shipped rename block, then `repair --apply` for each finding with test-supplied answers, then `run` over three chunks. One open and one terminal record are read back through the installed helpers (§8.3.7), `bin/fusion-write` claims the open package, a second `run` is a no-op, and a run killed after chunk 2 resumes.
+    - Dependencies: steps 7, 9 and 10.
+    - Acceptance: codec suite (`CODEC_REQUIRE_GOLDENS=1`) and typecheck green, with the case run and not skipped.
 
-11. **The proof on copies of real workbenches**
+12. **The proof on copies of real workbenches**
     - Executor: `analyst`
     - Files: the package's `analyses/` (one report), this plan's step note
-    - Changes: three copies in scratch:
-      - **fusion**, from a commit of this branch, not the live tree;
-      - **axibra-1**, v12 with `circles/` left over, so it goes through the rename first;
-      - **krk**, v11 names.
-
-      The source tree hash is taken before and after, and must be equal. Each copy is migrated by the installed helper from step 10's install. Per copy the report gives:
-      - the plugin and bundle digests, Node and the machine;
-      - record counts per cut row;
-      - findings by class, and how each was resolved in the frozen plan;
-      - phase timings (three runs, median and max);
+    - Changes: the three copies of step 2 (fusion from a commit of this branch; the two others as the head's confidentiality line names them), with source tree hashes equal before and after. On each copy, step 9's helper from step 11's install repairs with answers the analyst supplies and records, without guessing a value on the user's behalf. Any finding that needs a value nobody recorded is left blocking and counted. The helper then migrates. Per copy, the report gives:
+      - the digests, Node and the machine;
+      - counts per cut row;
+      - findings by class before and after repair, and the repairs by class;
+      - the chunk count and the time per chunk (median, max) and per phase;
       - the answer bytes of `survey`, unscoped `list` and `reconcile`, against 16 MiB;
-      - `reconcile` time against the 5 s allowance;
-      - the inventory and receipt hashes;
+      - `reconcile` time against 5 s;
+      - the index and receipt hashes;
       - the second run's no-op;
-      - a kill inside `apply`, resumed;
-      - rollback before activation restoring the tree hash;
-      - rollback refused after one `create`;
+      - a kill inside a chunk, resumed;
+      - a full rollback restoring the tree hash;
+      - a refused rollback after one `create`;
       - one open and one terminal record read back through each shipped reader.
 
-      A git-tracked copy and a plain copy of one workbench are both run. For axibra-1 and krk, every figure is aggregate (the head's confidentiality line).
-    - Dependencies: step 10.
-    - Acceptance: every figure present with its command, or a named finding; no write outside scratch (source hashes equal); no axibra-1 or krk file name or content excerpt anywhere in the report.
+      One copy is also run without `.git`. The other projects appear in aggregate only.
+    - Dependencies: step 11.
+    - Acceptance: every figure present with its command, or a named finding; source hashes equal; no file name or excerpt of the two other projects.
 
-12. **The hand-over: what landed, the frozen digest, the re-pin**
+13. **The hand-over: what landed, the frozen digest, the re-pin**
     - Executor: `analyst`
     - Files: `codec/fixtures/prior/REQUESTS.md`, this plan
     - Changes: `## FJ04 (the hand-over)`, written against the last commit that moved `codec/`, `bin/` or `hooks/`. It holds:
-      - the commits in order, each intermediate digest, and the frozen digest;
-      - test figures from a scratch clone;
+      - the commits, each intermediate digest, and the frozen digest;
+      - the figures from a scratch clone;
       - each pinned path that differs from Prior's pin at `e1bafd2f`;
       - the delta files and the session's exchange list;
-      - step 11's figures in aggregate, citing the report;
+      - step 12's figures in aggregate;
       - requests 45 to 49 as answered;
-      - under the next free numbers, a re-snapshot of the shared fixtures, and a re-pin with the replay of every session through its deltas, the migration session included, plus Prior's conformance run.
-    - Dependencies: steps 7 and 11.
-    - Acceptance: the section's prior lines hash equal to the head blob; the frozen digest equals the blob and a rebuilt scratch clone; no axibra-1 or krk file name or excerpt.
+      - under the next free numbers, a re-snapshot and a re-pin with every session replayed through its deltas, the migration session included, plus Prior's conformance run.
+    - Dependencies: steps 7 and 12.
+    - Acceptance: the prior lines hash equal to the head blob; the frozen digest equals the blob and a rebuilt scratch clone; aggregate only for the other projects.
 
 ```mermaid
 flowchart TD
   subgraph A["Part A: no codec change"]
     S1[1 legacy fixture] --> S2[2 host reader, dry run, intent-size measurement]
   end
-  S2 --> GO{go/no-go by the user}
-  subgraph B["Part B: only on a go"]
-    S3[3 contract delta, requests 45-49] --> S4[4 schemas]
+  S2 --> GO{go, ruled 2026-10-01}
+  subgraph B["Part B"]
+    S3[3 contract delta, requests 45-49] --> S4[4 schemas, split plan]
     S4 --> S5[5 survey and plan]
-    S5 --> S6[6 apply, verify, rollback]
+    S5 --> S6[6 apply per chunk, verify, rollback]
     S6 --> S7[7 recorded session, deltas]
-    S6 --> S8[8 bin/fusion-migrate]
-    S8 --> S9[9 /fusion:migrate]
-    S7 --> S10[10 installed copy]
-    S8 --> S10
-    S9 --> S10
-    S10 --> S11[11 proof on copies]
-    S7 --> S12[12 hand-over]
-    S11 --> S12
+    S8[8 repair with consent] --> S9[9 bin/fusion-migrate]
+    S6 --> S9
+    S9 --> S10[10 /fusion:migrate]
+    S7 --> S11[11 installed copy]
+    S9 --> S11
+    S10 --> S11
+    S11 --> S12[12 proof on copies]
+    S7 --> S13[13 hand-over]
+    S12 --> S13
   end
   GO -->|go| S3
-  S2 -->|reader| S8
+  GO -->|go| S8
 ```
 
 ## Where this work stops
 
-- Part A: step 2's note states the dry-run figures, the finding classes and the intent choice (one intent, or chunked under one fence) with its axibra-1 measurement, and the user ruled go or no-go on it.
-- On a no-go: part B did not start, and the plan was amended or closed. (Every clause below applies only on a go.)
-- Requests 45 to 49 were sent once, after part A, with the measured finding classes; request 46 names the terminal-import gap after activation.
+- Part A: step 2's note states the dry-run figures, the finding classes and the intent choice; the user ruled go on it on 2026-10-01 (`b9d43fb1`).
+- Requests 45 to 49 were sent once, after part A. They carry the measured finding classes, the repair policy, the intent-size figures and the split plan, and request 46 names the terminal-import gap.
 - The codec suite and typecheck are green at the closing commit; `committed-bundle.test.ts` was green at every commit that moved the bundle.
 - Every recorded response file at `15e4d52e` is unedited, and step 7's delta files are the only differences any gate admits.
 - `protocol-session-migration/` replays green without regeneration, and from a shell.
-- Every refusal and crash cut of steps 5 and 6 has a test shown red against a broken copy.
-- `bin/fusion-migrate` passes every case of step 8, and the installed copy passes step 10's case.
-- Step 11's report exists with the figures for all three copies, and every source tree hash is equal before and after.
-- No report, note or `REQUESTS.md` text names an axibra-1 or krk file or quotes its content.
-- `REQUESTS.md` carries the sections of steps 3 and 12, the second stamped with the frozen digest.
+- Every refusal and crash cut of steps 5 and 6 (inside a chunk and between chunks) has a test shown red against a broken copy.
+- No apply request of the largest copy exceeds the 5 s post-wait allowance, and no plan file exceeds 1 MiB.
+- Every repair class of step 8 applies only with consent and a supplied value; unrepairable classes stay blocking; no repair ran on a source project.
+- `bin/fusion-migrate` passes every case of step 9, and the installed copy passes step 11's case.
+- Step 12's report exists for all three copies, and every source tree hash is equal before and after.
+- No report, note, commit message or `REQUESTS.md` text names a file of the two other projects or quotes their content.
+- `REQUESTS.md` carries the sections of steps 3 and 13, the second stamped with the frozen digest.
 - Precondition for the real migration, not claimed here: Prior has re-pinned that digest and reported conformance green, and FJ03d's window is agreed. No real workbench, this repository's included, has a `workbench.json` written by this plan.
 - No file under `agents/`, `rules/`, `docs/`, `templates/` or `.claude-plugin/` changed, nor `install.sh`; `plugin.json` stays at 12.0.0.
 
 ## Data Structures
 
-- **Migration plan** (`archive/migrations/<id>/plan.json`): migration id, workbench UUID, the `apply` operation id (one per chunk if chunked; the first is the fence's id), source layout, bundle digest. One row per written file `{path, kind, source_sha256 | null, after_sha256}`, one row per read-only source, and the UUID map `{legacy_path -> id}`. Also the findings with their resolution, and the counts. The exact shape is put to Prior in step 3.
-- **Receipt** (`archive/migrations/<id>/receipt.json`): the plan's revision, the inventory hash, the checks run with their results, the versions, and the activation's manifest revision. It holds no secrets and no local journal (§8.3.6).
-- **Originals:** `archive/migrations/<id>/originals/<workbench path>`, the exact bytes of every narrative converted or rewritten; each `provenance.backup` points there.
+- **Migration plan, split:** `archive/migrations/<id>/plan.json` is the index. It holds the migration and workbench UUIDs, the source layout, the bundle digest, each chunk file with its sha256 and operation id, the UUID map, the repair log (finding, pre and post sha256, the consenting answer), the findings and the counts. `chunks/<n>.json` holds at most 50 write rows `{path, kind, source_sha256 | null, after_sha256}` with their target controls. Every file stays under 1 MiB; step 2 measured the unsplit metadata at about 969 KB on the largest copy. The exact shape goes to Prior in step 3.
+- **Receipt** (`archive/migrations/<id>/receipt.json`): the index's revision, the inventory hash, the checks run with their results, the versions, and the manifest revision. No secrets, no local journal (§8.3.6).
+- **Originals:** `archive/migrations/<id>/originals/<workbench path>`, the exact bytes of every converted or rewritten narrative (after repair; the pre-repair bytes are in the external backup, with their hashes in the repair log).
 
 ## API Changes
 
-`migration` with five phases, each with `operation_id`. `inspect.operations.deferred` becomes `[]`. New reasons are named in step 3. `bin/fusion-migrate` is new. `/fusion:migrate` gains its JSON phase.
+`migration` with five phases, each with `operation_id`; `apply` and `rollback` take a `chunk`. `inspect.operations.deferred` becomes `[]`. New reasons are named in step 3. `bin/fusion-migrate` is new. `/fusion:migrate` gains its repair and JSON phases.
 
 ## Testing Strategy
 
-Shapes are tested on the fixture (steps 2 and 5 to 8), the protocol on the recorded session (step 7), and the shipped path on the installed copy (step 10). The intent size comes from part A's measurement; scale and real-data correctness come from the proof on copies (step 11). Each guard is shown red against a broken copy. Hook suite runs follow the standing rules: the monitor's wildcard-bind loopback case is the one known red.
+Shapes are tested on the fixture (steps 2, 5, 6, 8 and 9), the protocol on the recorded session (step 7), and the shipped path on the installed copy (step 11). Scale and real-data correctness come from the proof on copies (step 12). Each guard is shown red against a broken copy. Hook suite runs follow the standing rules: the monitor's wildcard-bind loopback case is the one known red.
 
 ## Risks & Mitigations
 
 | Risk | Mitigation |
 |---|---|
-| An old v12 client edits Markdown during the run | Source hashes frozen; intent pre-hashes and `verify` re-hash; divergence blocks before activation; quiescence stated by the skill (§8.1) |
+| An old v12 client edits Markdown during the run | Source hashes frozen; each chunk re-checks its sources under the lock; `verify` re-hashes everything; divergence blocks before activation; quiescence stated by the skill (§8.1) |
 | The mapping is wrong in meaning, while its form is valid | Host tests per legacy shape; each copy read back through every shipped reader; originals kept for every rewritten byte |
-| One intent of thousands of writes exceeds the client's timeout | Settled in part A, before the contract: measured on the axibra-1 copy against the 5 s post-wait allowance, then one intent or chunked intents under one fence; the timeout is never raised |
-| Prior rules a request otherwise | Part B's code steps start after step 3's answers or the user's ruling; the plan is amended first |
+| A chunk's time is noisy (fsync stalls) | 50 writes leave half the allowance (step 2); step 6 tests the generated large store per chunk |
+| A repair guesses a value | Questions, not defaults; tests red on a defaulted value; consent per finding |
+| Prior rules a request otherwise | Code steps 4 onward start after step 3's answers or the user's ruling; the plan is amended first |
 | The archive plan's step 13 and this plan both move the bundle | Step 4 waits for step 13's commit |
-| Hook-test room is 0 | The head's growth-bound line: replace first, raise the measured remainder, log each raise |
-| Another team's data leaks into fusion's records | Aggregate figures only for axibra-1 and krk; steps 11 and 12 check it in their acceptance |
+| Hook-test room is 0 | The head's growth-bound line |
+| Another team's data leaks into fusion's records | Aggregate figures only; steps 3, 12 and 13 check it in their acceptance |
 
 ## Open Questions
 
