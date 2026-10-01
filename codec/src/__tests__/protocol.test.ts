@@ -32,6 +32,11 @@ interface ProtocolSchema {
   oneOf: Branch[];
 }
 
+/** The operations whose request has two branches of the schema, adjacent. */
+const TWO_BRANCHES: readonly string[] = ["create", "maintenance"];
+/** An operation with no single valid fixture names one per branch; every other one is `<op>.json`. */
+const VALID_FIXTURES: Readonly<Record<string, readonly string[]>> = { maintenance: ["maintenance-begin.json", "maintenance-end.json"] };
+
 const schema = (): ProtocolSchema => {
   const parsed = strictParse(readFileSync(SCHEMA_FILE));
   if (!parsed.ok) throw new Error(`${SCHEMA_FILE}: ${parsed.reason}: ${parsed.detail}`);
@@ -45,16 +50,29 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     expect(schemas().document(PROTOCOL_SCHEMA_ID)).toBeDefined();
   });
 
-  it("names the fifteen operations of spec section 6, in the table's order, in both the enum and the branches", () => {
+  it("names the sixteen operations, spec section 6's table and maintenance after reconcile, in both the enum and the branches", () => {
     const s = schema();
-    expect(OPERATIONS).toHaveLength(15);
+    expect(OPERATIONS).toHaveLength(16);
     expect(OPERATIONS.indexOf("initialize")).toBe(OPERATIONS.indexOf("validate") + 1);
+    expect(OPERATIONS.indexOf("maintenance")).toBe(OPERATIONS.indexOf("reconcile") + 1);
+    expect(OPERATIONS.at(-1)).toBe("migration");
     expect(s.properties.op.enum).toEqual([...OPERATIONS]);
-    // One branch per operation in the table's order, except create, which
-    // carries two adjacent ones: the record create and the evidence create
-    // (FJ02b settled choice 1, Prior's request 19).
-    const expected = OPERATIONS.flatMap((op) => (op === "create" ? [op, op] : [op]));
+    // One branch per operation in the table's order, except the two that
+    // carry two adjacent ones: create, the record create and the evidence
+    // create (FJ02b settled choice 1, Prior's request 19), and maintenance,
+    // begin and end (request 39).
+    const expected = OPERATIONS.flatMap((op) => (TWO_BRANCHES.includes(op) ? [op, op] : [op]));
     expect(s.oneOf.map((b) => b.properties.op.const)).toEqual(expected);
+  });
+
+  it("the two maintenance branches are disjoint on action: begin carries no fence, end requires one", () => {
+    const branches = schema().oneOf.filter((b) => b.properties.op.const === "maintenance") as unknown as Array<{ required: string[]; properties: Record<string, { const?: string }> }>;
+    expect(branches.map((b) => b.properties.action?.const)).toEqual(["begin", "end"]);
+    const [begin, end] = branches as [(typeof branches)[number], (typeof branches)[number]];
+    expect(begin.required.slice().sort()).toEqual(["action", "op", "operation_id"]);
+    expect(Object.keys(begin.properties).sort()).toEqual(["action", "op", "operation_id", "workbench"]);
+    expect(end.required.slice().sort()).toEqual(["action", "fence", "op", "operation_id"]);
+    expect(Object.keys(end.properties).sort()).toEqual(["action", "fence", "op", "operation_id", "workbench"]);
   });
 
   it("the two create branches are disjoint on kind: the evidence branch's is const evidence, the record branch's enum lacks it", () => {
@@ -78,7 +96,7 @@ describe("the protocol schema is the seventh schema of the default set", () => {
   });
 
   it("every mutation branch requires an operation_id; every read branch forbids one", () => {
-    const mutations = ["initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"];
+    const mutations = ["initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "maintenance"];
     for (const b of schema().oneOf) {
       const op = b.properties.op.const;
       const hasId = b.required.includes("operation_id");
@@ -93,7 +111,7 @@ describe("the protocol schema is the seventh schema of the default set", () => {
   });
 
   it("the answered operations are every operation of the table but migration", () => {
-    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"]);
+    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance"]);
     expect(OPERATIONS.filter((o) => !IMPLEMENTED_OPERATIONS.includes(o))).toEqual(["migration"]);
     for (const op of IMPLEMENTED_OPERATIONS) expect(isOperation(op)).toBe(true);
     expect(isOperation("delete")).toBe(false);
@@ -128,14 +146,17 @@ describe("every operation has a valid and an invalid request fixture", () => {
   const invalidFiles = existsSync(invalidDir) ? readdirSync(invalidDir) : [];
 
   for (const op of OPERATIONS) {
-    it(`${op}: valid/protocol/${op}.json validates and names the op`, () => {
-      const file = join(validDir, `${op}.json`);
-      expect(existsSync(file), file).toBe(true);
-      const parsed = strictParse(readFileSync(file));
-      expect(parsed.ok).toBe(true);
-      if (!parsed.ok) return;
-      expect((parsed.value as { op: string }).op).toBe(op);
-      expect(validate(PROTOCOL_SCHEMA_ID, parsed.value)).toEqual({ ok: true });
+    const valid = VALID_FIXTURES[op] ?? [`${op}.json`];
+    it(`${op}: ${valid.map((f) => `valid/protocol/${f}`).join(" and ")} validate${valid.length === 1 ? "s" : ""} and name the op`, () => {
+      for (const name of valid) {
+        const file = join(validDir, name);
+        expect(existsSync(file), file).toBe(true);
+        const parsed = strictParse(readFileSync(file));
+        expect(parsed.ok, name).toBe(true);
+        if (!parsed.ok) return;
+        expect((parsed.value as { op: string }).op, name).toBe(op);
+        expect(validate(PROTOCOL_SCHEMA_ID, parsed.value), name).toEqual({ ok: true });
+      }
     });
 
     it(`${op}: an invalid fixture exists under invalid/protocol/ and is refused`, () => {

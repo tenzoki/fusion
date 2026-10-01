@@ -12,9 +12,16 @@
 # branch per operation of the spec's section 6 table; the errors are the
 # spec's typed classes. At this revision the bundle answers `inspect`, `list`,
 # `show`, `validate`, `initialize`, `create`, `transition`, `claim`, `release`,
-# `set-mode`, `set-dependencies`, `adopt-plan`, `attach-evidence` and
-# `reconcile`; every mutation is a compare-and-swap on the stored-bytes
-# revision, replayable by `operation_id`. `migration` is deferred and answered
+# `set-mode`, `set-dependencies`, `adopt-plan`, `attach-evidence`,
+# `reconcile` and `maintenance`; every mutation is a compare-and-swap on the
+# stored-bytes revision, replayable by `operation_id`. `maintenance` begin and
+# end set and remove the fence a host holds while it moves pairs into
+# `archive/`: while it stands every other fresh mutation is refused
+# `conflict/maintenance-active` and reads answer as before; it outlives the
+# process that set it, and `inspect` names it as `maintenance`. If the host's
+# record of the move is lost, the last resort is deleting
+# `.json-state/maintenance.json` by hand after a `validate` and a `reconcile`
+# (codec/README.md, `maintenance`). `migration` is deferred and answered
 # `operation-unknown/not-implemented`. That list is a copy: ask `inspect`,
 # whose `operations.implemented` and `operations.deferred` name what the
 # bundle beside this script answers. Every answer is on stdout with

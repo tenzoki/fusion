@@ -4097,3 +4097,195 @@ describe("archive/: outside the current record store", () => {
     expect(journal()).toEqual([]);
   });
 });
+
+// --- maintenance: the fence ---------------------------------------------------------
+
+describe("maintenance: the fence (request 39)", () => {
+  const BEGIN_ID = "b0b0b0b0-0000-4000-8000-000000000001";
+  const END_ID = "b0b0b0b0-0000-4000-8000-000000000002";
+  const OTHER_ID = "b0b0b0b0-0000-4000-8000-000000000003";
+  const BEFORE_ID = "b0b0b0b0-0000-4000-8000-000000000004";
+  const AFTER_ID = "b0b0b0b0-0000-4000-8000-000000000005";
+  const SINCE = "2026-10-01T12:00:00.000Z";
+  const AT = { kernel: { now: () => Date.parse(SINCE) } };
+  const FENCE_FILE = ".json-state/maintenance.json";
+
+  const begin = (operation_id = BEGIN_ID) => ({ op: "maintenance" as const, workbench: root, operation_id, action: "begin" as const });
+  const end = (fence = BEGIN_ID, operation_id = END_ID) => ({ op: "maintenance" as const, workbench: root, operation_id, action: "end" as const, fence });
+  const errorOf = (r: Response): { class: string; reason: string; detail?: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason, ...(r.error.detail !== undefined ? { detail: r.error.detail } : {}) };
+  };
+  const listed = (dir: string): string[] => (existsSync(join(root, ".json-state", dir)) ? readdirSync(join(root, ".json-state", dir)).sort() : []);
+  /** Every file of the workbench with its bytes, `.json-state/` included. */
+  const everything = (): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const walk = (dir: string, rel: string): void => {
+      for (const e of readdirSync(dir, { withFileTypes: true })) {
+        const p = rel === "" ? e.name : `${rel}/${e.name}`;
+        if (e.isDirectory()) walk(join(dir, e.name), p);
+        else out[p] = readFileSync(join(dir, e.name)).toString("base64");
+      }
+    };
+    walk(root, "");
+    return out;
+  };
+  /** Every mutation kind the protocol has, from its valid request fixture, pointed at this workbench; a second begin and an end naming another fence among them. */
+  const everyMutation = (): Array<Record<string, unknown>> =>
+    ["create", "create-evidence", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "maintenance-begin", "maintenance-end"].map((f) => ({ ...fixture(`protocol/${f}.json`), workbench: root }));
+  const inspected = async (): Promise<unknown> => okResult(await dispatch({ op: "inspect", workbench: root })).maintenance;
+
+  it("begin sets the fence: the answer, the fence file, and inspect.maintenance after pending; no revisions, no record written", async () => {
+    expect(await inspected()).toBeNull();
+    const records = everything();
+    const r = await dispatch(begin(), AT);
+    expect(r).toEqual({ ok: true, result: { operation_id: BEGIN_ID, action: "begin", since: SINCE } });
+    expect(JSON.parse(readFileSync(join(root, FENCE_FILE), "utf-8"))).toEqual({ operation_id: BEGIN_ID, since: SINCE });
+    const result = okResult(await dispatch({ op: "inspect", workbench: root }));
+    expect(result.maintenance).toEqual({ operation_id: BEGIN_ID, since: SINCE });
+    expect(Object.keys(result).indexOf("maintenance")).toBe(Object.keys(result).indexOf("pending") + 1);
+    expect((result.operations as { implemented: string[] }).implemented).toContain("maintenance");
+    expect(listed("journal")).toEqual([]);
+    expect(listed("ops")).toEqual([`${BEGIN_ID}.json`]);
+    // `.json-state/.gitignore` is the lock's self-ignore, which every first lock writes.
+    const now = everything();
+    const changed = Object.keys(now).filter((p) => now[p] !== records[p] && p !== ".json-state/.gitignore");
+    expect(changed.sort(), "the fence and its stored answer, nothing else").toEqual([FENCE_FILE, `.json-state/ops/${BEGIN_ID}.json`].sort());
+  });
+
+  it("while the fence stands every mutation kind is refused maintenance-active before its intent, nothing written or stored; reads answer", async () => {
+    okResult(await dispatch(begin(), AT));
+    const before = everything();
+    for (const req of [...everyMutation(), transitionRequest({ operation_id: OTHER_ID })]) {
+      const e = errorOf(await dispatch(req));
+      expect({ class: e.class, reason: e.reason }, `${String(req.op)} ${JSON.stringify(req).slice(0, 80)}`).toEqual({ class: "conflict", reason: "maintenance-active" });
+      expect(e.detail).toContain(`set by operation ${BEGIN_ID} since ${SINCE}`);
+    }
+    expect(listed("journal"), "no intent written").toEqual([]);
+    expect(listed("ops"), "no answer stored").toEqual([`${BEGIN_ID}.json`]);
+    expect(everything(), "every file byte-identical").toEqual(before);
+    // The reads the move's verification needs.
+    expect(await inspected()).toEqual({ operation_id: BEGIN_ID, since: SINCE });
+    expect((okResult(await dispatch({ op: "list", workbench: root })).records as unknown[]).length).toBeGreaterThan(0);
+    expect(okResult(await dispatch({ op: "show", workbench: root, record: { path: OPEN } })).revision).toBe(revision(OPEN));
+    expect(okResult(await dispatch({ op: "validate", workbench: root })).valid).toBe(true);
+    expect(okResult(await dispatch({ op: "reconcile", workbench: root })).intents).toEqual([]);
+    expect(everything(), "the reads wrote nothing").toEqual(before);
+  });
+
+  it("initialize never meets the fence: a fenced store has a manifest, and the answer is manifest-present", async () => {
+    okResult(await dispatch(begin(), AT));
+    expect(errorOf(await dispatch({ ...fixture("protocol/initialize.json"), workbench: root }))).toMatchObject({ class: "conflict", reason: "manifest-present" });
+  });
+
+  it("the replay lookup comes first: an operation completed before the fence, and the begin itself, answer their stored bytes under it", async () => {
+    const move = transitionRequest({ operation_id: BEFORE_ID });
+    const landed = await dispatch(move);
+    okResult(landed);
+    const first = await dispatch(begin(), AT);
+    const records = everything();
+    expect(await dispatch(move)).toEqual(landed);
+    expect(await dispatch(begin())).toEqual(first);
+    // The same ids under another request are refused by the replay lookup, not by the fence.
+    expect(errorOf(await dispatch({ ...move, reason: "another" }))).toMatchObject({ class: "conflict", reason: "operation-id-reused" });
+    expect(errorOf(await dispatch({ ...begin(), workbench: `${root}/` }))).toMatchObject({ class: "conflict", reason: "operation-id-reused" });
+    expect(everything()).toEqual(records);
+  });
+
+  it("a second begin under another id is refused, whatever the id; the standing fence stays", async () => {
+    okResult(await dispatch(begin(), AT));
+    expect(errorOf(await dispatch(begin(OTHER_ID)))).toMatchObject({ class: "conflict", reason: "maintenance-active" });
+    expect(await inspected()).toEqual({ operation_id: BEGIN_ID, since: SINCE });
+  });
+
+  it("end: under the begin's own id operation-id-reused, naming another fence maintenance-active, with no fence maintenance-not-active; the matching end removes it and mutations land", async () => {
+    expect(errorOf(await dispatch(end()))).toMatchObject({ class: "conflict", reason: "maintenance-not-active" });
+    expect(listed("ops"), "a refused end stores nothing").toEqual([]);
+    okResult(await dispatch(begin(), AT));
+    expect(errorOf(await dispatch(end(BEGIN_ID, BEGIN_ID)))).toMatchObject({ class: "conflict", reason: "operation-id-reused" });
+    expect(errorOf(await dispatch(end(OTHER_ID)))).toMatchObject({ class: "conflict", reason: "maintenance-active" });
+    expect(await inspected()).toEqual({ operation_id: BEGIN_ID, since: SINCE });
+
+    const ended = await dispatch(end());
+    expect(ended).toEqual({ ok: true, result: { operation_id: END_ID, action: "end", since: SINCE } });
+    expect(existsSync(join(root, FENCE_FILE))).toBe(false);
+    expect(await inspected()).toBeNull();
+    expect(await dispatch(end()), "the end replays its stored answer").toEqual(ended);
+    expect(errorOf(await dispatch(end(BEGIN_ID, OTHER_ID))), "a fresh end over no fence").toMatchObject({ class: "conflict", reason: "maintenance-not-active" });
+    okResult(await dispatch(transitionRequest({ operation_id: AFTER_ID })));
+    // A new fence after the old one, under a new id.
+    okResult(await dispatch(begin(OTHER_ID), AT));
+    expect(await inspected()).toEqual({ operation_id: OTHER_ID, since: SINCE });
+  });
+
+  it("begin over a pending intent recovery cannot land is refused recovery-blocked and sets no fence; settled by hand, it lands after the roll-forward", async () => {
+    await expect(dispatch(transitionRequest({ operation_id: BEFORE_ID }), { kernel: { faults: { cutAt: "after-intent" } } })).rejects.toBeInstanceOf(CutReached);
+    const pre = bytesOf(OPEN);
+    writeFileSync(join(root, OPEN), Buffer.concat([pre, Buffer.from("\n")]));
+    expect(errorOf(await dispatch(begin(), AT))).toMatchObject({ class: "operation-unknown", reason: "recovery-blocked" });
+    expect(existsSync(join(root, FENCE_FILE))).toBe(false);
+    expect(await inspected()).toBeNull();
+    expect(listed("journal")).toEqual([BEFORE_ID]);
+    expect(listed("ops")).toEqual([]);
+
+    writeFileSync(join(root, OPEN), pre);
+    okResult(await dispatch(begin(), AT));
+    expect(listed("journal"), "the intent was rolled forward first").toEqual([]);
+    expect((JSON.parse(bytesOf(OPEN).toString("utf-8")) as { status: string }).status).toBe("claimed");
+    expect(await inspected()).toEqual({ operation_id: BEGIN_ID, since: SINCE });
+  });
+
+  it("a fence outlives the process that set it: begun through the bundle, its lock left by a dead holder, the next writer is still refused", () => {
+    const run = (req: object) => spawnSync(process.execPath, [BUNDLE], { input: JSON.stringify(req), encoding: "utf-8" });
+    const begun = run(begin());
+    expect(begun.status, begun.stderr).toBe(0);
+    expect(JSON.parse(begun.stdout)).toMatchObject({ ok: true, result: { operation_id: BEGIN_ID, action: "begin" } });
+    // A holder killed with the lock held: its PID is dead, so the next writer takes the lock over as stale.
+    const dead = spawnSync(process.execPath, ["-e", ""]).pid;
+    writeFileSync(lockPathFor(openWorkbenchOrThrow(root)), `pid: ${dead}\nhost: ${hostname()}\nnonce: 00\nacquired_at: ${SINCE}\n`);
+    const refused = run(transitionRequest({ operation_id: OTHER_ID }));
+    expect(refused.status, refused.stderr).toBe(0);
+    expect(JSON.parse(refused.stdout)).toMatchObject({ ok: false, error: { class: "conflict", reason: "maintenance-active" } });
+    expect(JSON.parse(run({ op: "inspect", workbench: root }).stdout).result.maintenance).toMatchObject({ operation_id: BEGIN_ID });
+    expect(listed("journal")).toEqual([]);
+  });
+
+  it("a fence file that does not read still fences, the end included, and inspect refuses it typed, never answering null", async () => {
+    const cases: Array<[string, () => void]> = [
+      ["cut short", () => writeFileSync(join(root, FENCE_FILE), '{\n  "operation_id": "' + BEGIN_ID + '",\n')],
+      ["a field missing", () => writeFileSync(join(root, FENCE_FILE), JSON.stringify({ operation_id: BEGIN_ID }))],
+      ["a field more", () => writeFileSync(join(root, FENCE_FILE), JSON.stringify({ operation_id: BEGIN_ID, since: SINCE, by: "host" }))],
+      ["a field of another type", () => writeFileSync(join(root, FENCE_FILE), JSON.stringify({ operation_id: BEGIN_ID, since: 0 }))],
+      ["a directory", () => mkdirSync(join(root, FENCE_FILE))],
+    ];
+    mkdirSync(join(root, ".json-state"), { recursive: true });
+    for (const [what, make] of cases) {
+      rmSync(join(root, FENCE_FILE), { recursive: true, force: true });
+      make();
+      expect(errorOf(await dispatch({ op: "inspect", workbench: root })), what).toMatchObject({ class: "operation-unknown", reason: "maintenance-unreadable" });
+      for (const req of [begin(OTHER_ID), end(), transitionRequest({ operation_id: OTHER_ID })]) {
+        const e = errorOf(await dispatch(req));
+        expect({ class: e.class, reason: e.reason }, `${what}: ${String(req.op)}`).toEqual({ class: "conflict", reason: "maintenance-active" });
+        expect(e.detail, what).toContain(".json-state/maintenance.json stands and cannot be read as a fence");
+      }
+      expect((okResult(await dispatch({ op: "list", workbench: root })).records as unknown[]).length, what).toBeGreaterThan(0);
+      expect(listed("journal"), what).toEqual([]);
+      expect(listed("ops"), what).toEqual([]);
+    }
+  });
+
+  it("the bundle answers maintenance and the fenced inspect as dispatch does", async () => {
+    const run = (req: object) => JSON.parse(spawnSync(process.execPath, [BUNDLE], { input: JSON.stringify(req), encoding: "utf-8" }).stdout) as Response;
+    const begun = run(begin());
+    expect(await dispatch(begin()), "the replay through dispatch").toEqual(begun);
+    expect(run({ op: "inspect", workbench: root })).toEqual(await dispatch({ op: "inspect", workbench: root }));
+    expect(run(end())).toMatchObject({ ok: true, result: { operation_id: END_ID, action: "end" } });
+  });
+});
+
+function openWorkbenchOrThrow(dir: string) {
+  const opened = openWorkbench(dir);
+  if (!opened.ok) throw new Error(opened.error.detail);
+  return opened.value;
+}

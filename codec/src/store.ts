@@ -47,7 +47,8 @@
 //
 // `.json-state/` is class L: every lock first makes sure it holds a
 // `.gitignore` of `*`, so a tracked workbench never lists it and a clone
-// never carries a foreign lock or intent.
+// never carries a foreign lock or intent. The maintenance fence lives there
+// too (`MAINTENANCE_FILE`), so it fences this checkout and no other.
 //
 // The serialisation is deterministic so that two writers of the same value
 // produce the same bytes and so the same revision: two-space indent, LF, a
@@ -943,6 +944,64 @@ export function lockProtocolOwns(stateDir: string, name: string): boolean {
   } catch {
     return false;
   }
+}
+
+// --- the maintenance fence ------------------------------------------------------
+//
+// Request 39 (the archive revision): `.json-state/maintenance.json`,
+// `{operation_id, since}`, set by `maintenance begin` and removed by the `end`
+// naming it. Unlike the lock it outlives the process that set it, so a move a
+// crash interrupted keeps the store closed. It is written and removed under the
+// lock, never through the journal: the fence writes no record, and an intent
+// cannot express a removal. It is not the lock protocol's, so `initialize`'s
+// exemption does not cover it.
+
+/** The fence's file name in `STATE_DIR`. */
+export const MAINTENANCE_FILE = "maintenance.json";
+
+export interface Fence {
+  operation_id: string;
+  since: string;
+}
+
+const fencePathFor = (wb: Workbench): string => join(wb.root, STATE_DIR, MAINTENANCE_FILE);
+
+/**
+ * The standing fence, or null when none stands. A fence file that exists but
+ * does not read, does not parse strictly, or is not exactly
+ * `{operation_id, since}` with two strings is `operation-unknown/
+ * maintenance-unreadable`: it is never read as no fence (request 39 (d)).
+ */
+export function readFence(wb: Workbench): Result<Fence | null> {
+  const rel = `${STATE_DIR}/${MAINTENANCE_FILE}`;
+  const unreadable = (why: string): Result<never> =>
+    err("operation-unknown", "maintenance-unreadable", `${rel} stands and cannot be read as a fence (${why}); it fences every fresh mutation until it is removed by hand, after a validate and a reconcile`);
+  let bytes: Buffer;
+  try {
+    bytes = readFileSync(fencePathFor(wb));
+  } catch (e) {
+    const code = (e as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") return { ok: true, value: null };
+    return unreadable(code ?? "an error without a code");
+  }
+  const parsed = strictParse(bytes);
+  if (!parsed.ok) return unreadable(`${parsed.reason}: ${parsed.detail}`);
+  const v = parsed.value;
+  if (!isObject(v) || Object.keys(v).sort().join(",") !== "operation_id,since" || typeof v.operation_id !== "string" || typeof v.since !== "string") {
+    return unreadable("not exactly {operation_id, since}, two strings");
+  }
+  return { ok: true, value: { operation_id: v.operation_id, since: v.since } };
+}
+
+/** Sets the fence: complete bytes by temp file, fsync and rename. The caller holds the lock and found no fence. */
+export function writeFence(wb: Workbench, fence: Fence): void {
+  replaceAtomically(fencePathFor(wb), Buffer.from(JSON.stringify({ operation_id: fence.operation_id, since: fence.since }, null, 2) + "\n", "utf-8"));
+}
+
+/** Removes the fence. The caller holds the lock and found the fence it ends. */
+export function removeFence(wb: Workbench): void {
+  unlinkSync(fencePathFor(wb));
+  fsyncDirectory(join(wb.root, STATE_DIR));
 }
 
 function describeHolder(lock: string): string {

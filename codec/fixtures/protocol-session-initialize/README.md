@@ -55,7 +55,9 @@ each, one line, a trailing newline.
 against a fresh copy of `base/` on every test run and fails when a fresh
 exchange, `base/` or a seed differs from the recorded one; everything here is
 regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`, except a
-response a reviewed delta moves (below), which is never rewritten.
+response a reviewed delta moves (below), which is never rewritten. Ten do:
+26, and the nine successful `inspect` answers 01, 08, 14, 16, 18, 19, 21, 22
+and 24.
 
 ## The reviewed delta of 26
 
@@ -74,6 +76,24 @@ delta's value, serialise without whitespace, and compare with that. It shares it
 machinery with the FJ02 and FJ02b recorders through
 `codec/src/__tests__/helpers/session.ts`, started from `base/` in place of
 the scratch workbench.
+
+## The reviewed deltas of the nine `inspect` answers
+
+The archive revision adds the maintenance fence (request 39). Every
+successful `inspect` names it after `pending`, `null` here since no exchange
+sets one, and `operations.implemented` gains `maintenance` after `reconcile`.
+The nine recordings stay the historical expectation and are not edited.
+`<nn>-inspect.maintenance-delta.json` beside each, of the form
+`fusion.session-delta/2` with no delta before it, carries exactly two `add`
+changes: `/result/maintenance`, value `null`, after `pending`; and
+`/result/operations/implemented/14`, value `"maintenance"`, the array's new
+last element. The gate applies each to its recording and compares the fresh
+answer byte for byte, and an answer one field more or one less fails it; a
+case of its own holds the nine to be every successful recorded `inspect` and
+each delta to be those two changes. To replay one by hand, insert
+`"maintenance":null` after the `pending` member of `result` and append
+`"maintenance"` to `result.operations.implemented` in the recorded response,
+serialise without whitespace, and compare with that.
 
 The recorder also asserts that each request of 17, 20, 23 and 25, rebuilt
 from nothing but the target and the preceding `inspect`'s `pending`
@@ -140,8 +160,9 @@ request under its own operation id first.
    `bin/fusion-record < request`, or `node codec/dist/fusion-record.js <
    request` from an installed fusion copy.
 3. Read stdout, replace R with `<workbench>`, and compare with the recorded
-   response, byte for byte; for 26, with the recorded response plus the delta
-   above. Exit is 0 for all twenty-six.
+   response, byte for byte; for 26 and the nine successful `inspect`
+   answers, with the recorded response plus its delta above. Exit is 0 for
+   all twenty-six.
 
 Order matters: 07 and 13 are 06's replay out of
 `R/new/.json-state/ops/<operation_id>.json`, 09 is refused against that same

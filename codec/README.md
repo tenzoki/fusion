@@ -75,8 +75,9 @@ Exit 0 for an answered request whatever its `ok`, 2 on usage, 3 when the
 inlined schemas do not compile; nothing on stderr except on 2 and 3. A
 `workbench` the request leaves out is taken from `FUSION_WORKBENCH`. The
 request shapes are `schemas/protocol.schema.json` (`fusion.protocol/v1`), one
-branch per operation of spec section 6's table and a second branch of `create`
-for `kind: evidence`; the errors are the spec's eight typed classes. `inspect` reports which operations answer
+branch per operation of spec section 6's table, a second branch of `create`
+for `kind: evidence`, and `maintenance` (request 39) after `reconcile`, one
+branch for `begin` and one for `end`; the errors are the spec's eight typed classes. `inspect` reports which operations answer
 (`operations.implemented`) and which do not yet (`operations.deferred`); an
 operation not yet answered is refused `operation-unknown/not-implemented`, with
 a detail naming the package that lands it.
@@ -257,6 +258,44 @@ the plan, after the replay lookup, so a create completed before its pair was
 archived still answers its stored bytes and recreates nothing. The codec
 moves no file into `archive/`; that is the host's maintenance move.
 
+**`maintenance`** (request 39, the archive revision; decision
+`261001-1030_*_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md`,
+option 1) is the fence a host holds while it moves pairs. `{op:
+"maintenance", workbench?, operation_id, action: "begin"}` writes
+`.json-state/maintenance.json`, `{operation_id, since}`; `{op: "maintenance",
+workbench?, operation_id, action: "end", fence}`, under an `operation_id` of
+its own, removes the fence whose `begin` `fence` names. The answer is
+`{operation_id, action, since}`, `since` the fence's, and carries no
+`revisions`: the fence writes no record and takes no intent. It runs through
+the kernel's sequence (below), which checks the fence after the replay lookup
+and before every plan:
+
+| Request | No fence | Fence `F` stands | Fence file does not read |
+|---|---|---|---|
+| A replay of a completed operation (any op, `F`'s own `begin` included) | its stored answer | its stored answer, nothing written | its stored answer |
+| `begin` | sets the fence; `operation-unknown/recovery-blocked` while an intent recovery cannot land stands, and then no fence | `conflict/maintenance-active`, whatever its id | `conflict/maintenance-active` |
+| `end` naming `F` | `conflict/maintenance-not-active` | removes `F` | `conflict/maintenance-active` |
+| `end` naming another fence | `conflict/maintenance-not-active` | `conflict/maintenance-active` | `conflict/maintenance-active` |
+| `end` under the `operation_id` of a stored `begin` | `conflict/operation-id-reused` (the replay lookup) | `conflict/operation-id-reused` | `conflict/operation-id-reused` |
+| every other fresh mutation | as before | `conflict/maintenance-active`, before its intent; the detail names `F`'s id and `since` | `conflict/maintenance-active`, the detail naming the file |
+| `initialize` | as before | as before: a fenced store has a manifest, so `conflict/manifest-present` | as before |
+| `list`, `show`, `validate`, `reconcile` | as before | as before | as before |
+| `inspect` | `maintenance: null` | `maintenance: {operation_id, since}` | `operation-unknown/maintenance-unreadable` |
+
+`inspect.maintenance` follows `pending`, and `operations.implemented` ends
+with `maintenance`. A file that does not read is one that cannot be read,
+does not parse strictly, or is not exactly `{operation_id, since}` with two
+strings; it fences until it is removed (request 39 (d)). `end` with no fence
+standing is refused, never answered as success (request 39 (c)). The fence is
+set before its answer is stored and removed before the `end`'s answer is: a
+process killed between the two leaves the fence it meant to set, which a retry
+of its `begin` meets as `maintenance-active` naming its own id, or no fence,
+which a retry of its `end` meets as `maintenance-not-active`; `inspect` tells
+which. The fence outlives the process and its lock. It is local to one
+checkout, since `.json-state/` never travels. A host that set a fence ends it;
+if the host's record of the move is lost, the last resort is deleting
+`.json-state/maintenance.json` by hand after a `validate` and a `reconcile`.
+
 ## The kernel and the journal
 
 `src/kernel.ts` is the one writer of fusion JSON. `mutate` runs every
@@ -266,7 +305,9 @@ admits (a legacy or unsupported workbench refuses every operation but
 directory itself, under the lock); the workbench write lock; a sweep of the transient entries
 in `.json-state/journal/` and `.json-state/ops/`; the recovery of every pending
 intent; the replay lookup, which consults a pending intent under the request's
-`operation_id` before the stored answer; the operation's own plan function,
+`operation_id` before the stored answer; the maintenance fence, which refuses
+every fresh mutation but `initialize` and the `end` naming it while it stands;
+the operation's own plan function,
 which reads what it needs, checks the caller's `expected_revision` against the
 stored bytes, applies the operation's rules and validates every record it
 would write, and returns the writes and the result without writing; the
@@ -336,6 +377,7 @@ had landed.
 | `write.lock.takeover.<hash>` | A transient claim on a stale lock instance, named by the hash of the stale bytes, in the same content form |
 | `journal/<operation_id>/` | A pending intent, as above |
 | `ops/<operation_id>.json` | A stored answer, as above |
+| `maintenance.json` | The maintenance fence, `{operation_id, since}`, present from a `maintenance begin` to the `end` naming it; written and removed under the lock, never through the journal |
 | `.gitignore` | `*`, written whenever it is missing or holds other bytes, before every lock, so a tracked workbench never lists the directory whatever the root `.gitignore` says, and a clone never carries a foreign lock or intent |
 
 A dot-named entry in `journal/` or `ops/` is transient (an intent still being
@@ -515,10 +557,13 @@ and `at`); later ones carry `"format": "fusion.session-delta/2"`, a list of
 `replace` and `add` changes by JSON pointer (an added object member names the
 member it follows), and `follows`, the delta files applied before it.
 `codec/src/__tests__/helpers/session.ts` is the one implementation. The
-archive revision's deltas are `protocol-session-fj02/15-reconcile.report-delta.json`
-and `protocol-session-initialize/26-inspect.detail-delta.json` (the
+archive revision's deltas are `protocol-session-fj02/15-reconcile.report-delta.json`,
+`protocol-session-initialize/26-inspect.detail-delta.json` (the
 `pending-initialize-unreadable` detail naming the intent's directory once,
-where it named it twice).
+where it named it twice), and `protocol-session-initialize/<nn>-inspect.maintenance-delta.json`
+for `01`, `08`, `14`, `16`, `18`, `19`, `21`, `22` and `24`, every successful
+recorded `inspect`, each adding `maintenance: null` after `pending` and
+`maintenance` at the end of `operations.implemented`.
 
 ## The two closed vocabularies
 
@@ -546,15 +591,15 @@ never by its file format.
 | `fixtures/protocol-session/` | The FJ01 recorded session: six request/response pairs through `bin/fusion-record` over a copy of the scratch workbench, byte for byte, gated by `round-trip-cli.test.ts` and regenerated only under `UPDATE_PROTOCOL_SESSION=1`; its `README.md` is the replay procedure for the Prior side; not indexed by the manifest |
 | `fixtures/protocol-session-fj02/` | The FJ02 recorded session: fifteen pairs covering every operation FJ02 answers, the replay of a `create`, a divergent replay and a read that recovers a pending intent, with the files no operation writes under `seed/<nn>-<op>/` (a memo, an evidence pair, a pending intent directory), each copied onto the workbench just before its exchange, and `15-reconcile.role-delta.json` then `15-reconcile.report-delta.json`, the two reviewed fields and the one reviewed entry the current answer adds to the historical `15-reconcile.response.json`; gated by `round-trip-cli-fj02.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02=1` (15's response never), replay procedure in its `README.md`; not indexed by the manifest |
 | `fixtures/protocol-session-fj02b/` | The FJ02b recorded session: twenty pairs covering plan progress through `transition` (with and without a state change, its replay, and the refusals for a stale revision, a forbidden step edge, a repeated id, an unknown id and a closed plan) and `create` of `kind: evidence` (a first record, two corrections, the replay of the first correction after the second landed, and the refusals for a taken name, a report at another hash and a correction over a changed report), with the report no operation writes under `seed/11-create/` and its replacement under `seed/20-create/`, each copied onto the workbench just before its exchange; gated by `round-trip-cli-fj02b.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02B=1`, replay procedure in its `README.md`; not indexed by the manifest |
-| `fixtures/protocol-session-initialize/` | The `initialize` recorded session: twenty-six pairs over a root of targets, not one workbench (`<workbench>/legacy`, `/file`, `/new`, `/pending`, `/crowded`, `/diverged`, `/nonfile`, `/unreadable`). It covers `inspect` and `list` on an empty directory and a v12 store (`state: legacy`); `initialize` refused on the store (`target-not-empty`, byte-identical after) and on a file (`workbench-missing`), landed on the empty directory, replayed before and after a `create` with an `inspect` after each replay, refused under its id with another request (`operation-id-reused`) and under another id (`manifest-present`); then `inspect.pending` (`{operation_id, id, blocked}`) over a committed intent alone and beside another entry, each landed by the request rebuilt from the target and `pending` alone, over a diverged and a non-file manifest (`blocked: true`, the `initialize` `recovery-blocked` with every file kept), and over an unreadable intent (`pending-initialize-unreadable`, whose current detail is the historical `26-inspect.response.json` with `26-inspect.detail-delta.json` applied). `base/` is the root the session starts from; `seed/<nn>-inspect/` holds each intent, the readable ones cut in process from the request their `initialize` exchange sends, with the request digest as the placeholder `<request-digest:<nn>-initialize>` a replayer computes; gated by `round-trip-cli-initialize.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`, replay procedure and the placeholder rule in its `README.md`; not indexed by the manifest |
+| `fixtures/protocol-session-initialize/` | The `initialize` recorded session: twenty-six pairs over a root of targets, not one workbench (`<workbench>/legacy`, `/file`, `/new`, `/pending`, `/crowded`, `/diverged`, `/nonfile`, `/unreadable`). It covers `inspect` and `list` on an empty directory and a v12 store (`state: legacy`); `initialize` refused on the store (`target-not-empty`, byte-identical after) and on a file (`workbench-missing`), landed on the empty directory, replayed before and after a `create` with an `inspect` after each replay, refused under its id with another request (`operation-id-reused`) and under another id (`manifest-present`); then `inspect.pending` (`{operation_id, id, blocked}`) over a committed intent alone and beside another entry, each landed by the request rebuilt from the target and `pending` alone, over a diverged and a non-file manifest (`blocked: true`, the `initialize` `recovery-blocked` with every file kept), and over an unreadable intent (`pending-initialize-unreadable`, whose current detail is the historical `26-inspect.response.json` with `26-inspect.detail-delta.json` applied); each successful `inspect` answers its historical recording with `<nn>-inspect.maintenance-delta.json` applied. `base/` is the root the session starts from; `seed/<nn>-inspect/` holds each intent, the readable ones cut in process from the request their `initialize` exchange sends, with the request digest as the placeholder `<request-digest:<nn>-initialize>` a replayer computes; gated by `round-trip-cli-initialize.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`, replay procedure and the placeholder rule in its `README.md`; not indexed by the manifest |
 | `fixtures/workbench/` | A minimal v12-shaped scratch workbench (`workbench.json`, `.fusion-setup`, two package pairs, one shared issue pair) the store and CLI suites copy to a temp directory before every case; not indexed by the manifest |
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |
 | `scripts/build.mjs` | esbuild, pinned exactly, `--bundle --platform=node --format=esm --target=node20`, JSON inlined, staging path then atomic rename into `dist/`; a second run writes nothing |
 | `scripts/bench-fixture.mjs` | The scale fixture of the measurement protocol: a JSON-controlled store of packages, each with one adopted plan, built through the bundle beside it with fixed ids and cut into the subsets of 200, 500, 1 000 and 2 500 records, so that the Prior side can rebuild the stores the figures were taken on; a tool, run by nothing in the suite and timing nothing |
-| `src/cli/protocol.ts` | The request union over the fifteen operations, the response envelope and the eight error classes; `src/cli/schemas.ts` inlines the contract for the bundle |
+| `src/cli/protocol.ts` | The request union over the sixteen operations, the response envelope and the eight error classes; `src/cli/schemas.ts` inlines the contract for the bundle |
 | `src/cli/ops.ts` | `dispatch(request)`: validates against the protocol schema, then the operations it answers, reads under the kernel's read protocol and every mutation through the kernel (`src/kernel.ts`) |
 | `src/cli/main.ts` | The entry point: stdin or `--file` in, stdout out, the exit codes above |
-| `src/store.ts` | `openWorkbench` (spec 4.1: json-control, legacy, unsupported), `readPair` (control, `sha256:` revision of the stored bytes, narrative hash; for an evidence record the report's path and hashes instead), the walk over every control file (`package.json`, `*.record.json`, `*.evidence.json`), the evidence naming rule, `serialise` (deterministic, in the schemas' `properties` order), the one workbench write lock `.json-state/write.lock` with its takeover and the self-ignore, and `replaceAtomically` (temp file, fsync, atomic rename); it writes no record itself |
+| `src/store.ts` | `openWorkbench` (spec 4.1: json-control, legacy, unsupported), `readPair` (control, `sha256:` revision of the stored bytes, narrative hash; for an evidence record the report's path and hashes instead), the walk over every control file (`package.json`, `*.record.json`, `*.evidence.json`), the evidence naming rule, `serialise` (deterministic, in the schemas' `properties` order), the one workbench write lock `.json-state/write.lock` with its takeover and the self-ignore, the maintenance fence `.json-state/maintenance.json` (`readFence`, `writeFence`, `removeFence`), and `replaceAtomically` (temp file, fsync, atomic rename); it writes no record itself |
 | `src/kernel.ts` | `mutate` (the one mutation sequence every operation runs through), `read` (the lock-free read protocol), the plan context an operation's plan function reads through (`readPair`, `cas`, `resolveRecordId`, `resolveArtefact`, `validateResult`), and the fault cuts `CUTS` the tests drive; see `## The kernel and the journal` |
 | `src/journal.ts` | The intent (`commitIntent`, `readIntents`, `removeIntent`, `sweep`), the three-way file state and `recover`, the request digest, and the stored answer in both readable forms |
 | `src/strict-json.ts` | The strict reader: bytes in, one JSON object or a typed refusal out (spec §4 limits) |

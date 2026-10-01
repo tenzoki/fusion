@@ -8832,6 +8832,34 @@ function lockProtocolOwns(stateDir, name) {
     return false;
   }
 }
+var MAINTENANCE_FILE = "maintenance.json";
+var fencePathFor = (wb) => join2(wb.root, STATE_DIR, MAINTENANCE_FILE);
+function readFence(wb) {
+  const rel = `${STATE_DIR}/${MAINTENANCE_FILE}`;
+  const unreadable = (why) => err("operation-unknown", "maintenance-unreadable", `${rel} stands and cannot be read as a fence (${why}); it fences every fresh mutation until it is removed by hand, after a validate and a reconcile`);
+  let bytes;
+  try {
+    bytes = readFileSync2(fencePathFor(wb));
+  } catch (e) {
+    const code = e.code;
+    if (code === "ENOENT") return { ok: true, value: null };
+    return unreadable(code ?? "an error without a code");
+  }
+  const parsed = strictParse(bytes);
+  if (!parsed.ok) return unreadable(`${parsed.reason}: ${parsed.detail}`);
+  const v = parsed.value;
+  if (!isObject(v) || Object.keys(v).sort().join(",") !== "operation_id,since" || typeof v.operation_id !== "string" || typeof v.since !== "string") {
+    return unreadable("not exactly {operation_id, since}, two strings");
+  }
+  return { ok: true, value: { operation_id: v.operation_id, since: v.since } };
+}
+function writeFence(wb, fence) {
+  replaceAtomically(fencePathFor(wb), Buffer.from(JSON.stringify({ operation_id: fence.operation_id, since: fence.since }, null, 2) + "\n", "utf-8"));
+}
+function removeFence(wb) {
+  unlinkSync(fencePathFor(wb));
+  fsyncDirectory(join2(wb.root, STATE_DIR));
+}
 function describeHolder(lock) {
   try {
     const text = readFileSync2(lock, "utf-8").trim();
@@ -9090,9 +9118,10 @@ var OPERATIONS = [
   "adopt-plan",
   "attach-evidence",
   "reconcile",
+  "maintenance",
   "migration"
 ];
-var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"];
+var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance"];
 var LANDS_IN = {
   migration: "FJ04"
 };
@@ -9166,8 +9195,19 @@ async function mutate(wb, req, plan, options = {}, admits = JSON_CONTROL_ONLY) {
     const replay = replayAnswer(wb, req);
     if (!replay.ok) return refuse2(replay.error);
     if (replay.value !== null) return replay.value;
-    const planned = await plan(planContext(wb, blocked));
+    const fence = readFence(wb);
+    const fenced = fenceRefusal(req, fence);
+    if (fenced !== null) return refuse2(fenced);
+    const planned = await plan(planContext(wb, blocked, fence.ok ? fence.value : null));
     if (!planned.ok) return refuse2(planned.error);
+    if (planned.value.fence !== void 0) {
+      if (planned.value.writes.length > 0) throw new Error(`the plan of ${req.op} sets a fence and writes files`);
+      const response2 = { ok: true, result: planned.value.result };
+      if (planned.value.fence === null) removeFence(wb);
+      else writeFence(wb, planned.value.fence);
+      writeAnswer(wb, { operation_id: req.operation_id, op: req.op, request_digest: digest, response: response2 });
+      return response2;
+    }
     for (const w of planned.value.writes) {
       const b = blockedOn(blocked, w.path);
       if (b !== void 0) return refuse2(recoveryBlocked(b));
@@ -9203,6 +9243,18 @@ async function mutate(wb, req, plan, options = {}, admits = JSON_CONTROL_ONLY) {
     releaseLock(lock.value);
   }
 }
+function fenceRefusal(req, fence) {
+  if (req.op === "initialize") return null;
+  if (!fence.ok) return { class: "conflict", reason: "maintenance-active", detail: fence.error.detail };
+  if (fence.value === null) return null;
+  const r = req;
+  if (r.op === "maintenance" && r.action === "end" && r.fence === fence.value.operation_id) return null;
+  return {
+    class: "conflict",
+    reason: "maintenance-active",
+    detail: `a maintenance fence stands in ${STATE_DIR}/${MAINTENANCE_FILE}, set by operation ${fence.value.operation_id} since ${fence.value.since}; every fresh mutation is refused until the maintenance end naming it`
+  };
+}
 var reused = (id) => fail("conflict", "operation-id-reused", `operation_id ${id} was already used for a different request`);
 function hashOrNull(abs) {
   try {
@@ -9212,10 +9264,11 @@ function hashOrNull(abs) {
     throw e;
   }
 }
-function planContext(wb, blocked) {
+function planContext(wb, blocked, fence) {
   return {
     ...readContext(wb, blocked),
     blocked,
+    fence,
     cas(pair, expected) {
       if (pair.revision !== expected) return no("conflict", "revision-mismatch", `stored ${pair.revision} expected ${expected}`);
       return ok(void 0);
@@ -9512,6 +9565,8 @@ async function dispatch(request, options = {}) {
       return mutate(wb, req, attachEvidencePlan(req), kernel);
     case "reconcile":
       return readable(wb) ?? reading(wb, (view) => reconcile(wb, req, view), kernel);
+    case "maintenance":
+      return mutate(wb, req, maintenancePlan(req, kernel), kernel);
     default:
       return notImplemented(req.op);
   }
@@ -9527,6 +9582,8 @@ async function reading(wb, body, options) {
 function inspect(wb) {
   const pending = pendingInitialize(wb);
   if (!pending.ok) return fromStore(pending.error);
+  const fence = readFence(wb);
+  if (!fence.ok) return fromStore(fence.error);
   return {
     ok: true,
     result: {
@@ -9536,6 +9593,7 @@ function inspect(wb) {
       manifest: wb.manifest,
       diagnosis: wb.diagnosis,
       pending: pending.value,
+      maintenance: fence.value,
       schemas: schemas().ids(),
       features: [...SUPPORTED_FEATURES],
       kinds: [...KINDS],
@@ -9683,6 +9741,20 @@ function pendingInitialize(wb) {
     };
   }
   return { ok: true, value: found[0] ?? null };
+}
+function maintenancePlan(req, options) {
+  return (ctx) => {
+    if (req.action === "begin") {
+      const blocked = ctx.blocked[0];
+      if (blocked !== void 0) return { ok: false, error: recoveryBlocked(blocked) };
+      const since = new Date((options.now ?? Date.now)()).toISOString();
+      return { ok: true, value: { writes: [], result: { operation_id: req.operation_id, action: "begin", since }, fence: { operation_id: req.operation_id, since } } };
+    }
+    if (ctx.fence === null) {
+      return { ok: false, error: { class: "conflict", reason: "maintenance-not-active", detail: `no maintenance fence stands in ${STATE_DIR}/${MAINTENANCE_FILE}, so there is no fence ${req.fence} to end; inspect names the standing fence, null when there is none` } };
+    }
+    return { ok: true, value: { writes: [], result: { operation_id: req.operation_id, action: "end", since: ctx.fence.since }, fence: null } };
+  };
 }
 var stateOf = (pair) => pair.kind === "package" ? pair.control.status : pair.control.control?.state ?? null;
 function scopeDir(wb, scope) {
@@ -12079,13 +12151,13 @@ var protocol_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.protocol/v1",
   title: "fusion.protocol/v1",
-  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there.",
+  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence.",
   type: "object",
   required: ["op"],
   properties: {
     op: {
       type: "string",
-      enum: ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "migration"]
+      enum: ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"]
     }
   },
   oneOf: [
@@ -12412,6 +12484,29 @@ var protocol_schema_default = {
         op: { const: "reconcile" },
         workbench: { $ref: "#/$defs/workbench" },
         scope: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" }
+      }
+    },
+    {
+      type: "object",
+      additionalProperties: false,
+      required: ["op", "operation_id", "action"],
+      properties: {
+        op: { const: "maintenance" },
+        workbench: { $ref: "#/$defs/workbench" },
+        operation_id: { $ref: "#/$defs/operation_id" },
+        action: { const: "begin" }
+      }
+    },
+    {
+      type: "object",
+      additionalProperties: false,
+      required: ["op", "operation_id", "action", "fence"],
+      properties: {
+        op: { const: "maintenance" },
+        workbench: { $ref: "#/$defs/workbench" },
+        operation_id: { $ref: "#/$defs/operation_id" },
+        action: { const: "end" },
+        fence: { $ref: "#/$defs/operation_id", description: "The operation_id of the begin whose fence this end removes." }
       }
     },
     {

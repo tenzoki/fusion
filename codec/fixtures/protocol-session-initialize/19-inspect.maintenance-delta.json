@@ -1,0 +1,20 @@
+{
+  "format": "fusion.session-delta/2",
+  "exchange": "19-inspect",
+  "recorded": "19-inspect.response.json",
+  "follows": [],
+  "why": "The archive revision (REQUESTS.md, 'The archive revision (the contract delta)', request 39 and 'Recorded bytes this revision moves'): inspect names the maintenance fence after pending, null where none stands, and maintenance joins operations.implemented after reconcile. The recorded response is the historical expectation and is not edited; the current answer is those bytes with exactly these two changes.",
+  "changes": [
+    {
+      "op": "add",
+      "pointer": "/result/maintenance",
+      "value": null,
+      "after": "pending"
+    },
+    {
+      "op": "add",
+      "pointer": "/result/operations/implemented/14",
+      "value": "maintenance"
+    }
+  ]
+}

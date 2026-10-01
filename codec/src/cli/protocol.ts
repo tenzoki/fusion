@@ -3,8 +3,8 @@
 // out, both JSON, as Prior's `concept/fusion-json-workbench-spec.md` section 6
 // lays it out.
 //
-// The fifteen operations of the spec's table are the request union below,
-// each with its argument shape. `IMPLEMENTED_OPERATIONS` names the ones this
+// The sixteen operations, the spec's table and `maintenance` (request 39, the
+// archive revision), are the request union below, each with its argument shape. `IMPLEMENTED_OPERATIONS` names the ones this
 // codec answers, and `inspect` reports it; every other one is answered
 // `operation-unknown/not-implemented` with a detail naming the package that
 // lands it (`LANDS_IN`), so that a caller written against the whole table gets
@@ -34,7 +34,7 @@ import type { ValidationError } from "../validate.js";
 
 export const PROTOCOL_SCHEMA_ID = "urn:fusion:schema:fusion.protocol/v1";
 
-/** The operations of spec section 6's table, in the table's order. */
+/** The operations of spec section 6's table, in the table's order, `maintenance` (request 39) after `reconcile`. */
 export const OPERATIONS = [
   "inspect",
   "list",
@@ -50,13 +50,14 @@ export const OPERATIONS = [
   "adopt-plan",
   "attach-evidence",
   "reconcile",
+  "maintenance",
   "migration",
 ] as const;
 
 export type Operation = (typeof OPERATIONS)[number];
 
 /** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
-export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile"];
+export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance"];
 
 /** The package that lands each operation not yet answered: the detail of its `not-implemented` refusal. */
 export const LANDS_IN: Partial<Record<Operation, string>> = {
@@ -272,6 +273,17 @@ export interface ReconcileRequest extends Base<"reconcile"> {
   scope?: string;
 }
 
+/**
+ * `maintenance` (request 39, the archive revision): the fence a host holds
+ * while it moves pairs into `archive/`. `begin` sets it; `end`, under an
+ * `operation_id` of its own (a stored answer is keyed by it), removes the
+ * fence whose `begin` it names in `fence`. While a fence stands every other
+ * fresh mutation but `initialize` is refused `conflict/maintenance-active`.
+ */
+export type MaintenanceRequest =
+  | (Base<"maintenance"> & { operation_id: string; action: "begin" })
+  | (Base<"maintenance"> & { operation_id: string; action: "end"; fence: string });
+
 export interface MigrationRequest extends Base<"migration"> {
   phase: "survey" | "plan" | "apply" | "verify";
   /** The frozen plan, workbench-relative; required from `apply` on. */
@@ -294,6 +306,7 @@ export type Request =
   | AdoptPlanRequest
   | AttachEvidenceRequest
   | ReconcileRequest
+  | MaintenanceRequest
   | MigrationRequest;
 
 // --- the response envelope ----------------------------------------------------

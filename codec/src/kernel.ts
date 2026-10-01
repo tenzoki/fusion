@@ -13,13 +13,21 @@
 // `sweep`;
 // the recovery of every pending intent; the replay lookup, which consults
 // `journal/<id>/` before `ops/<id>.json` (discussion 260929-0709, C13); the
-// operation's own plan function; the durable intent; each write by temp file,
-// fsync and rename; the stored answer; the intent's removal. The plan
+// maintenance fence (request 39), which refuses every fresh mutation but
+// `initialize` and the `end` naming it while it stands; the operation's own
+// plan function; the durable intent; each write by temp file, fsync and
+// rename; the stored answer; the intent's removal. A replay therefore still
+// answers under the fence, and nothing the fence refuses writes an intent. The plan
 // function is where an operation's rules live. It reads what it needs through
 // the context (under the lock), checks the caller's expected revision with
 // `cas`, validates the records it would write, and returns the writes and the
 // result; it never writes. So `claim` and `release` (step 4) can only ever be
 // `transition` with defaults: there is no second route to the files.
+//
+// The fence itself is set and removed outside the journal: `maintenance`'s
+// plan function returns no writes and a `fence` instead, which `mutate`
+// applies under the lock before it stores the answer. An intent cannot express
+// a removal, and the fence writes no record.
 //
 // The intent is the commit point. Once `journal/<id>/` exists under its own
 // name the operation lands, on this attempt or through recovery on any later
@@ -68,14 +76,20 @@ import {
 } from "./journal.js";
 import {
   LOCK_STALE_MS,
+  MAINTENANCE_FILE,
+  STATE_DIR,
   WORKBENCH_MANIFEST,
   acquireLock,
   controlFiles,
+  readFence,
+  removeFence,
+  writeFence,
   describeErrors,
   readPair,
   releaseLock,
   resolveInside,
   revisionOf,
+  type Fence,
   type Pair,
   type Result,
   type StoreError,
@@ -138,6 +152,12 @@ export interface Planned {
   writes: PlannedWrite[];
   result: unknown;
   revisions?: Record<string, string>;
+  /**
+   * `maintenance` alone: the fence to set, or null to remove the standing one.
+   * Never beside writes: the fence takes no intent, and `mutate` applies it
+   * before it stores the answer.
+   */
+  fence?: Fence | null;
 }
 
 /** What a plan function may ask, all of it under the lock. */
@@ -145,6 +165,8 @@ export interface PlanContext {
   readonly wb: Workbench;
   /** The intents recovery left blocked, read-only: `initialize` refuses on any of them before it reads the directory. */
   readonly blocked: readonly Blocked[];
+  /** The fence standing when the plan runs: null for every operation the fence let through but the `end` naming it. */
+  readonly fence: Fence | null;
   /** A pair, or `recovery-blocked` when a blocked intent names its path. */
   readPair(path: string): Result<Pair>;
   /** `conflict/revision-mismatch` unless the pair's stored bytes hash to `expected`. */
@@ -264,8 +286,22 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
     if (!replay.ok) return refuse(replay.error);
     if (replay.value !== null) return replay.value;
 
-    const planned = await plan(planContext(wb, blocked));
+    const fence = readFence(wb);
+    const fenced = fenceRefusal(req, fence);
+    if (fenced !== null) return refuse(fenced);
+
+    const planned = await plan(planContext(wb, blocked, fence.ok ? fence.value : null));
     if (!planned.ok) return refuse(planned.error);
+    if (planned.value.fence !== undefined) {
+      if (planned.value.writes.length > 0) throw new Error(`the plan of ${req.op} sets a fence and writes files`);
+      // Fence first, answer second: a crash between leaves the fence set and no
+      // answer, and a retry meets the fence it set, named by its own id.
+      const response: Response = { ok: true, result: planned.value.result };
+      if (planned.value.fence === null) removeFence(wb);
+      else writeFence(wb, planned.value.fence);
+      writeAnswer(wb, { operation_id: req.operation_id, op: req.op, request_digest: digest, response });
+      return response;
+    }
     for (const w of planned.value.writes) {
       const b = blockedOn(blocked, w.path);
       if (b !== undefined) return refuse(recoveryBlocked(b));
@@ -306,6 +342,27 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
   }
 }
 
+/**
+ * The fence's refusal of `req`, or null when it passes (request 39). A fence
+ * that stands refuses every fresh mutation but `initialize`, which never meets
+ * a fenced store (a fenced store has a manifest, and its plan answers
+ * `manifest-present`), and the `maintenance end` whose `fence` names it. A
+ * fence file that does not read fences too, the `end` included, since no `end`
+ * can be matched against it (request 39 (d)).
+ */
+export function fenceRefusal(req: MutationRequest, fence: Result<Fence | null>): StoreError | null {
+  if (req.op === "initialize") return null;
+  if (!fence.ok) return { class: "conflict", reason: "maintenance-active", detail: fence.error.detail };
+  if (fence.value === null) return null;
+  const r = req as MutationRequest & { action?: unknown; fence?: unknown };
+  if (r.op === "maintenance" && r.action === "end" && r.fence === fence.value.operation_id) return null;
+  return {
+    class: "conflict",
+    reason: "maintenance-active",
+    detail: `a maintenance fence stands in ${STATE_DIR}/${MAINTENANCE_FILE}, set by operation ${fence.value.operation_id} since ${fence.value.since}; every fresh mutation is refused until the maintenance end naming it`,
+  };
+}
+
 const reused = (id: string): Response => fail("conflict", "operation-id-reused", `operation_id ${id} was already used for a different request`);
 
 function hashOrNull(abs: string): string | null {
@@ -320,10 +377,11 @@ function hashOrNull(abs: string): string | null {
 /** The read half of the plan context: what a body under `read` may ask, as a plan function asks it under the lock. */
 export type ReadContext = Pick<PlanContext, "wb" | "readPair" | "resolveRecordId" | "resolveArtefact">;
 
-function planContext(wb: Workbench, blocked: readonly Blocked[]): PlanContext {
+function planContext(wb: Workbench, blocked: readonly Blocked[], fence: Fence | null): PlanContext {
   return {
     ...readContext(wb, blocked),
     blocked,
+    fence,
     cas(pair, expected) {
       if (pair.revision !== expected) return no("conflict", "revision-mismatch", `stored ${pair.revision} expected ${expected}`);
       return ok(undefined);

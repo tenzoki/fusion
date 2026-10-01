@@ -53,6 +53,11 @@
 //               `validate` findings, every reference and whether it resolves,
 //               every evidence binding, every dependency edge and cycle, and
 //               status copies in live narratives
+//   maintenance the fence a host holds while it moves pairs (request 39):
+//               `begin` sets `.json-state/maintenance.json` over a journal
+//               with no pending intent, `end` removes the fence it names;
+//               while one stands the kernel refuses every other fresh
+//               mutation but `initialize`, and reads answer as before
 //
 // Every other operation of the table answers `operation-unknown/not-implemented`
 // with a detail naming the package that lands it (`LANDS_IN`).
@@ -93,6 +98,7 @@ import { allowed, dependencySatisfied, stateRules, stepAllowed, transitions, typ
 import {
   EVIDENCE_SUFFIX,
   KINDS,
+  MAINTENANCE_FILE,
   PACKAGE_SCHEMA_ID,
   RECORD_SCHEMA_ID,
   SCHEMA_ID_PREFIX,
@@ -107,6 +113,7 @@ import {
   evidenceNaming,
   lockProtocolOwns,
   openWorkbench,
+  readFence,
   readPair,
   reportProblem,
   resolveCurrent,
@@ -135,6 +142,7 @@ import {
   type EvidenceRef,
   type InitializeRequest,
   type ListRequest,
+  type MaintenanceRequest,
   type ReconcileRequest,
   type RecordRef,
   type ReleaseRequest,
@@ -213,6 +221,8 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
       return mutate(wb, req, attachEvidencePlan(req), kernel);
     case "reconcile":
       return readable(wb) ?? reading(wb, (view) => reconcile(wb, req, view), kernel);
+    case "maintenance":
+      return mutate(wb, req, maintenancePlan(req, kernel), kernel);
     default:
       return notImplemented((req as Request).op);
   }
@@ -232,9 +242,17 @@ async function reading(wb: Workbench, body: (view: ReadView) => Response, option
 
 // --- inspect ------------------------------------------------------------------
 
+/**
+ * `inspect.maintenance` (request 39) follows `pending`: null, or the standing
+ * fence `{operation_id, since}`. A fence file that does not read is refused
+ * `operation-unknown/maintenance-unreadable`, never answered null, as an
+ * unreadable journal is for `pending`; the journal is asked first.
+ */
 function inspect(wb: Workbench): Response {
   const pending = pendingInitialize(wb);
   if (!pending.ok) return fromStore(pending.error);
+  const fence = readFence(wb);
+  if (!fence.ok) return fromStore(fence.error);
   return {
     ok: true,
     result: {
@@ -244,6 +262,7 @@ function inspect(wb: Workbench): Response {
       manifest: wb.manifest,
       diagnosis: wb.diagnosis,
       pending: pending.value,
+      maintenance: fence.value,
       schemas: schemas().ids(),
       features: [...SUPPORTED_FEATURES],
       kinds: [...KINDS],
@@ -466,6 +485,34 @@ function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
     };
   }
   return { ok: true, value: found[0] ?? null };
+}
+
+// --- maintenance ------------------------------------------------------------------
+//
+// The fence (request 39, the archive revision). The kernel orders it: under the
+// lock, sweep and recovery, then the replay lookup, then the fence check, then
+// this plan. So a replay of an operation completed before the fence answers its
+// stored bytes, a second `begin` under any id meets the fence, and an `end`
+// reaches this plan only when no fence stands or `fence` names the standing
+// one. The plan returns no writes and the fence to set or remove, which the
+// kernel applies before it stores the answer `{operation_id, action, since}`;
+// `since` is the fence's, so `end` answers the time its `begin` set.
+
+function maintenancePlan(req: MaintenanceRequest, options: KernelOptions): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    if (req.action === "begin") {
+      // Pending committed writes are settled first (`## 36`): one recovery could not land stops the fence.
+      const blocked = ctx.blocked[0];
+      if (blocked !== undefined) return { ok: false, error: recoveryBlocked(blocked) };
+      const since = new Date((options.now ?? Date.now)()).toISOString();
+      return { ok: true, value: { writes: [], result: { operation_id: req.operation_id, action: "begin", since }, fence: { operation_id: req.operation_id, since } } };
+    }
+    // The kernel let an `end` through, so the fence it names stands, or none does.
+    if (ctx.fence === null) {
+      return { ok: false, error: { class: "conflict", reason: "maintenance-not-active", detail: `no maintenance fence stands in ${STATE_DIR}/${MAINTENANCE_FILE}, so there is no fence ${req.fence} to end; inspect names the standing fence, null when there is none` } };
+    }
+    return { ok: true, value: { writes: [], result: { operation_id: req.operation_id, action: "end", since: ctx.fence.since }, fence: null } };
+  };
 }
 
 // --- list ---------------------------------------------------------------------
