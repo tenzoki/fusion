@@ -11,7 +11,7 @@
 
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -279,6 +279,19 @@ describe("initialize", () => {
     expect(statSync(join(file, ".json-state")).isFile()).toBe(true);
   });
 
+  // Issue 261001-0841 (inspect over a non-directory journal): the sweep under
+  // the lock threw ENOTDIR, and the content check was never reached.
+  it("a .json-state/journal or .json-state/ops that is no directory is target-not-empty naming it, before the lock; the target keeps its bytes", async () => {
+    for (const inner of ["journal", "ops"]) {
+      const dir = target(`${inner}-file`, { [`.json-state/${inner}`]: "" });
+      const before = tree(dir);
+      const r = await dispatch(init(dir));
+      expect(r, inner).toMatchObject({ ok: false, error: { class: "conflict", reason: "target-not-empty" } });
+      if (!r.ok) expect(r.error.detail).toContain(`holds .json-state/${inner}`);
+      expect(tree(dir), inner).toEqual(before);
+    }
+  });
+
   it("a manifest that is valid, unsupported, or a directory is manifest-present, before the lock and under it", async () => {
     // Valid, and under JSON control: the scratch workbench, which carries .json-state/ after a write.
     expect(await dispatch(init(root))).toMatchObject({ ok: false, error: { class: "conflict", reason: "manifest-present" } });
@@ -509,6 +522,37 @@ describe("inspect.pending and list.state", () => {
     await unreadable(noAnswer, "names none");
   });
 
+  // Issue 261001-0841: the listing threw ENOTDIR and the bundle exited 1.
+  it("a .json-state or a journal that is no directory: inspect is pending-initialize-unreadable naming the journal and its code, and the bundle answers with exit 0", async () => {
+    const stateFile = empty("state-file");
+    writeFileSync(join(stateFile, ".json-state"), "");
+    const journalFile = empty("journal-file");
+    mkdirSync(join(journalFile, ".json-state"));
+    writeFileSync(join(journalFile, ".json-state", "journal"), "");
+    const { FUSION_WORKBENCH: _drop, ...env } = process.env;
+    for (const dir of [stateFile, journalFile]) {
+      const r = await dispatch({ op: "inspect", workbench: dir });
+      expect(r, dir).toMatchObject({ ok: false, error: { class: "operation-unknown", reason: "pending-initialize-unreadable" } });
+      if (!r.ok) expect(r.error.detail).toContain(".json-state/journal: the journal cannot be listed (ENOTDIR)");
+      const b = spawnSync(process.execPath, [BUNDLE], { input: JSON.stringify({ op: "inspect", workbench: dir }), encoding: "utf-8", env });
+      expect(b.status, b.stderr).toBe(0);
+      expect(b.stderr).toBe("");
+      expect(JSON.parse(b.stdout)).toEqual(r);
+    }
+  });
+
+  // Issue 261001-0841 (isRegularFile, request 41), through the bundle.
+  it("a workbench.json link loop: inspect is unsupported with schema-invalid/manifest-unreadable, and the bundle answers with exit 0", async () => {
+    const dir = empty("loop");
+    symlinkSync("workbench.json", join(dir, "workbench.json"));
+    const r = okResult(await dispatch({ op: "inspect", workbench: dir }));
+    expect(r).toMatchObject({ state: "unsupported", pending: null, diagnosis: { class: "schema-invalid", reason: "manifest-unreadable" } });
+    const { FUSION_WORKBENCH: _drop, ...env } = process.env;
+    const b = spawnSync(process.execPath, [BUNDLE], { input: JSON.stringify({ op: "inspect", workbench: dir }), encoding: "utf-8", env });
+    expect(b.status, b.stderr).toBe(0);
+    expect(JSON.parse(b.stdout)).toMatchObject({ ok: true, result: { diagnosis: { reason: "manifest-unreadable" } } });
+  });
+
   it("more than one committed initialize is refused pending-initialize-ambiguous, naming the intent directories", async () => {
     const SECOND = "5c4e6a8b-1d3f-4a5b-9c7d-0e1f2a3b4c5d";
     const dir = await committed("two");
@@ -553,7 +597,8 @@ describe("inspect.pending and list.state", () => {
     expect(existsSync(join(dir, "workbench.json"))).toBe(false);
   });
 
-  it("precedence on initialize: replay and blocked recovery before manifest-present, which a fresh initialize over any manifest entry answers", async () => {
+  // The blocked case of the precedence is "a blocked intent: every initialize is a typed refusal" above.
+  it("precedence on initialize: replay before manifest-present, which a fresh initialize over any manifest entry answers", async () => {
     const dir = empty("landed");
     const first = await dispatch(init(dir));
     expect(first.ok).toBe(true);

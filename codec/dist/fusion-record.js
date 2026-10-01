@@ -8326,7 +8326,11 @@ function openWorkbench(root, set = schemas()) {
     ok: true,
     value: { root: abs, state: "unsupported", id: null, manifest: manifest2, diagnosis }
   });
-  if (!isRegularFile(manifestPath)) {
+  const regular = isRegularFile(manifestPath);
+  if (!regular.ok) {
+    return unsupported({ class: "schema-invalid", reason: "manifest-unreadable", detail: `${WORKBENCH_MANIFEST} in ${abs} cannot be examined (${regular.code})` }, null);
+  }
+  if (!regular.value) {
     return unsupported({ class: "schema-invalid", reason: "manifest-not-a-file", detail: `${WORKBENCH_MANIFEST} in ${abs} is not a regular file` }, null);
   }
   const parsed = strictParse(readFileSync2(manifestPath));
@@ -8365,9 +8369,11 @@ function entryExists(path) {
 }
 function isRegularFile(path) {
   try {
-    return statSync(path).isFile();
-  } catch {
-    return false;
+    return { ok: true, value: statSync(path).isFile() };
+  } catch (e) {
+    const code = e.code;
+    if (code === "ENOENT") return { ok: true, value: false };
+    return { ok: false, code: code ?? "an error without a code" };
   }
 }
 var describeErrors = (errors) => errors.map((e) => `${e.instancePath || "/"} ${e.keyword}: ${e.message}`).join("; ");
@@ -9557,11 +9563,20 @@ function contentRefusal(root, entries) {
   return { class: "conflict", reason: "target-not-empty", detail: `initialize writes a new workbench into an empty directory, and ${root} holds ${named}` };
 }
 var INITIAL_FEATURES = ["json-control-v1"];
+var unlistable = (root, name) => {
+  try {
+    return !statSync3(join4(root, STATE_DIR, name)).isDirectory();
+  } catch (e) {
+    if (e.code === "ENOENT") return false;
+    throw e;
+  }
+};
 async function initialize(wb, req, options) {
   const stateDir = () => isDirectoryEntry(join4(wb.root, STATE_DIR)) === true;
-  if (!stateDir()) {
+  const precheck = () => !stateDir() || unlistable(wb.root, JOURNAL_DIR) || unlistable(wb.root, OPS_DIR);
+  if (precheck()) {
     const refused2 = contentRefusal(wb.root, initialContent(wb.root));
-    if (refused2 !== null && !stateDir()) return fromStore(refused2);
+    if (refused2 !== null && precheck()) return fromStore(refused2);
   }
   return mutate(wb, req, initializePlan(req), options, EVERY_STATE);
 }
@@ -9587,15 +9602,31 @@ function initializePlan(req) {
   };
 }
 function pendingInitialize(wb) {
-  const dirOf = (id) => `${STATE_DIR}/${JOURNAL_DIR}/${id}`;
-  const unreadable = (id, why) => ({
+  const journal = `${STATE_DIR}/${JOURNAL_DIR}`;
+  const dirOf = (id) => `${journal}/${id}`;
+  const refusal2 = (where, why) => ({
     ok: false,
-    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${dirOf(id)}: ${why}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` }
+    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${where}: ${why}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` }
   });
+  const unreadable = (id, why) => refusal2(dirOf(id), why);
+  const listed = () => {
+    try {
+      return { ok: true, value: pendingIds(wb) };
+    } catch (e) {
+      const code = e.code ?? "an error without a code";
+      return refusal2(journal, `the journal cannot be listed (${code})`);
+    }
+  };
+  const ids = listed();
+  if (!ids.ok) return ids;
   const found = [];
-  for (const name of pendingIds(wb)) {
+  for (const name of ids.value) {
     const r = readIntent(wb, name);
-    if ((!r.ok || r.value === null) && !pendingIds(wb).includes(name)) continue;
+    if (!r.ok || r.value === null) {
+      const again = listed();
+      if (!again.ok) return again;
+      if (!again.value.includes(name)) continue;
+    }
     if (!r.ok) return unreadable(name, r.error.detail);
     if (r.value === null) continue;
     const { intent, contents } = r.value;

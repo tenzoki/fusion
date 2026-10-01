@@ -264,7 +264,9 @@ function inspect(wb: Workbench): Response {
 // workbench was opened with, since recovery may have landed a manifest since.
 // And once before the lock when `.json-state` is not a directory: no intent,
 // stored answer or lock can exist there, so the lock path would answer the
-// same, and a refused target keeps its bytes and gains no `.json-state/`.
+// same, and a refused target keeps its bytes and gains no `.json-state/`. The
+// same check runs there when `.json-state/journal` or `.json-state/ops` stands
+// and is not a directory, which the sweep under the lock cannot list.
 //
 // The one exempt entry is a `.json-state/` directory holding only what the
 // lock protocol owns (`lockProtocolOwns`) and a `journal/` and an `ops/` with no
@@ -334,14 +336,27 @@ function contentRefusal(root: string, entries: readonly string[]): StoreError | 
 /** The manifest's `required_features`: the feature this contract introduces, never whatever else this codec may support later. */
 const INITIAL_FEATURES: readonly string[] = ["json-control-v1"];
 
+/** Whether `.json-state/<name>` stands and does not list as a directory, which the lock holder's sweep could not read. */
+const unlistable = (root: string, name: string): boolean => {
+  try {
+    return !statSync(join(root, STATE_DIR, name)).isDirectory();
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw e;
+  }
+};
+
 async function initialize(wb: Workbench, req: InitializeRequest, options: KernelOptions): Promise<Response> {
   const stateDir = (): boolean => isDirectoryEntry(join(wb.root, STATE_DIR)) === true;
-  if (!stateDir()) {
+  // A `journal` or `ops` that is no directory: the sweep under the lock would
+  // throw before the replay lookup, so the content check answers here.
+  const precheck = (): boolean => !stateDir() || unlistable(wb.root, JOURNAL_DIR) || unlistable(wb.root, OPS_DIR);
+  if (precheck()) {
     const refused = contentRefusal(wb.root, initialContent(wb.root));
     // A `.json-state/` that appeared meanwhile is a concurrent writer's (on
     // such a target only `initialize` takes the lock), so what this check saw
     // may be that writer's work in flight: the lock path answers instead.
-    if (refused !== null && !stateDir()) return fromStore(refused);
+    if (refused !== null && precheck()) return fromStore(refused);
   }
   return mutate(wb, req, initializePlan(req), options, EVERY_STATE);
 }
@@ -391,19 +406,39 @@ export interface PendingInitialize {
  * that does not validate or carries another id than the intent's recorded
  * answer (`pending-initialize-unreadable`); and more than one committed
  * `initialize` (`pending-initialize-ambiguous`), since one field cannot name
- * two. No read finishes the intent; an `initialize` request does, under the lock.
+ * two. A journal that cannot be listed for any reason but its absence (a
+ * `.json-state` or a `journal` that is no directory, a denied read) is
+ * `pending-initialize-unreadable` too, naming the journal and the error code,
+ * and never a throw: `inspect` is the gate every reader calls first. No read
+ * finishes the intent; an `initialize` request does, under the lock.
  */
 function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
-  const dirOf = (id: string): string => `${STATE_DIR}/${JOURNAL_DIR}/${id}`;
-  const unreadable = (id: string, why: string): Result<PendingInitialize | null> => ({
+  const journal = `${STATE_DIR}/${JOURNAL_DIR}`;
+  const dirOf = (id: string): string => `${journal}/${id}`;
+  const refusal = (where: string, why: string): Result<never> => ({
     ok: false,
-    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${dirOf(id)}: ${why}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` },
+    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${where}: ${why}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` },
   });
+  const unreadable = (id: string, why: string): Result<never> => refusal(dirOf(id), why);
+  const listed = (): Result<string[]> => {
+    try {
+      return { ok: true, value: pendingIds(wb) };
+    } catch (e) {
+      const code = (e as NodeJS.ErrnoException).code ?? "an error without a code";
+      return refusal(journal, `the journal cannot be listed (${code})`);
+    }
+  };
+  const ids = listed();
+  if (!ids.ok) return ids;
   const found: PendingInitialize[] = [];
-  for (const name of pendingIds(wb)) {
+  for (const name of ids.value) {
     const r = readIntent(wb, name);
     // Gone since the listing: its writer finished, and it is pending no more.
-    if ((!r.ok || r.value === null) && !pendingIds(wb).includes(name)) continue;
+    if (!r.ok || r.value === null) {
+      const again = listed();
+      if (!again.ok) return again;
+      if (!again.value.includes(name)) continue;
+    }
     if (!r.ok) return unreadable(name, r.error.detail);
     if (r.value === null) continue;
     const { intent, contents } = r.value;

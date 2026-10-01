@@ -9,7 +9,7 @@
 
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, symlinkSync, unlinkSync, utimesSync, writeFileSync } from "node:fs";
+import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, symlinkSync, unlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { hostname, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -130,6 +130,31 @@ describe("openWorkbench", () => {
     rmSync(join(root, "workbench.json"), { recursive: true });
     symlinkSync(join(root, "nowhere.json"), join(root, "workbench.json"));
     expect(open().diagnosis).toMatchObject({ class: "schema-invalid", reason: "manifest-not-a-file" });
+  });
+
+  // Issue 261001-0841 (isRegularFile, request 41): only ENOENT, the dangling
+  // link above, is not-a-file; any other stat failure names its own cause.
+  it("a workbench.json whose kind cannot be examined is schema-invalid/manifest-unreadable with its error code: a link loop, a link through a denied directory", () => {
+    unlinkSync(join(root, "workbench.json"));
+    symlinkSync("workbench.json", join(root, "workbench.json"));
+    const loop = open();
+    expect(loop.state).toBe("unsupported");
+    expect(loop.manifest).toBeNull();
+    expect(loop.diagnosis).toMatchObject({ class: "schema-invalid", reason: "manifest-unreadable" });
+    expect(loop.diagnosis?.detail).toContain("ELOOP");
+    if (process.getuid?.() === 0) return; // root reads through a mode-000 directory
+    unlinkSync(join(root, "workbench.json"));
+    mkdirSync(join(root, "denied"));
+    writeFileSync(join(root, "denied", "manifest.json"), "{}\n");
+    symlinkSync(join(root, "denied", "manifest.json"), join(root, "workbench.json"));
+    chmodSync(join(root, "denied"), 0o000);
+    try {
+      const denied = open();
+      expect(denied.diagnosis).toMatchObject({ class: "schema-invalid", reason: "manifest-unreadable" });
+      expect(denied.diagnosis?.detail).toContain("EACCES");
+    } finally {
+      chmodSync(join(root, "denied"), 0o755);
+    }
   });
 
   it("a workbench.json linked to a regular manifest reads through the link, as before", () => {

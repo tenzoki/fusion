@@ -14,7 +14,9 @@
 // as `unsupported`, with the diagnosis attached rather than thrown, because
 // inspection may show raw data while mutation is refused; so is a
 // `workbench.json` entry that is not a regular file
-// (`schema-invalid/manifest-not-a-file`). No manifest entry at all is the
+// (`schema-invalid/manifest-not-a-file`), and one whose kind cannot be
+// examined, a link loop or a denied directory on its path
+// (`schema-invalid/manifest-unreadable`). No manifest entry at all is the
 // `legacy` state: reads are allowed, mutation is refused with
 // `unsupported-format/legacy-workbench`, and only `initialize` writes one.
 //
@@ -152,7 +154,11 @@ export function openWorkbench(root: string, set: SchemaSet = schemas()): Result<
     value: { root: abs, state: "unsupported", id: null, manifest, diagnosis },
   });
 
-  if (!isRegularFile(manifestPath)) {
+  const regular = isRegularFile(manifestPath);
+  if (!regular.ok) {
+    return unsupported({ class: "schema-invalid", reason: "manifest-unreadable", detail: `${WORKBENCH_MANIFEST} in ${abs} cannot be examined (${regular.code})` }, null);
+  }
+  if (!regular.value) {
     return unsupported({ class: "schema-invalid", reason: "manifest-not-a-file", detail: `${WORKBENCH_MANIFEST} in ${abs} is not a regular file` }, null);
   }
   const parsed = strictParse(readFileSync(manifestPath));
@@ -192,12 +198,19 @@ function entryExists(path: string): boolean {
   }
 }
 
-/** Whether `path` reads as a regular file, through a link as `readFileSync` reads it. */
-function isRegularFile(path: string): boolean {
+/**
+ * Whether `path` reads as a regular file, through a link as `readFileSync`
+ * reads it. Only `ENOENT`, the dangling link, is "not a file"; every other
+ * failure (a link loop, a denied directory on the way, an I/O error) is its
+ * error code, so the diagnosis names the real cause and nothing throws.
+ */
+function isRegularFile(path: string): { ok: true; value: boolean } | { ok: false; code: string } {
   try {
-    return statSync(path).isFile();
-  } catch {
-    return false;
+    return { ok: true, value: statSync(path).isFile() };
+  } catch (e) {
+    const code = (e as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") return { ok: true, value: false };
+    return { ok: false, code: code ?? "an error without a code" };
   }
 }
 

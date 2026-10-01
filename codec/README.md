@@ -157,9 +157,12 @@ the detail naming the first entries, sorted. The one exempt entry is a
 claims, the self-ignore holding `*`, and their temp files) and a `journal/` and
 `ops/` with no entry but the sweep's dot-named ones; a stored answer of another
 operation is an entry. `.DS_Store`, `.gitkeep`, a marker or an empty store
-directory is an entry like any other. When `.json-state` is not a directory
-the check runs before the lock, so a refused target keeps its bytes and gains
-no `.json-state/`. `/fusion:setup` does not call it yet (FJ03d).
+directory is an entry like any other. When `.json-state` is not a directory,
+or its `journal` or `ops` stands and is not one, the check runs before the
+lock, so a refused target keeps its bytes and gains no `.json-state/`; a
+`journal` or `ops` that is a file is `conflict/target-not-empty` naming
+`.json-state/journal` or `.json-state/ops`. `/fusion:setup` does not call it
+yet (FJ03d).
 
 **`inspect.pending`** is `null`, or `{operation_id, id, blocked}` naming the
 committed `initialize` in `.json-state/journal/`, until its intent leaves the
@@ -185,7 +188,10 @@ not exactly the manifest, and a staged manifest that does not validate or
 carries another id than the intent's recorded answer are refused
 `operation-unknown/pending-initialize-unreadable`; more than one committed
 `initialize` is `operation-unknown/pending-initialize-ambiguous`. Both details
-name the intent directories. A caller deciding between `initialize` and FJ04
+name the intent directories. A journal that cannot be listed for any reason but
+its absence (a `.json-state` or a `journal` that is a file, a denied read) is
+`pending-initialize-unreadable` as well, the detail naming
+`.json-state/journal` and the error code; `inspect` never throws on it. A caller deciding between `initialize` and FJ04
 reads this field and does not re-derive the exemption. A successful replay is
 no proof of the manifest's present bytes (it answers after `workbench.json` was
 deleted), so a caller inspects again after it.
@@ -205,6 +211,12 @@ answer it, each on its own path:
   `operation-unknown/recovery-blocked`, and only a fresh request reaches the
   content check, which answers `conflict/manifest-present` for a
   `workbench.json` entry of any kind.
+
+Only the dangling link reads as not a file. A `workbench.json` whose kind
+cannot be examined, a link loop or a link through a denied directory, is
+`unsupported` with `schema-invalid/manifest-unreadable`, the error code in the
+detail (`ELOOP`, `EACCES`), through the same four envelopes; it is never
+reported as `manifest-not-a-file` and never thrown.
 
 ## The kernel and the journal
 
