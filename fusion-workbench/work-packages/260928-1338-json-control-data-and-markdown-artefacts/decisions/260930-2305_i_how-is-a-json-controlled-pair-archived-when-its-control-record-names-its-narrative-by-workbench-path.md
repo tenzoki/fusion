@@ -35,3 +35,6 @@ Inference, not measured beyond the one scratch run above: option 2, because it i
 
 ---
 Answered: plan `260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md` — option 2 — archive/ leaves JSON control (legacy read mode), the exclusion covering references, dependencies and evidence bindings, put to the Prior side as request 36; until it answers the archive skill moves no control file; the user approved it with the FJ03c plan on 2026-09-30; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: archive revision (plan `261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md`), codec 195af428 (archive/ outside the record store) through e1bafd2f, frozen bundle sha256:6b26faf2b0f9389fcbb4df1a3dd23881d2ff76cb2cab4c918f2bf969a597b0bf qualified by the Prior side at 590465d (request 44); /fusion:archive archives JSON pairs through bin/fusion-archive since step 13.

@@ -70,6 +70,14 @@ if [ -x "$E" ]; then "$E" presence; echo "exit=$?"; else echo "presence=unread";
 
 **Both counts `0`: print nothing at all.** Otherwise one line in the project's chat language: `other_people` and `other_checkouts` apart (*"1 other person, 1 further checkout of your own"*), each `party=`'s person, its fifth field and its time, its sixth field as that checkout's alias where the field is not `-`, the `window_days` window, and `scope=pulled`. **A failed read says so and never prints a zero**: `exit=3` — presence could not be read, this checkout has no identifier; `exit=4` — `other_checkouts`, another person not tellable from a further checkout of your own; `presence=unread` — not read, this install lacks the helper. The rest: that helper's header.
 
+Then whether an archive move left the store fenced:
+
+```bash
+M="$(echo '{"op":"inspect"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" 2>/dev/null | grep -o -e '"maintenance":{[^}]*}' -e 'maintenance-unreadable')"; case "$M" in *operation_id*) echo "fence=$M"; find ./fusion-workbench/archive -maxdepth 2 -name .inventory.json -exec grep -l "\"fence\": \"$(echo "$M" | cut -d'"' -f6)\"" {} + 2>/dev/null ;; ?*) echo "fence=unreadable" ;; esac
+```
+
+**No output: print nothing.** `fence=` is one line: the store is fenced since that time and every write to a record is refused; the path printed under it is the inventory for `bin/fusion-archive resume --inventory <path>`, or `abandon` where it records nothing moved. `fence=unreadable`, or no path: the recovery is that helper's header. Never tell the user to delete the fence file.
+
 ## assets — the copied profiles against the ones this version ships
 
 This selector reads the record `/fusion:setup`'s profile step writes, classifies each asset, and asks **at most one question**. It resolves the shipped root itself, into `$SRC`; a root that resolves to nothing skips the selector: ask nothing, change nothing, and say that the assets were not compared. Every block below begins with this prelude, pasted in because each Bash call is a fresh shell:

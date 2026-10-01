@@ -67,8 +67,14 @@
 // holding another checkout identifier (exit 5), releases and files a reviewer's
 // evidence. The log then holds one `record_change` row per landed revision,
 // matched by key, and a re-send, twice, adds none. The blocks run on the second
-// PATH plus `date` and `awk` (SKILL_TOOLS); wp's `autonomous` block is not run,
-// since it hashes with `shasum`, a perl program.
+// PATH plus `date`, `awk` and `basename` (SKILL_TOOLS); wp's `autonomous` block is
+// not run, since it hashes with `shasum`, a perl program. Then (archive revision
+// step 13) archive's gate and its three JSON blocks: the tier selection from
+// `list`, the survey, which holds a closed issue the live package references and
+// a done package holding that package's evidence, and the move of a closed issue
+// and a done package; a natural-language list naming `workbench.json` and
+// `.json-state/` is refused by name; check's fence line reads none, a fence, and
+// an unreadable fence file.
 //
 // A sixth case (archive revision step 11) runs Setup's Step 0, files through
 // `bin/fusion-write` a closed issue and a done package holding a review and
@@ -107,8 +113,8 @@ const HOST_TOOLS = ["bash", "tar", "cp", "rm", "mkdir", "cat", "chmod", "find", 
 const OPTIONAL_TOOLS = ["gzip"];
 /** What `bin/fusion-identity` calls beyond HOST_TOOLS; on PATH for the scope case and for preparing a project. */
 const IDENTITY_TOOLS = ["git", "od", "tr", "grep", "sort", "wc", "ls"];
-/** What the shipped skill blocks call beyond both lists: discuss's stamp, and `bin/fusion-session-domain`'s `awk`. */
-const SKILL_TOOLS = ["date", "awk"];
+/** What the shipped skill blocks call beyond both lists: discuss's stamp, `bin/fusion-session-domain`'s `awk`, and archive's `basename`. */
+const SKILL_TOOLS = ["date", "awk", "basename"];
 
 interface Install {
   tmp: string;
@@ -665,7 +671,92 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
       expect(readFileSync(log).equals(logBytes)).toBe(true);
     }
     expect(record(p, { op: "validate" }).valid).toBe(true);
-  }, 120_000);
+
+    // archive (archive revision step 13): a closed issue, a done package, a closed issue a live package references, and a done package holding the report and evidence record the live package has attached.
+    const md = (rel: string, text: string) => {
+      mkdirSync(dirname(join(WORKBENCH, rel)), { recursive: true });
+      writeFileSync(join(WORKBENCH, rel), text);
+      return rel;
+    };
+    const ok = (r: ReturnType<typeof run>) => {
+      expect([r.status, kv(r.stdout, "result")], r.stderr).toEqual([0, "landed"]);
+      return r.stdout;
+    };
+    const closedIssue = (name: string) => {
+      const i = kv(ok(write(["create", "--kind", "issue", "--narrative-file", md(`shared/issues/${name}.md`, `# ${name}\n`), "--origin", "user-request", "--actor", "user"])), "path")!;
+      ok(write(["transition", "--record", i, "--to", "closed", "--reason", "rejected", "--disposition", JSON.stringify({ kind: "rejected", reason_ref: null }), "--actor", "user"]));
+      return i;
+    };
+    const donePackage = (name: string, report: string) => {
+      const pkgPath = kv(ok(write(["create", "--kind", "package", "--narrative-file", md(`work-packages/${name}/${name}.md`, `# ${name}\n\n## Directive\n\nFinished.\n`), "--origin", "user-request", "--domain", "code", "--actor", "user"])), "path")!;
+      md(report, "# Review\n\nAccepted.\n");
+      expect([git("add", "-A"), git("commit", "-q", "-m", name)]).toEqual([0, 0]);
+      const ev = ok(write(["evidence", "--record", pkgPath, "--report", report, "--verdict", "accept", "--actor", "reviewer"])).split("\n").find((l) => l.startsWith("path=") && l.endsWith(".evidence.json"))!.slice(5);
+      ok(write(["attach-evidence", "--record", pkgPath, "--evidence", ev, "--actor", "user"]));
+      ok(write(["claim", "--record", pkgPath, "--actor", "user"]));
+      ok(write(["transition", "--record", pkgPath, "--to", "done", "--reason", "finished", "--outcome", JSON.stringify({ class: "completed", reason: "finished", evidence: [] }), "--actor", "user"]));
+      return { pkgPath, ev };
+    };
+    const pair = closedIssue("261001-1030-terminal-pair");
+    const bound = closedIssue("261001-1031-referenced-issue");
+    const [D, E] = ["261001-1032-done-package", "261001-1033-bound-package"];
+    donePackage(D, `work-packages/${D}/reviews/261001-1034-review.md`);
+    donePackage(E, `work-packages/${E}/reviews/261001-1035-review.md`);
+    const workbench_id = record(p, { op: "inspect" }).id;
+    const L = `work-packages/261001-1036-live/package.json`;
+    record(p, { op: "create", operation_id: uuid(p), id: uuid(p), kind: "package", filed_by: ACTOR, origin: { kind: "user-request", ref: null }, scope: { container: null, store: "work-packages" }, narrative: { path: L.replace("package.json", "261001-1036-live.md"), content: "# Live\n" }, payload: { domain: "code", references: [{ workbench_id, record_id: (record(p, { op: "show", record: { path: bound } }).control as { id: string }).id }] } });
+    md(`work-packages/${E}/reviews/261001-1037-live-review.md`, "# Review of the live package\n");
+    expect([git("add", "-A"), git("commit", "-q", "-m", "live review")]).toEqual([0, 0]);
+    const attached = ok(write(["evidence", "--record", L, "--report", `work-packages/${E}/reviews/261001-1037-live-review.md`, "--verdict", "accept", "--actor", "reviewer"])).split("\n").find((l) => l.startsWith("path=") && l.endsWith(".evidence.json"))!.slice(5);
+    ok(write(["attach-evidence", "--record", L, "--evidence", attached, "--actor", "user"]));
+
+    // The shipped blocks, verbatim: Step 1's gate, then the three of `## On a JSON-controlled workbench`.
+    const [archiveGate] = shippedBlocks("archive", "## Step 1 —");
+    expect(block(archiveGate).stdout.split("\n")[0]).toBe('"state":"json-control"');
+    const json = shippedBlocks("archive", "## On a JSON-controlled workbench");
+    expect(json.length).toBe(3);
+    const [STAMP, SLUG] = ["261001-1040", "safe-cleanup-tier-1"];
+    const archiveEnv = { WORKBENCH, STAMP, SLUG, TMPDIR: join(install.tmp, "skills-project-tmp") };
+    mkdirSync(archiveEnv.TMPDIR);
+    const selected = block(json[0], archiveEnv);
+    expect([selected.status, selected.stdout.split("\n").filter((l) => l.length > 0).sort()], selected.stderr).toEqual([0, [...[pair, bound].map((c) => c.replace(".record.json", ".md")), `work-packages/${D}`, `work-packages/${E}`].map((r) => `${WORKBENCH}/${r}`).sort()]);
+    const kept = join(archiveEnv.TMPDIR, "kept");
+    const surveyed = block(`${json[1]}printf '%s' "$KEEP" > ${JSON.stringify(kept)}\n`, { ...archiveEnv, KEEP: selected.stdout });
+    expect([surveyed.status, readFileSync(kept, "utf-8")], surveyed.stderr).toEqual([0, ""]);
+    expect(surveyed.stdout.split("\n").filter((l) => l.length > 0).sort()).toEqual(
+      [
+        "survey exit=0",
+        `candidate=pair\t${pair}`,
+        `candidate=package\twork-packages/${D}`,
+        `held=pair\t${bound}\tbinding\t${L}\t/references/0\t${bound}`,
+        `held=package\twork-packages/${E}\tbinding\t${L}\t/evidence/0/ref\t${attached}`,
+      ].sort(),
+    );
+    const moved = block(json[2], archiveEnv);
+    expect([moved.status, moved.stdout.split("\n").filter((l) => l.startsWith("moved=") || l.startsWith("result=") || l.startsWith("move exit="))], moved.stderr).toEqual([0, [`moved=pair\t${pair}\tarchive/${STAMP}-${SLUG}/${pair}`, `moved=package\twork-packages/${D}\tarchive/${STAMP}-${SLUG}/work-packages/${D}`, "result=moved", "move exit=0"]]);
+    for (const [rel, here] of [[pair, false], [pair.replace(".record.json", ".md"), false], [`work-packages/${D}`, false], [bound, true], [`work-packages/${E}/package.json`, true], [attached, true]] as const) {
+      expect([rel, existsSync(join(WORKBENCH, rel)), existsSync(join(WORKBENCH, "archive", `${STAMP}-${SLUG}`, rel))]).toEqual([rel, here, !here]);
+    }
+    expect(record(p, { op: "validate" }).valid).toBe(true);
+
+    // A natural-language run naming the two reserved JSON surfaces: refused by name, both in place, the forum entry kept for Step 7's mv.
+    const forum = md("shared/forum/261001-1037-note.md", "# A note\n");
+    const nl = block(`${json[1]}printf '%s' "$KEEP" > ${JSON.stringify(kept)}\n`, { ...archiveEnv, KEEP: [`${WORKBENCH}/workbench.json`, `${WORKBENCH}/.json-state/`, `${WORKBENCH}/${forum}`].join("\n") });
+    expect([nl.status, nl.stdout, readFileSync(kept, "utf-8")], nl.stderr).toEqual([0, "  refused (safety filter 1): workbench.json\n  refused (safety filter 1): .json-state/\n", `${WORKBENCH}/${forum}\n`]);
+    expect([existsSync(join(WORKBENCH, "workbench.json")), existsSync(join(WORKBENCH, ".json-state"))]).toEqual([true, true]);
+
+    // /fusion:check's fence line: nothing unfenced, the fence while one stands, `unreadable` for a fence file that does not read.
+    const fenceLine = shippedBlocks("check", "## concurrency —").at(-1)!;
+    expect(block(fenceLine).stdout).toBe("");
+    const fence = uuid(p);
+    record(p, { op: "maintenance", operation_id: fence, action: "begin" });
+    expect(block(fenceLine).stdout).toMatch(new RegExp(`^fence="maintenance":\\{"operation_id":"${fence}","since":"[^"]+"\\}\\n$`));
+    record(p, { op: "maintenance", operation_id: uuid(p), action: "end", fence });
+    mkdirSync(join(WORKBENCH, ".json-state", "maintenance.json"));
+    expect(block(fenceLine).stdout).toBe("fence=unreadable\n");
+    rmSync(join(WORKBENCH, ".json-state", "maintenance.json"), { recursive: true });
+    expect(block(fenceLine).stdout).toBe("");
+  }, 180_000);
 
   it("the installed bin/fusion-archive holds a referenced issue and archives a terminal package, after which the store reads clean and the helpers name nothing archived", () => {
     expect(install.failure).toBeNull();

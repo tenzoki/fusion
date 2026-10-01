@@ -43,7 +43,7 @@ else
 fi
 ```
 
-The first line is the workbench's format. `"state":"json-control"` adds the hold of `## On a JSON-controlled workbench` after the citation check; any other line, or none, is this body exactly as written.
+The first line is the workbench's format. `"state":"json-control"` adds the three blocks of `## On a JSON-controlled workbench`, at Steps 3, 4 and 7; any other line, or none, is this body exactly as written.
 
 **Read that file in full before Step 2**, the way an agent reads every path `fusion-rules` emits: its record-versus-live-state split is what decides which workbench entries this workflow must preserve rather than discard. If the block prints `UNRESOLVED` or the file as not read, say so and continue — the tier tables below still apply, but the classification behind them is then unread and is not written from memory (`bin/fusion-source-root`'s header, exit 2).
 
@@ -77,6 +77,7 @@ These are non-negotiable defaults. The user can override them at the `refine` st
    - `$WORKBENCH/.guard-state/` **apart from `events.jsonl`** — the throttle stores in there each describe *now* and are rewritten in place. An `escalation.json` may still be sitting there in a project set up under an older fusion; it is inert at this version, nothing rewrites it, and `/fusion:setup` is what offers to delete it — archiving it is not this workflow's call either way. The append-only `events.jsonl` beside them is not a state file and has its own case; see *Rolling the guard event log* below.
    - `$WORKBENCH/.commit-lock/`, `$WORKBENCH/.session-marker`, `$WORKBENCH/.fusion-setup`, `$WORKBENCH/.checkout-id`, `$WORKBENCH/.cadence-anchors`, `$WORKBENCH/.check-stamps`, `$WORKBENCH/.asset-provenance`
    - `$WORKBENCH/monitor`, `$WORKBENCH/stilwerk/`, `$WORKBENCH/stashes/`, `$WORKBENCH/.migration-v2-backup/`
+   - `$WORKBENCH/workbench.json` and `$WORKBENCH/.json-state/`, on either format and never at `refine`: moving either takes the workbench out of JSON control.
    - Anything already under the archive store.
 
 2. **Active markers — never archive in tier modes:**
@@ -141,7 +142,7 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
 
 3. **Build the candidate list.**
 
-   **Work packages (all tiers).** An item is a **directory** and its record sits inside it under the directory's own name, so the walk goes two levels down and the candidate it yields is the container. An item's state is a head field, not a filename marker, so the selection reads the record. One pass over the store:
+   **Work packages (all tiers).** On `json-control` neither walk below runs; the Step 3 block of `## On a JSON-controlled workbench` selects instead. An item is a **directory** and its record sits inside it under the directory's own name, so the walk goes two levels down and the candidate it yields is the container. An item's state is a head field, not a filename marker, so the selection reads the record. One pass over the store:
 
    ```bash
    for s in $SCAN_PACKAGES; do find "$WORKBENCH/$s" -mindepth 1 -maxdepth 1 -type d 2>/dev/null; done | sort | while IFS= read -r d; do b="$(basename "$d")"; f="$d/$b.md"; [ -f "$f" ] || f="$(find "$d" -mindepth 1 -maxdepth 1 -type f -name '_?_circle.md' 2>/dev/null | head -n 1)"; [ -f "$f" ] || continue; st="$(sed -n 's/^\*\*Status:\*\*[[:space:]]*//p' "$f" | head -n 1)"; case "$st" in done|dropped) printf '%s\t%s\n' "$st" "$b" ;; esac; done
@@ -253,19 +254,44 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
 
 ## On a JSON-controlled workbench
 
-A record here is a pair, its Markdown and the control file the codec writes beside it (`package.json`, `<name>.record.json`, `<name>.evidence.json`), and the control file names its narrative by workbench path, so a `mv` would leave the pair unresolvable. **Until request 36 is answered, this workflow moves no control file.** Run this after Step 4 and before Step 5, over `$KEEP`:
+A record here is a pair, its Markdown and the control file the codec writes beside it (`package.json`, `<name>.record.json`, `<name>.evidence.json`), and the control file names its narrative by workbench path, so a `mv` would leave the pair unresolvable. **A record unit moves only through `bin/fusion-archive`**, whose header is the account: it fences the store against every codec write, holds each unit a remaining record binds, moves, verifies, and ends the fence. Forum entries, reports no evidence record names, history and the guard log move as Step 7 says.
+
+**Step 3, in place of both walks.** The state is the codec's: a package `done` or `dropped` yields its container; under `shared/` an issue or plan `closed`, or a decision `implemented` or `superseded`, yields its narrative. `deferred` and the live states stay (filter 2).
 
 ```bash
-hc() { find "$@" \( -name package.json -o -name '*.record.json' -o -name '*.evidence.json' \) -print 2>/dev/null | head -n 1; }; R="held (archival of JSON pairs awaits request 36)"
-for p in $SCAN_PACKAGES; do find "$WORKBENCH/$p" -mindepth 1 -maxdepth 1 -type d 2>/dev/null; done | sort | while IFS= read -r d; do [ -n "$(hc "$d")" ] && echo "  $R: ${d#"$WORKBENCH"/}"; done
-K=""; while IFS= read -r f; do [ -n "$f" ] || continue; if [ -d "$f" ]; then h="$(hc "$f")"; else s="$(basename "${f%.md}")"; h="$(hc "$(dirname "$f")" -maxdepth 1 \( -name package.json -o -name "$s" -o -name "$s.record.json" -o -name "$s.evidence.json" -o -name "$s.*.evidence.json" \))"; fi; if [ -n "$h" ]; then echo "  $R: ${f#"$WORKBENCH"/}"; else K="$K$f
+echo '{"op":"list"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" | grep -o '"path":"[^"]*","kind":"[a-z]*","id":"[^"]*","status":"[a-z]*","revision":"[^"]*","narrative":{"path":"[^"]*"' | sed -E 's/^"path":"([^"]*)","kind":"([a-z]*)".*"status":"([a-z]*)".*"path":"([^"]*)"$/\2 \3 \1 \4/' | while read -r k s c n; do case "$k $s" in "package done"|"package dropped") echo "$WORKBENCH/${c%/*}" ;; "issue closed"|"plan closed"|"decision implemented"|"decision superseded") case "$n" in shared/*) echo "$WORKBENCH/$n" ;; esac ;; esac; done
+```
+
+**After Step 4, over `$KEEP`.** `STAMP` and `SLUG` are this run's, as Step 7's roll takes them. The two JSON surfaces of filter 1 are refused by name; a container holding a control file, a control file, or a Markdown file with one beside it goes to the survey; the rest stays in `$KEEP`.
+
+```bash
+C="${TMPDIR:-/tmp}/fusion-archive-$STAMP-$SLUG"; : > "$C.candidates"; rm -f "$C.survey"
+hc() { find "$@" \( -name package.json -o -name '*.record.json' -o -name '*.evidence.json' \) -print 2>/dev/null | head -n 1; }
+K=""; while IFS= read -r f; do [ -n "$f" ] || continue; r="${f#"$WORKBENCH"/}"; case "$r" in workbench.json|.json-state|.json-state/*) echo "  refused (safety filter 1): $r"; continue ;; esac; if [ -d "$f" ]; then h="$(hc "$f")"; else s="$(basename "${f%.md}")"; h="$(hc "$(dirname "$f")" -maxdepth 1 \( -name package.json -o -name "$s" -o -name "$s.record.json" -o -name "$s.evidence.json" -o -name "$s.*.evidence.json" \))"; fi; if [ -n "$h" ]; then echo "$r" >> "$C.candidates"; else K="$K$f
 "; fi; done <<EOF
 $KEEP
 EOF
 KEEP="$K"
+if [ -s "$C.candidates" ]; then "$FUSION_PLUGIN_ROOT/bin/fusion-archive" survey --candidates "$C.candidates" > "$C.survey"; echo "survey exit=$?"; grep -E '^(candidate|held|refused)=' "$C.survey"; fi
 ```
 
-A container holding a control file is held and named, never a `**Status:**` fault at Step 3. Every held line is reported at Step 5 and in the manifest as a safety filter; the rest of the flow is unchanged.
+Step 5 names every `candidate=` unit, and every `held=` and `refused=` line with what it gives (the binding's source, pointer and target, or the state), as a safety filter in the manifest too. Exit 6 means every unit is held; any other non-zero exit moves no record unit this run, and Step 5 says why from stderr. A changed scope at Step 6 re-runs this block.
+
+**Step 7, before the `mv` of `$KEEP`:**
+
+```bash
+C="${TMPDIR:-/tmp}/fusion-archive-$STAMP-$SLUG"
+if grep -q '^candidate=' "$C.survey" 2>/dev/null; then "$FUSION_PLUGIN_ROOT/bin/fusion-archive" move --survey "$C.survey" --into "$STAMP-$SLUG"; echo "move exit=$?"; fi
+```
+
+| Exit | Report |
+|---|---|
+| 0 | each `moved=` line is archived and goes into the manifest; a `held=` line held a unit under the fence |
+| 6 | nothing stayed eligible under the fence; nothing moved |
+| 5 | the fence was refused (another fence, or an unfinished codec write); nothing moved |
+| 8 | the move or its verification failed and every file is back; nothing archived |
+| 7 | **the store is left fenced and every codec write is refused.** Name the `bin/fusion-archive resume --inventory <file>` and `abandon` stderr gives. Never delete the fence by hand |
+| 1, 2, 3, 4 | nothing moved; quote stderr |
 
 ## Guardrails
 
