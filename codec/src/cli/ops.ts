@@ -109,6 +109,7 @@ import {
   openWorkbench,
   readPair,
   reportProblem,
+  resolveCurrent,
   resolveInside,
   revisionOf,
   serialise,
@@ -473,7 +474,7 @@ const stateOf = (pair: Pair): unknown =>
 
 function scopeDir(wb: Workbench, scope: string | undefined): { ok: true; dir: string } | { ok: false; response: Response } {
   if (scope === undefined) return { ok: true, dir: wb.root };
-  const abs = resolveInside(wb, scope);
+  const abs = resolveCurrent(wb, scope, "scope");
   if (!abs.ok) return { ok: false, response: fromStore(abs.error) };
   let isDir = false;
   try {
@@ -792,8 +793,26 @@ function newRecord(ctx: PlanContext, req: CreateRequest): Result<{ next: Record<
   return { ok: true, value: { next, schemaId: RECORD_SCHEMA_ID } };
 }
 
+/**
+ * `unknown-scope/archived-path` when a path `create` files under (the scope's
+ * container, the narrative, an evidence record's report) lies in `archive/`.
+ * It runs first in the plan, so after the replay lookup: a completed create
+ * whose pair was archived since still answers its stored bytes. A path
+ * `resolveInside` refuses is left to the check that refuses it today.
+ */
+function archivedTarget(wb: Workbench, paths: ReadonlyArray<string | null>): Result<void> {
+  for (const path of paths) {
+    if (path === null) continue;
+    const r = resolveCurrent(wb, path, "scope");
+    if (!r.ok && r.error.reason === "archived-path") return r;
+  }
+  return { ok: true, value: undefined };
+}
+
 function createPlan(req: CreateRequest): PlanFunction {
   return (ctx: PlanContext): Result<Planned> => {
+    const outside = archivedTarget(ctx.wb, [req.scope.container, req.narrative.path]);
+    if (!outside.ok) return outside;
     const paths = pairPaths(ctx, req);
     if (!paths.ok) return paths;
     const { control, narrative } = paths.value;
@@ -855,7 +874,8 @@ function createPlan(req: CreateRequest): PlanFunction {
 // report it records, in a container's `reviews/` or in `shared/reviews/`. The
 // report is the reviewer's file and is already on disk; the kernel writes the
 // record alone, `serialise(payload)`, and adds nothing to it. Every check
-// below refuses with nothing written, in this order: the id the envelope and
+// below refuses with nothing written, in this order: a container or report in
+// `archive/` (`archivedTarget`); the id the envelope and
 // the payload carry; the payload's workbench; the report's directory against
 // the scope, and the container a package directory; the report's name; the
 // report on disk at the payload's hash; the id in use nowhere; the
@@ -901,6 +921,8 @@ function createEvidencePlan(req: CreateEvidenceRequest): PlanFunction {
   return (ctx: PlanContext): Result<Planned> => {
     const payload = req.payload;
     const report = payload.report;
+    const outside = archivedTarget(ctx.wb, [req.scope.container, report.path]);
+    if (!outside.ok) return outside;
     if (payload.id !== req.id) return refusal("schema-invalid", "id-mismatch", `the envelope's id is ${req.id}; the payload's is ${payload.id}`);
     if (payload.workbench_id !== ctx.wb.id) {
       return refusal("unknown-scope", "foreign-workbench-id", `the payload carries workbench_id ${payload.workbench_id}; this workbench is ${String(ctx.wb.id)}`);
@@ -1774,7 +1796,8 @@ function attachEvidencePlan(req: AttachEvidenceRequest): PlanFunction {
 //
 // A record whose control file the strict reader or its schema refuses is
 // reported under `records` and contributes to no other section: what it says
-// is not decided. Scope narrows the walk as `list`'s does; references still
+// is not decided. The walk never enters the root's `archive/`, and a scope in
+// it is `archived-path`. Scope narrows the walk as `list`'s does; references still
 // resolve against the whole workbench, an intent is reported when a path it
 // names is in scope, and a cycle when a package of the scope is on it. The
 // report carries no clock value and no absolute path but the echoed

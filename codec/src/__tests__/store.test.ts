@@ -25,6 +25,7 @@ import {
   STATE_DIR,
   TAKEOVER_INFIX,
   acquireLock,
+  archived,
   controlFiles,
   evidenceName,
   evidenceNaming,
@@ -34,6 +35,7 @@ import {
   readPair,
   reportProblem,
   releaseLock,
+  resolveCurrent,
   revisionOf,
   serialise,
   type HeldLock,
@@ -751,5 +753,83 @@ describe("controlFiles", () => {
     writeFileSync(join(root, STATE_DIR, "ops", "x.record.json"), "{}\n");
     const after = controlFiles(wb, root);
     expect(after).toEqual([...before, "shared/issues/260929-0800-a-review.evidence.json"].sort());
+  });
+
+  it("never enters the root's archive/, nor a directory reached through a scope that aliases the root; a nested archive/ is walked", () => {
+    const wb = open();
+    const before = controlFiles(wb, root);
+    mkdirSync(join(root, "archive", "260930-1200-sweep", "shared", "issues"), { recursive: true });
+    writeFileSync(join(root, "archive", "260930-1200-sweep", "shared", "issues", "260901-1000-old.record.json"), "{}\n");
+    mkdirSync(join(root, "shared", "archive"), { recursive: true });
+    writeFileSync(join(root, "shared", "archive", "260902-1000-nested.record.json"), "{}\n");
+    expect(controlFiles(wb, root)).toEqual([...before, "shared/archive/260902-1000-nested.record.json"].sort());
+    // A link that names the root itself: walking through it meets `archive/` again, by another path.
+    symlinkSync("..", join(root, "shared", "up"));
+    expect(controlFiles(wb, join(root, "shared", "up")).filter((p) => p.includes("260901-1000-old"))).toEqual([]);
+  });
+});
+
+// --- the archive boundary --------------------------------------------------------------
+
+describe("the archive boundary: archived and resolveCurrent", () => {
+  const ARCH = "archive/260930-1200-sweep";
+  beforeEach(() => {
+    mkdirSync(join(root, ARCH, "shared", "issues"), { recursive: true });
+    writeFileSync(join(root, ARCH, "shared", "issues", "260901-1000-old.record.json"), "{}\n");
+  });
+
+  it("the first lexically normalised segment decides, whether or not the path exists", () => {
+    const wb = open();
+    for (const p of ["archive", "archive/", `${ARCH}/shared/issues/260901-1000-old.record.json`, "archive/absent/x.record.json", "./archive/x", "shared//../archive/x"]) {
+      expect(archived(wb, p), p).toBe(true);
+    }
+    for (const p of [ISSUE, OPEN, "shared/archive/x.record.json", "work-packages/archive/package.json", "archived/x.record.json", "archive.record.json", "shared/issues/absent.record.json"]) {
+      expect(archived(wb, p), p).toBe(false);
+    }
+  });
+
+  it("a link into archive/ is archived like the path it aliases: a directory link, a file link, a missing tail below a link", () => {
+    const wb = open();
+    symlinkSync(`../${ARCH}/shared/issues`, join(root, "shared", "old"));
+    symlinkSync(`../../${ARCH}/shared/issues/260901-1000-old.record.json`, join(root, "shared", "issues", "260901-1000-old.record.json"));
+    expect(archived(wb, "shared/old")).toBe(true);
+    expect(archived(wb, "shared/old/260901-1000-old.record.json")).toBe(true);
+    expect(archived(wb, "shared/old/absent/deeper.record.json")).toBe(true);
+    expect(archived(wb, "shared/issues/260901-1000-old.record.json")).toBe(true);
+    // A link that leads elsewhere, a dangling one and a looping one are not.
+    symlinkSync("../work-packages", join(root, "shared", "packages"));
+    symlinkSync("absent", join(root, "shared", "dangling"));
+    symlinkSync("loop", join(root, "shared", "loop"));
+    expect(archived(wb, "shared/packages/260928-1200-parser-fix/package.json")).toBe(false);
+    expect(archived(wb, "shared/dangling/x.record.json")).toBe(false);
+    expect(archived(wb, "shared/loop/x.record.json")).toBe(false);
+  });
+
+  it("an archive/ that is itself a link counts where it points", () => {
+    const elsewhere = mkdtempSync(join(tmpdir(), "codec-store-archive-"));
+    try {
+      rmSync(join(root, "archive"), { recursive: true });
+      mkdirSync(join(elsewhere, "x"), { recursive: true });
+      symlinkSync(elsewhere, join(root, "archive"));
+      symlinkSync(join(elsewhere, "x"), join(root, "shared", "old"));
+      const wb = open();
+      expect(archived(wb, "archive/x")).toBe(true);
+      expect(archived(wb, "shared/old/y.record.json")).toBe(true);
+      expect(archived(wb, ISSUE)).toBe(false);
+    } finally {
+      rmSync(elsewhere, { recursive: true, force: true });
+    }
+  });
+
+  it("resolveCurrent: a record path is record-not-found, a scope archived-path; a refusal of resolveInside comes first; a current path resolves", () => {
+    const wb = open();
+    const archivedRecord = `${ARCH}/shared/issues/260901-1000-old.record.json`;
+    expect(resolveCurrent(wb, archivedRecord, "record")).toMatchObject({ ok: false, error: { class: "unresolved-reference", reason: "record-not-found" } });
+    expect(resolveCurrent(wb, ARCH, "scope")).toMatchObject({ ok: false, error: { class: "unknown-scope", reason: "archived-path" } });
+    expect(resolveCurrent(wb, "../archive/x", "scope")).toMatchObject({ ok: false, error: { class: "unknown-scope", reason: "path-outside-workbench" } });
+    expect(resolveCurrent(wb, ISSUE, "record")).toEqual({ ok: true, value: join(root, ISSUE) });
+    const read = readPair(wb, archivedRecord);
+    expect(read).toMatchObject({ ok: false, error: { class: "unresolved-reference", reason: "record-not-found" } });
+    if (!read.ok) expect(read.error.detail).toContain(archivedRecord);
   });
 });

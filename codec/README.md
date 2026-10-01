@@ -233,6 +233,30 @@ cannot be examined, a link loop or a link through a denied directory, is
 detail (`ELOOP`, `EACCES`), through the same four envelopes; it is never
 reported as `manifest-not-a-file` and never thrown.
 
+**`archive/` is outside the current record store** (Prior's ruling on request
+36; `fixtures/prior/REQUESTS.md`, "The boundary: `archive/` outside the current
+record store"). One predicate decides it, `archived` in `src/store.ts`: a
+path whose lexically normalised first segment is `archive`, or whose deepest
+existing ancestor's real path lies in the real path of the root's `archive/`,
+so a link such as `shared/old -> ../archive/x` is refused like the path it
+aliases. One gate applies it, `resolveCurrent`, after `resolveInside`'s
+traversal and outside-workbench refusals:
+
+| Input | Answer when the path is archived |
+|---|---|
+| A record path: `show`, `validate`, the `record` of every mutation | `unresolved-reference/record-not-found`, in the operation's existing envelope (a finding for `validate`) |
+| A `list` or `reconcile` scope | `unknown-scope/archived-path`, an absent path below `archive/` included |
+| A `create` container, narrative path, or an evidence record's report path | `unknown-scope/archived-path`, before the intent |
+| A record id (an origin, `adopt-plan`'s plan, `attach-evidence`'s evidence, any reference) | not found: the walk (`controlFiles`) skips every archived directory and both id resolvers walk through it, so an id only in `archive/` is `record-not-found`, never `ambiguous-reference` |
+| A hash-bound artefact (`provenance.backup`, a migration receipt) | unchanged: historical reads stay supported |
+
+An unscoped `list`, `validate` or `reconcile` never answers `archived-path`;
+it skips `archive/`. A directory named `archive` below the root, such as
+`shared/archive/`, is an ordinary store directory. The `create` check runs in
+the plan, after the replay lookup, so a create completed before its pair was
+archived still answers its stored bytes and recreates nothing. The codec
+moves no file into `archive/`; that is the host's maintenance move.
+
 ## The kernel and the journal
 
 `src/kernel.ts` is the one writer of fusion JSON. `mutate` runs every
@@ -440,7 +464,9 @@ and every cycle through a package in scope); `narratives` (a `**Status:**`,
 line in the narrative of a non-terminal record, and a narrative carrying merge
 conflict markers). A terminal record's narrative is not read: its markers are
 history. The report carries no clock value and no absolute path but the echoed
-`workbench` root.
+`workbench` root. The walk never enters the root's `archive/`, so an archived
+record is in no section, and a reference to one is `unresolved` with
+`record-not-found`; a scope in `archive/` is refused `archived-path`.
 
 Record ids resolve through one index per read attempt, built from a single walk
 of the control files the first time an id is asked for, so an unscoped

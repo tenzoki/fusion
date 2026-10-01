@@ -8041,6 +8041,7 @@ import {
   openSync,
   readdirSync as readdirSync2,
   readFileSync as readFileSync2,
+  realpathSync,
   renameSync,
   statSync,
   unlinkSync,
@@ -8384,11 +8385,40 @@ function resolveInside(wb, path) {
   if (rel.length === 0 || rel.startsWith("..") || isAbsolute(rel)) return err("unknown-scope", "path-outside-workbench", `${path} leaves ${wb.root}`);
   return { ok: true, value: abs };
 }
+var ARCHIVE_DIR = "archive";
+var within = (parent, child) => {
+  const rel = relative(parent, child);
+  return rel.length === 0 || !rel.startsWith("..") && !isAbsolute(rel);
+};
+function realAncestor(abs) {
+  for (let probe = abs; ; probe = dirname(probe)) {
+    try {
+      return realpathSync(probe);
+    } catch {
+      if (dirname(probe) === probe) return probe;
+    }
+  }
+}
+function archived(wb, path) {
+  const abs = resolve(wb.root, path);
+  const rel = relative(wb.root, abs).split("\\").join("/");
+  if (rel === ARCHIVE_DIR || rel.startsWith(`${ARCHIVE_DIR}/`)) return true;
+  const archive = join2(wb.root, ARCHIVE_DIR);
+  const realArchive = existsSync(archive) ? realAncestor(archive) : join2(realAncestor(wb.root), ARCHIVE_DIR);
+  return within(realArchive, realAncestor(abs));
+}
+function resolveCurrent(wb, path, role) {
+  const abs = resolveInside(wb, path);
+  if (!abs.ok || !archived(wb, path)) return abs;
+  const where = `${path} lies in ${ARCHIVE_DIR}/ of ${wb.root}, outside the current record store`;
+  if (role === "record") return err("unresolved-reference", "record-not-found", `${where}; an archived record is not a current record`);
+  return err("unknown-scope", "archived-path", `${where}; ${ARCHIVE_DIR}/ is historical storage and no current scope`);
+}
 var KINDS = ["package", "issue", "plan", "discussion", "decision", "evidence"];
 var RECORD_KINDS = ["issue", "plan", "discussion", "decision"];
 var EVIDENCE_SCHEMA_ID = "urn:fusion:schema:fusion.evidence/v1";
 function readPair(wb, path, set = schemas()) {
-  const abs = resolveInside(wb, path);
+  const abs = resolveCurrent(wb, path, "record");
   if (!abs.ok) return abs;
   let bytes;
   try {
@@ -8472,8 +8502,10 @@ function controlFiles(wb, dir) {
     for (const e of entries) {
       if (e.name.startsWith(".")) continue;
       const abs = join2(d, e.name);
-      if (e.isDirectory()) walk(abs);
-      else if (e.isFile() && isControlFile(e.name)) out.push(relative(wb.root, abs).split("\\").join("/"));
+      const rel = relative(wb.root, abs).split("\\").join("/");
+      if (e.isDirectory()) {
+        if (!archived(wb, rel)) walk(abs);
+      } else if (e.isFile() && isControlFile(e.name)) out.push(rel);
     }
   };
   walk(dir);
@@ -9655,7 +9687,7 @@ function pendingInitialize(wb) {
 var stateOf = (pair) => pair.kind === "package" ? pair.control.status : pair.control.control?.state ?? null;
 function scopeDir(wb, scope) {
   if (scope === void 0) return { ok: true, dir: wb.root };
-  const abs = resolveInside(wb, scope);
+  const abs = resolveCurrent(wb, scope, "scope");
   if (!abs.ok) return { ok: false, response: fromStore(abs.error) };
   let isDir = false;
   try {
@@ -9876,8 +9908,18 @@ function newRecord(ctx, req) {
   const next = { schema: schemaField(RECORD_SCHEMA_ID), ...common, kind: req.kind, references: [], control: { ...payload } };
   return { ok: true, value: { next, schemaId: RECORD_SCHEMA_ID } };
 }
+function archivedTarget(wb, paths) {
+  for (const path of paths) {
+    if (path === null) continue;
+    const r = resolveCurrent(wb, path, "scope");
+    if (!r.ok && r.error.reason === "archived-path") return r;
+  }
+  return { ok: true, value: void 0 };
+}
 function createPlan(req) {
   return (ctx) => {
+    const outside = archivedTarget(ctx.wb, [req.scope.container, req.narrative.path]);
+    if (!outside.ok) return outside;
     const paths = pairPaths(ctx, req);
     if (!paths.ok) return paths;
     const { control, narrative } = paths.value;
@@ -9936,6 +9978,8 @@ function createEvidencePlan(req) {
   return (ctx) => {
     const payload = req.payload;
     const report = payload.report;
+    const outside = archivedTarget(ctx.wb, [req.scope.container, report.path]);
+    if (!outside.ok) return outside;
     if (payload.id !== req.id) return refusal("schema-invalid", "id-mismatch", `the envelope's id is ${req.id}; the payload's is ${payload.id}`);
     if (payload.workbench_id !== ctx.wb.id) {
       return refusal("unknown-scope", "foreign-workbench-id", `the payload carries workbench_id ${payload.workbench_id}; this workbench is ${String(ctx.wb.id)}`);
@@ -10670,8 +10714,8 @@ function indexedContext(ctx) {
 function reconcile(wb, req, view) {
   const scope = scopeDir(wb, req.scope);
   if (!scope.ok) return scope.response;
-  const within = req.scope === void 0 ? null : relative3(wb.root, scope.dir).split("\\").join("/");
-  const inScope = (path) => within === null || path === within || path.startsWith(`${within}/`);
+  const within2 = req.scope === void 0 ? null : relative3(wb.root, scope.dir).split("\\").join("/");
+  const inScope = (path) => within2 === null || path === within2 || path.startsWith(`${within2}/`);
   const ctx = indexedContext(readContext(wb, view.blocked));
   const intents = [];
   for (const b of view.blocked) {

@@ -11,7 +11,7 @@
 
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -3777,5 +3777,213 @@ describe("create: evidence", () => {
     expect(errorOf(await dispatch(attach(FIRST, "prior-enforced"))), "the label does not make stale evidence fresh").toEqual({ class: "missing-evidence", reason: "brief-changed" });
     expect(bytesOf(OPEN).equals(pkg), "no binding was written").toBe(true);
     expect(parsed(GUIDED).execution_policy).toBe("claude-guided");
+  });
+});
+
+// --- archive/: outside the current record store ---------------------------------------------
+//
+// The boundary of Prior's ruling on request 36 (`codec/fixtures/prior/REQUESTS.md`,
+// "The boundary: `archive/` outside the current record store"), row by row. The
+// host moves pairs into `archive/<stamp>/` by hand here, as its archive helper will:
+// the codec moves no file.
+
+describe("archive/: outside the current record store", () => {
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const ISSUE_ID = "d068e1ae-3f62-429a-880a-2785763aaf01";
+  const ARCH = "archive/260930-1200-sweep";
+  const OLD_ID = "a1a1a1a1-0000-4000-8000-000000000001";
+  const KEPT_ID = "a1a1a1a1-0000-4000-8000-000000000002";
+  const NESTED_ID = "a1a1a1a1-0000-4000-8000-000000000003";
+  const OLD = "shared/issues/260901-1000-stats-file-stale.record.json";
+  const KEPT = "shared/issues/260902-1000-stats-refresh-follow-up.record.json";
+  const NESTED = "shared/archive/260903-1000-nested-store.record.json";
+  const DONE_DIR = "work-packages/260927-0900-strict-reader";
+  const BACKUP = "archive/migrations/migration-20260928-example/backup/shared/issues/260901-1000-stats-file-stale.md";
+  const OLD_AT = `${ARCH}/${OLD}`;
+  const DONE_AT = `${ARCH}/${DONE_DIR}/package.json`;
+  const DUPLICATE_AT = `${ARCH}/${ISSUE}`;
+
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+  const journal = (): string[] => (existsSync(join(root, ".json-state", "journal")) ? readdirSync(join(root, ".json-state", "journal")) : []);
+  const writeAt = (path: string, bytes: string | Buffer): void => {
+    mkdirSync(join(root, path, ".."), { recursive: true });
+    writeFileSync(join(root, path), bytes);
+  };
+  /** Moves a file or directory as the host's archive move does: the same bytes at the new path. */
+  const move = (from: string, to: string): void => {
+    mkdirSync(join(root, to, ".."), { recursive: true });
+    renameSync(join(root, from), join(root, to));
+  };
+  /** A closed issue pair at `path`, its narrative beside it, carrying `references`. */
+  const closedIssue = (path: string, id: string, references: unknown[]): void => {
+    const narrative = path.replace(/\.record\.json$/, ".md");
+    writeAt(narrative, `# ${id}\n\nClosed.\n`);
+    const record = { ...fixture("record/issue-closed.json"), id, narrative: { path: narrative }, references, provenance: { source: "created", legacy_fields: {} } };
+    writeAt(path, serialise(record));
+  };
+  const wb = () => {
+    const r = openWorkbench(root);
+    if (!r.ok) throw new Error(r.error.detail);
+    return r.value;
+  };
+  const listed = async (scope?: string): Promise<string[]> =>
+    (okResult(await dispatch({ op: "list", workbench: root, ...(scope !== undefined ? { scope } : {}) })).records as Array<{ path: string }>).map((r) => r.path);
+
+  beforeEach(() => {
+    // A terminal issue pair that is archived, and a terminal issue that stays and
+    // references it by id and the migration backup under archive/ by hash.
+    closedIssue(OLD, OLD_ID, []);
+    writeAt(BACKUP, "# the stats file is stale\n\nBackup bytes.\n");
+    closedIssue(KEPT, KEPT_ID, [
+      { workbench_id: WB_ID, record_id: OLD_ID, display: "260901-1000-stats-file-stale.md" },
+      { path: BACKUP, sha256: revision(BACKUP), kind: "other" },
+    ]);
+    move(OLD, OLD_AT);
+    move(OLD.replace(/\.record\.json$/, ".md"), OLD_AT.replace(/\.record\.json$/, ".md"));
+    // A whole terminal package, and an archive-only copy of a current record's control file.
+    move(DONE_DIR, `${ARCH}/${DONE_DIR}`);
+    writeAt(DUPLICATE_AT, bytesOf(ISSUE));
+    // A directory named archive below shared/ is an ordinary store directory.
+    closedIssue(NESTED, NESTED_ID, []);
+  });
+
+  it("unscoped list, validate and reconcile name nothing in archive/, validate is valid, and a nested archive/ stays in the store", async () => {
+    const current = [ISSUE, KEPT, NESTED, OPEN].sort();
+    expect(await listed()).toEqual(current);
+    expect(okResult(await dispatch({ op: "validate", workbench: root }))).toEqual({ workbench: root, state: "json-control", checked: 4, valid: true, findings: [] });
+    const rec = okResult(await dispatch({ op: "reconcile", workbench: root }));
+    expect(rec.checked).toBe(4);
+    expect(JSON.stringify(rec)).not.toContain("archive/260930");
+    expect(await listed("shared/archive")).toEqual([NESTED]);
+    expect(okResult(await dispatch({ op: "show", workbench: root, record: { path: NESTED } }))).toMatchObject({ path: NESTED, kind: "issue" });
+  });
+
+  it("a by-id reference from a remaining terminal record to an archived one is record-not-found; a hash-bound artefact under archive/ still resolves", async () => {
+    const refs = (okResult(await dispatch({ op: "reconcile", workbench: root })).references as Array<Record<string, unknown>>).filter((e) => e.path === KEPT && String(e.at).startsWith("/references/"));
+    expect(refs).toEqual([
+      { path: KEPT, at: "/references/0", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" },
+      { path: KEPT, at: "/references/1", status: "resolved", target: BACKUP },
+    ]);
+    expect(readContext(wb(), []).resolveArtefact({ path: BACKUP, sha256: revision(BACKUP) })).toEqual({ ok: true, value: { path: BACKUP, sha256: revision(BACKUP) } });
+  });
+
+  it("both id resolvers: an id only in archive/ is record-not-found, never ambiguous; an archive-only duplicate leaves the current id unambiguous", () => {
+    for (const [name, ctx] of [["kernel", readContext(wb(), [])], ["reconcile index", indexedContext(readContext(wb(), []))]] as const) {
+      expect(ctx.resolveRecordId(OLD_ID), name).toMatchObject({ ok: false, error: { class: "unresolved-reference", reason: "record-not-found" } });
+      expect(ctx.resolveRecordId(ISSUE_ID), name).toEqual({ ok: true, value: { path: ISSUE, id: ISSUE_ID } });
+    }
+  });
+
+  it("show and validate of an archived path are record-not-found, a normalised spelling included", async () => {
+    for (const path of [OLD_AT, DONE_AT, DUPLICATE_AT, `./${OLD_AT}`]) {
+      expect(errorOf(await dispatch({ op: "show", workbench: root, record: { path } })), path).toEqual({ class: "unresolved-reference", reason: "record-not-found" });
+      const v = okResult(await dispatch({ op: "validate", workbench: root, record: { path } }));
+      expect(v, path).toMatchObject({ checked: 1, valid: false, findings: [{ path, class: "unresolved-reference", reason: "record-not-found" }] });
+    }
+  });
+
+  it("list and reconcile scoped to archive/ or below are unknown-scope/archived-path, an absent path below it included", async () => {
+    for (const scope of ["archive", ARCH, `${ARCH}/shared/issues`, `./${ARCH}`, "archive/absent"]) {
+      for (const op of ["list", "reconcile"]) {
+        expect(errorOf(await dispatch({ op, workbench: root, scope })), `${op} ${scope}`).toEqual({ class: "unknown-scope", reason: "archived-path" });
+      }
+    }
+  });
+
+  it("a mutation's record in archive/ is record-not-found, with nothing written", async () => {
+    const before = bytesOf(DONE_AT);
+    const requests = [
+      transitionRequest({ record: { path: DONE_AT }, expected_revision: revision(DONE_AT), to: "open", payload: {} }),
+      transitionRequest({ record: { path: OLD_AT }, expected_revision: revision(OLD_AT), to: "open", payload: {} }),
+      { op: "set-mode", workbench: root, operation_id: randomUUID(), record: { path: DONE_AT }, expected_revision: revision(DONE_AT), actor: ACTOR, mode: { value: "ordinary", source: null } },
+    ];
+    for (const req of requests) {
+      const r = await dispatch(req);
+      if (r.ok || r.error.class === "schema-invalid") throw new Error(JSON.stringify(r));
+      expect(errorOf(r), JSON.stringify(req.record)).toEqual({ class: "unresolved-reference", reason: "record-not-found" });
+    }
+    expect(bytesOf(DONE_AT).equals(before)).toBe(true);
+    expect(journal()).toEqual([]);
+  });
+
+  it("create into archive/ is unknown-scope/archived-path before any write: a record's container, an evidence record's container", async () => {
+    const recordReq: CreateRequest = {
+      op: "create",
+      workbench: root,
+      operation_id: randomUUID(),
+      id: "b1b1b1b1-0000-4000-8000-000000000001",
+      kind: "issue",
+      filed_by: ACTOR,
+      origin: { kind: "user-request", ref: null },
+      scope: { container: `${ARCH}/${DONE_DIR}`, store: "issues" },
+      narrative: { path: `${ARCH}/${DONE_DIR}/issues/260930-1300-into-the-archive.md`, content: "# no\n" },
+      payload: { state: "open", disposition: null },
+    };
+    expect(errorOf(await dispatch(recordReq))).toEqual({ class: "unknown-scope", reason: "archived-path" });
+    expect(existsSync(join(root, recordReq.narrative.path))).toBe(false);
+    const report = `${ARCH}/${DONE_DIR}/reviews/260930-1300-review.md`;
+    writeAt(report, "# A review of an archived package\n");
+    const payload = { ...fixture("evidence/revise-claude-guided.json"), id: "b1b1b1b1-0000-4000-8000-000000000002", workbench_id: WB_ID, predecessor: null, report: { path: report, sha256: revision(report), kind: "review" } };
+    const evReq: CreateEvidenceRequest = { op: "create", workbench: root, operation_id: randomUUID(), id: payload.id, kind: "evidence", scope: { container: `${ARCH}/${DONE_DIR}`, store: "reviews" }, payload: payload as unknown as EvidencePayload };
+    expect(errorOf(await dispatch(evReq))).toEqual({ class: "unknown-scope", reason: "archived-path" });
+    expect(readdirSync(join(root, ARCH, DONE_DIR, "reviews")).filter((n) => n.endsWith(".evidence.json"))).toEqual([]);
+    expect(journal()).toEqual([]);
+  });
+
+  it("a link shared/old -> ../archive/... is refused like the path it aliases: show, validate, transition, list, reconcile, create", async () => {
+    symlinkSync(`../${ARCH}/shared/issues`, join(root, "shared", "old"));
+    const alias = `shared/old/${OLD.slice("shared/issues/".length)}`;
+    expect(existsSync(join(root, alias))).toBe(true);
+    expect(errorOf(await dispatch({ op: "show", workbench: root, record: { path: alias } }))).toEqual({ class: "unresolved-reference", reason: "record-not-found" });
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: alias } }))).toMatchObject({ valid: false, findings: [{ reason: "record-not-found" }] });
+    expect(errorOf(await dispatch(transitionRequest({ record: { path: alias }, expected_revision: revision(alias), to: "open", payload: {} })))).toEqual({ class: "unresolved-reference", reason: "record-not-found" });
+    for (const op of ["list", "reconcile"]) expect(errorOf(await dispatch({ op, workbench: root, scope: "shared/old" })), op).toEqual({ class: "unknown-scope", reason: "archived-path" });
+    // The shared plans store, aliased into the archive: create through it is refused.
+    mkdirSync(join(root, ARCH, "shared", "plans"), { recursive: true });
+    symlinkSync(`../${ARCH}/shared/plans`, join(root, "shared", "plans"));
+    const planReq: CreateRequest = {
+      op: "create",
+      workbench: root,
+      operation_id: randomUUID(),
+      id: "b1b1b1b1-0000-4000-8000-000000000003",
+      kind: "plan",
+      filed_by: ACTOR,
+      origin: { kind: "user-request", ref: null },
+      scope: { container: null, store: "plans" },
+      narrative: { path: "shared/plans/260930-1300-through-a-link.md", content: "# no\n" },
+      payload: { state: "open", steps: [], criteria: [], acceptance: null },
+    };
+    expect(errorOf(await dispatch(planReq))).toEqual({ class: "unknown-scope", reason: "archived-path" });
+    expect(readdirSync(join(root, ARCH, "shared", "plans"))).toEqual([]);
+    expect(await listed(), "the walk follows no link").toEqual([ISSUE, KEPT, NESTED, OPEN].sort());
+    expect(journal()).toEqual([]);
+  });
+
+  it("a replay of a create completed before its pair was archived answers its stored bytes and recreates nothing", async () => {
+    const req: CreateRequest = {
+      op: "create",
+      workbench: root,
+      operation_id: randomUUID(),
+      id: "b1b1b1b1-0000-4000-8000-000000000004",
+      kind: "issue",
+      filed_by: ACTOR,
+      origin: { kind: "user-request", ref: null },
+      scope: { container: null, store: "issues" },
+      narrative: { path: "shared/issues/260930-1400-archived-after-landing.md", content: "# landed\n" },
+      payload: { state: "open", disposition: null },
+    };
+    const first = await dispatch(req);
+    expect(first.ok, JSON.stringify(first)).toBe(true);
+    const control = "shared/issues/260930-1400-archived-after-landing.record.json";
+    move(control, `${ARCH}/${control}`);
+    move(req.narrative.path, `${ARCH}/${req.narrative.path}`);
+    expect(await dispatch(req)).toEqual(first);
+    expect(existsSync(join(root, control))).toBe(false);
+    expect(existsSync(join(root, req.narrative.path))).toBe(false);
+    expect(journal()).toEqual([]);
   });
 });

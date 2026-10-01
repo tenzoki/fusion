@@ -58,7 +58,9 @@
 // is byte-identical to its own serialisation, which `store.test.ts` asserts.
 //
 // Everything here takes and returns workbench-relative paths and refuses one
-// that leaves the root: a record outside the workbench is `unknown-scope`.
+// that leaves the root: a record outside the workbench is `unknown-scope`. The
+// root's `archive/` is outside the current record store: the walk skips it and
+// `resolveCurrent` refuses a record path or a scope inside it.
 // ---------------------------------------------------------------------------
 
 import { createHash, randomBytes } from "node:crypto";
@@ -73,6 +75,7 @@ import {
   openSync,
   readdirSync,
   readFileSync,
+  realpathSync,
   renameSync,
   rmSync,
   statSync,
@@ -230,6 +233,73 @@ export function resolveInside(wb: Workbench, path: string): Result<string> {
   return { ok: true, value: abs };
 }
 
+// --- the archive boundary -------------------------------------------------------
+//
+// The workbench-root `archive/` is historical storage, outside the current
+// record store for every operation (Prior's ruling on request 36,
+// `codec/fixtures/prior/REQUESTS.md`, "The boundary: `archive/` outside the
+// current record store"). One predicate decides it, `archived`, and one gate
+// applies it to a caller's path, `resolveCurrent`; no operation carries a copy.
+// A directory named `archive` anywhere below the root is an ordinary store
+// directory. A hash-bound artefact read (`resolveArtefact`) does not pass the
+// gate: historical reads stay supported.
+
+/** The workbench-root directory that holds archived records. */
+export const ARCHIVE_DIR = "archive";
+
+/** Whether `child` is `parent` or lies below it, both absolute. */
+const within = (parent: string, child: string): boolean => {
+  const rel = relative(parent, child);
+  return rel.length === 0 || (!rel.startsWith("..") && !isAbsolute(rel));
+};
+
+/** The real path of `abs`, or of its deepest ancestor that has one: a missing tail, a dangling or looping link, is walked past. */
+function realAncestor(abs: string): string {
+  for (let probe = abs; ; probe = dirname(probe)) {
+    try {
+      return realpathSync(probe);
+    } catch {
+      if (dirname(probe) === probe) return probe;
+    }
+  }
+}
+
+/**
+ * Whether the workbench-relative `path` lies in the root's `archive/`: its
+ * lexically normalised first segment is `archive`, or the real path of its
+ * deepest existing ancestor lies under the real path of the root's `archive/`.
+ * The second test catches an in-workbench link such as
+ * `shared/old -> ../archive/x`, which is refused like the path it aliases.
+ * The archive's real path is that of `<root>/archive` when it stands (so an
+ * `archive` that is itself a link counts where it points), and
+ * `<real root>/archive` when it does not. A path that leaves the root is
+ * `resolveInside`'s to refuse, not this predicate's.
+ */
+export function archived(wb: Workbench, path: string): boolean {
+  const abs = resolve(wb.root, path);
+  const rel = relative(wb.root, abs).split("\\").join("/");
+  if (rel === ARCHIVE_DIR || rel.startsWith(`${ARCHIVE_DIR}/`)) return true;
+  const archive = join(wb.root, ARCHIVE_DIR);
+  const realArchive = existsSync(archive) ? realAncestor(archive) : join(realAncestor(wb.root), ARCHIVE_DIR);
+  return within(realArchive, realAncestor(abs));
+}
+
+/**
+ * The gate of the archive boundary: `resolveInside`'s answer, checked first,
+ * then the refusal a path in `archive/` earns in the role it is given. A
+ * record path is `unresolved-reference/record-not-found`, in the envelope the
+ * operation already answers a missing record in; a scope (a `list` or
+ * `reconcile` scope, a `create` container, narrative or report path) is
+ * `unknown-scope/archived-path`.
+ */
+export function resolveCurrent(wb: Workbench, path: string, role: "record" | "scope"): Result<string> {
+  const abs = resolveInside(wb, path);
+  if (!abs.ok || !archived(wb, path)) return abs;
+  const where = `${path} lies in ${ARCHIVE_DIR}/ of ${wb.root}, outside the current record store`;
+  if (role === "record") return err("unresolved-reference", "record-not-found", `${where}; an archived record is not a current record`);
+  return err("unknown-scope", "archived-path", `${where}; ${ARCHIVE_DIR}/ is historical storage and no current scope`);
+}
+
 // --- the pair -----------------------------------------------------------------
 
 export const KINDS = ["package", "issue", "plan", "discussion", "decision", "evidence"] as const;
@@ -259,9 +329,13 @@ export interface Pair {
   report: { path: string; sha256: string | null; stored: string | null } | null;
 }
 
-/** Reads one control record. Strict parse only; schema validity is `validate`'s question, not the reader's. */
+/**
+ * Reads one control record. Strict parse only; schema validity is
+ * `validate`'s question, not the reader's. A path in `archive/` is not found:
+ * every operation that takes a record path reads it here.
+ */
 export function readPair(wb: Workbench, path: string, set: SchemaSet = schemas()): Result<Pair> {
-  const abs = resolveInside(wb, path);
+  const abs = resolveCurrent(wb, path, "record");
   if (!abs.ok) return abs;
   let bytes: Buffer;
   try {
@@ -370,7 +444,12 @@ export function reportProblem(pair: Pair): StoreError | null {
 /** A control file by its name: a package, a record, or an evidence record. */
 export const isControlFile = (name: string): boolean => name === "package.json" || name.endsWith(".record.json") || name.endsWith(EVIDENCE_SUFFIX);
 
-/** Every control file under `dir`, workbench-relative with forward slashes, sorted; dot entries skipped. */
+/**
+ * Every control file under `dir`, workbench-relative with forward slashes,
+ * sorted; dot entries skipped, and every directory `archived` holds for, so
+ * the root's `archive/` is never walked. Every inventory and both id
+ * resolvers walk through here, so they agree on what is current.
+ */
 export function controlFiles(wb: Workbench, dir: string): string[] {
   const out: string[] = [];
   const walk = (d: string): void => {
@@ -383,8 +462,10 @@ export function controlFiles(wb: Workbench, dir: string): string[] {
     for (const e of entries) {
       if (e.name.startsWith(".")) continue;
       const abs = join(d, e.name);
-      if (e.isDirectory()) walk(abs);
-      else if (e.isFile() && isControlFile(e.name)) out.push(relative(wb.root, abs).split("\\").join("/"));
+      const rel = relative(wb.root, abs).split("\\").join("/");
+      if (e.isDirectory()) {
+        if (!archived(wb, rel)) walk(abs);
+      } else if (e.isFile() && isControlFile(e.name)) out.push(rel);
     }
   };
   walk(dir);
