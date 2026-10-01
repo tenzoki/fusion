@@ -1248,3 +1248,86 @@ What the re-pin replays, and what fusion asserts at `f64d435c`:
 The re-pin should change these Prior assertions and nothing else: the digest; the FJ02 replay of exchange 15, through both deltas; the `initialize` replay, through its ten deltas, which needs the `fusion.session-delta/2` form (`replace`, `add` with `after`, `follows`); and the new archive replay. `migration` still answers `operation-unknown/not-implemented`, which `TestCodecPinsScopeAndDomainRefusals` asserts. The lock is still the one `write.lock`, and the fence file stands beside it. The transitions Prior's tests send carry no payload, so request 37 refuses none of them. `TestCodecFJ02RetainedAnswerPreventsABAReplay` runs over exchanges that did not move. If Prior's replay differs anywhere else, the differing exchange and its stdout are the finding. Prior's own archive host, and its reading of `inspect.maintenance` before it reopens work (request 39's duty), stay Prior's integration work, and this request does not ask for them.
 
 The Claude side's JSON archival (plan step 13: `/fusion:archive` over `bin/fusion-archive`, and `workbench.json` and `.json-state/` reserved in the archive skill's safety filter 1) starts only after request 43 is answered green. Until then the hold of the FJ03c section's item 7 stays in force.
+
+## The archive revision (the corrected fence reader)
+
+**Written against:** fusion commit `e1bafd2f` on branch `fj-json-workbench` (2026-10-01 15:57), the last commit of the archive-revision plan's step 12a. It is the last commit that moved a file under `codec/`, `bin/` or `hooks/`, and the head of the branch when this text was written. It answers Prior commit `39f6fb8` (2026-10-01 14:53), the head of the Prior checkout: `git log --all --oneline 39f6fb8..` there is empty, and the uncommitted files under its `docs/` concern the dual-host design and answer nothing here. Every Prior text below is quoted from `Prior: docs/design/fusion-archive-prior-response.md` at that commit. **The frozen digest:** `codec/dist/fusion-record.js` at `e1bafd2f` is 543 227 bytes, `sha256:6b26faf2b0f9389fcbb4df1a3dd23881d2ff76cb2cab4c918f2bf969a597b0bf`, the same in the blob and in a scratch clone of `e1bafd2f` after both suites had run there. It replaces the candidate `sha256:ea902c01…1548021` that request 43 named and Prior's response blocked.
+
+This section answers Prior's response to requests 42 and 43, for one re-pin. The commits since the hand-over above, in order: `11e2ca52` (step 10, `bin/fusion-archive`), `bd5633c5` (step 12, the section above), `2a66a030` (step 11, the installed copy), `eeb488bb` (12a, the fence reader), `b689be56` (12a, the host requirements) and `e1bafd2f` (12a, the unreadable-fence refusal's detail). Steps 10 and 11 moved no inlined file: the bundle is `ea902c01…` at `f64d435c`, `2a66a030` and in Prior's pin. The intermediate digest, at `eeb488bb` and `b689be56`, is 543 134 bytes, `sha256:6d51775dbb029f6c12d7a8d0468b3baff896e0894163171300786f2cec16089f`; its committed-bundle gate was green in a scratch clone of `b689be56`. `e1bafd2f` changes one string in `codec/src/store.ts` and the bundle built from it, nothing else under `codec/`, `bin/` or `hooks/`. Only the digest above is asked to be pinned.
+
+Figures re-taken on 2026-10-01 in a scratch clone of `e1bafd2f`, with the git-ignored `hooks/package-lock.json` copied in, on an Apple M2 Max, macOS 26.6.2, Node 25.7.0. `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` exits 0 with 19 test files and 1 332 tests, none skipped, `fixtures: 237 manifest entries`, `0 derived-from-source, 13 Go-emitted golden(s)`, `163 of 163 prior_keys exercised`. Among them, without regeneration: `round-trip-cli.test.ts` 18, `prior-handback.test.ts` 6, `round-trip-cli-fj02.test.ts` 39, `round-trip-cli-fj02b.test.ts` 49, `round-trip-cli-initialize.test.ts` 90, `round-trip-cli-archive.test.ts` 94, `fixtures.test.ts` 240, `committed-bundle.test.ts` 4, `ops.test.ts` 204 and `install.test.ts` 11. `npm run typecheck` exits 0. `cd hooks && npm test` runs 64 test files and 1 085 tests, of which 1 084 pass, `record-archive.test.ts` 11 of 11 among them. The one red case is the monitor's wildcard-bind loopback case, which times out at 30 s on this machine, as in the section above. The scratch tree was clean after both runs.
+
+### 39 (d): why the reader failed open, and the fix
+
+Prior's diagnosis holds. `readFence` in `codec/src/store.ts` read the fence with `readFileSync` and returned `ENOENT` as "no fence". `readFileSync` follows a link, so a link whose target is missing gives the same `ENOENT` as an absent entry.
+
+The fix (`eeb488bb`) decides presence by the entry itself, as the manifest's check does (request 41). `readFence` runs `lstat` first, and only `ENOENT` there is no fence. A standing entry then goes through `isRegularFile`, the manifest's own check. A non-regular entry, a failed stat (`ELOOP` among them) or a read that fails after the `lstat` is unreadable. Parsing and the shape check are unchanged. `fenceRefusal` in `codec/src/kernel.ts` and `inspect` in `codec/src/cli/ops.ts` both go through `readFence` and are unchanged. Every refusal leaves the entry as it stood.
+
+| Entry at `.json-state/maintenance.json` | `inspect` | Every fresh mutation (`begin` and `end` included) |
+|---|---|---|
+| No entry | `maintenance: null` | as before |
+| A regular file, exactly `{operation_id, since}` with two strings | `maintenance: {operation_id, since}` | `conflict/maintenance-active` (`end` with that id ends it) |
+| A link to such a file | that fence | as for the file; its `end` removes the link and leaves the target |
+| A dangling link (the case Prior found) | `operation-unknown/maintenance-unreadable` | `conflict/maintenance-active` |
+| A link loop (`ELOOP`) | the same | the same |
+| A directory, or a link to one | the same | the same |
+| A file that cannot be read, does not parse strictly, or has the wrong shape | the same | the same |
+
+The link policy is the manifest's: a link to a valid fence reads as that fence, as a link to `workbench.json` reads as the manifest. Prior's response allowed either form ("distinguish an absent fence entry from a dangling link (or explicitly reject nonregular fence entries)"). Fusion follows the link so that the two files under one root share one presence rule. If Prior wants every link at the fence path refused, that needs a new digest; it is put here for objection.
+
+Tests, in `ops.test.ts` under the fence cases: one `it.each` over the dangling link (named `missing-maintenance-target.json`, Prior's name), a link to a directory and a directory. Each runs through dispatch and through the bundle and checks `inspect`, a transition, `begin` and `end`, with a link-aware snapshot of the store unchanged. A second case covers a link to a valid fence and a link loop.
+
+Prior's probe, repeated from a shell on 2026-10-01, through `bin/fusion-record` of each revision over a copy of `codec/fixtures/workbench/` whose path holds a space. First a refused `end` set up the lock bookkeeping, then `.json-state/maintenance.json` became a link to `missing-maintenance-target.json`. With the bundle at `f64d435c`, `inspect` answered `ok`, `maintenance: null`, and FJ01's `02-transition` landed: the package went to `claimed`. With the bundle at `e1bafd2f`, `inspect` answered `operation-unknown/maintenance-unreadable`, and the transition and a fresh `begin` answered `conflict/maintenance-active`. The package stayed `open`, and the link still pointed at its missing target.
+
+The refusal's detail now follows Prior's ruling on recovery (`e1bafd2f`). Up to `b689be56`, both refusals over an unreadable fence ended "until it is removed by hand, after a validate and a reconcile", the last resort the ruling rejects. They now end "it fences every fresh mutation; remove it only once a trustworthy move inventory is recovered, or a known complete state verified, under the fence, else leave it and normal work blocked". No recorded response holds either text: `git grep` for "cannot be read as a fence" over `codec/fixtures/` at `e1bafd2f` finds none. No test changed.
+
+### Recorded bytes: none moved
+
+`git diff --stat f64d435c e1bafd2f -- codec/fixtures` names `codec/fixtures/prior/REQUESTS.md` alone. Every recorded request and response, the twelve delta files, every session README, the archive session's `base/` and `seed/` files, the manifest, the schemas and the goldens are as Prior pinned them at `f64d435c`. So the expected answers are those of request 43, through the same deltas and the same three substitutions. The fix changes no answer a recorded exchange gets, because no recorded store holds a link at the fence path.
+
+### Prior's rulings and how the host meets them
+
+| Ruling | Host requirement | Where it is met at `e1bafd2f` |
+|---|---|---|
+| 39 (a), accepted | gate normal work on the actual maintenance state | Every Claude-side write goes through the codec under its lock and meets its fence check: `hooks/lib/record-write.ts` sends each call under a fresh operation id and re-sends only under `--operation-id` for an unknown outcome. The readers (`hooks/lib/scope.ts`, `work-graph.ts`, `record-index.ts`) keep reading under a fence and authorise no write. Residual: a narrative edited by hand, outside the codec, is not fenced |
+| 39 (b), accepted | coordinate participating writers; reconcile after a pull | Unchanged. The fence is stated as this checkout's alone, in `bin/fusion-archive`'s header and in `codec/README.md` |
+| 39 (c), accepted | none | `conflict/maintenance-not-active`, as before |
+| 39 (d), fail-open rejected | a fence entry that stands is never no fence | The fix above |
+| Recovery limit 1 | resume inspects and matches the inventory; an unknown result is never turned into a fresh `begin` or `end` | `resume` was not compliant and is changed (`b689be56`). It restored files with no fence standing and sent a fresh `end` where `inspect` named no fence. Now it reads the fence through `inspect` and matches it against the inventory. In the phase before the units are fixed it restores nothing, ends the fence only if it is this inventory's, and closes (exit 8). Under the inventory's fence it finishes or restores, as before. With no fence standing it moves nothing: it closes a move whose files all stand verified at their destinations (exit 0), and otherwise exits 5. No path of `move`, `resume` or `abandon` sends `begin` after a crash, and an unanswered `begin` or `end` is exit 7, never re-sent |
+| Recovery limit 2 | no last resort of deleting the fence after `validate` and `reconcile` | The wording is replaced, in the same terms, in `bin/fusion-archive`'s header, in `codec/README.md`'s fence paragraph, in `bin/fusion-record`'s header (comment lines only) and in the codec's refusal detail over an unreadable fence (`e1bafd2f`): deleting the fence file is no recovery, since `validate` and `reconcile` pass two of the three half-moves the archive session records; the host recovers a trustworthy inventory, or restores or verifies a known complete state under the fence (every pair and evidence group whole, every file at its recorded hash) before removing it, and otherwise leaves the fence standing and normal work blocked |
+| 40, the intentional break rejected | retain the targets of full-path prose citations | `bin/fusion-archive` holds them (`hooks/lib/record-archive.ts`, `holdsOf`). It reads the narrative of every remaining record with the citation scanner of `hooks/lib/citation-scan.ts` (unchanged), and every `store-prefixed` token that names a candidate unit holds it, inside the same fixed point as the reference holds. The token is resolved as a path: `./` and `../` from the citing file, `fusion-workbench/` and a bare container directory from the workbench root, plus every file the grammar's own lookup of the last segment finds in that directory. `survey` prints `held=<kind> <source> citation <narrative> line <n> <cited path>`. A storeless basename holds nothing, since it still resolves after the move, as Prior allows. A narrative that does not read stops the survey, and the recheck under the fence, with exit 4. No intentional break remains |
+| 41, accepted | none | As before |
+
+The hand-over above (request 40's row) said a full-path prose citation into an archived record breaks. That statement is withdrawn by this section.
+
+### What changed for Prior's two pins
+
+Each pinned path at `39f6fb8`, hashed in the blob at `e1bafd2f`. None is missing.
+
+`Prior: tests/testdata/fusion-fj01/UPSTREAM.json` (323 files, fusion `f64d435c`): three differ.
+
+| Path | `sha256` at `e1bafd2f` | Change since `f64d435c` |
+|---|---|---|
+| `bin/fusion-record` | `46f2aeda6c81a9f7f2ec5ebf78b741908a1c79540635f077142694f9e431e769` | **comment lines only**: the header's recovery sentence (3 lines out, 5 in) |
+| `codec/dist/fusion-record.js` | `6b26faf2b0f9389fcbb4df1a3dd23881d2ff76cb2cab4c918f2bf969a597b0bf` | the fence reader and its refusal detail |
+| `codec/fixtures/prior/REQUESTS.md` | `b5b387a525ae1c0620cda3cd95fadb09ace94172cf9ebe72da6f9c7ae56858d8` | the section above (step 12); this section changes it once more |
+
+`Prior: tests/testdata/fusion-codec/UPSTREAM.json` (277 files, relative to `codec/`, fusion `f64d435c`): one differs, `fixtures/prior/REQUESTS.md`, the same file. The schemas, the manifest, every fixture and every golden hash as pinned.
+
+Outside both pins, changed since `f64d435c`: `codec/src/store.ts`, `codec/src/__tests__/ops.test.ts`, `codec/src/__tests__/install.test.ts`, `codec/README.md`, `bin/fusion-archive` (new), `hooks/archive.ts` and `hooks/lib/record-archive.ts` (new) with their test, and small edits in `hooks/` and `README-hooks.md`. No file under `agents/`, `skills/`, `rules/`, `templates/`, `docs/` or `.claude-plugin/` changed, nor `install.sh`; `plugin.json` stays at 12.0.0. No skill reaches `bin/fusion-archive`.
+
+### 44. Re-pin the corrected bundle, re-run the dangling-link regression and the complete qualification
+
+**Closes:** request 43, which this digest replaces. In `Prior: tests/testdata/fusion-fj01/UPSTREAM.json`: `commit` to `e1bafd2f`, `bundle_digest` and the entries for `codec/dist/fusion-record.js`, `bin/fusion-record` and `codec/fixtures/prior/REQUESTS.md`; in `Prior: tests/testdata/fusion-codec/UPSTREAM.json`, `commit` and `fixtures/prior/REQUESTS.md`; and `codecBundleDigest` in `Prior: internal/fusionhost/codec_process_test.go`. `REQUESTS.md` with this section stands at the commit that appends it, after `e1bafd2f`. Pinning it there, or pinning the `e1bafd2f` blob and reading this section separately as at `bd5633c5`, is Prior's choice. Preferred form: the re-pin, the runs below in the Prior repository, and a reply saying they are green against `sha256:6b26faf2b0f9389fcbb4df1a3dd23881d2ff76cb2cab4c918f2bf969a597b0bf`.
+
+What it asks Prior to run, and what fusion asserts at `e1bafd2f`:
+
+- **The regression, unedited:** `go test ./internal/fusionhost -run '^TestCodecMaintenanceUnreadableFence$' -count=1 -v`, all three kinds. `dangling-symlink` should answer `maintenance-unreadable` and `maintenance-active` with the store unchanged; `invalid-json` and `directory` as before.
+- **The rest of the fence checks:** `TestCodecMaintenanceFenceLifecycle` and `TestCodecManifestStatFailure`, and Prior's independent checks of begin/end replay, wrong fence, reused id and end without a fence.
+- **The complete qualification, as request 43 lists it:** the six FJ01 pairs and the handback byte for byte; the fifteen FJ02 exchanges, the fifteenth through both of its deltas; the twenty FJ02b exchanges; the twenty-six `initialize` exchanges, ten through their deltas; and the fifty-one archive exchanges with the three substitutions. These are five recorded sessions and the handback, and none of their bytes moved.
+- **The shared manifest:** `TestFusionCodecSharedManifest` 237 of 237 (62 valid, 175 invalid) and `TestFusionAppliedRulingAndGoldens` unchanged, since only `REQUESTS.md` moved in that pin.
+- **Prior's conformance run:** `go test ./...` and `go vet ./...` green.
+
+A differing answer anywhere else is the finding, with the exchange and its stdout. Prior's own archive host and its gating on `inspect.maintenance` stay Prior's integration work, and this request does not ask for them.
+
+The Claude side's JSON archival (plan step 13: `/fusion:archive` over `bin/fusion-archive`, and `workbench.json` and `.json-state/` reserved in the archive skill's safety filter 1) starts only after request 44 is answered green. Until then the hold of the FJ03c section's item 7 stays in force.
