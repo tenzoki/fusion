@@ -31,3 +31,6 @@ Section 4.3 (Prior `590465d`): a plan's control holds versioned steps `{id, stat
 ## Recommendation
 
 Option 1, put to Prior as part of request 48 of the FJ04 plan.
+
+---
+Answered: plan `261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md` — option 1 — the existing step number is the anchor, criteria empty at import; sent to the Prior side as request 48 for confirmation; the user approved it with the FJ04 plan on 2026-10-01, the requests to be sent after the measurement part; ruled by user, Kai Stalmann <ks@qantr.com>

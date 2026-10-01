@@ -32,3 +32,6 @@ Section 6 of the specification (Prior `590465d`) lists `migration survey/plan/ap
 ## Recommendation
 
 Option 1, put to Prior as request 45 of the FJ04 plan with the request and answer shapes. The single journaled intent is the reason: atomicity and resumption come from a mechanism already qualified, not from a new one.
+
+---
+Answered: plan `261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md` — option 1 — the host reads the v12 Markdown, only the codec writes; put to the Prior side as request 45; the user approved it with the FJ04 plan on 2026-10-01, the requests to be sent after the measurement part; ruled by user, Kai Stalmann <ks@qantr.com>

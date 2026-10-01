@@ -32,3 +32,6 @@ Section 8.2 (Prior `590465d`): unknown states, several active plans, invalid cla
 ## Recommendation
 
 Option 1, put to Prior as requests 47 and 49 of the FJ04 plan; the `_d_` Circle and any value the copies show beyond these stay findings.
+
+---
+Answered: plan `261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md` — option 1 — the recommended mapping table, put to the Prior side as requests 47 and 49 because a fixed mapping may touch the no-guessing rule of spec section 8.2; the user approved it with the FJ04 plan on 2026-10-01, the requests to be sent after the measurement part; ruled by user, Kai Stalmann <ks@qantr.com>

@@ -41,3 +41,6 @@ Terminal records carry values with no v1 state: 5 plans `_s_` in axibra-1 (no `s
 ## Recommendation
 
 Option 2. It is §2.1's criterion made executable: state that steers a workflow today is live state, or state a live structure binds. Under it fusion's workbench migrates 104 records, 42 package heads and the closure (0 at `15e4d52e`: the four live packages bind four live documents), and none of the terminal values without a v1 state is touched. Put to Prior as request 46 of the FJ04 plan.
+
+---
+Answered: plan `261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md` — option 2 — all packages, all live records, and a terminal record only when a pure record_ref field names it; put to the Prior side as request 46, together with the gap that no operation imports a single terminal record after activation; the user approved it with the FJ04 plan on 2026-10-01, the requests to be sent after the measurement part; ruled by user, Kai Stalmann <ks@qantr.com>
