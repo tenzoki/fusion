@@ -417,17 +417,18 @@ export interface PendingInitialize {
 function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
   const journal = `${STATE_DIR}/${JOURNAL_DIR}`;
   const dirOf = (id: string): string => `${journal}/${id}`;
-  const refusal = (where: string, why: string): Result<never> => ({
+  /** `what` names its place first: the journal, or the intent's directory. */
+  const refusal = (what: string): Result<never> => ({
     ok: false,
-    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${where}: ${why}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` },
+    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${what}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` },
   });
-  const unreadable = (id: string, why: string): Result<never> => refusal(dirOf(id), why);
+  const unreadable = (id: string, why: string): Result<never> => refusal(`${dirOf(id)}: ${why}`);
   const listed = (): Result<string[]> => {
     try {
       return { ok: true, value: pendingIds(wb) };
     } catch (e) {
       const code = (e as NodeJS.ErrnoException).code ?? "an error without a code";
-      return refusal(journal, `the journal cannot be listed (${code})`);
+      return refusal(`${journal}: the journal cannot be listed (${code})`);
     }
   };
   const ids = listed();
@@ -441,7 +442,7 @@ function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
       if (!again.ok) return again;
       if (!again.value.includes(name)) continue;
     }
-    if (!r.ok) return unreadable(name, r.error.detail);
+    if (!r.ok) return refusal(r.error.detail); // `readIntent`'s detail already begins with the intent's directory
     if (r.value === null) continue;
     const { intent, contents } = r.value;
     if (intent.op !== "initialize") continue;
@@ -1880,14 +1881,24 @@ interface NarrativeEntry {
 const field = (v: unknown, key: string): unknown => (isObject(v) ? v[key] : undefined);
 
 /** A place a control record carries a reference; `binding` is the `active_documents` entry that carries it, when one does. */
-interface ReferenceSite {
+export interface ReferenceSite {
   at: string;
   value: unknown;
   binding?: unknown;
 }
 
-/** Every place a control record carries a reference, as a JSON pointer and the value there; an absent or null one is no site. */
-function referenceSites(pair: Pair): ReferenceSite[] {
+/**
+ * Every place a control record carries a reference, as a JSON pointer and the
+ * value there, in the schema's field order; an absent or null one is no site.
+ * The set is every schema position that reaches a record, artefact or
+ * evidence reference, a `reference`, or a narrative, the record's own
+ * narrative excepted and `extensions` and `legacy_fields` opaque: a test
+ * derives it from the schemas and holds this function to it, so the host can
+ * decide archival safety from `reconcile` alone (request 40; decision
+ * 261001-1030, option 1). An evidence record's report and a `provenance.backup`
+ * are artefact references, resolved by hash as every artefact is.
+ */
+export function referenceSites(pair: Pair): ReferenceSite[] {
   const sites: ReferenceSite[] = [];
   const add = (at: string, value: unknown): void => {
     if (value !== null && value !== undefined) sites.push({ at, value });
@@ -1897,8 +1908,10 @@ function referenceSites(pair: Pair): ReferenceSite[] {
     items.forEach((item, i) => add(key === undefined ? `${at}/${i}` : `${at}/${i}/${key}`, key === undefined ? item : field(item, key)));
   };
   const c = pair.control;
+  const backup = (): void => add("/provenance/backup", field(c.provenance, "backup"));
   if (pair.kind === "evidence") {
-    add("/predecessor", c.predecessor); // the report is `records`' question, through `validate`
+    add("/report", c.report);
+    add("/predecessor", c.predecessor);
     return sites;
   }
   if (pair.kind === "package") {
@@ -1917,9 +1930,11 @@ function referenceSites(pair: Pair): ReferenceSite[] {
     each("/references", c.references);
     each("/evidence", c.evidence, "ref");
     each("/outcome/evidence", field(c.outcome, "evidence"), "ref");
+    backup();
     return sites;
   }
   each("/references", c.references);
+  backup();
   const control = c.control;
   if (pair.kind === "issue") add("/control/disposition/reason_ref", field(field(control, "disposition"), "reason_ref"));
   else if (pair.kind === "plan") add("/control/acceptance/ref", field(field(control, "acceptance"), "ref"));

@@ -73,6 +73,159 @@ export function filesUnder(dir: string): string[] {
   return out.sort();
 }
 
+// --- reviewed deltas -------------------------------------------------------------------
+//
+// A recorded response is never rewritten once the Prior side has replayed it,
+// not even under a session's update variable. When a later revision moves its
+// bytes, a reviewed delta file beside it, `<nn>-<op>.<topic>-delta.json`,
+// names exactly what moved, and the gate holds the fresh answer equal to the
+// recording with its deltas applied in order. Two forms:
+//
+//   - The first, `15-reconcile.role-delta.json` (FJ02, Prior `a15dfc8`): no
+//     `format` field; `adds` inserts each named field after the field it
+//     names, in the one entry of the array `list` whose `path` and `at` match.
+//   - `fusion.session-delta/2` (the archive revision): `changes`, each a
+//     JSON pointer (RFC 6901) into the response. `replace` swaps a member or
+//     element that stands, in its place; `add` inserts an array element at an
+//     index up to the length, or an object member that is new, after the
+//     member `after` names, so the key order is stated rather than implied.
+//     `follows` lists the delta files applied before this one, in order, so a
+//     chain is read off the files alone.
+//
+// Application is strict, so nothing but the named fields can differ: the
+// recorded bytes must round-trip through JSON, a pointer must land where its
+// change says, and a change that leaves its value as it was is refused.
+
+export const DELTA_FORMAT = "fusion.session-delta/2";
+
+export interface FieldDelta {
+  exchange: string;
+  recorded: string;
+  why: string;
+  /** The JSON pointer of the array whose entries the delta changes. */
+  list: string;
+  adds: Array<{ entry: { path: string; at: string }; field: string; after: string; value: unknown }>;
+}
+
+export type DeltaChange = { op: "replace"; pointer: string; value: unknown } | { op: "add"; pointer: string; value: unknown; after?: string };
+
+export interface PointerDelta {
+  format: typeof DELTA_FORMAT;
+  exchange: string;
+  recorded: string;
+  follows: string[];
+  why: string;
+  changes: DeltaChange[];
+}
+
+export type Delta = FieldDelta | PointerDelta;
+
+type Json = Record<string, unknown>;
+
+/** The tokens of a JSON pointer, unescaped. */
+const tokensOf = (pointer: string): string[] => {
+  if (!pointer.startsWith("/")) throw new Error(`${JSON.stringify(pointer)} is not a JSON pointer`);
+  return pointer.slice(1).split("/").map((t) => t.replace(/~1/g, "/").replace(/~0/g, "~"));
+};
+
+/** The value a JSON pointer names, or undefined where it names nothing. */
+export function valueAt(doc: unknown, pointer: string): unknown {
+  return tokensOf(pointer).reduce<unknown>((v, key) => (v !== null && typeof v === "object" ? (v as Json)[key] : undefined), doc);
+}
+
+/** The array a JSON pointer names. */
+export function listAt(doc: unknown, pointer: string): Json[] {
+  const at = valueAt(doc, pointer);
+  if (!Array.isArray(at)) throw new Error(`${pointer} names no array`);
+  return at as Json[];
+}
+
+/** `object` with the new member `key` inserted after `after`. */
+function placed(object: Json, key: string, value: unknown, after: string): Json {
+  const next: Json = {};
+  for (const [k, v] of Object.entries(object)) {
+    next[k] = v;
+    if (k === after) next[key] = value;
+  }
+  return next;
+}
+
+/** `change` applied to `doc` in place: the parent its pointer names is changed, and nothing else. */
+function applyChange(doc: unknown, change: DeltaChange): void {
+  const tokens = tokensOf(change.pointer);
+  const last = tokens.pop() as string;
+  const parent = tokens.reduce<unknown>((v, key) => (v !== null && typeof v === "object" ? (v as Json)[key] : undefined), doc);
+  const where = `${change.op} ${change.pointer}`;
+  if (parent === null || typeof parent !== "object") throw new Error(`${where}: the parent names nothing`);
+  const same = (recorded: unknown): boolean => JSON.stringify(recorded) === JSON.stringify(change.value);
+  if (Array.isArray(parent)) {
+    if (!/^(0|[1-9][0-9]*)$/.test(last)) throw new Error(`${where}: ${JSON.stringify(last)} is no array index`);
+    const i = Number(last);
+    if (change.op === "replace") {
+      if (i >= parent.length) throw new Error(`${where}: no element ${i}`);
+      if (same(parent[i])) throw new Error(`${where}: the value is the recorded one`);
+      parent[i] = change.value;
+    } else {
+      if (i > parent.length) throw new Error(`${where}: index ${i} is past the end (${parent.length})`);
+      parent.splice(i, 0, change.value);
+    }
+    return;
+  }
+  const object = parent as Json;
+  if (change.op === "replace") {
+    if (!(last in object)) throw new Error(`${where}: no member ${last}`);
+    if (same(object[last])) throw new Error(`${where}: the value is the recorded one`);
+    object[last] = change.value; // an existing key keeps its place
+    return;
+  }
+  if (last in object) throw new Error(`${where}: the member stands already`);
+  if (change.after === undefined || !(change.after in object)) throw new Error(`${where}: an added member names the member it follows, and ${JSON.stringify(change.after)} is none`);
+  const entries = Object.entries(placed(object, last, change.value, change.after));
+  for (const k of Object.keys(object)) delete object[k];
+  for (const [k, v] of entries) object[k] = v;
+}
+
+/** `text`, a recorded response or the result of an earlier delta, with exactly `delta` applied. */
+export function applyDelta(text: string, delta: Delta): string {
+  const doc = JSON.parse(text) as unknown;
+  if (JSON.stringify(doc) + "\n" !== text) throw new Error(`${delta.exchange}: the bytes a delta applies to do not round-trip through JSON`);
+  if ("format" in delta) {
+    if (delta.format !== DELTA_FORMAT) throw new Error(`${delta.exchange}: unknown delta format ${JSON.stringify(delta.format)}`);
+    if (delta.changes.length === 0) throw new Error(`${delta.exchange}: a delta changes something`);
+    for (const change of delta.changes) applyChange(doc, change);
+    return JSON.stringify(doc) + "\n";
+  }
+  const list = listAt(doc, delta.list);
+  for (const add of delta.adds) {
+    const hits = list.map((e, i) => [e, i] as const).filter(([e]) => e.path === add.entry.path && e.at === add.entry.at);
+    if (hits.length !== 1) throw new Error(`${add.entry.path} ${add.entry.at}: ${hits.length} entries, not one`);
+    const [entry, i] = hits[0] as readonly [Json, number];
+    if (add.field in entry) throw new Error(`${add.entry.path} ${add.entry.at} already carries ${add.field}`);
+    if (!(add.after in entry)) throw new Error(`${add.entry.path} ${add.entry.at} carries no ${add.after}`);
+    list[i] = placed(entry, add.field, add.value, add.after);
+  }
+  return JSON.stringify(doc) + "\n";
+}
+
+export const readDelta = (dir: string, file: string): Delta => JSON.parse(readFileSync(join(dir, file), "utf-8")) as Delta;
+
+/**
+ * What exchange `exchange` answers now: its recorded response with each file
+ * of `chain` applied in order. Each delta must name the exchange and its
+ * recording, and a `fusion.session-delta/2` file's `follows` must be exactly
+ * the files before it, so the chain is the one the files themselves state.
+ */
+export function deltaChain(dir: string, exchange: string, chain: readonly string[]): string {
+  let text = readFileSync(join(dir, `${exchange}.response.json`), "utf-8");
+  chain.forEach((file, i) => {
+    const delta = readDelta(dir, file);
+    if (delta.exchange !== exchange || delta.recorded !== `${exchange}.response.json`) throw new Error(`${file} names ${delta.exchange} and ${delta.recorded}, not ${exchange}`);
+    if ("format" in delta && JSON.stringify(delta.follows) !== JSON.stringify(chain.slice(0, i))) throw new Error(`${file} follows ${JSON.stringify(delta.follows)}, not ${JSON.stringify(chain.slice(0, i))}`);
+    text = applyDelta(text, delta);
+  });
+  return text;
+}
+
 // --- a session -----------------------------------------------------------------------
 
 export interface Exchange<Name extends string = string> {

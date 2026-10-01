@@ -46,7 +46,7 @@ under R:
 | `23-initialize` | `initialize` `diverged/`, rebuilt from 22's `pending` | `operation-unknown/recovery-blocked`; every file of `diverged/` stays, the intent stands |
 | `24-inspect` | `inspect` `nonfile/` | `ok`: `state: unsupported`, diagnosis `schema-invalid/manifest-not-a-file`, `pending` with `blocked: true` |
 | `25-initialize` | `initialize` `nonfile/`, rebuilt from 24's `pending` | `operation-unknown/recovery-blocked`, ahead of any `manifest-present`; every file stays |
-| `26-inspect` | `inspect` `unreadable/` | `operation-unknown/pending-initialize-unreadable`, the detail naming the intent directory: never `pending: null` |
+| `26-inspect` | `inspect` `unreadable/` | `operation-unknown/pending-initialize-unreadable`, the detail naming the intent directory once: never `pending: null`; the current answer is the recording with `26-inspect.detail-delta.json` applied |
 
 `<nn>-<op>.request.json` is exactly what was written to the wrapper's stdin,
 `<nn>-<op>.response.json` exactly what it wrote to stdout: one JSON object
@@ -54,7 +54,23 @@ each, one line, a trailing newline.
 `codec/src/__tests__/round-trip-cli-initialize.test.ts` runs the twenty-six
 against a fresh copy of `base/` on every test run and fails when a fresh
 exchange, `base/` or a seed differs from the recorded one; everything here is
-regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`. It shares its
+regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`, except a
+response a reviewed delta moves (below), which is never rewritten.
+
+## The reviewed delta of 26
+
+`26-inspect.response.json` was recorded when the detail named the intent's
+directory twice (`.json-state/journal/<id>: .json-state/journal/<id>:
+intent.json: syntax: …`), because `pendingInitialize` prefixed a detail of
+`readIntent`'s that already began with it. The archive revision names it once.
+The recording stays the historical expectation and is not edited.
+`26-inspect.detail-delta.json` beside it, of the form
+`fusion.session-delta/2`, carries one `replace` of the JSON pointer
+`/error/detail` with the new detail, the rest of the detail unchanged; the gate
+applies it to the recorded bytes and compares the fresh answer with the
+result, byte for byte, and an answer one field more or one less fails it. To
+replay 26 by hand, replace `error.detail` in the recorded response with the
+delta's value, serialise without whitespace, and compare with that. It shares its
 machinery with the FJ02 and FJ02b recorders through
 `codec/src/__tests__/helpers/session.ts`, started from `base/` in place of
 the scratch workbench.
@@ -124,7 +140,8 @@ request under its own operation id first.
    `bin/fusion-record < request`, or `node codec/dist/fusion-record.js <
    request` from an installed fusion copy.
 3. Read stdout, replace R with `<workbench>`, and compare with the recorded
-   response, byte for byte. Exit is 0 for all twenty-six.
+   response, byte for byte; for 26, with the recorded response plus the delta
+   above. Exit is 0 for all twenty-six.
 
 Order matters: 07 and 13 are 06's replay out of
 `R/new/.json-state/ops/<operation_id>.json`, 09 is refused against that same

@@ -16,7 +16,7 @@ import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { bindEvidence, dispatch, indexedContext, TRANSITION_PAYLOAD_FIELDS } from "../cli/ops.js";
+import { bindEvidence, dispatch, indexedContext, referenceSites, TRANSITION_PAYLOAD_FIELDS } from "../cli/ops.js";
 import {
   OPERATIONS,
   IMPLEMENTED_OPERATIONS,
@@ -38,7 +38,7 @@ import {
 import { installInlined } from "../cli/schemas.js";
 import { commitIntent, requestDigest, type Intent, type Write } from "../journal.js";
 import { CutReached, mutate, readContext } from "../kernel.js";
-import { controlFiles, lockPathFor, openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
+import { controlFiles, KINDS, lockPathFor, openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
 import { MAX_RECORD_BYTES, strictParse } from "../strict-json.js";
 import { transitions } from "../transitions.js";
 import { loadSchemas } from "../validate.js";
@@ -2778,7 +2778,10 @@ describe("reconcile", () => {
       ["/control/outcome_refs/0", "unresolved", "unresolved-reference/record-not-found"],
       ["/control/outcome_refs/1", "unchecked", ""],
     ]);
-    expect(of(placed["issue-closed"] as string)).toEqual([["/control/disposition/reason_ref", "unchecked", ""]]);
+    expect(of(placed["issue-closed"] as string)).toEqual([
+      ["/provenance/backup", "unresolved", "unresolved-reference/artefact-missing"],
+      ["/control/disposition/reason_ref", "unchecked", ""],
+    ]);
     expect(of(p1)).toEqual([
       ["/origin/ref", "resolved", OPEN],
       ["/mode/source/ref", "resolved", word.path],
@@ -2787,6 +2790,113 @@ describe("reconcile", () => {
     // The user's word edited afterwards: the source no longer resolves at its hash.
     writeAt(word.path, "Run it autonomously, but ask first.\n");
     expect((await reconcile()).references.find((r) => r.path === p1 && r.at === "/mode/source/ref")).toMatchObject({ status: "unresolved", class: "missing-evidence", reason: "artefact-changed" });
+  });
+
+  // --- the binding enumeration, complete by the schemas (request 40) ---
+
+  it("the reference sites are every schema position that reaches a binding, per kind, the record's own narrative excepted: derived from the schemas, never listed by hand", () => {
+    // Every position, per kind, at which a control record can carry a
+    // record_ref, an artefact_ref, a `reference` or a narrative, with
+    // `extensions` and `legacy_fields` opaque. An evidence_ref is reached
+    // through its `ref`, the record_ref inside it, which is where a binding
+    // names its target. An array index is `*`.
+    const SCHEMA_DIR = fileURLToPath(new URL("../../schemas/", import.meta.url));
+    const docs = new Map<string, Record<string, unknown>>();
+    for (const name of readdirSync(SCHEMA_DIR).filter((n) => n.endsWith(".schema.json"))) {
+      const doc = JSON.parse(readFileSync(join(SCHEMA_DIR, name), "utf-8")) as Record<string, unknown>;
+      docs.set(doc.$id as string, doc);
+    }
+    const LEAVES = new Set(["record_ref", "artefact_ref", "reference", "narrative"]);
+    const OPAQUE = new Set(["extensions", "legacy_fields"]);
+    type Node = Record<string, unknown>;
+    const deref = (ref: string, doc: Node): { node: Node; doc: Node; name: string } => {
+      const [uri, fragment = ""] = ref.split("#");
+      const base = uri === "" ? doc : docs.get(uri as string);
+      if (base === undefined) throw new Error(`no schema ${uri}`);
+      const tokens = fragment.split("/").slice(1);
+      const node = tokens.reduce<unknown>((n, t) => (n as Node)[t], base) as Node;
+      return { node, doc: base, name: tokens[tokens.length - 1] ?? "" };
+    };
+    const derive = (root: Node, kind: string): string[] => {
+      const out = new Set<string>();
+      const walk = (node: unknown, at: string, doc: Node, seen: ReadonlySet<string>): void => {
+        if (node === null || typeof node !== "object") return;
+        const n = node as Node;
+        // A branch for another record kind is not this kind's.
+        const kindConst = ((n.properties as Node | undefined)?.kind as Node | undefined)?.const;
+        if (at === "" && typeof kindConst === "string" && kindConst !== kind) return;
+        if (typeof n.$ref === "string") {
+          const target = deref(n.$ref, doc);
+          if (LEAVES.has(target.name)) out.add(at);
+          else if (!OPAQUE.has(target.name) && !seen.has(`${n.$ref}@${at}`)) walk(target.node, at, target.doc, new Set([...seen, `${n.$ref}@${at}`]));
+          return;
+        }
+        for (const k of ["oneOf", "anyOf", "allOf"]) for (const branch of (n[k] as unknown[] | undefined) ?? []) walk(branch, at, doc, seen);
+        for (const k of ["if", "then", "else"]) walk(n[k], at, doc, seen);
+        for (const [key, sub] of Object.entries((n.properties as Node | undefined) ?? {})) if (!OPAQUE.has(key)) walk(sub, `${at}/${key}`, doc, seen);
+        for (const sub of Object.values((n.patternProperties as Node | undefined) ?? {})) walk(sub, `${at}/*`, doc, seen);
+        if (typeof n.additionalProperties === "object") walk(n.additionalProperties, `${at}/*`, doc, seen);
+        if (typeof n.items === "object") walk(n.items, `${at}/*`, doc, seen);
+      };
+      walk(root, "", root, new Set());
+      out.delete("/narrative"); // the record's own narrative: `records`' question, never a binding to another file
+      return [...out].sort();
+    };
+    const schemaOf = (kind: string): Node => [...docs.values()].find((d) => d.title === (kind === "package" ? "fusion.package/v1" : kind === "evidence" ? "fusion.evidence/v1" : "fusion.record/v1")) as Node;
+
+    // Each kind with every position filled, and the variants a discriminator
+    // picks between (the mode's source as a record or as the user's word).
+    const R = { workbench_id: "w", record_id: "r" };
+    const saturated: Record<string, Array<Record<string, unknown>>> = {
+      package: [
+        { origin: { ref: R }, mode: { source: R }, depends_on: [{ target: R }], active_documents: [{ ref: R, role: "plan" }], references: [R], evidence: [{ ref: R }], outcome: { evidence: [{ ref: R }] }, provenance: { backup: R } },
+        { mode: { source: { kind: "user-word", ref: R } } },
+      ],
+      evidence: [{ report: R, predecessor: R }],
+      issue: [{ references: [R], provenance: { backup: R }, control: { disposition: { reason_ref: R } } }],
+      plan: [{ references: [R], provenance: { backup: R }, control: { acceptance: { ref: R } } }],
+      discussion: [{ references: [R], provenance: { backup: R }, control: { outcome_refs: [R] } }],
+      decision: [{ references: [R], provenance: { backup: R }, control: { answer_ref: R, implementation_ref: R, superseded_by: R, deferral: { target: R } } }],
+    };
+    expect(Object.keys(saturated).sort(), "one row per pair kind").toEqual([...KINDS].sort());
+    const sitesOf = (kind: string): string[] =>
+      [...new Set(saturated[kind]?.flatMap((control) => referenceSites({ kind, control } as unknown as Pair).map((s) => s.at.replace(/\/\d+(?=\/|$)/g, "/*"))))].sort();
+
+    for (const kind of KINDS) expect(sitesOf(kind), `${kind}: referenceSites against the schema-derived positions`).toEqual(derive(schemaOf(kind), kind));
+    // The derivation itself reaches what request 40 names, so an empty walk cannot pass.
+    expect(derive(schemaOf("evidence"), "evidence")).toEqual(["/predecessor", "/report"]);
+    for (const kind of ["package", "issue", "plan", "discussion", "decision"]) expect(derive(schemaOf(kind), kind), kind).toContain("/provenance/backup");
+  });
+
+  it("an evidence record's report and a provenance backup are each one row, resolved at their hash; a changed report, and a backup no file carries, are unresolved", async () => {
+    const ev = await seedEvidence(root, { package: OPEN, id: "e7e7e7e7-0000-4000-8000-000000000601", basename: "260929-1601-review" });
+    // A backup under archive/: a hash-bound artefact, which the boundary leaves readable.
+    const BACKUP = "archive/migrations/migration-20260929-example/backup/work-packages/260928-1200-parser-fix/package.json";
+    writeAt(BACKUP, bytesOf(OPEN));
+    const backup = { path: BACKUP, sha256: revisionOf(bytesOf(BACKUP)), kind: "other" };
+    rewrite(OPEN, (c) => ({ ...c, provenance: { source: "imported", legacy_fields: {}, backup } }));
+    const issue = fixture("record/issue-closed.json");
+    const narrative = (issue.narrative as { path: string }).path;
+    const control = narrative.replace(/\.md$/, ".record.json");
+    const issueBackup = (issue.provenance as { backup: { path: string } }).backup.path;
+    writeAt(narrative, "# issue-closed\n");
+    writeAt(issueBackup, "The issue as it stood before the import.\n");
+    writeAt(control, serialise({ ...issue, provenance: { ...(issue.provenance as object), backup: { path: issueBackup, sha256: revisionOf(bytesOf(issueBackup)), kind: "other" } } }));
+
+    const report = await reconcile();
+    expect(report.records, "every file is valid").toEqual([]);
+    const rows = (path: string, at: string) => report.references.filter((r) => r.path === path && r.at === at);
+    expect(report.references.filter((r) => r.path === ev.path)).toEqual([{ path: ev.path, at: "/report", status: "resolved", target: ev.report }]);
+    expect(rows(OPEN, "/provenance/backup")).toEqual([{ path: OPEN, at: "/provenance/backup", status: "resolved", target: BACKUP }]);
+    expect(rows(control, "/provenance/backup")).toEqual([{ path: control, at: "/provenance/backup", status: "resolved", target: issueBackup }]);
+    // The package's backup row is its last, after the outcome's evidence: the schema's field order.
+    expect(report.references.filter((r) => r.path === OPEN).at(-1)?.at).toBe("/provenance/backup");
+
+    writeAt(ev.report, `${readFileSync(join(root, ev.report), "utf-8")}\nA line added after the review was accepted.\n`);
+    rmSync(join(root, issueBackup));
+    const after = await reconcile();
+    expect(after.references.filter((r) => r.path === ev.path)).toEqual([{ path: ev.path, at: "/report", status: "unresolved", class: "missing-evidence", reason: "artefact-changed" }]);
+    expect(after.references.filter((r) => r.path === control && r.at === "/provenance/backup")).toEqual([{ path: control, at: "/provenance/backup", status: "unresolved", class: "unresolved-reference", reason: "artefact-missing" }]);
   });
 
   it("the role: every active-document binding carries its stored role after at, resolved, unresolved and ambiguous alike, and no target it did not resolve to; no other entry carries one", async () => {

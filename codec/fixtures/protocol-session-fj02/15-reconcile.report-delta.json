@@ -1,0 +1,21 @@
+{
+  "format": "fusion.session-delta/2",
+  "exchange": "15-reconcile",
+  "recorded": "15-reconcile.response.json",
+  "follows": [
+    "15-reconcile.role-delta.json"
+  ],
+  "why": "The archive revision, request 40 (REQUESTS.md, '40. Notice: reconcile enumerates every binding a remaining record makes'): reconcile's references name an evidence record's report at /report. The one evidence record of this workbench, whose predecessor is null, gains that entry; it is the last control file of the walk, so the entry is the last of references. No record here carries provenance.backup. Applied after the role delta; the recorded response is not edited.",
+  "changes": [
+    {
+      "op": "add",
+      "pointer": "/result/references/10",
+      "value": {
+        "path": "work-packages/260929-0900-fj02-session/reviews/260929-1200-review.evidence.json",
+        "at": "/report",
+        "status": "resolved",
+        "target": "work-packages/260929-0900-fj02-session/reviews/260929-1200-review.md"
+      }
+    }
+  ]
+}

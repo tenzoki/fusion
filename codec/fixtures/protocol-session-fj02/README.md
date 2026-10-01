@@ -83,7 +83,12 @@ wrote resolves; the dependency of 08 is `satisfied` because P ended `done` with
 outcome `completed`; `checked` is 6 (the three scratch pairs, P, L and the
 evidence record).
 
-## The one reviewed delta: `15-reconcile.role-delta.json`
+## The reviewed deltas of 15
+
+Two delta files state the current answer to 15, applied in this order:
+`15-reconcile.role-delta.json`, then `15-reconcile.report-delta.json`.
+
+### `15-reconcile.role-delta.json`
 
 `15-reconcile.response.json` is the answer as recorded before `reconcile`
 reported the role of each active-document binding. The current codec adds
@@ -107,9 +112,24 @@ it. The update variable rewrites every other recorded file but never this
 response: a later change to the answer is a reviewed change to the delta
 file, and Prior compares it at the re-pin.
 
-To replay 15 by hand, apply the delta to the recorded response (insert each
-field after the one it names, in the one entry its `path` and `at` pick out,
-and serialise without whitespace) and compare with that.
+### `15-reconcile.report-delta.json`
+
+The archive revision (request 40) makes `reconcile`'s `references` name every
+binding a control record makes, an evidence record's report included. The one
+evidence record here, `reviews/260929-1200-review.evidence.json` in P's
+container, has a healthy report and a null predecessor, so the current answer
+carries one more entry: `{"path":"…/260929-1200-review.evidence.json",
+"at":"/report","status":"resolved","target":"…/260929-1200-review.md"}`. The
+evidence record is the last control file of the walk, so the entry is the last
+of `references`, index 10. Nothing else moved: no record here carries
+`provenance.backup`. The file has the form `fusion.session-delta/2`: one `add`
+at the JSON pointer `/result/references/10`, and `follows` naming the role
+delta, so it applies to the recording with the role delta applied.
+
+To replay 15 by hand, apply the role delta to the recorded response (insert
+each field after the one it names, in the one entry its `path` and `at` pick
+out), then the report delta (insert its value into `references` at index 10),
+serialise without whitespace, and compare with that.
 
 ## Replaying
 
@@ -121,8 +141,8 @@ and serialise without whitespace) and compare with that.
    `bin/fusion-record < request`, or `node codec/dist/fusion-record.js <
    request` from an installed fusion copy.
 3. Read stdout, replace W with `<workbench>`, and compare with the recorded
-   response, byte for byte; for 15, with the recorded response plus the delta
-   above. Exit is 0 for all fifteen.
+   response, byte for byte; for 15, with the recorded response plus the two
+   deltas above, in order. Exit is 0 for all fifteen.
 
 Order matters: every mutation names the revision the exchange before it left;
 12 is 01's replay out of `W/.json-state/ops/<operation_id>.json` and 13 is

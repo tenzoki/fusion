@@ -83,6 +83,16 @@
 // Nothing else depends on the clock, the host or a generated id: every id and
 // operation id is a fixed literal, the intents' `created_at` is fixed, and
 // every revision is `sha256:` over deterministic bytes.
+//
+// ## Reviewed deltas
+//
+// A recorded response a later revision moves is never rewritten, not even
+// under the update variable. `DELTAS` names each such exchange and the delta
+// files beside it that state its current answer, in the order they apply
+// (`helpers/session.ts`, "reviewed deltas"); its gate holds the fresh answer
+// equal to the recording with exactly those deltas applied. The archive
+// revision moves one: `26-inspect.detail-delta.json`, the intent's directory
+// named once in the detail. Every other exchange is byte for byte.
 // ---------------------------------------------------------------------------
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -93,7 +103,7 @@ import type { CreateRequest, InitializeRequest, InspectRequest, ListRequest } fr
 import { canonical, requestDigest, type Intent } from "../journal.js";
 import { CutReached } from "../kernel.js";
 import { SELF_IGNORE, SELF_IGNORE_FILE, STATE_DIR, revisionOf, serialise } from "../store.js";
-import { CODEC_DIR, PLACEHOLDER, bytesAt, filesUnder, openSession, parse, requestBytes } from "./helpers/session.js";
+import { CODEC_DIR, DELTA_FORMAT, PLACEHOLDER, bytesAt, deltaChain, filesUnder, openSession, parse, readDelta, requestBytes, type PointerDelta } from "./helpers/session.js";
 
 // --- the fixed literals ----------------------------------------------------------
 
@@ -197,6 +207,10 @@ const REFUSED: ReadonlyArray<[Name, { class: string; reason: string }]> = [
   ["25-initialize", { class: "operation-unknown", reason: "recovery-blocked" }],
   ["26-inspect", { class: "operation-unknown", reason: "pending-initialize-unreadable" }],
 ];
+
+/** The exchanges whose recorded response is historical, each with the reviewed delta files that state its current answer, in the order they apply. */
+const DELTAS: ReadonlyMap<Name, readonly string[]> = new Map<Name, readonly string[]>([["26-inspect", ["26-inspect.detail-delta.json"]]]);
+const deltaFiles = (): string[] => [...DELTAS.values()].flat();
 
 /** The successful replays, each followed by an `inspect` of its target. */
 const REPLAYS: ReadonlyArray<[Name, Name]> = [
@@ -508,8 +522,10 @@ describe("the twenty-six initialize exchanges through bin/fusion-record", () => 
     });
   }
 
-  it("26: an intent that does not read is refused by name, never reported as pending: null", () => {
-    expect(refusalOf("26-inspect").detail).toContain(`.json-state/journal/${op(26)}`);
+  it("26: an intent that does not read is refused by name, never reported as pending: null; the detail names its directory once", () => {
+    const { detail } = refusalOf("26-inspect");
+    expect(detail.startsWith(`.json-state/journal/${op(26)}: intent.json: syntax: `), detail).toBe(true);
+    expect(detail.split(`.json-state/journal/${op(26)}`)).toHaveLength(2);
   });
 });
 
@@ -530,7 +546,7 @@ describe(`the recorded session under fixtures/protocol-session-initialize/ (${UP
     }
   });
 
-  for (const name of NAMES) {
+  for (const name of NAMES.filter((n) => !DELTAS.has(n))) {
     it(`${name}: the recorded request and response equal the fresh exchange`, () => {
       const { requestFile, responseFile, freshRequest, freshResponse } = session.fresh(name);
       const missing = [requestFile, responseFile].filter((f) => !existsSync(f));
@@ -539,6 +555,45 @@ describe(`the recorded session under fixtures/protocol-session-initialize/ (${UP
       expect(readFileSync(responseFile, "utf-8"), `${name}.response.json differs from the fresh exchange. If the protocol changed on purpose, regenerate with ${FIX} and commit the files; the Prior side replays them.`).toBe(freshResponse);
     });
   }
+
+  // A historical response is never rewritten, so `session.fresh`, which rewrites under the update variable, is not called for it.
+  for (const [name, chain] of DELTAS) {
+    describe(`${name}: the recorded response with exactly the reviewed deltas, ${chain.join(" then ")}`, () => {
+      const expected = (): string => deltaChain(SESSION, name, chain);
+      const fresh = (): string => record(byName(name).stdout);
+      /** The fresh answer with one change made to it. */
+      const changed = (change: (doc: { ok: boolean; error?: Record<string, unknown>; result?: Record<string, unknown> }) => void): string => {
+        const doc = JSON.parse(fresh()) as { ok: boolean; error?: Record<string, unknown>; result?: Record<string, unknown> };
+        change(doc);
+        return JSON.stringify(doc) + "\n";
+      };
+
+      it("the recorded request equals the fresh one", () => {
+        expect(readFileSync(join(SESSION, `${name}.request.json`), "utf-8")).toBe(record(requestBytes(byName(name).request)));
+      });
+
+      it("the fresh answer is the recorded bytes with the deltas applied, byte for byte, and not the recorded bytes alone", () => {
+        expect(fresh(), `the answer differs from ${name}.response.json with ${chain.join(" and ")} applied. The recorded response is historical and is not regenerated; a change to the answer is a reviewed change to a delta file, and the Prior side compares it at the re-pin.`).toBe(expected());
+        expect(readFileSync(join(SESSION, `${name}.response.json`), "utf-8"), "the recording itself").not.toBe(fresh());
+      });
+
+      it("the gate is red against an answer carrying one field less or one field more", () => {
+        const part = (doc: { ok: boolean; error?: Record<string, unknown>; result?: Record<string, unknown> }): Record<string, unknown> => (doc.ok ? doc.result : doc.error) as Record<string, unknown>;
+        expect(changed(() => undefined), "unchanged").toBe(expected());
+        expect(changed((doc) => delete part(doc)[Object.keys(part(doc)).at(-1) as string]), "one field less").not.toBe(expected());
+        expect(changed((doc) => (part(doc).extra = null)), "one field more").not.toBe(expected());
+      });
+    });
+  }
+
+  it("26-inspect.detail-delta.json replaces the detail alone, and the new detail is the recorded one with its doubled directory named once", () => {
+    const d = readDelta(SESSION, "26-inspect.detail-delta.json") as PointerDelta;
+    expect(d).toMatchObject({ format: DELTA_FORMAT, exchange: "26-inspect", recorded: "26-inspect.response.json", follows: [] });
+    const recorded = (JSON.parse(readFileSync(join(SESSION, "26-inspect.response.json"), "utf-8")) as { error: { detail: string } }).error.detail;
+    const dir = `.json-state/journal/${op(26)}: `;
+    expect(recorded.startsWith(dir + dir), "the recording names the directory twice").toBe(true);
+    expect(d.changes).toEqual([{ op: "replace", pointer: "/error/detail", value: recorded.slice(dir.length) }]);
+  });
 
   it("base/ holds exactly the v12 store and the regular file the constants state", () => {
     expect(filesUnder(BASE), `base/ is not the stated file set. If it changed on purpose, regenerate with ${FIX}.`).toEqual([...BASE_FILES.keys()].sort());
@@ -567,9 +622,9 @@ describe(`the recorded session under fixtures/protocol-session-initialize/ (${UP
     });
   }
 
-  it("the recorded set is exactly the twenty-six pairs, a README, base/ and seed/", () => {
+  it("the recorded set is exactly the twenty-six pairs, the reviewed deltas, a README, base/ and seed/", () => {
     const files = readdirSync(SESSION).sort();
-    const expected = ["README.md", "base", "seed", ...NAMES.flatMap((n) => [`${n}.request.json`, `${n}.response.json`])].sort();
+    const expected = ["README.md", "base", "seed", ...deltaFiles(), ...NAMES.flatMap((n) => [`${n}.request.json`, `${n}.response.json`])].sort();
     expect(files).toEqual(expected);
     expect(readdirSync(SEED).sort()).toEqual([...SEEDED].sort());
   });

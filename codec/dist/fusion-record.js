@@ -9636,17 +9636,17 @@ function initializePlan(req) {
 function pendingInitialize(wb) {
   const journal = `${STATE_DIR}/${JOURNAL_DIR}`;
   const dirOf = (id) => `${journal}/${id}`;
-  const refusal2 = (where, why) => ({
+  const refusal2 = (what) => ({
     ok: false,
-    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${where}: ${why}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` }
+    error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${what}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` }
   });
-  const unreadable = (id, why) => refusal2(dirOf(id), why);
+  const unreadable = (id, why) => refusal2(`${dirOf(id)}: ${why}`);
   const listed = () => {
     try {
       return { ok: true, value: pendingIds(wb) };
     } catch (e) {
       const code = e.code ?? "an error without a code";
-      return refusal2(journal, `the journal cannot be listed (${code})`);
+      return refusal2(`${journal}: the journal cannot be listed (${code})`);
     }
   };
   const ids = listed();
@@ -9659,7 +9659,7 @@ function pendingInitialize(wb) {
       if (!again.ok) return again;
       if (!again.value.includes(name)) continue;
     }
-    if (!r.ok) return unreadable(name, r.error.detail);
+    if (!r.ok) return refusal2(r.error.detail);
     if (r.value === null) continue;
     const { intent, contents } = r.value;
     if (intent.op !== "initialize") continue;
@@ -10557,7 +10557,9 @@ function referenceSites(pair) {
     items.forEach((item, i) => add(key === void 0 ? `${at}/${i}` : `${at}/${i}/${key}`, key === void 0 ? item : field(item, key)));
   };
   const c = pair.control;
+  const backup = () => add("/provenance/backup", field(c.provenance, "backup"));
   if (pair.kind === "evidence") {
+    add("/report", c.report);
     add("/predecessor", c.predecessor);
     return sites;
   }
@@ -10576,9 +10578,11 @@ function referenceSites(pair) {
     each("/references", c.references);
     each("/evidence", c.evidence, "ref");
     each("/outcome/evidence", field(c.outcome, "evidence"), "ref");
+    backup();
     return sites;
   }
   each("/references", c.references);
+  backup();
   const control = c.control;
   if (pair.kind === "issue") add("/control/disposition/reason_ref", field(field(control, "disposition"), "reason_ref"));
   else if (pair.kind === "plan") add("/control/acceptance/ref", field(field(control, "acceptance"), "ref"));

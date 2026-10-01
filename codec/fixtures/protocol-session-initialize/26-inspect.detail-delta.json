@@ -1,0 +1,14 @@
+{
+  "format": "fusion.session-delta/2",
+  "exchange": "26-inspect",
+  "recorded": "26-inspect.response.json",
+  "follows": [],
+  "why": "The archive revision (REQUESTS.md, 'The archive revision (the contract delta)', 'The three fusion issues, and the detail delta for exchange 26'): pendingInitialize no longer prefixes readIntent's detail, which already begins with the intent's directory, so the directory is named once. The recorded response is the historical expectation and is not edited; the current answer is those bytes with exactly this change.",
+  "changes": [
+    {
+      "op": "replace",
+      "pointer": "/error/detail",
+      "value": ".json-state/journal/1a1e0026-0000-4000-8000-000000000026: intent.json: syntax: Expected double-quoted property name in JSON at position 82 (line 4 column 1); inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand"
+    }
+  ]
+}

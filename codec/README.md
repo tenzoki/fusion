@@ -453,10 +453,10 @@ and freshness on their own.
 the whole workbench or a scope as `list` takes one, in these sections:
 `intents` (each pending intent left blocked, with each file's
 `post | pre | diverged`); `records` (every `validate` finding, and an evidence
-record outside a `reviews/` store); `references` (every reference site in
-packages and records, each entry `{path, at, role?, status, target?, class?,
-reason?}`: `resolved`, `unresolved`, `ambiguous`, `foreign`, or `unchecked`
-for a legacy citation string); `evidence` (every binding: `fresh`,
+record outside a `reviews/` store); `references` (every binding site of every
+package, record and evidence record, each entry `{path, at, role?, status,
+target?, class?, reason?}`: `resolved`, `unresolved`, `ambiguous`, `foreign`,
+or `unchecked` for a legacy citation string); `evidence` (every binding: `fresh`,
 or the reason it would be refused); `dependencies` (every `depends_on` edge
 against the target's live control data: `satisfied`, `unmet` with the reason,
 and every cycle through a package in scope); `narratives` (a `**Status:**`,
@@ -489,6 +489,37 @@ stays as recorded, and `15-reconcile.role-delta.json` beside it names the two
 added fields, which the FJ02 gate applies to the recorded bytes (Prior
 `a15dfc8`).
 
+**`references` is complete by the schemas** (the archive revision, request
+40). Its sites are every position of a control record's schema that reaches a
+`record_ref`, an `artefact_ref`, an `evidence_ref` (through its `ref`), a
+`reference` or a narrative, with `extensions` and `legacy_fields` opaque and the
+record's own narrative left to `records`. So an evidence record names its
+report at `/report` and its predecessor at `/predecessor`, and every package
+and record names its `provenance.backup` at `/provenance/backup`, after its
+other sites in the schema's field order; both are artefact references,
+`resolved` at their hash or `unresolved` (`missing-evidence/artefact-changed`,
+`unresolved-reference/artefact-missing`), and a backup under `archive/` still
+resolves. `ops.test.ts` derives the position set from the schemas per kind and
+holds `referenceSites` equal to it, so a schema field without a site fails the
+suite. A host decides from this one answer which records a remaining record
+binds. This moved one entry of the same recorded FJ02 answer, the evidence
+record's `/report`; `15-reconcile.report-delta.json` adds it after the role
+delta.
+
+**Reviewed deltas.** A recorded response is never edited once Prior has
+replayed it. Where a revision moves its bytes, a delta file beside it,
+`<nn>-<op>.<topic>-delta.json`, states exactly what moved, and the session's
+gate compares the fresh answer with the recording plus its deltas in order.
+The role delta has the first form (fields added to entries picked by `path`
+and `at`); later ones carry `"format": "fusion.session-delta/2"`, a list of
+`replace` and `add` changes by JSON pointer (an added object member names the
+member it follows), and `follows`, the delta files applied before it.
+`codec/src/__tests__/helpers/session.ts` is the one implementation. The
+archive revision's deltas are `protocol-session-fj02/15-reconcile.report-delta.json`
+and `protocol-session-initialize/26-inspect.detail-delta.json` (the
+`pending-initialize-unreadable` detail naming the intent's directory once,
+where it named it twice).
+
 ## The two closed vocabularies
 
 Two token sets that FJ00 left open were closed at FJ01b, as the decision
@@ -513,9 +544,9 @@ never by its file format.
 | `fixtures/prior/` | Round-trip fixtures for the Prior DTO mapping; not indexed by the manifest. The 13 `prior.json` are Go-emitted goldens (`go-golden@dbd1aa1`, taken at Prior `c512c4c`), copied byte for byte and never edited here; each `fusion.json` beside one is the codec's import of it, and `UPDATE_PRIOR_FIXTURES=1 npm test` regenerates it when the mapping changes on purpose |
 | `fixtures/prior-handback/` | Prior's FJ01 handback: the five files after Prior's own `claimed → paused` transition through the pinned bundle (the record, its revision, the `show` response, the `transition` request and response), counterchecked by `prior-handback.test.ts`; not indexed by the manifest |
 | `fixtures/protocol-session/` | The FJ01 recorded session: six request/response pairs through `bin/fusion-record` over a copy of the scratch workbench, byte for byte, gated by `round-trip-cli.test.ts` and regenerated only under `UPDATE_PROTOCOL_SESSION=1`; its `README.md` is the replay procedure for the Prior side; not indexed by the manifest |
-| `fixtures/protocol-session-fj02/` | The FJ02 recorded session: fifteen pairs covering every operation FJ02 answers, the replay of a `create`, a divergent replay and a read that recovers a pending intent, with the files no operation writes under `seed/<nn>-<op>/` (a memo, an evidence pair, a pending intent directory), each copied onto the workbench just before its exchange, and `15-reconcile.role-delta.json`, the two reviewed fields the current answer adds to the historical `15-reconcile.response.json`; gated by `round-trip-cli-fj02.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02=1` (15's response never), replay procedure in its `README.md`; not indexed by the manifest |
+| `fixtures/protocol-session-fj02/` | The FJ02 recorded session: fifteen pairs covering every operation FJ02 answers, the replay of a `create`, a divergent replay and a read that recovers a pending intent, with the files no operation writes under `seed/<nn>-<op>/` (a memo, an evidence pair, a pending intent directory), each copied onto the workbench just before its exchange, and `15-reconcile.role-delta.json` then `15-reconcile.report-delta.json`, the two reviewed fields and the one reviewed entry the current answer adds to the historical `15-reconcile.response.json`; gated by `round-trip-cli-fj02.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02=1` (15's response never), replay procedure in its `README.md`; not indexed by the manifest |
 | `fixtures/protocol-session-fj02b/` | The FJ02b recorded session: twenty pairs covering plan progress through `transition` (with and without a state change, its replay, and the refusals for a stale revision, a forbidden step edge, a repeated id, an unknown id and a closed plan) and `create` of `kind: evidence` (a first record, two corrections, the replay of the first correction after the second landed, and the refusals for a taken name, a report at another hash and a correction over a changed report), with the report no operation writes under `seed/11-create/` and its replacement under `seed/20-create/`, each copied onto the workbench just before its exchange; gated by `round-trip-cli-fj02b.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02B=1`, replay procedure in its `README.md`; not indexed by the manifest |
-| `fixtures/protocol-session-initialize/` | The `initialize` recorded session: twenty-six pairs over a root of targets, not one workbench (`<workbench>/legacy`, `/file`, `/new`, `/pending`, `/crowded`, `/diverged`, `/nonfile`, `/unreadable`). It covers `inspect` and `list` on an empty directory and a v12 store (`state: legacy`); `initialize` refused on the store (`target-not-empty`, byte-identical after) and on a file (`workbench-missing`), landed on the empty directory, replayed before and after a `create` with an `inspect` after each replay, refused under its id with another request (`operation-id-reused`) and under another id (`manifest-present`); then `inspect.pending` (`{operation_id, id, blocked}`) over a committed intent alone and beside another entry, each landed by the request rebuilt from the target and `pending` alone, over a diverged and a non-file manifest (`blocked: true`, the `initialize` `recovery-blocked` with every file kept), and over an unreadable intent (`pending-initialize-unreadable`). `base/` is the root the session starts from; `seed/<nn>-inspect/` holds each intent, the readable ones cut in process from the request their `initialize` exchange sends, with the request digest as the placeholder `<request-digest:<nn>-initialize>` a replayer computes; gated by `round-trip-cli-initialize.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`, replay procedure and the placeholder rule in its `README.md`; not indexed by the manifest |
+| `fixtures/protocol-session-initialize/` | The `initialize` recorded session: twenty-six pairs over a root of targets, not one workbench (`<workbench>/legacy`, `/file`, `/new`, `/pending`, `/crowded`, `/diverged`, `/nonfile`, `/unreadable`). It covers `inspect` and `list` on an empty directory and a v12 store (`state: legacy`); `initialize` refused on the store (`target-not-empty`, byte-identical after) and on a file (`workbench-missing`), landed on the empty directory, replayed before and after a `create` with an `inspect` after each replay, refused under its id with another request (`operation-id-reused`) and under another id (`manifest-present`); then `inspect.pending` (`{operation_id, id, blocked}`) over a committed intent alone and beside another entry, each landed by the request rebuilt from the target and `pending` alone, over a diverged and a non-file manifest (`blocked: true`, the `initialize` `recovery-blocked` with every file kept), and over an unreadable intent (`pending-initialize-unreadable`, whose current detail is the historical `26-inspect.response.json` with `26-inspect.detail-delta.json` applied). `base/` is the root the session starts from; `seed/<nn>-inspect/` holds each intent, the readable ones cut in process from the request their `initialize` exchange sends, with the request digest as the placeholder `<request-digest:<nn>-initialize>` a replayer computes; gated by `round-trip-cli-initialize.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`, replay procedure and the placeholder rule in its `README.md`; not indexed by the manifest |
 | `fixtures/workbench/` | A minimal v12-shaped scratch workbench (`workbench.json`, `.fusion-setup`, two package pairs, one shared issue pair) the store and CLI suites copy to a temp directory before every case; not indexed by the manifest |
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |
 | `scripts/build.mjs` | esbuild, pinned exactly, `--bundle --platform=node --format=esm --target=node20`, JSON inlined, staging path then atomic rename into `dist/`; a second run writes nothing |
