@@ -45,7 +45,9 @@
  *
  * `261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md`
  * option 1: Circle `_c_` done/legacy-completed, `_b_` dropped/bounded, `_s_`
- * dropped/dropped, `_d_` a blocking finding; an empty container tree is
+ * dropped/dropped, `_d_` a blocking finding until its `**Status:**` starts
+ * `paused` or `dropped`, which the consented repair writes
+ * (`lib/legacy-repair.ts`); an empty container tree is
  * reported and not migrated; an `Answered:` line citing nothing resolvable
  * answers with the record's own original; a document role comes from its
  * clause or its stem, else a blocking finding. Every mapped value stays
@@ -170,6 +172,32 @@ export interface ComposeInput {
 }
 /** Every entry under `root`, sorted; links are not followed. Reads only. */
 export declare function buildInventory(root: string): Inventory;
+export interface Head {
+    fields: Map<string, {
+        value: string;
+        line: number;
+    }[]>;
+}
+/** Lines outside fenced code blocks, as booleans by index. */
+export declare function unfenced(lines: string[]): boolean[];
+/** `**Key:** value` lines before the first `## ` heading, outside fences. */
+export declare function readHead(lines: string[]): Head;
+/** Splits a head value at commas outside parentheses: `a.md (plan, part 1), b.md`. */
+export declare function entries(value: string): {
+    token: string;
+    clause: string;
+    raw: string;
+}[];
+export declare const ACTOR: RegExp;
+/** A plan's step lines (id and bracket mark) and its stray marks, outside fences, by the header's grammar. */
+export declare function scanPlan(lines: string[]): {
+    steps: {
+        line: number;
+        id: string;
+        mark: string | undefined;
+    }[];
+    stray: number[];
+};
 /** Composes the migration proposal. Reads files under `root`; writes nothing. */
 export declare function composeProposal(input: ComposeInput): Proposal;
 /** The findings that stop activation until the frozen plan resolves them. */

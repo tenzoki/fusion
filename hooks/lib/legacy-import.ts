@@ -45,7 +45,9 @@
  *
  * `261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md`
  * option 1: Circle `_c_` done/legacy-completed, `_b_` dropped/bounded, `_s_`
- * dropped/dropped, `_d_` a blocking finding; an empty container tree is
+ * dropped/dropped, `_d_` a blocking finding until its `**Status:**` starts
+ * `paused` or `dropped`, which the consented repair writes
+ * (`lib/legacy-repair.ts`); an empty container tree is
  * reported and not migrated; an `Answered:` line citing nothing resolvable
  * answers with the record's own original; a document role comes from its
  * clause or its stem, else a blocking finding. Every mapped value stays
@@ -202,6 +204,7 @@ const CIRCLE: Record<string, { status: "done" | "dropped"; outcome: string; reas
   c: { status: "done", outcome: "legacy-completed", reason: "", heads: /^(closed|done|complete)/i },
   b: { status: "dropped", outcome: "bounded", reason: "closed bounded (legacy Circle marker)", heads: /^(bounded|closed)/i },
   s: { status: "dropped", outcome: "dropped", reason: "superseded (legacy Circle marker)", heads: /^superseded/i },
+  d: { status: "dropped", outcome: "dropped", reason: "deferred (legacy Circle marker), dropped at repair", heads: /^(paused|dropped)\b/ },
 };
 const PACKAGE_STATUSES = new Set(["open", "claimed", "paused", "done", "dropped"]);
 /** The head fields JSON owns on a live package: removed from its narrative, kept raw in `legacy_fields`. */
@@ -234,12 +237,12 @@ export function buildInventory(root: string): Inventory {
 
 // --- the Markdown grammar ----------------------------------------------------------
 
-interface Head {
+export interface Head {
   fields: Map<string, { value: string; line: number }[]>;
 }
 
 /** Lines outside fenced code blocks, as booleans by index. */
-function unfenced(lines: string[]): boolean[] {
+export function unfenced(lines: string[]): boolean[] {
   let fence: string | null = null;
   return lines.map((l) => {
     const m = /^\s*(```|~~~)/.exec(l);
@@ -252,7 +255,7 @@ function unfenced(lines: string[]): boolean[] {
 }
 
 /** `**Key:** value` lines before the first `## ` heading, outside fences. */
-function readHead(lines: string[]): Head {
+export function readHead(lines: string[]): Head {
   const fields = new Map<string, { value: string; line: number }[]>();
   const open = unfenced(lines);
   for (let i = 0; i < lines.length; i++) {
@@ -273,8 +276,8 @@ function rawHead(h: Head): Record<string, string> {
 }
 
 /** Splits a head value at commas outside parentheses: `a.md (plan, part 1), b.md`. */
-function entries(value: string): { token: string; clause: string }[] {
-  const out: { token: string; clause: string }[] = [];
+export function entries(value: string): { token: string; clause: string; raw: string }[] {
+  const out: { token: string; clause: string; raw: string }[] = [];
   let depth = 0;
   let cur = "";
   for (const ch of value + ",") {
@@ -284,12 +287,30 @@ function entries(value: string): { token: string; clause: string }[] {
       const t = cur.trim().replace(/^`|`$/g, "");
       if (t) {
         const m = /^(\S+?)`?\s*(?:\((.*)\))?\s*$/.exec(t);
-        out.push(m ? { token: m[1].replace(/`/g, ""), clause: m[2] ?? "" } : { token: t, clause: "" });
+        out.push(m ? { token: m[1].replace(/`/g, ""), clause: m[2] ?? "", raw: cur.trim() } : { token: t, clause: "", raw: cur.trim() });
       }
       cur = "";
     } else cur += ch;
   }
   return out;
+}
+
+export const ACTOR = /^[a-z][a-z0-9-]*$/;
+
+/** A plan's step lines (id and bracket mark) and its stray marks, outside fences, by the header's grammar. */
+export function scanPlan(lines: string[]): { steps: { line: number; id: string; mark: string | undefined }[]; stray: number[] } {
+  const open = unfenced(lines);
+  const steps: { line: number; id: string; mark: string | undefined }[] = [];
+  const stray: number[] = [];
+  let inSteps = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (!open[i]) continue;
+    if (/^## /.test(lines[i])) inSteps = /^##\s+implementation steps\b/i.test(lines[i]);
+    const step = /^((?:#{2,4}\s+)?)(\d+[a-z]?)\.\s+(?:\[([A-Z][A-Z -]*)\]\s+)?/.exec(lines[i]);
+    if (step && (step[3] !== undefined || inSteps)) steps.push({ line: i, id: step[2], mark: step[3] });
+    else if (/^\s*(?:#{1,6}\s+)?(?:[-*+]\s+|\d+[a-z]?\.\s+)?(?:\*\*)?\[[A-Z][A-Z -]*\]/.test(lines[i]) && /\[(OPEN|IN PROGRESS|DONE)\]/.test(lines[i])) stray.push(i);
+  }
+  return { steps, stray };
 }
 
 function filedBy(value: string | undefined): { actor: string; person: string | null } | "missing" | "unreadable" {
@@ -361,11 +382,12 @@ export function composeProposal(input: ComposeInput): Proposal {
     let status: string;
     if (circle) {
       const map = CIRCLE[circle[1]];
-      if (!map) {
+      const picked = circle[1] === "d" ? /^(paused|dropped)\b/.exec(one(head, "Status") ?? "")?.[1] : undefined;
+      if (!map || (circle[1] === "d" && !picked)) {
         find(circle[1] === "d" ? "circle-deferred" : "unknown-package-status", narrative, `Circle marker _${circle[1]}_ has no v1 status`);
         continue;
       }
-      status = map.status;
+      status = picked ?? map.status;
       if (!map.heads.test(one(head, "Status") ?? "")) find("circle-head-disagrees-with-marker", narrative, `marker _${circle[1]}_, head ${JSON.stringify(one(head, "Status") ?? null)}`);
     } else {
       status = one(head, "Status") ?? "";
@@ -431,26 +453,19 @@ export function composeProposal(input: ComposeInput): Proposal {
       if (c.kind !== "plan") find("status-head-in-live-record", c.narrative, `**Status:** ${JSON.stringify(st[0].value)} removed`);
     }
     if (c.kind === "plan") {
-      const open = unfenced(lines);
       const found: { id: string; state: string }[] = [];
       const marks: Record<string, string> = {};
-      let inSteps = false;
-      for (let i = 0; i < lines.length; i++) {
-        if (!open[i]) continue;
-        if (/^## /.test(lines[i])) inSteps = /^##\s+implementation steps\b/i.test(lines[i]);
-        const step = /^((?:#{2,4}\s+)?)(\d+[a-z]?)\.\s+(?:\[([A-Z][A-Z -]*)\]\s+)?/.exec(lines[i]);
-        if (step && (step[3] !== undefined || inSteps)) {
-          if (step[3] !== undefined && !(step[3] in STEP_MARKS)) find("unknown-step-mark", c.narrative, `step ${step[2]} [${step[3]}]`);
-          if (found.some((s) => s.id === step[2])) find("duplicate-step-number", c.narrative, `step ${step[2]}`);
-          found.push({ id: step[2], state: step[3] === undefined ? "open" : STEP_MARKS[step[3]] ?? "open" });
-          if (step[3] !== undefined) {
-            marks[step[2]] = step[3];
-            lines[i] = lines[i].replace(`[${step[3]}] `, "");
-          }
-        } else if (/^\s*(?:#{1,6}\s+)?(?:[-*+]\s+|\d+[a-z]?\.\s+)?(?:\*\*)?\[[A-Z][A-Z -]*\]/.test(lines[i]) && /\[(OPEN|IN PROGRESS|DONE)\]/.test(lines[i])) {
-          find("mark-outside-numbered-step", c.narrative, `line ${i + 1}`);
+      const scan = scanPlan(lines);
+      for (const { line, id, mark } of scan.steps) {
+        if (mark !== undefined && !(mark in STEP_MARKS)) find("unknown-step-mark", c.narrative, `step ${id} [${mark}]`);
+        if (found.some((s) => s.id === id)) find("duplicate-step-number", c.narrative, `step ${id}`);
+        found.push({ id, state: mark === undefined ? "open" : STEP_MARKS[mark] ?? "open" });
+        if (mark !== undefined) {
+          marks[id] = mark;
+          lines[line] = lines[line].replace(`[${mark}] `, "");
         }
       }
+      for (const i of scan.stray) find("mark-outside-numbered-step", c.narrative, `line ${i + 1}`);
       steps.set(c.narrative, found);
       removedMarks.set(c.narrative, marks);
     }
@@ -496,7 +511,11 @@ export function composeProposal(input: ComposeInput): Proposal {
       }
       if (!target.live) {
         if (target.status === "") find("closure-without-v1-state", target.narrative, `bound by ${c.narrative}`);
-        else closure.set(target.narrative, target);
+        else if (!closure.has(target.narrative)) {
+          // A plain candidate was never read; the closure record's head and actor come from its text.
+          const text = read(target.narrative);
+          closure.set(target.narrative, { ...target, text, head: readHead(text.split("\n")) });
+        }
       }
       ds.push({ path: target.narrative, role });
     }
