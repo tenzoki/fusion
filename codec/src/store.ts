@@ -980,7 +980,7 @@ const fencePathFor = (wb: Workbench): string => join(wb.root, STATE_DIR, MAINTEN
 export function readFence(wb: Workbench): Result<Fence | null> {
   const rel = `${STATE_DIR}/${MAINTENANCE_FILE}`;
   const unreadable = (why: string): Result<never> =>
-    err("operation-unknown", "maintenance-unreadable", `${rel} stands and cannot be read as a fence (${why}); it fences every fresh mutation until it is removed by hand, after a validate and a reconcile`);
+    err("operation-unknown", "maintenance-unreadable", `${rel} stands and cannot be read as a fence (${why}); it fences every fresh mutation; remove it only once a trustworthy move inventory is recovered, or a known complete state verified, under the fence, else leave it and normal work blocked`);
   const path = fencePathFor(wb);
   try {
     lstatSync(path);
