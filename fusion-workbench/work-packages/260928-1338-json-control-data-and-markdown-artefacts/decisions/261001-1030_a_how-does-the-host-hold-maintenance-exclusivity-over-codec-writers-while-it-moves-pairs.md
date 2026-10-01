@@ -39,3 +39,6 @@ A second opinion (2026-10-01) agrees with option 1 and adds what recovering a fe
 - **Recovery.** The host writes its inventory, naming the fence's operation id, before `begin`. `bin/fusion-archive resume` finishes or restores a run. `bin/fusion-archive abandon` ends a fence with nothing moved. With the inventory lost, the documented last resort is deleting `.json-state/maintenance.json` by hand.
 - **Visibility.** `/fusion:check` reports an active fence. `bin/fusion-write` maps `conflict/maintenance-active` to a message that names `resume` and `abandon`.
 - **The limit, stated in request 39.** The fence is local to one checkout, because `.json-state/` never travels (`JSON_LIVE_STATE` in `hooks/lib/staging-drift.ts`). A checkout that has not pulled the move can add a reference to an archived record. A `reconcile` after the pull is the only place that catches it, and no mechanism closes the gap.
+
+---
+Answered: plan `261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md` — option 1 — a durable codec maintenance lock as a sixteenth operation, with the recovery path and visibility the second opinion asked for, put to the Prior side as request 39 (a contract change); the user approved it with the plan on 2026-10-01; ruled by user, Kai Stalmann <ks@qantr.com>

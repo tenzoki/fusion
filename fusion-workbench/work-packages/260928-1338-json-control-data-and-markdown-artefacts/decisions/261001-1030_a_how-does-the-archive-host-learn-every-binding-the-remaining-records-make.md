@@ -34,3 +34,6 @@ A second opinion (2026-10-01) agrees with option 1 and sharpens two points.
 
 - **Request 40 is a notice, not a permission request.** `## 36` already allows the additive delta, so the request tells Prior that recorded answers move and names the delta files of step 6. It does not ask whether they may move.
 - **The departure on prose is stated openly.** Prior lists prose citations among the bindings that must not break (`## 36`, "Which objects must remain outside the archive") and keeps only basename citations supported. Option 1 holds nothing for prose. Basename citations still resolve after the move. A full-path citation in prose is not protected. Request 40 says so.
+
+---
+Answered: plan `261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md` — option 1 — additional reconcile reference rows for /report and /provenance/backup with a completeness test against the schemas, sent to the Prior side as notice in request 40; the user approved it with the plan on 2026-10-01; ruled by user, Kai Stalmann <ks@qantr.com>

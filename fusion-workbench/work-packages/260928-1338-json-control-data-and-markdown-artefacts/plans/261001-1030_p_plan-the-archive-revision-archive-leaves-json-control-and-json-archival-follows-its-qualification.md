@@ -1,7 +1,7 @@
 # Implementation Plan: the archive revision. `archive/` leaves JSON control, foreign transition fields are refused, and JSON archival follows its qualification
 
 **Date:** 2026-10-01
-**Status:** Draft, amended 2026-10-01 by a second opinion agreeing with both recommendations.
+**Status:** Approved 2026-10-01 by the user with both recommendations (decisions 1 and 2, option 1); the data steps 3 and 7 approved in advance. In progress.
 **Spec:** none as a requirements-designer spec. Prior's `concept/fusion-json-workbench-spec.md` at Prior `b912302`: the paragraph "Anfrage 36 präzisiert die nächste Codec-Revision" in section 3 and the paragraph on requests 37 and 38 in section 6. The ruling is `Prior: docs/design/fusion-fj03c-prior-response.md` (`b912302`): `## 36` (option 2, its own revision before archival), `## 37` (refusal, same revision), `## 38` (later revision of its own).
 **Cross-references:** 260928-1338-json-control-data-and-markdown-artefacts.md, 260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md (method), 260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md (step 8 moved out), 261001-0638_*_json-pairs-cannot-be-archived-until-request-36-is-answered-and-the-archive-safety-filter-reserves-no-json-surface.md, 261001-0841_*_inspect-throws-and-exits-1-when-json-state-or-its-journal-is-not-a-directory.md, 261001-0841_*_isregularfile-reads-every-stat-error-on-workbench-json-as-manifest-not-a-file.md, 261001-0841_*_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.md, 260930-2305_*_how-is-a-json-controlled-pair-archived-when-its-control-record-names-its-narrative-by-workbench-path.md, 260930-2305_*_does-transition-refuse-a-payload-field-the-records-kind-has-no-rule-about.md, 261001-1030_*_how-does-the-archive-host-learn-every-binding-the-remaining-records-make.md, 261001-1030_*_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md
 **Planned against:** fusion `01304fc8` (`git diff --stat 63faa26f 01304fc8 -- codec` names `REQUESTS.md` alone); bundle 534 131 bytes, `sha256:bde8f3c952bd111695dbac510d3c0802566080e07c2ba3b6396d9c2c807844d1`, Prior's standing pin; Prior `b912302` (2026-10-01 06:38), `git log --all --oneline b912302..` empty. Growth room at planning, as dispatched: hook tests 0 lines (`TEST_LINE_HEAD_ROOM` 4 191), skills 18 783 bytes. Each step re-reads both from `surface-growth-bound.test.ts`.
@@ -90,7 +90,7 @@ flowchart LR
 
 ## Implementation Steps
 
-1. **The contract delta and requests 39 to 41, to the Prior side**
+1. [IN PROGRESS] **The contract delta and requests 39 to 41, to the Prior side**
    - Executor: `analyst`
    - Files: `codec/fixtures/prior/REQUESTS.md`
    - Changes: the analyst drafts `## The archive revision (the contract delta)` in its scratchpad, and the orchestrator appends it and commits it. It is stamped with the fusion head, Prior `b912302` and the bundle digest above. It submits the changed sections only: the boundary table of `## Approach`, the reason `unknown-scope/archived-path`, and the symlink rule; request 37's refusal with Prior's table and the protocol description's new wording; the three issue fixes, with `26-inspect`'s detail announced as a reviewed delta; the recorded archive session's case list (step 9); and the statement that request 38 is not in this revision. It proposes, as the user rules the two decisions:
@@ -102,7 +102,7 @@ flowchart LR
    - Dependencies: both decisions answered.
    - Acceptance: the commit changes `REQUESTS.md` alone, as a pure append; every figure is re-taken.
 
-2. **The codec halves of the three issues, answer bytes unchanged**
+2. [IN PROGRESS] **The codec halves of the three issues, answer bytes unchanged**
    - Executor: `code-implementer`
    - Files: `codec/src/journal.ts`, `codec/src/cli/ops.ts`, `codec/src/store.ts`, their tests (`journal`, `ops`, `store`), `codec/dist/fusion-record.js`, `codec/README.md` (`## The CLI`)
    - Changes: `pendingInitialize` maps a journal that cannot be listed for any reason but `ENOENT` to `operation-unknown/pending-initialize-unreadable`, the path in the detail. `initialize` answers `conflict/target-not-empty`, naming the entry, before `sweep` when `.json-state/journal` or `.json-state/ops` exists and is not a directory. `isRegularFile` as request 41 states it. The precedence test is renamed to what it asserts, because the blocked case is pinned by "a blocked intent: every initialize is a typed refusal" and exchanges 23 and 25. The doubled detail is step 6's.
