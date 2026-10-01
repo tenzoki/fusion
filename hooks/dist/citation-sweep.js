@@ -403,7 +403,8 @@
  *      `--root`, or `--root` names no workbench).
  *   3  the plugin itself could not run: the compiled hooks are missing
  *      (`bin/fusion-citation-sweep` raises it before this file is reached),
- *      or the codec bundle is, so nothing could be asked.
+ *      or the codec bundle is, so nothing could be asked; or an internal
+ *      error stopped it, with nothing on stdout (the `try` at the end).
  *   4  guard (a) refused: not a git work tree, workbench untracked, an
  *      uncommitted change on a file in this run's corpus, or an extra path
  *      outside the work tree or untracked by it. Nothing written.
@@ -916,4 +917,14 @@ function main(argv) {
     }
     return 0;
 }
-process.exitCode = main(process.argv.slice(2));
+// An internal error is 3, "the plugin itself could not run", and never Node's
+// own 1, which is the usage error here. The census is printed only after every
+// write, so a throw leaves stdout empty; a writing run may have rewritten files
+// before it, which `git diff` shows.
+try {
+    process.exitCode = main(process.argv.slice(2));
+}
+catch (e) {
+    process.stderr.write(`${NAME}: an internal error stopped the sweep, a fusion bug or an incomplete install and not the workbench's. Nothing was printed; in a writing mode, git diff shows any file rewritten before it.\n${e instanceof Error ? e.stack : String(e)}\n`);
+    process.exitCode = 3;
+}

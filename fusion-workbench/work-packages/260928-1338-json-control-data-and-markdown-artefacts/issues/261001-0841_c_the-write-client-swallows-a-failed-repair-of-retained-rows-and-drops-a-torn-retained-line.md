@@ -23,3 +23,6 @@ Severity: Low. Scope: `hooks/lib/record-write.ts` `write`, `hooks/lib/record-cha
 
 - A write over a read-only log with retained rows prints the repair failure on stderr.
 - A pending file ending in a torn line still holds that line, or a named copy of it, after `repairRetained`.
+
+---
+Resolved: `write()` in `hooks/lib/record-write.ts` keeps the repair's result. A repair that threw or left rows retained rides on every outcome as `repair`, and `hooks/write.ts` prints it as `retained=<n|unread>` on stdout plus one stderr line, whatever the mutation's outcome. `repairRetained` in `hooks/lib/record-change.ts` reads whole lines only, so a last line without its LF stays where it is. It keeps every whole line that is no row and names the count in `detail`. `hooks/lib/__tests__/record-write.test.ts` (the legacy case): a retained row over a read-only log is reported as `repair: {retained: 1, …append failed…}`. `hooks/lib/__tests__/record-change.test.ts` (the delayed-logging case): a torn retained line is still in the file after the repair. Each was red against the unfixed code: the outcome carried no `repair`, and the pending file was deleted. The `bin/fusion-write` header's output list names the `retained=` line.

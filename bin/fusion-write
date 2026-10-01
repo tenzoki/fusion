@@ -33,8 +33,10 @@
 #                     has no marker yet, so no workbench is looked up and no
 #                     identity read. Split on `inspect` (`hooks/lib/record-write.ts`
 #                     `## Initialize, Setup's route to a new workbench`): reused,
-#                     legacy (a pre-JSON workbench, its `.fusion-setup` present),
-#                     the pending intent resent once, or a new one sent once; after
+#                     legacy (a pre-JSON workbench, its `.fusion-setup` present or,
+#                     the marker lost, a fusion store: work-packages, circles,
+#                     shared), the pending intent resent once, or a new one sent
+#                     once (a target holding no fusion store); after
 #                     a landed answer `inspect` must name the id sent
 #
 # Payload flags of `transition`, each a JSON value, each read only for the
@@ -62,6 +64,9 @@
 #   initialize  result=initialized|reused|legacy, workbench_id= (not for legacy),
 #             operation_id= when one was sent; on a stop result=<kind> of the
 #             exit table below, with operation_id= when one was sent
+#   any mutation, last: retained= (a count, or unread) when the repair of
+#             retained rows run before it failed or left rows retained, with
+#             one stderr line; the outcome above stands either way
 # Every reason on stderr, one line each, prefixed `fusion-write:`.
 #
 # Exit codes:
@@ -84,9 +89,11 @@
 #      blocked or unreadable pending intent (corrected by hand), and a landed
 #      answer after which `inspect` does not name the id sent.
 #   5  ownership refused. `release` and every `transition` out of `claimed`
-#      need the standing claim to be this checkout's, and `claim` needs this
-#      checkout's identifier; a foreign claim or an unreadable identity
-#      refuses, and no flag overrides it. Nothing sent.
+#      need the standing claim to be this checkout's, and a request that
+#      writes a claim (`claim`, or a `transition` into `claimed` or carrying a
+#      non-null `--claim`) must name this checkout's identifier as its
+#      `checkout_id`; a foreign claim, standing or written, or an unreadable
+#      identity refuses, and no flag overrides it. Nothing sent.
 #   6  the codec refused the mutation, its class and reason on stderr
 #      (`conflict/revision-mismatch` when the record moved after `show`;
 #      for initialize `target-not-empty` or `manifest-present`, naming entries).

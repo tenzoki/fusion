@@ -58,8 +58,10 @@
  * appended, original `ts` included, and the outcome is `pending`: the codec
  * succeeded and the event is missing. Nothing here can send a request, so a
  * failed append is never repaired by rerunning the mutation. `repairRetained`
- * appends retained rows by the same key test and removes what it read; every
- * later write run calls it first. That file is not yet named in
+ * appends retained rows by the same key test and removes the rows it read; a
+ * line that is no row, a torn last line included, stays in the file and is
+ * named in the result's `detail`. Every later write run calls it first and
+ * reports a repair that failed or left anything retained. That file is not yet named in
  * `rules/workbench-tracking.md`, whose `.guard-state/` list FJ03d extends.
  *
  * Residual, stated: two repairs racing each other can both append one row
@@ -224,28 +226,32 @@ export function logObserved(workbench, rows) {
         }
     }
 }
-/** Append every retained row by key, then drop what was read. What failed to append stays retained. */
+/** Append every retained row by key, then drop the rows that were read. What failed to append stays retained, and so does every line that is no row. */
 export function repairRetained(workbench) {
     const pending = join(workbench, PENDING_FILE);
     const read = readOrEmpty(pending);
     if (read === "")
         return { appended: 0, retained: 0 };
-    const rows = rowsIn(read);
+    // Whole lines only: a last line without its LF is torn, or still being written, and stays where it is.
+    const whole = read.slice(0, read.lastIndexOf("\n") + 1);
+    const rows = rowsIn(whole);
     let appended;
     try {
         appended = appendByKey(workbench, rows);
     }
     catch (e) {
-        return { appended: 0, retained: rows.length, detail: `the log append failed: ${message(e)}` };
+        return { appended: 0, retained: rowsIn(read).length, detail: `the log append failed: ${message(e)}` };
     }
-    // Rows retained since the read are a suffix of it; keep them.
+    // A whole line that is no row is kept, ahead of the rows retained since the read, which are a suffix of it.
+    const kept = whole.split("\n").filter((l) => l !== "" && rowsIn(l).length === 0);
     const now = readOrEmpty(pending);
-    const rest = now.startsWith(read) ? now.slice(read.length) : now;
+    const rest = now.startsWith(whole) ? kept.map((l) => `${l}\n`).join("") + now.slice(whole.length) : now;
     if (rest === "")
         unlinkSync(pending);
-    else
+    else if (rest !== now)
         writeFileSync(pending, rest, "utf-8");
-    return { appended, retained: rowsIn(rest).length };
+    const unparsed = rest.split("\n").filter((l) => l !== "" && rowsIn(l).length === 0).length;
+    return { appended, retained: rowsIn(rest).length, ...(unparsed > 0 && { detail: `${unparsed} line(s) of ${PENDING_FILE} are no record_change row (torn or foreign) and stay there for a person to read` }) };
 }
 /** A re-send: no row is composed. Retained rows are appended, and the answer's keys are classified. */
 export function logResend(workbench, op, workbenchId, operationId, revisions) {

@@ -58,8 +58,10 @@
  * appended, original `ts` included, and the outcome is `pending`: the codec
  * succeeded and the event is missing. Nothing here can send a request, so a
  * failed append is never repaired by rerunning the mutation. `repairRetained`
- * appends retained rows by the same key test and removes what it read; every
- * later write run calls it first. That file is not yet named in
+ * appends retained rows by the same key test and removes the rows it read; a
+ * line that is no row, a torn last line included, stays in the file and is
+ * named in the result's `detail`. Every later write run calls it first and
+ * reports a repair that failed or left anything retained. That file is not yet named in
  * `rules/workbench-tracking.md`, whose `.guard-state/` list FJ03d extends.
  *
  * Residual, stated: two repairs racing each other can both append one row
@@ -140,7 +142,7 @@ export interface LogResult {
 }
 /** Rows this call composed from an answer it observed: appended by key, or retained with their `ts`. */
 export declare function logObserved(workbench: string, rows: RecordChangeRow[]): LogResult;
-/** Append every retained row by key, then drop what was read. What failed to append stays retained. */
+/** Append every retained row by key, then drop the rows that were read. What failed to append stays retained, and so does every line that is no row. */
 export declare function repairRetained(workbench: string): {
     appended: number;
     retained: number;

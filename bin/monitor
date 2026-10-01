@@ -1367,8 +1367,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         # Date.toISOString() — fixed-width, UTC, Z-suffixed — so lexical order
         # IS chronological order and no parsing (and no parsing failure) is
         # involved. An event missing ts sorts oldest rather than raising, and
-        # the sort is stable, so events sharing a timestamp keep file order.
-        merged.sort(key=lambda e: e.get("ts") or "")
+        # the sort is stable, so events sharing a timestamp keep file order. A
+        # ts that is no string sorts as missing: comparing it would raise.
+        merged.sort(key=lambda e: e["ts"] if isinstance(e.get("ts"), str) else "")
         return merged
 
     def _read_checkout_id(self):
@@ -1511,7 +1512,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 if wrote and wrote != mine:
                     continue
             events.append(ev)
-        events.sort(key=lambda e: (e.get("ts") or "") if isinstance(e, dict) else "")
+        events.sort(key=lambda e: e["ts"] if isinstance(e, dict) and isinstance(e.get("ts"), str) else "")
         return events
 
     def _record_changes(self):
@@ -1530,10 +1531,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
         UTC form, which the decision record on this row kind requires of every
         host. A revision hash gives no order and is never used for one. This
         monitor reads no record and runs no codec: the log is its only source,
-        so what it shows is the last OBSERVED change, never the current one."""
+        so what it shows is the last OBSERVED change, never the current one.
+
+        A row whose `ts` is not that form (YYYY-MM-DDTHH:MM:SS, 19 characters)
+        is left out: one host's malformed row would otherwise stop the sort,
+        and the whole dashboard with it, or misplace itself among the rest."""
         rows = [ev for ev in _EVENTS_TAIL.rows()
-                if isinstance(ev, dict) and ev.get("event") == RECORD_CHANGE]
-        rows.sort(key=lambda e: e.get("ts") or "")
+                if isinstance(ev, dict) and ev.get("event") == RECORD_CHANGE
+                and isinstance(ev.get("ts"), str) and len(ev["ts"]) == 19
+                and ev["ts"][4] + ev["ts"][7] + ev["ts"][10] + ev["ts"][13] + ev["ts"][16] == "--T::"]
+        rows.sort(key=lambda e: e["ts"])
         return rows
 
     def _last_observed(self, changes, item):

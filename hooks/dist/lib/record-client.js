@@ -81,12 +81,12 @@
  * the scale request 31 of `codec/fixtures/prior/REQUESTS.md` expects: `inspect`
  * 0.18 s, `show` 0.19 s, `list` and `validate` 0.43 s (0.84 s on a first
  * run), `create`, `adopt-plan` and `transition` 0.24 to 0.67 s. 5 s is six
- * times the worst of them. **It does not cover `reconcile`**, whose body
- * resolves every reference by reading every control file and so grows with
- * the square of the record count: 2.1 s at 200 records, 47 s at 1 000, 310 s
- * at 2 500, past this whole timeout from about 1 200 records even with nobody
- * holding the lock. No constant here fixes that; it is the codec's, filed as
- * `260930-1712_*_the-codecs-reconcile-grows-with-the-square-of-the-record-count-and-outlasts-the-clients-timeout-from-about-1200-records.md`.
+ * times the worst of them. `reconcile` is inside it too since the codec
+ * resolves its references from one index built per run: linear in the record
+ * count, 0.26 s median at 200 records, 0.48 s at 1 000 and 0.89 s (1.14 s at
+ * most) at 2 500, as `REQUESTS.md` `### The evidence, kept apart` records
+ * them. Before that index it read every control file per reference and took
+ * 310 s at 2 500 records.
  *
  * ## The bundle is resolved relative to this module
  *

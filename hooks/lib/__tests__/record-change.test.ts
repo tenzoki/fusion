@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { composeRows, logObserved, logResend, PENDING_FILE, repairRetained, type Observer, type PriorShow, type RecordChangeRow } from "../record-change.js";
 import type { CodecRequest } from "../record-client.js";
@@ -105,18 +105,19 @@ describe("appending by key", () => {
     });
   });
 
-  it("delayed logging: a retained row lands after a later one with its own ts, and the monitor's stable sort places it", () => {
+  it("delayed logging: a retained row lands after a later one with its own ts, a torn retained line stays, and the monitor's stable sort places it and leaves out a row whose ts is no stamp", () => {
     withJsonProject((p) => {
       const pkg = createPackage(p, "260930-1200-p");
       const early = observe(p, claimOf(p, pkg), [pkg.path]);
       writeFileSync(logFile(p), "");
       chmodSync(logFile(p), 0o444);
       logObserved(p.workbench, early);
-      chmodSync(logFile(p), 0o644);
+      chmodSync(logFile(p), 0o644); appendFileSync(pendingFile(p), '{"ts":"torn');
       const late = observe(p, mutation(p, pkg, "release", { reason: "set aside" }), [pkg.path], { ...BY, ts: "2026-09-30T10:05:00" });
       expect(logObserved(p.workbench, late)).toEqual({ event: "logged" });
-      expect([repairRetained(p.workbench), existsSync(pendingFile(p))]).toEqual([{ appended: 1, retained: 0 }, false]);
+      expect([repairRetained(p.workbench), readFileSync(pendingFile(p), "utf-8")]).toEqual([{ appended: 1, retained: 0, detail: expect.stringContaining("1 line(s)") }, '{"ts":"torn']);
       expect(lines(logFile(p)).map((r) => [r.ts, r.change.to])).toEqual([["2026-09-30T10:05:00", "open"], ["2026-09-30T10:00:00", "claimed"]]);
+      appendFileSync(logFile(p), `${JSON.stringify({ ts: 5, event: "record_change", change: { to: "stampless" } })}\n`);
       expect(monitorOrder(logFile(p)).map((r) => r.change.to)).toEqual(["claimed", "open"]);
     });
   });

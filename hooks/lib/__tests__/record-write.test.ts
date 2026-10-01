@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { ask, gate, type Answer, type Ask, type CodecRequest } from "../record-client.js";
 import { INITIAL_CONTROL, initialize, PAYLOAD_FIELDS, parseFlags, SETUP_MARKER, write, type Identity, type Init, type Outcome } from "../record-write.js";
@@ -41,7 +41,7 @@ const schema = (f: string) => JSON.parse(readFileSync(resolve(REPO_ROOT, "codec"
 const repo = (p: JsonProject) => [["init", "-q"], ["config", "user.email", "s@example.com"], ["config", "user.name", "Scratch"], ["commit", "-q", "--allow-empty", "-m", "base"]].forEach((a) => spawnSync("git", a, { cwd: p.root, env: GIT_ENV }));
 
 describe("ownership, response 22 (a)", () => {
-  it("the owner releases; another checkout, an unreadable identity and a non-claimed source each take their own branch", () => {
+  it("the owner releases; another checkout, an unreadable identity and a non-claimed source each take their own branch; a claim is written for this checkout alone", () => {
     withJsonProject((p) => {
       const pkg = createPackage(p, "260930-1300-p");
       const on = ["--record", pkg.path, "--actor", "user"];
@@ -53,13 +53,13 @@ describe("ownership, response 22 (a)", () => {
       const refused = [release({ checkout: OTHER }), release({}), run(p, "transition", [...on, "--to", "paused", "--reason", "r"], { checkout: OTHER })];
       expect(refused.map((r) => [r.o.kind, /could not be read/.test((r.o as { detail: string }).detail), mutations(r.sent)])).toEqual([["ownership", false, []], ["ownership", true, []], ["ownership", false, []]]);
       expect(release({ checkout: ME, person: "Test Person <t@example.com>" }).o).toMatchObject({ kind: "landed", event: "logged" });
+      const into = (id: Identity, holder: string) => run(p, "transition", [...on, "--to", "claimed", "--reason", "r", "--claim", JSON.stringify({ checkout_id: holder, person: null, claimed_at: "2026-10-01T09:00:00Z" })], id);
+      expect([into({ checkout: ME }, OTHER), into({}, ME)].map((r) => [r.o.kind, mutations(r.sent)])).toEqual([["ownership", []], ["ownership", []]]);
+      expect([into({ checkout: ME }, ME).o.kind, run(p, "transition", [...on, "--to", "open", "--reason", "r", "--claim", "null"]).o.kind]).toEqual(["landed", "landed"]);
       // Out of `open` there is no claim to hold, so no identity is read.
       expect(run(p, "transition", [...on, "--to", "paused", "--reason", "r"], {}).o.kind).toBe("landed");
-      expect(rows(p).map((r) => [r.op, r.checkout, r.change])).toEqual([
-        ["claim", ME, { from: "open", to: "claimed" }],
-        ["release", ME, { from: "claimed", to: "open" }],
-        ["transition", undefined, { from: "open", to: "paused" }],
-      ]);
+      expect(rows(p).map((r) => [r.op, r.checkout, r.change])).toEqual([["claim", ME, { from: "open", to: "claimed" }], ["release", ME, { from: "claimed", to: "open" }],
+        ["transition", ME, { from: "open", to: "claimed" }], ["transition", ME, { from: "claimed", to: "open" }], ["transition", undefined, { from: "open", to: "paused" }]]);
     });
   });
 });
@@ -109,14 +109,15 @@ describe("what is sent", () => {
     expect(Object.fromEntries(Object.entries(kinds).map(([k, props]) => [k, Object.keys(payload).filter((f) => f in props)]))).toEqual(PAYLOAD_FIELDS);
   });
 
-  it("legacy with a pending initialize is refused and names Setup: only inspect is sent", () => {
+  it("legacy with a pending initialize is refused and names Setup: only inspect is sent, and the failed repair of a retained row is reported", () => {
     withJsonProject((p) => {
       cpSync(resolve(REPO_ROOT, "codec", "fixtures", "protocol-session-initialize", "seed", "16-inspect", "pending"), p.workbench, { recursive: true });
       // The seed carries a placeholder for its request's digest; inspect reads the intent and not the request, so any digest serves.
       const intent = resolve(p.workbench, ".json-state", "journal", "1a1e0017-0000-4000-8000-000000000017", "intent.json");
       writeFileSync(intent, readFileSync(intent, "utf-8").replace(/<request-digest:[^>]+>/, `sha256:${"0".repeat(64)}`));
+      put(p, ".guard-state/record-change-pending.jsonl", `${JSON.stringify({ event: "record_change" })}\n`); chmodSync(resolve(p.workbench, put(p, "orchestrator-events.jsonl", "")), 0o444);
       const r = run(p, "claim", ["--record", "work-packages/x/package.json", "--actor", "user"]);
-      expect(r.o).toMatchObject({ kind: "unread", detail: expect.stringContaining("Run /fusion:setup") });
+      expect(r.o).toMatchObject({ kind: "unread", detail: expect.stringContaining("Run /fusion:setup"), repair: { retained: 1, detail: expect.stringContaining("the log append failed") } });
       expect(r.sent.map((q) => q.op)).toEqual(["inspect"]);
     }, { legacy: true });
   });
@@ -186,12 +187,12 @@ describe("initialize, one case per row of Setup's table", () => {
     expect([r.o, r.ops(), readdirSync(p.workbench)]).toEqual([{ kind: "ready", how: "legacy", workbenchId: null }, ["inspect"], [SETUP_MARKER]]);
   }, { legacy: true }));
 
-  it("legacy, no marker, empty: a new workbench, and the re-inspect names its id; .DS_Store and a store are refused by name", () => withJsonProject((p) => {
+  it("legacy, no marker, empty: a new workbench, and the re-inspect names its id; .DS_Store is refused by name, and a store without its marker is legacy", () => withJsonProject((p) => {
     bare(p); const r = init(p); const o = r.o as Init & { kind: "ready" };
     expect([o.how, r.ops(), gate(p.workbench, { bundle: BUNDLE })]).toEqual(["initialized", ["inspect", "initialize", "inspect"], { state: "json-control", id: o.workbenchId }]);
     for (const entry of [".DS_Store", "work-packages"]) {
       rmSync(p.workbench, { recursive: true }); mkdirSync(resolve(p.workbench, entry === ".DS_Store" ? "" : entry), { recursive: true }); if (entry === ".DS_Store") put(p, entry);
-      expect([init(p).o, readdirSync(p.workbench)], entry).toMatchObject([{ kind: "refused", detail: expect.stringMatching(new RegExp(`target-not-empty.*${entry}`)) }, [entry]]);
+      expect([init(p).o, readdirSync(p.workbench)], entry).toMatchObject([entry === ".DS_Store" ? { kind: "refused", detail: expect.stringMatching(/target-not-empty.*\.DS_Store/) } : { kind: "ready", how: "legacy", workbenchId: null }, [entry]]);
     }
   }, { legacy: true }));
 

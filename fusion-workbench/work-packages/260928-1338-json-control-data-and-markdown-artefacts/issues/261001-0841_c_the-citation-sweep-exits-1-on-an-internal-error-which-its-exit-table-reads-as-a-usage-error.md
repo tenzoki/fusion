@@ -20,3 +20,6 @@ Severity: Low. Scope: `hooks/citation-sweep.ts`, `bin/fusion-citation-sweep` (he
 **Fix direction:** wrap `main` as `plan-size.ts` does, with stderr saying nothing was swept. Add "or an internal error" to exit 3 in the wrapper's table.
 
 **Acceptance:** a case in `hooks/lib/__tests__/citation-sweep.test.ts`, red against the current code. On a JSON workbench, with the transitions contract unreadable, the sweep exits 3, stdout is empty, and stderr names an internal error.
+
+---
+Resolved: `hooks/citation-sweep.ts` wraps `main` as `plan-size.ts` and `citation-check.ts` do. An internal error is exit 3, its stack on stderr, with nothing on stdout, since the census is printed only after every write. Exit 3 in the source's exit table and in the `bin/fusion-citation-sweep` header now names the internal error. `hooks/lib/__tests__/citation-sweep.test.ts` (the JSON stop case) makes `transitions.json` unreadable through a preload, and the sweep exits 3 with empty stdout. Red against the unwrapped entry: exit 1.

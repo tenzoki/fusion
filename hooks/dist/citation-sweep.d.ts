@@ -403,7 +403,8 @@
  *      `--root`, or `--root` names no workbench).
  *   3  the plugin itself could not run: the compiled hooks are missing
  *      (`bin/fusion-citation-sweep` raises it before this file is reached),
- *      or the codec bundle is, so nothing could be asked.
+ *      or the codec bundle is, so nothing could be asked; or an internal
+ *      error stopped it, with nothing on stdout (the `try` at the end).
  *   4  guard (a) refused: not a git work tree, workbench untracked, an
  *      uncommitted change on a file in this run's corpus, or an extra path
  *      outside the work tree or untracked by it. Nothing written.

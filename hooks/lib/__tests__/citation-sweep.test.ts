@@ -509,17 +509,17 @@ describe("citation-sweep on a JSON-controlled workbench", () => {
     });
   }, CASE_TIMEOUT);
 
-  it("refuses a <path> naming a control file, exit 1, and stops on an unsupported workbench, exit 6 with nothing on stdout", () => {
+  it("refuses a <path> naming a control file, exit 1, and stops on an unsupported workbench, exit 6, and on an internal error, exit 3, each with nothing on stdout", () => {
     withJsonProject((p) => {
       const pkg = createPackage(p, "260101-0001-alpha");
       const refused = sweep(p.root, p.workbench, join(p.workbench, pkg.path));
-      expect([refused.status, refused.stdout]).toEqual([1, ""]);
-      expect(refused.stderr).toMatch(/package\.json is a file only the codec writes/);
+      expect([refused.status, refused.stdout, refused.stderr]).toMatchObject([1, "", expect.stringMatching(/package\.json is a file only the codec writes/)]);
+      const broken = spawnSync(process.execPath, ["--import", `data:text/javascript,${encodeURIComponent('import fs from "node:fs"; import { syncBuiltinESMExports } from "node:module"; const r = fs.readFileSync; fs.readFileSync = (f, ...a) => { if (String(f).endsWith("transitions.json")) throw new Error("contract unreadable"); return r(f, ...a); }; syncBuiltinESMExports();')}`, ENTRY, "--root", p.workbench], { cwd: p.root, encoding: "utf-8" });
+      expect([broken.status, broken.stdout, broken.stderr]).toMatchObject([3, "", expect.stringMatching(/internal error stopped the sweep[\s\S]*contract unreadable/)]);
       const manifest = JSON.parse(readFileSync(join(p.workbench, "workbench.json"), "utf-8")) as { required_features: string[] };
       place(p, "workbench.json", JSON.stringify({ ...manifest, required_features: [...manifest.required_features, "json-control-v9"] }));
       const unread = sweep(p.root, p.workbench);
-      expect([unread.status, unread.stdout]).toEqual([6, ""]);
-      expect(unread.stderr).toMatch(/unsupported .*unknown-feature.* Nothing was swept\.$/m);
+      expect([unread.status, unread.stdout, unread.stderr]).toMatchObject([6, "", expect.stringMatching(/unsupported .*unknown-feature.* Nothing was swept\.$/m)]);
     });
   }, CASE_TIMEOUT);
 });

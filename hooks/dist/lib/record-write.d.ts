@@ -6,7 +6,9 @@
  * ## The sequence
  *
  *   repair      rows an earlier call retained are appended first
- *               (`lib/record-change.ts` `repairRetained`).
+ *               (`lib/record-change.ts` `repairRetained`). A repair that
+ *               failed or left rows retained is reported on the outcome
+ *               (`repair`), and the mutation does not wait on it.
  *   gate        `inspect`; only `json-control` admits a write. `legacy` with a
  *               committed `initialize` pending is refused and names Setup,
  *               which finishes it: a mutation sends no `initialize`, no
@@ -27,14 +29,18 @@
  *
  * ## Ownership (response 22 (a))
  *
- * For `release` and every `transition` out of `claimed`, and for nothing
- * else, the standing claim's `checkout_id` in `show` must equal this
- * checkout's `CHECKOUT=`, read by `bin/fusion-identity` in the wrapper. A
- * foreign claim refuses, and so does an identity that cannot be read; no flag
- * overrides either. `release` of a package that is not `claimed` has no claim
- * to check and goes to the codec, which refuses it `conflict/not-claimed`. A
- * write that landed between the `show` and the mutation is
- * `conflict/revision-mismatch`, and nothing is retried. What is not checked,
+ * For `release` and every `transition` out of `claimed`, the standing claim's
+ * `checkout_id` in `show` must equal this checkout's `CHECKOUT=`, read by
+ * `bin/fusion-identity` in the wrapper. A request that writes a claim, `claim`
+ * or a `transition` into `claimed` or carrying a non-null `--claim`, names this
+ * checkout as its `checkout_id`: the rule is the claim field the request
+ * writes, not the subcommand, so `transition` is no route past `claim`'s
+ * binding. A foreign claim, standing or written, refuses, and so does an
+ * identity that cannot be read; no flag overrides either. `release` of a
+ * package that is not `claimed` has no claim to check and goes to the codec,
+ * which refuses it `conflict/not-claimed`. A write that landed between the
+ * `show` and the mutation is `conflict/revision-mismatch`, and nothing is
+ * retried. What is not checked,
  * because this host does not have it, is stated in `REQUESTS.md` under
  * "Stated for objection: the Claude side binds a caller by its checkout
  * identity alone". A takeover waits for request 38.
@@ -89,16 +95,21 @@
  *   legacy, pending not blocked                        the request rebuilt from pending, once
  *   legacy, pending blocked                            stop; corrected by hand
  *   legacy, no pending, `.fusion-setup` present        legacy: Setup runs as before, until FJ04
- *   legacy, no pending, no marker                      a new id and operation id, sent once
+ *   legacy, no pending, no marker, a fusion store      legacy: a workbench that lost its marker,
+ *     (`work-packages`, `circles`, `shared`) present     which Setup's marker block writes again
+ *   legacy, no pending, no marker, no fusion store     a new id and operation id, sent once
  *   unsupported                                        stop, naming the diagnosis
  *   refused (pending-initialize-unreadable, -ambiguous
  *     among them) or unanswered                        stop
  *
  * The marker row keeps every workbench Setup wrote before the JSON cutover
  * setting up as it did: it is not empty, so `initialize` would answer
- * `target-not-empty`. A pending intent never stands beside the marker (the
- * marker is an entry, and `initialize` lands only in an empty directory), so
- * the marker splits nothing the pending rows decide. A refused `initialize`
+ * `target-not-empty`. The store row keeps such a workbench setting up when
+ * its marker is gone, a clone of one whose marker was never committed for
+ * one, as Setup did before the cutover; only a target holding no fusion store
+ * goes on to `initialize`, so foreign entries alone are refused by name. Both
+ * rows read only a target with no pending intent, so neither splits anything
+ * the pending rows decide. A refused `initialize`
  * (`target-not-empty` and `manifest-present` name the entries) and an
  * unanswered one stop; nothing is retried, and a Setup run again reads the
  * intent from `pending`. After every answer that landed, `inspect` is asked
@@ -128,7 +139,7 @@ export interface Call {
     /** The version an evidence record's role names. Default: this plugin's, from `.claude-plugin/plugin.json`. */
     roleVersion?: string;
 }
-export type Outcome = {
+export type Outcome = ({
     kind: "landed";
     operationId: string;
     revisions: Record<string, string>;
@@ -161,6 +172,12 @@ export type Outcome = {
     operationId: string;
     resend: Record<string, string>;
     detail: string;
+}) & {
+    /** The repair of retained rows this call ran first, when it failed or left rows retained; `retained` is null when unread. */
+    repair?: {
+        retained: number | null;
+        detail: string;
+    };
 };
 /** The subcommand's flags read from `argv`, or the usage error. Values are opaque here. */
 export declare function parseFlags(sub: string, argv: string[]): {

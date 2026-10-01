@@ -89,6 +89,11 @@ async function main(argv) {
         default:
             err(o.detail);
     }
+    // The repair ran before the mutation and reports whatever the mutation's outcome: `retained=` as log-repair prints it.
+    if (o.repair !== undefined) {
+        out([`retained=${o.repair.retained ?? "unread"}`]);
+        err(`retained rows: ${o.repair.detail}. The outcome above stands; a later write or log-repair tries again.`);
+    }
     return CODES[o.kind];
 }
 try {

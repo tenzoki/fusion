@@ -16,3 +16,6 @@ Severity: Low. Scope: `bin/monitor` (`_record_changes`; also `_scoped_events` an
 **Fix direction:** sort on `ts if isinstance(ts, str) else ""` at all three sites. Better, drop a `record_change` row whose `ts` is not a string and count it in the warnings panel.
 
 **Acceptance:** a case in `hooks/lib/__tests__/monitor-warnings-panel.test.ts` seeds one `record_change` row with `"ts": 5` beside valid rows. `/api/dashboard` answers 200, and the running item's last-observed line comes from the valid rows. The case is red against the current monitor.
+
+---
+Resolved: `bin/monitor` `_record_changes` leaves out a `record_change` row whose `ts` is not the 19-character `YYYY-MM-DDTHH:MM:SS` string, so such a row can neither stop nor misplace the sort. The two older sort keys, in `_scoped_events` and the warnings merge, treat a non-string `ts` as missing. `hooks/lib/__tests__/record-change.test.ts` (the delayed-logging case) runs the monitor's own `_record_changes` over a log holding one row with `"ts": 5`, and the valid rows come back in order. Red against the unfixed monitor: Python's `TypeError: '<' not supported between instances of 'int' and 'str'`. The case runs the method and not `/api/dashboard`, the site the crash came from.

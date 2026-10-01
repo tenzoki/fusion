@@ -69,9 +69,9 @@
 #   1  usage error.
 #   2  no fusion workbench above the working directory and no --root.
 #   3  the plugin's compiled hooks or its codec bundle are missing, so nothing
-#      could be asked. Its own code and not 2: "there is no workbench" is an
-#      answer about the project, and a broken install must never be reported
-#      as one.
+#      could be asked, or an internal error stopped the sweep (stdout empty).
+#      Its own code and not 2: "there is no workbench" is an answer about the
+#      project, and a broken install must never be reported as one.
 #   4  guard (a) refused; nothing written.
 #   5  guard (b) refused (--write without --yes); the census was printed,
 #      nothing written.
