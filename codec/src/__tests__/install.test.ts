@@ -70,6 +70,15 @@
 // PATH plus `date` and `awk` (SKILL_TOOLS); wp's `autonomous` block is not run,
 // since it hashes with `shasum`, a perl program.
 //
+// A sixth case (archive revision step 11) runs Setup's Step 0, files through
+// `bin/fusion-write` a closed issue and a done package holding a review and
+// its evidence, and a live package whose `references` name the issue, sent
+// through `bin/fusion-record` since `bin/fusion-write` writes no references.
+// `bin/fusion-archive survey` holds the issue and the live package and offers
+// the done one, and `move` archives it. The store then validates, reconciles
+// clean, stands unfenced and refuses a foreign transition field, and four
+// installed readers exit 0 naming nothing archived, on the same PATHs.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -656,6 +665,100 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
       expect(readFileSync(log).equals(logBytes)).toBe(true);
     }
     expect(record(p, { op: "validate" }).valid).toBe(true);
+  }, 120_000);
+
+  it("the installed bin/fusion-archive holds a referenced issue and archives a terminal package, after which the store reads clean and the helpers name nothing archived", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = project("archive-project", { empty: true });
+    const env = skillEnv();
+    const write = (...args: string[]) => run(join(install.home, "bin", "fusion-write"), args, { cwd: p.root, env });
+    const archive = (...args: string[]) => run(join(install.home, "bin", "fusion-archive"), args, { cwd: p.root, env });
+    const landed = (r: ReturnType<typeof run>) => {
+      expect([r.status, kv(r.stdout, "result")], r.stderr).toEqual([0, "landed"]);
+      return r.stdout;
+    };
+    for (const b of shippedBlocks("setup", "## Step 0 —")) expect(run("bash", ["-c", fill(b, {})], { cwd: p.root, env }).status).toBe(0);
+    const WORKBENCH = join(p.root, "fusion-workbench");
+    const workbench_id = record(p, { op: "inspect" }).id as string;
+    const narrative = (rel: string, text: string) => {
+      mkdirSync(dirname(join(WORKBENCH, rel)), { recursive: true });
+      writeFileSync(join(WORKBENCH, rel), text);
+      return rel;
+    };
+
+    // A terminal issue in shared/.
+    const issueOut = landed(write("create", "--kind", "issue", "--narrative-file", narrative("shared/issues/261001-1100-install-test-issue.md", "# An issue\n\nRejected.\n"), "--origin", "user-request", "--actor", "user"));
+    const issue = kv(issueOut, "path")!;
+    landed(write("transition", "--record", issue, "--to", "closed", "--reason", "rejected", "--disposition", JSON.stringify({ kind: "rejected", reason_ref: null }), "--actor", "user"));
+    const issueId = (record(p, { op: "show", record: { path: issue } }).control as { id: string }).id;
+
+    // A terminal package with a review and its evidence, all in its container.
+    const done = "261001-1101-install-test-done";
+    const donePkg = kv(landed(write("create", "--kind", "package", "--narrative-file", narrative(`work-packages/${done}/${done}.md`, "# Done\n\n## Directive\n\nFinished.\n"), "--origin", "user-request", "--domain", "code", "--actor", "user")), "path")!;
+    const report = narrative(`work-packages/${done}/reviews/261001-1102-review.md`, "# Review\n\nAccepted.\n");
+    const git = (...args: string[]) => run("git", args, { cwd: p.root, env: identityEnv() }).status;
+    expect([git("add", "-A"), git("commit", "-q", "-m", "filed")]).toEqual([0, 0]);
+    const evidence = landed(write("evidence", "--record", donePkg, "--report", report, "--verdict", "accept", "--actor", "reviewer")).split("\n").find((l) => l.startsWith("path=") && l.endsWith(".evidence.json"))!.slice(5);
+    landed(write("attach-evidence", "--record", donePkg, "--evidence", evidence, "--actor", "user"));
+    landed(write("claim", "--record", donePkg, "--actor", "user"));
+    landed(write("transition", "--record", donePkg, "--to", "done", "--reason", "finished", "--outcome", JSON.stringify({ class: "completed", reason: "finished", evidence: [] }), "--actor", "user"));
+
+    // A live package referencing the issue. bin/fusion-write has no flag that writes a package's references, so this create goes through the installed bin/fusion-record.
+    const live = "261001-1103-install-test-live";
+    const livePkg = `work-packages/${live}/package.json`;
+    record(p, { op: "create", operation_id: uuid(p), id: uuid(p), kind: "package", filed_by: ACTOR, origin: { kind: "user-request", ref: null }, scope: { container: null, store: "work-packages" }, narrative: { path: `work-packages/${live}/${live}.md`, content: `# Live\n\n## Directive\n\nFollows \`${done}.md\`.\n` }, payload: { domain: "code", references: [{ workbench_id, record_id: issueId }] } });
+
+    // survey: the issue is held by the live package's binding, the live package by its state, the terminal package is offered.
+    const candidates = join(install.tmp, "archive-candidates.txt");
+    writeFileSync(candidates, [`work-packages/${done}`, issue, `work-packages/${live}`].join("\n") + "\n");
+    const surveyed = archive("survey", "--candidates", candidates);
+    expect(surveyed.status, surveyed.stderr).toBe(0);
+    expect(kv(surveyed.stdout, "workbench_id")).toBe(workbench_id);
+    expect(surveyed.stdout.split("\n").filter((l) => /^(candidate|held|refused)=/.test(l))).toEqual([
+      `candidate=package\twork-packages/${done}`,
+      `held=pair\t${issue}\tbinding\t${livePkg}\t/references/0\t${issue}`,
+      `held=package\twork-packages/${live}\tlive\t${livePkg}\t-\topen`,
+    ]);
+
+    // move: the container leaves whole for archive/<into>/, the fence taken and ended.
+    const surveyFile = join(install.tmp, "archive-survey.txt");
+    writeFileSync(surveyFile, surveyed.stdout);
+    const into = "261001-1104-install-test";
+    const moved = archive("move", "--survey", surveyFile, "--into", into);
+    expect(moved.status, moved.stderr).toBe(0);
+    expect([moved.stdout.split("\n").filter((l) => l.startsWith("moved=")), kv(moved.stdout, "result")]).toEqual([[`moved=package\twork-packages/${done}\tarchive/${into}/work-packages/${done}`], "moved"]);
+    const archived = [`${done}.md`, "package.json", "reviews/261001-1102-review.md", evidence.slice(`work-packages/${done}/`.length)].map((f) => `work-packages/${done}/${f}`);
+    expect(archived.map((f) => [existsSync(join(WORKBENCH, f)), existsSync(join(WORKBENCH, "archive", into, f))])).toEqual(archived.map(() => [false, true]));
+
+    // The store without it: valid, every reference resolved, no fence standing.
+    expect(record(p, { op: "validate" }).valid).toBe(true);
+    const reconciled = record(p, { op: "reconcile" }) as { records: unknown[]; references: { path: string; at: string; status: string; target?: string }[] };
+    expect([reconciled.records, reconciled.references.filter((r) => r.status !== "resolved")]).toEqual([[], []]);
+    expect(reconciled.references).toContainEqual(expect.objectContaining({ path: livePkg, at: "/references/0", status: "resolved", target: issue }));
+    expect(record(p, { op: "inspect" }).maintenance).toBeNull();
+
+    // A transition carrying a field foreign to the package, sent raw: refused, the record unchanged.
+    const before = readFileSync(join(WORKBENCH, livePkg));
+    const { revision } = record(p, { op: "show", record: { path: livePkg } });
+    const foreign = run(join(install.home, "bin", "fusion-record"), [], { cwd: p.root, input: JSON.stringify({ op: "transition", operation_id: uuid(p), record: { path: livePkg }, expected_revision: revision, actor: ACTOR, to: "paused", reason: "r", payload: { disposition: null } }) + "\n", env: installedEnv() });
+    expect(foreign.status, foreign.stderr).toBe(0);
+    const refusal = JSON.parse(foreign.stdout) as { ok: boolean; error?: { class: string; reason: string } };
+    expect([refusal.ok, refusal.error?.class, refusal.error?.reason], foreign.stdout).toEqual([false, "schema-invalid", "payload-field-not-admitted"]);
+    expect(readFileSync(join(WORKBENCH, livePkg)).equals(before)).toBe(true);
+
+    // The installed readers answer, and none names the archived package: nothing claimed, the live package the one item, the brief's basename citation of the archived package still resolving.
+    const out: Record<string, string> = {};
+    for (const [name, args, helperEnv] of [["fusion-claimed-package", [], identityEnv()], ["fusion-work-order", [], installedEnv()], ["fusion-citation-check", [], identityEnv()], ["fusion-citation-sweep", ["--dry-run"], identityEnv()]] as const) {
+      const r = run(join(install.home, "bin", name), [...args], { cwd: p.root, env: helperEnv });
+      expect(r.status, `${name}: ${r.stderr}`).toBe(0);
+      expect(r.stdout, name).not.toContain(done);
+      expect(r.stdout, name).not.toContain("archive/");
+      out[name] = r.stdout;
+    }
+    expect(out["fusion-claimed-package"]).toBe("");
+    expect([kv(out["fusion-work-order"], "items"), out["fusion-work-order"].split("\n").filter((l) => l.startsWith("  ")).map((l) => l.trim().split(/\s+/).slice(3))]).toEqual(["1", [["ready", live]]]);
+    expect(["resolved", "dangling", "verdict"].map((k) => kv(out["fusion-citation-check"], k))).toEqual(["1", "0", "clean"]);
   }, 120_000);
 
   it("the installer warns, in the guard.js words, when the source carries no codec bundle", () => {
