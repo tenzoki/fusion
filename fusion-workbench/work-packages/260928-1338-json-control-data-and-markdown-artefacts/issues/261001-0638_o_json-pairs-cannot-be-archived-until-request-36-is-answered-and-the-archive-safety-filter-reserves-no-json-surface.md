@@ -1,0 +1,18 @@
+JSON pairs cannot be archived until request 36 is answered, and the archive safety filter reserves no JSON surface
+---
+On a JSON-controlled workbench `/fusion:archive` archives no record. Since `4e91c96d` (FJ03c step 7) it holds every pair and every container that carries a control file, with the reason "archival of JSON pairs awaits request 36". Terminal packages and records therefore stay in the live tree, as live citation targets and nodes of the work order, until the Prior side answers request 36 of `codec/fixtures/prior/REQUESTS.md` (`## FJ03c (questions before the write paths)`). This is FJ03c plan step 8, moved out of FJ03c by the user on 2026-10-01 with nothing implemented. It is for a plan of its own once 36 is answered.
+
+A second gap rides with it. Safety filter 1 of `skills/archive/SKILL.md` (`## Safety filters (apply to ALL modes)`) reserves the root-anchored surfaces, and its list names neither `$WORKBENCH/workbench.json` nor `$WORKBENCH/.json-state/`. No tier selects either, but a natural-language description could name them, and moving either takes the workbench out of JSON control.
+---
+**Filed by:** analyst, Kai Stalmann <ks@qantr.com>
+**Cross-references:** 260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md (steps 7, 8 and 10), 260930-2305_*_how-is-a-json-controlled-pair-archived-when-its-control-record-names-its-narrative-by-workbench-path.md (option 2, ruled), 260930-1640_*_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.md (the same two surfaces, unnamed in the rule text)
+
+**Evidence.** Plan step 1 measured it through the bundle (`sha256:bde8f3c9…44d1`): a closed issue pair moved with `mv` into `archive/` keeps `narrative.path` at its old path, and `validate` answers `valid: false`, `unresolved-reference/narrative-missing`. The codec's walk (`controlFiles` in `codec/src/store.ts`) descends into `archive/`, and only the codec may rewrite a control file. Plan step 7 ran the base skill over a scratch workbench: all six candidates moved and `validate` turned `valid: false`. The skill at `4e91c96d` moved only the forum entry and the review. Safety filter 1 at `63faa26f`: `grep -n -E 'workbench\.json|json-state' skills/archive/SKILL.md` finds no line at all. Prior head `930eb26`, no later commit on any ref, so request 36 is unanswered.
+
+**The work, once 36 is answered** (plan step 8 as written): selection from `list` with each kind's `terminal` set from `codec/contract/transitions.json`; exclusion of every candidate that a live record names through `reconcile`'s references, its dependencies or an evidence binding, plus any exclusion Prior's answer adds (option 2's caveat: a by-id reference into `archive/` would answer `record-not-found`). Pairs and containers move whole, and a move that fails half-way is undone. If the answer needs a codec change, that change is a plan and a qualified revision of its own, and the archive work waits for its re-pin.
+
+**Acceptance.**
+- Over a fixture holding a terminal pair, a terminal package container, a terminal record a live record references, and a package a live evidence record binds: one archive run moves the first two whole, holds the other two and names each with the record that names it. `validate` is `valid: true` after the run.
+- A move interrupted between the two files of a pair leaves both at their source.
+- Safety filter 1 lists `$WORKBENCH/workbench.json` and `$WORKBENCH/.json-state/`, and a natural-language run naming either refuses it.
+- The skills growth bound is green, or the raise is logged.
