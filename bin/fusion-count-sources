@@ -118,6 +118,18 @@
 # git-tracked (in most consuming projects it is ignored and never appears).
 # This is one closed directory that fusion itself defines, not an open prune
 # list.
+#
+# Any directory named fixtures/, __fixtures__/ or testdata/, at any depth, is
+# excluded from both counts too. What sits there is test input — sample records
+# a test parses, golden outputs it compares against — and not the data the
+# project governs, so counting it lets a growing test corpus flip a code
+# project's domain to `data` (measured in this repository on 2026-10-01: 562
+# data files against 241 source files, 121 of the 562 added by one fixture
+# session). The three names are the conventional ones (Jest's, Go's, and the
+# plain spelling most others use), a small closed list rather than a prune list
+# that grows per ecosystem; a directory merely containing the word, such as
+# my-fixtures/, still counts. This amends the decision named under "Why git
+# ls-files" above; the user approved the amendment on 2026-10-01.
 
 set -eu
 
@@ -186,7 +198,9 @@ fi
 # git's own stderr stays suppressed — it is noisy on the success path — but its
 # exit status is read, which is why this is not piped into `sort`.
 if ! raw="$(git -C "$root" ls-files --cached --others --exclude-standard \
-              -- . ':(exclude)fusion-workbench' 2>/dev/null)"; then
+              -- . ':(exclude)fusion-workbench' ':(exclude,glob)**/fixtures/**' \
+              ':(exclude,glob)**/__fixtures__/**' ':(exclude,glob)**/testdata/**' \
+              2>/dev/null)"; then
   report_unavailable 'git ls-files failed'
 fi
 listing="$(printf '%s\n' "$raw" | sort -u)"

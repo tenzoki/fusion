@@ -58,9 +58,7 @@ function runEnv(cwd: string, args: string[], extraEnv: Record<string, string> = 
   };
 }
 
-function run(cwd: string, ...args: string[]): Counts {
-  return runEnv(cwd, args);
-}
+const run = (cwd: string, ...args: string[]): Counts => runEnv(cwd, args);
 
 /**
  * The extension alternations, read out of the script rather than copied into
@@ -240,13 +238,20 @@ describe("fusion-count-sources", () => {
     expect(Number(r.data)).toBe(0);
   });
 
+  it("leaves test-fixture directories (fixtures, __fixtures__, testdata) out at any depth", () => {
+    // Test inputs, not the data the project governs; a lookalike name still counts.
+    const root = project([
+      "src/main.go", "src/fixtures.ts", "conf/settings.yaml", "my-fixtures/kept.json",
+      "fixtures/a.json", "codec/fixtures/valid/deep/b.json", "pkg/__fixtures__/c.yaml", "svc/testdata/d.go",
+    ]);
+    const r = run(root);
+    expect([r.status, r.code, r.data, r.countedBy]).toEqual([0, "2", "2", "git-ls-files"]);
+  });
+
   it("reports an absent count as `unavailable`, never as zero, when there is no git repository", () => {
     const root = project(["src/deep/deeper/a.py", "ontology/x.yaml"], { git: false });
     const r = run(root);
-    expect(r.status).toBe(2);
-    expect(r.code).toBe("unavailable");
-    expect(r.data).toBe("unavailable");
-    expect(r.countedBy).toBe("none");
+    expect([r.status, r.code, r.data, r.countedBy]).toEqual([2, "unavailable", "unavailable", "none"]);
   });
 
   it("counts an empty repository as a real zero, distinguishable from `unavailable`", () => {
@@ -379,10 +384,7 @@ describe("fusion-count-sources", () => {
     expect(probe.status).toBe(0); // the existing guard does not catch this
 
     const r = run(root);
-    expect(r.countedBy).toBe("none");
-    expect(r.code).toBe("unavailable");
-    expect(r.data).toBe("unavailable");
-    expect(r.status).toBe(2);
+    expect([r.status, r.code, r.data, r.countedBy]).toEqual([2, "unavailable", "unavailable", "none"]);
     expect(r.stderr).toMatch(/ls-files failed/);
   });
 
@@ -397,9 +399,7 @@ describe("fusion-count-sources", () => {
 
     const root = project(["src/a.py"]);
     const r = runEnv(root, [], { PATH: `${shim}:${process.env.PATH ?? ""}` });
-    expect(r.countedBy).toBe("none");
-    expect(r.code).toBe("unavailable");
-    expect(r.status).toBe(2);
+    expect([r.status, r.code, r.countedBy]).toEqual([2, "unavailable", "none"]);
     expect(r.stderr).toMatch(/filter failed/);
   });
 
