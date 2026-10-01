@@ -68,7 +68,7 @@ flowchart TD
      - `R ≤ 40`. The hook-test surface ends at exactly zero margin. `npm test` is green, with no `TEST_LINE_BASELINE`, `SKILL_BASELINE` or `AGENT_BASELINE` entry changed.
    - Verification: `cd /Users/k1/Projects/productive/fusion/hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts; npm test`. The first command fails by design on its flag case. Then `git diff --stat -- hooks/lib/__tests__` shows only the four test files named above.
 
-2. **The skill `/fusion:wp-order` and its two `README-agents.md` rows**
+2. **The skill `/fusion:wp-order` and its two `README-agents.md` rows** [DONE]
    - Executor: `code-implementer`
    - Files: `skills/wp-order/SKILL.md` (new), `README-agents.md` (skill table and the roster bullet only), `hooks/lib/__tests__/fixtures/surface-growth.golden`, `hooks/lib/__tests__/reference-resolution-lint.test.ts` (line 488, if moved)
    - Changes:
