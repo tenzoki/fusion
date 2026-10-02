@@ -65,3 +65,5 @@ The four renderers really do read one projection. Text and TSV output are byte-i
 
 ---
 **Reconciliation 261002-1155 (state-auditor, HEAD `23e97066`).** M1 resolved at `e0032f06` (`hooks/order.ts` `## The JSON format`; 261002-0926_*_the-json-contract-says-every-array-is-empty-on-verdict-empty-while-the-helper-prints-unreadable-records-there.md closed). L1, L2 and L3 are unchanged at HEAD and their three records stay open. The release act named under `## Recommended sequencing` is done: `git tag -l 'v12*'` lists `v12.2.0`.
+
+**Reconciliation 261002-1427 (state-auditor, HEAD `a6c6d484`).** L1 resolved at `dc1993b7` (the rich-fixture entry in `hooks/lib/__tests__/fusion-work-order.test.ts` carries all eleven escaped punctuation characters, file still 80 lines). L2 resolved at `eb93e9ed` (class (b) of `hooks/lib/__tests__/reference-resolution-lint.test.ts` reads a `.ts` or `bin/` file token against its header comment, `BASELINE.anchors` 342). L3 resolved at `813f7d11` (scope note under `### C1` of the spec). All three records are `_c_`; the spec is closed in this pass.
