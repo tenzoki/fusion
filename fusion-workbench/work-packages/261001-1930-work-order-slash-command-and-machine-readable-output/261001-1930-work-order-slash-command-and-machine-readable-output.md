@@ -4,8 +4,8 @@
 **Domain:** code
 **Status:** claimed
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 261001-2139
-**Active spec/plan:** 261001-1934_*_spec-work-order-slash-command-and-machine-readable-output.md (spec), 261001-1955_*_plan-work-order-slash-command-and-tsv-output.md (plan)
-**Cross-references:** 260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260908-2018-prerequisites-confirmed-once-order-computed.md
+**Active spec/plan:** 261001-1934_*_spec-work-order-slash-command-and-machine-readable-output.md (spec), 261002-0733_*_plan-work-order-markdown-and-json-formats.md (plan)
+**Cross-references:** 260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260908-2018-prerequisites-confirmed-once-order-computed.md, 261001-1955_*_plan-work-order-slash-command-and-tsv-output.md
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
 
 ---

@@ -7,11 +7,13 @@
  * header for what a node is, why a `done` item is outside the graph, and why
  * the figures measure unfinished work only.
  *
- * Usage: `fusion-work-order [--format text|tsv]`. With no argument, or with
- * `--format text`, the output is the text format below, one `KEY=value` per
- * line, then one row per item in the computed order, prerequisites first, then
- * the cycle and unresolved rows. `--format tsv` prints the same computation as
- * the stream `## The TSV format` defines.
+ * Usage: `fusion-work-order [--format text|tsv|markdown|json]`. With no
+ * argument, or with `--format text`, the output is the text format below, one
+ * `KEY=value` per line, then one row per item in the computed order,
+ * prerequisites first, then the cycle and unresolved rows. `--format tsv`,
+ * `--format json` and `--format markdown` print the same computation as
+ * `## The TSV format`, `## The JSON format` and `## The Markdown format` define.
+ * All four read one projection of the report, so they cannot disagree.
  *
  *   anchor=workbench-root
  *   items=7
@@ -147,9 +149,9 @@
  *
  * EXIT CODES are the ones below and mean the same in every format. On every
  * non-zero exit stdout is empty and the reason is on stderr, so a consumer
- * never parses a partial stream. An unknown format name, a missing value,
- * `--format=tsv` as one token, a repeated `--format` and any other argument
- * are each a usage error.
+ * never parses a partial stream. An unknown format name (`md` included: there
+ * are no aliases), a missing value, `--format=tsv` as one token, a repeated
+ * `--format` and any other argument are each a usage error.
  *
  * COMPATIBILITY. `#format=` is an integer, 1 for the format defined here.
  * Appending a column after the last one, or adding a comment key after
@@ -159,10 +161,71 @@
  * a column or comment key, changing a value's meaning, vocabulary or encoding,
  * or changing the escaping rule raises it by one.
  *
+ * ## The JSON format
+ *
+ * `--format json` prints the TSV's computation as one JSON object followed by
+ * one LF: `JSON.stringify(value, null, 2)`, UTF-8, no byte-order mark. Keys
+ * come in this fixed order, so two runs over an unchanged store print
+ * identical bytes:
+ *
+ *   format       integer, 1 for this definition; see COMPATIBILITY
+ *   anchor       "workbench-root"
+ *   summary      object, the TSV comment keys `items` through `verdict` in
+ *                their TSV order, the counts as numbers
+ *   note         the TSV's `#note=` value as a string, or null where the TSV
+ *                prints no such line. Always present: test the value, not the key
+ *   items        array, one object per TSV row in the same order, keyed by the
+ *                ten TSV header names in header order
+ *   cycles       array of member arrays, in the order the `cycle` numbers count
+ *   unresolved   array of { item, entry }, in the text format's order
+ *   unreadable   array of item names, ascending
+ *
+ * Names and vocabularies are the TSV's; only the types differ. `order`,
+ * `depth`, `blocks` and `cycle` are numbers (`cycle` is 0 for none, otherwise
+ * the 1-based index into `cycles`); `depends-on` (file order) and `unresolved`
+ * (ascending) are arrays of strings; `field` stays "present" or "absent".
+ * Nothing is escaped beyond what JSON requires. On `verdict: "empty"` every
+ * count is 0, `note` is null and every array is empty.
+ *
+ * COMPATIBILITY. `format` is versioned independently of the TSV's `#format=`.
+ * Adding a key anywhere leaves it unchanged, and a consumer ignores keys it
+ * does not know. Removing or renaming a key, or changing a value's type,
+ * meaning or vocabulary, raises it by one.
+ *
+ * ## The Markdown format
+ *
+ * `--format markdown` prints the same computation as GitHub-flavoured Markdown
+ * for a person or a document, not for a parser. UTF-8, every line ends in one
+ * LF, blocks are separated by exactly one blank line, in this order:
+ *
+ *   1. `<!-- fusion-work-order markdown format=1 -->`, the version marker.
+ *   2. The summary as a bullet list, `- anchor: workbench-root` through
+ *      `- verdict: …`, in the TSV comment order.
+ *   3. `**Note:** <caveat>`, present exactly when the TSV prints `#note=`. The
+ *      caveat is fusion's own Markdown and is emitted unescaped.
+ *   4. One pipe table: the ten TSV header names, a delimiter row that
+ *      right-aligns order, depth, blocks and cycle, then one row per item in
+ *      the computed order, `depends-on` and `unresolved` joined with `, `. On
+ *      `verdict=empty` the header and delimiter rows stand with no body.
+ *   5. Each only when non-empty, a bold label paragraph, then a list:
+ *      `**Cycles**` with `- 1: <member>, <member>` numbered as the `cycle`
+ *      column; `**Unresolved**` with `- <item> wants <entry>`; `**Unreadable**`
+ *      with `- <item>`.
+ *
+ * ESCAPING, in every table cell and list value (the note excepted): a
+ * backslash before each of `\` `|` `` ` `` `*` `_` `~` `[` `]` `<` `>` `&`,
+ * then tab, CR and LF as the references `&#9;`, `&#13;` and `&#10;`.
+ * CommonMark renders a backslash before ASCII punctuation as the literal
+ * character, so the rule is lossless and no value can break a row or a list
+ * item.
+ *
+ * COMPATIBILITY. The marker's `format=` is raised on the JSON's terms.
+ *
  * ## Exit codes, and the one that is deliberately NOT here
  *
  *   0  the check ran. `verdict=` says what it found.
- *   1  usage error.
+ *   1  usage error: any argument but `--format` with one of `text`, `tsv`,
+ *      `markdown`, `json`.
  *   2  no fusion workbench above the working directory; nothing to compute.
  *   3  (the wrapper `bin/fusion-work-order`, before this program runs) the
  *      plugin's compiled hooks are missing.

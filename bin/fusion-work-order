@@ -7,8 +7,13 @@
 #   fusion-work-order --format tsv    the same computation as a versioned TSV
 #                                     stream; its contract is hooks/order.ts
 #                                     `## The TSV format`, not restated here
+#   fusion-work-order --format json   the same as one versioned JSON object;
+#                                     contract: `## The JSON format` there
+#   fusion-work-order --format markdown
+#                                     the same as a Markdown document for a
+#                                     person; contract: `## The Markdown format`
 #
-# Any other argument is a usage error. The text format, on stdout, is one
+# Any other argument is a usage error, aliases such as `md` included. The text format, on stdout, is one
 # KEY=value per line, then one row per item in the computed order, prerequisites
 # first, then the cycle and unresolved rows:
 #
@@ -71,7 +76,8 @@
 #   0  the check ran. `verdict=` says what it found. A cycle is NOT a non-zero
 #      exit, and `verdict=empty` is a real answer that reaches 0 like the other
 #      two.
-#   1  usage error: any argument but `--format text` or `--format tsv`.
+#   1  usage error: any argument but `--format` followed by `text`, `tsv`,
+#      `markdown` or `json`.
 #   2  no fusion workbench above the working directory; nothing to compute.
 #   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
 #      own code and not 2: "there are no live work packages" is an answer about the

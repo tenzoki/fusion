@@ -7,11 +7,13 @@
  * header for what a node is, why a `done` item is outside the graph, and why
  * the figures measure unfinished work only.
  *
- * Usage: `fusion-work-order [--format text|tsv]`. With no argument, or with
- * `--format text`, the output is the text format below, one `KEY=value` per
- * line, then one row per item in the computed order, prerequisites first, then
- * the cycle and unresolved rows. `--format tsv` prints the same computation as
- * the stream `## The TSV format` defines.
+ * Usage: `fusion-work-order [--format text|tsv|markdown|json]`. With no
+ * argument, or with `--format text`, the output is the text format below, one
+ * `KEY=value` per line, then one row per item in the computed order,
+ * prerequisites first, then the cycle and unresolved rows. `--format tsv`,
+ * `--format json` and `--format markdown` print the same computation as
+ * `## The TSV format`, `## The JSON format` and `## The Markdown format` define.
+ * All four read one projection of the report, so they cannot disagree.
  *
  *   anchor=workbench-root
  *   items=7
@@ -147,9 +149,9 @@
  *
  * EXIT CODES are the ones below and mean the same in every format. On every
  * non-zero exit stdout is empty and the reason is on stderr, so a consumer
- * never parses a partial stream. An unknown format name, a missing value,
- * `--format=tsv` as one token, a repeated `--format` and any other argument
- * are each a usage error.
+ * never parses a partial stream. An unknown format name (`md` included: there
+ * are no aliases), a missing value, `--format=tsv` as one token, a repeated
+ * `--format` and any other argument are each a usage error.
  *
  * COMPATIBILITY. `#format=` is an integer, 1 for the format defined here.
  * Appending a column after the last one, or adding a comment key after
@@ -159,10 +161,71 @@
  * a column or comment key, changing a value's meaning, vocabulary or encoding,
  * or changing the escaping rule raises it by one.
  *
+ * ## The JSON format
+ *
+ * `--format json` prints the TSV's computation as one JSON object followed by
+ * one LF: `JSON.stringify(value, null, 2)`, UTF-8, no byte-order mark. Keys
+ * come in this fixed order, so two runs over an unchanged store print
+ * identical bytes:
+ *
+ *   format       integer, 1 for this definition; see COMPATIBILITY
+ *   anchor       "workbench-root"
+ *   summary      object, the TSV comment keys `items` through `verdict` in
+ *                their TSV order, the counts as numbers
+ *   note         the TSV's `#note=` value as a string, or null where the TSV
+ *                prints no such line. Always present: test the value, not the key
+ *   items        array, one object per TSV row in the same order, keyed by the
+ *                ten TSV header names in header order
+ *   cycles       array of member arrays, in the order the `cycle` numbers count
+ *   unresolved   array of { item, entry }, in the text format's order
+ *   unreadable   array of item names, ascending
+ *
+ * Names and vocabularies are the TSV's; only the types differ. `order`,
+ * `depth`, `blocks` and `cycle` are numbers (`cycle` is 0 for none, otherwise
+ * the 1-based index into `cycles`); `depends-on` (file order) and `unresolved`
+ * (ascending) are arrays of strings; `field` stays "present" or "absent".
+ * Nothing is escaped beyond what JSON requires. On `verdict: "empty"` every
+ * count is 0, `note` is null and every array is empty.
+ *
+ * COMPATIBILITY. `format` is versioned independently of the TSV's `#format=`.
+ * Adding a key anywhere leaves it unchanged, and a consumer ignores keys it
+ * does not know. Removing or renaming a key, or changing a value's type,
+ * meaning or vocabulary, raises it by one.
+ *
+ * ## The Markdown format
+ *
+ * `--format markdown` prints the same computation as GitHub-flavoured Markdown
+ * for a person or a document, not for a parser. UTF-8, every line ends in one
+ * LF, blocks are separated by exactly one blank line, in this order:
+ *
+ *   1. `<!-- fusion-work-order markdown format=1 -->`, the version marker.
+ *   2. The summary as a bullet list, `- anchor: workbench-root` through
+ *      `- verdict: …`, in the TSV comment order.
+ *   3. `**Note:** <caveat>`, present exactly when the TSV prints `#note=`. The
+ *      caveat is fusion's own Markdown and is emitted unescaped.
+ *   4. One pipe table: the ten TSV header names, a delimiter row that
+ *      right-aligns order, depth, blocks and cycle, then one row per item in
+ *      the computed order, `depends-on` and `unresolved` joined with `, `. On
+ *      `verdict=empty` the header and delimiter rows stand with no body.
+ *   5. Each only when non-empty, a bold label paragraph, then a list:
+ *      `**Cycles**` with `- 1: <member>, <member>` numbered as the `cycle`
+ *      column; `**Unresolved**` with `- <item> wants <entry>`; `**Unreadable**`
+ *      with `- <item>`.
+ *
+ * ESCAPING, in every table cell and list value (the note excepted): a
+ * backslash before each of `\` `|` `` ` `` `*` `_` `~` `[` `]` `<` `>` `&`,
+ * then tab, CR and LF as the references `&#9;`, `&#13;` and `&#10;`.
+ * CommonMark renders a backslash before ASCII punctuation as the literal
+ * character, so the rule is lossless and no value can break a row or a list
+ * item.
+ *
+ * COMPATIBILITY. The marker's `format=` is raised on the JSON's terms.
+ *
  * ## Exit codes, and the one that is deliberately NOT here
  *
  *   0  the check ran. `verdict=` says what it found.
- *   1  usage error.
+ *   1  usage error: any argument but `--format` with one of `text`, `tsv`,
+ *      `markdown`, `json`.
  *   2  no fusion workbench above the working directory; nothing to compute.
  *   3  (the wrapper `bin/fusion-work-order`, before this program runs) the
  *      plugin's compiled hooks are missing.
@@ -182,7 +245,46 @@ import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 // The reader may close stdout first; see exitZeroOnStdoutEpipe.
 exitZeroOnStdoutEpipe();
-const USAGE = "usage: fusion-work-order [--format text|tsv]";
+const FORMATS = ["text", "tsv", "markdown", "json"];
+const USAGE = `usage: fusion-work-order [--format ${FORMATS.join("|")}]`;
+const COLUMNS = ["order", "depth", "blocks", "readiness", "item", "status", "field", "depends-on", "unresolved", "cycle"];
+function project(report) {
+    const unresolvedCount = report.unresolvedEdges.length;
+    const cycleOf = new Map();
+    report.cycles.forEach((c, i) => c.members.forEach((m) => cycleOf.set(m, i + 1)));
+    return {
+        summary: [
+            ["anchor", "workbench-root"],
+            ["items", report.items],
+            ["edges", report.edges],
+            ["unresolved-edges", unresolvedCount],
+            ["cycles", report.cycles.length],
+            ["ready", report.rows.filter((r) => r.readiness === "ready").length],
+            ["roots", report.rows.filter((r) => r.depth === 0).length],
+            ["no-depends-on-field", report.noDependsOnField],
+            ["unreadable-head", report.unreadableHead],
+            ["verdict", report.verdict],
+        ],
+        note: report.noDependsOnField > 0 || unresolvedCount > 0
+            ? caveat(report.noDependsOnField, unresolvedCount)
+            : null,
+        rows: report.rows.map((r) => ({
+            order: r.order,
+            depth: r.depth,
+            blocks: r.blocks,
+            readiness: r.readiness,
+            item: r.dir,
+            status: r.status,
+            field: r.dependsOnField ? "present" : "absent",
+            "depends-on": r.dependsOn,
+            unresolved: report.unresolvedEdges.filter((u) => u.from === r.dir).map((u) => u.entry),
+            cycle: cycleOf.get(r.dir) ?? 0,
+        })),
+        cycles: report.cycles.map((c) => c.members),
+        unresolved: report.unresolvedEdges.map((u) => ({ item: u.from, entry: u.entry })),
+        unreadable: report.unreadable,
+    };
+}
 /** The five fixed columns, in the indented shape `renderPlanRow` prints. */
 function renderItemRow(row) {
     return [
@@ -193,13 +295,14 @@ function renderItemRow(row) {
         "  ",
         row.readiness.padEnd(7),
         "  ",
-        row.dir,
+        row.item,
     ].join("");
 }
 /**
- * The mandated caveat. It states each count that is above zero, why that count
- * asserts nothing about readiness, and that the doubt is unmeasurable from
- * here — all three, because all three are what the approval accepted.
+ * The mandated caveat, without its `note=` prefix. It states each count that
+ * is above zero, why that count asserts nothing about readiness, and that the
+ * doubt is unmeasurable from here — all three, because all three are what the
+ * approval accepted.
  */
 function caveat(noField, unresolved) {
     const parts = [];
@@ -213,61 +316,109 @@ function caveat(noField, unresolved) {
             "dependent whose entry names live work in a form the grammar does not define " +
             "reads `ready` all the same (only an entry naming a terminal item is genuinely no edge)");
     }
-    return `note=${parts.join("; ")}. \`ready=\` is optimistic by ${parts.length === 1 ? "that count" : "those counts"}, and nothing here can tell by how much.`;
+    return `${parts.join("; ")}. \`ready=\` is optimistic by ${parts.length === 1 ? "that count" : "those counts"}, and nothing here can tell by how much.`;
+}
+/** The text format, the one `/fusion:wp-order` renders. */
+function renderText(view) {
+    const out = view.summary.map(([k, v]) => `${k}=${v}`);
+    if (view.note !== null)
+        out.push(`note=${view.note}`);
+    for (const r of view.rows)
+        out.push(renderItemRow(r));
+    for (const c of view.cycles)
+        out.push(`cycle=${c.join(", ")}`);
+    for (const u of view.unresolved)
+        out.push(`unresolved=${u.item} wants ${u.entry}`);
+    for (const d of view.unreadable)
+        out.push(`unreadable=${d}`);
+    return out.join("\n") + "\n";
 }
 /** Spec'd escaping for every TSV cell and comment value: backslash first, then tab, CR, LF. */
 function esc(value) {
     return value.replace(/\\/g, "\\\\").replace(/\t/g, "\\t").replace(/\r/g, "\\r").replace(/\n/g, "\\n");
 }
-/** The `## The TSV format` stream over the same report the text format reads. */
-function renderTsv(report) {
-    const unresolvedCount = report.unresolvedEdges.length;
-    const comments = [
-        ["format", 1],
-        ["anchor", "workbench-root"],
-        ["items", report.items],
-        ["edges", report.edges],
-        ["unresolved-edges", unresolvedCount],
-        ["cycles", report.cycles.length],
-        ["ready", report.rows.filter((r) => r.readiness === "ready").length],
-        ["roots", report.rows.filter((r) => r.depth === 0).length],
-        ["no-depends-on-field", report.noDependsOnField],
-        ["unreadable-head", report.unreadableHead],
-        ["verdict", report.verdict],
-    ];
-    if (report.noDependsOnField > 0 || unresolvedCount > 0) {
-        comments.push(["note", caveat(report.noDependsOnField, unresolvedCount).slice("note=".length)]);
-    }
-    for (const d of report.unreadable)
+/** The `## The TSV format` stream. */
+function renderTsv(view) {
+    const comments = [["format", 1], ...view.summary];
+    if (view.note !== null)
+        comments.push(["note", view.note]);
+    for (const d of view.unreadable)
         comments.push(["unreadable", d]);
-    const cycleOf = new Map();
-    report.cycles.forEach((c, i) => c.members.forEach((m) => cycleOf.set(m, i + 1)));
     const lines = comments.map(([k, v]) => `#${k}=${esc(String(v))}`);
-    lines.push("order\tdepth\tblocks\treadiness\titem\tstatus\tfield\tdepends-on\tunresolved\tcycle");
-    for (const r of report.rows) {
-        const unresolved = report.unresolvedEdges.filter((u) => u.from === r.dir).map((u) => u.entry);
-        const cells = [
-            String(r.order),
-            String(r.depth),
-            String(r.blocks),
-            r.readiness,
-            r.dir,
-            r.status,
-            r.dependsOnField ? "present" : "absent",
-            r.dependsOn.join(","),
-            unresolved.join(","),
-            String(cycleOf.get(r.dir) ?? 0),
-        ];
+    lines.push(COLUMNS.join("\t"));
+    for (const r of view.rows) {
+        const cells = COLUMNS.map((c) => {
+            const v = r[c];
+            return Array.isArray(v) ? v.join(",") : String(v);
+        });
         lines.push(cells.map(esc).join("\t"));
     }
     return lines.join("\n") + "\n";
 }
-/** No argument or `--format text` is text; `--format tsv` is TSV; anything else is null. */
+/** The `## The JSON format` object. */
+function renderJson(view) {
+    const [[, anchor], ...counts] = view.summary;
+    return (JSON.stringify({
+        format: 1,
+        anchor,
+        summary: Object.fromEntries(counts),
+        note: view.note,
+        items: view.rows,
+        cycles: view.cycles,
+        unresolved: view.unresolved,
+        unreadable: view.unreadable,
+    }, null, 2) + "\n");
+}
+/**
+ * `## The Markdown format` escaping: a backslash before each listed ASCII
+ * punctuation character first, then the three control characters as numeric
+ * references — in that order, so the references' own `&` stays unescaped.
+ */
+function mdEsc(value) {
+    return value
+        .replace(/[\\|`*_~[\]<>&]/g, "\\$&")
+        .replace(/\t/g, "&#9;")
+        .replace(/\r/g, "&#13;")
+        .replace(/\n/g, "&#10;");
+}
+/** The `## The Markdown format` document. */
+function renderMarkdown(view) {
+    const blocks = ["<!-- fusion-work-order markdown format=1 -->"];
+    blocks.push(view.summary.map(([k, v]) => `- ${k}: ${mdEsc(String(v))}`).join("\n"));
+    if (view.note !== null)
+        blocks.push(`**Note:** ${view.note}`);
+    const numeric = new Set(["order", "depth", "blocks", "cycle"]);
+    const tableRow = (cells) => `| ${cells.join(" | ")} |`;
+    const table = [
+        tableRow([...COLUMNS]),
+        tableRow(COLUMNS.map((c) => (numeric.has(c) ? "---:" : "---"))),
+        ...view.rows.map((r) => tableRow(COLUMNS.map((c) => {
+            const v = r[c];
+            return Array.isArray(v) ? v.map(mdEsc).join(", ") : mdEsc(String(v));
+        }))),
+    ];
+    blocks.push(table.join("\n"));
+    const listBlock = (label, items) => {
+        if (items.length > 0)
+            blocks.push(`**${label}**`, items.map((i) => `- ${i}`).join("\n"));
+    };
+    listBlock("Cycles", view.cycles.map((c, i) => `${i + 1}: ${c.map(mdEsc).join(", ")}`));
+    listBlock("Unresolved", view.unresolved.map((u) => `${mdEsc(u.item)} wants ${mdEsc(u.entry)}`));
+    listBlock("Unreadable", view.unreadable.map(mdEsc));
+    return blocks.join("\n\n") + "\n";
+}
+const RENDERERS = {
+    text: renderText,
+    tsv: renderTsv,
+    markdown: renderMarkdown,
+    json: renderJson,
+};
+/** No argument is text; `--format <name>` with one of the four names is that format; anything else is null. */
 function parseFormat(argv) {
     if (argv.length === 0)
         return "text";
-    if (argv.length === 2 && argv[0] === "--format" && (argv[1] === "text" || argv[1] === "tsv")) {
-        return argv[1];
+    if (argv.length === 2 && argv[0] === "--format") {
+        return FORMATS.find((f) => f === argv[1]) ?? null;
     }
     return null;
 }
@@ -282,35 +433,7 @@ function main(argv) {
         process.stderr.write("fusion-work-order: no fusion workbench above the working directory — nothing to compute.\n");
         return 2;
     }
-    const report = computeWorkGraph(root);
-    if (format === "tsv") {
-        process.stdout.write(renderTsv(report));
-        return 0;
-    }
-    const out = [
-        "anchor=workbench-root",
-        `items=${report.items}`,
-        `edges=${report.edges}`,
-        `unresolved-edges=${report.unresolvedEdges.length}`,
-        `cycles=${report.cycles.length}`,
-        `ready=${report.rows.filter((r) => r.readiness === "ready").length}`,
-        `roots=${report.rows.filter((r) => r.depth === 0).length}`,
-        `no-depends-on-field=${report.noDependsOnField}`,
-        `unreadable-head=${report.unreadableHead}`,
-        `verdict=${report.verdict}`,
-    ];
-    if (report.noDependsOnField > 0 || report.unresolvedEdges.length > 0) {
-        out.push(caveat(report.noDependsOnField, report.unresolvedEdges.length));
-    }
-    for (const r of report.rows)
-        out.push(renderItemRow(r));
-    for (const c of report.cycles)
-        out.push(`cycle=${c.members.join(", ")}`);
-    for (const u of report.unresolvedEdges)
-        out.push(`unresolved=${u.from} wants ${u.entry}`);
-    for (const d of report.unreadable)
-        out.push(`unreadable=${d}`);
-    process.stdout.write(out.join("\n") + "\n");
+    process.stdout.write(RENDERERS[format](project(computeWorkGraph(root))));
     return 0;
 }
 process.exitCode = main(process.argv.slice(2));
