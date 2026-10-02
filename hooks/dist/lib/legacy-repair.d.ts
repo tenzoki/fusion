@@ -14,9 +14,18 @@
  * `bin/fusion-identity`'s `PERSON=`; an unanswered question refuses the
  * repair rather than taking one. A person answered `""` writes the half
  * absent, which the conventions allow and which is an answer, not a gap.
- * A duplicate step number is the one edit that asks nothing: the later
- * duplicate takes the next free letter, and the lines citing that step are
- * listed for the user, not edited.
+ * A duplicate step number suffixes the later duplicate with the next free
+ * letter and asks, per known citation of that step, which of the two steps it
+ * means; each answered with the new id is rewritten in the same edit. Known
+ * (C16 of the a1fb17a amendment, fusion's reading): a line of the plan, or of
+ * another live narrative that cites the plan through `lib/citation-scan.ts`,
+ * naming `step <n>`. A terminal narrative or `archive/` is history and is
+ * neither scanned nor edited.
+ *
+ * A terminal narrative is never edited (`## Terminal states are history`):
+ * a missing `**Filed by:**` there is asked all the same, consented and logged,
+ * but the actor goes into its control file only (`control_only`), through the
+ * composer's `actors` input that `actorsFromLog` builds from the log.
  *
  * Every other blocking class has no repair that avoids guessing and stays
  * blocking; `legacy-store-name` routes to the store rename.
@@ -48,6 +57,12 @@ export interface Question {
         value: string;
     };
 }
+/** A line naming the duplicated step; `line` is 0-based. */
+interface Cite {
+    path: string;
+    line: number;
+    text: string;
+}
 export type RepairProposal = {
     repairable: true;
     finding: Finding;
@@ -55,6 +70,11 @@ export type RepairProposal = {
     edit: string;
     questions: Question[];
     listed: string[];
+    control_only: boolean;
+    others: {
+        path: string;
+        sha256: string;
+    }[];
 } | {
     repairable: false;
     finding: Finding;
@@ -65,6 +85,8 @@ export interface RepairLogEntry {
     answers: Record<string, string>;
     pre_sha256: string;
     post_sha256: string;
+    /** The Markdown stayed as it is (pre equals post) and the answer goes into the control file. */
+    control_only?: true;
 }
 export type ApplyResult = {
     applied: true;
@@ -82,10 +104,14 @@ type Answers = Readonly<Record<string, string>>;
 interface Repair {
     edit: string;
     /** The questions for this finding in this text, or why it cannot be located. */
-    questions(text: string, f: Finding, offers: Offers): Question[] | string;
+    questions(text: string, f: Finding, offers: Offers, root: string): Question[] | string;
     apply(text: string, f: Finding, a: Answers): string;
     listed?(text: string, f: Finding): string[];
+    /** The known citations an answer may rewrite, in this file and in others. */
+    cites?(root: string, text: string, f: Finding): Cite[];
 }
+/** A terminal narrative by its name or head: a terminal record marker, a closed Circle head, a done or dropped item record. */
+export declare function isTerminalNarrative(path: string, text: string): boolean;
 export declare const REPAIRS: Partial<Record<FindingClass, Repair>>;
 /** Proposes the repair of one finding, reading its file; writes nothing. */
 export declare function proposeRepair(root: string, finding: Finding, offers?: Offers): RepairProposal;
@@ -97,7 +123,14 @@ export declare function checkAnswers(questions: Question[], answers: Answers): {
 /** The workbench's tree hash: every file's path, kind and sha256, and every directory. */
 export declare function treeHash(root: string): string;
 export declare function readRepairLog(session: string): RepairLogEntry[];
-/** Applies one consented repair. Without consent, a full answer or an unchanged file it writes nothing at all. */
+/** The actors the log supplied to control files only, by narrative, for the composer's `actors`. */
+export declare function actorsFromLog(log: readonly RepairLogEntry[]): Record<string, {
+    actor: string;
+    person: string | null;
+}>;
+/** Copies the workbench into `session/backup/` once, verified by tree hash; a copy that does not verify throws, and nothing is repaired. */
+export declare function ensureBackup(root: string, session: string): void;
+/** Applies one consented repair. Without consent, a full answer or unchanged files it writes nothing at all. */
 export declare function applyRepair(input: {
     root: string;
     session: string;

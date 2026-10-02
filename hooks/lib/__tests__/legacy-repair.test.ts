@@ -3,7 +3,7 @@ import { cpSync, existsSync, mkdtempSync, readFileSync, renameSync, rmSync, writ
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { buildInventory, composeProposal, type Finding, type FindingClass } from "../legacy-import.js";
-import { applyRepair, proposeRepair, readRepairLog, treeHash, type RepairProposal } from "../legacy-repair.js";
+import { actorsFromLog, applyRepair, proposeRepair, readRepairLog, treeHash, type RepairProposal } from "../legacy-repair.js";
 import { REPO_ROOT } from "./helpers/guard-harness.js";
 
 // ---------------------------------------------------------------------------
@@ -33,8 +33,8 @@ function withCopy(fn: (wb: string, session: string) => void): void {
   }
 }
 const edit = (wb: string, rel: string, a: string, b: string) => writeFileSync(join(wb, rel), readFileSync(join(wb, rel), "utf-8").replace(a, b));
-const findings = (wb: string) => composeProposal({ root: wb, inventory: buildInventory(wb), migrationId: "t", newId: () => "x" }).findings;
-const blockers = (wb: string) => findings(wb).filter((f) => f.severity === "blocking");
+const findings = (wb: string, session = "") => composeProposal({ root: wb, inventory: buildInventory(wb), migrationId: "t", newId: () => "x", actors: actorsFromLog(readRepairLog(session)) }).findings;
+const blockers = (wb: string, session = "") => findings(wb, session).filter((f) => f.severity === "blocking");
 const same = (wb: string, f: Finding) => findings(wb).filter((x) => x.class === f.class && x.path === f.path && x.detail === f.detail).length;
 const asked = (p: RepairProposal, a: Record<string, string>) => (p.repairable ? p.questions.filter((q) => !q.when || a[q.when.key] === q.when.value) : []);
 
@@ -92,13 +92,13 @@ describe("legacy repair: one blocking finding at a time, with consent", () => {
   it("repairs the fixture to zero blocking findings, backed up first and logged with hashes", () =>
     withCopy((wb, session) => {
       const original = treeHash(wb);
-      for (let left = blockers(wb), n = 0; left.length; left = blockers(wb), n++) {
+      for (let left = blockers(wb), n = 0; left.length; left = blockers(wb, session), n++) {
         expect(n).toBeLessThan(10);
         expect(applyRepair({ root: wb, session, proposal: proposeRepair(wb, left[0]), consent: true, answers: ANSWERS[left[0].class] })).toMatchObject({ applied: true });
       }
       const log = readRepairLog(session);
       expect(log.map((e) => e.finding.class).sort()).toEqual(["circle-deferred", "duplicate-step-number", "filed-by-not-owed", "filed-by-not-owed", "filed-by-not-owed", "filed-by-not-owed"]);
-      expect(log.every((e) => /^sha256:/.test(e.pre_sha256) && e.pre_sha256 !== e.post_sha256)).toBe(true);
+      expect(log.map((e) => /^sha256:/.test(e.pre_sha256) && (e.pre_sha256 === e.post_sha256) === (e.control_only === true))).toEqual(log.map(() => true));
       expect([readFileSync(join(session, "backup.sha256"), "utf-8").trim(), treeHash(join(session, "backup"))]).toEqual([original, original]);
     }));
 });

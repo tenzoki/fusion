@@ -12,10 +12,13 @@
  *
  * ## The inventory
  *
- * `buildInventory` is a stand-in for the codec's `migration survey` until that
- * exists (plan step 8 replaces it): every entry under the root, not following a
- * link, with its size, sha256 and kind, plus every directory, because an empty
- * container tree is a shape no file list shows.
+ * A migration composes from the codec's `migration survey`: `bin/fusion-migrate`
+ * passes its entries through `inventoryFromSurvey` (step 9), so the proposal
+ * describes exactly the tree whose `eligible_sha256` it carries.
+ * `buildInventory` walks the same tree host-side, not following a link, with
+ * each file's size, sha256 and kind plus every directory (an empty container
+ * tree is a shape no file list shows); it stays for the repair's re-read and
+ * the backup's tree hash, which need no codec.
  *
  * ## The record cut
  *
@@ -170,6 +173,22 @@ export function buildInventory(root) {
         }
     };
     walk("");
+    return { files, dirs };
+}
+/** The composer's inventory from survey's entries: a link carries its target's hash, as `buildInventory` gives it. */
+export function inventoryFromSurvey(entries) {
+    const files = [];
+    const dirs = [];
+    for (const e of entries) {
+        if (e.kind === "directory")
+            dirs.push(e.path);
+        else if (e.kind === "file")
+            files.push({ path: e.path, size: e.size, sha256: e.sha256, kind: "regular" });
+        else if (e.kind === "link")
+            files.push({ path: e.path, size: Buffer.byteLength(e.target), sha256: sha(e.target), kind: "link" });
+        else
+            files.push({ path: e.path, size: 0, sha256: sha(""), kind: "other" });
+    }
     return { files, dirs };
 }
 /** Lines outside fenced code blocks, as booleans by index. */
@@ -506,6 +525,8 @@ export function composeProposal(input) {
         const open = unfenced(lines);
         const line = lines.find((l, i) => open[i] && /^(?:\*\*)?Filed by:/.test(l));
         const f = filedBy(line?.replace(/^(?:\*\*)?Filed by:(?:\*\*)?/, "").replace(/`/g, "").trim());
+        if (typeof f === "string" && input.actors?.[c.narrative] !== undefined)
+            return { ...input.actors[c.narrative] };
         if (typeof f === "string") {
             // A plan does not owe the line (the conventions' `### Who filed it`), and the schema's actor is never invented.
             find(f === "unreadable" ? "filed-by-unreadable" : c.kind === "plan" ? "filed-by-not-owed" : "filed-by-missing", c.narrative, JSON.stringify(one(c.head, "Filed by") ?? null));
@@ -600,9 +621,9 @@ export function composeProposal(input) {
                 }
                 let answer = null;
                 if (c.status === "answered") {
-                    if (answered === undefined)
-                        find("answered-without-answer-line", c.narrative, "_a_ with no Answered: line");
-                    const hit = answered === undefined ? undefined : scanner.scanCitationTokens(c.narrative, [{ line: 1, text: answered.split(" — ")[0] }]).find((h) => h.status === "resolved" && h.matches.length === 1);
+                    if (!answered)
+                        find("answered-without-answer-line", c.narrative, answered === undefined ? "_a_ with no Answered: line" : "_a_ whose last Answered: line is empty");
+                    const hit = !answered ? undefined : scanner.scanCitationTokens(c.narrative, [{ line: 1, text: answered.split(" — ")[0] }]).find((h) => h.status === "resolved" && h.matches.length === 1);
                     if (hit && ids.has(hit.matches[0]))
                         answer = ref(hit.matches[0]);
                     else if (hit && CITATION.some((re) => re.test(hit.token)))

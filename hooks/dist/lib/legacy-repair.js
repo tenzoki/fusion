@@ -14,9 +14,18 @@
  * `bin/fusion-identity`'s `PERSON=`; an unanswered question refuses the
  * repair rather than taking one. A person answered `""` writes the half
  * absent, which the conventions allow and which is an answer, not a gap.
- * A duplicate step number is the one edit that asks nothing: the later
- * duplicate takes the next free letter, and the lines citing that step are
- * listed for the user, not edited.
+ * A duplicate step number suffixes the later duplicate with the next free
+ * letter and asks, per known citation of that step, which of the two steps it
+ * means; each answered with the new id is rewritten in the same edit. Known
+ * (C16 of the a1fb17a amendment, fusion's reading): a line of the plan, or of
+ * another live narrative that cites the plan through `lib/citation-scan.ts`,
+ * naming `step <n>`. A terminal narrative or `archive/` is history and is
+ * neither scanned nor edited.
+ *
+ * A terminal narrative is never edited (`## Terminal states are history`):
+ * a missing `**Filed by:**` there is asked all the same, consented and logged,
+ * but the actor goes into its control file only (`control_only`), through the
+ * composer's `actors` input that `actorsFromLog` builds from the log.
  *
  * Every other blocking class has no repair that avoids guessing and stays
  * blocking; `legacy-store-name` routes to the store rename.
@@ -33,9 +42,10 @@
  * answers, and the file's sha256 before and after, for the frozen plan's
  * repair log.
  */
-import { appendFileSync, cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { isAbsolute, join, relative, resolve } from "node:path";
+import { createScanner } from "./citation-scan.js";
 import { ACTOR, buildInventory, composeProposal, entries, readHead, scanPlan, unfenced } from "./legacy-import.js";
 const sha = (b) => "sha256:" + createHash("sha256").update(b).digest("hex");
 const MARKS = ["OPEN", "IN PROGRESS", "DONE"];
@@ -61,6 +71,64 @@ function editEntries(lines, key, edit) {
 function segmentOf(text, f) {
     const v = readHead(text.split("\n")).fields.get("Active spec/plan")?.[0]?.value;
     return v === undefined ? undefined : entries(v).find((e) => e.token === f.detail)?.raw;
+}
+const TERMINAL_MARK = /^\d{6}-\d{4}_[cdis]_.+\.md$/;
+/** A terminal narrative by its name or head: a terminal record marker, a closed Circle head, a done or dropped item record. */
+export function isTerminalNarrative(path, text) {
+    const base = path.split("/").pop();
+    if (TERMINAL_MARK.test(base) || /^_[cbs]_circle\.md$/.test(base))
+        return true;
+    const item = /^work-packages\/([^/]+)\/([^/]+)\.md$/.exec(path);
+    return item !== null && item[1] === item[2] && /^(done|dropped)$/.test(readHead(text.split("\n")).fields.get("Status")?.[0]?.value ?? "");
+}
+const stepRe = (id) => new RegExp(`\\b([Ss]teps?\\s+)${id}\\b`);
+const nextFree = (text, id) => {
+    const taken = new Set(scanPlan(text.split("\n")).steps.map((x) => x.id));
+    return "bcdefghijklmnopqrstuvwxyz".split("").map((c) => id.replace(/[a-z]$/, "") + c).find((c) => !taken.has(c));
+};
+/** Live narratives under the record stores, the plan excluded: where an incoming citation may stand. */
+function liveNarratives(root, except) {
+    const out = [];
+    const walk = (rel) => {
+        for (const e of readdirSync(join(root, rel), { withFileTypes: true })) {
+            const r = `${rel}/${e.name}`;
+            if (e.isDirectory())
+                walk(r);
+            else if (e.isFile() && r.endsWith(".md") && r !== except)
+                out.push(r);
+        }
+    };
+    for (const top of ["work-packages", "shared"])
+        if (existsSync(join(root, top)))
+            walk(top);
+    return out.sort();
+}
+/** Every known citation of a plan's duplicated step: the plan's own lines, then other live narratives citing the plan (C16). */
+function stepCites(root, text, f) {
+    const id = f.detail.slice("step ".length);
+    const steps = new Set(scanPlan(text.split("\n")).steps.filter((s) => s.id === id).map((s) => s.line));
+    const own = text.split("\n").flatMap((l, i) => (!steps.has(i) && stepRe(id).test(l) ? [{ path: f.path, line: i, text: l }] : []));
+    const stamp = f.path.split("/").pop().slice(0, 11);
+    const scanner = createScanner(root);
+    const incoming = liveNarratives(root, f.path).flatMap((p) => {
+        const t = readFileSync(join(root, p), "utf-8");
+        if (!t.includes(stamp) || isTerminalNarrative(p, t))
+            return [];
+        const cites = (l, i) => l.includes(stamp) && stepRe(id).test(l) && scanner.scanCitationTokens(p, [{ line: i + 1, text: l }]).some((h) => h.matches.length === 1 && h.matches[0] === f.path);
+        return t.split("\n").flatMap((l, i) => (cites(l, i) ? [{ path: p, line: i, text: l }] : []));
+    });
+    return [...own, ...incoming];
+}
+/** The citations answered with the renumbered step, rewritten in `text` of `path`. */
+function rewriteCites(text, path, cites, f, a) {
+    const id = f.detail.slice("step ".length);
+    const lines = text.split("\n");
+    cites.forEach((c, i) => {
+        const to = a[`cite-${i + 1}`];
+        if (c.path === path && to !== id)
+            lines[c.line] = lines[c.line].replace(stepRe(id), `$1${to}`);
+    });
+    return lines.join("\n");
 }
 const stepLine = (text, f, nth) => {
     const m = /^step (\S+)(?: \[(.+)\])?$/.exec(f.detail);
@@ -132,22 +200,20 @@ export const REPAIRS = {
         },
     },
     "duplicate-step-number": {
-        edit: "suffix the later duplicate with the next free letter",
-        questions: (text, f) => (stepLine(text, f, 1) ? [] : `no second ${f.detail}`),
-        listed(text, f) {
-            const id = f.detail.slice("step ".length);
-            const skip = stepLine(text, f, 1)?.line;
-            return text.split("\n").flatMap((l, i) => (i !== skip && new RegExp(`\\b[Ss]teps?\\s+${id}\\b`).test(l) ? [`line ${i + 1}: ${l.trim()}`] : []));
+        edit: "suffix the later duplicate with the next free letter, and rewrite each citation of the step the owner says means it",
+        questions(text, f, _offers, root) {
+            const s = stepLine(text, f, 1);
+            const next = s && nextFree(text, s.id);
+            if (!s || !next)
+                return `no second ${f.detail}, or no free suffix`;
+            return stepCites(root, text, f).map((c, i) => ({ key: `cite-${i + 1}`, ask: `${c.path} line ${c.line + 1}: ${c.text.trim()} -- step ${s.id} or the renumbered ${next}?`, form: "choice", choices: [s.id, next] }));
         },
+        cites: (root, text, f) => stepCites(root, text, f),
+        listed: (text, f) => [`the later step ${f.detail.slice("step ".length)} becomes ${nextFree(text, f.detail.slice("step ".length)) ?? "?"}`],
         apply(text, f) {
             const lines = text.split("\n");
             const s = stepLine(text, f, 1);
-            const base = s.id.replace(/[a-z]$/, "");
-            const taken = new Set(scanPlan(lines).steps.map((x) => x.id));
-            const next = "bcdefghijklmnopqrstuvwxyz".split("").map((c) => base + c).find((c) => !taken.has(c));
-            if (!next)
-                throw new Error(`no free suffix for step ${s.id}`);
-            lines[s.line] = lines[s.line].replace(new RegExp(`^((?:#{2,4}\\s+)?)${s.id}\\.`), `$1${next}.`);
+            lines[s.line] = lines[s.line].replace(new RegExp(`^((?:#{2,4}\\s+)?)${s.id}\\.`), `$1${nextFree(text, s.id)}.`);
             return lines.join("\n");
         },
     },
@@ -209,10 +275,15 @@ export function proposeRepair(root, finding, offers = {}) {
         return { repairable: false, finding, reason: "no repair avoids guessing; it stays blocking until the Markdown is fixed by hand" };
     const bytes = readFileSync(join(root, finding.path));
     const text = bytes.toString("utf-8");
-    const questions = repair.questions(text, finding, offers);
+    if (repair === filedByRepair && isTerminalNarrative(finding.path, text)) {
+        const edit = "the actor goes into this terminal record's control file only; its Markdown stays byte-identical";
+        return { repairable: true, finding, source_sha256: sha(bytes), edit, questions: [actor(), person(offers)], listed: [], control_only: true, others: [] };
+    }
+    const questions = repair.questions(text, finding, offers, root);
     if (typeof questions === "string")
         return { repairable: false, finding, reason: questions };
-    return { repairable: true, finding, source_sha256: sha(bytes), edit: repair.edit, questions, listed: repair.listed?.(text, finding) ?? [] };
+    const others = [...new Set((repair.cites?.(root, text, finding) ?? []).map((c) => c.path).filter((p) => p !== finding.path))].map((p) => ({ path: p, sha256: sha(readFileSync(join(root, p))) }));
+    return { repairable: true, finding, source_sha256: sha(bytes), edit: repair.edit, questions, listed: repair.listed?.(text, finding) ?? [], control_only: false, others };
 }
 /** The first question left unanswered or answered outside its form; null when every asked one is answered. */
 export function checkAnswers(questions, answers) {
@@ -240,8 +311,12 @@ export function readRepairLog(session) {
     const p = join(session, LOG);
     return existsSync(p) ? readFileSync(p, "utf-8").split("\n").filter(Boolean).map((l) => JSON.parse(l)) : [];
 }
-/** Copies the workbench into `session/backup/` once, verified by tree hash. */
-function ensureBackup(root, session) {
+/** The actors the log supplied to control files only, by narrative, for the composer's `actors`. */
+export function actorsFromLog(log) {
+    return Object.fromEntries(log.filter((e) => e.control_only).map((e) => [e.finding.path, { actor: e.answers.actor, person: e.answers.person || null }]));
+}
+/** Copies the workbench into `session/backup/` once, verified by tree hash; a copy that does not verify throws, and nothing is repaired. */
+export function ensureBackup(root, session) {
     if (existsSync(join(session, BACKUP_HASH)))
         return;
     mkdirSync(session, { recursive: true });
@@ -251,11 +326,11 @@ function ensureBackup(root, session) {
         throw new Error(`the backup does not verify: ${a} != ${b}`);
     writeFileSync(join(session, BACKUP_HASH), `${a}\n`);
 }
-const count = (root, f) => {
+const count = (root, f, actors = {}) => {
     let n = 0;
-    return composeProposal({ root, inventory: buildInventory(root), migrationId: "repair-check", newId: () => String(n++) }).findings.filter((x) => x.class === f.class && x.path === f.path && x.detail === f.detail).length;
+    return composeProposal({ root, inventory: buildInventory(root), migrationId: "repair-check", newId: () => String(n++), actors }).findings.filter((x) => x.class === f.class && x.path === f.path && x.detail === f.detail).length;
 };
-/** Applies one consented repair. Without consent, a full answer or an unchanged file it writes nothing at all. */
+/** Applies one consented repair. Without consent, a full answer or unchanged files it writes nothing at all. */
 export function applyRepair(input) {
     const { root, session, proposal, answers } = input;
     if (!proposal.repairable)
@@ -269,25 +344,41 @@ export function applyRepair(input) {
     if (rel === "" || (!rel.startsWith("..") && !isAbsolute(rel)))
         return { applied: false, refusal: "session-inside-root", detail: session };
     const f = proposal.finding;
-    const path = join(root, f.path);
-    const pre = readFileSync(path);
-    if (sha(pre) !== proposal.source_sha256)
-        return { applied: false, refusal: "file-changed", detail: `${f.path} is ${sha(pre)}, proposed on ${proposal.source_sha256}` };
-    let out;
+    const pre = new Map([f.path, ...proposal.others.map((o) => o.path)].map((p) => [p, readFileSync(join(root, p))]));
+    for (const { path, sha256 } of [{ path: f.path, sha256: proposal.source_sha256 }, ...proposal.others]) {
+        if (sha(pre.get(path)) !== sha256)
+            return { applied: false, refusal: "file-changed", detail: `${path} is ${sha(pre.get(path))}, proposed on ${sha256}` };
+    }
+    const log = readRepairLog(session);
+    if (proposal.control_only) {
+        const entry = { finding: f, answers: { ...answers }, pre_sha256: sha(pre.get(f.path)), post_sha256: sha(pre.get(f.path)), control_only: true };
+        if (count(root, f, actorsFromLog([...log, entry])) >= count(root, f, actorsFromLog(log)))
+            return { applied: false, refusal: "not-cleared", detail: `${f.class} ${f.path} ${f.detail}` };
+        ensureBackup(root, session);
+        appendFileSync(join(session, LOG), `${JSON.stringify(entry)}\n`);
+        return { applied: true, entry };
+    }
+    const out = new Map();
     try {
-        out = REPAIRS[f.class].apply(pre.toString("utf-8"), f, answers);
+        const text = pre.get(f.path).toString("utf-8");
+        const cites = REPAIRS[f.class].cites?.(root, text, f) ?? [];
+        for (const [p, bytes] of pre)
+            out.set(p, rewriteCites(p === f.path ? REPAIRS[f.class].apply(text, f, answers) : bytes.toString("utf-8"), p, cites, f, answers));
     }
     catch (e) {
         return { applied: false, refusal: "not-located", detail: e.message };
     }
     const before = count(root, f);
     ensureBackup(root, session);
-    writeFileSync(path, out);
+    for (const [p, t] of out)
+        writeFileSync(join(root, p), t);
     if (count(root, f) >= before) {
-        writeFileSync(path, pre);
+        for (const [p, bytes] of pre)
+            writeFileSync(join(root, p), bytes);
         return { applied: false, refusal: "not-cleared", detail: `${f.class} ${f.path} ${f.detail}` };
     }
-    const entry = { finding: f, answers: { ...answers }, pre_sha256: sha(pre), post_sha256: sha(out) };
-    appendFileSync(join(session, LOG), `${JSON.stringify(entry)}\n`);
-    return { applied: true, entry };
+    // One line per file the edit changed, the finding's own first: each line's hashes are its path's.
+    const entries = [...out].filter(([p, t]) => p === f.path || sha(t) !== sha(pre.get(p))).map(([p, t]) => ({ finding: p === f.path ? f : { ...f, path: p, detail: `${f.detail} of ${f.path}` }, answers: { ...answers }, pre_sha256: sha(pre.get(p)), post_sha256: sha(t) }));
+    appendFileSync(join(session, LOG), entries.map((e) => `${JSON.stringify(e)}\n`).join(""));
+    return { applied: true, entry: entries[0] };
 }

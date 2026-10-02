@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+# fusion-migrate — a v12 Markdown workbench to JSON control, on this machine.
+#
+# Usage:
+#   fusion-migrate survey
+#   fusion-migrate repair --list
+#   fusion-migrate repair --apply <finding> [--value <key>=<value>]... [--consent]
+#   fusion-migrate run
+#   fusion-migrate resume
+#   fusion-migrate rollback
+#   fusion-migrate restore-backup --consent
+#   fusion-migrate status
+# Every subcommand also takes --session <dir> (default
+# $HOME/.fusion-migrate/<12 hex of the workbench's real path>).
+#
+# Over the workbench found above the working directory, through
+# `hooks/dist/migrate.js`, whose header is the account of the session, the
+# ids and setup metadata. The host reads the Markdown and composes; the codec
+# (`bin/fusion-record`'s bundle) writes every control, plan and answer byte.
+# Plugin and Node only: no other runtime, service or variable is read.
+#
+#   survey          counts of the record cut and findings by class, each
+#                   blocking finding with its id. Writes nothing.
+#   repair --list   per blocking finding its proposed edit and every question,
+#                   or why it stays blocking. Writes nothing.
+#   repair --apply  one finding, with consent and every asked value. The first
+#                   repair takes the full backup into the session, verified by
+#                   tree hash, before any edit, and each is logged with its
+#                   hashes. A terminal record's actor goes into its control
+#                   file only. A finding id binds its file's bytes: an edit
+#                   since `--list` makes it unknown.
+#   run             preconditions in this order: no v11 store name (routed to
+#                   /fusion:migrate's rename), `migration` implemented by the
+#                   codec, no fence or pending intent; then a live
+#                   .session-marker reported, untracked and ignored files
+#                   listed; the backup; a refusal while any blocking finding
+#                   remains; then survey, the proposal into
+#                   .json-state/migration/, plan, one apply per chunk, verify,
+#                   setup metadata and `maintenance end`. A second run sends
+#                   nothing.
+#   resume          sends the next request whose answer is not stored, under
+#                   its recorded id, after an interruption or an unknown outcome.
+#   rollback        every landed chunk in reverse, chunk 0, and the fence's end;
+#                   after activation under a fence of its own. Resumable.
+#                   Restores the frozen post-repair input.
+#   restore-backup  the pre-repair backup back over a legacy store with no
+#                   fence and no plan files, checked by tree hash; .json-state/
+#                   stays. Never calls the codec.
+#   status          where the recorded run stands.
+#
+# Output on stdout, `KEY=value`, fields separated by a tab; every reason on
+# stderr, prefixed `fusion-migrate:`.
+#
+# Exit codes:
+#   0  done, or nothing left to do.
+#   1  no fusion workbench above the working directory.
+#   2  usage.
+#   3  install incomplete (this entry or the codec bundle missing) or an
+#      internal fault; `status` names where the run stands.
+#   4  Node is missing or older than codec/package.json's engines; nothing
+#      was read or written.
+#   5  a precondition refused: v11 store names, a codec without `migration`,
+#      a fence or pending intent, a run already recorded, nothing to resume,
+#      or restore-backup's conditions. Nothing was written by this call.
+#   6  blocking findings remain, or a repair was not applied (no consent, an
+#      unanswered question, a file changed); nothing was written.
+#   7  an outcome is unknown: the codec gave no answer. `resume` (or
+#      `rollback`) sends the same request again.
+#   8  the codec refused a request; its class and reason are on stderr.
+#   9  the backup does not verify; nothing was repaired or restored.
+#
+# Called by a person or `/fusion:migrate`, never by an automatic hook
+# (`hooks/lib/record-client.ts` `## The recovery declaration`), which
+# `hooks/lib/__tests__/hook-route-exclusion.test.ts` pins with a stub of this
+# file. A call site guards with [ -x ].
+
+set -eu
+
+usage() {
+  sed -n '3,13p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
+}
+
+case "${1:-}" in
+  survey|repair|run|resume|rollback|restore-backup|status) ;;
+  *)
+    usage
+    exit 2
+    ;;
+esac
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Node before anything else: no read, backup, repair or request without it.
+want="$(sed -n 's/.*"node": *">=\([0-9][0-9.]*\)".*/\1/p' "$here/../codec/package.json" 2>/dev/null | head -n 1)"
+want="${want:-20.12.0}"
+if ! command -v node >/dev/null 2>&1; then
+  printf 'fusion-migrate: Node %s or later is required and `node` is not on PATH. Nothing was read or written.\n' "$want" >&2
+  exit 4
+fi
+have="$(node --version 2>/dev/null | sed 's/^v//')"
+older() {
+  local IFS=.
+  local -a a=($1) b=($2)
+  local i
+  for i in 0 1 2; do
+    if [ "${a[$i]:-0}" -lt "${b[$i]:-0}" ] 2>/dev/null; then return 0; fi
+    if [ "${a[$i]:-0}" -gt "${b[$i]:-0}" ] 2>/dev/null; then return 1; fi
+  done
+  return 1
+}
+if [ -z "$have" ] || ! [[ "$have" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]] || older "${have%%-*}" "$want"; then
+  printf 'fusion-migrate: Node %s or later is required; `node` reports %s. Nothing was read or written.\n' "$want" "${have:-nothing}" >&2
+  exit 4
+fi
+
+entry="$here/../hooks/dist/migrate.js"
+if [ ! -x "$here/fusion-workbench-root" ]; then
+  printf 'fusion-migrate: %s is missing; the plugin install is incomplete.\n' "$here/fusion-workbench-root" >&2
+  exit 3
+fi
+root="$("$here/fusion-workbench-root" 2>/dev/null || true)"
+if [ -z "$root" ]; then
+  printf 'fusion-migrate: no fusion workbench found above %s. Run /fusion:setup at the project root.\n' "$(pwd)" >&2
+  exit 1
+fi
+if [ ! -f "$entry" ] || [ ! -f "$here/../codec/dist/fusion-record.js" ]; then
+  printf 'fusion-migrate: %s or the codec bundle is missing; the plugin install is incomplete.\n' "$entry" >&2
+  exit 3
+fi
+
+sub="$1"
+shift
+exec node "$entry" "$sub" "$root/fusion-workbench" "$@"

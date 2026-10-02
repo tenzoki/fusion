@@ -12,10 +12,13 @@
  *
  * ## The inventory
  *
- * `buildInventory` is a stand-in for the codec's `migration survey` until that
- * exists (plan step 8 replaces it): every entry under the root, not following a
- * link, with its size, sha256 and kind, plus every directory, because an empty
- * container tree is a shape no file list shows.
+ * A migration composes from the codec's `migration survey`: `bin/fusion-migrate`
+ * passes its entries through `inventoryFromSurvey` (step 9), so the proposal
+ * describes exactly the tree whose `eligible_sha256` it carries.
+ * `buildInventory` walks the same tree host-side, not following a link, with
+ * each file's size, sha256 and kind plus every directory (an empty container
+ * tree is a shape no file list shows); it stays for the repair's re-read and
+ * the backup's tree hash, which need no codec.
  *
  * ## The record cut
  *
@@ -169,9 +172,30 @@ export interface ComposeInput {
     newId: () => string;
     untracked?: readonly string[];
     ignored?: readonly string[];
+    /** Narrative path to an actor the repair log supplied for its control only (a terminal record, whose Markdown stays as it is). */
+    actors?: Readonly<Record<string, {
+        actor: string;
+        person: string | null;
+    }>>;
 }
 /** Every entry under `root`, sorted; links are not followed. Reads only. */
 export declare function buildInventory(root: string): Inventory;
+/** One entry of `migration survey`'s answer, in its four forms. */
+export type SurveyEntry = {
+    path: string;
+    kind: "file";
+    size: number;
+    sha256: string;
+} | {
+    path: string;
+    kind: "link";
+    target: string;
+} | {
+    path: string;
+    kind: "directory" | "other";
+};
+/** The composer's inventory from survey's entries: a link carries its target's hash, as `buildInventory` gives it. */
+export declare function inventoryFromSurvey(entries: readonly SurveyEntry[]): Inventory;
 export interface Head {
     fields: Map<string, {
         value: string;
