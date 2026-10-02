@@ -37,10 +37,22 @@
 // computed here as a digest so the answer file need not carry the request.
 // An answer the FJ01 bundle stored (`{operation_id, request, response}`) is
 // still read, by digesting its request.
+//
+// A removal entry (FJ04 contract delta as amended, "The journal's removal
+// entry") is a write with `after: null`: it removes a REGULAR file and needs
+// a non-null `before`. It is admitted in an intent of `migration`'s
+// `rollback` phase only, which the intent names in `phase`; anywhere else, or
+// null to null, `commitIntent` refuses it before anything is written and a
+// journal holding one reads as `journal-unreadable`. Its state is read by
+// `lstat`, never through a link: a regular file at `before` is pre, an absent
+// entry is post, anything else (a link, dangling or not, a directory, other
+// bytes) is diverged. Applying it unlinks the file and fsyncs the parent;
+// recovery is idempotent, since absent is done. Intents written before this
+// revision carry no `phase` and no removal, and read and recover as before.
 // ---------------------------------------------------------------------------
 
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync } from "node:fs";
+import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, unlinkSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import type { Response } from "./cli/protocol.js";
 import { STATE_DIR, fsyncDirectory, replaceAtomically, resolveInside, revisionOf, writeDurably, type Result, type Workbench } from "./store.js";
@@ -57,11 +69,27 @@ export interface Write {
   after: string;
 }
 
+/** A removal entry: the regular file at `before` is removed (header). */
+export interface Removal {
+  path: string;
+  before: string;
+  after: null;
+}
+
+/** One entry of an intent: a write, or a removal. */
+export type Entry = Write | Removal;
+
+/** The phase that alone may carry a removal entry, of the op that alone has phases. */
+export const REMOVAL_OP = "migration";
+export const REMOVAL_PHASE = "rollback";
+
 export interface Intent {
   operation_id: string;
   op: string;
+  /** `migration` intents only: the request's phase. Absent in every other intent, and in every intent written before FJ04's step 6. */
+  phase?: string;
   request_digest: string;
-  writes: Write[];
+  writes: Entry[];
   response: Response;
   created_at: string;
 }
@@ -74,7 +102,7 @@ export interface PendingIntent {
 
 export type FileState = "post" | "pre" | "diverged";
 
-export type Recovery = { landed: true } | { landed: false; blocked: Write[] };
+export type Recovery = { landed: true } | { landed: false; blocked: Entry[] };
 
 export interface StoredAnswer {
   operation_id: string;
@@ -129,10 +157,14 @@ export const requestDigest = (req: unknown): string => revisionOf(Buffer.from(ca
  */
 export function commitIntent(wb: Workbench, intent: Intent, contents: ReadonlyMap<string, Uint8Array>): Result<void> {
   checkId(intent.operation_id);
+  const malformed = removalProblem(intent);
+  // A removal outside a rollback, or null to null, is a defect of the caller: refused before anything is written.
+  if (malformed !== null) throw new Error(`the intent of ${intent.operation_id} is malformed: ${malformed}`);
   const staged = new Map<string, Uint8Array>();
   for (const w of intent.writes) {
     const inside = resolveInside(wb, w.path);
     if (!inside.ok) return inside;
+    if (w.after === null) continue; // a removal stages no bytes
     const bytes = contents.get(w.path);
     if (bytes === undefined || revisionOf(bytes) !== w.after) throw new Error(`the post-bytes given for ${w.path} do not hash to ${w.after}`);
     if (bytes.byteLength > MAX_RECORD_BYTES) {
@@ -212,8 +244,18 @@ export function pendingIds(wb: Workbench): string[] {
   }
 }
 
-function isWrite(v: unknown): v is Write {
-  return isObject(v) && typeof v.path === "string" && (v.before === null || (typeof v.before === "string" && SHA256.test(v.before))) && typeof v.after === "string" && SHA256.test(v.after);
+function isEntry(v: unknown): v is Entry {
+  return isObject(v) && typeof v.path === "string" && (v.before === null || (typeof v.before === "string" && SHA256.test(v.before))) && (v.after === null || (typeof v.after === "string" && SHA256.test(v.after)));
+}
+
+/** Why the intent's removal entries are malformed (header), or null: null to null, or a removal outside `migration`'s `rollback`. */
+export function removalProblem(intent: Pick<Intent, "op" | "phase" | "writes">): string | null {
+  for (const w of intent.writes) {
+    if (w.after !== null) continue;
+    if (w.before === null) return `${w.path} is written from null to null`;
+    if (intent.op !== REMOVAL_OP || intent.phase !== REMOVAL_PHASE) return `${w.path} is removed by an intent of ${intent.op}${intent.phase === undefined ? "" : ` ${intent.phase}`}; only ${REMOVAL_OP} ${REMOVAL_PHASE} removes a file`;
+  }
+  return null;
 }
 
 function isIntent(v: unknown): v is Intent {
@@ -221,10 +263,11 @@ function isIntent(v: unknown): v is Intent {
     isObject(v) &&
     typeof v.operation_id === "string" &&
     typeof v.op === "string" &&
+    (v.phase === undefined || typeof v.phase === "string") &&
     typeof v.request_digest === "string" &&
     SHA256.test(v.request_digest) &&
     Array.isArray(v.writes) &&
-    v.writes.every(isWrite) &&
+    v.writes.every(isEntry) &&
     isObject(v.response) &&
     typeof v.created_at === "string"
   );
@@ -276,9 +319,12 @@ export function readIntent(wb: Workbench, name: string): Result<PendingIntent | 
   const intent = parsed.value;
   if (!isIntent(intent)) return unreadable(`${INTENT_FILE} is not an intent`);
   if (intent.operation_id !== name) return unreadable(`${INTENT_FILE} names operation ${intent.operation_id}`);
+  const malformed = removalProblem(intent);
+  if (malformed !== null) return unreadable(malformed);
   const contents = new Map<string, Buffer>();
   for (const w of intent.writes) {
     if (!resolveInside(wb, w.path).ok) return unreadable(`a write names ${JSON.stringify(w.path)}, which is not inside the workbench`);
+    if (w.after === null) continue; // a removal has no staged bytes
     const staged = stagedName(w.after);
     const file = join(abs, staged);
     let size: number;
@@ -304,10 +350,15 @@ export function readIntent(wb: Workbench, name: string): Result<PendingIntent | 
 
 // --- the file state and recovery ----------------------------------------------------
 
-/** Where one named file stands, tested post first (C4). */
-export function fileState(wb: Workbench, write: Write): FileState {
+/**
+ * Where one named file stands, tested post first (C4). A removal entry is
+ * read by `lstat` (header): a regular file at `before` is pre, an absent entry
+ * post, anything else diverged.
+ */
+export function fileState(wb: Workbench, write: Entry): FileState {
   const abs = resolveInside(wb, write.path);
   if (!abs.ok) throw new Error(`${write.path}: ${abs.error.detail}`);
+  if (write.after === null) return removalState(abs.value, write.before);
   let hash: string | null;
   try {
     hash = revisionOf(readFileSync(abs.value));
@@ -322,15 +373,36 @@ export function fileState(wb: Workbench, write: Write): FileState {
   return "diverged";
 }
 
+function removalState(abs: string, before: string | null): FileState {
+  try {
+    if (!lstatSync(abs).isFile()) return "diverged"; // a link, dangling or not, a directory, a device
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return "post";
+    throw e;
+  }
+  return revisionOf(readFileSync(abs)) === before ? "pre" : "diverged";
+}
+
 /**
  * Applies the given writes from their post-bytes, each by temp file, fsync
- * and rename, creating the parent directory. The first attempt and recovery
- * share it.
+ * and rename, creating the parent directory; a removal entry unlinks its
+ * regular file and fsyncs the parent, and an absent entry is already done.
+ * The caller has found every removal's entry at pre or post. The first
+ * attempt and recovery share it.
  */
-export function applyWrites(wb: Workbench, writes: readonly Write[], contents: ReadonlyMap<string, Uint8Array>): void {
+export function applyWrites(wb: Workbench, writes: readonly Entry[], contents: ReadonlyMap<string, Uint8Array>): void {
   for (const w of writes) {
     const abs = resolveInside(wb, w.path);
     if (!abs.ok) throw new Error(`${w.path}: ${abs.error.detail}`);
+    if (w.after === null) {
+      try {
+        unlinkSync(abs.value);
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+      }
+      fsyncDirectory(dirname(abs.value));
+      continue;
+    }
     const bytes = contents.get(w.path);
     if (bytes === undefined) throw new Error(`no post-bytes for ${w.path}`);
     mkdirSync(dirname(abs.value), { recursive: true });

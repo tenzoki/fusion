@@ -4,7 +4,8 @@
 // replay of their ids, the lock through the kernel (the CAS and lock cases of
 // FJ01's `writeControl`, moved here with its removal), concurrent and killed
 // processes, a pull, the read protocol's retries, and why no stored answer is
-// pruned (FJ02b plan step 4).
+// pruned (FJ02b plan step 4), and the removal entry a migration rollback
+// alone writes (FJ04 step 6).
 //
 // Every case works on a fresh copy of `fixtures/workbench/`; nothing here
 // writes into `codec/fixtures/`. The cuts are enumerated from the kernel's
@@ -16,7 +17,7 @@
 // ---------------------------------------------------------------------------
 
 import { spawn, spawnSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, unlinkSync, utimesSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, symlinkSync, unlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { hostname, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,8 +25,8 @@ import { build } from "esbuild";
 import { afterEach, describe, expect, it } from "vitest";
 import { dispatch } from "../cli/ops.js";
 import type { Response, TransitionRequest } from "../cli/protocol.js";
-import { commitIntent, journalDir, opsDir, pendingIds, readIntent, requestDigest, type Intent, type Write } from "../journal.js";
-import { CUTS, CutReached, blockedIntent, cutsFor, mutate, read, type KernelOptions, type MutationRequest, type PlanFunction } from "../kernel.js";
+import { commitIntent, fileState, journalDir, opsDir, pendingIds, readIntent, requestDigest, type Intent, type Write } from "../journal.js";
+import { CUTS, CutReached, blockedIntent, cutsFor, isHeld, mutate, read, type KernelOptions, type MutationRequest, type PlanFunction } from "../kernel.js";
 import { LOCK_STALE_MS, STATE_DIR, lockPathFor, openWorkbench, revisionOf, serialise, type Workbench } from "../store.js";
 import { strictParse } from "../strict-json.js";
 import { PLACEHOLDER, fromPlaceholder, toPlaceholder } from "./helpers/session.js";
@@ -1096,5 +1097,108 @@ describe("initialize through the kernel", () => {
     const landed = await dispatch(init(dir));
     expect(landed.ok).toBe(true);
     expect(okResult(await dispatch({ op: "inspect", workbench: dir })).pending, "the intent left the journal").toBeNull();
+  });
+});
+
+// --- removal entries (FJ04 step 6) ---------------------------------------------------------
+
+describe("a removal entry: after null, a migration rollback's only", () => {
+  const ROLLBACK = { op: "migration", operation_id: OP_ID, phase: "rollback" } as MutationRequest;
+  const removing = (root: string, path: string): PlanFunction => () => ({ ok: true, value: { writes: [], removals: [{ path, before: revision(root, path) }], result: { removed: [path] } } });
+
+  it("is refused before anything is written as null to null or outside migration rollback, and a journal holding one does not read", () => {
+    const root = fresh();
+    const wb = open(root);
+    const base = { operation_id: OP_ID, request_digest: requestDigest({}), response: { ok: true as const, result: {} }, created_at: new Date(0).toISOString() };
+    const removal = { path: ISSUE, before: revision(root, ISSUE), after: null };
+    expect(() => commitIntent(wb, { ...base, op: "transition", writes: [removal] }, new Map())).toThrow(/only migration rollback removes a file/);
+    expect(() => commitIntent(wb, { ...base, op: "migration", phase: "apply", writes: [removal] }, new Map())).toThrow(/only migration rollback removes a file/);
+    expect(() => commitIntent(wb, { ...base, op: "migration", phase: "rollback", writes: [{ path: ISSUE, before: null, after: null } as unknown as Write] }, new Map())).toThrow(/from null to null/);
+    expect(journalEntries(root)).toEqual([]);
+    // Hand-written into the journal, the same intent reads as journal-unreadable.
+    mkdirSync(join(journalDir(wb), OP_ID), { recursive: true });
+    writeFileSync(join(journalDir(wb), OP_ID, "intent.json"), JSON.stringify({ ...base, op: "transition", writes: [removal] }));
+    expect(readIntent(wb, OP_ID)).toMatchObject({ ok: false, error: { class: "conflict", reason: "journal-unreadable" } });
+  });
+
+  it("reads its state by lstat: the regular file at before is pre, absence post, a dangling link, a directory or other bytes diverged", () => {
+    const root = fresh();
+    const wb = open(root);
+    const w = { path: ISSUE, before: revision(root, ISSUE), after: null } as const;
+    expect(fileState(wb, w)).toBe("pre");
+    const stored = bytesOf(root, ISSUE);
+    writeFileSync(join(root, ISSUE), "other bytes\n");
+    expect(fileState(wb, w)).toBe("diverged");
+    rmSync(join(root, ISSUE));
+    expect(fileState(wb, w)).toBe("post");
+    symlinkSync("nowhere.json", join(root, ISSUE));
+    expect(fileState(wb, w)).toBe("diverged");
+    rmSync(join(root, ISSUE));
+    symlinkSync(join(root, "shared/issues/260928-1400-parser-fails-on-empty-input.md"), join(root, ISSUE));
+    expect(fileState(wb, { ...w, before: revision(root, "shared/issues/260928-1400-parser-fails-on-empty-input.md") })).toBe("diverged");
+    rmSync(join(root, ISSUE));
+    mkdirSync(join(root, ISSUE));
+    expect(fileState(wb, w)).toBe("diverged");
+    rmSync(join(root, ISSUE), { recursive: true });
+    writeFileSync(join(root, ISSUE), stored);
+    expect(fileState(wb, w)).toBe("pre");
+  });
+
+  it("cut at every point, the same request lands it: the file gone, the answer stored, recovery idempotent", async () => {
+    for (const cut of cutsFor(1)) {
+      const root = fresh();
+      const wb = open(root);
+      const plan = removing(root, ISSUE);
+      await expect(mutate(wb, ROLLBACK, plan, { faults: { cutAt: cut } }, ["json-control"])).rejects.toThrow(CutReached);
+      // A read leaves the held migration intent where it stands.
+      okResult(await dispatch({ op: "list", workbench: root }));
+      expect(pendingIds(wb), cut).toEqual([OP_ID]);
+      expect(okResult(await mutate(wb, ROLLBACK, plan, {}, ["json-control"])), cut).toEqual({ removed: [ISSUE] });
+      expect(existsSync(join(root, ISSUE)), cut).toBe(false);
+      expect(journalEntries(root), cut).toEqual([]);
+      expect(opsEntries(root), cut).toEqual([`${OP_ID}.json`]);
+    }
+  });
+
+  it("a removal whose entry diverged after the commit point blocks recovery and leaves the entry", async () => {
+    const root = fresh();
+    const wb = open(root);
+    const plan = removing(root, ISSUE);
+    await expect(mutate(wb, ROLLBACK, plan, { faults: { cutAt: "after-intent" } }, ["json-control"])).rejects.toThrow(CutReached);
+    rmSync(join(root, ISSUE));
+    symlinkSync("nowhere.json", join(root, ISSUE));
+    const r = await mutate(wb, ROLLBACK, plan, {}, ["json-control"]);
+    expect(r).toMatchObject({ ok: false, error: { class: "operation-unknown", reason: "recovery-blocked" } });
+    expect(lstatSync(join(root, ISSUE)).isSymbolicLink()).toBe(true);
+    expect(pendingIds(wb)).toEqual([OP_ID]);
+  });
+});
+
+// --- the hold: released to its id and digest only (FJ04 addendum for a1fb17a, R4) -----------
+
+describe("a held migration intent is released only to the request carrying its id and its digest", () => {
+  const ROLLBACK = { op: "migration", operation_id: OP_ID, phase: "rollback", chunk: 1 } as MutationRequest;
+  const removing = (root: string, path: string): PlanFunction => () => ({ ok: true, value: { writes: [], removals: [{ path, before: revision(root, path) }], result: { removed: [path] } } });
+
+  it("the same id under another digest is operation-id-reused with no recovery effect; a read and another id leave it; the same request lands it", async () => {
+    const root = fresh();
+    const wb = open(root);
+    const plan = removing(root, ISSUE);
+    await expect(mutate(wb, ROLLBACK, plan, { faults: { cutAt: "after-intent" } }, ["json-control"])).rejects.toThrow(CutReached);
+    const changed = { ...ROLLBACK, chunk: 2 } as MutationRequest;
+    const intent = readIntent(wb, OP_ID);
+    if (!intent.ok || intent.value === null) throw new Error("the intent does not read");
+    expect(isHeld(intent.value, changed)).toBe(true);
+    expect(isHeld(intent.value, null)).toBe(true);
+    expect(isHeld(intent.value, ROLLBACK)).toBe(false);
+    const r = await mutate(wb, changed, plan, {}, ["json-control"]);
+    expect(r).toMatchObject({ ok: false, error: { class: "conflict", reason: "operation-id-reused" } });
+    expect(existsSync(join(root, ISSUE)), "no recovery effect").toBe(true);
+    expect(pendingIds(wb)).toEqual([OP_ID]);
+    okResult(await dispatch({ op: "list", workbench: root }));
+    expect(pendingIds(wb)).toEqual([OP_ID]);
+    expect(okResult(await mutate(wb, ROLLBACK, plan, {}, ["json-control"]))).toEqual({ removed: [ISSUE] });
+    expect(existsSync(join(root, ISSUE))).toBe(false);
+    expect(pendingIds(wb)).toEqual([]);
   });
 });

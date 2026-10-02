@@ -145,8 +145,9 @@ describe("dispatch: the request itself", () => {
     });
   }
 
-  it("migration lands in FJ04", () => {
-    expect(LANDS_IN.migration).toBe("FJ04");
+  it("every operation is answered since FJ04's step 6, so no operation names a package that lands it", () => {
+    expect(OPERATIONS.filter((o) => !IMPLEMENTED_OPERATIONS.includes(o))).toEqual([]);
+    expect(LANDS_IN).toEqual({});
   });
 });
 

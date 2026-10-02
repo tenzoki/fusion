@@ -29,9 +29,11 @@
 // A migration intent is held: only the request that committed it finishes
 // it (FJ04 contract delta as amended, "Who finishes a migration intent").
 // Every other request's recovery, a read's included, leaves an intent whose
-// `op` is `migration` untouched unless the request carries its operation id,
-// and a `migration` request leaves a committed `initialize` untouched as
-// well. A held intent stands in `blocked` beside the ones recovery could not
+// `op` is `migration` untouched unless the request carries its operation id
+// and its request digest both (FJ04 addendum for a1fb17a, R4), and a
+// `migration` request leaves a committed `initialize` untouched as well.
+// The same id under another digest finds its own intent held, and the replay
+// lookup answers `operation-id-reused` with no recovery effect. A held intent stands in `blocked` beside the ones recovery could not
 // land, flagged `held`: a path it names answers
 // `operation-unknown/migration-pending` instead of `recovery-blocked`, and
 // `migration`'s plan function refuses `conflict/intent-pending` while one
@@ -40,8 +42,18 @@
 //
 // The fence itself is set and removed outside the journal: `maintenance`'s
 // plan function returns no writes and a `fence` instead, which `mutate`
-// applies under the lock before it stores the answer. An intent cannot express
-// a removal, and the fence writes no record.
+// applies under the lock before it stores the answer, and the fence writes no
+// record. `migration apply` of chunk 1 is the one plan that sets a fence AND
+// writes: it returns `fenceFirst`, which `mutate` sets in its own sequence
+// before it commits the intent (unless that very fence already stands, after
+// a crash between the two), so a crash between leaves the fence named by the
+// request's own id and no intent, and the same request passes it.
+//
+// A plan may also return `removals`, each a regular file at a hash it has
+// checked, which the intent carries as removal entries after the writes
+// (`journal.ts`, `after: null`). Only `migration rollback` returns any; the
+// journal refuses them in every other intent. A `migration` intent records the
+// request's `phase`, which is what the journal reads that from.
 //
 // The intent is the commit point. Once `journal/<id>/` exists under its own
 // name the operation lands, on this attempt or through recovery on any later
@@ -84,9 +96,9 @@ import {
   requestDigest,
   sweep,
   writeAnswer,
+  type Entry,
   type Intent,
   type PendingIntent,
-  type Write,
 } from "./journal.js";
 import {
   LOCK_STALE_MS,
@@ -124,7 +136,8 @@ import { fail, type Response } from "./cli/protocol.js";
  */
 export const CUTS = ["after-intent", "after-write:<n>", "after-answer"] as const;
 
-export type Cut = "after-intent" | `after-write:${number}` | "after-answer";
+/** `after-fence` is passed only by a plan that returns `fenceFirst`, so it is no member of `CUTS`, which every operation passes. */
+export type Cut = "after-fence" | "after-intent" | `after-write:${number}` | "after-answer";
 
 /** Every cut of an operation that writes `writes` files, in the order `mutate` passes them. */
 export const cutsFor = (writes: number): Cut[] =>
@@ -172,6 +185,10 @@ export interface Planned {
    * before it stores the answer.
    */
   fence?: Fence | null;
+  /** `migration apply` of chunk 1 alone: the fence set in its own sequence before the intent (header). */
+  fenceFirst?: Fence;
+  /** Regular files to remove, each at the hash the plan checked, after the writes and in this order (`migration rollback` alone). */
+  removals?: Array<{ path: string; before: string }>;
 }
 
 /** What a plan function may ask, all of it under the lock. */
@@ -214,7 +231,7 @@ export interface Blocked {
   held?: string;
 }
 
-const blockedOf = (p: PendingIntent, diverged: Write[]): Blocked => ({
+const blockedOf = (p: PendingIntent, diverged: Entry[]): Blocked => ({
   operation_id: p.intent.operation_id,
   paths: p.intent.writes.map((w) => w.path),
   diverged: diverged.map((w) => w.path),
@@ -225,11 +242,15 @@ const heldOf = (p: PendingIntent): Blocked => ({ operation_id: p.intent.operatio
 
 /**
  * Whether `p` is held from the request `req` (null for a read): a migration
- * intent unless `req` carries its id, and a committed `initialize` when `req`
- * is a migration request.
+ * intent, and a committed `initialize` when `req` is a migration request,
+ * unless `req` carries the intent's operation id AND its request digest
+ * (FJ04 addendum for a1fb17a, prefix step 3, R4). The same id under another
+ * digest stays held, so the replay lookup answers `operation-id-reused` with
+ * no recovery effect. `digest` is `requestDigest(req)`, passed by a caller
+ * that has it.
  */
-export function isHeld(p: PendingIntent, req: MutationRequest | null): boolean {
-  if (req !== null && p.intent.operation_id === req.operation_id) return false;
+export function isHeld(p: PendingIntent, req: MutationRequest | null, digest: string | null = req === null ? null : requestDigest(req)): boolean {
+  if (req !== null && p.intent.operation_id === req.operation_id && p.intent.request_digest === digest) return false;
   return p.intent.op === "migration" || (req?.op === "migration" && p.intent.op === "initialize");
 }
 
@@ -305,9 +326,10 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
     sweep(wb);
     const pending = readIntents(wb);
     if (!pending.ok) return refuse(pending.error);
+    const digest = requestDigest(req);
     const blocked: Blocked[] = [];
     for (const p of pending.value) {
-      if (isHeld(p, req)) {
+      if (isHeld(p, req, digest)) {
         blocked.push(heldOf(p));
         continue;
       }
@@ -315,8 +337,7 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
       if (!r.landed) blocked.push(blockedOf(p, r.blocked));
     }
 
-    // The replay lookup: a blocked intent under this id first, then the stored answer.
-    const digest = requestDigest(req);
+    // The replay lookup: a blocked or held intent under this id first, then the stored answer.
     const own = pending.value.find((p) => p.intent.operation_id === req.operation_id);
     const ownBlocked = blocked.find((b) => b.operation_id === req.operation_id);
     if (own !== undefined && ownBlocked !== undefined) {
@@ -332,8 +353,9 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
 
     const planned = await plan(planContext(wb, blocked, fence.ok ? fence.value : null));
     if (!planned.ok) return refuse(planned.error);
+    const removals = planned.value.removals ?? [];
     if (planned.value.fence !== undefined) {
-      if (planned.value.writes.length > 0) throw new Error(`the plan of ${req.op} sets a fence and writes files`);
+      if (planned.value.writes.length > 0 || removals.length > 0 || planned.value.fenceFirst !== undefined) throw new Error(`the plan of ${req.op} sets a fence and writes files`);
       // Fence first, answer second: a crash between leaves the fence set and no
       // answer, and a retry meets the fence it set, named by its own id.
       const response: Response = { ok: true, result: planned.value.result };
@@ -342,19 +364,29 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
       writeAnswer(wb, { operation_id: req.operation_id, op: req.op, request_digest: digest, response });
       return response;
     }
-    for (const w of planned.value.writes) {
+    for (const w of [...planned.value.writes, ...removals]) {
       const b = blockedOn(blocked, w.path);
       if (b !== undefined) return refuse(recoveryBlocked(b));
     }
 
-    const writes: Write[] = [];
+    const writes: Entry[] = [];
     const contents = new Map<string, Buffer>();
+    /** The absolute path of one named file, each named once. */
+    const named = (path: string): Result<string> => {
+      const abs = resolveInside(wb, path);
+      if (abs.ok && writes.some((x) => x.path === path)) throw new Error(`the plan of ${req.op} writes ${path} twice`);
+      return abs;
+    };
     for (const w of planned.value.writes) {
-      const abs = resolveInside(wb, w.path);
+      const abs = named(w.path);
       if (!abs.ok) return refuse(abs.error);
-      if (contents.has(w.path)) throw new Error(`the plan of ${req.op} writes ${w.path} twice`);
       writes.push({ path: w.path, before: hashOrNull(abs.value), after: revisionOf(w.bytes) });
       contents.set(w.path, w.bytes);
+    }
+    for (const r of removals) {
+      const abs = named(r.path);
+      if (!abs.ok) return refuse(abs.error);
+      writes.push({ path: r.path, before: r.before, after: null });
     }
     const response: Response = {
       ok: true,
@@ -362,7 +394,14 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
       ...(planned.value.revisions !== undefined ? { revisions: planned.value.revisions } : {}),
     };
     const now = options.now ?? Date.now;
-    const intent: Intent = { operation_id: req.operation_id, op: req.op, request_digest: digest, writes, response, created_at: new Date(now()).toISOString() };
+    const phase = req.op === "migration" ? (req as MutationRequest & { phase?: unknown }).phase : undefined;
+    const intent: Intent = { operation_id: req.operation_id, op: req.op, ...(typeof phase === "string" ? { phase } : {}), request_digest: digest, writes, response, created_at: new Date(now()).toISOString() };
+    const first = planned.value.fenceFirst;
+    if (first !== undefined) {
+      const standing = readFence(wb);
+      if (!standing.ok || standing.value === null || standing.value.operation_id !== first.operation_id) writeFence(wb, first);
+      await point("after-fence");
+    }
     const committed = commitIntent(wb, intent, contents);
     if (!committed.ok) return refuse(committed.error);
     await point("after-intent");
@@ -370,7 +409,7 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
     // A write whose post-bytes equal the stored bytes is kept: it reads as
     // landed (post is tested first), and the no-op still stores its answer.
     for (let i = 0; i < writes.length; i++) {
-      applyWrites(wb, [writes[i] as Write], contents);
+      applyWrites(wb, [writes[i] as Entry], contents);
       await point(`after-write:${i}`);
     }
     writeAnswer(wb, { operation_id: req.operation_id, op: req.op, request_digest: digest, response });

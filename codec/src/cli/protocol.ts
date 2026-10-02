@@ -60,14 +60,11 @@ export type Operation = (typeof OPERATIONS)[number];
 export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"];
 
 /**
- * The package that lands each operation or phase not yet answered: the detail
- * of its `not-implemented` refusal. `migration` answers `survey` and `plan`;
- * its `apply`, `verify` and `rollback` phases are refused with this detail
- * until FJ04's step 6 lands them.
+ * The package that lands each operation not yet answered: the detail of its
+ * `not-implemented` refusal. Empty since FJ04's step 6, which answers the last
+ * phases of `migration`; the table stays for an operation the spec adds later.
  */
-export const LANDS_IN: Partial<Record<Operation, string>> = {
-  migration: "FJ04",
-};
+export const LANDS_IN: Partial<Record<Operation, string>> = {};
 
 /** The typed error classes of spec section 6, in the spec's order. */
 export const ERROR_CLASSES = [
@@ -312,6 +309,9 @@ export type MigrationRequest =
   | (Base<"migration"> & { phase: "rollback"; operation_id: string; plan: BoundFile; chunk: number });
 
 export type MigrationPlanRequest = Extract<MigrationRequest, { phase: "plan" }>;
+export type MigrationApplyRequest = Extract<MigrationRequest, { phase: "apply" }>;
+export type MigrationVerifyRequest = Extract<MigrationRequest, { phase: "verify" }>;
+export type MigrationRollbackRequest = Extract<MigrationRequest, { phase: "rollback" }>;
 
 export type Request =
   | InspectRequest

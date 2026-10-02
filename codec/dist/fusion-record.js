@@ -211,26 +211,26 @@ var require_scope = __commonJS({
       toName(nameOrPrefix) {
         return nameOrPrefix instanceof code_1.Name ? nameOrPrefix : this.name(nameOrPrefix);
       }
-      name(prefix) {
-        return new code_1.Name(this._newName(prefix));
+      name(prefix2) {
+        return new code_1.Name(this._newName(prefix2));
       }
-      _newName(prefix) {
-        const ng = this._names[prefix] || this._nameGroup(prefix);
-        return `${prefix}${ng.index++}`;
+      _newName(prefix2) {
+        const ng = this._names[prefix2] || this._nameGroup(prefix2);
+        return `${prefix2}${ng.index++}`;
       }
-      _nameGroup(prefix) {
+      _nameGroup(prefix2) {
         var _a, _b;
-        if (((_b = (_a = this._parent) === null || _a === void 0 ? void 0 : _a._prefixes) === null || _b === void 0 ? void 0 : _b.has(prefix)) || this._prefixes && !this._prefixes.has(prefix)) {
-          throw new Error(`CodeGen: prefix "${prefix}" is not allowed in this scope`);
+        if (((_b = (_a = this._parent) === null || _a === void 0 ? void 0 : _a._prefixes) === null || _b === void 0 ? void 0 : _b.has(prefix2)) || this._prefixes && !this._prefixes.has(prefix2)) {
+          throw new Error(`CodeGen: prefix "${prefix2}" is not allowed in this scope`);
         }
-        return this._names[prefix] = { prefix, index: 0 };
+        return this._names[prefix2] = { prefix: prefix2, index: 0 };
       }
     };
     exports.Scope = Scope;
     var ValueScopeName = class extends code_1.Name {
-      constructor(prefix, nameStr) {
+      constructor(prefix2, nameStr) {
         super(nameStr);
-        this.prefix = prefix;
+        this.prefix = prefix2;
       }
       setValue(value, { property, itemIndex }) {
         this.value = value;
@@ -249,33 +249,33 @@ var require_scope = __commonJS({
       get() {
         return this._scope;
       }
-      name(prefix) {
-        return new ValueScopeName(prefix, this._newName(prefix));
+      name(prefix2) {
+        return new ValueScopeName(prefix2, this._newName(prefix2));
       }
       value(nameOrPrefix, value) {
         var _a;
         if (value.ref === void 0)
           throw new Error("CodeGen: ref must be passed in value");
         const name = this.toName(nameOrPrefix);
-        const { prefix } = name;
+        const { prefix: prefix2 } = name;
         const valueKey = (_a = value.key) !== null && _a !== void 0 ? _a : value.ref;
-        let vs = this._values[prefix];
+        let vs = this._values[prefix2];
         if (vs) {
           const _name = vs.get(valueKey);
           if (_name)
             return _name;
         } else {
-          vs = this._values[prefix] = /* @__PURE__ */ new Map();
+          vs = this._values[prefix2] = /* @__PURE__ */ new Map();
         }
         vs.set(valueKey, name);
-        const s = this._scope[prefix] || (this._scope[prefix] = []);
+        const s = this._scope[prefix2] || (this._scope[prefix2] = []);
         const itemIndex = s.length;
         s[itemIndex] = value.ref;
-        name.setValue(value, { property: prefix, itemIndex });
+        name.setValue(value, { property: prefix2, itemIndex });
         return name;
       }
-      getValue(prefix, keyOrRef) {
-        const vs = this._values[prefix];
+      getValue(prefix2, keyOrRef) {
+        const vs = this._values[prefix2];
         if (!vs)
           return;
         return vs.get(keyOrRef);
@@ -296,11 +296,11 @@ var require_scope = __commonJS({
       }
       _reduceValues(values, valueCode, usedValues = {}, getCode) {
         let code = code_1.nil;
-        for (const prefix in values) {
-          const vs = values[prefix];
+        for (const prefix2 in values) {
+          const vs = values[prefix2];
           if (!vs)
             continue;
-          const nameSet = usedValues[prefix] = usedValues[prefix] || /* @__PURE__ */ new Map();
+          const nameSet = usedValues[prefix2] = usedValues[prefix2] || /* @__PURE__ */ new Map();
           vs.forEach((name) => {
             if (nameSet.has(name))
               return;
@@ -733,12 +733,12 @@ var require_codegen = __commonJS({
         return this._root.render(this.opts);
       }
       // returns unique name in the internal scope
-      name(prefix) {
-        return this._scope.name(prefix);
+      name(prefix2) {
+        return this._scope.name(prefix2);
       }
       // reserves unique name in the external scope
-      scopeName(prefix) {
-        return this._extScope.name(prefix);
+      scopeName(prefix2) {
+        return this._extScope.name(prefix2);
       }
       // reserves unique name in the external scope and assigns value to it
       scopeValue(prefixOrName, value) {
@@ -747,8 +747,8 @@ var require_codegen = __commonJS({
         vs.add(name);
         return name;
       }
-      getScopeValue(prefix, keyOrRef) {
-        return this._extScope.getValue(prefix, keyOrRef);
+      getScopeValue(prefix2, keyOrRef) {
+        return this._extScope.getValue(prefix2, keyOrRef);
       }
       // return code that assigns values in the external scope to the names that are used internally
       // (same names that were returned by gen.scopeName or gen.scopeValue)
@@ -8020,12 +8020,12 @@ import { readFileSync as readFileSync8 } from "node:fs";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 
 // src/cli/ops.ts
-import { existsSync as existsSync4, lstatSync as lstatSync3, readdirSync as readdirSync6, readFileSync as readFileSync7, statSync as statSync3 } from "node:fs";
+import { existsSync as existsSync4, lstatSync as lstatSync4, readdirSync as readdirSync6, readFileSync as readFileSync7, statSync as statSync3 } from "node:fs";
 import { join as join5, relative as relative3 } from "node:path";
 
 // src/journal.ts
 import { randomBytes as randomBytes2 } from "node:crypto";
-import { existsSync as existsSync2, mkdirSync as mkdirSync2, readdirSync as readdirSync3, readFileSync as readFileSync3, renameSync as renameSync2, rmSync as rmSync2, statSync as statSync2 } from "node:fs";
+import { existsSync as existsSync2, lstatSync as lstatSync2, mkdirSync as mkdirSync2, readdirSync as readdirSync3, readFileSync as readFileSync3, renameSync as renameSync2, rmSync as rmSync2, statSync as statSync2, unlinkSync as unlinkSync2 } from "node:fs";
 import { dirname as dirname2, join as join3, relative as relative2 } from "node:path";
 
 // src/store.ts
@@ -8883,6 +8883,8 @@ function describeHolder(lock) {
 var JOURNAL_DIR = "journal";
 var OPS_DIR = "ops";
 var INTENT_FILE = "intent.json";
+var REMOVAL_OP = "migration";
+var REMOVAL_PHASE = "rollback";
 var err2 = (cls, reason, detail) => ({ ok: false, error: { class: cls, reason, detail } });
 var isObject2 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
 var SHA256 = /^sha256:[0-9a-f]{64}$/;
@@ -8906,10 +8908,13 @@ function canonical(value) {
 var requestDigest = (req) => revisionOf(Buffer.from(canonical(req), "utf-8"));
 function commitIntent(wb, intent, contents) {
   checkId(intent.operation_id);
+  const malformed = removalProblem(intent);
+  if (malformed !== null) throw new Error(`the intent of ${intent.operation_id} is malformed: ${malformed}`);
   const staged = /* @__PURE__ */ new Map();
   for (const w of intent.writes) {
     const inside = resolveInside(wb, w.path);
     if (!inside.ok) return inside;
+    if (w.after === null) continue;
     const bytes = contents.get(w.path);
     if (bytes === void 0 || revisionOf(bytes) !== w.after) throw new Error(`the post-bytes given for ${w.path} do not hash to ${w.after}`);
     if (bytes.byteLength > MAX_RECORD_BYTES) {
@@ -8972,11 +8977,19 @@ function pendingIds(wb) {
     throw e;
   }
 }
-function isWrite(v) {
-  return isObject2(v) && typeof v.path === "string" && (v.before === null || typeof v.before === "string" && SHA256.test(v.before)) && typeof v.after === "string" && SHA256.test(v.after);
+function isEntry(v) {
+  return isObject2(v) && typeof v.path === "string" && (v.before === null || typeof v.before === "string" && SHA256.test(v.before)) && (v.after === null || typeof v.after === "string" && SHA256.test(v.after));
+}
+function removalProblem(intent) {
+  for (const w of intent.writes) {
+    if (w.after !== null) continue;
+    if (w.before === null) return `${w.path} is written from null to null`;
+    if (intent.op !== REMOVAL_OP || intent.phase !== REMOVAL_PHASE) return `${w.path} is removed by an intent of ${intent.op}${intent.phase === void 0 ? "" : ` ${intent.phase}`}; only ${REMOVAL_OP} ${REMOVAL_PHASE} removes a file`;
+  }
+  return null;
 }
 function isIntent(v) {
-  return isObject2(v) && typeof v.operation_id === "string" && typeof v.op === "string" && typeof v.request_digest === "string" && SHA256.test(v.request_digest) && Array.isArray(v.writes) && v.writes.every(isWrite) && isObject2(v.response) && typeof v.created_at === "string";
+  return isObject2(v) && typeof v.operation_id === "string" && typeof v.op === "string" && (v.phase === void 0 || typeof v.phase === "string") && typeof v.request_digest === "string" && SHA256.test(v.request_digest) && Array.isArray(v.writes) && v.writes.every(isEntry) && isObject2(v.response) && typeof v.created_at === "string";
 }
 function readIntents(wb) {
   const out = [];
@@ -9009,9 +9022,12 @@ function readIntent(wb, name) {
   const intent = parsed.value;
   if (!isIntent(intent)) return unreadable(`${INTENT_FILE} is not an intent`);
   if (intent.operation_id !== name) return unreadable(`${INTENT_FILE} names operation ${intent.operation_id}`);
+  const malformed = removalProblem(intent);
+  if (malformed !== null) return unreadable(malformed);
   const contents = /* @__PURE__ */ new Map();
   for (const w of intent.writes) {
     if (!resolveInside(wb, w.path).ok) return unreadable(`a write names ${JSON.stringify(w.path)}, which is not inside the workbench`);
+    if (w.after === null) continue;
     const staged = stagedName(w.after);
     const file = join3(abs, staged);
     let size;
@@ -9037,6 +9053,7 @@ function readIntent(wb, name) {
 function fileState(wb, write) {
   const abs = resolveInside(wb, write.path);
   if (!abs.ok) throw new Error(`${write.path}: ${abs.error.detail}`);
+  if (write.after === null) return removalState(abs.value, write.before);
   let hash;
   try {
     hash = revisionOf(readFileSync3(abs.value));
@@ -9050,10 +9067,28 @@ function fileState(wb, write) {
   if (hash === write.before) return "pre";
   return "diverged";
 }
+function removalState(abs, before) {
+  try {
+    if (!lstatSync2(abs).isFile()) return "diverged";
+  } catch (e) {
+    if (e.code === "ENOENT") return "post";
+    throw e;
+  }
+  return revisionOf(readFileSync3(abs)) === before ? "pre" : "diverged";
+}
 function applyWrites(wb, writes, contents) {
   for (const w of writes) {
     const abs = resolveInside(wb, w.path);
     if (!abs.ok) throw new Error(`${w.path}: ${abs.error.detail}`);
+    if (w.after === null) {
+      try {
+        unlinkSync2(abs.value);
+      } catch (e) {
+        if (e.code !== "ENOENT") throw e;
+      }
+      fsyncDirectory(dirname2(abs.value));
+      continue;
+    }
     const bytes = contents.get(w.path);
     if (bytes === void 0) throw new Error(`no post-bytes for ${w.path}`);
     mkdirSync2(dirname2(abs.value), { recursive: true });
@@ -9098,17 +9133,17 @@ function readAnswer(wb, id) {
   return err2("conflict", "operation-record-unreadable", `${rel}: neither a stored answer nor FJ01's {operation_id, request, response}`);
 }
 function replayAnswer(wb, req) {
-  const stored = readAnswer(wb, req.operation_id);
-  if (!stored.ok) return stored;
-  if (stored.value === null) return { ok: true, value: null };
-  if (stored.value.request_digest !== requestDigest(req)) {
+  const stored2 = readAnswer(wb, req.operation_id);
+  if (!stored2.ok) return stored2;
+  if (stored2.value === null) return { ok: true, value: null };
+  if (stored2.value.request_digest !== requestDigest(req)) {
     return err2("conflict", "operation-id-reused", `operation_id ${req.operation_id} was already used for a different request`);
   }
-  return { ok: true, value: stored.value.response };
+  return { ok: true, value: stored2.value.response };
 }
 
 // src/migration.ts
-import { existsSync as existsSync3, lstatSync as lstatSync2, readdirSync as readdirSync4, readFileSync as readFileSync4, readlinkSync } from "node:fs";
+import { existsSync as existsSync3, lstatSync as lstatSync3, readdirSync as readdirSync4, readFileSync as readFileSync4, readlinkSync } from "node:fs";
 import { dirname as dirname3, join as join4 } from "node:path";
 var PLAN_SCHEMA_ID = "urn:fusion:schema:fusion.migration-plan/v1";
 var PROPOSAL_SCHEMA_ID = "urn:fusion:schema:fusion.migration-proposal/v1";
@@ -9140,25 +9175,51 @@ function inventory(root, skip) {
   const walk = (dir, rel) => {
     for (const name of readdirSync4(dir)) {
       const path = rel === "" ? name : `${rel}/${name}`;
-      if (skip(path)) continue;
       const abs = join4(dir, name);
-      const st = lstatSync2(abs);
-      if (st.isSymbolicLink()) out.push({ path, kind: "link", target: readlinkSync(abs) });
-      else if (st.isDirectory()) {
-        out.push({ path, kind: "directory" });
+      let st;
+      try {
+        st = lstatSync3(abs);
+      } catch (e) {
+        if (e.code === "ENOENT") continue;
+        throw e;
+      }
+      const kind = st.isSymbolicLink() ? "link" : st.isDirectory() ? "directory" : st.isFile() ? "file" : "other";
+      if (skip(path, kind)) continue;
+      if (kind === "link") out.push({ path, kind, target: readlinkSync(abs) });
+      else if (kind === "directory") {
+        out.push({ path, kind });
         walk(abs, path);
-      } else if (st.isFile()) {
+      } else if (kind === "file") {
         const bytes = readFileSync4(abs);
-        out.push({ path, kind: "file", size: bytes.byteLength, sha256: revisionOf(bytes) });
-      } else out.push({ path, kind: "other" });
+        out.push({ path, kind, size: bytes.byteLength, sha256: revisionOf(bytes) });
+      } else out.push({ path, kind });
     }
   };
   walk(root, "");
   return out.sort((a, b) => bytewise(a.path, b.path));
 }
 var under = (path, dir) => path === dir || path.startsWith(`${dir}/`);
+var EXCLUSION_ALLOWLIST = {
+  ".session-marker": "file",
+  ".checkout-id": "file",
+  ".cadence-anchors": "file",
+  ".check-stamps": "file",
+  monitor: "file",
+  "orchestrator-events.jsonl": "file",
+  ".fusion-setup": "file",
+  ".asset-provenance": "file",
+  ".guard-state": "directory",
+  ".commit-lock": "directory"
+};
+var excludedRoot = (selected, path, kind) => !path.includes("/") && selected.has(path) && EXCLUSION_ALLOWLIST[path] === kind;
+var WHOLE_ALLOWLIST = new Set(Object.keys(EXCLUSION_ALLOWLIST));
+function eligibleOf(entries, selected) {
+  const skipped = entries.filter((e) => excludedRoot(selected, e.path, e.kind)).map((e) => e.path);
+  return entries.filter((e) => !skipped.some((s) => under(e.path, s)));
+}
 function phaseOf(intent) {
   if (intent.op !== "migration") return null;
+  if (intent.phase !== void 0) return intent.phase;
   const r = intent.response.ok ? intent.response.result : void 0;
   if (!isObject3(r)) return null;
   if ("schedule" in r || "no_op" in r) return "plan";
@@ -9171,18 +9232,18 @@ function localState(wb) {
   const unreadable = [];
   let present = true;
   try {
-    lstatSync2(join4(wb.root, STATE_DIR));
+    lstatSync3(join4(wb.root, STATE_DIR));
   } catch (e) {
     if (e.code !== "ENOENT") throw e;
     present = false;
   }
   const intents = [];
-  let maintenance = null;
+  let maintenance2 = null;
   if (present) {
     const journal = `${STATE_DIR}/${JOURNAL_DIR}`;
     let names = [];
     try {
-      if (lstatSync2(journalDir(wb)).isDirectory()) names = readdirSync4(journalDir(wb)).filter((n) => !n.startsWith(".")).sort(bytewise);
+      if (lstatSync3(journalDir(wb)).isDirectory()) names = readdirSync4(journalDir(wb)).filter((n) => !n.startsWith(".")).sort(bytewise);
       else unreadable.push({ path: journal, reason: "not-a-directory" });
     } catch (e) {
       if (e.code !== "ENOENT") unreadable.push({ path: journal, reason: e.code ?? "unreadable" });
@@ -9193,14 +9254,15 @@ function localState(wb) {
       else if (r.value !== null) intents.push({ operation_id: r.value.intent.operation_id, op: r.value.intent.op, phase: phaseOf(r.value.intent) });
     }
     const fence = readFence(wb);
-    if (fence.ok) maintenance = fence.value;
+    if (fence.ok) maintenance2 = fence.value;
     else unreadable.push({ path: `${STATE_DIR}/${MAINTENANCE_FILE}`, reason: fence.error.reason });
   }
-  return { present, intents, maintenance, unreadable };
+  return { present, intents, maintenance: maintenance2, unreadable };
 }
 function survey(wb) {
   const entries = inventory(wb.root, (path) => path === STATE_DIR);
-  const response = { ok: true, result: { layout: wb.state, entries, local_state: localState(wb) } };
+  const eligible_sha256 = inventoryDigest(eligibleOf(entries, WHOLE_ALLOWLIST));
+  const response = { ok: true, result: { layout: wb.state, entries, eligible_sha256, local_state: localState(wb) } };
   const size = Buffer.byteLength(JSON.stringify(response), "utf-8") + 1;
   if (size > ANSWER_CAP) return { ok: false, error: { class: "schema-invalid", reason: "too-large", detail: `the survey of ${wb.root} is ${size} bytes with its LF; the answer channel carries at most ${ANSWER_CAP} (16 MiB), and an answer is never truncated` } };
   return response;
@@ -9212,7 +9274,7 @@ function proposalBytes(wb, path) {
   if (!abs.ok) return invalid(abs.error.detail);
   let size;
   try {
-    const st = lstatSync2(abs.value);
+    const st = lstatSync3(abs.value);
     if (!st.isFile()) return invalid(`${path} is not a regular file`);
     size = st.size;
   } catch (e) {
@@ -9259,7 +9321,10 @@ function rangesAndExclusions(p, order2) {
     }
   }
   const touched = new Set(order2.flatMap((id) => [firstSegment(p.records[id].narrative), firstSegment(p.records[id].control_path)]));
-  for (const ex of p.exclusions) if (touched.has(ex)) problems.push(`the exclusion ${ex} holds a narrative or control path the plan reads or writes`);
+  for (const ex of p.exclusions) {
+    if (!Object.hasOwn(EXCLUSION_ALLOWLIST, ex)) problems.push(`the exclusion ${ex} is not on the codec's allowlist (${Object.keys(EXCLUSION_ALLOWLIST).join(", ")})`);
+    else if (touched.has(ex)) problems.push(`the exclusion ${ex} holds a narrative or control path the plan reads or writes`);
+  }
   return problems.length === 0 ? { ok: true, value: void 0 } : invalid(`${plural(problems.length, "problem")}: ${listed(problems)}`);
 }
 function structural(wb, p, order2) {
@@ -9348,15 +9413,15 @@ function acceptances(p, order2) {
   return wrong.length === 0 ? { ok: true, value: void 0 } : invalid(`${plural(wrong.length, "acceptance")} do not match: ${listed(wrong)}`);
 }
 function sources(p, order2, taken) {
-  const changed = [];
+  const changed2 = [];
   for (const id of order2) {
     const r = p.records[id];
     const e = taken.get(r.narrative);
-    if (e === void 0) changed.push(`${r.narrative} does not exist`);
-    else if (e.kind !== "file") changed.push(`${r.narrative} is a ${e.kind}, not a file`);
-    else if (e.sha256 !== r.source_sha256) changed.push(`${r.narrative} is ${e.sha256}, the proposal names ${r.source_sha256}`);
+    if (e === void 0) changed2.push(`${r.narrative} does not exist`);
+    else if (e.kind !== "file") changed2.push(`${r.narrative} is a ${e.kind}, not a file`);
+    else if (e.sha256 !== r.source_sha256) changed2.push(`${r.narrative} is ${e.sha256}, the proposal names ${r.source_sha256}`);
   }
-  return changed.length === 0 ? { ok: true, value: void 0 } : refusal("conflict", "source-changed", `${plural(changed.length, "narrative")} not as the proposal read them: ${listed(changed)}`);
+  return changed2.length === 0 ? { ok: true, value: void 0 } : refusal("conflict", "source-changed", `${plural(changed2.length, "narrative")} not as the proposal read them: ${listed(changed2)}`);
 }
 function applyDeletions(source, deletions) {
   const kept = [];
@@ -9424,6 +9489,11 @@ function cut(migrationId, pairs) {
   close();
   return out;
 }
+var PART_ORDER = ["chunk", "records", "inventory", "findings", "repairs", "answers"];
+function eligibleSkip(own, exclusions) {
+  const selected = new Set(exclusions);
+  return (path, kind) => path === STATE_DIR || under(path, own) || excludedRoot(selected, path, kind);
+}
 function split(items, size, frame) {
   const groups = [[]];
   let weight = 0;
@@ -9457,13 +9527,13 @@ function secondRun(wb, req, manifest) {
     const abs = resolveInside(wb, path);
     if (!abs.ok) return null;
     try {
-      return lstatSync2(abs.value).isFile() ? readFileSync4(abs.value) : null;
+      return lstatSync3(abs.value).isFile() ? readFileSync4(abs.value) : null;
     } catch {
       return null;
     }
   };
-  const receiptPath = String(migration2.receipt);
-  const receiptBytes = fileAt(receiptPath);
+  const receiptPath2 = String(migration2.receipt);
+  const receiptBytes = fileAt(receiptPath2);
   if (receiptBytes === null) return unverified("it is not a file in the workbench");
   const receipt = strictParse(receiptBytes);
   if (!receipt.ok) return unverified(`${receipt.reason}: ${receipt.detail}`);
@@ -9478,32 +9548,77 @@ function secondRun(wb, req, manifest) {
     if (b === null) return unverified(`${f.path} is not available`);
     if (revisionOf(b) !== f.sha256) return unverified(`${f.path} is ${revisionOf(b)}, the receipt names ${f.sha256}`);
   }
-  const index = strictParse(fileAt(r.plan.path));
-  const schedule = index.ok && isObject3(index.value) && isObject3(index.value.schedule) ? index.value.schedule : {};
-  const scheduled = new Set([schedule.plan, schedule.verify, ...(Array.isArray(schedule.apply) ? schedule.apply : []).map((e) => isObject3(e) ? e.operation_id : null), ...(Array.isArray(schedule.rollback) ? schedule.rollback : []).map((e) => isObject3(e) ? e.operation_id : null)].filter((x) => typeof x === "string"));
+  const plan = readIndex(wb, r.plan);
+  if (!plan.ok) return unverified(plan.error.detail);
+  if (canonical(r.parts) !== canonical(plan.value.index.parts.map((x) => ({ path: x.path, sha256: x.sha256 })))) return unverified(`its parts are not those ${r.plan.path} names`);
+  const baseline = readBaseline(wb, plan.value);
+  if (!baseline.ok) return unverified(baseline.error.detail);
+  const later = laterOperations(wb, plan.value, baseline.value);
   return {
     ok: true,
     value: {
       writes: [],
-      result: { operation_id: req.operation_id, migration_id: proposed, no_op: true, receipt: { path: receiptPath, sha256: revisionOf(receiptBytes) }, manifest_revision: manifestRevision, later_operations: laterOperations(wb, scheduled) }
+      result: { operation_id: req.operation_id, migration_id: proposed, no_op: true, receipt: { path: receiptPath2, sha256: revisionOf(receiptBytes) }, manifest_revision: manifestRevision, later_operations: later.map((s) => ({ operation_id: s.entry.operation_id, op: s.entry.op })) }
     }
   };
 }
-function laterOperations(wb, scheduled) {
+function storedNow(wb) {
   let names = [];
   try {
     names = readdirSync4(opsDir(wb));
-  } catch {
-    return [];
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
   }
   const out = [];
   for (const name of names.filter((n) => !n.startsWith(".") && n.endsWith(".json")).sort(bytewise)) {
     const id = name.slice(0, -".json".length);
-    if (scheduled.has(id)) continue;
+    let bytes;
+    try {
+      bytes = readFileSync4(answerPath(wb, id));
+    } catch (e) {
+      if (e.code === "ENOENT") continue;
+      throw e;
+    }
     const a = readAnswer(wb, id);
-    out.push({ operation_id: id, op: a.ok && a.value !== null ? a.value.op : "unreadable" });
+    const answer = a.ok ? a.value : null;
+    const entry = answer === null ? { operation_id: id, op: "unreadable", request_digest: "", answer_sha256: sha(bytes) } : { operation_id: id, op: answer.op, request_digest: answer.request_digest, answer_sha256: sha(bytes) };
+    out.push({ entry, answer, unreadable: a.ok ? null : a.error });
   }
   return out;
+}
+function scheduledRequests(index, ref) {
+  const s = index.schedule;
+  const out = /* @__PURE__ */ new Map();
+  out.set(s.plan, { op: "migration", operation_id: s.plan, phase: "plan", proposal: index.proposal });
+  for (const e of s.apply) out.set(e.operation_id, applyRequest(ref, e));
+  out.set(s.verify, { op: "migration", operation_id: s.verify, phase: "verify", plan: ref });
+  for (const e of s.rollback) out.set(e.operation_id, rollbackRequest(ref, e));
+  return out;
+}
+var applyRequest = (ref, e) => ({ op: "migration", operation_id: e.operation_id, phase: "apply", plan: ref, chunk: e.chunk });
+var rollbackRequest = (ref, e) => ({ op: "migration", operation_id: e.operation_id, phase: "rollback", plan: ref, chunk: e.chunk });
+function reconstructs(digest, rebuilt, root) {
+  const bare = { ...rebuilt };
+  delete bare.workbench;
+  return digest === requestDigest(bare) || digest === requestDigest({ ...bare, workbench: root });
+}
+function laterOperations(wb, plan, baseline, now = storedNow(wb)) {
+  const base = new Set(baseline.map((e) => canonical(e)));
+  const scheduled = scheduledRequests(plan.index, plan.ref);
+  return now.filter((s) => {
+    if (base.has(canonical(s.entry))) return false;
+    const rebuilt = scheduled.get(s.entry.operation_id);
+    return rebuilt === void 0 || s.answer === null || !reconstructs(s.answer.request_digest, rebuilt, wb.root);
+  });
+}
+function readBaseline(wb, plan) {
+  const parts = readParts(wb, plan, "answers");
+  if (!parts.ok) return parts;
+  const entries = parts.value.flatMap((p) => p.entries);
+  for (let i = 1; i < entries.length; i++) {
+    if (bytewise(entries[i - 1].operation_id, entries[i].operation_id) >= 0) return changed(`the answers parts of ${plan.ref.path} list ${entries[i].operation_id} out of bytewise order or twice`);
+  }
+  return { ok: true, value: entries };
 }
 function standingPlans(root) {
   const dir = join4(root, MIGRATIONS_DIR);
@@ -9513,7 +9628,24 @@ function standingPlans(root) {
   } catch {
     return [];
   }
-  return ids.filter((id) => ["plan.json", "chunks", "parts"].some((n) => existsSync3(join4(dir, id, n)))).sort(bytewise);
+  const holdsFile = (path) => {
+    try {
+      return inventory(path, () => false).some((e) => e.kind !== "directory");
+    } catch {
+      return false;
+    }
+  };
+  return ids.filter((id) => existsSync3(join4(dir, id, "plan.json")) || ["chunks", "parts"].some((n) => holdsFile(join4(dir, id, n)))).sort(bytewise);
+}
+function prefix(ctx) {
+  const now = openWorkbench(ctx.wb.root);
+  if (!now.ok) return now;
+  if (now.value.state === "unsupported" && now.value.diagnosis !== null) return { ok: false, error: now.value.diagnosis };
+  const held2 = ctx.blocked.filter((b) => b.held !== void 0);
+  if (held2.length > 0) {
+    return refusal("conflict", "intent-pending", `${plural(held2.length, "intent")} pending for ${held2.length === 1 ? "its" : "their"} own request: ${listed(held2.map((b) => `${b.held} ${b.operation_id} in ${STATE_DIR}/${JOURNAL_DIR}/${b.operation_id}`))}; it is finished by that request, never by this one`);
+  }
+  return now;
 }
 function scheduleProblems(wb, p, req, chunks, order2) {
   const ids = p.operation_ids;
@@ -9535,13 +9667,8 @@ function scheduleProblems(wb, p, req, chunks, order2) {
 function migrationPlan(req, sitesOf) {
   return (ctx) => {
     const { wb } = ctx;
-    const now = openWorkbench(wb.root);
+    const now = prefix(ctx);
     if (!now.ok) return now;
-    if (now.value.state === "unsupported" && now.value.diagnosis !== null) return { ok: false, error: now.value.diagnosis };
-    const held2 = ctx.blocked.filter((b) => b.held !== void 0);
-    if (held2.length > 0) {
-      return refusal("conflict", "intent-pending", `${plural(held2.length, "intent")} pending for ${held2.length === 1 ? "its" : "their"} own request: ${listed(held2.map((b) => `${b.held} ${b.operation_id} in ${STATE_DIR}/${JOURNAL_DIR}/${b.operation_id}`))}; it is finished by that request, never by this one`);
-    }
     if (now.value.state === "json-control") return secondRun(wb, req, now.value.manifest);
     const fence = readFence(wb);
     if (!fence.ok) return refusal("conflict", "maintenance-active", fence.error.detail);
@@ -9571,10 +9698,13 @@ function migrationPlan(req, sitesOf) {
     if (!closed.ok) return closed;
     const accepted = acceptances(p, order2);
     if (!accepted.ok) return accepted;
-    const own = `${MIGRATIONS_DIR}/${p.migration_id}`;
-    const excluded = new Set(p.exclusions);
-    const taken = inventory(wb.root, (path) => path === STATE_DIR || excluded.has(path) || under(path, own));
+    const taken = inventory(wb.root, eligibleSkip(`${MIGRATIONS_DIR}/${p.migration_id}`, p.exclusions));
     const byPath = new Map(taken.map((e) => [e.path, e]));
+    const observed = inventoryDigest(taken);
+    if (observed !== p.source_inventory_sha256) {
+      const named = sources(p, order2, byPath);
+      return refusal("conflict", "source-changed", `the eligible inventory of ${wb.root} digests to ${observed} under the lock, and the proposal was composed over ${p.source_inventory_sha256}: an entry was added, removed, re-kinded or rewritten since the survey it was composed from${named.ok ? "" : `; among them, ${named.error.detail}`}`);
+    }
     const sourced = sources(p, order2, byPath);
     if (!sourced.ok) return sourced;
     const rewritten = rewrites(wb, p, order2);
@@ -9602,16 +9732,36 @@ function migrationPlan(req, sitesOf) {
     const inventoryParts = split(taken, (e) => contribution(JSON.stringify(e, null, 2), 2), (n, entries) => frame("inventory")(n, { entries }));
     const findingParts = split(p.findings, (f) => contribution(JSON.stringify(f, null, 2), 2), (n, findings) => frame("findings")(n, { findings }));
     const repairParts = split(p.repairs, (r) => contribution(JSON.stringify(r, null, 2), 2), (n, repairs) => frame("repairs")(n, { repairs }));
+    const stored2 = storedNow(wb);
+    const unreadable = stored2.find((s) => s.unreadable !== null);
+    if (unreadable !== void 0) return { ok: false, error: unreadable.unreadable };
+    const answerParts = split(
+      stored2.map((s) => s.entry),
+      (e) => contribution(JSON.stringify(e, null, 2), 2),
+      (n, entries) => frame("answers")(n, { entries })
+    );
     const parts = [
       ...chunks.map((c, i) => ({ entry: { part: "chunk", n: i + 1, path: chunkPath(p.migration_id, i + 1), sha256: revisionOf(c.bytes), writes: c.writes }, bytes: c.bytes, file: c.file })),
       ...[
         ["records", recordParts],
         ["inventory", inventoryParts],
         ["findings", findingParts],
-        ["repairs", repairParts]
+        ["repairs", repairParts],
+        ["answers", answerParts]
       ].flatMap(([kind, list2]) => list2.map((f, i) => ({ entry: { part: kind, n: i + 1, path: partPath(p.migration_id, kind, i + 1), sha256: revisionOf(f.bytes) }, bytes: f.bytes, file: f.file })))
     ];
-    const index = { schema: PLAN_SCHEMA, part: "index", migration_id: p.migration_id, workbench_id: p.workbench_id, source_layout: p.source_layout, proposal: { path: req.proposal.path, sha256: req.proposal.sha256 }, exclusions: p.exclusions, schedule, parts: parts.map((x) => x.entry) };
+    const index = {
+      schema: PLAN_SCHEMA,
+      part: "index",
+      migration_id: p.migration_id,
+      workbench_id: p.workbench_id,
+      source_layout: p.source_layout,
+      proposal: { path: req.proposal.path, sha256: req.proposal.sha256 },
+      source_inventory_sha256: p.source_inventory_sha256,
+      exclusions: p.exclusions,
+      schedule,
+      parts: parts.map((x) => x.entry)
+    };
     for (const x of parts) {
       const v2 = ctx.validateResult(PLAN_SCHEMA_ID, x.file, `the plan file ${String(x.entry.path)} is not valid`);
       if (!v2.ok) return v2;
@@ -9645,6 +9795,730 @@ function freezeOver(req, writes, result) {
   if (intentBytes > MAX_RECORD_BYTES) return `needs an intent.json of ${intentBytes} bytes, over the ${MAX_RECORD_BYTES}-byte cap`;
   return null;
 }
+var changed = (detail) => refusal("conflict", "plan-file-changed", detail);
+var outOfOrder = (detail) => refusal("migration-incomplete", "chunk-out-of-order", detail);
+var sha = (bytes) => revisionOf(bytes);
+function regularBytes(wb, path) {
+  const abs = resolveInside(wb, path);
+  if (!abs.ok) return null;
+  try {
+    return lstatSync3(abs.value).isFile() ? readFileSync4(abs.value) : null;
+  } catch (e) {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  }
+}
+function planFile(path, bytes) {
+  const parsed = strictParse(bytes);
+  if (!parsed.ok) return { ok: false, why: `${parsed.reason}: ${parsed.detail}` };
+  const v = validate(PLAN_SCHEMA_ID, parsed.value);
+  if (!v.ok) return { ok: false, why: v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}` };
+  return { ok: true, value: parsed.value };
+}
+function readIndex(wb, ref) {
+  const bytes = regularBytes(wb, ref.path);
+  if (bytes === null) return changed(`${ref.path} is no regular file in ${wb.root}; the request binds it at ${ref.sha256}`);
+  if (sha(bytes) !== ref.sha256) return changed(`${ref.path} is ${sha(bytes)}; the request binds ${ref.sha256}`);
+  const read2 = planFile(ref.path, bytes);
+  if (!read2.ok) return changed(`${ref.path}: ${read2.why}`);
+  const index = read2.value;
+  const own = dirname3(ref.path);
+  if (index.part !== "index" || indexPath(index.migration_id) !== ref.path) return changed(`${ref.path} is no index of the migration its path names`);
+  const chunks = index.parts.filter((x) => x.part === "chunk").length;
+  let at = 0;
+  for (const kind of PART_ORDER) {
+    let n = 0;
+    while (at < index.parts.length && index.parts[at].part === kind) {
+      const x = index.parts[at];
+      n += 1;
+      const path = kind === "chunk" ? chunkPath(index.migration_id, n) : partPath(index.migration_id, kind, n);
+      if (x.n !== n || x.path !== path) return changed(`${ref.path} names ${x.path} as ${kind} ${x.n}, out of the order the freeze writes`);
+      at += 1;
+    }
+    if (n === 0 && kind !== "chunk") return changed(`${ref.path} names no ${kind} part`);
+  }
+  if (at !== index.parts.length) return changed(`${ref.path} names its parts out of the order the freeze writes`);
+  const s = index.schedule;
+  const applyOk = s.apply.length === chunks && s.apply.every((e, i) => e.chunk === i + 1);
+  const rollbackOk = s.rollback.length === chunks + 1 && s.rollback.every((e, i) => e.chunk === i);
+  if (chunks === 0 || !applyOk || !rollbackOk) return changed(`${ref.path} schedules ${s.apply.length} apply and ${s.rollback.length} rollback ids for ${chunks} chunks`);
+  return { ok: true, value: { ref, index, own, chunks } };
+}
+function readPart(wb, plan, entry) {
+  const bytes = regularBytes(wb, entry.path);
+  if (bytes === null) return changed(`${entry.path}, named by ${plan.ref.path}, is no regular file`);
+  if (sha(bytes) !== entry.sha256) return changed(`${entry.path} is ${sha(bytes)}; ${plan.ref.path} names ${entry.sha256}`);
+  const read2 = planFile(entry.path, bytes);
+  if (!read2.ok) return changed(`${entry.path}: ${read2.why}`);
+  const v = read2.value;
+  const n = entry.part === "chunk" ? v.chunk : v.n;
+  if (v.part !== entry.part || n !== entry.n || v.migration_id !== plan.index.migration_id) return changed(`${entry.path} is not ${entry.part} ${entry.n} of ${plan.index.migration_id}`);
+  return { ok: true, value: v };
+}
+function readChunks(wb, plan, last) {
+  const out = [];
+  for (const entry of plan.index.parts.filter((x) => x.part === "chunk" && x.n <= last)) {
+    const r = readPart(wb, plan, entry);
+    if (!r.ok) return r;
+    out.push(r.value);
+  }
+  return { ok: true, value: out };
+}
+function readParts(wb, plan, kind) {
+  const out = [];
+  for (const entry of plan.index.parts.filter((x) => x.part === kind)) {
+    const r = readPart(wb, plan, entry);
+    if (!r.ok) return r;
+    out.push(r.value);
+  }
+  return { ok: true, value: out };
+}
+function frozenInventory(wb, plan) {
+  const parts = readParts(wb, plan, "inventory");
+  if (!parts.ok) return parts;
+  const entries = parts.value.flatMap((p) => p.entries);
+  const digest = inventoryDigest(entries);
+  if (digest !== plan.index.source_inventory_sha256) return changed(`the inventory parts of ${plan.ref.path} digest to ${digest}; the index froze ${plan.index.source_inventory_sha256}`);
+  return { ok: true, value: entries };
+}
+function ownDirectory(wb, plan, expect, disk) {
+  const want = /* @__PURE__ */ new Map();
+  want.set(plan.ref.path, { sha256: plan.ref.sha256, plan: true });
+  for (const x of plan.index.parts) want.set(x.path, { sha256: x.sha256, plan: true });
+  for (const c of expect.originals) for (const w of c.writes) if (w.kind === "original") want.set(w.path, { sha256: w.after_sha256, plan: false });
+  const abs = join4(wb.root, plan.own);
+  let entries = [];
+  try {
+    entries = inventory(abs, () => false);
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+  }
+  const seen = /* @__PURE__ */ new Set();
+  for (const e of entries) {
+    if (e.kind === "directory") continue;
+    const path = `${plan.own}/${e.path}`;
+    if (e.path === "receipt.json" && expect.receipt || e.path === "rollback.json" && expect.rollback) continue;
+    const w = want.get(path);
+    if (w === void 0) {
+      const planArea = e.path === "plan.json" || e.path.startsWith("chunks/") || e.path.startsWith("parts/");
+      return planArea ? changed(`${path} stands and ${plan.ref.path} does not name it`) : disk(`${path} stands, and this migration holds no such file at this point of its run`);
+    }
+    seen.add(path);
+    if (e.kind !== "file" || e.sha256 !== w.sha256) {
+      const what = e.kind === "file" ? e.sha256 : `a ${e.kind}`;
+      return w.plan ? changed(`${path} is ${what}; ${plan.ref.path} names ${w.sha256}`) : disk(`${path} is ${what}; the original it holds is ${w.sha256}`);
+    }
+  }
+  for (const [path, w] of want) if (!seen.has(path)) return w.plan ? changed(`${path}, named by ${plan.ref.path}, is missing`) : disk(`${path} is missing; it holds the original at ${w.sha256}`);
+  return { ok: true, value: void 0 };
+}
+function eligible(wb, plan) {
+  return inventory(wb.root, eligibleSkip(plan.own, plan.index.exclusions));
+}
+function controlBytes(w) {
+  const bytes = Buffer.from(serialise(w.control), "utf-8");
+  if (sha(bytes) !== w.after_sha256) return changed(`the control ${w.path} serialises to ${sha(bytes)}; its chunk names ${w.after_sha256}`);
+  return { ok: true, value: bytes };
+}
+function expectedState(frozen, chunks) {
+  const out = new Map(frozen.map((e) => [e.path, e]));
+  for (const c of chunks) {
+    for (const w of c.writes) {
+      if (w.kind === "control") {
+        const bytes = controlBytes(w);
+        if (!bytes.ok) return bytes;
+        out.set(w.path, { path: w.path, kind: "file", size: bytes.value.byteLength, sha256: w.after_sha256 });
+      } else if (w.kind === "rewrite") {
+        const source = out.get(w.path);
+        if (source === void 0 || source.kind !== "file" || source.sha256 !== w.source_sha256) return changed(`chunk ${c.chunk} rewrites ${w.path} from ${w.source_sha256}, which the frozen inventory does not hold`);
+        out.set(w.path, { path: w.path, kind: "file", size: source.size - w.deletions.reduce((n, d) => n + d.length, 0), sha256: w.after_sha256 });
+      }
+    }
+  }
+  return { ok: true, value: out };
+}
+var describe2 = (e) => e.kind === "file" ? `a file of ${e.size} bytes at ${e.sha256}` : e.kind === "link" ? `a link to ${JSON.stringify(e.target)}` : `a ${e.kind}`;
+var sameEntry = (a, b) => canonical(a) === canonical(b);
+function firstDifference(actual, expected) {
+  const created = new Set([ARCHIVE_DIR, MIGRATIONS_DIR].filter((d) => !expected.has(d)));
+  const problems = [];
+  const seen = /* @__PURE__ */ new Set();
+  for (const e of actual) {
+    seen.add(e.path);
+    const want = expected.get(e.path);
+    if (want === void 0) {
+      if (!(e.kind === "directory" && created.has(e.path))) problems.push([e.path, `${e.path} was added: ${describe2(e)}`]);
+    } else if (!sameEntry(e, want)) problems.push([e.path, `${e.path} is ${describe2(e)}, expected ${describe2(want)}`]);
+  }
+  for (const [path, want] of expected) if (!seen.has(path)) problems.push([path, `${path} was removed: expected ${describe2(want)}`]);
+  if (problems.length === 0) return null;
+  problems.sort((a, b) => bytewise(a[0], b[0]));
+  return problems[0][1] + (problems.length > 1 ? ` (and ${problems.length - 1} more)` : "");
+}
+var inventoryDigest = (entries) => sha(Buffer.from(canonical([...entries].sort((a, b) => bytewise(a.path, b.path))), "utf-8"));
+function stored(wb, id) {
+  return readAnswer(wb, id);
+}
+function landedChunks(wb, plan) {
+  const out = [];
+  for (let n = 1; n <= plan.chunks; n++) {
+    const applied = stored(wb, plan.index.schedule.apply[n - 1].operation_id);
+    if (!applied.ok) return applied;
+    const undone = stored(wb, plan.index.schedule.rollback[n].operation_id);
+    if (!undone.ok) return undone;
+    if (applied.value !== null && undone.value === null) out.push(n);
+  }
+  return { ok: true, value: out };
+}
+var chunkList = (ns) => ns.length === 0 ? "none" : ns.join(", ");
+var firstChunks = (n) => Array.from({ length: n }, (_, i) => i + 1);
+var sameList = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+var chunkOneFence = (plan) => plan.index.schedule.apply[0].operation_id;
+function fenceNow(wb) {
+  const fence = readFence(wb);
+  if (!fence.ok) return refusal("conflict", "maintenance-active", fence.error.detail);
+  return fence;
+}
+var fenceRefused = (standing, wanted) => refusal(
+  "conflict",
+  "maintenance-active",
+  standing === null ? `no maintenance fence stands in ${STATE_DIR}/${MAINTENANCE_FILE}; this phase runs under the fence ${wanted}` : `the fence in ${STATE_DIR}/${MAINTENANCE_FILE} is ${standing.operation_id} since ${standing.since}; this phase runs under ${wanted} only`
+);
+var manifestPresent = (wb, phase) => refusal("conflict", "manifest-present", `${wb.root} holds ${WORKBENCH_MANIFEST}; migration ${phase} runs on a legacy store only (a replay of an answer stored earlier is answered whatever the store's state)`);
+var sourceChanged = (detail) => refusal("conflict", "source-changed", detail);
+var afterStateChanged = (detail) => refusal("conflict", "after-state-changed", detail);
+function narrativeAt(wb, path, hash) {
+  const bytes = regularBytes(wb, path);
+  if (bytes === null || sha(bytes) !== hash) return sourceChanged(`${path} is ${bytes === null ? "no regular file" : sha(bytes)}; the plan reads it at ${hash}`);
+  return { ok: true, value: bytes };
+}
+function migrationApply(req, options) {
+  return (ctx) => {
+    const { wb } = ctx;
+    const now = prefix(ctx);
+    if (!now.ok) return now;
+    if (now.value.state === "json-control") return manifestPresent(wb, "apply");
+    const read2 = readIndex(wb, req.plan);
+    if (!read2.ok) return read2;
+    const plan = read2.value;
+    const frozen = frozenInventory(wb, plan);
+    if (!frozen.ok) return frozen;
+    const n = req.chunk;
+    const chunks = readChunks(wb, plan, n);
+    if (!chunks.ok) return chunks;
+    if (n > plan.chunks) return outOfOrder(`${plan.index.migration_id} has ${plural(plan.chunks, "chunk")}; there is no chunk ${n} to apply`);
+    const scheduled = plan.index.schedule.apply[n - 1].operation_id;
+    if (req.operation_id !== scheduled) return refusal("conflict", "operation-id-unscheduled", `${plan.ref.path} schedules ${scheduled} for apply chunk ${n}, not ${req.operation_id}`);
+    const f1 = chunkOneFence(plan);
+    const fence = fenceNow(wb);
+    if (!fence.ok) return fence;
+    const standing = fence.value;
+    if (n === 1 ? standing !== null && standing.operation_id !== f1 : standing === null || standing.operation_id !== f1) return fenceRefused(standing, f1);
+    const landed = landedChunks(wb, plan);
+    if (!landed.ok) return landed;
+    if (!sameList(landed.value, firstChunks(n - 1))) return outOfOrder(`apply chunk ${n} follows chunks 1 to ${n - 1}; the chunks landed are ${chunkList(landed.value)}`);
+    const before = chunks.value.slice(0, n - 1);
+    const expected = expectedState(frozen.value, before);
+    if (!expected.ok) return expected;
+    const diff = firstDifference(eligible(wb, plan), expected.value);
+    if (diff !== null) return sourceChanged(`the store is not as chunk ${n} of ${plan.index.migration_id} expects it: ${diff}`);
+    const own = ownDirectory(wb, plan, { originals: before, receipt: false, rollback: false }, sourceChanged);
+    if (!own.ok) return own;
+    const chunk = chunks.value[n - 1];
+    const writes = [];
+    const revisions = {};
+    for (const w of chunk.writes) {
+      if (w.kind === "original") {
+        const bytes = narrativeAt(wb, w.from, w.after_sha256);
+        if (!bytes.ok) return bytes;
+        writes.push({ path: w.path, bytes: bytes.value });
+      } else if (w.kind === "control") {
+        const bytes = controlBytes(w);
+        if (!bytes.ok) return bytes;
+        writes.push({ path: w.path, bytes: bytes.value });
+        revisions[w.path] = w.after_sha256;
+      } else {
+        const source = narrativeAt(wb, w.path, w.source_sha256);
+        if (!source.ok) return source;
+        const out = applyDeletions(source.value, w.deletions);
+        if (!out.ok || sha(out.bytes) !== w.after_sha256) return changed(`chunk ${n} rewrites ${w.path} to ${w.after_sha256}, which its deletions do not give`);
+        writes.push({ path: w.path, bytes: out.bytes });
+      }
+    }
+    const big = writes.filter((w) => w.bytes.byteLength > MAX_RECORD_BYTES);
+    if (big.length > 0) return refusal("schema-invalid", "too-large", `chunk ${n} writes ${listed(big.map((w) => `${w.path} (${w.bytes.byteLength} bytes)`))}, over the journal's ${MAX_RECORD_BYTES}-byte cap; nothing is written`);
+    const fenceFirst = n === 1 && standing === null ? { operation_id: f1, since: new Date(options.now()).toISOString() } : void 0;
+    const answerFence = fenceFirst ?? standing;
+    const result = {
+      operation_id: req.operation_id,
+      migration_id: plan.index.migration_id,
+      chunk: n,
+      fence: { operation_id: answerFence.operation_id, since: answerFence.since },
+      writes: chunk.writes.map((w) => ({ path: w.path, kind: w.kind }))
+    };
+    return { ok: true, value: { writes, result, revisions, ...fenceFirst !== void 0 ? { fenceFirst } : {} } };
+  };
+}
+function manifestOf(index, receipt) {
+  return { schema: WORKBENCH_SCHEMA_ID.slice(SCHEMA_ID_PREFIX.length), id: index.workbench_id, required_features: [...SUPPORTED_FEATURES], migration: { id: index.migration_id, source_layout: index.source_layout, receipt }, extensions: {} };
+}
+var receiptPath = (migrationId) => `${MIGRATIONS_DIR}/${migrationId}/receipt.json`;
+var rollbackPath = (migrationId) => `${MIGRATIONS_DIR}/${migrationId}/rollback.json`;
+function runChecks(view, index, rows, after, hooks) {
+  const checks = [];
+  const pairs = { name: "pairs", checked: rows.size, problems: [] };
+  const read2 = /* @__PURE__ */ new Map();
+  for (const [id, row] of rows) {
+    const r = readPair(view, row.control);
+    if (!r.ok) {
+      pairs.problems.push(`${row.control}: ${r.error.reason}`);
+      continue;
+    }
+    read2.set(id, r.value);
+    const c = r.value.control;
+    if (c.id !== id || r.value.kind !== row.kind) pairs.problems.push(`${row.control} is ${r.value.kind} ${String(c.id)}; the plan converts ${row.kind} ${id}`);
+    const narrative = r.value.narrative;
+    if (narrative === null || narrative.path !== row.narrative || narrative.sha256 !== after.get(row.narrative)) pairs.problems.push(`${row.control} names ${JSON.stringify(narrative)}; the plan leaves ${row.narrative} at ${String(after.get(row.narrative))}`);
+  }
+  checks.push(pairs);
+  const files = controlFiles(view, view.root);
+  const ids = { name: "ids", checked: files.length, problems: [] };
+  const carriers = /* @__PURE__ */ new Map();
+  for (const path of files) {
+    const bytes = regularBytes(view, path);
+    const parsed = bytes === null ? null : strictParse(bytes);
+    const control = parsed !== null && parsed.ok && isObject3(parsed.value) ? parsed.value : null;
+    if (control === null || typeof control.id !== "string") {
+      ids.problems.push(`${path} carries no id`);
+      continue;
+    }
+    if (control.workbench_id !== index.workbench_id) ids.problems.push(`${path} carries workbench_id ${String(control.workbench_id)}`);
+    carriers.set(control.id, [...carriers.get(control.id) ?? [], path]);
+  }
+  for (const [id, paths] of carriers) if (paths.length > 1) ids.problems.push(`${id} is carried by ${paths.join(", ")}`);
+  if (carriers.has(index.workbench_id)) ids.problems.push(`${index.workbench_id} is the workbench id and a record's`);
+  for (const [id, row] of rows) if (!(carriers.get(id) ?? []).includes(row.control)) ids.problems.push(`${id} is carried by no control file at ${row.control}`);
+  checks.push(ids);
+  const reconciled = hooks.reconcile(view);
+  const report = reconciled.ok ? reconciled.result : null;
+  const deps = report === null ? [] : report.dependencies;
+  const graph = { name: "graph", checked: deps.filter((d) => d.status !== "cycle").length, problems: [] };
+  for (const d of deps) {
+    if (d.status === "cycle") graph.problems.push(`a cycle through ${d.ids.join(" -> ")}`);
+    else if (d.class !== void 0 && d.reason !== "dependency-unmet") graph.problems.push(`${String(d.path)} ${String(d.at)}: ${String(d.reason)}`);
+  }
+  checks.push(graph);
+  const refs = report === null ? [] : report.references;
+  const references = { name: "references", checked: refs.length, problems: [] };
+  for (const r of refs) if (r.status === "unresolved" || r.status === "ambiguous") references.problems.push(`${String(r.path)} ${String(r.at)}: ${String(r.status)}, ${String(r.reason)}`);
+  checks.push(references);
+  const acceptance = { name: "acceptance", checked: 0, problems: [] };
+  for (const [id, pair] of read2) {
+    const control = pair.control.control;
+    const a = isObject3(control) ? control.acceptance : null;
+    if (!isObject3(a)) continue;
+    acceptance.checked += 1;
+    const ref = a.ref;
+    const pkg = isObject3(ref) && typeof ref.record_id === "string" ? read2.get(ref.record_id) : void 0;
+    const docs = pkg !== void 0 && Array.isArray(pkg.control.active_documents) ? pkg.control.active_documents : [];
+    const entry = docs.find((d) => isObject3(d) && isObject3(d.ref) && d.ref.record_id === id);
+    if (pkg === void 0 || pkg.kind !== "package") acceptance.problems.push(`${pair.path}: its acceptance names no converted package`);
+    else if (!isObject3(entry) || entry.revision !== a.revision) acceptance.problems.push(`${pair.path}: ${pkg.path} carries no active-document entry binding it at ${String(a.revision)}`);
+    else if (pair.narrative?.sha256 !== a.revision) acceptance.problems.push(`${pair.path}: accepted at ${String(a.revision)}, its narrative is ${String(pair.narrative?.sha256)}`);
+  }
+  checks.push(acceptance);
+  const closure2 = { name: "closure", checked: 0, problems: [] };
+  for (const [, pair] of read2) {
+    for (const site of hooks.sitesOf({ kind: pair.kind, control: pair.control })) {
+      const v = site.value;
+      if (!isObject3(v) || typeof v.record_id !== "string") continue;
+      if (v.workbench_id !== index.workbench_id) continue;
+      closure2.checked += 1;
+      if (!rows.has(v.record_id)) closure2.problems.push(`${pair.path} ${site.at} names ${v.record_id}, which this migration did not convert`);
+    }
+  }
+  checks.push(closure2);
+  const validated = hooks.validate(view);
+  const vr = validated.ok ? validated.result : null;
+  const findings = vr === null ? [] : vr.findings;
+  const validateCheck = { name: "validate", checked: vr === null ? 0 : Number(vr.checked), problems: validated.ok ? findings.map((f) => `${String(f.path)}: ${String(f.reason)}`) : [`validate answered ${validated.error.reason}`] };
+  checks.push(validateCheck);
+  const reconcileCheck = { name: "reconcile", checked: report === null ? 0 : Number(report.checked), problems: [] };
+  if (!reconciled.ok) reconcileCheck.problems.push(`reconcile answered ${reconciled.error.reason}`);
+  else {
+    for (const i of report?.intents) reconcileCheck.problems.push(`intent ${String(i.operation_id)} pending`);
+    for (const r of report?.records) reconcileCheck.problems.push(`${String(r.path)}: ${String(r.reason)}`);
+    for (const e of report?.evidence) if (e.status === "stale") reconcileCheck.problems.push(`${String(e.path)} ${String(e.at)}: stale evidence, ${String(e.reason)}`);
+  }
+  checks.push(reconcileCheck);
+  return checks;
+}
+function migrationVerify(req, hooks) {
+  return (ctx) => {
+    const { wb } = ctx;
+    const now = prefix(ctx);
+    if (!now.ok) return now;
+    if (now.value.state === "json-control") return manifestPresent(wb, "verify");
+    const read2 = readIndex(wb, req.plan);
+    if (!read2.ok) return read2;
+    const plan = read2.value;
+    const frozen = frozenInventory(wb, plan);
+    if (!frozen.ok) return frozen;
+    const chunks = readChunks(wb, plan, plan.chunks);
+    if (!chunks.ok) return chunks;
+    const recordParts = readParts(wb, plan, "records");
+    if (!recordParts.ok) return recordParts;
+    for (const kind of ["findings", "repairs"]) {
+      const r = readParts(wb, plan, kind);
+      if (!r.ok) return r;
+    }
+    const baseline = readBaseline(wb, plan);
+    if (!baseline.ok) return baseline;
+    if (req.operation_id !== plan.index.schedule.verify) return refusal("conflict", "operation-id-unscheduled", `${plan.ref.path} schedules ${plan.index.schedule.verify} for verify, not ${req.operation_id}`);
+    const f1 = chunkOneFence(plan);
+    const fence = fenceNow(wb);
+    if (!fence.ok) return fence;
+    if (fence.value === null || fence.value.operation_id !== f1) return fenceRefused(fence.value, f1);
+    const landed = landedChunks(wb, plan);
+    if (!landed.ok) return landed;
+    const missing = firstChunks(plan.chunks).filter((n) => !landed.value.includes(n));
+    if (missing.length > 0) return refusal("migration-incomplete", "chunks-missing", `verify follows every chunk of ${plan.index.migration_id}; ${missing.length === 1 ? "chunk" : "chunks"} ${missing.join(", ")} ${missing.length === 1 ? "has" : "have"} not landed`);
+    const expected = expectedState(frozen.value, chunks.value);
+    if (!expected.ok) return expected;
+    const actual = eligible(wb, plan);
+    const diff = firstDifference(actual, expected.value);
+    if (diff !== null) return sourceChanged(`the store is not the final state ${plan.index.migration_id} expects: ${diff}`);
+    const own = ownDirectory(wb, plan, { originals: chunks.value, receipt: false, rollback: false }, sourceChanged);
+    if (!own.ok) return own;
+    const rows = /* @__PURE__ */ new Map();
+    for (const part of recordParts.value) for (const [id, row] of Object.entries(part.records)) rows.set(id, row);
+    const after = /* @__PURE__ */ new Map();
+    for (const e of actual) if (e.kind === "file") after.set(e.path, e.sha256);
+    const receipt = receiptPath(plan.index.migration_id);
+    const manifest = manifestOf(plan.index, receipt);
+    const view = { root: wb.root, state: "json-control", id: plan.index.workbench_id, manifest, diagnosis: null };
+    const checks = runChecks(view, plan.index, rows, after, hooks);
+    const failed = checks.filter((c) => c.problems.length > 0);
+    if (failed.length > 0) {
+      return refusal("migration-incomplete", "check-failed", `${failed.map((c) => `${c.name}: ${plural(c.problems.length, "problem")}, ${listed(c.problems)}`).join("; ")}; no receipt is written`);
+    }
+    const manifestBytes = Buffer.from(serialise(manifest), "utf-8");
+    const v = ctx.validateResult(WORKBENCH_SCHEMA_ID, manifest, "the manifest verify would write is not valid");
+    if (!v.ok) return v;
+    const activated = [...actual, { path: WORKBENCH_MANIFEST, kind: "file", size: manifestBytes.byteLength, sha256: sha(manifestBytes) }];
+    const counts = recordParts.value[0].counts;
+    const receiptValue = {
+      schema: RECEIPT_SCHEMA_ID.slice(SCHEMA_ID_PREFIX.length),
+      migration_id: plan.index.migration_id,
+      workbench_id: plan.index.workbench_id,
+      source_layout: plan.index.source_layout,
+      plan: { path: plan.ref.path, sha256: plan.ref.sha256 },
+      parts: plan.index.parts.map((x) => ({ path: x.path, sha256: x.sha256 })),
+      verify_operation_id: req.operation_id,
+      after_inventory_sha256: inventoryDigest(activated),
+      checks: checks.map((c) => ({ name: c.name, result: "passed", checked: c.checked })),
+      counts,
+      versions: { schemas: schemas().ids(), features: [...SUPPORTED_FEATURES] },
+      manifest_revision: sha(manifestBytes)
+    };
+    const rv = ctx.validateResult(RECEIPT_SCHEMA_ID, receiptValue, "the receipt verify would write is not valid");
+    if (!rv.ok) return rv;
+    const receiptBytes = Buffer.from(serialise(receiptValue), "utf-8");
+    const result = {
+      operation_id: req.operation_id,
+      migration_id: plan.index.migration_id,
+      plan: { path: plan.ref.path, sha256: plan.ref.sha256 },
+      checks: receiptValue.checks,
+      counts,
+      receipt: { path: receipt, sha256: sha(receiptBytes) },
+      manifest: { path: WORKBENCH_MANIFEST, revision: sha(manifestBytes) }
+    };
+    return {
+      ok: true,
+      value: {
+        writes: [
+          { path: receipt, bytes: receiptBytes },
+          { path: WORKBENCH_MANIFEST, bytes: manifestBytes }
+        ],
+        result
+      }
+    };
+  };
+}
+var resultOf = (a) => a.response.ok && isObject3(a.response.result) ? a.response.result : {};
+var exemptOf = (s) => ({ operation_id: s.entry.operation_id, op: s.entry.op, request_digest: s.entry.request_digest });
+function boundBinding(wb, plan) {
+  const a = stored(wb, plan.index.schedule.rollback[plan.chunks].operation_id);
+  if (!a.ok) return a;
+  if (a.value === null) return { ok: true, value: null };
+  const b = resultOf(a.value).binding;
+  if (!isObject3(b)) return { ok: true, value: null };
+  return { ok: true, value: { path: String(b.path), sha256: String(b.sha256) } };
+}
+function readBinding(wb, plan, ref) {
+  const bytes = regularBytes(wb, ref.path);
+  if (bytes === null) return changed(`${ref.path} is no regular file; the first rollback after activation bound it at ${ref.sha256}`);
+  if (sha(bytes) !== ref.sha256) return changed(`${ref.path} is ${sha(bytes)}; the first rollback after activation bound it at ${ref.sha256}`);
+  const read2 = planFile(ref.path, bytes);
+  if (!read2.ok) return changed(`${ref.path}: ${read2.why}`);
+  const v = read2.value;
+  if (v.part !== "rollback-binding" || v.migration_id !== plan.index.migration_id || canonical(v.plan) !== canonical(plan.ref)) return changed(`${ref.path} is not the rollback binding of ${plan.index.migration_id} at ${plan.ref.sha256}`);
+  return { ok: true, value: v };
+}
+function exemptSet(wb, plan, standing, now) {
+  const f1 = chunkOneFence(plan);
+  const verifyId = plan.index.schedule.verify;
+  const verifies = now.filter((s) => s.answer !== null && s.entry.operation_id === verifyId && reconstructs(s.answer.request_digest, { op: "migration", operation_id: verifyId, phase: "verify", plan: plan.ref }, wb.root));
+  const ends = now.filter((s) => s.answer !== null && s.entry.op === "maintenance" && reconstructs(s.answer.request_digest, { op: "maintenance", operation_id: s.entry.operation_id, action: "end", fence: f1 }, wb.root));
+  const begins = now.filter((s) => s.answer !== null && s.entry.operation_id === standing.operation_id && reconstructs(s.answer.request_digest, { op: "maintenance", operation_id: standing.operation_id, action: "begin" }, wb.root));
+  if (verifies.length !== 1 || ends.length !== 1 || begins.length !== 1) {
+    return afterStateChanged(
+      `the exempt operations of a rollback after activation are this migration's verify, the one maintenance end naming chunk 1's fence ${f1} and the begin of the standing fence ${standing.operation_id}, each found by its reconstructed request; found ${plural(verifies.length, "verify", "verifies")}, ${plural(ends.length, "end")} and ${plural(begins.length, "begin")}`
+    );
+  }
+  return { ok: true, value: [verifies[0], ends[0], begins[0]].map((s) => exemptOf(s)).sort((a, b) => bytewise(a.operation_id, b.operation_id)) };
+}
+function audit(wb, plan, baseline, exempt, now) {
+  const bound = new Map(exempt.map((e) => [e.operation_id, e]));
+  for (const s of laterOperations(wb, plan, baseline, now)) {
+    const e = bound.get(s.entry.operation_id);
+    if (e !== void 0 && s.answer !== null && e.op === s.entry.op && e.request_digest === s.entry.request_digest) continue;
+    const what = s.answer !== null && s.entry.op === "maintenance" ? ` ${String(resultOf(s.answer).action)}` : "";
+    return afterStateChanged(`the stored answer ${s.entry.operation_id} (${s.entry.op}${what}) is neither in the baseline ${plan.ref.path} froze, nor a validated answer of its schedule, nor one of the exempt operations; a rollback after ordinary work is refused`);
+  }
+  return { ok: true, value: void 0 };
+}
+function baselineHolds(baseline, now) {
+  const byId = new Map(now.map((s) => [s.entry.operation_id, s]));
+  for (const e of baseline) {
+    const s = byId.get(e.operation_id);
+    if (s === void 0 || canonical(s.entry) !== canonical(e)) {
+      return afterStateChanged(`the stored answer ${e.operation_id} (${e.op}) that the baseline froze at plan is ${s === void 0 ? "missing" : `changed: it is ${s.entry.op} at ${s.entry.request_digest}, answer ${s.entry.answer_sha256}`}`);
+    }
+  }
+  return { ok: true, value: void 0 };
+}
+function receiptHolds(wb, plan, manifest) {
+  const path = receiptPath(plan.index.migration_id);
+  const unverified = (why) => refusal("migration-incomplete", "receipt-unverified", `the receipt ${path} of ${plan.index.migration_id} does not hold: ${why}`);
+  const migration2 = manifest.migration;
+  if (!isObject3(migration2) || migration2.receipt !== path) return unverified(`${WORKBENCH_MANIFEST} names ${isObject3(migration2) ? String(migration2.receipt) : "no receipt"}`);
+  const bytes = regularBytes(wb, path);
+  if (bytes === null) return unverified("it is no regular file in the workbench");
+  const parsed = strictParse(bytes);
+  if (!parsed.ok) return unverified(`${parsed.reason}: ${parsed.detail}`);
+  const v = validate(RECEIPT_SCHEMA_ID, parsed.value);
+  if (!v.ok) return unverified(v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`);
+  const r = parsed.value;
+  if (r.migration_id !== plan.index.migration_id || r.workbench_id !== plan.index.workbench_id || manifest.id !== plan.index.workbench_id) return unverified(`it names ${r.migration_id} in ${r.workbench_id}`);
+  if (r.plan.path !== plan.ref.path || r.plan.sha256 !== plan.ref.sha256) return unverified(`it binds the index at ${r.plan.sha256}`);
+  if (canonical(r.parts) !== canonical(plan.index.parts.map((x) => ({ path: x.path, sha256: x.sha256 })))) return unverified("its parts are not the index's");
+  if (r.verify_operation_id !== plan.index.schedule.verify) return unverified(`it names the verify ${r.verify_operation_id}`);
+  const manifestBytes = regularBytes(wb, WORKBENCH_MANIFEST);
+  const revision = manifestBytes === null ? null : sha(manifestBytes);
+  if (r.manifest_revision !== revision) return unverified(`it names the manifest at ${r.manifest_revision}, which is ${String(revision)}`);
+  return { ok: true, value: { ref: { path, sha256: sha(bytes) }, after: r.after_inventory_sha256 } };
+}
+function chunkAfterState(wb, chunk) {
+  for (const w of chunk.writes) {
+    if (w.kind === "original") continue;
+    const bytes = regularBytes(wb, w.path);
+    if (bytes === null || sha(bytes) !== w.after_sha256) return afterStateChanged(`${w.path} is ${bytes === null ? "no regular file" : sha(bytes)}; chunk ${chunk.chunk} left it at ${w.after_sha256}`);
+  }
+  return { ok: true, value: void 0 };
+}
+function migrationRollback(req) {
+  return (ctx) => {
+    const { wb } = ctx;
+    const now = prefix(ctx);
+    if (!now.ok) return now;
+    const read2 = readIndex(wb, req.plan);
+    if (!read2.ok) return read2;
+    const plan = read2.value;
+    const manifest = now.value.state === "json-control" ? now.value.manifest : null;
+    const activated = manifest !== null && isObject3(manifest.migration) && manifest.migration.id === plan.index.migration_id;
+    if (manifest !== null && !activated) return manifestPresent(wb, "rollback");
+    const k = req.chunk;
+    const frozen = frozenInventory(wb, plan);
+    if (!frozen.ok) return frozen;
+    const chunks = readChunks(wb, plan, plan.chunks);
+    if (!chunks.ok) return chunks;
+    for (const kind of ["records", "findings", "repairs"]) {
+      const r = readParts(wb, plan, kind);
+      if (!r.ok) return r;
+    }
+    const baseline = readBaseline(wb, plan);
+    if (!baseline.ok) return baseline;
+    let binding = null;
+    if (!activated) {
+      const ref = boundBinding(wb, plan);
+      if (!ref.ok) return ref;
+      if (ref.value !== null) {
+        const b = readBinding(wb, plan, ref.value);
+        if (!b.ok) return b;
+        binding = { ref: ref.value, value: b.value };
+      }
+    }
+    if (k > plan.chunks) return outOfOrder(`${plan.index.migration_id} has ${plural(plan.chunks, "chunk")}; there is no chunk ${k} to roll back`);
+    const scheduled = plan.index.schedule.rollback[k].operation_id;
+    if (req.operation_id !== scheduled) return refusal("conflict", "operation-id-unscheduled", `${plan.ref.path} schedules ${scheduled} for rollback chunk ${k}, not ${req.operation_id}`);
+    const f1 = chunkOneFence(plan);
+    const fence = fenceNow(wb);
+    if (!fence.ok) return fence;
+    const standing = fence.value;
+    let fenceOk;
+    let wanted;
+    if (activated) {
+      wanted = "the fence of a stored maintenance begin";
+      const begin = standing === null ? null : stored(wb, standing.operation_id);
+      if (begin !== null && !begin.ok) return begin;
+      fenceOk = begin !== null && begin.value !== null && begin.value.op === "maintenance" && resultOf(begin.value).action === "begin";
+    } else if (binding !== null) {
+      wanted = binding.value.fence;
+      fenceOk = standing !== null && standing.operation_id === wanted;
+    } else {
+      const applied = stored(wb, f1);
+      if (!applied.ok) return applied;
+      wanted = f1;
+      fenceOk = applied.value === null ? standing === null || standing.operation_id === f1 : standing !== null && standing.operation_id === f1;
+    }
+    if (!fenceOk) return fenceRefused(standing, wanted);
+    const landed = landedChunks(wb, plan);
+    if (!landed.ok) return landed;
+    const highest = landed.value.length === 0 ? 0 : Math.max(...landed.value);
+    if (k !== highest) return outOfOrder(k === 0 ? `rollback chunk 0 follows the rollback of every chunk; the chunks landed are ${chunkList(landed.value)}` : `rollback runs from the highest landed chunk down; the chunks landed are ${chunkList(landed.value)}, so chunk ${k} is not next`);
+    if (activated && k !== plan.chunks) return outOfOrder(`after activation every chunk of ${plan.index.migration_id} is landed; rollback starts at chunk ${plan.chunks}`);
+    let receipt = null;
+    let exempt = [];
+    if (activated) {
+      const held2 = receiptHolds(wb, plan, manifest);
+      if (!held2.ok) return held2;
+      receipt = held2.value.ref;
+      const actual = eligible(wb, plan);
+      if (inventoryDigest(actual) !== held2.value.after) {
+        const expected = expectedState(frozen.value, chunks.value);
+        if (!expected.ok) return expected;
+        const manifestBytes = regularBytes(wb, WORKBENCH_MANIFEST);
+        expected.value.set(WORKBENCH_MANIFEST, { path: WORKBENCH_MANIFEST, kind: "file", size: manifestBytes.byteLength, sha256: sha(manifestBytes) });
+        return afterStateChanged(`the store differs from the activated tree the receipt names (${held2.value.after}): ${firstDifference(actual, expected.value) ?? "an entry differs from the one verify compared"}`);
+      }
+      const answers = storedNow(wb);
+      const base = baselineHolds(baseline.value, answers);
+      if (!base.ok) return base;
+      const derived = exemptSet(wb, plan, standing, answers);
+      if (!derived.ok) return derived;
+      exempt = derived.value;
+      const audited = audit(wb, plan, baseline.value, exempt, answers);
+      if (!audited.ok) return audited;
+    } else if (binding !== null) {
+      const audited = audit(wb, plan, baseline.value, binding.value.exempt, storedNow(wb));
+      if (!audited.ok) return audited;
+    }
+    const originals = chunks.value.slice(0, k);
+    const own = ownDirectory(wb, plan, { originals, receipt: activated, rollback: binding !== null }, afterStateChanged);
+    if (!own.ok) return own;
+    if (k === 0) {
+      const diff = firstDifference(eligible(wb, plan), new Map(frozen.value.map((e) => [e.path, e])));
+      if (diff !== null) return afterStateChanged(`rollback chunk 0 runs on the frozen input of ${plan.index.migration_id} and the store differs: ${diff}`);
+      return chunkZero(wb, req, plan, binding?.ref ?? null, standing);
+    }
+    const chunk = chunks.value[k - 1];
+    const after = chunkAfterState(wb, chunk);
+    if (!after.ok) return after;
+    const writes = [];
+    const removals = [];
+    const restored = [];
+    let bound = null;
+    if (activated) {
+      const value = { schema: PLAN_SCHEMA, part: "rollback-binding", migration_id: plan.index.migration_id, plan: plan.ref, receipt, fence: standing.operation_id, exempt };
+      const v = ctx.validateResult(PLAN_SCHEMA_ID, value, "the rollback binding this rollback would write is not valid");
+      if (!v.ok) return v;
+      const bytes = Buffer.from(serialise(value), "utf-8");
+      bound = { path: rollbackPath(plan.index.migration_id), sha256: sha(bytes) };
+      writes.push({ path: bound.path, bytes });
+      removals.push({ path: WORKBENCH_MANIFEST, before: sha(regularBytes(wb, WORKBENCH_MANIFEST)) }, { path: receipt.path, before: receipt.sha256 });
+    }
+    const originalOf = new Map(chunk.writes.filter((w) => w.kind === "original").map((w) => [w.from, w]));
+    for (const w of chunk.writes) {
+      if (w.kind !== "rewrite") continue;
+      const original = originalOf.get(w.path);
+      const bytes = original === void 0 ? null : regularBytes(wb, original.path);
+      if (original === void 0 || bytes === null || sha(bytes) !== w.source_sha256) return afterStateChanged(`the original of ${w.path} is not at ${w.source_sha256}`);
+      writes.push({ path: w.path, bytes });
+      restored.push(w.path);
+    }
+    for (const w of chunk.writes) if (w.kind === "control") removals.push({ path: w.path, before: w.after_sha256 });
+    for (const w of chunk.writes) if (w.kind === "original") removals.push({ path: w.path, before: w.after_sha256 });
+    const result = { operation_id: req.operation_id, migration_id: plan.index.migration_id, chunk: k, restored, removed: removals.map((r) => r.path), activation_undone: activated, ...bound !== null ? { binding: bound } : {} };
+    return { ok: true, value: { writes, removals, result } };
+  };
+}
+function chunkZero(wb, req, plan, binding, standing) {
+  let m = 0;
+  for (let n = 1; n <= plan.chunks; n++) {
+    const a = stored(wb, plan.index.schedule.apply[n - 1].operation_id);
+    if (!a.ok) return a;
+    if (a.value !== null) m = n;
+  }
+  const progress = [];
+  for (let n = m; n >= 1; n--) {
+    const e = plan.index.schedule.rollback[n];
+    const a = stored(wb, e.operation_id);
+    if (!a.ok) return a;
+    const r = a.value === null ? null : resultOf(a.value);
+    if (a.value === null || a.value.op !== "migration" || !a.value.response.ok || r?.migration_id !== plan.index.migration_id || r.chunk !== n || !reconstructs(a.value.request_digest, rollbackRequest(plan.ref, e), wb.root)) {
+      return afterStateChanged(`rollback chunk 0 lists the rollback of chunk ${n} under ${e.operation_id}, and its stored answer is ${a.value === null ? "missing" : "not that request's answer"}`);
+    }
+    progress.push({ chunk: n, operation_id: e.operation_id, request_digest: a.value.request_digest });
+  }
+  progress.push({ chunk: 0, operation_id: req.operation_id, request_digest: requestDigest(req) });
+  const removals = [];
+  for (const x of plan.index.parts.filter((p) => p.part === "chunk")) removals.push({ path: x.path, before: x.sha256 });
+  for (const x of plan.index.parts.filter((p) => p.part !== "chunk")) removals.push({ path: x.path, before: x.sha256 });
+  if (binding !== null) removals.push({ path: binding.path, before: binding.sha256 });
+  removals.push({ path: plan.ref.path, before: plan.ref.sha256 });
+  const result = {
+    operation_id: req.operation_id,
+    migration_id: plan.index.migration_id,
+    chunk: 0,
+    restored: [],
+    removed: removals.map((r) => r.path),
+    activation_undone: false,
+    plan: { path: plan.ref.path, sha256: plan.ref.sha256 },
+    fence: standing === null ? null : standing.operation_id,
+    progress,
+    progress_sha256: progressDigest(progress)
+  };
+  return { ok: true, value: { writes: [], removals, result } };
+}
+var progressDigest = (progress) => sha(Buffer.from(canonical(progress), "utf-8"));
+function cleanupEvidence(wb, fence) {
+  const plain = `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`;
+  const legacy = (why) => refusal("unsupported-format", "legacy-workbench", `${plain}, but for the end of a fence a complete migration rollback names, and ${why}`);
+  const now = storedNow(wb);
+  const zeros = now.filter((s) => s.answer !== null && s.entry.op === "migration" && s.answer.response.ok && resultOf(s.answer).chunk === 0 && Array.isArray(resultOf(s.answer).progress) && resultOf(s.answer).fence === fence);
+  if (zeros.length === 0) return refusal("unsupported-format", "legacy-workbench", plain);
+  if (zeros.length > 1) return legacy(`${zeros.length} stored rollback chunk 0 answers name the fence ${fence}; exactly one must`);
+  const zero = zeros[0];
+  const r = resultOf(zero.answer);
+  const progress = r.progress;
+  const shaped = progress.every((p) => isObject3(p) && Object.keys(p).sort().join(",") === "chunk,operation_id,request_digest" && Number.isInteger(p.chunk) && typeof p.operation_id === "string" && typeof p.request_digest === "string");
+  const list2 = progress;
+  const last = list2.at(-1);
+  if (!shaped || last === void 0 || last.chunk !== 0 || last.operation_id !== zero.entry.operation_id || last.request_digest !== zero.entry.request_digest || !list2.every((p, i) => p.chunk === list2.length - 1 - i)) {
+    return legacy(`the progress of ${zero.entry.operation_id} is no list of the applied prefix's rollbacks ending at this chunk 0`);
+  }
+  const byId = new Map(now.map((s) => [s.entry.operation_id, s]));
+  for (const p of list2.slice(0, -1)) {
+    const s = byId.get(p.operation_id);
+    const pr = s === void 0 || s.answer === null ? null : resultOf(s.answer);
+    if (s === void 0 || s.answer === null || pr === null || s.entry.op !== "migration" || !s.answer.response.ok || s.entry.request_digest !== p.request_digest || pr.migration_id !== r.migration_id || pr.chunk !== p.chunk) {
+      return legacy(`the rollback of chunk ${p.chunk} that ${zero.entry.operation_id} lists under ${p.operation_id} is ${s === void 0 ? "not stored" : "not the answer it lists"}`);
+    }
+  }
+  if (progressDigest(list2) !== r.progress_sha256) return legacy(`the progress of ${zero.entry.operation_id} digests to ${progressDigest(list2)}, and it answered ${String(r.progress_sha256)}`);
+  return { ok: true, value: { migration_id: String(r.migration_id) } };
+}
 
 // src/kernel.ts
 import { readdirSync as readdirSync5, readFileSync as readFileSync5 } from "node:fs";
@@ -9670,9 +10544,7 @@ var OPERATIONS = [
   "migration"
 ];
 var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"];
-var LANDS_IN = {
-  migration: "FJ04"
-};
+var LANDS_IN = {};
 var fail = (cls, reason, detail, errors) => ({
   ok: false,
   error: { class: cls, reason, ...detail !== void 0 ? { detail } : {}, ...errors !== void 0 ? { errors } : {} }
@@ -9693,8 +10565,8 @@ var blockedOf = (p, diverged) => ({
   diverged: diverged.map((w) => w.path)
 });
 var heldOf = (p) => ({ operation_id: p.intent.operation_id, paths: p.intent.writes.map((w) => w.path), diverged: [], held: p.intent.op });
-function isHeld(p, req) {
-  if (req !== null && p.intent.operation_id === req.operation_id) return false;
+function isHeld(p, req, digest = req === null ? null : requestDigest(req)) {
+  if (req !== null && p.intent.operation_id === req.operation_id && p.intent.request_digest === digest) return false;
   return p.intent.op === "migration" || req?.op === "migration" && p.intent.op === "initialize";
 }
 function recoveryBlocked(b) {
@@ -9741,16 +10613,16 @@ async function mutate(wb, req, plan, options = {}, admits = JSON_CONTROL_ONLY) {
     sweep(wb);
     const pending = readIntents(wb);
     if (!pending.ok) return refuse2(pending.error);
+    const digest = requestDigest(req);
     const blocked = [];
     for (const p of pending.value) {
-      if (isHeld(p, req)) {
+      if (isHeld(p, req, digest)) {
         blocked.push(heldOf(p));
         continue;
       }
       const r = recover(wb, p);
       if (!r.landed) blocked.push(blockedOf(p, r.blocked));
     }
-    const digest = requestDigest(req);
     const own = pending.value.find((p) => p.intent.operation_id === req.operation_id);
     const ownBlocked = blocked.find((b) => b.operation_id === req.operation_id);
     if (own !== void 0 && ownBlocked !== void 0) {
@@ -9764,26 +10636,36 @@ async function mutate(wb, req, plan, options = {}, admits = JSON_CONTROL_ONLY) {
     if (fenced !== null) return refuse2(fenced);
     const planned = await plan(planContext(wb, blocked, fence.ok ? fence.value : null));
     if (!planned.ok) return refuse2(planned.error);
+    const removals = planned.value.removals ?? [];
     if (planned.value.fence !== void 0) {
-      if (planned.value.writes.length > 0) throw new Error(`the plan of ${req.op} sets a fence and writes files`);
+      if (planned.value.writes.length > 0 || removals.length > 0 || planned.value.fenceFirst !== void 0) throw new Error(`the plan of ${req.op} sets a fence and writes files`);
       const response2 = { ok: true, result: planned.value.result };
       if (planned.value.fence === null) removeFence(wb);
       else writeFence(wb, planned.value.fence);
       writeAnswer(wb, { operation_id: req.operation_id, op: req.op, request_digest: digest, response: response2 });
       return response2;
     }
-    for (const w of planned.value.writes) {
+    for (const w of [...planned.value.writes, ...removals]) {
       const b = blockedOn(blocked, w.path);
       if (b !== void 0) return refuse2(recoveryBlocked(b));
     }
     const writes = [];
     const contents = /* @__PURE__ */ new Map();
+    const named = (path) => {
+      const abs = resolveInside(wb, path);
+      if (abs.ok && writes.some((x) => x.path === path)) throw new Error(`the plan of ${req.op} writes ${path} twice`);
+      return abs;
+    };
     for (const w of planned.value.writes) {
-      const abs = resolveInside(wb, w.path);
+      const abs = named(w.path);
       if (!abs.ok) return refuse2(abs.error);
-      if (contents.has(w.path)) throw new Error(`the plan of ${req.op} writes ${w.path} twice`);
       writes.push({ path: w.path, before: hashOrNull(abs.value), after: revisionOf(w.bytes) });
       contents.set(w.path, w.bytes);
+    }
+    for (const r of removals) {
+      const abs = named(r.path);
+      if (!abs.ok) return refuse2(abs.error);
+      writes.push({ path: r.path, before: r.before, after: null });
     }
     const response = {
       ok: true,
@@ -9791,7 +10673,14 @@ async function mutate(wb, req, plan, options = {}, admits = JSON_CONTROL_ONLY) {
       ...planned.value.revisions !== void 0 ? { revisions: planned.value.revisions } : {}
     };
     const now = options.now ?? Date.now;
-    const intent = { operation_id: req.operation_id, op: req.op, request_digest: digest, writes, response, created_at: new Date(now()).toISOString() };
+    const phase = req.op === "migration" ? req.phase : void 0;
+    const intent = { operation_id: req.operation_id, op: req.op, ...typeof phase === "string" ? { phase } : {}, request_digest: digest, writes, response, created_at: new Date(now()).toISOString() };
+    const first = planned.value.fenceFirst;
+    if (first !== void 0) {
+      const standing = readFence(wb);
+      if (!standing.ok || standing.value === null || standing.value.operation_id !== first.operation_id) writeFence(wb, first);
+      await point("after-fence");
+    }
     const committed = commitIntent(wb, intent, contents);
     if (!committed.ok) return refuse2(committed.error);
     await point("after-intent");
@@ -10148,7 +11037,7 @@ async function dispatch(request, options = {}) {
     case "reconcile":
       return readable(wb) ?? reading(wb, (view) => reconcile(wb, req, view), kernel);
     case "maintenance":
-      return mutate(wb, req, maintenancePlan(req, kernel), kernel);
+      return maintenance(wb, req, kernel);
     case "migration":
       return migration(wb, req, kernel);
     default:
@@ -10164,7 +11053,7 @@ async function reading(wb, body, options) {
   return r.ok ? r.value : fromStore(r.error);
 }
 function inspect(wb) {
-  const pending = pendingInitialize(wb);
+  const pending = pendingOperation(wb);
   if (!pending.ok) return fromStore(pending.error);
   const fence = readFence(wb);
   if (!fence.ok) return fromStore(fence.error);
@@ -10191,7 +11080,7 @@ function inspect(wb) {
 var NAMED_ENTRIES = 5;
 var isDirectoryEntry = (path) => {
   try {
-    return lstatSync3(path).isDirectory();
+    return lstatSync4(path).isDirectory();
   } catch (e) {
     if (e.code === "ENOENT") return null;
     throw e;
@@ -10275,7 +11164,7 @@ function initializePlan(req) {
     };
   };
 }
-function pendingInitialize(wb) {
+function pendingOperation(wb) {
   const journal = `${STATE_DIR}/${JOURNAL_DIR}`;
   const dirOf = (id) => `${journal}/${id}`;
   const refusal3 = (what) => ({
@@ -10294,6 +11183,7 @@ function pendingInitialize(wb) {
   const ids = listed2();
   if (!ids.ok) return ids;
   const found = [];
+  const verifies = [];
   for (const name of ids.value) {
     const r = readIntent(wb, name);
     if (!r.ok || r.value === null) {
@@ -10304,6 +11194,12 @@ function pendingInitialize(wb) {
     if (!r.ok) return refusal3(r.error.detail);
     if (r.value === null) continue;
     const { intent, contents } = r.value;
+    if (intent.op === "migration") {
+      const v2 = pendingVerify(wb, r.value);
+      if (!v2.ok) return v2;
+      if (v2.value !== null) verifies.push(v2.value);
+      continue;
+    }
     if (intent.op !== "initialize") continue;
     const write = intent.writes.length === 1 ? intent.writes[0] : void 0;
     if (write === void 0 || write.path !== WORKBENCH_MANIFEST) {
@@ -10318,16 +11214,81 @@ function pendingInitialize(wb) {
     if (answered !== id) return unreadable(name, `the staged ${WORKBENCH_MANIFEST} carries id ${id}, and the intent's recorded answer ${answered === void 0 ? "names none" : `names ${JSON.stringify(answered)}`}`);
     found.push({ operation_id: intent.operation_id, id, blocked: blockedIntent(wb, r.value) !== null });
   }
+  if (verifies.length > 1 || verifies.length === 1 && found.length > 0) {
+    return {
+      ok: false,
+      error: {
+        class: "operation-unknown",
+        reason: "pending-migration-ambiguous",
+        detail: `${verifies.length > 1 ? "more than one committed migration verify is" : "a committed migration verify and a committed initialize are"} pending: ${[...verifies, ...found].map((p) => dirOf(p.operation_id)).join(", ")}; one pending field cannot name them, so they are to be resolved by hand`
+      }
+    };
+  }
   if (found.length > 1) {
     return {
       ok: false,
       error: { class: "operation-unknown", reason: "pending-initialize-ambiguous", detail: `more than one committed initialize is pending: ${found.map((p) => dirOf(p.operation_id)).join(", ")}; one pending field cannot name them, so they are to be resolved by hand` }
     };
   }
-  return { ok: true, value: found[0] ?? null };
+  return { ok: true, value: verifies[0] ?? found[0] ?? null };
 }
+function pendingVerify(wb, p) {
+  const { intent, contents } = p;
+  const writesManifest = intent.writes.some((w) => w.path === WORKBENCH_MANIFEST && w.after !== null);
+  if (intent.phase !== "verify" && !writesManifest) return { ok: true, value: null };
+  const unreadable = (why) => ({
+    ok: false,
+    error: { class: "operation-unknown", reason: "pending-migration-unreadable", detail: `${STATE_DIR}/${JOURNAL_DIR}/${intent.operation_id}: ${why}; inspect cannot say which verify is pending, so the intent is to be read and corrected by hand` }
+  });
+  if (intent.phase !== "verify") return unreadable(`a migration ${intent.phase ?? "intent"} writes ${WORKBENCH_MANIFEST}, which only verify writes`);
+  const [receipt, manifestWrite] = intent.writes;
+  if (intent.writes.length !== 2 || receipt === void 0 || manifestWrite?.path !== WORKBENCH_MANIFEST || receipt.after === null) {
+    return unreadable(`a verify intent writes ${intent.writes.map((w) => w.path).join(", ") || "nothing"}, not the receipt and then ${WORKBENCH_MANIFEST}`);
+  }
+  const parsed = strictParse(contents.get(WORKBENCH_MANIFEST));
+  if (!parsed.ok) return unreadable(`the staged ${WORKBENCH_MANIFEST}: ${parsed.reason}: ${parsed.detail}`);
+  const v = validate(WORKBENCH_SCHEMA_ID, parsed.value);
+  if (!v.ok) return unreadable(`the staged ${WORKBENCH_MANIFEST} is not valid: ${v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`}`);
+  const manifest = parsed.value;
+  const migration2 = manifest.migration;
+  const result = intent.response.ok ? intent.response.result : void 0;
+  const plan = result?.plan;
+  if (result === void 0 || result.operation_id !== intent.operation_id || typeof result.migration_id !== "string" || typeof plan?.path !== "string" || typeof plan.sha256 !== "string") {
+    return unreadable("the recorded answer names no operation, migration and plan of this intent");
+  }
+  if (migration2 === null || migration2.id !== result.migration_id || migration2.receipt !== receipt.path) {
+    return unreadable(`the staged ${WORKBENCH_MANIFEST} names ${migration2 === null ? "no migration" : `${String(migration2.id)} and ${String(migration2.receipt)}`}; the recorded answer names ${result.migration_id} and the intent writes ${receipt.path}`);
+  }
+  return {
+    ok: true,
+    value: { op: "migration", phase: "verify", operation_id: intent.operation_id, id: manifest.id, migration_id: result.migration_id, plan: { path: plan.path, sha256: plan.sha256 }, blocked: blockedIntent(wb, p) !== null }
+  };
+}
+var legacyRefusal = (wb) => fail("unsupported-format", "legacy-workbench", `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`);
+function maintenance(wb, req, kernel) {
+  if (req.action !== "end" || wb.state !== "legacy") return mutate(wb, req, maintenancePlan(req, kernel), kernel);
+  if (existsSync4(join5(wb.root, STATE_DIR, OPS_DIR, `${req.operation_id}.json`))) return mutate(wb, req, maintenancePlan(req, kernel), kernel, LEGACY_END_STATES);
+  const evidence = cleanupEvidence(wb, req.fence);
+  if (!evidence.ok) return fromStore(evidence.error);
+  const fence = readFence(wb);
+  if (!fence.ok || fence.value === null || fence.value.operation_id !== req.fence) return legacyRefusal(wb);
+  return mutate(wb, req, maintenancePlan(req, kernel), kernel, LEGACY_END_STATES);
+}
+var LEGACY_END_STATES = ["legacy", "json-control"];
 function maintenancePlan(req, options) {
   return (ctx) => {
+    if (req.action === "end") {
+      const held2 = ctx.blocked.find((x) => x.held !== void 0);
+      if (held2 !== void 0) return { ok: false, error: recoveryBlocked(held2) };
+      const now = openWorkbench(ctx.wb.root);
+      if (!now.ok) return now;
+      if (now.value.state === "unsupported" && now.value.diagnosis !== null) return { ok: false, error: now.value.diagnosis };
+      if (now.value.state === "legacy") {
+        const evidence = cleanupEvidence(ctx.wb, req.fence);
+        if (!evidence.ok) return evidence;
+        if (ctx.fence === null) return { ok: false, error: { class: "unsupported-format", reason: "legacy-workbench", detail: `${ctx.wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)` } };
+      }
+    }
     if (req.action === "begin") {
       const blocked = ctx.blocked[0];
       if (blocked !== void 0) return { ok: false, error: recoveryBlocked(blocked) };
@@ -10340,14 +11301,24 @@ function maintenancePlan(req, options) {
     return { ok: true, value: { writes: [], result: { operation_id: req.operation_id, action: "end", since: ctx.fence.since }, fence: null } };
   };
 }
+var EMPTY_VIEW = { blocked: [], blockedOn: () => void 0 };
+var CHECK_HOOKS = {
+  sitesOf: (pair) => referenceSites(pair),
+  validate: (view) => validateOp(view, { op: "validate" }, EMPTY_VIEW),
+  reconcile: (view) => reconcile(view, { op: "reconcile" }, EMPTY_VIEW)
+};
 function migration(wb, req, kernel) {
   switch (req.phase) {
     case "survey":
       return readable(wb) ?? survey(wb);
     case "plan":
-      return mutate(wb, req, migrationPlan(req, (pair) => referenceSites(pair)), kernel, EVERY_STATE);
-    default:
-      return fail("operation-unknown", "not-implemented", `migration ${req.phase} is specified (FJ04 contract delta, request 45) and lands in ${LANDS_IN.migration ?? "a later package"} step 6; survey and plan are answered`);
+      return mutate(wb, req, migrationPlan(req, CHECK_HOOKS.sitesOf), kernel, EVERY_STATE);
+    case "apply":
+      return mutate(wb, req, migrationApply(req, { now: kernel.now ?? Date.now }), kernel, EVERY_STATE);
+    case "verify":
+      return mutate(wb, req, migrationVerify(req, CHECK_HOOKS), kernel, EVERY_STATE);
+    case "rollback":
+      return mutate(wb, req, migrationRollback(req), kernel, EVERY_STATE);
   }
 }
 var stateOf = (pair) => pair.kind === "package" ? pair.control.status : pair.control.control?.state ?? null;
@@ -10589,9 +11560,9 @@ function createPlan(req) {
     const paths = pairPaths(ctx, req);
     if (!paths.ok) return paths;
     const { control, narrative } = paths.value;
-    const stored = fileHash(ctx.wb, control);
-    if (!stored.ok) return stored;
-    if (stored.value !== null) return refusal2("conflict", "record-exists", `${control} exists; create never replaces a record`);
+    const stored2 = fileHash(ctx.wb, control);
+    if (!stored2.ok) return stored2;
+    if (stored2.value !== null) return refusal2("conflict", "record-exists", `${control} exists; create never replaces a record`);
     const writes = [];
     let narrativeHash;
     const content = req.narrative.content;
@@ -10669,11 +11640,11 @@ function createEvidencePlan(req) {
     if (basename2 === null || !markerlessName().test(name) || reading2 === null || reading2.correction !== null || reading2.report !== report.path) {
       return refusal2("schema-invalid", "report-name", `${name} is not a report name an evidence record can pair with: a marker-free YYMMDD-HHMM-<topic>.md whose last dotted segment is no correction counter, so that ${first} reads back as its first record`);
     }
-    const stored = fileHash(ctx.wb, report.path);
-    if (!stored.ok) return stored;
+    const stored2 = fileHash(ctx.wb, report.path);
+    if (!stored2.ok) return stored2;
     const bytes = Buffer.from(serialise(payload), "utf-8");
     const revision = revisionOf(bytes);
-    const candidate = { path: first, kind: "evidence", schemaId: EVIDENCE_SCHEMA_ID, control: payload, bytes, revision, narrative: null, report: { path: report.path, sha256: report.sha256, stored: stored.value } };
+    const candidate = { path: first, kind: "evidence", schemaId: EVIDENCE_SCHEMA_ID, control: payload, bytes, revision, narrative: null, report: { path: report.path, sha256: report.sha256, stored: stored2.value } };
     const problem = reportProblem(candidate);
     if (problem !== null) return { ok: false, error: problem };
     const taken = ctx.resolveRecordId(req.id);
@@ -10828,42 +11799,42 @@ function planProgress(control, from, to, payload) {
   }
   const arrays = [];
   for (const { field: field2, noun, value } of carried) {
-    const stored = Array.isArray(control[field2]) ? control[field2] : [];
+    const stored2 = Array.isArray(control[field2]) ? control[field2] : [];
     const updates = payload[field2];
     for (const [entries, where] of [
-      [stored, "the stored plan's"],
+      [stored2, "the stored plan's"],
       [updates, "the payload's"]
     ]) {
       const unique = uniqueIds2(noun, field2, entries, where);
       if (!unique.ok) return unique;
     }
-    const known = new Set(stored.map((e) => e.id));
+    const known = new Set(stored2.map((e) => e.id));
     const unknown = updates.filter((u) => !known.has(u.id)).map((u) => u.id);
     if (unknown.length > 0) {
       return refusal2("unresolved-reference", `unknown-${noun}-id`, `the payload's ${field2} names ${unknown.join(", ")}, which the stored plan lacks; plan progress updates the ${field2} it has and never adds one`);
     }
-    arrays.push({ field: field2, value, stored, updates });
+    arrays.push({ field: field2, value, stored: stored2, updates });
   }
   const byId = (entries) => new Map(entries.map((e) => [e.id, e]));
-  let changed = false;
-  for (const { field: field2, value, stored, updates } of arrays) {
-    const was = byId(stored);
+  let changed2 = false;
+  for (const { field: field2, value, stored: stored2, updates } of arrays) {
+    const was = byId(stored2);
     for (const u of updates) {
       const before = was.get(u.id)[value];
       if (before === u[value]) continue;
-      changed = true;
+      changed2 = true;
       if (field2 !== "steps") continue;
       const rule = stepAllowed(String(before), String(u[value]));
       if (!rule.ok) return { ok: false, error: { class: rule.class, reason: "transition-refused", detail: `step ${u.id}: ${rule.reason}` } };
     }
   }
-  if (to === from && !changed) {
+  if (to === from && !changed2) {
     return refused({ class: "conflict", reason: `plan: to is the stored state ${from} and the payload changes no step or criterion; staying in a state is admitted for plan progress only` });
   }
   const fields = {};
-  for (const { field: field2, value, stored, updates } of arrays) {
+  for (const { field: field2, value, stored: stored2, updates } of arrays) {
     const next = byId(updates);
-    fields[field2] = stored.map((e) => {
+    fields[field2] = stored2.map((e) => {
       const u = next.get(e.id);
       return u === void 0 ? e : { ...e, [value]: u[value] };
     });
@@ -12512,12 +13483,12 @@ var migration_plan_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.migration-plan/v1",
   title: "fusion.migration-plan/v1",
-  description: "The frozen plan of a migration (spec section 8; FJ04 contract delta, amended for Prior ab9cb59), written by the migration's plan phase under archive/migrations/<migration id>/ in one bounded intent, the index last, and never edited afterwards. It is split into six shapes, told apart by part, each file under the strict reader's 1 MiB cap. The index, plan.json, holds only the identity, the proposal it froze by path and sha256, the frozen root exclusions, the operation schedule and {part, n, path, sha256} of every other plan file; a request names the index by {path, sha256}. The other parts may each span several numbered files, in the order the index lists them: records (parts/records-<n>.json, the UUID map with each record's kind, cut row, control and narrative path, and on file 1 the cut's counts), inventory (parts/inventory-<n>.json, the source inventory the codec took under plan's lock, in survey's four entry forms), findings (parts/findings-<n>.json, the reported findings), repairs (parts/repairs-<n>.json, the consented repair log) and chunk (chunks/<n>.json, at most 50 writes, each bound by the hash of the target before and after it). A write is an original copied to archive/migrations/<migration id>/originals/<workbench path>, a new control file carrying its target control, or a live narrative rewritten as byte deletions; apply never removes a file, and the removal writes a rollback journals (after null) are derived from these rows, not stored in them. Rules JSON Schema cannot check: every part hashes as the index names it, no part on disk is unnamed by the index, and the parts stand in the index's order (conflict/plan-file-changed); a chunk part's writes equals the length of that file's writes, and a part file's n and migration_id equal its index entry's; paths under archive/migrations/ name this migration's id; a request's operation_id is the one the schedule names for its phase and chunk, never an unassigned one (conflict/operation-id-unscheduled); the schedule holds one apply id per chunk in order from 1 and one rollback id per chunk from 0 to the chunk count, and no UUID occurs twice across schedule, records and workbench_id; a record UUID occurs once across the records parts and its control carries the id it is keyed by (schema-invalid/duplicate-id); every source and after hash matches disk at apply (conflict/source-changed); a pair's original, control file and rewrite share one chunk; deletion ranges ascend, do not overlap and lie inside the source bytes; an original's after_sha256 equals the sha256 of the file it copies; inventory entries are sorted bytewise by path across the inventory parts.",
+  description: "The frozen plan of a migration (spec section 8; FJ04 contract delta, amended for Prior ab9cb59 and a1fb17a), written by the migration's plan phase under archive/migrations/<migration id>/ in one bounded intent, the index last, and never edited afterwards. It is split into seven plan shapes, told apart by part, each file under the strict reader's 1 MiB cap. The index, plan.json, holds only the identity, the proposal it froze by path and sha256, the digest of the source inventory the proposal was composed from, the frozen root exclusions, the operation schedule and {part, n, path, sha256} of every other plan file; a request names the index by {path, sha256}. The other parts may each span several numbered files, in the order the index lists them: records (parts/records-<n>.json, the UUID map with each record's kind, cut row, control and narrative path, and on file 1 the cut's counts), inventory (parts/inventory-<n>.json, the source inventory the codec took under plan's lock, in survey's four entry forms), findings (parts/findings-<n>.json, the reported findings), repairs (parts/repairs-<n>.json, the consented repair log), answers (parts/answers-<n>.json, the operation baseline: every answer stored before plan, by hash) and chunk (chunks/<n>.json, at most 50 writes, each bound by the hash of the target before and after it). An eighth shape, rollback-binding, is no plan part and is not named by the index: it is rollback.json, written by the first rollback after activation in its own intent and bound by that rollback's stored answer (binding: {path, sha256}); rollback chunk 0 removes it. A write is an original copied to archive/migrations/<migration id>/originals/<workbench path>, a new control file carrying its target control, or a live narrative rewritten as byte deletions; apply never removes a file, and the removal writes a rollback journals (after null) are derived from these rows, not stored in them. Rules JSON Schema cannot check: every part hashes as the index names it, no part on disk is unnamed by the index, and the parts stand in the index's order (conflict/plan-file-changed); a chunk part's writes equals the length of that file's writes, and a part file's n and migration_id equal its index entry's; paths under archive/migrations/ name this migration's id; a request's operation_id is the one the schedule names for its phase and chunk, never an unassigned one (conflict/operation-id-unscheduled); the schedule holds one apply id per chunk in order from 1 and one rollback id per chunk from 0 to the chunk count, and no UUID occurs twice across schedule, records and workbench_id; a record UUID occurs once across the records parts and its control carries the id it is keyed by (schema-invalid/duplicate-id); every source and after hash matches disk at apply (conflict/source-changed); a pair's original, control file and rewrite share one chunk; deletion ranges ascend, do not overlap and lie inside the source bytes; an original's after_sha256 equals the sha256 of the file it copies; inventory entries are sorted bytewise by path across the inventory parts; the frozen inventory parts digest to the index's source_inventory_sha256 (conflict/plan-file-changed); answers entries are unique by operation_id and sorted bytewise by it across the answers parts; a rollback-binding's file hashes as the first post-activation rollback's binding names it (conflict/plan-file-changed), its fence is the standing rollback fence and its exempt entries are this migration's verify, the end naming chunk 1's fence and the begin of the standing fence, each found by reconstructing its request.",
   type: "object",
   required: ["part", "schema"],
   properties: {
     schema: { const: "fusion.migration-plan/v1" },
-    part: { type: "string", enum: ["index", "records", "inventory", "findings", "repairs", "chunk"] }
+    part: { type: "string", enum: ["index", "records", "inventory", "findings", "repairs", "answers", "chunk", "rollback-binding"] }
   },
   oneOf: [
     { $ref: "#/$defs/index" },
@@ -12525,7 +13496,9 @@ var migration_plan_schema_default = {
     { $ref: "#/$defs/inventory_part" },
     { $ref: "#/$defs/findings_part" },
     { $ref: "#/$defs/repairs_part" },
-    { $ref: "#/$defs/chunk" }
+    { $ref: "#/$defs/answers_part" },
+    { $ref: "#/$defs/chunk" },
+    { $ref: "#/$defs/rollback_binding" }
   ],
   $defs: {
     migration_id: {
@@ -12566,12 +13539,38 @@ var migration_plan_schema_default = {
     },
     exclusions: {
       type: "array",
-      description: "Root entries the host proposes to leave out of every inventory comparison, frozen by the index: checkout-local files and those the host's own machinery appends to during the run. .json-state/ and this migration's own archive/migrations/<id>/ are excluded always and are not listed. An entry is one name directly under the workbench root, never work-packages, shared, archive or workbench.json. That it holds no narrative or control path the plan reads or writes is checked by plan (schema-invalid/proposal-invalid).",
+      description: "Root entries the host selects to leave out of every inventory comparison, frozen by the index: a subset of the codec's fixed allowlist (FJ04 addendum for a1fb17a, R1), which replaces any free name. .json-state/ and this migration's own archive/migrations/<id>/ are excluded always and are not listed; workbench.json is never excluded. The allowlist's regular files are .session-marker, .checkout-id, .cadence-anchors, .check-stamps, monitor, orchestrator-events.jsonl, .fusion-setup and .asset-provenance; its directories, with everything below them, are .guard-state and .commit-lock, named here without the trailing slash, as the root entry's name. Any other name is schema-invalid/proposal-invalid. The kinds are the codec's to check, not this schema's: a selected entry is skipped only while it is absent or lstats as its kind; under another kind, or as a link, it is eligible and compared, and no excluded link is followed. That an exclusion holds no narrative or control path the plan reads or writes is checked by plan (schema-invalid/proposal-invalid).",
       uniqueItems: true,
       items: {
         type: "string",
-        minLength: 1,
-        pattern: "^(?!\\.\\.?$)(?!(work-packages|shared|archive|workbench\\.json)$)[^/\\\\]+$"
+        enum: [".session-marker", ".checkout-id", ".cadence-anchors", ".check-stamps", "monitor", "orchestrator-events.jsonl", ".fusion-setup", ".asset-provenance", ".guard-state", ".commit-lock"]
+      }
+    },
+    source_inventory_sha256: {
+      $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256",
+      description: "The digest of the eligible source inventory the proposal was composed from (FJ04 addendum for a1fb17a, R2): survey's eligible_sha256, taken by a survey run after the last consented repair and before composition, under the whole allowlist; sha256 over the codec's canonical JSON of the eligible entries in survey's four forms, sorted bytewise by path. plan checks it first in its Disk step, before the per-source checks: the eligible inventory it takes under the lock digesting differently is conflict/source-changed, naming both digests. After the freeze, apply, verify and rollback check that the frozen inventory parts digest to the index's value (conflict/plan-file-changed otherwise)."
+    },
+    answer_entry: {
+      type: "object",
+      description: "One answer stored before plan: its operation id, the op of its request, the digest of that request and the sha256 of the stored answer's bytes. A stored answer is a baseline entry only when all four equal one entry of the answers part.",
+      additionalProperties: false,
+      required: ["answer_sha256", "op", "operation_id", "request_digest"],
+      properties: {
+        operation_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        op: { $ref: "urn:fusion:schema:fusion.protocol/v1#/properties/op" },
+        request_digest: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        answer_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
+    },
+    exempt_entry: {
+      type: "object",
+      description: "One stored answer a later rollback chunk exempts from the later-operation audit, found by reconstructing its request and comparing digests: this migration's verify (op migration), the end naming chunk 1's fence and the begin of the standing fence (op maintenance).",
+      additionalProperties: false,
+      required: ["op", "operation_id", "request_digest"],
+      properties: {
+        operation_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        op: { type: "string", enum: ["maintenance", "migration"] },
+        request_digest: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
       }
     },
     finding: {
@@ -12709,7 +13708,7 @@ var migration_plan_schema_default = {
       additionalProperties: false,
       required: ["n", "part", "path", "sha256"],
       properties: {
-        part: { type: "string", enum: ["records", "inventory", "findings", "repairs", "chunk"] },
+        part: { type: "string", enum: ["records", "inventory", "findings", "repairs", "answers", "chunk"] },
         n: { type: "integer", minimum: 1 },
         path: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
         sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
@@ -12724,14 +13723,14 @@ var migration_plan_schema_default = {
       else: {
         type: "object",
         not: { type: "object", required: ["writes"] },
-        properties: { path: { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/parts/(records|inventory|findings|repairs)-[1-9][0-9]*\\.json$" } }
+        properties: { path: { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/parts/(records|inventory|findings|repairs|answers)-[1-9][0-9]*\\.json$" } }
       }
     },
     index: {
       type: "object",
-      description: "archive/migrations/<migration id>/plan.json: identity, the proposal it froze, the exclusions, the schedule and the part list, nothing else.",
+      description: "archive/migrations/<migration id>/plan.json: identity, the proposal it froze, the source inventory digest, the exclusions, the schedule and the part list, nothing else.",
       additionalProperties: false,
-      required: ["exclusions", "migration_id", "part", "parts", "proposal", "schedule", "schema", "source_layout", "workbench_id"],
+      required: ["exclusions", "migration_id", "part", "parts", "proposal", "schedule", "schema", "source_inventory_sha256", "source_layout", "workbench_id"],
       properties: {
         schema: { const: "fusion.migration-plan/v1" },
         part: { const: "index" },
@@ -12739,6 +13738,7 @@ var migration_plan_schema_default = {
         workbench_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid", description: "The workbench UUID the manifest will carry; a resume reuses it." },
         source_layout: { $ref: "#/$defs/source_layout" },
         proposal: { $ref: "#/$defs/proposal_ref" },
+        source_inventory_sha256: { $ref: "#/$defs/source_inventory_sha256" },
         exclusions: { $ref: "#/$defs/exclusions" },
         schedule: { $ref: "#/$defs/schedule" },
         parts: {
@@ -12822,6 +13822,54 @@ var migration_plan_schema_default = {
         migration_id: { $ref: "#/$defs/migration_id" },
         n: { type: "integer", minimum: 1 },
         repairs: { type: "array", items: { $ref: "#/$defs/repair" } }
+      }
+    },
+    answers_part: {
+      type: "object",
+      description: "parts/answers-<n>.json: the operation baseline (FJ04 addendum for a1fb17a, R3), every answer stored before plan, frozen inside plan's one freeze intent and counted against the freeze bound. The index names it with its hash and the receipt's parts bind it. Entries are unique and ordered bytewise by operation_id; uniqueness and order are wholly the codec's to check, not the schema's: a uniqueItems here is deep-equalled quadratically on every inventory part the root oneOf tries against this branch before part rules it out, and the codec refuses a repeated or out-of-order entry anyway. An empty list is valid on a store with no stored answer.",
+      additionalProperties: false,
+      required: ["entries", "migration_id", "n", "part", "schema"],
+      properties: {
+        schema: { const: "fusion.migration-plan/v1" },
+        part: { const: "answers" },
+        migration_id: { $ref: "#/$defs/migration_id" },
+        n: { type: "integer", minimum: 1 },
+        entries: { type: "array", items: { $ref: "#/$defs/answer_entry" } }
+      }
+    },
+    rollback_binding: {
+      type: "object",
+      description: "archive/migrations/<migration id>/rollback.json (FJ04 addendum for a1fb17a, request 52): written by the first rollback after activation in its own intent, whose answer adds binding: {path, sha256} over these exact bytes. It binds the frozen index and the receipt by {path, sha256}, names the standing rollback fence, and lists exactly three exempt stored answers by {operation_id, op, request_digest}. A later fresh rollback chunk checks the file against the bound hash before trusting it; a replay never reads it; rollback chunk 0 removes it.",
+      additionalProperties: false,
+      required: ["exempt", "fence", "migration_id", "part", "plan", "receipt", "schema"],
+      properties: {
+        schema: { const: "fusion.migration-plan/v1" },
+        part: { const: "rollback-binding" },
+        migration_id: { $ref: "#/$defs/migration_id" },
+        plan: { $ref: "#/$defs/plan_ref" },
+        receipt: {
+          type: "object",
+          description: "The receipt the first rollback after activation checked, by path and the sha256 of its exact bytes.",
+          additionalProperties: false,
+          required: ["path", "sha256"],
+          properties: {
+            path: {
+              allOf: [
+                { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+                { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/receipt\\.json$" }
+              ]
+            },
+            sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+          }
+        },
+        fence: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid", description: "The operation id of the standing rollback fence's begin." },
+        exempt: {
+          type: "array",
+          minItems: 3,
+          maxItems: 3,
+          uniqueItems: true,
+          items: { $ref: "#/$defs/exempt_entry" }
+        }
       }
     },
     original_write: {
@@ -12910,15 +13958,16 @@ var migration_proposal_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.migration-proposal/v1",
   title: "fusion.migration-proposal/v1",
-  description: "The host's mapping proposal, the input the migration's plan phase reads from .json-state/migration/ by {path, sha256} (FJ04 contract delta, amended for Prior ab9cb59). The host composes it from the legacy v12 Markdown (hooks/lib/legacy-import.ts composeProposal) and writes nothing else; the codec reads it, never writes it, and freezes it into fusion.migration-plan/v1's index and parts. It never travels and is no control record, so the 1 MiB record cap does not bind it; its cap is 16 MiB. A proposal that does not validate here is refused schema-invalid/proposal-invalid. It carries the record cut with fresh UUIDs, each record's target control, the backup path of its original, and, for a live narrative the import changes, the rewrite as byte deletions bound by the record's source_sha256 before and the rewrite's after_sha256 behind. It also carries every finding of both severities, the repair log of the consented repairs, the root exclusions the host proposes, and every operation id of the run, frozen before dispatch (request 45f). It carries no inventory: plan takes its own under the lock. Rules JSON Schema cannot check, each refused by plan in the contract's order: no UUID occurs twice across operation_ids' four members, none already has a stored answer or an intent in this workbench, the request's operation_id is operation_ids.plan, and once the writes are cut apply holds at least one id per chunk and rollback at least one more than that (proposal-invalid); an exclusion holds no narrative or control path the plan reads or writes (proposal-invalid); a record UUID occurs once across workbench_id and the records' keys, and each control's id is its key and its workbench_id the proposal's (duplicate-id); no control path is present on disk (conflict/record-exists); no finding is blocking (migration-incomplete/blocking-finding); every record_ref at every reference site names a proposed record (closure-incomplete); every source_sha256 matches the inventory plan takes (conflict/source-changed). Also unchecked here: backup is archive/migrations/<migration_id>/originals/<narrative>; deletion ranges ascend, do not overlap and lie inside the source bytes, and applying them gives after_sha256 (proposal-invalid); a terminal record has no rewrite.",
+  description: "The host's mapping proposal, the input the migration's plan phase reads from .json-state/migration/ by {path, sha256} (FJ04 contract delta, amended for Prior ab9cb59 and a1fb17a). The host composes it from the legacy v12 Markdown (hooks/lib/legacy-import.ts composeProposal) and writes nothing else; the codec reads it, never writes it, and freezes it into fusion.migration-plan/v1's index and parts. It never travels and is no control record, so the 1 MiB record cap does not bind it; its cap is 16 MiB. A proposal that does not validate here is refused schema-invalid/proposal-invalid. It carries the record cut with fresh UUIDs, each record's target control, the backup path of its original, and, for a live narrative the import changes, the rewrite as byte deletions bound by the record's source_sha256 before and the rewrite's after_sha256 behind. It also carries every finding of both severities, the repair log of the consented repairs, the root exclusions the host selects from the codec's fixed allowlist, and every operation id of the run, frozen before dispatch (request 45f). It carries the digest of the eligible source inventory it was composed from, not its entries: plan takes its own inventory under the lock and digests it. Rules JSON Schema cannot check, each refused by plan in the contract's order: no UUID occurs twice across operation_ids' four members, none already has a stored answer or an intent in this workbench, the request's operation_id is operation_ids.plan, and once the writes are cut apply holds at least one id per chunk and rollback at least one more than that (proposal-invalid); an exclusion holds no narrative or control path the plan reads or writes (proposal-invalid); a record UUID occurs once across workbench_id and the records' keys, and each control's id is its key and its workbench_id the proposal's (duplicate-id); no control path is present on disk (conflict/record-exists); the eligible inventory plan takes under the lock digests to source_inventory_sha256, checked first in the Disk step (conflict/source-changed, naming both digests); no finding is blocking (migration-incomplete/blocking-finding); every record_ref at every reference site names a proposed record (closure-incomplete); every source_sha256 matches the inventory plan takes (conflict/source-changed). Also unchecked here: backup is archive/migrations/<migration_id>/originals/<narrative>; deletion ranges ascend, do not overlap and lie inside the source bytes, and applying them gives after_sha256 (proposal-invalid); a terminal record has no rewrite.",
   type: "object",
   additionalProperties: false,
-  required: ["counts", "exclusions", "findings", "migration_id", "operation_ids", "records", "repairs", "schema", "source_layout", "workbench_id"],
+  required: ["counts", "exclusions", "findings", "migration_id", "operation_ids", "records", "repairs", "schema", "source_inventory_sha256", "source_layout", "workbench_id"],
   properties: {
     schema: { const: "fusion.migration-proposal/v1" },
     migration_id: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/migration_id" },
     workbench_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid", description: "The new workbench UUID, fixed in the index and reused by a resume." },
     source_layout: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/source_layout" },
+    source_inventory_sha256: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/source_inventory_sha256", description: "survey's eligible_sha256 from the survey run after the last consented repair and before composition, whose entries the host composed from; the index carries the same value." },
     operation_ids: {
       type: "object",
       description: "Every operation id of the run, chosen by the caller and frozen before dispatch (request 45f). plan assigns apply[i-1] to chunk i (chunk 1's also names the fence it sets) and rollback[k] to rollback chunk k from 0 to the chunk count, fixes them in the index's schedule, and lists the surplus ids there as unassigned.",
@@ -13028,7 +14077,7 @@ var migration_receipt_schema_default = {
           path: {
             allOf: [
               { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
-              { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/(chunks/[1-9][0-9]*|parts/(records|inventory|findings|repairs)-[1-9][0-9]*)\\.json$" }
+              { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/(chunks/[1-9][0-9]*|parts/(records|inventory|findings|repairs|answers)-[1-9][0-9]*)\\.json$" }
             ]
           },
           sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }

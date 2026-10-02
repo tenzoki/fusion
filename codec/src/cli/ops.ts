@@ -57,16 +57,21 @@
 //               `begin` sets `.json-state/maintenance.json` over a journal
 //               with no pending intent, `end` removes the fence it names;
 //               while one stands the kernel refuses every other fresh
-//               mutation but `initialize`, and reads answer as before
+//               mutation but `initialize`, and reads answer as before; `end`
+//               is also admitted on a legacy store for the fence a complete
+//               migration rollback names (FJ04, question 51)
 //   migration   the maintenance run of spec section 8 (`../migration.ts`):
 //               `survey`, the observed inventory and local state; `plan`,
 //               the host's proposal, bound by its hash, frozen into chunk
 //               files, parts and an index under `archive/migrations/<id>/`
-//               in one intent
+//               in one intent; `apply` one chunk per request, the first
+//               under the fence it sets; `verify`, the checks, the receipt
+//               and the manifest last; `rollback` chunk by chunk backwards,
+//               chunk 0 removing the plan files
 //
-// An operation or phase not yet answered (`apply`, `verify` and `rollback` of
-// `migration`) is refused `operation-unknown/not-implemented` with a detail
-// naming the package that lands it (`LANDS_IN`).
+// An operation not yet answered would be refused
+// `operation-unknown/not-implemented` with a detail naming the package that
+// lands it (`LANDS_IN`); since FJ04's step 6 there is none.
 //
 // Reads run under the kernel's read protocol (`read`), mutations through its
 // one sequence (`mutate`), which also makes them replayable by
@@ -84,8 +89,8 @@
 
 import { existsSync, lstatSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import { JOURNAL_DIR, OPS_DIR, canonical, fileState, pendingIds, readIntent, type FileState } from "../journal.js";
-import { migrationPlan, survey } from "../migration.js";
+import { JOURNAL_DIR, OPS_DIR, canonical, fileState, pendingIds, readIntent, type FileState, type PendingIntent } from "../journal.js";
+import { cleanupEvidence, migrationApply, migrationPlan, migrationRollback, migrationVerify, survey, type CheckHooks } from "../migration.js";
 import {
   EVERY_STATE,
   blockedIntent,
@@ -230,7 +235,7 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
     case "reconcile":
       return readable(wb) ?? reading(wb, (view) => reconcile(wb, req, view), kernel);
     case "maintenance":
-      return mutate(wb, req, maintenancePlan(req, kernel), kernel);
+      return maintenance(wb, req, kernel);
     case "migration":
       return migration(wb, req, kernel);
     default:
@@ -259,7 +264,7 @@ async function reading(wb: Workbench, body: (view: ReadView) => Response, option
  * unreadable journal is for `pending`; the journal is asked first.
  */
 function inspect(wb: Workbench): Response {
-  const pending = pendingInitialize(wb);
+  const pending = pendingOperation(wb);
   if (!pending.ok) return fromStore(pending.error);
   const fence = readFence(wb);
   if (!fence.ok) return fromStore(fence.error);
@@ -424,6 +429,25 @@ export interface PendingInitialize {
 }
 
 /**
+ * `inspect.pending`'s second variant (FJ04 contract delta as amended, "The
+ * pending union"): a committed migration `verify`, told apart by `op`, which
+ * the `initialize` object does not carry. `id` is the workbench UUID of the
+ * manifest the intent carries; `migration_id` and `plan` are read from the
+ * answer it carries. A host reconstructs the request from its workbench path
+ * and these fields; the kernel holds the reconstruction to the intent's
+ * request digest when it arrives, as it does for `initialize`.
+ */
+export interface PendingVerify {
+  op: "migration";
+  phase: "verify";
+  operation_id: string;
+  id: string;
+  migration_id: string;
+  plan: { path: string; sha256: string };
+  blocked: boolean;
+}
+
+/**
  * `inspect.pending` (decision 260930-1654, option 3; Prior item 33 as
  * corrected at Prior `ae1ad78`): the committed `initialize` in
  * `.json-state/journal/`, until its intent leaves the journal, whatever else
@@ -443,7 +467,7 @@ export interface PendingInitialize {
  * and never a throw: `inspect` is the gate every reader calls first. No read
  * finishes the intent; an `initialize` request does, under the lock.
  */
-function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
+function pendingOperation(wb: Workbench): Result<PendingInitialize | PendingVerify | null> {
   const journal = `${STATE_DIR}/${JOURNAL_DIR}`;
   const dirOf = (id: string): string => `${journal}/${id}`;
   /** `what` names its place first: the journal, or the intent's directory. */
@@ -463,6 +487,7 @@ function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
   const ids = listed();
   if (!ids.ok) return ids;
   const found: PendingInitialize[] = [];
+  const verifies: PendingVerify[] = [];
   for (const name of ids.value) {
     const r = readIntent(wb, name);
     // Gone since the listing: its writer finished, and it is pending no more.
@@ -474,6 +499,12 @@ function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
     if (!r.ok) return refusal(r.error.detail); // `readIntent`'s detail already begins with the intent's directory
     if (r.value === null) continue;
     const { intent, contents } = r.value;
+    if (intent.op === "migration") {
+      const v = pendingVerify(wb, r.value);
+      if (!v.ok) return v;
+      if (v.value !== null) verifies.push(v.value);
+      continue;
+    }
     if (intent.op !== "initialize") continue;
     const write = intent.writes.length === 1 ? intent.writes[0] : undefined;
     if (write === undefined || write.path !== WORKBENCH_MANIFEST) {
@@ -488,13 +519,66 @@ function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
     if (answered !== id) return unreadable(name, `the staged ${WORKBENCH_MANIFEST} carries id ${id}, and the intent's recorded answer ${answered === undefined ? "names none" : `names ${JSON.stringify(answered)}`}`);
     found.push({ operation_id: intent.operation_id, id, blocked: blockedIntent(wb, r.value) !== null });
   }
+  if (verifies.length > 1 || (verifies.length === 1 && found.length > 0)) {
+    return {
+      ok: false,
+      error: {
+        class: "operation-unknown",
+        reason: "pending-migration-ambiguous",
+        detail: `${verifies.length > 1 ? "more than one committed migration verify is" : "a committed migration verify and a committed initialize are"} pending: ${[...verifies, ...found].map((p) => dirOf(p.operation_id)).join(", ")}; one pending field cannot name them, so they are to be resolved by hand`,
+      },
+    };
+  }
   if (found.length > 1) {
     return {
       ok: false,
       error: { class: "operation-unknown", reason: "pending-initialize-ambiguous", detail: `more than one committed initialize is pending: ${found.map((p) => dirOf(p.operation_id)).join(", ")}; one pending field cannot name them, so they are to be resolved by hand` },
     };
   }
-  return { ok: true, value: found[0] ?? null };
+  return { ok: true, value: verifies[0] ?? found[0] ?? null };
+}
+
+/**
+ * The pending variant of a committed migration intent, or null when it is no
+ * `verify` (a pending `apply` or `rollback` chunk or plan freeze is no
+ * `pending` value: `inspect.maintenance` names the fence and `survey`'s
+ * `local_state` the intent). A `verify`, or any migration intent that writes
+ * the manifest, must agree with itself: the receipt and then `workbench.json`
+ * written, the staged manifest valid and naming that receipt and the
+ * migration the recorded answer names, the answer naming this operation and
+ * a plan. Otherwise `operation-unknown/pending-migration-unreadable`.
+ */
+function pendingVerify(wb: Workbench, p: PendingIntent): Result<PendingVerify | null> {
+  const { intent, contents } = p;
+  const writesManifest = intent.writes.some((w) => w.path === WORKBENCH_MANIFEST && w.after !== null);
+  if (intent.phase !== "verify" && !writesManifest) return { ok: true, value: null };
+  const unreadable = (why: string): Result<never> => ({
+    ok: false,
+    error: { class: "operation-unknown", reason: "pending-migration-unreadable", detail: `${STATE_DIR}/${JOURNAL_DIR}/${intent.operation_id}: ${why}; inspect cannot say which verify is pending, so the intent is to be read and corrected by hand` },
+  });
+  if (intent.phase !== "verify") return unreadable(`a migration ${intent.phase ?? "intent"} writes ${WORKBENCH_MANIFEST}, which only verify writes`);
+  const [receipt, manifestWrite] = intent.writes;
+  if (intent.writes.length !== 2 || receipt === undefined || manifestWrite?.path !== WORKBENCH_MANIFEST || receipt.after === null) {
+    return unreadable(`a verify intent writes ${intent.writes.map((w) => w.path).join(", ") || "nothing"}, not the receipt and then ${WORKBENCH_MANIFEST}`);
+  }
+  const parsed = strictParse(contents.get(WORKBENCH_MANIFEST) as Buffer);
+  if (!parsed.ok) return unreadable(`the staged ${WORKBENCH_MANIFEST}: ${parsed.reason}: ${parsed.detail}`);
+  const v = validate(WORKBENCH_SCHEMA_ID, parsed.value);
+  if (!v.ok) return unreadable(`the staged ${WORKBENCH_MANIFEST} is not valid: ${v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`}`);
+  const manifest = parsed.value as Record<string, unknown>;
+  const migration = manifest.migration as Record<string, unknown> | null;
+  const result = intent.response.ok ? (intent.response.result as Record<string, unknown> | undefined) : undefined;
+  const plan = result?.plan as Record<string, unknown> | undefined;
+  if (result === undefined || result.operation_id !== intent.operation_id || typeof result.migration_id !== "string" || typeof plan?.path !== "string" || typeof plan.sha256 !== "string") {
+    return unreadable("the recorded answer names no operation, migration and plan of this intent");
+  }
+  if (migration === null || migration.id !== result.migration_id || migration.receipt !== receipt.path) {
+    return unreadable(`the staged ${WORKBENCH_MANIFEST} names ${migration === null ? "no migration" : `${String(migration.id)} and ${String(migration.receipt)}`}; the recorded answer names ${result.migration_id} and the intent writes ${receipt.path}`);
+  }
+  return {
+    ok: true,
+    value: { op: "migration", phase: "verify", operation_id: intent.operation_id, id: manifest.id as string, migration_id: result.migration_id, plan: { path: plan.path, sha256: plan.sha256 }, blocked: blockedIntent(wb, p) !== null },
+  };
 }
 
 // --- maintenance ------------------------------------------------------------------
@@ -508,8 +592,49 @@ function pendingInitialize(wb: Workbench): Result<PendingInitialize | null> {
 // kernel applies before it stores the answer `{operation_id, action, since}`;
 // `since` is the fence's, so `end` answers the time its `begin` set.
 
+// `end` on a legacy store (FJ04 addendum for a1fb17a, "Chunk 0 and legacy
+// `end`") is admitted for the fence a complete migration rollback names. A
+// replay comes first: an `end` whose id holds a stored answer goes to the
+// kernel's replay lookup, which answers it from that answer even after the
+// fence is gone, or refuses `operation-id-reused`. A fresh `end` then needs
+// the evidence `cleanupEvidence` checks (exactly one stored rollback chunk 0
+// answer naming the fence, its `progress` re-read and matching,
+// `progress_sha256` recomputed) and the standing fence equal to the
+// request's, before the lock and again under it; under it no migration
+// intent may be pending, so a committed but unlanded cleanup refuses. Every
+// other `end` on a legacy store, and every `begin` there, keeps the existing
+// refusal `unsupported-format/legacy-workbench`.
+
+const legacyRefusal = (wb: Workbench): Response => fail("unsupported-format", "legacy-workbench", `${wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)`);
+
+function maintenance(wb: Workbench, req: MaintenanceRequest, kernel: KernelOptions): Promise<Response> | Response {
+  if (req.action !== "end" || wb.state !== "legacy") return mutate(wb, req, maintenancePlan(req, kernel), kernel);
+  if (existsSync(join(wb.root, STATE_DIR, OPS_DIR, `${req.operation_id}.json`))) return mutate(wb, req, maintenancePlan(req, kernel), kernel, LEGACY_END_STATES);
+  const evidence = cleanupEvidence(wb, req.fence);
+  if (!evidence.ok) return fromStore(evidence.error);
+  const fence = readFence(wb);
+  if (!fence.ok || fence.value === null || fence.value.operation_id !== req.fence) return legacyRefusal(wb);
+  return mutate(wb, req, maintenancePlan(req, kernel), kernel, LEGACY_END_STATES);
+}
+
+/** The states an admitted `end` on a legacy store passes; the plan decides again under the lock. */
+const LEGACY_END_STATES: readonly Workbench["state"][] = ["legacy", "json-control"];
+
 function maintenancePlan(req: MaintenanceRequest, options: KernelOptions): PlanFunction {
   return (ctx: PlanContext): Result<Planned> => {
+    if (req.action === "end") {
+      // A migration intent pending under the fence is finished by its own request first: the fence is not ended over it.
+      const held = ctx.blocked.find((x) => x.held !== undefined);
+      if (held !== undefined) return { ok: false, error: recoveryBlocked(held) };
+      const now = openWorkbench(ctx.wb.root);
+      if (!now.ok) return now;
+      if (now.value.state === "unsupported" && now.value.diagnosis !== null) return { ok: false, error: now.value.diagnosis };
+      if (now.value.state === "legacy") {
+        const evidence = cleanupEvidence(ctx.wb, req.fence);
+        if (!evidence.ok) return evidence;
+        if (ctx.fence === null) return { ok: false, error: { class: "unsupported-format", reason: "legacy-workbench", detail: `${ctx.wb.root} carries no ${WORKBENCH_MANIFEST}; reads are allowed, mutation is not (spec 4.1)` } };
+      }
+    }
     if (req.action === "begin") {
       // Pending committed writes are settled first (`## 36`): one recovery could not land stops the fence.
       const blocked = ctx.blocked[0];
@@ -528,23 +653,37 @@ function maintenancePlan(req: MaintenanceRequest, options: KernelOptions): PlanF
 // --- migration --------------------------------------------------------------------
 //
 // The maintenance run of spec section 8 (`../migration.ts`, FJ04 contract
-// delta as amended for Prior `ab9cb59`). `survey` is an observation run
-// directly, never through the read protocol: it takes no lock, sweeps and
+// delta as amended for Prior `ab9cb59`, and its addendum for `a1fb17a`).
+// `survey` is an observation run directly, never through the read protocol:
+// it takes no lock, sweeps and
 // recovers nothing, and creates no `.json-state/`; an unsupported manifest
-// is refused with its diagnosis as every read refuses it. `plan` runs through
-// the kernel admitting every state, so that its replay and its own recovery
-// come before the store's shape is judged; its plan function judges the
-// shape. `apply`, `verify` and `rollback` land in FJ04's step 6 and are
-// refused `operation-unknown/not-implemented` until then, naming the phase.
+// is refused with its diagnosis as every read refuses it. Every other phase
+// runs through the kernel admitting every state, so that its replay and its
+// own recovery come before the store's shape is judged; its plan function
+// judges the shape. `verify` borrows `validate` and `reconcile` from here,
+// run over a json-control view of the store with no blocked intent (any
+// intent pending there was refused before the checks).
+
+const EMPTY_VIEW: ReadView = { blocked: [], blockedOn: () => undefined };
+
+const CHECK_HOOKS: CheckHooks = {
+  sitesOf: (pair) => referenceSites(pair as Pair),
+  validate: (view) => validateOp(view, { op: "validate" }, EMPTY_VIEW),
+  reconcile: (view) => reconcile(view, { op: "reconcile" }, EMPTY_VIEW),
+};
 
 function migration(wb: Workbench, req: MigrationRequest, kernel: KernelOptions): Promise<Response> | Response {
   switch (req.phase) {
     case "survey":
       return readable(wb) ?? survey(wb);
     case "plan":
-      return mutate(wb, req, migrationPlan(req, (pair) => referenceSites(pair as Pair)), kernel, EVERY_STATE);
-    default:
-      return fail("operation-unknown", "not-implemented", `migration ${req.phase} is specified (FJ04 contract delta, request 45) and lands in ${LANDS_IN.migration ?? "a later package"} step 6; survey and plan are answered`);
+      return mutate(wb, req, migrationPlan(req, CHECK_HOOKS.sitesOf), kernel, EVERY_STATE);
+    case "apply":
+      return mutate(wb, req, migrationApply(req, { now: kernel.now ?? Date.now }), kernel, EVERY_STATE);
+    case "verify":
+      return mutate(wb, req, migrationVerify(req, CHECK_HOOKS), kernel, EVERY_STATE);
+    case "rollback":
+      return mutate(wb, req, migrationRollback(req), kernel, EVERY_STATE);
   }
 }
 

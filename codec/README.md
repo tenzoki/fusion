@@ -107,10 +107,8 @@ package. FJ02 answers the rest of the table as it then stood but one: `create` (
 narrative must already exist), `transition` on every record kind, `claim`,
 `release`, `set-mode`, `set-dependencies`, `adopt-plan` (`role: plan`, the
 default, or `role: spec`), `attach-evidence` and `reconcile`. `migration` lands
-in FJ04: its `survey` and `plan` phases are answered (below, "`migration`"),
-and `apply`, `verify` and `rollback` are refused
-`operation-unknown/not-implemented`, naming the phase, until FJ04's step 6.
-No operation is deferred any more. `initialize` joined the table
+in FJ04, all five phases (below, "`migration`"). No operation is deferred any
+more, and `LANDS_IN` is empty. `initialize` joined the table
 later, after `validate`; it is described below. Every mutation runs through
 the kernel below, and `claim` and `release` are `transition` with defaults and
 clearer refusals, never a second route to the files.
@@ -329,8 +327,19 @@ stores nothing, so a retry is an ordinary first attempt.
 **The intent is the commit point.** It is a directory,
 `.json-state/journal/<operation_id>/`, holding `intent.json`
 (`{operation_id, op, request_digest, writes, response, created_at}`, each write
-`{path, before, after}` with `before: null` for a file the operation creates)
-and one staged file per distinct post-bytes, named by the hex of its hash. It
+`{path, before, after}` with `before: null` for a file the operation creates;
+a `migration` intent also records its request's `phase` after `op`) and one
+staged file per distinct post-bytes, named by the hex of its hash. **A removal
+entry** is a write with `after: null`: it removes the regular file at
+`before`, which must not be null, stages no bytes, and is admitted in a
+`migration` `rollback` intent only; anywhere else, or null to null,
+`commitIntent` refuses it before anything is written and a journal holding one
+reads as `journal-unreadable`. Its state is read by `lstat` and never through
+a link: the regular file at `before` is pre, an absent entry post, anything
+else (a link, dangling or not, a directory, other bytes) diverged. It unlinks
+the file and fsyncs the parent; absent is done, so its recovery is idempotent.
+Intents written before FJ04's step 6 carry neither and read and recover as
+before. It
 is built under a dot name and committed by one rename. Once
 `journal/<id>/` exists under its own name the operation lands, on this attempt
 or through recovery on any later request, so a caller whose process died after
@@ -433,7 +442,9 @@ a committed `initialize` whose manifest has not landed, or stands at other
 bytes, so no read finishes it: `inspect` names it as `pending`, with the
 blocked flag from the same classification a lock-free read applies
 (`blockedIntent`), and an `initialize` request finishes it under the lock.
-Every other committed intent is recovered by reads as described above.
+A migration intent is not finished by any read or any other request either
+(below, "`migration`"). Every other committed intent is recovered by reads as
+described above.
 
 ## Evidence records on disk
 
@@ -579,19 +590,42 @@ recorded `inspect`, each adding `maintenance: null` after `pending` and
 ## `migration`
 
 The maintenance run of spec section 8, as `fixtures/prior/REQUESTS.md`
-"FJ04 (the contract delta, amended for ab9cb59)" states it, in
-`src/migration.ts`. The host reads the v12 Markdown and composes a mapping
-proposal; the codec validates it, freezes it and alone writes every byte.
+"FJ04 (the contract delta, amended for ab9cb59)" states it and its "FJ04
+(addendum for a1fb17a)" corrects it, in `src/migration.ts`. The host reads the
+v12 Markdown and composes a mapping proposal; the codec validates it, freezes
+it and alone writes every byte. Nothing in it calls a Prior binary, service or
+file: the bundle is plain Node, run by `bin/fusion-record`.
 
-**`survey`** is an observation: `{layout, entries, local_state}`. `entries` is
-every entry under the root but `.json-state/`, sorted bytewise by path, each a
-file `{path, kind, size, sha256}`, a link `{path, kind, target}` (its own text,
-never followed or hashed), a directory `{path, kind}` or `{path, kind:
-"other"}`. `local_state` is `{present, intents, maintenance, unreadable}`: the
-pending intents by id, op and migration phase, the fence, and what does not
-read. It takes no lock, sweeps and recovers nothing, stores no answer and
-creates no `.json-state/`; an answer over 16 MiB is refused
-`schema-invalid/too-large`.
+**The exclusion allowlist** (R1) is one versioned constant,
+`EXCLUSION_ALLOWLIST`: the regular files `.session-marker`, `.checkout-id`,
+`.cadence-anchors`, `.check-stamps`, `monitor`, `orchestrator-events.jsonl`,
+`.fusion-setup` and `.asset-provenance`, and the directories `.guard-state`
+and `.commit-lock` with everything below them, named without a trailing slash
+as `schemas/migration-plan.schema.json` `$defs/exclusions` enumerates them (a
+test holds the two equal). A proposal's `exclusions` is a subset; fusion's host
+selects the whole list. A selected entry is skipped only while it is absent or
+`lstat`s as its kind: under another kind, or as a link, it is eligible and
+compared, so it shows as added or re-kinded, and no excluded link is followed.
+`workbench.json` is never excluded, and rollback neither restores nor removes
+excluded data. **The eligible inventory** every comparison runs over is the
+whole tree but `.json-state/`, this migration's own
+`archive/migrations/<id>/` (checked against the plan instead) and the selected
+exclusions in their kinds; an expected state adds exactly `archive/` and
+`archive/migrations/` where the frozen inventory lacked them.
+
+**`survey`** is an observation: `{layout, entries, eligible_sha256,
+local_state}`. `entries` is every entry under the root but `.json-state/`,
+sorted bytewise by path, each a file `{path, kind, size, sha256}`, a link
+`{path, kind, target}` (its own text, never followed or hashed), a directory
+`{path, kind}` or `{path, kind: "other"}`. `eligible_sha256` is the sha256
+over the canonical JSON of the eligible entries under the whole allowlist,
+the form `plan` checks (R2, C9 option 1): the host copies it into the
+proposal's `source_inventory_sha256` from a survey taken after the last
+consented repair and composes from that survey's entries. `local_state` is
+`{present, intents, maintenance, unreadable}`: the pending intents by id, op
+and migration phase, the fence, and what does not read. It takes no lock,
+sweeps and recovers nothing, stores no answer and creates no `.json-state/`;
+an answer over 16 MiB is refused `schema-invalid/too-large`.
 
 **`plan`** takes `proposal: {path, sha256}` under `.json-state/migration/`,
 read strictly at a 16 MiB cap (`strictParse`'s `cap`, the one caller that
@@ -602,33 +636,260 @@ order, first refusal wins: a manifest that does not read; a held intent
 when it names a receipt of this migration that holds, else
 `migration-incomplete/receipt-unverified` or `conflict/manifest-present`; a
 fence (`maintenance-active`); standing plan files (`migration-planned`); the
-proposal's form and its hash (`proposal-invalid`, `conflict/source-changed`);
-the records (`proposal-invalid`, `duplicate-id`, `record-exists`,
-`blocking-finding`, `closure-incomplete` over every `record_ref` site
-`referenceSites` names, an acceptance its package does not carry); the
-inventory the codec takes under the lock, against every source hash
-(`source-changed`) and every rewrite's deletion ranges; the cut and the
-operation-id schedule (`proposal-invalid`); and the freeze bound
-(`schema-invalid/plan-too-large`). The writes are cut in narrative-path order
-into chunks of at most 50, a pair never split, originals first. The plan is
-frozen under `archive/migrations/<id>/` as `chunks/<n>.json`,
-`parts/{records,inventory,findings,repairs}-<n>.json` and `plan.json`, the
-index, which binds every part by hash: in ONE intent, the index its last
-write, so no plan is visible before it lands.
+proposal's form and its hash (`proposal-invalid`, `conflict/source-changed`),
+an exclusion off the allowlist or holding a path the plan reads or writes
+(`proposal-invalid`); the records (`proposal-invalid`, `duplicate-id`,
+`record-exists`, `blocking-finding`, `closure-incomplete` over every
+`record_ref` site `referenceSites` names, an acceptance its package does not
+carry); then the eligible inventory the codec takes under the lock, first its
+digest against `source_inventory_sha256` (`source-changed`, naming both
+digests and any changed narrative), then every source hash (`source-changed`)
+and every rewrite's deletion ranges; the cut and the operation-id schedule
+(`proposal-invalid`); and the freeze bound (`schema-invalid/plan-too-large`).
+The writes are cut in narrative-path order into chunks of at most 50, a pair
+never split, originals first. The plan is frozen under
+`archive/migrations/<id>/` as `chunks/<n>.json`,
+`parts/{records,inventory,findings,repairs,answers}-<n>.json` and
+`plan.json`, the index, which binds every part by hash and carries
+`source_inventory_sha256`: in ONE intent, the index its last write, so no
+plan is visible before it lands. The `answers` parts are the operation
+baseline (R3): one entry `{operation_id, op, request_digest, answer_sha256}`
+per answer stored before the plan, `answer_sha256` over the answer file's
+bytes, bytewise by id, an empty list on a store with none. An answer that
+does not read refuses the plan (`operation-record-unreadable`).
 
 **The freeze bound.** Every plan file and `intent.json` under 1 MiB, at most
-80 files and 6 MiB. Measured for step 5 through the bundle with process
-start, on a store generated at the largest measured copy's size (749 pairs,
-1 680 writes, 7 942 files): 41 files, 3 410 844 bytes, 1.26 s, 1.28 s and
-1.32 s. A freeze over the bound publishes nothing; a multi-request freeze is
-the contract's question 50 and is not built.
+80 files and 6 MiB, the answers parts counted. Measured for step 5 through the
+bundle with process start, on a store generated at the largest measured
+copy's size (749 pairs, 1 680 writes, 7 942 files): 41 files, 3 410 844 bytes,
+1.26 s, 1.28 s and 1.32 s. Measured again for step 6 with the answers part
+(below, "Measured"). A freeze over the bound publishes nothing; a
+multi-request freeze is the contract's question 50 and is not built.
 
 **A migration intent is held.** Only the request that committed it finishes
-it. Every other request's recovery, a read's included, leaves an intent whose
-`op` is `migration` untouched (a `migration` request also leaves a committed
-`initialize`), and the paths it names answer
-`operation-unknown/migration-pending` in `list`, `show`, `validate` and
-`reconcile` and to any mutation that touches them (`kernel.ts`, `isHeld`).
+it: the request carrying its operation id AND its request digest (R4, C14).
+Every other request's recovery, a read's included, leaves an intent whose `op`
+is `migration` untouched (a `migration` request also leaves a committed
+`initialize`), and the same id under another digest finds it held and is
+`conflict/operation-id-reused` with no recovery effect. The paths a held intent
+names answer `operation-unknown/migration-pending` in `list`, `show`,
+`validate` and `reconcile` and to any mutation that touches them (`kernel.ts`,
+`isHeld`). `maintenance end` meeting one leaves the fence standing and answers
+`migration-pending`.
+
+**The common prefix.** `apply`, `verify` and `rollback` run, like `plan`,
+through the kernel admitting every state: the lock, the sweep, the recovery of
+every intent the request does not hold, and this operation id's replay (a
+stored answer is returned whatever the store's state is now, so an old `apply`
+replayed after activation or after its rollback answers its stored bytes and
+recreates nothing, and no replay reads a plan file); then a manifest that
+does not read, and a held intent (`conflict/intent-pending`). Each phase then
+checks in the contract's order, first refusal wins; the full orders stand at
+the plan functions in `src/migration.ts`. Every phase reads the index at the
+request's `plan.sha256` and the parts it needs at the index's hashes, the
+inventory parts digesting to the index's `source_inventory_sha256`
+(`conflict/plan-file-changed`). This migration's own directory is checked
+against the plan: every plan file at the index's hash and none it does not
+name (`plan-file-changed`), exactly the originals of the landed chunks, and
+the receipt and `rollback.json` only where the phase admits them.
+
+**`apply {chunk: n}`**: a manifest (`manifest-present`); the index, the
+inventory parts and chunks 1 to n (`plan-file-changed`); n beyond the last
+chunk (`migration-incomplete/chunk-out-of-order`) or an id not the index's
+apply id for n, an unassigned one included (`conflict/operation-id-unscheduled`);
+the fence, for n = 1 none or chunk 1's own after a crash between fence and
+intent, for n > 1 chunk 1's (`maintenance-active`); the chunks landed exactly
+1 to n − 1, chunk n landed meaning apply n's answer stored and rollback n's
+not (`chunk-out-of-order`); the whole eligible inventory against the frozen
+one with chunks 1 to n − 1 applied, added, removed, re-kinded and re-hashed
+entries alike (`conflict/source-changed`, naming the first difference
+bytewise); a staged file over 1 MiB (`schema-invalid/too-large`). Then, for
+n = 1, the fence `{operation_id: <chunk 1's id>, since}` in its own sequence,
+and one intent with the chunk's writes, originals first. The answer keeps the
+established envelope (C15): `{ok: true, result: {operation_id, migration_id,
+chunk, fence, writes: [{path, kind}]}, revisions}`, `revisions` beside
+`result`. Because every chunk rechecks the whole store, a source edited after
+`plan` is refused at the next chunk, whichever chunk converts it.
+
+**`verify`**: a manifest; the index and every part; the scheduled verify id;
+chunk 1's fence; every chunk landed (`migration-incomplete/chunks-missing`);
+the whole eligible inventory against the expected final state
+(`source-changed`); then eight checks over a json-control view of the store
+(the manifest verify would write, not yet written): `pairs` (each converted
+control at its path, its id, kind and narrative at the after-hash), `ids`
+(every control file's id once, in this workbench), `graph` (no `depends_on`
+cycle, every edge resolving), `references` (none unresolved or ambiguous),
+`acceptance` (each against its package's active-document entry and the
+narrative's bytes), `closure` (every `record_ref` of this workbench naming a
+converted record), `validate` (no finding) and `reconcile` (no intent, record
+finding or stale evidence; status lines kept in live narratives are reported
+there and fail nothing). A failure is `migration-incomplete/check-failed`
+naming each failing check, and nothing is written. Otherwise one intent writes
+`archive/migrations/<id>/receipt.json` and then `workbench.json`, its last
+write. The receipt binds the index and every part by hash, names
+`verify_operation_id`, the counts and the codec's schema ids and features, and
+carries `manifest_revision` and `after_inventory_sha256`, the digest of the
+activated tree (C11): the eligible inventory verify compared plus the
+`workbench.json` entry of the exact manifest bytes the same intent writes. The
+manifest names the receipt by path only, so no hash refers to itself. The
+answer is `{operation_id, migration_id, plan, checks, counts, receipt: {path,
+sha256}, manifest: {path, revision}}`.
+
+**`inspect.pending`'s second variant.** A committed `verify` is named as
+`{op: "migration", phase: "verify", operation_id, id, migration_id, plan,
+blocked}` at every cut: legacy before the receipt, legacy with the receipt,
+and under JSON control once the manifest landed and before the answer. `id` is
+read from the staged manifest, `migration_id` and `plan` from the answer the
+intent carries. The `initialize` object is unchanged, byte for byte. A verify
+intent that does not agree with itself is
+`operation-unknown/pending-migration-unreadable`; two committed verifies, or
+one beside a committed `initialize`, `pending-migration-ambiguous`. Only the
+verify request reconstructed from the workbench path and these fields finishes
+it; the kernel compares its digest as for any replay.
+
+**Later operations** (R3, C10). A later operation is a stored answer that is
+neither a baseline entry (all four fields equal to one entry of the `answers`
+parts) nor one of this plan's validated scheduled answers: stored under an id
+the schedule assigns to `plan`, an apply chunk, `verify` or a rollback chunk
+(the `unassigned` ids are not scheduled), whose request digest equals its
+reconstructed request's (`plan`'s rebuilt from the index's `proposal`, every
+other phase from the index the request binds). One function,
+`laterOperations`, is that definition; the second-run no-op's
+`later_operations` (by id and op; it decides nothing and refuses nothing) and
+the rollback audit both use it. Whether an answer landed after another cannot
+be decided from stored answers, which carry no sequence or time, so nothing
+here asks it, and file times play no part. A consequence: the no-op stores an
+answer of its own, a later operation, so a second `plan` sent after
+activation refuses a later rollback like any other work.
+
+**Reconstruction and `workbench`** (departure 5). The digest covers
+`workbench` when a request carried it, so every request the codec rebuilds
+itself (each scheduled answer's, the exempt `end` and `begin`, each answer
+before chunk 0 that `progress` lists) is tried in two forms: `workbench`
+absent, and `workbench` equal to the root the codec resolved for the request
+being served (the resolved `FUSION_WORKBENCH` when it carried none).
+**Limit:** a request that spelled its workbench otherwise than that resolved
+root (a moved workbench, a trailing `/.`) misses in both, and every miss
+refuses where a match is required. Baseline entries are compared as frozen
+and are not rebuilt.
+
+**`rollback {chunk: k}`**: legacy, or a manifest naming this migration, which
+makes it the first rollback after activation (any other manifest:
+`manifest-present`); the index and every part, and for a later chunk after a
+rollback across activation `rollback.json` (below); k beyond the last chunk
+(`chunk-out-of-order`) or not the scheduled rollback id
+(`operation-id-unscheduled`); the fence (below); k the highest landed chunk,
+or k = 0 with none landed (`chunk-out-of-order`); for the first rollback after
+activation the receipt (identity, integrity, availability, `manifest_revision`
+the manifest's: `migration-incomplete/receipt-unverified`) and the baseline
+(below); then every file chunk k wrote at its after-state and its originals
+at their source hashes, or for k = 0 the eligible inventory equal to the
+frozen post-repair input (`conflict/after-state-changed`). One intent writes
+the originals back over the narratives chunk k rewrote, then removes its
+control files, then its originals, so no cut leaves a removed original whose
+narrative was not restored. The answer is `{operation_id, migration_id, chunk,
+restored, removed, activation_undone}`. Rollback restores the frozen
+post-repair input, not the external pre-repair backup, which is the host's
+`bin/fusion-migrate restore-backup` (C6).
+
+- **The fence.** After activation, a standing fence whose id holds a stored
+  `maintenance begin` answer (the host ends chunk 1's fence after setup
+  metadata and begins a new one); on every later chunk the fence
+  `rollback.json` binds; before activation chunk 1's once chunk 1 was
+  applied, and none or chunk 1's when it never was (a full abort before chunk
+  1 needs no fence). Otherwise `maintenance-active`. The fence stands through
+  every reverse chunk and through chunk 0; only `maintenance end` removes it.
+- **The baseline** (the first rollback after activation). The eligible
+  inventory, the manifest included, digesting to the receipt's
+  `after_inventory_sha256`, else `after-state-changed` naming the first entry
+  that differs from the activated tree. Every baseline entry stored as frozen:
+  one missing or at other bytes is `after-state-changed`. The exempt set:
+  this migration's `verify`, validated; the one `maintenance end` whose
+  request reconstructs as `{op: "maintenance", operation_id, action: "end",
+  fence: <chunk 1's apply id>}`; and the one `maintenance begin` stored under
+  the standing fence's id reconstructing as `{op: "maintenance",
+  operation_id: <fence>, action: "begin"}`. Exactly one stored answer must
+  match each, else `after-state-changed`. Then the audit: every later
+  operation is one of the three by id, op and digest, else
+  `after-state-changed` naming it, even when the record bytes it moved have
+  returned to their old hashes. No operation is exempt by its name.
+- **`rollback.json`** (question 52, as Prior answered it). The first rollback
+  after activation writes it in its own intent, `serialise`d and valid as the
+  plan schema's `rollback-binding` shape: `{schema, part: "rollback-binding",
+  migration_id, plan: {path, sha256}, receipt: {path, sha256}, fence,
+  exempt}`, `fence` the standing rollback fence and `exempt` the three
+  entries `{operation_id, op, request_digest}`, bytewise by id. The same
+  intent removes `workbench.json` and the receipt and restores the last
+  chunk, and its answer adds `binding: {path, sha256}` for the file's exact
+  bytes. A later fresh chunk reads that answer under the schedule's id for
+  the highest rollback chunk, checks the file against the bound hash before
+  it validates and trusts it (`plan-file-changed`), takes the fence from it,
+  and refuses any later operation outside its exempt set. Replays never read
+  the file.
+- **Rollback chunk 0** first holds that no chunk is landed and that the
+  eligible inventory equals the frozen input with the permitted empty
+  directories. It then builds `progress`, the ordered list of `{chunk,
+  operation_id, request_digest}`: the rollbacks of the applied prefix from m
+  down to 1, m the highest chunk whose scheduled apply answer is stored (none
+  for a full abort), each validated (stored, `ok`, this migration, its chunk,
+  the digest of its reconstructed rollback request), then chunk 0 from this
+  request. Its one intent removes the chunk parts, the other parts,
+  `rollback.json` when present and the index last, carrying their hashes and
+  none of their bytes (W9), and its answer adds `{plan: {path, sha256}, fence,
+  progress, progress_sha256}` (question 51, as Prior answered it): `fence` the
+  standing fence's id, or null only when none stands (after a crash between
+  chunk 1's fence and its intent chunk 0 names that fence, and an `end` is
+  needed), and `progress_sha256` the sha256 over the list's canonical bytes.
+  The answer is in the intent, so the evidence is durable before any plan file
+  is gone.
+- **No directory is removed.** A complete rollback leaves the frozen input
+  plus exactly these empty directories: `archive/` and `archive/migrations/`
+  where the input lacked them, and `archive/migrations/<id>/` with its
+  `chunks/`, `parts/` and `originals/` trees. A later `plan` treats empty
+  directories as no plan.
+
+**`maintenance end` on a legacy store** answers a replay first, from `end`'s
+own stored answer, even after the fence is gone. A fresh one is admitted for
+the fence a complete rollback names, when exactly one stored rollback chunk 0
+answer names that fence, its `progress` ends at chunk 0 with that answer's
+own id and digest, each listed answer is re-read and matches, `progress_sha256`
+recomputes from `progress`, and the standing fence is the request's; under
+the lock no migration intent may be pending, so a committed but unlanded
+cleanup refuses (`migration-pending`). Anything missing, unreadable or
+mismatched keeps the existing refusal `unsupported-format/legacy-workbench`,
+byte for byte where no migration evidence exists at all. Every `begin` on a
+legacy store keeps it as well.
+
+**Measured for step 6** through `bin/fusion-record` with process start,
+three runs on an M2 Max with Node 25.7.0, the 1-minute load under 4 at the
+start of each run, on the store step 5 generated at the largest measured
+copy's size (749 pairs, 1 680 writes, 35 chunks, 7 942 files) with 500
+answers stored before the plan, so that the answers part and the baseline
+audit carry weight. Median and max: the plan freeze with the answers part
+(42 files) 1.63 s and 1.66 s; the worst chunk's apply 2.22 s and 2.24 s
+(chunk 1, with the fence and the full recheck, 1.55 s and 1.60 s); chunk 1's
+recovery after a cut at its commit point 0.78 s and 0.83 s; `verify` 1.70 s
+and 1.71 s; the first rollback after activation, with its baseline, 1.14 s
+and 1.15 s; the chunk-0 cleanup (43 files) 1.12 s and 1.13 s. The step-5
+bundle froze the same store in 1.43 s and 1.46 s on the same runs. Every
+figure is under the client's 5 s post-wait allowance, so question 50's
+multi-request path stays unbuilt. A first attempt ran over 5 s: the plan
+schema then gave the `answers` part's `entries` `uniqueItems`, which its
+root `oneOf` evaluated on every inventory part, quadratic in its entries;
+the schema leaves uniqueness and order to the codec since.
+
+**Three limits, stated rather than built around.** (1) A re-plan under the id
+of a completely rolled-back migration: `survey`'s `eligible_sha256` counts the
+empty directories the rollback left under `archive/migrations/<id>/`, which
+`plan`'s eligible inventory leaves out as that migration's own, so the plan
+is `source-changed` until they are removed or the host takes a new migration
+id. (2) A second `plan` after activation, the no-op, stores an answer of its
+own, and a stored no-op answer is itself a later operation: a rollback after
+it refuses as a later operation (`after-state-changed`). A host that may still
+roll back reads the store's state with `survey`, which stores nothing, not
+with `plan`. (3) `plan` does not refuse a narrative over 1 MiB, which no
+journal can stage; its chunk is refused `schema-invalid/too-large` before
+anything of that chunk is written, for chunk 1 before its fence.
 
 ## The two closed vocabularies
 
