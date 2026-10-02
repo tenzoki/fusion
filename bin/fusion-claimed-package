@@ -43,9 +43,11 @@
 #      record was answered for. A record list past the argument limit is not a
 #      cause: the records go to grep in batches.
 #
-# An unreadable record is not exit 3. It is skipped and named on stderr, one
-# line per file, since a claim inside it may be missed; the readable records'
-# matches stand and the code follows them as if that file were absent.
+# An unreadable record, or a container directory that cannot be searched, is
+# not exit 3. It is skipped and named on stderr, one line each, since a claim
+# inside it may be missed; the readable records' matches stand and the code
+# follows them as if it were absent. A searchable container with no record
+# named after it is simply not a package, and stays silent.
 #
 # ---------------------------------------------------------------------------
 # One criterion, one implementation
@@ -282,7 +284,13 @@ for store_root in $CONTAINER_STORE $LEGACY_CONTAINER_STORE; do
   while IFS= read -r dir; do
     [ -n "$dir" ] || continue
     base="${dir##*/}"
-    [ -f "$dir/$base.md" ] || continue
+    if [ ! -f "$dir/$base.md" ]; then
+      # Without search permission the record test is false whether or not the
+      # record exists, so only a searchable container is silently not a package.
+      [ -x "$dir" ] || printf 'fusion-claimed-package: %s/%s could not be searched and is skipped, so a claim inside it may be missed.\n' \
+        "$store_root" "$base" >&2
+      continue
+    fi
     if [ ! -r "$dir/$base.md" ]; then
       printf 'fusion-claimed-package: %s/%s/%s.md could not be read and is skipped, so a claim inside it may be missed.\n' \
         "$store_root" "$base" "$base" >&2

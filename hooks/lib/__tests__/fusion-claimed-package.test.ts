@@ -16,7 +16,7 @@ const LEGACY = WINDOW_LEGACY_NAMES[CONTAINER_STORE];
 const identity = join(pluginRoot, "bin", "fusion-identity");
 
 const tmpRoots: string[] = [];
-afterAll(() => tmpRoots.forEach((d) => rmSync(d, { recursive: true, force: true })));
+afterAll(() => tmpRoots.forEach((d) => { sh("chmod", ["-R", "u+rwx", d], d); rmSync(d, { recursive: true, force: true }); }));
 
 /** Git reads none of the developer's own config: a global `user.name` would
  *  make the no-identity case pass for the wrong reason. */
@@ -132,22 +132,23 @@ describe("bin/fusion-claimed-package", () => {
 
   // Neither blanks the readable claim, which sorts last so only a later grep batch finds it.
   it.each([
-    ["an unreadable record is skipped and named", (d: string) => {
+    ["an unreadable record or unsearchable container is skipped and named, a container with no record is not", (d: string) => {
       add(d, "260910-1000-alpha", "claimed", `${checkout(d)} — Scratch Person, 260910-1000`);
       chmodSync(join(d, "fusion-workbench", CONTAINER_STORE, "260910-1000-alpha", "260910-1000-alpha.md"), 0);
-    }, `${CONTAINER_STORE}/260910-1000-alpha/260910-1000-alpha.md could not be read`],
+      for (const [c, mode] of [["legacy", 0o755], ["sealed", 0]] as const) mkdirSync(join(d, "fusion-workbench", CONTAINER_STORE, `260910-1000-${c}`), { mode });
+    }, [`${CONTAINER_STORE}/260910-1000-alpha/260910-1000-alpha.md could not be read`, `${CONTAINER_STORE}/260910-1000-sealed could not be searched`]],
     ["the record list exceeds the argument limit", (d: string) => {
       for (let i = 0, m = Number(sh("getconf", ["ARG_MAX"], d).stdout.trim()); i * 230 < m; i++) add(d, `260910-1000-${String(i).padStart(5, "0")}-${"x".repeat(200)}`, "open");
-    }, ""],
+    }, []],
   ])("the readable claim still stands when %s", (_, seed, named) => {
-    if (named && process.getuid?.() === 0) return; // root reads a mode-0 file
+    if (named.length && process.getuid?.() === 0) return; // root reads a mode-0 file
     const dir = project();
     seed(dir);
     add(dir, "260910-1000-zzzz", "claimed", `${checkout(dir)} — Scratch Person, 260910-1000`);
     const r = run(dir);
     expect(r.status, r.stderr).toBe(0);
     expect(r.stdout).toBe(`PACKAGE=${CONTAINER_STORE}/260910-1000-zzzz/260910-1000-zzzz.md\nCONTAINER=${CONTAINER_STORE}/260910-1000-zzzz\n`);
-    expect(r.stderr).toContain(named);
+    expect(r.stderr.match(/^.*is skipped.*$/gm) ?? []).toEqual(named.map((n) => expect.stringContaining(n)));
   }, 60_000);
 
   it("exit 3, not an empty answer, when the scan's grep is killed", () => {
