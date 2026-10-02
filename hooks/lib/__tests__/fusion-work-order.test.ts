@@ -32,16 +32,16 @@ const ACYCLIC = { "260101-0001-a": "260101-0002-b.md", "260101-0002-b": null };
 const COLS = "order\tdepth\tblocks\treadiness\titem\tstatus\tfield\tdepends-on\tunresolved\tcycle";
 const COUNTS = ["items", "edges", "unresolved-edges", "cycles", "ready", "roots", "no-depends-on-field", "unreadable-head"];
 const MARK = "<!-- fusion-work-order markdown format=1 -->";
-// Two cycles (one a self-edge), an absent field, unresolved entries carrying `\`, a tab, `|` and a backtick, paused, unreadable.
-const [D, E, F, G] = ["260101-0004-d", "260101-0005-e", "260101-0006-f", "260101-0007-g"];
+// Two cycles (one a self-edge), an absent field, unresolved entries carrying a tab and all eleven escaped punctuation characters, paused, unreadable.
+const [D, E, F, G, P, PM] = ["260101-0004-d", "260101-0005-e", "260101-0006-f", "260101-0007-g", "p|q`r&*_[s]<t>~.md", "p\\|q\\`r\\&\\*\\_\\[s\\]\\<t\\>\\~.md"];
 function rich(): string {
-  const root = scratch({ ...CYCLIC, "260101-0003-c": null, [D]: "260101-0003-c.md, x\\y.md, w\tz.md, x\\y.md, p|q`r.md", [E]: null, [F]: `${F}.md`, [G]: null });
+  const root = scratch({ ...CYCLIC, "260101-0003-c": null, [D]: `260101-0003-c.md, x\\y.md, w\tz.md, x\\y.md, ${P}`, [E]: null, [F]: `${F}.md`, [G]: null });
   for (const [d, s] of [[E, "paused"], [G, "bogus"]]) writeFileSync(join(root, "fusion-workbench", "work-packages", d, `${d}.md`), `# ${d}\n\n---\n**Status:** ${s}\n---\n`);
   return root;
 }
 const ROWS = [["1", "0", "1", "blocked", "260101-0001-a", "open", "present", "260101-0002-b.md", "", "1"],
   ["2", "0", "1", "blocked", "260101-0002-b", "open", "present", "260101-0001-a.md", "", "1"], ["3", "0", "1", "ready", "260101-0003-c", "open", "absent", "", "", "0"],
-  ["4", "1", "0", "blocked", D, "open", "present", "260101-0003-c.md,x\\\\y.md,w\\tz.md,x\\\\y.md,p|q`r.md", "p|q`r.md,w\\tz.md,x\\\\y.md", "0"],
+  ["4", "1", "0", "blocked", D, "open", "present", `260101-0003-c.md,x\\\\y.md,w\\tz.md,x\\\\y.md,${P}`, `${P},w\\tz.md,x\\\\y.md`, "0"],
   ["5", "0", "0", "paused", E, "paused", "absent", "", "", "0"], ["6", "0", "0", "blocked", F, "open", "present", `${F}.md`, "", "2"]];
 describe("bin/fusion-work-order: reports, never gates", () => {
   it("exits 0 with verdict=cyclic, prints one note= only where a field is absent, and holds roots= equal to ready= unless a cycle sits at depth 0", () => {
@@ -59,12 +59,12 @@ describe("bin/fusion-work-order: reports, never gates", () => {
     const sig = "order:number,depth:number,blocks:number,readiness:string,item:string,status:string,field:string,depends-on:object,unresolved:object,cycle:number";
     expect(j.items.map((o: object) => [Object.entries(o).map(([k, v]) => `${k}:${typeof v}`).join(), ...Object.values(o).map(cell)])).toEqual(ROWS.map((r) => [sig, ...r]));
     expect([j.format, j.anchor, Object.entries(j.summary), j.note]).toEqual([1, "workbench-root", [...[6, 4, 3, 2, 1, 5, 2, 1].map((n, i) => [COUNTS[i], n]), ["verdict", "cyclic"]], value(run(root).stdout, "note")]);
-    expect([j.cycles, j.unresolved, j.unreadable]).toEqual([[["260101-0001-a", "260101-0002-b"], [F]], ["p|q`r.md", "w\tz.md", "x\\y.md"].map((entry) => ({ item: D, entry })), [G]]);
+    expect([j.cycles, j.unresolved, j.unreadable]).toEqual([[["260101-0001-a", "260101-0002-b"], [F]], [P, "w\tz.md", "x\\y.md"].map((entry) => ({ item: D, entry })), [G]]);
   });
   it("prints --format markdown: marker, note paragraph, the escaped table row, numbered cycles, unresolved and unreadable lists", () => {
     const root = rich(), b = run(root, "--format", "markdown").stdout.split("\n\n");
-    expect([b[0], b[2], b[3].split("\n")[5], ...b.slice(4)]).toEqual([MARK, `**Note:** ${value(run(root).stdout, "note")}`, `| 4 | 1 | 0 | blocked | ${D} | open | present | 260101-0003-c.md, x\\\\y.md, w&#9;z.md, x\\\\y.md, p\\|q\\\`r.md | p\\|q\\\`r.md, w&#9;z.md, x\\\\y.md | 0 |`,
-      "**Cycles**", `- 1: 260101-0001-a, 260101-0002-b\n- 2: ${F}`, "**Unresolved**", `- ${D} wants p\\|q\\\`r.md\n- ${D} wants w&#9;z.md\n- ${D} wants x\\\\y.md`, "**Unreadable**", `- ${G}\n`]);
+    expect([b[0], b[2], b[3].split("\n")[5], ...b.slice(4)]).toEqual([MARK, `**Note:** ${value(run(root).stdout, "note")}`, `| 4 | 1 | 0 | blocked | ${D} | open | present | 260101-0003-c.md, x\\\\y.md, w&#9;z.md, x\\\\y.md, ${PM} | ${PM}, w&#9;z.md, x\\\\y.md | 0 |`,
+      "**Cycles**", `- 1: 260101-0001-a, 260101-0002-b\n- 2: ${F}`, "**Unresolved**", `- ${D} wants ${PM}\n- ${D} wants w&#9;z.md\n- ${D} wants x\\\\y.md`, "**Unreadable**", `- ${G}\n`]);
   });
   it("exits 1 with empty stdout on any other argument, an alias and --format=json included, and 2 with no workbench above", () => {
     for (const a of [["--wat"], ["--format"], ["--format", "yaml"], ["--format", "md"], ["--format=json"], ["--format=tsv"], ["--format", "tsv", "--format", "tsv"]]) expect(((r) => [r.status, r.stdout])(run(scratch(), ...a))).toEqual([1, ""]);
