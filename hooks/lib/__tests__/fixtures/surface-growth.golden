@@ -65,7 +65,7 @@
   fenced-code-exemption.test.ts 206
   fusion-checkout-name.test.ts 202
   fusion-citation-check.test.ts 284
-  fusion-claimed-package.test.ts 169
+  fusion-claimed-package.test.ts 180
   fusion-commit-lock.test.ts 454
   fusion-count-sources.test.ts 413
   fusion-events.test.ts 432
@@ -109,4 +109,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 189
   workbench-citation-lint.test.ts 353
-  total 22269
+  total 22280

@@ -130,26 +130,37 @@ describe("bin/fusion-claimed-package", () => {
     expect(r.stderr).toContain("item in scope is unknown");
   });
 
-  // A grep that could not read every record is unknown scope, never "none claimed":
-  // a record list past the argument limit (grep never runs, 126) and an unreadable record (2).
+  // Neither blanks the readable claim, which sorts last so only a later grep batch finds it.
   it.each([
-    ["the record list exceeds the argument limit", (d: string) => {
-      const argMax = Number(sh("getconf", ["ARG_MAX"], d).stdout.trim());
-      for (let i = 0; i * 230 < argMax; i++) add(d, `260910-1000-${String(i).padStart(5, "0")}-${"x".repeat(200)}`, "open");
-    }],
-    ["a record is unreadable", (d: string) => {
+    ["an unreadable record is skipped and named", (d: string) => {
       add(d, "260910-1000-alpha", "claimed", `${checkout(d)} — Scratch Person, 260910-1000`);
       chmodSync(join(d, "fusion-workbench", CONTAINER_STORE, "260910-1000-alpha", "260910-1000-alpha.md"), 0);
-    }],
-  ])("exit 3, not an empty answer, when %s", (_, seed) => {
-    if (_.includes("unreadable") && process.getuid?.() === 0) return; // root reads a mode-0 file
+    }, `${CONTAINER_STORE}/260910-1000-alpha/260910-1000-alpha.md could not be read`],
+    ["the record list exceeds the argument limit", (d: string) => {
+      for (let i = 0, m = Number(sh("getconf", ["ARG_MAX"], d).stdout.trim()); i * 230 < m; i++) add(d, `260910-1000-${String(i).padStart(5, "0")}-${"x".repeat(200)}`, "open");
+    }, ""],
+  ])("the readable claim still stands when %s", (_, seed, named) => {
+    if (named && process.getuid?.() === 0) return; // root reads a mode-0 file
     const dir = project();
     seed(dir);
+    add(dir, "260910-1000-zzzz", "claimed", `${checkout(dir)} — Scratch Person, 260910-1000`);
     const r = run(dir);
-    expect(r.status).toBe(3);
-    expect(r.stdout).toBe("");
-    expect(r.stderr).toContain("item in scope is unknown");
+    expect(r.status, r.stderr).toBe(0);
+    expect(r.stdout).toBe(`PACKAGE=${CONTAINER_STORE}/260910-1000-zzzz/260910-1000-zzzz.md\nCONTAINER=${CONTAINER_STORE}/260910-1000-zzzz\n`);
+    expect(r.stderr).toContain(named);
   }, 60_000);
+
+  it("exit 3, not an empty answer, when the scan's grep is killed", () => {
+    // SIGKILL for the scan's `-lE` only; every other caller gets the real grep.
+    const dir = project(), fake = join(dir, "fakebin");
+    add(dir, "260910-1000-alpha", "open");
+    mkdirSync(fake);
+    writeFileSync(join(fake, "grep"), `#!/bin/sh\n[ "$1" = -lE ] && kill -9 $$\nexec ${sh("sh", ["-c", "command -v grep"], dir).stdout.trim()} "$@"\n`, { mode: 0o755 });
+    const r = spawnSync(script, [], { cwd: dir, env: { ...env, PATH: `${fake}:${env.PATH}` }, encoding: "utf-8" });
+    expect(r.status, r.stderr).toBe(3);
+    expect(r.stdout).toBe("");
+    expect(r.stderr).toContain("grep could not run");
+  });
 
   it.each([
     ["no workbench above the working directory", { workbench: false }, "no fusion workbench"],

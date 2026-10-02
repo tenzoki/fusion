@@ -39,8 +39,13 @@
 #      named on stderr; this checkout's own identifier could not be read
 #      inside a git work tree (`bin/fusion-identity` exiting 3 or 5, or that
 #      helper or `bin/fusion-stores` missing from the install); or the scan's
-#      grep did not read every record (one unreadable, or a record list past
-#      the argument limit, where grep never runs).
+#      grep could not run at all (not found, not executable, killed), so no
+#      record was answered for. A record list past the argument limit is not a
+#      cause: the records go to grep in batches.
+#
+# An unreadable record is not exit 3. It is skipped and named on stderr, one
+# line per file, since a claim inside it may be missed; the readable records'
+# matches stand and the code follows them as if that file were absent.
 #
 # ---------------------------------------------------------------------------
 # One criterion, one implementation
@@ -224,18 +229,43 @@ fi
 matches=''
 n=0
 
-# One grep over a store's records, the matching paths left in $hits. Exit 0
-# and 1 are answers; anything above is a record left unread (2) or a grep that
-# never ran (126, the argument limit). Either could hide the claim, so it is
-# unknown scope, never "none claimed". grep's own stderr passes through.
-grep_records() {
-  local pattern="$1" rc=0
+# One grep per batch of records, the matching paths appended to $hits. Batches
+# keep the argument list far below any ARG_MAX (64K characters of paths, at most
+# 256 KiB however wide the characters), and run in order, so grep -l's input
+# order holds across them. grep's own codes are read directly: 0 and 1 are
+# answers, 2 is a file that failed while being read, which grep names on stderr
+# and which leaves the other files' matches standing, as an unreadable record
+# does. Anything else (126 or 127 from the shell, above 128 for a signal) means
+# grep never answered for the batch, so the scan has no answer: exit 3.
+grep_batch() {
+  local pattern="$1" out rc=0
   shift
-  hits="$(grep -lE "$pattern" "$@")" || rc=$?
-  [ "$rc" -le 1 ] && return 0
-  printf 'fusion-claimed-package: grep exited %s over the records under %s, so a claim may have gone unread and the item in scope is unknown.\n' \
-    "$rc" "$store_root" >&2
-  exit 3
+  out="$(grep -lE "$pattern" "$@")" || rc=$?
+  if [ "$rc" -gt 2 ]; then
+    printf 'fusion-claimed-package: grep could not run over the records under %s (exit %s), so no record was answered for and the item in scope is unknown.\n' \
+      "$store_root" "$rc" >&2
+    exit 3
+  fi
+  [ -z "$out" ] || hits="$hits$out
+"
+}
+
+grep_records() {
+  local pattern="$1" len=0 f
+  local -a batch
+  shift
+  hits=''
+  batch=()
+  for f in "$@"; do
+    if [ "${#batch[@]}" -gt 0 ] && [ $((len + ${#f})) -gt 65536 ]; then
+      grep_batch "$pattern" "${batch[@]}"
+      batch=()
+      len=0
+    fi
+    batch+=("$f")
+    len=$((len + ${#f} + 1))
+  done
+  [ "${#batch[@]}" -eq 0 ] || grep_batch "$pattern" "${batch[@]}"
 }
 
 for store_root in $CONTAINER_STORE $LEGACY_CONTAINER_STORE; do
@@ -244,13 +274,20 @@ for store_root in $CONTAINER_STORE $LEGACY_CONTAINER_STORE; do
   # Every fork below runs once per store, not once per container, so the scan
   # costs the same however many containers stand there: the record list is
   # built with parameter expansion, and each head field is one grep over the
-  # surviving records. grep -l lists matches in argument order, so the sorted
-  # order holds.
+  # surviving records, batched only past the argument budget. grep -l lists
+  # matches in argument order, so the sorted order holds. An unreadable record
+  # is skipped and named, exactly as if it were absent: one such file must not
+  # blank every other record's answer.
   records=()
   while IFS= read -r dir; do
     [ -n "$dir" ] || continue
     base="${dir##*/}"
     [ -f "$dir/$base.md" ] || continue
+    if [ ! -r "$dir/$base.md" ]; then
+      printf 'fusion-claimed-package: %s/%s/%s.md could not be read and is skipped, so a claim inside it may be missed.\n' \
+        "$store_root" "$base" "$base" >&2
+      continue
+    fi
     records+=("$dir/$base.md")
   done <<EOF
 $(find "$store" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
@@ -259,7 +296,7 @@ EOF
   grep_records '^\*\*Status:\*\*[[:space:]]*claimed[[:space:]]*$' "${records[@]}"
   [ -n "$hits" ] || continue
   records=()
-  while IFS= read -r record; do records+=("$record"); done <<EOF
+  while IFS= read -r record; do [ -z "$record" ] || records+=("$record"); done <<EOF
 $hits
 EOF
   grep_records "^\*\*Claim:\*\*[[:space:]]*$checkout([[:space:]]|$)" "${records[@]}"

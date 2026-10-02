@@ -22,3 +22,6 @@ Acceptance: a test builds a store whose record list exceeds the argument limit (
 
 ---
 Resolved: bin/fusion-claimed-package reads grep exit codes through grep_records: 0 and 1 are answers, anything higher (unreadable record, argument list too long) exits 3 with a stderr reason and grep's own error passes through. An unreadable record now exits 3 even when another record matches. Tests in hooks/lib/__tests__/fusion-claimed-package.test.ts cover ARG_MAX overflow and an unreadable claimed record.
+
+---
+Revised by: this commit (fix(claim) following 8303cc52) — the first fix exited 3 on any unreadable record even beside a matching one, which let one bad file block every claim lookup; an unreadable record is now skipped and named on stderr, the record list goes to grep in batches so the argument limit is unreachable, and only a grep that could not run exits 3.
