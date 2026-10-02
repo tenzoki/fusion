@@ -92,11 +92,11 @@ Read `$FUSION_SRC/README.md`. Two paths:
 
 **Why three commands:** Claude Code has no `/plugin upgrade` or `/plugin update`. `/plugin install` on an already-installed plugin reports *"already installed globally"* and does not re-fetch — so the upgrade path requires `uninstall` first.
 
+**Coming from a 12.2.1 install:** 12.2.2 fixes one defect, speeds up one helper and changes nothing you do. `/fusion:archive` no longer moves a `done` or `dropped` work package that still holds an open, in-progress, answered or deferred record; the proposal names each such record, and natural-language mode flags it `[ACTIVE]` (`$FUSION_SRC/skills/archive/SKILL.md` `## Safety filters (apply to ALL modes)`, filter 2). `bin/fusion-claimed-package` no longer forks per container, so its cost stops growing with the store; its output is unchanged.
+
 **Coming from a 12.2.0 install:** 12.2.1 changes nothing you do and ships no behaviour change; it hardens two tests. The check that cited references resolve now also finds a heading named in the header comment of a cited TypeScript file or `bin/` helper. The test of the Markdown work order now pins every character that format escapes.
 
 **Coming from a 12.1.0 install:** 12.2.0 adds two output formats and changes nothing you do. `bin/fusion-work-order` gains `--format markdown`, for a person or a document, and `--format json`, for programs, each the same computation as the text and TSV formats; their contracts are `$FUSION_SRC/hooks/order.ts` `## The Markdown format` and `## The JSON format`. `/fusion:wp-order` now takes `--format text|tsv|markdown|json` and passes it to the helper; the default stays text.
-
-**Coming from a 12.0.1 install:** 12.1.0 adds one command and one output format and changes nothing you do. `/fusion:wp-order` reports in chat the order `bin/fusion-work-order` computes over the live work packages, with depth, blocking count and readiness per item, then its cycles, unresolved entries and caveat; it ranks and writes nothing. The helper gains `--format tsv`, a ten-column stream for programs whose contract is `$FUSION_SRC/hooks/order.ts` `## The TSV format`; its default text output is unchanged.
 
 **Older than that:** this section carries the last three releases and no more, because it is a per-release list on a surface with a fixed byte ceiling. For an older install, run `ls $FUSION_SRC/docs/` and read every `upgrading-to` note above the user's own version, in version order; not every release has one, and no filename is derivable from a version string. One of them still carries an action that fails silently when it is skipped: v9 retired the `strategic` and `knowledge` domain values, and a record still carrying one runs as `code` without saying so.
 
