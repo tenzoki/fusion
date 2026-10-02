@@ -1,5 +1,6 @@
 ---
 description: Report the order fusion computes over the live work packages — position, depth, blocking count and readiness per item, with cycles, unresolved entries and the caveat — read from bin/fusion-work-order and never ranked. Use when the user asks in what order the packages stand or what blocks what.
+argument-hint: "[--format text|tsv|markdown|json]"
 allowed-tools: [Bash]
 ---
 
@@ -36,16 +37,23 @@ On `missing`, say this and stop:
 ## Step 2: run it
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-work-order"; echo "exit=$?"
+"$FUSION_PLUGIN_ROOT/bin/fusion-work-order" <the user's arguments>; echo "exit=$?"
 ```
 
-No argument: the default text format is the one rendered here. Exit 0 is the only case that continues, whatever `verdict=` says. For every other, say one plain sentence and stop:
+Pass the words the user gave after the command unchanged, each as its own argument, or none. Do not check or correct them: the helper is the only validator of what an argument means. Exit 0 is the only case that continues, whatever `verdict=` says. For every other, say one plain sentence and stop:
 
 - **exit 2**: no fusion workbench above here. Run `/fusion:setup`.
 - **exit 3**: the plugin's compiled hooks are missing, so the install is broken and nothing could be asked. Run `fusion --update`, then restart the session. Never report this as "no work packages".
-- **exit 1**: a usage fault in this body. Report it as a fusion defect, never as the user's fault.
+- **exit 1 with an argument given**: the user's argument is not one the helper takes. Quote its stderr usage line.
+- **exit 1 with no argument**: a usage fault in this body. Report it as a fusion defect, never as the user's fault.
 
-## Step 3: render
+On exit 0 the format decides the reply:
+
+- **`--format tsv` or `--format json`**: one sentence saying what it is, then stdout verbatim in a single ` ```tsv ` or ` ```json ` block, untranslated and unannotated. The bytes are the contract (`hooks/order.ts` `## The TSV format`, `## The JSON format`); a `note` in them is not repeated. Stop.
+- **`--format markdown`**: stdout verbatim as the reply (`hooks/order.ts` `## The Markdown format`). Stop.
+- **No argument or `--format text`**: Step 3.
+
+## Step 3: render the text format
 
 **`verdict=empty` is a real answer and never an error.** Say there are no live work packages; if the helper printed `unreadable=` rows, name each as item 5 below says, then stop.
 
@@ -61,6 +69,6 @@ Otherwise, in this order:
 
 ## Guardrails
 
-- Never reorder, filter, group or omit an item; never add a figure the helper did not print.
+- In every format: never reorder, filter, group or omit an item; never add a figure the helper did not print.
 - Never say which item to take next, never add a recommendation or a priority, and never call the order binding.
 - Write no file, commit nothing, ask the user nothing, dispatch no agent.

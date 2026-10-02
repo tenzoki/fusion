@@ -145,12 +145,13 @@ This is the user's own invocation (`/fusion:wp-order --format tsv`) made true, a
    - Dependencies: 1.
    - Done 2026-10-02: the cut branch, no raise. `fusion-work-order.test.ts` stays at 80 lines (80 before, 80 after), no other file cut, no baseline or head-room constant moved, the golden unchanged. Paid for by the six-line header comment condensed to two, `--wat` folded into the usage loop with the exit-2 assertion, and the store-level cases merged where they already built the same fixture: cyclic exit 0, the `note=` count and roots/ready into one case over ACYCLIC and CYCLIC; empty-store exit 0 into the `verdict=empty` case; text-equals-no-argument onto the rich fixture. No assertion was dropped. Mutations run, each red on its own: (a) and (b) in the shared projection and again inside `renderJson` alone, (c) through (g) as listed.
 
-3. **`/fusion:wp-order` takes `--format` and the READMEs name the two formats**
+3. **`/fusion:wp-order` takes `--format` and the READMEs name the two formats** [DONE]
    - Executor: `code-implementer`
    - Files: `skills/wp-order/SKILL.md`, `README-hooks.md` (rows at 229 and 336), `README-agents.md` (row at 260), `hooks/lib/__tests__/fixtures/surface-growth.golden`, `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the `BASELINE` line, if it moves).
    - Changes: in the skill, add `argument-hint: "[--format text|tsv|markdown|json]"` and change Step 2 to pass the user's arguments through. Apply the exit-1 split and the per-format rendering from Approach. Keep Step 3 for text alone. The mechanism stays in the helper header, and the body only names `hooks/order.ts` `## The JSON format` / `## The Markdown format` where it says the bytes are the contract. Growth target: under 1 500 bytes added to the skill. In the two `README-hooks.md` rows and the `README-agents.md` row, say `--format tsv`, `json` or `markdown` and point at the header sections. Leave the `README-hooks.md` raise log alone unless the user's answer to the first Open Question is a raise. In that case the log entry is written here, beside the 2026-10-01 entry, in that entry's form.
    - Acceptance: `npm test` green after golden regeneration and, if needed, pin re-approval. The skills surface stays inside its budget. `derivable-enumerations-lint.test.ts` and `path-literal-lint.test.ts` stay green.
    - Dependencies: 1. Step 2 is only needed for the full-green claim.
+   - Done 2026-10-02: skill +852 bytes (4 425 -> 5 277; skills surface 208 165 of 228 028). `reference-resolution-lint` `BASELINE` paths 1753 -> 1757, re-approved on its line with attribution (skill +2, `README-hooks.md` +1, `README-agents.md` +1). Golden regenerated (wp-order row only). No head-room constant moved, the raise log untouched.
 
 4. **Release surfaces for 12.2.0**
    - Executor: `code-implementer`
