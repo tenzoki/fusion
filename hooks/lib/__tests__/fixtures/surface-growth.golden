@@ -33,7 +33,7 @@
   commit/SKILL.md 6119
   curate/SKILL.md 12135
   discuss/SKILL.md 14332
-  help/SKILL.md 14937
+  help/SKILL.md 15189
   memo/SKILL.md 6824
   migrate/SKILL.md 21101
   news/SKILL.md 8223
@@ -42,7 +42,7 @@
   setup/SKILL.md 14675
   wp-order/SKILL.md 5277
   wp/SKILL.md 4994
-  total 208245
+  total 208497
 
 [hook-tests lines]
   archive-filter-key.test.ts 64
