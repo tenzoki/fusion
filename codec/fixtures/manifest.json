@@ -2163,13 +2163,6 @@
     "note": "An answers entry carries the sha256 of the stored answer's bytes."
   },
   {
-    "path": "invalid/migration/part-answers-entry-repeated.json",
-    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
-    "expect": "invalid",
-    "error_class": "schema-invalid",
-    "note": "An answers entry twice is refused by the schema; the same operation_id with other fields, and the bytewise order, are the codec's to check."
-  },
-  {
     "path": "invalid/migration/part-answers-op-unknown.json",
     "schema": "urn:fusion:schema:fusion.migration-plan/v1",
     "expect": "invalid",

@@ -345,7 +345,7 @@
     },
     "answers_part": {
       "type": "object",
-      "description": "parts/answers-<n>.json: the operation baseline (FJ04 addendum for a1fb17a, R3), every answer stored before plan, frozen inside plan's one freeze intent and counted against the freeze bound. The index names it with its hash and the receipt's parts bind it. Entries are unique and ordered bytewise by operation_id; the order, and uniqueness by operation_id alone, are the codec's to check. An empty list is valid on a store with no stored answer.",
+      "description": "parts/answers-<n>.json: the operation baseline (FJ04 addendum for a1fb17a, R3), every answer stored before plan, frozen inside plan's one freeze intent and counted against the freeze bound. The index names it with its hash and the receipt's parts bind it. Entries are unique and ordered bytewise by operation_id; uniqueness and order are wholly the codec's to check, not the schema's: a uniqueItems here is deep-equalled quadratically on every inventory part the root oneOf tries against this branch before part rules it out, and the codec refuses a repeated or out-of-order entry anyway. An empty list is valid on a store with no stored answer.",
       "additionalProperties": false,
       "required": ["entries", "migration_id", "n", "part", "schema"],
       "properties": {
@@ -353,7 +353,7 @@
         "part": { "const": "answers" },
         "migration_id": { "$ref": "#/$defs/migration_id" },
         "n": { "type": "integer", "minimum": 1 },
-        "entries": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/answer_entry" } }
+        "entries": { "type": "array", "items": { "$ref": "#/$defs/answer_entry" } }
       }
     },
     "rollback_binding": {
