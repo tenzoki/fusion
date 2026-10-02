@@ -1898,3 +1898,108 @@ Asked: is that answer sufficient evidence, or does Prior require a retained file
 Asked: does Prior accept the binding in `rollback.json`, derived by that rule, or does it require the exemptions in the request?
 
 Fusion's schema step (step 4's rework) and its codec steps build against this section. Where fusion's plan contradicted Prior's answer, those points were ruled on 2026-10-02 in favour of Prior's contract. Where Prior answers 50 to 52 otherwise, the plan is amended first and the affected part is reworked before the hand-over.
+
+## FJ04 (addendum for a1fb17a)
+
+**Written against:** fusion commit `92b375d5` on branch `fj-json-workbench` (2026-10-02 14:24), the head of the branch when this text was written. The last commit that moved `codec/`, `bin/` or `hooks/` is `e5a476bc` (steps 4 and 5: the migration schemas, `survey` and `plan`). The section above is unchanged since `5a406417`, the commit Prior reviewed. The bundle in the blob at `92b375d5` is 614 704 bytes, `sha256:c30b018bff6aa01f5911356f0e58b8286f411ca32379c6dc02331f165ec6af1a`. It is unqualified. The last qualified bundle stays `e1bafd2f`, `sha256:6b26faf2…b0bf`. Prior was read at `1dfd446` (2026-10-02 14:00), the head of the Prior checkout, and `git log --all --oneline 1dfd446..` is empty there. Every Prior text below is from `Prior: docs/design/fusion-fj04-amended-contract-prior-response.md` at that commit. Beyond `a1fb17a`, `1dfd446` adds only the requirement that fusion stays usable standalone under Claude Code. Nothing below makes a Prior binary, service or runtime file a dependency of the codec or the helpers.
+
+This addendum changes the contract text of `## FJ04 (the contract delta, amended for ab9cb59)` where Prior's answer to 50 to 52 requires it. Everything not named here stands. Where the two disagree, this addendum governs. It asks no new question. The other two workbenches still appear only as the second and the third, in aggregate figures.
+
+### 50: not used, and the figures
+
+Step 5 measured one `plan` freeze through the bundle, with process start, on a store generated at the second workbench's size (749 pairs, 1 680 writes). Three runs took 1.26 s, 1.28 s and 1.32 s, against the 5 s post-wait allowance. The freeze wrote 41 files, 3 410 844 bytes in total, and the largest was 983 029 bytes. The bound is fixed at 80 files and 6 MiB in total, with every file under 1 MiB and `intent.json` under 1 MiB. The time at the bound is inferred at under 2.5 s from the measured rate, not measured. The `answers` part (below) is counted against the same bound. Rollback chunk 0's cleanup runs in one intent under the same bound. Its intent carries the hashes of the files it removes, not their bytes. Step 6 measures the cleanup and the freeze again, now with the `answers` part. If either exceeds 5 s at its max, fusion builds no multi-request path before this contract is amended under 50's rules. The hand-over carries the figures.
+
+### Exclusions: a fixed allowlist (replaces lines 1704-1710)
+
+The eligible inventory is every entry under the workbench root except: `.json-state/`, always; this migration's own `archive/migrations/<id>/`, which is checked against the plan instead; and the selected entries of this allowlist, which the codec holds as one versioned constant.
+
+| Name | Kind |
+|---|---|
+| `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.check-stamps`, `monitor`, `orchestrator-events.jsonl`, `.fusion-setup`, `.asset-provenance` | regular file |
+| `.guard-state/`, `.commit-lock/` | directory, with everything below it |
+
+- The proposal's `exclusions` is a subset of these names. Any other name is `schema-invalid/proposal-invalid`. The checks for protected roots and record overlap stay. Fusion's host selects the whole list.
+- A selected entry is skipped only while it is absent or `lstat`s as its kind. It may appear and disappear in that kind. Under another kind, or as a link, it is eligible and compared, so it shows as added or re-kinded. No excluded link is followed. There is no wildcard.
+- `workbench.json` is never excluded.
+- Rollback neither restores nor removes excluded data.
+- Expected intermediate and final states add exactly the bookkeeping directories the migration creates outside its own subtree: `archive/` and `archive/migrations/`, where the frozen inventory lacked them.
+
+### The observed inventory (R2; corrects lines 1716, 1725 and 1788)
+
+- **`survey`'s answer** gains `eligible_sha256`. It is computed under the whole allowlist, with the same function `plan` uses: sha256 over the codec's canonical JSON of the eligible entries in the four forms, sorted bytewise by path. This is the digest form of `after_inventory_sha256`.
+- **The proposal** carries `source_inventory_sha256`. The host takes it from a `survey` run after the last consented repair and before composition, and composes from that survey's entries.
+- **The index** carries the value too, beside `exclusions`.
+- **In `plan`,** the value is checked first in the **Disk** step of line 1765, before the per-source checks. The codec takes the eligible inventory under the lock and digests it. A different digest is `conflict/source-changed`, naming both digests.
+- **After the freeze,** `apply`, `verify` and `rollback` check that the frozen inventory parts digest to the index's value. Otherwise the answer is `conflict/plan-file-changed`.
+- Line 1788's "the proposal carries no inventory" now reads: the proposal carries its digest, not its entries.
+
+### The operation baseline (R3; corrects lines 1723, 1768 and 1806)
+
+- **The `answers` part.** `plan` freezes every answer stored before it as `parts/answers-<n>.json`, inside its one freeze intent. Each entry is `{operation_id, op, request_digest, answer_sha256}`, where `answer_sha256` is over the stored answer's bytes. Entries are unique and ordered bytewise by `operation_id`. An empty list is valid. The index names the part as `answers` with its hash, and the receipt's `parts` binds it.
+- **One definition of a later operation.** A later operation is a stored answer that is neither a baseline entry nor one of this plan's validated scheduled answers. A stored answer is a baseline entry only when its `operation_id`, `op`, `request_digest` and `answer_sha256` all equal one entry of the `answers` part. A scheduled answer is one stored under an id the schedule assigns to `plan`, an apply chunk, `verify` or a rollback chunk; the `unassigned` ids are not scheduled. It is validated when its `request_digest` equals the digest of its reconstructed request. `plan`'s request is rebuilt from the index's `proposal`. Both the no-op's `later_operations` and the rollback audit use this definition. Line 1723's "landed after the receipt" is withdrawn. Whether an answer landed after the receipt cannot be decided from stored answers, which carry no sequence or time. Its next sentence is withdrawn too: `later_operations` names the stored answers that neither the baseline nor the validated schedule accounts for, and does not tell ordinary work apart from a changed or unmatched answer.
+- **Refusals.** In the first rollback after activation, a baseline entry whose stored answer is missing or hashes differently refuses as `conflict/after-state-changed`. A scheduled answer that does not validate is a later operation and refuses under line 1806. The second-run no-op adds no refusal: it answers with `later_operations` as defined above, which decides nothing.
+- **The first rollback after activation** (line 1768) runs under the standing fence. Its `begin` is the later operation stored under the fence's id that reconstructs as `{op: "maintenance", operation_id: <fence>, action: "begin"}`. The words "stored after the receipt" are withdrawn.
+- **The exempt set** (line 1806) is unchanged: this migration's `verify`, the `end` naming chunk 1's fence, and the `begin` of the standing fence. Each is found only by reconstructing its request and comparing digests:
+  - the `end` as `{op: "maintenance", operation_id: <the answer's id>, action: "end", fence: <chunk 1's apply id>}`;
+  - the `begin` as above.
+
+  Exactly one stored answer must match each. Otherwise the answer is `after-state-changed`.
+- **Reconstruction and the `workbench` field.** The digest covers `workbench` when a request carried it. Every reconstruction the codec performs itself (the exempt `end` and `begin`, each scheduled answer's request, and each answer before chunk 0 that the `progress` list names) is therefore tried in two forms: with `workbench` absent, and with `workbench` equal to the root the codec resolved for the request being served (the resolved `FUSION_WORKBENCH` when that request carried none). The host's own rebuild of a pending `verify` (line 1742) is outside this rule. **Limit:** a rebuilt request misses in both forms when the original request carried `workbench` spelled differently from that resolved root. Every answer fusion's host stored before the workbench directory was moved is such a case; baseline entries are not rebuilt and are unaffected. Every miss refuses: the first rollback after activation as `after-state-changed`, and rollback chunk 0's check of its `progress` list and any later rollback chunk as their own refusals. The no-op lists the affected answers in `later_operations`. Departure (5).
+
+### The activated tree (corrects line 1693)
+
+`after_inventory_sha256` is computed over the eligible inventory of the activated tree. That tree includes the `workbench.json` entry for the exact manifest bytes `verify` is about to write. `verify` derives it before committing. No hash cycle arises, because the manifest names the receipt by path only. The first rollback after activation compares the eligible inventory against it, manifest included.
+
+### `rollback.json` and its binding (52; corrects lines 1720 and 1896)
+
+- **The file.** The first rollback after activation writes `rollback.json` in its own intent. Its shape is `{schema: "fusion.migration-plan/v1", part: "rollback-binding", migration_id, plan: {path, sha256}, receipt: {path, sha256}, fence, exempt}`, where `fence` is the standing rollback fence. `exempt` holds exactly three entries `{operation_id, op, request_digest}`.
+- **The binding.** The answer of that first rollback adds `binding: {path, sha256}` for the file's exact bytes, stored by the same intent.
+- **Later fresh chunks.** A later fresh chunk reads that answer under the schedule's id for the highest rollback chunk. It checks the file against the bound hash before validating and trusting it. A difference is `conflict/plan-file-changed`. The chunk then refuses any later operation outside the exempt set.
+- **Replays.** A replay is answered at prefix step 4 from its stored answer, and never reads the file. Line 1896's "and every replay" is withdrawn: chunk 0 removes the file.
+
+### Chunk 0 and legacy `end` (51; corrects lines 1720, 1810, 1812 and 1886)
+
+- **Before the answer is built.** Rollback chunk 0 first proves two things: that no chunk is landed, and that the eligible inventory equals the frozen input plus the permitted empty directories. Then it builds `progress`, the ordered list of `{chunk, operation_id, request_digest}`:
+  - for chunks m down to 1, where m is the highest chunk whose scheduled apply answer is stored (none for a full abort);
+  - then chunk 0, taken from the current validated request.
+- **Validation.** Each listed answer before chunk 0 is validated: stored, `ok`, this migration, its chunk, and the digest of its reconstructed rollback request.
+- **The answer** adds `progress` beside `progress_sha256`, the sha256 over the list's canonical bytes. The unused scheduled chunks are not listed. `fence` is the standing fence's id, or `null` only when none stands. After a crash between chunk 1's fence and its intent, chunk 0 names chunk 1's fence, and an `end` is needed.
+- **Legacy `end`.** A replay is answered from `end`'s own stored answer first, even after the fence is gone. A fresh `end` then needs all of the following:
+  - exactly one stored chunk-0 answer naming the request's `fence`;
+  - no pending migration intent, so a committed but unlanded cleanup refuses;
+  - each listed answer re-read and matching;
+  - `progress_sha256` recomputed from `progress`;
+  - the standing fence equal to the request's.
+
+  Anything missing, unreadable or mismatched keeps the existing refusal.
+
+### Recovery, the envelope and the repairs (corrects lines 1718, 1746, 1756, 1825, 1831 and 1832)
+
+- **Prefix step 3** recovers every pending intent that is neither a migration intent nor a committed `initialize`. Either of those is left to prefix step 4, and also in line 1746, only when the request's operation id **and** request digest both equal the intent's. The same id with another digest is `conflict/operation-id-reused`, with no recovery effect.
+- **The apply answer** keeps the established envelope `{ok: true, result, revisions}`. `revisions` is not a member of `result`.
+- **Repairs:**
+  - An `_a_` decision whose answer entry is missing or empty blocks.
+  - An actor supplied only to a control record, as for a terminal closure record, is asked with consent per finding. It is logged in the repair log with its answers, as an edit is.
+  - The duplicate-number repair also settles known incoming citations from other documents. Each is shown to the owner and rewritten in the same consented edit. *Known* is fusion's reading (inference; Prior's text does not define it): the citations that the host's citation scan and the repair module's step matcher resolve to the duplicated step.
+
+### Recorded cases and measurements added
+
+- **Step 6's codec tests** carry Prior's evidence list.
+- **The recorded migration session** adds:
+  - a `plan` refused for an exclusion outside the allowlist;
+  - a `plan` refused as `source-changed` after an eligible file was added between composition and `plan`;
+  - an altered `rollback.json` refused at a later rollback chunk;
+  - a rollback replay after chunk 0 removed that file;
+  - after cleanup, legacy `end`, its replay, and an old apply and verify replay.
+- **Before the hand-over, line 1867's list adds:**
+  - the chunk-0 cleanup;
+  - the freeze with the `answers` part.
+
+### Departures from Prior's text
+
+1. In the first rollback after activation, a missing or changed baseline answer refuses as `after-state-changed`. Prior names only "a refusal" there. The no-op adds no refusal.
+2. The host does not compute the inventory digest. The codec's `survey` answers it, and the host copies it into the proposal. `survey` digests only under the whole allowlist, so a host selecting a subset has to compute its own digest by the same definition. Fusion's host does not do that.
+3. `answers` entries also carry `op`, which `later_operations` names. Prior lists the id, the request digest and the answer hash.
+4. `rollback.json` also binds the receipt by `{path, sha256}`. Prior names migration, plan and fence.
+5. A codec-side reconstruction is tried with `workbench` absent and with `workbench` equal to the served request's resolved root. Prior's text does not address this field. A host rule that never sends `workbench` was considered and not taken: fusion's host sets the field on every request by design (`hooks/lib/record-client.ts:207-209`).
+6. The scheduled answers set aside from later operations include the rollback chunks' answers besides plan, apply and verify, which Prior names. `REQUESTS.md:1806` already counts them as progress, not as exemptions.
