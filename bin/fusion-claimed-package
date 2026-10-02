@@ -225,18 +225,35 @@ n=0
 for store_root in $CONTAINER_STORE $LEGACY_CONTAINER_STORE; do
   store="$root/fusion-workbench/$store_root"
   [ -d "$store" ] || continue
+  # Every fork below runs once per store, not once per container, so the scan
+  # costs the same however many containers stand there: the record list is
+  # built with parameter expansion, and each head field is one grep over the
+  # surviving records. grep -l lists matches in argument order, so the sorted
+  # order holds.
+  records=()
   while IFS= read -r dir; do
     [ -n "$dir" ] || continue
-    base="$(basename "$dir")"
-    record="$dir/$base.md"
-    [ -f "$record" ] || continue
-    grep -qE '^\*\*Status:\*\*[[:space:]]*claimed[[:space:]]*$' "$record" 2>/dev/null || continue
-    grep -qE "^\*\*Claim:\*\*[[:space:]]*$checkout([[:space:]]|$)" "$record" 2>/dev/null || continue
-    matches="$matches$store_root/$base
+    base="${dir##*/}"
+    [ -f "$dir/$base.md" ] || continue
+    records+=("$dir/$base.md")
+  done <<EOF
+$(find "$store" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+EOF
+  [ "${#records[@]}" -gt 0 ] || continue
+  claimed="$(grep -lE '^\*\*Status:\*\*[[:space:]]*claimed[[:space:]]*$' "${records[@]}" 2>/dev/null || true)"
+  [ -n "$claimed" ] || continue
+  records=()
+  while IFS= read -r record; do records+=("$record"); done <<EOF
+$claimed
+EOF
+  while IFS= read -r record; do
+    [ -n "$record" ] || continue
+    dir="${record%/*}"
+    matches="$matches$store_root/${dir##*/}
 "
     n=$((n + 1))
   done <<EOF
-$(find "$store" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+$(grep -lE "^\*\*Claim:\*\*[[:space:]]*$checkout([[:space:]]|$)" "${records[@]}" 2>/dev/null || true)
 EOF
 done
 
