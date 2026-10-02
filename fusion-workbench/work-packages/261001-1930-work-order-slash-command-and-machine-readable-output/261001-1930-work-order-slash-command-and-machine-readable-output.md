@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** claimed
+**Status:** done
 **Claim:** 5e8248d7 — Kai Stalmann <ks@qantr.com>, 261001-2139
 **Active spec/plan:** 261001-1934_*_spec-work-order-slash-command-and-machine-readable-output.md (spec), 261002-0733_*_plan-work-order-markdown-and-json-formats.md (plan)
 **Cross-references:** 260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260908-2018-prerequisites-confirmed-once-order-computed.md, 261001-1955_*_plan-work-order-slash-command-and-tsv-output.md
@@ -41,3 +41,11 @@ Kurz: Das Ganze nach fusion zu übernehmen lohnt nicht, aber ein klar abgegrenzt
 Doppelt und nach fusion gehörend: `pakete.py` ist ein zweiter Parser für `**Status:**` und `**Depends-on:**` neben `hooks/lib/work-graph.ts`, und `reihenfolge.py` rechnet Tiefe und transitives Blockieren noch einmal. Die integrale Lösung: `bin/fusion-work-order` bekommt ein maschinenlesbares Ausgabeformat (etwa `--format tsv` oder `json`: Paket, Status, Depends-on, Tiefe, Blockiert, Reihenfolge, Bereitschaft); der Consumer liest diese Ausgabe und behält seine Zeitbox-Mappe als Projektion darauf. Kein neuer Laufzeitbedarf (die Hooks laufen mit nacktem node ohne node_modules, `README-hooks.md:117`), keine Konventionsänderung, kein Ruling berührt. Nicht empfohlen: fusion ein Excel schreiben lassen.
 
 Inferenz des Consultants, nicht gemessen: dass `reihenfolge.py`s `tiefe()` / `transitiv_blockiert()` dasselbe liefern wie `work-graph.ts`.
+
+## Closure, 261002-0936
+
+**done.** Both parts shipped: `/fusion:wp-order` and `bin/fusion-work-order --format tsv` in 12.1.0 (`cfbc12dc..f74ec59b`), and `--format markdown` / `--format json` with the skill's `--format` pass-through in 12.2.0 (`f74ec59b..e0032f06`, tag `v12.2.0`, marketplace `440eed7`), `npm test` green, plan `261002-0733_*_plan-work-order-markdown-and-json-formats.md` complete.
+
+The plan's five stop conditions were put to the user and all were answered as holding. Two facts stated with that question stand on the record: the reference-resolution `BASELINE` was re-approved twice (1753 -> 1758 paths), and the tag was pushed moments before the marketplace push completed.
+
+The closing review `261002-0926-reviewer-closing-pass-over-the-markdown-and-json-formats.md` covers `f74ec59b..d3311e73`; its medium finding was fixed in `e0032f06`. Open after closure: `261002-0926_*_the-markdown-tests-pin-three-of-the-eleven-escaped-characters-so-dropping-the-ampersand-escape-stays-green.md`, `261002-0926_*_heading-anchors-into-source-file-headers-are-resolved-by-no-lint-and-the-format-contracts-are-cited-that-way-on-four-surfaces.md`, `261002-0926_*_the-plan-names-only-d1-as-superseded-while-the-pass-through-formats-also-relax-four-c1-criteria-of-the-spec.md`. Review coverage at closure: `e0032f06` is the one commit of this range no review opened; `hooks/dist/order.js` is carried as not opened.
