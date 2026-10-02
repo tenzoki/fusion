@@ -185,7 +185,8 @@
  * the 1-based index into `cycles`); `depends-on` (file order) and `unresolved`
  * (ascending) are arrays of strings; `field` stays "present" or "absent".
  * Nothing is escaped beyond what JSON requires. On `verdict: "empty"` every
- * count is 0, `note` is null and every array is empty.
+ * count but `unreadable-head` is 0, `note` is null, `items`, `cycles` and
+ * `unresolved` are empty, and `unreadable` names any unreadable record.
  *
  * COMPATIBILITY. `format` is versioned independently of the TSV's `#format=`.
  * Adding a key anywhere leaves it unchanged, and a consumer ignores keys it
