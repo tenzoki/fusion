@@ -1,0 +1,85 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "index",
+  "migration_id": "migration-20261002-example",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "source_layout": "fusion-v12",
+  "proposal": {
+    "path": ".json-state/migration/proposal.json",
+    "sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  "exclusions": [
+    ".fusion-setup",
+    "orchestrator-events.jsonl"
+  ],
+  "schedule": {
+    "plan": "9c2e4a6b-3d5f-4b7a-8e1c-0f2a4c6e8b3d",
+    "apply": [
+      {
+        "chunk": 1,
+        "operation_id": "4b8d2f6a-1c3e-4a5b-9d7f-2e4c6a8b0d1f"
+      },
+      {
+        "chunk": 2,
+        "operation_id": "6f0a2c4e-8b1d-4e3f-a5c7-9d1b3f5a7c2e"
+      }
+    ],
+    "verify": "1a3c5e7b-9d2f-4c6e-b8a0-3e5c7a9b1d4f",
+    "rollback": [
+      {
+        "chunk": 0,
+        "operation_id": "2d4f6a8c-0e1b-4d3f-9a5c-7e9b1d3f5a6c"
+      },
+      {
+        "chunk": 1,
+        "operation_id": "3e5a7c9b-1d2f-4a6c-8e0b-5c7a9e1b3d6f"
+      },
+      {
+        "chunk": 2,
+        "operation_id": "5a7c9e1b-3d4f-4c8e-a0b2-7e9c1a3d5f8b"
+      }
+    ],
+    "unassigned": [
+      "7c9e1b3d-5f6a-4e0b-b2c4-9a1e3c5b7d0a"
+    ]
+  },
+  "parts": [
+    {
+      "part": "chunk",
+      "n": 1,
+      "path": "archive/migrations/migration-20261002-example/chunks/1.json",
+      "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "part": "chunk",
+      "n": 2,
+      "path": "archive/migrations/migration-20261002-example/chunks/2.json",
+      "sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "writes": 2
+    },
+    {
+      "part": "records",
+      "n": 1,
+      "path": "archive/migrations/migration-20261002-example/parts/records-1.json",
+      "sha256": "sha256:1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a"
+    },
+    {
+      "part": "inventory",
+      "n": 1,
+      "path": "archive/migrations/migration-20261002-example/parts/inventory-1.json",
+      "sha256": "sha256:2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b"
+    },
+    {
+      "part": "findings",
+      "n": 1,
+      "path": "archive/migrations/migration-20261002-example/parts/findings-1.json",
+      "sha256": "sha256:3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c"
+    },
+    {
+      "part": "repairs",
+      "n": 1,
+      "path": "archive/migrations/migration-20261002-example/parts/repairs-1.json",
+      "sha256": "sha256:4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d"
+    }
+  ]
+}

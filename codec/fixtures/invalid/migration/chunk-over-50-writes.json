@@ -1,0 +1,365 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "chunk",
+  "migration_id": "migration-20261002-example",
+  "chunk": 1,
+  "writes": [
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1000_o_issue-00.md",
+      "from": "shared/issues/261002-1000_o_issue-00.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1001_o_issue-01.md",
+      "from": "shared/issues/261002-1001_o_issue-01.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1002_o_issue-02.md",
+      "from": "shared/issues/261002-1002_o_issue-02.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1003_o_issue-03.md",
+      "from": "shared/issues/261002-1003_o_issue-03.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1004_o_issue-04.md",
+      "from": "shared/issues/261002-1004_o_issue-04.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1005_o_issue-05.md",
+      "from": "shared/issues/261002-1005_o_issue-05.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1006_o_issue-06.md",
+      "from": "shared/issues/261002-1006_o_issue-06.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1007_o_issue-07.md",
+      "from": "shared/issues/261002-1007_o_issue-07.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1008_o_issue-08.md",
+      "from": "shared/issues/261002-1008_o_issue-08.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1009_o_issue-09.md",
+      "from": "shared/issues/261002-1009_o_issue-09.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1010_o_issue-10.md",
+      "from": "shared/issues/261002-1010_o_issue-10.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1011_o_issue-11.md",
+      "from": "shared/issues/261002-1011_o_issue-11.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1012_o_issue-12.md",
+      "from": "shared/issues/261002-1012_o_issue-12.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1013_o_issue-13.md",
+      "from": "shared/issues/261002-1013_o_issue-13.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1014_o_issue-14.md",
+      "from": "shared/issues/261002-1014_o_issue-14.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1015_o_issue-15.md",
+      "from": "shared/issues/261002-1015_o_issue-15.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1016_o_issue-16.md",
+      "from": "shared/issues/261002-1016_o_issue-16.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1017_o_issue-17.md",
+      "from": "shared/issues/261002-1017_o_issue-17.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1018_o_issue-18.md",
+      "from": "shared/issues/261002-1018_o_issue-18.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1019_o_issue-19.md",
+      "from": "shared/issues/261002-1019_o_issue-19.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1020_o_issue-20.md",
+      "from": "shared/issues/261002-1020_o_issue-20.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1021_o_issue-21.md",
+      "from": "shared/issues/261002-1021_o_issue-21.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1022_o_issue-22.md",
+      "from": "shared/issues/261002-1022_o_issue-22.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1023_o_issue-23.md",
+      "from": "shared/issues/261002-1023_o_issue-23.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1024_o_issue-24.md",
+      "from": "shared/issues/261002-1024_o_issue-24.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1025_o_issue-25.md",
+      "from": "shared/issues/261002-1025_o_issue-25.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1026_o_issue-26.md",
+      "from": "shared/issues/261002-1026_o_issue-26.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1027_o_issue-27.md",
+      "from": "shared/issues/261002-1027_o_issue-27.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1028_o_issue-28.md",
+      "from": "shared/issues/261002-1028_o_issue-28.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1029_o_issue-29.md",
+      "from": "shared/issues/261002-1029_o_issue-29.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1030_o_issue-30.md",
+      "from": "shared/issues/261002-1030_o_issue-30.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1031_o_issue-31.md",
+      "from": "shared/issues/261002-1031_o_issue-31.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1032_o_issue-32.md",
+      "from": "shared/issues/261002-1032_o_issue-32.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1033_o_issue-33.md",
+      "from": "shared/issues/261002-1033_o_issue-33.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1034_o_issue-34.md",
+      "from": "shared/issues/261002-1034_o_issue-34.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1035_o_issue-35.md",
+      "from": "shared/issues/261002-1035_o_issue-35.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1036_o_issue-36.md",
+      "from": "shared/issues/261002-1036_o_issue-36.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1037_o_issue-37.md",
+      "from": "shared/issues/261002-1037_o_issue-37.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1038_o_issue-38.md",
+      "from": "shared/issues/261002-1038_o_issue-38.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1039_o_issue-39.md",
+      "from": "shared/issues/261002-1039_o_issue-39.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1040_o_issue-40.md",
+      "from": "shared/issues/261002-1040_o_issue-40.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1041_o_issue-41.md",
+      "from": "shared/issues/261002-1041_o_issue-41.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1042_o_issue-42.md",
+      "from": "shared/issues/261002-1042_o_issue-42.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1043_o_issue-43.md",
+      "from": "shared/issues/261002-1043_o_issue-43.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1044_o_issue-44.md",
+      "from": "shared/issues/261002-1044_o_issue-44.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1045_o_issue-45.md",
+      "from": "shared/issues/261002-1045_o_issue-45.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1046_o_issue-46.md",
+      "from": "shared/issues/261002-1046_o_issue-46.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1047_o_issue-47.md",
+      "from": "shared/issues/261002-1047_o_issue-47.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1048_o_issue-48.md",
+      "from": "shared/issues/261002-1048_o_issue-48.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1049_o_issue-49.md",
+      "from": "shared/issues/261002-1049_o_issue-49.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261002-example/originals/shared/issues/261002-1050_o_issue-50.md",
+      "from": "shared/issues/261002-1050_o_issue-50.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+  ]
+}

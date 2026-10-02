@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// The contract, inlined: the seven schemas and the two tables as JSON imports,
+// The contract, inlined: the ten schemas and the two tables as JSON imports,
 // so that esbuild folds them into `dist/fusion-record.js` and the one shipped
 // file carries everything it validates against. Prior takes a digest over that
 // file before it spawns it; a schema read from disk at run time would be
@@ -16,6 +16,9 @@ import transitionsTable from "../../contract/transitions.json";
 import campaign from "../../schemas/campaign.schema.json";
 import common from "../../schemas/common.schema.json";
 import evidence from "../../schemas/evidence.schema.json";
+import migrationPlan from "../../schemas/migration-plan.schema.json";
+import migrationProposal from "../../schemas/migration-proposal.schema.json";
+import migrationReceipt from "../../schemas/migration-receipt.schema.json";
 import pkg from "../../schemas/package.schema.json";
 import protocol from "../../schemas/protocol.schema.json";
 import record from "../../schemas/record.schema.json";
@@ -29,6 +32,9 @@ export function installInlined(): SchemaSet {
     { source: "schemas/campaign.schema.json", value: campaign },
     { source: "schemas/common.schema.json", value: common },
     { source: "schemas/evidence.schema.json", value: evidence },
+    { source: "schemas/migration-plan.schema.json", value: migrationPlan },
+    { source: "schemas/migration-proposal.schema.json", value: migrationProposal },
+    { source: "schemas/migration-receipt.schema.json", value: migrationReceipt },
     { source: "schemas/package.schema.json", value: pkg },
     { source: "schemas/protocol.schema.json", value: protocol },
     { source: "schemas/record.schema.json", value: record },

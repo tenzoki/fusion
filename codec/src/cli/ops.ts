@@ -58,9 +58,15 @@
 //               with no pending intent, `end` removes the fence it names;
 //               while one stands the kernel refuses every other fresh
 //               mutation but `initialize`, and reads answer as before
+//   migration   the maintenance run of spec section 8 (`../migration.ts`):
+//               `survey`, the observed inventory and local state; `plan`,
+//               the host's proposal, bound by its hash, frozen into chunk
+//               files, parts and an index under `archive/migrations/<id>/`
+//               in one intent
 //
-// Every other operation of the table answers `operation-unknown/not-implemented`
-// with a detail naming the package that lands it (`LANDS_IN`).
+// An operation or phase not yet answered (`apply`, `verify` and `rollback` of
+// `migration`) is refused `operation-unknown/not-implemented` with a detail
+// naming the package that lands it (`LANDS_IN`).
 //
 // Reads run under the kernel's read protocol (`read`), mutations through its
 // one sequence (`mutate`), which also makes them replayable by
@@ -79,6 +85,7 @@
 import { existsSync, lstatSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { JOURNAL_DIR, OPS_DIR, canonical, fileState, pendingIds, readIntent, type FileState } from "../journal.js";
+import { migrationPlan, survey } from "../migration.js";
 import {
   EVERY_STATE,
   blockedIntent,
@@ -143,6 +150,7 @@ import {
   type InitializeRequest,
   type ListRequest,
   type MaintenanceRequest,
+  type MigrationRequest,
   type ReconcileRequest,
   type RecordRef,
   type ReleaseRequest,
@@ -223,6 +231,8 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
       return readable(wb) ?? reading(wb, (view) => reconcile(wb, req, view), kernel);
     case "maintenance":
       return mutate(wb, req, maintenancePlan(req, kernel), kernel);
+    case "migration":
+      return migration(wb, req, kernel);
     default:
       return notImplemented((req as Request).op);
   }
@@ -513,6 +523,29 @@ function maintenancePlan(req: MaintenanceRequest, options: KernelOptions): PlanF
     }
     return { ok: true, value: { writes: [], result: { operation_id: req.operation_id, action: "end", since: ctx.fence.since }, fence: null } };
   };
+}
+
+// --- migration --------------------------------------------------------------------
+//
+// The maintenance run of spec section 8 (`../migration.ts`, FJ04 contract
+// delta as amended for Prior `ab9cb59`). `survey` is an observation run
+// directly, never through the read protocol: it takes no lock, sweeps and
+// recovers nothing, and creates no `.json-state/`; an unsupported manifest
+// is refused with its diagnosis as every read refuses it. `plan` runs through
+// the kernel admitting every state, so that its replay and its own recovery
+// come before the store's shape is judged; its plan function judges the
+// shape. `apply`, `verify` and `rollback` land in FJ04's step 6 and are
+// refused `operation-unknown/not-implemented` until then, naming the phase.
+
+function migration(wb: Workbench, req: MigrationRequest, kernel: KernelOptions): Promise<Response> | Response {
+  switch (req.phase) {
+    case "survey":
+      return readable(wb) ?? survey(wb);
+    case "plan":
+      return mutate(wb, req, migrationPlan(req, (pair) => referenceSites(pair as Pair)), kernel, EVERY_STATE);
+    default:
+      return fail("operation-unknown", "not-implemented", `migration ${req.phase} is specified (FJ04 contract delta, request 45) and lands in ${LANDS_IN.migration ?? "a later package"} step 6; survey and plan are answered`);
+  }
 }
 
 // --- list ---------------------------------------------------------------------

@@ -1,0 +1,22 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "repairs",
+  "migration_id": "migration-20261002-example",
+  "n": 1,
+  "repairs": [
+    {
+      "finding": {
+        "class": "filed-by-not-owed",
+        "severity": "blocking",
+        "path": "work-packages/260920-0900-lint-cleanup/plans/260920-1000_p_plan-lint-cleanup.md",
+        "detail": "live plan without **Filed by:**"
+      },
+      "answers": {
+        "actor": "user",
+        "person": null
+      },
+      "pre_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "post_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ]
+}

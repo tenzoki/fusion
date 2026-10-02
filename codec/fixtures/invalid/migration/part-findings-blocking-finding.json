@@ -1,0 +1,14 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "findings",
+  "migration_id": "migration-20261002-example",
+  "n": 1,
+  "findings": [
+    {
+      "class": "reference-not-a-citation",
+      "severity": "blocking",
+      "path": "work-packages/260920-0900-lint-cleanup/260920-0900-lint-cleanup.md",
+      "detail": "**Cross-references:** token 'the lint ticket' is no citation; kept in the narrative"
+    }
+  ]
+}

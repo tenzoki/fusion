@@ -1,0 +1,20 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "records",
+  "migration_id": "migration-20261002-example",
+  "n": 1,
+  "records": {
+    "c659cc62-52e9-4887-8617-124715712a64": {
+      "kind": "package",
+      "row": "package-live",
+      "control": "work-packages/260920-0900-lint-cleanup/package.json",
+      "narrative": "work-packages/260920-0900-lint-cleanup/260920-0900-lint-cleanup.md"
+    },
+    "8e1f3a5c-7b9d-4c2e-a4f6-1d3b5c7e9f0a": {
+      "kind": "issue",
+      "row": "record-live",
+      "control": "work-packages/260920-0900-lint-cleanup/issues/260921-1000_o_lint-rule-misfires.record.json",
+      "narrative": "work-packages/260920-0900-lint-cleanup/issues/260921-1000_o_lint-rule-misfires.md"
+    }
+  }
+}

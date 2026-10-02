@@ -57,9 +57,14 @@ export const OPERATIONS = [
 export type Operation = (typeof OPERATIONS)[number];
 
 /** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
-export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance"];
+export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"];
 
-/** The package that lands each operation not yet answered: the detail of its `not-implemented` refusal. */
+/**
+ * The package that lands each operation or phase not yet answered: the detail
+ * of its `not-implemented` refusal. `migration` answers `survey` and `plan`;
+ * its `apply`, `verify` and `rollback` phases are refused with this detail
+ * until FJ04's step 6 lands them.
+ */
 export const LANDS_IN: Partial<Record<Operation, string>> = {
   migration: "FJ04",
 };
@@ -284,11 +289,29 @@ export type MaintenanceRequest =
   | (Base<"maintenance"> & { operation_id: string; action: "begin" })
   | (Base<"maintenance"> & { operation_id: string; action: "end"; fence: string });
 
-export interface MigrationRequest extends Base<"migration"> {
-  phase: "survey" | "plan" | "apply" | "verify";
-  /** The frozen plan, workbench-relative; required from `apply` on. */
-  plan?: string;
+/** A file bound by its bytes (FJ04 contract delta as amended, 45(a)): a workbench-relative path and the sha256 of the exact bytes. */
+export interface BoundFile {
+  path: string;
+  sha256: string;
 }
+
+/**
+ * `migration` (FJ04 contract delta as amended for Prior `ab9cb59`): the
+ * maintenance run of spec section 8, one branch per phase. `survey` is a read
+ * and carries no `operation_id`; every other phase does. `proposal` is the
+ * host's mapping proposal under `.json-state/migration/`, `plan` the frozen
+ * index `archive/migrations/<migration id>/plan.json`, each bound by its
+ * sha256; `chunk` counts from 1 in `apply` and from 0 in `rollback`, where 0
+ * names the plan files.
+ */
+export type MigrationRequest =
+  | (Base<"migration"> & { phase: "survey" })
+  | (Base<"migration"> & { phase: "plan"; operation_id: string; proposal: BoundFile })
+  | (Base<"migration"> & { phase: "apply"; operation_id: string; plan: BoundFile; chunk: number })
+  | (Base<"migration"> & { phase: "verify"; operation_id: string; plan: BoundFile })
+  | (Base<"migration"> & { phase: "rollback"; operation_id: string; plan: BoundFile; chunk: number });
+
+export type MigrationPlanRequest = Extract<MigrationRequest, { phase: "plan" }>;
 
 export type Request =
   | InspectRequest

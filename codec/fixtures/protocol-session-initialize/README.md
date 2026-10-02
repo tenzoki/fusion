@@ -57,7 +57,7 @@ exchange, `base/` or a seed differs from the recorded one; everything here is
 regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`, except a
 response a reviewed delta moves (below), which is never rewritten. Ten do:
 26, and the nine successful `inspect` answers 01, 08, 14, 16, 18, 19, 21, 22
-and 24.
+and 24, each of the nine by two deltas in a chain.
 
 ## The reviewed delta of 26
 
@@ -94,6 +94,21 @@ each delta to be those two changes. To replay one by hand, insert
 `"maintenance":null` after the `pending` member of `result` and append
 `"maintenance"` to `result.operations.implemented` in the recorded response,
 serialise without whitespace, and compare with that.
+
+FJ04's step 5 moves the same nine again. `<nn>-inspect.migration-delta.json`
+beside each, which `follows` that answer's maintenance delta and applies after
+it, of the form
+`fusion.session-delta/2`, carries exactly five changes, in this order: three
+`add`s into `/result/schemas` at indices 3, 4 and 5, the ids
+`urn:fusion:schema:fusion.migration-plan/v1`, `…migration-proposal/v1` and
+`…migration-receipt/v1`, which the bundle's schema set now loads and which
+sort there; an `add` of `"migration"` at `/result/operations/implemented/15`,
+after `maintenance`; and a `replace` of `/result/operations/deferred` with
+`[]`. FJ04's step 5 answers `migration` (its `survey` and `plan` phases), so
+no operation stays deferred. A case holds each to be exactly these five changes. To replay
+one by hand, apply the maintenance delta first, then insert the three schema
+ids at their sorted place, append `"migration"` to
+`result.operations.implemented`, and set `result.operations.deferred` to `[]`.
 
 The recorder also asserts that each request of 17, 20, 23 and 25, rebuilt
 from nothing but the target and the preceding `inspect`'s `pending`
@@ -161,7 +176,7 @@ request under its own operation id first.
    request` from an installed fusion copy.
 3. Read stdout, replace R with `<workbench>`, and compare with the recorded
    response, byte for byte; for 26 and the nine successful `inspect`
-   answers, with the recorded response plus its delta above. Exit is 0 for
+   answers, with the recorded response plus its deltas above, in order. Exit is 0 for
    all twenty-six.
 
 Order matters: 07 and 13 are 06's replay out of

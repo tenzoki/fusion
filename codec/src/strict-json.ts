@@ -57,9 +57,14 @@ const refuse = (reason: StrictReason, detail: string): StrictRefusal => ({
   detail,
 });
 
-export function strictParse(bytes: Uint8Array): StrictParseResult {
-  if (bytes.byteLength > MAX_RECORD_BYTES) {
-    return refuse("too-large", `${bytes.byteLength} bytes; the cap is ${MAX_RECORD_BYTES} bytes (1 MiB)`);
+/**
+ * `cap` is the record cap unless a caller reads a file that is no control
+ * record: the migration proposal alone passes its own (16 MiB, FJ04 request
+ * 45h). Every other rule applies unchanged at any cap.
+ */
+export function strictParse(bytes: Uint8Array, cap: number = MAX_RECORD_BYTES): StrictParseResult {
+  if (bytes.byteLength > cap) {
+    return refuse("too-large", `${bytes.byteLength} bytes; the cap is ${cap} bytes (${cap / MAX_RECORD_BYTES} MiB)`);
   }
   if (bytes.byteLength >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) {
     return refuse("bom", "UTF-8 byte order mark (EF BB BF) at offset 0");

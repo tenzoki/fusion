@@ -9,9 +9,11 @@
 // `mutate` runs, in this order and for every operation alike: the workbench
 // state, against the states the operation admits (`json-control` alone for
 // every operation but `initialize`, which admits every state and decides on
-// the directory's content under the lock instead); the workbench write lock;
-// `sweep`;
-// the recovery of every pending intent; the replay lookup, which consults
+// the directory's content under the lock instead, and `migration`, which
+// admits every state too, so that its replay and its own recovery are decided
+// before the store's shape is judged, FJ04 contract delta as amended); the
+// workbench write lock; `sweep`;
+// the recovery of every pending intent but a held one (below); the replay lookup, which consults
 // `journal/<id>/` before `ops/<id>.json` (discussion 260929-0709, C13); the
 // maintenance fence (request 39), which refuses every fresh mutation but
 // `initialize` and the `end` naming it while it stands; the operation's own
@@ -23,6 +25,18 @@
 // `cas`, validates the records it would write, and returns the writes and the
 // result; it never writes. So `claim` and `release` (step 4) can only ever be
 // `transition` with defaults: there is no second route to the files.
+//
+// A migration intent is held: only the request that committed it finishes
+// it (FJ04 contract delta as amended, "Who finishes a migration intent").
+// Every other request's recovery, a read's included, leaves an intent whose
+// `op` is `migration` untouched unless the request carries its operation id,
+// and a `migration` request leaves a committed `initialize` untouched as
+// well. A held intent stands in `blocked` beside the ones recovery could not
+// land, flagged `held`: a path it names answers
+// `operation-unknown/migration-pending` instead of `recovery-blocked`, and
+// `migration`'s plan function refuses `conflict/intent-pending` while one
+// stands. The maintenance fence is not checked here for `migration`: its
+// plan function checks it in the contract's order, after the store's state.
 //
 // The fence itself is set and removed outside the journal: `maintenance`'s
 // plan function returns no writes and a `fence` instead, which `mutate`
@@ -196,6 +210,8 @@ export interface Blocked {
   paths: string[];
   /** The paths at neither their pre- nor their post-bytes. */
   diverged: string[];
+  /** Set when the intent is held for its own request (a migration intent), not blocked: its `op`. */
+  held?: string;
 }
 
 const blockedOf = (p: PendingIntent, diverged: Write[]): Blocked => ({
@@ -204,8 +220,28 @@ const blockedOf = (p: PendingIntent, diverged: Write[]): Blocked => ({
   diverged: diverged.map((w) => w.path),
 });
 
-/** The refusal for a path a blocked intent names, or for a replay of the blocked intent itself. */
+/** A committed intent recovery leaves for its own request: every path it names is held. */
+const heldOf = (p: PendingIntent): Blocked => ({ operation_id: p.intent.operation_id, paths: p.intent.writes.map((w) => w.path), diverged: [], held: p.intent.op });
+
+/**
+ * Whether `p` is held from the request `req` (null for a read): a migration
+ * intent unless `req` carries its id, and a committed `initialize` when `req`
+ * is a migration request.
+ */
+export function isHeld(p: PendingIntent, req: MutationRequest | null): boolean {
+  if (req !== null && p.intent.operation_id === req.operation_id) return false;
+  return p.intent.op === "migration" || (req?.op === "migration" && p.intent.op === "initialize");
+}
+
+/** The refusal for a path a blocked or held intent names, or for a replay of the blocked intent itself. */
 export function recoveryBlocked(b: Blocked): StoreError {
+  if (b.held !== undefined) {
+    return {
+      class: "operation-unknown",
+      reason: "migration-pending",
+      detail: `operation ${b.operation_id} (${b.held}) is pending in .json-state/journal/${b.operation_id}, and only its own request finishes it; until then the files it names (${b.paths.join(", ")}) are not answered as fact`,
+    };
+  }
   const files = b.diverged.join(", ");
   const verb = b.diverged.length === 1 ? "is" : "are";
   return {
@@ -271,6 +307,10 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
     if (!pending.ok) return refuse(pending.error);
     const blocked: Blocked[] = [];
     for (const p of pending.value) {
+      if (isHeld(p, req)) {
+        blocked.push(heldOf(p));
+        continue;
+      }
       const r = recover(wb, p);
       if (!r.landed) blocked.push(blockedOf(p, r.blocked));
     }
@@ -287,7 +327,7 @@ export async function mutate(wb: Workbench, req: MutationRequest, plan: PlanFunc
     if (replay.value !== null) return replay.value;
 
     const fence = readFence(wb);
-    const fenced = fenceRefusal(req, fence);
+    const fenced = req.op === "migration" ? null : fenceRefusal(req, fence);
     if (fenced !== null) return refuse(fenced);
 
     const planned = await plan(planContext(wb, blocked, fence.ok ? fence.value : null));
@@ -448,6 +488,28 @@ export interface ReadView {
 
 const NO_VIEW: ReadView = { blocked: [], blockedOn: () => undefined };
 
+/**
+ * The view of a store not under JSON control: no recovery runs there, and a
+ * migration intent pending on it is held, so its paths answer
+ * `migration-pending` as they do on a store under JSON control. An entry that
+ * does not read is left to the operation that meets it; with none held the
+ * view is the empty one, so a read without a migration answers as before.
+ */
+function heldView(wb: Workbench): ReadView {
+  const held: Blocked[] = [];
+  let ids: string[];
+  try {
+    ids = pendingIds(wb);
+  } catch {
+    return NO_VIEW; // a journal that does not list: the operation meeting it answers as before
+  }
+  for (const id of ids) {
+    const r = readIntent(wb, id);
+    if (r.ok && r.value !== null && isHeld(r.value, null)) held.push(heldOf(r.value));
+  }
+  return held.length === 0 ? NO_VIEW : { blocked: held, blockedOn: (path) => blockedOn(held, path) };
+}
+
 interface Snapshot {
   journal: string[];
   /** The sorted id set of `journal/` and `ops/`, dot names excluded, as one comparable key. */
@@ -490,6 +552,10 @@ function classify(wb: Workbench, ids: readonly string[]): Classified {
       if (!r.ok) return { kind: "unreadable", error: r.error };
       continue;
     }
+    if (isHeld(r.value, null)) {
+      blocked.push(heldOf(r.value));
+      continue;
+    }
     const b = blockedIntent(wb, r.value);
     if (b === null) return { kind: "live" };
     blocked.push(b);
@@ -505,7 +571,7 @@ async function recoverUnderLock(wb: Workbench, options: KernelOptions): Promise<
     sweep(wb);
     const pending = readIntents(wb);
     if (!pending.ok) return pending;
-    for (const p of pending.value) recover(wb, p);
+    for (const p of pending.value) if (!isHeld(p, null)) recover(wb, p);
     return ok(undefined);
   } finally {
     releaseLock(lock.value);
@@ -524,7 +590,7 @@ async function recoverUnderLock(wb: Workbench, options: KernelOptions): Promise<
  * 33, as corrected at Prior `ae1ad78`).
  */
 export async function read<T>(wb: Workbench, body: (view: ReadView) => T | Promise<T>, options: KernelOptions = {}): Promise<Result<T>> {
-  if (wb.state !== "json-control") return ok(await body(NO_VIEW));
+  if (wb.state !== "json-control") return ok(await body(heldView(wb)));
   const now = options.now ?? Date.now;
   const waitMs = options.waitMs ?? LOCK_STALE_MS + 5_000;
   const started = now();

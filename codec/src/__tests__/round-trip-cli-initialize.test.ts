@@ -95,7 +95,11 @@
 // named once in the detail, and one `<nn>-inspect.maintenance-delta.json` for
 // each of the nine successful `inspect` answers (`MAINTENANCE_DELTAS`), which
 // gain `maintenance: null` after `pending` and `maintenance` at the end of
-// `operations.implemented` (request 39). Every other exchange is byte for byte.
+// `operations.implemented` (request 39). FJ04's step 5 moves the same nine
+// again, each by `<nn>-inspect.migration-delta.json` following its
+// maintenance delta: the three migration schemas join `schemas`, `migration`
+// joins `operations.implemented` and `operations.deferred` becomes empty
+// (`MIGRATION_CHANGES`). Every other exchange is byte for byte.
 // ---------------------------------------------------------------------------
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -214,10 +218,19 @@ const REFUSED: ReadonlyArray<[Name, { class: string; reason: string }]> = [
 /** The exchanges whose recorded response is historical, each with the reviewed delta files that state its current answer, in the order they apply. */
 const MAINTENANCE_DELTAS: readonly Name[] = ["01-inspect", "08-inspect", "14-inspect", "16-inspect", "18-inspect", "19-inspect", "21-inspect", "22-inspect", "24-inspect"];
 const DELTAS: ReadonlyMap<Name, readonly string[]> = new Map<Name, readonly string[]>([
-  ...MAINTENANCE_DELTAS.map((n): [Name, readonly string[]] => [n, [`${n}.maintenance-delta.json`]]),
+  ...MAINTENANCE_DELTAS.map((n): [Name, readonly string[]] => [n, [`${n}.maintenance-delta.json`, `${n}.migration-delta.json`]]),
   ["26-inspect", ["26-inspect.detail-delta.json"]],
 ]);
 const deltaFiles = (): string[] => [...DELTAS.values()].flat();
+
+/** FJ04 step 5's change to every successful `inspect` answer, after the maintenance delta: exactly these, in this order. */
+const MIGRATION_CHANGES = [
+  { op: "add", pointer: "/result/schemas/3", value: "urn:fusion:schema:fusion.migration-plan/v1" },
+  { op: "add", pointer: "/result/schemas/4", value: "urn:fusion:schema:fusion.migration-proposal/v1" },
+  { op: "add", pointer: "/result/schemas/5", value: "urn:fusion:schema:fusion.migration-receipt/v1" },
+  { op: "add", pointer: "/result/operations/implemented/15", value: "migration" },
+  { op: "replace", pointer: "/result/operations/deferred", value: [] },
+];
 
 /** The successful replays, each followed by an `inspect` of its target. */
 const REPLAYS: ReadonlyArray<[Name, Name]> = [
@@ -617,6 +630,14 @@ describe(`the recorded session under fixtures/protocol-session-initialize/ (${UP
         { op: "add", pointer: "/result/maintenance", value: null, after: "pending" },
         { op: "add", pointer: `/result/operations/implemented/${implemented.length}`, value: "maintenance" },
       ]);
+    }
+  });
+
+  it("the migration deltas follow the maintenance deltas of the same nine answers and change exactly the schemas, implemented and deferred", () => {
+    for (const name of MAINTENANCE_DELTAS) {
+      const d = readDelta(SESSION, `${name}.migration-delta.json`) as PointerDelta;
+      expect(d, name).toMatchObject({ format: DELTA_FORMAT, exchange: name, recorded: `${name}.response.json`, follows: [`${name}.maintenance-delta.json`] });
+      expect(d.changes, name).toEqual(MIGRATION_CHANGES);
     }
   });
 

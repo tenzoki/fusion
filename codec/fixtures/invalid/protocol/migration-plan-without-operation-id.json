@@ -1,0 +1,9 @@
+{
+  "op": "migration",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "phase": "plan",
+  "proposal": {
+    "path": ".json-state/migration/proposal.json",
+    "sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+  }
+}

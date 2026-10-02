@@ -1,0 +1,11 @@
+{
+  "op": "migration",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "4b8d2f6a-1c3e-4a5b-9d7f-2e4c6a8b0d1f",
+  "phase": "apply",
+  "plan": {
+    "path": "archive/migrations/migration-20261002-example/plan.json",
+    "sha256": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+  },
+  "chunk": 1
+}

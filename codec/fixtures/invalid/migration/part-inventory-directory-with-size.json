@@ -1,0 +1,60 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "inventory",
+  "migration_id": "migration-20261002-example",
+  "n": 1,
+  "entries": [
+    {
+      "path": "archive",
+      "kind": "directory",
+      "size": 0
+    },
+    {
+      "path": "shared",
+      "kind": "directory"
+    },
+    {
+      "path": "shared/notes.fifo",
+      "kind": "other"
+    },
+    {
+      "path": "work-packages",
+      "kind": "directory"
+    },
+    {
+      "path": "work-packages/260920-0900-lint-cleanup",
+      "kind": "directory"
+    },
+    {
+      "path": "work-packages/260920-0900-lint-cleanup/260920-0900-lint-cleanup.md",
+      "kind": "file",
+      "size": 912,
+      "sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "path": "work-packages/260920-0900-lint-cleanup/issues",
+      "kind": "directory"
+    },
+    {
+      "path": "work-packages/260920-0900-lint-cleanup/issues/260921-1000_o_lint-rule-misfires.md",
+      "kind": "file",
+      "size": 404,
+      "sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    {
+      "path": "work-packages/260920-0900-lint-cleanup/latest-plan.md",
+      "kind": "link",
+      "target": "plans/260920-1000_p_plan-lint-cleanup.md"
+    },
+    {
+      "path": "work-packages/260920-0900-lint-cleanup/plans",
+      "kind": "directory"
+    },
+    {
+      "path": "work-packages/260920-0900-lint-cleanup/plans/260920-1000_p_plan-lint-cleanup.md",
+      "kind": "file",
+      "size": 1530,
+      "sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ]
+}

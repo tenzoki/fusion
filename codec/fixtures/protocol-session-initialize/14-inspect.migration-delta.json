@@ -1,0 +1,36 @@
+{
+  "format": "fusion.session-delta/2",
+  "exchange": "14-inspect",
+  "recorded": "14-inspect.response.json",
+  "follows": [
+    "14-inspect.maintenance-delta.json"
+  ],
+  "why": "FJ04 step 5 (REQUESTS.md, 'FJ04 (the contract delta)', 'Recorded bytes this revision moves'): migration is answered, so it joins operations.implemented after maintenance and operations.deferred becomes empty; the bundle's schema set gains the three migration schemas, fusion.migration-plan/v1, fusion.migration-proposal/v1 and fusion.migration-receipt/v1, in sorted id order. The recorded response is the historical expectation and is not edited; the current answer is those bytes with exactly these changes.",
+  "changes": [
+    {
+      "op": "add",
+      "pointer": "/result/schemas/3",
+      "value": "urn:fusion:schema:fusion.migration-plan/v1"
+    },
+    {
+      "op": "add",
+      "pointer": "/result/schemas/4",
+      "value": "urn:fusion:schema:fusion.migration-proposal/v1"
+    },
+    {
+      "op": "add",
+      "pointer": "/result/schemas/5",
+      "value": "urn:fusion:schema:fusion.migration-receipt/v1"
+    },
+    {
+      "op": "add",
+      "pointer": "/result/operations/implemented/15",
+      "value": "migration"
+    },
+    {
+      "op": "replace",
+      "pointer": "/result/operations/deferred",
+      "value": []
+    }
+  ]
+}

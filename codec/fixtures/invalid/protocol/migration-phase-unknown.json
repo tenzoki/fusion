@@ -1,5 +1,5 @@
 {
   "op": "migration",
   "workbench": "/tmp/fusion-scratch-workbench",
-  "phase": "rollback"
+  "phase": "resume"
 }

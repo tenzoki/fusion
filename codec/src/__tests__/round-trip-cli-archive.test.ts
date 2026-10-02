@@ -79,6 +79,17 @@
 //     such value to be a timestamp of the run.
 //
 // Nothing else depends on the clock, the host or a generated id.
+//
+// ## Reviewed deltas
+//
+// A recorded response a later revision moves is never rewritten, not even
+// under the update variable (`helpers/session.ts`, "reviewed deltas"). FJ04's
+// step 5 moves the six successful `inspect` answers, 01, 13, 27, 31, 38 and
+// 45, each by `<nn>-inspect.migration-delta.json`: the three migration
+// schemas join `schemas`, `migration` joins `operations.implemented` and
+// `operations.deferred` becomes empty. Their gate holds the fresh answer equal
+// to the recording with exactly that delta applied; every other exchange is
+// byte for byte.
 // ---------------------------------------------------------------------------
 
 import { cpSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, readlinkSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
@@ -88,7 +99,7 @@ import { dispatch } from "../cli/ops.js";
 import { canonical, requestDigest, type Intent } from "../journal.js";
 import { CutReached } from "../kernel.js";
 import { revisionOf, serialise } from "../store.js";
-import { CODEC_DIR, PLACEHOLDER, bytesAt, filesUnder, openSession, parse, requestBytes } from "./helpers/session.js";
+import { CODEC_DIR, DELTA_FORMAT, PLACEHOLDER, bytesAt, deltaChain, filesUnder, openSession, parse, readDelta, requestBytes, type PointerDelta } from "./helpers/session.js";
 
 // --- the fixed literals ----------------------------------------------------------
 
@@ -324,6 +335,18 @@ const NAMES = [
   "51-inspect",
 ] as const;
 type Name = (typeof NAMES)[number];
+
+/** The exchanges whose recorded response is historical, each with the reviewed delta files that state its current answer, in order. */
+const MIGRATION_DELTAS: readonly Name[] = ["01-inspect", "13-inspect", "27-inspect", "31-inspect", "38-inspect", "45-inspect"];
+const DELTAS: ReadonlyMap<Name, readonly string[]> = new Map(MIGRATION_DELTAS.map((n): [Name, readonly string[]] => [n, [`${n}.migration-delta.json`]]));
+/** FJ04 step 5's change to every successful `inspect` answer of this session: exactly these, in this order. */
+const MIGRATION_CHANGES = [
+  { op: "add", pointer: "/result/schemas/3", value: "urn:fusion:schema:fusion.migration-plan/v1" },
+  { op: "add", pointer: "/result/schemas/4", value: "urn:fusion:schema:fusion.migration-proposal/v1" },
+  { op: "add", pointer: "/result/schemas/5", value: "urn:fusion:schema:fusion.migration-receipt/v1" },
+  { op: "add", pointer: "/result/operations/implemented/15", value: "migration" },
+  { op: "replace", pointer: "/result/operations/deferred", value: [] },
+];
 
 // --- the host's actions --------------------------------------------------------------
 
@@ -866,7 +889,7 @@ describe(`the recorded session under fixtures/protocol-session-archive/ (${UPDAT
     expect(requestDigest(request)).toBe(revisionOf(Buffer.from(canonical(request), "utf-8")));
   });
 
-  for (const name of NAMES) {
+  for (const name of NAMES.filter((n) => !DELTAS.has(n))) {
     it(`${name}: the recorded request and response equal the fresh exchange`, () => {
       const e = byName(name);
       const requestFile = join(SESSION, `${name}.request.json`);
@@ -883,6 +906,47 @@ describe(`the recorded session under fixtures/protocol-session-archive/ (${UPDAT
       expect(readFileSync(responseFile, "utf-8"), `${name}.response.json differs from the fresh exchange. If the protocol changed on purpose, regenerate with ${FIX} and commit the files; the Prior side replays them.`).toBe(freshResponse);
     });
   }
+
+  // A historical response is never rewritten, so its files are not written under the update variable.
+  for (const [name, chain] of DELTAS) {
+    describe(`${name}: the recorded response with exactly the reviewed deltas, ${chain.join(" then ")}`, () => {
+      const expected = (): string => deltaChain(SESSION, name, chain);
+      const fresh = (): string => recorded(byName(name).stdout);
+      type Doc = { ok: boolean; error?: Record<string, unknown>; result?: Record<string, unknown> };
+      const changed = (change: (doc: Doc) => void): string => {
+        const doc = JSON.parse(fresh()) as Doc;
+        change(doc);
+        return JSON.stringify(doc) + "\n";
+      };
+
+      it("the recorded request equals the fresh one", () => {
+        expect(readFileSync(join(SESSION, `${name}.request.json`), "utf-8")).toBe(recorded(requestBytes(byName(name).request)));
+      });
+
+      it("the fresh answer is the recorded bytes with the deltas applied, byte for byte, and not the recorded bytes alone", () => {
+        expect(fresh(), `the answer differs from ${name}.response.json with ${chain.join(" and ")} applied. The recorded response is historical and is not regenerated; a change to the answer is a reviewed change to a delta file, and the Prior side compares it at the re-pin.`).toBe(expected());
+        expect(readFileSync(join(SESSION, `${name}.response.json`), "utf-8"), "the recording itself").not.toBe(fresh());
+      });
+
+      it("the gate is red against an answer carrying one field less or one field more", () => {
+        const part = (doc: Doc): Record<string, unknown> => (doc.ok ? doc.result : doc.error) as Record<string, unknown>;
+        expect(changed(() => undefined), "unchanged").toBe(expected());
+        expect(changed((doc) => delete part(doc)[Object.keys(part(doc)).at(-1) as string]), "one field less").not.toBe(expected());
+        expect(changed((doc) => (part(doc).extra = null)), "one field more").not.toBe(expected());
+      });
+    });
+  }
+
+  it("the migration deltas are every successful inspect of the session, and each changes exactly the schemas, implemented and deferred", () => {
+    const inspects = NAMES.filter((n) => n.endsWith("-inspect"));
+    const answered = inspects.filter((n) => (JSON.parse(readFileSync(join(SESSION, `${n}.response.json`), "utf-8")) as { ok: boolean }).ok);
+    expect([...MIGRATION_DELTAS], "the six successful recorded inspect answers").toEqual(answered);
+    for (const name of MIGRATION_DELTAS) {
+      const d = readDelta(SESSION, `${name}.migration-delta.json`) as PointerDelta;
+      expect(d, name).toMatchObject({ format: DELTA_FORMAT, exchange: name, recorded: `${name}.response.json`, follows: [] });
+      expect(d.changes, name).toEqual(MIGRATION_CHANGES);
+    }
+  });
 
   it("base/ holds exactly the workbench the constants state", () => {
     expect(filesUnder(BASE), `base/ is not the stated file set. If it changed on purpose, regenerate with ${FIX}.`).toEqual([...BASE_FILES.keys()].sort());
@@ -914,8 +978,8 @@ describe(`the recorded session under fixtures/protocol-session-archive/ (${UPDAT
     for (const name of HOST.keys()) expect(NAMES).toContain(name);
   });
 
-  it("the recorded set is exactly the fifty-one pairs, a README, base/ and seed/", () => {
-    const expected = ["README.md", "base", "seed", ...NAMES.flatMap((n) => [`${n}.request.json`, `${n}.response.json`])].sort();
+  it("the recorded set is exactly the fifty-one pairs, the reviewed deltas, a README, base/ and seed/", () => {
+    const expected = ["README.md", "base", "seed", ...[...DELTAS.values()].flat(), ...NAMES.flatMap((n) => [`${n}.request.json`, `${n}.response.json`])].sort();
     expect(readdirSync(SESSION).sort()).toEqual(expected);
     expect(readdirSync(SEED).sort()).toEqual([...SEEDED].sort());
   });

@@ -23,8 +23,8 @@
 # recovers a trustworthy record, or restores or verifies a known complete
 # state under the fence before removing it, and otherwise leaves the fence
 # standing and normal work blocked (codec/README.md, `maintenance`;
-# bin/fusion-archive). `migration` is deferred and answered
-# `operation-unknown/not-implemented`. That list is a copy: ask `inspect`,
+# bin/fusion-archive). `migration` answers `survey` and `plan`; `apply`,
+# `verify` and `rollback` are `not-implemented`. That list is a copy: ask `inspect`,
 # whose `operations.implemented` and `operations.deferred` name what the
 # bundle beside this script answers. Every answer is on stdout with
 # exit 0, whatever its `ok`: a refused request, a stale revision, a record

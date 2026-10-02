@@ -106,9 +106,11 @@ package. FJ02 answers the rest of the table as it then stood but one: `create` (
 `narrative.content` it writes both halves of the pair, without it the
 narrative must already exist), `transition` on every record kind, `claim`,
 `release`, `set-mode`, `set-dependencies`, `adopt-plan` (`role: plan`, the
-default, or `role: spec`), `attach-evidence` and `reconcile`. `migration` is
-the one operation still deferred: it lands in FJ04 and is refused
-`operation-unknown/not-implemented` until then. `initialize` joined the table
+default, or `role: spec`), `attach-evidence` and `reconcile`. `migration` lands
+in FJ04: its `survey` and `plan` phases are answered (below, "`migration`"),
+and `apply`, `verify` and `rollback` are refused
+`operation-unknown/not-implemented`, naming the phase, until FJ04's step 6.
+No operation is deferred any more. `initialize` joined the table
 later, after `validate`; it is described below. Every mutation runs through
 the kernel below, and `claim` and `release` are `transition` with defaults and
 clearer refusals, never a second route to the files.
@@ -573,6 +575,60 @@ where it named it twice), and `protocol-session-initialize/<nn>-inspect.maintena
 for `01`, `08`, `14`, `16`, `18`, `19`, `21`, `22` and `24`, every successful
 recorded `inspect`, each adding `maintenance: null` after `pending` and
 `maintenance` at the end of `operations.implemented`.
+
+## `migration`
+
+The maintenance run of spec section 8, as `fixtures/prior/REQUESTS.md`
+"FJ04 (the contract delta, amended for ab9cb59)" states it, in
+`src/migration.ts`. The host reads the v12 Markdown and composes a mapping
+proposal; the codec validates it, freezes it and alone writes every byte.
+
+**`survey`** is an observation: `{layout, entries, local_state}`. `entries` is
+every entry under the root but `.json-state/`, sorted bytewise by path, each a
+file `{path, kind, size, sha256}`, a link `{path, kind, target}` (its own text,
+never followed or hashed), a directory `{path, kind}` or `{path, kind:
+"other"}`. `local_state` is `{present, intents, maintenance, unreadable}`: the
+pending intents by id, op and migration phase, the fence, and what does not
+read. It takes no lock, sweeps and recovers nothing, stores no answer and
+creates no `.json-state/`; an answer over 16 MiB is refused
+`schema-invalid/too-large`.
+
+**`plan`** takes `proposal: {path, sha256}` under `.json-state/migration/`,
+read strictly at a 16 MiB cap (`strictParse`'s `cap`, the one caller that
+passes one). It runs through the kernel admitting every state, so that its
+replay and its own recovery come first, and then decides in the contract's
+order, first refusal wins: a manifest that does not read; a held intent
+(`conflict/intent-pending`); a manifest, answered as the second-run no-op
+when it names a receipt of this migration that holds, else
+`migration-incomplete/receipt-unverified` or `conflict/manifest-present`; a
+fence (`maintenance-active`); standing plan files (`migration-planned`); the
+proposal's form and its hash (`proposal-invalid`, `conflict/source-changed`);
+the records (`proposal-invalid`, `duplicate-id`, `record-exists`,
+`blocking-finding`, `closure-incomplete` over every `record_ref` site
+`referenceSites` names, an acceptance its package does not carry); the
+inventory the codec takes under the lock, against every source hash
+(`source-changed`) and every rewrite's deletion ranges; the cut and the
+operation-id schedule (`proposal-invalid`); and the freeze bound
+(`schema-invalid/plan-too-large`). The writes are cut in narrative-path order
+into chunks of at most 50, a pair never split, originals first. The plan is
+frozen under `archive/migrations/<id>/` as `chunks/<n>.json`,
+`parts/{records,inventory,findings,repairs}-<n>.json` and `plan.json`, the
+index, which binds every part by hash: in ONE intent, the index its last
+write, so no plan is visible before it lands.
+
+**The freeze bound.** Every plan file and `intent.json` under 1 MiB, at most
+80 files and 6 MiB. Measured for step 5 through the bundle with process
+start, on a store generated at the largest measured copy's size (749 pairs,
+1 680 writes, 7 942 files): 41 files, 3 410 844 bytes, 1.26 s, 1.28 s and
+1.32 s. A freeze over the bound publishes nothing; a multi-request freeze is
+the contract's question 50 and is not built.
+
+**A migration intent is held.** Only the request that committed it finishes
+it. Every other request's recovery, a read's included, leaves an intent whose
+`op` is `migration` untouched (a `migration` request also leaves a committed
+`initialize`), and the paths it names answer
+`operation-unknown/migration-pending` in `list`, `show`, `validate` and
+`reconcile` and to any mutation that touches them (`kernel.ts`, `isHeld`).
 
 ## The two closed vocabularies
 

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.migration-receipt/v1",
+  "title": "fusion.migration-receipt/v1",
+  "description": "The receipt of a verified migration, archive/migrations/<migration id>/receipt.json (spec section 8.3.6; FJ04 contract delta, amended for Prior ab9cb59), written by the verify phase in one intent with the manifest, the manifest last; workbench.json's migration.receipt names it by path only. The receipt hashes the manifest and the manifest does not hash the receipt, so neither refers to itself. A receipt exists only for a run whose every check passed: a failing check is migration-incomplete/check-failed and writes no receipt. It binds the frozen plan by hash instead of copying it: the index, and every part the index names, each by path and sha256; the repair log and the findings are among those parts. It holds no secret and no local journal. Rules JSON Schema cannot check: plan.sha256 is the hash of the index's exact bytes, and parts are exactly the index's parts in its order, at the hashes it names; verify_operation_id is the index's scheduled verify id; after_inventory_sha256 is the sha256 over the codec's canonical JSON of the eligible after-state inventory verify compared, entries sorted bytewise by path, the baseline a later rollback compares against; manifest_revision is the revision of the workbench.json bytes the same intent writes. A second-run plan and the first rollback after activation check identity, integrity and availability against these fields (migration-incomplete/receipt-unverified).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["after_inventory_sha256", "checks", "counts", "manifest_revision", "migration_id", "parts", "plan", "schema", "source_layout", "verify_operation_id", "versions", "workbench_id"],
+  "properties": {
+    "schema": { "const": "fusion.migration-receipt/v1" },
+    "migration_id": { "$ref": "urn:fusion:schema:fusion.migration-plan/v1#/$defs/migration_id" },
+    "workbench_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    "source_layout": { "$ref": "urn:fusion:schema:fusion.migration-plan/v1#/$defs/source_layout" },
+    "plan": { "$ref": "urn:fusion:schema:fusion.migration-plan/v1#/$defs/plan_ref", "description": "The frozen index this run executed, at its exact revision." },
+    "parts": {
+      "type": "array",
+      "description": "Every plan file the index names, by path and hash, in the index's order.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {
+            "allOf": [
+              { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+              { "type": "string", "pattern": "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/(chunks/[1-9][0-9]*|parts/(records|inventory|findings|repairs)-[1-9][0-9]*)\\.json$" }
+            ]
+          },
+          "sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+        }
+      }
+    },
+    "verify_operation_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid", "description": "The operation id of the verify that wrote this receipt; its stored answer is exempt from a later rollback's baseline." },
+    "after_inventory_sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+    "checks": {
+      "type": "array",
+      "description": "Every check verify ran, each with the number of items it covered.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["checked", "name", "result"],
+        "properties": {
+          "name": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/token" },
+          "result": { "const": "passed" },
+          "checked": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "counts": { "$ref": "urn:fusion:schema:fusion.migration-plan/v1#/$defs/counts" },
+    "versions": {
+      "type": "object",
+      "description": "What wrote the store: the schema ids and the features of the codec that ran verify, as inspect reports them.",
+      "additionalProperties": false,
+      "required": ["features", "schemas"],
+      "properties": {
+        "schemas": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "features": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/token" } }
+      }
+    },
+    "manifest_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+  }
+}

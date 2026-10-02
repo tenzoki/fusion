@@ -1,0 +1,110 @@
+{
+  "schema": "fusion.migration-receipt/v1",
+  "migration_id": "migration-20261002-example",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "source_layout": "fusion-v12",
+  "plan": {
+    "path": "archive/migrations/migration-20261002-example/plan.json",
+    "sha256": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+  },
+  "parts": [
+    {
+      "path": "archive/migrations/migration-20261002-example/chunks/1.json",
+      "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-example/chunks/2.json",
+      "sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-example/parts/records-1.json",
+      "sha256": "sha256:1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-example/parts/inventory-1.json",
+      "sha256": "sha256:2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-example/parts/findings-1.json",
+      "sha256": "sha256:3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-example/parts/repairs-1.json",
+      "sha256": "sha256:4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d"
+    }
+  ],
+  "verify_operation_id": "1a3c5e7b-9d2f-4c6e-b8a0-3e5c7a9b1d4f",
+  "after_inventory_sha256": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+  "checks": [
+    {
+      "name": "after-hashes",
+      "result": "passed",
+      "checked": 5
+    },
+    {
+      "name": "pairs",
+      "result": "passed",
+      "checked": 2
+    },
+    {
+      "name": "ids",
+      "result": "passed",
+      "checked": 2
+    },
+    {
+      "name": "depends-on-graph",
+      "result": "passed",
+      "checked": 1
+    },
+    {
+      "name": "references",
+      "result": "passed",
+      "checked": 9
+    },
+    {
+      "name": "acceptance",
+      "result": "passed",
+      "checked": 0
+    },
+    {
+      "name": "closure",
+      "result": "passed",
+      "checked": 2
+    },
+    {
+      "name": "validate",
+      "result": "passed",
+      "checked": 2
+    },
+    {
+      "name": "reconcile",
+      "result": "passed",
+      "checked": 2
+    }
+  ],
+  "counts": {
+    "package_live": 1,
+    "package_terminal": 0,
+    "record_live": 1,
+    "record_closure": 0,
+    "plain_terminal": 3,
+    "empty_container": 0
+  },
+  "versions": {
+    "schemas": [
+      "urn:fusion:schema:fusion.campaign/v1",
+      "urn:fusion:schema:fusion.common/v1",
+      "urn:fusion:schema:fusion.evidence/v1",
+      "urn:fusion:schema:fusion.migration-plan/v1",
+      "urn:fusion:schema:fusion.migration-proposal/v1",
+      "urn:fusion:schema:fusion.migration-receipt/v1",
+      "urn:fusion:schema:fusion.package/v1",
+      "urn:fusion:schema:fusion.protocol/v1",
+      "urn:fusion:schema:fusion.record/v1",
+      "urn:fusion:schema:fusion.workbench/v1"
+    ],
+    "features": [
+      "json-control-v1"
+    ]
+  }
+}

@@ -148,6 +148,27 @@ answers its `begin`'s `since`. A replayer reads the value from the fresh
 `begin` answer and substitutes it the same way. The gate holds each value to be
 an RFC 3339 timestamp of the run, the four distinct.
 
+## The reviewed deltas of the six `inspect` answers
+
+A recorded response a later revision moves is never rewritten, not even
+under `UPDATE_PROTOCOL_SESSION_ARCHIVE=1`. FJ04's step 5 moves the six
+successful `inspect` answers, 01, 13, 27, 31, 38 and 45; 51 is a refusal and
+does not move. `<nn>-inspect.migration-delta.json` beside each, of the form
+`fusion.session-delta/2`, carries exactly five changes, in this order: three
+`add`s into `/result/schemas` at indices 3, 4 and 5, the ids
+`urn:fusion:schema:fusion.migration-plan/v1`, `…migration-proposal/v1` and
+`…migration-receipt/v1`, which the bundle's schema set now loads and which
+sort there; an `add` of `"migration"` at `/result/operations/implemented/15`,
+after `maintenance`; and a `replace` of `/result/operations/deferred` with
+`[]`. FJ04's step 5 answers `migration` (its `survey` and `plan` phases), so
+no operation stays deferred. The gate applies each to its recording and compares the fresh
+answer byte for byte, and an answer one field more or one less fails it; a
+case holds the six to be every successful recorded `inspect` and each delta
+to be these five changes. To replay one by hand, insert the three schema ids
+at their sorted place in `result.schemas`, append `"migration"` to
+`result.operations.implemented`, set `result.operations.deferred` to `[]`,
+serialise without whitespace, and compare with that.
+
 ## Replaying
 
 1. Make a directory of your own, the root, absolute. Copy `base/` into it
@@ -162,8 +183,9 @@ an RFC 3339 timestamp of the run, the four distinct.
    < request` from an installed fusion copy.
 3. Read stdout. When the exchange is a `begin` that answered `ok`, note its
    `result.since`. Replace the root with `<workbench>` and every noted `since`
-   with its placeholder, and compare with the recorded response, byte for byte.
-   Exit is 0 for all fifty-one.
+   with its placeholder, and compare with the recorded response, byte for byte;
+   for the six successful `inspect` answers, with the recorded response plus
+   its delta above. Exit is 0 for all fifty-one.
 
 Order matters: the host's moves set up 16 to 29 and the failed moves, 12 lands
 the intent 11 found blocked, 14 replays what 12 landed, and 25 replays what 04

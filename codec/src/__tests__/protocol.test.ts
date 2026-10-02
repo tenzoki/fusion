@@ -32,10 +32,15 @@ interface ProtocolSchema {
   oneOf: Branch[];
 }
 
-/** The operations whose request has two branches of the schema, adjacent. */
-const TWO_BRANCHES: readonly string[] = ["create", "maintenance"];
+/** The operations whose request has more than one branch of the schema, adjacent, and how many. */
+const BRANCHES: Readonly<Record<string, number>> = { create: 2, maintenance: 2, migration: 5 };
+/** The migration phases, one branch each, in the schema's order (FJ04 contract delta, request 45). */
+const MIGRATION_PHASES = ["survey", "plan", "apply", "verify", "rollback"];
 /** An operation with no single valid fixture names one per branch; every other one is `<op>.json`. */
-const VALID_FIXTURES: Readonly<Record<string, readonly string[]>> = { maintenance: ["maintenance-begin.json", "maintenance-end.json"] };
+const VALID_FIXTURES: Readonly<Record<string, readonly string[]>> = {
+  maintenance: ["maintenance-begin.json", "maintenance-end.json"],
+  migration: ["migration.json", "migration-plan.json", "migration-apply.json", "migration-verify.json", "migration-rollback.json", "migration-rollback-plan-files.json"],
+};
 
 const schema = (): ProtocolSchema => {
   const parsed = strictParse(readFileSync(SCHEMA_FILE));
@@ -57,11 +62,11 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     expect(OPERATIONS.indexOf("maintenance")).toBe(OPERATIONS.indexOf("reconcile") + 1);
     expect(OPERATIONS.at(-1)).toBe("migration");
     expect(s.properties.op.enum).toEqual([...OPERATIONS]);
-    // One branch per operation in the table's order, except the two that
-    // carry two adjacent ones: create, the record create and the evidence
-    // create (FJ02b settled choice 1, Prior's request 19), and maintenance,
-    // begin and end (request 39).
-    const expected = OPERATIONS.flatMap((op) => (TWO_BRANCHES.includes(op) ? [op, op] : [op]));
+    // One branch per operation in the table's order, except those that carry
+    // adjacent ones: create, the record create and the evidence create (FJ02b
+    // settled choice 1, Prior's request 19); maintenance, begin and end
+    // (request 39); migration, one per phase (FJ04, request 45).
+    const expected = OPERATIONS.flatMap((op) => Array.from({ length: BRANCHES[op] ?? 1 }, () => op));
     expect(s.oneOf.map((b) => b.properties.op.const)).toEqual(expected);
   });
 
@@ -73,6 +78,23 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     expect(Object.keys(begin.properties).sort()).toEqual(["action", "op", "operation_id", "workbench"]);
     expect(end.required.slice().sort()).toEqual(["action", "fence", "op", "operation_id"]);
     expect(Object.keys(end.properties).sort()).toEqual(["action", "fence", "op", "operation_id", "workbench"]);
+  });
+
+  it("the five migration branches are disjoint on phase, and each carries exactly its phase's fields", () => {
+    const branches = schema().oneOf.filter((b) => b.properties.op.const === "migration") as unknown as Array<{ required: string[]; properties: Record<string, { const?: string }> }>;
+    expect(branches.map((b) => b.properties.phase?.const)).toEqual(MIGRATION_PHASES);
+    const fields: Record<string, string[]> = {
+      survey: ["op", "phase"],
+      plan: ["op", "operation_id", "phase", "proposal"],
+      apply: ["chunk", "op", "operation_id", "phase", "plan"],
+      verify: ["op", "operation_id", "phase", "plan"],
+      rollback: ["chunk", "op", "operation_id", "phase", "plan"],
+    };
+    for (const b of branches) {
+      const phase = b.properties.phase?.const as string;
+      expect(b.required.slice().sort(), phase).toEqual(fields[phase]);
+      expect(Object.keys(b.properties).sort(), phase).toEqual([...(fields[phase] as string[]), "workbench"].sort());
+    }
   });
 
   it("the two create branches are disjoint on kind: the evidence branch's is const evidence, the record branch's enum lacks it", () => {
@@ -95,12 +117,15 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     }
   });
 
-  it("every mutation branch requires an operation_id; every read branch forbids one", () => {
-    const mutations = ["initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "maintenance"];
-    for (const b of schema().oneOf) {
+  it("every mutation branch requires an operation_id; every read branch forbids one, migration survey included", () => {
+    const mutations = ["initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "maintenance", "migration"];
+    for (const b of schema().oneOf as unknown as Array<Branch & { properties: { phase?: { const?: string }; operation_id?: unknown } }>) {
       const op = b.properties.op.const;
+      // migration survey is a read (request 45c): no operation_id, no stored answer.
+      const mutation = mutations.includes(op) && b.properties.phase?.const !== "survey";
       const hasId = b.required.includes("operation_id");
-      expect(hasId, `${op} ${hasId ? "carries" : "lacks"} operation_id`).toBe(mutations.includes(op));
+      expect(hasId, `${op} ${b.properties.phase?.const ?? ""} ${hasId ? "carries" : "lacks"} operation_id`).toBe(mutation);
+      if (!mutation) expect(b.properties.operation_id, `${op} ${b.properties.phase?.const ?? ""} admits operation_id`).toBeUndefined();
     }
   });
 
@@ -110,9 +135,9 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     expect(Object.keys(branch?.properties ?? {}).sort()).toEqual(["id", "op", "operation_id", "workbench"]);
   });
 
-  it("the answered operations are every operation of the table but migration", () => {
-    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance"]);
-    expect(OPERATIONS.filter((o) => !IMPLEMENTED_OPERATIONS.includes(o))).toEqual(["migration"]);
+  it("the answered operations are every operation of the table, migration last", () => {
+    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"]);
+    expect(OPERATIONS.filter((o) => !IMPLEMENTED_OPERATIONS.includes(o))).toEqual([]);
     for (const op of IMPLEMENTED_OPERATIONS) expect(isOperation(op)).toBe(true);
     expect(isOperation("delete")).toBe(false);
     expect(isOperation(42)).toBe(false);

@@ -3404,7 +3404,7 @@ var require_utils = __commonJS({
     }
     function serializePathEncoding(input, pathNoScheme = false) {
       let output = "";
-      let firstSegment = pathNoScheme && input[0] !== "/";
+      let firstSegment2 = pathNoScheme && input[0] !== "/";
       for (let i = 0; i < input.length; i++) {
         const ch = input[i];
         if (ch === "%" && i + 2 < input.length) {
@@ -3416,9 +3416,9 @@ var require_utils = __commonJS({
           }
         }
         if (ch === "/") {
-          firstSegment = false;
+          firstSegment2 = false;
         }
-        if (isPathCharacter(ch) && (ch !== ":" || !firstSegment)) {
+        if (isPathCharacter(ch) && (ch !== ":" || !firstSegment2)) {
           output += ch;
         } else {
           const code = input.charCodeAt(i);
@@ -5046,8 +5046,8 @@ var require_multipleOf = __commonJS({
         const { gen, data, schemaCode, it } = cxt;
         const prec = it.opts.multipleOfPrecision;
         const res = gen.let("res");
-        const invalid = prec ? (0, codegen_1._)`Math.abs(Math.round(${res}) - ${res}) > 1e-${prec}` : (0, codegen_1._)`${res} !== parseInt(${res})`;
-        cxt.fail$data((0, codegen_1._)`(${schemaCode} === 0 || (${res} = ${data}/${schemaCode}, ${invalid}))`);
+        const invalid2 = prec ? (0, codegen_1._)`Math.abs(Math.round(${res}) - ${res}) > 1e-${prec}` : (0, codegen_1._)`${res} !== parseInt(${res})`;
+        cxt.fail$data((0, codegen_1._)`(${schemaCode} === 0 || (${res} = ${data}/${schemaCode}, ${invalid2}))`);
       }
     };
     exports.default = def;
@@ -8016,12 +8016,12 @@ var require_dist = __commonJS({
 });
 
 // src/cli/main.ts
-import { readFileSync as readFileSync7 } from "node:fs";
+import { readFileSync as readFileSync8 } from "node:fs";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 
 // src/cli/ops.ts
-import { existsSync as existsSync3, lstatSync as lstatSync2, readdirSync as readdirSync5, readFileSync as readFileSync6, statSync as statSync3 } from "node:fs";
-import { join as join4, relative as relative3 } from "node:path";
+import { existsSync as existsSync4, lstatSync as lstatSync3, readdirSync as readdirSync6, readFileSync as readFileSync7, statSync as statSync3 } from "node:fs";
+import { join as join5, relative as relative3 } from "node:path";
 
 // src/journal.ts
 import { randomBytes as randomBytes2 } from "node:crypto";
@@ -8058,9 +8058,9 @@ var refuse = (reason, detail) => ({
   reason,
   detail
 });
-function strictParse(bytes) {
-  if (bytes.byteLength > MAX_RECORD_BYTES) {
-    return refuse("too-large", `${bytes.byteLength} bytes; the cap is ${MAX_RECORD_BYTES} bytes (1 MiB)`);
+function strictParse(bytes, cap = MAX_RECORD_BYTES) {
+  if (bytes.byteLength > cap) {
+    return refuse("too-large", `${bytes.byteLength} bytes; the cap is ${cap} bytes (${cap / MAX_RECORD_BYTES} MiB)`);
   }
   if (bytes.byteLength >= 3 && bytes[0] === 239 && bytes[1] === 187 && bytes[2] === 191) {
     return refuse("bom", "UTF-8 byte order mark (EF BB BF) at offset 0");
@@ -9107,8 +9107,547 @@ function replayAnswer(wb, req) {
   return { ok: true, value: stored.value.response };
 }
 
+// src/migration.ts
+import { existsSync as existsSync3, lstatSync as lstatSync2, readdirSync as readdirSync4, readFileSync as readFileSync4, readlinkSync } from "node:fs";
+import { dirname as dirname3, join as join4 } from "node:path";
+var PLAN_SCHEMA_ID = "urn:fusion:schema:fusion.migration-plan/v1";
+var PROPOSAL_SCHEMA_ID = "urn:fusion:schema:fusion.migration-proposal/v1";
+var RECEIPT_SCHEMA_ID = "urn:fusion:schema:fusion.migration-receipt/v1";
+var MIGRATIONS_DIR = `${ARCHIVE_DIR}/migrations`;
+var PROPOSAL_DIR = `${STATE_DIR}/migration`;
+var PROPOSAL_CAP = 16 * MAX_RECORD_BYTES;
+var ANSWER_CAP = 16 * MAX_RECORD_BYTES;
+var CHUNK_WRITES = 50;
+var FREEZE_MAX_FILES = 80;
+var FREEZE_MAX_BYTES = 6 * MAX_RECORD_BYTES;
+var PLAN_SCHEMA = PLAN_SCHEMA_ID.slice(SCHEMA_ID_PREFIX.length);
+var NAMED = 5;
+var PART_MARGIN = 64 * 1024;
+var isObject3 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+var refusal = (cls, reason, detail, errors) => ({
+  ok: false,
+  error: { class: cls, reason, detail, ...errors !== void 0 ? { errors } : {} }
+});
+var listed = (items) => items.slice(0, NAMED).join("; ") + (items.length > NAMED ? `; and ${items.length - NAMED} more` : "");
+var plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+var bytewise = (a, b) => Buffer.compare(Buffer.from(a, "utf-8"), Buffer.from(b, "utf-8"));
+var indexPath = (migrationId) => `${MIGRATIONS_DIR}/${migrationId}/plan.json`;
+var chunkPath = (migrationId, n) => `${MIGRATIONS_DIR}/${migrationId}/chunks/${n}.json`;
+var partPath = (migrationId, kind, n) => `${MIGRATIONS_DIR}/${migrationId}/parts/${kind}-${n}.json`;
+var originalPath = (migrationId, narrative) => `${MIGRATIONS_DIR}/${migrationId}/originals/${narrative}`;
+function inventory(root, skip) {
+  const out = [];
+  const walk = (dir, rel) => {
+    for (const name of readdirSync4(dir)) {
+      const path = rel === "" ? name : `${rel}/${name}`;
+      if (skip(path)) continue;
+      const abs = join4(dir, name);
+      const st = lstatSync2(abs);
+      if (st.isSymbolicLink()) out.push({ path, kind: "link", target: readlinkSync(abs) });
+      else if (st.isDirectory()) {
+        out.push({ path, kind: "directory" });
+        walk(abs, path);
+      } else if (st.isFile()) {
+        const bytes = readFileSync4(abs);
+        out.push({ path, kind: "file", size: bytes.byteLength, sha256: revisionOf(bytes) });
+      } else out.push({ path, kind: "other" });
+    }
+  };
+  walk(root, "");
+  return out.sort((a, b) => bytewise(a.path, b.path));
+}
+var under = (path, dir) => path === dir || path.startsWith(`${dir}/`);
+function phaseOf(intent) {
+  if (intent.op !== "migration") return null;
+  const r = intent.response.ok ? intent.response.result : void 0;
+  if (!isObject3(r)) return null;
+  if ("schedule" in r || "no_op" in r) return "plan";
+  if ("receipt" in r && "manifest" in r) return "verify";
+  if ("restored" in r) return "rollback";
+  if ("chunk" in r) return "apply";
+  return null;
+}
+function localState(wb) {
+  const unreadable = [];
+  let present = true;
+  try {
+    lstatSync2(join4(wb.root, STATE_DIR));
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+    present = false;
+  }
+  const intents = [];
+  let maintenance = null;
+  if (present) {
+    const journal = `${STATE_DIR}/${JOURNAL_DIR}`;
+    let names = [];
+    try {
+      if (lstatSync2(journalDir(wb)).isDirectory()) names = readdirSync4(journalDir(wb)).filter((n) => !n.startsWith(".")).sort(bytewise);
+      else unreadable.push({ path: journal, reason: "not-a-directory" });
+    } catch (e) {
+      if (e.code !== "ENOENT") unreadable.push({ path: journal, reason: e.code ?? "unreadable" });
+    }
+    for (const name of names) {
+      const r = readIntent(wb, name);
+      if (!r.ok) unreadable.push({ path: `${journal}/${name}`, reason: r.error.reason });
+      else if (r.value !== null) intents.push({ operation_id: r.value.intent.operation_id, op: r.value.intent.op, phase: phaseOf(r.value.intent) });
+    }
+    const fence = readFence(wb);
+    if (fence.ok) maintenance = fence.value;
+    else unreadable.push({ path: `${STATE_DIR}/${MAINTENANCE_FILE}`, reason: fence.error.reason });
+  }
+  return { present, intents, maintenance, unreadable };
+}
+function survey(wb) {
+  const entries = inventory(wb.root, (path) => path === STATE_DIR);
+  const response = { ok: true, result: { layout: wb.state, entries, local_state: localState(wb) } };
+  const size = Buffer.byteLength(JSON.stringify(response), "utf-8") + 1;
+  if (size > ANSWER_CAP) return { ok: false, error: { class: "schema-invalid", reason: "too-large", detail: `the survey of ${wb.root} is ${size} bytes with its LF; the answer channel carries at most ${ANSWER_CAP} (16 MiB), and an answer is never truncated` } };
+  return response;
+}
+var invalid = (detail, errors) => refusal("schema-invalid", "proposal-invalid", detail, errors);
+function proposalBytes(wb, path) {
+  if (!path.startsWith(`${PROPOSAL_DIR}/`) || path.slice(PROPOSAL_DIR.length + 1).includes("/")) return invalid(`${path} is not a file directly under ${PROPOSAL_DIR}/`);
+  const abs = resolveInside(wb, path);
+  if (!abs.ok) return invalid(abs.error.detail);
+  let size;
+  try {
+    const st = lstatSync2(abs.value);
+    if (!st.isFile()) return invalid(`${path} is not a regular file`);
+    size = st.size;
+  } catch (e) {
+    if (e.code === "ENOENT") return invalid(`${path} does not exist in ${wb.root}`);
+    throw e;
+  }
+  if (size > PROPOSAL_CAP) return invalid(`${path} is ${size} bytes; a proposal is at most ${PROPOSAL_CAP} bytes (16 MiB)`);
+  const bytes = readFileSync4(abs.value);
+  if (bytes.byteLength > PROPOSAL_CAP) return invalid(`${path} grew to ${bytes.byteLength} bytes while it was read; a proposal is at most ${PROPOSAL_CAP} bytes (16 MiB)`);
+  return { ok: true, value: bytes };
+}
+function boundProposal(wb, req) {
+  const bytes = proposalBytes(wb, req.proposal.path);
+  if (!bytes.ok) return bytes;
+  const hash = revisionOf(bytes.value);
+  if (hash !== req.proposal.sha256) return refusal("conflict", "source-changed", `${req.proposal.path} is ${hash}; the request binds ${req.proposal.sha256}`);
+  return bytes;
+}
+function parseProposal(path, bytes) {
+  const parsed = strictParse(bytes, PROPOSAL_CAP);
+  if (!parsed.ok) return invalid(`${path}: ${parsed.reason}: ${parsed.detail}`);
+  const v = validate(PROPOSAL_SCHEMA_ID, parsed.value);
+  if (!v.ok) {
+    if (v.class === "unsupported-format") return refusal("unsupported-format", "unknown-schema", `no schema ${v.schemaId}`);
+    return invalid(`${path}: ${describeErrors(v.errors)}`, v.errors);
+  }
+  return { ok: true, value: parsed.value };
+}
+var TERMINAL_ROWS = ["package-terminal", "record-closure"];
+var ROWS = { package_live: "package-live", package_terminal: "package-terminal", record_live: "record-live", record_closure: "record-closure" };
+var firstSegment = (path) => path.split("/")[0];
+function rangesAndExclusions(p, order2) {
+  const problems = [];
+  for (const id of order2) {
+    const r = p.records[id];
+    if (r.rewrite === null) continue;
+    let end = 0;
+    for (const d of r.rewrite.deletions) {
+      if (d.offset < end) {
+        problems.push(`${r.narrative}: the deletion at ${d.offset} overlaps or precedes the one before it, which ends at ${end}`);
+        break;
+      }
+      end = d.offset + d.length;
+    }
+  }
+  const touched = new Set(order2.flatMap((id) => [firstSegment(p.records[id].narrative), firstSegment(p.records[id].control_path)]));
+  for (const ex of p.exclusions) if (touched.has(ex)) problems.push(`the exclusion ${ex} holds a narrative or control path the plan reads or writes`);
+  return problems.length === 0 ? { ok: true, value: void 0 } : invalid(`${plural(problems.length, "problem")}: ${listed(problems)}`);
+}
+function structural(wb, p, order2) {
+  const problems = [];
+  const narratives = /* @__PURE__ */ new Set();
+  const controls = /* @__PURE__ */ new Set();
+  for (const id of order2) {
+    const r = p.records[id];
+    const at = `records/${id} (${r.narrative})`;
+    const c = r.control;
+    const isPackage = r.kind === "package";
+    const schemaId = SCHEMA_ID_PREFIX + String(c.schema);
+    if (isPackage !== r.row.startsWith("package-") || (isPackage ? schemaId !== PACKAGE_SCHEMA_ID : schemaId !== RECORD_SCHEMA_ID || c.kind !== r.kind)) {
+      problems.push(`${at}: row ${r.row}, kind ${r.kind} and a control of ${String(c.schema)}${isPackage ? "" : ` kind ${String(c.kind)}`} do not agree`);
+    }
+    if (!isObject3(c.narrative) || c.narrative.path !== r.narrative) problems.push(`${at}: the control names the narrative ${JSON.stringify(isObject3(c.narrative) ? c.narrative.path : null)}`);
+    const dir = dirname3(r.narrative);
+    const stem = r.narrative.endsWith(".md") ? r.narrative.slice(dir.length + 1, -".md".length) : null;
+    const pairControl = isPackage ? `${dir}/package.json` : stem === null ? null : `${dir}/${stem}.record.json`;
+    if (dir === "." || pairControl !== r.control_path) problems.push(`${at}: the control path is ${r.control_path}; the pair's is ${pairControl ?? "none, the narrative is no .md file"}`);
+    for (const path of [r.narrative, r.control_path]) {
+      const inside = resolveInside(wb, path);
+      if (!inside.ok) problems.push(`${at}: ${inside.error.detail}`);
+      else if (archived(wb, path)) problems.push(`${at}: ${path} lies in ${ARCHIVE_DIR}/, which the migration never converts`);
+    }
+    const backup = originalPath(p.migration_id, r.narrative);
+    if (r.backup !== backup) problems.push(`${at}: the backup is ${r.backup}; this migration's is ${backup}`);
+    const named = isObject3(c.provenance) ? c.provenance.backup : void 0;
+    if (!isObject3(named) || named.path !== backup || named.sha256 !== r.source_sha256) problems.push(`${at}: provenance.backup does not name ${backup} at the source sha256`);
+    const source = isObject3(c.provenance) ? c.provenance.source : void 0;
+    const terminal = TERMINAL_ROWS.includes(r.row);
+    if (source !== (terminal ? "legacy-terminal" : "imported")) problems.push(`${at}: a ${r.row} row carries provenance.source ${JSON.stringify(source)}`);
+    if (terminal && r.rewrite !== null) problems.push(`${at}: a ${r.row} row stays byte-identical and carries a rewrite`);
+    if (narratives.has(r.narrative)) problems.push(`${at}: the narrative is named by another record`);
+    if (controls.has(r.control_path)) problems.push(`${at}: the control path is named by another record`);
+    narratives.add(r.narrative);
+    controls.add(r.control_path);
+  }
+  for (const [count, row] of Object.entries(ROWS)) {
+    const n = order2.filter((id) => p.records[id]?.row === row).length;
+    if (p.counts[count] !== n) problems.push(`counts.${count} is ${String(p.counts[count])}; the records hold ${n} ${row} rows`);
+  }
+  return problems.length === 0 ? { ok: true, value: void 0 } : invalid(`${plural(problems.length, "problem")}: ${listed(problems)}`);
+}
+function uniqueIds(p, order2) {
+  const twice = [];
+  if (p.records[p.workbench_id] !== void 0) twice.push(`${p.workbench_id} is the workbench id and a record's`);
+  for (const id of order2) {
+    const c = p.records[id].control;
+    if (c.id !== id) twice.push(`the record keyed ${id} carries the id ${String(c.id)}`);
+    if (c.workbench_id !== p.workbench_id) twice.push(`the record ${id} carries workbench_id ${String(c.workbench_id)}, the proposal ${p.workbench_id}`);
+  }
+  return twice.length === 0 ? { ok: true, value: void 0 } : refusal("schema-invalid", "duplicate-id", listed(twice));
+}
+function closure(p, order2, sitesOf) {
+  const open = [];
+  for (const id of order2) {
+    const r = p.records[id];
+    for (const site of sitesOf({ kind: r.kind, control: r.control })) {
+      const v = site.value;
+      if (!isObject3(v) || typeof v.record_id !== "string") continue;
+      if (v.workbench_id !== p.workbench_id || p.records[v.record_id] === void 0) open.push(`${r.narrative} ${site.at} names ${v.record_id}`);
+    }
+  }
+  return open.length === 0 ? { ok: true, value: void 0 } : refusal("unresolved-reference", "closure-incomplete", `${plural(open.length, "record reference")} name no proposed record: ${listed(open)}`);
+}
+var afterHash = (r) => r.rewrite?.after_sha256 ?? r.source_sha256;
+function acceptances(p, order2) {
+  const wrong = [];
+  for (const id of order2) {
+    const r = p.records[id];
+    const control = r.control.control;
+    const acceptance = isObject3(control) ? control.acceptance : null;
+    if (!isObject3(acceptance)) continue;
+    const ref = acceptance.ref;
+    const pkg = isObject3(ref) && typeof ref.record_id === "string" ? p.records[ref.record_id] : void 0;
+    if (pkg === void 0 || pkg.kind !== "package") {
+      wrong.push(`${r.narrative}: its acceptance names no proposed package`);
+      continue;
+    }
+    if (acceptance.revision !== afterHash(r)) wrong.push(`${r.narrative}: its acceptance revision is ${String(acceptance.revision)}, the narrative's after-rewrite sha256 ${afterHash(r)}`);
+    const docs = Array.isArray(pkg.control.active_documents) ? pkg.control.active_documents : [];
+    const entry = docs.find((d) => isObject3(d) && isObject3(d.ref) && d.ref.record_id === id);
+    if (!isObject3(entry) || entry.revision !== acceptance.revision) wrong.push(`${r.narrative}: ${pkg.narrative} carries no active-document entry binding it at ${String(acceptance.revision)}`);
+  }
+  return wrong.length === 0 ? { ok: true, value: void 0 } : invalid(`${plural(wrong.length, "acceptance")} do not match: ${listed(wrong)}`);
+}
+function sources(p, order2, taken) {
+  const changed = [];
+  for (const id of order2) {
+    const r = p.records[id];
+    const e = taken.get(r.narrative);
+    if (e === void 0) changed.push(`${r.narrative} does not exist`);
+    else if (e.kind !== "file") changed.push(`${r.narrative} is a ${e.kind}, not a file`);
+    else if (e.sha256 !== r.source_sha256) changed.push(`${r.narrative} is ${e.sha256}, the proposal names ${r.source_sha256}`);
+  }
+  return changed.length === 0 ? { ok: true, value: void 0 } : refusal("conflict", "source-changed", `${plural(changed.length, "narrative")} not as the proposal read them: ${listed(changed)}`);
+}
+function applyDeletions(source, deletions) {
+  const kept = [];
+  let at = 0;
+  for (const d of deletions) {
+    if (d.offset < at) return { ok: false, why: `the range at ${d.offset} does not ascend past ${at}` };
+    if (d.offset + d.length > source.byteLength) return { ok: false, why: `the range ${d.offset}+${d.length} passes the ${source.byteLength} source bytes` };
+    kept.push(source.subarray(at, d.offset));
+    at = d.offset + d.length;
+  }
+  kept.push(source.subarray(at));
+  return { ok: true, bytes: Buffer.concat(kept) };
+}
+function rewrites(wb, p, order2) {
+  const wrong = [];
+  for (const id of order2) {
+    const r = p.records[id];
+    if (r.rewrite === null) continue;
+    const bytes = readFileSync4(join4(wb.root, r.narrative));
+    if (revisionOf(bytes) !== r.source_sha256) return refusal("conflict", "source-changed", `${r.narrative} changed while plan read it`);
+    const out = applyDeletions(bytes, r.rewrite.deletions);
+    if (!out.ok) wrong.push(`${r.narrative}: ${out.why}`);
+    else if (revisionOf(out.bytes) !== r.rewrite.after_sha256) wrong.push(`${r.narrative}: the deletions give ${revisionOf(out.bytes)}, the rewrite names ${r.rewrite.after_sha256}`);
+  }
+  return wrong.length === 0 ? { ok: true, value: void 0 } : invalid(`${plural(wrong.length, "rewrite")} do not apply: ${listed(wrong)}`);
+}
+function pairWrites(r) {
+  const control = Buffer.from(serialise(r.control), "utf-8");
+  const rest = [{ kind: "control", path: r.control_path, source_sha256: null, after_sha256: revisionOf(control), control: r.control }];
+  if (r.rewrite !== null) rest.push({ kind: "rewrite", path: r.narrative, source_sha256: r.source_sha256, after_sha256: r.rewrite.after_sha256, deletions: r.rewrite.deletions });
+  return { original: { kind: "original", path: r.backup, from: r.narrative, source_sha256: null, after_sha256: r.source_sha256 }, rest };
+}
+var chunkFile = (migrationId, n, pairs) => ({
+  schema: PLAN_SCHEMA,
+  part: "chunk",
+  migration_id: migrationId,
+  chunk: n,
+  writes: [...pairs.map((p) => p.original), ...pairs.flatMap((p) => p.rest)]
+});
+var writesOf = (pair) => 1 + pair.rest.length;
+function contribution(text, depth) {
+  const lines = text.split("\n").length;
+  return Buffer.byteLength(text, "utf-8") + lines * 2 * depth + 2;
+}
+function cut(migrationId, pairs) {
+  const out = [];
+  let current2 = [];
+  let writes = 0;
+  let weight = 0;
+  const close = () => {
+    if (current2.length === 0) return;
+    const file = chunkFile(migrationId, out.length + 1, current2);
+    out.push({ file, bytes: Buffer.from(serialise(file), "utf-8"), writes });
+    current2 = [];
+    writes = 0;
+    weight = 0;
+  };
+  for (const pair of pairs) {
+    const w = [pair.original, ...pair.rest].reduce((n, x) => n + contribution(JSON.stringify(x, null, 2), 2), 0);
+    if (current2.length > 0 && (writes + writesOf(pair) > CHUNK_WRITES || weight + w > MAX_RECORD_BYTES - PART_MARGIN)) close();
+    current2.push(pair);
+    writes += writesOf(pair);
+    weight += w;
+  }
+  close();
+  return out;
+}
+function split(items, size, frame) {
+  const groups = [[]];
+  let weight = 0;
+  for (const item of items) {
+    const w = size(item);
+    const last = groups[groups.length - 1];
+    if (last.length > 0 && weight + w > MAX_RECORD_BYTES - PART_MARGIN) {
+      groups.push([item]);
+      weight = w;
+    } else {
+      last.push(item);
+      weight += w;
+    }
+  }
+  return groups.map((g, i) => {
+    const file = frame(i + 1, g);
+    return { file, bytes: Buffer.from(serialise(file), "utf-8") };
+  });
+}
+function secondRun(wb, req, manifest) {
+  const bytes = boundProposal(wb, req);
+  if (!bytes.ok) return bytes;
+  const parsed = strictParse(bytes.value, PROPOSAL_CAP);
+  const proposed = parsed.ok && isObject3(parsed.value) && typeof parsed.value.migration_id === "string" ? parsed.value.migration_id : null;
+  const migration2 = manifest.migration;
+  if (!isObject3(migration2) || proposed === null || migration2.id !== proposed) {
+    return refusal("conflict", "manifest-present", `${wb.root} holds ${WORKBENCH_MANIFEST} and is under JSON control; ${isObject3(migration2) ? `it was migrated by ${String(migration2.id)}, not by ${proposed ?? "this proposal"}` : "it was never migrated, and a migration never replaces a manifest"}`);
+  }
+  const unverified = (why) => refusal("migration-incomplete", "receipt-unverified", `the receipt ${String(migration2.receipt)} of ${proposed} does not hold: ${why}; a manifest merely naming a receipt is no verified no-op`);
+  const fileAt = (path) => {
+    const abs = resolveInside(wb, path);
+    if (!abs.ok) return null;
+    try {
+      return lstatSync2(abs.value).isFile() ? readFileSync4(abs.value) : null;
+    } catch {
+      return null;
+    }
+  };
+  const receiptPath = String(migration2.receipt);
+  const receiptBytes = fileAt(receiptPath);
+  if (receiptBytes === null) return unverified("it is not a file in the workbench");
+  const receipt = strictParse(receiptBytes);
+  if (!receipt.ok) return unverified(`${receipt.reason}: ${receipt.detail}`);
+  const v = validate(RECEIPT_SCHEMA_ID, receipt.value);
+  if (!v.ok) return unverified(v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`);
+  const r = receipt.value;
+  if (r.migration_id !== proposed || r.workbench_id !== manifest.id) return unverified(`it names ${r.migration_id} in ${r.workbench_id}`);
+  const manifestRevision = revisionOf(readFileSync4(join4(wb.root, WORKBENCH_MANIFEST)));
+  if (r.manifest_revision !== manifestRevision) return unverified(`it names the manifest at ${r.manifest_revision}, which is ${manifestRevision}`);
+  for (const f of [r.plan, ...r.parts]) {
+    const b = fileAt(f.path);
+    if (b === null) return unverified(`${f.path} is not available`);
+    if (revisionOf(b) !== f.sha256) return unverified(`${f.path} is ${revisionOf(b)}, the receipt names ${f.sha256}`);
+  }
+  const index = strictParse(fileAt(r.plan.path));
+  const schedule = index.ok && isObject3(index.value) && isObject3(index.value.schedule) ? index.value.schedule : {};
+  const scheduled = new Set([schedule.plan, schedule.verify, ...(Array.isArray(schedule.apply) ? schedule.apply : []).map((e) => isObject3(e) ? e.operation_id : null), ...(Array.isArray(schedule.rollback) ? schedule.rollback : []).map((e) => isObject3(e) ? e.operation_id : null)].filter((x) => typeof x === "string"));
+  return {
+    ok: true,
+    value: {
+      writes: [],
+      result: { operation_id: req.operation_id, migration_id: proposed, no_op: true, receipt: { path: receiptPath, sha256: revisionOf(receiptBytes) }, manifest_revision: manifestRevision, later_operations: laterOperations(wb, scheduled) }
+    }
+  };
+}
+function laterOperations(wb, scheduled) {
+  let names = [];
+  try {
+    names = readdirSync4(opsDir(wb));
+  } catch {
+    return [];
+  }
+  const out = [];
+  for (const name of names.filter((n) => !n.startsWith(".") && n.endsWith(".json")).sort(bytewise)) {
+    const id = name.slice(0, -".json".length);
+    if (scheduled.has(id)) continue;
+    const a = readAnswer(wb, id);
+    out.push({ operation_id: id, op: a.ok && a.value !== null ? a.value.op : "unreadable" });
+  }
+  return out;
+}
+function standingPlans(root) {
+  const dir = join4(root, MIGRATIONS_DIR);
+  let ids;
+  try {
+    ids = readdirSync4(dir);
+  } catch {
+    return [];
+  }
+  return ids.filter((id) => ["plan.json", "chunks", "parts"].some((n) => existsSync3(join4(dir, id, n)))).sort(bytewise);
+}
+function scheduleProblems(wb, p, req, chunks, order2) {
+  const ids = p.operation_ids;
+  const problems = [];
+  if (ids.plan !== req.operation_id) problems.push(`operation_ids.plan is ${ids.plan}; this request is ${req.operation_id}`);
+  if (ids.apply.length < chunks) problems.push(`the plan cuts ${plural(chunks, "chunk")} and operation_ids.apply holds ${ids.apply.length}`);
+  if (ids.rollback.length < chunks + 1) problems.push(`rollback chunks 0 to ${chunks} need ${chunks + 1} ids and operation_ids.rollback holds ${ids.rollback.length}`);
+  const all = [ids.plan, ...ids.apply, ids.verify, ...ids.rollback];
+  const seen = /* @__PURE__ */ new Set();
+  const records = /* @__PURE__ */ new Set([p.workbench_id, ...order2]);
+  for (const id of all) {
+    if (seen.has(id)) problems.push(`${id} occurs twice in operation_ids`);
+    if (records.has(id)) problems.push(`${id} is in operation_ids and is a workbench or record UUID`);
+    seen.add(id);
+    if (id !== req.operation_id && (existsSync3(answerPath(wb, id)) || existsSync3(join4(journalDir(wb), id)))) problems.push(`${id} already has a stored answer or an intent in this workbench`);
+  }
+  return problems;
+}
+function migrationPlan(req, sitesOf) {
+  return (ctx) => {
+    const { wb } = ctx;
+    const now = openWorkbench(wb.root);
+    if (!now.ok) return now;
+    if (now.value.state === "unsupported" && now.value.diagnosis !== null) return { ok: false, error: now.value.diagnosis };
+    const held2 = ctx.blocked.filter((b) => b.held !== void 0);
+    if (held2.length > 0) {
+      return refusal("conflict", "intent-pending", `${plural(held2.length, "intent")} pending for ${held2.length === 1 ? "its" : "their"} own request: ${listed(held2.map((b) => `${b.held} ${b.operation_id} in ${STATE_DIR}/${JOURNAL_DIR}/${b.operation_id}`))}; it is finished by that request, never by this one`);
+    }
+    if (now.value.state === "json-control") return secondRun(wb, req, now.value.manifest);
+    const fence = readFence(wb);
+    if (!fence.ok) return refusal("conflict", "maintenance-active", fence.error.detail);
+    if (fence.value !== null) return refusal("conflict", "maintenance-active", `a maintenance fence stands in ${STATE_DIR}/${MAINTENANCE_FILE}, set by operation ${fence.value.operation_id} since ${fence.value.since}; plan freezes nothing under it`);
+    const standing = standingPlans(wb.root);
+    if (standing.length > 0) return refusal("conflict", "migration-planned", `plan files stand for ${standing.join(", ")} under ${MIGRATIONS_DIR}/; one migration is planned at a time, its own plan only by the request that froze it, and rollback chunk 0 removes them`);
+    const bytes = boundProposal(wb, req);
+    if (!bytes.ok) return bytes;
+    const read2 = parseProposal(req.proposal.path, bytes.value);
+    if (!read2.ok) return read2;
+    const p = read2.value;
+    const order2 = Object.keys(p.records).sort((a, b) => bytewise(p.records[a].narrative, p.records[b].narrative));
+    if (order2.length === 0) return invalid(`${req.proposal.path} names no record; a migration converts at least one pair`);
+    const ranges = rangesAndExclusions(p, order2);
+    if (!ranges.ok) return ranges;
+    const shape = structural(wb, p, order2);
+    if (!shape.ok) return shape;
+    const unique = uniqueIds(p, order2);
+    if (!unique.ok) return unique;
+    const present = order2.map((id) => p.records[id].control_path).filter((path) => existsSync3(join4(wb.root, path)));
+    if (present.length > 0) return refusal("conflict", "record-exists", `${plural(present.length, "control file")} the proposal would write stand already: ${listed(present)}`);
+    const blocking = p.findings.filter((f) => f.severity === "blocking");
+    if (blocking.length > 0) {
+      return refusal("migration-incomplete", "blocking-finding", `${plural(blocking.length, "blocking finding")} open; each is resolved by a consented repair before plan: ${listed(blocking.map((f) => `${f.class} in ${f.path}`))}`);
+    }
+    const closed = closure(p, order2, sitesOf);
+    if (!closed.ok) return closed;
+    const accepted = acceptances(p, order2);
+    if (!accepted.ok) return accepted;
+    const own = `${MIGRATIONS_DIR}/${p.migration_id}`;
+    const excluded = new Set(p.exclusions);
+    const taken = inventory(wb.root, (path) => path === STATE_DIR || excluded.has(path) || under(path, own));
+    const byPath = new Map(taken.map((e) => [e.path, e]));
+    const sourced = sources(p, order2, byPath);
+    if (!sourced.ok) return sourced;
+    const rewritten = rewrites(wb, p, order2);
+    if (!rewritten.ok) return rewritten;
+    const chunks = cut(
+      p.migration_id,
+      order2.map((id) => pairWrites(p.records[id]))
+    );
+    const scheduling = scheduleProblems(wb, p, req, chunks.length, order2);
+    if (scheduling.length > 0) return invalid(`the operation-id schedule: ${listed(scheduling)}`);
+    const ids = p.operation_ids;
+    const schedule = {
+      plan: ids.plan,
+      apply: chunks.map((_, i) => ({ chunk: i + 1, operation_id: ids.apply[i] })),
+      verify: ids.verify,
+      rollback: Array.from({ length: chunks.length + 1 }, (_, k) => ({ chunk: k, operation_id: ids.rollback[k] })),
+      unassigned: [...ids.apply.slice(chunks.length), ...ids.rollback.slice(chunks.length + 1)]
+    };
+    const frame = (kind) => (n, extra) => ({ schema: PLAN_SCHEMA, part: kind, migration_id: p.migration_id, n, ...extra });
+    const recordParts = split(
+      order2,
+      (id) => contribution(`"${id}": ${JSON.stringify(recordEntry(p.records[id]), null, 2)}`, 2),
+      (n, group) => frame("records")(n, { ...n === 1 ? { counts: p.counts } : {}, records: Object.fromEntries(group.map((id) => [id, recordEntry(p.records[id])])) })
+    );
+    const inventoryParts = split(taken, (e) => contribution(JSON.stringify(e, null, 2), 2), (n, entries) => frame("inventory")(n, { entries }));
+    const findingParts = split(p.findings, (f) => contribution(JSON.stringify(f, null, 2), 2), (n, findings) => frame("findings")(n, { findings }));
+    const repairParts = split(p.repairs, (r) => contribution(JSON.stringify(r, null, 2), 2), (n, repairs) => frame("repairs")(n, { repairs }));
+    const parts = [
+      ...chunks.map((c, i) => ({ entry: { part: "chunk", n: i + 1, path: chunkPath(p.migration_id, i + 1), sha256: revisionOf(c.bytes), writes: c.writes }, bytes: c.bytes, file: c.file })),
+      ...[
+        ["records", recordParts],
+        ["inventory", inventoryParts],
+        ["findings", findingParts],
+        ["repairs", repairParts]
+      ].flatMap(([kind, list2]) => list2.map((f, i) => ({ entry: { part: kind, n: i + 1, path: partPath(p.migration_id, kind, i + 1), sha256: revisionOf(f.bytes) }, bytes: f.bytes, file: f.file })))
+    ];
+    const index = { schema: PLAN_SCHEMA, part: "index", migration_id: p.migration_id, workbench_id: p.workbench_id, source_layout: p.source_layout, proposal: { path: req.proposal.path, sha256: req.proposal.sha256 }, exclusions: p.exclusions, schedule, parts: parts.map((x) => x.entry) };
+    for (const x of parts) {
+      const v2 = ctx.validateResult(PLAN_SCHEMA_ID, x.file, `the plan file ${String(x.entry.path)} is not valid`);
+      if (!v2.ok) return v2;
+    }
+    const v = ctx.validateResult(PLAN_SCHEMA_ID, index, "the frozen index is not valid");
+    if (!v.ok) return v;
+    const indexBytes = Buffer.from(serialise(index), "utf-8");
+    const writes = [...parts.map((x) => ({ path: String(x.entry.path), bytes: x.bytes })), { path: indexPath(p.migration_id), bytes: indexBytes }];
+    const result = { operation_id: req.operation_id, migration_id: p.migration_id, plan: { path: indexPath(p.migration_id), sha256: revisionOf(indexBytes) }, parts: index.parts, schedule, counts: p.counts };
+    const over = freezeOver(req, writes, result);
+    if (over !== null) return refusal("schema-invalid", "plan-too-large", `the freeze of ${p.migration_id} ${over}; nothing is published, and a multi-request freeze is not built (question 50)`);
+    return { ok: true, value: { writes, result } };
+  };
+}
+var recordEntry = (r) => ({ kind: r.kind, row: r.row, control: r.control_path, narrative: r.narrative });
+function freezeOver(req, writes, result) {
+  const big = writes.filter((w) => w.bytes.byteLength > MAX_RECORD_BYTES);
+  if (big.length > 0) return `holds ${plural(big.length, "file")} over the ${MAX_RECORD_BYTES}-byte cap: ${listed(big.map((w) => `${w.path} (${w.bytes.byteLength} bytes)`))}`;
+  const total = writes.reduce((n, w) => n + w.bytes.byteLength, 0);
+  if (writes.length > FREEZE_MAX_FILES) return `writes ${writes.length} files; one freeze intent holds at most ${FREEZE_MAX_FILES}`;
+  if (total > FREEZE_MAX_BYTES) return `writes ${total} bytes; one freeze intent holds at most ${FREEZE_MAX_BYTES}`;
+  const intent = {
+    operation_id: req.operation_id,
+    op: req.op,
+    request_digest: requestDigest(req),
+    writes: writes.map((w) => ({ path: w.path, before: null, after: revisionOf(w.bytes) })),
+    response: { ok: true, result },
+    created_at: (/* @__PURE__ */ new Date(0)).toISOString()
+  };
+  const intentBytes = Buffer.byteLength(JSON.stringify(intent, null, 2) + "\n", "utf-8");
+  if (intentBytes > MAX_RECORD_BYTES) return `needs an intent.json of ${intentBytes} bytes, over the ${MAX_RECORD_BYTES}-byte cap`;
+  return null;
+}
+
 // src/kernel.ts
-import { readdirSync as readdirSync4, readFileSync as readFileSync4 } from "node:fs";
+import { readdirSync as readdirSync5, readFileSync as readFileSync5 } from "node:fs";
 
 // src/cli/protocol.ts
 var PROTOCOL_SCHEMA_ID = "urn:fusion:schema:fusion.protocol/v1";
@@ -9130,7 +9669,7 @@ var OPERATIONS = [
   "maintenance",
   "migration"
 ];
-var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance"];
+var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"];
 var LANDS_IN = {
   migration: "FJ04"
 };
@@ -9142,9 +9681,9 @@ var isOperation = (op) => typeof op === "string" && OPERATIONS.includes(op);
 
 // src/kernel.ts
 var CutReached = class extends Error {
-  constructor(cut) {
-    super(`fault injection: the operation was cut at ${cut}`);
-    this.cut = cut;
+  constructor(cut2) {
+    super(`fault injection: the operation was cut at ${cut2}`);
+    this.cut = cut2;
     this.name = "CutReached";
   }
 };
@@ -9153,7 +9692,19 @@ var blockedOf = (p, diverged) => ({
   paths: p.intent.writes.map((w) => w.path),
   diverged: diverged.map((w) => w.path)
 });
+var heldOf = (p) => ({ operation_id: p.intent.operation_id, paths: p.intent.writes.map((w) => w.path), diverged: [], held: p.intent.op });
+function isHeld(p, req) {
+  if (req !== null && p.intent.operation_id === req.operation_id) return false;
+  return p.intent.op === "migration" || req?.op === "migration" && p.intent.op === "initialize";
+}
 function recoveryBlocked(b) {
+  if (b.held !== void 0) {
+    return {
+      class: "operation-unknown",
+      reason: "migration-pending",
+      detail: `operation ${b.operation_id} (${b.held}) is pending in .json-state/journal/${b.operation_id}, and only its own request finishes it; until then the files it names (${b.paths.join(", ")}) are not answered as fact`
+    };
+  }
   const files = b.diverged.join(", ");
   const verb = b.diverged.length === 1 ? "is" : "are";
   return {
@@ -9192,6 +9743,10 @@ async function mutate(wb, req, plan, options = {}, admits = JSON_CONTROL_ONLY) {
     if (!pending.ok) return refuse2(pending.error);
     const blocked = [];
     for (const p of pending.value) {
+      if (isHeld(p, req)) {
+        blocked.push(heldOf(p));
+        continue;
+      }
       const r = recover(wb, p);
       if (!r.landed) blocked.push(blockedOf(p, r.blocked));
     }
@@ -9205,7 +9760,7 @@ async function mutate(wb, req, plan, options = {}, admits = JSON_CONTROL_ONLY) {
     if (!replay.ok) return refuse2(replay.error);
     if (replay.value !== null) return replay.value;
     const fence = readFence(wb);
-    const fenced = fenceRefusal(req, fence);
+    const fenced = req.op === "migration" ? null : fenceRefusal(req, fence);
     if (fenced !== null) return refuse2(fenced);
     const planned = await plan(planContext(wb, blocked, fence.ok ? fence.value : null));
     if (!planned.ok) return refuse2(planned.error);
@@ -9267,7 +9822,7 @@ function fenceRefusal(req, fence) {
 var reused = (id) => fail("conflict", "operation-id-reused", `operation_id ${id} was already used for a different request`);
 function hashOrNull(abs) {
   try {
-    return revisionOf(readFileSync4(abs));
+    return revisionOf(readFileSync5(abs));
   } catch (e) {
     if (e.code === "ENOENT") return null;
     throw e;
@@ -9303,7 +9858,7 @@ function readContext(wb, blocked) {
       for (const path of controlFiles(wb, wb.root)) {
         const abs = resolveInside(wb, path);
         if (!abs.ok) continue;
-        const parsed = strictParse(readFileSync4(abs.value));
+        const parsed = strictParse(readFileSync5(abs.value));
         if (parsed.ok && parsed.value.id === id) hits.push(path);
       }
       if (hits.length === 0) return no("unresolved-reference", "record-not-found", `no control file in ${wb.root} carries the id ${id}`);
@@ -9321,9 +9876,23 @@ function readContext(wb, blocked) {
   };
 }
 var NO_VIEW = { blocked: [], blockedOn: () => void 0 };
+function heldView(wb) {
+  const held2 = [];
+  let ids;
+  try {
+    ids = pendingIds(wb);
+  } catch {
+    return NO_VIEW;
+  }
+  for (const id of ids) {
+    const r = readIntent(wb, id);
+    if (r.ok && r.value !== null && isHeld(r.value, null)) held2.push(heldOf(r.value));
+  }
+  return held2.length === 0 ? NO_VIEW : { blocked: held2, blockedOn: (path) => blockedOn(held2, path) };
+}
 function answeredIds(wb) {
   try {
-    return readdirSync4(opsDir(wb)).filter((n) => !n.startsWith(".") && n.endsWith(".json")).map((n) => n.slice(0, -".json".length));
+    return readdirSync5(opsDir(wb)).filter((n) => !n.startsWith(".") && n.endsWith(".json")).map((n) => n.slice(0, -".json".length));
   } catch (e) {
     if (e.code === "ENOENT") return [];
     throw e;
@@ -9344,6 +9913,10 @@ function classify(wb, ids) {
       if (!r.ok) return { kind: "unreadable", error: r.error };
       continue;
     }
+    if (isHeld(r.value, null)) {
+      blocked.push(heldOf(r.value));
+      continue;
+    }
     const b = blockedIntent(wb, r.value);
     if (b === null) return { kind: "live" };
     blocked.push(b);
@@ -9357,14 +9930,14 @@ async function recoverUnderLock(wb, options) {
     sweep(wb);
     const pending = readIntents(wb);
     if (!pending.ok) return pending;
-    for (const p of pending.value) recover(wb, p);
+    for (const p of pending.value) if (!isHeld(p, null)) recover(wb, p);
     return ok(void 0);
   } finally {
     releaseLock(lock.value);
   }
 }
 async function read(wb, body, options = {}) {
-  if (wb.state !== "json-control") return ok(await body(NO_VIEW));
+  if (wb.state !== "json-control") return ok(await body(heldView(wb)));
   const now = options.now ?? Date.now;
   const waitMs = options.waitMs ?? LOCK_STALE_MS + 5e3;
   const started = now();
@@ -9389,12 +9962,12 @@ async function read(wb, body, options = {}) {
 }
 
 // src/transitions.ts
-import { readFileSync as readFileSync5 } from "node:fs";
+import { readFileSync as readFileSync6 } from "node:fs";
 import { fileURLToPath as fileURLToPath2 } from "node:url";
 var CONTRACT_DIR = fileURLToPath2(new URL("../contract/", import.meta.url));
 function readTable(file) {
   const abs = CONTRACT_DIR + file;
-  const parsed = strictParse(readFileSync5(abs));
+  const parsed = strictParse(readFileSync6(abs));
   if (!parsed.ok) throw new Error(`${abs}: ${parsed.reason}: ${parsed.detail}`);
   return parsed.value;
 }
@@ -9408,7 +9981,7 @@ function useTables(t, d) {
 }
 var kinds = () => Object.keys(transitions().kinds);
 var refuse3 = (cls, reason) => ({ ok: false, class: cls, reason });
-var isObject3 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+var isObject4 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
 function allowed(kind, from, to, payload = {}) {
   const table = transitions().kinds[kind];
   if (table === void 0) return refuse3("schema-invalid", `unknown kind "${kind}"; the table controls ${kinds().join(", ")}`);
@@ -9432,7 +10005,7 @@ function allowed(kind, from, to, payload = {}) {
 }
 function packageRules(table, to, payload) {
   const claimRule = table.claim?.[to];
-  const hasClaim = isObject3(payload.claim);
+  const hasClaim = isObject4(payload.claim);
   if (claimRule === "required" && !hasClaim) return refuse3("schema-invalid", `package: ${to} requires a claim`);
   if (claimRule === "forbidden" && payload.claim != null) return refuse3("schema-invalid", `package: ${to} carries no claim`);
   const terminal = table.terminal.includes(to);
@@ -9441,7 +10014,7 @@ function packageRules(table, to, payload) {
     if (outcome !== null) return refuse3("schema-invalid", `package: outcome is null while ${to}`);
     return { ok: true };
   }
-  if (!isObject3(outcome)) return refuse3("schema-invalid", `package: ${to} requires an outcome`);
+  if (!isObject4(outcome)) return refuse3("schema-invalid", `package: ${to} requires an outcome`);
   const classes = table.outcome_classes?.[to] ?? [];
   if (!classes.includes(outcome.class)) {
     return refuse3("schema-invalid", `package: ${to} admits the outcome classes ${classes.join(", ")}, not "${outcome.class}"`);
@@ -9450,7 +10023,7 @@ function packageRules(table, to, payload) {
 }
 function issueRules(table, to, payload) {
   const terminal = table.terminal.includes(to);
-  const hasDisposition = isObject3(payload.disposition);
+  const hasDisposition = isObject4(payload.disposition);
   if (terminal && !hasDisposition) return refuse3("schema-invalid", `issue: ${to} requires a disposition`);
   if (!terminal && payload.disposition != null) return refuse3("schema-invalid", `issue: disposition is null while ${to}`);
   return { ok: true };
@@ -9576,6 +10149,8 @@ async function dispatch(request, options = {}) {
       return readable(wb) ?? reading(wb, (view) => reconcile(wb, req, view), kernel);
     case "maintenance":
       return mutate(wb, req, maintenancePlan(req, kernel), kernel);
+    case "migration":
+      return migration(wb, req, kernel);
     default:
       return notImplemented(req.op);
   }
@@ -9616,7 +10191,7 @@ function inspect(wb) {
 var NAMED_ENTRIES = 5;
 var isDirectoryEntry = (path) => {
   try {
-    return lstatSync2(path).isDirectory();
+    return lstatSync3(path).isDirectory();
   } catch (e) {
     if (e.code === "ENOENT") return null;
     throw e;
@@ -9624,7 +10199,7 @@ var isDirectoryEntry = (path) => {
 };
 var namesIn = (dir) => {
   try {
-    return readdirSync5(dir);
+    return readdirSync6(dir);
   } catch (e) {
     if (e.code === "ENOENT") return [];
     throw e;
@@ -9633,7 +10208,7 @@ var namesIn = (dir) => {
 function initialContent(root) {
   const found = [];
   for (const name of namesIn(root)) {
-    const state = join4(root, name);
+    const state = join5(root, name);
     if (name !== STATE_DIR || isDirectoryEntry(state) !== true) {
       found.push(name);
       continue;
@@ -9641,10 +10216,10 @@ function initialContent(root) {
     for (const inner of namesIn(state)) {
       const rel = `${STATE_DIR}/${inner}`;
       if (inner === JOURNAL_DIR || inner === OPS_DIR) {
-        const isDir = isDirectoryEntry(join4(state, inner));
+        const isDir = isDirectoryEntry(join5(state, inner));
         if (isDir === false) found.push(rel);
         else if (isDir === true) {
-          for (const n of namesIn(join4(state, inner))) if (!n.startsWith(".")) found.push(`${rel}/${n}`);
+          for (const n of namesIn(join5(state, inner))) if (!n.startsWith(".")) found.push(`${rel}/${n}`);
         }
       } else if (!lockProtocolOwns(state, inner)) {
         found.push(rel);
@@ -9664,14 +10239,14 @@ function contentRefusal(root, entries) {
 var INITIAL_FEATURES = ["json-control-v1"];
 var unlistable = (root, name) => {
   try {
-    return !statSync3(join4(root, STATE_DIR, name)).isDirectory();
+    return !statSync3(join5(root, STATE_DIR, name)).isDirectory();
   } catch (e) {
     if (e.code === "ENOENT") return false;
     throw e;
   }
 };
 async function initialize(wb, req, options) {
-  const stateDir = () => isDirectoryEntry(join4(wb.root, STATE_DIR)) === true;
+  const stateDir = () => isDirectoryEntry(join5(wb.root, STATE_DIR)) === true;
   const precheck = () => !stateDir() || unlistable(wb.root, JOURNAL_DIR) || unlistable(wb.root, OPS_DIR);
   if (precheck()) {
     const refused2 = contentRefusal(wb.root, initialContent(wb.root));
@@ -9703,30 +10278,30 @@ function initializePlan(req) {
 function pendingInitialize(wb) {
   const journal = `${STATE_DIR}/${JOURNAL_DIR}`;
   const dirOf = (id) => `${journal}/${id}`;
-  const refusal2 = (what) => ({
+  const refusal3 = (what) => ({
     ok: false,
     error: { class: "operation-unknown", reason: "pending-initialize-unreadable", detail: `${what}; inspect cannot say whether an initialize is pending, so the intent is to be read and corrected by hand` }
   });
-  const unreadable = (id, why) => refusal2(`${dirOf(id)}: ${why}`);
-  const listed = () => {
+  const unreadable = (id, why) => refusal3(`${dirOf(id)}: ${why}`);
+  const listed2 = () => {
     try {
       return { ok: true, value: pendingIds(wb) };
     } catch (e) {
       const code = e.code ?? "an error without a code";
-      return refusal2(`${journal}: the journal cannot be listed (${code})`);
+      return refusal3(`${journal}: the journal cannot be listed (${code})`);
     }
   };
-  const ids = listed();
+  const ids = listed2();
   if (!ids.ok) return ids;
   const found = [];
   for (const name of ids.value) {
     const r = readIntent(wb, name);
     if (!r.ok || r.value === null) {
-      const again = listed();
+      const again = listed2();
       if (!again.ok) return again;
       if (!again.value.includes(name)) continue;
     }
-    if (!r.ok) return refusal2(r.error.detail);
+    if (!r.ok) return refusal3(r.error.detail);
     if (r.value === null) continue;
     const { intent, contents } = r.value;
     if (intent.op !== "initialize") continue;
@@ -9764,6 +10339,16 @@ function maintenancePlan(req, options) {
     }
     return { ok: true, value: { writes: [], result: { operation_id: req.operation_id, action: "end", since: ctx.fence.since }, fence: null } };
   };
+}
+function migration(wb, req, kernel) {
+  switch (req.phase) {
+    case "survey":
+      return readable(wb) ?? survey(wb);
+    case "plan":
+      return mutate(wb, req, migrationPlan(req, (pair) => referenceSites(pair)), kernel, EVERY_STATE);
+    default:
+      return fail("operation-unknown", "not-implemented", `migration ${req.phase} is specified (FJ04 contract delta, request 45) and lands in ${LANDS_IN.migration ?? "a later package"} step 6; survey and plan are answered`);
+  }
 }
 var stateOf = (pair) => pair.kind === "package" ? pair.control.status : pair.control.control?.state ?? null;
 function scopeDir(wb, scope) {
@@ -9853,16 +10438,16 @@ function repeatedIds(entries) {
   const seen = /* @__PURE__ */ new Set();
   const twice = /* @__PURE__ */ new Set();
   for (const e of entries) {
-    if (!isObject4(e) || typeof e.id !== "string") continue;
+    if (!isObject5(e) || typeof e.id !== "string") continue;
     if (seen.has(e.id)) twice.add(e.id);
     seen.add(e.id);
   }
   return [...twice];
 }
-function uniqueIds(noun, field2, entries, where) {
+function uniqueIds2(noun, field2, entries, where) {
   const twice = repeatedIds(entries);
   if (twice.length === 0) return { ok: true, value: void 0 };
-  return refusal("schema-invalid", `duplicate-${noun}-id`, `${where} ${field2}: the id ${twice.join(", ")} appears more than once; a ${noun} is updated by its id, which must name one entry`);
+  return refusal2("schema-invalid", `duplicate-${noun}-id`, `${where} ${field2}: the id ${twice.join(", ")} appears more than once; a ${noun} is updated by its id, which must name one entry`);
 }
 var COMMON_SCHEMA_ID = "urn:fusion:schema:fusion.common/v1";
 var STORE_OF = { package: "work-packages", issue: "issues", plan: "plans", discussion: "discussions", decision: "decisions" };
@@ -9876,7 +10461,7 @@ var INITIAL_CONTROL = {
     fixed: { state: "open", answer_ref: null, implementation_ref: null, superseded_by: null, deferral: null }
   }
 };
-var refusal = (cls, reason, detail) => ({ ok: false, error: { class: cls, reason, detail } });
+var refusal2 = (cls, reason, detail) => ({ ok: false, error: { class: cls, reason, detail } });
 function markerlessName() {
   const doc = schemas().document(COMMON_SCHEMA_ID);
   const pattern = doc?.$defs?.["legacy_markerless_citation"]?.pattern;
@@ -9886,15 +10471,15 @@ function markerlessName() {
 function fileHash(wb, path) {
   const abs = resolveInside(wb, path);
   if (!abs.ok) return abs;
-  if (!existsSync3(abs.value)) return { ok: true, value: null };
-  if (!statSync3(abs.value).isFile()) return refusal("unknown-scope", "not-a-file", `${path} is a directory in ${wb.root}`);
-  return { ok: true, value: revisionOf(readFileSync6(abs.value)) };
+  if (!existsSync4(abs.value)) return { ok: true, value: null };
+  if (!statSync3(abs.value).isFile()) return refusal2("unknown-scope", "not-a-file", `${path} is a directory in ${wb.root}`);
+  return { ok: true, value: revisionOf(readFileSync7(abs.value)) };
 }
 function pairPaths(ctx, req) {
   const { kind, scope } = req;
   const narrative = req.narrative.path;
   const store = STORE_OF[kind];
-  const mismatch = (why) => refusal("unknown-scope", "store-kind-mismatch", `create ${kind}: ${why}`);
+  const mismatch = (why) => refusal2("unknown-scope", "store-kind-mismatch", `create ${kind}: ${why}`);
   if (scope.store !== store) return mismatch(`a ${kind} is filed in ${store}/; the scope names ${scope.store}/`);
   const slash = narrative.lastIndexOf("/");
   const dir = narrative.slice(0, Math.max(slash, 0));
@@ -9912,28 +10497,28 @@ function pairPaths(ctx, req) {
       const holder = `${scope.container}/package.json`;
       const pkg = ctx.readPair(holder);
       if (!pkg.ok && pkg.error.reason !== "record-not-found") return pkg;
-      if (!pkg.ok || pkg.value.kind !== "package") return refusal("unknown-scope", "container-missing", `${scope.container} is not a package directory: ${holder} ${pkg.ok ? `is a ${pkg.value.kind} record` : "does not exist"}`);
+      if (!pkg.ok || pkg.value.kind !== "package") return refusal2("unknown-scope", "container-missing", `${scope.container} is not a package directory: ${holder} ${pkg.ok ? `is a ${pkg.value.kind} record` : "does not exist"}`);
     }
     control = `${dir}/${stem}.record.json`;
   }
   if (!markerlessName().test(name)) {
-    return refusal("schema-invalid", "narrative-name", `${name} is not a marker-free name (YYMMDD-HHMM-<topic>.md, no underscore): a new record carries its state in JSON, never in its file name`);
+    return refusal2("schema-invalid", "narrative-name", `${name} is not a marker-free name (YYMMDD-HHMM-<topic>.md, no underscore): a new record carries its state in JSON, never in its file name`);
   }
   return { ok: true, value: { control, narrative } };
 }
 function checkOrigin(ctx, origin) {
-  if (origin.kind === "legacy-unknown") return refusal("schema-invalid", "origin-legacy-on-create", "legacy-unknown is kept by an import that could not recover the origin; a record created now names its own");
+  if (origin.kind === "legacy-unknown") return refusal2("schema-invalid", "origin-legacy-on-create", "legacy-unknown is kept by an import that could not recover the origin; a record created now names its own");
   if (origin.kind === "user-request") {
-    return origin.ref === null ? { ok: true, value: void 0 } : refusal("schema-invalid", "origin-ref-not-admitted", "a user-request origin carries ref null: the user's request is the mandate, no record is");
+    return origin.ref === null ? { ok: true, value: void 0 } : refusal2("schema-invalid", "origin-ref-not-admitted", "a user-request origin carries ref null: the user's request is the mandate, no record is");
   }
-  if (origin.ref === null) return refusal("schema-invalid", "origin-ref-required", `a ${origin.kind} origin names the package whose scope the new record decomposes; its ref is null`);
+  if (origin.ref === null) return refusal2("schema-invalid", "origin-ref-required", `a ${origin.kind} origin names the package whose scope the new record decomposes; its ref is null`);
   const hit = resolveRecordRef(ctx, origin.ref);
   if (!hit.ok) return hit;
   const pair = ctx.readPair(hit.value.path);
   if (!pair.ok) return pair;
   if (pair.value.kind !== "package") {
     const campaign = origin.kind === "campaign" ? " (campaign records are not addressable in FJ02, so a campaign origin resolves against packages only)" : "";
-    return refusal("unresolved-reference", "not-a-package", `the ${origin.kind} origin ${origin.ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; an origin resolves to a package${campaign}`);
+    return refusal2("unresolved-reference", "not-a-package", `the ${origin.kind} origin ${origin.ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; an origin resolves to a package${campaign}`);
   }
   return { ok: true, value: void 0 };
 }
@@ -9944,7 +10529,7 @@ function newRecord(ctx, req) {
   const extra = Object.keys(payload).filter((k) => !admitted.includes(k));
   if (extra.length > 0) {
     const whose = req.kind === "package" ? "the rest of a new package (status open, no claim, mode ordinary) is the kernel's" : `a ${req.kind} payload is its control object`;
-    return refusal("schema-invalid", "payload-field-not-admitted", `a ${req.kind} payload admits ${admitted.join(", ")}; it carries ${extra.join(", ")}, and ${whose}`);
+    return refusal2("schema-invalid", "payload-field-not-admitted", `a ${req.kind} payload admits ${admitted.join(", ")}; it carries ${extra.join(", ")}, and ${whose}`);
   }
   const common = {
     id: req.id,
@@ -9956,7 +10541,7 @@ function newRecord(ctx, req) {
   };
   if (req.kind === "package") {
     if (payload.domain === void 0 || payload.domain === null) {
-      return refusal("schema-invalid", "domain-required", "a package payload carries its domain; null is kept only for a package imported without one");
+      return refusal2("schema-invalid", "domain-required", "a package payload carries its domain; null is kept only for a package imported without one");
     }
     const next2 = {
       schema: schemaField(PACKAGE_SCHEMA_ID),
@@ -9978,11 +10563,11 @@ function newRecord(ctx, req) {
   const off = Object.keys(fixed).filter((k) => payload[k] !== fixed[k]);
   if (off.length > 0) {
     const sets = off.map((k) => `${k} ${k in payload ? JSON.stringify(payload[k]) : "absent"}`).join(", ");
-    return refusal("schema-invalid", "not-initial-state", `a new ${req.kind} record starts at ${JSON.stringify(fixed)}; the payload has ${sets}`);
+    return refusal2("schema-invalid", "not-initial-state", `a new ${req.kind} record starts at ${JSON.stringify(fixed)}; the payload has ${sets}`);
   }
   if (req.kind === "plan") {
     for (const { field: field2, noun } of PROGRESS) {
-      const unique = uniqueIds(noun, field2, payload[field2], "the new plan's");
+      const unique = uniqueIds2(noun, field2, payload[field2], "the new plan's");
       if (!unique.ok) return unique;
     }
   }
@@ -10006,25 +10591,25 @@ function createPlan(req) {
     const { control, narrative } = paths.value;
     const stored = fileHash(ctx.wb, control);
     if (!stored.ok) return stored;
-    if (stored.value !== null) return refusal("conflict", "record-exists", `${control} exists; create never replaces a record`);
+    if (stored.value !== null) return refusal2("conflict", "record-exists", `${control} exists; create never replaces a record`);
     const writes = [];
     let narrativeHash;
     const content = req.narrative.content;
     const standing = fileHash(ctx.wb, narrative);
     if (!standing.ok) return standing;
     if (content !== void 0) {
-      if (standing.value !== null) return refusal("conflict", "narrative-exists", `${narrative} exists; with narrative.content create writes both halves of a new pair and never replaces a narrative`);
+      if (standing.value !== null) return refusal2("conflict", "narrative-exists", `${narrative} exists; with narrative.content create writes both halves of a new pair and never replaces a narrative`);
       const bytes2 = Buffer.from(content, "utf-8");
-      if (bytes2.toString("utf-8") !== content) return refusal("schema-invalid", "narrative-not-utf8", "narrative.content holds a lone surrogate, which has no UTF-8 encoding");
+      if (bytes2.toString("utf-8") !== content) return refusal2("schema-invalid", "narrative-not-utf8", "narrative.content holds a lone surrogate, which has no UTF-8 encoding");
       writes.push({ path: narrative, bytes: bytes2 });
       narrativeHash = revisionOf(bytes2);
     } else {
-      if (standing.value === null) return refusal("unresolved-reference", "narrative-missing", `${narrative} does not exist; without narrative.content create requires it`);
+      if (standing.value === null) return refusal2("unresolved-reference", "narrative-missing", `${narrative} does not exist; without narrative.content create requires it`);
       narrativeHash = standing.value;
     }
     const taken = ctx.resolveRecordId(req.id);
-    if (taken.ok) return refusal("conflict", "id-in-use", `the id ${req.id} is carried by ${taken.value.path}`);
-    if (taken.error.reason !== "record-not-found") return refusal("conflict", "id-in-use", taken.error.detail);
+    if (taken.ok) return refusal2("conflict", "id-in-use", `the id ${req.id} is carried by ${taken.value.path}`);
+    if (taken.error.reason !== "record-not-found") return refusal2("conflict", "id-in-use", taken.error.detail);
     const origin = checkOrigin(ctx, req.origin);
     if (!origin.ok) return origin;
     const built = newRecord(ctx, req);
@@ -10049,7 +10634,7 @@ function nextCorrection(wb, dir, basename2) {
   const abs = resolveInside(wb, dir);
   if (!abs.ok) return abs;
   let highest = 1;
-  for (const entry of readdirSync5(abs.value)) {
+  for (const entry of readdirSync6(abs.value)) {
     const name = evidenceName(`${dir}/${entry}`);
     if (name !== null && name.basename === basename2 && name.correction !== null) highest = Math.max(highest, name.correction);
   }
@@ -10061,28 +10646,28 @@ function createEvidencePlan(req) {
     const report = payload.report;
     const outside = archivedTarget(ctx.wb, [req.scope.container, report.path]);
     if (!outside.ok) return outside;
-    if (payload.id !== req.id) return refusal("schema-invalid", "id-mismatch", `the envelope's id is ${req.id}; the payload's is ${payload.id}`);
+    if (payload.id !== req.id) return refusal2("schema-invalid", "id-mismatch", `the envelope's id is ${req.id}; the payload's is ${payload.id}`);
     if (payload.workbench_id !== ctx.wb.id) {
-      return refusal("unknown-scope", "foreign-workbench-id", `the payload carries workbench_id ${payload.workbench_id}; this workbench is ${String(ctx.wb.id)}`);
+      return refusal2("unknown-scope", "foreign-workbench-id", `the payload carries workbench_id ${payload.workbench_id}; this workbench is ${String(ctx.wb.id)}`);
     }
     const { container } = req.scope;
     const dir = `${container ?? "shared"}/${REVIEWS_STORE}`;
     const slash = report.path.lastIndexOf("/");
     if (report.path.slice(0, Math.max(slash, 0)) !== dir) {
-      return refusal("unknown-scope", "store-kind-mismatch", `create evidence: the scope's store is ${dir}/, and an evidence record sits beside its report there; the report is ${report.path}`);
+      return refusal2("unknown-scope", "store-kind-mismatch", `create evidence: the scope's store is ${dir}/, and an evidence record sits beside its report there; the report is ${report.path}`);
     }
     if (container !== null) {
       const holder = `${container}/package.json`;
       const pkg = ctx.readPair(holder);
       if (!pkg.ok && pkg.error.reason !== "record-not-found") return pkg;
-      if (!pkg.ok || pkg.value.kind !== "package") return refusal("unknown-scope", "container-missing", `${container} is not a package directory: ${holder} ${pkg.ok ? `is a ${pkg.value.kind} record` : "does not exist"}`);
+      if (!pkg.ok || pkg.value.kind !== "package") return refusal2("unknown-scope", "container-missing", `${container} is not a package directory: ${holder} ${pkg.ok ? `is a ${pkg.value.kind} record` : "does not exist"}`);
     }
     const name = report.path.slice(slash + 1);
     const basename2 = name.endsWith(".md") ? name.slice(0, -".md".length) : null;
     const first = `${dir}/${basename2 ?? name}${EVIDENCE_SUFFIX}`;
     const reading2 = evidenceName(first);
     if (basename2 === null || !markerlessName().test(name) || reading2 === null || reading2.correction !== null || reading2.report !== report.path) {
-      return refusal("schema-invalid", "report-name", `${name} is not a report name an evidence record can pair with: a marker-free YYMMDD-HHMM-<topic>.md whose last dotted segment is no correction counter, so that ${first} reads back as its first record`);
+      return refusal2("schema-invalid", "report-name", `${name} is not a report name an evidence record can pair with: a marker-free YYMMDD-HHMM-<topic>.md whose last dotted segment is no correction counter, so that ${first} reads back as its first record`);
     }
     const stored = fileHash(ctx.wb, report.path);
     if (!stored.ok) return stored;
@@ -10092,8 +10677,8 @@ function createEvidencePlan(req) {
     const problem = reportProblem(candidate);
     if (problem !== null) return { ok: false, error: problem };
     const taken = ctx.resolveRecordId(req.id);
-    if (taken.ok) return refusal("conflict", "id-in-use", `the id ${req.id} is carried by ${taken.value.path}`);
-    if (taken.error.reason !== "record-not-found") return refusal("conflict", "id-in-use", taken.error.detail);
+    if (taken.ok) return refusal2("conflict", "id-in-use", `the id ${req.id} is carried by ${taken.value.path}`);
+    if (taken.error.reason !== "record-not-found") return refusal2("conflict", "id-in-use", taken.error.detail);
     let path = first;
     if (payload.predecessor !== null) {
       const hit = resolveRecordRef(ctx, payload.predecessor);
@@ -10101,14 +10686,14 @@ function createEvidencePlan(req) {
       const got = ctx.readPair(hit.value.path);
       if (!got.ok) return got;
       const pred = got.value;
-      if (pred.kind !== "evidence") return refusal("unresolved-reference", "not-evidence", `the predecessor ${payload.predecessor.record_id} is the ${pred.kind} record ${pred.path}; a correction names an evidence record`);
+      if (pred.kind !== "evidence") return refusal2("unresolved-reference", "not-evidence", `the predecessor ${payload.predecessor.record_id} is the ${pred.kind} record ${pred.path}; a correction names an evidence record`);
       const pinned = payload.predecessor.revision;
       if (pinned !== void 0 && pred.revision !== pinned) {
-        return refusal("missing-evidence", "evidence-revision-mismatch", `the predecessor ${pred.path} is stored at ${pred.revision}; the payload pins ${pinned}`);
+        return refusal2("missing-evidence", "evidence-revision-mismatch", `the predecessor ${pred.path} is stored at ${pred.revision}; the payload pins ${pinned}`);
       }
       if (pred.report?.path === report.path) {
         if (pred.report.sha256 !== report.sha256) {
-          return refusal("conflict", "predecessor-report-changed", `the predecessor ${pred.path} records ${report.path} at ${String(pred.report.sha256)}; this record names ${report.sha256}. A correction under the same basename is over an unchanged report; a changed report takes a new basename`);
+          return refusal2("conflict", "predecessor-report-changed", `the predecessor ${pred.path} records ${report.path} at ${String(pred.report.sha256)}; this record names ${report.sha256}. A correction under the same basename is over an unchanged report; a changed report takes a new basename`);
         }
         const n = nextCorrection(ctx.wb, dir, basename2);
         if (!n.ok) return n;
@@ -10117,7 +10702,7 @@ function createEvidencePlan(req) {
     }
     const standing = fileHash(ctx.wb, path);
     if (!standing.ok) return standing;
-    if (standing.value !== null) return refusal("conflict", "record-exists", `${path} exists; an evidence record is immutable once accepted, and a record without a predecessor naming this report is its first record, never a correction`);
+    if (standing.value !== null) return refusal2("conflict", "record-exists", `${path} exists; an evidence record is immutable once accepted, and a record without a predecessor naming this report is its first record, never a correction`);
     return {
       ok: true,
       value: {
@@ -10128,7 +10713,7 @@ function createEvidencePlan(req) {
     };
   };
 }
-var isObject4 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+var isObject5 = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
 var TRANSITION_PAYLOAD_FIELDS = {
   package: ["claim", "outcome"],
   issue: ["disposition"],
@@ -10146,7 +10731,7 @@ function payloadAdmitted(req) {
       const on = Object.keys(TRANSITION_PAYLOAD_FIELDS).filter((k) => TRANSITION_PAYLOAD_FIELDS[k]?.includes(f));
       return on.length > 0 ? `${f} (admitted on ${on.join(", ")})` : f;
     });
-    return refusal("schema-invalid", "payload-field-not-admitted", `${req.record.path} is a record of kind ${pair.kind}, whose transition payload admits ${row}; it carries ${carried.join(", ")}`);
+    return refusal2("schema-invalid", "payload-field-not-admitted", `${req.record.path} is a record of kind ${pair.kind}, whose transition payload admits ${row}; it carries ${carried.join(", ")}`);
   };
 }
 function transitionPlan(req, precheck) {
@@ -10157,7 +10742,7 @@ function transitionPlan(req, precheck) {
     const cas = ctx.cas(pair, req.expected_revision);
     if (!cas.ok) return cas;
     if (pair.kind === "evidence") {
-      return refusal("conflict", "evidence-immutable", `${req.record.path} is an evidence record, which has no lifecycle and is immutable once accepted (spec 4.4); a correction is a new record naming it as predecessor`);
+      return refusal2("conflict", "evidence-immutable", `${req.record.path} is an evidence record, which has no lifecycle and is immutable once accepted (spec 4.4); a correction is a new record naming it as predecessor`);
     }
     if (precheck !== void 0) {
       const p = precheck(pair);
@@ -10198,7 +10783,7 @@ function movePackage(pair, to, payload) {
   const outcome = payload.outcome ?? null;
   const rule = allowed("package", from, to, { claim, outcome });
   if (!rule.ok) return refused(rule);
-  if (table?.claim?.[to] === "required" && isObject4(claim) && claim.claimed_at === null) {
+  if (table?.claim?.[to] === "required" && isObject5(claim) && claim.claimed_at === null) {
     return { ok: false, error: { class: "schema-invalid", reason: "claimed-at-required", detail: `package: a move into ${to} makes a new claim, whose claimed_at is known to the caller and never guessed; it is null` } };
   }
   return { ok: true, value: { from, next: { ...pair.control, status: to, claim, outcome }, schemaId: PACKAGE_SCHEMA_ID } };
@@ -10226,7 +10811,7 @@ function moveRecord(ctx, pair, to, payload) {
     for (const f of DECISION_FIELDS) {
       if (!(f in payload)) continue;
       const value = fields[f];
-      const target = f === "deferral" && isObject4(value) ? value.target : value;
+      const target = f === "deferral" && isObject5(value) ? value.target : value;
       const resolved = resolveReference(ctx, target);
       if (!resolved.ok) return resolved;
     }
@@ -10249,13 +10834,13 @@ function planProgress(control, from, to, payload) {
       [stored, "the stored plan's"],
       [updates, "the payload's"]
     ]) {
-      const unique = uniqueIds(noun, field2, entries, where);
+      const unique = uniqueIds2(noun, field2, entries, where);
       if (!unique.ok) return unique;
     }
     const known = new Set(stored.map((e) => e.id));
     const unknown = updates.filter((u) => !known.has(u.id)).map((u) => u.id);
     if (unknown.length > 0) {
-      return refusal("unresolved-reference", `unknown-${noun}-id`, `the payload's ${field2} names ${unknown.join(", ")}, which the stored plan lacks; plan progress updates the ${field2} it has and never adds one`);
+      return refusal2("unresolved-reference", `unknown-${noun}-id`, `the payload's ${field2} names ${unknown.join(", ")}, which the stored plan lacks; plan progress updates the ${field2} it has and never adds one`);
     }
     arrays.push({ field: field2, value, stored, updates });
   }
@@ -10286,7 +10871,7 @@ function planProgress(control, from, to, payload) {
   return { ok: true, value: fields };
 }
 function resolveReference(ctx, value) {
-  if (!isObject4(value)) return { ok: true, value: void 0 };
+  if (!isObject5(value)) return { ok: true, value: void 0 };
   if (typeof value.record_id === "string") {
     const r = resolveRecordRef(ctx, { workbench_id: value.workbench_id, record_id: value.record_id });
     return r.ok ? { ok: true, value: void 0 } : r;
@@ -10326,7 +10911,7 @@ function claimPlan(req) {
   const { to } = operationEdges("claim");
   return transitionPlan(asTransition(req, to, "claim", { claim: req.claim }), (pair) => {
     if (pair.kind !== "package" || pair.control.status !== to) return { ok: true, value: void 0 };
-    const held2 = isObject4(pair.control.claim) ? `checkout ${String(pair.control.claim.checkout_id)}` : "no recorded checkout";
+    const held2 = isObject5(pair.control.claim) ? `checkout ${String(pair.control.claim.checkout_id)}` : "no recorded checkout";
     return { ok: false, error: { class: "conflict", reason: "already-claimed", detail: `the package is already ${to}, held by ${held2}; a second claim is a conflict` } };
   });
 }
@@ -10346,9 +10931,9 @@ function livePackage(ctx, req, op, does) {
   const pair = r.value;
   const cas = ctx.cas(pair, req.expected_revision);
   if (!cas.ok) return cas;
-  if (pair.kind !== "package") return refusal("schema-invalid", "not-a-package", `${req.record.path} is a ${pair.kind} record; ${op} ${does}`);
+  if (pair.kind !== "package") return refusal2("schema-invalid", "not-a-package", `${req.record.path} is a ${pair.kind} record; ${op} ${does}`);
   const status = pair.control.status;
-  if (isTerminal("package", status)) return refusal("conflict", "package-terminal", `the package is ${String(status)}, which is terminal; its record is history and ${op} writes nothing into it`);
+  if (isTerminal("package", status)) return refusal2("conflict", "package-terminal", `the package is ${String(status)}, which is terminal; its record is history and ${op} writes nothing into it`);
   return r;
 }
 function recordWrite(path, value) {
@@ -10361,7 +10946,7 @@ function setModePlan(req) {
     if (!r.ok) return r;
     const pair = r.value;
     const { value, source } = req.mode;
-    if (isObject4(source) && source.kind === "legacy") {
+    if (isObject5(source) && source.kind === "legacy") {
       return { ok: false, error: { class: "schema-invalid", reason: "legacy-source-on-set-mode", detail: "a legacy mode source is kept by an import only; set-mode takes the user's word or a record" } };
     }
     if (value === "ordinary" && source !== null) {
@@ -10370,7 +10955,7 @@ function setModePlan(req) {
     const next = { ...pair.control, mode: { value, source } };
     const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after set-mode is not a valid package");
     if (!v.ok) return v;
-    if (isObject4(source)) {
+    if (isObject5(source)) {
       const resolved = resolveReference(ctx, source.kind === "user-word" ? source.ref : source);
       if (!resolved.ok) return resolved;
     }
@@ -10391,7 +10976,7 @@ function resolvePackage(ctx, ref, role) {
   if (!hit.ok) return hit;
   const pair = ctx.readPair(hit.value.path);
   if (!pair.ok) return pair;
-  if (pair.value.kind !== "package") return refusal("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; it must be a package`);
+  if (pair.value.kind !== "package") return refusal2("unresolved-reference", "not-a-package", `the ${role} ${ref.record_id} is the ${pair.value.kind} record ${hit.value.path}; it must be a package`);
   return pair;
 }
 function dependencyEdges(ctx) {
@@ -10401,7 +10986,7 @@ function dependencyEdges(ctx) {
     const r = ctx.readPair(path);
     if (!r.ok || r.value.kind !== "package" || typeof r.value.control.id !== "string") continue;
     const deps = Array.isArray(r.value.control.depends_on) ? r.value.control.depends_on : [];
-    const targets = deps.flatMap((d) => isObject4(d) && isObject4(d.target) && d.target.workbench_id === ctx.wb.id && typeof d.target.record_id === "string" ? [d.target.record_id] : []);
+    const targets = deps.flatMap((d) => isObject5(d) && isObject5(d.target) && d.target.workbench_id === ctx.wb.id && typeof d.target.record_id === "string" ? [d.target.record_id] : []);
     edges.set(r.value.control.id, targets);
   }
   return edges;
@@ -10431,10 +11016,10 @@ function setDependenciesPlan(req) {
     const counted = /* @__PURE__ */ new Map();
     for (const e of req.depends_on) counted.set(e.target.record_id, (counted.get(e.target.record_id) ?? 0) + 1);
     const twice = [...counted].filter(([, n]) => n > 1).map(([id]) => id);
-    if (twice.length > 0) return refusal("schema-invalid", "duplicate-target", `depends_on names ${twice.join(", ")} more than once; one edge per target`);
+    if (twice.length > 0) return refusal2("schema-invalid", "duplicate-target", `depends_on names ${twice.join(", ")} more than once; one edge per target`);
     for (const e of req.depends_on) {
       if (e.target.record_id === self && e.target.workbench_id === ctx.wb.id) {
-        return refusal("conflict", "self-dependency", `depends_on names the package itself, ${self}`);
+        return refusal2("conflict", "self-dependency", `depends_on names the package itself, ${self}`);
       }
       const target = resolvePackage(ctx, e.target, "dependency target");
       if (!target.ok) return target;
@@ -10442,7 +11027,7 @@ function setDependenciesPlan(req) {
     const edges = dependencyEdges(ctx);
     edges.set(self, req.depends_on.map((e) => e.target.record_id));
     const cycle = cycleThrough(self, edges);
-    if (cycle !== null) return refusal("conflict", "cycle", `depends_on would close the cycle ${cycle.join(" -> ")}`);
+    if (cycle !== null) return refusal2("conflict", "cycle", `depends_on would close the cycle ${cycle.join(" -> ")}`);
     const next = { ...pkg.control, depends_on: req.depends_on };
     const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after set-dependencies is not a valid package");
     if (!v.ok) return v;
@@ -10458,8 +11043,8 @@ function setDependenciesPlan(req) {
   };
 }
 var PLAN_ROLE = "plan";
-var sameRecord = (a, id) => isObject4(a) && a.record_id === id;
-var acceptedBy = (acceptance, pkg) => isObject4(acceptance) && isObject4(acceptance.ref) && acceptance.ref.record_id === pkg.control.id && acceptance.ref.workbench_id === pkg.control.workbench_id;
+var sameRecord = (a, id) => isObject5(a) && a.record_id === id;
+var acceptedBy = (acceptance, pkg) => isObject5(acceptance) && isObject5(acceptance.ref) && acceptance.ref.record_id === pkg.control.id && acceptance.ref.workbench_id === pkg.control.workbench_id;
 var withAcceptance = (doc, acceptance) => ({ ...doc.control, control: { ...doc.control.control, acceptance } });
 function replacedRecord(ctx, ref, pkg) {
   const hit = resolveRecordRef(ctx, ref);
@@ -10480,30 +11065,30 @@ function adoptPlanPlan(req) {
     const docId = req.plan.record_id;
     const hit = resolveRecordRef(ctx, req.plan);
     if (!hit.ok) return hit;
-    const notAPlan = (what) => refusal("unresolved-reference", "not-a-plan", `${docId} is ${what}; adopt-plan binds a plan record, as a ${role}`);
+    const notAPlan = (what) => refusal2("unresolved-reference", "not-a-plan", `${docId} is ${what}; adopt-plan binds a plan record, as a ${role}`);
     const got = ctx.readPair(hit.value.path);
     if (!got.ok) return got;
     const doc = got.value;
     if (doc.kind !== "plan") return notAPlan(`the ${doc.kind} record ${doc.path}`);
     const control = doc.control.control ?? {};
     if (isTerminal("plan", control.state)) {
-      return refusal("conflict", "plan-terminal", `${doc.path} is ${String(control.state)}, which is terminal; a closed or deferred plan is history and is not adopted`);
+      return refusal2("conflict", "plan-terminal", `${doc.path} is ${String(control.state)}, which is terminal; a closed or deferred plan is history and is not adopted`);
     }
     if (doc.narrative === null || doc.narrative.sha256 === null) {
-      return refusal("unresolved-reference", "narrative-missing", `${doc.path} names ${doc.narrative === null ? "no narrative" : `${doc.narrative.path}, which does not exist`}; its revision cannot be accepted`);
+      return refusal2("unresolved-reference", "narrative-missing", `${doc.path} names ${doc.narrative === null ? "no narrative" : `${doc.narrative.path}, which does not exist`}; its revision cannot be accepted`);
     }
     if (doc.narrative.sha256 !== req.revision) {
-      return refusal("conflict", "plan-revision-mismatch", `${doc.narrative.path} is ${doc.narrative.sha256}; the request accepts ${req.revision}`);
+      return refusal2("conflict", "plan-revision-mismatch", `${doc.narrative.path} is ${doc.narrative.sha256}; the request accepts ${req.revision}`);
     }
     const acceptance = control.acceptance;
     if (acceptance !== null && acceptance !== void 0 && !acceptedBy(acceptance, pkg)) {
-      const holder = isObject4(acceptance) && isObject4(acceptance.ref) ? String(acceptance.ref.record_id) : JSON.stringify(acceptance);
-      return refusal("conflict", "plan-adopted-elsewhere", `${doc.path} is adopted by the package ${holder}; a record is adopted by one package`);
+      const holder = isObject5(acceptance) && isObject5(acceptance.ref) ? String(acceptance.ref.record_id) : JSON.stringify(acceptance);
+      return refusal2("conflict", "plan-adopted-elsewhere", `${doc.path} is adopted by the package ${holder}; a record is adopted by one package`);
     }
     const docs = Array.isArray(pkg.control.active_documents) ? pkg.control.active_documents : [];
     const otherRole = docs.find((d) => sameRecord(d.ref, docId) && d.role !== role);
     if (otherRole !== void 0) {
-      return refusal("conflict", "role-conflict", `${docId} is this package's ${otherRole.role} already; a record is adopted in one role`);
+      return refusal2("conflict", "role-conflict", `${docId} is this package's ${otherRole.role} already; a record is adopted in one role`);
     }
     const entry = { ref: req.plan, role, revision: req.revision };
     const at = docs.findIndex((d) => d.role === role && (role === PLAN_ROLE || sameRecord(d.ref, docId)));
@@ -10552,8 +11137,8 @@ function adoptPlanPlan(req) {
 var EVIDENCE_CHECKED_ON = "done";
 function activePlanRevision(pkg) {
   const docs = Array.isArray(pkg.control.active_documents) ? pkg.control.active_documents : [];
-  const plan = docs.find((d) => isObject4(d) && d.role === PLAN_ROLE);
-  return isObject4(plan) && typeof plan.revision === "string" ? plan.revision : null;
+  const plan = docs.find((d) => isObject5(d) && d.role === PLAN_ROLE);
+  return isObject5(plan) && typeof plan.revision === "string" ? plan.revision : null;
 }
 function bindEvidence(ctx, pkg, binding) {
   const id = binding.ref.record_id;
@@ -10562,29 +11147,29 @@ function bindEvidence(ctx, pkg, binding) {
   const got = ctx.readPair(hit.value.path);
   if (!got.ok) return got;
   const ev = got.value;
-  if (ev.kind !== "evidence") return refusal("unresolved-reference", "not-evidence", `${id} is the ${ev.kind} record ${ev.path}; an evidence binding names a fusion.evidence/v1 record`);
+  if (ev.kind !== "evidence") return refusal2("unresolved-reference", "not-evidence", `${id} is the ${ev.kind} record ${ev.path}; an evidence binding names a fusion.evidence/v1 record`);
   if (ev.revision !== binding.ref.revision) {
-    return refusal("missing-evidence", "evidence-revision-mismatch", `${ev.path} is stored at ${ev.revision}; the binding names ${binding.ref.revision}`);
+    return refusal2("missing-evidence", "evidence-revision-mismatch", `${ev.path} is stored at ${ev.revision}; the binding names ${binding.ref.revision}`);
   }
   const v = validate(EVIDENCE_SCHEMA_ID, ev.control);
-  if (!v.ok) return refusal("schema-invalid", "evidence-invalid", `${ev.path}: ${v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`}`);
+  if (!v.ok) return refusal2("schema-invalid", "evidence-invalid", `${ev.path}: ${v.class === "schema-invalid" ? describeErrors(v.errors) : `no schema ${v.schemaId}`}`);
   const naming = evidenceNaming(ev);
   if (naming !== null) return { ok: false, error: naming };
   const record = ev.control;
   if (ctx.wb.id !== null && record.workbench_id !== ctx.wb.id) {
-    return refusal("unknown-scope", "foreign-workbench-id", `${ev.path} carries workbench_id ${JSON.stringify(record.workbench_id)}; this workbench is ${ctx.wb.id}`);
+    return refusal2("unknown-scope", "foreign-workbench-id", `${ev.path} carries workbench_id ${JSON.stringify(record.workbench_id)}; this workbench is ${ctx.wb.id}`);
   }
   if (record.execution_policy !== binding.policy) {
-    return refusal("schema-invalid", "policy-mismatch", `${ev.path} was produced ${String(record.execution_policy)}; the binding claims ${binding.policy}, and a binding never changes the policy a result was produced under`);
+    return refusal2("schema-invalid", "policy-mismatch", `${ev.path} was produced ${String(record.execution_policy)}; the binding claims ${binding.policy}, and a binding never changes the policy a result was produced under`);
   }
   const brief = pkg.narrative?.sha256 ?? null;
   if (record.brief_revision !== brief) {
-    return refusal("missing-evidence", "brief-changed", `${ev.path} was produced against the brief at ${String(record.brief_revision)}; ${pkg.narrative === null ? "the package names no brief" : `${pkg.narrative.path} is ${brief ?? "absent"}`} now`);
+    return refusal2("missing-evidence", "brief-changed", `${ev.path} was produced against the brief at ${String(record.brief_revision)}; ${pkg.narrative === null ? "the package names no brief" : `${pkg.narrative.path} is ${brief ?? "absent"}`} now`);
   }
   if (record.plan_revision !== null) {
     const plan = activePlanRevision(pkg);
-    if (plan === null) return refusal("missing-evidence", "no-active-plan", `${ev.path} was produced against the plan at ${String(record.plan_revision)}; the package has no plan in force`);
-    if (plan !== record.plan_revision) return refusal("missing-evidence", "plan-changed", `${ev.path} was produced against the plan at ${String(record.plan_revision)}; the plan in force is at ${plan}`);
+    if (plan === null) return refusal2("missing-evidence", "no-active-plan", `${ev.path} was produced against the plan at ${String(record.plan_revision)}; the package has no plan in force`);
+    if (plan !== record.plan_revision) return refusal2("missing-evidence", "plan-changed", `${ev.path} was produced against the plan at ${String(record.plan_revision)}; the plan in force is at ${plan}`);
   }
   const report = reportProblem(ev);
   if (report !== null) return { ok: false, error: report };
@@ -10597,8 +11182,8 @@ function attachEvidencePlan(req) {
     const pkg = r.value;
     const bound = Array.isArray(pkg.control.evidence) ? pkg.control.evidence : [];
     const { record_id, revision: at } = req.evidence.ref;
-    if (bound.some((b) => isObject4(b.ref) && b.ref.record_id === record_id && b.ref.revision === at)) {
-      return refusal("conflict", "evidence-already-bound", `the package binds ${record_id} at ${at} already`);
+    if (bound.some((b) => isObject5(b.ref) && b.ref.record_id === record_id && b.ref.revision === at)) {
+      return refusal2("conflict", "evidence-already-bound", `the package binds ${record_id} at ${at} already`);
     }
     const ev = bindEvidence(ctx, pkg, req.evidence);
     if (!ev.ok) return ev;
@@ -10627,7 +11212,7 @@ function placementFinding(path) {
     detail: `${path} is an evidence record outside a ${REVIEWS_STORE}/ store; it lives beside its report in <container>/${REVIEWS_STORE}/ or shared/${REVIEWS_STORE}/`
   };
 }
-var field = (v, key) => isObject4(v) ? v[key] : void 0;
+var field = (v, key) => isObject5(v) ? v[key] : void 0;
 function referenceSites(pair) {
   const sites = [];
   const add = (at, value) => {
@@ -10677,7 +11262,7 @@ function referenceEntry(ctx, path, site) {
   const { value } = site;
   const role = site.binding === void 0 ? void 0 : field(site.binding, "role");
   const head = { path, at: site.at, ...role === "plan" || role === "spec" ? { role } : {} };
-  if (!isObject4(value)) return { ...head, status: "unchecked" };
+  if (!isObject5(value)) return { ...head, status: "unchecked" };
   if (typeof value.record_id === "string") {
     const hit = resolveRecordRef(ctx, { workbench_id: value.workbench_id, record_id: value.record_id });
     if (hit.ok) return { ...head, status: "resolved", target: hit.value.path };
@@ -10724,7 +11309,7 @@ function edgeEntries(ctx, pkg) {
     const target = resolvePackage(ctx, edge.target, "dependency target");
     if (!target.ok) return { ...base, status: "unmet", class: target.error.class, reason: target.error.reason };
     const t = target.value.control;
-    const outcome = isObject4(t.outcome) ? t.outcome : null;
+    const outcome = isObject5(t.outcome) ? t.outcome : null;
     const rule = dependencySatisfied(edge.condition, { status: String(t.status), outcome, evidence_records: evidenceRecords(ctx, outcome) });
     return rule.ok ? { ...base, status: "satisfied" } : { ...base, status: "unmet", class: rule.class, reason: "dependency-unmet", detail: rule.reason };
   });
@@ -10753,7 +11338,7 @@ function narrativeEntries(wb, pair, view) {
   if (view.blockedOn(narrative.path) !== void 0) return [];
   const abs = resolveInside(wb, narrative.path);
   if (!abs.ok) return [];
-  const lines = readFileSync6(abs.value, "utf-8").split(/\r?\n/);
+  const lines = readFileSync7(abs.value, "utf-8").split(/\r?\n/);
   const entry = (cls, reason, i) => ({ path: pair.path, narrative: narrative.path, class: cls, reason, line: lines[i], line_number: i + 1 });
   const start = lines.findIndex((l) => CONFLICT_START.test(l));
   if (start >= 0 && lines.some((l) => CONFLICT_END.test(l))) return [entry("schema-invalid", "conflict-markers", start)];
@@ -10775,7 +11360,7 @@ function indexedContext(ctx) {
     for (const path of controlFiles(wb, wb.root)) {
       const abs = resolveInside(wb, path);
       if (!abs.ok) continue;
-      const parsed = strictParse(readFileSync6(abs.value));
+      const parsed = strictParse(readFileSync7(abs.value));
       if (!parsed.ok) continue;
       const id = parsed.value.id;
       if (typeof id !== "string") continue;
@@ -10790,8 +11375,8 @@ function indexedContext(ctx) {
     resolveRecordId(id) {
       index ??= build();
       const hits = index.get(id) ?? [];
-      if (hits.length === 0) return refusal("unresolved-reference", "record-not-found", `no control file in ${wb.root} carries the id ${id}`);
-      if (hits.length > 1) return refusal("conflict", "ambiguous-reference", `the id ${id} is carried by ${hits.join(", ")}`);
+      if (hits.length === 0) return refusal2("unresolved-reference", "record-not-found", `no control file in ${wb.root} carries the id ${id}`);
+      if (hits.length > 1) return refusal2("conflict", "ambiguous-reference", `the id ${id} is carried by ${hits.join(", ")}`);
       return { ok: true, value: { path: hits[0], id } };
     }
   };
@@ -11922,6 +12507,566 @@ var evidence_schema_default = {
   }
 };
 
+// schemas/migration-plan.schema.json
+var migration_plan_schema_default = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "urn:fusion:schema:fusion.migration-plan/v1",
+  title: "fusion.migration-plan/v1",
+  description: "The frozen plan of a migration (spec section 8; FJ04 contract delta, amended for Prior ab9cb59), written by the migration's plan phase under archive/migrations/<migration id>/ in one bounded intent, the index last, and never edited afterwards. It is split into six shapes, told apart by part, each file under the strict reader's 1 MiB cap. The index, plan.json, holds only the identity, the proposal it froze by path and sha256, the frozen root exclusions, the operation schedule and {part, n, path, sha256} of every other plan file; a request names the index by {path, sha256}. The other parts may each span several numbered files, in the order the index lists them: records (parts/records-<n>.json, the UUID map with each record's kind, cut row, control and narrative path, and on file 1 the cut's counts), inventory (parts/inventory-<n>.json, the source inventory the codec took under plan's lock, in survey's four entry forms), findings (parts/findings-<n>.json, the reported findings), repairs (parts/repairs-<n>.json, the consented repair log) and chunk (chunks/<n>.json, at most 50 writes, each bound by the hash of the target before and after it). A write is an original copied to archive/migrations/<migration id>/originals/<workbench path>, a new control file carrying its target control, or a live narrative rewritten as byte deletions; apply never removes a file, and the removal writes a rollback journals (after null) are derived from these rows, not stored in them. Rules JSON Schema cannot check: every part hashes as the index names it, no part on disk is unnamed by the index, and the parts stand in the index's order (conflict/plan-file-changed); a chunk part's writes equals the length of that file's writes, and a part file's n and migration_id equal its index entry's; paths under archive/migrations/ name this migration's id; a request's operation_id is the one the schedule names for its phase and chunk, never an unassigned one (conflict/operation-id-unscheduled); the schedule holds one apply id per chunk in order from 1 and one rollback id per chunk from 0 to the chunk count, and no UUID occurs twice across schedule, records and workbench_id; a record UUID occurs once across the records parts and its control carries the id it is keyed by (schema-invalid/duplicate-id); every source and after hash matches disk at apply (conflict/source-changed); a pair's original, control file and rewrite share one chunk; deletion ranges ascend, do not overlap and lie inside the source bytes; an original's after_sha256 equals the sha256 of the file it copies; inventory entries are sorted bytewise by path across the inventory parts.",
+  type: "object",
+  required: ["part", "schema"],
+  properties: {
+    schema: { const: "fusion.migration-plan/v1" },
+    part: { type: "string", enum: ["index", "records", "inventory", "findings", "repairs", "chunk"] }
+  },
+  oneOf: [
+    { $ref: "#/$defs/index" },
+    { $ref: "#/$defs/records_part" },
+    { $ref: "#/$defs/inventory_part" },
+    { $ref: "#/$defs/findings_part" },
+    { $ref: "#/$defs/repairs_part" },
+    { $ref: "#/$defs/chunk" }
+  ],
+  $defs: {
+    migration_id: {
+      type: "string",
+      description: "The migration's id, chosen by the host in the proposal; the pattern of fusion.workbench/v1's migration.id.",
+      pattern: "^migration-[0-9]{8}-[a-z0-9-]+$"
+    },
+    source_layout: { type: "string", enum: ["fusion-v12", "fusion-pre-v12"] },
+    proposal_ref: {
+      type: "object",
+      description: "The host's proposal, bound by its path under .json-state/migration/ and the sha256 of its exact bytes (request 45a). A hash differing from the file is conflict/source-changed.",
+      additionalProperties: false,
+      required: ["path", "sha256"],
+      properties: {
+        path: {
+          allOf: [
+            { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { type: "string", pattern: "^\\.json-state/migration/[^/]+$" }
+          ]
+        },
+        sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
+    },
+    plan_ref: {
+      type: "object",
+      description: "The frozen index, archive/migrations/<migration id>/plan.json, bound by the sha256 of its exact bytes (request 45a). The index binds every other plan file by hash in turn.",
+      additionalProperties: false,
+      required: ["path", "sha256"],
+      properties: {
+        path: {
+          allOf: [
+            { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/plan\\.json$" }
+          ]
+        },
+        sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
+    },
+    exclusions: {
+      type: "array",
+      description: "Root entries the host proposes to leave out of every inventory comparison, frozen by the index: checkout-local files and those the host's own machinery appends to during the run. .json-state/ and this migration's own archive/migrations/<id>/ are excluded always and are not listed. An entry is one name directly under the workbench root, never work-packages, shared, archive or workbench.json. That it holds no narrative or control path the plan reads or writes is checked by plan (schema-invalid/proposal-invalid).",
+      uniqueItems: true,
+      items: {
+        type: "string",
+        minLength: 1,
+        pattern: "^(?!\\.\\.?$)(?!(work-packages|shared|archive|workbench\\.json)$)[^/\\\\]+$"
+      }
+    },
+    finding: {
+      type: "object",
+      description: "One finding of the host's legacy reader: its class, the narrative it is about and what the reader saw.",
+      additionalProperties: false,
+      required: ["class", "detail", "path", "severity"],
+      properties: {
+        class: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/token" },
+        severity: { type: "string", enum: ["blocking", "reported"] },
+        path: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+        detail: { type: "string" }
+      }
+    },
+    reported_finding: {
+      description: "A finding the frozen plan carries: only reported ones, since plan refuses a proposal naming an open blocking finding (migration-incomplete/blocking-finding).",
+      allOf: [
+        { $ref: "#/$defs/finding" },
+        { type: "object", properties: { severity: { const: "reported" } } }
+      ]
+    },
+    repair: {
+      type: "object",
+      description: "One repair applied with the owner's consent before plan froze anything: the blocking finding it cleared, the answers given, and the sha256 of the file before and after the edit. An answer may be null where the owner left it open (a person not known; the actor is never offered from the current identity). The pre-repair bytes are in the external backup, the post-repair bytes in originals/.",
+      additionalProperties: false,
+      required: ["answers", "finding", "post_sha256", "pre_sha256"],
+      properties: {
+        finding: {
+          allOf: [
+            { $ref: "#/$defs/finding" },
+            { type: "object", properties: { severity: { const: "blocking" } } }
+          ]
+        },
+        answers: { type: "object", additionalProperties: { type: ["string", "null"] } },
+        pre_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        post_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
+    },
+    counts: {
+      type: "object",
+      description: "The record cut's figures as the proposal composed them: packages live and terminal, live records, terminal records the closure pulls in, terminal records left plain, empty container trees not migrated.",
+      additionalProperties: false,
+      required: ["empty_container", "package_live", "package_terminal", "plain_terminal", "record_closure", "record_live"],
+      properties: {
+        package_live: { type: "integer", minimum: 0 },
+        package_terminal: { type: "integer", minimum: 0 },
+        record_live: { type: "integer", minimum: 0 },
+        record_closure: { type: "integer", minimum: 0 },
+        plain_terminal: { type: "integer", minimum: 0 },
+        empty_container: { type: "integer", minimum: 0 }
+      }
+    },
+    deletions: {
+      type: "array",
+      description: "Byte ranges removed from the source bytes of a narrative: the control lines and step marks the import removes, and nothing else.",
+      minItems: 1,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["length", "offset"],
+        properties: {
+          offset: { type: "integer", minimum: 0, description: "Byte offset into the source bytes." },
+          length: { type: "integer", minimum: 1 }
+        }
+      }
+    },
+    inventory_entry: {
+      description: "One entry under the workbench root in survey's four forms: a regular file with its size and the sha256 of its bytes; a link with its own text, unfollowed and never hashed; a directory, with no size, mode or time; any other file type.",
+      oneOf: [
+        {
+          type: "object",
+          additionalProperties: false,
+          required: ["kind", "path", "sha256", "size"],
+          properties: {
+            path: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            kind: { const: "file" },
+            size: { type: "integer", minimum: 0 },
+            sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+          }
+        },
+        {
+          type: "object",
+          additionalProperties: false,
+          required: ["kind", "path", "target"],
+          properties: {
+            path: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            kind: { const: "link" },
+            target: { type: "string", minLength: 1, description: "The link's own text, with no claim about whether it resolves." }
+          }
+        },
+        {
+          type: "object",
+          additionalProperties: false,
+          required: ["kind", "path"],
+          properties: {
+            path: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            kind: { enum: ["directory", "other"] }
+          }
+        }
+      ]
+    },
+    schedule_entry: {
+      type: "object",
+      additionalProperties: false,
+      required: ["chunk", "operation_id"],
+      properties: {
+        chunk: { type: "integer", minimum: 0 },
+        operation_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" }
+      }
+    },
+    schedule: {
+      type: "object",
+      description: "Every operation id of this migration, frozen from the proposal's operation_ids before anything is dispatched (request 45f): plan's own; apply[i-1] for chunk i, chunk 1's also naming the fence it sets; verify's; rollback[k] for rollback chunk k from 0 to the chunk count; the surplus ids, unassigned. A request whose operation_id is not the one scheduled for its phase and chunk is conflict/operation-id-unscheduled.",
+      additionalProperties: false,
+      required: ["apply", "plan", "rollback", "unassigned", "verify"],
+      properties: {
+        plan: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        apply: {
+          type: "array",
+          minItems: 1,
+          items: { allOf: [{ $ref: "#/$defs/schedule_entry" }, { type: "object", properties: { chunk: { type: "integer", minimum: 1 } } }] }
+        },
+        verify: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        rollback: {
+          type: "array",
+          minItems: 2,
+          items: { $ref: "#/$defs/schedule_entry" }
+        },
+        unassigned: { type: "array", uniqueItems: true, items: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" } }
+      }
+    },
+    part_entry: {
+      type: "object",
+      description: "One plan file the index binds: its kind, its number within that kind from 1, its path and the sha256 of its exact bytes. writes, the chunk's write count, appears on chunk parts only.",
+      additionalProperties: false,
+      required: ["n", "part", "path", "sha256"],
+      properties: {
+        part: { type: "string", enum: ["records", "inventory", "findings", "repairs", "chunk"] },
+        n: { type: "integer", minimum: 1 },
+        path: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+        sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        writes: { type: "integer", minimum: 1, maximum: 50 }
+      },
+      if: { type: "object", properties: { part: { const: "chunk" } } },
+      then: {
+        type: "object",
+        required: ["writes"],
+        properties: { path: { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/chunks/[1-9][0-9]*\\.json$" } }
+      },
+      else: {
+        type: "object",
+        not: { type: "object", required: ["writes"] },
+        properties: { path: { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/parts/(records|inventory|findings|repairs)-[1-9][0-9]*\\.json$" } }
+      }
+    },
+    index: {
+      type: "object",
+      description: "archive/migrations/<migration id>/plan.json: identity, the proposal it froze, the exclusions, the schedule and the part list, nothing else.",
+      additionalProperties: false,
+      required: ["exclusions", "migration_id", "part", "parts", "proposal", "schedule", "schema", "source_layout", "workbench_id"],
+      properties: {
+        schema: { const: "fusion.migration-plan/v1" },
+        part: { const: "index" },
+        migration_id: { $ref: "#/$defs/migration_id" },
+        workbench_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid", description: "The workbench UUID the manifest will carry; a resume reuses it." },
+        source_layout: { $ref: "#/$defs/source_layout" },
+        proposal: { $ref: "#/$defs/proposal_ref" },
+        exclusions: { $ref: "#/$defs/exclusions" },
+        schedule: { $ref: "#/$defs/schedule" },
+        parts: {
+          type: "array",
+          description: "Every other plan file, in the order plan wrote and apply reads them.",
+          minItems: 1,
+          items: { $ref: "#/$defs/part_entry" }
+        }
+      }
+    },
+    records_part: {
+      type: "object",
+      description: "parts/records-<n>.json: the UUID map, keyed by record id, with each converted pair's kind, cut row, control file and narrative; file 1 also carries the cut's counts, and no later file does. A UUID repeated as a key within one file is refused by the strict reader (duplicate-key); across files, by plan (duplicate-id).",
+      additionalProperties: false,
+      required: ["migration_id", "n", "part", "records", "schema"],
+      properties: {
+        schema: { const: "fusion.migration-plan/v1" },
+        part: { const: "records" },
+        migration_id: { $ref: "#/$defs/migration_id" },
+        n: { type: "integer", minimum: 1 },
+        counts: { $ref: "#/$defs/counts" },
+        records: {
+          type: "object",
+          propertyNames: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+          additionalProperties: {
+            type: "object",
+            additionalProperties: false,
+            required: ["control", "kind", "narrative", "row"],
+            properties: {
+              kind: { type: "string", enum: ["package", "issue", "plan", "discussion", "decision"] },
+              row: { type: "string", enum: ["package-live", "package-terminal", "record-live", "record-closure"] },
+              control: {
+                allOf: [
+                  { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+                  { type: "string", pattern: "(^|/)(package|[^/]+\\.record)\\.json$" }
+                ]
+              },
+              narrative: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/narrative/properties/path" }
+            }
+          }
+        }
+      },
+      if: { type: "object", properties: { n: { const: 1 } } },
+      then: { type: "object", required: ["counts"] },
+      else: { type: "object", not: { type: "object", required: ["counts"] } }
+    },
+    inventory_part: {
+      type: "object",
+      description: "parts/inventory-<n>.json: the frozen source inventory, taken by the codec under plan's lock with survey's routine: every eligible entry, so none under .json-state/, this migration's own directory or a frozen exclusion. Each apply, verify and rollback chunk 0 compares the eligible inventory against it.",
+      additionalProperties: false,
+      required: ["entries", "migration_id", "n", "part", "schema"],
+      properties: {
+        schema: { const: "fusion.migration-plan/v1" },
+        part: { const: "inventory" },
+        migration_id: { $ref: "#/$defs/migration_id" },
+        n: { type: "integer", minimum: 1 },
+        entries: { type: "array", items: { $ref: "#/$defs/inventory_entry" } }
+      }
+    },
+    findings_part: {
+      type: "object",
+      description: "parts/findings-<n>.json: the reported findings, carried for the record; a blocking one never reaches a frozen plan.",
+      additionalProperties: false,
+      required: ["findings", "migration_id", "n", "part", "schema"],
+      properties: {
+        schema: { const: "fusion.migration-plan/v1" },
+        part: { const: "findings" },
+        migration_id: { $ref: "#/$defs/migration_id" },
+        n: { type: "integer", minimum: 1 },
+        findings: { type: "array", items: { $ref: "#/$defs/reported_finding" } }
+      }
+    },
+    repairs_part: {
+      type: "object",
+      description: "parts/repairs-<n>.json: the repair log, in the order the repairs were applied.",
+      additionalProperties: false,
+      required: ["migration_id", "n", "part", "repairs", "schema"],
+      properties: {
+        schema: { const: "fusion.migration-plan/v1" },
+        part: { const: "repairs" },
+        migration_id: { $ref: "#/$defs/migration_id" },
+        n: { type: "integer", minimum: 1 },
+        repairs: { type: "array", items: { $ref: "#/$defs/repair" } }
+      }
+    },
+    original_write: {
+      type: "object",
+      description: "The exact bytes of a converted or rewritten narrative, as they stand after repair, copied into originals/ before anything else of its pair is written.",
+      additionalProperties: false,
+      required: ["after_sha256", "from", "kind", "path", "source_sha256"],
+      properties: {
+        kind: { const: "original" },
+        path: {
+          allOf: [
+            { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/originals/.+$" }
+          ]
+        },
+        from: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/narrative/properties/path" },
+        source_sha256: { type: "null", description: "The target does not exist before the write." },
+        after_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
+    },
+    control_write: {
+      type: "object",
+      description: "A new control file and the control it carries, serialised by the codec.",
+      additionalProperties: false,
+      required: ["after_sha256", "control", "kind", "path", "source_sha256"],
+      properties: {
+        kind: { const: "control" },
+        path: {
+          allOf: [
+            { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { type: "string", pattern: "(^|/)(package|[^/]+\\.record)\\.json$" }
+          ]
+        },
+        source_sha256: { type: "null", description: "The target does not exist before the write (conflict/record-exists otherwise)." },
+        after_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        control: {
+          oneOf: [
+            { $ref: "urn:fusion:schema:fusion.package/v1" },
+            { $ref: "urn:fusion:schema:fusion.record/v1" }
+          ]
+        }
+      }
+    },
+    rewrite_write: {
+      type: "object",
+      description: "A live narrative rewritten by deleting byte ranges of its source (the control lines and step marks the import removes), so apply reads no Markdown grammar and never needs the proposal again.",
+      additionalProperties: false,
+      required: ["after_sha256", "deletions", "kind", "path", "source_sha256"],
+      properties: {
+        kind: { const: "rewrite" },
+        path: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/narrative/properties/path" },
+        source_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        after_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        deletions: { $ref: "#/$defs/deletions" }
+      }
+    },
+    chunk: {
+      type: "object",
+      description: "archive/migrations/<migration id>/chunks/<n>.json: one apply request's writes, originals first.",
+      additionalProperties: false,
+      required: ["chunk", "migration_id", "part", "schema", "writes"],
+      properties: {
+        schema: { const: "fusion.migration-plan/v1" },
+        part: { const: "chunk" },
+        migration_id: { $ref: "#/$defs/migration_id" },
+        chunk: { type: "integer", minimum: 1 },
+        writes: {
+          type: "array",
+          minItems: 1,
+          maxItems: 50,
+          items: {
+            oneOf: [
+              { $ref: "#/$defs/original_write" },
+              { $ref: "#/$defs/control_write" },
+              { $ref: "#/$defs/rewrite_write" }
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+// schemas/migration-proposal.schema.json
+var migration_proposal_schema_default = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "urn:fusion:schema:fusion.migration-proposal/v1",
+  title: "fusion.migration-proposal/v1",
+  description: "The host's mapping proposal, the input the migration's plan phase reads from .json-state/migration/ by {path, sha256} (FJ04 contract delta, amended for Prior ab9cb59). The host composes it from the legacy v12 Markdown (hooks/lib/legacy-import.ts composeProposal) and writes nothing else; the codec reads it, never writes it, and freezes it into fusion.migration-plan/v1's index and parts. It never travels and is no control record, so the 1 MiB record cap does not bind it; its cap is 16 MiB. A proposal that does not validate here is refused schema-invalid/proposal-invalid. It carries the record cut with fresh UUIDs, each record's target control, the backup path of its original, and, for a live narrative the import changes, the rewrite as byte deletions bound by the record's source_sha256 before and the rewrite's after_sha256 behind. It also carries every finding of both severities, the repair log of the consented repairs, the root exclusions the host proposes, and every operation id of the run, frozen before dispatch (request 45f). It carries no inventory: plan takes its own under the lock. Rules JSON Schema cannot check, each refused by plan in the contract's order: no UUID occurs twice across operation_ids' four members, none already has a stored answer or an intent in this workbench, the request's operation_id is operation_ids.plan, and once the writes are cut apply holds at least one id per chunk and rollback at least one more than that (proposal-invalid); an exclusion holds no narrative or control path the plan reads or writes (proposal-invalid); a record UUID occurs once across workbench_id and the records' keys, and each control's id is its key and its workbench_id the proposal's (duplicate-id); no control path is present on disk (conflict/record-exists); no finding is blocking (migration-incomplete/blocking-finding); every record_ref at every reference site names a proposed record (closure-incomplete); every source_sha256 matches the inventory plan takes (conflict/source-changed). Also unchecked here: backup is archive/migrations/<migration_id>/originals/<narrative>; deletion ranges ascend, do not overlap and lie inside the source bytes, and applying them gives after_sha256 (proposal-invalid); a terminal record has no rewrite.",
+  type: "object",
+  additionalProperties: false,
+  required: ["counts", "exclusions", "findings", "migration_id", "operation_ids", "records", "repairs", "schema", "source_layout", "workbench_id"],
+  properties: {
+    schema: { const: "fusion.migration-proposal/v1" },
+    migration_id: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/migration_id" },
+    workbench_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid", description: "The new workbench UUID, fixed in the index and reused by a resume." },
+    source_layout: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/source_layout" },
+    operation_ids: {
+      type: "object",
+      description: "Every operation id of the run, chosen by the caller and frozen before dispatch (request 45f). plan assigns apply[i-1] to chunk i (chunk 1's also names the fence it sets) and rollback[k] to rollback chunk k from 0 to the chunk count, fixes them in the index's schedule, and lists the surplus ids there as unassigned.",
+      additionalProperties: false,
+      required: ["apply", "plan", "rollback", "verify"],
+      properties: {
+        plan: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid", description: "The plan request's own operation_id." },
+        apply: { type: "array", minItems: 1, uniqueItems: true, items: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" } },
+        verify: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        rollback: { type: "array", minItems: 2, uniqueItems: true, items: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" }, description: "Rollback chunk 0's id included, so always one more than the apply ids a cut uses." }
+      }
+    },
+    exclusions: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/exclusions" },
+    records: {
+      type: "object",
+      description: "The record cut, keyed by the fresh record UUID. A UUID repeated as a key is refused by the strict reader (duplicate-key).",
+      propertyNames: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+      additionalProperties: { $ref: "#/$defs/record" }
+    },
+    counts: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/counts" },
+    findings: {
+      type: "array",
+      description: "Every finding of the reader, blocking and reported. A blocking one is admitted here and refused by plan as migration-incomplete/blocking-finding; the reported ones are frozen into the plan's findings parts, which the receipt binds by hash.",
+      items: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/finding" }
+    },
+    repairs: {
+      type: "array",
+      description: "The repair log of step 8 (the session's repair-log.jsonl, outside the workbench), carried inline in the order applied, since the codec reads nothing outside the workbench; plan freezes it into the repairs parts.",
+      items: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/repair" }
+    }
+  },
+  $defs: {
+    record: {
+      type: "object",
+      description: "One converted pair: its row of the record cut, its narrative as read, its new control file and the control it will carry.",
+      additionalProperties: false,
+      required: ["backup", "control", "control_path", "kind", "narrative", "rewrite", "row", "source_sha256"],
+      properties: {
+        row: { type: "string", enum: ["package-live", "package-terminal", "record-live", "record-closure"] },
+        kind: { type: "string", enum: ["package", "issue", "plan", "discussion", "decision"] },
+        narrative: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/narrative/properties/path" },
+        source_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256", description: "The narrative's bytes as the survey hashed them, after repair: the original's hash and a rewrite's before-hash." },
+        control_path: {
+          allOf: [
+            { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { type: "string", pattern: "(^|/)(package|[^/]+\\.record)\\.json$" }
+          ]
+        },
+        backup: {
+          allOf: [
+            { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/originals/.+\\.md$" }
+          ],
+          description: "Where the original goes; the control's provenance.backup names the same path."
+        },
+        rewrite: {
+          description: "null when the narrative stays byte-identical (every terminal record, and a live one with nothing to remove).",
+          oneOf: [
+            { type: "null" },
+            {
+              type: "object",
+              additionalProperties: false,
+              required: ["after_sha256", "deletions"],
+              properties: {
+                after_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+                deletions: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/deletions" }
+              }
+            }
+          ]
+        },
+        control: {
+          oneOf: [
+            { $ref: "urn:fusion:schema:fusion.package/v1" },
+            { $ref: "urn:fusion:schema:fusion.record/v1" }
+          ]
+        }
+      }
+    }
+  }
+};
+
+// schemas/migration-receipt.schema.json
+var migration_receipt_schema_default = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "urn:fusion:schema:fusion.migration-receipt/v1",
+  title: "fusion.migration-receipt/v1",
+  description: "The receipt of a verified migration, archive/migrations/<migration id>/receipt.json (spec section 8.3.6; FJ04 contract delta, amended for Prior ab9cb59), written by the verify phase in one intent with the manifest, the manifest last; workbench.json's migration.receipt names it by path only. The receipt hashes the manifest and the manifest does not hash the receipt, so neither refers to itself. A receipt exists only for a run whose every check passed: a failing check is migration-incomplete/check-failed and writes no receipt. It binds the frozen plan by hash instead of copying it: the index, and every part the index names, each by path and sha256; the repair log and the findings are among those parts. It holds no secret and no local journal. Rules JSON Schema cannot check: plan.sha256 is the hash of the index's exact bytes, and parts are exactly the index's parts in its order, at the hashes it names; verify_operation_id is the index's scheduled verify id; after_inventory_sha256 is the sha256 over the codec's canonical JSON of the eligible after-state inventory verify compared, entries sorted bytewise by path, the baseline a later rollback compares against; manifest_revision is the revision of the workbench.json bytes the same intent writes. A second-run plan and the first rollback after activation check identity, integrity and availability against these fields (migration-incomplete/receipt-unverified).",
+  type: "object",
+  additionalProperties: false,
+  required: ["after_inventory_sha256", "checks", "counts", "manifest_revision", "migration_id", "parts", "plan", "schema", "source_layout", "verify_operation_id", "versions", "workbench_id"],
+  properties: {
+    schema: { const: "fusion.migration-receipt/v1" },
+    migration_id: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/migration_id" },
+    workbench_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+    source_layout: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/source_layout" },
+    plan: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/plan_ref", description: "The frozen index this run executed, at its exact revision." },
+    parts: {
+      type: "array",
+      description: "Every plan file the index names, by path and hash, in the index's order.",
+      minItems: 1,
+      uniqueItems: true,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["path", "sha256"],
+        properties: {
+          path: {
+            allOf: [
+              { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+              { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/(chunks/[1-9][0-9]*|parts/(records|inventory|findings|repairs)-[1-9][0-9]*)\\.json$" }
+            ]
+          },
+          sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+        }
+      }
+    },
+    verify_operation_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid", description: "The operation id of the verify that wrote this receipt; its stored answer is exempt from a later rollback's baseline." },
+    after_inventory_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+    checks: {
+      type: "array",
+      description: "Every check verify ran, each with the number of items it covered.",
+      minItems: 1,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["checked", "name", "result"],
+        properties: {
+          name: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/token" },
+          result: { const: "passed" },
+          checked: { type: "integer", minimum: 0 }
+        }
+      }
+    },
+    counts: { $ref: "urn:fusion:schema:fusion.migration-plan/v1#/$defs/counts" },
+    versions: {
+      type: "object",
+      description: "What wrote the store: the schema ids and the features of the codec that ran verify, as inspect reports them.",
+      additionalProperties: false,
+      required: ["features", "schemas"],
+      properties: {
+        schemas: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } },
+        features: { type: "array", minItems: 1, uniqueItems: true, items: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/token" } }
+      }
+    },
+    manifest_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+  }
+};
+
 // schemas/package.schema.json
 var package_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
@@ -12160,7 +13305,7 @@ var protocol_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.protocol/v1",
   title: "fusion.protocol/v1",
-  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence.",
+  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
   type: "object",
   required: ["op"],
   properties: {
@@ -12525,8 +13670,57 @@ var protocol_schema_default = {
       properties: {
         op: { const: "migration" },
         workbench: { $ref: "#/$defs/workbench" },
-        phase: { type: "string", enum: ["survey", "plan", "apply", "verify"] },
-        plan: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path", description: "The frozen plan; required from apply on, which the operation checks." }
+        phase: { const: "survey", description: "A read: no operation_id, no stored answer, and no .json-state/ is created (request 45c)." }
+      }
+    },
+    {
+      type: "object",
+      additionalProperties: false,
+      required: ["op", "operation_id", "phase", "proposal"],
+      properties: {
+        op: { const: "migration" },
+        workbench: { $ref: "#/$defs/workbench" },
+        operation_id: { $ref: "#/$defs/operation_id" },
+        phase: { const: "plan" },
+        proposal: { $ref: "#/$defs/migration_proposal" }
+      }
+    },
+    {
+      type: "object",
+      additionalProperties: false,
+      required: ["op", "operation_id", "phase", "plan", "chunk"],
+      properties: {
+        op: { const: "migration" },
+        workbench: { $ref: "#/$defs/workbench" },
+        operation_id: { $ref: "#/$defs/operation_id", description: "The operation id the frozen index's schedule fixes for this chunk (conflict/operation-id-unscheduled otherwise); chunk 1's is the fence's id." },
+        phase: { const: "apply" },
+        plan: { $ref: "#/$defs/migration_plan" },
+        chunk: { type: "integer", minimum: 1, description: "The chunk of the frozen plan this request lands, from 1, in order." }
+      }
+    },
+    {
+      type: "object",
+      additionalProperties: false,
+      required: ["op", "operation_id", "phase", "plan"],
+      properties: {
+        op: { const: "migration" },
+        workbench: { $ref: "#/$defs/workbench" },
+        operation_id: { $ref: "#/$defs/operation_id" },
+        phase: { const: "verify" },
+        plan: { $ref: "#/$defs/migration_plan" }
+      }
+    },
+    {
+      type: "object",
+      additionalProperties: false,
+      required: ["op", "operation_id", "phase", "plan", "chunk"],
+      properties: {
+        op: { const: "migration" },
+        workbench: { $ref: "#/$defs/workbench" },
+        operation_id: { $ref: "#/$defs/operation_id" },
+        phase: { const: "rollback" },
+        plan: { $ref: "#/$defs/migration_plan" },
+        chunk: { type: "integer", minimum: 0, description: "The highest chunk still landed, rolled back by one intent; 0 removes the plan files once no chunk is landed. Rollback never removes the fence; only maintenance end does." }
       }
     }
   ],
@@ -12540,6 +13734,36 @@ var protocol_schema_default = {
     operation_id: {
       $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid",
       description: "Caller-chosen, reusable for an identical replay; stored under .json-state/ops/<operation_id>.json with the answer."
+    },
+    migration_proposal: {
+      type: "object",
+      description: "The host's mapping proposal (fusion.migration-proposal/v1), a file under .json-state/migration/ that never travels, bound by the sha256 of its exact bytes (request 45a); the codec reads it and never writes it. A hash differing from the file is conflict/source-changed; its 16 MiB cap and its content are checked by the operation (schema-invalid/proposal-invalid). The request digest covers the hash, so a changed proposal under a used operation id is conflict/operation-id-reused.",
+      additionalProperties: false,
+      required: ["path", "sha256"],
+      properties: {
+        path: {
+          allOf: [
+            { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { type: "string", pattern: "^\\.json-state/migration/[^/]+$" }
+          ]
+        },
+        sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
+    },
+    migration_plan: {
+      type: "object",
+      description: "The frozen plan's index, archive/migrations/<migration id>/plan.json (fusion.migration-plan/v1), bound by the sha256 of its exact bytes (request 45a); the index binds every other plan file by hash in turn (conflict/plan-file-changed otherwise).",
+      additionalProperties: false,
+      required: ["path", "sha256"],
+      properties: {
+        path: {
+          allOf: [
+            { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { type: "string", pattern: "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/plan\\.json$" }
+          ]
+        },
+        sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
     },
     record_selector: {
       type: "object",
@@ -13037,6 +14261,9 @@ function installInlined() {
     { source: "schemas/campaign.schema.json", value: campaign_schema_default },
     { source: "schemas/common.schema.json", value: common_schema_default },
     { source: "schemas/evidence.schema.json", value: evidence_schema_default },
+    { source: "schemas/migration-plan.schema.json", value: migration_plan_schema_default },
+    { source: "schemas/migration-proposal.schema.json", value: migration_proposal_schema_default },
+    { source: "schemas/migration-receipt.schema.json", value: migration_receipt_schema_default },
     { source: "schemas/package.schema.json", value: package_schema_default },
     { source: "schemas/protocol.schema.json", value: protocol_schema_default },
     { source: "schemas/record.schema.json", value: record_schema_default },
@@ -13095,7 +14322,7 @@ ${USAGE}
   let bytes;
   if (args.file !== null) {
     try {
-      bytes = readFileSync7(args.file);
+      bytes = readFileSync8(args.file);
     } catch (e) {
       process.stderr.write(`fusion-record: cannot read ${args.file}: ${e instanceof Error ? e.message : String(e)}
 ${USAGE}

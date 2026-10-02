@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:fusion:schema:fusion.protocol/v1",
   "title": "fusion.protocol/v1",
-  "description": "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence.",
+  "description": "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
   "type": "object",
   "required": ["op"],
   "properties": {
@@ -367,8 +367,57 @@
       "properties": {
         "op": { "const": "migration" },
         "workbench": { "$ref": "#/$defs/workbench" },
-        "phase": { "type": "string", "enum": ["survey", "plan", "apply", "verify"] },
-        "plan": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path", "description": "The frozen plan; required from apply on, which the operation checks." }
+        "phase": { "const": "survey", "description": "A read: no operation_id, no stored answer, and no .json-state/ is created (request 45c)." }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "phase", "proposal"],
+      "properties": {
+        "op": { "const": "migration" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "phase": { "const": "plan" },
+        "proposal": { "$ref": "#/$defs/migration_proposal" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "phase", "plan", "chunk"],
+      "properties": {
+        "op": { "const": "migration" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id", "description": "The operation id the frozen index's schedule fixes for this chunk (conflict/operation-id-unscheduled otherwise); chunk 1's is the fence's id." },
+        "phase": { "const": "apply" },
+        "plan": { "$ref": "#/$defs/migration_plan" },
+        "chunk": { "type": "integer", "minimum": 1, "description": "The chunk of the frozen plan this request lands, from 1, in order." }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "phase", "plan"],
+      "properties": {
+        "op": { "const": "migration" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "phase": { "const": "verify" },
+        "plan": { "$ref": "#/$defs/migration_plan" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "phase", "plan", "chunk"],
+      "properties": {
+        "op": { "const": "migration" },
+        "workbench": { "$ref": "#/$defs/workbench" },
+        "operation_id": { "$ref": "#/$defs/operation_id" },
+        "phase": { "const": "rollback" },
+        "plan": { "$ref": "#/$defs/migration_plan" },
+        "chunk": { "type": "integer", "minimum": 0, "description": "The highest chunk still landed, rolled back by one intent; 0 removes the plan files once no chunk is landed. Rollback never removes the fence; only maintenance end does." }
       }
     }
   ],
@@ -382,6 +431,36 @@
     "operation_id": {
       "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid",
       "description": "Caller-chosen, reusable for an identical replay; stored under .json-state/ops/<operation_id>.json with the answer."
+    },
+    "migration_proposal": {
+      "type": "object",
+      "description": "The host's mapping proposal (fusion.migration-proposal/v1), a file under .json-state/migration/ that never travels, bound by the sha256 of its exact bytes (request 45a); the codec reads it and never writes it. A hash differing from the file is conflict/source-changed; its 16 MiB cap and its content are checked by the operation (schema-invalid/proposal-invalid). The request digest covers the hash, so a changed proposal under a used operation id is conflict/operation-id-reused.",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "allOf": [
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { "type": "string", "pattern": "^\\.json-state/migration/[^/]+$" }
+          ]
+        },
+        "sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
+    },
+    "migration_plan": {
+      "type": "object",
+      "description": "The frozen plan's index, archive/migrations/<migration id>/plan.json (fusion.migration-plan/v1), bound by the sha256 of its exact bytes (request 45a); the index binds every other plan file by hash in turn (conflict/plan-file-changed otherwise).",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "allOf": [
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+            { "type": "string", "pattern": "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/plan\\.json$" }
+          ]
+        },
+        "sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
     },
     "record_selector": {
       "type": "object",
