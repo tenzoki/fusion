@@ -1,7 +1,7 @@
 # Implementation Plan: `--format markdown` and `--format json` for `bin/fusion-work-order`
 
 **Date:** 2026-10-02
-**Status:** Ready for Review
+**Status:** Complete
 **Spec:** none for this increment. Planned from the user's request of 2026-10-02 ("füge zwei weitere ausgabe-format formate zu wp-order hinzu: markdown und json"). That request supersedes D1 ("TSV only, no JSON") of `261001-1934_*_spec-work-order-slash-command-and-machine-readable-output.md`. Every other ruling of that spec still holds: D2 (text output byte-identical), the single format selector as the helper's only argument, and the order as a computation rather than a ranking (`260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md`, option 3).
 **Decidability:** Can both new formats be rendered from the `WorkGraphReport` that `computeWorkGraph()` already returns, with no second parse of any record and no new field? Yes. The TSV renderer already derives all ten columns from it (the `field` boolean was added for TSV in 12.1.0), along with the summary figures, the caveat, the per-row cycle number and the per-row unresolved list. JSON and Markdown need nothing TSV does not already read. The one question no test can decide, whether a renderer is faithful to the computation, is answered structurally: all four formats read one projection (Approach).
 
@@ -153,12 +153,13 @@ This is the user's own invocation (`/fusion:wp-order --format tsv`) made true, a
    - Dependencies: 1. Step 2 is only needed for the full-green claim.
    - Done 2026-10-02: skill +852 bytes (4 425 -> 5 277; skills surface 208 165 of 228 028). `reference-resolution-lint` `BASELINE` paths 1753 -> 1757, re-approved on its line with attribution (skill +2, `README-hooks.md` +1, `README-agents.md` +1). Golden regenerated (wp-order row only). No head-room constant moved, the raise log untouched.
 
-4. **Release surfaces for 12.2.0**
+4. **Release surfaces for 12.2.0** [DONE]
    - Executor: `code-implementer`
    - Files: `.claude-plugin/plugin.json` (`12.1.0` -> `12.2.0`, a minor bump: two options added, nothing removed), `skills/help/SKILL.md` `### 4. Update` (a "Coming from a 12.1.0 install" paragraph that relabels the ones below and drops the oldest, so it still carries three), the `FUSION_REF=tags/v12.2.0` examples in `install.sh` (header) and `README.md:26`, the golden, and the reference pin if it moves.
    - Changes: as listed. `docs/upgrading-to-v12.md` is unchanged, because this release renames nothing it describes. The `description` pair in `plugin.json` and `marketplace.json` is read side by side and left alone unless it names the formats. The marketplace edit itself is the release act (`## Where this work stops`).
    - Acceptance: `npm test` green and `claude plugin validate .` passes.
    - Dependencies: 1, 2, 3.
+   - Done 2026-10-02: `plugin.json` 12.1.0 -> 12.2.0; the `FUSION_REF=tags/v12.2.0` pin in `install.sh` and `README.md`; `skills/help/SKILL.md` `### 4. Update` gained the 12.1.0-install paragraph and dropped the 11.11.2 one (still three; 15 886 -> 15 047 bytes). `reference-resolution-lint` `BASELINE` paths 1757 -> 1758, re-approved with attribution (help skill alone). Golden regenerated (help row only). The `description` pair names no format and was left alone; `docs/upgrading-to-v12.md` unchanged. `npm test` exit 0, `claude plugin validate .` passed with warnings.
 
 ```mermaid
 flowchart TD
