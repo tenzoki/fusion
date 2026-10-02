@@ -41,3 +41,6 @@ Option 2. The question the cache answers is "has **this checkout** performed thi
 
 ---
 Answered: 260910-1600_*_does-the-periodic-check-cache-belong-in-a-file-that-travels-between-checkouts.md `## Options` — option 2: the periodic-check cache moves out of the tracked `.fusion-setup` into a local, untracked file of its own, after the `.cadence-anchors` model; to be fixed on `main` as well (issue 260924-1732_*_the-periodic-check-cache-travels-in-the-tracked-setup-marker.md); ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: 421d0f89 — option 2: the periodic-check stamps live in the local `fusion-workbench/.check-stamps` (`skills/check/SKILL.md`, opening section), ignored by `.gitignore` line 103, and `.fusion-setup` now carries only `setup_at` and `plugin_version`; issue 260924-1732_*_the-periodic-check-cache-travels-in-the-tracked-setup-marker.md is closed on it.

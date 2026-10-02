@@ -11,3 +11,5 @@ Class (b) of `hooks/lib/__tests__/reference-resolution-lint.test.ts` (`ANCHOR_RE
 **Acceptance.** One of these holds:
 - (a) class (b) also resolves `## X` against a `.ts` or `bin/` file's header comment, matching a comment line `* ## X` or `# ## X` by prefix as for Markdown. The anchors above count toward `BASELINE.anchors`, and renaming `## The JSON format` in `hooks/order.ts` turns the lint red.
 - (b) the lint header says that anchors into non-Markdown files are deliberately not resolved, and why.
+
+**Reconciliation 261002-1155 (state-auditor, domain `code`, HEAD `23e97066`) — still open.** `hooks/lib/__tests__/reference-resolution-lint.test.ts` is unchanged since `d3311e73`: `ANCHOR_RE` still resolves `.md` file tokens only and the file header states no deliberate exclusion, so neither (a) nor (b) holds. The work package closed `done` at `3210689a` with this record open.

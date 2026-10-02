@@ -31,3 +31,6 @@
 
 ---
 Answered: 260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md `## Options` — none of the three as written; the user splits the concern: filing a new work package gets a command of its own in place of `/fusion:memo idea:`, and `/fusion:memo` keeps the personal log, keyed per person instead of per checkout, as one task file and one notes file, the target chosen by content; the store stays outside the record model. Neither change is built yet; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: 092e9c8b — both halves of the split: `/fusion:wp` files a new work package (`skills/wp/SKILL.md`), and `/fusion:memo` keeps one `tasks-<person>.md` and one `notes-<person>.md` per person (`skills/memo/SKILL.md`); released in 11.11.2 (`68322790`).

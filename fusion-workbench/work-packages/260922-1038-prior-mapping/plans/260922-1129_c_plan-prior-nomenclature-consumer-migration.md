@@ -1,7 +1,7 @@
 # Implementation Plan: Migrate a consuming project's workbench to the PRIOR/Fusion store names (part 2 of 2)
 
 **Date:** 2026-09-22
-**Status:** Approved at the plan gate on 2026-09-23; revised in place against `eef3ced0` the same day
+**Status:** Complete
 **Spec:** 260922-1106_*_spec-prior-nomenclature-consumer-migration.md (Decided; the two user rulings of 2026-09-22, C5 and C10, and the nine defaults of its `## User Decisions Pending` stand)
 **Cross-references:** 260922-1038-prior-mapping.md, nomenclature.md (this container), 260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1114_*_plan-prior-nomenclature-plugin-source.md, 260922-1125_*_does-the-store-name-migration-carry-its-mechanics-in-the-skill-body-or-in-a-bin-helper.md, 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md, 260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md, 260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md, 260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md, and the seven `260922-1059_*` records this container holds (planning input; none is answered here and no step depends on an answer)
 **Survey commit:** `eef3ced0` (first surveyed at `ad5535df`). Working tree clean on every shipped surface (only `fusion-workbench/orchestrator-events.jsonl` modified); the `work-graph` work the first survey found uncommitted has since landed. `npm test` in `hooks/` green at `eef3ced0` (exit 0; 58 files, 987 tests). Every figure below was re-measured at `eef3ced0` and names the command that produced it.
@@ -313,3 +313,7 @@ Filled by the executor at the commit of steps 1 to 4, at step 7, and at step 9; 
 | baseline `eef3ced0` | `CLAUDE.md` bytes | 8 022 (step 6 re-measures) | | 0 on every dispatch path (each path 2 bytes under its row) | |
 | baseline `eef3ced0` | `rules/fusion-workbench-conventions.md` bytes | 69 221 (step 5 re-measures) | | 0 on every dispatch path | |
 | baseline (step 8) | `bin/fusion-citation-check` dangling / store-prefixed over the workbench | (step 8 records) | (step 9 records) | equal | |
+
+## Reconciliation Log
+
+**261002-1155 (state-auditor, domain `code`, HEAD `23e97066`) — `**Status:**` → `Complete`, marker `_o_` → `_c_`.** All nine steps carry `[DONE]`. The first run on this repository is the migration commit `7d2ea602`, followed by the two 12.0.1 repairs to the pass (`8489c4ed`, `6d68c297`, released at `996d48fd`); `cd hooks && npm test` exits 0 at HEAD (60 files, 1 012 tests). Drift from `## Where this work stops`: its last-but-one clause says the seven `260922-1059_*` records stay `_o_` at the end of this work; all seven were ruled by the user afterwards and stand at `_a_` or `_i_`, which is a later ruling and not a fault of this plan.

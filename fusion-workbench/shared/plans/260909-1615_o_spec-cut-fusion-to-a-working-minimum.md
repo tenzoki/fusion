@@ -511,3 +511,7 @@ Verified at HEAD: `ls agents/*.md | wc -l` returns 11; `cd hooks && npm test` ex
 967 tests; `node hooks/dist/citation-check.js` reads `verdict=clean`. The marker stays `_o_` for the
 reason the 260911 pass gave: renaming to `_c_` would assert that the Directive stated here was met, and
 it was not. Closing it bounded, with the eleven-versus-eight named, is the user's call.
+
+---
+
+**261002-1155 (state-auditor, domain `code`, HEAD `23e97066`) — marker and status unchanged.** `ls agents/*.md` still returns 11 against the Directive's eight (the seven renames of 12.0.0 changed names, not the count); `cd hooks && npm test` exits 0 at 60 files and 1 012 tests. Bounded closure with the eleven-versus-eight named is still the user's call.

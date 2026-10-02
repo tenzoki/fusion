@@ -62,3 +62,6 @@ The four renderers really do read one projection. Text and TSV output are byte-i
 - **Before the tag (release act, not a defect):** `git tag -l 'v12*'` lists no `v12.2.0`. The marketplace working clone's `marketplace.json` still says `12.1.0`. The release commit does not state `bin/fusion-review-coverage --since v12.1.0`, which `README-agents.md` `## Releasing` step 0 asks for, in the commit or the session log. With this file in place, that run reports `uncovered=2`: `b56032fb` and `f74ec59b`, the range's exclusive lower end. Both touch the workbench only.
 - **Patch release or next touch of `hooks/order.ts`:** M1 is a single sentence plus a dist rebuild. L1 is a line-neutral fixture widening. Both can go into one commit.
 - **Whenever convenient:** L2 (lint scope), and L3, which belongs to whoever closes the work package.
+
+---
+**Reconciliation 261002-1155 (state-auditor, HEAD `23e97066`).** M1 resolved at `e0032f06` (`hooks/order.ts` `## The JSON format`; 261002-0926_*_the-json-contract-says-every-array-is-empty-on-verdict-empty-while-the-helper-prints-unreadable-records-there.md closed). L1, L2 and L3 are unchanged at HEAD and their three records stay open. The release act named under `## Recommended sequencing` is done: `git tag -l 'v12*'` lists `v12.2.0`.

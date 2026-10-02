@@ -24,20 +24,20 @@ flowchart LR
 **Description:** A person in a fusion session types `/fusion:wp-order`. The command checks that it sits inside a fusion workbench and that the installed fusion carries the helper. It then runs `bin/fusion-work-order` and renders what the helper printed, readably and in the project's chat language: the summary figures, the ordered item table, and any cycle, unresolved-entry and unreadable-record rows. Any `note=` line is repeated to the person in a sentence of its own. The command adds nothing the helper did not compute. The body follows the shape of the existing wrapper skills (`skills/news/SKILL.md`, `skills/wp/SKILL.md`): the mechanics stay documented in the helper's own header, and the body carries only the flow and the sentences the person reads. The command's name differs from the helper's, so the body says which helper it wraps.
 
 **Acceptance criteria:**
-- [ ] The skill lives at `skills/wp-order/SKILL.md`, and the command is `/fusion:wp-order`.
-- [ ] The skill body names `bin/fusion-work-order` as the helper it wraps and points to that helper's header as the authoritative account of the mechanics.
-- [ ] Typing the command in a project that has a fusion workbench shows the summary figures (items, edges, unresolved entries, cycles, ready, roots, items with no prerequisite field, unreadable records, verdict) and one line per item in the helper's order. Each line shows position, depth, blocking count, readiness and item name.
-- [ ] Item order, readiness words and figures in the rendering match the helper's own output for the same store, item for item. The command never reorders, filters, groups by preference or omits an item.
+- [x] The skill lives at `skills/wp-order/SKILL.md`, and the command is `/fusion:wp-order`.
+- [x] The skill body names `bin/fusion-work-order` as the helper it wraps and points to that helper's header as the authoritative account of the mechanics.
+- [x] Typing the command in a project that has a fusion workbench shows the summary figures (items, edges, unresolved entries, cycles, ready, roots, items with no prerequisite field, unreadable records, verdict) and one line per item in the helper's order. Each line shows position, depth, blocking count, readiness and item name.
+- [x] Item order, readiness words and figures in the rendering match the helper's own output for the same store, item for item. The command never reorders, filters, groups by preference or omits an item.
 - [ ] When the helper prints a `note=` line, the person sees its content as a separate sentence in the chat language, and it is never folded into a table or dropped.
 - [ ] Every cycle, unresolved-entry and unreadable-record row the helper printed is named to the person, along with what each means.
-- [ ] `verdict=empty` is reported as a real answer ("no live work packages"), never as an error.
-- [ ] The command never says which item to take next, never adds a recommendation or a priority, and never calls the order binding. It reports the order as the helper's computation, which the user may override.
-- [ ] Outside a fusion workbench the command stops with the standard message to run `/fusion:setup` at the project root, and creates nothing.
-- [ ] When the installed fusion does not carry an executable `bin/fusion-work-order`, the command stops with a message naming `fusion --update` followed by a session restart.
+- [x] `verdict=empty` is reported as a real answer ("no live work packages"), never as an error.
+- [x] The command never says which item to take next, never adds a recommendation or a priority, and never calls the order binding. It reports the order as the helper's computation, which the user may override.
+- [x] Outside a fusion workbench the command stops with the standard message to run `/fusion:setup` at the project root, and creates nothing.
+- [x] When the installed fusion does not carry an executable `bin/fusion-work-order`, the command stops with a message naming `fusion --update` followed by a session restart.
 - [ ] Each of the helper's non-zero exits is reported distinctly: no workbench (2), compiled hooks missing, so the install is broken and `fusion --update` is the remedy (3), and usage error (1), which is reported as a fusion defect and not as the person's fault.
-- [ ] The command writes no file, commits nothing, asks the person no question and dispatches no agent.
-- [ ] The helper is invoked through `$FUSION_PLUGIN_ROOT/bin/fusion-work-order` and never as a bare `bin/...` path, so it resolves in a consuming project (issue `260916-0755_*_the-work-order-helper-is-named-bare-in-shipped-text-so-a-consuming-project-reader-resolves-nothing.md`).
-- [ ] The new skill body is no larger than 6 000 bytes, and the skill-body growth bound stays green.
+- [x] The command writes no file, commits nothing, asks the person no question and dispatches no agent.
+- [x] The helper is invoked through `$FUSION_PLUGIN_ROOT/bin/fusion-work-order` and never as a bare `bin/...` path, so it resolves in a consuming project (issue `260916-0755_*_the-work-order-helper-is-named-bare-in-shipped-text-so-a-consuming-project-reader-resolves-nothing.md`).
+- [x] The new skill body is no larger than 6 000 bytes, and the skill-body growth bound stays green.
 
 **Decisions made:**
 - Name: `/fusion:wp-order`, directory `skills/wp-order/` (user, 261001, D3). It sits beside `/fusion:wp` and deliberately differs from the helper's name. `wp-order` collides with no agent name in `bin/fusion-paths`' flat namespace.
@@ -52,46 +52,46 @@ flowchart LR
 **Acceptance criteria (the output contract):**
 
 *Selection and exits*
-- [ ] Run with no option, the helper prints byte-for-byte what it prints today. `--format text` selects that same output explicitly.
+- [x] Run with no option, the helper prints byte-for-byte what it prints today. `--format text` selects that same output explicitly.
 - [ ] `--format tsv` selects the stream below. No other format name exists.
-- [ ] Exit codes are unchanged and mean the same in every format: `0` the computation ran, whatever the verdict (a cycle and `empty` are both exit 0); `1` usage error, including an unknown format name, a missing format value or any other argument; `2` no fusion workbench above the working directory; `3` the plugin's compiled hooks are missing. On every non-zero exit stdout is empty and the reason goes to stderr, so a consumer never parses a partial stream.
+- [x] Exit codes are unchanged and mean the same in every format: `0` the computation ran, whatever the verdict (a cycle and `empty` are both exit 0); `1` usage error, including an unknown format name, a missing format value or any other argument; `2` no fusion workbench above the working directory; `3` the plugin's compiled hooks are missing. On every non-zero exit stdout is empty and the reason goes to stderr, so a consumer never parses a partial stream.
 
 *Stream layout*
-- [ ] The stream is UTF-8 without a byte-order mark. Every line ends in a single LF, the last line included, and there are no blank lines.
-- [ ] The stream has three parts in this order: comment lines, exactly one header line, zero or more item rows. The header is printed even when there are no rows (`verdict=empty`).
-- [ ] A comment line is `#` immediately followed by `key=value`, with no space: a consumer strips the first character and splits at the first `=`. The comment lines appear in this fixed order:
+- [x] The stream is UTF-8 without a byte-order mark. Every line ends in a single LF, the last line included, and there are no blank lines.
+- [x] The stream has three parts in this order: comment lines, exactly one header line, zero or more item rows. The header is printed even when there are no rows (`verdict=empty`).
+- [x] A comment line is `#` immediately followed by `key=value`, with no space: a consumer strips the first character and splits at the first `=`. The comment lines appear in this fixed order:
   1. `#format=1`, always the first line of the stream.
   2. `#anchor=workbench-root`.
   3. `#items=`, `#edges=`, `#unresolved-edges=`, `#cycles=`, `#ready=`, `#roots=`, `#no-depends-on-field=`, `#unreadable-head=`, each carrying the same integer the text format prints under the same key.
   4. `#verdict=` with `acyclic`, `cyclic` or `empty`.
   5. `#note=` with the same caveat text the text format prints after `note=`, present exactly when the text format prints a `note=` line and absent otherwise.
   6. `#unreadable=<item>`, one line per item record whose head yields no readable status, in ascending name order. None when `unreadable-head` is 0.
-- [ ] The header line is these ten column names, tab-separated, in this order. The first five are the text format's five columns in its own order:
+- [x] The header line is these ten column names, tab-separated, in this order. The first five are the text format's five columns in its own order:
 
   `order	depth	blocks	readiness	item	status	field	depends-on	unresolved	cycle`
 
 *Columns (one row per live item, in the computed order)*
-- [ ] `order`: integer, 1-based position in the computed order, consecutive and without gaps.
-- [ ] `depth`: integer, the longest prerequisite chain below the item; 0 where it has none.
-- [ ] `blocks`: integer, how many other live items wait on this one, transitively. This is the "blocked" figure the brief names.
-- [ ] `readiness`: `ready`, `blocked` or `paused`, with the meaning the helper header gives each. `paused` is the item's own status and overrides the two derived values, as in the text format.
-- [ ] `item`: the container directory name (`YYMMDD-HHMM-<slug>`).
-- [ ] `status`: the item's own `**Status:**`, one of `open`, `claimed`, `paused`.
-- [ ] `field`: `present` when the record carries a `**Depends-on:**` field and `absent` when it carries none. This column, and nothing in `depends-on`, distinguishes an absent field from an empty one, because an absent field asserts nothing (the ruling behind `note`) and no in-cell marker could be told apart from an entry spelled the same way.
-- [ ] `depends-on`: the field's entries exactly as written and in file order, unresolved entries included, joined with `,` and no space. Empty cell when `field` is `absent` and also when the field is present but empty. A comma inside an entry cannot occur, because the field's grammar splits on commas.
-- [ ] `unresolved`: the subset of this item's entries that resolved to no live item, joined with `,`, each once, in ascending order. Empty cell when there are none. An entry naming a terminal (`done`, `dropped`) or archived item appears here and stays in `depends-on`, as the text format reports it today.
-- [ ] `cycle`: `0` when the item is in no cycle; otherwise the 1-based number of its cycle, counted in the order the text format prints its `cycle=` rows. All members of one cycle carry the same number, and a cycle's members are the rows sharing it. A self-edge is a cycle of one.
-- [ ] Terminal and archived items never appear as rows.
+- [x] `order`: integer, 1-based position in the computed order, consecutive and without gaps.
+- [x] `depth`: integer, the longest prerequisite chain below the item; 0 where it has none.
+- [x] `blocks`: integer, how many other live items wait on this one, transitively. This is the "blocked" figure the brief names.
+- [x] `readiness`: `ready`, `blocked` or `paused`, with the meaning the helper header gives each. `paused` is the item's own status and overrides the two derived values, as in the text format.
+- [x] `item`: the container directory name (`YYMMDD-HHMM-<slug>`).
+- [x] `status`: the item's own `**Status:**`, one of `open`, `claimed`, `paused`.
+- [x] `field`: `present` when the record carries a `**Depends-on:**` field and `absent` when it carries none. This column, and nothing in `depends-on`, distinguishes an absent field from an empty one, because an absent field asserts nothing (the ruling behind `note`) and no in-cell marker could be told apart from an entry spelled the same way.
+- [x] `depends-on`: the field's entries exactly as written and in file order, unresolved entries included, joined with `,` and no space. Empty cell when `field` is `absent` and also when the field is present but empty. A comma inside an entry cannot occur, because the field's grammar splits on commas.
+- [x] `unresolved`: the subset of this item's entries that resolved to no live item, joined with `,`, each once, in ascending order. Empty cell when there are none. An entry naming a terminal (`done`, `dropped`) or archived item appears here and stays in `depends-on`, as the text format reports it today.
+- [x] `cycle`: `0` when the item is in no cycle; otherwise the 1-based number of its cycle, counted in the order the text format prints its `cycle=` rows. All members of one cycle carry the same number, and a cycle's members are the rows sharing it. A self-edge is a cycle of one.
+- [x] Terminal and archived items never appear as rows.
 
 *Escaping*
-- [ ] In every cell and in every comment value: a backslash is written `\\`, a tab `\t`, a carriage return `\r` and a line feed `\n`. Nothing else is escaped, and no quoting is used. Item names and the fixed vocabularies never need escaping. The rule exists so that an entry written by hand can never break a row.
+- [x] In every cell and in every comment value: a backslash is written `\\`, a tab `\t`, a carriage return `\r` and a line feed `\n`. Nothing else is escaped, and no quoting is used. Item names and the fixed vocabularies never need escaping. The rule exists so that an entry written by hand can never break a row.
 
 *Stability and versioning*
-- [ ] Two runs over an unchanged store print identical bytes.
-- [ ] Every ordering is fixed and locale-independent: rows in the computed order, comment lines in the order above, `#unreadable=` lines and the `unresolved` cell ascending by code unit, `depends-on` in file order.
-- [ ] Compatibility rule, stated in the helper header: `#format=` is an integer, `1` for the format this spec defines. Appending a new column after the last one, or adding a new comment key after `#verdict=`/`#note=` and before the `#unreadable=` lines, leaves `format` unchanged, and a consumer addresses columns by header name and ignores columns and comment keys it does not know. Removing, renaming or reordering an existing column or comment key, changing a value's meaning, vocabulary or encoding, or changing the escaping rule raises `format` by one.
-- [ ] The helper header documents the TSV format completely enough that a consumer can be written from the header alone: the layout, every comment key, every column, its absent and empty renderings, the list encoding, the escaping, the orderings, the exit codes and the compatibility rule.
-- [ ] Running the helper in any format still writes nothing and leaves no cache, index or marker behind.
+- [x] Two runs over an unchanged store print identical bytes.
+- [x] Every ordering is fixed and locale-independent: rows in the computed order, comment lines in the order above, `#unreadable=` lines and the `unresolved` cell ascending by code unit, `depends-on` in file order.
+- [x] Compatibility rule, stated in the helper header: `#format=` is an integer, `1` for the format this spec defines. Appending a new column after the last one, or adding a new comment key after `#verdict=`/`#note=` and before the `#unreadable=` lines, leaves `format` unchanged, and a consumer addresses columns by header name and ignores columns and comment keys it does not know. Removing, renaming or reordering an existing column or comment key, changing a value's meaning, vocabulary or encoding, or changing the escaping rule raises `format` by one.
+- [x] The helper header documents the TSV format completely enough that a consumer can be written from the header alone: the layout, every comment key, every column, its absent and empty renderings, the list encoding, the escaping, the orderings, the exit codes and the compatibility rule.
+- [x] Running the helper in any format still writes nothing and leaves no cache, index or marker behind.
 
 **Decisions made:**
 - TSV only, no JSON (user, 261001, D1).
@@ -106,16 +106,16 @@ flowchart LR
 **Description:** The places that describe who runs the helper, which commands exist and what each bound has been granted name the new command, the new format and the raise. Every sentence touched is true of the tree afterwards.
 
 **Acceptance criteria:**
-- [ ] The `order.ts` row in `README-hooks.md` (line 229 at `cfbc12dc`, verified) no longer says the helper is run "by a person and by nothing else" without naming `/fusion:wp-order`. It names the command as the route through which a person runs it, and it remains clear that no hook calls the helper and no pipeline step invokes it.
-- [ ] That same sentence's claim "no test checks it" is corrected or removed. It is already false at `cfbc12dc`: `hooks/lib/__tests__/fusion-work-order.test.ts` runs the helper. The same holds for the matching claims in the helper's own header ("no test, hook or pipeline step runs this program") and in `hooks/order.ts`'s header, since this work edits both headers anyway. A "no test gates on its verdict" wording would be true.
-- [ ] The `bin/fusion-work-order` row of the helper roster in `README-hooks.md` (line 336, verified) mentions the TSV format and the slash command that wraps the helper.
-- [ ] `README-agents.md`'s skill table carries exactly one row for `` `/fusion:wp-order` | `skills/wp-order/SKILL.md` ``, and the row says which helper the command wraps. This is enforced by `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` ("README-agents' skill table has exactly one row per skill directory").
-- [ ] `README-agents.md`'s roster sentence (the bullet ending "…which is why every body under `skills/` is named here", line 265, verified) names `/fusion:wp-order` among the situational commands. This is also lint-enforced, by "the sentence claiming every skill body is named there does name every one". The consultant left open whether such a lint exists. It does, in both directions, and without these two edits `npm test` goes red.
-- [ ] The test head-room raise granted under `## Constraints` is applied to `TEST_LINE_HEAD_ROOM` in `hooks/lib/__tests__/surface-growth-bound.test.ts` and logged in `README-hooks.md` `### Growth bounds on the shipped text`, beside the earlier raises. The log entry says who granted it, when, for which test lines, and that the figure equals the lines added.
-- [ ] `.claude-plugin/plugin.json` `version` is bumped from `12.0.1` (default: a minor bump to `12.1.0`, since a command and an option are added and nothing is removed).
-- [ ] The growth-bound golden (`hooks/lib/__tests__/fixtures/surface-growth.golden`) is regenerated with its documented flag, because the skill surface gains a file and the hook-test surface changes.
-- [ ] `npm test` (run in `hooks/`) is green, including the committed-build check, which requires the compiled helper in `hooks/dist/` to match its source.
-- [ ] The work ships in a released fusion version according to `README-agents.md` `## Releasing`. That condition is the work package's own end state, not an extra.
+- [x] The `order.ts` row in `README-hooks.md` (line 229 at `cfbc12dc`, verified) no longer says the helper is run "by a person and by nothing else" without naming `/fusion:wp-order`. It names the command as the route through which a person runs it, and it remains clear that no hook calls the helper and no pipeline step invokes it.
+- [x] That same sentence's claim "no test checks it" is corrected or removed. It is already false at `cfbc12dc`: `hooks/lib/__tests__/fusion-work-order.test.ts` runs the helper. The same holds for the matching claims in the helper's own header ("no test, hook or pipeline step runs this program") and in `hooks/order.ts`'s header, since this work edits both headers anyway. A "no test gates on its verdict" wording would be true.
+- [x] The `bin/fusion-work-order` row of the helper roster in `README-hooks.md` (line 336, verified) mentions the TSV format and the slash command that wraps the helper.
+- [x] `README-agents.md`'s skill table carries exactly one row for `` `/fusion:wp-order` | `skills/wp-order/SKILL.md` ``, and the row says which helper the command wraps. This is enforced by `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` ("README-agents' skill table has exactly one row per skill directory").
+- [x] `README-agents.md`'s roster sentence (the bullet ending "…which is why every body under `skills/` is named here", line 265, verified) names `/fusion:wp-order` among the situational commands. This is also lint-enforced, by "the sentence claiming every skill body is named there does name every one". The consultant left open whether such a lint exists. It does, in both directions, and without these two edits `npm test` goes red.
+- [x] The test head-room raise granted under `## Constraints` is applied to `TEST_LINE_HEAD_ROOM` in `hooks/lib/__tests__/surface-growth-bound.test.ts` and logged in `README-hooks.md` `### Growth bounds on the shipped text`, beside the earlier raises. The log entry says who granted it, when, for which test lines, and that the figure equals the lines added.
+- [x] `.claude-plugin/plugin.json` `version` is bumped from `12.0.1` (default: a minor bump to `12.1.0`, since a command and an option are added and nothing is removed).
+- [x] The growth-bound golden (`hooks/lib/__tests__/fixtures/surface-growth.golden`) is regenerated with its documented flag, because the skill surface gains a file and the hook-test surface changes.
+- [x] `npm test` (run in `hooks/`) is green, including the committed-build check, which requires the compiled helper in `hooks/dist/` to match its source.
+- [x] The work ships in a released fusion version according to `README-agents.md` `## Releasing`. That condition is the work package's own end state, not an extra.
 
 ## Stops when
 
@@ -154,3 +154,7 @@ flowchart LR
 ## User Decisions Pending
 
 None. D1 (TSV only), D2 (text output byte-identical), D3 (`/fusion:wp-order`) and D4 (a one-time test head-room raise of at most 40 lines) were answered by the user on 261001.
+
+## Reconciliation Log
+
+**261002-1155 (state-auditor, domain `code`, HEAD `23e97066`) — 44 criteria ticked, 4 left unticked, marker unchanged at `_o_`.** Verified by grep, by read-only runs of `bin/fusion-work-order` in all four formats over this workbench and three scratch stores, and by `cd hooks && npm test` (60 files, 1 012 tests, exit 0). The four unticked boxes are the ones 261002-0733_*_plan-work-order-markdown-and-json-formats.md changed on purpose: `### C2` "`--format tsv` only" (D1, which the plan names) and three `### C1` boxes the plan does not name, the `note=` sentence in the chat language, every cycle/unresolved/unreadable row named with its meaning, and exit 1 reported as a fusion defect. The fourth departure 261002-0926_*_the-plan-names-only-d1-as-superseded-while-the-pass-through-formats-also-relax-four-c1-criteria-of-the-spec.md lists, the chat language of the reply, sits in the `### C1` description rather than in a box. None of the 48 is false at HEAD for any other reason. The marker moves when that record's line naming the departures lands; the work package is already `done` (`3210689a`).

@@ -45,3 +45,6 @@ What survives unchanged from the old record: no mechanism is built for stale mar
 
 ---
 Answered: 260922-2125_*_is-the-rename-to-citation-obligation-dissolved-now-that-the-mandated-form-stales-nothing.md `## Answer` — option 2: the obligation is dissolved and the shipped-text clause retired with it; the old record is superseded by this one; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 1812feec — option 2 realised: 260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md renamed to `_s_` with a `Superseded by:` line citing this record; no shipped text carries the retired clause (`grep -rn "No fusion mechanism rewrites shipped text"` over `rules/ agents/ skills/ docs/ README*.md` is empty at `23e97066`).

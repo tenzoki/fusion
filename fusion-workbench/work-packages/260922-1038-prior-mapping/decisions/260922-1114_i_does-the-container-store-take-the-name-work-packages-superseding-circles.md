@@ -35,3 +35,6 @@ Option 1. The nomenclature is the user's own ruling and names the store; the old
 
 ---
 Answered: nomenclature.md `### Fusion workbench migration` — option 1, the container store becomes `work-packages/`, with `circles/` read beside it for the v12 window; confirmed at the plan gate of 260923-0839-implement-prior-nomenclature.md; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: 2c05cd6b, eabde08e, 7d2ea602 — the bash helpers and `hooks/lib/stores.ts` resolve and write `work-packages/` with `circles/` read only as the window's legacy name, and this repository's workbench was migrated to it; shipped in 12.0.0 (`75380775`).
