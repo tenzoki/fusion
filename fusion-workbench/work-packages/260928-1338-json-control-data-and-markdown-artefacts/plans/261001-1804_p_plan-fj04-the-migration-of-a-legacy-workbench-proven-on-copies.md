@@ -97,6 +97,48 @@ Source: `Prior: docs/design/fusion-fj04-contract-prior-response.md` at `ab9cb59`
 
 **New step 3a (`analyst`), before step 4's rework.** It appends `## FJ04 (the contract delta, amended for ab9cb59)` to `REQUESTS.md`. That section freezes the request and response shapes, the `pending` union, error precedence, the journal's removal format, plan freeze and cleanup, and questions 50 to 52 below. It is drafted in the scratchpad and appended by the orchestrator. Dependencies: step 3. Steps 4 to 6 build against it.
 
+**Step 3a [DONE].**
+   - Done (2026-10-02, analyst; drafted in the scratchpad, to be appended by the orchestrator, uncommitted). `## FJ04 (the contract delta, amended for ab9cb59)` is drafted as a pure append to `codec/fixtures/prior/REQUESTS.md`. In `scratchpad/REQUESTS-fj04-step3a.md` it starts at line 1600, with line 1599 blank, and runs to line 1900. The first 1 598 lines hash `sha256:335e612b…4020`, equal to the blob at `4ef69265`. It is stamped against fusion `4ef69265` (`git diff --stat 65700dd5 4ef69265 -- codec bin hooks` is empty, and `65700dd5` is the commit Prior reviewed), Prior `ab9cb59` (`git log --all --oneline ab9cb59..` empty), and the bundle `sha256:6b26faf2…b0bf`, 543 227 bytes, re-hashed from the blob. It does not rest on the uncommitted step 4 and 5 files.
+     - **What it holds.**
+       - A table mapping each ruling to fusion's answer, and the status of step 3's nine departures: (7) and (8) withdrawn.
+       - The files of one migration: an index holding only identity, `proposal {path, sha256}`, `exclusions`, the operation schedule and `{part, n, path, sha256}`; numbered parts for the records and counts, the inventory, the findings and the repairs; and the receipt binding the parts by hash, with `after_inventory_sha256` and `manifest_revision`, the manifest naming it by path only.
+       - The id schedule: plan, apply, verify and rollback ids frozen in the proposal, surplus ids `unassigned`.
+       - Exclusions: a rule plus a frozen list.
+       - The request and answer shapes of all five phases, `survey`'s entry forms included.
+       - The `pending` union.
+       - Who finishes a migration intent: only its own request.
+       - The order under the lock: a common prefix, then the per-phase precedence table.
+       - The second-run no-op with its receipt checks; progress by scheduled ids plus byte rechecks.
+       - The one-intent plan freeze with its bound.
+       - The inventory rechecks.
+       - The journal's removal entry.
+       - Rollback: the restore order, the post-activation baseline, chunk 0's evidence, `maintenance end` on legacy, the expected empty directories, and `bin/fusion-migrate restore-backup`.
+       - 46 to 49 as ruled.
+       - The amended repairs (C5, C7, the terminal-record ruling).
+       - The reason list.
+       - The recorded cases.
+       - What step 6 measures.
+       - Questions 50 (conditional), 51 and 52.
+     - **Checked by command for this text.** `git grep -l` at `4ef69265` over `codec/src`, `codec/contract`, `codec/schemas`, `codec/fixtures` and `hooks/lib` finds none of the eight new reason names, nor `active-document-role-conflict` or `plan-staged`. `referenceSites` is at `codec/src/cli/ops.ts:1948`, pinned by the `ops.test.ts` case at line 2797. `Write` is `{path, before: string | null, after: string}` (`codec/src/journal.ts:54`). `PendingInitialize` is `{operation_id, id, blocked}` (`codec/src/cli/ops.ts:410`). `commitIntent` caps each write and `intent.json` at 1 MiB (`journal.ts:139`, `:145`). The manifest's `migration` object is `{id, source_layout, receipt}` with the receipt by path (`codec/schemas/workbench.schema.json`).
+     - **Confidentiality.** The other two projects appear only as the second and the third workbench, in aggregate figures. `grep -i` for their names and directories over the section finds none, and no commit hash of theirs appears.
+     - **Departures from the plan's text, each stated in the section.**
+       - (1) `conflict/chunk-id-mismatch` is renamed `conflict/operation-id-unscheduled`, since verify and rollback ids are now scheduled. The uncommitted `codec/schemas/protocol.schema.json` names the old reason and is reworked in step 4.
+       - (2) Seven reasons beyond step 3's are new: `intent-pending`, `plan-too-large`, `receipt-unverified`, `check-failed`, `pending-migration-unreadable`, `pending-migration-ambiguous` and `migration-pending`, the last as the per-path problem a read reports for an untouched migration intent. `plan-staged` appears only inside question 50.
+       - (3) The plan named exclusions only as `.json-state/` and the migration's own files. The section adds a frozen list of workbench-root entries under a rule, because the host's hooks append to `orchestrator-events.jsonl` during the run and section 8.3.5 rewrites `.fusion-setup` after `verify`. Without it, chunk 1's full recheck would refuse any run started from a fusion session. This is drafted, not measured, and is new to Prior.
+       - (4) The codec, not the proposal, takes the inventory frozen at `plan`.
+       - (5) The receipt drops step 4's inline `repairs` and `findings` and gains `parts`, `verify_operation_id` and `after_inventory_sha256`.
+       - (6) The `verify` answer gains `plan` so that the pending variant is reconstructible.
+       - (7) Question 52 is sharpened: the first rollback derives the exempt set by rule (this migration's `verify`, the `end` naming chunk 1's fence, the standing `begin`) and binds it in `rollback.json`.
+       - (8) The rollback removes no directory. The empty bookkeeping directories it leaves are named.
+       - (9) The duplicate-number repair asks the owner which step each ambiguous citation means.
+     - **Rework this sets for step 4**, from the uncommitted files:
+       - protocol `proposal` and `plan` as `{path, sha256}`;
+       - the index slimmed, with the part shapes `records`, `inventory`, `findings` and `repairs`, `chunks` named as parts;
+       - the receipt as above;
+       - the proposal's `operation_ids` as an object `{plan, apply, verify, rollback}`, plus `exclusions`;
+       - an `inspect` answer schema admitting the pending variant;
+       - the invalid fixtures that name the renamed reason or the inline index fields.
+
 | Ruling | Step | Change |
 |---|---|---|
 | 45(a) hash binding | 4 (rework of the uncommitted files) | `plan` takes `proposal: {path, sha256}`; `apply`, `verify` and `rollback` take `plan: {path, sha256}`. The request digest covers both. |
