@@ -47,7 +47,6 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // asserts, it never rewrites a rule file.
 // ---------------------------------------------------------------------------
 
-
 // The position rule as a single named constant: a header counts only if it sits
 // within this many lines of the file's start. How ten was sized, why the
 // remaining margin is zero, and why the fix for a long lede is to move the

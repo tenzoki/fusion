@@ -6,7 +6,6 @@ import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import {
   measurePresence,
-  countTurns,
   renderParty,
   measureDispatchDurations,
   renderDispatch,
@@ -189,10 +188,6 @@ describe("renderParty appends the registry's alias as a sixth field", () => {
     expect(fields[5]).toBe("-");
   });
 });
-
-const HF = "circles/260825-2023-x/history/s.md";
-const S = (o: Row): Row => ({ event: "session_start", history_file: HF, ...o });
-const T = (o: Row): Row => ({ event: "turn_start", ...o });
 
 /* --- The entry point, as `bin/fusion-events` runs it ----------------------- */
 

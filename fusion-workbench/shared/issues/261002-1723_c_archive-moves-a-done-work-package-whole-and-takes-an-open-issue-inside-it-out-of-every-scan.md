@@ -10,3 +10,6 @@ Evidence, measured in the consuming project krk on 2026-10-02: `/fusion:archive 
 The same gap applies to the claimed item's stores in `$SCAN_*`: those are filtered by marker and are safe. Only the container path skips the filter.
 
 Acceptance: before a `done` or `dropped` container becomes a candidate, the survey walks its `issues/`, `plans/` and `decisions/` and excludes the container when any record carries `_o_`, `_p_` or `_a_` (and `_d_`, consistent with filter 2), naming the container and the live record in the proposal; natural-language mode flags it `[ACTIVE]` instead. A test builds a `done` container holding an `_o_` issue and proves the tier survey does not select it.
+
+---
+Resolved: skills/archive/SKILL.md `## Safety filters (apply to ALL modes)` filter 2 now reaches a container's own issues, plans (and their v11 name), discussions and decisions; a done or dropped container holding an o, p, a or d record is excluded and its live records are named, natural-language mode flags it [ACTIVE]. Test: hooks/lib/__tests__/archive-filter-key.test.ts runs the exact SKILL.md block under bash and zsh.

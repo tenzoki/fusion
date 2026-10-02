@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
@@ -24,7 +23,6 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 // This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
 // asserts, it never rewrites a prompt.
 // ---------------------------------------------------------------------------
-
 
 // The no-match-fatal dotglob idiom, in both its negation spellings:
 //   .[!.]*   (POSIX)          .[^.]*   (bash/ksh equivalent)

@@ -36,7 +36,6 @@ import { agentNames, pluginRoot } from "./helpers/citation-scan.js";
 // asserts, it never rewrites a document.
 // ---------------------------------------------------------------------------
 
-
 const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
 
 // --- derived ground truth ---------------------------------------------------
