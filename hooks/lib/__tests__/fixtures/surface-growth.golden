@@ -95,7 +95,7 @@
   plan-size.test.ts 165
   plan-stopping-section-lint.test.ts 257
   provenance-header-lint.test.ts 425
-  reference-resolution-lint.test.ts 1012
+  reference-resolution-lint.test.ts 1011
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 857
   rules-emission-golden.test.ts 1189
@@ -109,4 +109,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 189
   workbench-citation-lint.test.ts 353
-  total 22281
+  total 22280
