@@ -1715,7 +1715,7 @@
     "path": "valid/migration/index.json",
     "schema": "urn:fusion:schema:fusion.migration-plan/v1",
     "expect": "valid",
-    "note": "The frozen index and nothing else: identity, the proposal by {path, sha256}, the frozen root exclusions, the schedule (plan, one apply id per chunk, verify, rollback ids for chunks 0 to 2, one surplus id unassigned) and six parts by {part, n, path, sha256}, writes on the two chunk parts only."
+    "note": "The frozen index and nothing else: identity, the proposal by {path, sha256}, the digest of the source inventory the proposal was composed from, the frozen root exclusions (allowlisted names), the schedule (plan, one apply id per chunk, verify, rollback ids for chunks 0 to 2, one surplus id unassigned) and seven parts by {part, n, path, sha256}, the answers part among them, writes on the two chunk parts only."
   },
   {
     "path": "valid/migration/chunk.json",
@@ -1751,19 +1751,43 @@
     "path": "valid/migration/receipt.json",
     "schema": "urn:fusion:schema:fusion.migration-receipt/v1",
     "expect": "valid",
-    "note": "A verified run's receipt: the index and every part bound by hash, the verify operation id, the after-state inventory hash, every check passed, the counts, the versions and the manifest revision; no inline repairs or findings."
+    "note": "A verified run's receipt: the index and every part bound by hash, the answers part among them, the verify operation id, the after-state inventory hash, every check passed, the counts, the versions and the manifest revision; no inline repairs or findings."
   },
   {
     "path": "valid/migration/proposal.json",
     "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
     "expect": "valid",
-    "note": "The host's proposal: two records keyed by fresh UUID, a live package rewritten as byte deletions bound by its source and after hashes, a live issue left byte-identical, every operation id of the run (plan, apply, verify, rollback), the root exclusions, one consented repair, one reported finding."
+    "note": "The host's proposal: two records keyed by fresh UUID, a live package rewritten as byte deletions bound by its source and after hashes, a live issue left byte-identical, every operation id of the run (plan, apply, verify, rollback), the digest of the source inventory it was composed from (not its entries), root exclusions from the allowlist, one consented repair, one reported finding."
   },
   {
     "path": "valid/migration/proposal-with-blocking-finding.json",
     "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
     "expect": "valid",
     "note": "A blocking finding is admitted by the schema: plan refuses it as migration-incomplete/blocking-finding, not proposal-invalid, as the contract's order has it."
+  },
+  {
+    "path": "valid/migration/proposal-whole-allowlist.json",
+    "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
+    "expect": "valid",
+    "note": "The proposal selecting the whole exclusion allowlist, as fusion's host does: the eight regular-file names and the two directory names, each directory named as its root entry, without a trailing slash."
+  },
+  {
+    "path": "valid/migration/part-answers.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "valid",
+    "note": "Answers part 1, the operation baseline: every answer stored before plan as {operation_id, op, request_digest, answer_sha256}, ordered bytewise by operation_id."
+  },
+  {
+    "path": "valid/migration/part-answers-empty.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "valid",
+    "note": "An answers part with no entry is valid: plan on a store with no stored answer freezes an empty baseline."
+  },
+  {
+    "path": "valid/migration/rollback-binding.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "valid",
+    "note": "rollback.json: the frozen index and the receipt by {path, sha256}, the standing rollback fence, and exactly three exempt answers (this migration's verify, the end naming chunk 1's fence, the begin of the standing fence) by {operation_id, op, request_digest}."
   },
   {
     "path": "invalid/migration/index-part-sha256-missing.json",
@@ -1826,14 +1850,14 @@
     "schema": "urn:fusion:schema:fusion.migration-plan/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "An exclusion is never work-packages, shared, archive or workbench.json."
+    "note": "An exclusion is a name of the codec's allowlist; work-packages, shared, archive and workbench.json never are."
   },
   {
     "path": "invalid/migration/index-exclusion-nested.json",
     "schema": "urn:fusion:schema:fusion.migration-plan/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "An exclusion is one name directly under the workbench root."
+    "note": "An exclusion is a name of the codec's allowlist, one root entry; a nested path is none."
   },
   {
     "path": "invalid/migration/chunk-rewrite-source-sha256-missing.json",
@@ -1882,7 +1906,7 @@
     "schema": "urn:fusion:schema:fusion.migration-plan/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "part is index, records, inventory, findings, repairs or chunk; rollback.json is no plan part."
+    "note": "part is index, records, inventory, findings, repairs, answers, chunk or rollback-binding; rollback is none of them."
   },
   {
     "path": "invalid/migration/part-records-counts-missing.json",
@@ -1983,6 +2007,13 @@
     "note": "The receipt carries the revision of the manifest the same intent writes."
   },
   {
+    "path": "invalid/migration/receipt-part-kind-unknown.json",
+    "schema": "urn:fusion:schema:fusion.migration-receipt/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A bound parts/ file is records, inventory, findings, repairs or answers; rollback names no plan part kind."
+  },
+  {
     "path": "invalid/migration/proposal-operation-ids-missing.json",
     "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
     "expect": "invalid",
@@ -2029,7 +2060,7 @@
     "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "An exclusion is never work-packages, shared, archive or workbench.json."
+    "note": "An exclusion is a name of the codec's allowlist; work-packages, shared, archive and workbench.json never are."
   },
   {
     "path": "invalid/migration/proposal-rewrite-without-after-sha256.json",
@@ -2074,5 +2105,110 @@
     "error_class": "schema-invalid",
     "reason": "duplicate-key",
     "note": "A record UUID twice in the records map is a repeated key, refused by the strict reader."
+  },
+  {
+    "path": "invalid/migration/proposal-source-inventory-sha256-missing.json",
+    "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The proposal carries the digest of the eligible source inventory it was composed from (R2)."
+  },
+  {
+    "path": "invalid/migration/proposal-source-inventory-sha256-bare-hex.json",
+    "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "source_inventory_sha256 takes the sha256: form; bare hex is refused."
+  },
+  {
+    "path": "invalid/migration/proposal-exclusion-outside-allowlist.json",
+    "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An exclusion outside the codec's allowlist is refused (schema-invalid/proposal-invalid); stilwerk is no allowlisted name."
+  },
+  {
+    "path": "invalid/migration/proposal-exclusion-directory-with-slash.json",
+    "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An allowlisted directory is named as its root entry, without a trailing slash."
+  },
+  {
+    "path": "invalid/migration/index-source-inventory-sha256-missing.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The index carries the source inventory digest beside the exclusions (R2)."
+  },
+  {
+    "path": "invalid/migration/index-exclusion-outside-allowlist.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The index freezes the same allowlisted names; stilwerk is none of them."
+  },
+  {
+    "path": "invalid/migration/index-answers-part-under-chunks.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An answers part lives at parts/answers-<n>.json; chunks/ holds chunk parts only."
+  },
+  {
+    "path": "invalid/migration/part-answers-entry-without-answer-sha256.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An answers entry carries the sha256 of the stored answer's bytes."
+  },
+  {
+    "path": "invalid/migration/part-answers-entry-repeated.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An answers entry twice is refused by the schema; the same operation_id with other fields, and the bytewise order, are the codec's to check."
+  },
+  {
+    "path": "invalid/migration/part-answers-op-unknown.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An answers entry's op is a protocol op; rollback is a migration phase, not an op."
+  },
+  {
+    "path": "invalid/migration/rollback-binding-two-exempt.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "rollback.json lists exactly three exempt answers; two are refused."
+  },
+  {
+    "path": "invalid/migration/rollback-binding-without-plan.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "rollback.json binds the frozen index by {path, sha256}."
+  },
+  {
+    "path": "invalid/migration/rollback-binding-without-receipt.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "rollback.json binds the receipt by {path, sha256} too (the addendum's departure 4)."
+  },
+  {
+    "path": "invalid/migration/rollback-binding-exempt-op-create.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "An exempt answer is this migration's verify (migration) or a maintenance end or begin; create is neither."
+  },
+  {
+    "path": "invalid/migration/rollback-binding-receipt-not-receipt.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "The bound receipt is archive/migrations/<id>/receipt.json; the index's path is refused there."
   }
 ]

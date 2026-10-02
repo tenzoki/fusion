@@ -19,8 +19,16 @@
     ]
   },
   "exclusions": [
+    ".session-marker",
+    ".checkout-id",
+    ".cadence-anchors",
+    ".check-stamps",
+    "monitor",
+    "orchestrator-events.jsonl",
     ".fusion-setup",
-    "orchestrator-events.jsonl"
+    ".asset-provenance",
+    ".guard-state",
+    ".commit-lock"
   ],
   "records": {
     "c659cc62-52e9-4887-8617-124715712a64": {

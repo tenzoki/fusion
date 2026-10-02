@@ -25,7 +25,7 @@
           "path": {
             "allOf": [
               { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
-              { "type": "string", "pattern": "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/(chunks/[1-9][0-9]*|parts/(records|inventory|findings|repairs)-[1-9][0-9]*)\\.json$" }
+              { "type": "string", "pattern": "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/(chunks/[1-9][0-9]*|parts/(records|inventory|findings|repairs|answers)-[1-9][0-9]*)\\.json$" }
             ]
           },
           "sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }

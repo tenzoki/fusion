@@ -31,6 +31,10 @@
     {
       "path": "archive/migrations/migration-20261002-example/parts/repairs-1.json",
       "sha256": "sha256:4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-example/parts/answers-1.json",
+      "sha256": "sha256:5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e"
     }
   ],
   "after_inventory_sha256": "sha256:8888888888888888888888888888888888888888888888888888888888888888",

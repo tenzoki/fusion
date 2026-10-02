@@ -20,7 +20,8 @@
   },
   "exclusions": [
     ".fusion-setup",
-    "orchestrator-events.jsonl"
+    "orchestrator-events.jsonl",
+    "stilwerk"
   ],
   "records": {
     "c659cc62-52e9-4887-8617-124715712a64": {

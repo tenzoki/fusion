@@ -9,7 +9,7 @@
   },
   "parts": [
     {
-      "path": "archive/migrations/migration-20261002-example/receipt.json",
+      "path": "archive/migrations/migration-20261002-example/chunks/1.json",
       "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     },
     {
@@ -33,7 +33,7 @@
       "sha256": "sha256:4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d"
     },
     {
-      "path": "archive/migrations/migration-20261002-example/parts/answers-1.json",
+      "path": "archive/migrations/migration-20261002-example/parts/rollback-1.json",
       "sha256": "sha256:5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e"
     }
   ],

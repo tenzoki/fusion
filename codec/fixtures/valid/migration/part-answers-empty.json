@@ -1,0 +1,7 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "answers",
+  "migration_id": "migration-20261002-example",
+  "n": 1,
+  "entries": []
+}

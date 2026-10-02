@@ -49,6 +49,7 @@
       "part": "chunk",
       "n": 1,
       "path": "archive/migrations/migration-20261002-example/chunks/1.json",
+      "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "writes": 3
     },
     {
@@ -85,7 +86,7 @@
     {
       "part": "answers",
       "n": 1,
-      "path": "archive/migrations/migration-20261002-example/parts/answers-1.json",
+      "path": "archive/migrations/migration-20261002-example/chunks/answers-1.json",
       "sha256": "sha256:5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e"
     }
   ]

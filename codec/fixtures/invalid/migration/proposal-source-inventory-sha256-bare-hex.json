@@ -3,7 +3,7 @@
   "migration_id": "migration-20261002-example",
   "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
   "source_layout": "fusion-v12",
-  "source_inventory_sha256": "sha256:5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f",
+  "source_inventory_sha256": "5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f",
   "operation_ids": {
     "plan": "9c2e4a6b-3d5f-4b7a-8e1c-0f2a4c6e8b3d",
     "apply": [

@@ -2,12 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:fusion:schema:fusion.migration-plan/v1",
   "title": "fusion.migration-plan/v1",
-  "description": "The frozen plan of a migration (spec section 8; FJ04 contract delta, amended for Prior ab9cb59), written by the migration's plan phase under archive/migrations/<migration id>/ in one bounded intent, the index last, and never edited afterwards. It is split into six shapes, told apart by part, each file under the strict reader's 1 MiB cap. The index, plan.json, holds only the identity, the proposal it froze by path and sha256, the frozen root exclusions, the operation schedule and {part, n, path, sha256} of every other plan file; a request names the index by {path, sha256}. The other parts may each span several numbered files, in the order the index lists them: records (parts/records-<n>.json, the UUID map with each record's kind, cut row, control and narrative path, and on file 1 the cut's counts), inventory (parts/inventory-<n>.json, the source inventory the codec took under plan's lock, in survey's four entry forms), findings (parts/findings-<n>.json, the reported findings), repairs (parts/repairs-<n>.json, the consented repair log) and chunk (chunks/<n>.json, at most 50 writes, each bound by the hash of the target before and after it). A write is an original copied to archive/migrations/<migration id>/originals/<workbench path>, a new control file carrying its target control, or a live narrative rewritten as byte deletions; apply never removes a file, and the removal writes a rollback journals (after null) are derived from these rows, not stored in them. Rules JSON Schema cannot check: every part hashes as the index names it, no part on disk is unnamed by the index, and the parts stand in the index's order (conflict/plan-file-changed); a chunk part's writes equals the length of that file's writes, and a part file's n and migration_id equal its index entry's; paths under archive/migrations/ name this migration's id; a request's operation_id is the one the schedule names for its phase and chunk, never an unassigned one (conflict/operation-id-unscheduled); the schedule holds one apply id per chunk in order from 1 and one rollback id per chunk from 0 to the chunk count, and no UUID occurs twice across schedule, records and workbench_id; a record UUID occurs once across the records parts and its control carries the id it is keyed by (schema-invalid/duplicate-id); every source and after hash matches disk at apply (conflict/source-changed); a pair's original, control file and rewrite share one chunk; deletion ranges ascend, do not overlap and lie inside the source bytes; an original's after_sha256 equals the sha256 of the file it copies; inventory entries are sorted bytewise by path across the inventory parts.",
+  "description": "The frozen plan of a migration (spec section 8; FJ04 contract delta, amended for Prior ab9cb59 and a1fb17a), written by the migration's plan phase under archive/migrations/<migration id>/ in one bounded intent, the index last, and never edited afterwards. It is split into seven plan shapes, told apart by part, each file under the strict reader's 1 MiB cap. The index, plan.json, holds only the identity, the proposal it froze by path and sha256, the digest of the source inventory the proposal was composed from, the frozen root exclusions, the operation schedule and {part, n, path, sha256} of every other plan file; a request names the index by {path, sha256}. The other parts may each span several numbered files, in the order the index lists them: records (parts/records-<n>.json, the UUID map with each record's kind, cut row, control and narrative path, and on file 1 the cut's counts), inventory (parts/inventory-<n>.json, the source inventory the codec took under plan's lock, in survey's four entry forms), findings (parts/findings-<n>.json, the reported findings), repairs (parts/repairs-<n>.json, the consented repair log), answers (parts/answers-<n>.json, the operation baseline: every answer stored before plan, by hash) and chunk (chunks/<n>.json, at most 50 writes, each bound by the hash of the target before and after it). An eighth shape, rollback-binding, is no plan part and is not named by the index: it is rollback.json, written by the first rollback after activation in its own intent and bound by that rollback's stored answer (binding: {path, sha256}); rollback chunk 0 removes it. A write is an original copied to archive/migrations/<migration id>/originals/<workbench path>, a new control file carrying its target control, or a live narrative rewritten as byte deletions; apply never removes a file, and the removal writes a rollback journals (after null) are derived from these rows, not stored in them. Rules JSON Schema cannot check: every part hashes as the index names it, no part on disk is unnamed by the index, and the parts stand in the index's order (conflict/plan-file-changed); a chunk part's writes equals the length of that file's writes, and a part file's n and migration_id equal its index entry's; paths under archive/migrations/ name this migration's id; a request's operation_id is the one the schedule names for its phase and chunk, never an unassigned one (conflict/operation-id-unscheduled); the schedule holds one apply id per chunk in order from 1 and one rollback id per chunk from 0 to the chunk count, and no UUID occurs twice across schedule, records and workbench_id; a record UUID occurs once across the records parts and its control carries the id it is keyed by (schema-invalid/duplicate-id); every source and after hash matches disk at apply (conflict/source-changed); a pair's original, control file and rewrite share one chunk; deletion ranges ascend, do not overlap and lie inside the source bytes; an original's after_sha256 equals the sha256 of the file it copies; inventory entries are sorted bytewise by path across the inventory parts; the frozen inventory parts digest to the index's source_inventory_sha256 (conflict/plan-file-changed); answers entries are unique by operation_id and sorted bytewise by it across the answers parts; a rollback-binding's file hashes as the first post-activation rollback's binding names it (conflict/plan-file-changed), its fence is the standing rollback fence and its exempt entries are this migration's verify, the end naming chunk 1's fence and the begin of the standing fence, each found by reconstructing its request.",
   "type": "object",
   "required": ["part", "schema"],
   "properties": {
     "schema": { "const": "fusion.migration-plan/v1" },
-    "part": { "type": "string", "enum": ["index", "records", "inventory", "findings", "repairs", "chunk"] }
+    "part": { "type": "string", "enum": ["index", "records", "inventory", "findings", "repairs", "answers", "chunk", "rollback-binding"] }
   },
   "oneOf": [
     { "$ref": "#/$defs/index" },
@@ -15,7 +15,9 @@
     { "$ref": "#/$defs/inventory_part" },
     { "$ref": "#/$defs/findings_part" },
     { "$ref": "#/$defs/repairs_part" },
-    { "$ref": "#/$defs/chunk" }
+    { "$ref": "#/$defs/answers_part" },
+    { "$ref": "#/$defs/chunk" },
+    { "$ref": "#/$defs/rollback_binding" }
   ],
   "$defs": {
     "migration_id": {
@@ -56,12 +58,38 @@
     },
     "exclusions": {
       "type": "array",
-      "description": "Root entries the host proposes to leave out of every inventory comparison, frozen by the index: checkout-local files and those the host's own machinery appends to during the run. .json-state/ and this migration's own archive/migrations/<id>/ are excluded always and are not listed. An entry is one name directly under the workbench root, never work-packages, shared, archive or workbench.json. That it holds no narrative or control path the plan reads or writes is checked by plan (schema-invalid/proposal-invalid).",
+      "description": "Root entries the host selects to leave out of every inventory comparison, frozen by the index: a subset of the codec's fixed allowlist (FJ04 addendum for a1fb17a, R1), which replaces any free name. .json-state/ and this migration's own archive/migrations/<id>/ are excluded always and are not listed; workbench.json is never excluded. The allowlist's regular files are .session-marker, .checkout-id, .cadence-anchors, .check-stamps, monitor, orchestrator-events.jsonl, .fusion-setup and .asset-provenance; its directories, with everything below them, are .guard-state and .commit-lock, named here without the trailing slash, as the root entry's name. Any other name is schema-invalid/proposal-invalid. The kinds are the codec's to check, not this schema's: a selected entry is skipped only while it is absent or lstats as its kind; under another kind, or as a link, it is eligible and compared, and no excluded link is followed. That an exclusion holds no narrative or control path the plan reads or writes is checked by plan (schema-invalid/proposal-invalid).",
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "minLength": 1,
-        "pattern": "^(?!\\.\\.?$)(?!(work-packages|shared|archive|workbench\\.json)$)[^/\\\\]+$"
+        "enum": [".session-marker", ".checkout-id", ".cadence-anchors", ".check-stamps", "monitor", "orchestrator-events.jsonl", ".fusion-setup", ".asset-provenance", ".guard-state", ".commit-lock"]
+      }
+    },
+    "source_inventory_sha256": {
+      "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256",
+      "description": "The digest of the eligible source inventory the proposal was composed from (FJ04 addendum for a1fb17a, R2): survey's eligible_sha256, taken by a survey run after the last consented repair and before composition, under the whole allowlist; sha256 over the codec's canonical JSON of the eligible entries in survey's four forms, sorted bytewise by path. plan checks it first in its Disk step, before the per-source checks: the eligible inventory it takes under the lock digesting differently is conflict/source-changed, naming both digests. After the freeze, apply, verify and rollback check that the frozen inventory parts digest to the index's value (conflict/plan-file-changed otherwise)."
+    },
+    "answer_entry": {
+      "type": "object",
+      "description": "One answer stored before plan: its operation id, the op of its request, the digest of that request and the sha256 of the stored answer's bytes. A stored answer is a baseline entry only when all four equal one entry of the answers part.",
+      "additionalProperties": false,
+      "required": ["answer_sha256", "op", "operation_id", "request_digest"],
+      "properties": {
+        "operation_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        "op": { "$ref": "urn:fusion:schema:fusion.protocol/v1#/properties/op" },
+        "request_digest": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        "answer_sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
+    },
+    "exempt_entry": {
+      "type": "object",
+      "description": "One stored answer a later rollback chunk exempts from the later-operation audit, found by reconstructing its request and comparing digests: this migration's verify (op migration), the end naming chunk 1's fence and the begin of the standing fence (op maintenance).",
+      "additionalProperties": false,
+      "required": ["op", "operation_id", "request_digest"],
+      "properties": {
+        "operation_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        "op": { "type": "string", "enum": ["maintenance", "migration"] },
+        "request_digest": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
       }
     },
     "finding": {
@@ -199,7 +227,7 @@
       "additionalProperties": false,
       "required": ["n", "part", "path", "sha256"],
       "properties": {
-        "part": { "type": "string", "enum": ["records", "inventory", "findings", "repairs", "chunk"] },
+        "part": { "type": "string", "enum": ["records", "inventory", "findings", "repairs", "answers", "chunk"] },
         "n": { "type": "integer", "minimum": 1 },
         "path": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
         "sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
@@ -214,14 +242,14 @@
       "else": {
         "type": "object",
         "not": { "type": "object", "required": ["writes"] },
-        "properties": { "path": { "type": "string", "pattern": "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/parts/(records|inventory|findings|repairs)-[1-9][0-9]*\\.json$" } }
+        "properties": { "path": { "type": "string", "pattern": "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/parts/(records|inventory|findings|repairs|answers)-[1-9][0-9]*\\.json$" } }
       }
     },
     "index": {
       "type": "object",
-      "description": "archive/migrations/<migration id>/plan.json: identity, the proposal it froze, the exclusions, the schedule and the part list, nothing else.",
+      "description": "archive/migrations/<migration id>/plan.json: identity, the proposal it froze, the source inventory digest, the exclusions, the schedule and the part list, nothing else.",
       "additionalProperties": false,
-      "required": ["exclusions", "migration_id", "part", "parts", "proposal", "schedule", "schema", "source_layout", "workbench_id"],
+      "required": ["exclusions", "migration_id", "part", "parts", "proposal", "schedule", "schema", "source_inventory_sha256", "source_layout", "workbench_id"],
       "properties": {
         "schema": { "const": "fusion.migration-plan/v1" },
         "part": { "const": "index" },
@@ -229,6 +257,7 @@
         "workbench_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid", "description": "The workbench UUID the manifest will carry; a resume reuses it." },
         "source_layout": { "$ref": "#/$defs/source_layout" },
         "proposal": { "$ref": "#/$defs/proposal_ref" },
+        "source_inventory_sha256": { "$ref": "#/$defs/source_inventory_sha256" },
         "exclusions": { "$ref": "#/$defs/exclusions" },
         "schedule": { "$ref": "#/$defs/schedule" },
         "parts": {
@@ -312,6 +341,54 @@
         "migration_id": { "$ref": "#/$defs/migration_id" },
         "n": { "type": "integer", "minimum": 1 },
         "repairs": { "type": "array", "items": { "$ref": "#/$defs/repair" } }
+      }
+    },
+    "answers_part": {
+      "type": "object",
+      "description": "parts/answers-<n>.json: the operation baseline (FJ04 addendum for a1fb17a, R3), every answer stored before plan, frozen inside plan's one freeze intent and counted against the freeze bound. The index names it with its hash and the receipt's parts bind it. Entries are unique and ordered bytewise by operation_id; the order, and uniqueness by operation_id alone, are the codec's to check. An empty list is valid on a store with no stored answer.",
+      "additionalProperties": false,
+      "required": ["entries", "migration_id", "n", "part", "schema"],
+      "properties": {
+        "schema": { "const": "fusion.migration-plan/v1" },
+        "part": { "const": "answers" },
+        "migration_id": { "$ref": "#/$defs/migration_id" },
+        "n": { "type": "integer", "minimum": 1 },
+        "entries": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/answer_entry" } }
+      }
+    },
+    "rollback_binding": {
+      "type": "object",
+      "description": "archive/migrations/<migration id>/rollback.json (FJ04 addendum for a1fb17a, request 52): written by the first rollback after activation in its own intent, whose answer adds binding: {path, sha256} over these exact bytes. It binds the frozen index and the receipt by {path, sha256}, names the standing rollback fence, and lists exactly three exempt stored answers by {operation_id, op, request_digest}. A later fresh rollback chunk checks the file against the bound hash before trusting it; a replay never reads it; rollback chunk 0 removes it.",
+      "additionalProperties": false,
+      "required": ["exempt", "fence", "migration_id", "part", "plan", "receipt", "schema"],
+      "properties": {
+        "schema": { "const": "fusion.migration-plan/v1" },
+        "part": { "const": "rollback-binding" },
+        "migration_id": { "$ref": "#/$defs/migration_id" },
+        "plan": { "$ref": "#/$defs/plan_ref" },
+        "receipt": {
+          "type": "object",
+          "description": "The receipt the first rollback after activation checked, by path and the sha256 of its exact bytes.",
+          "additionalProperties": false,
+          "required": ["path", "sha256"],
+          "properties": {
+            "path": {
+              "allOf": [
+                { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
+                { "type": "string", "pattern": "^archive/migrations/migration-[0-9]{8}-[a-z0-9-]+/receipt\\.json$" }
+              ]
+            },
+            "sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+          }
+        },
+        "fence": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid", "description": "The operation id of the standing rollback fence's begin." },
+        "exempt": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/exempt_entry" }
+        }
       }
     },
     "original_write": {

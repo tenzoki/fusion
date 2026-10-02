@@ -1,0 +1,31 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "rollback-binding",
+  "migration_id": "migration-20261002-example",
+  "plan": {
+    "path": "archive/migrations/migration-20261002-example/plan.json",
+    "sha256": "sha256:7171717171717171717171717171717171717171717171717171717171717171"
+  },
+  "receipt": {
+    "path": "archive/migrations/migration-20261002-example/receipt.json",
+    "sha256": "sha256:7272727272727272727272727272727272727272727272727272727272727272"
+  },
+  "fence": "d5f7a9c1-3e4b-4d6f-b8a0-4c6e8a0b2d53",
+  "exempt": [
+    {
+      "operation_id": "1a3c5e7b-9d2f-4c6e-b8a0-3e5c7a9b1d4f",
+      "op": "migration",
+      "request_digest": "sha256:7373737373737373737373737373737373737373737373737373737373737373"
+    },
+    {
+      "operation_id": "e6a8c0d2-4f5b-4e7a-9c1b-5d7f9b1c3e64",
+      "op": "maintenance",
+      "request_digest": "sha256:7474747474747474747474747474747474747474747474747474747474747474"
+    },
+    {
+      "operation_id": "d5f7a9c1-3e4b-4d6f-b8a0-4c6e8a0b2d53",
+      "op": "maintenance",
+      "request_digest": "sha256:7575757575757575757575757575757575757575757575757575757575757575"
+    }
+  ]
+}

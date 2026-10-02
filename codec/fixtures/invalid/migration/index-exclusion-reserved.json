@@ -8,6 +8,7 @@
     "path": ".json-state/migration/proposal.json",
     "sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
   },
+  "source_inventory_sha256": "sha256:5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f",
   "exclusions": [
     "work-packages",
     "orchestrator-events.jsonl"
@@ -81,6 +82,12 @@
       "n": 1,
       "path": "archive/migrations/migration-20261002-example/parts/repairs-1.json",
       "sha256": "sha256:4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d"
+    },
+    {
+      "part": "answers",
+      "n": 1,
+      "path": "archive/migrations/migration-20261002-example/parts/answers-1.json",
+      "sha256": "sha256:5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e"
     }
   ]
 }
