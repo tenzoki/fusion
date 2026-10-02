@@ -1,0 +1,31 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ab1e0011-0000-4000-8000-000000000011",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Fixture Person <fixture@example.invalid>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "p",
+      "removed": []
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.md",
+      "sha256": "sha256:7fddfc894203394153828873933ff0edb824f7f6fc70b2828edfb4dcf8fe5fb4",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "disposition": null
+  }
+}

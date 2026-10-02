@@ -1,0 +1,31 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ab1e0075-0000-4000-8000-000000000075",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260907-1025_o_bulk-issue-25.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Fixture Person <fixture@example.invalid>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "removed": []
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1025_o_bulk-issue-25.md",
+      "sha256": "sha256:2d28b4c245e9af630a32d2af8162432d468a83fdaa9ac4e229e6025cee8d39c5",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

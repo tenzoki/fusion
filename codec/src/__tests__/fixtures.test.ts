@@ -132,7 +132,9 @@ function regularFiles(dir: string, rel = ""): string[] {
 // refusals and maintenance fence with their base and seed files (the archive
 // revision plan's step 9, `round-trip-cli-archive.test.ts` is their gate) and
 // `legacy-v12/` the v12 Markdown workbench FJ04's migration reads (the FJ04
-// plan's step 1, its README lists the shapes);
+// plan's step 1, its README lists the shapes) and
+// `protocol-session-migration/` the recorded migration with its seeds (the
+// FJ04 plan's step 7, `round-trip-cli-migration.test.ts` is their gate);
 // none is a validation fixture, so none is indexed.
 const isIndexed = (rel: string): boolean =>
   rel !== MANIFEST_FILE &&
@@ -145,7 +147,8 @@ const isIndexed = (rel: string): boolean =>
   !rel.startsWith("protocol-session-fj02b/") &&
   !rel.startsWith("protocol-session-initialize/") &&
   !rel.startsWith("protocol-session-archive/") &&
-  !rel.startsWith("legacy-v12/");
+  !rel.startsWith("legacy-v12/") &&
+  !rel.startsWith("protocol-session-migration/");
 
 describe("fixtures/ coverage", () => {
   it("every fixture file appears in the manifest exactly once, and every manifest path exists", () => {

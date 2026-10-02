@@ -1,0 +1,2479 @@
+{
+  "schema": "fusion.migration-proposal/v1",
+  "migration_id": "migration-20261002-session",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "source_layout": "fusion-v12",
+  "source_inventory_sha256": "sha256:7586066543193e3b46a47c310838db9e891f1667cf88c68ca84ca75c5f97c907",
+  "operation_ids": {
+    "plan": "ab1e0f05-0000-4000-8000-000000000005",
+    "apply": [
+      "ab1e0f40-0000-4000-8000-000000000040",
+      "ab1e0f41-0000-4000-8000-000000000041",
+      "ab1e0f42-0000-4000-8000-000000000042",
+      "ab1e0f43-0000-4000-8000-000000000043"
+    ],
+    "verify": "ab1e0f44-0000-4000-8000-000000000044",
+    "rollback": [
+      "ab1e0f50-0000-4000-8000-000000000050",
+      "ab1e0f51-0000-4000-8000-000000000051",
+      "ab1e0f52-0000-4000-8000-000000000052",
+      "ab1e0f53-0000-4000-8000-000000000053",
+      "ab1e0f54-0000-4000-8000-000000000054"
+    ]
+  },
+  "exclusions": [
+    ".session-marker",
+    ".checkout-id",
+    ".cadence-anchors",
+    ".check-stamps",
+    "monitor",
+    "orchestrator-events.jsonl",
+    ".fusion-setup",
+    ".asset-provenance",
+    ".guard-state",
+    ".commit-lock"
+  ],
+  "records": {
+    "ab1e0001-0000-4000-8000-000000000001": {
+      "row": "package-live",
+      "kind": "package",
+      "narrative": "work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md",
+      "source_sha256": "sha256:d413bf27f85ca9e3d86e0f8d8974cff25c68dae98e903518d8432de814c88bf7",
+      "control_path": "work-packages/260901-0900-tokenizer-handles-unicode/package.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md",
+      "rewrite": {
+        "after_sha256": "sha256:69332915b2a4aa8d1f2f75b4b1b19a008854e350d8f8e6cbd6d09f0975077886",
+        "deletions": [
+          {
+            "offset": 90,
+            "length": 17
+          },
+          {
+            "offset": 107,
+            "length": 51
+          }
+        ]
+      },
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ab1e0001-0000-4000-8000-000000000001",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "domain": "code",
+        "filed_by": {
+          "actor": "user",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "narrative": {
+          "path": "work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md"
+        },
+        "references": [],
+        "evidence": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": null,
+            "removed": [
+              "**Status:** open\n",
+              "**Depends-on:** 260903-0800-lexer-table-rewrite.md\n"
+            ]
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md",
+            "sha256": "sha256:d413bf27f85ca9e3d86e0f8d8974cff25c68dae98e903518d8432de814c88bf7",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "depends_on": [
+          {
+            "target": {
+              "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+              "record_id": "ab1e0004-0000-4000-8000-000000000004"
+            },
+            "condition": "terminal"
+          }
+        ],
+        "active_documents": [],
+        "outcome": null,
+        "status": "open"
+      }
+    },
+    "ab1e0002-0000-4000-8000-000000000002": {
+      "row": "package-live",
+      "kind": "package",
+      "narrative": "work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md",
+      "source_sha256": "sha256:f79b5f135f190fde08c347a00e2cad7962ba1e9d0dc707773b65c8bd9aa8b6fa",
+      "control_path": "work-packages/260902-1000-parser-error-recovery/package.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md",
+      "rewrite": {
+        "after_sha256": "sha256:9a02cd3e3a8748a437b447bf3b0f6493752d86de129bae7e26ab3339aabcd0d1",
+        "deletions": [
+          {
+            "offset": 106,
+            "length": 20
+          },
+          {
+            "offset": 126,
+            "length": 78
+          },
+          {
+            "offset": 204,
+            "length": 21
+          },
+          {
+            "offset": 225,
+            "length": 142
+          }
+        ]
+      },
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ab1e0002-0000-4000-8000-000000000002",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "domain": "code",
+        "filed_by": {
+          "actor": "user",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "narrative": {
+          "path": "work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md"
+        },
+        "references": [],
+        "evidence": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": null,
+            "removed": [
+              "**Status:** claimed\n",
+              "**Claim:** 0f1e2d3c — Fixture Person <fixture@example.invalid>, 260902-1015\n",
+              "**Mode:** autonomous\n",
+              "**Active spec/plan:** 260902-1030_*_spec-parser-error-recovery.md (the spec), 260902-1100_*_plan-parser-error-recovery.md (plan, part 1 of 2)\n"
+            ]
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md",
+            "sha256": "sha256:f79b5f135f190fde08c347a00e2cad7962ba1e9d0dc707773b65c8bd9aa8b6fa",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "claim": {
+          "checkout_id": "0f1e2d3c",
+          "person": "Fixture Person <fixture@example.invalid>",
+          "claimed_at": "2026-09-02T10:15:00+02:00"
+        },
+        "mode": {
+          "value": "autonomous",
+          "source": {
+            "kind": "legacy",
+            "raw": "**Mode:** autonomous"
+          }
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "depends_on": [],
+        "active_documents": [
+          {
+            "ref": {
+              "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+              "record_id": "ab1e0014-0000-4000-8000-000000000014"
+            },
+            "role": "spec",
+            "revision": "sha256:725d4fdf2491cc1809bbc6444f2b1ef26d2a2db89a73525971f4eb1a52e78859"
+          },
+          {
+            "ref": {
+              "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+              "record_id": "ab1e0015-0000-4000-8000-000000000015"
+            },
+            "role": "plan",
+            "revision": "sha256:b142ad708b7ad1aa199a24ee632cf28a91d377cb955c454cac47344a4ab66ecf"
+          }
+        ],
+        "outcome": null,
+        "status": "claimed"
+      }
+    },
+    "ab1e0003-0000-4000-8000-000000000003": {
+      "row": "package-live",
+      "kind": "package",
+      "narrative": "work-packages/260903-1200-streaming-input/260903-1200-streaming-input.md",
+      "source_sha256": "sha256:ee08e494e2d353800a83d26db9cc2a1d441ff94b0c2f84b50446d552fb8505b7",
+      "control_path": "work-packages/260903-1200-streaming-input/package.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260903-1200-streaming-input/260903-1200-streaming-input.md",
+      "rewrite": {
+        "after_sha256": "sha256:878a44a9e22f211ade347b1801ed4fef72fb308b325b7393211a5405252be0ca",
+        "deletions": [
+          {
+            "offset": 81,
+            "length": 19
+          },
+          {
+            "offset": 100,
+            "length": 102
+          },
+          {
+            "offset": 202,
+            "length": 57
+          }
+        ]
+      },
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ab1e0003-0000-4000-8000-000000000003",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "domain": "code",
+        "filed_by": {
+          "actor": "user",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "narrative": {
+          "path": "work-packages/260903-1200-streaming-input/260903-1200-streaming-input.md"
+        },
+        "references": [],
+        "evidence": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": null,
+            "removed": [
+              "**Status:** paused\n",
+              "**Active spec/plan:** 260903-1230_*_plan-streaming-input-first-cut.md (plan, closed before the pause)\n",
+              "**Depends-on:** 260901-0900-tokenizer-handles-unicode.md\n"
+            ]
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-1200-streaming-input/260903-1200-streaming-input.md",
+            "sha256": "sha256:ee08e494e2d353800a83d26db9cc2a1d441ff94b0c2f84b50446d552fb8505b7",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "depends_on": [
+          {
+            "target": {
+              "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+              "record_id": "ab1e0001-0000-4000-8000-000000000001"
+            },
+            "condition": "succeeded"
+          }
+        ],
+        "active_documents": [
+          {
+            "ref": {
+              "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+              "record_id": "ab1e0020-0000-4000-8000-000000000020"
+            },
+            "role": "plan",
+            "revision": "sha256:b401e9bce12ec7c6a717a5bb68e99c4dc91e7e7f73eacc6c88c9f5a990abaab3"
+          }
+        ],
+        "outcome": null,
+        "status": "paused"
+      }
+    },
+    "ab1e0004-0000-4000-8000-000000000004": {
+      "row": "package-terminal",
+      "kind": "package",
+      "narrative": "work-packages/260903-0800-lexer-table-rewrite/260903-0800-lexer-table-rewrite.md",
+      "source_sha256": "sha256:ffd206dc4ef5f10558887936981774840d214473fa64866199d27c5ce71f38f2",
+      "control_path": "work-packages/260903-0800-lexer-table-rewrite/package.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/260903-0800-lexer-table-rewrite.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ab1e0004-0000-4000-8000-000000000004",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "domain": "code",
+        "filed_by": {
+          "actor": "user",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "narrative": {
+          "path": "work-packages/260903-0800-lexer-table-rewrite/260903-0800-lexer-table-rewrite.md"
+        },
+        "references": [],
+        "evidence": [],
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/260903-0800-lexer-table-rewrite.md",
+            "sha256": "sha256:ffd206dc4ef5f10558887936981774840d214473fa64866199d27c5ce71f38f2",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "Closed before JSON control.",
+          "evidence": []
+        },
+        "status": "done"
+      }
+    },
+    "ab1e0005-0000-4000-8000-000000000005": {
+      "row": "package-terminal",
+      "kind": "package",
+      "narrative": "work-packages/260904-1300-regex-backend/260904-1300-regex-backend.md",
+      "source_sha256": "sha256:2ee7f6d32accb273615fb9db1899081dcf655e62cc62a58a5177ab3c6c6c21a2",
+      "control_path": "work-packages/260904-1300-regex-backend/package.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260904-1300-regex-backend/260904-1300-regex-backend.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ab1e0005-0000-4000-8000-000000000005",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "domain": "code",
+        "filed_by": {
+          "actor": "user",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "narrative": {
+          "path": "work-packages/260904-1300-regex-backend/260904-1300-regex-backend.md"
+        },
+        "references": [],
+        "evidence": [],
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260904-1300-regex-backend/260904-1300-regex-backend.md",
+            "sha256": "sha256:2ee7f6d32accb273615fb9db1899081dcf655e62cc62a58a5177ab3c6c6c21a2",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "outcome": {
+          "class": "dropped",
+          "reason": "Replaced by parser error recovery and the generated lexer table.",
+          "evidence": []
+        },
+        "status": "dropped"
+      }
+    },
+    "ab1e0006-0000-4000-8000-000000000006": {
+      "row": "package-terminal",
+      "kind": "package",
+      "narrative": "work-packages/260810-0900-error-messages-name-the-rule/_c_circle.md",
+      "source_sha256": "sha256:cbc60d0aafa25cdefe65d7d2f42708632c50005027b37d85594d020d6efe7fa1",
+      "control_path": "work-packages/260810-0900-error-messages-name-the-rule/package.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260810-0900-error-messages-name-the-rule/_c_circle.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ab1e0006-0000-4000-8000-000000000006",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "domain": "code",
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260810-0900-error-messages-name-the-rule/_c_circle.md"
+        },
+        "references": [],
+        "evidence": [],
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260810-0900-error-messages-name-the-rule/_c_circle.md",
+            "sha256": "sha256:cbc60d0aafa25cdefe65d7d2f42708632c50005027b37d85594d020d6efe7fa1",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "A Circle closed coherent.",
+          "evidence": []
+        },
+        "status": "done"
+      }
+    },
+    "ab1e0007-0000-4000-8000-000000000007": {
+      "row": "package-terminal",
+      "kind": "package",
+      "narrative": "work-packages/260812-1000-grammar-coverage-report/_b_circle.md",
+      "source_sha256": "sha256:ea932a47150cb011c4a78b018665460948e6600108b99af00423922ad96427de",
+      "control_path": "work-packages/260812-1000-grammar-coverage-report/package.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260812-1000-grammar-coverage-report/_b_circle.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ab1e0007-0000-4000-8000-000000000007",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "domain": "code",
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260812-1000-grammar-coverage-report/_b_circle.md"
+        },
+        "references": [],
+        "evidence": [],
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "b",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260812-1000-grammar-coverage-report/_b_circle.md",
+            "sha256": "sha256:ea932a47150cb011c4a78b018665460948e6600108b99af00423922ad96427de",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "outcome": {
+          "class": "bounded",
+          "reason": "The expression rules were left out of scope.",
+          "evidence": []
+        },
+        "status": "dropped"
+      }
+    },
+    "ab1e0008-0000-4000-8000-000000000008": {
+      "row": "package-terminal",
+      "kind": "package",
+      "narrative": "work-packages/260814-1100-incremental-reparse/_s_circle.md",
+      "source_sha256": "sha256:bc47c756d17a040a98b11aa14ad7eca068afd17d32a0cfe5b76a035cb9d9e94a",
+      "control_path": "work-packages/260814-1100-incremental-reparse/package.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260814-1100-incremental-reparse/_s_circle.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ab1e0008-0000-4000-8000-000000000008",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "domain": "code",
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260814-1100-incremental-reparse/_s_circle.md"
+        },
+        "references": [],
+        "evidence": [],
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "s",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260814-1100-incremental-reparse/_s_circle.md",
+            "sha256": "sha256:bc47c756d17a040a98b11aa14ad7eca068afd17d32a0cfe5b76a035cb9d9e94a",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "outcome": {
+          "class": "dropped",
+          "reason": "Superseded when the streaming work took over its scope.",
+          "evidence": []
+        },
+        "status": "dropped"
+      }
+    },
+    "ab1e0009-0000-4000-8000-000000000009": {
+      "row": "package-live",
+      "kind": "package",
+      "narrative": "work-packages/260815-1400-wasm-target/_d_circle.md",
+      "source_sha256": "sha256:291f5a44c66cfa6f127bbe686f0812cb80ae60c51489c2888057b845b425092d",
+      "control_path": "work-packages/260815-1400-wasm-target/package.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260815-1400-wasm-target/_d_circle.md",
+      "rewrite": {
+        "after_sha256": "sha256:67fe39acecbd734a34c3c97865985c33079116af4155fef9d3ac5f6caae452dc",
+        "deletions": [
+          {
+            "offset": 67,
+            "length": 19
+          }
+        ]
+      },
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ab1e0009-0000-4000-8000-000000000009",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "domain": "code",
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260815-1400-wasm-target/_d_circle.md"
+        },
+        "references": [],
+        "evidence": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "d",
+            "removed": [
+              "**Status:** paused\n"
+            ]
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260815-1400-wasm-target/_d_circle.md",
+            "sha256": "sha256:291f5a44c66cfa6f127bbe686f0812cb80ae60c51489c2888057b845b425092d",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "outcome": null,
+        "status": "paused"
+      }
+    },
+    "ab1e0010-0000-4000-8000-000000000010": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.md",
+      "source_sha256": "sha256:a10b767fb1b391c46643839e4556f9bfa667a86119f1e675fa65a9b16f3faa72",
+      "control_path": "work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0010-0000-4000-8000-000000000010",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.md"
+        },
+        "filed_by": {
+          "actor": "code-implementer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.md",
+            "sha256": "sha256:a10b767fb1b391c46643839e4556f9bfa667a86119f1e675fa65a9b16f3faa72",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0011-0000-4000-8000-000000000011": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.md",
+      "source_sha256": "sha256:7fddfc894203394153828873933ff0edb824f7f6fc70b2828edfb4dcf8fe5fb4",
+      "control_path": "work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0011-0000-4000-8000-000000000011",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "p",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.md",
+            "sha256": "sha256:7fddfc894203394153828873933ff0edb824f7f6fc70b2828edfb4dcf8fe5fb4",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "in_progress",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0012-0000-4000-8000-000000000012": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.md",
+      "source_sha256": "sha256:5acbc584534f390a352be4efc223825a6c5f579c4ded1a4663a3db28d64d18cc",
+      "control_path": "work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0012-0000-4000-8000-000000000012",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.md",
+            "sha256": "sha256:5acbc584534f390a352be4efc223825a6c5f579c4ded1a4663a3db28d64d18cc",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0013-0000-4000-8000-000000000013": {
+      "row": "record-live",
+      "kind": "plan",
+      "narrative": "shared/plans/260905-0900_o_plan-benchmark-suite.md",
+      "source_sha256": "sha256:08324ccf8311d914f060084e23261edbd1e48a3829a04716759dd80b8d04398e",
+      "control_path": "shared/plans/260905-0900_o_plan-benchmark-suite.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/plans/260905-0900_o_plan-benchmark-suite.md",
+      "rewrite": {
+        "after_sha256": "sha256:dea2a6889cf53720add0fcca53687ea7cce7faed0dacb77a1b3b32fc042b1c9a",
+        "deletions": [
+          {
+            "offset": 81,
+            "length": 18
+          }
+        ]
+      },
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0013-0000-4000-8000-000000000013",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "plan",
+        "narrative": {
+          "path": "shared/plans/260905-0900_o_plan-benchmark-suite.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": [
+              "**Status:** Draft\n"
+            ]
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/plans/260905-0900_o_plan-benchmark-suite.md",
+            "sha256": "sha256:08324ccf8311d914f060084e23261edbd1e48a3829a04716759dd80b8d04398e",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [
+            {
+              "id": "1",
+              "state": "open"
+            },
+            {
+              "id": "2",
+              "state": "open"
+            },
+            {
+              "id": "2b",
+              "state": "open"
+            }
+          ],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    "ab1e0014-0000-4000-8000-000000000014": {
+      "row": "record-live",
+      "kind": "plan",
+      "narrative": "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md",
+      "source_sha256": "sha256:527fa1a76366dd27bf7a9b9ceff9f14756ee9641ab72754243a5522342da1fa9",
+      "control_path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md",
+      "rewrite": {
+        "after_sha256": "sha256:725d4fdf2491cc1809bbc6444f2b1ef26d2a2db89a73525971f4eb1a52e78859",
+        "deletions": [
+          {
+            "offset": 52,
+            "length": 45
+          }
+        ]
+      },
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0014-0000-4000-8000-000000000014",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "p",
+            "removed": [
+              "**Status:** Approved 2026-09-02 by the user.\n"
+            ]
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md",
+            "sha256": "sha256:527fa1a76366dd27bf7a9b9ceff9f14756ee9641ab72754243a5522342da1fa9",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "in_progress",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    "ab1e0015-0000-4000-8000-000000000015": {
+      "row": "record-live",
+      "kind": "plan",
+      "narrative": "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md",
+      "source_sha256": "sha256:f481607458cb2debc210325cdb666bda6555383a4603523051c50f0aeee43f87",
+      "control_path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md",
+      "rewrite": {
+        "after_sha256": "sha256:b142ad708b7ad1aa199a24ee632cf28a91d377cb955c454cac47344a4ab66ecf",
+        "deletions": [
+          {
+            "offset": 75,
+            "length": 24
+          },
+          {
+            "offset": 518,
+            "length": 7
+          },
+          {
+            "offset": 691,
+            "length": 14
+          },
+          {
+            "offset": 900,
+            "length": 7
+          }
+        ]
+      },
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0015-0000-4000-8000-000000000015",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "p",
+            "removed": [
+              "**Status:** In progress\n",
+              "[DONE] ",
+              "[IN PROGRESS] ",
+              "[OPEN] "
+            ]
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md",
+            "sha256": "sha256:f481607458cb2debc210325cdb666bda6555383a4603523051c50f0aeee43f87",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "in_progress",
+          "steps": [
+            {
+              "id": "1",
+              "state": "done"
+            },
+            {
+              "id": "2",
+              "state": "in_progress"
+            },
+            {
+              "id": "12a",
+              "state": "open"
+            },
+            {
+              "id": "12b",
+              "state": "open"
+            }
+          ],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    "ab1e0016-0000-4000-8000-000000000016": {
+      "row": "record-live",
+      "kind": "discussion",
+      "narrative": "work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.md",
+      "source_sha256": "sha256:65c37732edfb3ae9b3a086776958fd2f490034ed4dba6ebbd8b279dc2702d282",
+      "control_path": "work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0016-0000-4000-8000-000000000016",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "discussion",
+        "narrative": {
+          "path": "work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.md",
+            "sha256": "sha256:65c37732edfb3ae9b3a086776958fd2f490034ed4dba6ebbd8b279dc2702d282",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "participants": [
+            {
+              "actor": "orchestrator",
+              "person": null
+            },
+            {
+              "actor": "consultant",
+              "person": null
+            }
+          ],
+          "outcome_refs": []
+        }
+      }
+    },
+    "ab1e0017-0000-4000-8000-000000000017": {
+      "row": "record-live",
+      "kind": "decision",
+      "narrative": "shared/decisions/260905-1200_o_should-the-ast-keep-trivia.md",
+      "source_sha256": "sha256:cf4c283dddb10fb02ce2bf3ad634f7929b846f4675910387aadf02e9e2a507ac",
+      "control_path": "shared/decisions/260905-1200_o_should-the-ast-keep-trivia.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/decisions/260905-1200_o_should-the-ast-keep-trivia.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0017-0000-4000-8000-000000000017",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260905-1200_o_should-the-ast-keep-trivia.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/decisions/260905-1200_o_should-the-ast-keep-trivia.md",
+            "sha256": "sha256:cf4c283dddb10fb02ce2bf3ad634f7929b846f4675910387aadf02e9e2a507ac",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "answer_ref": null,
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    "ab1e0018-0000-4000-8000-000000000018": {
+      "row": "record-live",
+      "kind": "decision",
+      "narrative": "work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.md",
+      "source_sha256": "sha256:ade98291b40766ed8b9e805851658330e7f209d01a3bbd4cc5131031bd31045b",
+      "control_path": "work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0018-0000-4000-8000-000000000018",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.md",
+            "sha256": "sha256:ade98291b40766ed8b9e805851658330e7f209d01a3bbd4cc5131031bd31045b",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+            "record_id": "ab1e0015-0000-4000-8000-000000000015"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    "ab1e0019-0000-4000-8000-000000000019": {
+      "row": "record-live",
+      "kind": "decision",
+      "narrative": "shared/decisions/260905-1300_a_which-unicode-version-does-the-tokenizer-target.md",
+      "source_sha256": "sha256:bab227648b811abf9700235efbdbf8c645ed6f205ab082e4366868ce4fc36f48",
+      "control_path": "shared/decisions/260905-1300_a_which-unicode-version-does-the-tokenizer-target.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/decisions/260905-1300_a_which-unicode-version-does-the-tokenizer-target.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0019-0000-4000-8000-000000000019",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260905-1300_a_which-unicode-version-does-the-tokenizer-target.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/decisions/260905-1300_a_which-unicode-version-does-the-tokenizer-target.md",
+            "sha256": "sha256:bab227648b811abf9700235efbdbf8c645ed6f205ab082e4366868ce4fc36f48",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260905-1300_a_which-unicode-version-does-the-tokenizer-target.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    "ab1e0020-0000-4000-8000-000000000020": {
+      "row": "record-closure",
+      "kind": "plan",
+      "narrative": "work-packages/260903-1200-streaming-input/plans/260903-1230_c_plan-streaming-input-first-cut.md",
+      "source_sha256": "sha256:b401e9bce12ec7c6a717a5bb68e99c4dc91e7e7f73eacc6c88c9f5a990abaab3",
+      "control_path": "work-packages/260903-1200-streaming-input/plans/260903-1230_c_plan-streaming-input-first-cut.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/work-packages/260903-1200-streaming-input/plans/260903-1230_c_plan-streaming-input-first-cut.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0020-0000-4000-8000-000000000020",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260903-1200-streaming-input/plans/260903-1230_c_plan-streaming-input-first-cut.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-1200-streaming-input/plans/260903-1230_c_plan-streaming-input-first-cut.md",
+            "sha256": "sha256:b401e9bce12ec7c6a717a5bb68e99c4dc91e7e7f73eacc6c88c9f5a990abaab3",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "closed",
+          "steps": [
+            {
+              "id": "1",
+              "state": "done"
+            },
+            {
+              "id": "2",
+              "state": "done"
+            }
+          ],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    "ab1e0050-0000-4000-8000-000000000050": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1000_o_bulk-issue-00.md",
+      "source_sha256": "sha256:d325f0888583b64952c1ab5568983928dc05448005bcc1dc1908fa92685703aa",
+      "control_path": "shared/issues/260907-1000_o_bulk-issue-00.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1000_o_bulk-issue-00.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0050-0000-4000-8000-000000000050",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1000_o_bulk-issue-00.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1000_o_bulk-issue-00.md",
+            "sha256": "sha256:d325f0888583b64952c1ab5568983928dc05448005bcc1dc1908fa92685703aa",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0051-0000-4000-8000-000000000051": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1001_o_bulk-issue-01.md",
+      "source_sha256": "sha256:1aebd6c2a39594f261c5b160955a8aad4abe0420eeaaf2123d8e0460a30e34a7",
+      "control_path": "shared/issues/260907-1001_o_bulk-issue-01.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1001_o_bulk-issue-01.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0051-0000-4000-8000-000000000051",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1001_o_bulk-issue-01.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1001_o_bulk-issue-01.md",
+            "sha256": "sha256:1aebd6c2a39594f261c5b160955a8aad4abe0420eeaaf2123d8e0460a30e34a7",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0052-0000-4000-8000-000000000052": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1002_o_bulk-issue-02.md",
+      "source_sha256": "sha256:f7092b3aa1352ade637a5f288a1983be769ab00d20db5d345c1e0182bd6c88eb",
+      "control_path": "shared/issues/260907-1002_o_bulk-issue-02.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1002_o_bulk-issue-02.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0052-0000-4000-8000-000000000052",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1002_o_bulk-issue-02.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1002_o_bulk-issue-02.md",
+            "sha256": "sha256:f7092b3aa1352ade637a5f288a1983be769ab00d20db5d345c1e0182bd6c88eb",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0053-0000-4000-8000-000000000053": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1003_o_bulk-issue-03.md",
+      "source_sha256": "sha256:cff894862153728d0a8d288a002e0c0ddab2d5c430333b188d807a79e2496920",
+      "control_path": "shared/issues/260907-1003_o_bulk-issue-03.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1003_o_bulk-issue-03.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0053-0000-4000-8000-000000000053",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1003_o_bulk-issue-03.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1003_o_bulk-issue-03.md",
+            "sha256": "sha256:cff894862153728d0a8d288a002e0c0ddab2d5c430333b188d807a79e2496920",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0054-0000-4000-8000-000000000054": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1004_o_bulk-issue-04.md",
+      "source_sha256": "sha256:889cfe954f64964ea0a92401fc37c374059d0c0c49323bc72955382495b65083",
+      "control_path": "shared/issues/260907-1004_o_bulk-issue-04.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1004_o_bulk-issue-04.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0054-0000-4000-8000-000000000054",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1004_o_bulk-issue-04.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1004_o_bulk-issue-04.md",
+            "sha256": "sha256:889cfe954f64964ea0a92401fc37c374059d0c0c49323bc72955382495b65083",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0055-0000-4000-8000-000000000055": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1005_o_bulk-issue-05.md",
+      "source_sha256": "sha256:a1e830ff569a17ed3fb465cd535bea9c53e971cb1dce6e36756cabc35eb51f60",
+      "control_path": "shared/issues/260907-1005_o_bulk-issue-05.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1005_o_bulk-issue-05.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0055-0000-4000-8000-000000000055",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1005_o_bulk-issue-05.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1005_o_bulk-issue-05.md",
+            "sha256": "sha256:a1e830ff569a17ed3fb465cd535bea9c53e971cb1dce6e36756cabc35eb51f60",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0056-0000-4000-8000-000000000056": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1006_o_bulk-issue-06.md",
+      "source_sha256": "sha256:1d33ca459bf2a5edf5eb77b2e83de002681c4df3f2c72f7bac961993f33fb8a0",
+      "control_path": "shared/issues/260907-1006_o_bulk-issue-06.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1006_o_bulk-issue-06.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0056-0000-4000-8000-000000000056",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1006_o_bulk-issue-06.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1006_o_bulk-issue-06.md",
+            "sha256": "sha256:1d33ca459bf2a5edf5eb77b2e83de002681c4df3f2c72f7bac961993f33fb8a0",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0057-0000-4000-8000-000000000057": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1007_o_bulk-issue-07.md",
+      "source_sha256": "sha256:d8e37a17ec7db518e510be9a09ed95df591929a2844d50ab5eb5cc433947c6ae",
+      "control_path": "shared/issues/260907-1007_o_bulk-issue-07.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1007_o_bulk-issue-07.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0057-0000-4000-8000-000000000057",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1007_o_bulk-issue-07.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1007_o_bulk-issue-07.md",
+            "sha256": "sha256:d8e37a17ec7db518e510be9a09ed95df591929a2844d50ab5eb5cc433947c6ae",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0058-0000-4000-8000-000000000058": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1008_o_bulk-issue-08.md",
+      "source_sha256": "sha256:9cd1c422a626e76242fec1314e5b0044fd4aaa762ae6a092fef01b80794786ed",
+      "control_path": "shared/issues/260907-1008_o_bulk-issue-08.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1008_o_bulk-issue-08.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0058-0000-4000-8000-000000000058",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1008_o_bulk-issue-08.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1008_o_bulk-issue-08.md",
+            "sha256": "sha256:9cd1c422a626e76242fec1314e5b0044fd4aaa762ae6a092fef01b80794786ed",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0059-0000-4000-8000-000000000059": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1009_o_bulk-issue-09.md",
+      "source_sha256": "sha256:1ea2ffc73c9aaec018cbf44929f10ec35a96b156301e556597026b53309914ec",
+      "control_path": "shared/issues/260907-1009_o_bulk-issue-09.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1009_o_bulk-issue-09.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0059-0000-4000-8000-000000000059",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1009_o_bulk-issue-09.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1009_o_bulk-issue-09.md",
+            "sha256": "sha256:1ea2ffc73c9aaec018cbf44929f10ec35a96b156301e556597026b53309914ec",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0060-0000-4000-8000-000000000060": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1010_o_bulk-issue-10.md",
+      "source_sha256": "sha256:a31c58956a842b1ab29c1ac0bf2fb8e95a1e13db5a4e07a8153963bf9464fb9a",
+      "control_path": "shared/issues/260907-1010_o_bulk-issue-10.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1010_o_bulk-issue-10.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0060-0000-4000-8000-000000000060",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1010_o_bulk-issue-10.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1010_o_bulk-issue-10.md",
+            "sha256": "sha256:a31c58956a842b1ab29c1ac0bf2fb8e95a1e13db5a4e07a8153963bf9464fb9a",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0061-0000-4000-8000-000000000061": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1011_o_bulk-issue-11.md",
+      "source_sha256": "sha256:4511a367e03be189f13de8e342e72c517d183041a79a9688381353fa8108cec3",
+      "control_path": "shared/issues/260907-1011_o_bulk-issue-11.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1011_o_bulk-issue-11.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0061-0000-4000-8000-000000000061",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1011_o_bulk-issue-11.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1011_o_bulk-issue-11.md",
+            "sha256": "sha256:4511a367e03be189f13de8e342e72c517d183041a79a9688381353fa8108cec3",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0062-0000-4000-8000-000000000062": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1012_o_bulk-issue-12.md",
+      "source_sha256": "sha256:157a2afd9006247e8791cff9d23952bdeef79ba56f690cdba840457de849cfe3",
+      "control_path": "shared/issues/260907-1012_o_bulk-issue-12.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1012_o_bulk-issue-12.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0062-0000-4000-8000-000000000062",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1012_o_bulk-issue-12.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1012_o_bulk-issue-12.md",
+            "sha256": "sha256:157a2afd9006247e8791cff9d23952bdeef79ba56f690cdba840457de849cfe3",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0063-0000-4000-8000-000000000063": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1013_o_bulk-issue-13.md",
+      "source_sha256": "sha256:c855b988b9f31003aae18529dc47d75d9293e51cec913ad790f8d4bb7f6d57be",
+      "control_path": "shared/issues/260907-1013_o_bulk-issue-13.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1013_o_bulk-issue-13.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0063-0000-4000-8000-000000000063",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1013_o_bulk-issue-13.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1013_o_bulk-issue-13.md",
+            "sha256": "sha256:c855b988b9f31003aae18529dc47d75d9293e51cec913ad790f8d4bb7f6d57be",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0064-0000-4000-8000-000000000064": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1014_o_bulk-issue-14.md",
+      "source_sha256": "sha256:58d2a250d29d97ab16afe230ba3ef5e325c3f17103273365048150b01d817b3c",
+      "control_path": "shared/issues/260907-1014_o_bulk-issue-14.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1014_o_bulk-issue-14.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0064-0000-4000-8000-000000000064",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1014_o_bulk-issue-14.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1014_o_bulk-issue-14.md",
+            "sha256": "sha256:58d2a250d29d97ab16afe230ba3ef5e325c3f17103273365048150b01d817b3c",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0065-0000-4000-8000-000000000065": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1015_o_bulk-issue-15.md",
+      "source_sha256": "sha256:9f485cf79f36de60be38040039380ea64712592564271696bd938cc3827e9f2a",
+      "control_path": "shared/issues/260907-1015_o_bulk-issue-15.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1015_o_bulk-issue-15.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0065-0000-4000-8000-000000000065",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1015_o_bulk-issue-15.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1015_o_bulk-issue-15.md",
+            "sha256": "sha256:9f485cf79f36de60be38040039380ea64712592564271696bd938cc3827e9f2a",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0066-0000-4000-8000-000000000066": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1016_o_bulk-issue-16.md",
+      "source_sha256": "sha256:6b67a108ed88d3c8acc06e0543cc5f97d6e69b176e916d8c62da57de4f83e8be",
+      "control_path": "shared/issues/260907-1016_o_bulk-issue-16.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1016_o_bulk-issue-16.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0066-0000-4000-8000-000000000066",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1016_o_bulk-issue-16.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1016_o_bulk-issue-16.md",
+            "sha256": "sha256:6b67a108ed88d3c8acc06e0543cc5f97d6e69b176e916d8c62da57de4f83e8be",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0067-0000-4000-8000-000000000067": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1017_o_bulk-issue-17.md",
+      "source_sha256": "sha256:2c77629a363b599f8627b481ee5b2bba6035121312bdc3607f0567d2ce100010",
+      "control_path": "shared/issues/260907-1017_o_bulk-issue-17.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1017_o_bulk-issue-17.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0067-0000-4000-8000-000000000067",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1017_o_bulk-issue-17.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1017_o_bulk-issue-17.md",
+            "sha256": "sha256:2c77629a363b599f8627b481ee5b2bba6035121312bdc3607f0567d2ce100010",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0068-0000-4000-8000-000000000068": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1018_o_bulk-issue-18.md",
+      "source_sha256": "sha256:a19b6c6c161cced1551eb7681973644622bc6da166137a5311a0ec9a170b9d1b",
+      "control_path": "shared/issues/260907-1018_o_bulk-issue-18.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1018_o_bulk-issue-18.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0068-0000-4000-8000-000000000068",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1018_o_bulk-issue-18.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1018_o_bulk-issue-18.md",
+            "sha256": "sha256:a19b6c6c161cced1551eb7681973644622bc6da166137a5311a0ec9a170b9d1b",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0069-0000-4000-8000-000000000069": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1019_o_bulk-issue-19.md",
+      "source_sha256": "sha256:5d26b976be1f82a7dce8891487ecb50947aaa4bf1d4cca5cf732cdd6c3def70b",
+      "control_path": "shared/issues/260907-1019_o_bulk-issue-19.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1019_o_bulk-issue-19.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0069-0000-4000-8000-000000000069",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1019_o_bulk-issue-19.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1019_o_bulk-issue-19.md",
+            "sha256": "sha256:5d26b976be1f82a7dce8891487ecb50947aaa4bf1d4cca5cf732cdd6c3def70b",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0070-0000-4000-8000-000000000070": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1020_o_bulk-issue-20.md",
+      "source_sha256": "sha256:87e252d0789a23de3582880cf43e8c1805583c31eb1fe7b6f66ca01375d29241",
+      "control_path": "shared/issues/260907-1020_o_bulk-issue-20.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1020_o_bulk-issue-20.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0070-0000-4000-8000-000000000070",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1020_o_bulk-issue-20.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1020_o_bulk-issue-20.md",
+            "sha256": "sha256:87e252d0789a23de3582880cf43e8c1805583c31eb1fe7b6f66ca01375d29241",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0071-0000-4000-8000-000000000071": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1021_o_bulk-issue-21.md",
+      "source_sha256": "sha256:4435f4c41c65dca565b2cdc5d9bd44d34c6fe5cfa9d1be684c9d9b1a75d15c0b",
+      "control_path": "shared/issues/260907-1021_o_bulk-issue-21.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1021_o_bulk-issue-21.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0071-0000-4000-8000-000000000071",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1021_o_bulk-issue-21.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1021_o_bulk-issue-21.md",
+            "sha256": "sha256:4435f4c41c65dca565b2cdc5d9bd44d34c6fe5cfa9d1be684c9d9b1a75d15c0b",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0072-0000-4000-8000-000000000072": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1022_o_bulk-issue-22.md",
+      "source_sha256": "sha256:79b3f3c11f191d3cad1aa7646b275c5e4dc610bb26e198ab1b18f7507052bdee",
+      "control_path": "shared/issues/260907-1022_o_bulk-issue-22.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1022_o_bulk-issue-22.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0072-0000-4000-8000-000000000072",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1022_o_bulk-issue-22.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1022_o_bulk-issue-22.md",
+            "sha256": "sha256:79b3f3c11f191d3cad1aa7646b275c5e4dc610bb26e198ab1b18f7507052bdee",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0073-0000-4000-8000-000000000073": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1023_o_bulk-issue-23.md",
+      "source_sha256": "sha256:fb98205cce03eaa6e95649bbb61738948e4b94d7e1a730e0b4675d3c7661de57",
+      "control_path": "shared/issues/260907-1023_o_bulk-issue-23.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1023_o_bulk-issue-23.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0073-0000-4000-8000-000000000073",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1023_o_bulk-issue-23.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1023_o_bulk-issue-23.md",
+            "sha256": "sha256:fb98205cce03eaa6e95649bbb61738948e4b94d7e1a730e0b4675d3c7661de57",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0074-0000-4000-8000-000000000074": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1024_o_bulk-issue-24.md",
+      "source_sha256": "sha256:73ae362a495aadfb3b0bbf29c41e048b2bf204bdc655be807d79604e68c7c748",
+      "control_path": "shared/issues/260907-1024_o_bulk-issue-24.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1024_o_bulk-issue-24.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0074-0000-4000-8000-000000000074",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1024_o_bulk-issue-24.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1024_o_bulk-issue-24.md",
+            "sha256": "sha256:73ae362a495aadfb3b0bbf29c41e048b2bf204bdc655be807d79604e68c7c748",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0075-0000-4000-8000-000000000075": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1025_o_bulk-issue-25.md",
+      "source_sha256": "sha256:2d28b4c245e9af630a32d2af8162432d468a83fdaa9ac4e229e6025cee8d39c5",
+      "control_path": "shared/issues/260907-1025_o_bulk-issue-25.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1025_o_bulk-issue-25.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0075-0000-4000-8000-000000000075",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1025_o_bulk-issue-25.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1025_o_bulk-issue-25.md",
+            "sha256": "sha256:2d28b4c245e9af630a32d2af8162432d468a83fdaa9ac4e229e6025cee8d39c5",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0076-0000-4000-8000-000000000076": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1026_o_bulk-issue-26.md",
+      "source_sha256": "sha256:ed8000b809c118528c025c444be577f9758c54d25222f07c32dab1f344b7a8bf",
+      "control_path": "shared/issues/260907-1026_o_bulk-issue-26.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1026_o_bulk-issue-26.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0076-0000-4000-8000-000000000076",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1026_o_bulk-issue-26.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1026_o_bulk-issue-26.md",
+            "sha256": "sha256:ed8000b809c118528c025c444be577f9758c54d25222f07c32dab1f344b7a8bf",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0077-0000-4000-8000-000000000077": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1027_o_bulk-issue-27.md",
+      "source_sha256": "sha256:c57df58198c47cc5bea66813468390445806748c0f8b33087d201e036db167f8",
+      "control_path": "shared/issues/260907-1027_o_bulk-issue-27.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1027_o_bulk-issue-27.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0077-0000-4000-8000-000000000077",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1027_o_bulk-issue-27.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1027_o_bulk-issue-27.md",
+            "sha256": "sha256:c57df58198c47cc5bea66813468390445806748c0f8b33087d201e036db167f8",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0078-0000-4000-8000-000000000078": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1028_o_bulk-issue-28.md",
+      "source_sha256": "sha256:8cff612d43f374b5b8552b52496e4e5f91ed60434e86875df4d7d27fb0f9bc42",
+      "control_path": "shared/issues/260907-1028_o_bulk-issue-28.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1028_o_bulk-issue-28.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0078-0000-4000-8000-000000000078",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1028_o_bulk-issue-28.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1028_o_bulk-issue-28.md",
+            "sha256": "sha256:8cff612d43f374b5b8552b52496e4e5f91ed60434e86875df4d7d27fb0f9bc42",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    "ab1e0079-0000-4000-8000-000000000079": {
+      "row": "record-live",
+      "kind": "issue",
+      "narrative": "shared/issues/260907-1029_o_bulk-issue-29.md",
+      "source_sha256": "sha256:d5c4069eb2d6a3f17497e02b8c960f708ee33ee73ee1cb3c2f37652d3a0bf09f",
+      "control_path": "shared/issues/260907-1029_o_bulk-issue-29.record.json",
+      "backup": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1029_o_bulk-issue-29.md",
+      "rewrite": null,
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ab1e0079-0000-4000-8000-000000000079",
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260907-1029_o_bulk-issue-29.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Fixture Person <fixture@example.invalid>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "removed": []
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1029_o_bulk-issue-29.md",
+            "sha256": "sha256:d5c4069eb2d6a3f17497e02b8c960f708ee33ee73ee1cb3c2f37652d3a0bf09f",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    }
+  },
+  "counts": {
+    "package_live": 4,
+    "package_terminal": 5,
+    "record_live": 40,
+    "record_closure": 1,
+    "plain_terminal": 10,
+    "empty_container": 0
+  },
+  "findings": [
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.md",
+      "detail": "an open issue under a done package"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "shared/decisions/260905-1300_a_which-unicode-version-does-the-tokenizer-target.md",
+      "detail": "the answer is cited in prose outside the workbench; answer_ref names the decision itself"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260814-1100-incremental-reparse/_s_circle.md",
+      "detail": "the head says active, the marker superseded"
+    }
+  ],
+  "repairs": [
+    {
+      "finding": {
+        "class": "filed-by-not-owed",
+        "severity": "blocking",
+        "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md",
+        "detail": "a live spec with no **Filed by:** line"
+      },
+      "answers": {
+        "actor": "implementation-planner",
+        "person": "Fixture Person <fixture@example.invalid>"
+      },
+      "pre_sha256": "sha256:70e44e93e37e218c4b53e931a3567e2d0cda4add1c0d0ae028175e596bd3fe87",
+      "post_sha256": "sha256:527fa1a76366dd27bf7a9b9ceff9f14756ee9641ab72754243a5522342da1fa9"
+    },
+    {
+      "finding": {
+        "class": "filed-by-not-owed",
+        "severity": "blocking",
+        "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md",
+        "detail": "a live plan with no **Filed by:** line"
+      },
+      "answers": {
+        "actor": "implementation-planner",
+        "person": "Fixture Person <fixture@example.invalid>"
+      },
+      "pre_sha256": "sha256:33f61ff62a087ca795a986d2d1c91cdd98d073e17b6cafed07453f92ed8af3d6",
+      "post_sha256": "sha256:f481607458cb2debc210325cdb666bda6555383a4603523051c50f0aeee43f87"
+    },
+    {
+      "finding": {
+        "class": "filed-by-not-owed",
+        "severity": "blocking",
+        "path": "shared/plans/260905-0900_o_plan-benchmark-suite.md",
+        "detail": "a live plan with no **Filed by:** line"
+      },
+      "answers": {
+        "actor": "implementation-planner",
+        "person": "Fixture Person <fixture@example.invalid>"
+      },
+      "pre_sha256": "sha256:942240994c4dea68300afbbf08a6a0bbad4a556216674b6969a215abe63e91bc",
+      "post_sha256": "sha256:bba055eb7f00f03baa5bb9860b5519933ad0457ef2053f32eebe9729fcff6274"
+    },
+    {
+      "finding": {
+        "class": "duplicate-step-number",
+        "severity": "blocking",
+        "path": "shared/plans/260905-0900_o_plan-benchmark-suite.md",
+        "detail": "step 2 is numbered twice"
+      },
+      "answers": {
+        "step": "2b"
+      },
+      "pre_sha256": "sha256:bba055eb7f00f03baa5bb9860b5519933ad0457ef2053f32eebe9729fcff6274",
+      "post_sha256": "sha256:08324ccf8311d914f060084e23261edbd1e48a3829a04716759dd80b8d04398e"
+    },
+    {
+      "finding": {
+        "class": "circle-deferred",
+        "severity": "blocking",
+        "path": "work-packages/260815-1400-wasm-target/_d_circle.md",
+        "detail": "a deferred Circle has no v1 state"
+      },
+      "answers": {
+        "status": "paused"
+      },
+      "pre_sha256": "sha256:3e4ff17bbc9d77b8e67211a4c4cbb088c29b5f139137802acd37becd4050f211",
+      "post_sha256": "sha256:291f5a44c66cfa6f127bbe686f0812cb80ae60c51489c2888057b845b425092d"
+    }
+  ]
+}

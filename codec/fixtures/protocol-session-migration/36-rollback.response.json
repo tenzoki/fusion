@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"conflict","reason":"plan-file-changed","detail":"archive/migrations/migration-20261002-session/rollback.json is sha256:a29c9fa2c89973c3f929825f44e78e4ed21bc961406c1f171cc696ad7fe3931e; the first rollback after activation bound it at sha256:736a9c7396667ceba32f5ae2239c20239174a492cef7770f93faa7f593ad2b5d"}}

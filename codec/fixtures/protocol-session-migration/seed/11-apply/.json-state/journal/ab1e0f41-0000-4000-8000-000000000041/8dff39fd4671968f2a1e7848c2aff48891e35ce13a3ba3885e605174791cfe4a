@@ -1,0 +1,31 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ab1e0012-0000-4000-8000-000000000012",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Fixture Person <fixture@example.invalid>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "removed": []
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.md",
+      "sha256": "sha256:5acbc584534f390a352be4efc223825a6c5f579c4ded1a4663a3db28d64d18cc",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

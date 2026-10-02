@@ -1,0 +1,70 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "ab1e0002-0000-4000-8000-000000000002",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "0f1e2d3c",
+    "person": "Fixture Person <fixture@example.invalid>",
+    "claimed_at": "2026-09-02T10:15:00+02:00"
+  },
+  "mode": {
+    "value": "autonomous",
+    "source": {
+      "kind": "legacy",
+      "raw": "**Mode:** autonomous"
+    }
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Fixture Person <fixture@example.invalid>"
+  },
+  "narrative": {
+    "path": "work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "record_id": "ab1e0014-0000-4000-8000-000000000014"
+      },
+      "role": "spec",
+      "revision": "sha256:725d4fdf2491cc1809bbc6444f2b1ef26d2a2db89a73525971f4eb1a52e78859"
+    },
+    {
+      "ref": {
+        "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+        "record_id": "ab1e0015-0000-4000-8000-000000000015"
+      },
+      "role": "plan",
+      "revision": "sha256:b142ad708b7ad1aa199a24ee632cf28a91d377cb955c454cac47344a4ab66ecf"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": null,
+      "removed": [
+        "**Status:** claimed\n",
+        "**Claim:** 0f1e2d3c — Fixture Person <fixture@example.invalid>, 260902-1015\n",
+        "**Mode:** autonomous\n",
+        "**Active spec/plan:** 260902-1030_*_spec-parser-error-recovery.md (the spec), 260902-1100_*_plan-parser-error-recovery.md (plan, part 1 of 2)\n"
+      ]
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md",
+      "sha256": "sha256:f79b5f135f190fde08c347a00e2cad7962ba1e9d0dc707773b65c8bd9aa8b6fa",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

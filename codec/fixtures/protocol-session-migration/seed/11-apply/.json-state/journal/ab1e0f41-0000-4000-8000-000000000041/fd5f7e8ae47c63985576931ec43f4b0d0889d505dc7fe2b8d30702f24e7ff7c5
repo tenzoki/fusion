@@ -1,0 +1,45 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "ab1e0004-0000-4000-8000-000000000004",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "domain": "code",
+  "status": "done",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Fixture Person <fixture@example.invalid>"
+  },
+  "narrative": {
+    "path": "work-packages/260903-0800-lexer-table-rewrite/260903-0800-lexer-table-rewrite.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "Closed before JSON control.",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": null,
+      "removed": []
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/260903-0800-lexer-table-rewrite.md",
+      "sha256": "sha256:ffd206dc4ef5f10558887936981774840d214473fa64866199d27c5ce71f38f2",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

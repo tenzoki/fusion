@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"conflict","reason":"after-state-changed","detail":"the stored answer ab1e0f18-0000-4000-8000-000000000018 (migration) is neither in the baseline archive/migrations/migration-20261002-session/plan.json froze, nor a validated answer of its schedule, nor one of the exempt operations; a rollback after ordinary work is refused"}}

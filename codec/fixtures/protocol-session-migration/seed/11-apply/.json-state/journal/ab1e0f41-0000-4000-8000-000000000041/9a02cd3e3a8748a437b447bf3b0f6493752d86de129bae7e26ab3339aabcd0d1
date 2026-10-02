@@ -1,0 +1,12 @@
+# The parser recovers from a syntax error and reports every later error in the file
+
+---
+**Domain:** code
+**Cross-references:** 260904-1300-regex-backend.md, 260902-1500_*_which-sync-tokens-end-a-recovery.md
+**Filed by:** user, Fixture Person <fixture@example.invalid>
+
+---
+
+## Directive
+
+A syntax error no longer ends the parse. The parser skips to the next synchronising token, records the error and goes on, so one run reports every error in the file in source order. Reached when the recovery corpus reports each seeded error exactly once and no phantom error after it.

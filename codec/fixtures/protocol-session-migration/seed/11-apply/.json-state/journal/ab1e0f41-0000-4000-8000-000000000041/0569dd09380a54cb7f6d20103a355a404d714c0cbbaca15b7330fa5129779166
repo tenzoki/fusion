@@ -1,0 +1,35 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ab1e0014-0000-4000-8000-000000000014",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Fixture Person <fixture@example.invalid>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "p",
+      "removed": [
+        "**Status:** Approved 2026-09-02 by the user.\n"
+      ]
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md",
+      "sha256": "sha256:527fa1a76366dd27bf7a9b9ceff9f14756ee9641ab72754243a5522342da1fa9",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

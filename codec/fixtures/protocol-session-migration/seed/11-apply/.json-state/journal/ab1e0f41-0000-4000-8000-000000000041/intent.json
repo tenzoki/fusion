@@ -1,0 +1,497 @@
+{
+  "operation_id": "ab1e0f41-0000-4000-8000-000000000041",
+  "op": "migration",
+  "phase": "apply",
+  "request_digest": "sha256:3638587a66164c884f3e323da2e286281e924345f3a2364e0066232b1b386cd0",
+  "writes": [
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1023_o_bulk-issue-23.md",
+      "before": null,
+      "after": "sha256:fb98205cce03eaa6e95649bbb61738948e4b94d7e1a730e0b4675d3c7661de57"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1024_o_bulk-issue-24.md",
+      "before": null,
+      "after": "sha256:73ae362a495aadfb3b0bbf29c41e048b2bf204bdc655be807d79604e68c7c748"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1025_o_bulk-issue-25.md",
+      "before": null,
+      "after": "sha256:2d28b4c245e9af630a32d2af8162432d468a83fdaa9ac4e229e6025cee8d39c5"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1026_o_bulk-issue-26.md",
+      "before": null,
+      "after": "sha256:ed8000b809c118528c025c444be577f9758c54d25222f07c32dab1f344b7a8bf"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1027_o_bulk-issue-27.md",
+      "before": null,
+      "after": "sha256:c57df58198c47cc5bea66813468390445806748c0f8b33087d201e036db167f8"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1028_o_bulk-issue-28.md",
+      "before": null,
+      "after": "sha256:8cff612d43f374b5b8552b52496e4e5f91ed60434e86875df4d7d27fb0f9bc42"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1029_o_bulk-issue-29.md",
+      "before": null,
+      "after": "sha256:d5c4069eb2d6a3f17497e02b8c960f708ee33ee73ee1cb3c2f37652d3a0bf09f"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/plans/260905-0900_o_plan-benchmark-suite.md",
+      "before": null,
+      "after": "sha256:08324ccf8311d914f060084e23261edbd1e48a3829a04716759dd80b8d04398e"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260810-0900-error-messages-name-the-rule/_c_circle.md",
+      "before": null,
+      "after": "sha256:cbc60d0aafa25cdefe65d7d2f42708632c50005027b37d85594d020d6efe7fa1"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260812-1000-grammar-coverage-report/_b_circle.md",
+      "before": null,
+      "after": "sha256:ea932a47150cb011c4a78b018665460948e6600108b99af00423922ad96427de"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260814-1100-incremental-reparse/_s_circle.md",
+      "before": null,
+      "after": "sha256:bc47c756d17a040a98b11aa14ad7eca068afd17d32a0cfe5b76a035cb9d9e94a"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260815-1400-wasm-target/_d_circle.md",
+      "before": null,
+      "after": "sha256:291f5a44c66cfa6f127bbe686f0812cb80ae60c51489c2888057b845b425092d"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md",
+      "before": null,
+      "after": "sha256:d413bf27f85ca9e3d86e0f8d8974cff25c68dae98e903518d8432de814c88bf7"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.md",
+      "before": null,
+      "after": "sha256:a10b767fb1b391c46643839e4556f9bfa667a86119f1e675fa65a9b16f3faa72"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md",
+      "before": null,
+      "after": "sha256:f79b5f135f190fde08c347a00e2cad7962ba1e9d0dc707773b65c8bd9aa8b6fa"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.md",
+      "before": null,
+      "after": "sha256:ade98291b40766ed8b9e805851658330e7f209d01a3bbd4cc5131031bd31045b"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.md",
+      "before": null,
+      "after": "sha256:65c37732edfb3ae9b3a086776958fd2f490034ed4dba6ebbd8b279dc2702d282"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.md",
+      "before": null,
+      "after": "sha256:7fddfc894203394153828873933ff0edb824f7f6fc70b2828edfb4dcf8fe5fb4"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md",
+      "before": null,
+      "after": "sha256:527fa1a76366dd27bf7a9b9ceff9f14756ee9641ab72754243a5522342da1fa9"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md",
+      "before": null,
+      "after": "sha256:f481607458cb2debc210325cdb666bda6555383a4603523051c50f0aeee43f87"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/260903-0800-lexer-table-rewrite.md",
+      "before": null,
+      "after": "sha256:ffd206dc4ef5f10558887936981774840d214473fa64866199d27c5ce71f38f2"
+    },
+    {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.md",
+      "before": null,
+      "after": "sha256:5acbc584534f390a352be4efc223825a6c5f579c4ded1a4663a3db28d64d18cc"
+    },
+    {
+      "path": "shared/issues/260907-1023_o_bulk-issue-23.record.json",
+      "before": null,
+      "after": "sha256:76dca5c4bb26f871ff50e84de104e81ebc7a2fe51dec336727c52b3ddfb47c2d"
+    },
+    {
+      "path": "shared/issues/260907-1024_o_bulk-issue-24.record.json",
+      "before": null,
+      "after": "sha256:855b72e04e87c5a5fb0add1d88b902046270da30f321c4a96b8aff796e427cfc"
+    },
+    {
+      "path": "shared/issues/260907-1025_o_bulk-issue-25.record.json",
+      "before": null,
+      "after": "sha256:502823f467fe9a99748457a9000eba41a33314a2735f94d401de42c509a19cf9"
+    },
+    {
+      "path": "shared/issues/260907-1026_o_bulk-issue-26.record.json",
+      "before": null,
+      "after": "sha256:735753958a9983ca34c28b1865ac2e35d40522f6778bb26bdf0de33cb2b6e32a"
+    },
+    {
+      "path": "shared/issues/260907-1027_o_bulk-issue-27.record.json",
+      "before": null,
+      "after": "sha256:f05be653f79e4e51115afd3c8ef5f7917a9496d62db361f4e5b490880f278640"
+    },
+    {
+      "path": "shared/issues/260907-1028_o_bulk-issue-28.record.json",
+      "before": null,
+      "after": "sha256:2cfd780f67c674b1f5ed7a87ae0f2b4bea7b816d440d5c300dcb864680ca8410"
+    },
+    {
+      "path": "shared/issues/260907-1029_o_bulk-issue-29.record.json",
+      "before": null,
+      "after": "sha256:9169556f964907c0b0dff2e91eb977a9e734407e5ab484b5b98fe232ebe15f94"
+    },
+    {
+      "path": "shared/plans/260905-0900_o_plan-benchmark-suite.record.json",
+      "before": null,
+      "after": "sha256:213c815329fc988325fd46c36c09db03d9e83245f15690ed372d4fee615446e0"
+    },
+    {
+      "path": "shared/plans/260905-0900_o_plan-benchmark-suite.md",
+      "before": "sha256:08324ccf8311d914f060084e23261edbd1e48a3829a04716759dd80b8d04398e",
+      "after": "sha256:dea2a6889cf53720add0fcca53687ea7cce7faed0dacb77a1b3b32fc042b1c9a"
+    },
+    {
+      "path": "work-packages/260810-0900-error-messages-name-the-rule/package.json",
+      "before": null,
+      "after": "sha256:48ad752e7cfc5422210e3600ed5a1dd7b79c0d323f803b299ec21d01254abd77"
+    },
+    {
+      "path": "work-packages/260812-1000-grammar-coverage-report/package.json",
+      "before": null,
+      "after": "sha256:9b26ad717ed874e435301043a508ab0fbfd48df693b2e69c92008df187f990a0"
+    },
+    {
+      "path": "work-packages/260814-1100-incremental-reparse/package.json",
+      "before": null,
+      "after": "sha256:d55a9402c2c46756945868865b02359ac6f2a752c902ade1039ae46bd8e2f61b"
+    },
+    {
+      "path": "work-packages/260815-1400-wasm-target/package.json",
+      "before": null,
+      "after": "sha256:9b68a20ec08425d405a90a79d567cd8ad8e159d16a034f786aeb54dbf97af762"
+    },
+    {
+      "path": "work-packages/260815-1400-wasm-target/_d_circle.md",
+      "before": "sha256:291f5a44c66cfa6f127bbe686f0812cb80ae60c51489c2888057b845b425092d",
+      "after": "sha256:67fe39acecbd734a34c3c97865985c33079116af4155fef9d3ac5f6caae452dc"
+    },
+    {
+      "path": "work-packages/260901-0900-tokenizer-handles-unicode/package.json",
+      "before": null,
+      "after": "sha256:51922ebab68aa6a5ef46718585ae9972ab0b816022de3af0feeebb867baf09a1"
+    },
+    {
+      "path": "work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md",
+      "before": "sha256:d413bf27f85ca9e3d86e0f8d8974cff25c68dae98e903518d8432de814c88bf7",
+      "after": "sha256:69332915b2a4aa8d1f2f75b4b1b19a008854e350d8f8e6cbd6d09f0975077886"
+    },
+    {
+      "path": "work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.record.json",
+      "before": null,
+      "after": "sha256:4a0803a5dfc4cd48f71a2ecc8e821c8c46494ebc8ac3c1a3a8186e03056b3d5e"
+    },
+    {
+      "path": "work-packages/260902-1000-parser-error-recovery/package.json",
+      "before": null,
+      "after": "sha256:e0520afbc1e50f67a8619ca6c36c891e322dddb2defdc93f4c2ce9b61e962f6b"
+    },
+    {
+      "path": "work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md",
+      "before": "sha256:f79b5f135f190fde08c347a00e2cad7962ba1e9d0dc707773b65c8bd9aa8b6fa",
+      "after": "sha256:9a02cd3e3a8748a437b447bf3b0f6493752d86de129bae7e26ab3339aabcd0d1"
+    },
+    {
+      "path": "work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.record.json",
+      "before": null,
+      "after": "sha256:718fadfaf1c7658e2d8d96b9b9e3fcac325fa5b938de63c41e88a0aa7cc716c4"
+    },
+    {
+      "path": "work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.record.json",
+      "before": null,
+      "after": "sha256:829b75b920f4d74459553bcc50130694380ba184d0d71f162759a85df225ea08"
+    },
+    {
+      "path": "work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.record.json",
+      "before": null,
+      "after": "sha256:7bfcb4e17c1ec445b646ab5b41fbfe7dbb7afa83d4ae68d07c90a1dbdbdd3098"
+    },
+    {
+      "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.record.json",
+      "before": null,
+      "after": "sha256:0569dd09380a54cb7f6d20103a355a404d714c0cbbaca15b7330fa5129779166"
+    },
+    {
+      "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md",
+      "before": "sha256:527fa1a76366dd27bf7a9b9ceff9f14756ee9641ab72754243a5522342da1fa9",
+      "after": "sha256:725d4fdf2491cc1809bbc6444f2b1ef26d2a2db89a73525971f4eb1a52e78859"
+    },
+    {
+      "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.record.json",
+      "before": null,
+      "after": "sha256:1305e5615b41b6cc9e13bc9f6e4ceb67ec44c2c29a56aae7624ec63c50e89167"
+    },
+    {
+      "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md",
+      "before": "sha256:f481607458cb2debc210325cdb666bda6555383a4603523051c50f0aeee43f87",
+      "after": "sha256:b142ad708b7ad1aa199a24ee632cf28a91d377cb955c454cac47344a4ab66ecf"
+    },
+    {
+      "path": "work-packages/260903-0800-lexer-table-rewrite/package.json",
+      "before": null,
+      "after": "sha256:fd5f7e8ae47c63985576931ec43f4b0d0889d505dc7fe2b8d30702f24e7ff7c5"
+    },
+    {
+      "path": "work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.record.json",
+      "before": null,
+      "after": "sha256:8dff39fd4671968f2a1e7848c2aff48891e35ce13a3ba3885e605174791cfe4a"
+    }
+  ],
+  "response": {
+    "ok": true,
+    "result": {
+      "operation_id": "ab1e0f41-0000-4000-8000-000000000041",
+      "migration_id": "migration-20261002-session",
+      "chunk": 2,
+      "fence": {
+        "operation_id": "ab1e0f40-0000-4000-8000-000000000040",
+        "since": "<since:08-apply>"
+      },
+      "writes": [
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1023_o_bulk-issue-23.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1024_o_bulk-issue-24.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1025_o_bulk-issue-25.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1026_o_bulk-issue-26.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1027_o_bulk-issue-27.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1028_o_bulk-issue-28.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/shared/issues/260907-1029_o_bulk-issue-29.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/shared/plans/260905-0900_o_plan-benchmark-suite.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260810-0900-error-messages-name-the-rule/_c_circle.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260812-1000-grammar-coverage-report/_b_circle.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260814-1100-incremental-reparse/_s_circle.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260815-1400-wasm-target/_d_circle.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/260903-0800-lexer-table-rewrite.md",
+          "kind": "original"
+        },
+        {
+          "path": "archive/migrations/migration-20261002-session/originals/work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.md",
+          "kind": "original"
+        },
+        {
+          "path": "shared/issues/260907-1023_o_bulk-issue-23.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "shared/issues/260907-1024_o_bulk-issue-24.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "shared/issues/260907-1025_o_bulk-issue-25.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "shared/issues/260907-1026_o_bulk-issue-26.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "shared/issues/260907-1027_o_bulk-issue-27.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "shared/issues/260907-1028_o_bulk-issue-28.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "shared/issues/260907-1029_o_bulk-issue-29.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "shared/plans/260905-0900_o_plan-benchmark-suite.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "shared/plans/260905-0900_o_plan-benchmark-suite.md",
+          "kind": "rewrite"
+        },
+        {
+          "path": "work-packages/260810-0900-error-messages-name-the-rule/package.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260812-1000-grammar-coverage-report/package.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260814-1100-incremental-reparse/package.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260815-1400-wasm-target/package.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260815-1400-wasm-target/_d_circle.md",
+          "kind": "rewrite"
+        },
+        {
+          "path": "work-packages/260901-0900-tokenizer-handles-unicode/package.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md",
+          "kind": "rewrite"
+        },
+        {
+          "path": "work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260902-1000-parser-error-recovery/package.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260902-1000-parser-error-recovery/260902-1000-parser-error-recovery.md",
+          "kind": "rewrite"
+        },
+        {
+          "path": "work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.md",
+          "kind": "rewrite"
+        },
+        {
+          "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.record.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md",
+          "kind": "rewrite"
+        },
+        {
+          "path": "work-packages/260903-0800-lexer-table-rewrite/package.json",
+          "kind": "control"
+        },
+        {
+          "path": "work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.record.json",
+          "kind": "control"
+        }
+      ]
+    },
+    "revisions": {
+      "shared/issues/260907-1023_o_bulk-issue-23.record.json": "sha256:76dca5c4bb26f871ff50e84de104e81ebc7a2fe51dec336727c52b3ddfb47c2d",
+      "shared/issues/260907-1024_o_bulk-issue-24.record.json": "sha256:855b72e04e87c5a5fb0add1d88b902046270da30f321c4a96b8aff796e427cfc",
+      "shared/issues/260907-1025_o_bulk-issue-25.record.json": "sha256:502823f467fe9a99748457a9000eba41a33314a2735f94d401de42c509a19cf9",
+      "shared/issues/260907-1026_o_bulk-issue-26.record.json": "sha256:735753958a9983ca34c28b1865ac2e35d40522f6778bb26bdf0de33cb2b6e32a",
+      "shared/issues/260907-1027_o_bulk-issue-27.record.json": "sha256:f05be653f79e4e51115afd3c8ef5f7917a9496d62db361f4e5b490880f278640",
+      "shared/issues/260907-1028_o_bulk-issue-28.record.json": "sha256:2cfd780f67c674b1f5ed7a87ae0f2b4bea7b816d440d5c300dcb864680ca8410",
+      "shared/issues/260907-1029_o_bulk-issue-29.record.json": "sha256:9169556f964907c0b0dff2e91eb977a9e734407e5ab484b5b98fe232ebe15f94",
+      "shared/plans/260905-0900_o_plan-benchmark-suite.record.json": "sha256:213c815329fc988325fd46c36c09db03d9e83245f15690ed372d4fee615446e0",
+      "work-packages/260810-0900-error-messages-name-the-rule/package.json": "sha256:48ad752e7cfc5422210e3600ed5a1dd7b79c0d323f803b299ec21d01254abd77",
+      "work-packages/260812-1000-grammar-coverage-report/package.json": "sha256:9b26ad717ed874e435301043a508ab0fbfd48df693b2e69c92008df187f990a0",
+      "work-packages/260814-1100-incremental-reparse/package.json": "sha256:d55a9402c2c46756945868865b02359ac6f2a752c902ade1039ae46bd8e2f61b",
+      "work-packages/260815-1400-wasm-target/package.json": "sha256:9b68a20ec08425d405a90a79d567cd8ad8e159d16a034f786aeb54dbf97af762",
+      "work-packages/260901-0900-tokenizer-handles-unicode/package.json": "sha256:51922ebab68aa6a5ef46718585ae9972ab0b816022de3af0feeebb867baf09a1",
+      "work-packages/260901-0900-tokenizer-handles-unicode/issues/260901-0930_o_tokenizer-rejects-combining-marks.record.json": "sha256:4a0803a5dfc4cd48f71a2ecc8e821c8c46494ebc8ac3c1a3a8186e03056b3d5e",
+      "work-packages/260902-1000-parser-error-recovery/package.json": "sha256:e0520afbc1e50f67a8619ca6c36c891e322dddb2defdc93f4c2ce9b61e962f6b",
+      "work-packages/260902-1000-parser-error-recovery/decisions/260902-1500_a_which-sync-tokens-end-a-recovery.record.json": "sha256:718fadfaf1c7658e2d8d96b9b9e3fcac325fa5b938de63c41e88a0aa7cc716c4",
+      "work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.record.json": "sha256:829b75b920f4d74459553bcc50130694380ba184d0d71f162759a85df225ea08",
+      "work-packages/260902-1000-parser-error-recovery/issues/260902-1400_p_recovery-loses-token-position.record.json": "sha256:7bfcb4e17c1ec445b646ab5b41fbfe7dbb7afa83d4ae68d07c90a1dbdbdd3098",
+      "work-packages/260902-1000-parser-error-recovery/plans/260902-1030_p_spec-parser-error-recovery.record.json": "sha256:0569dd09380a54cb7f6d20103a355a404d714c0cbbaca15b7330fa5129779166",
+      "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.record.json": "sha256:1305e5615b41b6cc9e13bc9f6e4ceb67ec44c2c29a56aae7624ec63c50e89167",
+      "work-packages/260903-0800-lexer-table-rewrite/package.json": "sha256:fd5f7e8ae47c63985576931ec43f4b0d0889d505dc7fe2b8d30702f24e7ff7c5",
+      "work-packages/260903-0800-lexer-table-rewrite/issues/260904-0900_o_lexer-table-misses-tab-width.record.json": "sha256:8dff39fd4671968f2a1e7848c2aff48891e35ce13a3ba3885e605174791cfe4a"
+    }
+  },
+  "created_at": "2026-10-02T12:00:00.000Z"
+}

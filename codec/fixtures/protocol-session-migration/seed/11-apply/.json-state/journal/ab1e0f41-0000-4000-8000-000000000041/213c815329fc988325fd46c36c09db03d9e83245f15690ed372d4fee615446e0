@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ab1e0013-0000-4000-8000-000000000013",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "kind": "plan",
+  "narrative": {
+    "path": "shared/plans/260905-0900_o_plan-benchmark-suite.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Fixture Person <fixture@example.invalid>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "removed": [
+        "**Status:** Draft\n"
+      ]
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261002-session/originals/shared/plans/260905-0900_o_plan-benchmark-suite.md",
+      "sha256": "sha256:08324ccf8311d914f060084e23261edbd1e48a3829a04716759dd80b8d04398e",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "2b",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": null
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ab1e0016-0000-4000-8000-000000000016",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "kind": "discussion",
+  "narrative": {
+    "path": "work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Fixture Person <fixture@example.invalid>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "removed": []
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261002-session/originals/work-packages/260902-1000-parser-error-recovery/discussions/260902-1600_o_how-deep-may-a-recovery-unwind.md",
+      "sha256": "sha256:65c37732edfb3ae9b3a086776958fd2f490034ed4dba6ebbd8b279dc2702d282",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "participants": [
+      {
+        "actor": "orchestrator",
+        "person": null
+      },
+      {
+        "actor": "consultant",
+        "person": null
+      }
+    ],
+    "outcome_refs": []
+  }
+}
