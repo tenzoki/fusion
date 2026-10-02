@@ -19,3 +19,6 @@ The same `2>/dev/null || true` also cannot tell an unreadable record (grep exit 
 Fix direction: keep the per-store grep but read its exit code. 0 and 1 are answers; anything above 1 with no output is unknown scope, exit 3 with a stderr line. Or batch the list (`xargs`, or `find … -exec grep -l … {} +`), which keeps the argument order the output relies on.
 
 Acceptance: a test builds a store whose record list exceeds the argument limit (or forces the failure some other way) and the helper does not exit 0 with empty output; the existing one, two and three claim cases stay byte-identical.
+
+---
+Resolved: bin/fusion-claimed-package reads grep exit codes through grep_records: 0 and 1 are answers, anything higher (unreadable record, argument list too long) exits 3 with a stderr reason and grep's own error passes through. An unreadable record now exits 3 even when another record matches. Tests in hooks/lib/__tests__/fusion-claimed-package.test.ts cover ARG_MAX overflow and an unreadable claimed record.

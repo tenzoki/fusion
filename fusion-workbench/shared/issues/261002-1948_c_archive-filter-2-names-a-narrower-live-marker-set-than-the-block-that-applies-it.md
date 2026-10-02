@@ -8,3 +8,6 @@ Archive filter 2 names a narrower live-marker set than the step-3 block that app
 Severity: Low. The block's behaviour is the defensible one: no tier ever selects an `_o_` or `_d_` decision or an `_o_` discussion from the shared store, so a container holding one should not take it out either. The defect is that the filter text, which `skills/help/SKILL.md` `### 4. Update` cites as the authority for 12.2.2's fix, states less than the code does.
 
 Acceptance: the marker set a container is excluded for is enumerated once (filter 2 or the step-3 paragraph), the other place cites it, and the enumeration matches the `case` pattern in the block.
+
+---
+Resolved: skills/archive/SKILL.md filter 2 names the set the block applies (_o_, _p_, _a_ or _d_ on an issue, plan, discussion or decision); a test in archive-filter-key.test.ts holds the text and the block pattern equal.

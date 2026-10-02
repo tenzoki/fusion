@@ -1,6 +1,6 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
@@ -16,17 +16,11 @@ const LEGACY = WINDOW_LEGACY_NAMES[CONTAINER_STORE];
 const identity = join(pluginRoot, "bin", "fusion-identity");
 
 const tmpRoots: string[] = [];
-afterAll(() => {
-  for (const d of tmpRoots) rmSync(d, { recursive: true, force: true });
-});
+afterAll(() => tmpRoots.forEach((d) => rmSync(d, { recursive: true, force: true })));
 
 /** Git reads none of the developer's own config: a global `user.name` would
  *  make the no-identity case pass for the wrong reason. */
-const env = {
-  ...process.env,
-  GIT_CONFIG_GLOBAL: "/dev/null",
-  GIT_CONFIG_SYSTEM: "/dev/null",
-};
+const env = { ...process.env, GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_SYSTEM: "/dev/null" };
 
 function sh(cmd: string, args: string[], cwd: string) {
   const r = spawnSync(cmd, args, { cwd, env, encoding: "utf-8" });
@@ -35,31 +29,23 @@ function sh(cmd: string, args: string[], cwd: string) {
 
 const run = (cwd: string, ...args: string[]) => sh(script, args, cwd);
 
-interface Opts {
-  /** false leaves the tree without a workbench at all. */
-  workbench?: boolean;
-  /** false leaves the tree outside a git work tree. */
-  git?: boolean;
-  /** false initialises a work tree with no `user.name`. */
-  named?: boolean;
-  /** Seed `.checkout-id` by hand, to make the minted value unreadable. */
-  checkoutId?: string;
-}
+/** `workbench: false` leaves no workbench, `git: false` no work tree, `named: false` no
+ *  `user.name`; `checkoutId` seeds `.checkout-id` by hand, to make the minted value unreadable. */
+interface Opts { workbench?: boolean; git?: boolean; named?: boolean; checkoutId?: string }
 
-function project(opts: Opts = {}): string {
-  const { workbench = true, git = true, named = true, checkoutId } = opts;
+function project({ workbench = true, git = true, named = true, checkoutId }: Opts = {}): string {
   const dir = mkdtempSync(join(tmpdir(), "fusion-claimed-package-"));
   tmpRoots.push(dir);
+  const wb = join(dir, "fusion-workbench");
   if (git) {
     sh("git", ["init", "-q"], dir);
     sh("git", ["config", "user.email", "scratch@example.com"], dir);
     if (named) sh("git", ["config", "user.name", "Scratch Person"], dir);
   }
   if (workbench) {
-    mkdirSync(join(dir, "fusion-workbench", CONTAINER_STORE), { recursive: true });
-    writeFileSync(join(dir, "fusion-workbench", ".fusion-setup"), "{}\n");
-    if (checkoutId !== undefined)
-      writeFileSync(join(dir, "fusion-workbench", ".checkout-id"), checkoutId + "\n");
+    mkdirSync(join(wb, CONTAINER_STORE), { recursive: true });
+    writeFileSync(join(wb, ".fusion-setup"), "{}\n");
+    if (checkoutId !== undefined) writeFileSync(join(wb, ".checkout-id"), checkoutId + "\n");
   }
   return dir;
 }
@@ -74,31 +60,12 @@ function checkout(dir: string): string {
 /** One package: its container under `root`, and the record named after it.
  *  `record` overrides that name, which is how a file at the same depth is shown
  *  NOT to be a package. */
-function add(
-  dir: string,
-  slug: string,
-  status: string,
-  claim?: string,
-  record = `${slug}.md`,
-  root = CONTAINER_STORE,
-): void {
+function add(dir: string, slug: string, status: string, claim?: string, record = `${slug}.md`, root = CONTAINER_STORE): void {
   const d = join(dir, "fusion-workbench", root, slug);
   mkdirSync(d, { recursive: true });
-  writeFileSync(
-    join(d, record),
-    [
-      `# ${slug}`,
-      "",
-      "---",
-      "**Domain:** code",
-      `**Status:** ${status}`,
-      ...(claim === undefined ? [] : [`**Claim:** ${claim}`]),
-      "**Filed by:** user, Scratch Person <scratch@example.com>",
-      "",
-      "---",
-      "",
-    ].join("\n"),
-  );
+  const claimLine = claim === undefined ? [] : [`**Claim:** ${claim}`];
+  writeFileSync(join(d, record), [`# ${slug}`, "", "---", "**Domain:** code", `**Status:** ${status}`, ...claimLine,
+    "**Filed by:** user, Scratch Person <scratch@example.com>", "", "---", ""].join("\n"));
 }
 
 describe("bin/fusion-claimed-package", () => {
@@ -129,23 +96,10 @@ describe("bin/fusion-claimed-package", () => {
 
   it.each([
     ["no item is claimed at all", (d: string) => add(d, "260910-1000-alpha", "open")],
-    [
-      "the claim names another checkout",
-      (d: string) => add(d, "260910-1000-alpha", "claimed", "ffffffff — Someone Else, 260910-1000"),
-    ],
-    [
-      "the status says claimed with no claim beside it",
-      (d: string) => add(d, "260910-1000-alpha", "claimed"),
-    ],
-    [
-      "the claim sits on a done item",
-      (d: string) => add(d, "260910-1000-alpha", "done", `${checkout(d)} — Scratch Person, 260910-1000`),
-    ],
-    [
-      "the record is not named after its own container",
-      (d: string) =>
-        add(d, "260910-1000-alpha", "claimed", `${checkout(d)} — x, 260910-1000`, "notes.md"),
-    ],
+    ["the claim names another checkout", (d: string) => add(d, "260910-1000-alpha", "claimed", "ffffffff — Someone Else, 260910-1000")],
+    ["the status says claimed with no claim beside it", (d: string) => add(d, "260910-1000-alpha", "claimed")],
+    ["the claim sits on a done item", (d: string) => add(d, "260910-1000-alpha", "done", `${checkout(d)} — Scratch Person, 260910-1000`)],
+    ["the record is not named after its own container", (d: string) => add(d, "260910-1000-alpha", "claimed", `${checkout(d)} — x, 260910-1000`, "notes.md")],
   ])("exit 0 with no output when %s", (_, seed) => {
     const dir = project();
     seed(dir);
@@ -175,6 +129,27 @@ describe("bin/fusion-claimed-package", () => {
     expect(r.stdout).toBe("");
     expect(r.stderr).toContain("item in scope is unknown");
   });
+
+  // A grep that could not read every record is unknown scope, never "none claimed":
+  // a record list past the argument limit (grep never runs, 126) and an unreadable record (2).
+  it.each([
+    ["the record list exceeds the argument limit", (d: string) => {
+      const argMax = Number(sh("getconf", ["ARG_MAX"], d).stdout.trim());
+      for (let i = 0; i * 230 < argMax; i++) add(d, `260910-1000-${String(i).padStart(5, "0")}-${"x".repeat(200)}`, "open");
+    }],
+    ["a record is unreadable", (d: string) => {
+      add(d, "260910-1000-alpha", "claimed", `${checkout(d)} — Scratch Person, 260910-1000`);
+      chmodSync(join(d, "fusion-workbench", CONTAINER_STORE, "260910-1000-alpha", "260910-1000-alpha.md"), 0);
+    }],
+  ])("exit 3, not an empty answer, when %s", (_, seed) => {
+    if (_.includes("unreadable") && process.getuid?.() === 0) return; // root reads a mode-0 file
+    const dir = project();
+    seed(dir);
+    const r = run(dir);
+    expect(r.status).toBe(3);
+    expect(r.stdout).toBe("");
+    expect(r.stderr).toContain("item in scope is unknown");
+  }, 60_000);
 
   it.each([
     ["no workbench above the working directory", { workbench: false }, "no fusion workbench"],

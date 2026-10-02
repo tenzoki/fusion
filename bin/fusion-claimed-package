@@ -34,11 +34,13 @@
 #      or `user.email` is unset, or no runnable `git` at all).
 #   2  usage error: an argument was given, or -h/--help. Nothing on stdout.
 #   3  the item in scope cannot be determined. Nothing on stdout, and NEVER a
-#      fall back to the shared store. Two causes, and the message says which:
+#      fall back to the shared store. Three causes, and the message says which:
 #      two or more items carry a claim naming this checkout, every one of them
-#      named on stderr; or this checkout's own identifier could not be read
+#      named on stderr; this checkout's own identifier could not be read
 #      inside a git work tree (`bin/fusion-identity` exiting 3 or 5, or that
-#      helper or `bin/fusion-stores` missing from the install).
+#      helper or `bin/fusion-stores` missing from the install); or the scan's
+#      grep did not read every record (one unreadable, or a record list past
+#      the argument limit, where grep never runs).
 #
 # ---------------------------------------------------------------------------
 # One criterion, one implementation
@@ -222,6 +224,20 @@ fi
 matches=''
 n=0
 
+# One grep over a store's records, the matching paths left in $hits. Exit 0
+# and 1 are answers; anything above is a record left unread (2) or a grep that
+# never ran (126, the argument limit). Either could hide the claim, so it is
+# unknown scope, never "none claimed". grep's own stderr passes through.
+grep_records() {
+  local pattern="$1" rc=0
+  shift
+  hits="$(grep -lE "$pattern" "$@")" || rc=$?
+  [ "$rc" -le 1 ] && return 0
+  printf 'fusion-claimed-package: grep exited %s over the records under %s, so a claim may have gone unread and the item in scope is unknown.\n' \
+    "$rc" "$store_root" >&2
+  exit 3
+}
+
 for store_root in $CONTAINER_STORE $LEGACY_CONTAINER_STORE; do
   store="$root/fusion-workbench/$store_root"
   [ -d "$store" ] || continue
@@ -240,12 +256,13 @@ for store_root in $CONTAINER_STORE $LEGACY_CONTAINER_STORE; do
 $(find "$store" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
 EOF
   [ "${#records[@]}" -gt 0 ] || continue
-  claimed="$(grep -lE '^\*\*Status:\*\*[[:space:]]*claimed[[:space:]]*$' "${records[@]}" 2>/dev/null || true)"
-  [ -n "$claimed" ] || continue
+  grep_records '^\*\*Status:\*\*[[:space:]]*claimed[[:space:]]*$' "${records[@]}"
+  [ -n "$hits" ] || continue
   records=()
   while IFS= read -r record; do records+=("$record"); done <<EOF
-$claimed
+$hits
 EOF
+  grep_records "^\*\*Claim:\*\*[[:space:]]*$checkout([[:space:]]|$)" "${records[@]}"
   while IFS= read -r record; do
     [ -n "$record" ] || continue
     dir="${record%/*}"
@@ -253,7 +270,7 @@ EOF
 "
     n=$((n + 1))
   done <<EOF
-$(grep -lE "^\*\*Claim:\*\*[[:space:]]*$checkout([[:space:]]|$)" "${records[@]}" 2>/dev/null || true)
+$hits
 EOF
 done
 

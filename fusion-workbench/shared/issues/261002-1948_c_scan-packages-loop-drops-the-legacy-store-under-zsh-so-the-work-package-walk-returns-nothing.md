@@ -26,3 +26,6 @@ Same result for the orchestrator line (bash 3 rows, zsh 0). With `SCAN_PACKAGES=
 Fix direction: the construct the earlier fix used at the sibling sites, `for s in $(printf '%s\n' "$SCAN_PACKAGES")` (both shells field-split an unquoted command substitution; store names carry no whitespace), applied at every site above and stated once in the Step 1 paragraph. `agents/orchestrator.md` is under the growth bounds; the change is a few bytes per site.
 
 Acceptance: `hooks/lib/__tests__/archive-filter-key.test.ts` runs the selection block under zsh with `SCAN_PACKAGES="work-packages circles"` and a legacy container present, and gets the same lines as bash; a test or lint covers the orchestrator block the same way; `grep -rnE 'for [a-z]+ in \$SCAN_' skills agents` finds no bare form.
+
+---
+Resolved: every $SCAN_* loop in skills/archive/SKILL.md (selection block, head-field block, Step 1 split rule) and agents/orchestrator.md Setup now reads `for s in $(printf %s "$SCAN_PACKAGES")`, which splits alike in bash and zsh; no other site in agents/, skills/, rules/, docs/. hooks/lib/__tests__/archive-filter-key.test.ts runs both blocks under bash and zsh with a two-store value and lints against a bare `for x in $SCAN_` loop.
