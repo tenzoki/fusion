@@ -21,6 +21,8 @@ flowchart LR
 
 ### C1: The `/fusion:wp-order` slash command
 
+> **Scope note, 12.2.0 on.** Four C1 criteria hold for the text format only. With `--format tsv|json|markdown` the command departs from them: (1) rendering in the project's chat language (the Description); (2) a `note=` line repeated as a separate sentence; (3) each cycle, unresolved-entry and unreadable-record row named to the person with its meaning; (4) exit 1 reported as a fusion defect, where with an argument it is now the person's argument. The source of the departure is `261002-0733_*_plan-work-order-markdown-and-json-formats.md`, whose Approach and Risks table argue each one. That plan's head names only D1 as superseded, and this note records the other four (issue `261002-0926_*_the-plan-names-only-d1-as-superseded-while-the-pass-through-formats-also-relax-four-c1-criteria-of-the-spec.md`).
+
 **Description:** A person in a fusion session types `/fusion:wp-order`. The command checks that it sits inside a fusion workbench and that the installed fusion carries the helper. It then runs `bin/fusion-work-order` and renders what the helper printed, readably and in the project's chat language: the summary figures, the ordered item table, and any cycle, unresolved-entry and unreadable-record rows. Any `note=` line is repeated to the person in a sentence of its own. The command adds nothing the helper did not compute. The body follows the shape of the existing wrapper skills (`skills/news/SKILL.md`, `skills/wp/SKILL.md`): the mechanics stay documented in the helper's own header, and the body carries only the flow and the sentences the person reads. The command's name differs from the helper's, so the body says which helper it wraps.
 
 **Acceptance criteria:**
