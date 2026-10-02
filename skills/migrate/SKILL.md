@@ -1,11 +1,11 @@
 ---
-description: Bring a fusion workbench to the v12 store names — `circles/` to `work-packages/`, `planning/` to `plans/` in `shared/` and in every container, `shared/consult/` to `shared/consultations/`. Directory renames only; no record is rewritten, nothing in `archive/` or the Review-class stores moves. Surveys first, asks before moving, never overwrites, resumes after an interruption. A pre-v4 workbench is refused and routed to the `v11.11.1` tag.
+description: Bring a fusion workbench to the v12 store names — `circles/` to `work-packages/`, `planning/` to `plans/` in `shared/` and in every container, `shared/consult/` to `shared/consultations/`. Directory renames only; no record is rewritten, nothing in `archive/` or the Review-class stores moves. Surveys first, asks before moving, never overwrites, resumes after an interruption. A pre-v4 workbench is refused and routed to the `v11.11.1` tag. Then, where the installed copy carries `bin/fusion-migrate`, repairs the records one finding at a time and migrates the workbench to JSON control on a yes.
 allowed-tools: [Bash, Read, AskUserQuestion]
 ---
 
 # Migrate a workbench to the current format
 
-This workflow brings a workbench to the **v12 store names**, and it does nothing else. Three stores were renamed at `12.0.0`:
+This workflow brings a workbench to the **v12 store names** (Steps 1 to 6), then to **JSON control** (Step 7). Three stores were renamed at `12.0.0`:
 
 | From | To |
 |---|---|
@@ -104,7 +104,7 @@ Then, in this order:
 - **`LEGACY=1`**: stop. Show the `LEGACY` lines and render the `REFUSED` line as one message. Ask nothing.
 - **`DIRTY>0`**: stop. Name every `DIRTY` path and ask the user to commit or stash, then run again: a rename over a modified file mixes the migration with work in flight and leaves no clean revert.
 - **`UNKNOWN>0`**: stop. Name the entry; the user rules on its class, and this workflow's classification gains a row.
-- **`FOUND=0`**: *"This workbench is already in the v12 format. Nothing to do."* Stop, and ask nothing.
+- **`FOUND=0`**: *"This workbench already has the v12 store names."* Ask nothing and go to Step 7.
 
 ## Step 3 — Ask before moving
 
@@ -120,7 +120,7 @@ Use `AskUserQuestion` in the project's language (see `rules/fusion-workbench-con
 
 Offer "Tracked entries only" only in `git` mode with `UNTRACKED>0`. With `COLLISIONS>0`, put the collision lines above the options and say that those entries stay and the rest moves. For `MODE=plain`, replace the `git mv` sentence with the honest one: *"This workbench is not under version control, so moving uses `mv`. The renames appear in no diff and cannot be taken back with `git revert`."*
 
-Do not migrate without an explicit choice.
+Do not migrate without an explicit choice. On "Cancel" stop here: Step 7 needs the new names.
 
 ## Step 4 — Apply
 
@@ -153,15 +153,48 @@ Then what to do next, in this order: commit the migration as one commit of renam
 
 ## Step 6 — Sweep the citations
 
-The pass moved directories and rewrote no record, so a citation spelling a moved store segment, or a pre-v4 bracket marker, is the other half. Set `SWEEP="$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep"`. If `[ -x "$SWEEP" ]` is false, say the sweep was skipped because the installed copy carries no `bin/fusion-citation-sweep` yet and `fusion --update` then a restart will get it, and stop there. Otherwise run `"$SWEEP" --dry-run`, report its summary, and ask in Step 3's shape whether to respell those markers to the wildcard. On a yes run `"$SWEEP" --write --yes` and report its summary, and say that it wrote record content, which stays unstaged beside the staged renames and is committed separately, after the migration commit; on a no, say they were left as written.
+The pass moved directories and rewrote no record, so a citation spelling a moved store segment, or a pre-v4 bracket marker, is the other half. Set `SWEEP="$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep"`. If `[ -x "$SWEEP" ]` is false, say the sweep was skipped because the installed copy carries no `bin/fusion-citation-sweep` yet and `fusion --update` then a restart will get it, and go to Step 7. Otherwise run `"$SWEEP" --dry-run`, report its summary, and ask in Step 3's shape whether to respell those markers to the wildcard. On a yes run `"$SWEEP" --write --yes` and report its summary, and say that it wrote record content, which stays unstaged beside the staged renames and is committed separately, after the migration commit; on a no, say they were left as written. Then go to Step 7.
 
 The ask is not ceremony: what it puts to the user is the open half of `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
 
+## Step 7 — Repair, then migrate to JSON control
+
+Run this step only when `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-migrate" ]` holds; otherwise say the installed copy carries no JSON migration yet and stop. Every question in this step is plain chat text with numbered options, never `AskUserQuestion`: one question per message, and the user answers with a number or in their own words.
+
+**Node first, before any `bin/fusion-migrate` call.** The rename pass above needed no Node and stands as it is; this step does:
+
+```bash
+W="$(sed -n 's/.*"node": *">=\([0-9][0-9.]*\)".*/\1/p' "$FUSION_PLUGIN_ROOT/codec/package.json" 2>/dev/null | head -1)"; W="${W:-20.12.0}"; if command -v node >/dev/null 2>&1 && node -e 'const c=s=>s.split(".").map(Number),h=c(process.versions.node),w=c(process.argv[1]);for(let i=0;i<3;i++)if(h[i]!==w[i])process.exit(h[i]>w[i]?0:1)' "$W" 2>/dev/null; then echo "NODE=$(node --version)"; else echo "REFUSED: the JSON migration needs Node $W or later, and node is missing or older. Install it and run /fusion:migrate again."; fi
+```
+
+On `REFUSED`, tell the user that line and stop. Set `M="$FUSION_PLUGIN_ROOT/bin/fusion-migrate"`; every call below runs from `$ROOT`. Its lines are `KEY=value` on stdout with tab-separated fields, its reasons on stderr; on any exit other than those named here, show the stderr line and stop.
+
+**Survey.** Run `"$M" status`. With `done=true` and `rolled_back=false` the workbench is already on JSON control: say so and stop. With a recorded run that is not done, go to *Interrupted* below. Otherwise run `"$M" survey` (it writes nothing) and show its `count=` and `findings=` lines as a short table.
+
+**Repairs, one blocking finding at a time.** Run `"$M" repair --list`. With `blocking=0`, go on. A finding with an `unrepairable=` line is named with its reason: the user fixes it by hand, and this step stops before the question to migrate while any remains. Take the **first** other `finding=` only and put it to the user: its file, what is wrong (`detail`), the proposed edit (`edit=`) and every `listed=` citation it rewrites. Ask each `ask=` question in its own message, skipping one whose condition (the last field) the earlier answers do not meet: a `choice` question numbers its choices; an `actor` question takes an agent name or `user`; a `person` question takes `Name <email>` or an explicit "nobody". **A missing actor or person is asked, never filled**: not from git, not from the session, not from a neighbouring record. When the edit goes into the control file only, say that the record's text stays unchanged. Then ask:
+
+> 1. Apply this repair.
+> 2. Skip it: the migration stays blocked until it is fixed.
+
+Only on 1, run `"$M" repair --apply <finding> --value <key>=<answer> … --consent`, one `--value` per answer. Exit 6 means it was not applied (stderr says why); exit 9 means the backup did not verify and nothing was repaired: report either and stop. After each applied repair run `repair --list` again, because a finding's id binds its file's bytes, and put the next one. On 2, stop.
+
+**The question to migrate.** Once `blocking=0`, say first: *every installation that writes this workbench must be on 13.0.0 or later before it writes again; nothing detects a checkout that does not update.* Then ask once:
+
+> This workbench's records are ready to move to the new JSON format. A full backup outside the workbench, taken before the first repair or now, stands first; the move runs in chunks and can be rolled back.
+> 1. Migrate now.
+> 2. Not now: nothing changes, and `/fusion:migrate` can run again at any time.
+
+**Run.** Only on 1, run `"$M" run`. Show every `reported=`, `untracked=` and `ignored=` line, then the receipt (`verified=`, `migrated=`). `result=no-op` means it had already run and nothing was sent. Exit 6 means a finding came back: return to the repairs. Exit 5 or 8: show the reason and stop.
+
+**Interrupted.** On exit 7, or a recorded run that is not done, run `"$M" status` and ask: 1. continue (`"$M" resume`), 2. undo (`"$M" rollback`). Never start a second plan: a re-run is `run`, which no-ops once done.
+
+**Report.** Close with the receipt and the commit split, four commits in this order: the repairs, the originals and the record pairs, the rewritten records, the manifest. Then repeat the sentence: every installation that writes this workbench must be on 13.0.0 or later before it writes again, and nothing detects a checkout that does not update, so other checkouts update their installation first, then pull. `"$M" rollback` undoes the migration and `"$M" status` says where it stands.
+
 ## Guardrails
 
-- **Never migrate without an explicit user choice.** The survey is read-only; nothing moves before Step 3's answer.
+- **Never migrate without an explicit user choice.** The survey is read-only; nothing moves before Step 3's answer, and Step 7 changes nothing before its yes.
 - **Never overwrite.** A destination that exists means the source stays and the collision is reported. Move only; never copy, never delete.
 - **Never touch the root-anchored surfaces.** `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/`, `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.check-stamps`, `.asset-provenance`, `monitor`, `stilwerk/`, `.fusion-setup` stay where they are; their consumers read them at fixed root-relative paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`).
 - **Never rename inside `archive/`, `stashes/`, `.migration-v2-backup/` or `shared/backlog/`.** Frozen content keeps the names it was frozen with.
-- **Never open a record.** The pass renames directories; no line inside any file is read for its state or rewritten, terminal or live (`rules/fusion-workbench-conventions.md` `## Terminal states are history`).
+- **Never open a record in the rename pass.** It renames directories; no line inside any file is read for its state or rewritten, terminal or live (`rules/fusion-workbench-conventions.md` `## Terminal states are history`). Step 7 edits a record only through a repair the user said yes to.
 - **Never touch git beyond `git mv`.** No `git add`, no `git commit`. The user decides when to commit the migration.
