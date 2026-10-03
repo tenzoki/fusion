@@ -85,6 +85,21 @@
 // clean, stands unfenced and refuses a foreign transition field, and four
 // installed readers exit 0 naming nothing archived, on the same PATHs.
 //
+// A seventh case (FJ04 step 11) takes two v11-named twins of the installed
+// `codec/fixtures/legacy-v12/` with thirty more live issues (three chunks)
+// through `/fusion:migrate`'s shipped Steps 1, 2 and 4 (the rename block),
+// then `bin/fusion-migrate`: every blocking finding repaired with answers
+// the test supplies, `run`. On the first twin one open and one terminal
+// record read back through the installed `bin/fusion-record` and readers,
+// `bin/fusion-write` claims the open package, and a second `run` is a no-op.
+// The second twin's run dies after chunk 2 in a copy of the install whose
+// bundle is a stand-in that discards chunk 2's answer; the installed copy
+// resumes it, rolls it back after activation and restores the backup. Every
+// call runs with PATH, HOME and FUSION_PLUGIN_ROOT alone, and the case
+// asserts that no PATH entry and no HOME entry names Prior. An eighth case
+// runs `bin/fusion-migrate survey` with `node` absent from PATH: the Node
+// refusal, nothing written.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -94,7 +109,7 @@
 
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -113,8 +128,8 @@ const HOST_TOOLS = ["bash", "tar", "cp", "rm", "mkdir", "cat", "chmod", "find", 
 const OPTIONAL_TOOLS = ["gzip"];
 /** What `bin/fusion-identity` calls beyond HOST_TOOLS; on PATH for the scope case and for preparing a project. */
 const IDENTITY_TOOLS = ["git", "od", "tr", "grep", "sort", "wc", "ls"];
-/** What the shipped skill blocks call beyond both lists: discuss's stamp, `bin/fusion-session-domain`'s `awk`, and archive's `basename`. */
-const SKILL_TOOLS = ["date", "awk", "basename"];
+/** What the shipped skill blocks call beyond both lists: discuss's stamp, `bin/fusion-session-domain`'s `awk`, archive's `basename`, and the `mv` and `rmdir` of migrate's rename block. */
+const SKILL_TOOLS = ["date", "awk", "basename", "mv", "rmdir"];
 
 interface Install {
   tmp: string;
@@ -851,6 +866,159 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     expect([kv(out["fusion-work-order"], "items"), out["fusion-work-order"].split("\n").filter((l) => l.startsWith("  ")).map((l) => l.trim().split(/\s+/).slice(3))]).toEqual(["1", [["ready", live]]]);
     expect(["resolved", "dangling", "verdict"].map((k) => kv(out["fusion-citation-check"], k))).toEqual(["1", "0", "clean"]);
   }, 120_000);
+
+  it("the installed copy renames a v11-named workbench with the shipped block, repairs it, migrates it in three chunks, reads it back, claims, resumes a kill after chunk 2, rolls back and restores the backup, with no Prior present", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const FIX = join(install.home, "codec", "fixtures", "legacy-v12");
+    const OPEN_PKG = "work-packages/260901-0900-tokenizer-handles-unicode/package.json";
+    const CLOSURE = "work-packages/260903-1200-streaming-input/plans/260903-1230_c_plan-streaming-input-first-cut";
+    const version = (JSON.parse(readFileSync(join(install.home, ".claude-plugin", "plugin.json"), "utf-8")) as { version: string }).version;
+    type Twin = Project & { wb: string; env: NodeJS.ProcessEnv };
+    const lines = (out: string, key: string) => out.split("\n").filter((l) => l.startsWith(`${key}=`));
+    /** Every file but `.json-state/`, which restore-backup keeps. */
+    const plain = (wb: string) => tree(wb).filter((l) => !l.startsWith(".json-state"));
+
+    /** A v11-named twin of the installed fixture with thirty more live issues, committed, the untracked issue copied in after; HOME its own. */
+    const twin = (name: string): Twin => {
+      const root = join(install.tmp, name);
+      const wb = join(root, "fusion-workbench");
+      cpSync(join(FIX, "workbench"), wb, { recursive: true, verbatimSymlinks: true });
+      writeFileSync(join(wb, ".fusion-setup"), '{"setup_at":"t"}\n');
+      for (let i = 10; i < 40; i++) writeFileSync(join(wb, `shared/issues/260907-10${i}_o_extra-issue-${i}.md`), `# Extra issue ${i}\n\n**Filed by:** user\n\nBody.\n`);
+      for (const dir of ["shared", ...readdirSync(join(wb, "work-packages")).map((d) => `work-packages/${d}`)]) if (existsSync(join(wb, dir, "plans"))) renameSync(join(wb, dir, "plans"), join(wb, dir, "planning"));
+      renameSync(join(wb, "work-packages"), join(wb, "circles"));
+      const env = skillEnv({ HOME: join(root, "home") });
+      mkdirSync(env.HOME!);
+      // The plugin and Node only: three variables, and nothing on PATH or in HOME that names Prior.
+      expect(Object.keys(env).sort()).toEqual(["FUSION_PLUGIN_ROOT", "HOME", "PATH"]);
+      expect([...env.PATH!.split(delimiter), env.HOME!].flatMap((d) => readdirSync(d)).filter((n) => /prior/i.test(n))).toEqual([]);
+      for (const args of [["init", "-q"], ["config", "user.name", "Install Test"], ["config", "user.email", "install-test@example.invalid"], ["add", "-A"], ["commit", "-qm", "v11 fixture"]]) expect(run("git", args, { cwd: root, env }).status).toBe(0);
+      cpSync(join(FIX, "untracked", "shared", "issues"), join(wb, "shared", "issues"), { recursive: true });
+      return { root, next: 1, wb, env };
+    };
+    const migrate = (t: Twin, ...args: string[]) => run(join(install.home, "bin", "fusion-migrate"), args, { cwd: t.root, env: t.env });
+
+    /** /fusion:migrate's Steps 1, 2 and 4 as shipped: the guard, the survey, the rename block. */
+    const rename = (t: Twin): string[] => {
+      const [locate] = shippedBlocks("migrate", "## Step 1 —");
+      const sh = (b: string) => run("bash", ["-c", `${fill(locate, {})}cd "$ROOT"\n${b}`], { cwd: t.root, env: t.env });
+      const [guard, survey] = shippedBlocks("migrate", "## Step 2 —");
+      const g = sh(guard);
+      expect([g.status, g.stdout], g.stderr).toEqual([0, `INSTALLED=${version}\nWINDOW=open\n`]);
+      const s = sh(survey);
+      expect([s.status, ...["FOUND", "LEGACY", "DIRTY", "UNKNOWN", "COLLISIONS", "MODE"].map((k) => kv(s.stdout, k))], s.stdout + s.stderr).toEqual([0, "1", "0", "0", "0", "0", "git"]);
+      const [apply, ...rest] = shippedBlocks("migrate", "## Step 4 —");
+      expect(rest).toEqual([]);
+      const moved = sh(fill(apply, {}));
+      expect([moved.status, moved.stdout.split("\n").at(-2)], moved.stderr).toEqual([0, expect.stringMatching(/^moved=\d+ mv-fallbacks=0 collisions=0 left=0 mode=git$/)]);
+      expect(["circles", "shared/planning", "work-packages", "shared/plans"].map((d) => existsSync(join(t.wb, d)))).toEqual([false, false, true, true]);
+      return plain(t.wb);
+    };
+
+    /** Every blocking finding through `repair --list` and `--apply`, each answer the test's: status paused, actor user, person nobody, else the last choice. */
+    const repairAll = (t: Twin): number => {
+      for (let i = 0; i < 12; i++) {
+        const list = migrate(t, "repair", "--list");
+        expect(list.status, list.stderr).toBe(0);
+        const id = kv(list.stdout, "finding")?.split("\t")[0];
+        if (id === undefined) {
+          expect(kv(list.stdout, "blocking")).toBe("0");
+          return i;
+        }
+        expect(lines(list.stdout, "unrepairable")).toEqual([]);
+        const values = list.stdout.split("\n").filter((l) => l.startsWith(`ask=${id}\t`)).map((l) => l.split("\t")).flatMap(([, key, , , choices]) => ["--value", `${key}=${key === "status" ? "paused" : key === "actor" ? "user" : key === "person" ? "" : choices.split("|").pop()}`]);
+        const applied = migrate(t, "repair", "--apply", id, ...values, "--consent");
+        expect([applied.status, kv(applied.stdout, "logged")], applied.stderr).toEqual([0, String(i + 1)]);
+      }
+      throw new Error("the repairs did not converge");
+    };
+
+    // The first twin: renamed, repaired, migrated in three chunks.
+    const a = twin("migrate-v11-a");
+    rename(a);
+    expect(repairAll(a)).toBe(6);
+    const closureText = readFileSync(join(a.wb, `${CLOSURE}.md`));
+    const ran = migrate(a, "run");
+    expect([ran.status, kv(ran.stdout, "result"), lines(ran.stdout, "applied")], ran.stderr).toEqual([0, "json-control", ["applied=1", "applied=2", "applied=3"]]);
+    expect(kv(ran.stdout, "planned")).toMatch(/\t3 chunks$/);
+    expect(existsSync(join(a.wb, "workbench.json"))).toBe(true);
+
+    // §8.3.7: one open and one terminal record, read back through the installed wrapper and readers.
+    const open = record(a, { op: "show", record: { path: OPEN_PKG } }) as { kind: string; control: { status: string; provenance: { source: string } } };
+    expect([open.kind, open.control.status, open.control.provenance.source]).toEqual(["package", "open", "imported"]);
+    const closure = record(a, { op: "show", record: { path: `${CLOSURE}.record.json` } }) as { kind: string; control: { filed_by: unknown; provenance: { source: string }; control: { state: string } } };
+    expect([closure.kind, closure.control.control.state, closure.control.provenance.source, closure.control.filed_by]).toEqual(["plan", "closed", "legacy-terminal", { actor: "user", person: null }]);
+    expect(readFileSync(join(a.wb, `${CLOSURE}.md`)).equals(closureText)).toBe(true);
+    const listed = (record(a, { op: "list" }).records as { path: string }[]).map((r) => r.path);
+    expect(listed).toEqual(expect.arrayContaining([OPEN_PKG, `${CLOSURE}.record.json`]));
+    for (const reader of [["fusion-claimed-package"], ["fusion-work-order"], ["fusion-citation-check"], ["fusion-citation-sweep", "--dry-run"]]) {
+      const r = run(join(install.home, "bin", reader[0]), reader.slice(1), { cwd: a.root, env: a.env });
+      expect(r.status, `${reader.join(" ")}: ${r.stderr}`).toBe(0);
+    }
+
+    // bin/fusion-write claims the open package, which the scope helper then names; a second run sends nothing.
+    const claimed = run(join(install.home, "bin", "fusion-write"), ["claim", "--record", OPEN_PKG, "--actor", "user"], { cwd: a.root, env: a.env });
+    expect([claimed.status, kv(claimed.stdout, "result")], claimed.stderr).toEqual([0, "landed"]);
+    const stem = OPEN_PKG.split("/")[1];
+    expect(run(join(install.home, "bin", "fusion-claimed-package"), [], { cwd: a.root, env: a.env }).stdout).toBe(`PACKAGE=work-packages/${stem}/${stem}.md\nCONTAINER=work-packages/${stem}\n`);
+    const again = migrate(a, "run");
+    expect([again.status, kv(again.stdout, "result")], again.stderr).toEqual([0, "no-op"]);
+
+    // The second twin: its run dies after chunk 2 in a copy of the install whose bundle discards chunk 2's answer once the real one stored it.
+    const b = twin("migrate-v11-b");
+    const renamed = rename(b);
+    expect(repairAll(b)).toBe(6);
+    const killHome = join(install.tmp, "home-kill");
+    cpSync(install.home, killHome, { recursive: true, verbatimSymlinks: true });
+    mkdirSync(join(killHome, "real", "dist"), { recursive: true });
+    renameSync(join(killHome, "codec", "dist", "fusion-record.js"), join(killHome, "real", "dist", "fusion-record.js"));
+    cpSync(join(killHome, "codec", "package.json"), join(killHome, "real", "package.json"));
+    writeFileSync(
+      join(killHome, "codec", "dist", "fusion-record.js"),
+      [
+        'import { spawnSync } from "node:child_process"; import { readFileSync } from "node:fs"; import { fileURLToPath } from "node:url";',
+        "const input = readFileSync(0), q = JSON.parse(input);",
+        'const r = spawnSync(process.execPath, [fileURLToPath(new URL("../../real/dist/fusion-record.js", import.meta.url))], { input });',
+        'if (q.phase === "apply" && q.chunk === 2) process.exit(9);',
+        "process.stdout.write(r.stdout); process.exit(r.status ?? 1);",
+      ].join("\n") + "\n",
+    );
+    const killed = run(join(killHome, "bin", "fusion-migrate"), ["run"], { cwd: b.root, env: b.env });
+    expect([killed.status, killed.stderr], killed.stdout).toEqual([7, expect.stringContaining("apply chunk 2")]);
+    const status = migrate(b, "status");
+    expect(["state", "chunks", "verified", "done"].map((k) => kv(status.stdout, k)), status.stderr).toEqual(["legacy", "2/3", "no", "false"]);
+    const resumed = migrate(b, "resume");
+    expect([resumed.status, kv(resumed.stdout, "result"), lines(resumed.stdout, "applied")], resumed.stderr).toEqual([0, "json-control", ["applied=3"]]);
+
+    // A full rollback after activation, then the pre-repair backup back: the tree as the rename left it.
+    const back = migrate(b, "rollback");
+    expect([back.status, kv(back.stdout, "result"), lines(back.stdout, "rolled-back-chunk")], back.stderr).toEqual([0, "legacy", ["rolled-back-chunk=3", "rolled-back-chunk=2", "rolled-back-chunk=1", "rolled-back-chunk=0"]]);
+    expect([existsSync(join(b.wb, "workbench.json")), readFileSync(join(b.wb, ".fusion-setup"), "utf-8")]).toEqual([false, '{"setup_at":"t"}\n']);
+    const restored = migrate(b, "restore-backup", "--consent");
+    expect([restored.status, kv(restored.stdout, "result")], restored.stderr).toEqual([0, "restored"]);
+    expect(plain(b.wb)).toEqual(renamed);
+  }, 300_000);
+
+  it("the installed bin/fusion-migrate refuses survey with node absent from PATH, and reads and writes nothing", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const root = join(install.tmp, "migrate-no-node");
+    const wb = join(root, "fusion-workbench");
+    cpSync(join(install.home, "codec", "fixtures", "legacy-v12", "workbench"), wb, { recursive: true, verbatimSymlinks: true });
+    writeFileSync(join(wb, ".fusion-setup"), '{"setup_at":"t"}\n');
+    const home = join(root, "home");
+    mkdirSync(home);
+    // The install's PATH directory, every entry but node.
+    const noNode = join(install.tmp, "path-no-node");
+    mkdirSync(noNode);
+    for (const name of readdirSync(install.path)) if (name !== "node") symlinkSync(join(install.path, name), join(noNode, name));
+    const want = (JSON.parse(readFileSync(join(install.home, "codec", "package.json"), "utf-8")) as { engines: { node: string } }).engines.node.replace(">=", "");
+    const before = tree(wb);
+    const r = run(join(install.home, "bin", "fusion-migrate"), ["survey"], { cwd: root, env: { PATH: noNode, HOME: home } });
+    expect([r.status, r.stdout, r.stderr]).toEqual([4, "", `fusion-migrate: Node ${want} or later is required and \`node\` is not on PATH. Nothing was read or written.\n`]);
+    expect([tree(wb), readdirSync(home)]).toEqual([before, []]);
+  });
 
   it("the installer warns, in the guard.js words, when the source carries no codec bundle", () => {
     expect(install.failure).toBeNull();
