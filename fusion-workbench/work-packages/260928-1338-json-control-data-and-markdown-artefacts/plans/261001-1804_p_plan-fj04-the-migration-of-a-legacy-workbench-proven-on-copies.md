@@ -674,6 +674,13 @@ Source: the closed discussion `261002-1236_*_does-priors-a1fb17a-contract-govern
       One copy is also run without `.git`. The other projects appear in aggregate only. Amended for the rulings of 2026-10-02: every run uses step 11's installed copy with the Prior runtime absent, and the report states the environment per copy and the plugin version the install reports.
     - Dependencies: step 11.
     - Acceptance: every figure present with its command, or a named finding; source hashes equal; no file name or excerpt of the two other projects. The report states, per copy, that migration, the resumed kill and the rollback ran with no Prior installation, binary or variable present.
+    - Stopped (2026-10-03, analyst, on `76ba852f`, installed 13.0.0, bundle `c71e219e…`): not done; the acceptance is not met (N1). Report `261003-1004-fj04-step12-proof-on-copies-of-real-workbenches.md`.
+      - **Copies and hashes.** fusion from `76ba852f`, the two others at the commits the report names, copied to the scratchpad; each source tree hash equal before the copy, after it and at the end. The second project's copy was renamed first by the installed `/fusion:migrate` Steps 1, 2 and 4.
+      - **Environment.** Installed as in step 11 (it reports 13.0.0); every helper call under `env -i` with `PATH`, `HOME` and `FUSION_PLUGIN_ROOT` only; nothing names Prior. Node v25.7.0, M2 Max, 1-minute load 8.0-9.5 from an external run.
+      - **Measured** (fusion / second / third, aggregate). Blocking findings 25 / 60 / 277, every one asking an actor and person or a ruling; 0 repairs; `run` exit 6 with the tree byte-identical, 1.63 / 1.37 / 3.43 s max including the backup; `survey` answers 813 005 / 585 337 / 2 048 186 bytes against 16 MiB; `list` and `reconcile` on the legacy store under 0.37 s. One copy also ran without `.git`: survey identical, `run` exit 6.
+      - **N1:** no copy migrates; no answer is recorded for any of the 362 findings, and Step 7 forbids filling them. Chunk times, index and receipt, the no-op, the kill and resume, both rollbacks, the cleanup, the `create` refusal and the read-back are not taken. Even with every actor sourced, two copies stay blocked on rulings (5 and 2).
+      - **N2:** on 13.0.0, `fusion-paths` exits 3 and `fusion-work-order` exits 4 on all three unmigrated workbenches, so agents halt until the migration completes, and the migration needs the user's answers first. The plan's release preconditions do not cover this.
+      - **N3:** `run`'s exit 6 drops the `reported=` lines (`hooks/migrate.ts:286-301`).
 
 13. **The hand-over: what landed, the frozen digest, the re-pin**
     - Executor: `analyst`
