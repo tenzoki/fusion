@@ -33,3 +33,6 @@ Option 1. The closing release is what decides it: a mechanism that reads the leg
 
 ---
 Answered: 260922-1129_*_plan-prior-nomenclature-consumer-migration.md `## Implementation Steps` — option 1, the survey and apply blocks stay in `skills/migrate/SKILL.md` with the three rename pairs literal, so the pass outlives 13.0.0; confirmed at the plan gate of 260923-0839-implement-prior-nomenclature.md; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: f4addc3f — option 1: the survey and apply blocks live in `skills/migrate/SKILL.md` with the three rename pairs literal, and no `bin/` helper carries the migration (`ls bin | grep -i migrat` is empty at `23e97066`).

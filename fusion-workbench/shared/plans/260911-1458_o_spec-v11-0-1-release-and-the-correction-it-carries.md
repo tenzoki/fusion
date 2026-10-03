@@ -246,3 +246,7 @@ because nobody ruled; the default has the effect of a ruling.
 written, and the report is an analysis, which a reconciliation pass may not edit. Closing this spec is
 either an editor's pass over the report against C1–C3, or the user's bounded closure with those ten boxes
 named. `Partially Complete` is the field value that says so.
+
+---
+
+**261002-1155 (state-auditor, domain `code`, HEAD `23e97066`) — marker and status unchanged.** 260911-1316-five-retired-agents-and-the-container-contradiction-read-site-by-site.md has no commit since `cb8776f3` other than the store rename at `7d2ea602`, so the ten unticked boxes under C1 to C3 stand as the 260921 entry left them.

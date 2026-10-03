@@ -71,7 +71,7 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     expect([format, out[0]]).toEqual(["format=legacy", "fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=2"]);
     expect(out[1]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260202-0202' {2}resolved$/);
     expect(out[2]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260101-0101' {2}ambiguous$/);
-    expect(out[3]).toBe("files=1 rewrites=2 residual=2 record=1 package-record=0 package-dir=0 bare-record=1 stamp-bare=0 mode=dry-run");
+    expect(out.at(-1)).toBe("files=1 rewrites=2 residual=2 record=1 package-record=0 package-dir=0 bare-record=1 stamp-bare=0 mode=dry-run");
   }, CASE_TIMEOUT);
 
   it("a truncated citation, a head-field date and a word-marked filename are each one token and never chained", () => {
@@ -360,12 +360,24 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
     }
   }, CASE_TIMEOUT);
 
-  it("has no bare-stamp option: --resolve-stamps is a usage error", () => {
-    const { root, wb } = scratchRepo();
+  // issue 260928-1832: /fusion:migrate writes the store repairs without the marker respellings
+  it("--kinds writes only the named kinds, the census splits by where files sit, and a bad option is a usage error", () => {
+    const { root, wb, doc } = scratchRepo();
+    const mixed = "see `shared/issues/260101-0101_o_alpha.md` and 260404-0404_a_delta.md";
+    const files = [doc, join(wb, "archive/260801-1244-old/shared/decisions/260505-0505_c_old.md"), join(root, "src/a.go")];
     try {
-      const run = sweep(root, wb, "--resolve-stamps");
-      expect(run.status).toBe(1);
-      expect(run.stderr).toMatch(/unknown option --resolve-stamps/);
+      writeFileSync(join(root, "fusion.json"), JSON.stringify({ citations: { extraPaths: ["src/*.go"] } }));
+      for (const d of [dirname(files[1]), dirname(files[2])]) mkdirSync(d, { recursive: true });
+      for (const f of files) writeFileSync(f, mixed);
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "mixed");
+      const run = sweep(root, wb, "--kinds", "record,package-record,package-dir", "--write", "--yes");
+      expect(run.status, run.stderr).toBe(0);
+      for (const f of files) expect(readFileSync(f, "utf-8")).toBe("see `260101-0101_*_alpha.md` and 260404-0404_a_delta.md");
+      expect(run.stdout.trim().split("\n").slice(-4).join(" | ")).toBe("scope=workbench files=1 rewrites=1 | scope=archive files=1 rewrites=1 | scope=extra-paths files=1 rewrites=1 | files=3 rewrites=3 residual=0 record=3 package-record=0 package-dir=0 bare-record=0 stamp-bare=0 mode=write");
+      expect(last(sweep(root, wb, "--kinds", "bare-record"))).toMatch(/^files=3 rewrites=3 .* bare-record=3 /);
+      for (const args of [["--kinds", "stamp-bare"], ["--kinds", ","], ["--repair", "--kinds", "record"], ["--resolve-stamps"]])
+        expect(sweep(root, wb, ...args).stderr, args.join(" ")).toMatch(/unknown (kind|option)|needs|takes no kinds/);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -414,18 +426,8 @@ describe("citation-sweep --repair undoes the retired stamp-bare rewrite, token b
     }
   }, CASE_TIMEOUT);
 
-  /**
-   * THE SPLICE DAMAGE, AND THE CUT THROUGH IT. The unanchored store patterns
-   * matched from inside a longer word and from behind a foreign path, and the
-   * sweep spliced the storeless basename in at the token's own column. What
-   * survived in front of the stamp decides whether the damage is repairable:
-   * a LETTER RUN is the broken head of one path segment and cannot be part of
-   * any rooting, so deleting it is decidable from the token; a COMPLETE path
-   * segment terminated by its own `/` is intact text whose removed interior the
-   * token does not record, and it is left to the git remedy the header spells.
-   * Both halves are pinned here, because a class that quietly widened to the
-   * second would be guessing in a program that rewrites a project's records.
-   */
+  // Both halves of the splice damage (`hooks/citation-sweep.ts` `## The splice damage`)
+  // are pinned: a class that widened to the second would be guessing.
   it("strips a glued letter run when the basename names a record here, and never touches a surviving path segment", () => {
     const { root, wb } = scratchRepo();
     const doc = join(wb, "shared/history/260202-0202-beta-log.md");

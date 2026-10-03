@@ -28,7 +28,6 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 // construction.
 // ---------------------------------------------------------------------------
 
-
 // The nine state-marker letters. A bracket token wrapping exactly one of these
 // is the forbidden form.
 const MARKER_LETTERS = "oatcibspd";

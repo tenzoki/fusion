@@ -5,8 +5,8 @@ that carry them take the names of the PRIOR/Fusion vocabulary, and the prose the
 work package, brief, evidence base, approval, audit result, workflow, module and artefact where it
 said work item, Directive, Grounding, gate, verdict, skill, plugin and artifact. Nothing is removed and
 no behaviour moves: every agent does what it did under its old name. This note describes v12 as it
-stands at the latest v12.x release, not as it stood at `v12.0.0`: a release that changes something
-the note describes edits the note in the same commit.
+stands at the latest v12.x release, as of `v12.0.1`, not as it stood at `v12.0.0`: a release that
+changes something the note describes edits the note in the same commit.
 
 **Two things reach your project.** A name you type or your tooling sends stops resolving the day you
 update, and your workbench still carries the three v11 store names until you rename them. The first
@@ -139,13 +139,20 @@ storeless citation (`YYMMDD-HHMM_*_<topic>.md`) resolves after the move exactly 
 that spells a store segment — `circles/…` or `planning/…` inside a record — is not touched by the
 migration, and `bin/fusion-citation-check` reports it as store-prefixed as it did before. The repair
 is yours to run by hand: `/fusion:migrate` offers it as its last step, or run
-`bin/fusion-citation-sweep --dry-run` yourself, read the census, and only then its write. The write
-changes record content, so commit it as a second commit, after the migration commit.
+`bin/fusion-citation-sweep --dry-run --kinds record,package-record,package-dir` yourself, read the
+census, and only then its write. Since 12.0.1 that step asks about these store repairs alone, and its
+census names the `archive/` and `citations.extraPaths` shares apart from the workbench's. The
+respelling of pre-v4 bracket markers (`--kinds bare-record`) is unrelated to v12 and not part of the
+migration; it stays a separate choice for later. The write changes record content, so commit it as a
+second commit, after the migration commit.
 
 **What the migration leaves where it stands:** `archive/`, which keeps its old inner names for good;
 the frozen stores; `issues/`, `decisions/`, `reviews/`, `analyses/`, `memos/`, `history/` and the other
 unrenamed stores; `stilwerk/`; and every root file. The survey names each, and says when a decision
-record holds an open question about its future name.
+record holds an open question about its future name. It stops only on an entry it cannot classify
+that is, or directly holds, a `circles`, `planning` or `consult` directory: move that misplaced store
+by hand and run it again. Since 12.0.1 it decides this by layout and opens no file, so a note that
+merely mentions an old store path no longer stops it.
 
 **Other checkouts.** A checkout that pulls the migration commit gets the new layout by git's ordinary
 means. Two cases need a word:

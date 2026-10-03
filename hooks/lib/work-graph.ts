@@ -112,6 +112,8 @@ export interface WorkItemNode {
   /** The container directory name, `YYMMDD-HHMM-<slug>`. */
   dir: string;
   status: ItemStatus;
+  /** The record ids its `depends_on` names, in the order `reconcile` reports them, satisfied ones included. */
+  dependsOn: string[];
 }
 
 /** `from` depends on `to`: "from may start after to". Both are container names. */
@@ -450,14 +452,14 @@ export function readWorkGraph(workbench: string, ask: Ask = askCodec): Read {
   const edges: ResolvedEdge[] = [];
   const unmet: UnmetEdge[] = [];
   const unresolved: UnresolvedEdge[] = [];
-  const entries = new Map<string, number>([...nodes.keys()].map((p) => [p, 0]));
+  const entries = new Map<string, string[]>([...nodes.keys()].map((p) => [p, []]));
   for (const e of dependencies.list) {
     if (!isObject(e) || typeof e.path !== "string" || e.status === "cycle") continue;
     const from = nodes.get(e.path);
     if (from === undefined) continue; // a terminal or unreadable package's entries are never read
-    entries.set(e.path, (entries.get(e.path) ?? 0) + 1);
-    if (e.status === "satisfied") continue;
     const target = typeof e.target === "string" ? e.target : JSON.stringify(e.target);
+    entries.get(e.path)!.push(target);
+    if (e.status === "satisfied") continue;
     const problem = problemOf({ class: typeof e.class === "string" ? e.class : "operation-unknown", reason: typeof e.reason === "string" ? e.reason : "reason-unnamed", detail: e.detail });
     const b = blockedRead("reconcile", problem);
     if (b !== null) return failed(b);
@@ -476,12 +478,12 @@ export function readWorkGraph(workbench: string, ask: Ask = askCodec): Read {
   return {
     kind: "report",
     report: orderOf({
-      nodes: [...nodes.values()].map((n) => ({ dir: n.dir, status: n.status as ItemStatus })),
+      nodes: [...nodes.values()].map((n) => ({ dir: n.dir, status: n.status as ItemStatus, dependsOn: entries.get(n.path)! })),
       edges,
       unmet,
       unresolved,
       unreadable,
-      noDependsOnField: [...entries.values()].filter((n) => n === 0).length,
+      noDependsOnField: [...entries.values()].filter((t) => t.length === 0).length,
     }),
   };
 }

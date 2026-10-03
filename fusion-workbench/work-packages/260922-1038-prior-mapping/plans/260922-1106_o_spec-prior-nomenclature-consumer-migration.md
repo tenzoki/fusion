@@ -85,8 +85,8 @@ What the evidence did not decide is what becomes of the passes the skill carries
 **Acceptance criteria:**
 - [ ] `ls -1d skills/*/` after the work lists no new directory: the store-name migration is reached through `/fusion:migrate` and through nothing else.
 - [ ] `EXEMPT_SKILLS` in `hooks/lib/__tests__/path-literal-lint.test.ts` still holds exactly `setup` and `migrate`, and `npm test` in `hooks/` is green with the skill surface within its bound and no baseline figure or head-room constant changed (`README-hooks.md` `### Growth bounds on the shipped text`).
-- [ ] On a workbench already in the `12.0.0` format the skill surveys, finds nothing, and stops without a question (the existing idempotency rule, unchanged).
-- [ ] The skill's description line and `README-agents.md`'s skill row say the store-name pass and nothing else, with no conversion promised that the body no longer carries.
+- [x] On a workbench already in the `12.0.0` format the skill surveys, finds nothing, and stops without a question (the existing idempotency rule, unchanged).
+- [x] The skill's description line and `README-agents.md`'s skill row say the store-name pass and nothing else, with no conversion promised that the body no longer carries.
 
 **Decisions made:**
 - Extend `/fusion:migrate` (decided by the evidence above; not re-asked).
@@ -113,11 +113,11 @@ The pass does **not** rename, and says so in its survey and its report:
 5. **Every file's basename.** A `_c_circle.md` record inside a legacy container (24 such containers here) stays as it is: it is terminal, and the existing skill never opens one.
 
 **Acceptance criteria:**
-- [ ] After a confirmed run on a workbench in the `11.x` format, `ls fusion-workbench/` shows `work-packages/` and no `circles/`; `ls fusion-workbench/shared/` shows `plans/` and `consultations/` and neither `planning/` nor `consult/`; and `find fusion-workbench/work-packages -mindepth 2 -maxdepth 2 -type d -name planning` is empty while every container that had a `planning/` has a `plans/` with the same entries.
-- [ ] `find fusion-workbench -type f | sed 's#.*/##' | sort` is identical before and after the run (no basename created, dropped or changed), and `find fusion-workbench/archive fusion-workbench/stashes fusion-workbench/.migration-v2-backup` (where present) is byte-for-byte the same listing before and after.
-- [ ] `git status --porcelain fusion-workbench` after a run on a tracked workbench shows only renames (`R`) for tracked entries and no deletion (`D`) of any file; `git log --follow` on any moved file reaches its pre-migration history.
-- [ ] Every root-anchored surface, `stilwerk/`, the Review-class stores, `forum/` and `discussions/` have the same path and the same content after the run as before.
-- [ ] `bin/fusion-citation-check` run before and after the migration reports the same `dangling` count; a rise is a defect of the pass.
+- [x] After a confirmed run on a workbench in the `11.x` format, `ls fusion-workbench/` shows `work-packages/` and no `circles/`; `ls fusion-workbench/shared/` shows `plans/` and `consultations/` and neither `planning/` nor `consult/`; and `find fusion-workbench/work-packages -mindepth 2 -maxdepth 2 -type d -name planning` is empty while every container that had a `planning/` has a `plans/` with the same entries.
+- [x] `find fusion-workbench -type f | sed 's#.*/##' | sort` is identical before and after the run (no basename created, dropped or changed), and `find fusion-workbench/archive fusion-workbench/stashes fusion-workbench/.migration-v2-backup` (where present) is byte-for-byte the same listing before and after.
+- [x] `git status --porcelain fusion-workbench` after a run on a tracked workbench shows only renames (`R`) for tracked entries and no deletion (`D`) of any file; `git log --follow` on any moved file reaches its pre-migration history.
+- [x] Every root-anchored surface, `stilwerk/`, the Review-class stores, `forum/` and `discussions/` have the same path and the same content after the run as before.
+- [x] `bin/fusion-citation-check` run before and after the migration reports the same `dangling` count; a rise is a defect of the pass.
 
 **Decisions made:**
 - `archive/` contents stay frozen under their old inner names (default, pending veto; the alternative, renaming inside every sweep so the archive has one shape, is one-way over 609 tracked files here and contradicts every precedent the frozen stores carry).
@@ -144,13 +144,13 @@ The pass does **not** rename, and says so in its survey and its report:
 **Rollback** is `git revert` of the migration commit in `git` mode, which reverses every `git mv`; the `mv`-moved untracked entries are named in the report so the user can move them back by hand. In `plain` mode there is no rollback and the confirmation says so before the user answers.
 
 **Acceptance criteria:**
-- [ ] Running the pass twice in a row on any workbench: the second run reports nothing to do and asks nothing.
-- [ ] A run interrupted after any single move, then re-run, reaches the same end state as an uninterrupted run, with no entry duplicated or lost (`find … -type f | sed 's#.*/##' | sort` identical to the pre-migration listing).
+- [x] Running the pass twice in a row on any workbench: the second run reports nothing to do and asks nothing.
+- [x] A run interrupted after any single move, then re-run, reaches the same end state as an uninterrupted run, with no entry duplicated or lost (`find … -type f | sed 's#.*/##' | sort` identical to the pre-migration listing).
 - [ ] On a workbench where `work-packages/` already exists beside `circles/` with one colliding container name, the colliding container is refused and named, every other entry moves, and `circles/` survives holding only the refused container.
-- [ ] With an uncommitted modification under `circles/` in `git` mode, the pass refuses before the confirmation and names the file.
-- [ ] With the installed plugin at `11.10.0` and the work-tree skill body at `12.0.0`, the pass refuses before surveying and names both versions.
-- [ ] `git revert` of the migration commit restores the pre-migration tree for every tracked entry, and the report of the original run names every untracked entry that `revert` does not restore.
-- [ ] No `git add`, `git commit`, `cp` or `rm -r` occurs in the pass; `rmdir` is the only removal, and it fails loudly on a non-empty source.
+- [x] With an uncommitted modification under `circles/` in `git` mode, the pass refuses before the confirmation and names the file.
+- [x] With the installed plugin at `11.10.0` and the work-tree skill body at `12.0.0`, the pass refuses before surveying and names both versions.
+- [x] `git revert` of the migration commit restores the pre-migration tree for every tracked entry, and the report of the original run names every untracked entry that `revert` does not restore.
+- [x] No `git add`, `git commit`, `cp` or `rm -r` occurs in the pass; `rmdir` is the only removal, and it fails loudly on a non-empty source.
 
 **Decisions made:**
 - Refuse on uncommitted changes in the moved paths rather than migrate around them (default, pending veto; the alternative leaves a migration commit that carries somebody's half-written record).
@@ -177,10 +177,10 @@ The pass does **not** rename, and says so in its survey and its report:
 | Hook tests and fixtures naming `fusion-workbench/circles/…` (81 occurrences at `9ff0f9fc`, part (1)'s count) | Yes | Part (1); the first run here (C8) is what proves them |
 
 **Acceptance criteria:**
-- [ ] `git diff --stat` of a migration commit on a tracked workbench lists renames only: no file's content changes (`git diff -M --numstat` shows `0 0` on every row).
-- [ ] `bin/fusion-citation-check` before and after the run reports equal `dangling` and equal `store-prefixed` figures over the workbench, so the migration neither broke a citation nor silently repaired one.
+- [x] `git diff --stat` of a migration commit on a tracked workbench lists renames only: no file's content changes (`git diff -M --numstat` shows `0 0` on every row).
+- [x] `bin/fusion-citation-check` before and after the run reports equal `dangling` and equal `store-prefixed` figures over the workbench, so the migration neither broke a citation nor silently repaired one.
 - [ ] The report names every surface in the table's "reported" and "history" rows that the survey found present, with the count found, and names the sweep as the repair for the citation rows.
-- [ ] `orchestrator-events.jsonl`, every `history/` directory, `archive/` and `.guard-state/` are byte-identical before and after.
+- [x] `orchestrator-events.jsonl`, every `history/` directory, `archive/` and `.guard-state/` are byte-identical before and after.
 
 **Decisions made:**
 - Records are never rewritten by this pass, including their head fields (there is nothing to rewrite in the measured corpus, and the case that could exist is the existing `rewrite_fields`'s).
@@ -193,7 +193,7 @@ The pass does **not** rename, and says so in its survey and its report:
 One case is not prose and was the user's to decide: the `## Directive` heading of a **live** work-item record (`**Status:**` `open`, `claimed` or `paused`), which the shaper reads as the raw request and which part (1) renames to `## Brief` in the shipped template. The user ruled on 2026-09-22 that no record is touched: the heading stays as written in live and terminal records alike, and the migration commit is a pure directory rename. Terminal records keep `## Directive` for good in any case, so every reader of the heading accepts both spellings permanently, and the ruling adds no write to buy the readers nothing. No `bin/` helper reads the heading (`grep -rn '## Directive' bin hooks/lib/*.ts` is empty); `**Status:**` and `**Claim:**`, the fields helpers do read, are not renamed by the nomenclature.
 
 **Acceptance criteria:**
-- [ ] Every `.md` under the workbench is byte-identical before and after the run; `git diff -M --numstat` of the migration commit shows `0 0` on every row.
+- [x] Every `.md` under the workbench is byte-identical before and after the run; `git diff -M --numstat` of the migration commit shows `0 0` on every row.
 - [ ] Every agent prompt that reads the heading names both spellings; the reader rule is part (1)'s to write, and the tool's acceptance is the byte comparison above.
 
 **Decisions made:**
@@ -208,7 +208,7 @@ The tool is shaped for the sequel: the classifying pass, once the seven are rule
 
 **Acceptance criteria:**
 - [ ] After the run, `ls fusion-workbench/shared/` still lists `issues`, `memos`, `history`, `checkouts`, `forum`, `discussions`, and the root still holds `stilwerk/` and `.guard-state/`, each with unchanged content.
-- [ ] The report carries one line per Review-class store present in the workbench, and the line names the decision record (`260922-1059_*_…`) that holds its question.
+- [x] The report carries one line per Review-class store present in the workbench, and the line names the decision record (`260922-1059_*_…`) that holds its question.
 - [ ] The seven records stay at `_o_` at the end of this work; none is answered, deferred or superseded by it.
 
 **Decisions made:**
@@ -229,7 +229,7 @@ The tool is shaped for the sequel: the classifying pass, once the seven are rule
 - [ ] A second clone that pulls the migration commit while holding an untracked `circles/<new-item>/` directory ends, after one `/fusion:migrate` run, with that container under `work-packages/` and no `circles/` directory, with no question asked beyond the one confirmation.
 - [ ] A second clone that pulls the migration commit with a claimed item resolves `bin/fusion-paths <agent>` into that item's container under the new store with no edit to the record.
 - [ ] `/fusion:setup` on a clone holding both `work-packages/` and a residual `circles/` during the window proceeds and prints one note naming `/fusion:migrate`; after the window it refuses and routes to `/fusion:migrate`, as it does for a pre-v4 layout today.
-- [ ] `/fusion:news` on a clone before and after pulling the migration commit shows the same entries.
+- [x] `/fusion:news` on a clone before and after pulling the migration commit shows the same entries.
 
 **Decisions made:**
 - During the window `/fusion:setup` proceeds on a legacy or partially migrated layout with a note; after the window it refuses (default, pending veto; it follows from part (1)'s "reads both" and is stated here because the probe is setup's).
@@ -241,8 +241,8 @@ The tool is shaped for the sequel: the classifying pass, once the seven are rule
 The upgrade note part (1) writes (`docs/upgrading-to-v12.md`) carries the consumer's procedure in this order: `fusion --update`, restart, `/fusion:migrate`, commit and push the migration as one commit, tell the other checkouts to pull.
 
 **Acceptance criteria:**
-- [ ] `docs/upgrading-to-v12.md` names the window's closing release, the five-step procedure above, and what a consumer sees when it updates without migrating (nothing breaks inside the window; setup refuses after it).
-- [ ] `/fusion:setup` inside the window prints the migration-due note exactly once per run on a legacy layout and not at all on a migrated one.
+- [x] `docs/upgrading-to-v12.md` names the window's closing release, the five-step procedure above, and what a consumer sees when it updates without migrating (nothing breaks inside the window; setup refuses after it).
+- [x] `/fusion:setup` inside the window prints the migration-due note exactly once per run on a legacy layout and not at all on a migrated one.
 
 ### C9: This repository is the first consumer, and the order of work follows from that
 
@@ -270,9 +270,9 @@ Steps 1 and 2 are one release; step 4 cannot precede step 3 in an interactive se
 What follows on the other surfaces: setup's four pre-v4 probes go with the passes, in the same commit (the boundary section says which side owns what); `EXEMPT_SKILLS` is unchanged; `LEGACY_STORES` and `RETIRED_REVIEW_FOLDERS` in `hooks/lib/stores.ts` stay, since they forbid a literal in a prompt rather than promise a conversion; `README-agents.md`'s skill row, `README.md`, `/fusion:help`'s update topic and `docs/upgrading-to-v12.md` say what `/fusion:migrate` now does and name the `v11.10.0` route; and the `_c_circle.md` records in the 24 legacy containers here are unaffected, since no pass ever opened a terminal record.
 
 **Acceptance criteria:**
-- [ ] `skills/migrate/SKILL.md` at `12.0.0` contains no shell block that moves a root type folder, merges a review folder, converts a flat `circles/*.md`, re-heads a Circle record or renames a bracket marker; its description line names the store-name pass only.
+- [x] `skills/migrate/SKILL.md` at `12.0.0` contains no shell block that moves a root type folder, merges a review folder, converts a flat `circles/*.md`, re-heads a Circle record or renames a bracket marker; its description line names the store-name pass only.
 - [ ] On a workbench holding a root `planning/` directory, a flat `circles/<stamp>[t]-<slug>.md`, a bracket-marked filename under `shared/`, or a `circles/<dir>/_t_circle.md`, the `12.0.0` skill stops before its confirmation and prints one message naming the tag `v11.10.0`, `claude --plugin-dir`, and the two-run order (convert there, then update and migrate the store names).
-- [ ] `skills/setup/SKILL.md` at `12.0.0` carries no probe for those four shapes and one probe for the legacy store names (part (1)'s), and `/fusion:setup` on a pre-v4 workbench neither refuses for a pre-v4 reason nor loops the user to a migration that has nothing to do.
+- [x] `skills/setup/SKILL.md` at `12.0.0` carries no probe for those four shapes and one probe for the legacy store names (part (1)'s), and `/fusion:setup` on a pre-v4 workbench neither refuses for a pre-v4 reason nor loops the user to a migration that has nothing to do.
 - [ ] `npm test` in `hooks/` is green with the skill surface under its bound, the baseline map and `SKILL_HEAD_ROOM` unchanged, and the plan states the byte delta of `skills/migrate/SKILL.md` and `skills/setup/SKILL.md` against the working tree of 2026-09-22.
 - [ ] `docs/upgrading-to-v12.md` and `/fusion:help`'s update topic name the `v11.10.0` route in one sentence each.
 
@@ -329,12 +329,22 @@ The two questions that shaped this spec were ruled by the user on 2026-09-22 and
 
 Defaults taken in this draft, each open to veto:
 
-- [ ] `archive/` contents stay frozen under `circles/` and `planning/`; sweeps made after the migration carry the new names (C2).
-- [ ] The pass refuses on an uncommitted change under a path it would move, rather than migrating around it (C3).
+- [x] `archive/` contents stay frozen under `circles/` and `planning/`; sweeps made after the migration carry the new names (C2).
+- [x] The pass refuses on an uncommitted change under a path it would move, rather than migrating around it (C3).
 - [ ] The Review-class stores, `forum/`, `discussions/`, `stilwerk/` and the root-anchored files are left where they stand and reported with their decision record; the seven records stay open for a later item (C6).
 - [ ] No record line is rewritten by the pass; the store-prefixed citations stay for the hand-run sweep (C4).
-- [ ] A consumer's `CLAUDE.md` is not touched; the `**Artifact language:**` label moves with its reader at the window-closing release (C4).
+- [x] A consumer's `CLAUDE.md` is not touched; the `**Artifact language:**` label moves with its reader at the window-closing release (C4).
 - [ ] `/fusion:setup` proceeds with one note on a legacy or partially migrated layout during the window and refuses after it (C7).
-- [ ] The pass is permanent in `/fusion:migrate`, so a consumer arriving after the window still has a way in (C8).
-- [ ] The version guard refuses below `12.0.0` and never above any release (C3).
+- [x] The pass is permanent in `/fusion:migrate`, so a consumer arriving after the window still has a way in (C8).
+- [x] The version guard refuses below `12.0.0` and never above any release (C3).
 - [ ] The `12.0.0` skill recognises the four pre-v4 shapes and refuses with the `v11.10.0` route rather than ignoring them (C10).
+
+## Reconciliation Log
+
+**261002-1155 (state-auditor, domain `code`, HEAD `23e97066`) — 28 of 48 boxes ticked, marker unchanged at `_o_`.** Evidence: `skills/migrate/SKILL.md`, `hooks/lib/__tests__/store-name-migration.test.ts`, the migration commit `7d2ea602` (1 647 renames, every numstat row `0 0`, nothing under `archive/`), and HEAD's `citation-check` run over the trees at `4888358c` and `7d2ea602` (`dangling=298`, `store-prefixed=405` at both). Of the 20 unticked boxes:
+
+- **Overtaken by a later ruling or later work, not a fault of this work:** C6-3 and D3 (the seven `260922-1059_*` records were ruled afterwards), C10-2, C10-5 and D9 (the route tag is `v11.11.1` by the 260923 ruling; `/fusion:help` no longer names a route since 12.2.0), C9-3 (agent renamed to requirements-designer, key now `SCAN_PACKAGES`), C3-3 (the 12.0.1 fix `850d96dc` folds a container present under both roots instead of refusing it), C1-1 and C1-2 (`skills/wp/`, `skills/wp-order/` and the `TEST_LINE_HEAD_ROOM` raise in `a6880c02` come from other items).
+- **False at HEAD:** C9-1 (`7d2ea602` is an ancestor of the release commit `75380775`, not after it), C9-2 (`npm test` red at `7d2ea602` until `ecc46e55`), C4-3 (the report names entries but prints no per-surface count), C5-2 (no agent names a `## Brief` spelling beside `## Directive`), C6-1 (`shared/discussions/` absent).
+- **Unverifiable:** C7-1 and C7-2 (no second-clone run on record), C7-3 and D6 (the post-window refusal is 13.0.0 work), C10-4 (no byte delta recorded), D4 (Step 6 of the skill offers the `--write` sweep on a yes).
+
+The work package is `done` and both plans drawn from this spec are `_c_`; closing the spec bounded, with the false and overtaken boxes named, is the user's call.

@@ -549,3 +549,7 @@ migration carried across; both carry the person half.
 
 The spec's second closure route is unchanged and is the user's: close it bounded with `:181` named, or
 wait for a September-clean re-measurement. This pass moves neither.
+
+---
+
+**261002-1155 (state-auditor, domain `code`, HEAD `23e97066`) — marker unchanged at `_o_`, no criterion moved.** Every issue, decision and review stamped 260922 or later, shared stores and containers alike, carries `**Filed by:** <agent or user>, Name <email>`: 54 of 54. C3's third criterion is still false as written by the one 260917 analyst record the 260921 pass named, which is terminal and not edited. Closure stays the user's call as the 260921 entry states.

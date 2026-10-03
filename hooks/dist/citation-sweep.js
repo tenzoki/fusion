@@ -15,7 +15,7 @@
  *
  * ## Usage
  *
- *   fusion-citation-sweep [--root <workbench>] [--dry-run | --write [--yes]] [--repair] [<path>...]
+ *   fusion-citation-sweep [--root <workbench>] [--dry-run | --write [--yes]] [--kinds <k,...>] [--repair] [<path>...]
  *
  *   --root <dir>   the workbench to index and sweep; default: walk up from
  *                  cwd to the directory holding `fusion-workbench/.fusion-setup`
@@ -23,6 +23,15 @@
  *   --write        apply the rewrites, behind the three guards below
  *   --yes          the second guard's answer; without it `--write` prints the
  *                  census and writes nothing
+ *   --kinds <k,..> restrict the sweep, census and write alike, to the named
+ *                  token kinds of the rewrite table below: any of `record`,
+ *                  `package-record`, `package-dir`, `bare-record`. A token of
+ *                  another kind is left as written and counted nowhere. An
+ *                  unknown name, an empty list, or `--kinds` with `--repair`
+ *                  is a usage error. Without it every kind is swept, as before.
+ *                  The three store-prefixed kinds are the ones a store rename
+ *                  breaks; `bare-record` only respells a marker to `_*_`, which
+ *                  is why `/fusion:migrate` passes the first three alone
  *   --repair       the repair pass (below) instead of the sweep; combines with
  *                  `--write` / `--dry-run` / `--yes` the same way
  *   <path>...      files or directories to sweep BEYOND the workbench (a
@@ -271,12 +280,18 @@
  * Output: the `format=` line, one `<file>  rewrites=<n>` line per touched file, then the
  * residual (every bare stamp the scanner judged, in file order — the corpus
  * order the census lines above them use, and by line within a file; an exempt
- * one is not listed) as `<file>:<line>  '<token>'  <status>`, then the
+ * one is not listed) as `<file>:<line>  '<token>'  <status>`, then
+ * three share lines, `scope=workbench files=<n> rewrites=<n>`, then
+ * `scope=archive ...` and `scope=extra-paths ...` — the touched files split by
+ * where they sit: under the workbench outside `archive/`, under its
+ * `archive/`, and outside the workbench (the declared `citations.extraPaths`
+ * and any `<path>` argument), always all three and in that order — then the
  * `bound=` lines (`json-control` only, in write-set order), then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
  * package-record=<n> package-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message
- * that lands a sweep names. `stamp-bare=` is always 0 since the rule went and
+ * that lands a sweep names. The summary line stays last and its shape is
+ * unchanged, so a reader of the last line reads it as before. `stamp-bare=` is always 0 since the rule went and
  * is kept so the line's shape is stable. The summary line reads `mode=write`
  * only when files were written; a `--write` run stopped by guard (b) prints
  * `mode=dry-run`, because that is what it was.
@@ -426,7 +441,9 @@ import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 // The reader may close stdout first; see exitZeroOnStdoutEpipe.
 exitZeroOnStdoutEpipe();
 const NAME = "fusion-citation-sweep";
-const USAGE = `usage: ${NAME} [--root <workbench>] [--dry-run | --write [--yes]] [--repair] [<path>...]`;
+const USAGE = `usage: ${NAME} [--root <workbench>] [--dry-run | --write [--yes]] [--kinds <k,...>] [--repair] [<path>...]`;
+/** The kinds the rewrite table rewrites, and so the only names `--kinds` takes. */
+const SWEEP_KINDS = ["record", "package-record", "package-dir", "bare-record"];
 function usage(msg) {
     process.stderr.write(`${NAME}: ${msg}\n${USAGE}\n`);
     process.exit(1);
@@ -436,6 +453,7 @@ function parse(argv) {
     let write = false;
     let yes = false;
     let repair = false;
+    let kinds = null;
     const extra = [];
     for (let i = 0; i < argv.length; i++) {
         const a = argv[i];
@@ -453,11 +471,27 @@ function parse(argv) {
             yes = true;
         else if (a === "--repair")
             repair = true;
+        else if (a === "--kinds") {
+            const next = argv[++i];
+            if (next === undefined)
+                usage("--kinds needs a comma-separated list");
+            const names = next.split(",").map((k) => k.trim()).filter((k) => k.length > 0);
+            if (names.length === 0)
+                usage("--kinds needs at least one kind");
+            for (const k of names) {
+                if (!SWEEP_KINDS.includes(k)) {
+                    usage(`unknown kind ${k} (one of ${SWEEP_KINDS.join(", ")})`);
+                }
+            }
+            kinds = new Set(names);
+        }
         else if (a.startsWith("--"))
             usage(`unknown option ${a}`);
         else
             extra.push(a);
     }
+    if (repair && kinds !== null)
+        usage("--kinds restricts the sweep; --repair takes no kinds");
     if (root === null) {
         const project = findWorkbenchRoot();
         if (project !== null)
@@ -467,7 +501,7 @@ function parse(argv) {
         process.stderr.write(`${NAME}: no workbench (no fusion-workbench/.fusion-setup above cwd; pass --root)\n`);
         process.exit(2);
     }
-    return { root: resolve(root), write, yes, repair, extra };
+    return { root: resolve(root), write, yes, repair, kinds: kinds ?? new Set(SWEEP_KINDS), extra };
 }
 // --- guard (a): a tracked workbench, and no pending change in its corpus -----
 function git(cwd, ...args) {
@@ -646,7 +680,9 @@ function candidateFor(hit) {
     }
 }
 /** The storeless spelling of one hit, or null when it is left as it stands. */
-function rewriteOf(scanner, hit) {
+function rewriteOf(scanner, hit, kinds) {
+    if (!kinds.has(hit.kind))
+        return null;
     if (hit.status === "unresolved-no-workbench")
         return null;
     // A `reason` is what forbids a rewrite, and the status is not: since
@@ -859,6 +895,17 @@ function main(argv) {
         let rewrites = 0;
         const byKind = { record: 0, "package-record": 0, "package-dir": 0, "bare-record": 0, "stamp-bare": 0 };
         const residual = [];
+        // the census split by where a touched file sits (the header's Output paragraph):
+        // a workbench-only rename and a rewrite of shipped code are not one question
+        const realRoot = real(root);
+        const archiveRoot = join(realRoot, "archive") + sep;
+        const shares = { workbench: [0, 0], archive: [0, 0], "extra-paths": [0, 0] };
+        const shareOf = (abs) => {
+            const r = real(abs);
+            if (r.startsWith(archiveRoot))
+                return "archive";
+            return r.startsWith(realRoot + sep) ? "workbench" : "extra-paths";
+        };
         for (const abs of files) {
             if (isTestFixture(abs))
                 continue;
@@ -874,7 +921,7 @@ function main(argv) {
             const here = [];
             // right to left within a line, so each splice leaves the earlier columns valid
             for (const h of [...hits].sort((a, b) => b.line - a.line || b.col - a.col)) {
-                const to = rewriteOf(scanner, h);
+                const to = rewriteOf(scanner, h, opts.kinds);
                 if (to === null) {
                     if (h.kind === "stamp-bare" && h.status !== "exempt") {
                         here.push([h.line, h.col, `${rel}:${h.line}  '${h.token}'  ${h.status}`]);
@@ -895,12 +942,17 @@ function main(argv) {
                 continue;
             writeSet.push(abs);
             rewrites += n;
+            const share = shares[shareOf(abs)];
+            share[0]++;
+            share[1] += n;
             out.push(`${rel}  rewrites=${n}`);
             if (write)
                 writeFileSync(abs, lines.map((l) => l.text).join("\n"));
         }
         for (const r of residual)
             out.push(r);
+        for (const [k, [f, n]] of Object.entries(shares))
+            out.push(`scope=${k} files=${f} rewrites=${n}`);
         const kinds = Object.entries(byKind).map(([k, v]) => `${k}=${v}`).join(" ");
         out.push(`files=${writeSet.length} rewrites=${rewrites} residual=${residual.length} ${kinds} mode=${mode}`);
     }

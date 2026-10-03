@@ -3,12 +3,20 @@
 # citations to the storeless form, behind three guards, and never on its own.
 #
 # Usage:
-#   fusion-citation-sweep [--root <workbench>] [--dry-run | --write [--yes]] [--repair] [<path>...]
+#   fusion-citation-sweep [--root <workbench>] [--dry-run | --write [--yes]] [--kinds <k,...>] [--repair] [<path>...]
 #
 # --dry-run is the default and runs anywhere a workbench does: it prints the
 # census (one `<file>  rewrites=<n>` line per file it would touch, the bare
-# stamps it will not judge, then one `files=<n> rewrites=<n> ... mode=dry-run`
-# summary line) and writes nothing. --repair selects the repair pass over the
+# stamps it will not judge, three `scope=<workbench|archive|extra-paths>
+# files=<n> rewrites=<n>` lines splitting the touched files by where they sit
+# — the workbench outside archive/, its archive/, and everything outside the
+# workbench, i.e. citations.extraPaths and <path> arguments — then one
+# `files=<n> rewrites=<n> ... mode=dry-run` summary line, always last) and
+# writes nothing. --kinds restricts census and write alike to a comma list of
+# record, package-record, package-dir, bare-record; an unknown name is a usage
+# error, and without it every kind is swept. The first three are the
+# store-prefixed kinds a store rename breaks; bare-record only respells a
+# marker to `_*_`. --repair selects the repair pass over the
 # sweep; --write applies whichever was selected, behind three guards:
 #
 #   (a) the workbench is inside a git work tree and tracked by it

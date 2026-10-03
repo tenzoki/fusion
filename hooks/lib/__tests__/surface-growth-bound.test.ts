@@ -178,66 +178,87 @@ const SKILL_BASELINE: Record<string, number> = {
 };
 
 /**
- * The hook tests and their helpers, in lines. 20 766 at the 2026-09-05 merge
- * re-baseline, up from 17 875 at the 2026-08-17 cleanup re-baseline and 19 453
- * at the 2026-08-15 arming: the merged tree's own figure, taken per file. See
- * `## The merge re-baseline, 2026-09-05` above for the two parent figures, the
- * check that neither was over, and what the move absolves — and
- * `## The cleanup re-baseline, 2026-08-17` for the previous move. The
- * instrument still counts itself, and so does this file: a bound that did not
- * would be granting itself the one exemption it exists to refuse.
+ * The hook tests and their helpers, in lines. 24 037 at the 2026-10-03 merge
+ * re-baseline (`origin/main` at 12.2.3 into `fj-json-workbench`), up from
+ * 19 228: the merged tree's own figure, taken per file, every file of the
+ * surface. `README-hooks.md` `### Growth bounds on the shipped text` names the
+ * merge commit, both parent figures, the check that neither was over, and what
+ * the move absolves. The instrument still counts itself, and so does this file:
+ * a bound that did not would be granting itself the one exemption it exists to refuse.
  */
 const TEST_LINE_BASELINE: Record<string, number> = {
-  "archive-filter-key.test.ts": 40,
-  "citation-grammar-boundaries.test.ts": 116,
-  "citation-sweep.test.ts": 441,
-  "commit-message-path.test.ts": 315,
-  "committed-dist.test.ts": 332,
-  "config.test.ts": 859,
-  "context-manifest.test.ts": 472,
-  "deliverable-language-lint.test.ts": 138,
-  "derivable-enumerations-lint.test.ts": 453,
-  "domain-cascade-order-lint.test.ts": 234,
-  "domain-cascade.test.ts": 911,
-  "executor-verification-report-lint.test.ts": 217,
-  "fenced-code-exemption.test.ts": 224,
-  "fusion-checkout-name.test.ts": 177,
-  "fusion-citation-check.test.ts": 248,
-  "fusion-commit-lock.test.ts": 424,
-  "fusion-count-sources.test.ts": 442,
-  "fusion-events.test.ts": 322,
-  "fusion-identity.test.ts": 220,
-  "fusion-paths.test.ts": 873,
-  "fusion-prose-metric.test.ts": 174,
-  "fusion-session-domain.test.ts": 80,
-  "glob-nomatch-lint.test.ts": 148,
-  "guard-bash-integration.test.ts": 338,
-  "guard-project-config-integration.test.ts": 251,
-  "guard-state-shape.test.ts": 215,
+  "archive-filter-key.test.ts": 64,
+  "citation-form.test.ts": 360,
+  "citation-grammar-boundaries.test.ts": 242,
+  "citation-sweep.test.ts": 641,
+  "claude-md-weight.test.ts": 208,
+  "commit-message-path.test.ts": 385,
+  "committed-dist.test.ts": 328,
+  "config.test.ts": 950,
+  "context-manifest.test.ts": 507,
+  "declared-citation-paths.test.ts": 84,
+  "deliverable-language-lint.test.ts": 136,
+  "derivable-enumerations-lint.test.ts": 475,
+  "domain-cascade-order-lint.test.ts": 232,
+  "domain-cascade.test.ts": 888,
+  "edge-answers.test.ts": 190,
+  "executor-verification-report-lint.test.ts": 238,
+  "fenced-code-exemption.test.ts": 206,
+  "fusion-checkout-name.test.ts": 202,
+  "fusion-citation-check.test.ts": 371,
+  "fusion-claimed-package.test.ts": 218,
+  "fusion-commit-lock.test.ts": 454,
+  "fusion-count-sources.test.ts": 413,
+  "fusion-events.test.ts": 438,
+  "fusion-forum.test.ts": 251,
+  "fusion-identity.test.ts": 225,
+  "fusion-paths.test.ts": 727,
+  "fusion-prose-metric.test.ts": 173,
+  "fusion-session-domain.test.ts": 140,
+  "fusion-stores.test.ts": 32,
+  "fusion-work-order.test.ts": 138,
+  "glob-nomatch-lint.test.ts": 138,
+  "guard-bash-integration.test.ts": 334,
+  "guard-project-config-integration.test.ts": 232,
+  "guard-state-shape.test.ts": 341,
   "helpers/citation-scan.ts": 56,
-  "helpers/growth-bound.ts": 123,
-  "helpers/guard-harness.ts": 970,
+  "helpers/growth-bound.ts": 178,
+  "helpers/guard-harness.ts": 1035,
+  "helpers/json-workbench.ts": 157,
   "helpers/prompt-blocks.ts": 28,
-  "hook-fail-open.test.ts": 624,
-  "hooks-wiring.test.ts": 187,
+  "hook-fail-open.test.ts": 614,
+  "hook-route-exclusion.test.ts": 329,
+  "hooks-wiring.test.ts": 136,
   "identity-mint-notice.test.ts": 118,
   "legacy-halt-clearing.test.ts": 213,
-  "marker-format-lint.test.ts": 171,
-  "monitor-warnings-panel.test.ts": 1153,
-  "path-literal-lint.test.ts": 338,
+  "legacy-import.test.ts": 113,
+  "legacy-repair.test.ts": 104,
+  "marker-format-lint.test.ts": 163,
+  "migrate.test.ts": 178,
+  "monitor-warnings-panel.test.ts": 1286,
+  "path-literal-lint.test.ts": 325,
   "paths.test.ts": 31,
-  "plan-stopping-section-lint.test.ts": 266,
-  "provenance-header-lint.test.ts": 448,
-  "reference-resolution-lint.test.ts": 1004,
+  "plan-size.test.ts": 206,
+  "plan-stopping-section-lint.test.ts": 257,
+  "provenance-header-lint.test.ts": 424,
+  "record-archive.test.ts": 179,
+  "record-change.test.ts": 138,
+  "record-client.test.ts": 202,
+  "record-write.test.ts": 252,
+  "reference-resolution-lint.test.ts": 1011,
   "review-coverage-mandate.test.ts": 353,
-  "review-coverage.test.ts": 818,
-  "rules-emission-golden.test.ts": 1150,
-  "rules-voice-profile.test.ts": 323,
-  "sentence-identifier-containment.test.ts": 425,
+  "review-coverage.test.ts": 857,
+  "rules-emission-golden.test.ts": 1189,
+  "rules-voice-profile.test.ts": 319,
+  "sentence-identifier-containment.test.ts": 456,
+  "session-start-event.test.ts": 150,
   "session-start-subdirectory.test.ts": 159,
-  "staging-drift.test.ts": 673,
-  "surface-growth-bound.test.ts": 608,
-  "workbench-citation-lint.test.ts": 325,
+  "staging-drift.test.ts": 696,
+  "store-name-migration.test.ts": 124,
+  "surface-growth-bound.test.ts": 536,
+  "window-bound.test.ts": 24,
+  "work-graph.test.ts": 127,
+  "workbench-citation-lint.test.ts": 353,
 };
 
 /** See `## Where each head-room comes from`. Derived per surface, never shared. */
@@ -246,7 +267,7 @@ const AGENT_HEAD_ROOM = 18_000;
 const SKILL_HEAD_ROOM = 39_260;
 /**
  * 2 500 derived, plus the 2026-09-11 raise, the three on 2026-09-16 and the
- * +423 of 2026-09-29 and the +56, +81, +46, +41, +65, +21, +20, +18, +137 and +133 of 2026-09-30 and the +49, +69, +2, +162, +17, +113 and +104 of 2026-10-01 and the +178 of 2026-10-02, logged in `README-hooks.md` — and a ninth raise of +190
+ * +423 of 2026-09-29 and the +56, +81, +46, +41, +65, +21, +20, +18, +137 and +133 of 2026-09-30 and the +49, +69, +2, +162, +17, +113 and +104 of 2026-10-01 and the +178 of 2026-10-02, and the release line's +23 of 2026-10-01 (merged at 12.2.3), logged in `README-hooks.md` — and a ninth raise of +190
  * on 2026-09-18, justified here rather than there because a raise nobody can
  * trace is what this bound exists to prevent.
  *
@@ -259,7 +280,7 @@ const SKILL_HEAD_ROOM = 39_260;
  * raise as the remedy and the authorisation reaches nothing else — the same
  * dispatch left `AGENT_HEAD_ROOM` and `SKILL_HEAD_ROOM` unraised and said so.
  */
-const TEST_LINE_HEAD_ROOM = 4_765;
+const TEST_LINE_HEAD_ROOM = 4_788;
 
 const SURFACES: Surface[] = [
   {

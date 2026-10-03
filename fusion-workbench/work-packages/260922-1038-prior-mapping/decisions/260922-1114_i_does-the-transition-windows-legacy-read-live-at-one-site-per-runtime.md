@@ -35,3 +35,6 @@ Option 1. It is the mechanism the repository already uses for the shared stores,
 
 ---
 Answered: 260922-1114_*_plan-prior-nomenclature-plugin-source.md `### Names this plan fixes` — option 1, one definition site per runtime (`hooks/lib/stores.ts`, `bin/fusion-stores`) derived from the layout tree and held equal by a test; confirmed at the plan gate of 260923-0839-implement-prior-nomenclature.md; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: eabde08e, 2c05cd6b — one definition site per runtime: `hooks/lib/stores.ts` (the legacy map `work-packages`→`circles`, `plans`→`planning`, `consultations`→`consult`) and `bin/fusion-stores`, held equal by `hooks/lib/__tests__/fusion-stores.test.ts`.

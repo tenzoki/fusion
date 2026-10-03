@@ -1,7 +1,7 @@
 # Implementation Plan: repair three citation-grammar defects
 
 **Date:** 2026-08-31
-**Status:** Partially Complete
+**Status:** Complete
 **Spec:** none — planned from three filed defect records
 **Decidability:** The load-bearing question is defect 3's: *is this head-field value a pointer at a record or an identifier that names no record?* From the token text alone it is **not decidable** — a session identifier and a Circle directory name are both `<stamp>-<name>`, which is measured below and is what refutes candidate 3. So the mechanism changes rather than the approximation improving (`rules/critical-stance.md` §4): the grammar stops asking about the token and asks about the **field label**, an input `isHeadFieldValue()` already parses and which does separate the two classes. Defects 1 and 2 pose no such question — the tail class and the directory index are each decidable from what the mechanism already reads.
 
@@ -214,7 +214,7 @@ and the six probes above as cases in the new test file, written against whicheve
 
 **If the reading differs:** any movement in `dangling` at this step means the clause reached a token class it was not meant to. The clause is gated on `isHeadFieldValue()`, which requires the token to be the *whole* value of a `**Label:**` line; a movement means that guard was dropped.
 
-### 4. Close the records and bump the version
+### 4. [DONE] Close the records and bump the version
 
 - **Executor:** `coder`
 - **Files:** the three `_o_` issue records in `fusion-workbench/shared/issues/`, the decision `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md`, `.claude-plugin/plugin.json`
@@ -390,3 +390,17 @@ reads `11.10.0`. Not marked: what remains is not executor work.
 
 **What is left of this plan is one ruling.** Every code step is built and every gate is green; the plan
 closes when the user rules on `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md` and the orchestrator carries that ruling through `_a_` to `_i_`.
+
+---
+
+**261002-1155 (state-auditor, domain `code`, HEAD `23e97066`) — step 4 marked `[DONE]`, `**Status:** Partially Complete` → `Complete`, marker `_o_` → `_c_`.**
+
+The one ruling the 260921 pass named as all that was left has been given: 260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md carries `Answered:` (ruled by user 260921-2312) and `Implemented: 76b36efa`, renamed to `_i_` at `684871d7`. Against `## Where this work stops`, at HEAD:
+
+1. `./bin/fusion-citation-check` reads `dangling=299`, the figure this plan states (corpus 3 134 files, 28 837 tokens), `verdict=clean`. **Holds.**
+2. `./bin/fusion-citation-sweep --dry-run` reads `files=0 rewrites=0`. **Holds.**
+3. `cd hooks && npm test` exits 0, 60 files, 1 012 tests. **Holds.**
+4. `committed-dist.test.ts` is in that green run. **Holds.**
+5. `surface-growth-bound.test.ts` is green in the same run. **Holds.**
+6. Three `_c_` issues (260831-2119, -2120, -2121) and the decision at `_i_`. **Holds.**
+7. `.claude-plugin/plugin.json` reads `12.2.0`. **Holds.**

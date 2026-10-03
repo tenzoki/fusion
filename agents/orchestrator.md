@@ -135,7 +135,7 @@ Remaining setup:
 
      ```bash
      [ -n "$WORKBENCH" ] && [ -n "$SCAN_PACKAGES" ] || { echo "fusion bug: WORKBENCH or SCAN_PACKAGES empty — work packages not read" >&2; exit 1; }
-     for s in $SCAN_PACKAGES; do find "$WORKBENCH/$s" -mindepth 1 -maxdepth 1 -type d 2>/dev/null; done | sort | while IFS= read -r d; do b="$(basename "$d")"; f="$d/$b.md"; [ -f "$f" ] || f="$(find "$d" -mindepth 1 -maxdepth 1 -type f -name '_?_circle.md' 2>/dev/null | head -n 1)"; [ -f "$f" ] || continue; printf '%s\t%s\t%s\t%s\n' "$b" "$(sed -n 's/^\*\*Status:\*\*[[:space:]]*//p' "$f" | head -n 1)" "$(sed -n 's/^\*\*Claim:\*\*[[:space:]]*//p' "$f" | head -n 1)" "$(sed -n 's/^\*\*Mode:\*\*[[:space:]]*//p' "$f" | head -n 1)"; done
+     for s in $(printf %s "$SCAN_PACKAGES"); do find "$WORKBENCH/$s" -mindepth 1 -maxdepth 1 -type d 2>/dev/null; done | sort | while IFS= read -r d; do b="$(basename "$d")"; f="$d/$b.md"; [ -f "$f" ] || f="$(find "$d" -mindepth 1 -maxdepth 1 -type f -name '_?_circle.md' 2>/dev/null | head -n 1)"; [ -f "$f" ] || continue; printf '%s\t%s\t%s\t%s\n' "$b" "$(sed -n 's/^\*\*Status:\*\*[[:space:]]*//p' "$f" | head -n 1)" "$(sed -n 's/^\*\*Claim:\*\*[[:space:]]*//p' "$f" | head -n 1)" "$(sed -n 's/^\*\*Mode:\*\*[[:space:]]*//p' "$f" | head -n 1)"; done
      ```
 
      `find` drives both levels so an empty or absent store yields no input — no unmatched glob to abort under zsh, no unexpanded pattern to miscount. One line per item: the **container's** name, status, claim, mode. The container's name is the item's identifier from here on — it is what a `**Work-item:**` line carries and what a `**Work package:**` parameter names — and the record is `<container>/<container>.md`.

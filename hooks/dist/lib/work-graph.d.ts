@@ -107,6 +107,8 @@ export interface WorkItemNode {
     /** The container directory name, `YYMMDD-HHMM-<slug>`. */
     dir: string;
     status: ItemStatus;
+    /** The record ids its `depends_on` names, in the order `reconcile` reports them, satisfied ones included. */
+    dependsOn: string[];
 }
 /** `from` depends on `to`: "from may start after to". Both are container names. */
 export interface ResolvedEdge {

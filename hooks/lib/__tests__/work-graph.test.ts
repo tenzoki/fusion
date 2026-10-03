@@ -11,7 +11,7 @@ import type { Answer, Ask } from "../record-client.js";
 const d = (n: number, s: string) => `260101-${String(n).padStart(4, "0")}-${s}`;
 const [base, mid, tip, fanA, fanB, cycA, cycB, dangle, closed, paused, afterPaused, twice, self, waits, garbage] =
   ["base", "mid", "tip", "fan-a", "fan-b", "cyc-a", "cyc-b", "dangle", "closed", "paused", "after-paused", "twice", "self", "waits", "garbage"].map((s, i) => d([2, 1, 3, 4, 5, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18][i], s));
-const open = (dir: string, status: "open" | "claimed" | "paused" = "open") => ({ dir, status });
+const open = (dir: string, status: "open" | "claimed" | "paused" = "open") => ({ dir, status, dependsOn: [] });
 const INPUT: OrderInput = {
   nodes: [base, mid, tip, fanA, fanB, cycB, dangle, afterPaused, twice, self, waits].map((n) => open(n)).concat(open(cycA, "claimed"), open(paused, "paused")),
   edges: [[mid, base], [tip, mid], [fanA, base], [fanB, base], [cycA, cycB], [cycB, cycA], [afterPaused, paused], [twice, base], [twice, base], [self, self]].map(([from, to]) => ({ from, to })),

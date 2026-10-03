@@ -339,17 +339,17 @@ export function readWorkGraph(workbench, ask = askCodec) {
     const edges = [];
     const unmet = [];
     const unresolved = [];
-    const entries = new Map([...nodes.keys()].map((p) => [p, 0]));
+    const entries = new Map([...nodes.keys()].map((p) => [p, []]));
     for (const e of dependencies.list) {
         if (!isObject(e) || typeof e.path !== "string" || e.status === "cycle")
             continue;
         const from = nodes.get(e.path);
         if (from === undefined)
             continue; // a terminal or unreadable package's entries are never read
-        entries.set(e.path, (entries.get(e.path) ?? 0) + 1);
+        const target = typeof e.target === "string" ? e.target : JSON.stringify(e.target);
+        entries.get(e.path).push(target);
         if (e.status === "satisfied")
             continue;
-        const target = typeof e.target === "string" ? e.target : JSON.stringify(e.target);
         const problem = problemOf({ class: typeof e.class === "string" ? e.class : "operation-unknown", reason: typeof e.reason === "string" ? e.reason : "reason-unnamed", detail: e.detail });
         const b = blockedRead("reconcile", problem);
         if (b !== null)
@@ -370,12 +370,12 @@ export function readWorkGraph(workbench, ask = askCodec) {
     return {
         kind: "report",
         report: orderOf({
-            nodes: [...nodes.values()].map((n) => ({ dir: n.dir, status: n.status })),
+            nodes: [...nodes.values()].map((n) => ({ dir: n.dir, status: n.status, dependsOn: entries.get(n.path) })),
             edges,
             unmet,
             unresolved,
             unreadable,
-            noDependsOnField: [...entries.values()].filter((n) => n === 0).length,
+            noDependsOnField: [...entries.values()].filter((t) => t.length === 0).length,
         }),
     };
 }

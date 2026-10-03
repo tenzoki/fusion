@@ -3,11 +3,21 @@
 # from JSON control data through the codec.
 #
 # Usage:
-#   fusion-work-order
+#   fusion-work-order                 the text format below
+#   fusion-work-order --format text   the same, selected explicitly
+#   fusion-work-order --format tsv    the same computation as a versioned TSV
+#                                     stream; its contract is hooks/order.ts
+#                                     `## The TSV format`, not restated here
+#   fusion-work-order --format json   the same as one versioned JSON object;
+#                                     contract: `## The JSON format` there
+#   fusion-work-order --format markdown
+#                                     the same as a Markdown document for a
+#                                     person; contract: `## The Markdown format`
 #
-# Takes no arguments. Output on stdout, one KEY=value per line, then one row per
-# item in the computed order, prerequisites first, then the cycle, unmet,
-# unresolved and unreadable rows:
+# Any other argument is a usage error, aliases such as `md` included. The text
+# format, on stdout, is one KEY=value per line, then one row per item in the
+# computed order, prerequisites first, then the cycle, unmet, unresolved and
+# unreadable rows:
 #
 #   anchor=workbench-root
 #   items=7
@@ -75,7 +85,8 @@
 #   0  the check ran. `verdict=` says what it found. A cycle is NOT a non-zero
 #      exit, and `verdict=empty` is a real answer that reaches 0 like the other
 #      two.
-#   1  usage error.
+#   1  usage error: any argument but `--format` followed by `text`, `tsv`,
+#      `markdown` or `json`.
 #   2  no fusion workbench above the working directory; nothing to compute.
 #   3  the plugin itself could not run (compiled hooks or bundle missing, or an
 #      internal error in the order entry, named on stderr with its stack), so
@@ -99,12 +110,16 @@
 # overrides any figure here at will. The portfolio layer that used to rank work
 # went at v11 and this is not its return.
 #
-# It reports and it blocks nothing. No exit code carries the result, and no
-# test, hook or pipeline step runs this program — the stdout-verdict rule every
-# other reporting helper in this directory carries, none of them promoted to a
-# blocking check. No automatic hook starts it: hooks/lib/record-client.ts
-# `## The recovery declaration` says why, and a read it sends may finish a
-# committed intent, which is the codec's and not this program's.
+# It reports and it blocks nothing. A person runs it, directly or through
+# /fusion:wp-order, which renders the text format in the chat and ranks nothing.
+# No exit code carries the result, no hook or pipeline step runs this program
+# and no test gates on its verdict — the stdout-verdict rule every other
+# reporting helper in this directory carries, none of them promoted to a
+# blocking check. In every format the exit codes mean the same, and on a
+# non-zero one stdout is empty. No automatic hook starts it:
+# hooks/lib/record-client.ts `## The recovery declaration` says why, and a read
+# it sends may finish a committed intent, which is the codec's and not this
+# program's.
 #
 # It sends no mutation. No cache, no index, no marker, no record: the order is
 # recomputed per run and discarded, so two runs over an unchanged store print
