@@ -1621,6 +1621,14 @@ describe("create", () => {
     await land(createRequest("package", { origin: { kind: "campaign", ref: { workbench_id: WB_ID, record_id: OPEN_ID } } }));
   });
 
+  it("the reserved actor legacy-unknown is an import's alone: a create naming it as its filer is schema-invalid and nothing is written (decision 261003-1746)", async () => {
+    for (const kind of ["package", "issue"] as const) {
+      const req = createRequest(kind, { operation_id: randomUUID(), filed_by: { actor: "legacy-unknown", person: null } });
+      expect(errorOf(await dispatch(req)), kind).toEqual({ class: "schema-invalid", reason: "request" });
+      nothingWritten(req, kind);
+    }
+  });
+
   // --- where the pair goes ---
 
   it("scope, kind and path must agree, a container must be a package directory, and a new name is marker-free", async () => {

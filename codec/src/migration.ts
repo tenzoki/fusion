@@ -1829,9 +1829,14 @@ export function migrationVerify(req: MigrationVerifyRequest, hooks: CheckHooks):
 //            `answers` part froze it; exactly one stored answer
 //            reconstructing as each of the exempt `end` and `begin`; and
 //            every later operation (`laterOperations`) one of the three
-//            exempt: `conflict/after-state-changed`. A later chunk after a
-//            rollback across activation audits the later operations against
-//            the exempt set `rollback.json` binds, the same way;
+//            exempt or a proven second-run no-op of this migration
+//            (`provenNoOps`, Prior `d0fce6c`'s four conditions):
+//            `conflict/after-state-changed`; the binding over the strict
+//            reader's 1 MiB: `schema-invalid/too-large`, naming the no-op
+//            count. A later chunk after a rollback across activation first
+//            holds every no-op `rollback.json` binds stored as bound, then
+//            audits the later operations against the bound exempt and no-op
+//            entries alone, the same way: `after-state-changed`;
 //   disk     every file chunk k wrote at its after-state, its originals at
 //            their source hashes; for k = 0 the eligible inventory equal to
 //            the frozen post-repair input, plus the bookkeeping directories
@@ -1841,7 +1846,8 @@ export function migrationVerify(req: MigrationVerifyRequest, hooks: CheckHooks):
 //            originals removed. The first rollback after activation writes
 //            `rollback.json` first and removes the manifest and the receipt
 //            before the controls; its answer binds the file by `binding:
-//            {path, sha256}`. Chunk 0 removes the chunk parts, the other
+//            {path, sha256}`. The file carries `no_ops` only when at least
+//            one no-op was proven, so a binding without one keeps its bytes. Chunk 0 removes the chunk parts, the other
 //            parts, `rollback.json` and the index last, and its answer
 //            carries the evidence `maintenance end` reads on a legacy store:
 //            `progress` and `progress_sha256` (question 51).
@@ -1858,14 +1864,29 @@ interface Exempt {
   request_digest: string;
 }
 
-/** `rollback.json`, the `rollback-binding` shape of the plan schema (question 52, as Prior answered it). */
+/** One proven second-run no-op, as `rollback.json` binds it (Prior `d0fce6c`): its id, its request digest and the hash of its stored answer's bytes. */
+interface NoOp {
+  operation_id: string;
+  request_digest: string;
+  answer_sha256: string;
+}
+
+/**
+ * `rollback.json`, the `rollback-binding` shape of the plan schema (question
+ * 52, as Prior answered it; `no_ops` from Prior `d0fce6c`, present only when
+ * at least one no-op was proven, so a binding without one keeps its bytes).
+ */
 interface RollbackBinding {
   migration_id: string;
   plan: PlanRef;
   receipt: PlanRef;
   fence: string;
   exempt: Exempt[];
+  no_ops?: NoOp[];
 }
+
+/** The keys of the second-run no-op's result (`secondRun`), sorted: the shape condition 1 compares. */
+const NO_OP_KEYS = "later_operations,manifest_revision,migration_id,no_op,operation_id,receipt";
 
 const resultOf = (a: StoredAnswer): Record<string, unknown> => (a.response.ok && isObject(a.response.result) ? a.response.result : {});
 const exemptOf = (s: Stored): Exempt => ({ operation_id: s.entry.operation_id, op: s.entry.op, request_digest: s.entry.request_digest });
@@ -1894,6 +1915,11 @@ function readBinding(wb: Workbench, plan: Plan, ref: PlanRef): Result<RollbackBi
   if (!read.ok) return changed(`${ref.path}: ${read.why}`);
   const v = read.value as unknown as RollbackBinding & { part: string };
   if (v.part !== "rollback-binding" || v.migration_id !== plan.index.migration_id || canonical(v.plan) !== canonical(plan.ref)) return changed(`${ref.path} is not the rollback binding of ${plan.index.migration_id} at ${plan.ref.sha256}`);
+  // The schema leaves the no-ops' order and uniqueness to the codec, as for the answers parts.
+  const ids = (v.no_ops ?? []).map((n) => n.operation_id);
+  for (let i = 1; i < ids.length; i++) {
+    if (bytewise(ids[i - 1] as string, ids[i] as string) >= 0) return changed(`${ref.path} lists the no-op ${ids[i]} out of bytewise order or twice`);
+  }
   return { ok: true, value: v };
 }
 
@@ -1904,6 +1930,8 @@ function readBinding(wb: Workbench, plan: Plan, ref: PlanRef): Result<RollbackBi
  * the `maintenance begin` of the standing fence. Each is found only by
  * reconstructing its request in the two forms and comparing digests, and
  * exactly one stored answer must match each, else `after-state-changed`.
+ * These three stay exactly three; the audit admits them plus the proven
+ * no-ops (`provenNoOps`), a second checked class and no list of names.
  */
 function exemptSet(wb: Workbench, plan: Plan, standing: Fence, now: readonly Stored[]): Result<Exempt[]> {
   const f1 = chunkOneFence(plan);
@@ -1919,14 +1947,89 @@ function exemptSet(wb: Workbench, plan: Plan, standing: Fence, now: readonly Sto
   return { ok: true, value: [verifies[0], ends[0], begins[0]].map((s) => exemptOf(s as Stored)).sort((a, b) => bytewise(a.operation_id, b.operation_id)) };
 }
 
-/** The audit: every later operation is one of `exempt` by id, op and digest, else `after-state-changed` naming it. */
-function audit(wb: Workbench, plan: Plan, baseline: readonly AnswerEntry[], exempt: readonly Exempt[], now: readonly Stored[]): Result<void> {
+/**
+ * The proven second-run no-ops among the later operations (Prior `d0fce6c`;
+ * `REQUESTS.md` `## FJ04 (addendum for Prior d0fce6c and ruling b1)`),
+ * bytewise by id, each `{operation_id, request_digest, answer_sha256}`. Run
+ * by the first rollback after activation alone, after the receipt check and
+ * the exempt set, over each later operation that is not an exempt answer. A
+ * later operation is proven only when all four conditions hold:
+ *
+ *   1. its stored answer reads, its op is `migration`, its response is `ok`
+ *      with no `revisions`, and its result has exactly the six keys of the
+ *      no-op answer, the flag `no_op` true, `operation_id` its own id and
+ *      `migration_id` the index's. A name or the flag alone is never enough;
+ *   2. its id is not one the schedule assigns, and its request digest
+ *      reconstructs as `{op: "migration", operation_id: <its id>, phase:
+ *      "plan", proposal: <the index's exact proposal>}` in the two forms of
+ *      departure 5 (`reconstructs`). Nothing is normalised;
+ *   3. its `receipt` is the `{path, sha256}` `receiptHolds` verified, and its
+ *      `manifest_revision` the activated manifest's that the same check read;
+ *   4. it comes from the no-write path. Condition 1's shape is written only
+ *      by `secondRun`, which plans no write: fusion's reading of Prior's
+ *      condition, proven by shape, digest and receipt, and checked by `grep`
+ *      over this file before the hand-over (one site writes `no_op`).
+ *
+ * The no-op's own `later_operations` is a diagnostic and decides nothing
+ * here: every stored answer is still audited.
+ */
+function provenNoOps(wb: Workbench, plan: Plan, receipt: PlanRef, manifestRevision: string, later: readonly Stored[], exempt: readonly Exempt[]): NoOp[] {
+  const exemptIds = new Set(exempt.map((e) => e.operation_id));
+  const scheduled = scheduledRequests(plan.index, plan.ref);
+  const out: NoOp[] = [];
+  for (const s of later) {
+    const id = s.entry.operation_id;
+    const a = s.answer;
+    if (exemptIds.has(id) || a === null) continue;
+    // 1. The no-op answer's shape, its own id and this migration.
+    if (a.op !== "migration" || !a.response.ok || "revisions" in a.response) continue;
+    const r = a.response.result;
+    if (!isObject(r) || Object.keys(r).sort().join(",") !== NO_OP_KEYS || r.no_op !== true || r.operation_id !== id || r.migration_id !== plan.index.migration_id) continue;
+    // 2. Unscheduled, and the plan request of the index's exact proposal under its id.
+    if (scheduled.has(id) || !reconstructs(a.request_digest, { op: "migration", operation_id: id, phase: "plan", proposal: plan.index.proposal }, wb.root)) continue;
+    // 3. The verified receipt and the activated manifest.
+    const rc = r.receipt;
+    if (!isObject(rc) || Object.keys(rc).sort().join(",") !== "path,sha256" || rc.path !== receipt.path || rc.sha256 !== receipt.sha256 || r.manifest_revision !== manifestRevision) continue;
+    out.push({ operation_id: id, request_digest: s.entry.request_digest, answer_sha256: s.entry.answer_sha256 });
+  }
+  return out.sort((x, y) => bytewise(x.operation_id, y.operation_id));
+}
+
+/**
+ * A later fresh chunk after a rollback across activation: each no-op the
+ * binding names still stored under its id with its request digest and answer
+ * hash, else `after-state-changed` (departure 7). No exception is added after
+ * the binding is frozen: the audit then admits the bound entries only.
+ */
+function boundNoOpsHold(noOps: readonly NoOp[], now: readonly Stored[], path: string): Result<void> {
+  const byId = new Map(now.map((s) => [s.entry.operation_id, s]));
+  for (const n of noOps) {
+    const s = byId.get(n.operation_id);
+    if (s === undefined || s.answer === null || s.entry.op !== "migration" || s.entry.request_digest !== n.request_digest || s.entry.answer_sha256 !== n.answer_sha256) {
+      return afterStateChanged(`the no-op ${n.operation_id} that ${path} binds is ${s === undefined ? "missing" : `changed: it is ${s.entry.op} at ${s.entry.request_digest}, answer ${s.entry.answer_sha256}`}`);
+    }
+  }
+  return { ok: true, value: undefined };
+}
+
+/**
+ * The audit: every later operation falls into exactly one of three cases. It
+ * is one of `exempt` by id, op and digest (a `maintenance` answer, or `verify`
+ * under its scheduled id); or one of `noOps` by id, op `migration`, digest and
+ * answer hash (a `plan` under an id the schedule does not assign, so the two
+ * cannot overlap); or the rollback refuses as `after-state-changed`, naming
+ * it, even when the record bytes it moved have returned to their old hashes.
+ */
+function audit(plan: Plan, later: readonly Stored[], exempt: readonly Exempt[], noOps: readonly NoOp[]): Result<void> {
   const bound = new Map(exempt.map((e) => [e.operation_id, e]));
-  for (const s of laterOperations(wb, plan, baseline, now)) {
+  const proven = new Map(noOps.map((n) => [n.operation_id, n]));
+  for (const s of later) {
     const e = bound.get(s.entry.operation_id);
     if (e !== undefined && s.answer !== null && e.op === s.entry.op && e.request_digest === s.entry.request_digest) continue;
+    const n = proven.get(s.entry.operation_id);
+    if (n !== undefined && s.answer !== null && s.entry.op === "migration" && n.request_digest === s.entry.request_digest && n.answer_sha256 === s.entry.answer_sha256) continue;
     const what = s.answer !== null && s.entry.op === "maintenance" ? ` ${String(resultOf(s.answer).action)}` : "";
-    return afterStateChanged(`the stored answer ${s.entry.operation_id} (${s.entry.op}${what}) is neither in the baseline ${plan.ref.path} froze, nor a validated answer of its schedule, nor one of the exempt operations; a rollback after ordinary work is refused`);
+    return afterStateChanged(`the stored answer ${s.entry.operation_id} (${s.entry.op}${what}) is neither in the baseline ${plan.ref.path} froze, nor a validated answer of its schedule, nor one of the exempt operations, nor a proven no-op of this migration; a rollback after ordinary work is refused`);
   }
   return { ok: true, value: undefined };
 }
@@ -1944,9 +2047,9 @@ function baselineHolds(baseline: readonly AnswerEntry[], now: readonly Stored[])
 }
 
 /** The receipt check of the first rollback after activation: identity, integrity, availability. */
-function receiptHolds(wb: Workbench, plan: Plan, manifest: Record<string, unknown>): Result<{ ref: PlanRef; after: string }> {
+function receiptHolds(wb: Workbench, plan: Plan, manifest: Record<string, unknown>): Result<{ ref: PlanRef; after: string; revision: string }> {
   const path = receiptPath(plan.index.migration_id);
-  const unverified = (why: string): Result<{ ref: PlanRef; after: string }> => refusal("migration-incomplete", "receipt-unverified", `the receipt ${path} of ${plan.index.migration_id} does not hold: ${why}`);
+  const unverified = (why: string): Result<{ ref: PlanRef; after: string; revision: string }> => refusal("migration-incomplete", "receipt-unverified", `the receipt ${path} of ${plan.index.migration_id} does not hold: ${why}`);
   const migration = manifest.migration;
   if (!isObject(migration) || migration.receipt !== path) return unverified(`${WORKBENCH_MANIFEST} names ${isObject(migration) ? String(migration.receipt) : "no receipt"}`);
   const bytes = regularBytes(wb, path);
@@ -1963,7 +2066,7 @@ function receiptHolds(wb: Workbench, plan: Plan, manifest: Record<string, unknow
   const manifestBytes = regularBytes(wb, WORKBENCH_MANIFEST);
   const revision = manifestBytes === null ? null : sha(manifestBytes);
   if (r.manifest_revision !== revision) return unverified(`it names the manifest at ${r.manifest_revision}, which is ${String(revision)}`);
-  return { ok: true, value: { ref: { path, sha256: sha(bytes) }, after: r.after_inventory_sha256 } };
+  return { ok: true, value: { ref: { path, sha256: sha(bytes) }, after: r.after_inventory_sha256, revision: r.manifest_revision } };
 }
 
 /** Each file chunk k wrote, at its after-state as a regular file: controls and rewritten narratives. */
@@ -2044,9 +2147,9 @@ export function migrationRollback(req: MigrationRollbackRequest): PlanFunction {
     if (k !== highest) return outOfOrder(k === 0 ? `rollback chunk 0 follows the rollback of every chunk; the chunks landed are ${chunkList(landed.value)}` : `rollback runs from the highest landed chunk down; the chunks landed are ${chunkList(landed.value)}, so chunk ${k} is not next`);
     if (activated && k !== plan.chunks) return outOfOrder(`after activation every chunk of ${plan.index.migration_id} is landed; rollback starts at chunk ${plan.chunks}`);
 
-    // The first rollback after activation: the receipt, the activated tree, the baseline, the exempt set, the audit.
+    // The first rollback after activation: the receipt, the activated tree, the baseline, the exempt set, the proven no-ops, the audit, the binding's size.
     let receipt: PlanRef | null = null;
-    let exempt: Exempt[] = [];
+    let bindingBytes: Buffer | null = null;
     if (activated) {
       const held = receiptHolds(wb, plan, manifest as Record<string, unknown>);
       if (!held.ok) return held;
@@ -2064,11 +2167,25 @@ export function migrationRollback(req: MigrationRollbackRequest): PlanFunction {
       if (!base.ok) return base;
       const derived = exemptSet(wb, plan, standing as Fence, answers);
       if (!derived.ok) return derived;
-      exempt = derived.value;
-      const audited = audit(wb, plan, baseline.value, exempt, answers);
+      const exempt = derived.value;
+      const later = laterOperations(wb, plan, baseline.value, answers);
+      const noOps = provenNoOps(wb, plan, held.value.ref, held.value.revision, later, exempt);
+      const audited = audit(plan, later, exempt, noOps);
       if (!audited.ok) return audited;
+      // The binding, built and held to the strict reader's cap before any write is built (departure 8).
+      const value = { schema: PLAN_SCHEMA, part: "rollback-binding", migration_id: plan.index.migration_id, plan: plan.ref, receipt: held.value.ref, fence: (standing as Fence).operation_id, exempt, ...(noOps.length > 0 ? { no_ops: noOps } : {}) };
+      const bytes = Buffer.from(serialise(value), "utf-8");
+      if (bytes.byteLength > MAX_RECORD_BYTES) {
+        return refusal("schema-invalid", "too-large", `${rollbackPath(plan.index.migration_id)} would be ${bytes.byteLength} bytes, binding ${plural(noOps.length, "proven no-op")}; the strict reader's cap is ${MAX_RECORD_BYTES} bytes (1 MiB), so it could not be read back, and nothing is written`);
+      }
+      const v = ctx.validateResult(PLAN_SCHEMA_ID, value, "the rollback binding this rollback would write is not valid");
+      if (!v.ok) return v;
+      bindingBytes = bytes;
     } else if (binding !== null) {
-      const audited = audit(wb, plan, baseline.value, binding.value.exempt, storedNow(wb));
+      const answers = storedNow(wb);
+      const bound = boundNoOpsHold(binding.value.no_ops ?? [], answers, binding.ref.path);
+      if (!bound.ok) return bound;
+      const audited = audit(plan, laterOperations(wb, plan, baseline.value, answers), binding.value.exempt, binding.value.no_ops ?? []);
       if (!audited.ok) return audited;
     }
 
@@ -2091,10 +2208,7 @@ export function migrationRollback(req: MigrationRollbackRequest): PlanFunction {
     const restored: string[] = [];
     let bound: PlanRef | null = null;
     if (activated) {
-      const value = { schema: PLAN_SCHEMA, part: "rollback-binding", migration_id: plan.index.migration_id, plan: plan.ref, receipt: receipt as PlanRef, fence: (standing as Fence).operation_id, exempt };
-      const v = ctx.validateResult(PLAN_SCHEMA_ID, value, "the rollback binding this rollback would write is not valid");
-      if (!v.ok) return v;
-      const bytes = Buffer.from(serialise(value), "utf-8");
+      const bytes = bindingBytes as Buffer;
       bound = { path: rollbackPath(plan.index.migration_id), sha256: sha(bytes) };
       writes.push({ path: bound.path, bytes });
       removals.push({ path: WORKBENCH_MANIFEST, before: sha(regularBytes(wb, WORKBENCH_MANIFEST) as Buffer) }, { path: (receipt as PlanRef).path, before: (receipt as PlanRef).sha256 });

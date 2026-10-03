@@ -592,7 +592,8 @@ recorded `inspect`, each adding `maintenance: null` after `pending` and
 
 The maintenance run of spec section 8, as `fixtures/prior/REQUESTS.md`
 "FJ04 (the contract delta, amended for ab9cb59)" states it and its "FJ04
-(addendum for a1fb17a)" corrects it, in `src/migration.ts`. The host reads the
+(addendum for a1fb17a)" and "FJ04 (addendum for Prior d0fce6c and ruling
+b1)" correct it, in `src/migration.ts`. The host reads the
 v12 Markdown and composes a mapping proposal; the codec validates it, freezes
 it and alone writes every byte. Nothing in it calls a Prior binary, service or
 file: the bundle is plain Node, run by `bin/fusion-record`.
@@ -759,9 +760,9 @@ other phase from the index the request binds). One function,
 `later_operations` (by id and op; it decides nothing and refuses nothing) and
 the rollback audit both use it. Whether an answer landed after another cannot
 be decided from stored answers, which carry no sequence or time, so nothing
-here asks it, and file times play no part. A consequence: the no-op stores an
-answer of its own, a later operation, so a second `plan` sent after
-activation refuses a later rollback like any other work.
+here asks it, and file times play no part. The no-op stores an answer of its
+own, which meets this definition and may stay in `later_operations`; the
+rollback audit admits it only when it is proven (below).
 
 **Reconstruction and `workbench`** (departure 5). The digest covers
 `workbench` when a request carried it, so every request the codec rebuilds
@@ -811,22 +812,46 @@ post-repair input, not the external pre-repair backup, which is the host's
   the standing fence's id reconstructing as `{op: "maintenance",
   operation_id: <fence>, action: "begin"}`. Exactly one stored answer must
   match each, else `after-state-changed`. Then the audit: every later
-  operation is one of the three by id, op and digest, else
-  `after-state-changed` naming it, even when the record bytes it moved have
-  returned to their old hashes. No operation is exempt by its name.
+  operation is one of the three by id, op and digest, or a proven no-op by
+  id, op, digest and answer hash, else `after-state-changed` naming it, even
+  when the record bytes it moved have returned to their old hashes. No
+  operation is exempt by its name.
+- **The verified no-op** (Prior `d0fce6c`). A second `plan` after
+  activation does not by itself block rollback. `provenNoOps` proves a later
+  operation that is not an exempt answer to be a no-op of this migration
+  only when all four hold: (1) its stored answer reads, its op is
+  `migration`, its response `ok` with no `revisions`, its result exactly the
+  six keys of the no-op answer with `no_op` true, its own id and the index's
+  migration id; (2) its id is not one the schedule assigns, and its request
+  digest reconstructs as `{op: "migration", operation_id, phase: "plan",
+  proposal: <the index's exact proposal>}` in the two forms above, nothing
+  normalised; (3) its `receipt` is the one the receipt check verified and its
+  `manifest_revision` the activated manifest's; (4) it comes from the
+  no-write path: the shape of (1) is written only by the second-run branch
+  of `plan`, which writes nothing, so the codec proves (4) by shape, digest
+  and receipt. A different proposal naming the same migration does not
+  reconstruct and refuses; ordinary work followed by a no-op still refuses.
 - **`rollback.json`** (question 52, as Prior answered it). The first rollback
   after activation writes it in its own intent, `serialise`d and valid as the
   plan schema's `rollback-binding` shape: `{schema, part: "rollback-binding",
   migration_id, plan: {path, sha256}, receipt: {path, sha256}, fence,
-  exempt}`, `fence` the standing rollback fence and `exempt` the three
-  entries `{operation_id, op, request_digest}`, bytewise by id. The same
-  intent removes `workbench.json` and the receipt and restores the last
-  chunk, and its answer adds `binding: {path, sha256}` for the file's exact
-  bytes. A later fresh chunk reads that answer under the schedule's id for
-  the highest rollback chunk, checks the file against the bound hash before
-  it validates and trusts it (`plan-file-changed`), takes the fence from it,
-  and refuses any later operation outside its exempt set. Replays never read
-  the file.
+  exempt, no_ops}`, `fence` the standing rollback fence, `exempt` the three
+  entries `{operation_id, op, request_digest}` and `no_ops` one entry
+  `{operation_id, request_digest, answer_sha256}` per proven no-op, each
+  bytewise by id. `no_ops` is present only when a no-op was proven, so a
+  binding without one keeps its bytes. The serialised file is held to the
+  strict reader's 1 MiB before any write of the rollback is built
+  (`schema-invalid/too-large`, naming the no-op count; about 271 bytes an
+  entry, so some 3 800 no-ops). The same intent removes `workbench.json` and
+  the receipt and restores the last chunk, and its answer adds `binding:
+  {path, sha256}` for the file's exact bytes. A later fresh chunk reads that
+  answer under the schedule's id for the highest rollback chunk, checks the
+  file against the bound hash before it validates and trusts it
+  (`plan-file-changed`), takes the fence from it, holds every bound no-op
+  still stored with its id, digest and answer hash (`after-state-changed`),
+  and refuses any later operation outside the bound exempt and no-op
+  entries: no exception is added after the binding, and a fresh no-op under
+  that fence is `maintenance-active`. Replays never read the file.
 - **Rollback chunk 0** first holds that no chunk is landed and that the
   eligible inventory equals the frozen input with the permitted empty
   directories. It then builds `progress`, the ordered list of `{chunk,
@@ -879,18 +904,22 @@ schema then gave the `answers` part's `entries` `uniqueItems`, which its
 root `oneOf` evaluated on every inventory part, quadratic in its entries;
 the schema leaves uniqueness and order to the codec since.
 
-**Three limits, stated rather than built around.** (1) A re-plan under the id
+**The reserved actor** (decision 261003-1746). `legacy-unknown` names a
+filer's actor that an imported workbench never recorded. The schemas admit it
+only on a record or package whose `provenance.source` is `imported` or
+`legacy-terminal`, and refuse it in every request that carries an actor
+(`schema-invalid/request`), so `plan` freezes it from a proposal, with the
+`derived` entries the host writes, and refuses it on a `created` control
+(`proposal-invalid`). The codec never writes it on its own.
+
+**Two limits, stated rather than built around.** (1) A re-plan under the id
 of a completely rolled-back migration: `survey`'s `eligible_sha256` counts the
 empty directories the rollback left under `archive/migrations/<id>/`, which
 `plan`'s eligible inventory leaves out as that migration's own, so the plan
 is `source-changed` until they are removed or the host takes a new migration
-id. (2) A second `plan` after activation, the no-op, stores an answer of its
-own, and a stored no-op answer is itself a later operation: a rollback after
-it refuses as a later operation (`after-state-changed`). A host that may still
-roll back reads the store's state with `survey`, which stores nothing, not
-with `plan`. (3) `plan` does not refuse a narrative over 1 MiB, which no
-journal can stage; its chunk is refused `schema-invalid/too-large` before
-anything of that chunk is written, for chunk 1 before its fence.
+id. (2) `plan` does not refuse a narrative over 1 MiB, which no journal can
+stage; its chunk is refused `schema-invalid/too-large` before anything of
+that chunk is written, for chunk 1 before its fence.
 
 ## The two closed vocabularies
 
@@ -920,7 +949,7 @@ never by its file format.
 | `fixtures/protocol-session-fj02b/` | The FJ02b recorded session: twenty pairs covering plan progress through `transition` (with and without a state change, its replay, and the refusals for a stale revision, a forbidden step edge, a repeated id, an unknown id and a closed plan) and `create` of `kind: evidence` (a first record, two corrections, the replay of the first correction after the second landed, and the refusals for a taken name, a report at another hash and a correction over a changed report), with the report no operation writes under `seed/11-create/` and its replacement under `seed/20-create/`, each copied onto the workbench just before its exchange; gated by `round-trip-cli-fj02b.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_FJ02B=1`, replay procedure in its `README.md`; not indexed by the manifest |
 | `fixtures/protocol-session-initialize/` | The `initialize` recorded session: twenty-six pairs over a root of targets, not one workbench (`<workbench>/legacy`, `/file`, `/new`, `/pending`, `/crowded`, `/diverged`, `/nonfile`, `/unreadable`). It covers `inspect` and `list` on an empty directory and a v12 store (`state: legacy`); `initialize` refused on the store (`target-not-empty`, byte-identical after) and on a file (`workbench-missing`), landed on the empty directory, replayed before and after a `create` with an `inspect` after each replay, refused under its id with another request (`operation-id-reused`) and under another id (`manifest-present`); then `inspect.pending` (`{operation_id, id, blocked}`) over a committed intent alone and beside another entry, each landed by the request rebuilt from the target and `pending` alone, over a diverged and a non-file manifest (`blocked: true`, the `initialize` `recovery-blocked` with every file kept), and over an unreadable intent (`pending-initialize-unreadable`, whose current detail is the historical `26-inspect.response.json` with `26-inspect.detail-delta.json` applied); each successful `inspect` answers its historical recording with `<nn>-inspect.maintenance-delta.json` applied. `base/` is the root the session starts from; `seed/<nn>-inspect/` holds each intent, the readable ones cut in process from the request their `initialize` exchange sends, with the request digest as the placeholder `<request-digest:<nn>-initialize>` a replayer computes; gated by `round-trip-cli-initialize.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`, replay procedure and the placeholder rule in its `README.md`; not indexed by the manifest |
 | `fixtures/protocol-session-archive/` | The archive revision's recorded session: fifty-one pairs over one workbench under JSON control (`base/`: a live issue, a closed chain it names, a closed issue naming another, the closed unit of two failed moves, an open record of every other kind, and two done packages, each with its evidence group), with the host's moves, copies and one link between exchanges. It covers `reconcile` naming every binding before the sweep; request 37's refusal once per kind; `maintenance` `begin` refused `recovery-blocked` over a seeded intent, then landing it and setting the fence, the intent's request answering its stored bytes under the fence and a fresh one `maintenance-active`; after a sweep into `archive/` of a terminal issue pair, a created pair and a whole package with its evidence group, `validate`, `reconcile` and `list` without them, a reference to the archived issue `record-not-found`, an archive-only copy of a current id no second carrier, scopes into `archive/` and through a link `archived-path`, archived paths `record-not-found`, the pre-archive `create` replayed without recreating its files, `end`; three failed moves under a fence each (a control file without its narrative and a container without its evidence group, which neither `validate` nor `reconcile` sees, and a narrative without its control file, `narrative-missing`), each restored and ended; and `inspect` over a journal that is a file. `base/` is the workbench the session starts from; `seed/11-maintenance/` holds the intent, cut in process from exchange 14's request with its digest as the placeholder `<request-digest:14-transition>`, and L diverged, `seed/12-maintenance/` L restored; each fence's `since`, the clock's, is recorded as `<since:<nn>-maintenance>`; gated by `round-trip-cli-archive.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_ARCHIVE=1`, the host's actions, the placeholder rules and the replay procedure in its `README.md`; not indexed by the manifest |
-| `fixtures/protocol-session-migration/` | The FJ04 recorded migration session: fifty-four pairs covering `migration` in all five phases with the `maintenance` and read operations that bracket them, over three bases (A runs the migration and records the second-run no-op that blocks the first rollback, B rolls back across activation, C rolls back two landed chunks), each a fresh copy of `fixtures/legacy-v12/workbench/` with no `base/` of its own, and seven seeds under `seed/<nn>-<op>/` (the generated issues that make three chunks, the repairs, four proposals and chunk 2's committed intent) plus four host edits, each applied just before its exchange; each fence's `since` is recorded as `<since:<nn>-<op>>`; gated by `round-trip-cli-migration.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_MIGRATION=1`, the host's actions, the placeholder rules and the replay procedure in its `README.md`; not indexed by the manifest |
+| `fixtures/protocol-session-migration/` | The FJ04 recorded migration session: seventy pairs covering `migration` in all five phases with the `maintenance`, `claim` and read operations that bracket them, over four bases (A runs the migration, records the second-run no-op and rolls back across it with the no-op bound; B rolls back across activation; C rolls back two landed chunks; D keeps a refusal after real work, a claim and then a no-op, refused on the tree and then in the audit), each a fresh copy of `fixtures/legacy-v12/workbench/` with no `base/` of its own, and seven seeds under `seed/<nn>-<op>/` (the generated issues that make three chunks, the repairs, four proposals and chunk 2's committed intent) plus six host edits, each applied just before its exchange; each fence's `since` is recorded as `<since:<nn>-<op>>`; gated by `round-trip-cli-migration.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_MIGRATION=1`, the host's actions, the placeholder rules and the replay procedure in its `README.md`; not indexed by the manifest |
 | `fixtures/workbench/` | A minimal v12-shaped scratch workbench (`workbench.json`, `.fusion-setup`, two package pairs, one shared issue pair) the store and CLI suites copy to a temp directory before every case; not indexed by the manifest |
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |
 | `scripts/build.mjs` | esbuild, pinned exactly, `--bundle --platform=node --format=esm --target=node20`, JSON inlined, staging path then atomic rename into `dist/`; a second run writes nothing |

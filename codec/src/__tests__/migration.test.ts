@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { dispatch } from "../cli/ops.js";
 import type { Response } from "../cli/protocol.js";
-import { canonical, commitIntent, requestDigest, type Intent } from "../journal.js";
+import { canonical, commitIntent, requestDigest, writeAnswer, type Intent } from "../journal.js";
 import { CutReached } from "../kernel.js";
 import { CHUNK_WRITES, EXCLUSION_ALLOWLIST, FREEZE_MAX_BYTES, FREEZE_MAX_FILES, PLAN_SCHEMA_ID, RECEIPT_SCHEMA_ID, applyDeletions, freezeOver, inventory, survey } from "../migration.js";
 import { openWorkbench, revisionOf, serialise } from "../store.js";
@@ -1259,6 +1259,39 @@ async function activated(arrange?: (p: Proposal) => void, between?: () => Promis
   return r;
 }
 
+const ROLLBACK_JSON = `archive/migrations/${MID}/rollback.json`;
+/** The ids `rollback.json` binds under `no_ops`, or null when it carries none. */
+const noOpIds = (): string[] | null => (readJson(ROLLBACK_JSON).no_ops as Array<{ operation_id: string }> | undefined)?.map((n) => n.operation_id) ?? null;
+/** A second plan under `id`, binding the proposal the run was planned from as it stands. */
+const noOp = (id: string) => planRequest(root, { path: PROPOSAL, sha256: revisionOf(readFileSync(join(root, PROPOSAL))) }, id);
+/** Sends a second plan under each id, each answered as the verified no-op. */
+const noOps = (...ids: string[]) => async (): Promise<void> => {
+  for (const id of ids) expect(okResult(await dispatch(noOp(id))).no_op, id).toBe(true);
+};
+/**
+ * The stored no-op answer under `from`, written through the journal's
+ * `writeAnswer` under `id`: the request digest of `id`'s bare plan request
+ * unless `digest` is given, `result.operation_id` its own, then `edit` applied
+ * to the result. Unedited, it meets all four conditions. `durable: false`
+ * writes `writeAnswer`'s exact bytes without its two fsyncs, for thousands.
+ */
+function forge(from: string, id: string, edit: (result: Record<string, unknown>) => void = () => {}, digest?: string, durable = true): void {
+  const a = JSON.parse(readFileSync(opsFile(from), "utf-8")) as { op: string; response: { ok: true; result: Record<string, unknown> } };
+  const { workbench: _w, ...bare } = noOp(id);
+  const result = { ...a.response.result, operation_id: id };
+  edit(result);
+  const answer = { operation_id: id, op: a.op, request_digest: digest ?? requestDigest(bare), response: { ...a.response, result } };
+  if (!durable) return writeFileSync(opsFile(id), JSON.stringify(answer, null, 2) + "\n");
+  const wb = openWorkbench(root);
+  if (!wb.ok) throw new Error(wb.error.detail);
+  writeAnswer(wb.value, answer);
+}
+/** After the first rollback after activation: every later chunk down to 0, then the end of the rollback's fence. */
+async function rollBackRest(r: Run): Promise<void> {
+  for (let k = r.chunks - 1; k >= 0; k--) okResult(await dispatch(rollbackReq(r, k)));
+  okResult(await dispatch(end(tid(0x69), tid(0x68))));
+}
+
 describe("the exclusion allowlist (R1)", () => {
   it("the codec's constant is the schema's enum, name for name and in order, with no trailing slash", () => {
     const schema = JSON.parse(readFileSync(fileURLToPath(new URL("../../schemas/migration-plan.schema.json", import.meta.url)), "utf-8")) as { $defs: { exclusions: { items: { enum: string[] } } } };
@@ -1526,7 +1559,7 @@ describe("recovery is the same request's alone (R4, C14), and reconstruction in 
     okResult(await dispatch(applyReq(r, 1)));
   });
 
-  it("requests sent without workbench are reconstructed bare: the no-op lists only the end, and the rollback exempts its end and begin", async () => {
+  it("requests sent without workbench are reconstructed bare: the no-op lists only the end, and the rollback exempts its end and begin and proves the no-op", async () => {
     const bare = <T extends { workbench?: string }>(req: T): Omit<T, "workbench"> => {
       const out = { ...req };
       delete out.workbench;
@@ -1546,18 +1579,11 @@ describe("recovery is the same request's alone (R4, C14), and reconstruction in 
     const r = await run();
     const again = okResult(await dispatch(planRequest(root, propose(root, r.p), tid(0x64))));
     expect(again.later_operations).toEqual([{ operation_id: tid(0x62), op: "maintenance" }]);
-    // The no-op stored an answer of its own, neither baseline nor scheduled: no operation is exempt by its name.
+    // The no-op stored an answer of its own, neither baseline nor scheduled: proven by its four conditions, never by its name (Prior d0fce6c), and bound.
     okResult(await dispatch(bare(begin(tid(0x68))), opts));
-    const e = refusalOf(await dispatch(bare(rollbackReq(r, r.chunks)), opts));
-    expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
-    expect(e.detail).toContain(`${tid(0x64)} (migration)`);
-
-    rmSync(root, { recursive: true, force: true });
-    mkdirSync(root);
-    const s = await run();
-    okResult(await dispatch(bare(begin(tid(0x68))), opts));
-    expect(okResult(await dispatch(bare(rollbackReq(s, s.chunks)), opts)).activation_undone).toBe(true);
-    for (let k = s.chunks - 1; k >= 0; k--) okResult(await dispatch(bare(rollbackReq(s, k)), opts));
+    expect(okResult(await dispatch(bare(rollbackReq(r, r.chunks)), opts)).activation_undone).toBe(true);
+    expect(noOpIds()).toEqual([tid(0x64)]);
+    for (let k = r.chunks - 1; k >= 0; k--) okResult(await dispatch(bare(rollbackReq(r, k)), opts));
     okResult(await dispatch(bare(end(tid(0x69), tid(0x68))), opts));
   });
 
@@ -1570,6 +1596,227 @@ describe("recovery is the same request's alone (R4, C14), and reconstruction in 
     const e = refusalOf(await dispatch(rollbackReq(r, r.chunks)));
     expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
     expect(e.detail).toContain("found 1 verify, 0 ends and 1 begin");
+  });
+});
+
+// --- Prior d0fce6c: the verified second-run no-op ----------------------------------------
+//
+// Prior's regression list in full (`REQUESTS.md` `## FJ04 (addendum for Prior
+// d0fce6c and ruling b1)`; plan step 12c, "Tests"), each case named after the
+// guard it shows.
+
+describe("the verified second-run no-op does not by itself block rollback (Prior d0fce6c)", () => {
+  it("one verified no-op, then a complete rollback and the legacy end; three no-ops, all three bound bytewise", async () => {
+    const r = await activated(undefined, noOps(tid(0x80)));
+    expect(okResult(await dispatch(rollbackReq(r, r.chunks))).activation_undone).toBe(true);
+    const binding = readJson(ROLLBACK_JSON);
+    expect(validate(PLAN_SCHEMA_ID, binding)).toEqual({ ok: true });
+    expect(binding.no_ops).toEqual([{ operation_id: tid(0x80), request_digest: requestDigest(noOp(tid(0x80))), answer_sha256: revisionOf(readFileSync(opsFile(tid(0x80)))) }]);
+    await rollBackRest(r);
+    expect((await inspectOf()).state).toBe("legacy");
+
+    rmSync(root, { recursive: true, force: true });
+    mkdirSync(root);
+    const s = await activated(undefined, noOps(tid(0x83), tid(0x81), tid(0x82)));
+    okResult(await dispatch(rollbackReq(s, s.chunks)));
+    expect(noOpIds()).toEqual([tid(0x81), tid(0x82), tid(0x83)]);
+    await rollBackRest(s);
+  });
+
+  it("a no-op replay creates no new exception: the binding lists the no-op once", async () => {
+    let answer: Response | undefined;
+    const r = await activated(undefined, async () => {
+      answer = await dispatch(noOp(tid(0x80)));
+      expect(await dispatch(noOp(tid(0x80)))).toEqual(answer);
+    });
+    expect(await dispatch(noOp(tid(0x80)))).toEqual(answer);
+    okResult(await dispatch(rollbackReq(r, r.chunks)));
+    expect(noOpIds()).toEqual([tid(0x80)]);
+  });
+
+  it("a no-op answer whose request digest does not reconstruct stays a later operation and refuses, beside a proven one", async () => {
+    const r = await activated(undefined, noOps(tid(0x80)));
+    forge(tid(0x80), tid(0x81), undefined, revisionOf(Buffer.from("another request")));
+    const t = tree(root);
+    const e = refusalOf(await dispatch(rollbackReq(r, r.chunks)));
+    expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
+    expect(e.detail).toContain(`${tid(0x81)} (migration)`);
+    expect(tree(root)).toBe(t);
+    rmSync(opsFile(tid(0x81)));
+    okResult(await dispatch(rollbackReq(r, r.chunks)));
+  });
+
+  it("a no-op through a different proposal that names the same migration refuses", async () => {
+    const other = ".json-state/migration/proposal-other.json";
+    const r = await activated(undefined, async () => {
+      await noOps(tid(0x80))();
+      const p = readJson(PROPOSAL) as unknown as Proposal;
+      const bytes = Buffer.from(JSON.stringify({ ...p, findings: [...p.findings, { ...p.findings[0], detail: "another finding" }] }), "utf-8");
+      write(root, other, bytes);
+      expect(okResult(await dispatch(planRequest(root, { path: other, sha256: revisionOf(bytes) }, tid(0x81)))).no_op).toBe(true);
+    });
+    const e = refusalOf(await dispatch(rollbackReq(r, r.chunks)));
+    expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
+    expect(e.detail).toContain(`${tid(0x81)} (migration)`);
+  });
+
+  it("a no-op-shaped answer naming another receipt, manifest revision or migration refuses; the same answer unaltered is proven", async () => {
+    const r = await activated(undefined, noOps(tid(0x80)));
+    const variants: Array<[string, (x: Record<string, unknown>) => void]> = [
+      ["another receipt hash", (x) => void (x.receipt = { ...(x.receipt as object), sha256: revisionOf(Buffer.from("another receipt")) })],
+      ["another manifest revision", (x) => void (x.manifest_revision = revisionOf(Buffer.from("another manifest")))],
+      ["another migration", (x) => void (x.migration_id = "migration-20261002-another")],
+    ];
+    for (const [label, edit] of variants) {
+      forge(tid(0x80), tid(0x81), edit);
+      const e = refusalOf(await dispatch(rollbackReq(r, r.chunks)));
+      expect(e, label).toMatchObject({ class: "conflict", reason: "after-state-changed" });
+      expect(e.detail, label).toContain(`${tid(0x81)} (migration)`);
+    }
+    forge(tid(0x80), tid(0x81));
+    okResult(await dispatch(rollbackReq(r, r.chunks)));
+    expect(noOpIds()).toEqual([tid(0x80), tid(0x81)]);
+  });
+
+  it("after the first reverse chunk, a bound no-op answer removed, or changed by one byte, refuses the next chunk", async () => {
+    const r = await activated(undefined, noOps(tid(0x80)));
+    okResult(await dispatch(rollbackReq(r, r.chunks)));
+    const file = opsFile(tid(0x80));
+    const good = readFileSync(file);
+    rmSync(file);
+    let e = refusalOf(await dispatch(rollbackReq(r, r.chunks - 1)));
+    expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
+    expect(e.detail).toContain(`the no-op ${tid(0x80)} that ${ROLLBACK_JSON} binds is missing`);
+    // The last byte, LF, as a space: the same answer, at other bytes.
+    writeFileSync(file, Buffer.concat([good.subarray(0, -1), Buffer.from(" ")]));
+    e = refusalOf(await dispatch(rollbackReq(r, r.chunks - 1)));
+    expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
+    expect(e.detail).toContain(`the no-op ${tid(0x80)} that ${ROLLBACK_JSON} binds is changed`);
+    writeFileSync(file, good);
+    await rollBackRest(r);
+  });
+
+  it("a no-op-shaped answer stored after the binding refuses the next chunk: no exception is added once the binding is frozen", async () => {
+    const r = await activated(undefined, noOps(tid(0x80)));
+    okResult(await dispatch(rollbackReq(r, r.chunks)));
+    forge(tid(0x80), tid(0x81));
+    const e = refusalOf(await dispatch(rollbackReq(r, r.chunks - 1)));
+    expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
+    expect(e.detail).toContain(`${tid(0x81)} (migration)`);
+    rmSync(opsFile(tid(0x81)));
+    await rollBackRest(r);
+  });
+
+  it("ordinary work, then a no-op, refuses naming the work and not the no-op; with the work's bytes restored, the audit refuses and not the tree", async () => {
+    const later = "work-packages/261002-1200-later-work";
+    const create = { op: "create", workbench: root, operation_id: tid(0x72), id: uuid(0xc1, 1), kind: "package", filed_by: { actor: "user", person: "kai" }, origin: { kind: "user-request", ref: null }, scope: { container: null, store: "work-packages" }, narrative: { path: `${later}/261002-1200-later-work.md`, content: "# Later work\n" }, payload: { domain: "code" } };
+    const r = await activated(undefined, async () => {
+      okResult(await dispatch(create));
+      // The no-op's id sorts before the work's, so a no-op left unproven would be named first.
+      await noOps(tid(0x70))();
+    });
+    let e = refusalOf(await dispatch(rollbackReq(r, r.chunks)));
+    expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
+    expect(e.detail).toContain("differs from the activated tree");
+    rmSync(join(root, later), { recursive: true });
+    e = refusalOf(await dispatch(rollbackReq(r, r.chunks)));
+    expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
+    expect(e.detail).toContain(`${tid(0x72)} (create)`);
+    expect(e.detail).not.toContain(tid(0x70));
+    expect(e.detail).not.toContain("activated tree");
+  });
+
+  it("request bindings: a no-op sent without workbench and one naming the resolved root are both proven; one spelling it otherwise is not", async () => {
+    const r = await activated(undefined, async () => {
+      const { workbench: _w, ...bare } = noOp(tid(0x80));
+      expect(okResult(await dispatch(bare, { defaultWorkbench: root })).no_op).toBe(true);
+      await noOps(tid(0x81))();
+    });
+    okResult(await dispatch(rollbackReq(r, r.chunks)));
+    expect(noOpIds()).toEqual([tid(0x80), tid(0x81)]);
+    await rollBackRest(r);
+
+    rmSync(root, { recursive: true, force: true });
+    mkdirSync(root);
+    const s = await activated(undefined, async () => {
+      expect(okResult(await dispatch({ ...noOp(tid(0x82)), workbench: `${root}/.` })).no_op).toBe(true);
+    });
+    const e = refusalOf(await dispatch(rollbackReq(s, s.chunks)));
+    expect(e).toMatchObject({ class: "conflict", reason: "after-state-changed" });
+    expect(e.detail).toContain(`${tid(0x82)} (migration)`);
+  });
+
+  it("a no-op replay after the cleanup and the legacy end answers from its stored answer and writes nothing", async () => {
+    let answer: Response | undefined;
+    const r = await activated(undefined, async () => {
+      answer = await dispatch(noOp(tid(0x80)));
+    });
+    okResult(await dispatch(rollbackReq(r, r.chunks)));
+    await rollBackRest(r);
+    expect(existsSync(join(root, PLAN_PATH))).toBe(false);
+    const t = tree(root);
+    expect(await dispatch(noOp(tid(0x80)))).toEqual(answer);
+    expect(tree(root)).toBe(t);
+  });
+
+  it("a fresh no-op under the standing rollback fence, once the binding is frozen, is maintenance-active and stores nothing", async () => {
+    const r = await activated(undefined, noOps(tid(0x80)));
+    okResult(await dispatch(rollbackReq(r, r.chunks)));
+    expect(refusalOf(await dispatch(noOp(tid(0x81))))).toMatchObject({ class: "conflict", reason: "maintenance-active" });
+    expect(existsSync(opsFile(tid(0x81)))).toBe(false);
+    await rollBackRest(r);
+  });
+
+  it("a binding over the strict reader's 1 MiB is refused before any write, naming the no-op count; the tree stays byte-identical", async () => {
+    const r = await activated(undefined, noOps(tid(0x80)));
+    // About 271 bytes an entry: 4 001 no-ops bind 1 085 441 bytes.
+    const n = 4_000;
+    forge(tid(0x80), uuid(0xe1, 1));
+    const durable = readFileSync(opsFile(uuid(0xe1, 1)));
+    for (let i = 1; i <= n; i++) forge(tid(0x80), uuid(0xe1, i), undefined, undefined, false);
+    expect(readFileSync(opsFile(uuid(0xe1, 1))).equals(durable)).toBe(true);
+    const t = tree(root);
+    const e = refusalOf(await dispatch(rollbackReq(r, r.chunks)));
+    expect(e).toMatchObject({ class: "schema-invalid", reason: "too-large" });
+    expect(e.detail).toContain(`binding ${n + 1} proven no-ops`);
+    expect(tree(root)).toBe(t);
+    expect(existsSync(join(root, ".json-state/journal", r.p.operation_ids.rollback[r.chunks] as string))).toBe(false);
+    expect(fenceFile()?.operation_id).toBe(tid(0x68));
+  }, 60_000);
+});
+
+// --- decision 261003-1746: the reserved actor ----------------------------------------------
+
+describe("the reserved actor legacy-unknown on an imported record (decision 261003-1746)", () => {
+  const LEGACY_FILER = { actor: "legacy-unknown", person: "Fixture Person <fixture@example.invalid>" };
+  const DERIVED = { "/filed_by/actor": { rule: "unknown" }, "/filed_by/person": { rule: "git-first-add", evidence: "4f2a9c1" } };
+  const carry = (source: string) => (p: Proposal): void => {
+    const [, rec] = issue(p);
+    rec.control.filed_by = LEGACY_FILER;
+    const prov = rec.control.provenance as { source: string; legacy_fields: Record<string, unknown> };
+    prov.source = source;
+    prov.legacy_fields = { ...prov.legacy_fields, derived: DERIVED };
+  };
+
+  it("plan freezes an imported control carrying it with its derived entries, and show reads it back byte for byte", async () => {
+    const r = await planned(THREE, carry("imported"));
+    await applyAll(r);
+    okResult(await dispatch(verifyReq(r)));
+    const [, rec] = issue(r.p);
+    expect(readFileSync(join(root, rec.control_path), "utf-8")).toBe(serialise(rec.control));
+    const shown = okResult(await dispatch({ op: "show", workbench: root, record: { path: rec.control_path } }));
+    expect(shown.control).toEqual(rec.control);
+    expect((shown.control as { filed_by: unknown }).filed_by).toEqual(LEGACY_FILER);
+  });
+
+  it("plan refuses a proposal carrying it on a record whose provenance.source is created: proposal-invalid, on the schema rule", async () => {
+    const p = generate(root, THREE);
+    carry("created")(p);
+    const t = tree(root);
+    const e = refusalOf(await dispatch(planRequest(root, propose(root, p))));
+    expect(e).toMatchObject({ class: "schema-invalid", reason: "proposal-invalid" });
+    expect(e.detail).toContain("/provenance/source");
+    expect(tree(root)).toBe(t);
   });
 });
 

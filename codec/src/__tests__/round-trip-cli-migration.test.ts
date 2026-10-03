@@ -1,15 +1,18 @@
 // ---------------------------------------------------------------------------
 // `migration` through `bin/fusion-record`, recorded (FJ04 step 7, as amended
-// for Prior `a1fb17a`; `codec/fixtures/prior/REQUESTS.md` `## FJ04 (the
-// contract delta, amended for ab9cb59)` and `## FJ04 (addendum for a1fb17a)`).
+// for Prior `a1fb17a`, and step 12c for Prior `d0fce6c`;
+// `codec/fixtures/prior/REQUESTS.md` `## FJ04 (the contract delta, amended for
+// ab9cb59)`, `## FJ04 (addendum for a1fb17a)` and `## FJ04 (addendum for
+// Prior d0fce6c and ruling b1)`).
 //
-// Fifty-four exchanges, through the wrapper only, over three fresh temp copies
+// Seventy exchanges, through the wrapper only, over four fresh temp copies
 // of the legacy fixture `codec/fixtures/legacy-v12/workbench/` (the session's
 // base, read in place and never copied into this session's directory). The
 // host's work between exchanges is a seed copied onto the root (the setup
 // marker and thirty generated live issues, so that the cut makes three
 // chunks; the consented repairs; a note added after composition; each
-// proposal; one committed intent) or an edit `HOST` names. Every request
+// proposal; one committed intent), an edit, or a file kept and written back
+// (base D). Every request
 // leaves `workbench` out and is answered against `FUSION_WORKBENCH`, so no
 // request digest, and no answer that carries one, depends on where the root
 // lies.
@@ -46,9 +49,12 @@
 //   22 show        the terminal plan the paused package binds (record-closure)
 //   23 inspect     json-control, the manifest naming the receipt
 //   24 maintenance begin
-//   25 rollback 3  conflict/after-state-changed: 18's stored no-op answer is a
-//                  later operation (the limit `codec/README.md` states)
-//   26 maintenance end, naming 24's fence
+//   25 rollback 3  the first after activation: 18 proven a verified no-op
+//                  (Prior d0fce6c) and bound under rollback.json's no_ops
+//   26 rollback 2  the bound no-op checked, then the audit
+//   55 rollback 1                                56 rollback 0
+//   57 maintenance end on the legacy store, naming 24's fence
+//   58 plan        18 repeated after the cleanup: 18's bytes
 //
 // Base B, a full rollback across activation (seeds 01, 03, 05 and 07 first):
 //   27 plan        07's request: 07's bytes      31 verify
@@ -76,6 +82,20 @@
 //   53 maintenance end on the legacy store, naming chunk 1's fence
 //   54 inspect     legacy, maintenance null
 //
+// Base D, a refusal after real work, kept as Prior asks (seeds as B):
+//   59 plan        07's request: 07's bytes      60-62 apply 1 to 3
+//   63 verify                                    64 maintenance end, chunk 1's
+//   65 claim       the open package: ordinary work   fence
+//   66 plan        07's proposal under a fresh id: the no-op, listing 64 and
+//                  65 as its diagnostic later operations
+//   67 maintenance begin
+//   68 rollback 3  conflict/after-state-changed: the claimed file differs from
+//                  the activated tree
+//   -- the host writes the file 65's revisions name back to its kept bytes
+//   69 rollback 3  conflict/after-state-changed in the audit, naming 65 and
+//                  not 66
+//   70 maintenance end, naming 67's fence
+//
 // ## The recorded session
 //
 // Every exchange is recorded under `fixtures/protocol-session-migration/` as
@@ -86,7 +106,7 @@
 //   - `<workbench>`, the base's absolute root, in the answers only (no request
 //     names a workbench);
 //   - `<since:<nn>-<op>>` for a fence's `since`, the clock when chunk 1 (08,
-//     28, 47) or a `begin` (24, 34) lands; every later occurrence, the seeded
+//     28, 47, 60) or a `begin` (24, 34, 67) lands; every later occurrence, the seeded
 //     intent of 11 included, is the placeholder naming that exchange.
 //
 // Nothing else depends on the clock, the host or a generated id. A case
@@ -102,7 +122,7 @@ import { dirname, join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { dispatch } from "../cli/ops.js";
 import type { Response } from "../cli/protocol.js";
-import type { Intent } from "../journal.js";
+import { requestDigest, type Intent } from "../journal.js";
 import { CutReached } from "../kernel.js";
 import { EXCLUSION_ALLOWLIST, applyDeletions } from "../migration.js";
 import { revisionOf, serialise } from "../store.js";
@@ -124,6 +144,9 @@ const APPLY = [oid(40), oid(41), oid(42), oid(43)]; // three scheduled, one unas
 const VERIFY = oid(44);
 const ROLLBACK = [oid(50), oid(51), oid(52), oid(53), oid(54)]; // four scheduled, one unassigned
 const NO_OP_PLAN = oid(18);
+/** Base D's no-op, and its ordinary work: an id that sorts after every migration id, so a refusal names it only once the no-op is proven. */
+const NO_OP_D = oid(66);
+const WORK = "ab1e1065-0000-4000-8000-000000000065";
 /** The clock of the cut that commits chunk 2's intent. */
 const CUT_AT = Date.parse("2026-10-02T12:00:00.000Z");
 
@@ -387,17 +410,23 @@ const proposalPath = (name: string): string => `.json-state/migration/proposal-$
 const NAMES = [
   "01-survey", "02-plan", "03-survey", "04-plan", "05-plan", "06-survey", "07-plan", "08-apply", "09-inspect", "10-apply",
   "11-apply", "12-apply", "13-apply", "14-verify", "15-apply", "16-verify", "17-plan", "18-plan", "19-maintenance", "20-list",
-  "21-show", "22-show", "23-inspect", "24-maintenance", "25-rollback", "26-maintenance",
+  "21-show", "22-show", "23-inspect", "24-maintenance", "25-rollback", "26-rollback", "55-rollback", "56-rollback", "57-maintenance", "58-plan",
   "27-plan", "28-apply", "29-apply", "30-apply", "31-verify", "32-plan", "33-maintenance", "34-maintenance", "35-rollback", "36-rollback",
   "37-rollback", "38-rollback", "39-rollback", "40-rollback", "41-maintenance", "42-maintenance", "43-apply", "44-verify", "45-inspect",
   "46-plan", "47-apply", "48-apply", "49-rollback", "50-rollback", "51-rollback", "52-rollback", "53-maintenance", "54-inspect",
+  "59-plan", "60-apply", "61-apply", "62-apply", "63-verify", "64-maintenance", "65-claim", "66-plan", "67-maintenance", "68-rollback",
+  "69-rollback", "70-maintenance",
 ] as const;
 type Name = (typeof NAMES)[number];
-type Base = "a" | "b" | "c";
-const BASES: readonly Base[] = ["a", "b", "c"];
+type Base = "a" | "b" | "c" | "d";
+const BASES: readonly Base[] = ["a", "b", "c", "d"];
 
-/** The host's work immediately before an exchange: a committed seed copied onto the root, a text appended to a file, or a file cut back by bytes. */
-type HostAction = { seed: Name } | { append: [string, string] } | { chop: [string, number] };
+/**
+ * The host's work immediately before an exchange: a committed seed copied
+ * onto the root, a text appended to a file, a file cut back by bytes, or a
+ * file's bytes kept and later written back.
+ */
+type HostAction = { seed: Name } | { append: [string, string] } | { chop: [string, number] } | { keep: string } | { restore: string };
 
 /** The seeds, each produced in base A by the exchange it precedes. */
 const SEEDED: readonly Name[] = ["01-survey", "02-plan", "03-survey", "04-plan", "05-plan", "07-plan", "11-apply"];
@@ -406,8 +435,11 @@ const ROLLBACK_FILE = `archive/migrations/${MID}/rollback.json`;
 /** A control file chunk 2 writes (a case below holds it), where the host writes in base C. */
 const C_WRITE = `${PATHS.R4.slice(0, -".md".length)}.record.json`;
 
+/** The package base D claims, an open one, and its control: the file the claim writes and the host writes back. */
+const CLAIMED = `${dirname(PATHS.P1)}/package.json`;
+
 /** The fence setters: chunk 1's first apply and each begin. Their `since` is recorded as `<since:<name>>`. */
-const SETTERS: readonly Name[] = ["08-apply", "24-maintenance", "28-apply", "34-maintenance", "47-apply"];
+const SETTERS: readonly Name[] = ["08-apply", "24-maintenance", "28-apply", "34-maintenance", "47-apply", "60-apply", "67-maintenance"];
 const sincePlaceholder = (name: Name): string => `<since:${name}>`;
 const sinceOf = (name: Name, response: Response): string => {
   if (!response.ok) throw new Error(`${name} did not land`);
@@ -425,6 +457,15 @@ const apply = (n: number): (() => object) => () => ({ chunk: n, op: "migration",
 const verify = (): object => ({ op: "migration", operation_id: VERIFY, phase: "verify", plan: planRef() });
 const rollback = (k: number): (() => object) => () => ({ chunk: k, op: "migration", operation_id: ROLLBACK[k], phase: "rollback", plan: planRef() });
 const begin = (n: number): object => ({ action: "begin", op: "maintenance", operation_id: mid(n) });
+/** Base D's claim of the open package, at the revision its control has when the claim is sent. */
+const claim = (): object => ({
+  op: "claim",
+  operation_id: WORK,
+  record: { path: CLAIMED },
+  expected_revision: revisionOf(readFileSync(join(run.root.d, CLAIMED))),
+  actor: by("user"),
+  claim: { checkout_id: "0f1e2d3c", person: FP, claimed_at: "2026-10-02T13:00:00+02:00" },
+});
 const end = (n: number, fence: string): object => ({ action: "end", fence, op: "maintenance", operation_id: mid(n) });
 
 /** Each proposal's bytes, by the exchange whose seed holds it. */
@@ -465,7 +506,11 @@ const STEPS: readonly Step[] = [
   { name: "23-inspect", base: "a", before: [], request: { op: "inspect" } },
   { name: "24-maintenance", base: "a", before: [], request: begin(24) },
   { name: "25-rollback", base: "a", before: [], request: rollback(3) },
-  { name: "26-maintenance", base: "a", before: [], request: end(26, mid(24)) },
+  { name: "26-rollback", base: "a", before: [], request: rollback(2) },
+  { name: "55-rollback", base: "a", before: [], request: rollback(1) },
+  { name: "56-rollback", base: "a", before: [], request: rollback(0) },
+  { name: "57-maintenance", base: "a", before: [], request: end(57, mid(24)) },
+  { name: "58-plan", base: "a", before: [], request: planReq(NO_OP_PLAN, "07-plan", shaOf("07-plan")) },
 
   { name: "27-plan", base: "b", before: PREPARED, request: planReq(oid(7), "07-plan", shaOf("07-plan")) },
   { name: "28-apply", base: "b", before: [], request: apply(1) },
@@ -496,6 +541,19 @@ const STEPS: readonly Step[] = [
   { name: "52-rollback", base: "c", before: [], request: rollback(0) },
   { name: "53-maintenance", base: "c", before: [], request: end(53, APPLY[0] as string) },
   { name: "54-inspect", base: "c", before: [], request: { op: "inspect" } },
+
+  { name: "59-plan", base: "d", before: PREPARED, request: planReq(oid(7), "07-plan", shaOf("07-plan")) },
+  { name: "60-apply", base: "d", before: [], request: apply(1) },
+  { name: "61-apply", base: "d", before: [], request: apply(2) },
+  { name: "62-apply", base: "d", before: [], request: apply(3) },
+  { name: "63-verify", base: "d", before: [], request: verify },
+  { name: "64-maintenance", base: "d", before: [], request: end(64, APPLY[0] as string) },
+  { name: "65-claim", base: "d", before: [{ keep: CLAIMED }], request: claim },
+  { name: "66-plan", base: "d", before: [], request: planReq(NO_OP_D, "07-plan", shaOf("07-plan")) },
+  { name: "67-maintenance", base: "d", before: [], request: begin(67) },
+  { name: "68-rollback", base: "d", before: [], request: rollback(3) },
+  { name: "69-rollback", base: "d", before: [{ restore: CLAIMED }], request: rollback(3) },
+  { name: "70-maintenance", base: "d", before: [], request: end(70, mid(67)) },
 ];
 
 /** The exchanges refused, each with the one reason it is recorded for. */
@@ -505,9 +563,10 @@ const REFUSED: ReadonlyMap<Name, [string, string]> = new Map<Name, [string, stri
   ["05-plan", ["conflict", "source-changed"]],
   ["10-apply", ["migration-incomplete", "chunk-out-of-order"]],
   ["11-apply", ["conflict", "intent-pending"]],
-  ["25-rollback", ["conflict", "after-state-changed"]],
   ["36-rollback", ["conflict", "plan-file-changed"]],
   ["49-rollback", ["conflict", "after-state-changed"]],
+  ["68-rollback", ["conflict", "after-state-changed"]],
+  ["69-rollback", ["conflict", "after-state-changed"]],
 ]);
 
 /** Each repeated request and the exchange whose bytes it answers. */
@@ -522,6 +581,8 @@ const REPEATS: ReadonlyArray<[Name, Name]> = [
   ["43-apply", "28-apply"],
   ["44-verify", "31-verify"],
   ["46-plan", "07-plan"],
+  ["58-plan", "18-plan"],
+  ["59-plan", "07-plan"],
 ];
 
 // --- the session machinery ---------------------------------------------------------------
@@ -537,6 +598,8 @@ interface Run {
   root: Record<Base, string>;
   /** Each setter's since in this run. */
   since: Map<Name, string>;
+  /** The bytes a `keep` action took, by path, for its `restore`. */
+  kept: Map<string, Buffer>;
 }
 
 const placeholdersOf = (run: Run): Array<[string, string]> => [...run.since].map(([n, v]) => [v, sincePlaceholder(n)]);
@@ -555,7 +618,7 @@ function newRun(tmp: string, label: string): Run {
     // The fixture holds one link; it is copied as a link with its own text.
     cpSync(LEGACY, root[base], { recursive: true, verbatimSymlinks: true });
   }
-  return { project, root, since: new Map() };
+  return { project, root, since: new Map(), kept: new Map() };
 }
 
 /** Copies the committed seed `name` onto the root, each since placeholder replaced by this run's value. */
@@ -575,6 +638,8 @@ function host(run: Run, base: Base, actions: readonly HostAction[], produce?: (n
       produce?.(a.seed);
       copySeed(run, base, a.seed);
     } else if ("append" in a) appendFileSync(join(run.root[base], a.append[0]), a.append[1]);
+    else if ("keep" in a) run.kept.set(a.keep, readFileSync(join(run.root[base], a.keep)));
+    else if ("restore" in a) writeFileSync(join(run.root[base], a.restore), run.kept.get(a.restore) as Buffer);
     else {
       const file = join(run.root[base], a.chop[0]);
       truncateSync(file, statSync(file).size - a.chop[1]);
@@ -601,6 +666,8 @@ const bareEnv = (): NodeJS.ProcessEnv => {
 
 let tmp: string;
 let run: Run;
+/** Base A's rollback.json as 25 wrote it; 56 removes it. */
+let boundA: Buffer;
 const exchanges: Exchange[] = [];
 const byName = (name: Name): Exchange => {
   const e = exchanges.find((x) => x.name === name);
@@ -762,6 +829,7 @@ beforeAll(async () => {
     const request = (typeof step.request === "function" ? step.request() : step.request) as Record<string, unknown>;
     send(step.name, step.base, request);
     if (step.name === "07-plan") PLAN = resultOf("07-plan").plan as { path: string; sha256: string };
+    if (step.name === "25-rollback") boundA = readFileSync(join(run.root.a, ROLLBACK_FILE));
   }
   if (UPDATE) {
     for (const e of exchanges) {
@@ -784,7 +852,7 @@ const refusalOf = (name: Name): { class: string; reason: string; detail: string 
   return (r as { error: { class: string; reason: string; detail: string } }).error;
 };
 
-describe("the fifty-four migration exchanges through bin/fusion-record", () => {
+describe("the seventy migration exchanges through bin/fusion-record", () => {
   it("every exchange was answered: exit 0, one line on stdout, nothing on stderr", () => {
     expect(exchanges.map((e) => e.name)).toEqual([...NAMES]);
     for (const e of exchanges) {
@@ -799,7 +867,7 @@ describe("the fifty-four migration exchanges through bin/fusion-record", () => {
     for (const e of exchanges) expect(Object.keys(e.request), e.name).not.toContain("workbench");
   });
 
-  it("the refused exchanges are exactly the eight named, each with its reason; every other answer is ok", () => {
+  it("the refused exchanges are exactly the nine named, each with its reason; every other answer is ok", () => {
     for (const name of NAMES) {
       const r = parse(byName(name).stdout);
       const want = REFUSED.get(name);
@@ -873,8 +941,28 @@ describe("the fifty-four migration exchanges through bin/fusion-record", () => {
     expect(resultOf("22-show")).toMatchObject({ kind: "plan", control: { id: ID.C1, control: { state: "closed" }, provenance: { source: "legacy-terminal" } } });
   });
 
-  it("25: after 18's no-op answer was stored, the first rollback after activation refuses it as a later operation (the step-6 limit)", () => {
-    expect(refusalOf("25-rollback").detail).toContain(NO_OP_PLAN);
+  it("25 to 58: after 18's verified no-op the first rollback after activation is admitted and binds 18 under no_ops; the rest runs to the legacy end, and 18 replays after the cleanup", () => {
+    expect(resultOf("25-rollback")).toMatchObject({ chunk: 3, activation_undone: true, binding: { path: ROLLBACK_FILE, sha256: revisionOf(boundA) } });
+    const binding = JSON.parse(boundA.toString("utf-8")) as { no_ops: Array<{ operation_id: string; request_digest: string; answer_sha256: string }> };
+    expect(binding.no_ops.map((n) => n.operation_id)).toEqual([NO_OP_PLAN]);
+    expect(binding.no_ops[0]?.request_digest).toBe(requestDigest(byName("18-plan").request));
+    expect(resultOf("26-rollback")).toMatchObject({ chunk: 2, activation_undone: false });
+    expect((resultOf("56-rollback").progress as Array<{ chunk: number }>).map((p) => p.chunk)).toEqual([3, 2, 1, 0]);
+    expect(resultOf("56-rollback").removed).toContain(ROLLBACK_FILE);
+    expect(resultOf("57-maintenance")).toMatchObject({ operation_id: mid(57), action: "end" });
+  });
+
+  it("59 to 70, base D: ordinary work then a no-op; the rollback refuses on the activated tree, then, the claimed bytes written back, in the audit naming the work and not the no-op", () => {
+    const claimed = parse(byName("65-claim").stdout) as { ok: true; revisions: Record<string, string> };
+    expect(Object.keys(claimed.revisions), "the host writes back every file the claim names").toEqual([CLAIMED]);
+    expect(resultOf("66-plan")).toMatchObject({ operation_id: NO_OP_D, no_op: true, later_operations: [{ operation_id: mid(64), op: "maintenance" }, { operation_id: WORK, op: "claim" }] });
+    expect(refusalOf("68-rollback").detail).toContain("differs from the activated tree");
+    expect(refusalOf("68-rollback").detail).toContain(`${CLAIMED} is a file`);
+    const audited = refusalOf("69-rollback").detail;
+    expect(audited).toContain(`${WORK} (claim)`);
+    expect(audited).not.toContain(NO_OP_D);
+    expect(audited).not.toContain("activated tree");
+    expect(resultOf("70-maintenance")).toMatchObject({ operation_id: mid(70), action: "end" });
   });
 
   it("35 to 40: the first rollback after activation binds rollback.json, an altered copy is refused, chunk 0 removes it, and 35's replay needs it not", () => {
@@ -916,7 +1004,7 @@ describe(`the recorded session under fixtures/protocol-session-migration/ (${UPD
     });
   }
 
-  it("no recorded byte carries a temp path, and the since placeholders are exactly the five setters'", () => {
+  it("no recorded byte carries a temp path, and the since placeholders are exactly the seven setters'", () => {
     const seen = new Set<string>();
     for (const name of NAMES) {
       const text = readFileSync(join(SESSION, `${name}.request.json`), "utf-8") + readFileSync(join(SESSION, `${name}.response.json`), "utf-8");
@@ -925,7 +1013,7 @@ describe(`the recorded session under fixtures/protocol-session-migration/ (${UPD
       expect(readFileSync(join(SESSION, `${name}.request.json`), "utf-8"), name).not.toContain(PLACEHOLDER);
     }
     expect([...seen].sort()).toEqual(SETTERS.map(sincePlaceholder).sort());
-    expect(new Set(run.since.values()).size, "five distinct timestamps of the run").toBe(5);
+    expect(new Set(run.since.values()).size, "seven distinct timestamps of the run").toBe(7);
     for (const v of run.since.values()) expect(Number.isNaN(Date.parse(v)), v).toBe(false);
   });
 
@@ -939,7 +1027,7 @@ describe(`the recorded session under fixtures/protocol-session-migration/ (${UPD
     });
   }
 
-  it("the recorded set is exactly the fifty-four pairs, a README and seed/", () => {
+  it("the recorded set is exactly the seventy pairs, a README and seed/", () => {
     expect(readdirSync(SESSION).sort()).toEqual(["README.md", "seed", ...NAMES.flatMap((n) => [`${n}.request.json`, `${n}.response.json`])].sort());
     expect(readdirSync(SEED).sort()).toEqual([...SEEDED].sort());
   });
@@ -961,7 +1049,7 @@ describe(`the recorded session under fixtures/protocol-session-migration/ (${UPD
 
 /** The paths chunk `n` of the frozen plan writes, from 07's recorded parts and the seeded proposal's cut. */
 function cutWrites(n: number): string[] {
-  // Base A's chunk files stand after activation: read the frozen chunk there.
-  const file = join(run.root.a, `archive/migrations/${MID}/chunks/${n}.json`);
+  // Base D's chunk files stand, its rollback refused: read the frozen chunk there.
+  const file = join(run.root.d, `archive/migrations/${MID}/chunks/${n}.json`);
   return (JSON.parse(readFileSync(file, "utf-8")) as { writes: Array<{ path: string }> }).writes.map((w) => w.path);
 }

@@ -10245,6 +10245,7 @@ function migrationVerify(req, hooks) {
     };
   };
 }
+var NO_OP_KEYS = "later_operations,manifest_revision,migration_id,no_op,operation_id,receipt";
 var resultOf = (a) => a.response.ok && isObject3(a.response.result) ? a.response.result : {};
 var exemptOf = (s) => ({ operation_id: s.entry.operation_id, op: s.entry.op, request_digest: s.entry.request_digest });
 function boundBinding(wb, plan) {
@@ -10263,6 +10264,10 @@ function readBinding(wb, plan, ref) {
   if (!read2.ok) return changed(`${ref.path}: ${read2.why}`);
   const v = read2.value;
   if (v.part !== "rollback-binding" || v.migration_id !== plan.index.migration_id || canonical(v.plan) !== canonical(plan.ref)) return changed(`${ref.path} is not the rollback binding of ${plan.index.migration_id} at ${plan.ref.sha256}`);
+  const ids = (v.no_ops ?? []).map((n) => n.operation_id);
+  for (let i = 1; i < ids.length; i++) {
+    if (bytewise(ids[i - 1], ids[i]) >= 0) return changed(`${ref.path} lists the no-op ${ids[i]} out of bytewise order or twice`);
+  }
   return { ok: true, value: v };
 }
 function exemptSet(wb, plan, standing, now) {
@@ -10278,13 +10283,44 @@ function exemptSet(wb, plan, standing, now) {
   }
   return { ok: true, value: [verifies[0], ends[0], begins[0]].map((s) => exemptOf(s)).sort((a, b) => bytewise(a.operation_id, b.operation_id)) };
 }
-function audit(wb, plan, baseline, exempt, now) {
+function provenNoOps(wb, plan, receipt, manifestRevision, later, exempt) {
+  const exemptIds = new Set(exempt.map((e) => e.operation_id));
+  const scheduled = scheduledRequests(plan.index, plan.ref);
+  const out = [];
+  for (const s of later) {
+    const id = s.entry.operation_id;
+    const a = s.answer;
+    if (exemptIds.has(id) || a === null) continue;
+    if (a.op !== "migration" || !a.response.ok || "revisions" in a.response) continue;
+    const r = a.response.result;
+    if (!isObject3(r) || Object.keys(r).sort().join(",") !== NO_OP_KEYS || r.no_op !== true || r.operation_id !== id || r.migration_id !== plan.index.migration_id) continue;
+    if (scheduled.has(id) || !reconstructs(a.request_digest, { op: "migration", operation_id: id, phase: "plan", proposal: plan.index.proposal }, wb.root)) continue;
+    const rc = r.receipt;
+    if (!isObject3(rc) || Object.keys(rc).sort().join(",") !== "path,sha256" || rc.path !== receipt.path || rc.sha256 !== receipt.sha256 || r.manifest_revision !== manifestRevision) continue;
+    out.push({ operation_id: id, request_digest: s.entry.request_digest, answer_sha256: s.entry.answer_sha256 });
+  }
+  return out.sort((x, y) => bytewise(x.operation_id, y.operation_id));
+}
+function boundNoOpsHold(noOps, now, path) {
+  const byId = new Map(now.map((s) => [s.entry.operation_id, s]));
+  for (const n of noOps) {
+    const s = byId.get(n.operation_id);
+    if (s === void 0 || s.answer === null || s.entry.op !== "migration" || s.entry.request_digest !== n.request_digest || s.entry.answer_sha256 !== n.answer_sha256) {
+      return afterStateChanged(`the no-op ${n.operation_id} that ${path} binds is ${s === void 0 ? "missing" : `changed: it is ${s.entry.op} at ${s.entry.request_digest}, answer ${s.entry.answer_sha256}`}`);
+    }
+  }
+  return { ok: true, value: void 0 };
+}
+function audit(plan, later, exempt, noOps) {
   const bound = new Map(exempt.map((e) => [e.operation_id, e]));
-  for (const s of laterOperations(wb, plan, baseline, now)) {
+  const proven = new Map(noOps.map((n) => [n.operation_id, n]));
+  for (const s of later) {
     const e = bound.get(s.entry.operation_id);
     if (e !== void 0 && s.answer !== null && e.op === s.entry.op && e.request_digest === s.entry.request_digest) continue;
+    const n = proven.get(s.entry.operation_id);
+    if (n !== void 0 && s.answer !== null && s.entry.op === "migration" && n.request_digest === s.entry.request_digest && n.answer_sha256 === s.entry.answer_sha256) continue;
     const what = s.answer !== null && s.entry.op === "maintenance" ? ` ${String(resultOf(s.answer).action)}` : "";
-    return afterStateChanged(`the stored answer ${s.entry.operation_id} (${s.entry.op}${what}) is neither in the baseline ${plan.ref.path} froze, nor a validated answer of its schedule, nor one of the exempt operations; a rollback after ordinary work is refused`);
+    return afterStateChanged(`the stored answer ${s.entry.operation_id} (${s.entry.op}${what}) is neither in the baseline ${plan.ref.path} froze, nor a validated answer of its schedule, nor one of the exempt operations, nor a proven no-op of this migration; a rollback after ordinary work is refused`);
   }
   return { ok: true, value: void 0 };
 }
@@ -10317,7 +10353,7 @@ function receiptHolds(wb, plan, manifest) {
   const manifestBytes = regularBytes(wb, WORKBENCH_MANIFEST);
   const revision = manifestBytes === null ? null : sha(manifestBytes);
   if (r.manifest_revision !== revision) return unverified(`it names the manifest at ${r.manifest_revision}, which is ${String(revision)}`);
-  return { ok: true, value: { ref: { path, sha256: sha(bytes) }, after: r.after_inventory_sha256 } };
+  return { ok: true, value: { ref: { path, sha256: sha(bytes) }, after: r.after_inventory_sha256, revision: r.manifest_revision } };
 }
 function chunkAfterState(wb, chunk) {
   for (const w of chunk.writes) {
@@ -10389,7 +10425,7 @@ function migrationRollback(req) {
     if (k !== highest) return outOfOrder(k === 0 ? `rollback chunk 0 follows the rollback of every chunk; the chunks landed are ${chunkList(landed.value)}` : `rollback runs from the highest landed chunk down; the chunks landed are ${chunkList(landed.value)}, so chunk ${k} is not next`);
     if (activated && k !== plan.chunks) return outOfOrder(`after activation every chunk of ${plan.index.migration_id} is landed; rollback starts at chunk ${plan.chunks}`);
     let receipt = null;
-    let exempt = [];
+    let bindingBytes = null;
     if (activated) {
       const held2 = receiptHolds(wb, plan, manifest);
       if (!held2.ok) return held2;
@@ -10407,11 +10443,24 @@ function migrationRollback(req) {
       if (!base.ok) return base;
       const derived = exemptSet(wb, plan, standing, answers);
       if (!derived.ok) return derived;
-      exempt = derived.value;
-      const audited = audit(wb, plan, baseline.value, exempt, answers);
+      const exempt = derived.value;
+      const later = laterOperations(wb, plan, baseline.value, answers);
+      const noOps = provenNoOps(wb, plan, held2.value.ref, held2.value.revision, later, exempt);
+      const audited = audit(plan, later, exempt, noOps);
       if (!audited.ok) return audited;
+      const value = { schema: PLAN_SCHEMA, part: "rollback-binding", migration_id: plan.index.migration_id, plan: plan.ref, receipt: held2.value.ref, fence: standing.operation_id, exempt, ...noOps.length > 0 ? { no_ops: noOps } : {} };
+      const bytes = Buffer.from(serialise(value), "utf-8");
+      if (bytes.byteLength > MAX_RECORD_BYTES) {
+        return refusal("schema-invalid", "too-large", `${rollbackPath(plan.index.migration_id)} would be ${bytes.byteLength} bytes, binding ${plural(noOps.length, "proven no-op")}; the strict reader's cap is ${MAX_RECORD_BYTES} bytes (1 MiB), so it could not be read back, and nothing is written`);
+      }
+      const v = ctx.validateResult(PLAN_SCHEMA_ID, value, "the rollback binding this rollback would write is not valid");
+      if (!v.ok) return v;
+      bindingBytes = bytes;
     } else if (binding !== null) {
-      const audited = audit(wb, plan, baseline.value, binding.value.exempt, storedNow(wb));
+      const answers = storedNow(wb);
+      const bound2 = boundNoOpsHold(binding.value.no_ops ?? [], answers, binding.ref.path);
+      if (!bound2.ok) return bound2;
+      const audited = audit(plan, laterOperations(wb, plan, baseline.value, answers), binding.value.exempt, binding.value.no_ops ?? []);
       if (!audited.ok) return audited;
     }
     const originals = chunks.value.slice(0, k);
@@ -10430,10 +10479,7 @@ function migrationRollback(req) {
     const restored = [];
     let bound = null;
     if (activated) {
-      const value = { schema: PLAN_SCHEMA, part: "rollback-binding", migration_id: plan.index.migration_id, plan: plan.ref, receipt, fence: standing.operation_id, exempt };
-      const v = ctx.validateResult(PLAN_SCHEMA_ID, value, "the rollback binding this rollback would write is not valid");
-      if (!v.ok) return v;
-      const bytes = Buffer.from(serialise(value), "utf-8");
+      const bytes = bindingBytes;
       bound = { path: rollbackPath(plan.index.migration_id), sha256: sha(bytes) };
       writes.push({ path: bound.path, bytes });
       removals.push({ path: WORKBENCH_MANIFEST, before: sha(regularBytes(wb, WORKBENCH_MANIFEST)) }, { path: receipt.path, before: receipt.sha256 });
@@ -13337,13 +13383,17 @@ var common_schema_default = {
     },
     actor: {
       type: "object",
-      description: "Who acted, in the shape of the conventions' **Filed by:** line: actor is 'user', an agent name or a host name; person is the PERSON= identity or null when unknown. Attribution, never authorisation.",
+      description: `Who acted, in the shape of the conventions' **Filed by:** line: actor is 'user', an agent name or a host name; person is the PERSON= identity or null when unknown. Attribution, never authorisation. The token legacy-unknown is reserved (decision 261003-1746, option 1): it marks a filer a legacy workbench never recorded, is admitted as filed_by.actor only on a record or package whose provenance.source is imported or legacy-terminal, and is refused in every request that carries an actor, so no live write produces it. It is always paired with provenance.legacy_fields.derived["/filed_by/actor"] = {rule: unknown}, and is a different field from the package's origin.kind legacy-unknown.`,
       additionalProperties: false,
       required: ["actor", "person"],
       properties: {
         actor: { $ref: "#/$defs/token" },
         person: { type: ["string", "null"], minLength: 1 }
       }
+    },
+    legacy_unknown_actor: {
+      description: "The reserved actor token for a filer a legacy workbench never recorded (decision 261003-1746, option 1). The record and package schemas admit it as filed_by.actor only under provenance.source imported or legacy-terminal; the protocol schema refuses it in every request that carries an actor.",
+      const: "legacy-unknown"
     },
     execution_policy: {
       type: "string",
@@ -13483,7 +13533,7 @@ var migration_plan_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.migration-plan/v1",
   title: "fusion.migration-plan/v1",
-  description: "The frozen plan of a migration (spec section 8; FJ04 contract delta, amended for Prior ab9cb59 and a1fb17a), written by the migration's plan phase under archive/migrations/<migration id>/ in one bounded intent, the index last, and never edited afterwards. It is split into seven plan shapes, told apart by part, each file under the strict reader's 1 MiB cap. The index, plan.json, holds only the identity, the proposal it froze by path and sha256, the digest of the source inventory the proposal was composed from, the frozen root exclusions, the operation schedule and {part, n, path, sha256} of every other plan file; a request names the index by {path, sha256}. The other parts may each span several numbered files, in the order the index lists them: records (parts/records-<n>.json, the UUID map with each record's kind, cut row, control and narrative path, and on file 1 the cut's counts), inventory (parts/inventory-<n>.json, the source inventory the codec took under plan's lock, in survey's four entry forms), findings (parts/findings-<n>.json, the reported findings), repairs (parts/repairs-<n>.json, the consented repair log), answers (parts/answers-<n>.json, the operation baseline: every answer stored before plan, by hash) and chunk (chunks/<n>.json, at most 50 writes, each bound by the hash of the target before and after it). An eighth shape, rollback-binding, is no plan part and is not named by the index: it is rollback.json, written by the first rollback after activation in its own intent and bound by that rollback's stored answer (binding: {path, sha256}); rollback chunk 0 removes it. A write is an original copied to archive/migrations/<migration id>/originals/<workbench path>, a new control file carrying its target control, or a live narrative rewritten as byte deletions; apply never removes a file, and the removal writes a rollback journals (after null) are derived from these rows, not stored in them. Rules JSON Schema cannot check: every part hashes as the index names it, no part on disk is unnamed by the index, and the parts stand in the index's order (conflict/plan-file-changed); a chunk part's writes equals the length of that file's writes, and a part file's n and migration_id equal its index entry's; paths under archive/migrations/ name this migration's id; a request's operation_id is the one the schedule names for its phase and chunk, never an unassigned one (conflict/operation-id-unscheduled); the schedule holds one apply id per chunk in order from 1 and one rollback id per chunk from 0 to the chunk count, and no UUID occurs twice across schedule, records and workbench_id; a record UUID occurs once across the records parts and its control carries the id it is keyed by (schema-invalid/duplicate-id); every source and after hash matches disk at apply (conflict/source-changed); a pair's original, control file and rewrite share one chunk; deletion ranges ascend, do not overlap and lie inside the source bytes; an original's after_sha256 equals the sha256 of the file it copies; inventory entries are sorted bytewise by path across the inventory parts; the frozen inventory parts digest to the index's source_inventory_sha256 (conflict/plan-file-changed); answers entries are unique by operation_id and sorted bytewise by it across the answers parts; a rollback-binding's file hashes as the first post-activation rollback's binding names it (conflict/plan-file-changed), its fence is the standing rollback fence and its exempt entries are this migration's verify, the end naming chunk 1's fence and the begin of the standing fence, each found by reconstructing its request.",
+  description: "The frozen plan of a migration (spec section 8; FJ04 contract delta, amended for Prior ab9cb59 and a1fb17a), written by the migration's plan phase under archive/migrations/<migration id>/ in one bounded intent, the index last, and never edited afterwards. It is split into seven plan shapes, told apart by part, each file under the strict reader's 1 MiB cap. The index, plan.json, holds only the identity, the proposal it froze by path and sha256, the digest of the source inventory the proposal was composed from, the frozen root exclusions, the operation schedule and {part, n, path, sha256} of every other plan file; a request names the index by {path, sha256}. The other parts may each span several numbered files, in the order the index lists them: records (parts/records-<n>.json, the UUID map with each record's kind, cut row, control and narrative path, and on file 1 the cut's counts), inventory (parts/inventory-<n>.json, the source inventory the codec took under plan's lock, in survey's four entry forms), findings (parts/findings-<n>.json, the reported findings), repairs (parts/repairs-<n>.json, the consented repair log), answers (parts/answers-<n>.json, the operation baseline: every answer stored before plan, by hash) and chunk (chunks/<n>.json, at most 50 writes, each bound by the hash of the target before and after it). An eighth shape, rollback-binding, is no plan part and is not named by the index: it is rollback.json, written by the first rollback after activation in its own intent and bound by that rollback's stored answer (binding: {path, sha256}); rollback chunk 0 removes it. A write is an original copied to archive/migrations/<migration id>/originals/<workbench path>, a new control file carrying its target control, or a live narrative rewritten as byte deletions; apply never removes a file, and the removal writes a rollback journals (after null) are derived from these rows, not stored in them. Rules JSON Schema cannot check: every part hashes as the index names it, no part on disk is unnamed by the index, and the parts stand in the index's order (conflict/plan-file-changed); a chunk part's writes equals the length of that file's writes, and a part file's n and migration_id equal its index entry's; paths under archive/migrations/ name this migration's id; a request's operation_id is the one the schedule names for its phase and chunk, never an unassigned one (conflict/operation-id-unscheduled); the schedule holds one apply id per chunk in order from 1 and one rollback id per chunk from 0 to the chunk count, and no UUID occurs twice across schedule, records and workbench_id; a record UUID occurs once across the records parts and its control carries the id it is keyed by (schema-invalid/duplicate-id); every source and after hash matches disk at apply (conflict/source-changed); a pair's original, control file and rewrite share one chunk; deletion ranges ascend, do not overlap and lie inside the source bytes; an original's after_sha256 equals the sha256 of the file it copies; inventory entries are sorted bytewise by path across the inventory parts; the frozen inventory parts digest to the index's source_inventory_sha256 (conflict/plan-file-changed); answers entries are unique by operation_id and sorted bytewise by it across the answers parts; a rollback-binding's file hashes as the first post-activation rollback's binding names it (conflict/plan-file-changed), its fence is the standing rollback fence, its exempt entries are this migration's verify, the end naming chunk 1's fence and the begin of the standing fence, each found by reconstructing its request, and its no_ops, written only when non-empty, are the later operations proven verified second-run no-ops of this migration by the four recognition conditions of the FJ04 addendum for Prior d0fce6c, unique and ordered bytewise by operation_id, each still stored with its bound request digest and answer hash at every later fresh chunk (conflict/after-state-changed); the serialised binding stays under the strict reader's cap (schema-invalid/too-large).",
   type: "object",
   required: ["part", "schema"],
   properties: {
@@ -13571,6 +13621,17 @@ var migration_plan_schema_default = {
         operation_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
         op: { type: "string", enum: ["maintenance", "migration"] },
         request_digest: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
+      }
+    },
+    no_op_entry: {
+      type: "object",
+      description: "One stored answer the first rollback after activation proved to be a verified second-run no-op of this migration (FJ04 addendum for Prior d0fce6c, ### The verified no-op, its four recognition conditions): a migration plan answer under an id the schedule does not assign, whose request digest reconstructs over the index's exact proposal and whose result names this migration and the checked receipt. It is bound by its operation id, the digest of its request and the sha256 of the stored answer's bytes; a later fresh rollback chunk refuses when any of the three no longer matches the store (conflict/after-state-changed).",
+      additionalProperties: false,
+      required: ["answer_sha256", "operation_id", "request_digest"],
+      properties: {
+        operation_id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
+        request_digest: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        answer_sha256: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
       }
     },
     finding: {
@@ -13839,7 +13900,7 @@ var migration_plan_schema_default = {
     },
     rollback_binding: {
       type: "object",
-      description: "archive/migrations/<migration id>/rollback.json (FJ04 addendum for a1fb17a, request 52): written by the first rollback after activation in its own intent, whose answer adds binding: {path, sha256} over these exact bytes. It binds the frozen index and the receipt by {path, sha256}, names the standing rollback fence, and lists exactly three exempt stored answers by {operation_id, op, request_digest}. A later fresh rollback chunk checks the file against the bound hash before trusting it; a replay never reads it; rollback chunk 0 removes it.",
+      description: "archive/migrations/<migration id>/rollback.json (FJ04 addendum for a1fb17a, request 52): written by the first rollback after activation in its own intent, whose answer adds binding: {path, sha256} over these exact bytes. It binds the frozen index and the receipt by {path, sha256}, names the standing rollback fence, and lists the three exempt stored answers by {operation_id, op, request_digest} plus, under no_ops, each later operation proven a verified second-run no-op of this migration by {operation_id, request_digest, answer_sha256} (FJ04 addendum for Prior d0fce6c, its four recognition conditions). The codec writes no_ops only when at least one no-op was proven, so a binding without one keeps its earlier bytes; order and uniqueness by operation_id are the codec's to check, not the schema's. A later fresh rollback chunk checks the file against the bound hash before trusting it; a replay never reads it; rollback chunk 0 removes it.",
       additionalProperties: false,
       required: ["exempt", "fence", "migration_id", "part", "plan", "receipt", "schema"],
       properties: {
@@ -13869,6 +13930,12 @@ var migration_plan_schema_default = {
           maxItems: 3,
           uniqueItems: true,
           items: { $ref: "#/$defs/exempt_entry" }
+        },
+        no_ops: {
+          type: "array",
+          description: "The proven no-ops, ordered bytewise by operation_id; present only when non-empty.",
+          minItems: 1,
+          items: { $ref: "#/$defs/no_op_entry" }
         }
       }
     },
@@ -14121,7 +14188,7 @@ var package_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.package/v1",
   title: "fusion.package/v1",
-  description: "Control data of one work package, work-packages/<name>/package.json (spec section 4.2). Every key is required; null and the empty list are deliberately distinct. Cross-field rules expressed below with if/then: claimed requires a claim, open and paused require claim null, outcome is null exactly on the non-terminal statuses, done admits the classes completed and legacy-completed, dropped admits bounded, cancelled, failed and dropped, a non-completed class carries a reason, legacy-completed requires provenance.source legacy-terminal and legacy-terminal requires a terminal status, mode autonomous requires a non-null source, origin package and campaign require a ref and legacy-unknown forbids one, at most one active_documents entry has role plan. Rules JSON Schema cannot check and codec/contract/transitions.json plus transitions.ts enforce: which status change is legal from which status (the spec 4.2 matrix; done and dropped are terminal and never reopened, resumption files a new package citing the old); depends_on targets are distinct by record_id (uniqueItems only catches identical entries) and form no cycle; a depends_on condition is evaluated against the target's live JSON (codec/contract/dependencies.json); every record_ref resolves in the named workbench; each active_documents revision equals the hash of the referenced narrative at acceptance, and a changed brief makes bound evidence stale; the claim's checkout_id is a domain assignment, never a host lease; narrative.path names this package's own Markdown file inside its own directory; mode autonomous is written only on the user's word and never invented by an agent.",
+  description: "Control data of one work package, work-packages/<name>/package.json (spec section 4.2). Every key is required; null and the empty list are deliberately distinct. Cross-field rules expressed below with if/then: claimed requires a claim, open and paused require claim null, outcome is null exactly on the non-terminal statuses, done admits the classes completed and legacy-completed, dropped admits bounded, cancelled, failed and dropped, a non-completed class carries a reason, legacy-completed requires provenance.source legacy-terminal and legacy-terminal requires a terminal status, filed_by.actor equal to the reserved legacy-unknown requires provenance.source imported or legacy-terminal (decision 261003-1746), mode autonomous requires a non-null source, origin package and campaign require a ref and legacy-unknown forbids one, at most one active_documents entry has role plan. Rules JSON Schema cannot check and codec/contract/transitions.json plus transitions.ts enforce: which status change is legal from which status (the spec 4.2 matrix; done and dropped are terminal and never reopened, resumption files a new package citing the old); depends_on targets are distinct by record_id (uniqueItems only catches identical entries) and form no cycle; a depends_on condition is evaluated against the target's live JSON (codec/contract/dependencies.json); every record_ref resolves in the named workbench; each active_documents revision equals the hash of the referenced narrative at acceptance, and a changed brief makes bound evidence stale; the claim's checkout_id is a domain assignment, never a host lease; narrative.path names this package's own Markdown file inside its own directory; mode autonomous is written only on the user's word and never invented by an agent.",
   type: "object",
   additionalProperties: false,
   required: ["active_documents", "claim", "depends_on", "domain", "evidence", "extensions", "filed_by", "id", "mode", "narrative", "origin", "outcome", "provenance", "references", "schema", "status", "workbench_id"],
@@ -14345,6 +14412,17 @@ var package_schema_default = {
         required: ["provenance"]
       },
       then: { type: "object", properties: { status: { enum: ["done", "dropped"] } } }
+    },
+    {
+      if: {
+        type: "object",
+        properties: { filed_by: { type: "object", properties: { actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, required: ["actor"] } },
+        required: ["filed_by"]
+      },
+      then: {
+        type: "object",
+        properties: { provenance: { type: "object", properties: { source: { enum: ["imported", "legacy-terminal"] } }, required: ["source"] } }
+      }
     }
   ]
 };
@@ -14354,7 +14432,7 @@ var protocol_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.protocol/v1",
   title: "fusion.protocol/v1",
-  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
+  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. The reserved actor legacy-unknown (decision 261003-1746) is refused in every request that carries an actor: create's filed_by and the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
   type: "object",
   required: ["op"],
   properties: {
@@ -14424,7 +14502,7 @@ var protocol_schema_default = {
         operation_id: { $ref: "#/$defs/operation_id" },
         id: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
         kind: { type: "string", enum: ["package", "issue", "plan", "discussion", "decision"] },
-        filed_by: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        filed_by: { $ref: "#/$defs/live_actor" },
         origin: {
           type: "object",
           additionalProperties: false,
@@ -14493,7 +14571,7 @@ var protocol_schema_default = {
         operation_id: { $ref: "#/$defs/operation_id" },
         record: { $ref: "#/$defs/record_selector" },
         expected_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        actor: { $ref: "#/$defs/live_actor" },
         to: { type: "string", pattern: "^[a-z][a-z0-9_-]*$", description: "The target state, in the vocabulary of the record's kind (codec/contract/transitions.json): package statuses are hyphen-free tokens, record states may carry an underscore (in_progress)." },
         reason: { type: "string", minLength: 1 },
         payload: {
@@ -14573,7 +14651,7 @@ var protocol_schema_default = {
         operation_id: { $ref: "#/$defs/operation_id" },
         record: { $ref: "#/$defs/record_selector" },
         expected_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        actor: { $ref: "#/$defs/live_actor" },
         claim: {
           type: "object",
           additionalProperties: false,
@@ -14596,7 +14674,7 @@ var protocol_schema_default = {
         operation_id: { $ref: "#/$defs/operation_id" },
         record: { $ref: "#/$defs/record_selector" },
         expected_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        actor: { $ref: "#/$defs/live_actor" },
         reason: { type: "string", minLength: 1 }
       }
     },
@@ -14610,7 +14688,7 @@ var protocol_schema_default = {
         operation_id: { $ref: "#/$defs/operation_id" },
         record: { $ref: "#/$defs/record_selector" },
         expected_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        actor: { $ref: "#/$defs/live_actor" },
         mode: {
           type: "object",
           description: "The package's mode field as fusion.package/v1 shapes it; autonomous needs a non-null source with the user's provenance, which the operation checks against the package schema, not this one.",
@@ -14633,7 +14711,7 @@ var protocol_schema_default = {
         operation_id: { $ref: "#/$defs/operation_id" },
         record: { $ref: "#/$defs/record_selector" },
         expected_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        actor: { $ref: "#/$defs/live_actor" },
         depends_on: {
           type: "array",
           uniqueItems: true,
@@ -14659,7 +14737,7 @@ var protocol_schema_default = {
         operation_id: { $ref: "#/$defs/operation_id" },
         record: { $ref: "#/$defs/record_selector" },
         expected_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        actor: { $ref: "#/$defs/live_actor" },
         plan: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
         revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256", description: "The hash of the plan narrative as accepted." },
         role: { type: "string", enum: ["spec", "plan"], description: "The active_documents role the record is bound in; absent means plan." }
@@ -14675,7 +14753,7 @@ var protocol_schema_default = {
         operation_id: { $ref: "#/$defs/operation_id" },
         record: { $ref: "#/$defs/record_selector" },
         expected_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        actor: { $ref: "#/$defs/live_actor" },
         evidence: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/evidence_ref" }
       }
     },
@@ -14780,6 +14858,13 @@ var protocol_schema_default = {
       minLength: 1,
       pattern: "^/"
     },
+    live_actor: {
+      description: "An actor as fusion.common/v1 shapes it, minus the reserved legacy-unknown (decision 261003-1746, option 1): create's filed_by and the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence refuse it, every request that carries an actor, so no live write produces it.",
+      allOf: [
+        { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        { not: { type: "object", properties: { actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, required: ["actor"] } }
+      ]
+    },
     operation_id: {
       $ref: "urn:fusion:schema:fusion.common/v1#/$defs/uuid",
       description: "Caller-chosen, reusable for an identical replay; stored under .json-state/ops/<operation_id>.json with the answer."
@@ -14836,7 +14921,7 @@ var record_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.record/v1",
   title: "fusion.record/v1",
-  description: "Control data of an issue, plan, discussion or decision, <name>.record.json beside <name>.md (spec section 4.3). control is a union discriminated by kind; each branch forbids the other kinds' fields. Cross-field rules expressed with if/then: an issue's disposition is null while open or in_progress and an object once closed or deferred; a decision's answer_ref, implementation_ref, superseded_by and deferral are null or present exactly as its state demands (answered cites an answer, implemented an implementation, superseded a successor, deferred a deferral naming its target and who ruled; open carries none; deferred carries neither implementation nor successor, and no other state carries a deferral); in a candidate block an admitted selection carries an admission, an admission needs a qualification, a merge target and the outcome merged imply each other, and a policy-evaluated outcome carries policy version and snapshot hash while merged carries neither. Rules JSON Schema cannot check: the legal state changes per kind live in codec/contract/transitions.json (the package matrix is never applied to records); ids inside steps, criteria, evidence and the set-valued arrays are distinct beyond what uniqueItems catches; a candidate's qualification is current only if its candidate_version equals version, its source_revision equals source.revision and its evidence_hash equals Prior's evidenceHash over the current evidence and reproduction (an admission over a stale qualification is refused, never healed); a deferred decision's target is control.deferral.target, a resolvable reference or a named external target such as a release, and the reason stays in the Markdown Deferred: line (a legacy record whose Deferred: line names no target or no ruler is a migration finding, never a null the schema admits); historical markers and status heads in the narrative are evidence, not state, and a divergent status note in an active narrative is a conflict; a plan's acceptance revision equals the hash of the plan narrative when it was adopted.",
+  description: "Control data of an issue, plan, discussion or decision, <name>.record.json beside <name>.md (spec section 4.3). control is a union discriminated by kind; each branch forbids the other kinds' fields. Cross-field rules expressed with if/then: filed_by.actor equal to the reserved legacy-unknown requires provenance.source imported or legacy-terminal (decision 261003-1746); an issue's disposition is null while open or in_progress and an object once closed or deferred; a decision's answer_ref, implementation_ref, superseded_by and deferral are null or present exactly as its state demands (answered cites an answer, implemented an implementation, superseded a successor, deferred a deferral naming its target and who ruled; open carries none; deferred carries neither implementation nor successor, and no other state carries a deferral); in a candidate block an admitted selection carries an admission, an admission needs a qualification, a merge target and the outcome merged imply each other, and a policy-evaluated outcome carries policy version and snapshot hash while merged carries neither. Rules JSON Schema cannot check: the legal state changes per kind live in codec/contract/transitions.json (the package matrix is never applied to records); ids inside steps, criteria, evidence and the set-valued arrays are distinct beyond what uniqueItems catches; a candidate's qualification is current only if its candidate_version equals version, its source_revision equals source.revision and its evidence_hash equals Prior's evidenceHash over the current evidence and reproduction (an admission over a stale qualification is refused, never healed); a deferred decision's target is control.deferral.target, a resolvable reference or a named external target such as a release, and the reason stays in the Markdown Deferred: line (a legacy record whose Deferred: line names no target or no ruler is a migration finding, never a null the schema admits); historical markers and status heads in the narrative are evidence, not state, and a divergent status note in an active narrative is a conflict; a plan's acceptance revision equals the hash of the plan narrative when it was adopted.",
   type: "object",
   additionalProperties: false,
   required: ["control", "extensions", "filed_by", "id", "kind", "narrative", "provenance", "references", "schema", "workbench_id"],
@@ -14876,6 +14961,19 @@ var record_schema_default = {
       type: "object",
       properties: { kind: { const: "decision" }, control: { $ref: "#/$defs/decision_control" } },
       required: ["control", "kind"]
+    }
+  ],
+  allOf: [
+    {
+      if: {
+        type: "object",
+        properties: { filed_by: { type: "object", properties: { actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, required: ["actor"] } },
+        required: ["filed_by"]
+      },
+      then: {
+        type: "object",
+        properties: { provenance: { type: "object", properties: { source: { enum: ["imported", "legacy-terminal"] } }, required: ["source"] } }
+      }
     }
   ],
   $defs: {
