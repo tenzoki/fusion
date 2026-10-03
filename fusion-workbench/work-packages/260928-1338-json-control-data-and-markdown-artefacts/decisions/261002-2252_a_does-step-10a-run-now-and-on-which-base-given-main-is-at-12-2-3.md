@@ -28,3 +28,7 @@ A second fact changes the step's ground. Measured on 2026-10-02 22:52: `fj-json-
 ## Recommendation
 
 Option 1. Advisory only; the merge and the destructive step are the user's to authorise.
+
+## Answer
+
+Answered: 2026-10-03, user, Kai Stalmann <ks@qantr.com>: option 1. No project still uses pre-v12 names in its repository (git history and archive entries aside), so the closing deletions may run; `origin/main` is merged into the branch first, by the orchestrator on the user's instruction, then 10a runs on the merged tree.

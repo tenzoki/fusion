@@ -30,3 +30,7 @@ Prior could not be asked while the user was away. This record holds the question
 ## Recommendation
 
 Option 1 now, as landed by step 6; put option 2 to Prior when contact resumes. Advisory only.
+
+## Status
+
+2026-10-03: the user forwarded the question to Prior; the answer is pending. Step 6 landed option 1 as a stated limit meanwhile.
