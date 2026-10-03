@@ -2121,3 +2121,73 @@ The value is always paired with `derived["/filed_by/actor"] = {rule: "unknown"}`
 ### The bundle
 
 The schema rule moves the bundle digest away from `c71e219e…`. Prior has not qualified that digest either, so Prior still qualifies one digest at the hand-over, the one that carries this rule. Prior's DTOs need no type change, because `filed_by.actor` stays a string. The hand-over also names the codec change that `d0fce6c` asks for, since Prior wants it in the same candidate before its digest is frozen.
+
+## FJ04 (addendum for Prior d0fce6c and ruling b1)
+
+**Written against:** fusion commit `3722b2af` on branch `fj-json-workbench` (2026-10-03 19:17), the head of the branch when this text was written. The last commit that moved `codec/`, `bin/` or `hooks/` is `0dc4be8b` (2026-10-03 18:26, the schema rule for the reserved actor). The sections above are unchanged since `06e95a05`, which appended `## FJ04 (addendum for the user's ruling of 2026-10-03)`. The bundle in the blob at `3722b2af` is 678 774 bytes, `sha256:c71e219efde6ec59f4f268ed820ba8bdd48067cb48fbe2521d7934e087e02fa6`. It is unqualified, and it predates the schemas committed at `0dc4be8b`, which inline into it on the next rebuild. The last qualified bundle stays `e1bafd2f`, `sha256:6b26faf2…b0bf`. Prior was read at `d0fce6c` (2026-10-03 09:01), the head of the Prior checkout, and `git log --all --oneline d0fce6c..` is empty there. Every Prior text below is from `Prior: docs/design/fusion-fj04-noop-rollback-prior-response.md` at that commit. The same commit adds one paragraph to `concept/fusion-json-workbench-spec.md` and rewords the narrow-set paragraph of `docs/design/fusion-fj04-amended-contract-prior-response.md`, which now "extends this set to individually verified second-run no-ops of the same migration".
+
+This addendum takes up two rulings the user gave on 2026-10-03. Ruling a1 answers decision `261002-2128_*_should-a-second-run-no-op-plan-stay-a-later-operation-that-blocks-rollback.md` by adopting Prior's ruling at `d0fce6c`, whose text governs where this one differs. Ruling b1 settles issue `261003-1906_*_the-legacy-composer-reports-two-finding-classes-the-confirmed-contract-makes-blocking.md`. Everything not named here stands. Where the sections above disagree with this one, this one governs. It asks no new question. The other two workbenches still appear only as the second and the third, in aggregate figures.
+
+### The verified no-op
+
+Prior: "A successful, verified no-op of the same migration must not by itself prevent rollback." Prior calls its own three-entry exempt set "overly narrow" and corrects it. The limit step 6 stated, that a stored no-op answer ends every later rollback, is withdrawn.
+
+**One more checked exception class, and no new list.** The one definition of a later operation (line 1939) stays, and so does `later_operations` in the no-op answer, a diagnostic set difference that may still list a no-op. The rollback audit admits the three exempt answers **plus** each individually proven no-op. Every later operation then falls into exactly one case:
+
+- one of the three exempt answers: a `maintenance` answer, or `verify` under its scheduled id;
+- a proven no-op: a `migration` `plan` answer under an id the schedule does not assign;
+- a refusal, for everything else.
+
+The first two cannot overlap, by op and id.
+
+**Recognition.** At the first rollback after activation, after the receipt check and the exempt set, the codec proves a later operation that is not an exempt answer to be a no-op only when all four hold:
+
+1. The stored answer reads, its `op` is `migration`, its response is `ok` with no `revisions`, and its result has exactly the six keys of the no-op answer (line 1717), with `no_op: true`, `result.operation_id` equal to the answer's own id and `result.migration_id` equal to the index's. A name or the flag alone is never enough.
+2. Its id is not one the schedule assigns. Its `request_digest` reconstructs as `{op: "migration", operation_id: <its id>, phase: "plan", proposal: <the index's exact proposal>}` in the two forms of departure (5) of `## FJ04 (addendum for a1fb17a)`. Nothing is normalised.
+3. `result.receipt` equals the receipt's `{path, sha256}` that the receipt check verified, and `result.manifest_revision` equals the activated manifest's revision that the same check read.
+4. The answer comes from the no-write path. The shape of condition 1 is written only by the second-run branch of `plan`, which plans no write; fusion checks that by its own source before the hand-over. This is fusion's reading of Prior's "The codec produced that result on its no-write second-run path": the codec proves it by shape, digest and receipt, not by a separate record of how the answer arose.
+
+Recorded exchange 18 is covered as it stands: a fresh id over `proposal-07.json`. A different proposal that names the same migration does not reconstruct, and it stays a later operation that refuses.
+
+**The binding.** `rollback.json` gains `no_ops`, one `{operation_id, request_digest, answer_sha256}` per proven no-op, ordered bytewise by id, as Prior names the three values. The member is present only when at least one no-op was proven, so a binding without no-ops keeps its present bytes and every recorded binding hash stays valid.
+
+**The size check.** Before any write of that rollback, the serialised binding is checked against the strict reader's 1 MiB cap. Over it, the answer is `schema-invalid/too-large`, naming the no-op count. At about 200 bytes an entry the cap holds some 5 000 no-ops (inference, not measured).
+
+**Later fresh chunks.** A later fresh chunk reads the binding at its bound hash, as before. Each `no_ops` entry must still be stored with the same id, request digest and answer hash, otherwise `conflict/after-state-changed`. The chunk then refuses any later operation outside the bound exempt and no-op entries. A no-op-shaped answer stored after the binding is outside both and refuses: no exception is added after the binding is frozen.
+
+**What stays.** Replays keep their precedence after the binding and the plan files are removed. A replay of a no-op stores nothing new and adds no exception. A fresh no-op under the standing rollback fence is still `conflict/maintenance-active`. The baseline, the activated-tree comparison and the fence stay in force. Ordinary work followed by a no-op still refuses, even when the work's record bytes were changed back. `bin/fusion-migrate run` on a finished migration still sends nothing and answers `result=no-op`; only the reason its `note=` line gives changes.
+
+**Departures from Prior's text,** numbered on from the six of `## FJ04 (addendum for a1fb17a)`:
+
+7. A bound no-op answer that is missing or changed refuses as `conflict/after-state-changed`. Prior: "missing or changed evidence refuses", with no class named. It is the class of departure (1) for a missing or changed baseline answer.
+8. A binding over the cap refuses as `schema-invalid/too-large`, naming the count. Prior: "Include this metadata in size checks before any rollback write", with no class named. It is the class the journal already gives a write over the strict reader's cap.
+
+### Corrections, by line
+
+- **Line 1806**, "The exempt set is exactly: this migration's `verify`, the one `maintenance end` naming chunk 1's fence, and the one `maintenance begin` whose fence stands." The set the audit admits is those three plus each proven no-op of this migration. "No operation is exempt by its name" stands: a no-op is admitted by the four conditions, never by its op or its flag.
+- **Line 1940**, the Refusals bullet. Its last sentence is withdrawn, both of its clauses: "A stored no-op answer is itself a later operation, so a rollback after it refuses as a later operation; a host that may still roll back reads the store's state with `survey`, not `plan`." A stored no-op still meets line 1939's definition and may appear in `later_operations`. A proven one is admitted by the audit. The sentence before it stands: the no-op adds no refusal, and `later_operations` decides nothing.
+- **Line 1942**, "The exempt set (line 1806) is unchanged". It is extended as above. The reconstruction of the `end` and the `begin`, and "Exactly one stored answer must match each" (line 1946), stand for the three exempt answers.
+- **Line 1955**, the file's shape, gains the optional `no_ops` after `exempt`. "`exempt` holds exactly three entries" stands.
+- **Line 1957**, "The chunk then refuses any later operation outside the exempt set." It now reads as **Later fresh chunks** above: the bound no-ops are checked first, then any later operation outside the bound exempt and no-op entries refuses.
+- **Line 2123.** This addendum is the naming of the codec change `d0fce6c` asks for. Line 2009's "neither takes it up nor rests on it" holds for that section only.
+
+### The recorded session
+
+Prior: "its current no-op-caused refusal is intentionally superseded. … Preserve the independent evidence for refusal after real work; do not simply remove it." So the migration session changes in two places, and the reason for each is this rule:
+
+- **Base A.** Exchanges 01 to 24 stay byte-identical. Exchange 25, the first rollback after activation, is admitted, and its `rollback.json` names exchange 18 under `no_ops`. Exchange 26 becomes the next rollback chunk instead of the `end`. New exchanges 55 to 58 finish the rollback, the legacy `end` and a replay of 18 after the cleanup.
+- **Base D** (new, 59 onward, the seeds and order of base B) is the kept evidence of a refusal after real work. Ordinary work and then a no-op precede the first rollback. The rollback refuses on the activated tree. After the host restores the work's bytes, it refuses again in the audit, naming the work and not the no-op.
+- Bases B and C stay byte-identical.
+
+The exact list of changed and added exchanges, with their hashes, is the one the codec step records and the hand-over carries. Line 1861's "a refusal after ordinary work" and line 1863's "a verified second-run no-op" stay in the session's list, now carried by base D and base A respectively.
+
+### Ruling b1: the two composer classes
+
+- **`plan-adopted-twice` stays blocking,** as confirmed (line 1824, line 1844). It is added to the still-blocking list of line 2049, which omitted it. Two live packages each binding the same plan leave open which plan is active for a live package, and section 8.2 forbids a default there, as for `several-active-plans`. The host composer typed it `reported`; the host change brings it to `blocking`. This is no departure.
+- **`active-document-role-conflict` is added as a reported class,** carried as a reference under request 58. A clause and a stem that name opposite roles leave the role as undecided as `active-document-role-unclear`, which request 58 already carries as a reference. One rule decides every `**Active spec/plan:**` entry the host cannot bind. The class is 0 / 0 / 0 on the copies, an upper bound taken before resolution, so the expected questions stay 0 / 0 / 0 and the ceiling stays 1 per copy.
+  - **Request 58's *Departs from*** (line 2116) also departs from `## FJ04 (the contract delta, amended for ab9cb59)` `### What Prior ruled, and where this section answers it`, row 49(c): "a clause and a stem that disagree block". It departs as well from the "Roles (49 c)" bullet of `### The record cut, the grammar and the roles, as ruled` in that section, and from line 1844, which lists the class as a new blocking finding class.
+  - **The evidence values** of `binding-carried-as-reference` (line 2067) gain `role-conflict`. That value is a string in `provenance.legacy_fields.derived`. It is unrelated to the refusal `conflict/role-conflict` of `adopt-plan`, which keeps its meaning.
+
+### The bundle
+
+The digest Prior qualifies at the hand-over carries the no-op rule and the reserved actor, in one rebuild. The two composer classes are the host's reader, not the codec's: they move no byte of the bundle, and the hand-over states them with the proof on copies. Prior's DTOs gain one optional member, `no_ops`, on the `rollback-binding` they read. No other type changes.
