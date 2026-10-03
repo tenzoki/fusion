@@ -48,30 +48,53 @@
  *
  * `261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md`
  * option 1: Circle `_c_` done/legacy-completed, `_b_` dropped/bounded, `_s_`
- * dropped/dropped, `_d_` a blocking finding until its `**Status:**` starts
- * `paused` or `dropped`, which the consented repair writes
- * (`lib/legacy-repair.ts`); an empty container tree is
- * reported and not migrated; an `Answered:` line citing nothing resolvable
- * answers with the record's own original; a document role comes from its
- * clause or its stem, else a blocking finding. Every mapped value stays
- * verbatim in `provenance.legacy_fields`.
+ * dropped/dropped, `_d_` dropped/dropped unless its `**Status:**` starts
+ * `paused` or `dropped`; an empty container tree is reported and not
+ * migrated; an `Answered:` line citing nothing resolvable answers with the
+ * record's own original. Every mapped value stays verbatim in
+ * `provenance.legacy_fields`.
  * `261001-1804_*_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md`
  * option 1: the step number is the anchor, criteria are empty.
  *
  * Which lines are steps, as decidable from the line: a line at column 0 that
  * is a number and a full stop, optionally behind a `##`-`####` heading
  * marker, is a step when it carries a bracket mark, or when it stands in an
- * `## Implementation steps` section. An unmarked step is `open`. A mark that
- * starts a list item or heading anywhere else, a mark outside the plan
- * vocabulary, and a duplicate number are blocking findings for that plan.
- * Inside a fenced code block nothing is read.
+ * `## Implementation steps` section. An unmarked step is `open`. Inside a
+ * fenced code block nothing is read.
+ *
+ * ## Derive, carry as unknown, default (the ruling of 2026-10-03)
+ *
+ * The plan's `## Amendment of 2026-10-03: derive, carry as unknown, ask only
+ * what is genuine`, and requests 54 to 58 of `codec/fixtures/prior/REQUESTS.md`.
+ * A value the files or git decide is derived; one they do not is carried as
+ * unknown or as a default that asserts no live state. Each such control value
+ * has one entry in `provenance.legacy_fields.derived`, keyed by its JSON
+ * Pointer, `{rule, evidence?}`, and its finding is `reported`. A value the
+ * legacy file recorded is never replaced, and `**Filed by:** user` keeps its
+ * person null. Per class:
+ *
+ *   filed-by-*       actor `legacy-unknown`; person from the injected
+ *                    `firstAdd` (the git author of the file's first add,
+ *                    followed through renames), else null with its evidence
+ *   answered-without-answer-line  `answer_ref` the record's own original
+ *   mark-outside-numbered-step    the mark token leaves the narrative, kept in
+ *                    `legacy_fields.unanchored_marks` by line
+ *   unknown-step-mark the step anchors `open`; the token stays in `step_marks`
+ *   duplicate-step-number every line of a duplicated number stays unanchored,
+ *                    its mark in `unanchored_marks`; the other steps anchor
+ *   an `**Active spec/plan:**` entry that is unresolvable, archived,
+ *                    ambiguous, not a plan, or of an unclear or conflicting
+ *                    role: carried in `references` as its citation, or only in
+ *                    `legacy_fields.head` when it is no citation
+ *   circle-deferred  `dropped`, as the other Circle markers map terminal
  *
  * ## Findings
  *
- * `blocking` stops activation until the frozen plan resolves it (spec section
- * 8.2: no guessed state, active plan, claim or live dependency); `reported` is
- * carried into the plan and the receipt and blocks nothing. `FINDINGS` lists
- * every class with its severity.
+ * `blocking` stops activation until the frozen plan resolves it: what spec
+ * section 8.2 forbids to default, a state, a claim, a live dependency or which
+ * plan is active (`several-active-plans`, `plan-adopted-twice`), and the
+ * structural facts the codec refuses. `reported` is carried into the plan and
+ * the receipt and blocks nothing. `FINDINGS` lists every class with its severity.
  */
 import { lstatSync, readdirSync, readFileSync, readlinkSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -84,32 +107,36 @@ export const FINDINGS = {
     "control-file-exists": "blocking",
     "unknown-state": "blocking",
     "unknown-package-status": "blocking",
-    "circle-deferred": "blocking",
     "two-package-heads": "blocking",
     "container-without-head": "blocking",
     "invalid-claim": "blocking",
     "unknown-mode": "blocking",
     "duplicate-control-head": "blocking",
-    "filed-by-missing": "blocking",
-    "filed-by-not-owed": "blocking",
-    "filed-by-unreadable": "blocking",
     "several-active-plans": "blocking",
-    "unresolvable-active-document": "blocking",
-    "active-document-not-a-plan": "blocking",
-    "active-document-archived": "blocking",
-    "active-document-role-unclear": "blocking",
+    "plan-adopted-twice": "blocking",
     "unresolvable-live-dependency": "blocking",
     "dependency-not-a-package": "blocking",
     "dependency-archived": "blocking",
+    /** On `**Depends-on:**` only; on `**Active spec/plan:**` it is `active-document-ambiguous`. */
     "ambiguous-structural-citation": "blocking",
-    "duplicate-step-number": "blocking",
-    "mark-outside-numbered-step": "blocking",
-    "unknown-step-mark": "blocking",
-    "answered-without-answer-line": "blocking",
     "closure-without-v1-state": "blocking",
     "closure-incomplete": "blocking",
     "record-is-link": "blocking",
     "narrative-too-large": "blocking",
+    "circle-deferred": "reported",
+    "filed-by-missing": "reported",
+    "filed-by-not-owed": "reported",
+    "filed-by-unreadable": "reported",
+    "unresolvable-active-document": "reported",
+    "active-document-not-a-plan": "reported",
+    "active-document-archived": "reported",
+    "active-document-ambiguous": "reported",
+    "active-document-role-unclear": "reported",
+    "active-document-role-conflict": "reported",
+    "duplicate-step-number": "reported",
+    "mark-outside-numbered-step": "reported",
+    "unknown-step-mark": "reported",
+    "answered-without-answer-line": "reported",
     "empty-container-tree": "reported",
     "terminal-value-without-v1-state": "reported",
     "circle-head-disagrees-with-marker": "reported",
@@ -119,7 +146,6 @@ export const FINDINGS = {
     "status-head-in-live-record": "reported",
     "reference-not-a-citation": "reported",
     "unmarked-file-in-record-store": "reported",
-    "plan-adopted-twice": "reported",
     "unknown-domain": "reported",
     "untracked-record": "reported",
     "ignored-record": "reported",
@@ -143,8 +169,10 @@ const CIRCLE = {
     c: { status: "done", outcome: "legacy-completed", reason: "", heads: /^(closed|done|complete)/i },
     b: { status: "dropped", outcome: "bounded", reason: "closed bounded (legacy Circle marker)", heads: /^(bounded|closed)/i },
     s: { status: "dropped", outcome: "dropped", reason: "superseded (legacy Circle marker)", heads: /^superseded/i },
-    d: { status: "dropped", outcome: "dropped", reason: "deferred (legacy Circle marker), dropped at repair", heads: /^(paused|dropped)\b/ },
+    d: { status: "dropped", outcome: "dropped", reason: "deferred (legacy Circle marker)", heads: /^(paused|dropped)\b/ },
 };
+/** A plan mark outside a numbered step: the token, and its one trailing space, leave the narrative. */
+const STRAY_MARK = /\[(OPEN|IN PROGRESS|DONE)\] ?/;
 const PACKAGE_STATUSES = new Set(["open", "claimed", "paused", "done", "dropped"]);
 /** The head fields JSON owns on a live package: removed from its narrative, kept raw in `legacy_fields`. */
 const PACKAGE_CONTROL_HEADS = ["Status", "Claim", "Mode", "Active spec/plan", "Depends-on"];
@@ -287,6 +315,9 @@ export function composeProposal(input) {
     const originals = (p) => `archive/migrations/${migrationId}/originals/${p}`;
     const untracked = new Set(input.untracked ?? []);
     const ignored = new Set(input.ignored ?? []);
+    const derived = new Map();
+    const derivedOf = (p) => derived.get(p) ?? (derived.set(p, {}), derived.get(p));
+    const unanchored = new Map();
     for (const legacy of V11_STORE_NAMES) {
         for (const d of inventory.dirs) {
             if (!d.startsWith("archive/") && (d === legacy || d.endsWith(`/${legacy}`)))
@@ -325,13 +356,17 @@ export function composeProposal(input) {
         let status;
         if (circle) {
             const map = CIRCLE[circle[1]];
-            const picked = circle[1] === "d" ? /^(paused|dropped)\b/.exec(one(head, "Status") ?? "")?.[1] : undefined;
-            if (!map || (circle[1] === "d" && !picked)) {
-                find(circle[1] === "d" ? "circle-deferred" : "unknown-package-status", narrative, `Circle marker _${circle[1]}_ has no v1 status`);
+            if (!map) {
+                find("unknown-package-status", narrative, `Circle marker _${circle[1]}_ has no v1 status`);
                 continue;
             }
+            const picked = circle[1] === "d" ? /^(paused|dropped)\b/.exec(one(head, "Status") ?? "")?.[1] : undefined;
             status = picked ?? map.status;
-            if (!map.heads.test(one(head, "Status") ?? ""))
+            if (circle[1] === "d" && !picked) {
+                find("circle-deferred", narrative, `Circle marker _d_ with head ${JSON.stringify(one(head, "Status") ?? null)}; dropped`);
+                derivedOf(narrative)["/status"] = { rule: "circle-deferred-dropped" };
+            }
+            else if (!map.heads.test(one(head, "Status") ?? ""))
                 find("circle-head-disagrees-with-marker", narrative, `marker _${circle[1]}_, head ${JSON.stringify(one(head, "Status") ?? null)}`);
         }
         else {
@@ -407,22 +442,46 @@ export function composeProposal(input) {
         if (c.kind === "plan") {
             const found = [];
             const marks = {};
+            const loose = {};
             const scan = scanPlan(lines);
+            const times = new Map();
+            for (const s of scan.steps)
+                times.set(s.id, (times.get(s.id) ?? 0) + 1);
+            const seen = new Set();
             for (const { line, id, mark } of scan.steps) {
                 if (mark !== undefined && !(mark in STEP_MARKS))
                     find("unknown-step-mark", c.narrative, `step ${id} [${mark}]`);
-                if (found.some((s) => s.id === id))
+                if (seen.has(id))
                     find("duplicate-step-number", c.narrative, `step ${id}`);
-                found.push({ id, state: mark === undefined ? "open" : STEP_MARKS[mark] ?? "open" });
+                seen.add(id);
+                // A duplicated number anchors no line, so a citation of it attaches to no step rather than possibly the wrong one.
+                const anchored = times.get(id) === 1;
                 if (mark !== undefined) {
-                    marks[id] = mark;
+                    if (anchored)
+                        marks[id] = mark;
+                    else
+                        loose[`line ${line + 1}`] = mark;
                     lines[line] = lines[line].replace(`[${mark}] `, "");
                 }
+                if (!anchored)
+                    continue;
+                if (mark !== undefined && !(mark in STEP_MARKS))
+                    derivedOf(c.narrative)[`/control/steps/${found.length}/state`] = { rule: "unrecognised-mark-open", evidence: mark };
+                found.push({ id, state: mark === undefined ? "open" : STEP_MARKS[mark] ?? "open" });
             }
-            for (const i of scan.stray)
+            const dup = [...times].filter(([, n]) => n > 1).map(([id]) => id);
+            if (dup.length)
+                derivedOf(c.narrative)["/control/steps"] = { rule: "duplicate-numbers-unanchored", evidence: dup.join(", ") };
+            for (const i of scan.stray) {
                 find("mark-outside-numbered-step", c.narrative, `line ${i + 1}`);
+                const m = STRAY_MARK.exec(lines[i]);
+                loose[`line ${i + 1}`] = m[1];
+                lines[i] = lines[i].replace(m[0], "");
+            }
             steps.set(c.narrative, found);
             removedMarks.set(c.narrative, marks);
+            if (Object.keys(loose).length)
+                unanchored.set(c.narrative, loose);
         }
         const out = lines.filter((_, i) => !drop.has(i)).join("\n");
         if (out !== c.text)
@@ -442,6 +501,8 @@ export function composeProposal(input) {
     const docs = new Map();
     const deps = new Map();
     const closure = new Map();
+    /** `**Active spec/plan:**` entries the files do not bind, by package: carried as references (request 58). */
+    const carried = new Map();
     const liveRecord = new Map(candidates.filter((c) => c.kind !== "package").map((c) => [c.narrative, c]));
     for (const c of candidates) {
         if (c.kind !== "package" || !c.live)
@@ -450,23 +511,38 @@ export function composeProposal(input) {
             if ((c.head.fields.get(k)?.length ?? 0) > 1)
                 find("duplicate-control-head", c.narrative, `**${k}:** twice`);
         const ds = [];
+        const carry = [];
+        const unbound = (cls, evidence, token, detail = token) => {
+            find(cls, c.narrative, detail);
+            carry.push({ token, evidence });
+        };
         const active = one(c.head, "Active spec/plan");
         for (const e of active === undefined ? [] : entries(active)) {
             const r = resolveOne(c.narrative, e.token);
             if (r.why !== null) {
-                find(r.why === "dangling" ? "unresolvable-active-document" : r.why === "archived" ? "active-document-archived" : "ambiguous-structural-citation", c.narrative, e.token);
+                if (r.why === "dangling")
+                    unbound("unresolvable-active-document", "unresolvable", e.token);
+                else if (r.why === "archived")
+                    unbound("active-document-archived", "archived", e.token);
+                else
+                    unbound("active-document-ambiguous", "ambiguous", e.token);
                 continue;
             }
             const target = liveRecord.get(r.path) ?? plain.get(r.path);
             if (!target || target.kind !== "plan") {
-                find("active-document-not-a-plan", c.narrative, `${e.token} is ${target ? `a ${target.kind}` : "no converted record kind"}`);
+                unbound("active-document-not-a-plan", "not-a-plan", e.token, `${e.token} is ${target ? `a ${target.kind}` : "no converted record kind"}`);
                 continue;
             }
             const clause = /\bspec\b/i.test(e.clause) !== /\bplan\b/i.test(e.clause) ? (/\bspec\b/i.test(e.clause) ? "spec" : "plan") : null;
             const stem = /_[a-z*]_(spec|plan)-/.exec(e.token)?.[1];
+            // A clause and a stem naming opposite roles decide neither, as no clause and no stem decide none.
+            if (clause && stem && clause !== stem) {
+                unbound("active-document-role-conflict", "role-conflict", e.token, `${e.token}: clause ${clause}, stem ${stem}`);
+                continue;
+            }
             const role = clause ?? stem;
             if (!role) {
-                find("active-document-role-unclear", c.narrative, e.token);
+                unbound("active-document-role-unclear", "role-unclear", e.token);
                 continue;
             }
             if (!target.live) {
@@ -483,6 +559,7 @@ export function composeProposal(input) {
         if (ds.filter((d) => d.role === "plan").length > 1)
             find("several-active-plans", c.narrative, ds.filter((d) => d.role === "plan").map((d) => d.path).join(", "));
         docs.set(c.narrative, ds);
+        carried.set(c.narrative, carry);
         const dp = [];
         const dependsOn = one(c.head, "Depends-on");
         for (const e of dependsOn === undefined ? [] : entries(dependsOn)) {
@@ -517,6 +594,14 @@ export function composeProposal(input) {
             else if (!out.includes(e.token))
                 out.push(e.token);
         }
+        for (const { token, evidence } of carried.get(c.narrative) ?? []) {
+            if (!CITATION.some((re) => re.test(token)))
+                find("reference-not-a-citation", c.narrative, token);
+            else if (!out.includes(token)) {
+                derivedOf(c.narrative)[`/references/${out.length}`] = { rule: "binding-carried-as-reference", evidence };
+                out.push(token);
+            }
+        }
         return out;
     };
     const actor = (c) => {
@@ -525,20 +610,27 @@ export function composeProposal(input) {
         const open = unfenced(lines);
         const line = lines.find((l, i) => open[i] && /^(?:\*\*)?Filed by:/.test(l));
         const f = filedBy(line?.replace(/^(?:\*\*)?Filed by:(?:\*\*)?/, "").replace(/`/g, "").trim());
-        if (typeof f === "string" && input.actors?.[c.narrative] !== undefined)
+        if (typeof f !== "string")
+            return f;
+        if (input.actors?.[c.narrative] !== undefined)
             return { ...input.actors[c.narrative] };
-        if (typeof f === "string") {
-            // A plan does not owe the line (the conventions' `### Who filed it`), and the schema's actor is never invented.
-            find(f === "unreadable" ? "filed-by-unreadable" : c.kind === "plan" ? "filed-by-not-owed" : "filed-by-missing", c.narrative, JSON.stringify(one(c.head, "Filed by") ?? null));
-            return null;
-        }
-        return f;
+        // A plan does not owe the line (the conventions' `### Who filed it`). The actor is never guessed; the person is git's record of the first add.
+        find(f === "unreadable" ? "filed-by-unreadable" : c.kind === "plan" ? "filed-by-not-owed" : "filed-by-missing", c.narrative, JSON.stringify(one(c.head, "Filed by") ?? null));
+        const added = input.firstAdd(c.narrative);
+        const d = derivedOf(c.narrative);
+        d["/filed_by/actor"] = { rule: "unknown" };
+        d["/filed_by/person"] = "commit" in added ? { rule: "git-first-add", evidence: added.commit } : { rule: "unknown", evidence: added.unknown };
+        return { actor: "legacy-unknown", person: "commit" in added ? added.person : null };
     };
-    const provenance = (c, extra = {}) => ({
-        source: c.live ? "imported" : "legacy-terminal",
-        legacy_fields: { file_marker: c.marker, head: rawHead(c.head), ...extra },
-        backup: { path: originals(c.narrative), sha256: byPath.get(c.narrative).sha256, kind: "other" },
-    });
+    const provenance = (c, extra = {}) => {
+        const loose = unanchored.get(c.narrative);
+        const d = derived.get(c.narrative);
+        return {
+            source: c.live ? "imported" : "legacy-terminal",
+            legacy_fields: { file_marker: c.marker, head: rawHead(c.head), ...extra, ...(loose ? { unanchored_marks: loose } : {}), ...(d && Object.keys(d).length ? { derived: d } : {}) },
+            backup: { path: originals(c.narrative), sha256: byPath.get(c.narrative).sha256, kind: "other" },
+        };
+    };
     const adoptedBy = new Map();
     for (const [pkg, ds] of docs) {
         for (const d of ds.filter((x) => x.role === "plan")) {
@@ -621,8 +713,10 @@ export function composeProposal(input) {
                 }
                 let answer = null;
                 if (c.status === "answered") {
-                    if (!answered)
+                    if (!answered) {
                         find("answered-without-answer-line", c.narrative, answered === undefined ? "_a_ with no Answered: line" : "_a_ whose last Answered: line is empty");
+                        derivedOf(c.narrative)["/control/answer_ref"] = { rule: "answer-ref-self", evidence: answered === undefined ? "no-answer-line" : "empty-answer-line" };
+                    }
                     const hit = !answered ? undefined : scanner.scanCitationTokens(c.narrative, [{ line: 1, text: answered.split(" — ")[0] }]).find((h) => h.status === "resolved" && h.matches.length === 1);
                     if (hit && ids.has(hit.matches[0]))
                         answer = ref(hit.matches[0]);

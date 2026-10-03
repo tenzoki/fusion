@@ -25,3 +25,6 @@ The composer raises both classes with the severity the confirmed contract gives 
 ## Disposition
 
 The user ruled on 2026-10-03 ("b1") that this is fixed within FJ04 step 12d.
+
+---
+Resolved: FJ04 step 12d, by ruling b1. `hooks/lib/legacy-import.ts` `FINDINGS` types `plan-adopted-twice` `blocking`. It adds `active-document-role-conflict` as `reported`: a clause and a stem that name opposite roles bind nothing, and the entry is carried in `references` with `derived` `binding-carried-as-reference`/`role-conflict` (request 58, as `REQUESTS.md` `## FJ04 (addendum for Prior d0fce6c and ruling b1)` states the departure). Shown in `hooks/lib/__tests__/legacy-import.test.ts`, one red run each against a composer that types the first `reported` and one that keeps `clause ?? stem`. On the three step-12 copies both classes count 0 / 0 / 0.

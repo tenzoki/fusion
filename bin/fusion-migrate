@@ -3,7 +3,7 @@
 #
 # Usage:
 #   fusion-migrate survey
-#   fusion-migrate repair --list
+#   fusion-migrate repair --list [--optional]
 #   fusion-migrate repair --apply <finding> [--value <key>=<value>]... [--consent]
 #   fusion-migrate run
 #   fusion-migrate resume
@@ -19,11 +19,18 @@
 # (`bin/fusion-record`'s bundle) writes every control, plan and answer byte.
 # Plugin and Node only: no other runtime, service or variable is read.
 #
-#   survey          counts of the record cut and findings by class, each
-#                   blocking finding with its id. Writes nothing.
+#   survey          counts of the record cut, findings by class, the derived
+#                   and defaulted values by rule, and each blocking finding
+#                   with its id. Writes nothing.
 #   repair --list   per blocking finding its proposed edit and every question,
-#                   or why it stays blocking. Writes nothing.
-#   repair --apply  one finding, with consent and every asked value. The first
+#                   or why it stays blocking; with --optional, the same for
+#                   each reported finding that has a repair. Writes nothing.
+#                   The migration requires no repair: what the Markdown does
+#                   not record is derived from git, carried as unknown or
+#                   defaulted, and marked in the control's
+#                   legacy_fields.derived (hooks/lib/legacy-import.ts).
+#   repair --apply  one finding, blocking or optional, with consent and every
+#                   asked value; the value is then a recorded one. The first
 #                   repair takes the full backup into the session, verified by
 #                   tree hash, before any edit, and each is logged with its
 #                   hashes. A terminal record's actor goes into its control
@@ -34,7 +41,7 @@
 #                   codec, no fence or pending intent; then a live
 #                   .session-marker reported, untracked and ignored files
 #                   listed; the backup; a refusal while any blocking finding
-#                   remains; then survey, the proposal into
+#                   remains, printing those lines first; then survey, the proposal into
 #                   .json-state/migration/, plan, one apply per chunk, verify,
 #                   setup metadata and `maintenance end`. A second run sends
 #                   nothing.

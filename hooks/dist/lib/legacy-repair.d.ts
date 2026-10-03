@@ -1,16 +1,22 @@
 /**
- * The repair of blocking findings before FJ04's migration freezes its plan
- * (step 8 of `261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md`).
- * A blocking finding of `lib/legacy-import.ts` becomes a proposed edit to the
- * v12 Markdown, applied only with the user's consent for that one finding.
+ * The repair of findings before FJ04's migration freezes its plan (step 8 of
+ * `261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md`).
+ * A finding of `lib/legacy-import.ts` becomes a proposed edit to the v12
+ * Markdown, applied only with the user's consent for that one finding.
+ *
+ * Optional since step 12d (the ruling of 2026-10-03): the composer derives,
+ * carries as unknown or defaults every class this module repairs, so the
+ * migration requires none of them. An owner who wants the Markdown corrected
+ * first applies one, blocking or reported, and the value is then a recorded
+ * one with no `derived` entry. `proposeRepair` takes a finding of any class
+ * `REPAIRS` holds, whatever its severity.
  *
  * ## What is proposed, and what is asked
  *
  * `REPAIRS` holds one entry per repairable class; the edit is pure (text in,
- * text out). A value only the user has is a question, never a default (spec
- * section 8.2): the actor and person of `**Filed by:**`, an `Answered:`
- * line's section, summary and ruler, a step mark, a document, a role, a
- * Circle's status. `offered` lists values the user may pick, such as
+ * text out). A repair writes only what the user answers: the actor and person
+ * of `**Filed by:**`, an `Answered:` line's section, summary and ruler, a step
+ * mark, a document, a role, a Circle's status. `offered` lists values the user may pick, such as
  * `bin/fusion-identity`'s `PERSON=`; an unanswered question refuses the
  * repair rather than taking one. A person answered `""` writes the half
  * absent, which the conventions allow and which is an answer, not a gap.
@@ -28,7 +34,8 @@
  * composer's `actors` input that `actorsFromLog` builds from the log.
  *
  * Every other blocking class has no repair that avoids guessing and stays
- * blocking; `legacy-store-name` routes to the store rename.
+ * blocking until the Markdown is fixed by hand; `legacy-store-name` routes to
+ * the store rename.
  *
  * ## Applying one
  *

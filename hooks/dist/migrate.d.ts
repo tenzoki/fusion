@@ -6,11 +6,23 @@
  *   migrate.js <sub> <workbench> [--session <dir>] [flags]
  *
  * The host reads and the codec writes. This entry reads the v12 Markdown
- * (`lib/legacy-import.ts`), applies consented repairs (`lib/legacy-repair.ts`),
- * composes the proposal into `.json-state/migration/`, and drives the codec's
+ * (`lib/legacy-import.ts`), applies the consented repairs an owner chooses
+ * (`lib/legacy-repair.ts`; optional, the migration requires none), composes
+ * the proposal into `.json-state/migration/`, and drives the codec's
  * `migration` phases through `lib/record-client.ts`, one request per process.
  * It writes no control file, no plan file and no stored answer; the codec
  * alone writes those. It needs the plugin and Node and nothing else.
+ *
+ * ## The git pass
+ *
+ * A filer the Markdown never recorded is carried as `legacy-unknown`, its
+ * person the author git names for the file's first add (`firstAdds`): one
+ * `git log --reverse -M --diff-filter=AR --name-status` over the workbench,
+ * each path followed back through the renames git reports, so a marker move
+ * and the v11-to-v12 store rename both lead to the original add. The person
+ * is `%an <%ae>` as written, with no mailmap. A file git does not track, a
+ * workbench in no repository and a shallow history each give no person, with
+ * that reason as evidence. The run's own identity is never read.
  *
  * ## The session
  *

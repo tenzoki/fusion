@@ -6,11 +6,23 @@
  *   migrate.js <sub> <workbench> [--session <dir>] [flags]
  *
  * The host reads and the codec writes. This entry reads the v12 Markdown
- * (`lib/legacy-import.ts`), applies consented repairs (`lib/legacy-repair.ts`),
- * composes the proposal into `.json-state/migration/`, and drives the codec's
+ * (`lib/legacy-import.ts`), applies the consented repairs an owner chooses
+ * (`lib/legacy-repair.ts`; optional, the migration requires none), composes
+ * the proposal into `.json-state/migration/`, and drives the codec's
  * `migration` phases through `lib/record-client.ts`, one request per process.
  * It writes no control file, no plan file and no stored answer; the codec
  * alone writes those. It needs the plugin and Node and nothing else.
+ *
+ * ## The git pass
+ *
+ * A filer the Markdown never recorded is carried as `legacy-unknown`, its
+ * person the author git names for the file's first add (`firstAdds`): one
+ * `git log --reverse -M --diff-filter=AR --name-status` over the workbench,
+ * each path followed back through the renames git reports, so a marker move
+ * and the v11-to-v12 store rename both lead to the original add. The person
+ * is `%an <%ae>` as written, with no mailmap. A file git does not track, a
+ * workbench in no repository and a shallow history each give no person, with
+ * that reason as evidence. The run's own identity is never read.
  *
  * ## The session
  *
@@ -41,10 +53,10 @@ import { createHash, randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { blocking, buildInventory, composeProposal, inventoryFromSurvey } from "./lib/legacy-import.js";
-import { actorsFromLog, applyRepair, ensureBackup, proposeRepair, readRepairLog, treeHash } from "./lib/legacy-repair.js";
+import { actorsFromLog, applyRepair, ensureBackup, proposeRepair, readRepairLog, REPAIRS, treeHash } from "./lib/legacy-repair.js";
 import { ask } from "./lib/record-client.js";
 import { CONTAINER_STORE, V11_STORE_NAMES } from "./lib/stores.js";
 const EXIT = { done: 0, usage: 2, fault: 3, precondition: 5, blocking: 6, unknown: 7, refused: 8, backup: 9 };
@@ -104,9 +116,45 @@ function survey(wb) {
     const r = send(wb, { op: "migration", phase: "survey" });
     return { layout: r.layout, entries: r.entries, eligible: r.eligible_sha256, local: r.local_state };
 }
+/** The git pass of the header: workbench path to its first add, or why there is none. */
+function firstAdds(wb, untracked) {
+    const git = (...a) => spawnSync("git", ["-C", wb, ...a], { encoding: "utf-8", timeout: 600_000, maxBuffer: 1 << 30 });
+    const top = git("rev-parse", "--show-toplevel");
+    if (top.status !== 0)
+        return () => ({ unknown: "no-repository" });
+    if (git("rev-parse", "--is-shallow-repository").stdout.trim() === "true")
+        return () => ({ unknown: "shallow-history" });
+    const prefix = relative(realpathSync(top.stdout.trim()), wb);
+    const log = spawnSync("git", ["-C", top.stdout.trim(), "-c", "core.quotePath=off", "log", "--reverse", "-M", "--diff-filter=AR", "--name-status", "-z", "--no-mailmap", "--format=%x01%H%x09%an <%ae>", "--", prefix || "."], { encoding: "utf-8", timeout: 600_000, maxBuffer: 1 << 30 });
+    if (log.status !== 0)
+        throw new Stop(EXIT.fault, `git log over ${wb} failed: ${log.stderr.trim()}`);
+    const origin = new Map();
+    for (const block of log.stdout.split("\x01").slice(1)) {
+        const [head, ...rest] = block.split("\0");
+        const [hash, person] = head.replace(/\n+$/, "").split("\t");
+        const at = { person, commit: hash };
+        const f = rest.map((x) => x.replace(/^\n+/, ""));
+        for (let i = 0; i < f.length; i++) {
+            if (f[i] === "A" && !origin.has(f[i + 1]))
+                origin.set(f[++i], at);
+            else if (/^R\d*$/.test(f[i])) {
+                const was = origin.get(f[i + 1]) ?? at;
+                origin.delete(f[i + 1]);
+                origin.set(f[i + 2], was);
+                i += 2;
+            }
+            else if (f[i] === "A")
+                i++;
+        }
+    }
+    return (path) => {
+        const hit = untracked.has(path) ? undefined : origin.get(prefix ? `${prefix}/${path}` : path);
+        return hit ?? { unknown: "untracked" };
+    };
+}
 function compose(wb, session, entries, migrationId = "migration-00000000-survey") {
     const g = gitLists(wb);
-    return composeProposal({ root: wb, inventory: inventoryFromSurvey(entries), migrationId, newId: randomUUID, untracked: g.untracked, ignored: g.ignored, actors: actorsFromLog(readRepairLog(session)) });
+    return composeProposal({ root: wb, inventory: inventoryFromSurvey(entries), migrationId, newId: randomUUID, untracked: g.untracked, ignored: g.ignored, actors: actorsFromLog(readRepairLog(session)), firstAdd: firstAdds(wb, new Set([...g.untracked, ...g.ignored])) });
 }
 const findingId = (wb, f) => {
     const p = join(wb, f.path);
@@ -115,7 +163,7 @@ const findingId = (wb, f) => {
 };
 const legacyNames = (wb) => V11_STORE_NAMES.flatMap((n) => [n, `shared/${n}`, ...(existsSync(join(wb, CONTAINER_STORE)) ? readdirSync(join(wb, CONTAINER_STORE)).map((d) => `${CONTAINER_STORE}/${d}/${n}`) : [])]).filter((p) => existsSync(join(wb, p)));
 // --- the proposal ------------------------------------------------------------------
-/** Byte ranges that turn `src` into `after`, which the composer made by dropping whole lines or a `[MARK] ` token. Verified by hash. */
+/** Byte ranges that turn `src` into `after`, which the composer made by dropping whole lines or a `[MARK]` token with or without its trailing space. Verified by hash. */
 function deletionsOf(src, after) {
     const s = src.toString("utf-8").split("\n");
     const a = after.split("\n");
@@ -135,7 +183,7 @@ function deletionsOf(src, after) {
         while (cut > 0 && p < a[j].length && s[i][p] === a[j][p])
             p++;
         for (; cut > 0 && p >= 0; p--) {
-            if (/^\[[A-Z][A-Z -]*\] $/.test(s[i].slice(p, p + cut)) && s[i].slice(0, p) + s[i].slice(p + cut) === a[j])
+            if (/^\[[A-Z][A-Z -]*\] ?$/.test(s[i].slice(p, p + cut)) && s[i].slice(0, p) + s[i].slice(p + cut) === a[j])
                 break;
         }
         if (cut > 0 && p >= 0) {
@@ -261,7 +309,7 @@ function preconditions(wb) {
 function run(wb, session) {
     const previous = readState(session);
     if (previous?.done && !previous.rolled_back)
-        return [`migrated=${previous.migration_id}`, "result=no-op", "note=nothing was sent: a second plan would store an answer a later rollback refuses"];
+        return [`migrated=${previous.migration_id}`, "result=no-op", "note=nothing was sent: the session records this migration as verified"];
     if (previous && !previous.rolled_back)
         throw new Stop(EXIT.precondition, `a run of ${previous.migration_id} is recorded in ${session}; \`resume\` finishes it or \`rollback\` undoes it`);
     const lines = preconditions(wb);
@@ -280,6 +328,7 @@ function run(wb, session) {
     const p = compose(wb, session, sv.entries, id);
     const blocks = blocking(p);
     if (blocks.length) {
+        out(lines);
         for (const f of blocks)
             say(`blocking ${f.class} ${f.path}: ${f.detail}`);
         throw new Stop(EXIT.blocking, `${blocks.length} blocking findings remain; \`repair --list\` proposes their repairs. Nothing was migrated.`);
@@ -393,14 +442,25 @@ function surveyOut(wb, session) {
     const by = new Map();
     for (const f of p.findings)
         by.set(`${f.severity}\t${f.class}`, (by.get(`${f.severity}\t${f.class}`) ?? 0) + 1);
-    return [`layout=${sv.layout}`, `eligible=${sv.eligible}`, `pending=${sv.local.intents.length}`, ...Object.entries(p.counts).map(([k, v]) => `count=${k}\t${v}`), ...[...by].map(([k, v]) => `findings=${k}\t${v}`), ...blocking(p).map((f) => `blocking=${findingId(wb, f)}\t${f.class}\t${f.path}\t${f.detail}`)];
+    // The derived and defaulted values by pointer, rule and evidence; an evidence naming a commit, a mark or step ids is counted as `*`.
+    const derived = new Map();
+    for (const r of p.records) {
+        for (const [at, d] of Object.entries(r.control.provenance.legacy_fields.derived ?? {})) {
+            const k = `${at.replace(/\/\d+(?=\/|$)/g, "/<i>")}\t${d.rule}\t${d.evidence === undefined ? "-" : /^[a-z][a-z-]*$/.test(d.evidence) ? d.evidence : "*"}`;
+            derived.set(k, (derived.get(k) ?? 0) + 1);
+        }
+    }
+    return [`layout=${sv.layout}`, `eligible=${sv.eligible}`, `pending=${sv.local.intents.length}`, ...Object.entries(p.counts).map(([k, v]) => `count=${k}\t${v}`), ...[...by].map(([k, v]) => `findings=${k}\t${v}`), ...[...derived].sort().map(([k, v]) => `derived=${k}\t${v}`), ...blocking(p).map((f) => `blocking=${findingId(wb, f)}\t${f.class}\t${f.path}\t${f.detail}`)];
 }
 function repair(wb, session, flags) {
     const p = compose(wb, session, survey(wb).entries);
     const blocks = blocking(p);
+    // A reported finding of a class the repair module holds: the owner may still fix its Markdown first.
+    const optional = p.findings.filter((f) => f.severity === "reported" && REPAIRS[f.class] !== undefined);
     if (flags.has("--list")) {
-        const lines = [`blocking=${blocks.length}`];
-        for (const f of blocks) {
+        const listed = flags.has("--optional") ? optional : blocks;
+        const lines = [`${flags.has("--optional") ? "optional" : "blocking"}=${listed.length}`];
+        for (const f of listed) {
             const id = findingId(wb, f);
             const r = proposeRepair(wb, f);
             lines.push(`finding=${id}\t${f.class}\t${f.path}\t${f.detail}`);
@@ -415,9 +475,9 @@ function repair(wb, session, flags) {
         return lines;
     }
     const id = flags.get("--apply")?.[0];
-    const f = blocks.find((x) => findingId(wb, x) === id);
+    const f = [...blocks, ...optional].find((x) => findingId(wb, x) === id);
     if (f === undefined)
-        throw new Stop(EXIT.blocking, `no blocking finding ${id}; its file may have changed since it was listed. \`repair --list\` names the current ones. Nothing was written.`);
+        throw new Stop(EXIT.blocking, `no repairable finding ${id}; its file may have changed since it was listed. \`repair --list\` names the current ones. Nothing was written.`);
     const answers = {};
     for (const v of flags.get("--value") ?? []) {
         const at = v.indexOf("=");
@@ -437,7 +497,7 @@ function repair(wb, session, flags) {
     return [`applied=${id}\t${f.class}\t${f.path}`, `logged=${readRepairLog(session).length}`];
 }
 // --- the entry -----------------------------------------------------------------------
-const TAKES = { survey: [], repair: ["--list", "--apply", "--value", "--consent"], run: [], resume: [], rollback: [], status: [], "restore-backup": ["--consent"] };
+const TAKES = { survey: [], repair: ["--list", "--optional", "--apply", "--value", "--consent"], run: [], resume: [], rollback: [], status: [], "restore-backup": ["--consent"] };
 const VALUED = new Set(["--apply", "--value", "--session"]);
 function main(argv) {
     const [sub, given, ...rest] = argv;
@@ -453,8 +513,8 @@ function main(argv) {
             throw new Stop(EXIT.usage, `${f} needs a value`);
         flags.set(f, [...(flags.get(f) ?? []), v]);
     }
-    if (sub === "repair" && flags.has("--list") === flags.has("--apply"))
-        throw new Stop(EXIT.usage, "repair takes --list or --apply <finding>");
+    if (sub === "repair" && (flags.has("--list") === flags.has("--apply") || (flags.has("--optional") && !flags.has("--list"))))
+        throw new Stop(EXIT.usage, "repair takes --list [--optional] or --apply <finding>");
     if (!lstatSync(given).isDirectory())
         throw new Stop(EXIT.usage, `${given} is not a directory`);
     const wb = realpathSync(given);

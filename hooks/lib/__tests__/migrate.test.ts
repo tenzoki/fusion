@@ -4,13 +4,14 @@ import { createHash } from "node:crypto";
 import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
-import { blocking, buildInventory, composeProposal } from "../legacy-import.js";
+import { buildInventory } from "../legacy-import.js";
 import { treeHash } from "../legacy-repair.js";
 import { CASE_TIMEOUT, REPO_ROOT } from "./helpers/guard-harness.js";
 
 // ---------------------------------------------------------------------------
 // `bin/fusion-migrate` against the real bundle, over copies of the legacy
-// fixture (`codec/fixtures/legacy-v12/README.md`) grown to two chunks. Every
+// fixture (`codec/fixtures/legacy-v12/README.md`) grown to two chunks, its history
+// a commit under the v11 store name renamed by another author. Every
 // helper call runs with PATH (node, git, the system) and HOME alone: no other
 // runtime, checkout or variable. The plan step's note records each guard red
 // against a copy without it.
@@ -23,7 +24,8 @@ const PATH = [dirname(process.execPath), GIT, "/usr/bin", "/bin"].join(":");
 const BENCH = "shared/plans/260905-0900_o_plan-benchmark-suite.md";
 const TRIVIA = "shared/decisions/260905-1200_o_should-the-ast-keep-trivia.md";
 const CLOSURE = "work-packages/260903-1200-streaming-input/plans/260903-1230_c_plan-streaming-input-first-cut.md";
-const DEC = "shared/decisions/260905-1300_a_which-unicode-version-does-the-tokenizer-target.md";
+const PLAN = "work-packages/260902-1000-parser-error-recovery/plans/260902-1100_p_plan-parser-error-recovery.md";
+const UNTRACKED = "shared/issues/260906-1500_o_parser-panics-on-empty-file.md";
 let base: string;
 let n = 0;
 beforeAll(() => void (base = realpathSync(mkdtempSync(join(tmpdir(), "fusion-migrate-")))));
@@ -35,7 +37,7 @@ const git = (cwd: string, ...a: string[]) => spawnSync("git", ["-c", "user.name=
 const read = (wb: string, p: string) => readFileSync(join(wb, p), "utf-8");
 const edit = (wb: string, p: string, a: string, b: string) => writeFileSync(join(wb, p), read(wb, p).replace(a, b));
 
-/** A copy as the fixture README recreates it, with twenty more live issues (two chunks) and two citations of the duplicated step. */
+/** A copy as the fixture README recreates it, with twenty more live issues (two chunks), two citations of the duplicated step, and an untracked issue with no filer. */
 function project(): { root: string; wb: string; home: string } {
   const root = join(base, `p${n++}`);
   const wb = join(root, "fusion-workbench");
@@ -44,31 +46,23 @@ function project(): { root: string; wb: string; home: string } {
   for (let i = 10; i < 30; i++) writeFileSync(join(wb, `shared/issues/260907-10${i}_o_extra-issue-${i}.md`), `# Extra issue ${i}\n\n**Filed by:** user\n\nBody.\n`);
   edit(wb, BENCH, "## Where", "Step 2 times the lexer.\n\n## Where");
   writeFileSync(join(wb, TRIVIA), `${read(wb, TRIVIA)}\nThe parser timings are \`260905-0900_*_plan-benchmark-suite.md\` step 2.\n`);
+  // First added under the v11 store name with the plan at its earlier marker; both renames are a later commit by another author.
+  const moves = [["work-packages", "circles"], [`circles/${PLAN.slice(14)}`, `circles/${PLAN.slice(14).replace("_p_", "_o_")}`]];
+  for (const [a, b] of moves) renameSync(join(wb, a), join(wb, b));
   git(root, "init", "-q");
   for (const [k, v] of [["user.name", "t"], ["user.email", "t@example.invalid"]]) git(root, "config", k, v);
   git(root, "add", "-A");
   git(root, "commit", "-qm", "fixture");
+  for (const [a, b] of moves.reverse()) renameSync(join(wb, b), join(wb, a));
+  git(root, "add", "-A");
+  git(root, "-c", "user.name=u", "-c", "user.email=u@example.invalid", "commit", "-qm", "rename");
   cpSync(join(FIX, "untracked/shared/issues"), join(wb, "shared/issues"), { recursive: true });
+  edit(wb, UNTRACKED, "**Filed by:** code-implementer, Fixture Person <fixture@example.invalid>\n", "");
   mkdirSync(join(root, "home"));
   return { root, wb, home: join(root, "home") };
 }
 const mig = (cwd: string, home: string, ...args: string[]) => spawnSync(BIN, args, { cwd, encoding: "utf-8", env: { PATH, HOME: home } });
 const value = (out: string, key: string) => out.split("\n").find((l) => l.startsWith(`${key}=`))?.slice(key.length + 1);
-
-/** Every blocking finding repaired through the helper, each answer the test's. */
-function repairAll(root: string, home: string): string[] {
-  const asked: string[] = [];
-  for (let i = 0; i < 12; i++) {
-    const list = mig(root, home, "repair", "--list").stdout;
-    const id = value(list, "finding")?.split("\t")[0];
-    if (id === undefined) return asked;
-    const asks = list.split("\n").filter((l) => l.startsWith(`ask=${id}\t`)).map((l) => l.split("\t"));
-    asked.push(...asks.map((a) => a[3]));
-    const values = asks.flatMap(([, key, , , choices]) => ["--value", `${key}=${key === "status" ? "paused" : key === "actor" ? "user" : key === "person" ? "" : choices.split("|").pop()}`]);
-    expect(mig(root, home, "repair", "--apply", id, ...values, "--consent").status).toBe(0);
-  }
-  throw new Error("the repairs did not converge");
-}
 
 describe("bin/fusion-migrate refuses without Node, and before anything else", () => {
   it("a PATH without node and a node reporting v20.11.0 are each refused, the tree byte-identical and no backup", () => {
@@ -93,30 +87,39 @@ describe("bin/fusion-migrate refuses without Node, and before anything else", ()
     const session = join(home, "s");
     mkdirSync(join(session, "backup"), { recursive: true });
     writeFileSync(join(session, "backup", "stray.md"), "left by an interrupted copy\n");
-    const id = value(mig(root, home, "repair", "--list", "--session", session).stdout, "finding")!.split("\t")[0];
+    const id = mig(root, home, "repair", "--list", "--optional", "--session", session).stdout.split("\n").find((l) => l.includes("\tcircle-deferred\t"))!.slice(8).split("\t")[0];
     const before = treeHash(wb);
     const r = mig(root, home, "repair", "--apply", id, "--value", "status=paused", "--consent", "--session", session);
     expect([r.status, r.stderr, treeHash(wb), existsSync(join(session, "repair-log.jsonl"))]).toEqual([9, expect.stringContaining("does not verify"), before, false]);
   }, CASE_TIMEOUT);
 
-  it("blocks an _a_ decision whose Answered: line is empty, as a missing one", () => {
-    const { wb } = project();
-    edit(wb, DEC, /\nAnswered:.*\n/.exec(read(wb, DEC))![0], "\nAnswered:\n");
-    expect(blocking(composeProposal({ root: wb, inventory: buildInventory(wb), migrationId: "m", newId: () => "x" })).map((f) => `${f.class} ${f.path}`)).toContain(`answered-without-answer-line ${DEC}`);
-  });
+  it("takes the person from git's first add, else carries it unknown with the reason, and run prints its reported lines before refusing", () => {
+    const { root, wb, home } = project();
+    const person = (cwd: string) => mig(cwd, home, "survey").stdout.split("\n").filter((l) => l.startsWith("derived=/filed_by/person"));
+    expect(person(root)).toEqual(["derived=/filed_by/person\tgit-first-add\t*\t4", "derived=/filed_by/person\tunknown\tuntracked\t1"]);
+    expect(git(base, "clone", "-q", "--depth", "1", `file://${root}`, `${root}-shallow`).status).toBe(0);
+    expect(person(`${root}-shallow`)).toEqual(["derived=/filed_by/person\tunknown\tshallow-history\t4"]);
+    rmSync(join(root, ".git"), { recursive: true, force: true });
+    edit(wb, "work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md", "**Status:** open", "**Status:** claimed");
+    expect(person(root)).toEqual(["derived=/filed_by/person\tunknown\tno-repository\t5"]);
+    const r = mig(root, home, "run");
+    expect([r.status, r.stdout, r.stderr]).toEqual([6, expect.stringContaining("reported=git\tnot a repository"), expect.stringContaining("blocking invalid-claim")]);
+  }, 2 * CASE_TIMEOUT);
 });
 
 describe("bin/fusion-migrate migrates, rolls back and restores with the plugin and Node alone", () => {
-  it("repairs with consent, migrates through canonical paths, reads back, rolls back after activation and restores the backup", () => {
+  it("needs no repair, lists the optional ones, migrates through canonical paths, reads back, rolls back after activation and restores the backup", () => {
     const { root, wb, home } = project();
     const original = treeHash(wb);
     const closure = read(wb, CLOSURE);
-    const asked = repairAll(root, home);
-    // C16: the in-file and the incoming citation of the duplicated step were put to the owner and rewritten.
-    expect(asked.filter((a) => /step 2 or the renumbered 2b/.test(a)).map((a) => a.split(" line ")[0])).toEqual([BENCH, TRIVIA]);
-    expect([read(wb, BENCH), read(wb, TRIVIA)].map((t) => /step 2b\b/i.test(t))).toEqual([true, true]);
+    const list = mig(root, home, "repair", "--list").stdout;
+    expect([value(list, "blocking"), list.includes("ask=")]).toEqual(["0", false]);
+    // C16, optional now: the in-file and the incoming citation of the duplicated step would be put to the owner.
+    const opt = mig(root, home, "repair", "--list", "--optional").stdout.split("\n");
+    const id = opt.find((l) => l.includes("\tduplicate-step-number\t"))!.slice(8).split("\t")[0];
+    expect(opt.filter((l) => l.startsWith(`ask=${id}\t`)).map((l) => l.split("\t")[3].split(" line ")[0])).toEqual([BENCH, TRIVIA]);
     const stores = () => sha(buildInventory(wb).files.filter((f) => /^(work-packages|shared)\//.test(f.path)).map((f) => `${f.path} ${f.sha256}`).join("\n"));
-    const repaired = stores();
+    const before = stores();
     // Sent through a symlinked spelling of the workbench: every request must still name its real path.
     symlinkSync(root, join(base, `link${n}`));
     const r = spawnSync(process.execPath, [resolve(REPO_ROOT, "hooks", "dist", "migrate.js"), "run", join(base, `link${n}`, "fusion-workbench")], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
@@ -126,8 +129,13 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     expect([s.schedule.apply.length, s.workbench]).toEqual([2, wb]);
     const end = JSON.parse(read(wb, `.json-state/ops/${s.end_id}.json`));
     expect(end.request_digest).toBe(sha(canonical({ op: "maintenance", operation_id: s.end_id, action: "end", fence: s.schedule.apply[0].operation_id, workbench: wb })));
-    // A terminal closure record's actor went into its control file only.
-    expect([read(wb, CLOSURE), JSON.parse(read(wb, CLOSURE.replace(/\.md$/, ".record.json"))).filed_by]).toEqual([closure, { actor: "user", person: null }]);
+    // The duplicated step 2 anchors neither of its lines. A filer nobody recorded is legacy-unknown, its person git's first add through both renames; a terminal record's Markdown stays as it is.
+    const control = (p: string) => JSON.parse(read(wb, p.replace(/\.md$/, ".record.json")));
+    expect([control(BENCH).control.steps, control(BENCH).provenance.legacy_fields.derived["/control/steps"]]).toEqual([[{ id: "1", state: "open" }], { rule: "duplicate-numbers-unanchored", evidence: "2" }]);
+    const first = git(root, "rev-list", "--max-parents=0", "HEAD").stdout.toString().trim();
+    const shown = JSON.parse(spawnSync(resolve(REPO_ROOT, "bin", "fusion-record"), [], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home }, input: JSON.stringify({ op: "show", record: { path: CLOSURE.replace(/\.md$/, ".record.json") } }) }).stdout).result.control;
+    expect([read(wb, CLOSURE), shown.filed_by, shown.provenance.legacy_fields.derived]).toEqual([closure, { actor: "legacy-unknown", person: "t <t@example.invalid>" }, { "/filed_by/actor": { rule: "unknown" }, "/filed_by/person": { rule: "git-first-add", evidence: first } }]);
+    expect(control(PLAN).provenance.legacy_fields.derived["/filed_by/person"]).toEqual({ rule: "git-first-add", evidence: first });
     for (const reader of [["fusion-claimed-package"], ["fusion-work-order"], ["fusion-citation-check"], ["fusion-citation-sweep", "--dry-run"]]) {
       const x = spawnSync(resolve(REPO_ROOT, "bin", reader[0]), reader.slice(1), { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
       expect(x.status, `${reader.join(" ")}: ${x.stderr}`).toBe(0);
@@ -135,7 +143,7 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     expect(value(mig(root, home, "run").stdout, "result")).toBe("no-op");
     const back = mig(root, home, "rollback");
     expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
-    expect([stores(), existsSync(join(wb, "workbench.json")), read(wb, ".fusion-setup")]).toEqual([repaired, false, '{"setup_at":"t"}\n']);
+    expect([stores(), existsSync(join(wb, "workbench.json")), read(wb, ".fusion-setup")]).toEqual([before, false, '{"setup_at":"t"}\n']);
     const restored = mig(root, home, "restore-backup", "--consent");
     expect([restored.status, value(restored.stdout, "tree")], restored.stderr).toEqual([0, original]);
   }, 4 * CASE_TIMEOUT);
@@ -157,7 +165,6 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     }
     const kill = (rule: object | null) => (rule ? writeFileSync(join(plugin, "codec/dist/kill.json"), JSON.stringify(rule)) : rmSync(join(plugin, "codec/dist/kill.json"), { force: true }));
     const { root, wb, home } = project();
-    repairAll(root, home);
     const cut = (sub: string) => spawnSync(join(plugin, "bin", "fusion-migrate"), [sub], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
     kill({ phase: "apply", chunk: 1 });
     expect([cut("run").status, cut("status").stdout]).toEqual([7, expect.stringContaining("chunks=1/2")]);

@@ -7,10 +7,10 @@ import { actorsFromLog, applyRepair, proposeRepair, readRepairLog, treeHash, typ
 import { REPO_ROOT } from "./helpers/guard-harness.js";
 
 // ---------------------------------------------------------------------------
-// The consented repair of blocking findings, over a copy of the legacy fixture
-// (`codec/fixtures/legacy-v12/README.md`). Every answer is the test's; the plan
-// step's note records each guard red against a copy that writes without consent
-// and one that takes the offered person when none was answered.
+// The consented repair of findings, optional since step 12d, over a copy of the
+// legacy fixture (`codec/fixtures/legacy-v12/README.md`). Every answer is the
+// test's; the plan step's note records each guard red against a copy that writes
+// without consent and one that takes the offered person when none was answered.
 // ---------------------------------------------------------------------------
 
 const FIX = resolve(REPO_ROOT, "codec", "fixtures", "legacy-v12", "workbench");
@@ -33,7 +33,7 @@ function withCopy(fn: (wb: string, session: string) => void): void {
   }
 }
 const edit = (wb: string, rel: string, a: string, b: string) => writeFileSync(join(wb, rel), readFileSync(join(wb, rel), "utf-8").replace(a, b));
-const findings = (wb: string, session = "") => composeProposal({ root: wb, inventory: buildInventory(wb), migrationId: "t", newId: () => "x", actors: actorsFromLog(readRepairLog(session)) }).findings;
+const findings = (wb: string, session = "") => composeProposal({ root: wb, inventory: buildInventory(wb), migrationId: "t", newId: () => "x", actors: actorsFromLog(readRepairLog(session)), firstAdd: () => ({ unknown: "no-repository" }) }).findings;
 const blockers = (wb: string, session = "") => findings(wb, session).filter((f) => f.severity === "blocking");
 const same = (wb: string, f: Finding) => findings(wb).filter((x) => x.class === f.class && x.path === f.path && x.detail === f.detail).length;
 const asked = (p: RepairProposal, a: Record<string, string>) => (p.repairable ? p.questions.filter((q) => !q.when || a[q.when.key] === q.when.value) : []);
@@ -45,18 +45,18 @@ const CASES: [FindingClass, (wb: string) => void, Record<string, string>][] = [
   ["answered-without-answer-line", (wb) => edit(wb, DEC, "\nAnswered:", "\nNote:"), { section: "## Recommendation", summary: "option 2", ruler: "user", ruler_person: ME }],
   ["mark-outside-numbered-step", (wb) => edit(wb, BENCH, "## Where", "### [DONE] Benchmarks run in CI\n\n## Where"), { action: "move", step: "1" }],
   ["unknown-step-mark", (wb) => edit(wb, PLAN, "12a. [OPEN]", "12a. [BLOCKED]"), { mark: "OPEN" }],
-  ["duplicate-step-number", () => {}, {}],
+  // C16: the plan's own citation of the step and an incoming one from another live narrative are each asked.
+  ["duplicate-step-number", (wb) => (edit(wb, BENCH, "## Where", "Step 2 times the lexer.\n\n## Where"), writeFileSync(join(wb, DEC), `${readFileSync(join(wb, DEC), "utf-8")}\nTimed in \`260905-0900_*_plan-benchmark-suite.md\` step 2.\n`)), { "cite-1": "2b", "cite-2": "2" }],
   ["unresolvable-active-document", (wb) => edit(wb, CLAIMED, SPEC, "260902-1031_*_spec-gone.md (the spec)"), { action: "cross-reference" }],
   ["active-document-role-unclear", (wb) => (renameSync(join(wb, PKG, "plans/260902-1030_p_spec-parser-error-recovery.md"), join(wb, PKG, "plans/260902-1030_p_recovery-notes.md")), edit(wb, CLAIMED, SPEC, "260902-1030_*_recovery-notes.md (the notes)")), { role: "spec" }],
   ["circle-deferred", () => {}, { status: "paused" }],
 ];
-const ANSWERS = Object.fromEntries(CASES.map(([c, , a]) => [c, a]));
 
-describe("legacy repair: one blocking finding at a time, with consent", () => {
+describe("legacy repair: one finding at a time, optional, with consent", () => {
   it.each(CASES)("%s: repaired only with consent and every asked value, then gone from the reader", (cls, setup, answers) =>
     withCopy((wb, session) => {
       setup(wb);
-      const f = blockers(wb).find((x) => x.class === cls)!;
+      const f = findings(wb).find((x) => x.class === cls)!;
       const p = proposeRepair(wb, f, { person: ME });
       const before = [treeHash(wb), same(wb, f)] as const;
       expect([p.repairable, asked(p, answers).map((q) => q.key).sort()]).toEqual([true, Object.keys(answers).sort()]);
@@ -87,18 +87,5 @@ describe("legacy repair: one blocking finding at a time, with consent", () => {
       renameSync(join(wb, "work-packages"), join(wb, "circles"));
       const route = proposeRepair(wb, findings(wb).find((x) => x.class === "legacy-store-name")!);
       expect(route).toMatchObject({ repairable: false, reason: expect.stringContaining("/fusion:migrate") });
-    }));
-
-  it("repairs the fixture to zero blocking findings, backed up first and logged with hashes", () =>
-    withCopy((wb, session) => {
-      const original = treeHash(wb);
-      for (let left = blockers(wb), n = 0; left.length; left = blockers(wb, session), n++) {
-        expect(n).toBeLessThan(10);
-        expect(applyRepair({ root: wb, session, proposal: proposeRepair(wb, left[0]), consent: true, answers: ANSWERS[left[0].class] })).toMatchObject({ applied: true });
-      }
-      const log = readRepairLog(session);
-      expect(log.map((e) => e.finding.class).sort()).toEqual(["circle-deferred", "duplicate-step-number", "filed-by-not-owed", "filed-by-not-owed", "filed-by-not-owed", "filed-by-not-owed"]);
-      expect(log.map((e) => /^sha256:/.test(e.pre_sha256) && (e.pre_sha256 === e.post_sha256) === (e.control_only === true))).toEqual(log.map(() => true));
-      expect([readFileSync(join(session, "backup.sha256"), "utf-8").trim(), treeHash(join(session, "backup"))]).toEqual([original, original]);
     }));
 });

@@ -48,30 +48,53 @@
  *
  * `261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md`
  * option 1: Circle `_c_` done/legacy-completed, `_b_` dropped/bounded, `_s_`
- * dropped/dropped, `_d_` a blocking finding until its `**Status:**` starts
- * `paused` or `dropped`, which the consented repair writes
- * (`lib/legacy-repair.ts`); an empty container tree is
- * reported and not migrated; an `Answered:` line citing nothing resolvable
- * answers with the record's own original; a document role comes from its
- * clause or its stem, else a blocking finding. Every mapped value stays
- * verbatim in `provenance.legacy_fields`.
+ * dropped/dropped, `_d_` dropped/dropped unless its `**Status:**` starts
+ * `paused` or `dropped`; an empty container tree is reported and not
+ * migrated; an `Answered:` line citing nothing resolvable answers with the
+ * record's own original. Every mapped value stays verbatim in
+ * `provenance.legacy_fields`.
  * `261001-1804_*_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md`
  * option 1: the step number is the anchor, criteria are empty.
  *
  * Which lines are steps, as decidable from the line: a line at column 0 that
  * is a number and a full stop, optionally behind a `##`-`####` heading
  * marker, is a step when it carries a bracket mark, or when it stands in an
- * `## Implementation steps` section. An unmarked step is `open`. A mark that
- * starts a list item or heading anywhere else, a mark outside the plan
- * vocabulary, and a duplicate number are blocking findings for that plan.
- * Inside a fenced code block nothing is read.
+ * `## Implementation steps` section. An unmarked step is `open`. Inside a
+ * fenced code block nothing is read.
+ *
+ * ## Derive, carry as unknown, default (the ruling of 2026-10-03)
+ *
+ * The plan's `## Amendment of 2026-10-03: derive, carry as unknown, ask only
+ * what is genuine`, and requests 54 to 58 of `codec/fixtures/prior/REQUESTS.md`.
+ * A value the files or git decide is derived; one they do not is carried as
+ * unknown or as a default that asserts no live state. Each such control value
+ * has one entry in `provenance.legacy_fields.derived`, keyed by its JSON
+ * Pointer, `{rule, evidence?}`, and its finding is `reported`. A value the
+ * legacy file recorded is never replaced, and `**Filed by:** user` keeps its
+ * person null. Per class:
+ *
+ *   filed-by-*       actor `legacy-unknown`; person from the injected
+ *                    `firstAdd` (the git author of the file's first add,
+ *                    followed through renames), else null with its evidence
+ *   answered-without-answer-line  `answer_ref` the record's own original
+ *   mark-outside-numbered-step    the mark token leaves the narrative, kept in
+ *                    `legacy_fields.unanchored_marks` by line
+ *   unknown-step-mark the step anchors `open`; the token stays in `step_marks`
+ *   duplicate-step-number every line of a duplicated number stays unanchored,
+ *                    its mark in `unanchored_marks`; the other steps anchor
+ *   an `**Active spec/plan:**` entry that is unresolvable, archived,
+ *                    ambiguous, not a plan, or of an unclear or conflicting
+ *                    role: carried in `references` as its citation, or only in
+ *                    `legacy_fields.head` when it is no citation
+ *   circle-deferred  `dropped`, as the other Circle markers map terminal
  *
  * ## Findings
  *
- * `blocking` stops activation until the frozen plan resolves it (spec section
- * 8.2: no guessed state, active plan, claim or live dependency); `reported` is
- * carried into the plan and the receipt and blocks nothing. `FINDINGS` lists
- * every class with its severity.
+ * `blocking` stops activation until the frozen plan resolves it: what spec
+ * section 8.2 forbids to default, a state, a claim, a live dependency or which
+ * plan is active (`several-active-plans`, `plan-adopted-twice`), and the
+ * structural facts the codec refuses. `reported` is carried into the plan and
+ * the receipt and blocks nothing. `FINDINGS` lists every class with its severity.
  */
 export interface InventoryEntry {
     path: string;
@@ -90,32 +113,36 @@ export declare const FINDINGS: {
     readonly "control-file-exists": "blocking";
     readonly "unknown-state": "blocking";
     readonly "unknown-package-status": "blocking";
-    readonly "circle-deferred": "blocking";
     readonly "two-package-heads": "blocking";
     readonly "container-without-head": "blocking";
     readonly "invalid-claim": "blocking";
     readonly "unknown-mode": "blocking";
     readonly "duplicate-control-head": "blocking";
-    readonly "filed-by-missing": "blocking";
-    readonly "filed-by-not-owed": "blocking";
-    readonly "filed-by-unreadable": "blocking";
     readonly "several-active-plans": "blocking";
-    readonly "unresolvable-active-document": "blocking";
-    readonly "active-document-not-a-plan": "blocking";
-    readonly "active-document-archived": "blocking";
-    readonly "active-document-role-unclear": "blocking";
+    readonly "plan-adopted-twice": "blocking";
     readonly "unresolvable-live-dependency": "blocking";
     readonly "dependency-not-a-package": "blocking";
     readonly "dependency-archived": "blocking";
+    /** On `**Depends-on:**` only; on `**Active spec/plan:**` it is `active-document-ambiguous`. */
     readonly "ambiguous-structural-citation": "blocking";
-    readonly "duplicate-step-number": "blocking";
-    readonly "mark-outside-numbered-step": "blocking";
-    readonly "unknown-step-mark": "blocking";
-    readonly "answered-without-answer-line": "blocking";
     readonly "closure-without-v1-state": "blocking";
     readonly "closure-incomplete": "blocking";
     readonly "record-is-link": "blocking";
     readonly "narrative-too-large": "blocking";
+    readonly "circle-deferred": "reported";
+    readonly "filed-by-missing": "reported";
+    readonly "filed-by-not-owed": "reported";
+    readonly "filed-by-unreadable": "reported";
+    readonly "unresolvable-active-document": "reported";
+    readonly "active-document-not-a-plan": "reported";
+    readonly "active-document-archived": "reported";
+    readonly "active-document-ambiguous": "reported";
+    readonly "active-document-role-unclear": "reported";
+    readonly "active-document-role-conflict": "reported";
+    readonly "duplicate-step-number": "reported";
+    readonly "mark-outside-numbered-step": "reported";
+    readonly "unknown-step-mark": "reported";
+    readonly "answered-without-answer-line": "reported";
     readonly "empty-container-tree": "reported";
     readonly "terminal-value-without-v1-state": "reported";
     readonly "circle-head-disagrees-with-marker": "reported";
@@ -125,7 +152,6 @@ export declare const FINDINGS: {
     readonly "status-head-in-live-record": "reported";
     readonly "reference-not-a-citation": "reported";
     readonly "unmarked-file-in-record-store": "reported";
-    readonly "plan-adopted-twice": "reported";
     readonly "unknown-domain": "reported";
     readonly "untracked-record": "reported";
     readonly "ignored-record": "reported";
@@ -177,7 +203,20 @@ export interface ComposeInput {
         actor: string;
         person: string | null;
     }>>;
+    /** Narrative path to the person git names for its first add, or why none: the person of a filer the file never recorded. */
+    firstAdd: (path: string) => FirstAdd;
 }
+export type FirstAdd = {
+    person: string;
+    commit: string;
+} | {
+    unknown: "untracked" | "no-repository" | "shallow-history";
+};
+/** `provenance.legacy_fields.derived`: JSON Pointer into the control to the rule that set the value. */
+export type Derived = Record<string, {
+    rule: string;
+    evidence?: string;
+}>;
 /** Every entry under `root`, sorted; links are not followed. Reads only. */
 export declare function buildInventory(root: string): Inventory;
 /** One entry of `migration survey`'s answer, in its four forms. */
