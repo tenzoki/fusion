@@ -2003,3 +2003,121 @@ The eligible inventory is every entry under the workbench root except: `.json-st
 4. `rollback.json` also binds the receipt by `{path, sha256}`. Prior names migration, plan and fence.
 5. A codec-side reconstruction is tried with `workbench` absent and with `workbench` equal to the served request's resolved root. Prior's text does not address this field. A host rule that never sends `workbench` was considered and not taken: fusion's host sets the field on every request by design (`hooks/lib/record-client.ts:207-209`).
 6. The scheduled answers set aside from later operations include the rollback chunks' answers besides plan, apply and verify, which Prior names. `REQUESTS.md:1806` already counts them as progress, not as exemptions.
+
+## FJ04 (addendum for the user's ruling of 2026-10-03)
+
+**Written against:** fusion commit `512bfe53` on branch `fj-json-workbench` (2026-10-03 17:53), the head of the branch when this text was written. The last commit that moved `codec/`, `bin/` or `hooks/` is `76ba852f` (2026-10-03 09:56, the installed-copy cases). The sections above are unchanged since `8edd3023`, which appended `## FJ04 (addendum for a1fb17a)`. The bundle in the blob at `512bfe53` is 678 774 bytes, `sha256:c71e219efde6ec59f4f268ed820ba8bdd48067cb48fbe2521d7934e087e02fa6`. It is unqualified. The last qualified bundle stays `e1bafd2f`, `sha256:6b26faf2…b0bf`. Prior was read at `d0fce6c` (2026-10-03 09:01), the head of the Prior checkout. `git log --all --oneline 1dfd446..` shows `d0fce6c` alone there. That commit is Prior's ruling that a verified second-run no-op does not by itself block rollback. It touches none of requests 54 to 58, and this addendum neither takes it up nor rests on it.
+
+This addendum changes the repair policy and the finding severities of `## FJ04 (the contract delta)` `### The finding classes, measured, and the repair policy`, as the two sections after it amended them, where the user's ruling requires. Everything not named here stands. Where they disagree, this addendum governs. It asks five things, requests 54 to 58, each a departure from a text Prior confirmed. Request 53 stays reserved. The other two workbenches still appear only as the second and the third, in aggregate figures. Every count below reads fusion / second / third.
+
+### The ruling, and what it removes
+
+On 2026-10-03 the user ruled that the migration derives what is derivable, carries what is not derivable as unknown, and asks only genuine decisions. The actor half of `**Filed by:**` is never guessed and never invented.
+
+The cost this removes was measured by the proof on copies at fusion `76ba852f`, through the installed 13.0.0 with no Prior runtime present. `repair --list` asked 54 / 636 / 122 questions, 49 / 569 / 122 of them unconditional. No copy migrated without the owner's answers. Under 13.0.0, an unmigrated workbench stops every agent's Setup: `bin/fusion-paths` exits 3 and `bin/fusion-work-order` exits 4. The question count was therefore the cost of the upgrade itself.
+
+The user also ruled, on the same day:
+
+- Decision `261003-1746_*_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md` is answered with option 1: the reserved actor below.
+- fusion's build does not wait for Prior's answers to 54 to 58. Those answers gate the hand-over that freezes the digest and the migration of a consuming project's real workbench. They never gate fusion's runtime. If Prior rejects a request, its classes go back to `blocking` with their repairs, the proof on copies is measured again, and the hand-over states the answers.
+
+### One rule, per class
+
+The host never asks for a value it can decide from the files or from git. A value it cannot decide is carried as unknown, or as a default that asserts no live state, under three conditions:
+
+- the legacy bytes stay in `originals/` and in `provenance.legacy_fields`;
+- the control file names the rule in `provenance.legacy_fields.derived`;
+- the finding is `reported`, so the frozen findings part and the receipt carry it.
+
+A value stays a question only where section 8.2 forbids any default: a state, a claim, a live dependency, or which of several plans is active. A value the legacy file recorded is never replaced. An explicitly absent person (`**Filed by:** user`) stays null.
+
+| Class | Was blocking (step 12's run) | Treatment | The control carries |
+|---|---|---|---|
+| `filed-by-missing` | 0 / 128 / 56 | actor unknown; person from git | `filed_by {actor: "legacy-unknown", person}`; `derived["/filed_by/actor"]` and `derived["/filed_by/person"]` |
+| `filed-by-not-owed` | 18 / 48 / 0 | as above; the conventions do not owe the line on a plan | as above |
+| `filed-by-unreadable` | 0 / 6 / 0 | as above; the line stays in the narrative and raw in `legacy_fields.head` | as above |
+| `answered-without-answer-line` | 2 / 19 / 2 | `answer_ref` is the record's own original (request 55) | `derived["/control/answer_ref"]` |
+| `mark-outside-numbered-step` | 5 / 65 / 0 | the mark token leaves the live narrative as a byte deletion (request 56) | `legacy_fields.unanchored_marks` |
+| `unknown-step-mark` | 0 / 3 / 0 | the step is anchored with state `open`, as an unmarked step is (request 56) | `derived["/control/steps/<i>/state"]`; the token in `step_marks` |
+| `duplicate-step-number` | 0 / 5 in 1 plan / 0 | every line carrying a duplicated number stays unanchored; the other steps anchor (request 56) | `derived["/control/steps"]`; those lines' marks in `unanchored_marks` |
+| `unresolvable-active-document` | 0 / 2 / 0 | the binding is carried as a reference, not as an active document (request 58) | `derived["/references/<i>"]`; the raw head in `legacy_fields.head` |
+| `active-document-role-unclear` | 0 / 1 / 0 | as above (request 58) | as above |
+| `circle-deferred` | 0 / 0 / 2 | `dropped`, outcome `dropped`, reason "deferred (legacy Circle marker)", `legacy-terminal` (request 57) | `derived["/status"]`; the marker in `legacy_fields.file_marker` |
+
+Every row is `reported` after the change. The binding rule of request 58 also covers `active-document-archived`, `active-document-not-a-plan` and an ambiguous citation in `**Active spec/plan:**`, newly reported as `active-document-ambiguous`. Each is 0 on all three copies. On `**Depends-on:**`, `ambiguous-structural-citation` stays blocking.
+
+These classes stay blocking, each 0 on all three copies: `legacy-store-name` (routed to the rename), `manifest-present`, `control-file-exists`, `unknown-state`, `unknown-package-status`, `two-package-heads`, `container-without-head`, `invalid-claim`, `unknown-mode`, `duplicate-control-head`, `several-active-plans`, `unresolvable-live-dependency`, `dependency-not-a-package`, `dependency-archived`, `ambiguous-structural-citation` on `**Depends-on:**`, `closure-without-v1-state`, `closure-incomplete`, `record-is-link` and `narrative-too-large`.
+
+**The repairs become optional.** Every repair of `### Repairs, as amended` stays available, with consent per finding, to an owner who wants the Markdown corrected before migrating (`repair --list --optional`). A repaired value is a recorded one and gets no `derived` entry. The migration requires no repair. With the change, `repair --list` is expected to print `blocking=0` and no question on each of the three copies, and `/fusion:migrate` asks one question per copy: whether to migrate now. The re-run of the proof on copies measures this before the hand-over.
+
+### The `derived` and `unanchored_marks` forms
+
+Both live inside `provenance.legacy_fields`, which `codec/schemas/common.schema.json` types as a free object. Neither is a schema change.
+
+- **`derived`** is an object keyed by a JSON Pointer into the control. Each value is `{rule, evidence?}`. The rules and their evidence:
+
+  | `rule` | Pointer | `evidence` |
+  |---|---|---|
+  | `unknown` | `/filed_by/actor` | none |
+  | `git-first-add` | `/filed_by/person` | the commit |
+  | `unknown` | `/filed_by/person` | `untracked`, `no-repository` or `shallow-history` |
+  | `answer-ref-self` | `/control/answer_ref` | `no-answer-line` or `empty-answer-line` |
+  | `unrecognised-mark-open` | `/control/steps/<i>/state` | the unrecognised mark |
+  | `duplicate-numbers-unanchored` | `/control/steps` | the duplicated step ids |
+  | `binding-carried-as-reference` | `/references/<i>` | `unresolvable`, `role-unclear`, `archived`, `not-a-plan` or `ambiguous` |
+  | `circle-deferred-dropped` | `/status` | none |
+
+- **`git-first-add`.** The person is the author of the commit that first added the file, followed through renames (`git log --follow --diff-filter=A`). It is historical evidence taken from the history, never the identity of whoever runs the migration. On the copies, every `**Filed by:**` finding named a tracked file with such an author: 18 of 18, 182 of 182 and 56 of 56, by 1, 2 and 1 distinct identities. **Limit:** in a commit that adds many files at once, the author may be whoever imported them rather than whoever wrote them. In the second copy, 8 of the 182 come from commits that add more than 20 files. The evidence names the commit, so a reader can judge it.
+- **`unanchored_marks`** is an object `{"line <n>": "<MARK>"}`, keyed by the line in the original. The original's full bytes stay in `originals/`.
+
+### The reserved actor `legacy-unknown`
+
+Decision 261003-1746, option 1, as the user answered it:
+
+- `common.schema.json` names the reserved value in `$defs/actor`'s description and adds `$defs/legacy_unknown_actor` (`const: "legacy-unknown"`).
+- `record.schema.json` and `package.schema.json` admit `filed_by.actor` equal to it only when `provenance.source` is `imported` or `legacy-terminal`.
+- `protocol.schema.json` refuses it in `create`'s `filed_by` and in the `actor` of `transition`, `claim` and `release`. No live write can produce it.
+- No schema id is added, so `/result/schemas` in the recorded `inspect` answers does not move.
+
+The value is always paired with `derived["/filed_by/actor"] = {rule: "unknown"}`. It is a string, so no consumer's decoding changes. It follows the vocabulary of the package's existing `origin.kind` `legacy-unknown`, which is a different field and is unchanged.
+
+### Requests 54 to 58
+
+**54. The filer carried as unknown, the person from git.**
+
+- *Departs from:* `## FJ04 (the contract delta, amended for ab9cb59)` `### Repairs, as amended`, "No identity offer": "When no actor can be established, the finding stays open." It also departs from the second bullet there, which asks a terminal closure record's actor into its control, and from the actor bullet of `## FJ04 (addendum for a1fb17a)` `### Recovery, the envelope and the repairs (corrects lines 1718, 1746, 1756, 1825, 1831 and 1832)`.
+- *Now:* the three `filed-by-*` classes are reported. The actor is `legacy-unknown`, and the person is `git-first-add` or null with its `unknown` evidence. A terminal record's Markdown stays byte-identical as before; only its control carries the values.
+- *Why Prior's principle holds:* nothing is offered, defaulted or taken from the current repairer. The person is the history's own record of who added the file.
+- *Asked:* does Prior accept the reserved actor under the schema rule above, and the first-add author as the person with its evidence?
+
+**55. An `_a_` decision with no answer line references its own original.**
+
+- *Departs from:* `## FJ04 (addendum for a1fb17a)` `### Recovery, the envelope and the repairs (corrects lines 1718, 1746, 1756, 1825, 1831 and 1832)`: "An `_a_` decision whose answer entry is missing or empty blocks." Also `## FJ04 (the contract delta, amended for ab9cb59)` `### The record cut, the grammar and the roles, as ruled`, "Answers (49 a, b)": "An `_a_` decision with no answer entry stays blocking."
+- *Now:* `answer_ref` is the `artefact_ref` to the record's own original, the branch Prior accepted in 49 (a) for a line that cites nothing resolvable. The rule is `answer-ref-self` with evidence `no-answer-line` or `empty-answer-line`.
+- *Why:* the `_a_` marker records that an answer was given. Where it stands is not always findable: on the copies, an answer section, a head field or a variant line was found in 2 / 3 / 2 of the 2 / 19 / 2 cases. In the other 0 / 16 / 0, the reference points to an original whose answer the host could not locate. The finding says so.
+- *Asked:* does Prior accept the self-reference as `answer_ref` where no answer line exists?
+
+**56. Plan structure: stray marks removed, an unknown mark taken as open, duplicated numbers left unanchored.**
+
+- *Departs from:* `### 48. Step anchors and criteria, for confirmation`: "An unclear structure blocks that plan … Each is resolved only by the owner's consented repair." Also the duplicate-number bullet of `## FJ04 (the contract delta, amended for ab9cb59)` `### Repairs, as amended`.
+- *Now:* as the table above states for the three classes.
+- *What still holds:* a citation is never attached to the wrong step. A duplicated number anchors no line, so a prose citation of it attaches to none. An ambiguous step is never dropped silently (`### The record cut, the grammar and the roles, as ruled`, "Steps (48)"): its line stays in the narrative, and the `derived` entry and the finding name it.
+- *Asked:* does Prior accept the three defaults in place of the blocking?
+
+**57. A `_d_` Circle maps to `dropped`.**
+
+- *Departs from:* `### 47. Circle heads and empty container trees`, the `_d_` row of the table and (c): "`_d_` stays blocking until the owner picks `paused` or `dropped`."
+- *Now:* `status: dropped`, outcome `dropped`, reason "deferred (legacy Circle marker)", `legacy-terminal`. The Circle's live records stay live and are reported as `live-record-in-terminal-container`.
+- *Why:* `_d_` is a terminal marker in fusion's vocabulary, and every other Circle marker maps to a terminal state under 47 (a). `paused` would turn history into live work. An owner who wants `paused` applies the optional repair before migrating.
+- *Asked:* is `_d_` to `dropped` a known state under section 8.2, as 47 (a) accepted for the other three markers?
+
+**58. An undecided `**Active spec/plan:**` entry is carried as a reference.**
+
+- *Departs from:* `### 49. answer_ref and document roles`, "Document roles": "Otherwise the finding `active-document-role-unclear` blocks … A binding that resolves to nothing blocks (`unresolvable-active-document`)". Also 49 (c): "any unclear role blocking until the owner picks".
+- *Now:* an entry the host cannot bind is carried in `references` as its legacy citation string, not as an active document. That covers an unresolvable entry, an unclear role, and the archived, not-a-plan and ambiguous cases. `several-active-plans` stays blocking.
+- *Why:* nothing is bound that the files do not decide. The owner binds the plan after migration with `adopt-plan`, an ordinary operation.
+- *Asked:* does Prior accept the reference in place of the blocking finding?
+
+### The bundle
+
+The schema rule moves the bundle digest away from `c71e219e…`. Prior has not qualified that digest either, so Prior still qualifies one digest at the hand-over, the one that carries this rule. Prior's DTOs need no type change, because `filed_by.actor` stays a string. The hand-over also names the codec change that `d0fce6c` asks for, since Prior wants it in the same candidate before its digest is frozen.

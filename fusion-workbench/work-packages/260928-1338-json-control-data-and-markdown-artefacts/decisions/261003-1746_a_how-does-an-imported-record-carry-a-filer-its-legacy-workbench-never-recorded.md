@@ -36,3 +36,7 @@ The user ruled on 2026-10-03 that the migration derives what is derivable, carri
 ## Recommendation
 
 Option 1. It is the only option in which the codec enforces "never invented" for every host while every consumer's types stay as they are. The added coordination is one more schema rule inside a re-qualification Prior must make anyway. The FJ04 plan's amendment of 2026-10-03 builds against option 1 (steps 12a to 12c) and sends it to Prior as a request in step 12a.
+
+## Answer
+
+Answered 2026-10-03 by the user (Kai Stalmann), in chat: option 1, the reserved actor `legacy-unknown`, admitted by the schema only on `imported` and `legacy-terminal` records and refused in every request. The user also ruled that the build does not wait for Prior's answers to requests 54 to 58 (the plan's open question, option 1), and asked that the requests be relayed to him for forwarding to Prior.
