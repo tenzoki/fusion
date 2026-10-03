@@ -1,0 +1,22 @@
+{
+  "op": "transition",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "0f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a",
+  "record": {
+    "path": "work-packages/260928-1200-parser-fix/package.json"
+  },
+  "expected_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actor": {
+    "actor": "legacy-unknown",
+    "person": "kai"
+  },
+  "to": "claimed",
+  "reason": "Claimed for the FJ01 round trip.",
+  "payload": {
+    "claim": {
+      "checkout_id": "a216a4b9",
+      "person": "kai",
+      "claimed_at": "2026-09-28T16:00:00+02:00"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "op": "create",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "0f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a",
+  "id": "7a1c2e3f-4d5b-4c6a-8b7d-9e0f1a2b3c4d",
+  "kind": "issue",
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": null
+  },
+  "origin": {
+    "kind": "package",
+    "ref": {
+      "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+      "record_id": "591d5bf4-2219-46b6-a0d3-cbdb28d6af16"
+    }
+  },
+  "scope": {
+    "container": "work-packages/260928-1200-parser-fix",
+    "store": "issues"
+  },
+  "narrative": {
+    "path": "work-packages/260928-1200-parser-fix/issues/260928-1700-empty-input.md"
+  },
+  "payload": {
+    "state": "open",
+    "disposition": null
+  }
+}

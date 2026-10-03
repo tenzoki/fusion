@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:fusion:schema:fusion.protocol/v1",
   "title": "fusion.protocol/v1",
-  "description": "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
+  "description": "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. The reserved actor legacy-unknown (decision 261003-1746) is refused in every request that carries an actor: create's filed_by and the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
   "type": "object",
   "required": ["op"],
   "properties": {
@@ -72,7 +72,7 @@
         "operation_id": { "$ref": "#/$defs/operation_id" },
         "id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
         "kind": { "type": "string", "enum": ["package", "issue", "plan", "discussion", "decision"] },
-        "filed_by": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "filed_by": { "$ref": "#/$defs/live_actor" },
         "origin": {
           "type": "object",
           "additionalProperties": false,
@@ -141,7 +141,7 @@
         "operation_id": { "$ref": "#/$defs/operation_id" },
         "record": { "$ref": "#/$defs/record_selector" },
         "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "actor": { "$ref": "#/$defs/live_actor" },
         "to": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$", "description": "The target state, in the vocabulary of the record's kind (codec/contract/transitions.json): package statuses are hyphen-free tokens, record states may carry an underscore (in_progress)." },
         "reason": { "type": "string", "minLength": 1 },
         "payload": {
@@ -221,7 +221,7 @@
         "operation_id": { "$ref": "#/$defs/operation_id" },
         "record": { "$ref": "#/$defs/record_selector" },
         "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "actor": { "$ref": "#/$defs/live_actor" },
         "claim": {
           "type": "object",
           "additionalProperties": false,
@@ -244,7 +244,7 @@
         "operation_id": { "$ref": "#/$defs/operation_id" },
         "record": { "$ref": "#/$defs/record_selector" },
         "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "actor": { "$ref": "#/$defs/live_actor" },
         "reason": { "type": "string", "minLength": 1 }
       }
     },
@@ -258,7 +258,7 @@
         "operation_id": { "$ref": "#/$defs/operation_id" },
         "record": { "$ref": "#/$defs/record_selector" },
         "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "actor": { "$ref": "#/$defs/live_actor" },
         "mode": {
           "type": "object",
           "description": "The package's mode field as fusion.package/v1 shapes it; autonomous needs a non-null source with the user's provenance, which the operation checks against the package schema, not this one.",
@@ -281,7 +281,7 @@
         "operation_id": { "$ref": "#/$defs/operation_id" },
         "record": { "$ref": "#/$defs/record_selector" },
         "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "actor": { "$ref": "#/$defs/live_actor" },
         "depends_on": {
           "type": "array",
           "uniqueItems": true,
@@ -307,7 +307,7 @@
         "operation_id": { "$ref": "#/$defs/operation_id" },
         "record": { "$ref": "#/$defs/record_selector" },
         "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "actor": { "$ref": "#/$defs/live_actor" },
         "plan": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" },
         "revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256", "description": "The hash of the plan narrative as accepted." },
         "role": { "type": "string", "enum": ["spec", "plan"], "description": "The active_documents role the record is bound in; absent means plan." }
@@ -323,7 +323,7 @@
         "operation_id": { "$ref": "#/$defs/operation_id" },
         "record": { "$ref": "#/$defs/record_selector" },
         "expected_revision": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
-        "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        "actor": { "$ref": "#/$defs/live_actor" },
         "evidence": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/evidence_ref" }
       }
     },
@@ -427,6 +427,13 @@
       "description": "Absolute path of the workbench root (the directory holding workbench.json). Optional in the request; main.ts fills it from FUSION_WORKBENCH.",
       "minLength": 1,
       "pattern": "^/"
+    },
+    "live_actor": {
+      "description": "An actor as fusion.common/v1 shapes it, minus the reserved legacy-unknown (decision 261003-1746, option 1): create's filed_by and the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence refuse it, every request that carries an actor, so no live write produces it.",
+      "allOf": [
+        { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
+        { "not": { "type": "object", "properties": { "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, "required": ["actor"] } }
+      ]
     },
     "operation_id": {
       "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid",

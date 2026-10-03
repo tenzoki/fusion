@@ -126,13 +126,17 @@
     },
     "actor": {
       "type": "object",
-      "description": "Who acted, in the shape of the conventions' **Filed by:** line: actor is 'user', an agent name or a host name; person is the PERSON= identity or null when unknown. Attribution, never authorisation.",
+      "description": "Who acted, in the shape of the conventions' **Filed by:** line: actor is 'user', an agent name or a host name; person is the PERSON= identity or null when unknown. Attribution, never authorisation. The token legacy-unknown is reserved (decision 261003-1746, option 1): it marks a filer a legacy workbench never recorded, is admitted as filed_by.actor only on a record or package whose provenance.source is imported or legacy-terminal, and is refused in every request that carries an actor, so no live write produces it. It is always paired with provenance.legacy_fields.derived[\"/filed_by/actor\"] = {rule: unknown}, and is a different field from the package's origin.kind legacy-unknown.",
       "additionalProperties": false,
       "required": ["actor", "person"],
       "properties": {
         "actor": { "$ref": "#/$defs/token" },
         "person": { "type": ["string", "null"], "minLength": 1 }
       }
+    },
+    "legacy_unknown_actor": {
+      "description": "The reserved actor token for a filer a legacy workbench never recorded (decision 261003-1746, option 1). The record and package schemas admit it as filed_by.actor only under provenance.source imported or legacy-terminal; the protocol schema refuses it in every request that carries an actor.",
+      "const": "legacy-unknown"
     },
     "execution_policy": {
       "type": "string",

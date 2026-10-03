@@ -1,0 +1,39 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "3b6f0c2e-8d41-4a7e-9c5b-2f1e0d9a8b7c",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260912-0930_o_lexer-drops-trailing-comment.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "kai"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "marker": "_o_",
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "4f2a9c1"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20260928-example/backup/shared/issues/260912-0930_o_lexer-drops-trailing-comment.md",
+      "sha256": "sha256:7c3e5a91d2b84f06e1a9c7d3b5f2e8a4c6d0b9f1e3a5c7d9b2f4e6a8c0d1e3f5",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

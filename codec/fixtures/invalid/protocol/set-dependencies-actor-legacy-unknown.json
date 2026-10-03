@@ -1,0 +1,22 @@
+{
+  "op": "set-dependencies",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "0f0d8c3a-9b7e-4c1d-8a2f-6e5b4d3c2b1a",
+  "record": {
+    "path": "work-packages/260928-1200-parser-fix/package.json"
+  },
+  "expected_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actor": {
+    "actor": "legacy-unknown",
+    "person": "kai"
+  },
+  "depends_on": [
+    {
+      "target": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "b6e23b92-0f65-4a35-89c9-2a53e4ac37c0"
+      },
+      "condition": "succeeded"
+    }
+  ]
+}

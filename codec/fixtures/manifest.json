@@ -160,6 +160,12 @@
     "note": "done with class legacy-completed requires provenance.source legacy-terminal with a backup; domain null and a raw legacy mode line are admitted on an imported record."
   },
   {
+    "path": "valid/package/done-legacy-completed-legacy-unknown-filer.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "done-legacy-completed.json with the reserved actor legacy-unknown as filed_by.actor: admitted under provenance.source legacy-terminal (decision 261003-1746, option 1)."
+  },
+  {
     "path": "valid/package/dropped-failed.json",
     "schema": "urn:fusion:schema:fusion.package/v1",
     "expect": "valid",
@@ -454,6 +460,12 @@
     "note": "A closed issue carries a disposition object whose reason_ref is a legacy citation; the terminal Markdown stays byte-identical under provenance legacy-terminal."
   },
   {
+    "path": "valid/record/issue-imported-legacy-unknown-filer.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "An imported record whose legacy workbench never recorded the filer carries the reserved actor legacy-unknown, the person from the file's first-add commit, and both rules in provenance.legacy_fields.derived (decision 261003-1746, option 1)."
+  },
+  {
     "path": "valid/record/issue-with-candidate.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "valid",
@@ -585,6 +597,13 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "A closed issue carries a disposition object."
+  },
+  {
+    "path": "invalid/record/created-with-legacy-unknown-filer.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "issue-open.json with filed_by.actor legacy-unknown: the reserved actor requires provenance.source imported or legacy-terminal, and this record is created (decision 261003-1746, option 1)."
   },
   {
     "path": "invalid/record/issue-state-unknown.json",
@@ -1453,6 +1472,13 @@
     "note": "expected_revision is an algorithm-qualified sha256: value."
   },
   {
+    "path": "invalid/protocol/transition-actor-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "transition.json with actor legacy-unknown: the reserved actor is refused in the actor of transition, claim and release (decision 261003-1746, option 1)."
+  },
+  {
     "path": "invalid/protocol/claim-checkout-id-uppercase.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "invalid",
@@ -1474,11 +1500,25 @@
     "note": "mode.value is ordinary or autonomous."
   },
   {
+    "path": "invalid/protocol/set-mode-actor-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "set-mode.json with actor legacy-unknown: the reserved actor is refused in every request that carries an actor (decision 261003-1746, option 1)."
+  },
+  {
     "path": "invalid/protocol/set-dependencies-condition-unknown.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "A depends_on condition is terminal or succeeded (codec/contract/dependencies.json)."
+  },
+  {
+    "path": "invalid/protocol/set-dependencies-actor-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "set-dependencies.json with actor legacy-unknown: the reserved actor is refused in every request that carries an actor (decision 261003-1746, option 1)."
   },
   {
     "path": "invalid/protocol/adopt-plan-without-revision.json",
@@ -1488,11 +1528,25 @@
     "note": "adopt-plan binds a revision; without one there is nothing to bind."
   },
   {
+    "path": "invalid/protocol/adopt-plan-actor-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "adopt-plan.json with actor legacy-unknown: the reserved actor is refused in every request that carries an actor (decision 261003-1746, option 1)."
+  },
+  {
     "path": "invalid/protocol/attach-evidence-ref-without-revision.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "An evidence_ref is pinned to an exact revision."
+  },
+  {
+    "path": "invalid/protocol/attach-evidence-actor-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "attach-evidence.json with actor legacy-unknown: the reserved actor is refused in every request that carries an actor (decision 261003-1746, option 1)."
   },
   {
     "path": "invalid/protocol/reconcile-operation-id.json",
@@ -1605,6 +1659,13 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "narrative.content is the Markdown body as one string; a list of lines is refused."
+  },
+  {
+    "path": "invalid/protocol/create-filed-by-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "create.json with filed_by.actor legacy-unknown: the reserved actor is refused in every request, so no live write produces it (decision 261003-1746, option 1)."
   },
   {
     "path": "invalid/protocol/adopt-plan-role-unknown.json",

@@ -1,0 +1,69 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "ec3709ff-7b8e-4571-89e6-11ef14b54c57",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "domain": null,
+  "status": "done",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": {
+      "kind": "legacy",
+      "raw": "**Mode:** ordinary"
+    }
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260715-1000-legacy-parser/260715-1000-legacy-parser.md"
+  },
+  "depends_on": [
+    {
+      "target": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "428c4b4a-5b43-48c3-86b8-000910cd2a8e"
+      },
+      "condition": "terminal"
+    }
+  ],
+  "active_documents": [],
+  "references": [
+    "260715-0900-parser-baseline.md"
+  ],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "Imported from a Markdown record already at Status done; no evidence record was ever bound.",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "Status": "done",
+      "Claimed-by": "a216a4b9",
+      "Depends-on": "260715-0900-parser-baseline.md",
+      "Domain": null,
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "unknown",
+          "evidence": "untracked"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20260928-example/backup/work-packages/260715-1000-legacy-parser.md",
+      "sha256": "sha256:5590388a3b2d9d22a5d4b06a57a761c72ec4f4557d8bc4f8e9a6d3d13c2c5c88",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

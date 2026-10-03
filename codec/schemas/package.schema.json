@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:fusion:schema:fusion.package/v1",
   "title": "fusion.package/v1",
-  "description": "Control data of one work package, work-packages/<name>/package.json (spec section 4.2). Every key is required; null and the empty list are deliberately distinct. Cross-field rules expressed below with if/then: claimed requires a claim, open and paused require claim null, outcome is null exactly on the non-terminal statuses, done admits the classes completed and legacy-completed, dropped admits bounded, cancelled, failed and dropped, a non-completed class carries a reason, legacy-completed requires provenance.source legacy-terminal and legacy-terminal requires a terminal status, mode autonomous requires a non-null source, origin package and campaign require a ref and legacy-unknown forbids one, at most one active_documents entry has role plan. Rules JSON Schema cannot check and codec/contract/transitions.json plus transitions.ts enforce: which status change is legal from which status (the spec 4.2 matrix; done and dropped are terminal and never reopened, resumption files a new package citing the old); depends_on targets are distinct by record_id (uniqueItems only catches identical entries) and form no cycle; a depends_on condition is evaluated against the target's live JSON (codec/contract/dependencies.json); every record_ref resolves in the named workbench; each active_documents revision equals the hash of the referenced narrative at acceptance, and a changed brief makes bound evidence stale; the claim's checkout_id is a domain assignment, never a host lease; narrative.path names this package's own Markdown file inside its own directory; mode autonomous is written only on the user's word and never invented by an agent.",
+  "description": "Control data of one work package, work-packages/<name>/package.json (spec section 4.2). Every key is required; null and the empty list are deliberately distinct. Cross-field rules expressed below with if/then: claimed requires a claim, open and paused require claim null, outcome is null exactly on the non-terminal statuses, done admits the classes completed and legacy-completed, dropped admits bounded, cancelled, failed and dropped, a non-completed class carries a reason, legacy-completed requires provenance.source legacy-terminal and legacy-terminal requires a terminal status, filed_by.actor equal to the reserved legacy-unknown requires provenance.source imported or legacy-terminal (decision 261003-1746), mode autonomous requires a non-null source, origin package and campaign require a ref and legacy-unknown forbids one, at most one active_documents entry has role plan. Rules JSON Schema cannot check and codec/contract/transitions.json plus transitions.ts enforce: which status change is legal from which status (the spec 4.2 matrix; done and dropped are terminal and never reopened, resumption files a new package citing the old); depends_on targets are distinct by record_id (uniqueItems only catches identical entries) and form no cycle; a depends_on condition is evaluated against the target's live JSON (codec/contract/dependencies.json); every record_ref resolves in the named workbench; each active_documents revision equals the hash of the referenced narrative at acceptance, and a changed brief makes bound evidence stale; the claim's checkout_id is a domain assignment, never a host lease; narrative.path names this package's own Markdown file inside its own directory; mode autonomous is written only on the user's word and never invented by an agent.",
   "type": "object",
   "additionalProperties": false,
   "required": ["active_documents", "claim", "depends_on", "domain", "evidence", "extensions", "filed_by", "id", "mode", "narrative", "origin", "outcome", "provenance", "references", "schema", "status", "workbench_id"],
@@ -226,6 +226,17 @@
         "required": ["provenance"]
       },
       "then": { "type": "object", "properties": { "status": { "enum": ["done", "dropped"] } } }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": { "filed_by": { "type": "object", "properties": { "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, "required": ["actor"] } },
+        "required": ["filed_by"]
+      },
+      "then": {
+        "type": "object",
+        "properties": { "provenance": { "type": "object", "properties": { "source": { "enum": ["imported", "legacy-terminal"] } }, "required": ["source"] } }
+      }
     }
   ]
 }
