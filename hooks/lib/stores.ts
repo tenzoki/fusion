@@ -56,19 +56,16 @@ export const LEGACY_STORES = ["backlog"] as const;
 export const RETIRED_REVIEW_FOLDERS = ["codereview", "ontoreview", "conceptreview"] as const;
 
 /**
- * The v11 name of each store v12 renamed: read beside the new name while that
- * directory exists, never written. A copy of the layout tree's `### Transition
- * window (v12.0.0 to v13.0.0)`, held equal to it by `path-literal-lint.test.ts`
- * and to the plugin's major by `window-bound.test.ts`; the closing release,
- * 13.0.0, empties it (ruling
+ * The v11 name of each store v12 renamed, read beside the new name during the
+ * v12 window. The window closed at 13.0.0, which emptied this record and
+ * deleted the layout tree's subsection it copied; `window-bound.test.ts` holds
+ * it empty (ruling
  * 260922-1114_*_does-the-transition-windows-legacy-read-live-at-one-site-per-runtime.md).
- * Typed as a record rather than `as const` so that emptying it is a one-line edit.
  */
-export const WINDOW_LEGACY_NAMES: Readonly<Record<string, string>> = {
-  "work-packages": "circles",
-  plans: "planning",
-  consultations: "consult",
-};
+export const WINDOW_LEGACY_NAMES: Readonly<Record<string, string>> = {};
+
+/** The three v11 store names, outliving the window: the migration refuses them and `/fusion:migrate` renames them. */
+export const V11_STORE_NAMES: readonly string[] = ["circles", "planning", "consult"];
 
 /** A store's names during the window: the new one first, then its legacy one if any. */
 export function namesOf(kind: string): string[] {

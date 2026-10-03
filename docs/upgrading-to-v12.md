@@ -10,8 +10,8 @@ changes something the note describes edits the note in the same commit.
 
 **Two things reach your project.** A name you type or your tooling sends stops resolving the day you
 update, and your workbench still carries the three v11 store names until you rename them. The first
-is loud; the second is quiet, and the module reads the old names for one major version so that
-nothing breaks while you get to it. That grace period is the **transition window**, and it closes at
+is loud; the second was quiet, and the module read the old names for one major version so that
+nothing broke while you got to it. That grace period was the **transition window**, and it closed at
 **13.0.0**.
 
 Upgrading itself is the ordinary update: `fusion --update`, or the uninstall/install/reload sequence
@@ -66,32 +66,22 @@ have carries it, so it stays until a release that may rewrite records renames it
 
 ## The transition window, 12.0.0 to 13.0.0
 
-Until 13.0.0 each renamed store is **read under its old name beside the new one, wherever the old
-directory exists, and never written under it**. The rule is defined once, in
-`rules/fusion-workbench-conventions.md` `### Transition window (v12.0.0 to v13.0.0)`, and copied into
-`hooks/lib/stores.ts` and `bin/fusion-stores`; tests hold the three equal and refuse a 13.x version
-while a legacy entry stands.
+Until 13.0.0 each renamed store was **read under its old name beside the new one, wherever the old
+directory existed, and never written under it**. For a workbench updated but not yet migrated that
+meant: every `SCAN_*` key listed the old directory beside the new one, every `OUT_*` key named a new
+store, `/fusion:setup` printed a `LEGACY-STORES` line and continued, and a plan step whose `Executor:`
+named a v11 agent was dispatched under the v12 name.
 
-What that means for a workbench you have updated but not yet migrated:
-
-- **Nothing breaks.** Every `SCAN_*` key lists the old directory beside the new one, so an agent
-  still finds the plans, consultations and work packages it found yesterday.
-- **New records land under the new names.** Every `OUT_*` key names a new store, so a plan filed today
-  goes to `plans/`, not `planning/`, and the two stand side by side until you migrate.
-- **`/fusion:setup` says so, once, and continues.** Its probe prints a `LEGACY-STORES` line naming each
-  old store it found and `/fusion:migrate`.
-- **A plan step whose `Executor:` names a v11 agent is dispatched under the v12 name.** The
-  orchestrator carries the seven-row table above for the persisted plans that spell the old one.
-
-At 13.0.0 the window closes: the legacy reads, the `Executor:` alias, the manifest's old-name match and setup's continue-on-legacy
-case are removed together, and `/fusion:setup` refuses a workbench that still carries a v11 store
-name. `/fusion:migrate` keeps working after that, for a project that updates late.
+At 13.0.0 the window closed: the legacy reads, the `Executor:` alias, the manifest's old-name match
+and setup's continue-on-legacy case were removed together, and `/fusion:setup` refuses a workbench
+that still carries a v11 store name. `/fusion:migrate` keeps working after that, for a project that
+updates late.
 
 ## What to do in your project
 
 Three checks. The first is the migration; the other two are names outside your workbench.
 
-### 1. Migrate the workbench inside the window
+### 1. Migrate the workbench
 
 `## Migrating your workbench` below is the procedure. Run it right after the update, before a session
 files anything: that keeps the migration a pure rename, and it avoids the one case the pass cannot
@@ -109,18 +99,17 @@ helper learns what to ask for instead. Your tooling that reads `ITEM=`, `OUT_BAC
 ### 3. Rename the agents in your context manifest
 
 If your project ships `./rules/context-manifest.yaml`, its `agents:` arrays name agents by
-identifier. Until 13.0.0 an old name is still matched as its v12 name, so a unit keyed
-`agents: [coder]` keeps loading for `code-implementer`, and `bin/fusion-rules` prints a one-line
-advisory naming the replacement; from 13.0.0 that unit stops loading, silently. The grep below is how
-you find the old names and rename them before then:
+identifier. Until 13.0.0 an old name was still matched as its v12 name, with a one-line advisory
+from `bin/fusion-rules`; since 13.0.0 a unit keyed `agents: [coder]` does not load for
+`code-implementer`, silently. The grep below is how you find the old names and rename them:
 
 ```bash
 grep -nE '(^|[^[:alnum:]-])(shaper|planner|coder|ontocoder|reconciler|editor|curator)([^[:alnum:]-]|$)' rules/context-manifest.yaml
 ```
 
-The manifest format is otherwise unchanged (`rules/context-manifest.md`). Your live plans' `Executor:`
-lines need nothing: the orchestrator reads them through the alias until 13.0.0, and a plan closed by
-then is history.
+The manifest format is otherwise unchanged (`rules/context-manifest.md`). The orchestrator read a
+live plan's old `Executor:` line through an alias until 13.0.0; since then a live plan names the
+v12 identifier, and a closed one is history.
 
 ## Migrating your workbench
 
@@ -169,8 +158,8 @@ path exists on both sides is refused: the pass names it, leaves it where it is, 
 else. Keep one of the two, delete or rename the other, and run `/fusion:migrate` again. Migrating
 before the first session after the update is how you never meet this.
 
-**If you skip the migration** nothing breaks inside the window, and every store you have carries two
-names until you do. After 13.0.0, `/fusion:setup` refuses the workbench until it is migrated.
+**If you skip the migration**, `/fusion:setup` refuses the workbench from 13.0.0 on until it is
+migrated, as the window's close made it.
 
 **A workbench older than v11** — the pre-v4 type folders, a v4-era flat Circle file, a live Circle
 record or a bracket-marked filename — is refused by the v12 migration, which converts none of those
@@ -194,7 +183,7 @@ Each line says what this release did to something and stops there.
 ## Where to read more
 
 - `README-agents.md` `## The agents` — the eleven agents under their v12 names.
-- `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` — the layout, with the window.
+- `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` — the layout.
 - `skills/migrate/SKILL.md` — the migration's own survey, question and refusals.
 - `docs/upgrading-to-v11.md` — the previous release with an action in it, if you are coming from
   v10.26 or earlier. Its migration step now runs at the `v11.11.1` tag, as described above.

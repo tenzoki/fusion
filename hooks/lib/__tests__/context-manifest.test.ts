@@ -236,13 +236,13 @@ describe("context-manifest: emit predicate (agent-match AND topic-match)", () =>
     }
   });
 
-  it("a pre-v12 agent name matches its v12 name until 13.0.0; an unknown name matches nothing", () => {
+  it("a pre-v12 agent name matches nothing since 13.0.0, like an unknown name", () => {
     writeManifest(manifestProject, "units:\n  - path: A.md\n    agents: [coder]\n    topics: [always]\n" +
       "  - path: B.md\n    agents: [no-such-agent]\n    topics: [always]\n");
     const r = run(manifestProject, "code-implementer");
-    expect(lines(r.stdout), "agents: [coder] reaches code-implementer").toContain("A.md");
+    expect(lines(r.stdout), "agents: [coder] no longer reaches code-implementer").not.toContain("A.md");
     expect(lines(r.stdout), "an unknown name is not aliased").not.toContain("B.md");
-    expect(r.stderr).toContain("names 'coder', renamed 'code-implementer'");
+    expect(r.stderr).not.toContain("coder");
   });
 
   it("a skill unit emits a `skill:<name>` pointer, not a file path", () => {

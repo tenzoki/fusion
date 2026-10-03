@@ -7,8 +7,8 @@ import {
   LEGACY_STORES,
   RECORD_STORES,
   RETIRED_REVIEW_FOLDERS,
+  V11_STORE_NAMES,
   WINDOW_LEGACY_NAMES,
-  WINDOW_LEGACY_RECORD_STORES,
 } from "../stores.js";
 
 // ---------------------------------------------------------------------------
@@ -21,7 +21,7 @@ import {
 
 // The artifact-store folders, composed from `hooks/lib/stores.ts` rather than
 // listed here: the live stores (the layout tree's, `checkouts` included) and the
-// container store, the window's legacy record-store names, the legacy backlog
+// container store, the v11 record-store names, the legacy backlog
 // store, and the three retired pre-v4 review folders. A kind's location comes
 // from `fusion-paths` ($OUT_* / $SCAN_*), never from a literal.
 //
@@ -33,14 +33,14 @@ import {
 const TYPE_FOLDERS: readonly string[] = [
   ...RECORD_STORES,
   CONTAINER_STORE,
-  ...WINDOW_LEGACY_RECORD_STORES,
+  ...V11_STORE_NAMES.filter((n) => n !== "circles"),
   ...LEGACY_STORES,
   ...RETIRED_REVIEW_FOLDERS,
 ];
 
 // The whole trust surface — the sites allowed to name type folders as paths.
 // Enumerated explicitly, never pattern-matched: `setup` names the stores it
-// scaffolds and, during the window, the legacy store it reports; `migrate`
+// scaffolds and the v11 stores it refuses; `migrate`
 // names both sides of the rename. Every other skill and every agent must go
 // through `fusion-paths`.
 const EXEMPT_SKILLS = new Set(["setup", "migrate"]);
@@ -193,7 +193,7 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
     ["the container store", "open work-packages/260716-x/ first"],
     ["the plans store", "skim plans/*.md for open steps"],
     ["the consultations store", "write the report to shared/consultations/<file>.md"],
-    ["a window legacy name", "the report sits in consult/<file>.md"],
+    ["a v11 store name", "the report sits in consult/<file>.md"],
   ];
 
   for (const [label, text] of PATHS_THAT_MUST_FIRE) {

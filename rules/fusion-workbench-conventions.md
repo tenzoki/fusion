@@ -74,16 +74,6 @@ They are root-anchored because none of them belongs to a unit of work. `orchestr
 
 The list is exhaustive as written, and it is a list rather than a count on purpose: a count goes stale on the next helper that needs project-wide state, and this one already had. When a `bin/` helper or a hook adds a root-anchored surface, it lands in this tree and in the record-or-live-state split in `rules/workbench-tracking.md`, both in the same commit: this document is the definition, and an incomplete tree invites exactly the reasoning-by-omission it exists to prevent.
 
-### Transition window (v12.0.0 to v13.0.0)
-
-Until v13.0.0 each store v12 renamed is read under its old name beside the new one, where that directory exists, and is never written under it:
-
-- `work-packages/`: `circles/`
-- `plans/`: `planning/`
-- `consultations/`: `consult/`
-
-`hooks/lib/stores.ts` and `bin/fusion-stores` copy this list; tests hold the three equal. v13.0.0 deletes this subsection and the legacy entries of both copies; archive sweeps keep `circles/` for good.
-
 ### Which of them a tracked workbench tracks
 
 Whether a consuming project tracks its workbench at all is that project's decision: fusion ships no `.gitignore` rule for it. Which of the root entries above a project that *does* track it should commit, which it should not, and what preserves the evidence in the ones it does not, are authored in `rules/workbench-tracking.md`.

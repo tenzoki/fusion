@@ -208,16 +208,16 @@ describe("bin/fusion-paths", () => {
       });
     }, CASE_TIMEOUT);
 
-    it("lists a v11 store name beside the new one only where that directory exists, and writes to none", () => {
-      // The transition-window read of `SCAN_*` is this script's own and stays; a claim under the v11 root is no longer read.
+    it("lists no v11 store name since 13.0.0 closed the window, even where that directory exists", () => {
+      // The window's `SCAN_*` read went with `bin/fusion-stores`' LEGACY_ lines; the branches read their absence as none.
       withScope((p, mine) => {
         claimAlpha(p, mine);
         mkdirSync(join(p.workbench, "circles", ALPHA, "planning"), { recursive: true });
         mkdirSync(join(p.workbench, "shared", "planning"), { recursive: true });
         const v = parse(run(p.root, "orchestrator").stdout);
         expect(v.OUT_ISSUE).toBe(`work-packages/${ALPHA}/issues`);
-        expect(v.SCAN_PACKAGES).toBe("work-packages circles");
-        expect(v.SCAN_PLANS).toBe(`work-packages/${ALPHA}/plans circles/${ALPHA}/planning shared/plans shared/planning`);
+        expect(v.SCAN_PACKAGES).toBe("work-packages");
+        expect(v.SCAN_PLANS).toBe(`work-packages/${ALPHA}/plans shared/plans`);
         expect(parse(run(p.root, "consultant").stdout).OUT_CONSULT).toBe("shared/consultations");
       });
     }, CASE_TIMEOUT);

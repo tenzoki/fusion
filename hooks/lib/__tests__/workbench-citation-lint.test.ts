@@ -227,7 +227,7 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
     // clause lands first so that conversion has a gate that can see it. Measured
     // here, it admits zero files on disk — the `LIVE_PLAN_RE` precedent.
     expect(inCorpus("work-packages/260101-0000-x/260101-0000-x.md")).toBe(true);
-    expect(inCorpus("circles/260101-0000-x/260101-0000-x.md")).toBe(true); // the window's legacy root
+    expect(inCorpus("circles/260101-0000-x/260101-0000-x.md")).toBe(false); // the v11 root, unread since 13.0.0
     // The structural equality is the whole discriminator. A stray file inside a
     // container, and one container naming another container's record, are each
     // outside — which is what stops the second clause from being an exemption
@@ -267,7 +267,7 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
     // test and which plans stand open on any given day is not a property of it.
     // The dated measurement at the clause itself is where a live count belongs.
     expect(inCorpus("shared/plans/260101-0000_o_x.md")).toBe(true);
-    expect(inCorpus("circles/260101-0000-c/planning/260101-0000_p_x.md")).toBe(true); // legacy names
+    expect(inCorpus("circles/260101-0000-c/planning/260101-0000_p_x.md")).toBe(false); // v11 names, unread since 13.0.0
     for (const m of ["c", "d"]) {
       expect(inCorpus(`shared/plans/260101-0000_${m}_x.md`), m).toBe(false);
     }

@@ -78,7 +78,7 @@ import { lstatSync, readdirSync, readFileSync, readlinkSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { createScanner, type Scanner } from "./citation-scan.js";
-import { CONTAINER_STORE, PACKAGE_CONTROL, RECORD_CONTROL_SUFFIX, WINDOW_LEGACY_NAMES, WORKBENCH_MANIFEST } from "./stores.js";
+import { CONTAINER_STORE, PACKAGE_CONTROL, RECORD_CONTROL_SUFFIX, V11_STORE_NAMES, WORKBENCH_MANIFEST } from "./stores.js";
 
 export interface InventoryEntry {
   path: string;
@@ -368,7 +368,7 @@ export function composeProposal(input: ComposeInput): Proposal {
   const untracked = new Set(input.untracked ?? []);
   const ignored = new Set(input.ignored ?? []);
 
-  for (const legacy of Object.values(WINDOW_LEGACY_NAMES)) {
+  for (const legacy of V11_STORE_NAMES) {
     for (const d of inventory.dirs) {
       if (!d.startsWith("archive/") && (d === legacy || d.endsWith(`/${legacy}`))) find("legacy-store-name", d, `rename to the v12 name first (/fusion:migrate)`);
     }

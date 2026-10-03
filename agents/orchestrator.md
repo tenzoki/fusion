@@ -237,17 +237,7 @@ Not every task needs either. Skip both when the request already names concrete f
 ### Step 1 — read the task
 
 1. **Read the source.** Open the plan step, the issue record, or the user's own words in full. A task you have only summarised is a task you have already narrowed.
-2. **Route it** per the **Agent Routing Table**. A plan step whose `Executor:` names a pre-v12 identifier is dispatched as its v12 identifier, until v13.0.0 removes this alias:
-
-   | pre-v12 | v12 |
-   |---|---|
-   | `shaper` | `requirements-designer` |
-   | `planner` | `implementation-planner` |
-   | `coder` | `code-implementer` |
-   | `ontocoder` | `data-implementer` |
-   | `reconciler` | `state-auditor` |
-   | `editor` | `document-editor` |
-   | `curator` | `policy-curator` |
+2. **Route it** per the **Agent Routing Table**.
 3. **Approval check.** If the task meets any condition in **Human approval rules**, emit `gate_hit`, put the question to the user, and emit `gate_response` with their decision. On Skip: emit `task_skipped` and move on. On Defer: rename the source marker to `_d_` and emit `task_deferred`. Under `**Mode:** autonomous`, the clause in **Human approval rules** sorts the conditions into three sets: answered by the field, file-and-skip with no question put, and ask as written.
 4. **Mark the source.** Rename the source file's state marker `_o_` → `_p_`, or mark the plan step `[IN PROGRESS]`.
 

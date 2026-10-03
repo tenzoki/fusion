@@ -46,7 +46,7 @@ import { fileURLToPath } from "node:url";
 import { blocking, buildInventory, composeProposal, inventoryFromSurvey } from "./lib/legacy-import.js";
 import { actorsFromLog, applyRepair, ensureBackup, proposeRepair, readRepairLog, treeHash } from "./lib/legacy-repair.js";
 import { ask } from "./lib/record-client.js";
-import { CONTAINER_STORE } from "./lib/stores.js";
+import { CONTAINER_STORE, V11_STORE_NAMES } from "./lib/stores.js";
 const EXIT = { done: 0, usage: 2, fault: 3, precondition: 5, blocking: 6, unknown: 7, refused: 8, backup: 9 };
 /** The codec's exclusion allowlist (`codec/README.md` `## migration`); fusion's host selects the whole list. */
 const EXCLUSIONS = [".session-marker", ".checkout-id", ".cadence-anchors", ".check-stamps", "monitor", "orchestrator-events.jsonl", ".fusion-setup", ".asset-provenance", ".guard-state", ".commit-lock"];
@@ -113,9 +113,7 @@ const findingId = (wb, f) => {
     const bytes = existsSync(p) && statSync(p).isFile() ? sha(readFileSync(p)) : "-";
     return sha([f.class, f.path, f.detail, bytes].join("\0")).slice(7, 19);
 };
-/** The v11 store names the rename pass of `/fusion:migrate` handles; held here, since the rename outlives the v12 window. */
-const V11_NAMES = ["circles", "planning", "consult"];
-const legacyNames = (wb) => V11_NAMES.flatMap((n) => [n, `shared/${n}`, ...(existsSync(join(wb, CONTAINER_STORE)) ? readdirSync(join(wb, CONTAINER_STORE)).map((d) => `${CONTAINER_STORE}/${d}/${n}`) : [])]).filter((p) => existsSync(join(wb, p)));
+const legacyNames = (wb) => V11_STORE_NAMES.flatMap((n) => [n, `shared/${n}`, ...(existsSync(join(wb, CONTAINER_STORE)) ? readdirSync(join(wb, CONTAINER_STORE)).map((d) => `${CONTAINER_STORE}/${d}/${n}`) : [])]).filter((p) => existsSync(join(wb, p)));
 // --- the proposal ------------------------------------------------------------------
 /** Byte ranges that turn `src` into `after`, which the composer made by dropping whole lines or a `[MARK] ` token. Verified by hash. */
 function deletionsOf(src, after) {

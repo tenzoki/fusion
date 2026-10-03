@@ -82,7 +82,7 @@ describe("plan-size: the ceiling reports and never gates", () => {
 
   it("exits 0 with verdict=under when every plan fits", () => {
     const root = scratchRoot();
-    plan(root, "shared/planning", "260909-1843_o_small.md", 500);
+    plan(root, "shared/plans", "260909-1843_o_small.md", 500);
 
     const r = run(root);
 
@@ -104,7 +104,7 @@ describe("plan-size: the ceiling reports and never gates", () => {
 
   it("--ceiling re-reads the same corpus at another number", () => {
     const root = scratchRoot();
-    plan(root, "shared/planning", "260909-1843_o_mid.md", 5000);
+    plan(root, "shared/plans", "260909-1843_o_mid.md", 5000);
 
     expect(value(run(root, "--ceiling", "4000").stdout, "verdict")).toBe("over");
     expect(value(run(root, "--ceiling", "6000").stdout, "verdict")).toBe("under");
@@ -124,36 +124,36 @@ describe("plan-size: the ceiling reports and never gates", () => {
 describe("plan-size: the corpus", () => {
   it("is live plans only — terminal markers and shaper specs are out", () => {
     const root = scratchRoot(); // a legacy-only v11 store, reported under its own name
-    plan(root, "shared/planning", "260901-0900_o_open.md", 900);
-    plan(root, "shared/planning", "260901-0901_p_recommended.md", 900);
-    plan(root, "shared/planning", "260901-0902_c_closed.md", 90000);
-    plan(root, "shared/planning", "260901-0903_d_deferred.md", 90000);
-    plan(root, "shared/planning", "260901-0904_o_spec-by-topic.md", 90000);
-    plan(root, "shared/planning", "260901-0905_o_by-h1.md", 90000, "# Spec: by h1");
-    plan(root, "shared/planning", "not-a-record.md", 90000);
+    plan(root, "shared/plans", "260901-0900_o_open.md", 900);
+    plan(root, "shared/plans", "260901-0901_p_recommended.md", 900);
+    plan(root, "shared/plans", "260901-0902_c_closed.md", 90000);
+    plan(root, "shared/plans", "260901-0903_d_deferred.md", 90000);
+    plan(root, "shared/plans", "260901-0904_o_spec-by-topic.md", 90000);
+    plan(root, "shared/plans", "260901-0905_o_by-h1.md", 90000, "# Spec: by h1");
+    plan(root, "shared/plans", "not-a-record.md", 90000);
 
     const report = measurePlanSizes(root);
 
     expect(report.rows.map((r) => r.rel)).toEqual([
-      "shared/planning/260901-0900_o_open.md",
-      "shared/planning/260901-0901_p_recommended.md",
+      "shared/plans/260901-0900_o_open.md",
+      "shared/plans/260901-0901_p_recommended.md",
     ]);
     expect(report.skippedSpecs).toBe(2);
     expect(report.verdict).toBe("under");
   });
 
-  it("spans every package's plans store and the shared one under both window names, largest first", () => {
+  it("spans every package's plans store and the shared one, largest first, and no v11 name since 13.0.0", () => {
     const root = scratchRoot();
     plan(root, "work-packages/260101-0000-a/plans", "260101-0000_o_a.md", 3000);
     plan(root, "circles/260102-0000-b/planning", "260102-0000_o_b.md", 5000);
     plan(root, "shared/plans", "260103-0000_o_c.md", 4000);
     plan(root, "shared/planning", "260104-0000_o_d.md", 2000);
 
-    const report = measurePlanSizes(root, 4500);
+    const report = measurePlanSizes(root, 3500);
 
     expect(report.rows.map((r) => r.rel.replace(/\/[^/]+$/, ""))).toEqual(
-      ["circles/260102-0000-b/planning", "shared/plans", "work-packages/260101-0000-a/plans", "shared/planning"]);
-    expect(report.rows.map((r) => r.over)).toEqual([true, false, false, false]);
+      ["shared/plans", "work-packages/260101-0000-a/plans"]);
+    expect(report.rows.map((r) => r.over)).toEqual([true, false]);
     expect(report.verdict).toBe("over");
   });
 

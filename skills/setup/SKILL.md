@@ -34,16 +34,16 @@ Note the path: the workbench is created here.
 
 **A `work-packages/` container holding work-package directories is the CURRENT layout and is never a finding.** That is what a workbench looks like now: one directory per work package, holding that package's own stores, beside the `shared/` stores for everything with no item to belong to (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). Setup creates `work-packages/` itself, below. A probe that refused a container would refuse the ordinary shape and route every user to a migration that must not run.
 
-**A v11 store name is reported, never refused.** `circles/`, `shared/planning/` and `shared/consult/` are read beside their v12 names until `13.0.0` (`rules/fusion-workbench-conventions.md` `### Transition window (v12.0.0 to v13.0.0)`), so the probe prints one `LEGACY-STORES` line naming each one it finds and `/fusion:migrate`, and Setup continues. The `mkdir` below then creates the new names beside them, and new records land there.
+**A v11 store name is refused.** `circles/`, `shared/planning/` and `shared/consult/` were read beside their v12 names until the window closed at `13.0.0`, and nothing reads them since, so the probe prints one `LEGACY-STORES` line naming each one it finds and Setup stops: `/fusion:migrate` renames them, then Setup runs again.
 
 Detection is by artefact presence, not by version. A pre-v4, v4-era or bracket-marked shape is `/fusion:migrate`'s to recognise, and it refuses with the `v11.11.1` route; setup probes for none of them. Read-only:
 
 ```bash
 WB=./fusion-workbench; OLD=0; L=""; for s in circles shared/planning shared/consult; do [ -d "$WB/$s" ] && L="$L $s/"; done
-[ -n "$L" ] && echo "LEGACY-STORES:$L (v11 names, read until 13.0.0; /fusion:migrate renames them)"; echo "OLD=$OLD"
+[ -n "$L" ] && OLD=1 && echo "LEGACY-STORES:$L (v11 names; run /fusion:migrate, then Setup again)"; echo "OLD=$OLD"
 ```
 
-- **`LEGACY-STORES`** — say the line to the user once, in the chat language, and continue.
+- **`LEGACY-STORES`**, `OLD=1` — say the line to the user once, in the chat language, and **stop Setup here, creating nothing**.
 - **`OLD=0`** — nothing out of format here. Continue with the `mkdir` below. Say nothing about it.
 
 Only when `OLD=0`, create the workbench directory alone and let the codec decide what it is. This is the only `initialize` sent anywhere, and it comes before any other write:

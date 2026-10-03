@@ -47,7 +47,7 @@ import { fileURLToPath } from "node:url";
 import { blocking, buildInventory, composeProposal, inventoryFromSurvey, type Finding, type Proposal, type SurveyEntry } from "./lib/legacy-import.js";
 import { actorsFromLog, applyRepair, ensureBackup, proposeRepair, readRepairLog, treeHash } from "./lib/legacy-repair.js";
 import { ask, type CodecRequest } from "./lib/record-client.js";
-import { CONTAINER_STORE } from "./lib/stores.js";
+import { CONTAINER_STORE, V11_STORE_NAMES } from "./lib/stores.js";
 
 const EXIT = { done: 0, usage: 2, fault: 3, precondition: 5, blocking: 6, unknown: 7, refused: 8, backup: 9 } as const;
 /** The codec's exclusion allowlist (`codec/README.md` `## migration`); fusion's host selects the whole list. */
@@ -147,10 +147,8 @@ const findingId = (wb: string, f: Finding): string => {
   return sha([f.class, f.path, f.detail, bytes].join("\0")).slice(7, 19);
 };
 
-/** The v11 store names the rename pass of `/fusion:migrate` handles; held here, since the rename outlives the v12 window. */
-const V11_NAMES = ["circles", "planning", "consult"];
 const legacyNames = (wb: string): string[] =>
-  V11_NAMES.flatMap((n) => [n, `shared/${n}`, ...(existsSync(join(wb, CONTAINER_STORE)) ? readdirSync(join(wb, CONTAINER_STORE)).map((d) => `${CONTAINER_STORE}/${d}/${n}`) : [])]).filter((p) => existsSync(join(wb, p)));
+  V11_STORE_NAMES.flatMap((n) => [n, `shared/${n}`, ...(existsSync(join(wb, CONTAINER_STORE)) ? readdirSync(join(wb, CONTAINER_STORE)).map((d) => `${CONTAINER_STORE}/${d}/${n}`) : [])]).filter((p) => existsSync(join(wb, p)));
 
 // --- the proposal ------------------------------------------------------------------
 

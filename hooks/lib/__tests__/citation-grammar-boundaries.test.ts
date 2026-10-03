@@ -31,7 +31,7 @@ const ITEM = "260910-2145-restore-the-container";
 function scratch(): string {
   const wb = join(realpathSync(mkdtempSync(join(tmpdir(), "grammar-"))), "fusion-workbench");
   mkdirSync(join(wb, "shared", "history"), { recursive: true });
-  mkdirSync(join(wb, "circles", LIVE), { recursive: true });
+  mkdirSync(join(wb, "work-packages", LIVE), { recursive: true });
   mkdirSync(join(wb, "work-packages", ITEM), { recursive: true });
   mkdirSync(join(wb, "archive", SWEEP, "circles", SWEPT), { recursive: true });
   writeFileSync(join(wb, ".fusion-setup"), "{}");
@@ -96,11 +96,11 @@ describe("a record token stops at a word, never on the sentence's full stop", ()
   // A Circle record carries no greedy tail: what refused the sentence's stop was
   // its trailing lookahead, and the token was not reported at all.
   it("reads a Circle-record citation that ends a sentence, and gives no `.md` back", () => {
-    const hit = toks(wb, `see circles/${LIVE}/_t_circle.md.`);
+    const hit = toks(wb, `see work-packages/${LIVE}/_t_circle.md.`);
     expect(hit.map((h) => [h.token, h.kind, h.status])).toEqual([
-      [`circles/${LIVE}/_t_circle.md`, "package-record", "store-prefixed"],
+      [`work-packages/${LIVE}/_t_circle.md`, "package-record", "store-prefixed"],
     ]);
-    expect(toks(wb, `see circles/${LIVE}/_t_circle.mdx here`)).toEqual([]);
+    expect(toks(wb, `see work-packages/${LIVE}/_t_circle.mdx here`)).toEqual([]);
   });
 });
 
@@ -114,7 +114,7 @@ describe("a bare directory name resolves to a Circle or to the archive sweep its
   });
 
   it("leaves the live and the swept Circle resolving exactly where they sit", () => {
-    expect(toks(wb, `in ${LIVE}`)[0].matches).toEqual([`circles/${LIVE}`]);
+    expect(toks(wb, `in ${LIVE}`)[0].matches).toEqual([`work-packages/${LIVE}`]);
     expect(toks(wb, `in ${SWEPT}`)[0].matches).toEqual([`archive/${SWEEP}/circles/${SWEPT}`]);
   });
 
@@ -123,7 +123,7 @@ describe("a bare directory name resolves to a Circle or to the archive sweep its
     mkdirSync(join(wb2, "archive", LIVE), { recursive: true });
     const hit = toks(wb2, `the name ${LIVE} is held twice`)[0];
     expect(hit.status).toBe("ambiguous");
-    expect(hit.matches.sort()).toEqual([`archive/${LIVE}`, `circles/${LIVE}`]);
+    expect(hit.matches.sort()).toEqual([`archive/${LIVE}`, `work-packages/${LIVE}`]);
   });
 
   it("still produces no token at all for a sweep cited as a path", () => {
@@ -205,7 +205,7 @@ describe("both container record forms are read, and neither widens into the othe
       ["stamp-name", "resolved", `work-packages/${ITEM}/${ITEM}.md`],
     ]);
     expect(toks(wb, `the Circle ${LIVE} is open`).map((h) => [h.kind, h.status, ...h.matches])).toEqual([
-      ["stamp-name", "resolved", `circles/${LIVE}`],
+      ["stamp-name", "resolved", `work-packages/${LIVE}`],
     ]);
   });
 
@@ -226,10 +226,10 @@ describe("both container record forms are read, and neither widens into the othe
       [`work-packages/${ITEM}/${ITEM}.md`, "package-record", "store-prefixed"],
     ]);
     expect(item[0].fix).toContain(`'${ITEM}.md'`);
-    const legacy = toks(wb, `see circles/${LIVE}/_t_circle.md here`)[0];
+    const legacy = toks(wb, `see work-packages/${LIVE}/_t_circle.md here`)[0];
     expect(legacy.fix).toContain(`'${LIVE}'`);
     // each root reports the segment it matched, not a literal
-    expect([item[0].problem, legacy.problem].map((p) => p.split("'")[1])).toEqual(["work-packages/", "circles/"]);
+    expect([item[0].problem, legacy.problem].map((p) => p.split("'")[1])).toEqual(["work-packages/", "work-packages/"]);
   });
 
   it("reads no other file in a container as that container's record", () => {

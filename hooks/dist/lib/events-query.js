@@ -147,8 +147,8 @@ export function parseTs(ts) {
  * field is present, and reads a party's work package off its `task_start` rows
  * otherwise, so `unknown` is now the answer for a malformed `circles/` path
  * alone. The literal stays after v12: the field is a pre-cut persisted value
- * no writer produces any more, which the window in
- * `rules/fusion-workbench-conventions.md` `### Transition window (v12.0.0 to v13.0.0)` does not govern.
+ * no writer produces any more, which the v12 store-name window, closed at
+ * 13.0.0, never governed.
  */
 export function circleOf(historyFile) {
     if (typeof historyFile !== "string" || historyFile === "")

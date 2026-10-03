@@ -60,14 +60,14 @@ describe("the survey", () => {
     expect(sh(survey, root)).toMatch(/^FOUND=1\nLEGACY=0\n(.*\n){3}DIRTY=0\nUNKNOWN=0$/m); expect(sh(survey, tree(["shared/x/planning/"]))).toMatch(/^UNKNOWN=1$/m);
   });
   it.each([["planning/260101-0101_o_x.md"], ["circles/260101-0101[t]-flat.md"], ["shared/issues/260101-0101[o]-x.md"], [`${A}/_t_circle.md`]])(
-    "refuses the pre-v4 shape %s with the v11.11.1 route, and setup no longer refuses it", (p) => {
+    "refuses the pre-v4 shape %s with the v11.11.1 route, and setup refuses it only for a v11 store name", (p) => {
       const root = tree([p]);
       const out = sh(survey, root); expect(out).toMatch(/^LEGACY=1$/m); expect(out).toContain("tag v11.11.1");
-      expect(sh(setupProbe, root)).toMatch(/^OLD=0$/m);
+      expect(sh(setupProbe, root)).toMatch(p.startsWith("circles/") ? /^OLD=1$/m : /^OLD=0$/m);
     });
-  it("setup names a v11 store in one line and continues, and says nothing on a v12 workbench", () => {
+  it("setup refuses a v11 store in one line naming /fusion:migrate, and says nothing on a v12 workbench", () => {
     expect(sh(setupProbe, tree(["work-packages/", "shared/plans/", "shared/consultations/"]))).toBe("OLD=0\n");
-    expect(sh(setupProbe, tree(["circles/c/c.md", "shared/consult/"]))).toMatch(/^LEGACY-STORES: circles\/ shared\/consult\/ .*\/fusion:migrate.*\nOLD=0\n$/);
+    expect(sh(setupProbe, tree(["circles/c/c.md", "shared/consult/"]))).toMatch(/^LEGACY-STORES: circles\/ shared\/consult\/ .*\/fusion:migrate.*\nOLD=1\n$/);
   });
   it("closes the window below 12 naming both versions, and opens it at 12", () => {
     const plug = mkdtempSync(join(tmpdir(), "store-name-plugin-")); roots.push(plug); mkdirSync(join(plug, ".claude-plugin"));

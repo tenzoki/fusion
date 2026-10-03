@@ -77,7 +77,7 @@ import { lstatSync, readdirSync, readFileSync, readlinkSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { createScanner } from "./citation-scan.js";
-import { CONTAINER_STORE, PACKAGE_CONTROL, RECORD_CONTROL_SUFFIX, WINDOW_LEGACY_NAMES, WORKBENCH_MANIFEST } from "./stores.js";
+import { CONTAINER_STORE, PACKAGE_CONTROL, RECORD_CONTROL_SUFFIX, V11_STORE_NAMES, WORKBENCH_MANIFEST } from "./stores.js";
 export const FINDINGS = {
     "legacy-store-name": "blocking",
     "manifest-present": "blocking",
@@ -287,7 +287,7 @@ export function composeProposal(input) {
     const originals = (p) => `archive/migrations/${migrationId}/originals/${p}`;
     const untracked = new Set(input.untracked ?? []);
     const ignored = new Set(input.ignored ?? []);
-    for (const legacy of Object.values(WINDOW_LEGACY_NAMES)) {
+    for (const legacy of V11_STORE_NAMES) {
         for (const d of inventory.dirs) {
             if (!d.startsWith("archive/") && (d === legacy || d.endsWith(`/${legacy}`)))
                 find("legacy-store-name", d, `rename to the v12 name first (/fusion:migrate)`);

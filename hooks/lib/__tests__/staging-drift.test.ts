@@ -31,7 +31,7 @@ import type { Project } from "./helpers/guard-harness.js";
  * than creating the file and the fault in the same step.
  */
 const WORKBENCH_FILES: Record<string, string> = {
-  "fusion-workbench/circles/260811-0100-close-the-findings/_t_circle.md": "# Close\n",
+  "fusion-workbench/work-packages/260811-0100-close-the-findings/_t_circle.md": "# Close\n",
   "fusion-workbench/portfolio.md": "# Portfolio\n\n## Anticipated (_a_) — ranked\n",
   "fusion-workbench/shared/issues/260811-0100_o_something.md": "an issue\n",
   "fusion-workbench/shared/history/260811-0100-orchestrator.md":
@@ -41,7 +41,7 @@ const WORKBENCH_FILES: Record<string, string> = {
 };
 
 /** The record a case dirties when it wants a fault that no artifact store owns. */
-const CIRCLE_RECORD = "circles/260811-0100-close-the-findings/_t_circle.md";
+const CIRCLE_RECORD = "work-packages/260811-0100-close-the-findings/_t_circle.md";
 
 const withWorkbench = <T,>(fn: (p: Project) => T): T =>
   withProject(fn, { git: true, files: WORKBENCH_FILES });
@@ -397,7 +397,7 @@ describe("staging drift: what it reports without raising an alarm", () => {
         // The unit of work is `<root>/<item>/<item>.md`: the same name twice
         // and no store segment, so it fell through to `unclassified` and an
         // uncommitted item never reached the verdict (issue 260911-1421_*_a-work-items-own-record-classifies-as-unclassified-so-staging-drift-claims-nothing-about-the-unit-of-work.md).
-        // A mixed window tree: one package under each root, and a legacy-named store.
+        // v11-named siblings beside the package: since 13.0.0 no store owns them.
         const item = "work-packages/260811-0200-file-the-idea";
         write(project.root, `fusion-workbench/${item}/260811-0200-file-the-idea.md`, "# Idea\n");
         write(project.root, `fusion-workbench/${item}/other.md`, "a note\n");
@@ -405,9 +405,9 @@ describe("staging drift: what it reports without raising an alarm", () => {
         write(project.root, "fusion-workbench/shared/consult/260811-0300-note.md", "a report\n");
 
         const res = runStagingDrift(project.root);
-        expect(keys(res.stdout).unstaged).toBe("3");
-        expect(row(res.stdout, "circles/260811-0300-older/260811-0300-older.md")).toContain("a work package's own record");
-        expect(row(res.stdout, "shared/consult/260811-0300-note.md")).toContain("the consult store");
+        expect(keys(res.stdout).unstaged).toBe("1");
+        expect(row(res.stdout, "circles/260811-0300-older/260811-0300-older.md")).toMatch(/^ {2}unclassified/);
+        expect(row(res.stdout, "shared/consult/260811-0300-note.md")).toMatch(/^ {2}unclassified/);
         const record = row(res.stdout, `${item}/260811-0200-file-the-idea.md`);
         expect(record).toMatch(/^ {2}record\s+\?\? .*UNSTAGED/);
         expect(record).toContain("a work package's own record");

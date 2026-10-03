@@ -310,14 +310,14 @@ describe("commit-message path: no shipped prompt names one inside the workbench"
     // directory, and the one this whole family exists for — `.commit-msg-tmp`
     // at the workbench root — landed where nobody predicted.
     const fixture =
-      "Write the message to `fusion-workbench/shared/consult/commit-message.txt` first.";
+      "Write the message to `fusion-workbench/shared/consultations/commit-message.txt` first.";
     expect(workbenchMessagePaths(fixture)).toEqual([
-      "fusion-workbench/shared/consult/commit-message.txt",
+      "fusion-workbench/shared/consultations/commit-message.txt",
     ]);
     // The run-time half is deliberately NOT widened with it: the same path on
     // disk is still an unstaged `record`, so the model is told to stage it,
     // never to delete it.
-    expect(classify("shared/consult/commit-message.txt", "").klass).toBe(
+    expect(classify("shared/consultations/commit-message.txt", "").klass).toBe(
       "record",
     );
   });

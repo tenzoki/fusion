@@ -432,8 +432,8 @@ describe("citation-sweep --repair undoes the retired stamp-bare rewrite, token b
     const { root, wb } = scratchRepo();
     const doc = join(wb, "shared/history/260202-0202-beta-log.md");
     // a Circle directory: the other shape a splice could have left a prefix on
-    mkdirSync(join(wb, "circles/260505-0505-widget-bar"), { recursive: true });
-    writeFileSync(join(wb, "circles/260505-0505-widget-bar/_t_circle.md"), "x");
+    mkdirSync(join(wb, "work-packages/260505-0505-widget-bar"), { recursive: true });
+    writeFileSync(join(wb, "work-packages/260505-0505-widget-bar/_t_circle.md"), "x");
     const before = [
       "repairable: `my260101-0101_*_alpha.md` `sub260101-0101-alpha-analysis.md` `mine260505-0505-widget-bar`",
       "twice damaged, one run: `my260101-0101_*_alpha.md_o`",

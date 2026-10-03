@@ -30,8 +30,8 @@
 # this script are two of the definition sites where a store-directory path
 # literal may appear; the full set is enumerated as DEFINITION_SITES in
 # hooks/lib/__tests__/path-literal-lint.test.ts, which enforces it. The store
-# names themselves, and their v11 names for the transition window, are read
-# from bin/fusion-stores and named nowhere in this script.
+# names themselves are read from bin/fusion-stores and named nowhere in this
+# script.
 #
 # Called from Setup step 2, alongside `fusion-rules <agent>` — the step every
 # agent demonstrably runs. Resolve once, use the values for the session.
@@ -84,12 +84,10 @@
 #     in scope. An artefact filed under a brief is the same kind as one
 #     filed without, so a consumer that read only the first value would report
 #     a clean pass over half the corpus.
-#   - During the v12 transition window a renamed store is also read under its
-#     v11 name, next to the new one and only where that directory exists, and
-#     is never written there: every OUT_* names a new store, under the new
-#     container root even for an item whose container still stands under the
-#     old one. Rule: rules/fusion-workbench-conventions.md, "### Transition
-#     window (v12.0.0 to v13.0.0)".
+#   - During the v12 transition window a renamed store was also read under its
+#     v11 name; the window closed at 13.0.0, bin/fusion-stores names no
+#     LEGACY_ store since, and the legacy branches below read an absent one as
+#     none. Every OUT_* names a new store.
 #   - Three kinds are unconditionally shared, because no container holds them:
 #     consultations, memos and messages answer to nobody's directive. And the
 #     container store IS the work packages, so OUT_PACKAGES and SCAN_PACKAGES

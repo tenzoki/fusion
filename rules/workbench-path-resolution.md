@@ -82,9 +82,9 @@ be in order to move them where they now belong. Its store paths are literal, and
 correct.
 
 **`/fusion:setup` is the second exemption the path-literal check carries, and it is not this
-one.** Setup `mkdir`s the stores it scaffolds and, for the window, names the v11 stores its
-probe reports; neither act is a transition between layouts, and neither could be expressed
-as a resolver key — the report is about names no key writes, the `mkdir` creates the
+one.** Setup `mkdir`s the stores it scaffolds and names the v11 stores its probe refuses;
+neither act is a transition between layouts, and neither could be expressed as a resolver
+key — the refusal is about names no key writes, the `mkdir` creates the
 directories the keys name. The two exemptions are enumerated in
 `hooks/lib/__tests__/path-literal-lint.test.ts` and recorded in
 `rules/fusion-workbench-conventions.md`, in the *Store-directory path literals* paragraph
@@ -98,10 +98,8 @@ in scope. An `OUT_*` resolves under that item's container, or under `shared/` wh
 A `SCAN_*` names **both** stores, container first and the shared one second, and collapses
 to the shared store alone when nothing is in scope. `<scope>` below stands for whichever
 base the resolver chose, so one row states both readings. Four rows carry a literal instead,
-and each says why it has no second candidate. Until v13.0.0 a `SCAN_*` also lists a renamed
-store's v11 name, and an item container under the v11 root, wherever that directory exists;
-no `OUT_*` ever names one (`rules/fusion-workbench-conventions.md`
-`### Transition window (v12.0.0 to v13.0.0)`).
+and each says why it has no second candidate. Until v13.0.0, which closed the v12 window, a
+`SCAN_*` also listed a renamed store's v11 name; no `OUT_*` ever named one.
 
 | Key | Read key | Value | Notes |
 |---|---|---|---|

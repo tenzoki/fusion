@@ -116,7 +116,7 @@ Use `AskUserQuestion` in the project's language (see `rules/fusion-workbench-con
 >
 > **Option "Convert"** (recommended): Renames as listed.
 > **Option "Tracked entries only"**: Renames every entry git tracks and leaves the untracked ones where they are, named in the report.
-> **Option "Cancel"**: Leaves the workbench exactly as it is. The module reads both names until `13.0.0`, so nothing breaks; `/fusion:migrate` can run again at any time.
+> **Option "Cancel"**: Leaves the workbench exactly as it is. The module stopped reading the old names at `13.0.0`, so `/fusion:setup` refuses it until it is renamed; `/fusion:migrate` can run again at any time.
 
 Offer "Tracked entries only" only in `git` mode with `UNTRACKED>0`. With `COLLISIONS>0`, put the collision lines above the options and say that those entries stay and the rest moves. For `MODE=plain`, replace the `git mv` sentence with the honest one: *"This workbench is not under version control, so moving uses `mv`. The renames appear in no diff and cannot be taken back with `git revert`."*
 
