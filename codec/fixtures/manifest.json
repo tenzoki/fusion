@@ -1851,6 +1851,12 @@
     "note": "rollback.json: the frozen index and the receipt by {path, sha256}, the standing rollback fence, and exactly three exempt answers (this migration's verify, the end naming chunk 1's fence, the begin of the standing fence) by {operation_id, op, request_digest}."
   },
   {
+    "path": "valid/migration/rollback-binding-with-no-ops.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "valid",
+    "note": "rollback.json with no_ops: two later operations proven verified second-run no-ops of this migration (FJ04 addendum for Prior d0fce6c), each by {operation_id, request_digest, answer_sha256}, ordered bytewise by operation_id."
+  },
+  {
     "path": "invalid/migration/index-part-sha256-missing.json",
     "schema": "urn:fusion:schema:fusion.migration-plan/v1",
     "expect": "invalid",
@@ -2264,5 +2270,26 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "The bound receipt is archive/migrations/<id>/receipt.json; the index's path is refused there."
+  },
+  {
+    "path": "invalid/migration/rollback-binding-no-ops-empty.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "no_ops is present only when at least one no-op was proven; an empty list is refused, so a binding without no-ops keeps its earlier bytes."
+  },
+  {
+    "path": "invalid/migration/rollback-binding-no-op-without-answer-sha256.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A no-op entry binds the stored answer's bytes by answer_sha256; an entry without it is refused."
+  },
+  {
+    "path": "invalid/migration/rollback-binding-no-op-with-op.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A no-op entry is exactly {operation_id, request_digest, answer_sha256}; its op is always migration and is not carried, so a fourth member is refused."
   }
 ]
