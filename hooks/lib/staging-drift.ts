@@ -145,13 +145,13 @@ import { basename, resolve, relative, sep } from "node:path";
 import { git, GIT_TIMED_OUT, GIT_TIMEOUT_MS } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 import {
-  CONTAINER_ROOT_NAMES,
+  CITED_CONTAINER_ROOTS,
   isControlFile,
   JSON_STATE_DIR,
   LEGACY_STORES,
   narrativeOf,
   RECORD_STORES,
-  WINDOW_LEGACY_RECORD_STORES,
+  V11_RECORD_STORES,
   WORKBENCH_MANIFEST,
 } from "./stores.js";
 
@@ -268,7 +268,7 @@ export const JSON_LIVE_STATE: { entry: string; why: string }[] = [
  * records, whether it sits under a work package's container or under `shared/`.
  *
  * The live set is `RECORD_STORES` in `./stores.ts`, the layout tree's twelve,
- * their window names (`WINDOW_LEGACY_RECORD_STORES`), plus `LEGACY_STORES`
+ * their v11 names (`V11_RECORD_STORES`), plus `LEGACY_STORES`
  * for the pre-container backlog store whose two files the tree still holds.
  * The three retired pre-v4 review folders are not here: a converted workbench
  * has no `codereview/`, and a workbench that still does is a `/fusion:migrate` matter rather than a staging one. `checkouts` IS here:
@@ -276,7 +276,7 @@ export const JSON_LIVE_STATE: { entry: string; why: string }[] = [
  * record (`rules/workbench-tracking.md`, class R1), so its change is a staging
  * obligation this measurement names like any other record's.
  */
-const STORES: readonly string[] = [...RECORD_STORES, ...WINDOW_LEGACY_RECORD_STORES, ...LEGACY_STORES];
+const STORES: readonly string[] = [...RECORD_STORES, ...V11_RECORD_STORES, ...LEGACY_STORES];
 
 /**
  * The root-anchored records: a file at the workbench root that a person authored
@@ -507,7 +507,7 @@ export function classify(rel: string, sessionHistory: string): { klass: EntryCla
   if (narrative !== null && classify(narrative, sessionHistory).klass === "record") {
     return { klass: "record", why: `the control file of ${narrative}` };
   }
-  const inContainer = CONTAINER_ROOT_NAMES.includes(segments[0]);
+  const inContainer = CITED_CONTAINER_ROOTS.includes(segments[0]);
   if (inContainer && name.endsWith("_circle.md")) {
     return { klass: "record", why: "a Circle record" };
   }

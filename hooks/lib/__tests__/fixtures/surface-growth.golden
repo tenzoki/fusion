@@ -47,7 +47,7 @@
 [hook-tests lines]
   archive-filter-key.test.ts 64
   citation-form.test.ts 360
-  citation-grammar-boundaries.test.ts 242
+  citation-grammar-boundaries.test.ts 255
   citation-sweep.test.ts 641
   claude-md-weight.test.ts 208
   commit-message-path.test.ts 385
@@ -111,10 +111,10 @@
   sentence-identifier-containment.test.ts 456
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 696
+  staging-drift.test.ts 697
   store-name-migration.test.ts 124
   surface-growth-bound.test.ts 557
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 353
-  total 24154
+  total 24168

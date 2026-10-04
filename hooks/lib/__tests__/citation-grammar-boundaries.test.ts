@@ -232,6 +232,19 @@ describe("both container record forms are read, and neither widens into the othe
     expect([item[0].problem, legacy.problem].map((p) => p.split("'")[1])).toEqual(["work-packages/", "work-packages/"]);
   });
 
+  // `/fusion:migrate` renames directories and rewrites no record, so a v11 store
+  // name a record spells outlives the window and stays reported (issue 261004-1807 D1).
+  it.each([
+    [`circles/${ITEM}/${ITEM}.md`, "package-record"],
+    [`circles/${LIVE}/_t_circle.md`, "package-record"],
+    [`shared/planning/${RECORD}`, "store-prefixed"],
+    [`shared/consult/${RECORD}`, "store-prefixed"],
+  ])("still reads the v11 spelling %s as store-prefixed", (path, kind) => {
+    const hit = toks(wb, `see ${path} here`);
+    expect(hit.map((h) => [h.token, h.status])).toEqual([[path, "store-prefixed"]]);
+    if (kind === "package-record") expect(hit[0].kind).toBe(kind);
+  });
+
   it("reads no other file in a container as that container's record", () => {
     // The backreference, put to the one input that separates it from a wildcard
     // over a container's contents. Both lines are store-prefixed spellings a

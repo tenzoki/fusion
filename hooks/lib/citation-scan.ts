@@ -302,12 +302,12 @@ import { isAbsolute, join, relative, sep } from "node:path";
 import { git, GIT_TIMED_OUT } from "./git.js";
 import {
   ARCHIVED_CONTAINER_ROOTS,
-  CONTAINER_ROOT_ALT,
+  CITED_CONTAINER_ROOTS,
   CONTAINER_ROOT_NAMES,
   JSON_STATE_DIR,
   LEGACY_STORES,
   RECORD_STORES,
-  WINDOW_LEGACY_RECORD_STORES,
+  V11_RECORD_STORES,
   isControlFile,
 } from "./stores.js";
 
@@ -336,14 +336,18 @@ export function isPlaceholder(token: string): boolean {
 
 /**
  * The store segments a store-prefixed citation may carry: `RECORD_STORES`, their
- * window names and `LEGACY_STORES` from `./stores.ts`, minus `checkouts`. A registry entry is
+ * v11 names (`V11_RECORD_STORES`, which a migrated record may still spell) and
+ * `LEGACY_STORES` from `./stores.ts`, minus `checkouts`. A registry entry is
  * `<hex>.md`, no stamp and no slug, so no record citation can name one and the
  * segment would match nothing. `discussions` is here for citations OF a
  * discussion record, written in some other record; nothing reads the citations
  * written INSIDE one, because a discussion record is machine-rewritten every
  * round and so is no live record to `isLiveRecord()`.
  */
-const STORES = [...RECORD_STORES, ...WINDOW_LEGACY_RECORD_STORES, ...LEGACY_STORES].filter((s) => s !== "checkouts").join("|");
+const STORES = [...RECORD_STORES, ...V11_RECORD_STORES, ...LEGACY_STORES].filter((s) => s !== "checkouts").join("|");
+
+/** The container roots a citation may spell, the v11 root included for the same reason. */
+const CONTAINER_ROOT_ALT = CITED_CONTAINER_ROOTS.join("|");
 
 /**
  * The words the marker slot may carry besides one letter: the agent names the

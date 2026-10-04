@@ -42,6 +42,14 @@ export declare const RETIRED_REVIEW_FOLDERS: readonly ["codereview", "ontoreview
  * 260922-1114_*_does-the-transition-windows-legacy-read-live-at-one-site-per-runtime.md).
  */
 export declare const WINDOW_LEGACY_NAMES: Readonly<Record<string, string>>;
+/** The v11 container root, outliving the window: an archive sweep keeps it, and a citation spelling it is still read. */
+export declare const V11_CONTAINER_ROOT = "circles";
+/**
+ * The v11 names of the record stores v12 renamed, outliving the window: a
+ * citation spelling one stays a store-prefixed token, and a path under one a
+ * record, since `/fusion:migrate` renames directories and rewrites no record.
+ */
+export declare const V11_RECORD_STORES: readonly string[];
 /** The three v11 store names, outliving the window: the migration refuses them and `/fusion:migrate` renames them. */
 export declare const V11_STORE_NAMES: readonly string[];
 /** A store's names during the window: the new one first, then its legacy one if any. */
@@ -56,8 +64,8 @@ export declare const CONTAINER_ROOT_NAMES: readonly string[];
 export declare const ARCHIVED_CONTAINER_ROOTS: readonly string[];
 /** The live root names as a regex alternation, for the citation grammar. */
 export declare const CONTAINER_ROOT_ALT: string;
-/** The record stores' legacy names, for the segment lists that must still recognise them. */
-export declare const WINDOW_LEGACY_RECORD_STORES: readonly string[];
+/** Every container root name a citation or a staged path may spell: the live ones, then the v11 root. */
+export declare const CITED_CONTAINER_ROOTS: readonly string[];
 /** The workbench manifest, at the workbench root. */
 export declare const WORKBENCH_MANIFEST = "workbench.json";
 /** The codec's local journal and lock directory, at the workbench root; ignored by its own `.gitignore`. */

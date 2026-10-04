@@ -57,8 +57,16 @@ export const RETIRED_REVIEW_FOLDERS = ["codereview", "ontoreview", "conceptrevie
  * 260922-1114_*_does-the-transition-windows-legacy-read-live-at-one-site-per-runtime.md).
  */
 export const WINDOW_LEGACY_NAMES = {};
+/** The v11 container root, outliving the window: an archive sweep keeps it, and a citation spelling it is still read. */
+export const V11_CONTAINER_ROOT = "circles";
+/**
+ * The v11 names of the record stores v12 renamed, outliving the window: a
+ * citation spelling one stays a store-prefixed token, and a path under one a
+ * record, since `/fusion:migrate` renames directories and rewrites no record.
+ */
+export const V11_RECORD_STORES = ["planning", "consult"];
 /** The three v11 store names, outliving the window: the migration refuses them and `/fusion:migrate` renames them. */
-export const V11_STORE_NAMES = ["circles", "planning", "consult"];
+export const V11_STORE_NAMES = [V11_CONTAINER_ROOT, ...V11_RECORD_STORES];
 /** A store's names during the window: the new one first, then its legacy one if any. */
 export function namesOf(kind) {
     const legacy = WINDOW_LEGACY_NAMES[kind];
@@ -71,11 +79,11 @@ export const CONTAINER_ROOT_NAMES = namesOf(CONTAINER_STORE);
  * sweep taken before v12 keeps `circles/` for good, so this list outlives
  * `WINDOW_LEGACY_NAMES` and the closing release leaves it alone.
  */
-export const ARCHIVED_CONTAINER_ROOTS = [CONTAINER_STORE, "circles"];
+export const ARCHIVED_CONTAINER_ROOTS = [CONTAINER_STORE, V11_CONTAINER_ROOT];
 /** The live root names as a regex alternation, for the citation grammar. */
 export const CONTAINER_ROOT_ALT = CONTAINER_ROOT_NAMES.join("|");
-/** The record stores' legacy names, for the segment lists that must still recognise them. */
-export const WINDOW_LEGACY_RECORD_STORES = RECORD_STORES.flatMap((s) => namesOf(s).slice(1));
+/** Every container root name a citation or a staged path may spell: the live ones, then the v11 root. */
+export const CITED_CONTAINER_ROOTS = [...CONTAINER_ROOT_NAMES, V11_CONTAINER_ROOT];
 /* ------------------------------------------------------------------ *
  * The JSON surfaces, by name
  *
