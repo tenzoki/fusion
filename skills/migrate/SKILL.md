@@ -40,10 +40,10 @@ ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || { echo "No fusion w
 **First the version guard.** The pass runs only when the installed plugin, the copy `$FUSION_PLUGIN_ROOT` names and every agent's helpers come from, reads the new names. Below `12.0.0` those helpers resolve only `circles/`, so a migrated workbench would leave every `OUT_*` and `SCAN_*` pointing at a directory that no longer exists. The installed copy reads the v12 names from 12.0.0 on, so the major alone decides:
 
 ```bash
-V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" 2>/dev/null | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"; M="${V%%.*}"; if [ -n "$V" ] && [ "$M" -ge 12 ] 2>/dev/null; then echo "INSTALLED=$V"; echo "WINDOW=open"; else echo "INSTALLED=${V:-unreadable}"; echo "WINDOW=closed"; echo "REFUSED: the installed plugin is ${V:-unreadable}; the store-name pass needs 12.0.0 or later. Run fusion --update, restart, and run /fusion:migrate again."; fi
+V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" 2>/dev/null | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"; M="${V%%.*}"; if [ -n "$V" ] && [ "$M" -ge 12 ] 2>/dev/null; then echo "INSTALLED=$V"; echo "READS_V12=yes"; else echo "INSTALLED=${V:-unreadable}"; echo "READS_V12=no"; echo "REFUSED: the installed plugin is ${V:-unreadable}; the store-name pass needs 12.0.0 or later. Run fusion --update, restart, and run /fusion:migrate again."; fi
 ```
 
-**`WINDOW=closed`: stop here**, before surveying, and tell the user the `REFUSED` line.
+**`READS_V12=no`: stop here**, before surveying, and tell the user the `REFUSED` line.
 
 **Then the survey. Detection is by artefact presence, not by version** (not `.fusion-setup`'s `plugin_version`). The pass is due while a legacy store exists: `circles/`, `shared/planning/`, `shared/consult/`, or a `planning/` directly inside a container under either store, which is where a refused fold leaves one. Each is something the apply removes, so the filesystem is the only state and a refused or interrupted move is found again next run. Nothing the pass merely inspects enters the trigger, or the question would fire forever.
 

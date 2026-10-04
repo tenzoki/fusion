@@ -69,11 +69,11 @@ describe("the survey", () => {
     expect(sh(setupProbe, tree(["work-packages/", "shared/plans/", "shared/consultations/"]))).toBe("OLD=0\n");
     expect(sh(setupProbe, tree(["circles/c/c.md", "shared/consult/"]))).toMatch(/^LEGACY-STORES: circles\/ shared\/consult\/ .*\/fusion:migrate.*\nOLD=1\n$/);
   });
-  it("closes the window below 12 naming both versions, and opens it at 12", () => {
+  it("refuses below 12 naming both versions, and reads the v12 names from 12 on", () => {
     const plug = mkdtempSync(join(tmpdir(), "store-name-plugin-")); roots.push(plug); mkdirSync(join(plug, ".claude-plugin"));
     const at = (v: string) => { writeFileSync(join(plug, ".claude-plugin", "plugin.json"), `{\n  "version": "${v}"\n}\n`); return sh(guard, plug, { ...ENV, FUSION_PLUGIN_ROOT: plug }); };
-    expect(at("11.10.0")).toMatch(/^WINDOW=closed$[\s\S]*11\.10\.0[\s\S]*12\.0\.0/m);
-    expect(at("12.0.0")).toMatch(/^WINDOW=open$/m);
+    expect(at("11.10.0")).toMatch(/^READS_V12=no$[\s\S]*11\.10\.0[\s\S]*12\.0\.0/m);
+    expect(at("12.0.0")).toMatch(/^READS_V12=yes$/m);
   });
 });
 

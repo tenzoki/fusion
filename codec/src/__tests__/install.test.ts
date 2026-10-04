@@ -905,7 +905,7 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
       const sh = (b: string) => run("bash", ["-c", `${fill(locate, {})}cd "$ROOT"\n${b}`], { cwd: t.root, env: t.env });
       const [guard, survey] = shippedBlocks("migrate", "## Step 2 —");
       const g = sh(guard);
-      expect([g.status, g.stdout], g.stderr).toEqual([0, `INSTALLED=${version}\nWINDOW=open\n`]);
+      expect([g.status, g.stdout], g.stderr).toEqual([0, `INSTALLED=${version}\nREADS_V12=yes\n`]);
       const s = sh(survey);
       expect([s.status, ...["FOUND", "LEGACY", "DIRTY", "UNKNOWN", "COLLISIONS", "MODE"].map((k) => kv(s.stdout, k))], s.stdout + s.stderr).toEqual([0, "1", "0", "0", "0", "0", "git"]);
       const [apply, ...rest] = shippedBlocks("migrate", "## Step 4 —");
