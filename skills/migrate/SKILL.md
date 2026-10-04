@@ -1,6 +1,6 @@
 ---
 description: Bring a fusion workbench to the v12 store names — `circles/` to `work-packages/`, `planning/` to `plans/` in `shared/` and in every container, `shared/consult/` to `shared/consultations/`. Directory renames only; no record is rewritten, nothing in `archive/` or the Review-class stores moves. Surveys first, asks before moving, never overwrites, resumes after an interruption. A pre-v4 workbench is refused and routed to the `v11.11.1` tag. Then, where the installed copy carries `bin/fusion-migrate`, repairs the records one finding at a time and migrates the workbench to JSON control on a yes.
-allowed-tools: [Bash, Read, AskUserQuestion]
+allowed-tools: [Bash, Read]
 ---
 
 # Migrate a workbench to the current format
@@ -110,13 +110,13 @@ Then, in this order:
 
 Say `MODE` out loud: with `git`, moves use `git mv`, the migration is one diff of renames and `git revert` retreats; with `plain` (untracked, gitignored, or no repo), moves use `mv`, appear in no diff and cannot be undone with git.
 
-Use `AskUserQuestion` in the project's language (see `rules/fusion-workbench-conventions.md` `## Project language`), following `rules/user-facing-output.md` and the chat profile. Show the survey output above the question, so the user sees the entries and counts rather than a summary of them. The prompt, in English:
+Ask in plain chat text in the project's language (`rules/fusion-workbench-conventions.md` `## Project language`), following `rules/user-facing-output.md` and the chat profile: the survey output first, so the user sees the entries and counts rather than a summary, then the question in one line, numbered options beneath. The user answers with a number or in their own words; then stop and wait. In English:
 
-> **Question:** This workbench still uses the v11 store names. I will rename them as listed above: `circles/` to `work-packages/`, each `planning/` to `plans/`, and `shared/consult/` to `shared/consultations/`. Directories move entry by entry with `git mv`, so the migration is one reviewable diff of renames. No file's content changes and every filename survives. `archive/`, the Review-class stores, `stilwerk/` and the root files stay where they are.
+> This workbench still uses the v11 store names; rename them as listed above (`circles/` to `work-packages/`, each `planning/` to `plans/`, `shared/consult/` to `shared/consultations/`)? Directories move entry by entry with `git mv`, one reviewable diff of renames; no file's content changes, every filename survives, and `archive/`, the Review-class stores, `stilwerk/` and the root files stay.
 >
-> **Option "Convert"** (recommended): Renames as listed.
-> **Option "Tracked entries only"**: Renames every entry git tracks and leaves the untracked ones where they are, named in the report.
-> **Option "Cancel"**: Leaves the workbench exactly as it is. The module stopped reading the old names at `13.0.0`, so `/fusion:setup` refuses it until it is renamed; `/fusion:migrate` can run again at any time.
+> 1. Convert (recommended): renames as listed.
+> 2. Tracked entries only: renames every entry git tracks, leaves the untracked ones, named in the report.
+> 3. Cancel: leaves the workbench as it is. Nothing reads the old names since `13.0.0`, so `/fusion:setup` refuses it until renamed; `/fusion:migrate` can run again any time.
 
 Offer "Tracked entries only" only in `git` mode with `UNTRACKED>0`. With `COLLISIONS>0`, put the collision lines above the options and say that those entries stay and the rest moves. For `MODE=plain`, replace the `git mv` sentence with the honest one: *"This workbench is not under version control, so moving uses `mv`. The renames appear in no diff and cannot be taken back with `git revert`."*
 

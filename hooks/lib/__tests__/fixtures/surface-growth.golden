@@ -35,14 +35,14 @@
   discuss/SKILL.md 15852
   help/SKILL.md 15189
   memo/SKILL.md 6824
-  migrate/SKILL.md 26592
+  migrate/SKILL.md 26532
   news/SKILL.md 8223
   post/SKILL.md 6694
   reconcile/SKILL.md 6671
   setup/SKILL.md 15968
   wp-order/SKILL.md 5577
   wp/SKILL.md 6960
-  total 224529
+  total 224469
 
 [hook-tests lines]
   archive-filter-key.test.ts 64
