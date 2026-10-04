@@ -33,3 +33,7 @@ The answer is owed before step 12e: the skill names `repair --list --optional` t
 ## Recommendation
 
 Option 1. It is the only option that keeps every consented value traceable inside the workbench. Option 2 loses that for control-only answers. Until it is ruled, step 12d's tests migrate without a repair and list the optional repairs without applying one.
+
+## Answer
+
+Answered 2026-10-04 by the user (Kai Stalmann), in chat ("1"): option 1. The migration-plan schema admits a `reported` finding in a repair entry, and the bundle is rebuilt before the hand-over. The user ruled after a two-round discussion that converged on option 1: `261003-2258_*_how-frozen-plan-carries-optional-repair.md`.
