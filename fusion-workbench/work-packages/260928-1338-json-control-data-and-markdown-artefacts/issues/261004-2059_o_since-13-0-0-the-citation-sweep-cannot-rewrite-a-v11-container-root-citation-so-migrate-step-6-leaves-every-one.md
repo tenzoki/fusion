@@ -1,0 +1,16 @@
+Since 13.0.0 the citation sweep cannot rewrite a v11 container-root citation, so /fusion:migrate Step 6 leaves every one
+---
+`candidateFor` in `hooks/citation-sweep.ts` builds the `package-record` and `package-dir` rewrite from `CONTAINER_ROOT_ALT` (imported at `:451`, used at `:688`), which `hooks/lib/stores.ts` derives from the emptied window table and which therefore names `work-packages` alone. Fix `8b7efa30` (issue 261004-1807 D1) moved the scanner and staging-drift to `CITED_CONTAINER_ROOTS`, so a `circles/<dir>/<dir>.md`, `circles/<dir>/_<m>_circle.md` or `circles/<dir>` citation is reported `store-prefixed` and `rewritable` again. The sweep, the tool that fixes those reports, still finds no match for any of them and leaves them as written. It prints no residual line for them.
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+**Domain:** code
+**Cross-references:** 261004-1807_*_since-13-0-0-a-citation-under-a-v11-store-name-is-invisible-to-the-citation-scanner-and-staging-drift.md, 261004-2059-reviewer-fj04-closing-pass-over-the-review-fixes.md
+
+**Evidence** (at `728545eb`; probe workbench in a git repo, one issue citing `circles/<dir>/<dir>.md`, `work-packages/<dir>/<dir>.md`, `shared/planning/<record>` and `circles/<dir>`):
+- `bin/fusion-citation-check`: `store-prefixed=4`, `unrewritable-violations=0`. The `circles/` row reads `rewritable`.
+- `bin/fusion-citation-sweep --dry-run` at `728545eb`: `rewrites=2 residual=0 record=1 package-record=1 package-dir=0`. Both `circles/` tokens are untouched.
+- The same probe with the shipped tree of `1fda4088` (the window open, `CONTAINER_ROOT_ALT` = `work-packages|circles`): `rewrites=4 … package-record=2 package-dir=1`. This is a regression from step 10a.
+- `skills/migrate/SKILL.md` `## Step 6 — Sweep the citations` runs this sweep with `--kinds record,package-record,package-dir` right after renaming `circles/` to `work-packages/`, because "a citation spelling a moved store segment is the other half". `bin/fusion-citation-sweep:18` names these kinds as "the store-prefixed kinds a store rename breaks". At 13.0.0 the step rewrites `shared/planning/` and `shared/consult/` citations but no container-root one. Those are the v11 form this workbench carries most: 14 live records contained `circles/` at `9232314a` (issue 261004-1807 D1).
+- Coverage: step 10a replaced `circles/` with `work-packages/` in `citation-sweep.test.ts`, and `8b7efa30` restored cases in `citation-grammar-boundaries.test.ts` and `staging-drift.test.ts` only.
+
+**Acceptance.** `candidateFor` matches the container roots `CITED_CONTAINER_ROOTS` names. A `circles/<dir>/<dir>.md` citation respells to `<dir>.md`, and `circles/<dir>` to `<dir>`. `citation-sweep.test.ts` gains a case for each v11 container-root form, and the case is red against `728545eb`. The probe above then gives `rewrites=4`.
