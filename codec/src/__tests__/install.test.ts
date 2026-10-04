@@ -947,10 +947,11 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     // §8.3.7: one open and one terminal record, read back through the installed wrapper and readers.
     const open = record(a, { op: "show", record: { path: OPEN_PKG } }) as { kind: string; control: { status: string; provenance: { source: string } } };
     expect([open.kind, open.control.status, open.control.provenance.source]).toEqual(["package", "open", "imported"]);
-    // The closure plan's filer was never recorded: the actor is carried as unknown, and the person too, because the rename pass's `git mv` is staged, so the plan's path is in no commit yet.
+    // The closure plan's filer was never recorded: the actor is carried as unknown, the person git's first add, followed through the rename pass's staged `git mv`.
     const closure = record(a, { op: "show", record: { path: `${CLOSURE}.record.json` } }) as { kind: string; control: { filed_by: unknown; provenance: { source: string; legacy_fields: { derived?: Record<string, unknown> } }; control: { state: string } } };
-    expect([closure.kind, closure.control.control.state, closure.control.provenance.source, closure.control.filed_by]).toEqual(["plan", "closed", "legacy-terminal", { actor: "legacy-unknown", person: null }]);
-    expect(closure.control.provenance.legacy_fields.derived).toMatchObject({ "/filed_by/actor": { rule: "unknown" }, "/filed_by/person": { rule: "unknown", evidence: "untracked" } });
+    expect([closure.kind, closure.control.control.state, closure.control.provenance.source, closure.control.filed_by]).toEqual(["plan", "closed", "legacy-terminal", { actor: "legacy-unknown", person: "Install Test <install-test@example.invalid>" }]);
+    const fixtureCommit = run("git", ["rev-parse", "HEAD"], { cwd: a.root, env: a.env }).stdout.trim();
+    expect(closure.control.provenance.legacy_fields.derived).toMatchObject({ "/filed_by/actor": { rule: "unknown" }, "/filed_by/person": { rule: "git-first-add", evidence: fixtureCommit } });
     expect(readFileSync(join(a.wb, `${CLOSURE}.md`)).equals(closureText)).toBe(true);
     const listed = (record(a, { op: "list" }).records as { path: string }[]).map((r) => r.path);
     expect(listed).toEqual(expect.arrayContaining([OPEN_PKG, `${CLOSURE}.record.json`]));

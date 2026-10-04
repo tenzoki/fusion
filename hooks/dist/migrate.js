@@ -19,7 +19,8 @@
  * person the author git names for the file's first add (`firstAdds`): one
  * `git log --reverse -M --diff-filter=AR --name-status` over the workbench,
  * each path followed back through the renames git reports, so a marker move
- * and the v11-to-v12 store rename both lead to the original add. The person
+ * and the v11-to-v12 store rename both lead to the original add, as does a
+ * rename staged in the index and not yet committed. The person
  * is `%an <%ae>` as written, with no mailmap. A file git does not track, a
  * workbench in no repository and a shallow history each give no person, with
  * that reason as evidence. The run's own identity is never read.
@@ -146,6 +147,18 @@ function firstAdds(wb, untracked) {
             else if (f[i] === "A")
                 i++;
         }
+    }
+    // A rename staged and not yet committed (`/fusion:migrate` Step 4's `git mv`) is followed the same way, so the moved path keeps its first add.
+    const staged = spawnSync("git", ["-C", top.stdout.trim(), "-c", "core.quotePath=off", "diff", "--cached", "-M", "--diff-filter=R", "--name-status", "-z", "--", prefix || "."], { encoding: "utf-8", timeout: 600_000, maxBuffer: 1 << 30 });
+    if (staged.status !== 0)
+        throw new Stop(EXIT.fault, `git diff --cached over ${wb} failed: ${staged.stderr.trim()}`);
+    const s = staged.stdout.split("\0");
+    for (let i = 0; i + 2 < s.length; i += 3) {
+        const was = origin.get(s[i + 1]);
+        if (!was)
+            continue;
+        origin.delete(s[i + 1]);
+        origin.set(s[i + 2], was);
     }
     return (path) => {
         const hit = untracked.has(path) ? undefined : origin.get(prefix ? `${prefix}/${path}` : path);

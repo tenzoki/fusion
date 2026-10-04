@@ -94,10 +94,10 @@ describe("bin/fusion-migrate refuses without Node, and before anything else", ()
     expect([r.status, r.stderr, treeHash(wb), existsSync(join(session, "repair-log.jsonl"))]).toEqual([9, expect.stringContaining("does not verify"), before, false]);
   }, CASE_TIMEOUT);
 
-  it("takes the person from git's first add, else carries it unknown with the reason, and run prints its reported lines before refusing", () => {
+  it("takes the person from git's first add, through a staged rename too, else carries it unknown with the reason, and run prints its reported lines before refusing", () => {
     const { root, wb, home } = project();
     const person = (cwd: string) => mig(cwd, home, "survey").stdout.split("\n").filter((l) => l.startsWith("derived=/filed_by/person"));
-    expect(person(root)).toEqual(["derived=/filed_by/person\tgit-first-add\t*\t4", "derived=/filed_by/person\tunknown\tuntracked\t1"]);
+    for (const mv of [[], ["mv", `fusion-workbench/${PLAN}`, `fusion-workbench/${PLAN.replace("_p_", "_o_")}`]]) expect([mv.length ? git(root, ...mv).status : 0, person(root)]).toEqual([0, ["derived=/filed_by/person\tgit-first-add\t*\t4", "derived=/filed_by/person\tunknown\tuntracked\t1"]]);
     expect(git(base, "clone", "-q", "--depth", "1", `file://${root}`, `${root}-shallow`).status).toBe(0);
     expect(person(`${root}-shallow`)).toEqual(["derived=/filed_by/person\tunknown\tshallow-history\t4"]);
     rmSync(join(root, ".git"), { recursive: true, force: true });
