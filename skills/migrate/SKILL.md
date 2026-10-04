@@ -1,5 +1,5 @@
 ---
-description: Bring a fusion workbench to the v12 store names — `circles/` to `work-packages/`, `planning/` to `plans/` in `shared/` and in every container, `shared/consult/` to `shared/consultations/`. Directory renames only; no record is rewritten, nothing in `archive/` or the Review-class stores moves. Surveys first, asks before moving, never overwrites, resumes after an interruption. A pre-v4 workbench is refused and routed to the `v11.11.1` tag. Then, where the installed copy carries `bin/fusion-migrate`, repairs the records one finding at a time and migrates the workbench to JSON control on a yes.
+description: Bring a fusion workbench to the v12 store names — `circles/` to `work-packages/`, `planning/` to `plans/` in `shared/` and in every container, `shared/consult/` to `shared/consultations/` — by directory renames that rewrite no record and move nothing in `archive/` or the Review-class stores. Surveys first, asks before moving, never overwrites, resumes after an interruption. A pre-v4 workbench is refused and routed to the `v11.11.1` tag. Then, where the installed copy carries `bin/fusion-migrate`, migrates the records to JSON control on a yes, which rewrites live narratives; repairs are optional.
 allowed-tools: [Bash, Read]
 ---
 
@@ -37,7 +37,7 @@ ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || { echo "No fusion w
 
 ## Step 2 — Guard and survey
 
-**First the version guard.** The pass runs only when the installed plugin, the copy `$FUSION_PLUGIN_ROOT` names and every agent's helpers come from, reads the new names. Below `12.0.0` those helpers resolve only `circles/`, so a migrated workbench would leave every `OUT_*` and `SCAN_*` pointing at a directory that no longer exists. The window opens and closes at a major, so the major alone decides:
+**First the version guard.** The pass runs only when the installed plugin, the copy `$FUSION_PLUGIN_ROOT` names and every agent's helpers come from, reads the new names. Below `12.0.0` those helpers resolve only `circles/`, so a migrated workbench would leave every `OUT_*` and `SCAN_*` pointing at a directory that no longer exists. The installed copy reads the v12 names from 12.0.0 on, so the major alone decides:
 
 ```bash
 V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" 2>/dev/null | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"; M="${V%%.*}"; if [ -n "$V" ] && [ "$M" -ge 12 ] 2>/dev/null; then echo "INSTALLED=$V"; echo "WINDOW=open"; else echo "INSTALLED=${V:-unreadable}"; echo "WINDOW=closed"; echo "REFUSED: the installed plugin is ${V:-unreadable}; the store-name pass needs 12.0.0 or later. Run fusion --update, restart, and run /fusion:migrate again."; fi
