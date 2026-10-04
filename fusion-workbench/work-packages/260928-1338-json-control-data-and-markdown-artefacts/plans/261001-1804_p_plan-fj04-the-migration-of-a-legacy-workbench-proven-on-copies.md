@@ -769,7 +769,7 @@ Bases B and C stay byte-identical.
       - **Environment (Claude Code criterion):** the install is `git archive HEAD` plus the working tree's `install.sh`, `bin/fusion-record` and `.gitignore`, installed by `install.sh` with stub `curl` and `claude`. Every migration call ran with `env` = `{PATH, HOME, FUSION_PLUGIN_ROOT}` only: `PATH` the install's tool directory (node, bash and core utilities, the stubs), the identity tools and the skill's tools; `HOME` a fresh scratch directory per twin. The case asserts the three keys and that nothing on any PATH directory or in HOME matches `/prior/i`. No Prior checkout, binary or variable was present.
       - **Verification:** `tsc` exit 0 in `codec/`; `CODEC_REQUIRE_GOLDENS=1 npm test` exit 0, 21 files, 1 627 tests, both new cases run (re-run by the orchestrator); bundle unchanged (`c71e219e…`); `hooks/` untouched, no bound moved.
 
-12. **The proof on copies of real workbenches**
+12. [DONE] **The proof on copies of real workbenches**
     - Executor: `analyst`
     - Files: the package's `analyses/` (one report), this plan's step note
     - Changes: the three copies of step 2 (fusion from a commit of this branch; the two others as the head's confidentiality line names them), with source tree hashes equal before and after. On each copy, step 9's helper from step 11's install repairs with answers the analyst supplies and records, without guessing a value on the user's behalf. Any finding that needs a value nobody recorded is left blocking and counted. The helper then migrates. Per copy, the report gives:
@@ -808,6 +808,24 @@ Bases B and C stay byte-identical.
       - **The verified no-op on a real copy (ruling a1).** On fusion's copy, before its first rollback after activation, one `plan` over the session's proposal is sent through the installed `bin/fusion-record` under a fresh id. Its answer is `no_op: true`. The rollback then runs to chunk 0 and the legacy `end`. `rollback.json`'s `no_ops` names that id, read before chunk 0 removes the file. The `create` refusal above stays the refusal after real work.
       - **The bundle (amended 2026-10-04).** The install carries step 12d4's bundle. The report states its sha256, and the figure equals step 12d4's note.
     - Dependencies (amended): step 11 and steps 12a to 12e, 12b2, 12b3 and 12d2 to 12d4 included.
+    - Done (2026-10-04, analyst, on `0b1e1b58`, installed 13.0.0, bundle 686 858 bytes `sha256:575aec47…260c`, equal to step 12d4's note; uncommitted). Report `261004-1516-fj04-step12-rerun-proof-on-fresh-copies.md`. The first report stays as written.
+      - **Copies and hashes.** The copies are fresh, under `scratchpad/fj04-step12r/`. fusion is a clone at `0b1e1b58`. The two others are at the same head commits as the first run. Each source's workbench tree hash is equal before the copy, after it and at the end (`0975e25c…`, `afe10941…`, `21105877…`). The third copy still carried v11 names. It was renamed by the installed Steps 1, 2 and 4 (`moved=72`) and committed in the copy first, so issue 261004-1001 bears on no figure. Its fix, `8e4ef9a0`, landed during the run, touches only `hooks/`, and was not installed.
+      - **Environment.** `env` is `{PATH, HOME, FUSION_PLUGIN_ROOT}` only, and nothing on PATH or in HOME names Prior. Node v25.7.0, git 2.53.0, M2 Max. The load was 2 to 4 for the three migrations and fusion's rollback, and 30 to 70 from an external process for the later series, each stated in the report.
+      - **Questions.** `repair --list` printed `blocking=0`, 0 `ask=` and 0 `unrepairable=` on each copy: 0 / 0 / 0 repair questions. Step 7's one question, "migrate now?", was answered yes on the scratch copies. No repair was applied (`--optional` lists 27 / 277 / 60). fusion moved since step 12, and its 27 findings are all in reclassified classes.
+      - **Measured** (fusion / second / third, aggregate):
+        - chunks 7 / 34 / 8; chunk median / max 1.17 / 1.18, 1.76 / 1.89 and 1.25 / 1.29 s; whole `run` 11.5 / 68.4 / 12.8 s;
+        - `survey`, `list` and `reconcile` answers at most 2 048 186 bytes against 16 MiB; `reconcile` at most 0.76 s against 5 s;
+        - the index and receipt hashes are in the report;
+        - the second `run` is a no-op, with no answer stored;
+        - `validate` 144 / 744 / 175 valid, so 0 / 0 / 0 schema-invalid;
+        - every `derived` rule read back through `show` equals the survey's count: `legacy-unknown` 18 / 182 / 56, `git-first-add` 18 / 182 / 56, 0 disagreements with `git log --follow`; one record read back per copy, quoted for fusion only.
+      - **Kill, rollback, no-op.**
+        - A `SIGKILL` inside chunk 4 / 17 / 4 landed after the journal entry and before any write. `run` exited 7, and `resume` finished it.
+        - The first rollback after activation restored each tree hash, apart from `.json-state/`, the permitted empty `archive/migrations/` directories and a reader-minted `.checkout-id`. First chunk 0.71 / 1.76 / 0.87 s, chunk-0 cleanup 0.57 / 1.83 / 0.85 s.
+        - On fusion a fresh-id `plan` answered `no_op: true`. The rollback then completed to the legacy `end`, and `rollback.json`'s `no_ops` names that id.
+        - After one `create`, the rollback was refused: exit 8, `after-state-changed`.
+        - The copy without `.git` migrated, rolled back, carried 56 `unknown`/`no-repository` persons and printed `reported=git` (N3 fixed).
+      - **F1** (new, filed as `261004-1516_*_a-refused-rollback-after-activation-leaves-its-fence-standing-and-no-helper-ends-it.md`): the refused rollback leaves its `maintenance begin` fence standing, and every write is then `maintenance-active`. `rollback` and `resume` both refuse, and `bin/fusion-write`'s hint points at the archive helper. Only a hand-sent codec `maintenance end` clears it. This does not block step 12, but it affects the release.
 
 12a. [DONE] **The contract addendum for the user's ruling of 2026-10-03, requests 54 to 58**
    - Executor: `analyst`
