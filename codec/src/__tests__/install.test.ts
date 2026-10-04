@@ -867,7 +867,7 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     expect(["resolved", "dangling", "verdict"].map((k) => kv(out["fusion-citation-check"], k))).toEqual(["1", "0", "clean"]);
   }, 120_000);
 
-  it("the installed copy renames a v11-named workbench with the shipped block, repairs it, migrates it in three chunks, reads it back, claims, resumes a kill after chunk 2, rolls back and restores the backup, with no Prior present", () => {
+  it("the installed copy renames a v11-named workbench with the shipped block, migrates it without a repair in three chunks, reads it back, claims, resumes a kill after chunk 2, rolls back and restores the backup, with no Prior present", () => {
     expect(install.failure).toBeNull();
     expect(install.status).toBe(0);
     const FIX = join(install.home, "codec", "fixtures", "legacy-v12");
@@ -916,7 +916,7 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
       return plain(t.wb);
     };
 
-    /** Every blocking finding through `repair --list` and `--apply`, each answer the test's: status paused, actor user, person nobody, else the last choice. */
+    /** Every blocking finding through `repair --list` and `--apply`, each answer the test's: status paused, actor user, person nobody, else the last choice. The migration derives, carries or defaults what the fixture lacks, so none is owed. */
     const repairAll = (t: Twin): number => {
       for (let i = 0; i < 12; i++) {
         const list = migrate(t, "repair", "--list");
@@ -934,10 +934,10 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
       throw new Error("the repairs did not converge");
     };
 
-    // The first twin: renamed, repaired, migrated in three chunks.
+    // The first twin: renamed, migrated in three chunks with no repair.
     const a = twin("migrate-v11-a");
     rename(a);
-    expect(repairAll(a)).toBe(6);
+    expect(repairAll(a)).toBe(0);
     const closureText = readFileSync(join(a.wb, `${CLOSURE}.md`));
     const ran = migrate(a, "run");
     expect([ran.status, kv(ran.stdout, "result"), lines(ran.stdout, "applied")], ran.stderr).toEqual([0, "json-control", ["applied=1", "applied=2", "applied=3"]]);
@@ -947,8 +947,10 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     // §8.3.7: one open and one terminal record, read back through the installed wrapper and readers.
     const open = record(a, { op: "show", record: { path: OPEN_PKG } }) as { kind: string; control: { status: string; provenance: { source: string } } };
     expect([open.kind, open.control.status, open.control.provenance.source]).toEqual(["package", "open", "imported"]);
-    const closure = record(a, { op: "show", record: { path: `${CLOSURE}.record.json` } }) as { kind: string; control: { filed_by: unknown; provenance: { source: string }; control: { state: string } } };
-    expect([closure.kind, closure.control.control.state, closure.control.provenance.source, closure.control.filed_by]).toEqual(["plan", "closed", "legacy-terminal", { actor: "user", person: null }]);
+    // The closure plan's filer was never recorded: the actor is carried as unknown, and the person too, because the rename pass's `git mv` is staged, so the plan's path is in no commit yet.
+    const closure = record(a, { op: "show", record: { path: `${CLOSURE}.record.json` } }) as { kind: string; control: { filed_by: unknown; provenance: { source: string; legacy_fields: { derived?: Record<string, unknown> } }; control: { state: string } } };
+    expect([closure.kind, closure.control.control.state, closure.control.provenance.source, closure.control.filed_by]).toEqual(["plan", "closed", "legacy-terminal", { actor: "legacy-unknown", person: null }]);
+    expect(closure.control.provenance.legacy_fields.derived).toMatchObject({ "/filed_by/actor": { rule: "unknown" }, "/filed_by/person": { rule: "unknown", evidence: "untracked" } });
     expect(readFileSync(join(a.wb, `${CLOSURE}.md`)).equals(closureText)).toBe(true);
     const listed = (record(a, { op: "list" }).records as { path: string }[]).map((r) => r.path);
     expect(listed).toEqual(expect.arrayContaining([OPEN_PKG, `${CLOSURE}.record.json`]));
@@ -968,7 +970,7 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     // The second twin: its run dies after chunk 2 in a copy of the install whose bundle discards chunk 2's answer once the real one stored it.
     const b = twin("migrate-v11-b");
     const renamed = rename(b);
-    expect(repairAll(b)).toBe(6);
+    expect(repairAll(b)).toBe(0);
     const killHome = join(install.tmp, "home-kill");
     cpSync(install.home, killHome, { recursive: true, verbatimSymlinks: true });
     mkdirSync(join(killHome, "real", "dist"), { recursive: true });
@@ -991,7 +993,7 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     const resumed = migrate(b, "resume");
     expect([resumed.status, kv(resumed.stdout, "result"), lines(resumed.stdout, "applied")], resumed.stderr).toEqual([0, "json-control", ["applied=3"]]);
 
-    // A full rollback after activation, then the pre-repair backup back: the tree as the rename left it.
+    // A full rollback after activation, then the backup `run` took back: the tree as the rename left it.
     const back = migrate(b, "rollback");
     expect([back.status, kv(back.stdout, "result"), lines(back.stdout, "rolled-back-chunk")], back.stderr).toEqual([0, "legacy", ["rolled-back-chunk=3", "rolled-back-chunk=2", "rolled-back-chunk=1", "rolled-back-chunk=0"]]);
     expect([existsSync(join(b.wb, "workbench.json")), readFileSync(join(b.wb, ".fusion-setup"), "utf-8")]).toEqual([false, '{"setup_at":"t"}\n']);
