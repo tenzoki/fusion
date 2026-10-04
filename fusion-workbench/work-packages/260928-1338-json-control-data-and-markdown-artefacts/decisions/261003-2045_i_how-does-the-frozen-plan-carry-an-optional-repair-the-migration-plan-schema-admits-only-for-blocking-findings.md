@@ -37,3 +37,5 @@ Option 1. It is the only option that keeps every consented value traceable insid
 ## Answer
 
 Answered 2026-10-04 by the user (Kai Stalmann), in chat ("1"): option 1. The migration-plan schema admits a `reported` finding in a repair entry, and the bundle is rebuilt before the hand-over. The user ruled after a two-round discussion that converged on option 1: `261003-2258_*_how-frozen-plan-carries-optional-repair.md`.
+
+Implemented: FJ04 steps 12d2 (`4f1059d9`), 12d3 (`a0695452`) and 12d4, 2026-10-04.
