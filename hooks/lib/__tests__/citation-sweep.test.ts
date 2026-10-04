@@ -382,6 +382,29 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
       rmSync(root, { recursive: true, force: true });
     }
   }, CASE_TIMEOUT);
+
+  // issue 261004-2059: migrate Step 6 must respell each v11 container-root form as its live twin
+  it("respells every v11 `circles/` container-root citation exactly as its `work-packages/` twin", () => {
+    const { root, wb, doc } = scratchRepo();
+    const [item, circle] = ["260505-0505-widget-bar", "260606-0606-old-circle"];
+    const forms = [`${item}/${item}.md`, `${circle}/_t_circle.md`, item];
+    mkdirSync(join(wb, "work-packages", circle), { recursive: true });
+    mkdirSync(join(wb, "work-packages", item));
+    writeFileSync(join(wb, "work-packages", item, `${item}.md`), "x");
+    writeFileSync(join(wb, "work-packages", circle, "_t_circle.md"), "x");
+    writeFileSync(doc, forms.map((f) => `\`circles/${f}\` \`work-packages/${f}\``).join("\n"));
+    git(root, "add", "-A");
+    git(root, "commit", "-qm", "v11 roots");
+    try {
+      const run = sweep(root, wb, "--kinds", "record,package-record,package-dir", "--write", "--yes");
+      expect(run.status, run.stderr).toBe(0);
+      const want = [`${item}.md`, circle, item].map((s) => `\`${s}\` \`${s}\``);
+      expect(readFileSync(doc, "utf-8").split("\n")).toEqual(want);
+      expect(last(run)).toMatch(/ rewrites=6 residual=0 record=0 package-record=4 package-dir=2 /);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
 });
 
 describe("citation-sweep --repair undoes the retired stamp-bare rewrite, token by token", () => {

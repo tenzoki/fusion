@@ -448,7 +448,7 @@ import {
 } from "./lib/citation-scan.js";
 import { loadConfig } from "./lib/config.js";
 import { bundleMissing, notReadLine, readRecordIndex, type NotRead, type RecordIndex } from "./lib/record-index.js";
-import { CONTAINER_ROOT_ALT, isControlFile, JSON_STATE_DIR, narrativeOf, WORKBENCH_MANIFEST } from "./lib/stores.js";
+import { CITED_CONTAINER_ROOTS, isControlFile, JSON_STATE_DIR, narrativeOf, WORKBENCH_MANIFEST } from "./lib/stores.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 
@@ -685,7 +685,9 @@ function candidateFor(hit: CitationHit): string | null {
     case "package-record":
     case "package-dir": {
       const DIR = "[0-9]{6}-[0-9]{4}-[a-z0-9-]+";
-      const m = new RegExp(`(?:${CONTAINER_ROOT_ALT})\\/(${DIR})(?:\\/(${DIR}))?`).exec(t);
+      // The cited roots, not the live ones: the scanner reports a v11 `circles/`
+      // token rewritable, and `/fusion:migrate` Step 6 relies on this to respell it.
+      const m = new RegExp(`(?:${CITED_CONTAINER_ROOTS.join("|")})\\/(${DIR})(?:\\/(${DIR}))?`).exec(t);
       if (m === null) return null;
       // The second group is set only for the item form, where the grammar's own
       // backreference has already proved the two names equal; the equality is
