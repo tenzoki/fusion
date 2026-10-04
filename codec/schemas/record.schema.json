@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:fusion:schema:fusion.record/v1",
   "title": "fusion.record/v1",
-  "description": "Control data of an issue, plan, discussion or decision, <name>.record.json beside <name>.md (spec section 4.3). control is a union discriminated by kind; each branch forbids the other kinds' fields. Cross-field rules expressed with if/then: filed_by.actor equal to the reserved legacy-unknown requires provenance.source imported or legacy-terminal (decision 261003-1746); an issue's disposition is null while open or in_progress and an object once closed or deferred; a decision's answer_ref, implementation_ref, superseded_by and deferral are null or present exactly as its state demands (answered cites an answer, implemented an implementation, superseded a successor, deferred a deferral naming its target and who ruled; open carries none; deferred carries neither implementation nor successor, and no other state carries a deferral); in a candidate block an admitted selection carries an admission, an admission needs a qualification, a merge target and the outcome merged imply each other, and a policy-evaluated outcome carries policy version and snapshot hash while merged carries neither. Rules JSON Schema cannot check: the legal state changes per kind live in codec/contract/transitions.json (the package matrix is never applied to records); ids inside steps, criteria, evidence and the set-valued arrays are distinct beyond what uniqueItems catches; a candidate's qualification is current only if its candidate_version equals version, its source_revision equals source.revision and its evidence_hash equals Prior's evidenceHash over the current evidence and reproduction (an admission over a stale qualification is refused, never healed); a deferred decision's target is control.deferral.target, a resolvable reference or a named external target such as a release, and the reason stays in the Markdown Deferred: line (a legacy record whose Deferred: line names no target or no ruler is a migration finding, never a null the schema admits); historical markers and status heads in the narrative are evidence, not state, and a divergent status note in an active narrative is a conflict; a plan's acceptance revision equals the hash of the plan narrative when it was adopted.",
+  "description": "Control data of an issue, plan, discussion or decision, <name>.record.json beside <name>.md (spec section 4.3). control is a union discriminated by kind; each branch forbids the other kinds' fields. Cross-field rules expressed with if/then: the reserved actor legacy-unknown in any actor position (filed_by.actor, an entry of control.participants, control.deferral.ruled_by.actor) requires provenance.source imported or legacy-terminal (decision 261003-1746); an issue's disposition is null while open or in_progress and an object once closed or deferred; a decision's answer_ref, implementation_ref, superseded_by and deferral are null or present exactly as its state demands (answered cites an answer, implemented an implementation, superseded a successor, deferred a deferral naming its target and who ruled; open carries none; deferred carries neither implementation nor successor, and no other state carries a deferral); in a candidate block an admitted selection carries an admission, an admission needs a qualification, a merge target and the outcome merged imply each other, and a policy-evaluated outcome carries policy version and snapshot hash while merged carries neither. Rules JSON Schema cannot check: the legal state changes per kind live in codec/contract/transitions.json (the package matrix is never applied to records); ids inside steps, criteria, evidence and the set-valued arrays are distinct beyond what uniqueItems catches; a candidate's qualification is current only if its candidate_version equals version, its source_revision equals source.revision and its evidence_hash equals Prior's evidenceHash over the current evidence and reproduction (an admission over a stale qualification is refused, never healed); a deferred decision's target is control.deferral.target, a resolvable reference or a named external target such as a release, and the reason stays in the Markdown Deferred: line (a legacy record whose Deferred: line names no target or no ruler is a migration finding, never a null the schema admits); historical markers and status heads in the narrative are evidence, not state, and a divergent status note in an active narrative is a conflict; a plan's acceptance revision equals the hash of the plan narrative when it was adopted.",
   "type": "object",
   "additionalProperties": false,
   "required": ["control", "extensions", "filed_by", "id", "kind", "narrative", "provenance", "references", "schema", "workbench_id"],
@@ -50,6 +50,28 @@
         "type": "object",
         "properties": { "filed_by": { "type": "object", "properties": { "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, "required": ["actor"] } },
         "required": ["filed_by"]
+      },
+      "then": {
+        "type": "object",
+        "properties": { "provenance": { "type": "object", "properties": { "source": { "enum": ["imported", "legacy-terminal"] } }, "required": ["source"] } }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": { "control": { "type": "object", "properties": { "participants": { "type": "array", "contains": { "type": "object", "properties": { "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, "required": ["actor"] } } }, "required": ["participants"] } },
+        "required": ["control"]
+      },
+      "then": {
+        "type": "object",
+        "properties": { "provenance": { "type": "object", "properties": { "source": { "enum": ["imported", "legacy-terminal"] } }, "required": ["source"] } }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": { "control": { "type": "object", "properties": { "deferral": { "type": "object", "properties": { "ruled_by": { "type": "object", "properties": { "actor": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, "required": ["actor"] } }, "required": ["ruled_by"] } }, "required": ["deferral"] } },
+        "required": ["control"]
       },
       "then": {
         "type": "object",

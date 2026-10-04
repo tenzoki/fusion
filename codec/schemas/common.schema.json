@@ -126,7 +126,7 @@
     },
     "actor": {
       "type": "object",
-      "description": "Who acted, in the shape of the conventions' **Filed by:** line: actor is 'user', an agent name or a host name; person is the PERSON= identity or null when unknown. Attribution, never authorisation. The token legacy-unknown is reserved (decision 261003-1746, option 1): it marks a filer a legacy workbench never recorded, is admitted as filed_by.actor only on a record or package whose provenance.source is imported or legacy-terminal, and is refused in every request that carries an actor, so no live write produces it. It is always paired with provenance.legacy_fields.derived[\"/filed_by/actor\"] = {rule: unknown}, and is a different field from the package's origin.kind legacy-unknown.",
+      "description": "Who acted, in the shape of the conventions' **Filed by:** line: actor is 'user', an agent name or a host name; person is the PERSON= identity or null when unknown. Attribution, never authorisation. The token legacy-unknown is reserved (decision 261003-1746, option 1): it marks a filer a legacy workbench never recorded, is admitted in an actor position (filed_by, a discussion's participants, a deferral's ruled_by) only on a record or package whose provenance.source is imported or legacy-terminal, and is refused in every actor position of every request, so no live write produces it. As filed_by.actor it is always paired with provenance.legacy_fields.derived[\"/filed_by/actor\"] = {rule: unknown}, and is a different field from the package's origin.kind legacy-unknown.",
       "additionalProperties": false,
       "required": ["actor", "person"],
       "properties": {
@@ -135,7 +135,7 @@
       }
     },
     "legacy_unknown_actor": {
-      "description": "The reserved actor token for a filer a legacy workbench never recorded (decision 261003-1746, option 1). The record and package schemas admit it as filed_by.actor only under provenance.source imported or legacy-terminal; the protocol schema refuses it in every request that carries an actor.",
+      "description": "The reserved actor token for a filer a legacy workbench never recorded (decision 261003-1746, option 1). The record and package schemas admit it in an actor position (filed_by, a discussion's participants, a deferral's ruled_by) only under provenance.source imported or legacy-terminal; the protocol schema refuses it in every actor position of every request.",
       "const": "legacy-unknown"
     },
     "execution_policy": {

@@ -514,6 +514,12 @@
     "note": "An open discussion with two participants and no outcome yet; open is read as interrupted, and the state enum is open or closed."
   },
   {
+    "path": "valid/record/discussion-imported-legacy-unknown-participant.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "discussion-open.json imported, with the reserved actor legacy-unknown as a participant: admitted under provenance.source imported, the derivation marked at /control/participants/1/actor (decision 261003-1746, option 1)."
+  },
+  {
     "path": "valid/record/discussion-closed.json",
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "valid",
@@ -548,6 +554,12 @@
     "schema": "urn:fusion:schema:fusion.record/v1",
     "expect": "valid",
     "note": "deferred carries a deferral naming an external target (v1.x, never a manufactured record id) and who ruled, and neither implementation nor successor (Prior's FJ00 response 5c)."
+  },
+  {
+    "path": "valid/record/decision-deferred-legacy-terminal-legacy-unknown-ruler.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "valid",
+    "note": "decision-deferred.json converted while terminal, its deferral ruled by the reserved actor legacy-unknown: admitted under provenance.source legacy-terminal (decision 261003-1746, option 1)."
   },
   {
     "path": "invalid/record/issue-with-decision-control.json",
@@ -604,6 +616,20 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "issue-open.json with filed_by.actor legacy-unknown: the reserved actor requires provenance.source imported or legacy-terminal, and this record is created (decision 261003-1746, option 1)."
+  },
+  {
+    "path": "invalid/record/created-decision-ruled-by-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "decision-deferred.json with control.deferral.ruled_by.actor legacy-unknown: the reserved actor in any actor position requires provenance.source imported or legacy-terminal, and this record is created (decision 261003-1746, option 1)."
+  },
+  {
+    "path": "invalid/record/created-discussion-participant-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "discussion-open.json with a participant whose actor is legacy-unknown: the reserved actor in any actor position requires provenance.source imported or legacy-terminal, and this record is created (decision 261003-1746, option 1)."
   },
   {
     "path": "invalid/record/issue-state-unknown.json",
@@ -1476,7 +1502,28 @@
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "transition.json with actor legacy-unknown: the reserved actor is refused in the actor of transition, claim and release (decision 261003-1746, option 1)."
+    "note": "transition.json with actor legacy-unknown: the reserved actor is refused in every actor position of every request (decision 261003-1746, option 1)."
+  },
+  {
+    "path": "invalid/protocol/transition-deferral-ruled-by-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "transition-decision-deferred.json with payload.deferral.ruled_by.actor legacy-unknown: the payload's deferral ruler is a live actor (decision 261003-1746, option 1)."
+  },
+  {
+    "path": "invalid/protocol/claim-actor-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claim.json with actor legacy-unknown: the reserved actor is refused in every actor position of every request (decision 261003-1746, option 1)."
+  },
+  {
+    "path": "invalid/protocol/release-actor-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "release.json with actor legacy-unknown: the reserved actor is refused in every actor position of every request (decision 261003-1746, option 1)."
   },
   {
     "path": "invalid/protocol/claim-checkout-id-uppercase.json",
@@ -1665,7 +1712,21 @@
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "invalid",
     "error_class": "schema-invalid",
-    "note": "create.json with filed_by.actor legacy-unknown: the reserved actor is refused in every request, so no live write produces it (decision 261003-1746, option 1)."
+    "note": "create.json with filed_by.actor legacy-unknown: the reserved actor is refused in every actor position of every request, so no live write produces it (decision 261003-1746, option 1)."
+  },
+  {
+    "path": "invalid/protocol/create-participant-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "create of a discussion whose payload names legacy-unknown among its participants: the payload's actor positions are live actors (decision 261003-1746, option 1)."
+  },
+  {
+    "path": "invalid/protocol/create-deferral-ruled-by-legacy-unknown.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "create of a decision whose payload carries a deferral ruled by legacy-unknown: the payload's actor positions are live actors, refused before the initial-state check (decision 261003-1746, option 1)."
   },
   {
     "path": "invalid/protocol/adopt-plan-role-unknown.json",

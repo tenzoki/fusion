@@ -1,0 +1,45 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "6ee445c7-2ccc-433f-89a7-473a732faecf",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "discussion",
+  "narrative": {
+    "path": "shared/discussions/260928-1100_o_should-the-codec-ship-a-validator.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "marker": "_o_",
+      "derived": {
+        "/control/participants/1/actor": {
+          "rule": "unknown"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20260928-example/backup/shared/discussions/260928-1100_o_should-the-codec-ship-a-validator.md",
+      "sha256": "sha256:7c3e5a91d2b84f06e1a9c7d3b5f2e8a4c6d0b9f1e3a5c7d9b2f4e6a8c0d1e3f5",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "participants": [
+      {
+        "actor": "user",
+        "person": "kai"
+      },
+      {
+        "actor": "legacy-unknown",
+        "person": null
+      }
+    ],
+    "outcome_refs": []
+  }
+}

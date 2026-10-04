@@ -905,10 +905,18 @@ root `oneOf` evaluated on every inventory part, quadratic in its entries;
 the schema leaves uniqueness and order to the codec since.
 
 **The reserved actor** (decision 261003-1746). `legacy-unknown` names a
-filer's actor that an imported workbench never recorded. The schemas admit it
-only on a record or package whose `provenance.source` is `imported` or
-`legacy-terminal`, and refuse it in every request that carries an actor
-(`schema-invalid/request`), so `plan` freezes it from a proposal, with the
+filer's actor that an imported workbench never recorded. A package has one
+actor position, `filed_by`; a record has three, `filed_by`, an entry of a
+discussion's `control.participants` and a decision's
+`control.deferral.ruled_by`. The schemas admit the token in any of them only
+when `provenance.source` is `imported` or `legacy-terminal`. A request refuses
+it in every actor position it can fill (`schema-invalid/request`): `create`'s
+`filed_by`, the `actor` of `transition`, `claim`, `release`, `set-mode`,
+`set-dependencies`, `adopt-plan` and `attach-evidence`, the `participants` of
+`create`'s payload, and the deferral ruler of `create`'s and `transition`'s
+payload. Until review 261004-1807 (A1) only `filed_by` and the top-level
+`actor` were guarded, and a `create` or `transition` could write the token
+into the two nested positions. `plan` freezes it from a proposal, with the
 `derived` entries the host writes, and refuses it on a `created` control
 (`proposal-invalid`). The codec never writes it on its own.
 

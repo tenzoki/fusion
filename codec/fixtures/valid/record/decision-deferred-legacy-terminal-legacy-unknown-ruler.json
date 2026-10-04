@@ -1,0 +1,47 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "2afd233f-bd96-47d7-85f5-e42eb3766210",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260810-0800_d_should-fixtures-be-yaml.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "references": [],
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "marker": "_d_",
+      "derived": {
+        "/control/deferral/ruled_by/actor": {
+          "rule": "unknown"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20260928-example/backup/shared/decisions/260810-0800_d_should-fixtures-be-yaml.md",
+      "sha256": "sha256:7c3e5a91d2b84f06e1a9c7d3b5f2e8a4c6d0b9f1e3a5c7d9b2f4e6a8c0d1e3f5",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "deferred",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": {
+      "target": {
+        "kind": "external",
+        "name": "v1.x"
+      },
+      "ruled_by": {
+        "actor": "legacy-unknown",
+        "person": "kai"
+      }
+    }
+  }
+}

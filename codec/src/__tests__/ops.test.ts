@@ -1709,6 +1709,116 @@ describe("create", () => {
   });
 });
 
+// --- the reserved actor in the nested actor positions (review 261004-1807 A1) -----------
+
+describe("legacy-unknown in every actor position: refused in a request, read on an import (decision 261003-1746)", () => {
+  // Every case runs twice, in process through `dispatch` and spawned on the
+  // committed bundle, because the bundle carries the schemas Prior pins by
+  // digest: a refusal the source tree makes and the bundle does not is no
+  // refusal for Prior.
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const OPEN_ID = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
+  const CONTAINER = "work-packages/260928-1200-parser-fix";
+  const LEGACY = { actor: "legacy-unknown", person: null };
+  const DEFERRAL = { target: { kind: "external", name: "v1.x" }, ruled_by: LEGACY };
+
+  const runBundle = (req: unknown): Response => {
+    const { FUSION_WORKBENCH: _drop, ...env } = process.env;
+    const r = spawnSync(process.execPath, [BUNDLE], { input: JSON.stringify(req), encoding: "utf-8", env });
+    expect(r.status, r.stderr).toBe(0);
+    return JSON.parse(r.stdout) as Response;
+  };
+  /** Every file under the scratch workbench with its bytes, so a refusal can be shown to have written nothing at all. */
+  const tree = (dir = root, prefix = ""): Record<string, string> => {
+    const out: Record<string, string> = {};
+    for (const name of readdirSync(dir).sort()) {
+      const abs = join(dir, name);
+      const rel = prefix ? `${prefix}/${name}` : name;
+      if (statSync(abs).isDirectory()) Object.assign(out, tree(abs, rel));
+      else out[rel] = readFileSync(abs).toString("base64");
+    }
+    return out;
+  };
+  /** The request is schema-invalid/request through both entry points, and the workbench is byte-identical afterwards. */
+  const refusedEverywhere = async (req: Record<string, unknown>, label: string): Promise<void> => {
+    const before = tree();
+    for (const [via, r] of [["bundle", runBundle(req)], ["dispatch", await dispatch(req)]] as const) {
+      expect(r.ok, `${label} via ${via}: ${JSON.stringify(r)}`).toBe(false);
+      if (!r.ok) expect({ class: r.error.class, reason: r.error.reason }, `${label} via ${via}`).toEqual({ class: "schema-invalid", reason: "request" });
+    }
+    expect(tree(), `${label}: nothing written`).toEqual(before);
+  };
+  /** A valid record fixture placed at its own narrative path, the narrative written beside it. */
+  const place = (fixtureRel: string): string => {
+    const value = fixture(fixtureRel) as { narrative: { path: string } };
+    const narrative = value.narrative.path;
+    const path = narrative.replace(/\.md$/, ".record.json");
+    mkdirSync(join(root, narrative, ".."), { recursive: true });
+    writeFileSync(join(root, narrative), `# ${fixtureRel}\n`);
+    writeFileSync(join(root, path), serialise(value));
+    return path;
+  };
+  const createOf = (kind: "discussion" | "decision", payload: Record<string, unknown>): Record<string, unknown> => {
+    const stem = `260929-1000-new-${kind}`;
+    return {
+      op: "create",
+      workbench: root,
+      operation_id: randomUUID(),
+      id: randomUUID(),
+      kind,
+      filed_by: ACTOR,
+      origin: { kind: "package", ref: { workbench_id: WB_ID, record_id: OPEN_ID } },
+      scope: { container: CONTAINER, store: `${kind}s` },
+      narrative: { path: `${CONTAINER}/${kind}s/${stem}.md`, content: `# A new ${kind}\n` },
+      payload,
+    };
+  };
+
+  it("create: a discussion naming legacy-unknown among its participants is refused, wherever it stands in the list", async () => {
+    for (const participants of [[LEGACY], [ACTOR, LEGACY], [{ ...LEGACY, person: "kai" }]]) {
+      await refusedEverywhere(createOf("discussion", { state: "open", participants, outcome_refs: [] }), `participants ${JSON.stringify(participants)}`);
+    }
+  });
+
+  it("create: a decision whose payload carries a deferral ruled by legacy-unknown is refused as a request, before the initial-state check", async () => {
+    await refusedEverywhere(createOf("decision", { state: "open", answer_ref: null, implementation_ref: null, superseded_by: null, deferral: DEFERRAL }), "create deferral");
+  });
+
+  it("transition: a decision deferred with legacy-unknown as who ruled is refused and the record stays open", async () => {
+    const path = place("record/decision-open.json");
+    const req = { op: "transition", workbench: root, operation_id: randomUUID(), record: { path }, expected_revision: revision(path), actor: ACTOR, to: "deferred", reason: "deferred", payload: { deferral: DEFERRAL } };
+    await refusedEverywhere(req, "transition deferral");
+    // The same move with a live ruler lands, so the refusal above is the ruler's alone.
+    expect(okResult(await dispatch({ ...req, operation_id: randomUUID(), payload: { deferral: { ...DEFERRAL, ruled_by: ACTOR } } }))).toMatchObject({ from: "open", to: "deferred" });
+  });
+
+  it("claim and release: legacy-unknown as the actor is refused", async () => {
+    const claim = { op: "claim", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: LEGACY, claim: CLAIM };
+    await refusedEverywhere(claim, "claim");
+    expect(okResult(await dispatch({ ...claim, actor: ACTOR }))).toMatchObject({ to: "claimed" });
+    const release = { op: "release", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: LEGACY, reason: "session ended" };
+    await refusedEverywhere(release, "release");
+    expect(okResult(await dispatch({ ...release, actor: ACTOR }))).toMatchObject({ to: "open" });
+  });
+
+  it("an imported record with a legacy-unknown participant and a legacy-terminal one with a legacy-unknown ruler read, validate, and the discussion still moves", async () => {
+    const discussion = place("record/discussion-imported-legacy-unknown-participant.json");
+    const decision = place("record/decision-deferred-legacy-terminal-legacy-unknown-ruler.json");
+    for (const path of [discussion, decision]) {
+      for (const [via, r] of [["bundle", runBundle({ op: "show", workbench: root, record: { path } })], ["dispatch", await dispatch({ op: "show", workbench: root, record: { path } })]] as const) {
+        expect(JSON.stringify(okResult(r)), `${path} via ${via}`).toContain("legacy-unknown");
+      }
+      const checked = runBundle({ op: "validate", workbench: root, record: { path } });
+      expect(okResult(checked), path).toMatchObject({ checked: 1, valid: true, findings: [] });
+    }
+    // A live write on the imported record keeps the participant it was imported with; it did not produce it.
+    expect(okResult(await dispatch({ op: "transition", workbench: root, operation_id: randomUUID(), record: { path: discussion }, expected_revision: revision(discussion), actor: ACTOR, to: "closed", reason: "closed", payload: {} }))).toMatchObject({ from: "open", to: "closed" });
+    const stored = strictParse(bytesOf(discussion));
+    if (!stored.ok) throw new Error(stored.detail);
+    expect((stored.value as { control: { participants: unknown } }).control.participants).toEqual([ACTOR, LEGACY]);
+  });
+});
+
 // --- main.ts, spawned on the committed bundle ------------------------------------------
 
 describe("main.ts on dist/fusion-record.js", () => {

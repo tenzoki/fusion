@@ -13383,7 +13383,7 @@ var common_schema_default = {
     },
     actor: {
       type: "object",
-      description: `Who acted, in the shape of the conventions' **Filed by:** line: actor is 'user', an agent name or a host name; person is the PERSON= identity or null when unknown. Attribution, never authorisation. The token legacy-unknown is reserved (decision 261003-1746, option 1): it marks a filer a legacy workbench never recorded, is admitted as filed_by.actor only on a record or package whose provenance.source is imported or legacy-terminal, and is refused in every request that carries an actor, so no live write produces it. It is always paired with provenance.legacy_fields.derived["/filed_by/actor"] = {rule: unknown}, and is a different field from the package's origin.kind legacy-unknown.`,
+      description: `Who acted, in the shape of the conventions' **Filed by:** line: actor is 'user', an agent name or a host name; person is the PERSON= identity or null when unknown. Attribution, never authorisation. The token legacy-unknown is reserved (decision 261003-1746, option 1): it marks a filer a legacy workbench never recorded, is admitted in an actor position (filed_by, a discussion's participants, a deferral's ruled_by) only on a record or package whose provenance.source is imported or legacy-terminal, and is refused in every actor position of every request, so no live write produces it. As filed_by.actor it is always paired with provenance.legacy_fields.derived["/filed_by/actor"] = {rule: unknown}, and is a different field from the package's origin.kind legacy-unknown.`,
       additionalProperties: false,
       required: ["actor", "person"],
       properties: {
@@ -13392,7 +13392,7 @@ var common_schema_default = {
       }
     },
     legacy_unknown_actor: {
-      description: "The reserved actor token for a filer a legacy workbench never recorded (decision 261003-1746, option 1). The record and package schemas admit it as filed_by.actor only under provenance.source imported or legacy-terminal; the protocol schema refuses it in every request that carries an actor.",
+      description: "The reserved actor token for a filer a legacy workbench never recorded (decision 261003-1746, option 1). The record and package schemas admit it in an actor position (filed_by, a discussion's participants, a deferral's ruled_by) only under provenance.source imported or legacy-terminal; the protocol schema refuses it in every actor position of every request.",
       const: "legacy-unknown"
     },
     execution_policy: {
@@ -14427,7 +14427,7 @@ var protocol_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.protocol/v1",
   title: "fusion.protocol/v1",
-  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. The reserved actor legacy-unknown (decision 261003-1746) is refused in every request that carries an actor: create's filed_by and the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
+  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. The reserved actor legacy-unknown (decision 261003-1746) is refused in every actor position of every request: create's filed_by, the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence, create's payload participants and the deferral ruler of create's and transition's payload. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
   type: "object",
   required: ["op"],
   properties: {
@@ -14527,7 +14527,14 @@ var protocol_schema_default = {
             content: { type: "string", description: "The exact bytes of the narrative, as a UTF-8 string." }
           }
         },
-        payload: { type: "object", description: "The kind-specific control fields the new record starts with." }
+        payload: {
+          type: "object",
+          description: "The kind-specific control fields the new record starts with. The record schema judges their shape on the composed record; the actor positions a payload can fill, a discussion's participants and a decision's deferral ruler, refuse the reserved legacy-unknown here and nothing else.",
+          properties: {
+            participants: { not: { type: "array", contains: { $ref: "#/$defs/legacy_unknown_held" } } },
+            deferral: { not: { type: "object", properties: { ruled_by: { $ref: "#/$defs/legacy_unknown_held" } }, required: ["ruled_by"] } }
+          }
+        }
       }
     },
     {
@@ -14621,7 +14628,7 @@ var protocol_schema_default = {
             answer_ref: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" }] },
             implementation_ref: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/git_commit" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" }] },
             superseded_by: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }] },
-            deferral: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.record/v1#/$defs/deferral" }] },
+            deferral: { oneOf: [{ type: "null" }, { $ref: "#/$defs/live_deferral" }] },
             steps: {
               type: "array",
               description: "Plan progress (Prior's FJ02 response 18): read on a plan record only, and refused on any other kind. Each entry is an update keyed by the id of a step the stored record already has; it never adds, removes or reorders an entry, and an entry left out keeps its value and position. to may equal a live plan's current state when an entry changes a value.",
@@ -14854,10 +14861,23 @@ var protocol_schema_default = {
       pattern: "^/"
     },
     live_actor: {
-      description: "An actor as fusion.common/v1 shapes it, minus the reserved legacy-unknown (decision 261003-1746, option 1): create's filed_by and the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence refuse it, every request that carries an actor, so no live write produces it.",
+      description: "An actor as fusion.common/v1 shapes it, minus the reserved legacy-unknown (decision 261003-1746, option 1): create's filed_by and the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence refuse it, and so do the nested positions a request can fill, create's payload participants and the deferral ruler of create's and transition's payload. Every actor position of every request refuses it, so no live write produces it.",
       allOf: [
         { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
-        { not: { type: "object", properties: { actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, required: ["actor"] } }
+        { not: { $ref: "#/$defs/legacy_unknown_held" } }
+      ]
+    },
+    legacy_unknown_held: {
+      description: "An object whose actor is the reserved legacy-unknown, matched and never admitted: every use sits under not. Only the reservation is checked, so a position whose shape another schema judges (create's payload, judged on the composed record) keeps that judgement.",
+      type: "object",
+      properties: { actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } },
+      required: ["actor"]
+    },
+    live_deferral: {
+      description: "A deferral as fusion.record/v1 shapes it, its ruler a live_actor: a request never names legacy-unknown as who ruled (decision 261003-1746, option 1).",
+      allOf: [
+        { $ref: "urn:fusion:schema:fusion.record/v1#/$defs/deferral" },
+        { type: "object", properties: { ruled_by: { $ref: "#/$defs/live_actor" } } }
       ]
     },
     operation_id: {
@@ -14916,7 +14936,7 @@ var record_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.record/v1",
   title: "fusion.record/v1",
-  description: "Control data of an issue, plan, discussion or decision, <name>.record.json beside <name>.md (spec section 4.3). control is a union discriminated by kind; each branch forbids the other kinds' fields. Cross-field rules expressed with if/then: filed_by.actor equal to the reserved legacy-unknown requires provenance.source imported or legacy-terminal (decision 261003-1746); an issue's disposition is null while open or in_progress and an object once closed or deferred; a decision's answer_ref, implementation_ref, superseded_by and deferral are null or present exactly as its state demands (answered cites an answer, implemented an implementation, superseded a successor, deferred a deferral naming its target and who ruled; open carries none; deferred carries neither implementation nor successor, and no other state carries a deferral); in a candidate block an admitted selection carries an admission, an admission needs a qualification, a merge target and the outcome merged imply each other, and a policy-evaluated outcome carries policy version and snapshot hash while merged carries neither. Rules JSON Schema cannot check: the legal state changes per kind live in codec/contract/transitions.json (the package matrix is never applied to records); ids inside steps, criteria, evidence and the set-valued arrays are distinct beyond what uniqueItems catches; a candidate's qualification is current only if its candidate_version equals version, its source_revision equals source.revision and its evidence_hash equals Prior's evidenceHash over the current evidence and reproduction (an admission over a stale qualification is refused, never healed); a deferred decision's target is control.deferral.target, a resolvable reference or a named external target such as a release, and the reason stays in the Markdown Deferred: line (a legacy record whose Deferred: line names no target or no ruler is a migration finding, never a null the schema admits); historical markers and status heads in the narrative are evidence, not state, and a divergent status note in an active narrative is a conflict; a plan's acceptance revision equals the hash of the plan narrative when it was adopted.",
+  description: "Control data of an issue, plan, discussion or decision, <name>.record.json beside <name>.md (spec section 4.3). control is a union discriminated by kind; each branch forbids the other kinds' fields. Cross-field rules expressed with if/then: the reserved actor legacy-unknown in any actor position (filed_by.actor, an entry of control.participants, control.deferral.ruled_by.actor) requires provenance.source imported or legacy-terminal (decision 261003-1746); an issue's disposition is null while open or in_progress and an object once closed or deferred; a decision's answer_ref, implementation_ref, superseded_by and deferral are null or present exactly as its state demands (answered cites an answer, implemented an implementation, superseded a successor, deferred a deferral naming its target and who ruled; open carries none; deferred carries neither implementation nor successor, and no other state carries a deferral); in a candidate block an admitted selection carries an admission, an admission needs a qualification, a merge target and the outcome merged imply each other, and a policy-evaluated outcome carries policy version and snapshot hash while merged carries neither. Rules JSON Schema cannot check: the legal state changes per kind live in codec/contract/transitions.json (the package matrix is never applied to records); ids inside steps, criteria, evidence and the set-valued arrays are distinct beyond what uniqueItems catches; a candidate's qualification is current only if its candidate_version equals version, its source_revision equals source.revision and its evidence_hash equals Prior's evidenceHash over the current evidence and reproduction (an admission over a stale qualification is refused, never healed); a deferred decision's target is control.deferral.target, a resolvable reference or a named external target such as a release, and the reason stays in the Markdown Deferred: line (a legacy record whose Deferred: line names no target or no ruler is a migration finding, never a null the schema admits); historical markers and status heads in the narrative are evidence, not state, and a divergent status note in an active narrative is a conflict; a plan's acceptance revision equals the hash of the plan narrative when it was adopted.",
   type: "object",
   additionalProperties: false,
   required: ["control", "extensions", "filed_by", "id", "kind", "narrative", "provenance", "references", "schema", "workbench_id"],
@@ -14964,6 +14984,28 @@ var record_schema_default = {
         type: "object",
         properties: { filed_by: { type: "object", properties: { actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, required: ["actor"] } },
         required: ["filed_by"]
+      },
+      then: {
+        type: "object",
+        properties: { provenance: { type: "object", properties: { source: { enum: ["imported", "legacy-terminal"] } }, required: ["source"] } }
+      }
+    },
+    {
+      if: {
+        type: "object",
+        properties: { control: { type: "object", properties: { participants: { type: "array", contains: { type: "object", properties: { actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, required: ["actor"] } } }, required: ["participants"] } },
+        required: ["control"]
+      },
+      then: {
+        type: "object",
+        properties: { provenance: { type: "object", properties: { source: { enum: ["imported", "legacy-terminal"] } }, required: ["source"] } }
+      }
+    },
+    {
+      if: {
+        type: "object",
+        properties: { control: { type: "object", properties: { deferral: { type: "object", properties: { ruled_by: { type: "object", properties: { actor: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/legacy_unknown_actor" } }, required: ["actor"] } }, required: ["ruled_by"] } }, required: ["deferral"] } },
+        required: ["control"]
       },
       then: {
         type: "object",
