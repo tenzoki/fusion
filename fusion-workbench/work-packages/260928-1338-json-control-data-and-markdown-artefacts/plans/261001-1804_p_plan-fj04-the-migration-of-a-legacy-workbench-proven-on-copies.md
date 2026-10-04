@@ -991,7 +991,7 @@ Bases B and C stay byte-identical.
      - **Not covered here (found while reading).** The codec's seventh install case runs `git archive HEAD`, so it still exercises the pre-12d helper until this step is committed. Step 12e rewrites it (`repairAll` to 0).
      - **Verification.** `cd hooks && npm test` exit 1, 67 files, 1 130 tests; the one red is `bin/monitor — the default wildcard bind > answers at localhost on both loopback families` (30 s timeout), the known loopback case. `npx tsc --noEmit` in `hooks/` exit 0. `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` exit 0, 21 files, 1 677 tests; `npx tsc --noEmit` in `codec/` exit 0. The bundle is unchanged at 686 926 bytes, `sha256:4bc2dc26…6dae`, and `git status` shows nothing under `codec/`.
 
-12d2. **The contract addendum for decision 261003-2045**
+12d2. [DONE] **The contract addendum for decision 261003-2045**
    - Executor: `analyst`
    - Source: decision `261003-2045_*_how-does-the-frozen-plan-carry-an-optional-repair-the-migration-plan-schema-admits-only-for-blocking-findings.md` (`_a_`, option 1).
    - Files: `codec/fixtures/prior/REQUESTS.md`, as a pure append after its last line (2 193 at `e7cb55c0`), drafted in the scratchpad and appended by the orchestrator, as in steps 12a and 12b2. This plan gets the step note.
@@ -1003,6 +1003,10 @@ Bases B and C stay byte-identical.
      - the one-line correction step 12b2 left open: `:2079` names four requests that refuse `legacy-unknown`, and the committed schema refuses it in eight.
    - Dependencies: decision 261003-2045 answered (2026-10-04).
    - Acceptance: the existing lines hash equal to the head blob. Every cited line is matched once by `grep -n -F`. Step 12a's confidentiality grep over the draft returns 0, and the draft contains no figure for another copy other than an aggregate.
+   - Done (2026-10-04, analyst draft, to be appended by the orchestrator; uncommitted). The draft is `scratchpad/fj04-12d2/addendum.md` (15 lines, a leading blank line included, `sha256:3e0f8890…758e`), with the preview `REQUESTS-appended.md` beside it. `cat REQUESTS.md addendum.md` gives 2 208 lines; the first 2 193 hash `a09858a0…a775`, equal to the blob at `0469832a`, and the section starts at line 2195.
+     - **Stamps.** fusion `0469832a` (2026-10-04 09:26); the last commit moving `codec/`, `bin/` or `hooks/` is `e7cb55c0`, and `REQUESTS.md` is unchanged since `19fdb71d`. Bundle `sha256:4bc2dc26…6dae`, 686 926 bytes, re-hashed from the blob, committed at `f3de44c1`, unqualified. Prior `d0fce6c` (2026-10-03 09:01): `git log --all --oneline d0fce6c..` is empty there.
+     - **Content.** The change: `$defs/repair`'s `finding` admits both severities, with the reworded description, one `$defs/repair` shared by proposal and frozen part, no codec logic on a repair's severity (`codec/src/migration.ts:977` reads `p.findings` only), and `part-repairs-finding-reported.json` becoming valid. No departure: lines 1484, 1642, 1982 and 2051 now hold for an optional repair too, line 1479 unchanged. Corrections: line 2193 (a second rebuild after `f3de44c1`; the digest Prior qualifies carries this rule as well; `f3de44c1`'s digest intermediate; Prior's DTOs unchanged beyond `no_ops`, C10/C11) and line 2079 (eight requests, not four: `create`'s `filed_by` and the `actor` of `transition`, `claim`, `release`, `set-mode`, `set-dependencies`, `adopt-plan`, `attach-evidence`; checked as 8 `live_actor` references in `protocol.schema.json` at `0dc4be8b`, inlined in the HEAD bundle). No figure for any copy.
+     - **Checks.** Each cited line is matched once by `grep -n -F` at its number: 1479, 1484, 1642, 1982, 2051, 2079 (both quoted sentences), 2193, and the heading at 2125. The confidentiality grep `grep -c -i -E 'krk|axibra|F08-KRK|F03_digital|digital-leadership|/Users/'` over the draft returns 0.
 
 12d3. **The schema: a repair entry admits a reported finding**
    - Executor: `data-implementer`
