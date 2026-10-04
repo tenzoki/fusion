@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** implementation-planner, Kai Stalmann <ks@qantr.com>
-**Cross-references:** 260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 261001-1804_*_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md
+**Cross-references:** 260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 261001-1804_*_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md, 261003-1746_*_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md, 261004-1641_*_how-mark-partly-overridden-decision-261001-1804.md
 
 ---
 
@@ -35,3 +35,6 @@ Option 1, put to Prior as requests 47 and 49 of the FJ04 plan; the `_d_` Circle 
 
 ---
 Answered: plan `261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md` — option 1 — the recommended mapping table, put to the Prior side as requests 47 and 49 because a fixed mapping may touch the no-guessing rule of spec section 8.2; the user approved it with the FJ04 plan on 2026-10-01, the requests to be sent after the measurement part; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: b9d43fb1 — option 1 realised as ruled (FJ04 step 2); the _d_, unclear-role and catch-all clauses later replaced at e7cb55c0 per the FJ04 plan's 2026-10-03 amendment (departures 57, 58)
