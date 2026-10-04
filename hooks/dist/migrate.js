@@ -375,27 +375,80 @@ function resumeRun(wb, session) {
     return drive(wb, session, s);
 }
 /**
- * Ends the fence a rollback began after activation once its first chunk is
- * refused, as the codec's session base D does, so the store takes writes
- * again. The codec's audit then refuses every later rollback of this
- * migration, which work since activation had already decided. The ids are
- * dropped only after the `end` is stored, so a retry resends it under its id.
+ * The stored answers no rollback of this migration gets past: every one under
+ * `.json-state/ops/` that is neither in the plan's baseline (its `answers`
+ * parts), nor an id this session sent, nor a no-op of this migration. The
+ * codec's audit refuses each of them in every rollback, whichever check
+ * refused first (the activated-tree comparison runs before the audit), and a
+ * stored answer is never removed, so no retry or restore clears them. `null`
+ * when the plan cannot be read: undecided, never read as "none".
  */
-function endRefusedFence(wb, session, s, refusal) {
-    const fence = s.rollback.begin_id;
+function workSincePlan(wb, s) {
+    const own = new Set([s.operation_ids.plan, ...s.operation_ids.apply, s.operation_ids.verify, ...s.operation_ids.rollback, s.end_id, ...(s.rollback ? [s.rollback.begin_id, s.rollback.end_id] : [])]);
+    const json = (p) => JSON.parse(readFileSync(join(wb, p), "utf-8"));
     try {
-        send(wb, { op: "maintenance", operation_id: s.rollback.end_id, action: "end", fence });
+        for (const part of json(s.plan.path).parts.filter((x) => x.part === "answers"))
+            for (const e of json(part.path).entries)
+                own.add(e.operation_id);
+    }
+    catch {
+        return null;
+    }
+    const noOp = (id) => {
+        try {
+            const r = json(`${STATE_DIR}/ops/${id}.json`).response;
+            return r.ok === true && r.result?.no_op === true && r.result.migration_id === s.migration_id;
+        }
+        catch {
+            return false;
+        }
+    };
+    const ops = join(wb, STATE_DIR, "ops");
+    return (existsSync(ops) ? readdirSync(ops) : []).filter((n) => !n.startsWith(".") && n.endsWith(".json")).map((n) => n.slice(0, -5)).filter((id) => !own.has(id) && !noOp(id));
+}
+/** Sends `maintenance end` for the fence this rollback began; the ids are dropped only after it is stored, so a retry resends it under its id. */
+function endRollbackFence(wb, session, s) {
+    send(wb, { op: "maintenance", operation_id: s.rollback.end_id, action: "end", fence: s.rollback.begin_id });
+    s.rollback = null;
+    writeState(session, s);
+}
+/**
+ * The first rollback chunk after activation was refused. With work since the
+ * plan standing, every rollback of this migration is refused for good, so the
+ * fence is ended, as the codec's session base D does, and the store takes
+ * writes again. Without it the refusal is one a retry or a restore clears (a
+ * lock timeout, a receipt or narrative changed by hand): the fence stays, and
+ * the message names `rollback` again and `rollback --end-fence`.
+ */
+function refusedFirstChunk(wb, session, s, refusal) {
+    const fence = s.rollback.begin_id;
+    const work = workSincePlan(wb, s);
+    if (work === null || work.length === 0) {
+        return new Stop(EXIT.refused, `${refusal.message}. The fence ${fence} this rollback began stands, so the store takes no writes. ${work === null ? "The plan's baseline could not be read, so whether work since the plan blocks this rollback is undecided" : "No operation stored since the plan blocks this rollback, so a retry or a restore clears this refusal"}: put back what it names and run \`bin/fusion-migrate rollback\` again, or run \`bin/fusion-migrate rollback --end-fence\` to end the fence and stay under JSON control, after which the codec refuses every later rollback of this migration`);
+    }
+    try {
+        endRollbackFence(wb, session, s);
     }
     catch (e) {
         return new Stop(e.code ?? EXIT.fault, `${refusal.message}; ending the fence ${fence} this rollback began then failed: ${e.message}`);
     }
-    s.rollback = null;
-    writeState(session, s);
-    return new Stop(EXIT.refused, `${refusal.message}. The fence ${fence} this rollback began is ended: the store stays under JSON control and takes writes again, and the codec refuses every later rollback of this migration`);
+    return new Stop(EXIT.refused, `${refusal.message}. Work stored since the plan (${work.slice(0, 3).join(", ")}${work.length > 3 ? `, ${work.length - 3} more` : ""}) is refused by the codec's audit in every rollback of this migration, whatever is restored, so the fence ${fence} this rollback began is ended: the store stays under JSON control and takes writes again`);
+}
+/** `rollback --end-fence`: ends the fence a refused first rollback chunk left standing, and nothing else. */
+function endLeftFence(wb, session, s) {
+    const i = inspect(wb);
+    const last = s.schedule ? s.schedule.rollback.find((r) => r.chunk === s.schedule.apply.length) : undefined;
+    if (s.rollback === null || i.state !== "json-control" || i.maintenance?.operation_id !== s.rollback.begin_id || (last && stored(wb, last.operation_id)))
+        throw new Stop(EXIT.precondition, "no fence of a refused rollback stands on a store under JSON control; nothing was sent");
+    const fence = s.rollback.begin_id;
+    endRollbackFence(wb, session, s);
+    return [`fence-ended=${fence}`, "result=json-control", "note=the codec refuses every later rollback of this migration"];
 }
 /** Rolls back every landed chunk, then chunk 0, then ends the fence; resumable under the recorded ids. */
-function rollback(wb, session) {
+function rollback(wb, session, endFence = false) {
     const s = recorded(wb, session);
+    if (endFence)
+        return endLeftFence(wb, session, s);
     if (s.rolled_back)
         return [`rolled-back=${s.migration_id}`, "result=no-op"];
     if (s.plan === null || s.schedule === null) {
@@ -428,7 +481,7 @@ function rollback(wb, session) {
         // Still activated, so no rollback chunk landed: the refused one was the first, and nothing binds this fence yet (codec/README.md, `## migration`).
         if (!(e instanceof Stop) || e.code !== EXIT.refused || i.state !== "json-control")
             throw e;
-        throw endRefusedFence(wb, session, s, e);
+        throw refusedFirstChunk(wb, session, s, e);
     }
     const fence = inspect(wb).maintenance;
     if (fence !== null && !stored(wb, s.rollback.end_id))
@@ -537,7 +590,7 @@ function repair(wb, session, flags) {
     return [`applied=${id}\t${f.class}\t${f.path}`, `logged=${readRepairLog(session).length}`];
 }
 // --- the entry -----------------------------------------------------------------------
-const TAKES = { survey: [], repair: ["--list", "--optional", "--apply", "--value", "--consent"], run: [], resume: [], rollback: [], status: [], "restore-backup": ["--consent"] };
+const TAKES = { survey: [], repair: ["--list", "--optional", "--apply", "--value", "--consent"], run: [], resume: [], rollback: ["--end-fence"], status: [], "restore-backup": ["--consent"] };
 const VALUED = new Set(["--apply", "--value", "--session"]);
 function main(argv) {
     const [sub, given, ...rest] = argv;
@@ -563,7 +616,7 @@ function main(argv) {
         : sub === "repair" ? repair(wb, session, flags)
             : sub === "run" ? run(wb, session)
                 : sub === "resume" ? resumeRun(wb, session)
-                    : sub === "rollback" ? rollback(wb, session)
+                    : sub === "rollback" ? rollback(wb, session, flags.has("--end-fence"))
                         : sub === "restore-backup" ? restoreBackup(wb, session, flags.has("--consent"))
                             : status(wb, session);
     out(lines);

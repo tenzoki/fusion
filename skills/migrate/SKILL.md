@@ -186,7 +186,7 @@ Only on 1, run `"$M" repair --apply <finding> --value <key>=<answer> … --conse
 
 **Run.** Only on 1, run `"$M" run`. Show every `reported=`, `untracked=` and `ignored=` line, then the receipt (`verified=`, `migrated=`). `result=no-op` means it had already run and nothing was sent. Exit 6 means a finding came back: return to the repairs. Exit 5 or 8: show the reason and stop.
 
-**Interrupted.** On exit 7, or a recorded run that is not done, run `"$M" status` and ask: 1. continue (`"$M" resume`), 2. undo (`"$M" rollback`). Never start a second plan: a re-run is `run`, which no-ops once done.
+**Interrupted.** On exit 7, or a recorded run that is not done, run `"$M" status` and ask: 1. continue (`"$M" resume`), 2. undo (`"$M" rollback`). Never start a second plan: a re-run is `run`, which no-ops once done. A `rollback` refused with exit 8 says on stderr whether its fence stands and, if so, the way out (`rollback` again or `rollback --end-fence`): show it and ask which.
 
 **Report.** Close with the receipt and the commit split, in this order: the repairs, only when one was applied; the originals and the record pairs; the rewritten records; the manifest. Then repeat the sentence: every installation that writes this workbench must be on 13.0.0 or later before it writes again, and nothing detects a checkout that does not update, so other checkouts update their installation first, then pull. `"$M" rollback` undoes the migration and `"$M" status` says where it stands.
 

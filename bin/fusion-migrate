@@ -7,7 +7,7 @@
 #   fusion-migrate repair --apply <finding> [--value <key>=<value>]... [--consent]
 #   fusion-migrate run
 #   fusion-migrate resume
-#   fusion-migrate rollback
+#   fusion-migrate rollback [--end-fence]
 #   fusion-migrate restore-backup --consent
 #   fusion-migrate status
 # Every subcommand also takes --session <dir> (default
@@ -48,9 +48,18 @@
 #   resume          sends the next request whose answer is not stored, under
 #                   its recorded id, after an interruption or an unknown outcome.
 #   rollback        every landed chunk in reverse, chunk 0, and the fence's end;
-#                   after activation under a fence of its own, which it ends
-#                   again when the codec refuses the first chunk (exit 8).
-#                   Resumable. Restores the frozen post-repair input.
+#                   after activation under a fence of its own. Resumable.
+#                   Restores the frozen post-repair input. When the codec
+#                   refuses the first chunk (exit 8), whatever its class: with
+#                   a stored answer since the plan that is neither the
+#                   baseline's, this session's nor a no-op, which the codec's
+#                   audit refuses in every rollback, it ends that fence; with
+#                   none, the refusal is one a retry or a restore clears (a
+#                   lock timeout, a receipt or narrative changed by hand), the
+#                   fence stays and stderr names the way out.
+#   rollback --end-fence
+#                   ends the fence such a refusal left standing; the codec
+#                   then refuses every later rollback of this migration.
 #   restore-backup  the pre-repair backup back over a legacy store with no
 #                   fence and no plan files, checked by tree hash; .json-state/
 #                   stays. Never calls the codec.

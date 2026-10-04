@@ -166,11 +166,33 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     expect(mig(root, home, "run").status).toBe(0);
     expect(create("261004-1600-after-activation").status).toBe(0);
     const back = mig(root, home, "rollback");
-    expect([back.status, back.stderr]).toEqual([8, expect.stringMatching(/after-state-changed[\s\S]*fence .* is ended/)]);
+    expect([back.status, back.stderr]).toEqual([8, expect.stringMatching(/after-state-changed[\s\S]*Work stored since the plan[\s\S]*fence .* is ended/)]);
     expect([value(mig(root, home, "status").stdout, "fence"), mig(root, home, "rollback").status]).toEqual(["-", 8]);
     const after = create("261004-1601-after-refusal");
     expect([after.status, value(mig(root, home, "status").stdout, "fence")], after.stderr).toEqual([0, "-"]);
   }, 4 * CASE_TIMEOUT);
+
+  it("a refusal a restore clears leaves the fence: an edited narrative put back rolls back; a deleted receipt takes --end-fence (issue 261004-1807, C1)", () => {
+    const edited = project();
+    expect(mig(edited.root, edited.home, "run").status).toBe(0);
+    const bytes = read(edited.wb, BENCH);
+    writeFileSync(join(edited.wb, BENCH), `${bytes}\nA hand edit, no codec operation.\n`);
+    const refused = mig(edited.root, edited.home, "rollback");
+    expect([refused.status, refused.stderr]).toEqual([8, expect.stringMatching(/after-state-changed[\s\S]*fence .* stands[\s\S]*rollback --end-fence/)]);
+    expect(value(mig(edited.root, edited.home, "status").stdout, "fence")).not.toBe("-");
+    writeFileSync(join(edited.wb, BENCH), bytes);
+    const back = mig(edited.root, edited.home, "rollback");
+    expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
+
+    const { root, wb, home } = project();
+    expect(mig(root, home, "run").status).toBe(0);
+    const receipt = JSON.parse(read(wb, "workbench.json")).migration.receipt as string;
+    rmSync(join(wb, receipt));
+    const unverified = mig(root, home, "rollback");
+    expect([unverified.status, unverified.stderr]).toEqual([8, expect.stringMatching(/receipt-unverified[\s\S]*fence .* stands/)]);
+    const ended = mig(root, home, "rollback", "--end-fence");
+    expect([ended.status, value(mig(root, home, "status").stdout, "fence"), mig(root, home, "rollback", "--end-fence").status], ended.stderr).toEqual([0, "-", 5]);
+  }, 6 * CASE_TIMEOUT);
 
   it("resumes after a kill following each chunk and one inside a chunk", () => {
     const plugin = join(base, "plugin");
