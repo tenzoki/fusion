@@ -126,6 +126,7 @@ const ROWS: Row[] = [
   ["filed-by-unreadable", (wb) => edit(wb, DEC, "implementation-planner,", "The Planner,"), DEC, (c) => [c.filed_by.actor, c.provenance.legacy_fields.head["Filed by"]], ["legacy-unknown", `The Planner, ${ME}`]],
   ["answered-without-answer-line", (wb) => edit(wb, DEC, "\nAnswered:", "\nNote:"), DEC, (c) => [c.control.answer_ref.path, D(c)["/control/answer_ref"]], [`archive/migrations/m1/originals/${DEC}`, { rule: "answer-ref-self", evidence: "no-answer-line" }]],
   ["answered-without-answer-line", (wb) => edit(wb, DEC, /\nAnswered:.*\n?$/, "\nAnswered:\n"), DEC, (c) => D(c)["/control/answer_ref"], { rule: "answer-ref-self", evidence: "empty-answer-line" }],
+  ["answer-ref-self", () => {}, DEC, (c) => [c.control.answer_ref.path, D(c)["/control/answer_ref"]], [`archive/migrations/m1/originals/${DEC}`, { rule: "answer-ref-self", evidence: "unresolvable-answer-line" }]],
   ["mark-outside-numbered-step", (wb) => edit(wb, BENCH, "## Where", "### [DONE] Benchmarks run in CI\n\n## Where"), BENCH, (c, r) => [c.provenance.legacy_fields.unanchored_marks, r.narrative_after!.includes("\n### Benchmarks run in CI\n")], [{ "line 21": "DONE" }, true]],
   ["unknown-step-mark", (wb) => edit(wb, PLAN, "12a. [OPEN]", "12a. [BLOCKED]"), PLAN, (c) => [c.control.steps[2], D(c)["/control/steps/2/state"], c.provenance.legacy_fields.step_marks["12a"]], [{ id: "12a", state: "open" }, { rule: "unrecognised-mark-open", evidence: "BLOCKED" }, "BLOCKED"]],
   ["duplicate-step-number", () => {}, BENCH, (c) => [c.control.steps, D(c)["/control/steps"]], [[{ id: "1", state: "open" }], { rule: "duplicate-numbers-unanchored", evidence: "2" }]],
@@ -152,6 +153,7 @@ describe("legacy import: derive, carry as unknown, default", () => {
     withCopy((wb, compose) => {
       edit(wb, DEC, `implementation-planner, ${ME}`, "user");
       const c = ctl(compose({ firstAdd: () => ({ person: GIT, commit: "c0ffee" }) }), DEC);
-      expect([c.filed_by, D(c)]).toEqual([{ actor: "user", person: null }, undefined]);
+      // The one derived entry is the decision's answer_ref default; none is the filer's.
+      expect([c.filed_by, Object.keys(D(c))]).toEqual([{ actor: "user", person: null }, ["/control/answer_ref"]]);
     }));
 });

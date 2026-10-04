@@ -76,7 +76,9 @@
  *   filed-by-*       actor `legacy-unknown`; person from the injected
  *                    `firstAdd` (the git author of the file's first add,
  *                    followed through renames), else null with its evidence
- *   answered-without-answer-line  `answer_ref` the record's own original
+ *   answered-without-answer-line, answer-ref-self  `answer_ref` the
+ *                    record's own original: no line, an empty one, or one
+ *                    citing nothing resolvable
  *   mark-outside-numbered-step    the mark token leaves the narrative, kept in
  *                    `legacy_fields.unanchored_marks` by line
  *   unknown-step-mark the step anchors `open`; the token stays in `step_marks`
