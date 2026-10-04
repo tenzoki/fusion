@@ -2206,3 +2206,255 @@ This addendum takes up decision `261003-2045_*_how-does-the-frozen-plan-carry-an
 
 - **Line 2193.** "The digest Prior qualifies at the hand-over carries the no-op rule and the reserved actor, in one rebuild." It now takes a second rebuild after `f3de44c1`, and the digest Prior qualifies carries this rule as well. The digest at `f3de44c1` becomes an intermediate one. Prior qualifies one digest at the hand-over either way. Prior's DTOs do not change beyond `no_ops`: Prior has no type for a migration plan, a proposal or a repair entry.
 - **Line 2079.** "`protocol.schema.json` refuses it in `create`'s `filed_by` and in the `actor` of `transition`, `claim` and `release`." The schema committed at `0dc4be8b` refuses the reserved actor in eight requests: `create`'s `filed_by` and the `actor` of `transition`, `claim`, `release`, `set-mode`, `set-dependencies`, `adopt-plan` and `attach-evidence`. No other request carries an actor. "No live write can produce it" stands.
+
+## FJ04 (the hand-over)
+
+**Written against:** fusion commit `524fdfad` on branch `fj-json-workbench` (2026-10-04 16:12). It is the last commit that moved a file under `codec/`, `bin/` or `hooks/` (`git log -1 -- codec bin hooks`); it changed `hooks/lib/__tests__/fixtures/surface-growth.golden` alone. The branch head when this text was written is `ac0344e5` (2026-10-04 17:22), which moves none of the three. The sections above are unchanged since `4f1059d9`, which appended `## FJ04 (addendum for the optional repair in the frozen plan)`. Prior was read at `d0fce6c` (2026-10-03 09:01), the head of the Prior checkout, and `git log --all --oneline d0fce6c..` is empty there. **The frozen digest:** `codec/dist/fusion-record.js` is 686 858 bytes, `sha256:575aec476cb9ce0fa06dd245e41825afc84dc3944a5b2faf938bc7c8a3ff260c`. The bundle took those bytes at `f3fcfbe7` (2026-10-04 09:56), and its blob is the same object at `f3fcfbe7`, `524fdfad` and `ac0344e5`. A scratch clone of `524fdfad` rebuilt it in `npm test`'s build step, which reported `dist/fusion-record.js: unchanged`, and the file hashed as above after both suites had run. Only this digest is asked to be pinned. It replaces `sha256:6b26faf2…b0bf` (`e1bafd2f`), the last qualified one.
+
+This section hands over FJ04, the contract of `## FJ04 (the contract delta)` as amended by the five sections after it, for one re-snapshot and one re-pin. The commits that moved `codec/`, `bin/` or `hooks/` for FJ04, in order: `5a9f0f39` (step 1, the legacy fixture), `b9d43fb1` (2, the host reader), `680c509f` (8, the consented repair), `e5a476bc` (4 and 5, the schemas, `survey` and `plan`), `d8cd8588` and `c1a82a69` (6b, the schemas for `a1fb17a`), `8edd3023` (6, `apply`, `verify`, `rollback`), `06a18c3e` (7, the recorded session), `4b141b07` (9, `bin/fusion-migrate`), `46943fc8` (7, a README follow-up), `f5f26c4d` (10, `/fusion:migrate`), `900d1f5c` (10a, 13.0.0), `76ba852f` (11, the installed copy), `0dc4be8b` (12b, the reserved actor), `d1f02baa` (12b3, `no_ops`), `f3de44c1` (12c, the verified no-op), `e7cb55c0` (12d, the host derives), `a0695452` (12d3, a repair admits a reported finding), `f3fcfbe7` (12d4), `0b1e1b58` (12e), `8e4ef9a0` and `7713c679` (the two host fixes below) and `524fdfad`. The contract text came with `65700dd5`, `5a406417`, `5f9d593b`, `06e95a05`, `19fdb71d` and `4f1059d9`.
+
+The intermediate digests, each the committed bundle:
+
+| Commit | Bytes | `sha256` | Carries |
+|---|---|---|---|
+| `e5a476bc` | 614 704 | `c30b018bff6aa01f5911356f0e58b8286f411ca32379c6dc02331f165ec6af1a` | `survey`, `plan`, the held-intent mechanism |
+| `8edd3023` | 678 774 | `c71e219efde6ec59f4f268ed820ba8bdd48067cb48fbe2521d7934e087e02fa6` | `apply`, `verify`, `rollback`, W7 |
+| `f3de44c1` | 686 926 | `4bc2dc2651c9d894bba8085c4906ceaebb518728e3798e32c38a53e85cd76dae` | the reserved actor, `no_ops`, the verified no-op |
+| `f3fcfbe7` | 686 858 | `575aec476cb9ce0fa06dd245e41825afc84dc3944a5b2faf938bc7c8a3ff260c` | a repair entry admits `reported`: the frozen digest |
+
+`0dc4be8b` and `d1f02baa` committed schemas without a rebuild. At those two commits the bundle is still `c71e219e…`, and the committed-bundle gate is red there by its stale-bundle cases; `f3de44c1`'s rebuild cleared it. Every other commit that moved the bundle had the gate green, in the tree or in a scratch clone of it.
+
+Figures re-taken on 2026-10-04 in a scratch clone of `524fdfad`, with the git-ignored `hooks/package-lock.json` copied in and `npm ci` in `codec/` and `hooks/`, on an Apple M2 Max, macOS 26.6.2, Node 25.7.0. `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` exits 0 with 21 test files and 1 678 tests, none skipped, `fixtures: 338 manifest entries`, `0 derived-from-source, 13 Go-emitted golden(s)`, `163 of 163 prior_keys exercised`. Among them, without regeneration: `round-trip-cli.test.ts` 18, `prior-handback.test.ts` 6, `round-trip-cli-fj02.test.ts` 39, `round-trip-cli-fj02b.test.ts` 49, `round-trip-cli-initialize.test.ts` 91, `round-trip-cli-archive.test.ts` 107, `round-trip-cli-migration.test.ts` 110, `fixtures.test.ts` 341, `committed-bundle.test.ts` 4, `kernel.test.ts` 59, `migration.test.ts` 96, `ops.test.ts` 204 and `install.test.ts` 13. `npx tsc --noEmit` exits 0 in `codec/` and in `hooks/`. `cd hooks && npm test` runs 67 test files and 1 131 tests, of which 1 130 pass. The one red case is the monitor's wildcard-bind loopback case, which times out at 30 s on this machine, as in every section since FJ03b. `git status --porcelain -- codec bin hooks` was empty after both runs.
+
+### What changed for Prior's two pins
+
+Each pinned path at `d0fce6c`, hashed in the blob at `524fdfad`. None is missing.
+
+`Prior: tests/testdata/fusion-fj01/UPSTREAM.json` (323 files, fusion `e1bafd2f`): five differ.
+
+| Path | `sha256` at `524fdfad` | Change since `e1bafd2f` |
+|---|---|---|
+| `bin/fusion-record` | `f76bb99bbd9e9238c116af97d0b51e4944d3e9bc88e057844ccd4e640b0cc51c` | **comment lines only**: header lines 26 and 27 name the five phases of `migration` as answered |
+| `codec/dist/fusion-record.js` | `575aec476cb9ce0fa06dd245e41825afc84dc3944a5b2faf938bc7c8a3ff260c` | FJ04 |
+| `codec/fixtures/prior/REQUESTS.md` | `b07cba1c051c0964998a8c18b137470f79e26972e2cb3f54a2c5fcdc2f860afd` | the six FJ04 sections above; this section changes it once more |
+| `codec/fixtures/protocol-session-archive/README.md` | `9a2b7e6402f38563b5d25b87e6085d861f9f84bb23d9b01572fe9be8f59b74c1` | it names its six `migration-delta` files |
+| `codec/fixtures/protocol-session-initialize/README.md` | `7c9d127663b85b5535aa5879044756bc05ffdc1a02e42eda632b2bebbd5a63fa` | it names its nine `migration-delta` files |
+
+`codec/package.json` and every recorded request and response file hash as pinned.
+
+`Prior: tests/testdata/fusion-codec/UPSTREAM.json` (277 files relative to `codec/`, fusion `e1bafd2f`): seven differ.
+
+| Path | `sha256` at `524fdfad` | Change |
+|---|---|---|
+| `schemas/common.schema.json` | `ef02e5bab108788711b8fd7546665be5c730172bbc1c6dda4895c9c941756a48` | `$defs/legacy_unknown_actor`; `$defs/actor` names the reserved value (12b) |
+| `schemas/record.schema.json` | `849d9d9c7c4bd8187df3e06dbfd97305540a11f6aae7f207074b954087c80459` | `legacy-unknown` as `filed_by.actor` only on `imported` or `legacy-terminal` (12b) |
+| `schemas/package.schema.json` | `78a34d589a34ea44cd2df0ee616dfd92567289753496b7f5bb4f9f0a47938871` | the same rule (12b) |
+| `schemas/protocol.schema.json` | `b730ae79c9c76021a5316a505c6109a817829d2650fe8d738577af738555407a` | five `migration` branches (4, 6b); `legacy-unknown` refused in the eight actor-bearing requests (12b) |
+| `fixtures/manifest.json` | `87c7d78c1206504bfa1eb5379136199ef5beb243cc71f255b265634b64ecc482` | 237 to 338 entries |
+| `fixtures/invalid/protocol/migration-phase-unknown.json` | `edee34969e29e038848b9ef95466bdd6068dd6514cd890f6f4e4401945245609` | `phase: "rollback"` became `"resume"`, since `rollback` is a phase now (step 4) |
+| `fixtures/prior/REQUESTS.md` | `b07cba1c…0afd`, as above | as above |
+
+The other pinned schemas, the three contract tables, `manifest.schema.json`, every other pinned fixture and the 13 goldens are byte-identical. New in the shared set: `schemas/migration-plan.schema.json`, `migration-proposal.schema.json` and `migration-receipt.schema.json`, and 101 fixtures (valid: 15 migration, 5 protocol, 1 package, 1 record; invalid: 61 migration, 17 protocol, 1 record).
+
+**The schema changes the re-pin carries**, each inlined into the frozen digest:
+
+| Change | File | Step |
+|---|---|---|
+| the migration plan, proposal and receipt shapes, and the five `migration` request branches | the three new schemas, `protocol.schema.json` | 4, 6b |
+| the reserved actor `legacy-unknown`: admitted on `imported` and `legacy-terminal` records and packages only, refused in every request that carries an actor | `common`, `record`, `package`, `protocol` | 12b |
+| `rollback-binding` gains the optional `no_ops` (`minItems: 1`, closed `{operation_id, request_digest, answer_sha256}`) | `migration-plan.schema.json` | 12b3 |
+| a repair entry's `finding` admits a `reported` finding, the severity an optional repair corrects | `migration-plan.schema.json` `$defs/repair`, which `migration-proposal.schema.json` references | 12d3 |
+
+None of them adds a type for Prior's DTOs. `legacy-unknown` is a string in a field that is already a string. `no_ops` is the one addition to a shape Prior's DTOs read, the `rollback-binding`, and it is optional. Prior has no type for a plan, a proposal or a repair entry.
+
+Outside both pins, new or changed since `e1bafd2f`: `codec/src/` (16 files, `migration.ts` new), `codec/README.md`, the fifteen delta files and the migration session below, `codec/fixtures/legacy-v12/` (41 entries: 40 files and one link, Markdown only), `bin/fusion-migrate` and `hooks/migrate.ts` (new), `hooks/lib/legacy-import.ts` and `legacy-repair.ts` (new) with their tests, `skills/migrate/SKILL.md` Step 7, and the 13.0.0 closure of the v12 window (`900d1f5c`). `plugin.json` reads 13.0.0. Neither `install.sh` nor any file under `templates/` changed.
+
+### The delta files
+
+Every recorded response file at `e1bafd2f` is unedited. Each `inspect` answer that `migration` moved has a delta file of the form `fusion.session-delta/2` beside it. Each one makes the same five changes: it adds the three migration schema ids at `/result/schemas/3` to `5`, adds `migration` at `/result/operations/implemented/15`, and replaces `/result/operations/deferred` with `[]`. The nine in the `initialize` session each `follow` that exchange's `maintenance-delta`; the six in the archive session have `follows: []`.
+
+| Delta file | `sha256` |
+|---|---|
+| `protocol-session-initialize/01-inspect.migration-delta.json` | `2415a9a540a4a2230f02a64e32bcab80ab3102b3f92117fb2f87369865b29341` |
+| `protocol-session-initialize/08-inspect.migration-delta.json` | `0d14f4b5ba3c137d6cf4063350097ef3179ba210d45c4a9738c1412e9c2c0212` |
+| `protocol-session-initialize/14-inspect.migration-delta.json` | `ad7dcca893ab795558cc45b078a6af78ee3dc1693749f1fba4840d4a57f9091f` |
+| `protocol-session-initialize/16-inspect.migration-delta.json` | `b2e9695c59acd024deba290f88b88daad9330cf02d755a5a5cc92699e7ac707d` |
+| `protocol-session-initialize/18-inspect.migration-delta.json` | `72d1bfaac75cc61421f150b69d1099e873a17f2fd9019bc029f7438eb8709ce0` |
+| `protocol-session-initialize/19-inspect.migration-delta.json` | `9658aacd37dedfefa0f8a95e4b5f39a3bc221b6bb237a0ce83caf68821e3f391` |
+| `protocol-session-initialize/21-inspect.migration-delta.json` | `5244ec26660554b3b70e99320705eaea406d8063eede5b025efa9ce03a739e84` |
+| `protocol-session-initialize/22-inspect.migration-delta.json` | `7640b4dbf6d2dd7815c4b48875164e4633b4a9bc09c20bc1c1fcf21c7eccb93a` |
+| `protocol-session-initialize/24-inspect.migration-delta.json` | `0614a4f07d1525ab0d2c66c77a4580fd77f41e8183efd84fe37f6b5055aaf62b` |
+| `protocol-session-archive/01-inspect.migration-delta.json` | `36a5f61495f392f3a01c99686fa7e2dfbce5a3abf0e055071915c950236e7bfa` |
+| `protocol-session-archive/13-inspect.migration-delta.json` | `7f67f68d638feb615a5ec1a49ffa209e6f1a9f4aa23306dfa6e51188729d9e7a` |
+| `protocol-session-archive/27-inspect.migration-delta.json` | `65caa35b22881535470587dd6c1d0676496dca8f22dcf007b50f1623d339d10a` |
+| `protocol-session-archive/31-inspect.migration-delta.json` | `7eaa4a5ed425562b80b20136d03f7a4cc5163b41d4eafc2a9455c777a78ef1e6` |
+| `protocol-session-archive/38-inspect.migration-delta.json` | `dc1d6b57773ee5f83ad2a78e2f8b44d0d63ee39ff364bdcd2a2ecb55ef888b6c` |
+| `protocol-session-archive/45-inspect.migration-delta.json` | `adb5a1c3aadb6bed9ff802b840c204a00108874731882af932c0e920f046a4a4` |
+
+No other recorded exchange moved: the six FJ01 pairs, the handback, the fifteen FJ02 exchanges (the fifteenth through its two deltas), all twenty FJ02b exchanges, the other seventeen `initialize` exchanges and the other forty-five archive exchanges replay as at `e1bafd2f`.
+
+### The recorded migration session
+
+`codec/fixtures/protocol-session-migration/` holds seventy exchanges through `bin/fusion-record`, in four bases, each over a fresh copy of `codec/fixtures/legacy-v12/workbench/`: A is 01 to 26 and 55 to 58, B is 27 to 45, C is 46 to 54 and D is 59 to 70. The directory holds 232 files: the 140 exchange files, 91 seed files under `seed/` and the README. The README gives the seeds, the host's six edits, the two substitutions (`<workbench>`, `<since:<nn>-<op>>`) and the replay procedure. Nine exchanges are refusals: 02 `migration-incomplete/blocking-finding`, 04 `schema-invalid/proposal-invalid`, 05 `conflict/source-changed`, 10 `migration-incomplete/chunk-out-of-order`, 11 `conflict/intent-pending`, 36 `conflict/plan-file-changed`, and 49, 68 and 69 `conflict/after-state-changed`. Its gate, `round-trip-cli-migration.test.ts`, 110 cases, regenerates only under `UPDATE_PROTOCOL_SESSION_MIGRATION=1`. Its last case replays all seventy from bash over roots whose path holds a space and a comma. No request names `workbench`, so no recorded digest depends on where the root lies.
+
+Step 7 recorded 54 exchanges at `06a18c3e`. Step 12c (`f3de44c1`) changed exactly these, as Prior asked ("Supply the exact changed exchanges or versioned deltas"). Before is the blob at `d1f02baa`, after the blob at `524fdfad`, which equals `f3de44c1`'s. 01 to 24, 25's request, 27 to 54 and every seed are byte-identical, base B's `binding` hash included.
+
+| Exchange | Before (`sha256`) | After (`sha256`) |
+|---|---|---|
+| `25-rollback.response.json` | `254918e95f7aee5a0a90956c9b0235cc2220758082c78a8e11e1e5dfa8ac89a5` | `c8e1540bfc316ac084ac681663b72639b264657c792696b4308c1cc3fc35d126` |
+| `26-maintenance.request.json` | `e27e9b9671f6d5612a636e7d7635c4b381dbfe4a663836acc1c4ef412fb5c1a0` | removed |
+| `26-maintenance.response.json` | `27085b0e1533fabea80bb65aa08cb2e88bae0fed6557258b9440b9eb45745c3b` | removed |
+| `26-rollback.request.json` | new | `8d35bffa996e4f82946c10d651fa33d579d314cb2e084eacade92261ae82308e` |
+| `26-rollback.response.json` | new | `1912e0027b7935cfe329b1cd5f1aea870bff7f21c0fb92aa13aa92cc55b2087c` |
+| `55-rollback` request / response | new | `a4232b5856b8ae560e57208e45522f4afa9d2afe6cfe3429fa35ec3e81c61616` / `073051ad50ad70903c9761e373484f42d808a45619a072073679c311ff002f17` |
+| `56-rollback` | new | `3343bb58850bac6a35b9b8e4267b7c0e3858e199afdc89379bc0e0032da73235` / `16458c2cdff905a0c543b3058f486dd2b54d0018bc0456b38ab013c818a47c38` |
+| `57-maintenance` | new | `b51ef8b3c8d96f98007b52105e1467af91985414766af405293babe74c503dc5` / `7881ff745d6bdab468d81f5c4ea48ea229591be989138594c05029f4a1a805ea` |
+| `58-plan` | new | `53028d4e5b538a88af5fae56f5bbda0de0d35a24a23d84b7b4caa950d671d255` / `a99f53b63349f311d25992b16847ac8ec0921c5ae2da2ca8f15665499c9f8d8b` |
+| `59-plan` | new | `eee40708a62eecbe6351e256b74fb60410b4cc7231e1150af9cc1b7dfa36dcb8` / `0308d7d8b633adb939d31787d29560d672de2e8635f1686390acd6ca118296d3` |
+| `60-apply` | new | `5bc71dcf5ef88c2ec59188070a22e277bd66690eac6d651cac48161cf2865ea2` / `07a6fc80bc1c6bd97f8c48e44f72798b2798ef075d757170434ebc331a2670b9` |
+| `61-apply` | new | `839c1559d4eb4ef16dd147ce0c88b345e9532839e9958402d2ed8279e04b0007` / `9e0aa1ee864683a7b6ca2d8c04f23047cbd143e2094111ee71e23112396a8d63` |
+| `62-apply` | new | `7849c81a2cbb4e0fd0333b6d2936ee9b144d2deefb4b6057e7f9b0428d62359e` / `f5767fd887aebd1550bf523e40df246f64a44a7c079fa3fac3735d2902e2dfd4` |
+| `63-verify` | new | `684128cab1dfa86a44d6a91866aedf0ec22ff1bdf3f1ead41e39ba28c98a281f` / `1385039a966f84d73d3f95a34267d513e5444c65a7b35e5aa9900a711975bfe2` |
+| `64-maintenance` | new | `3ed90abc84e241588d23f25157424cc9626e66639dbdd50ec58ed71cbae5bdd0` / `d1d6afdd12d9276ce87e6202064107e90aab524473952a1e8f7ae0b7a78e3a4e` |
+| `65-claim` | new | `d4b57116809252cd585ccb94c438db7ffad8373059fb7828d66d3dc421ef404c` / `0aa23400539b5fb865442b9ee5eab2e6ccc3a349f28478b6b3969ee5097f513c` |
+| `66-plan` | new | `f0e4c945653f4f482e3ebc50de57be0a7f58680ef7430209a6e0b269592fe467` / `487f0f4c6d4b7a787847c12f07e391831f6e69b0db4ebf94ce737a930a18bdf1` |
+| `67-maintenance` | new | `7ac595996224653d6247a8ba56dc23a926391c7bd3307584f1058dc8d01a9456` / `0b634fc1e1059797893bcbafee08498a068e1fdd707016e71bdaf087e161a0cd` |
+| `68-rollback` | new | `2b172a112d1ff35c4968e33bf89409376714426774da11cc75382103c5f59f6f` / `548547341cecdeb22345282d8e022f2024255bb03cf52b190a649b9c2ab65d22` |
+| `69-rollback` | new | `2b172a112d1ff35c4968e33bf89409376714426774da11cc75382103c5f59f6f` / `f8398aeb146d8527cf6da0adf949bb2fc3cd9186e307371f5f0d22aae2148918` |
+| `70-maintenance` | new | `48e1913dcdb566fc291fffcaa808c7c55e5a634b55775b37c9007dbb678f1daf` / `3304067c7c88fb74aaf4e4de10d7e2ed36b45cec3cc2c03c5f4a68f2463dc8f7` |
+| `README.md` | `a3efa69dd81aa6af0959a70aa269b806b4ff2ffcffa391126223a16fc866a9e0` | `c10e723ed732584b63253eb7c8b79ac6ca113f667b50b1dd25be929af84cc4d6` |
+
+The pair `26-maintenance` became `26-rollback` because the exchange's operation changed. 68 and 69 carry the same request, the first rollback chunk sent twice: before and after the host writes the claimed file back.
+
+### The kernel-level changes Prior must re-qualify
+
+Prior's FJ01 pin holds the bundle, its digest, `bin/fusion-record`, `codec/package.json`, this file and the recorded fixtures, and no path under `codec/src`. So the list above of pinned paths that differ cannot show a kernel change, except as the bundle digest moving. The held-intent mechanism reaches beyond `migration`, so it is named here for Prior's re-qualification. `git diff --stat e1bafd2f f3fcfbe7 -- codec/src/kernel.ts` is `1 file changed, 126 insertions(+), 21 deletions(-)`, and `kernel.ts` is the same at `524fdfad`. `git grep` for `heldOf`, `isHeld`, `heldView` and `held?:` at `e1bafd2f` finds none. At `f3fcfbe7`, `git grep -n` finds:
+
+| Item | `codec/src/kernel.ts` at `f3fcfbe7` | What it does |
+|---|---|---|
+| `Blocked.held` | `:231` `held?: string;` | marks an intent as held for its own request, not blocked; carries its `op` |
+| `heldOf` | `:241` `const heldOf = (p: PendingIntent): Blocked => …` | the `Blocked` entry of a held intent: every path it writes, nothing diverged |
+| `isHeld` | `:252` `export function isHeld(p, req, digest)` | whether a pending intent is held from this request: a migration intent, and a committed `initialize` when the request is a `migration` |
+| W7's fix in `isHeld` | `:253` `if (req !== null && p.intent.operation_id === req.operation_id && p.intent.request_digest === digest) return false;` | the hold is released only when the operation id **and** the request digest are equal (R4, C14); before W7 the id alone released it |
+| `heldView` | `:537` `function heldView(wb: Workbench): ReadView` | the read view of a store not under JSON control: a pending migration intent is held there, and its paths answer `migration-pending` |
+
+**What they reach.** The general recovery loop of every mutation, in `mutate` (`:331-338`): a held intent is listed and not recovered, and the replay lookup (`:341-344`) answers a held intent under the request's id as `recoveryBlocked` (same digest) or `operation-id-reused` (another digest). `recoveryBlocked` (`:258-265`) answers `operation-unknown/migration-pending` for a held intent's paths. The read path: `read` (`:632`) runs a store not under JSON control through `heldView`, where it ran with no view at `e1bafd2f`. The lock-free classification `classify` (`:594-596`) and `recoverUnderLock` (`:613`) skip a held intent on a store under JSON control. The same diff also carries `Planned.fenceFirst` (`:189`), `Planned.removals` (`:191`), the `after-fence` cut (`:140`) and the intent's `phase` (`:397`). These are reached only by a `migration` request.
+
+**Scope.** A held intent is a `migration` intent, or a committed `initialize` met by a `migration` request. With neither pending, every loop above recovers as at `e1bafd2f`. On a legacy workbench with no journal, `heldView` returns the empty view, and the read path answers as at `e1bafd2f`. Re-checked for this section over a copy of `codec/fixtures/legacy-v12/workbench/` with the bundle at `e1bafd2f` and the frozen bundle: `list`, and `show` of `work-packages/260901-0900-tokenizer-handles-unicode/package.json`, are byte-identical, and neither run created `.json-state/`. `inspect` differs only in `schemas` (the three migration ids) and `operations` (`migration` implemented, `deferred: []`). These are the five changes the delta files carry. So the kernel change reaches migrating and JSON-controlled workbenches only.
+
+### The verified no-op, as built (step 12c)
+
+Prior `d0fce6c`'s rule is built as `## FJ04 (addendum for Prior d0fce6c and ruling b1)` states it, and Prior qualifies it with the frozen digest. `provenNoOps` in `codec/src/migration.ts` checks the four conditions for each later operation that is not an exempt answer, after the receipt check and the exempt set. The audit admits the three exempt answers plus the proven no-ops, and refuses everything else. Condition 4, by `grep -n 'no_op: true' codec/src/migration.ts`: line 758 alone, in `secondRun`, which plans `writes: []`. `rollback.json` carries `no_ops` only when at least one no-op was proven, so base B's recorded binding hash did not move. `no_ops` is the one addition to the binding Prior's DTOs read.
+
+Step 12c's tests carry Prior's regression list in twelve cases, and eight broken copies (N1 to N8) each failed a named case. Base A of the recorded session now rolls back across exchange 18's no-op. Base D keeps the refusal after real work: a `claim` and then a no-op, refused on the activated tree, and with the claimed bytes written back, refused in the audit, naming the claim and not the no-op. On fusion's own copy in step 12's re-run, a fresh-id `plan` answered `no_op: true` before the first rollback after activation. The rollback then completed to the legacy `end`, and `rollback.json` named that id under `no_ops`.
+
+### Ruling b1, as built (step 12d)
+
+`plan-adopted-twice` is `blocking` in the host composer, as confirmed, and the still-blocking set the host pins is twenty classes. `active-document-role-conflict` is `reported` and carried as a reference under request 58, with `derived` evidence `role-conflict`. Both are host classes in `hooks/lib/legacy-import.ts` and move no byte of the bundle. Both were 0 / 0 / 0 on the three copies.
+
+### The sections this one stands on
+
+`## FJ04 (the contract delta)`; `## FJ04 (the contract delta, amended for ab9cb59)`; `## FJ04 (addendum for a1fb17a)`; `## FJ04 (addendum for the user's ruling of 2026-10-03)`; `## FJ04 (addendum for Prior d0fce6c and ruling b1)`; and `## FJ04 (addendum for the optional repair in the frozen plan)`. The last one admits the `reported` severity on a repair entry and corrects lines 2079 and 2193. Where they disagree, the later one governs.
+
+### A correction, by line
+
+- **Line 2158**, "A fresh no-op under the standing rollback fence is still `conflict/maintenance-active`." This holds once the first rollback chunk after activation has landed, which removes the manifest and freezes the binding, so the store is legacy again. Between the rollback's `maintenance begin` and that first chunk the store is still under JSON control. `plan` decides on the state before it reads the fence (`codec/src/migration.ts:950`, then `:952-954`), so a fresh no-op sent in that window is answered and stored, and the first rollback then proves it like any other no-op. This was so before step 12c and is unchanged by it. It is consistent with Prior's "This decision does not expand which fresh requests may pass a maintenance fence", since the no-op path writes nothing. The test "a fresh no-op under the standing rollback fence, once the binding is frozen, is maintenance-active and stores nothing" covers the sentence where it holds.
+
+### The proof on copies (step 12, re-run)
+
+The proof ran on 2026-10-04 on fresh scratch copies of three real workbenches: fusion's own, cloned at `0b1e1b58`, and two consuming projects, the second and the third, each read-only at its source. Each source's tree hash was equal before the copy, after it and at the end. It used an install of `0b1e1b58` built by `install.sh` that reports 13.0.0 and carries the frozen bundle. Every helper call ran under `env -i` with only `PATH`, `HOME` and `FUSION_PLUGIN_ROOT`, and nothing on `PATH` or in `HOME` named Prior. Figures are fusion / second / third, in aggregate.
+
+- **Questions:** `repair --list` printed `blocking=0` with no `ask=` and no `unrepairable=` line, so 0 / 0 / 0 repair questions. `/fusion:migrate` Step 7 asks one question per copy, whether to migrate now, which is the ceiling of 1. No repair was applied; `--optional` lists 27 / 277 / 60.
+- **Derived values, read back through `bin/fusion-record show`** over 144 / 744 / 175 controls, each equal to `survey`'s count:
+
+  | Rule | Count |
+  |---|---|
+  | `/filed_by/actor` `unknown` (`legacy-unknown`) | 18 / 182 / 56 |
+  | `/filed_by/person` `git-first-add` | 18 / 182 / 56, with 0 disagreements against `git log --follow --diff-filter=A` |
+  | `answer-ref-self` | 4 / 19 / 2 |
+  | `unrecognised-mark-open` | 0 / 3 / 0 |
+  | `duplicate-numbers-unanchored` | 0 / 1 / 0 |
+  | `binding-carried-as-reference` (`role-unclear`) | 0 / 1 / 0 |
+  | `circle-deferred-dropped` | 0 / 0 / 2 |
+  | `unanchored_marks` | 5 in 1 record / 69 in 11 records / 0 |
+
+  `plan-adopted-twice` and `active-document-role-conflict` were 0 / 0 / 0. `validate` found 0 / 0 / 0 controls schema-invalid.
+- **The run:** `result=json-control` on each copy. Chunks 7 / 34 / 8; chunk median and max 1.17 / 1.18, 1.76 / 1.89 and 1.25 / 1.29 s; plan freeze 0.68 / 1.81 / 0.72 s; whole `run` 11.5 / 68.4 / 12.8 s. The largest `survey`, `list` or `reconcile` answer was 2 048 186 bytes against 16 MiB, and `reconcile` took at most 0.76 s against 5 s. A second `run` was a no-op that stored nothing.
+- **Kill and resume:** a `SIGKILL` inside chunk 4 / 17 / 4 landed after the journal entry and before any write. `run` exited 7, and `resume` finished it.
+- **Rollback:** the first rollback after activation, with its baseline, took 0.71 / 1.76 / 0.87 s, and chunk 0's cleanup 0.57 / 1.83 / 0.85 s. Each tree hash was restored, apart from `.json-state/`, the permitted empty `archive/migrations/` directories and a reader-minted `.checkout-id` (allowlisted). After one `create`, the rollback was refused `after-state-changed` on each copy.
+- **One copy without `.git`** migrated and rolled back. It carried 56 persons as `unknown`/`no-repository` and printed `reported=git`.
+
+### The standalone Claude Code proof, beside Prior's conformance run
+
+fusion is shown to migrate, resume a killed run and roll back through its own installed helpers with the Prior runtime absent: `bin/fusion-migrate` in step 9, the installed copy in step 11 (with a second run, the full rollback and `restore-backup`), and the three real copies in step 12's re-run. Each of those runs had no Prior checkout, binary, service or variable present, and the codec ran as the shipped Node bundle through `bin/fusion-record`. The bundle's executed imports are `node:crypto`, `node:fs`, `node:os`, `node:path` and `node:url`. The five `require("ajv…")` strings are generator text and were present at `e1bafd2f` too. Prior `1dfd446` asks for this demonstration "alongside Prior's independent protocol replay". Request 60 below asks for that replay and Prior's conformance run. It stands beside the proof above and does not replace it. Neither is a precondition of the other. The plugin version the frozen commit carries is 13.0.0 (`.claude-plugin/plugin.json` at `f3fcfbe7` and `524fdfad`). `bin/fusion-migrate` refuses before any read when `node` is missing or older than `codec/package.json`'s `>=20.12.0`.
+
+### Two host fixes after step 12's re-run
+
+Both are host changes. Neither moves `codec/src` or the bundle: `git diff --stat f3fcfbe7 524fdfad -- codec` names `codec/src/__tests__/install.test.ts` alone.
+
+- **`8e4ef9a0`, the first-add pass over staged renames.** `/fusion:migrate` leaves its rename pass's `git mv` staged when Step 7 runs. The pass read committed history only, so every moved file lost its person to `unknown`/`untracked`. It now also follows `git diff --cached -M --diff-filter=R` within the workbench. Step 12's re-run committed the rename first, so none of its figures depends on this fix. The seventh install case asserts the fixture commit's author.
+- **`7713c679`, a refused rollback after activation ends its own fence.** When the codec refuses the first rollback chunk after activation (exit 8), nothing is bound to that fence yet. `bin/fusion-migrate rollback` now sends `maintenance end` for the fence it began, under its recorded id, and says that the store takes writes again. The codec then refuses every later rollback of that migration, because the ended pair is a later operation. Work since activation had already decided that. This is the host doing what base D's exchange 70 does. No codec rule changed.
+
+### Requests 45 to 58, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 45 to 49 | answered at Prior `ab9cb59`: the split, chunks of at most 50, the split plan, the record cut (46 a), the Circle map (47), anchors (48), answer references (49 a, b), with the phase and recovery precisions | `## FJ04 (the contract delta, amended for ab9cb59)`, built in steps 4 to 9 |
+| 50 | answered at Prior `a1fb17a`: yes, only if one freeze intent or the cleanup does not fit. Not used. | figures below |
+| 51 | answered at `a1fb17a`: the stored chunk-0 answer with its exact `progress` list | built in step 6 (W6); recorded in bases A, B, C |
+| 52 | answered at `a1fb17a`: the codec derives the exemptions and binds `rollback.json` by hash; extended at `d0fce6c` by the proven no-ops | built in steps 6 (W5) and 12c |
+| 53 | reserved, not sent | |
+| 54 to 58 | **outstanding.** Sent in `06e95a05` (2026-10-03 18:14). Prior's head `d0fce6c` (09:01 the same day) predates them, and no committed or uncommitted text under its `docs/` or `concept/` answers them. Built as the user ruled, without waiting (`## FJ04 (addendum for the user's ruling of 2026-10-03)`). If Prior rejects one, that class goes back to `blocking` with its repair, and the proof on copies is measured again | |
+
+**The freeze and cleanup bounds, as Prior 50 asks ("Publish the measurements and selected bounds").** The selected bound is one intent per freeze and per cleanup. Each is at most 80 files and 6 MiB in total, with every file and `intent.json` under 1 MiB. The answers part counts against the same bound, and chunk 0's intent carries hashes, not bytes. Measured through `bin/fusion-record` with process start, three runs, median and max, on a store generated at the second copy's size:
+
+| Phase | Figure |
+|---|---|
+| freeze (step 5) | 1.26, 1.28, 1.32 s; 41 files, 3 410 844 bytes, the largest 983 029 |
+| freeze with the answers part, 500 stored answers (step 6) | 1.63 / 1.66 s |
+| chunk-0 cleanup, 43 files (step 6) | 1.12 / 1.13 s |
+| worst apply chunk, its recovery after a cut, `verify` (step 6) | 2.22 / 2.24, 0.78 / 0.83, 1.70 / 1.71 s |
+| first rollback after activation, with its baseline (step 6) | 1.14 / 1.15 s |
+| the same, with 100 proven no-ops, binding 28 270 bytes (step 12c) | 1.18 / 1.21 s |
+| real copies, maximum over the three (step 12) | freeze 1.81 s, cleanup 1.83 s, chunk 1.89 s |
+
+Every maximum is under the 5 s post-wait allowance, so no multi-request path was built. A binding over the strict reader's 1 MiB cap (4 001 no-ops, 1 085 441 bytes) is refused `schema-invalid/too-large` before any write.
+
+Two requests follow, under the next free numbers.
+
+### 59. Re-snapshot the shared fixture set at `524fdfad` and re-run the Go harness
+
+**Closes:** `Prior: tests/testdata/fusion-codec/UPSTREAM.json` (today fusion `e1bafd2f`, 277 files). Preferred form: the re-snapshot and the test run in the Prior repository, plus a reply with the counts.
+
+The shared set changed in the seven pinned files above and gained three schemas and 101 fixtures. `TestFusionCodecSharedManifest` should pass 338 of the 338 manifest entries, 84 valid and 254 invalid (253 `schema-invalid`, 1 `unsupported-format`):
+
+| Schema | Valid / invalid |
+|---|---|
+| protocol | 30 / 49 |
+| record | 17 / 45 |
+| package | 11 / 36 |
+| migration-plan | 11 / 37 |
+| migration-proposal | 3 / 16 |
+| migration-receipt | 1 / 8 |
+| evidence, campaign, workbench, workbench/v2, bytes | unchanged: 3 / 18, 4 / 21, 4 / 15, 0 / 1, 0 / 8 |
+
+`TestFusionAppliedRulingAndGoldens` should pass unchanged: `codec/contract/` and the 13 goldens did not move. A differing count is a finding to report, not something to reconcile by editing either side.
+
+### 60. Re-pin the frozen bundle, replay every recorded session through its deltas, the migration session included, re-qualify the kernel, with Prior's conformance run
+
+**Closes:** in `Prior: tests/testdata/fusion-fj01/UPSTREAM.json`, `commit` (to `524fdfad`), `bundle_digest`, and the entries for the five paths above. In `Prior: tests/testdata/fusion-codec/UPSTREAM.json`, `commit` and the seven paths. `codecBundleDigest` in `Prior: internal/fusionhost/codec_process_test.go`. The fifteen delta files and the migration session's 232 files go into the pin or into a pin of their own, as Prior chooses. `REQUESTS.md` with this section stands at the commit that appends it, after `524fdfad`, and pinning it there is Prior's choice, as at request 44. Preferred form: the re-pin, the runs below in the Prior repository, and a reply saying they are green against `sha256:575aec476cb9ce0fa06dd245e41825afc84dc3944a5b2faf938bc7c8a3ff260c`.
+
+What it asks Prior to run, and what fusion asserts at `524fdfad`:
+
+- **The six FJ01 pairs and the handback, byte for byte** (`round-trip-cli.test.ts` 18, `prior-handback.test.ts` 6).
+- **The fifteen FJ02 exchanges**, the fifteenth through both of its deltas, and **the twenty FJ02b exchanges** (39 and 49 green).
+- **The twenty-six `initialize` exchanges** (91 green): sixteen byte for byte, `26-inspect` through its detail delta, and the nine successful `inspect` answers through their `maintenance-delta` and then their `migration-delta`.
+- **The fifty-one archive exchanges** (107 green), with request 43's three substitutions. The six successful `inspect` answers go through their `migration-delta`.
+- **The seventy migration exchanges** (110 green), per the session README: four bases, each over a fresh copy of `codec/fixtures/legacy-v12/workbench/` (its one link kept as a link), the seeds and host edits it lists, and the substitutions `<workbench>` and `<since:<nn>-<op>>`.
+- **The kernel re-qualification** of the five items above. Prior's existing recovery and replay tests run unchanged over exchanges that did not move. The held intent is shown by the migration session's exchanges 10 to 12: chunk 3 is refused before chunk 2, again while chunk 2's committed intent from `seed/11-apply/` is held, and then chunk 2's own request finishes it. Prior may add its own case for W7: the same operation id with another digest stays held and answers `operation-id-reused` with no recovery effect.
+- **The shared manifest** as request 59 states it.
+- **Prior's conformance run:** `go test ./...` and `go vet ./...` green.
+
+The re-pin should change these Prior assertions and nothing else: the digest; the `initialize` and archive replays, each gaining the migration deltas; the new migration replay; and `TestCodecPinsScopeAndDomainRefusals`'s last assertion. That one sends `{"op":"migration","phase":"survey"}` and expects `operation-unknown/not-implemented`. `survey` now answers `ok` and stores nothing, as `## FJ04 (the contract delta)` departure (1) announced. The assertion needs another deferred operation, and there is none left, or it is dropped. The lock is still the one `write.lock`, and the fence file stands beside it. If Prior's replay differs anywhere else, the differing exchange and its stdout are the finding.
+
+Prior's answer to requests 54 to 58, and this re-pin reported green, are preconditions of migrating a real workbench. They are release facts and gate no runtime path. Until both stand, no real workbench is migrated by this plan, fusion's own included.
