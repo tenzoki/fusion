@@ -2458,3 +2458,164 @@ What it asks Prior to run, and what fusion asserts at `524fdfad`:
 The re-pin should change these Prior assertions and nothing else: the digest; the `initialize` and archive replays, each gaining the migration deltas; the new migration replay; and `TestCodecPinsScopeAndDomainRefusals`'s last assertion. That one sends `{"op":"migration","phase":"survey"}` and expects `operation-unknown/not-implemented`. `survey` now answers `ok` and stores nothing, as `## FJ04 (the contract delta)` departure (1) announced. The assertion needs another deferred operation, and there is none left, or it is dropped. The lock is still the one `write.lock`, and the fence file stands beside it. If Prior's replay differs anywhere else, the differing exchange and its stdout are the finding.
 
 Prior's answer to requests 54 to 58, and this re-pin reported green, are preconditions of migrating a real workbench. They are release facts and gate no runtime path. Until both stand, no real workbench is migrated by this plan, fusion's own included.
+
+## FJ04 (hand-over correction after the closing review)
+
+**Written against:** fusion commit `f9ecae78` on branch `fj-json-workbench` (2026-10-04 18:35). It is the only commit since `9232314a` that moved `codec/dist/` (`git log -1 -- codec/dist`). The branch head when this text was written is `e0db2545` (2026-10-04 18:46), the follow-up to D2 below. It is the last commit that moved a file under `codec/`, `bin/` or `hooks/`, and it changes `codec/src/__tests__/install.test.ts`, `hooks/lib/__tests__/store-name-migration.test.ts` and `skills/migrate/SKILL.md` alone. Every path either Prior pin holds hashes the same at `e0db2545` as at `f9ecae78`. The sections above are unchanged since `9232314a`, which appended `## FJ04 (the hand-over)`: at `f9ecae78` this file is 2 460 lines, `sha256:3c7066e43c08f3b81f24d718e1b7107b3c857cc854bc5eb5fa9cb9a03326fdb7`. Prior was read at `7758bfa` (2026-10-04 18:29), the head of its `main`. `git log --all --oneline d0fce6c..` there names `7758bfa` and `88b2e6c`, the second on `review/fj04-candidate-524fdfad`. Every Prior text quoted below is from `Prior: docs/design/fusion-fj04-prior-response.md` at `7758bfa`.
+
+**The frozen digest:** `codec/dist/fusion-record.js` is 689 747 bytes, `sha256:c76bbce9cc86634f5e9c227e8496511dc71eb845768704f43e68200ab841e52e`. The bundle took those bytes at `f9ecae78`. A scratch clone of `f9ecae78` rebuilt it with `node scripts/build.mjs`, which reported `dist/fusion-record.js: unchanged`. The file hashed as above before the codec suite ran and again after it. This digest replaces `sha256:575aec476cb9ce0fa06dd245e41825afc84dc3944a5b2faf938bc7c8a3ff260c` (`f3fcfbe7`), which becomes an intermediate one. Only `c76bbce9…` is asked to be pinned. The last qualified bundle stays `e1bafd2f`, `sha256:6b26faf2…b0bf`.
+
+This section corrects `## FJ04 (the hand-over)` and the addenda before it after the closing review over `1fda4088..9232314a` and the fixes that followed it. It also answers Prior `7758bfa`, which asks: "Rebuild the committed bundle and send the new digest, fixture counts and any response deltas." Each correction cites the line it corrects, quotes it, and states what holds now. No line above is edited. Where this section disagrees with any section above, this section governs. It restates requests 59 and 60 against the new digest and asks no new question. The other two workbenches still appear only as the second and the third, in aggregate figures.
+
+### Prior's answer at `7758bfa`
+
+- **54 to 58: accepted.** "Accept the import policies in 54–58." Prior adds limits to each acceptance. The first-add author "establishes who added the file to that history, not who necessarily authored it". The self-reference of 55 "does not establish that the answer was located". The step array of 56 "is not evidence that unanchored work vanished or was completed". A workflow that needs a current plan binds one "through the ordinary supported operation" (58). fusion's host already works this way, and nothing below departs from it.
+- **59: done for `524fdfad`.** Prior's codec pin holds 381 files at `524fdfad`, and its harness passed 338 of 338 manifest cases. "The correction will require the new fixtures/schemas to be snapshotted again." Request 59 below asks for that snapshot.
+- **60: candidate rejected.** "Request 60 is blocked: the submitted bundle permits the reserved actor in newly created live records." Prior reproduced the closing review's finding A1 through `575aec47…`. A `create` of a discussion with a `legacy-unknown` participant answered `ok`, and so did a `transition` to `deferred` whose `deferral.ruled_by.actor` was `legacy-unknown`. Prior's runtime pin stays `e1bafd2f`. The candidate's preparation is kept on `review/fj04-candidate-524fdfad`, where `go test ./...` is red on the two nested-actor regressions.
+- **The host findings.** Prior: "The separate host findings in the closing review still belong to Fusion's release work … Their correction does not require a Prior runtime dependency." They are named below under `### Host changes since the hand-over`.
+
+### The reserved actor in every actor position (A1, `f9ecae78`)
+
+Decision 261003-1746's schema rule (`0dc4be8b`) guarded `filed_by` and the top-level `actor` of eight requests. Three more actor positions reached `common` `$defs/actor` with no guard. `f9ecae78` closes all three:
+
+| Schema | Position | Rule | Since |
+|---|---|---|---|
+| `record` | `filed_by.actor` | the token requires `provenance.source` `imported` or `legacy-terminal` | `0dc4be8b` |
+| `record` | an entry of `control.participants` (a discussion) | the same, a new top-level `allOf` `if/then` | `f9ecae78` |
+| `record` | `control.deferral.ruled_by.actor` (a decision) | the same, a new top-level `allOf` `if/then` | `f9ecae78` |
+| `package` | `filed_by.actor`, its one actor position | as on a record | `0dc4be8b` |
+| `protocol` | `create`'s `filed_by`; the `actor` of `transition`, `claim`, `release`, `set-mode`, `set-dependencies`, `adopt-plan` and `attach-evidence` | refused, `schema-invalid/request` | `0dc4be8b` |
+| `protocol` | `create`'s `payload.participants[]` | refused | `f9ecae78` |
+| `protocol` | `create`'s `payload.deferral.ruled_by` | refused, before the initial-state check | `f9ecae78` |
+| `protocol` | `transition`'s `payload.deferral.ruled_by` | refused, through `$defs/live_deferral` | `f9ecae78` |
+
+`protocol.schema.json` gains `$defs/legacy_unknown_held`, an object whose `actor` is the token, used only under `not`. `$defs/live_actor` now refers to it. `$defs/live_deferral` is `record` `$defs/deferral` with a `live_actor` ruler, and the `transition` payload's `deferral` refers to it. `create`'s `payload` gains properties for `participants` and `deferral` that refuse the token and judge nothing else; the record schema still judges the payload's shape on the composed record. `common.schema.json` changes two descriptions only. No schema id is added, and `package.schema.json` is unchanged.
+
+The bundle diff between `575aec47…` and `c76bbce9…` is the inlined schema text alone, 50 lines in and 8 out. `codec/src/` changed only in `__tests__/ops.test.ts`. `codec/contract/`, `codec/package.json`, `bin/fusion-record`, `codec/fixtures/legacy-v12/` and every recorded session are unchanged since `524fdfad`.
+
+**New fixtures, nine** (manifest 338 to 347 entries; `sha256` at `f9ecae78`):
+
+| Fixture | Expect | `sha256` |
+|---|---|---|
+| `invalid/protocol/transition-deferral-ruled-by-legacy-unknown.json` | `schema-invalid` | `4c52812dec6f50018d3e609866fc8de6baad4d2fb5e65da734d2ab9cc78d6233` |
+| `invalid/protocol/create-participant-legacy-unknown.json` | `schema-invalid` | `6ce490c9822a3655583be76322e9af954120c9197fa0de9daf7f38173a291580` |
+| `invalid/protocol/create-deferral-ruled-by-legacy-unknown.json` | `schema-invalid` | `f12e37cca949c3b1b1347b9051f6a32b985e7a8c23419dd17f63194308f4abde` |
+| `invalid/protocol/claim-actor-legacy-unknown.json` | `schema-invalid` | `eb167e1aed514ebeb1f1466fd73698e562739f312268f80c4de0b23276fd84b5` |
+| `invalid/protocol/release-actor-legacy-unknown.json` | `schema-invalid` | `ae9d38cab602f587be34be23d5b28d15bbf1bb5d3857eddf4ff2b7ed4104c9ec` |
+| `invalid/record/created-decision-ruled-by-legacy-unknown.json` | `schema-invalid` | `2a5f2c19b650ee684470cc490917f686bcc8fbdc31dcec60db3e8c3975349659` |
+| `invalid/record/created-discussion-participant-legacy-unknown.json` | `schema-invalid` | `cacc627161f2279c21653d86e5c62b9116983baf89f1252404ae44089421b7f4` |
+| `valid/record/discussion-imported-legacy-unknown-participant.json` | valid | `abd326b3675bd5041870d86683b5add84300b254ace0b47315955d2114b53bc1` |
+| `valid/record/decision-deferred-legacy-terminal-legacy-unknown-ruler.json` | valid | `8fe73efc3c600355a04b0a740042ba53ca00cd838fca012283e330c4bdac79ef` |
+
+Two existing manifest notes changed wording only, those of `invalid/protocol/transition-actor-legacy-unknown.json` and `invalid/protocol/create-filed-by-legacy-unknown.json`. Each now reads "every actor position of every request". These are the cases Prior asked for: "negative live-create/transition cases, positive historical cases, and the claim/release cases missing from the submitted manifest".
+
+**Cases.** A new block in `ops.test.ts` sends each refused request in process and through the bundle. Each answers `schema-invalid/request` and leaves the scratch workbench byte-identical. Each control with a live actor lands. The imported discussion and the `legacy-terminal` decision read and validate, and the discussion still moves to `closed` with its participant kept. Against `575aec47…`, the three nested-position cases are red.
+
+**Prior's counterexamples, replayed.** The three requests of `Prior: docs/design/fusion-fj04-reserved-actor-counterexamples.json` were sent in order through `bin/fusion-record` with `c76bbce9…`, under `env -i`, over a fresh copy of `codec/fixtures/workbench/` with the two narratives written first. `nested-participant-create-in-package` and `nested-deferral-transition` answered `schema-invalid/request`, and the tree was unchanged. `create-valid-decision` answered `ok`, its response JSON equal to the one Prior observed. The token as the top-level `transition` actor stays `schema-invalid/request`.
+
+### What changed for Prior's pins, at `f9ecae78`
+
+Each pin was hashed in the blob at `f9ecae78`. None of the pinned paths is missing.
+
+`Prior: tests/testdata/fusion-fj01/UPSTREAM.json` on Prior's `main` (323 files, fusion `e1bafd2f`): five differ, the same five as at `524fdfad`.
+
+| Path | `sha256` at `f9ecae78` | Since `524fdfad` |
+|---|---|---|
+| `bin/fusion-record` | `f76bb99bbd9e9238c116af97d0b51e4944d3e9bc88e057844ccd4e640b0cc51c` | unchanged |
+| `codec/dist/fusion-record.js` | `c76bbce9cc86634f5e9c227e8496511dc71eb845768704f43e68200ab841e52e` | A1 |
+| `codec/fixtures/prior/REQUESTS.md` | `3c7066e43c08f3b81f24d718e1b7107b3c857cc854bc5eb5fa9cb9a03326fdb7` | the hand-over (`9232314a`); this section changes it again |
+| `codec/fixtures/protocol-session-archive/README.md` | `9a2b7e6402f38563b5d25b87e6085d861f9f84bb23d9b01572fe9be8f59b74c1` | unchanged |
+| `codec/fixtures/protocol-session-initialize/README.md` | `7c9d127663b85b5535aa5879044756bc05ffdc1a02e42eda632b2bebbd5a63fa` | unchanged |
+
+The same file on `review/fj04-candidate-524fdfad` (611 files, fusion `524fdfad`, bundle `575aec47…`): two differ, the bundle and `REQUESTS.md`, with the hashes above. **No response delta.** Every recorded request and response, every delta file, the migration session's 232 files and the legacy fixture that the candidate pins hash equal at `f9ecae78`. No recorded exchange of `protocol-session-migration/` changed.
+
+`Prior: tests/testdata/fusion-codec/UPSTREAM.json` on Prior's `main` (381 files, fusion `524fdfad`): five differ.
+
+| Path | `sha256` at `f9ecae78` | Change |
+|---|---|---|
+| `schemas/common.schema.json` | `310605c1244af90a500b781385692c7151fac36699a69f763734dcd303061796` | two descriptions name the three positions (A1) |
+| `schemas/record.schema.json` | `f5cac00d656d5fa899f047234e200b11c910f8824edc42ae71485212e003dc6c` | two `if/then` rules: participants, deferral ruler (A1) |
+| `schemas/protocol.schema.json` | `a3d3ae806e1a5170bd3ccd7426d14bc0bd2196a86f9ce1d3349789c55b5c9f1d` | `legacy_unknown_held`, `live_deferral`; `create`'s payload and `transition`'s deferral guarded (A1) |
+| `fixtures/manifest.json` | `c54e5e21956aa458e2047adcbe5c7c2010191493c22d834ee79f6f4b549045f0` | 338 to 347 entries |
+| `fixtures/prior/REQUESTS.md` | `3c7066e4…fdb7`, as above | as above |
+
+`schemas/package.schema.json` (`78a34d58…8871`) and `fixtures/invalid/protocol/migration-phase-unknown.json` are unchanged since `524fdfad`. So are the other seven pinned schemas, `codec/contract/` and the 13 goldens. New in the shared set are the nine fixtures above, so the pin grows to 390 files.
+
+### Corrections, by line
+
+- **Line 2079**, "`protocol.schema.json` refuses it in `create`'s `filed_by` and in the `actor` of `transition`, `claim` and `release`. No live write can produce it." And **line 2208**, "No other request carries an actor. 'No live write can produce it' stands." Both are false for every bundle that carried the rule before `f9ecae78`: `4bc2dc26…` (`f3de44c1`) and `575aec47…` (`f3fcfbe7`). `create` carries actors in `payload.participants` and `payload.deferral.ruled_by`, and `transition` carries one in `payload.deferral.ruled_by`. Neither line was guarded, and a `created` record could carry the token. From `f9ecae78` on, the protocol refuses the token in all eleven positions of the table above, and the record schema admits it in its three positions only under `imported` or `legacy-terminal`. "No live write can produce it" holds from `c76bbce9…` on, and for no earlier digest.
+- **Line 2078**, "`record.schema.json` and `package.schema.json` admit `filed_by.actor` equal to it only when `provenance.source` is `imported` or `legacy-terminal`." Still true for `filed_by`. On a record, the same condition now covers `control.participants[]` and `control.deferral.ruled_by` as well.
+- **Line 2082**, "The value is always paired with `derived["/filed_by/actor"] = {rule: "unknown"}`." The pairing is for `filed_by.actor`. It did not hold in the host at `9232314a`. A repair answer `actor=legacy-unknown`, or a Markdown `**Filed by:** legacy-unknown`, gave the token with no `derived` entry. It holds since `e437d6a8` (A2, below). In the two nested positions the schema admits the token on an imported or `legacy-terminal` record and asks for no `derived` entry. fusion's host never writes it there: its composer writes `participants: []` and `deferral: null`.
+- **Line 2064**, the `derived` table's row "`answer-ref-self` | `/control/answer_ref` | `no-answer-line` or `empty-answer-line`". The evidence gains `unresolvable-answer-line` (B1, `833575f8`): an `Answered:` line that is present and cites nothing resolvable. The value is a string in `provenance.legacy_fields.derived` and not a schema change. This is what Prior asks at `7758bfa`: "Also record the derivation when a present answer line has no resolvable target." **Line 2096** names the evidence of request 55 alone, which covers no line or an empty one, and stays as written.
+- **Line 2154**, "At about 200 bytes an entry the cap holds some 5 000 no-ops (inference, not measured)." Measured: 100 proven no-ops make a 28 270-byte binding, and 4 001 make 1 085 441 bytes (lines 2418 and 2421). That is 271 bytes an entry on top of 1 170 bytes. On that line the cap holds 3 865 no-ops (an inference from the two measurements; the boundary was not measured), and `codec/README.md` says "some 3 800". The 4 001 refused `schema-invalid/too-large` is measured.
+- **Line 2193** and its correction at **line 2207** ("It now takes a second rebuild after `f3de44c1`"). A third rebuild followed, at `f9ecae78`, and the digest Prior qualifies is `c76bbce9…`. It still carries everything those lines name. Prior still qualifies one digest.
+- **Line 2212**, "**The frozen digest:** … 686 858 bytes, `sha256:575aec47…260c` … Only this digest is asked to be pinned." The frozen digest is now 689 747 bytes, `sha256:c76bbce9…e52e`, as at the head of this section, and only that one is asked to be pinned. Line 2212's "Prior was read at `d0fce6c`" was true when it was written. Prior's head is now `7758bfa`.
+- **Line 2214**, the commits that moved `codec/`, `bin/` or `hooks/`, gains `4b24d595` (C1), `833575f8` (B1), `e437d6a8` and `788f4acf` (A2), `8b7efa30` (D1), `ad563935` (D2), `f9ecae78` (A1) and `e0db2545` (D2). The contract text gains this section.
+- **Lines 2216 to 2223**, the intermediate digests. The row for `f3fcfbe7` (686 858 bytes, `575aec47…`) now reads "a repair entry admits `reported`", an intermediate digest. One row follows it: `f9ecae78`, 689 747 bytes, `c76bbce9cc86634f5e9c227e8496511dc71eb845768704f43e68200ab841e52e`, "the reserved actor in every actor position: the frozen digest".
+- **Line 2225**, "Every other commit that moved the bundle had the gate green". `f9ecae78` has it green too, in a scratch clone of it (below).
+- **Line 2227**, the figures. They were re-taken on 2026-10-04 in a scratch clone of `f9ecae78`, on the same machine and Node 25.7.0. `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` exits 0 with 21 test files and 1 694 tests, none skipped, `fixtures: 347 manifest entries`, `0 derived-from-source, 13 Go-emitted golden(s)` and `163 of 163 prior_keys exercised`. Changed from line 2227: `fixtures.test.ts` 350 (was 341) and `ops.test.ts` 209 (was 204). Unchanged: `round-trip-cli.test.ts` 18, `prior-handback.test.ts` 6, `round-trip-cli-fj02.test.ts` 39, `round-trip-cli-fj02b.test.ts` 49, `round-trip-cli-initialize.test.ts` 91, `round-trip-cli-archive.test.ts` 107, `round-trip-cli-migration.test.ts` 110, `committed-bundle.test.ts` 4, `kernel.test.ts` 59, `migration.test.ts` 96 and `install.test.ts` 13. `npx tsc --noEmit` exits 0 in `codec/` and in `hooks/`. `cd hooks && npm test`, run after the codec suite and not beside it, runs 67 test files and 1 139 tests, of which 1 138 pass (line 2227: 1 131 and 1 130). The one red case is still the monitor's wildcard-bind loopback case, which times out at 30 s. `git status --porcelain -- codec bin hooks` was empty after both runs.
+- **Lines 2233 to 2243 and 2245 to 2257**, the pin tables. They are replaced by `### What changed for Prior's pins, at f9ecae78` above. In line 2257's count of new fixtures since `e1bafd2f`, "101 fixtures (valid: 15 migration, 5 protocol, 1 package, 1 record; invalid: 61 migration, 17 protocol, 1 record)", the figure is now 110: valid 15 migration, 5 protocol, 1 package and 3 record; invalid 61 migration, 22 protocol and 3 record.
+- **Line 2250**, the `record.schema.json` row: "`legacy-unknown` as `filed_by.actor` only on `imported` or `legacy-terminal` (12b)". It now reads "in any of its three actor positions only on `imported` or `legacy-terminal` (12b, A1)". **Line 2252**, the `protocol.schema.json` row: "refused in the eight actor-bearing requests (12b)". It now reads "refused in every actor position of every request, the eight top-level ones and the three nested ones (12b, A1)". **Line 2253**: "237 to 338 entries" is now 237 to 347.
+- **Line 2264**, the schema-change row "the reserved actor `legacy-unknown`: admitted on `imported` and `legacy-terminal` records and packages only, refused in every request that carries an actor". The row now reads: admitted in any actor position (`filed_by`; on a record also `control.participants[]` and `control.deferral.ruled_by`) on `imported` and `legacy-terminal` records and packages only, and refused in every actor position of every request. Its files are `common`, `record`, `package` and `protocol`, steps 12b and A1. Line 2268 stands: `legacy-unknown` is still a string where a string already stood, and no DTO type is added.
+- **Line 2270**, "Outside both pins", gains `codec/src/__tests__/ops.test.ts` and the host changes below. `codec/README.md`'s reserved-actor paragraph was corrected at `f9ecae78` and now names the three record positions and the eleven request positions.
+- **Line 2343**, the scope check "with the bundle at `e1bafd2f` and the frozen bundle". It was re-run with `c76bbce9…` over a fresh copy of `codec/fixtures/legacy-v12/workbench/`, both bundles on the same root. `list` and `show` of `work-packages/260901-0900-tokenizer-handles-unicode/package.json` are byte-identical. `inspect` differs in `schemas` and `operations` only, and neither run created `.json-state/`. `codec/src/kernel.ts` is unchanged since `f3fcfbe7`. The five re-qualification items of lines 2333 to 2339 stand at their lines, and so does condition 4 at `codec/src/migration.ts:758` (line 2347; `git grep -n 'no_op: true' f9ecae78`).
+- **Line 2365**, "It used an install of `0b1e1b58` … that … carries the frozen bundle." That install carried `575aec47…`, now an intermediate digest, and the proof on copies was not re-run with `c76bbce9…`. Why its figures stand (inference, not measured): A1 adds conditions only where the token stands in a `created` record or a live request. Every control the migration writes is `imported` or `legacy-terminal`, and no migration request carries an actor. So no control that `validate` found valid at 0 / 0 / 0 invalid can turn invalid. Two figures depend on host fixes made after the proof:
+  - **Line 2374**, "`answer-ref-self` | 4 / 19 / 2". It counts `derived` entries with evidence `no-answer-line` or `empty-answer-line`. Since B1, an `_a_` decision whose `Answered:` line cites nothing resolvable carries an `unresolvable-answer-line` entry too. Those entries were not counted on the copies, so the figure is a lower bound for the rule today.
+  - **Line 2372**, the `/filed_by/actor` row. Since A2, a legacy `**Filed by:** legacy-unknown` line is read as unreadable and gets the derived pair. Whether any copy carries such a line was not measured. If one does, it adds to this row.
+- **Line 2389**, "The plugin version the frozen commit carries is 13.0.0". `.claude-plugin/plugin.json` reads 13.0.0 at `f9ecae78` as well.
+- **Line 2396**, "`bin/fusion-migrate rollback` now sends `maintenance end` for the fence it began … The codec then refuses every later rollback of that migration … Work since activation had already decided that." This is false for every refusal that a retry or a restore clears: `conflict/lock-timeout`, `migration-incomplete/receipt-unverified` when a receipt was deleted or edited by hand, and `conflict/after-state-changed` from a narrative edited by hand with no codec operation. At `7713c679`, each of these ended the fence, and the rollback was lost for good. Since `4b24d595` (C1, below), the host ends the fence only when work stored since the plan makes the codec's audit refuse every rollback. Otherwise the fence stays.
+- **Line 2407**, requests 54 to 58 "**outstanding.**" That was true when it was written. Prior accepted all five at `7758bfa` (`### Requests 45 to 60, as they stand`, below).
+- **Lines 2425 to 2441**, request 59, are restated below at `f9ecae78`. Line 2441 stands: `codec/contract/` and the 13 goldens did not move.
+- **Lines 2443 to 2458**, request 60, are restated below with `c76bbce9…`.
+- **Line 2460**, "Prior's answer to requests 54 to 58, and this re-pin reported green, are preconditions of migrating a real workbench … Until both stand, no real workbench is migrated by this plan". The first precondition now stands (`7758bfa`). The second does not. So no real workbench is migrated yet, fusion's own included.
+
+### Host changes since the hand-over
+
+None of these moves the codec's source or the bundle. `git diff --stat 9232314a e0db2545 -- codec/src` names two test files only: `__tests__/ops.test.ts` (A1) and `__tests__/install.test.ts` (D2).
+
+- **`4b24d595` (C1): a refused first rollback chunk after activation ends its fence only when rollback is lost anyway.** The refusal's class cannot make that cut. Ordinary work and a hand edit both refuse first as `conflict/after-state-changed` from the activated-tree comparison, and the audit runs only after it. So the host decides it from the store. It lists every stored answer under `.json-state/ops/` that is not in the plan's baseline (its `answers` parts), not an id this session sent, and not a no-op of this migration. Each such answer is one the codec's audit refuses in every rollback, and a stored answer is never removed.
+  - **Work found:** the fence is ended as at `7713c679`. The command exits 8, and stderr names up to three of the operations.
+  - **None found, or the plan cannot be read:** the fence stays and the store takes no writes. The command exits 8. stderr says to put back what the refusal names and run `bin/fusion-migrate rollback` again, or to run the new **`bin/fusion-migrate rollback --end-fence`**.
+  - **`rollback --end-fence`** ends only a fence that such a refusal left standing. It prints `fence-ended=<id>`, `result=json-control` and a note that the codec now refuses every later rollback of this migration. With no such fence it exits 5 and sends nothing.
+  - `/fusion:migrate`'s Interrupted paragraph shows that stderr and asks which way to go. `migrate.test.ts` keeps the create-then-refused case (fence ended). It adds a narrative edit (fence stands; after the restore the rollback finishes to `result=legacy`) and a deleted receipt (`receipt-unverified`; fence stands; `--end-fence` ends it, and a second `--end-fence` exits 5).
+  - This is still the host doing what base D's exchange 70 does, now only where base D's case applies. No codec rule changed.
+- **`833575f8` (B1): an `Answered:` line citing nothing resolvable carries its `derived` entry.** `composeProposal` writes `derived["/control/answer_ref"] = {rule: "answer-ref-self", evidence: "unresolvable-answer-line"}` in the branch that already defaulted `answer_ref` to the record's own original. A `legacy-import.test.ts` row asserts it on the legacy fixture's decision stamped 260905-1300.
+- **`e437d6a8`, `788f4acf` (A2): `legacy-unknown` is never read or answered as a recorded actor.** A Markdown `**Filed by:**` line naming it is read as unreadable, so `filed-by-unreadable` is reported and the derived pair is written. A repair answer `actor=legacy-unknown` is refused as unanswered, and nothing is written. `788f4acf` changes one comment's citation form only.
+- **`8b7efa30` (D1): v11 citations are read again after 13.0.0.** The citation scanner and the staging-drift check take the v11 store names (`circles/`, `shared/planning/`, `shared/consult/`) from a list that outlives the v12 window. A citation in those forms is `store-prefixed` again rather than invisible. No `REQUESTS.md` line states otherwise.
+- **`ad563935` and `e0db2545` (D2): the migrate texts.** The migrate skill's description, `README.md` and `README-agents.md` now say that 13.0.0 renames the stores and then, on a yes, moves the records to JSON control, with repairs optional. `e0db2545` renames the version guard's printed key from `WINDOW=open` to `READS_V12=yes`, with `install.test.ts` following. No `REQUESTS.md` line states otherwise.
+
+### Requests 45 to 60, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 45 to 52 | as line 2402 to line 2405 state | |
+| 53 | reserved, not sent | |
+| 54 to 58 | **accepted** at Prior `7758bfa`, with the limits quoted above. The answer for 55 asks for the `derived` entry B1 writes. | `## FJ04 (addendum for the user's ruling of 2026-10-03)`; this section |
+| 59 | done for `524fdfad` (381 files, 338 of 338); **re-asked** at `f9ecae78` below | |
+| 60 | **rejected** for `575aec47…` on the nested actor positions; **re-asked** with `c76bbce9…` below | |
+
+### 59. Re-snapshot the shared fixture set at `f9ecae78` and re-run the Go harness
+
+**Closes:** `Prior: tests/testdata/fusion-codec/UPSTREAM.json` (today fusion `524fdfad`, 381 files). Preferred form: the re-snapshot and the test run in the Prior repository, plus a reply with the counts.
+
+Five of the pinned files differ at `f9ecae78` (`### What changed for Prior's pins, at f9ecae78`), and nine fixtures are new, so the pin grows to 390 files. `TestFusionCodecSharedManifest` should pass 347 of the 347 manifest entries, 86 valid and 261 invalid (260 `schema-invalid`, 1 `unsupported-format`):
+
+| Schema | Valid / invalid |
+|---|---|
+| protocol | 30 / 54 |
+| record | 19 / 47 |
+| package | 11 / 36 |
+| migration-plan | 11 / 37 |
+| migration-proposal | 3 / 16 |
+| migration-receipt | 1 / 8 |
+| evidence, campaign, workbench, workbench/v2, bytes | unchanged: 3 / 18, 4 / 21, 4 / 15, 0 / 1, 0 / 8 |
+
+`TestFusionAppliedRulingAndGoldens` should pass unchanged, since `codec/contract/` and the 13 goldens did not move. A differing count is a finding to report, not something to reconcile by editing either side.
+
+### 60. Re-pin the frozen bundle `c76bbce9…`, replay every recorded session through its deltas, the migration session included, re-qualify the kernel, with Prior's conformance run
+
+**Closes:** in `Prior: tests/testdata/fusion-fj01/UPSTREAM.json`, `commit` (to `f9ecae78`), `bundle_digest`, and the entries for the paths that differ. On Prior's `main` those are the five above. Against the candidate on `review/fj04-candidate-524fdfad` they are the bundle and `REQUESTS.md`. In `Prior: tests/testdata/fusion-codec/UPSTREAM.json`, request 59's re-snapshot. `codecBundleDigest` in `Prior: internal/fusionhost/codec_process_test.go`. `REQUESTS.md` with this section stands at the commit that appends it, after `f9ecae78`, and pinning it there is Prior's choice, as at request 44. Preferred form: the re-pin, the runs below in the Prior repository, and a reply saying they are green against `sha256:c76bbce9cc86634f5e9c227e8496511dc71eb845768704f43e68200ab841e52e`.
+
+Everything line 2449 to line 2458 asks stands, with these figures at `f9ecae78`: the six FJ01 pairs and the handback (18 and 6 green); the FJ02 and FJ02b exchanges (39 and 49); the twenty-six `initialize` exchanges (91); the fifty-one archive exchanges (107); the seventy migration exchanges (110); the kernel re-qualification of the five items; the shared manifest as request 59 states it; and `go test ./...` and `go vet ./...` green. No recorded exchange and no delta file changed since `524fdfad`, so the candidate's replay preparation applies as it stands. Prior's two nested-actor regressions on `review/fj04-candidate-524fdfad` are expected to turn green against `c76bbce9…`. fusion has not run Prior's Go suite; that expectation rests on the counterexample replay above. The re-pin should change the Prior assertions line 2458 names, the two regressions' outcome, and nothing else.
+
+Prior's acceptance of 54 to 58 now stands. This re-pin reported green is the remaining precondition of migrating a real workbench. It is a release fact and gates no runtime path.

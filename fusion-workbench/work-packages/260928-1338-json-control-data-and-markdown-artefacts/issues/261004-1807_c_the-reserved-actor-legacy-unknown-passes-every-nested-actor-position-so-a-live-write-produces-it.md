@@ -19,3 +19,5 @@ The schema rule of decision 261003-1746 (option 1) guards `filed_by.actor` and t
 3. The bundle is rebuilt and the new digest replaces `575aec47…` in a `REQUESTS.md` addendum that corrects lines 2079 and 2208. The same addendum corrects line 2154's inference ("some 5 000 no-ops") to the measured figure the hand-over gives at line 2421 (4 001 entries exceed the cap, about 271 bytes each).
 
 This lands before Prior re-pins the frozen digest (request 60): it moves that digest.
+
+**Resolved (2026-10-04).** Every actor position now refuses `legacy-unknown` outside imported and legacy-terminal records: on records the participants and the deferral ruler beside `filed_by`; on requests the `transition` deferral ruler and the `create` participants and deferral ruler beside the existing positions (`f9ecae78`). Nine fixtures, manifest 338 -> 347; `ops.test.ts` cases red against the old bundle; `codec/README.md` corrected. Bundle 689 747 bytes, sha256 `c76bbce9…e52e`, the new frozen digest. REQUESTS.md corrected by the addendum after the closing review. Resolved by the commits named, closed by the commit that renames this record to `_c_`.

@@ -12,3 +12,5 @@ Step 10a emptied `WINDOW_LEGACY_NAMES` (`hooks/lib/stores.ts`). `WINDOW_LEGACY_R
 - This repository's workbench holds 14 live (`_o_`, `_p_`, `_a_`) records containing the string `circles/` (`grep -rl` at `9232314a`). A v11 consuming project holds more.
 
 **Acceptance.** `citation-scan.ts` and `staging-drift.ts` take their v11 segment and root names from `V11_STORE_NAMES` (which outlives the window), not from the emptied window table, so a `circles/…` or `shared/planning/…` citation is reported `store-prefixed` again. `citation-grammar-boundaries.test.ts` regains one case for each v11 form. `WINDOW_LEGACY_RECORD_STORES`'s comment then matches what it holds, or the export goes.
+
+**Resolved (2026-10-04).** `stores.ts` carries the v11 names for citation reading independent of the emptied window table; `citation-scan.ts` and `staging-drift.ts` read them again (`8b7efa30`), with cases shown empty against the old build. Resolved by the commits named, closed by the commit that renames this record to `_c_`.

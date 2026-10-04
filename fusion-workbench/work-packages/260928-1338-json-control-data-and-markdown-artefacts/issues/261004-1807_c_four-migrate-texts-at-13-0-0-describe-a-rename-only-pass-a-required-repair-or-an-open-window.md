@@ -12,3 +12,5 @@ At 13.0.0 `/fusion:migrate` runs the store rename and then, in Step 7, the JSON 
 4. `skills/migrate/SKILL.md` Step 2's guard prints `WINDOW=open` for any major of 12 or more, and its lead-in says "The window opens and closes at a major". Since 13.0.0 every other text says the window closed (`docs/upgrading-to-v12.md`, `README.md:28`, `skills/setup/SKILL.md`). The token means "the installed copy reads the v12 names". `codec/src/__tests__/install.test.ts` asserts `WINDOW=open` at 13.0.0.
 
 **Acceptance.** Each of the four states what 13.0.0 does: the rename, then the JSON migration on a yes, repairs optional. The guard's key no longer reads as the v12 window, with `install.test.ts` and the skills golden following. No other text changes.
+
+**Resolved (2026-10-04).** Description, `README.md`, `README-agents.md` and Step 2 rewritten (`ad563935`); the guard key `WINDOW=` became `READS_V12=` in the skill and its two tests (`e0db2545`). Resolved by the commits named, closed by the commit that renames this record to `_c_`.
