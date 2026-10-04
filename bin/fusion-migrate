@@ -48,8 +48,9 @@
 #   resume          sends the next request whose answer is not stored, under
 #                   its recorded id, after an interruption or an unknown outcome.
 #   rollback        every landed chunk in reverse, chunk 0, and the fence's end;
-#                   after activation under a fence of its own. Resumable.
-#                   Restores the frozen post-repair input.
+#                   after activation under a fence of its own, which it ends
+#                   again when the codec refuses the first chunk (exit 8).
+#                   Resumable. Restores the frozen post-repair input.
 #   restore-backup  the pre-repair backup back over a legacy store with no
 #                   fence and no plan files, checked by tree hash; .json-state/
 #                   stays. Never calls the codec.

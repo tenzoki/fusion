@@ -374,6 +374,25 @@ function resumeRun(wb, session) {
         return [`migrated=${s.migration_id}`, "result=no-op"];
     return drive(wb, session, s);
 }
+/**
+ * Ends the fence a rollback began after activation once its first chunk is
+ * refused, as the codec's session base D does, so the store takes writes
+ * again. The codec's audit then refuses every later rollback of this
+ * migration, which work since activation had already decided. The ids are
+ * dropped only after the `end` is stored, so a retry resends it under its id.
+ */
+function endRefusedFence(wb, session, s, refusal) {
+    const fence = s.rollback.begin_id;
+    try {
+        send(wb, { op: "maintenance", operation_id: s.rollback.end_id, action: "end", fence });
+    }
+    catch (e) {
+        return new Stop(e.code ?? EXIT.fault, `${refusal.message}; ending the fence ${fence} this rollback began then failed: ${e.message}`);
+    }
+    s.rollback = null;
+    writeState(session, s);
+    return new Stop(EXIT.refused, `${refusal.message}. The fence ${fence} this rollback began is ended: the store stays under JSON control and takes writes again, and the codec refuses every later rollback of this migration`);
+}
 /** Rolls back every landed chunk, then chunk 0, then ends the fence; resumable under the recorded ids. */
 function rollback(wb, session) {
     const s = recorded(wb, session);
@@ -397,11 +416,19 @@ function rollback(wb, session) {
         send(wb, { op: "maintenance", operation_id: s.rollback.begin_id, action: "begin" });
     const landed = s.schedule.apply.filter((a) => stored(wb, a.operation_id)).map((a) => a.chunk);
     const rb = new Map(s.schedule.rollback.map((r) => [r.chunk, r.operation_id]));
-    for (const chunk of [...landed.sort((x, y) => y - x), 0]) {
-        if (stored(wb, rb.get(chunk)))
-            continue;
-        send(wb, { op: "migration", operation_id: rb.get(chunk), phase: "rollback", plan: s.plan, chunk });
-        lines.push(`rolled-back-chunk=${chunk}`);
+    try {
+        for (const chunk of [...landed.sort((x, y) => y - x), 0]) {
+            if (stored(wb, rb.get(chunk)))
+                continue;
+            send(wb, { op: "migration", operation_id: rb.get(chunk), phase: "rollback", plan: s.plan, chunk });
+            lines.push(`rolled-back-chunk=${chunk}`);
+        }
+    }
+    catch (e) {
+        // Still activated, so no rollback chunk landed: the refused one was the first, and nothing binds this fence yet (codec/README.md, `## migration`).
+        if (!(e instanceof Stop) || e.code !== EXIT.refused || i.state !== "json-control")
+            throw e;
+        throw endRefusedFence(wb, session, s, e);
     }
     const fence = inspect(wb).maintenance;
     if (fence !== null && !stored(wb, s.rollback.end_id))

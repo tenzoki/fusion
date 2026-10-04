@@ -15,7 +15,7 @@
  *
  * Output: `KEY=value` lines on stdout, reasons on stderr prefixed
  * `fusion-write:`; a `conflict/maintenance-active` refusal adds a line naming
- * `bin/fusion-archive resume` and `abandon`, which close the fence. The
+ * both helpers that set a fence and the commands that close it. The
  * library is imported inside the `try`, so a module
  * missing from an install is exit 3 like any internal fault, never Node's
  * own 1, which the wrapper uses for "stop". No automatic hook runs this entry.

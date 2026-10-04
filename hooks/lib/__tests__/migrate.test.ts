@@ -157,6 +157,21 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     expect([restored.status, value(restored.stdout, "tree")], restored.stderr).toEqual([0, original]);
   }, 4 * CASE_TIMEOUT);
 
+  it("a rollback refused after a create ends the fence it began, and the next create lands (issue 261004-1516)", () => {
+    const { root, wb, home } = project();
+    const create = (stem: string) => {
+      writeFileSync(join(wb, `shared/issues/${stem}.md`), `# ${stem}\n\nBody.\n`);
+      return spawnSync(resolve(REPO_ROOT, "bin", "fusion-write"), ["create", "--kind", "issue", "--narrative-file", `shared/issues/${stem}.md`, "--origin", "user-request", "--actor", "user"], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    };
+    expect(mig(root, home, "run").status).toBe(0);
+    expect(create("261004-1600-after-activation").status).toBe(0);
+    const back = mig(root, home, "rollback");
+    expect([back.status, back.stderr]).toEqual([8, expect.stringMatching(/after-state-changed[\s\S]*fence .* is ended/)]);
+    expect([value(mig(root, home, "status").stdout, "fence"), mig(root, home, "rollback").status]).toEqual(["-", 8]);
+    const after = create("261004-1601-after-refusal");
+    expect([after.status, value(mig(root, home, "status").stdout, "fence")], after.stderr).toEqual([0, "-"]);
+  }, 4 * CASE_TIMEOUT);
+
   it("resumes after a kill following each chunk and one inside a chunk", () => {
     const plugin = join(base, "plugin");
     if (!existsSync(plugin)) {
