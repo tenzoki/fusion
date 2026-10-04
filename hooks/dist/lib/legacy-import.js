@@ -279,7 +279,11 @@ export function entries(value) {
     return out;
 }
 export const ACTOR = /^[a-z][a-z0-9-]*$/;
-/** The reserved actor of a filer the Markdown never recorded (decision 261003-1746): written only with its derived entry, never read or answered as a recorded actor. */
+/**
+ * The reserved actor of a filer the Markdown never recorded
+ * (`261003-1746_*_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md`):
+ * written only with its derived entry, never read or answered as a recorded actor.
+ */
 export const LEGACY_UNKNOWN = "legacy-unknown";
 /** A plan's step lines (id and bracket mark) and its stray marks, outside fences, by the header's grammar. */
 export function scanPlan(lines) {
