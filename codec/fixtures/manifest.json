@@ -1809,6 +1809,12 @@
     "note": "Repairs part 1: a consented repair whose person answer stayed null; the actor was asked, never offered from the current identity."
   },
   {
+    "path": "valid/migration/part-repairs-reported.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "valid",
+    "note": "Repairs part 1: an optional repair of a reported finding, corrected at the owner's choice (decision 261003-2045); the repair entry admits both severities."
+  },
+  {
     "path": "valid/migration/receipt.json",
     "schema": "urn:fusion:schema:fusion.migration-receipt/v1",
     "expect": "valid",
@@ -2016,13 +2022,6 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "The frozen plan carries reported findings only; an open blocking finding refuses plan (migration-incomplete/blocking-finding)."
-  },
-  {
-    "path": "invalid/migration/part-repairs-finding-reported.json",
-    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
-    "expect": "invalid",
-    "error_class": "schema-invalid",
-    "note": "A repair clears a blocking finding."
   },
   {
     "path": "invalid/migration/receipt-check-failed.json",

@@ -1008,7 +1008,7 @@ Bases B and C stay byte-identical.
      - **Content.** The change: `$defs/repair`'s `finding` admits both severities, with the reworded description, one `$defs/repair` shared by proposal and frozen part, no codec logic on a repair's severity (`codec/src/migration.ts:977` reads `p.findings` only), and `part-repairs-finding-reported.json` becoming valid. No departure: lines 1484, 1642, 1982 and 2051 now hold for an optional repair too, line 1479 unchanged. Corrections: line 2193 (a second rebuild after `f3de44c1`; the digest Prior qualifies carries this rule as well; `f3de44c1`'s digest intermediate; Prior's DTOs unchanged beyond `no_ops`, C10/C11) and line 2079 (eight requests, not four: `create`'s `filed_by` and the `actor` of `transition`, `claim`, `release`, `set-mode`, `set-dependencies`, `adopt-plan`, `attach-evidence`; checked as 8 `live_actor` references in `protocol.schema.json` at `0dc4be8b`, inlined in the HEAD bundle). No figure for any copy.
      - **Checks.** Each cited line is matched once by `grep -n -F` at its number: 1479, 1484, 1642, 1982, 2051, 2079 (both quoted sentences), 2193, and the heading at 2125. The confidentiality grep `grep -c -i -E 'krk|axibra|F08-KRK|F03_digital|digital-leadership|/Users/'` over the draft returns 0.
 
-12d3. **The schema: a repair entry admits a reported finding**
+12d3. [DONE] **The schema: a repair entry admits a reported finding**
    - Executor: `data-implementer`
    - Files: `codec/schemas/migration-plan.schema.json`, `codec/fixtures/invalid/migration/part-repairs-finding-reported.json` (moved), `codec/fixtures/valid/migration/`, `codec/fixtures/manifest.json`
    - Changes:
@@ -1017,6 +1017,7 @@ Bases B and C stay byte-identical.
      - `git mv` the invalid fixture to `valid/migration/part-repairs-reported.json`. Its manifest entry becomes `expect: valid`, with no `error_class` and a note naming an optional repair of a reported finding. The manifest count is stated before and after, with the same total, valid +1 and invalid −1.
    - Dependencies: step 12d2 drafted.
    - Acceptance: `cd codec && npx vitest run src/__tests__/fixtures.test.ts` exits 0, with the counts. The moved fixture is refused by HEAD's schema (`/repairs/0/finding/severity const`) and accepted by the new one, shown with one strict Ajv. In the full `CODEC_REQUIRE_GOLDENS=1 npm test`, the only admissible red is `committed-bundle.test.ts`, which step 12d4 clears. Any other red stops the step. `codec/dist/fusion-record.js` is restored to HEAD after the run.
+   - Done (2026-10-04, data-implementer; orchestrator note): `$defs/repair` `finding` is a plain `$ref`, description reworded; the fixture moved to `valid/migration/part-repairs-reported.json`; manifest 338 total, valid 83 -> 84, invalid 255 -> 254. `fixtures.test.ts` exit 0 (341 tests); the moved fixture is refused by HEAD's schema at `/repairs/0/finding/severity const` and valid under the new one. Full `CODEC_REQUIRE_GOLDENS=1 npm test` exit 1 on one case outside this step: `install.test.ts:940` `repairAll(a)` expects 6, receives 0. It is red identically with HEAD's schema restored, comes from step 12d (`e7cb55c0`), and step 12e already schedules its change to 0; the orchestrator accepted the step on that ground.
 
 12d4. **The rebuilt bundle, and an applied optional repair migrates end to end**
    - Executor: `code-implementer`

@@ -124,16 +124,11 @@
     },
     "repair": {
       "type": "object",
-      "description": "One repair applied with the owner's consent before plan froze anything: the blocking finding it cleared, the answers given, and the sha256 of the file before and after the edit. An answer may be null where the owner left it open (a person not known; the actor is never offered from the current identity). The pre-repair bytes are in the external backup, the post-repair bytes in originals/.",
+      "description": "One repair applied with the owner's consent before plan froze anything: the finding it cleared (blocking) or corrected at the owner's choice (reported, an optional repair), the answers given, and the sha256 of the file before and after the edit. An answer may be null where the owner left it open (a person not known; the actor is never offered from the current identity). The pre-repair bytes are in the external backup, the post-repair bytes in originals/.",
       "additionalProperties": false,
       "required": ["answers", "finding", "post_sha256", "pre_sha256"],
       "properties": {
-        "finding": {
-          "allOf": [
-            { "$ref": "#/$defs/finding" },
-            { "type": "object", "properties": { "severity": { "const": "blocking" } } }
-          ]
-        },
+        "finding": { "$ref": "#/$defs/finding" },
         "answers": { "type": "object", "additionalProperties": { "type": ["string", "null"] } },
         "pre_sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
         "post_sha256": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/sha256" }
