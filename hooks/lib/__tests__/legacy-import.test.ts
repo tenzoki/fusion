@@ -124,6 +124,7 @@ const ROWS: Row[] = [
   ["filed-by-not-owed", () => {}, PLAN, (c) => [c.filed_by, D(c)["/filed_by/actor"], D(c)["/filed_by/person"]], [{ actor: "legacy-unknown", person: GIT }, { rule: "unknown" }, { rule: "git-first-add", evidence: "c0ffee" }]],
   ["filed-by-missing", (wb) => edit(wb, DEC, `**Filed by:** implementation-planner, ${ME}\n`, ""), DEC, (c) => [c.filed_by, D(c)["/filed_by/person"]], [{ actor: "legacy-unknown", person: null }, { rule: "unknown", evidence: "untracked" }]],
   ["filed-by-unreadable", (wb) => edit(wb, DEC, "implementation-planner,", "The Planner,"), DEC, (c) => [c.filed_by.actor, c.provenance.legacy_fields.head["Filed by"]], ["legacy-unknown", `The Planner, ${ME}`]],
+  ["filed-by-unreadable", (wb) => edit(wb, DEC, "implementation-planner,", "legacy-unknown,"), DEC, (c) => [c.filed_by.actor, D(c)["/filed_by/actor"]], ["legacy-unknown", { rule: "unknown" }]],
   ["answered-without-answer-line", (wb) => edit(wb, DEC, "\nAnswered:", "\nNote:"), DEC, (c) => [c.control.answer_ref.path, D(c)["/control/answer_ref"]], [`archive/migrations/m1/originals/${DEC}`, { rule: "answer-ref-self", evidence: "no-answer-line" }]],
   ["answered-without-answer-line", (wb) => edit(wb, DEC, /\nAnswered:.*\n?$/, "\nAnswered:\n"), DEC, (c) => D(c)["/control/answer_ref"], { rule: "answer-ref-self", evidence: "empty-answer-line" }],
   ["answer-ref-self", () => {}, DEC, (c) => [c.control.answer_ref.path, D(c)["/control/answer_ref"]], [`archive/migrations/m1/originals/${DEC}`, { rule: "answer-ref-self", evidence: "unresolvable-answer-line" }]],

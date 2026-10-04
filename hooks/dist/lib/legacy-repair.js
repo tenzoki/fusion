@@ -53,7 +53,7 @@ import { appendFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSyn
 import { createHash } from "node:crypto";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { createScanner } from "./citation-scan.js";
-import { ACTOR, buildInventory, composeProposal, entries, readHead, scanPlan, unfenced } from "./legacy-import.js";
+import { ACTOR, buildInventory, LEGACY_UNKNOWN, composeProposal, entries, readHead, scanPlan, unfenced } from "./legacy-import.js";
 const sha = (b) => "sha256:" + createHash("sha256").update(b).digest("hex");
 const MARKS = ["OPEN", "IN PROGRESS", "DONE"];
 const person = (offers, key = "person") => ({ key, ask: "The person half, git's `Name <email>`; empty for absent", form: "person", offered: offers.person ? [offers.person] : [] });
@@ -298,6 +298,9 @@ export function checkAnswers(questions, answers) {
         const v = answers[q.key];
         if (v === undefined)
             return { refusal: "unanswered", detail: q.key };
+        // The reserved token says the actor is not known: it answers nothing.
+        if (q.form === "actor" && v === LEGACY_UNKNOWN)
+            return { refusal: "unanswered", detail: `${q.key}: ${LEGACY_UNKNOWN} names no actor` };
         const ok = q.form === "choice" ? q.choices.includes(v) : q.form === "actor" ? ACTOR.test(v) : !/[\r\n]/.test(v) && (q.form === "person" || v.trim() !== "");
         if (!ok)
             return { refusal: "invalid-answer", detail: `${q.key}: ${JSON.stringify(v)}` };

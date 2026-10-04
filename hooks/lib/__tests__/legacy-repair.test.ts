@@ -72,6 +72,15 @@ describe("legacy repair: one finding at a time, optional, with consent", () => {
     }),
   );
 
+  it("refuses legacy-unknown as an actor answer: unanswered, nothing written", () =>
+    withCopy((wb, session) => {
+      edit(wb, DEC, "**Filed by:** implementation-planner", "**Filed by:** The Planner");
+      const p = proposeRepair(wb, findings(wb).find((x) => x.class === "filed-by-unreadable")!, { person: ME });
+      const before = treeHash(wb);
+      expect(applyRepair({ root: wb, session, proposal: p, consent: true, answers: { actor: "legacy-unknown", person: ME } })).toMatchObject({ applied: false, refusal: "unanswered" });
+      expect([treeHash(wb), existsSync(session)]).toEqual([before, false]);
+    }));
+
   it("refuses a class with no repair, routes the old store names, and refuses a file changed after the finding", () =>
     withCopy((wb, session) => {
       edit(wb, "work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md", "**Status:** open", "**Status:** claimed");

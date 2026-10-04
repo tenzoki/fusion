@@ -54,7 +54,7 @@ import { appendFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSyn
 import { createHash } from "node:crypto";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { createScanner } from "./citation-scan.js";
-import { ACTOR, buildInventory, composeProposal, entries, readHead, scanPlan, unfenced, type ComposeInput, type Finding, type FindingClass } from "./legacy-import.js";
+import { ACTOR, buildInventory, LEGACY_UNKNOWN, composeProposal, entries, readHead, scanPlan, unfenced, type ComposeInput, type Finding, type FindingClass } from "./legacy-import.js";
 
 export interface Question {
   key: string;
@@ -341,6 +341,8 @@ export function checkAnswers(questions: Question[], answers: Answers): { refusal
     if (q.when && answers[q.when.key] !== q.when.value) continue;
     const v = answers[q.key];
     if (v === undefined) return { refusal: "unanswered", detail: q.key };
+    // The reserved token says the actor is not known: it answers nothing.
+    if (q.form === "actor" && v === LEGACY_UNKNOWN) return { refusal: "unanswered", detail: `${q.key}: ${LEGACY_UNKNOWN} names no actor` };
     const ok = q.form === "choice" ? q.choices!.includes(v) : q.form === "actor" ? ACTOR.test(v) : !/[\r\n]/.test(v) && (q.form === "person" || v.trim() !== "");
     if (!ok) return { refusal: "invalid-answer", detail: `${q.key}: ${JSON.stringify(v)}` };
   }

@@ -279,6 +279,8 @@ export function entries(value) {
     return out;
 }
 export const ACTOR = /^[a-z][a-z0-9-]*$/;
+/** The reserved actor of a filer the Markdown never recorded (decision 261003-1746): written only with its derived entry, never read or answered as a recorded actor. */
+export const LEGACY_UNKNOWN = "legacy-unknown";
 /** A plan's step lines (id and bracket mark) and its stray marks, outside fences, by the header's grammar. */
 export function scanPlan(lines) {
     const open = unfenced(lines);
@@ -302,7 +304,7 @@ function filedBy(value) {
     if (value === undefined)
         return "missing";
     const m = /^([a-z][a-z0-9-]*)(?:\s*\([^)]*\))?\s*(?:,\s*(.+?))?\s*$/.exec(value);
-    return m ? { actor: m[1], person: m[2] ?? null } : "unreadable";
+    return m && m[1] !== LEGACY_UNKNOWN ? { actor: m[1], person: m[2] ?? null } : "unreadable";
 }
 /** Composes the migration proposal. Reads files under `root`; writes nothing. */
 export function composeProposal(input) {
@@ -622,7 +624,7 @@ export function composeProposal(input) {
         const d = derivedOf(c.narrative);
         d["/filed_by/actor"] = { rule: "unknown" };
         d["/filed_by/person"] = "commit" in added ? { rule: "git-first-add", evidence: added.commit } : { rule: "unknown", evidence: added.unknown };
-        return { actor: "legacy-unknown", person: "commit" in added ? added.person : null };
+        return { actor: LEGACY_UNKNOWN, person: "commit" in added ? added.person : null };
     };
     const provenance = (c, extra = {}) => {
         const loose = unanchored.get(c.narrative);
