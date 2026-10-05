@@ -138,6 +138,7 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
      - `JSON_LIVE_STATE` merges into `LIVE_STATE` and `LIVE_PREFIXES`; the test pins the merged lists to the tracking rule's text (issue 260930-1640, row 3).
    - Dependencies: 2, 3.
    - Acceptance: as step 3, plus `staging-drift.test.ts` and `committed-dist.test.ts` green.
+   - [DONE] 2026-10-05, `fj03d` `8a6100fc`. All 27 hits and the step-2 amendment's additions converted, none left. Each decision payload shape in `decision-record-examples.md` was run against the codec first. `--superseded-by` takes the two-id record reference, not a filename. `JSON_LIVE_STATE` is merged into the live lists. `.gitignore` ignores `fusion-workbench/.json-state/*`, with a `git check-ignore` case on a codec-written workbench. Room per path is now 957 bytes (policy-curator) to 1 852; hook tests 4 661 lines. `reference-resolution-lint` re-approved 1 936 → 1 941, all from this step's rule files. Hooks 1 140 of 1 141 (the known monitor case), codec as step 1, bundle unchanged.
 
 5. **The orchestrator prompt**
    - Executor: `code-implementer`
