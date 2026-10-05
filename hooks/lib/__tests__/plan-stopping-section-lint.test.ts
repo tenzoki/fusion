@@ -28,60 +28,32 @@
 // and `placeholder` are three named failures, each with its own remedy in the
 // message. A placeholder PLUS a real clause passes — that is substance.
 //
-// THE CORPUS IS LIVE PLANS: `_o_` and `_p_` from the issues/planning marker
-// vocabulary authored in `rules/fusion-workbench-conventions.md`; `_c_` and `_d_`
-// are out, and so are requirements-designer specs, whose format has no such section. The mandate
+// THE CORPUS IS LIVE PLANS: plan records whose status lies outside the plan
+// kind's terminal set (`open`, `in_progress`), read from this workbench's
+// record index, never from a marker in a name; requirements-designer specs are
+// out, whose format has no such section. The corpus is `lib/plan-size.ts`'s,
+// taken by calling it, so the lint and the shipped helper read one definition
+// of a live plan (FJ03d step 8 retired this file's marker copy). The mandate
 // serves a step that runs BEFORE the work closes, so the window in which the
-// section must exist is exactly the window in which the plan is live.
-// WHAT THIS DOES NOT COVER, stated rather than discovered. At HEAD the live
-// corpus is EMPTY: 0 files, and the corpus assertion passes vacuously. It is a
-// trap set for the next plan, not a measurement of the current tree. The
-// mechanism is therefore pinned on its own, over synthetic documents, so that
-// what the gate would do is asserted today even though there is nothing for it
-// to do today.
+// section must exist is exactly the window in which the plan is live. A
+// workbench that does not read as `json-control` fails the corpus case by its
+// format, `legacy` by name. The mechanism is pinned on its own, over synthetic
+// documents, so what the gate would do is asserted whatever the tree holds.
 //
 // This is a guard, not a fixer (`rules/critical-stance.md` §2): it reads and
 // asserts, it never writes a section into a plan.
 // ---------------------------------------------------------------------------
 
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fencedContentLines, workbenchRoot, WORKBENCH_PRESENT } from "./helpers/citation-scan.ts";
-import { CONTAINER_STORE, containerRoots, namesOf } from "../stores.js";
+import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { indexOf } from "./helpers/json-workbench.js";
+import { isSpec, measurePlanSizes } from "../plan-size.js";
 
 /** The heading, verbatim from `agents/implementation-planner.md:131`. */
 const SECTION = "## Where this work stops";
-
-/**
- * The issues/planning markers that mean "this plan is still live work". `_c_`
- * and `_d_` are the terminal pair and are out of the corpus; see the header.
- */
-const LIVE_MARKERS = new Set(["o", "p"]);
-
-/** `YYMMDD-HHMM_S_<topic>.md` — the marker letter, or null if the name is not of that shape. */
-function markerOf(base: string): string | null {
-  const m = /^\d{6}-\d{4}_([a-z])_.+\.md$/.exec(base);
-  return m ? m[1] : null;
-}
-
-/**
- * A requirements-designer spec rather than an implementation-planner plan. Decided by the requirements-designer's own two
- * template signatures (`agents/requirements-designer.md:183` — the H1 `# Spec:` and the
- * filename `..._o_spec-<topic>.md`), either of which is sufficient. Both labels
- * are template text and stay English in a `de` project, which the four specs on
- * disk confirm: German bodies under an English `# Spec:` H1.
- *
- * The inverse test — matching plans by their own H1 — was measured and rejected:
- * the 20 plans on disk carry three H1 forms (`# Implementation Plan:`,
- * `# Master Implementation Plan:`, and the `de` `# Umsetzungsplan:` /
- * `# Ausstiegsplan:`), so a plan-side prefix silently drops plans, while the
- * spec side is uniform.
- */
-function isSpec(base: string, text: string): boolean {
-  const topic = base.replace(/^\d{6}-\d{4}_[a-z]_/, "");
-  return topic.startsWith("spec-") || /^#\s+Spec:/m.test(text.split("\n")[0] ?? "");
-}
 
 type Verdict = "ok" | "absent" | "empty" | "placeholder";
 
@@ -154,30 +126,13 @@ function report(violations: Violation[]): string {
   return violations.map((v) => `  ${v.rel}  ${REMEDY[v.verdict]}`).join("\n");
 }
 
-/** Every plan store, under both window names: each container's, plus the shared one. */
-function planningStores(): string[] {
-  const bases = ["shared"];
-  for (const r of containerRoots(workbenchRoot)) {
-    if (!existsSync(join(workbenchRoot, r))) continue;
-    for (const d of readdirSync(join(workbenchRoot, r), { withFileTypes: true })) if (d.isDirectory()) bases.push(`${r}/${d.name}`);
-  }
-  return bases.flatMap((b) => namesOf("plans").map((n) => `${b}/${n}`)).filter((s) => existsSync(join(workbenchRoot, s))).sort();
-}
-
-/** The corpus: live (`_o_`/`_p_`) plans, specs excluded. */
+/** The corpus: live plans of this workbench's record index, specs excluded, as `lib/plan-size.ts` measures them. */
 function livePlans(): { rel: string; text: string }[] {
-  const out: { rel: string; text: string }[] = [];
-  for (const store of planningStores()) {
-    for (const base of readdirSync(join(workbenchRoot, store)).sort()) {
-      if (!base.endsWith(".md")) continue;
-      const marker = markerOf(base);
-      if (marker === null || !LIVE_MARKERS.has(marker)) continue;
-      const text = readFileSync(join(workbenchRoot, store, base), "utf-8");
-      if (isSpec(base, text)) continue;
-      out.push({ rel: `${store}/${base}`, text });
-    }
-  }
-  return out;
+  const read = indexOf(workbenchRoot);
+  if (read.format === "legacy") throw new Error("fusion-workbench is legacy (no workbench.json: its control data is Markdown); run /fusion:migrate. The stopping-section gate takes its corpus from the record index and has none to judge.");
+  if (read.format !== "json-control") throw new Error(`fusion-workbench was not read (${read.unread.cause}); the stopping-section gate has no corpus to judge.`);
+  const { rows } = measurePlanSizes(dirname(workbenchRoot), read.index, Number.MAX_SAFE_INTEGER);
+  return rows.map(({ rel }) => ({ rel, text: readFileSync(join(workbenchRoot, rel), "utf-8") })).sort((x, y) => x.rel.localeCompare(y.rel));
 }
 
 describe("stopping-section lint: every live plan carries a filled '## Where this work stops'", () => {
@@ -191,7 +146,7 @@ describe("stopping-section lint: every live plan carries a filled '## Where this
       violations,
       `a live plan must carry its stopping section, filled:\n${report(violations)}`,
     ).toEqual([]);
-  });
+  }, 4 * CASE_TIMEOUT);
 });
 
 describe("stopping-section lint: the mechanism", () => {
@@ -232,26 +187,16 @@ describe("stopping-section lint: the mechanism", () => {
   });
 });
 
-describe("stopping-section lint: the corpus filter", () => {
-  it("admits the live markers and refuses the terminal ones", () => {
-    expect(markerOf("260819-2016_o_four-constraints.md")).toBe("o");
-    expect(markerOf("260819-2016_p_four-constraints.md")).toBe("p");
-    expect(["o", "p", "c", "d"].filter((m) => LIVE_MARKERS.has(m))).toEqual(["o", "p"]);
-    expect(markerOf("260819-2016-a-history-file.md")).toBeNull();
-  });
-
+describe("stopping-section lint: the spec filter", () => {
   it("excludes requirements-designer specs by either template signature, and admits every plan H1 on disk", () => {
+    // `isSpec` is `lib/plan-size.ts`'s: an imported name keeps its marker, a
+    // record created since carries the marker-free stamp, and both are read.
     expect(isSpec("260814-0738_o_spec-curator.md", "# Implementation Plan: mislabelled")).toBe(true);
-    expect(isSpec("260814-0738_o_curator.md", "# Spec: the policy-curator\n")).toBe(true);
-    // The four H1 forms the 20 plans carry, English and `de` alike.
+    expect(isSpec("260814-0738-spec-curator.md", "# Implementation Plan: mislabelled")).toBe(true);
+    expect(isSpec("260814-0738_o_curator.md", "# Spec: the policy-curator")).toBe(true);
+    // The four H1 forms the plans on disk carry, English and `de` alike.
     for (const h1 of ["# Implementation Plan: x", "# Master Implementation Plan: x", "# Umsetzungsplan: x", "# Ausstiegsplan: x"]) {
-      expect(isSpec("260819-2016_o_topic.md", `${h1}\n`)).toBe(false);
+      expect(isSpec("260819-2016-topic.md", h1)).toBe(false);
     }
-  });
-
-  it.skipIf(!WORKBENCH_PRESENT)("reads every plan store — each container's and the shared one", () => {
-    const stores = planningStores();
-    expect(stores).toContain("shared/plans");
-    expect(stores.filter((s) => s.startsWith(`${CONTAINER_STORE}/`)).length).toBeGreaterThan(0);
   });
 });

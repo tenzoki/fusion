@@ -12,275 +12,97 @@
  * It lived in that test file until 2026-09-01 and moved here whole, with its
  * reasoning, when decision `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`
  * chose option 3: only rows in a file somebody still edits move the reporter's
- * `verdict=` line. **Nothing about what the check asserts or reads changed with the
- * move** — that check's corpus is settled by
+ * `verdict=` line. That check's corpus is settled by
  * `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
  * and bounded by
- * `260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md`,
- * and this file is a new home for it rather than a revision of it.
+ * `260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md`.
+ *
+ * ## Liveness is the record's, since FJ03d step 8
+ *
+ * A narrative is live when its record's `status` lies outside its kind's
+ * `terminal` set in `codec/contract/transitions.json`, read through
+ * `lib/record-index.ts`, the table the kernel reads too. A marker in the file's
+ * name is history and decides nothing (section 4.4 of Prior's spec): an issue
+ * named `_c_` whose record is `open` is live, a plan named `_o_` whose record is
+ * `closed` is not. Until step 8 the predicate read that marker — `_o_` issues,
+ * `_o_`/`_a_` decisions, `_o_`/`_p_` plans, Circle and work-item records in
+ * every state — and the regexes that did so are gone with the format they read:
+ * a legacy workbench is refused by the readers before this predicate is asked
+ * (section 9's FJ03 row: old control parsers survive only in import and in
+ * `archive/` read mode).
+ *
+ * The wide reading of a live decision survives the change as the contract's
+ * own: `open` and `answered` are both outside the decision kind's terminal set,
+ * which is the `_o_` + `_a_` corpus the answering decision chose.
  *
  * ## What the predicate does NOT cover, and the judgement made instead
  *
  * THE CRITERION UNDER EVERY EXCLUSION IN THIS SECTION: A RECORD KIND ENTERS THE
  * CITATION CORPUS WHEN A PERSON WRITES IT AND STOPS. A KIND THAT A MECHANISM
- * REWRITES IS OUT, WHATEVER MARKER IT CARRIES. The corpus is the stretch in
- * which a person is the one writing the file. Inside it a repair is a correction
- * its writer would have made, and it survives, because nothing but a person will
- * touch the file again. Outside it a repair is either a falsification or futile,
- * and which of the two does not matter here — the file is out either way. A
- * MARKER IS HOW THE PREDICATE READS THAT STRETCH, NOT WHY A KIND IS IN IT: where
- * the two part, the criterion decides and the marker does not. It is written as
- * a criterion rather than as a fact about any one kind so that the next kind
- * somebody adds has a test to apply instead of this reasoning to re-derive.
+ * REWRITES IS OUT. The corpus is the stretch in which a person is the one
+ * writing the file. Inside it a repair is a correction its writer would have
+ * made; outside it a repair is either a falsification or futile, and the file
+ * is out either way.
  *
- * REVISIT IT when a kind a mechanism writes acquires a state after which the
- * mechanism is finished and a person owns the file: that state satisfies the
- * criterion, earns a clause of its own, and moves nothing else written here. The
- * cost of leaving it as it stands is that a dangling citation inside a
- * mechanism-written file is caught by no check and shows only as a printed row,
- * so a run of the reporter is where the evidence for revisiting comes from.
- *
- * TWO CLASSES OF FILE REACH THE REPORTER AND NOT THE GATE WITH NO MARKER TO
- * READ — which is what bounds the pair at two, the marked kind below being the
- * third such file and not a third such class. Both were named as costs in the
- * answering decision and are settled here rather than deferred.
- *
- * THE MARKER-LESS RECORD KINDS — `history/`, `analyses/`, `reviews/`,
- * `consult/`, `memos/`, `investigations/`. They carry no state marker at all,
- * so the live-versus-terminal test says nothing about them and this file
- * cannot derive an answer. **The judgement is that they are not edited**, and
- * it is a judgement rather than a derivation. Its ground: a history entry
- * records what was true when it was written, and the conventions say so
- * (`rules/fusion-workbench-conventions.md`); a review names the range it
- * opened; an analysis is a measurement dated to a commit. Correcting a
- * citation inside one falsifies the record rather than repairing it, which is
- * exactly the reason `archive/` is out. That is the criterion above with its
- * stretch collapsed to nothing: the person writes and stops in one act, so there
- * is no window in which a repair would be a repair. The measurement behind the
- * answering decision counted them among the rows nobody repairs — 191 of 312,
- * more than the frozen stores contribute — so this is where most of the scoping
- * happens. `isLiveRecord` returns false for them by falling through, not by
- * naming them: there is no clause here to delete if that judgement is ever
- * revisited, only a clause to add.
+ * A NARRATIVE WITH NO RECORD IS OUT — history, analyses, reviews, consultations,
+ * memos, investigations. **The judgement is that they are not edited**, and it
+ * is a judgement rather than a derivation: a history entry records what was
+ * true when it was written (`rules/fusion-workbench-conventions.md`), a review
+ * names the range it opened, an analysis is a measurement dated to a commit.
+ * Correcting a citation inside one falsifies the record rather than repairing
+ * it. They are out by falling through, not by being named: there is no clause
+ * here to delete if that judgement is ever revisited, only one to add.
  *
  * THE SURFACES OUTSIDE THE WORKBENCH — `CLAUDE.md`, `rules/*.md`,
  * `.claude/rules/*.md`, `docs/**`, and every path a project declared in
- * `citations.extraPaths`. No marker exists there and every one of those files
- * is live by construction: they are the project's normative text and its
- * source. **They move `verdict=`**, and this predicate is not asked about
- * them at all — it takes a WORKBENCH-RELATIVE path, and `citation-check.ts`
- * scopes a non-workbench file in without consulting it.
+ * `citations.extraPaths` — are live by construction, and this predicate is
+ * not asked about them: it takes a WORKBENCH-RELATIVE path, and
+ * `citation-check.ts` scopes a non-workbench file in without consulting it.
  *
- * AND ONE KIND IS OUT WITH A MARKER IN ITS NAME, which is the case the criterion
- * was written for and the one no clause below announces. The `discussions/`
- * store holds a record that is on disk before its first round has a result,
- * rewritten whole at every round after that, and finalised at the close. No
- * mechanism here admits it and none is wanted: `isLiveRecord` returns false for
- * its open state and its closed one alike by falling through, exactly as it does
- * for the marker-less kinds, and this paragraph is the whole of the answer.
- * MEASURED BEFORE IT WAS WRITTEN: the predicate already answered false for both
- * states, against live issue, decision and plan paths that answered true in the
- * same run, so nothing was added to the code and nothing is owed to it.
+ * AN OPEN DISCUSSION IS IN, where the marker predicate left it out. Its record
+ * is rewritten at every round, so a repair is futile until it closes; the
+ * contract gives `open` as live and the reader follows the contract, not this
+ * comment. FJ03b's note on `citation-check.ts` records the same departure for
+ * the reporter.
  *
- * The closed state needs no argument, being terminal exactly as a closed plan
- * and a closed issue are. The open one is the mirror of the marker-less
- * judgement above: those are out because repairing them falsifies the record,
- * this is out because repairing it is futile. The next round overwrites the
- * file, so a hand repair buys nothing, and a blocking check over it would fire on
- * a state the design REQUIRES the file to pass through rather than on a defect
- * somebody left behind. The reporter still prints every row it finds in one, so
- * the cost is visible to whoever runs the checker and is simply not blocking.
- *
- * ## The corpus itself
- *
- * THE CORPUS IS A MARKER PREDICATE, NOT THE WORD "OPEN". The user's answer
- * named it as "the Circle records, portfolio.md, the open decisions and the
- * open issues", and the planning run then measured that "the open decisions"
- * has two readings which differ by 20 files and 39 dangling tokens. A word
- * that admits two corpora does not define one, so the predicate is written out
- * below and the reading it takes is named.
- *
- * IT TAKES THE WIDE READING — decisions carrying `_o_` OR `_a_` — for three
- * reasons, in descending weight:
- *
- *   1. It is this project's own definition of a live decision.
- *      `rules/fusion-workbench-conventions.md` `## Decision Records` states
- *      that `_o_` and `_a_` together are the current evidence base, "the best-of-
- *      knowledge the project is working with", and that a reconciliation pass
- *      listing the current evidence base filters on `_o_` + `_a_`. An answered decision
- *      awaiting realisation is a document people still open and act on.
- *   2. It is a superset of the narrow reading, so it can only judge more. Where
- *      the two disagree the wide one is the stricter, and a citation check
- *      erring strict costs a repair while erring loose costs a dead pointer
- *      nobody sees.
- *   3. It is the reading the repair was performed against. Plan steps 5 to 9b
- *      cleared the wide corpus deliberately, so that the arming would satisfy
- *      either answer. Choosing the narrow one now would discard measured work.
- *
- * THE HOLE THIS PREDICATE HAS, recorded because it is real and because the
- * answering decision's own footer records it. Membership follows markers, so a
- * record LEAVES the corpus when it reaches a terminal state, carrying whatever
- * citations it holds. That happened inside the Circle that armed the check: a
- * decision moved `_a_` -> `_i_` at plan step 4 and took three dangling
- * citations out of reach, silently, and the check would have shown green over
- * them. It is a cost of the recomputed corpus — the same property that makes a
- * baseline unnecessary is the property that lets a record walk out of scope —
- * and not a defect in it. The fix would be a predicate that does not narrow at
- * terminal state. Nobody has proposed one and this file does not.
+ * THE HOLE THIS PREDICATE HAS, recorded because it is real: membership follows
+ * the record's state, so a record LEAVES the corpus when it reaches a terminal
+ * state, carrying whatever citations it holds. It is the cost of a recomputed
+ * corpus — the property that makes a baseline unnecessary is the property that
+ * lets a record walk out of scope.
  */
 
-import { CONTAINER_ROOT_ALT, namesOf } from "./stores.js";
-
-/**
- * The root and store names these predicates read, from `./stores.ts`: both
- * names of each renamed store during the window, so a legacy tree is judged
- * exactly as a migrated one.
- */
-const ROOT = `(?:${CONTAINER_ROOT_ALT})`;
-const PLANS = `(?:${namesOf("plans").join("|")})`;
-
-/** `<root>/<dir>/_<marker>_circle.md` — a Circle record in ANY state. */
-export const CIRCLE_RECORD_RE = new RegExp(`^${ROOT}\\/[^/]+\\/_[atcbsd]_circle\\.md$`);
-
-/**
- * `<root>/<dir>/<dir>.md` — a WORK-ITEM record: the file named after its own
- * container. The second record form the container store holds, and the one a
- * container filed since the restoration carries
- * (`260910-2145_*_restore-the-per-work-item-container.md` step S9, under the
- * ruling `260910-2133_*_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md`).
- *
- * BOTH FORMS STAND IN ONE TREE PERMANENTLY, BY DESIGN AND NOT IN TRANSITION.
- * The migration converts a record only while it is LIVE; a terminal one is not
- * touched, because `rules/fusion-workbench-conventions.md`
- * `## Terminal states are history` forbids editing it back and because renaming
- * it would break every citation that names it. In this workbench that is 24
- * marked records against 2 converted ones, and the ratio only ever moves one
- * way. So the predicate carries two clauses for as long as the store exists,
- * and neither is a migration step waiting to be deleted.
- *
- * THE DISCRIMINATOR IS A STRUCTURAL EQUALITY, NOT A WILDCARD OVER A CONTAINER.
- * The backreference is the whole of it: the basename, minus `.md`, must BE the
- * name of the directory holding it. `work-packages/<dir>/notes.md` is outside,
- * `work-packages/<other>/<dir>.md` is outside, and every path under a container's
- * `planning/`, `issues/` or `decisions/` is outside and stays judged by the
- * clause for its own kind. One path per container is admitted and there is no
- * input for which this clause admits more than the marked clause refused —
- * which is what stops the second form from being an EXEMPTION that widens the
- * net until a real defect falls through it.
- *
- * IT ADMITS A RECORD IN EVERY STATE, for the same reason `CIRCLE_RECORD_RE`
- * does and not by carelessness. An item carries its state in the `**Status:**`
- * head field rather than in its name, so no path predicate can read it; the
- * only alternative would be to open the file, which would make a pure function
- * of a path impure to buy a filter the marked form never had. A done item's
- * record is still read and still cited from, exactly as a `_c_` Circle's is.
- *
- * MEASURED WHEN IT WAS WRITTEN: it admits ZERO files in this tree, because the
- * conversion of the two live records is the NEXT step and this one lands first
- * so that the conversion has a check that can see it. That is the `LIVE_PLAN_RE`
- * precedent — a clause armed for the records somebody is about to write — and
- * the same note is owed here, because a clause measured at zero is a clause a
- * later reader will otherwise assume was measured at something.
- */
-export const ITEM_RECORD_RE = new RegExp(`^${ROOT}\\/([^/]+)\\/\\1\\.md$`);
-
-/** An issue carrying `_o_`, in a work package's store or in `shared/`. */
-export const OPEN_ISSUE_RE = /(?:^|\/)issues\/[0-9]{6}-[0-9]{4}_o_[^/]+\.md$/;
-
-/** A decision carrying `_o_` or `_a_` — the current evidence base, per the wide reading. */
-export const LIVE_DECISION_RE = /(?:^|\/)decisions\/[0-9]{6}-[0-9]{4}_[oa]_[^/]+\.md$/;
-
-/**
- * The portfolio briefing, at the workbench root. **Nothing writes one at this
- * version**: the Circle portfolio and the `playmaker` that ranked it went at
- * v11. The constant stays because a `portfolio.md` left in a checkout from
- * before that removal is still a live record where it sits, and admitting a
- * filename nothing produces costs nothing. Class L since 2026-08-23, so it was
- * never carried by git and was present in the generating checkout and in no
- * other; the predicate admits it either way and a walk judges it only where it
- * exists.
- */
-export const PORTFOLIO = "portfolio.md";
+import type { RecordIndex } from "./record-index.js";
 
 /**
  * The frozen stores, excluded at the workbench root.
  *
  * An archived record is a frozen copy of what was true when it was swept, and
- * repairing its citations would rewrite history rather than correct it. That
- * reason was written here for `archive/` alone and is not `archive/`'s alone.
+ * repairing its citations would rewrite history rather than correct it.
  * `stashes/` (the removed Circle stash skills) and `.migration-v2-backup/` (the
  * retired `/fusion:migrate-workbench-v2`'s rollback copy) are copy trees of the
- * same layout, carrying the very `issues/` and `decisions/` subtrees these
- * predicates match. Neither exists in this workbench; one exists in any project
- * that ran that migration, and a blocking check over a rollback copy has no
- * honest remedy. The pair is authored in `rules/fusion-workbench-conventions.md`
+ * same layout. The pair is authored in `rules/fusion-workbench-conventions.md`
  * ("Two legacy stores are absent from this tree on purpose"), and
  * `skills/cadence/SKILL.md` `### 3. Scan git and the workbench tree — once` is
- * the precedent this list follows — cited by section rather than by line,
- * because a line number is exactly what rotted here when the activity-log body
- * that held the list merged into that one.
+ * the precedent this list follows. `stilwerk/` is on that list as configuration
+ * and holds no `.md`, so it is not carried here.
  *
- * IT TAKES THREE OF THAT PRECEDENT'S FOUR ENTRIES. `stilwerk/` is on the
- * activity scan's list under that body's own criterion — configuration rather
- * than activity. It is not a frozen copy of records: it holds fixed-name voice
- * profiles, no `.md` at all, and no path under it can match a predicate here.
- * Carrying it would be an exclusion with no reason of this predicate's own.
- *
- * ANCHORED AT THE ROOT, and that is the point rather than a detail. All three
- * are workbench-root stores. A substring test would be a second unanchored
- * predicate, which is the defect this clause answers, repeated.
- *
- * EXCLUDING A STORE IS STILL NOT A WAY TO MAKE THE GATE GREEN. A record moved
- * into one leaves the corpus, but so do the obligations of everything it cited,
- * and the citations OF it in live records stay judged and go red. That
- * asymmetry is intentional. It is also why the reporter still PRINTS every row
- * it finds in one: a scoped result is not a narrowed search.
+ * ANCHORED AT THE ROOT: all three are workbench-root stores, and a substring
+ * test would be an unanchored predicate. Excluding a store is still not a way
+ * to make the gate green: the citations OF a moved record in live records stay
+ * judged and go red, and the reporter still PRINTS every row it finds in one.
  */
 export const FROZEN_PREFIXES = ["archive/", "stashes/", ".migration-v2-backup/"];
 
 /**
- * A plan or spec carrying `_o_` or `_p_`, in a work package's store or in `shared/`.
- *
- * THOSE TWO MARKERS AND NO OTHERS. `rules/fusion-workbench-conventions.md`
- * `## State Markers — issues and planning` gives a planning file four states:
- * `_o_` open, `_p_` in progress, `_c_` closed, `_d_` deferred. The first two are
- * the states in which an executor is dispatched against the document, so a
- * citation in it is one somebody is about to follow. `_c_` and `_d_` are
- * terminal and out for the reason a closed issue is out — and measurably so: the
- * 24 closed plans outside `archive/` carry 157 dangling citations between them
- * (2026-08-20; the exact figure moves with the parser, the order does not).
- * Admitting them would arm a red check over records nobody will open again, and
- * narrowing the corpus afterwards to get back to green is exactly the move
- * decision `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
- * exists to refuse. An `_o_`/`_p_` backlog entry is a separate question, asked
- * by the record that asked for this clause and not answered here.
- *
- * MEASURED before it was written, 2026-08-20 at HEAD `8e7cae7`: the clause
- * admits zero files then. Every plan outside `archive/` carried `_c_`,
- * including that Circle's own, and the tree's only `_p_` plan sat inside
- * `archive/` where the frozen-store exclusion takes it. Corpus and findings
- * were unchanged by adding it — 199 files, 0 violations, before and after. It
- * is armed for the next plan somebody writes, which is the whole of its job.
- */
-export const LIVE_PLAN_RE = new RegExp(`(?:^|\\/)${PLANS}\\/[0-9]{6}-[0-9]{4}_[op]_[^/]+\\.md$`);
-
-/**
- * The predicate itself, pure and over a WORKBENCH-RELATIVE path, so a caller
- * can put a path to it that no tree carries. Two of the three frozen stores are
- * such paths, and so is every live plan — which is the shape of both defects
- * this clause answered: nothing in fusion's own tree would have shown either.
+ * The predicate itself, over a WORKBENCH-RELATIVE path and the workbench's
+ * record index: live when the path is a narrative whose record is live, and
+ * never inside a frozen store.
  *
  * Twin: `skills/archive/SKILL.md` filter 3 enumerates the shipped files whose
  * citations an archive move must keep resolvable (decision 260827-1756).
  */
-export function isLiveRecord(rel: string): boolean {
+export function isLiveRecord(rel: string, index: RecordIndex): boolean {
   if (FROZEN_PREFIXES.some((p) => rel.startsWith(p))) return false;
-  if (rel === PORTFOLIO) return true;
-  return (
-    CIRCLE_RECORD_RE.test(rel) ||
-    ITEM_RECORD_RE.test(rel) ||
-    OPEN_ISSUE_RE.test(rel) ||
-    LIVE_DECISION_RE.test(rel) ||
-    LIVE_PLAN_RE.test(rel)
-  );
+  return index.byNarrative.get(rel)?.live === true;
 }

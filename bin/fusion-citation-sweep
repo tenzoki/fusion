@@ -65,7 +65,8 @@
 # line per file in the write set whose bytes a record binds by hash (a plan or
 # spec a package adopted, a report an evidence record names), so guard (b)
 # names every rewrite that would leave a binding stale before --yes. Nothing is
-# refused on that ground. On legacy the output is as before, plus format=.
+# refused on that ground. A legacy workbench is refused by name (exit 6) and
+# pointed at /fusion:migrate.
 #
 # No fusion pipeline or workflow runs this helper. `/fusion:cleanup` prints the
 # checker's result (bin/fusion-citation-check) and stops there; a person runs
@@ -83,7 +84,8 @@
 #   4  guard (a) refused; nothing written.
 #   5  guard (b) refused (--write without --yes); the census was printed,
 #      nothing written.
-#   6  the workbench was not read: unsupported, a refusal of the codec
+#   6  the workbench was not read: legacy (refused by name, pointing at
+#      /fusion:migrate), unsupported, a refusal of the codec
 #      (recovery-blocked among them), or no answer. The cause is on stderr,
 #      nothing is on stdout, nothing written.
 #

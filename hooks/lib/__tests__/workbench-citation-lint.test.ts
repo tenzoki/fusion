@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import {
@@ -12,13 +12,10 @@ import {
   scanRecordCitations,
   type Violation,
 } from "./helpers/citation-scan.js";
-import {
-  CIRCLE_RECORD_RE,
-  FROZEN_PREFIXES,
-  ITEM_RECORD_RE,
-  LIVE_DECISION_RE,
-  isLiveRecord,
-} from "../citation-corpus.js";
+import { FROZEN_PREFIXES, isLiveRecord } from "../citation-corpus.js";
+import type { IndexEntry, RecordIndex } from "../record-index.js";
+import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { indexOf, jsonWorkbenchAt, placeRecord } from "./helpers/json-workbench.js";
 
 // ---------------------------------------------------------------------------
 // Workbench citation gate (Circle 260819-1645-four-constraints-on-deep-change,
@@ -63,23 +60,26 @@ import {
 // `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`
 // scoped `citation-check.ts`'s `verdict=` line to the files somebody still
 // edits — which is this predicate, read by a reporter instead of by a gate.
-// Read that file for what the corpus IS and why: the wide reading of a live
-// decision, the two markers a live plan carries, the frozen stores and their
-// root anchoring, the hole at terminal state, and the judgement the reporter
-// needed about the kinds that carry no marker at all.
-//
-// NOTHING ABOUT WHAT THIS GATE ASSERTS OR READS CHANGED WITH THE MOVE. The
-// cases below are the same cases, put to the same predicate under its new
-// name. One predicate, two stakes: a file this gate admits must carry no
-// dangling citation or the suite goes red, while the reporter prints every row
-// either way and only narrows a verdict.
+// Read that file for what the corpus IS and why. Since FJ03d step 8 it reads a
+// record's liveness from the workbench's record index, never from a marker in
+// a file name, so this gate reads fusion's own workbench through the codec.
+// A workbench that does not read as `json-control` fails every own-tree case
+// below by its format, `legacy` by name: the gate has no corpus to judge.
 
-/** The gate's name for it, kept so every case below reads as it always did. */
-export const inCorpus = isLiveRecord;
+let own: RecordIndex | undefined;
+
+/** This workbench's record index, or a failure naming the format it read as. */
+function ownIndex(): RecordIndex {
+  if (own !== undefined) return own;
+  const read = indexOf(workbenchRoot);
+  if (read.format === "json-control") return (own = read.index);
+  const why = read.format === "legacy" ? "legacy (no workbench.json: its control data is Markdown); run /fusion:migrate" : `not read (${read.unread.cause})`;
+  throw new Error(`fusion-workbench is ${why}. The citation gate takes its corpus from the record index and has none to judge.`);
+}
 
 /** Workbench-relative paths of every file the gate judges under `root`. */
-export function corpusFiles(root = workbenchRoot): { rel: string; abs: string }[] {
-  return markdownFilesUnder(root).filter((f) => inCorpus(f.rel));
+function corpusFiles(root = workbenchRoot, index = ownIndex()): { rel: string; abs: string }[] {
+  return markdownFilesUnder(root).filter((f) => isLiveRecord(f.rel, index));
 }
 
 // --- the gate ---------------------------------------------------------------
@@ -134,14 +134,16 @@ function runAll(): { violations: Violation[]; resolved: number; files: number } 
 }
 
 describe("workbench citation lint: every citation in a live record resolves", () => {
-  const { violations, resolved, files } = runAll();
+  let ran: ReturnType<typeof runAll> | undefined;
+  const all = () => (ran ??= runAll());
 
   it("passes on the whole corpus — no dangling citation in any live record", () => {
+    const { violations } = all();
     expect(
       violations,
       `${VIOLATION_MESSAGE}\n\ndangling citations in live workbench records:\n${report(violations)}`,
     ).toEqual([]);
-  });
+  }, 4 * CASE_TIMEOUT);
 
   it("degrades loudly, not silently, when the workbench is absent", () => {
     // Without this the gate passes vacuously on a fresh clone: an empty violation
@@ -159,152 +161,72 @@ describe("workbench citation lint: every citation in a live record resolves", ()
     // that gets re-approved, which is the mechanism decision 260819-1645
     // rejected. These two assertions can only be tripped by a predicate that
     // matches nothing, which is the one failure the case exists to catch.
+    const { resolved, files } = all();
     expect(files, "the corpus predicate selected no files at all").toBeGreaterThan(0);
     expect(resolved, "no citation in the corpus resolved — the parser is not running").toBeGreaterThan(0);
-  });
+  }, 4 * CASE_TIMEOUT);
 });
 
-describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate", () => {
-  const rels = new Set(corpusFiles().map((f) => f.rel));
-  const all = markdownFilesUnder(workbenchRoot).map((f) => f.rel);
+/** An index holding `live` and `terminal` narratives, for the cases that need no codec. */
+function indexHolding(live: string[], terminal: string[] = []): RecordIndex {
+  const entry = (narrative: string, isLive: boolean): [string, IndexEntry] => [narrative, { id: narrative, kind: "issue", status: isLive ? "open" : "closed", live: isLive, control: narrative.replace(/\.md$/, ".record.json"), narrative }];
+  return { byNarrative: new Map([...live.map((n) => entry(n, true)), ...terminal.map((n) => entry(n, false))]), byId: new Map(), byControl: new Map(), unreadable: [], unresolvedRefs: [], bindings: new Map() };
+}
 
-  it("holds the four kinds the user's answer named", () => {
-    // TWO KINDS ARE PUT TO THE TREE AND TWO ARE NOT. Circle records and live
-    // decisions are class R1 (`rules/workbench-tracking.md`): git carries them,
-    // so "the tree carries one" is a claim every checkout can keep. `portfolio.md`
-    // is class L since 2026-08-23, absent from every fresh clone, where a tree
-    // assertion was red
-    // (`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-untracked-portfolio-turns-npm-test-red-in-every-fresh-clone-of-this-repository.md`);
-    // it is put to the predicate, BY LITERAL, so the case also fails when the
-    // constant stops naming the file the workbench writes. An open issue is what
-    // a clean workbench has none of by design, so a control needing one on disk
-    // failed exactly when the project reached the state it works towards
-    // (`circles/260824-1853-close-every-open-defect/issues/260824-2136_*_the-workbench-citation-lints-positive-control-requires-an-open-issue-on-disk-so-a-clean-workbench-fails-it.md`);
-    // that control runs the production selection over a scratch workbench the
-    // case writes. A positive control belongs to a fixture the test owns, not to
-    // the state of the tree it lints. DROPPING A KIND IS NOT THE REPAIR: the
-    // corpus is a user's recorded answer
-    // (`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`).
-    expect(inCorpus("portfolio.md"), "the corpus predicate admits portfolio.md").toBe(true);
-    const has = (re: RegExp) => all.some((r) => re.test(r) && rels.has(r));
-    // EITHER RECORD FORM SATISFIES IT, and the disjunction is not a softening:
-    // the container store holds both for good — only a live record is converted
-    // to its container's name — so a tree carrying one form and not the other is
-    // a tree this kind is still fully present in. Naming one form would make the
-    // assertion fail on a workbench whose containers all happen to be converted,
-    // which is a shape this project has not reached and a consuming one may.
-    expect(
-      has(CIRCLE_RECORD_RE) || has(ITEM_RECORD_RE),
-      "no container record of either form is selected",
-    ).toBe(true);
-    expect(has(LIVE_DECISION_RE), "at least one live decision is selected").toBe(true);
+describe("workbench citation lint: the corpus predicate", () => {
+  it("takes a narrative whose record is live, whatever marker its name carries, and nothing without a record", () => {
+    // Over records the codec reads, so the index this gate takes from the
+    // workbench is the one put to the predicate. The marker in each name says
+    // the opposite of the record's state: the record decides.
     const tmp = mkdtempSync(join(tmpdir(), "citation-corpus-"));
-    const open = "shared/issues/260101-0000_o_x.md";
-    mkdirSync(join(tmp, "shared/issues"), { recursive: true });
-    writeFileSync(join(tmp, open), "an open issue\n");
-    writeFileSync(join(tmp, "shared/issues/260101-0000_c_y.md"), "a closed one\n");
     try {
-      expect(corpusFiles(tmp).map((f) => f.rel), "an open issue is selected, a closed one is not").toEqual([open]);
+      const wb = jsonWorkbenchAt(tmp);
+      placeRecord(wb, "issue-open", "shared/issues/260101-0000_c_open.md", "open");
+      placeRecord(wb, "issue-closed", "shared/issues/260101-0001_o_closed.md", "closed");
+      placeRecord(wb, "decision-answered", "shared/decisions/260101-0002_i_answered.md", "answered");
+      placeRecord(wb, "decision-implemented", "shared/decisions/260101-0003_a_implemented.md", "implemented");
+      placeRecord(wb, "plan-in-progress", "shared/plans/260101-0004_c_under-way.md", "in_progress");
+      writeFileSync(join(wb, "shared/issues/260101-0005-no-record.md"), "a narrative nothing controls\n");
+      const read = indexOf(wb);
+      if (read.format !== "json-control") throw new Error(JSON.stringify(read));
+      expect(corpusFiles(wb, read.index).map((f) => f.rel).sort()).toEqual([
+        "shared/decisions/260101-0002_i_answered.md",
+        "shared/issues/260101-0000_c_open.md",
+        "shared/plans/260101-0004_c_under-way.md",
+      ]);
     } finally {
       rmSync(tmp, { recursive: true, force: true });
     }
+  }, CASE_TIMEOUT);
+
+  it("excludes every frozen store, whatever the record under it says, anchored at the workbench root", () => {
+    // Put to the predicate rather than to a tree: two of the three stores exist
+    // in no tree here, and a walk-derived assertion would pass vacuously. The
+    // exclusion is `startsWith`, so the same store name below the root is not
+    // a frozen store: an unanchored exclusion is the fault this clause answers.
+    const frozen = FROZEN_PREFIXES.map((p) => `${p}b/shared/issues/260101-0000_o_x.md`);
+    const nested = ["shared/archive/issues/260101-0000_o_x.md", "work-packages/c/stashes/issues/260101-0000_o_x.md"];
+    const index = indexHolding([...frozen, ...nested]);
+    expect([...frozen, ...nested].filter((r) => isLiveRecord(r, index))).toEqual(nested);
   });
 
-  it("takes a Circle record in every state, not only the active one", () => {
-    // The Circle record is the one kind with no marker filter: a closed Circle's
-    // record is still read, still cited from, and its citations still have to
-    // resolve. Asserted against the tree so that narrowing the pattern to `_t_`
-    // — the tempting simplification — fails here rather than passing silently.
-    const records = all.filter((r) => CIRCLE_RECORD_RE.test(r));
-    const states = new Set(records.map((r) => /_([atcbsd])_circle\.md$/.exec(r)![1]));
-    expect(states.size, "the tree carries Circle records in more than one state").toBeGreaterThan(1);
-    expect(records.filter((r) => !rels.has(r))).toEqual([]);
+  it("follows the record out of the corpus at a terminal state", () => {
+    // The hole named in `lib/citation-corpus.ts`, pinned as behaviour so that a
+    // later reader meets it as a fact rather than rediscovering it.
+    const index = indexHolding(["shared/issues/a.md"], ["shared/issues/b.md"]);
+    expect(["shared/issues/a.md", "shared/issues/b.md"].map((r) => isLiveRecord(r, index))).toEqual([true, false]);
   });
 
-  it("takes a container's record under its own name, and nothing else beside it", () => {
-    // The second record form, put to the PREDICATE rather than to the tree: the
-    // conversion of this workbench's two live records is the NEXT step, and this
-    // clause lands first so that conversion has a gate that can see it. Measured
-    // here, it admits zero files on disk — the `LIVE_PLAN_RE` precedent.
-    expect(inCorpus("work-packages/260101-0000-x/260101-0000-x.md")).toBe(true);
-    expect(inCorpus("circles/260101-0000-x/260101-0000-x.md")).toBe(false); // the v11 root, unread since 13.0.0
-    // The structural equality is the whole discriminator. A stray file inside a
-    // container, and one container naming another container's record, are each
-    // outside — which is what stops the second clause from being an exemption
-    // that widens the corpus until the marked clause's refusals fall through it.
-    expect(inCorpus("work-packages/260101-0000-x/notes.md")).toBe(false);
-    expect(inCorpus("work-packages/260101-0000-x/260101-0000-y.md")).toBe(false);
-    for (const p of FROZEN_PREFIXES) {
-      expect(inCorpus(`${p}b/circles/260101-0000-x/260101-0000-x.md`), p).toBe(false);
-    }
-  });
-
-  it("excludes every frozen store, whatever a swept file's marker says", () => {
-    const archived = all.filter((r) => r.startsWith("archive/"));
-    expect(archived.length, "the tree carries an archive/ to exclude").toBeGreaterThan(0);
-    expect(archived.filter((r) => rels.has(r))).toEqual([]);
-    // The other two exist in no tree here, so they are put to the predicate
-    // instead. A walk-derived assertion would pass vacuously and go on passing
-    // after somebody deleted the clause.
-    for (const p of FROZEN_PREFIXES) {
-      expect(inCorpus(`${p}b/shared/issues/260101-0000_o_x.md`), p).toBe(false);
-      expect(inCorpus(`${p}b/circles/c/_t_circle.md`), p).toBe(false);
-      expect(inCorpus(`${p}b/shared/planning/260101-0000_p_x.md`), p).toBe(false);
-    }
-  });
-
-  it("anchors the frozen stores at the workbench root", () => {
-    // The exclusion is `startsWith`, not a substring test. All three stores are
-    // root stores, and an unanchored exclusion is the same fault as the
-    // unanchored predicate this pair of clauses was filed against — fixing one
-    // by adding the other would be no fix at all.
-    expect(inCorpus("shared/archive/issues/260101-0000_o_x.md")).toBe(true);
-    expect(inCorpus("circles/c/stashes/issues/260101-0000_o_x.md")).toBe(true);
-  });
-
-  it("takes a plan under work, and no plan that has stopped", () => {
-    // Against the predicate, not the tree, because the predicate is what is under
-    // test and which plans stand open on any given day is not a property of it.
-    // The dated measurement at the clause itself is where a live count belongs.
-    expect(inCorpus("shared/plans/260101-0000_o_x.md")).toBe(true);
-    expect(inCorpus("circles/260101-0000-c/planning/260101-0000_p_x.md")).toBe(false); // v11 names, unread since 13.0.0
-    for (const m of ["c", "d"]) {
-      expect(inCorpus(`shared/plans/260101-0000_${m}_x.md`), m).toBe(false);
-    }
-    // And against the walk, where the terminal plans really are: over 150 dangling
-    // citations sit in them, so this case is what keeps the gate green for a
-    // reason rather than by luck.
-    const stopped = all.filter((r) =>
-      /(?:^|\/)planning\/[0-9]{6}-[0-9]{4}_[cd]_[^/]+\.md$/.test(r),
-    );
-    expect(stopped.length, "the tree carries closed plans to exclude").toBeGreaterThan(0);
-    expect(stopped.filter((r) => rels.has(r))).toEqual([]);
-  });
-
-  it("excludes the stores the user's answer did not name", () => {
-    // history/, analyses/, reviews/, consult/, memos/, backlog/ and
-    // investigations/ are outside. Session logs in particular cite records by
-    // the marker they carried on the day, and correcting them would falsify the
-    // log. This is the corpus the answer named, not every file in the workbench.
-    // `planning/` left this list on 2026-08-20 and is now a marker predicate of
-    // its own — see `LIVE_PLAN_RE` and the case above it.
-    const outside = [...rels].filter((r) =>
-      /(?:^|\/)(?:history|analyses|reviews|consult|memos|backlog|investigations)\//.test(r),
+  it.runIf(WORKBENCH_PRESENT)("excludes, in this workbench, the stores that carry no record", () => {
+    // history/, analyses/, reviews/, consultations/, memos/ and investigations/
+    // are outside: session logs cite records by the marker they carried on the
+    // day, and correcting them would falsify the log. They fall through because
+    // no record controls them; this case is where a record arriving there shows.
+    const outside = corpusFiles().map((f) => f.rel).filter((r) =>
+      /(?:^|\/)(?:history|analyses|reviews|consult|consultations|memos|backlog|investigations)\//.test(r),
     );
     expect(outside).toEqual([]);
-  });
-
-  it("excludes an issue or decision that has reached a terminal marker", () => {
-    // The hole named in the corpus block above, pinned as behaviour so that a
-    // later reader meets it as a fact rather than rediscovering it. A closed
-    // issue and an implemented decision are out of scope BY DESIGN; if that is
-    // ever revisited, this case is where the change announces itself.
-    const terminal = all.filter((r) =>
-      /(?:^|\/)(?:issues|decisions)\/[0-9]{6}-[0-9]{4}_[cdis]_[^/]+\.md$/.test(r),
-    );
-    expect(terminal.length, "the tree carries terminal records to exclude").toBeGreaterThan(0);
-    expect(terminal.filter((r) => rels.has(r))).toEqual([]);
-  });
+  }, CASE_TIMEOUT);
 });
 
 describe("workbench citation lint: the storeless form rests on basename uniqueness", () => {

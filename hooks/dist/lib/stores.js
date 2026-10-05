@@ -80,8 +80,6 @@ export const CONTAINER_ROOT_NAMES = namesOf(CONTAINER_STORE);
  * `WINDOW_LEGACY_NAMES` and the closing release leaves it alone.
  */
 export const ARCHIVED_CONTAINER_ROOTS = [CONTAINER_STORE, V11_CONTAINER_ROOT];
-/** The live root names as a regex alternation, for the citation grammar. */
-export const CONTAINER_ROOT_ALT = CONTAINER_ROOT_NAMES.join("|");
 /** Every container root name a citation or a staged path may spell: the live ones, then the v11 root. */
 export const CITED_CONTAINER_ROOTS = [...CONTAINER_ROOT_NAMES, V11_CONTAINER_ROOT];
 /* ------------------------------------------------------------------ *
