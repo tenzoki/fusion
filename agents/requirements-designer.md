@@ -104,7 +104,7 @@ For each gap or ambiguity, formulate a concrete question with options. Categoriz
 
 Only surface behavioral, scope, and UX decisions. Flag technical decisions as "implementation-planner will determine" in the spec.
 
-**Decision-record discipline:** A behavioral, scope or UX decision the user defers rather than answers in the round is a decision record at `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md`, per the decision-record template in `fusion-workbench-conventions.md` and the decision row of its `## Record filing`. One answered in the round is a line of the spec and needs no file. Defects spotted during shaping go to `$OUT_ISSUE` as today. Read every directory in `$SCAN_DECISIONS` and `$SCAN_ISSUES` in your context-loading step so you don't refile something already tracked.
+**Decision-record discipline:** A behavioral, scope or UX decision the user defers rather than answers in the round is a decision record at `$OUT_DECISION/YYMMDD-HHMM-<topic>.md`, filed by `bin/fusion-write create --kind decision` per the decision-record template in `fusion-workbench-conventions.md` and the decision row of its `## Record filing`. One answered in the round is a line of the spec and needs no file. Defects spotted during shaping go to `$OUT_ISSUE` as today. Read every directory in `$SCAN_DECISIONS` and `$SCAN_ISSUES` in your context-loading step so you don't refile something already tracked.
 
 ### 4. Involve the User
 
@@ -120,13 +120,12 @@ After all critical decisions are resolved, produce the spec document.
 
 ## Spec Output Format
 
-Write to `$OUT_PLAN/YYMMDD-HHMM_o_spec-<topic>.md`:
+Write to `$OUT_PLAN/YYMMDD-HHMM-spec-<topic>.md`, no marker, then file it with `bin/fusion-write create --kind plan --actor requirements-designer` (`fusion-workbench-conventions.md` `## Record filing`); its state is the control file's, so the head carries no `Status:` line:
 
 ```markdown
 # Spec: <feature/change>
 
 **Date:** YYYY-MM-DD
-**Status:** Draft
 **Source:** <user's original request, quoted or paraphrased>
 
 ## Directive

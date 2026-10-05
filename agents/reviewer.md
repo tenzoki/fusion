@@ -27,8 +27,8 @@ The Setup, the refusal, the review-file contract, the feedback standard and the 
 5. `git log --oneline -25` for recent change context. Pay attention to anything that landed since the last review.
 6. `git tag -l` — the release tag delineates "shipped" from "unshipped". Review against the tagged state unless the user says otherwise.
 7. Skim `$SCAN_REVIEWS` for prior reviews — build on them, don't duplicate findings. If a prior review flagged an issue and the user marked it done, verify the fix landed.
-8. Check open items under `$SCAN_ISSUES` (`grep '_o_'`) and the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS` — known open work. Don't refile; cross-reference instead.
-9. Skim the active plans under `$SCAN_PLANS` (`grep '_p_'`) — don't preempt their scope.
+8. Check the issues at `open` or `in_progress` under `$SCAN_ISSUES` and the decisions at `open` or `answered` under `$SCAN_DECISIONS` — known open work, read off one `bin/fusion-record` `list` (`fusion-workbench-conventions.md` `## Marker globs`). Don't refile; cross-reference instead.
+9. Skim the plans at `in_progress` under `$SCAN_PLANS`, from the same `list` — don't preempt their scope.
 
 ## Scope
 
@@ -85,6 +85,8 @@ Apply in order:
 ## Review process
 
 The review-file contract — the mandated header fields, the per-topic working files under `$OUT_REVIEW`, and the shape of the final consolidated review — is authored in `rules/review-contract.md`, which `bin/fusion-rules` emits to you at Setup. Read it there and follow it exactly. **Your sender segment is `reviewer`**, whichever domain the pass covered; the domain is named in the review's own text, not in its filename.
+
+**When `$OUT_REVIEW` lies inside a work package's container, record your verdict on the final review as evidence beside it**: `bin/fusion-write evidence --record <that container>/package.json --report <the review's workbench path> --verdict accept|revise|escalate --actor reviewer` — `accept` when the work meets its brief and plan, `revise` when a finding asks for a fix, `escalate` when the user must rule. One record per report; exit codes are that script's header.
 
 What that file leaves to your prompt is what analysing a topic means here:
 

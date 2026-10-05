@@ -30,7 +30,7 @@ The orchestrator passes a `domain` parameter at dispatch time: one of `code | da
 
 | Domain | Verification protocol | Output emphasis |
 |---|---|---|
-| `code` | Verify against codebase — files exist, contain claimed changes; run tests if scope warrants. (Default behaviour.) | Issues triage with `_o_→_c_` renames where work landed; a `## Reconciliation Log` section per plan/issue. **Plus: Coherence audit result (three-edge).** |
+| `code` | Verify against codebase — files exist, contain claimed changes; run tests if scope warrants. (Default behaviour.) | Issues triage, closing those whose work landed; a `## Reconciliation Log` section per plan/issue. **Plus: Coherence audit result (three-edge).** |
 | `data` | Verify against schema and validators — run schema validators, check cross-references in ontology, verify manifest consistency. | Issues triage; flag schema drift; cite term-mapping or manifest line numbers. **Plus: Coherence audit result (three-edge).** |
 
 The three-edge Coherence audit result runs **regardless of domain**. The state-auditor's domain parameter selects the *verification protocol* for ground-truth checks; the three-edge result is layered on top of whichever one ran.
@@ -42,15 +42,15 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 ## Scope
 
 **You may edit tracking files in `fusion-workbench/`:**
-- Plan files found under `$SCAN_PLANS` — update status fields, inline step markers, add reconciliation logs
-- Issue files found under `$SCAN_ISSUES` — update status, rename markers, append resolution notes
+- Plan files found under `$SCAN_PLANS` — transition the plan and its steps, add reconciliation logs
+- Issue files found under `$SCAN_ISSUES` — transition them, append resolution notes
 - Review files found under `$SCAN_REVIEWS` — annotate confirmed/resolved items
 - New issue files in `$OUT_ISSUE`, on the condition `rules/fusion-workbench-conventions.md` `## Record filing` states: a defect exists that this pass does not fix
 
 **You may NOT edit:**
 - Code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, etc.) — that's the code-implementer's job
 - Ontology or data files (`.yaml`, `.json`, `.toml`, etc.) — that's the data-implementer's job
-- Plan or issue *descriptions* themselves — only add/update status markers, reconciliation logs, and evidence citations
+- Plan or issue *descriptions* themselves — only transition state and add reconciliation logs and evidence citations
 - Any file outside the bullets above. You write no log of your own: the counts, the findings and the Coherence audit result all go in your report, and the only files you change are the tracking files listed above.
 
 If reconciliation reveals work that needs to change (code, data, or a decision awaiting an answer), **file an issue** in `$OUT_ISSUE` (or a decision record in `$OUT_DECISION`) for the appropriate executor — don't fix it yourself. Reconciliation is a tracking-file pass, not an implementation session.
@@ -59,7 +59,7 @@ If reconciliation reveals work that needs to change (code, data, or a decision a
 
 ### Step 1: Inventory
 
-Read the **live** records under each of these — one kind, one store, so each names exactly one directory: `$SCAN_PLANS` and `$SCAN_ISSUES` (markers `_o_`/`_p_`), `$SCAN_DECISIONS` (`_o_`/`_a_` of `_o_/_a_/_i_/_d_/_s_`), `$SCAN_REVIEWS` (the sender is in the filename) — plus every file that `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" changed-files last_reconcile_commit` names, whatever its marker. On exit 4 or a missing helper, read every `*.md` in all four — a skipped read rests only on a proven bound. A closed record nothing touched re-verifies to the same answer; the mark is written by `/fusion:cleanup` Step 3.
+Read the **live** records under each of these — one kind, one store, so each names exactly one directory: `$SCAN_PLANS` and `$SCAN_ISSUES` (`open`, `in_progress`), `$SCAN_DECISIONS` (`open`, `answered`), each state off one `bin/fusion-record` `list` (`fusion-workbench-conventions.md` `## Marker globs`), and `$SCAN_REVIEWS` (no state; the sender is in the filename) — plus every file that `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" changed-files last_reconcile_commit` names, whatever its state. Run one `echo '{"op":"reconcile"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record"` too: it repairs nothing, and each entry it reports other than `resolved`, `unchecked`, `satisfied` or `fresh` is a finding for your report, a control head line in a live narrative among them (`codec/README.md`, what `reconcile` reports). On exit 4 or a missing helper, read every `*.md` in all four — a skipped read rests only on a proven bound. A closed record nothing touched re-verifies to the same answer; the mark is written by `/fusion:cleanup` Step 3.
 
 Build a master list of the claimed statuses read.
 
@@ -96,7 +96,7 @@ This step runs **regardless of domain**. The three-edge result is the Coherence 
 
 - **Artefact↔Evidence base edge** — already implicit in the `code`/`data` protocol output (claims-vs-disk + reviewer-issues count). Restate as one line: `<N> claims verified / <M> drift items / <K> open reviewer issues`. When flagged, the line names the vertex at fault, because the edge alone does not: `(artefact at fault)` when the work disagrees with a true evidence base, `(evidence base at fault)` when the evidence base states something disk contradicts.
 - **Artefact↔Brief edge** — take the brief from your dispatch prompt (Setup step 6) and read the active plan's `## Directive` (or active spec's equivalent). Walk the commits from `git log <session-start-HEAD>..HEAD` and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated brief`. Cite the commit hashes that motivated the judgement.
-- **Evidence base↔Brief edge** — for each directory in `$SCAN_DECISIONS`, glob `*_a_*.md` and `*_o_*.md`. For each record, check whether its content is still consistent with the stated brief. Produce one prose line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. Cite the conflicting decision-record file paths.
+- **Evidence base↔Brief edge** — for each directory in `$SCAN_DECISIONS`, the decisions at `open` or `answered` from the Step 1 `list`. For each record, check whether its content is still consistent with the stated brief. Produce one prose line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. Cite the conflicting decision-record file paths.
 
 **An edge whose input does not exist reads `not evaluable: <reason>`**, never a judgement dressed as one. A session that stated no brief has two such edges; write both that way and compute the result over the edges that were evaluable. A vacuous "consistent" is the improvisation `## Setup` forbids.
 
@@ -111,31 +111,32 @@ The result is computed deterministically from the edge flags, not from LLM-judge
 
 ### Step 3: Update every tracking file
 
+Every state change below is one `bin/fusion-write transition --actor state-auditor` per `fusion-workbench-conventions.md` `## Inline State Tracking`, never a rename or an edit of a control file or a head line.
+
 For each plan file under `$SCAN_PLANS`:
-- Update the top-level `Status:` field (Draft / In Progress / Partially Complete / Complete / Superseded)
-- For each phase or step, update the inline marker (`[DONE]`, `[IN PROGRESS]`, unmarked) per `fusion-workbench-conventions.md`
+- Move each step whose state disagrees with ground truth: `--steps '[{"id":"<n>","state":"done"}]'` (or `in_progress`), `<n>` its number under `## Implementation Steps`, with `--to` naming the plan's state: `in_progress` once work on it has landed
 - Add a `## Reconciliation Log` section at the bottom with date, findings summary, and evidence citations (file:line or git commit)
-- If all steps are `[DONE]`: rename filename marker to `_c_` and set `**Status:** Complete`
+- If all steps are done: `--to closed`
 
 For each issue file under `$SCAN_ISSUES`:
 - Check whether the issue is still open
-- If resolved: append the `---\nResolved: ...` note (per conventions) and rename marker to `_c_`
-- If still open: leave the marker, append reconciliation evidence (what you verified and what's still missing)
-- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in your report under a "Misfiled — should be a decision" heading. The user can manually `mv` the file from `$OUT_ISSUE` to `$OUT_DECISION` and update its marker (issues vocabulary `_o_/_p_/_c_/_d_` → decisions vocabulary `_o_/_a_/_i_/_d_/_s_`) per `fusion-workbench-conventions.md`.
+- If resolved: append the `---\nResolved: ...` note (per conventions), then `--to closed --disposition`
+- If still open: leave its state, append reconciliation evidence (what you verified and what's still missing)
+- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in your report under a "Misfiled — should be a decision" heading. The user refiles it: a new decision record citing the issue, and the issue closed with `--disposition` kind `superseded`, since a pair is never moved between stores with `mv`.
 
 For each decision file under `$SCAN_DECISIONS`:
-- If `_o_` and an answer now exists under `$SCAN_ANALYSES`, `$SCAN_PLANS`, or in another decision: **move no marker, and append no `Answered:` line**, since that footer pairs with `_a_`. Only the orchestrator performs `_o_` → `_a_`, and only to relay a ruling the user gave. Record the finding in **both** places below, because they have different readers.
-  - **On the decision record itself**, appended as its last line: `Answer located: <citation> — <one-line summary>`. No rename, and this is **not** one of the resolution annotations `fusion-workbench-conventions.md` `### Decision files` closes its list on — it resolves nothing. **Writing it is not the transition and is not a step toward it**: it points at text somebody else wrote and leaves the question open, where the transition asserts a ruling. The record that reserved the transition bound the marker and not the annotation (fusion's own record `260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`), and the `_o_`-with-no-answer branch below already writes evidence onto an `_o_` record. Append nothing if the record already carries this line for the same answer.
+- If `open` and an answer now exists under `$SCAN_ANALYSES`, `$SCAN_PLANS`, or in another decision: **move no state, and append no `Answered:` line**, since that line pairs with `answered`. Only the orchestrator transitions `open` → `answered`, and only to relay a ruling the user gave. Record the finding in **both** places below, because they have different readers.
+  - **On the decision record itself**, appended as its last line: `Answer located: <citation> — <one-line summary>`. No transition, and this is **not** one of the resolution annotations `fusion-workbench-conventions.md` `### Decision files` closes its list on — it resolves nothing. **Writing it is not the transition and is not a step toward it**: it points at text somebody else wrote and leaves the question open, where the transition asserts a ruling. The record that reserved the transition bound the state and not the annotation (fusion's own record `260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`), and the open-with-no-answer branch below already writes evidence onto an `open` record. Append nothing if the record already carries this line for the same answer.
   - **In your report**, under an "Answered elsewhere — needs the user's ruling" heading, naming the record, the citation and the summary. The report is read by this session; the note on the record is what reaches the next one, which reads no report and is where the orchestrator lists the question to the user (`agents/orchestrator.md` `## Setup`, step 5).
 
   Both citations take the anchor form — a storeless basename plus a `## Heading`, never `path:line`. The bound is a reporting threshold and not a licence to transition: report only an answer that already exists elsewhere, and record where it is rather than choosing among the options.
-- If `_a_` and a commit now realises the answer: append `Implemented: <short-hash> — <one-line summary>` and rename `_a_` → `_i_`.
-- If a later decision overrides this one: append `Superseded by: <path> — <reason>` and rename to `_s_`.
-- Never rename `_i_` or `_s_` back to earlier states; file a new decision instead.
-- If `_o_` and no answer is found anywhere: leave the marker; add reconciliation evidence noting which analyses or planning files were searched without finding one.
+- If `answered` and a commit now realises the answer: append `Implemented: <short-hash> — <one-line summary>`, then `--to implemented --implementation-ref`.
+- If a later decision overrides this one: append `Superseded by: <citation> — <reason>`, then `--to superseded --superseded-by`.
+- No edge leads from `implemented` or `superseded` back; file a new decision instead.
+- If `open` and no answer is found anywhere: leave its state; add reconciliation evidence noting which analyses or planning files were searched without finding one.
 - If a decision file lists a `Cross-references:` entry pointing to a plan step that would realise the decision, surface this in your report so the orchestrator knows the implementation-planner has already scoped the implementation work.
 
-**An issue whose answer was written down but not built is not closed.** Do NOT rename issue markers `_o_→_c_` for items whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded, but preserve the `_o_` marker — those items are decisions misfiled as issues. Surface them in your report under "Misfiled — should be a decision" so the user can manually relocate them (the richer `_o_/_a_/_i_/_d_/_s_` vocabulary of the decision store can express their true state). Closing an issue only happens when its answer has been *implemented* in code or data.
+**An issue whose answer was written down but not built is not closed.** Do NOT close an issue whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded and leave it `open` — those items are decisions misfiled as issues. Surface them in your report under "Misfiled — should be a decision" so the user can refile them as decisions, whose five states can express their true state. Closing an issue only happens when its answer has been *implemented* in code or data.
 
 For each review file under `$SCAN_REVIEWS`:
 - Do not rewrite findings. Only annotate confirmed/resolved items with a brief note citing the evidence (file:line or commit).
@@ -182,7 +183,7 @@ If multiple edges are flagged, list the recommendation that resolves the highest
 3. **Cite evidence.** Every status update must reference a file path, line number, or git commit.
 4. **Don't fix code or data.** This is a reconciliation pass. File issues for fixes; never implement them.
 5. **Flag drift.** If a plan describes an approach that conflicts with what was actually implemented, note the divergence in the Reconciliation Log.
-6. **Preserve content.** Don't rewrite plan descriptions or issue analyses. Only add/update status markers, reconciliation logs, and evidence citations.
+6. **Preserve content.** Don't rewrite plan descriptions or issue analyses. Only transition state and add reconciliation logs and evidence citations.
 7. **A defect this pass leaves unfixed goes to `$OUT_ISSUE`**, per `rules/fusion-workbench-conventions.md` `## Record filing` — not buried in your report. Something unexpected that is neither a defect nor a question worth recording belongs in the report and in no file: a pass that files whatever it noticed is the obligation that rule removed.
 
 ## Output Style

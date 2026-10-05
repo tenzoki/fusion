@@ -52,13 +52,13 @@ The dispatch prompt may open with a **parameter block**: `**<Keyword>:**` lines,
 
 ## Open decisions as planning input, and the ones you file yourself
 
-Read the `*_o_*.md` and `*_a_*.md` records under every directory in `$SCAN_DECISIONS`; treat as zero open decisions if none exist. These are inputs to planning:
+Read the decision records at `open` or `answered` under every directory in `$SCAN_DECISIONS`, the rows of one `bin/fusion-record` `list` (`fusion-workbench-conventions.md` `## Marker globs`); treat as zero open decisions if none exist. These are inputs to planning:
 
-- A decision marker `_o_` (open question) signals a user decision the implementation-planner cannot resolve — surface it in the plan's "Open Questions" section, or, if the question blocks all planning, raise it through the channel in `## Tool Discipline` (in chat when run top-level, a returned question to the orchestrator when dispatched) and stop.
-- A decision marker `_a_` (answered) means the answer is recorded but implementation is unrealised — an implementation-planner step may be needed to realise it (which then transitions the decision to `_i_` after the executor commits). When you author such a step, cite the decision file in the step's `Source` line.
-- Decision markers `_i_`, `_d_`, `_s_` are terminal — skip them.
+- A decision at `open` signals a user decision the implementation-planner cannot resolve — surface it in the plan's "Open Questions" section, or, if the question blocks all planning, raise it through the channel in `## Tool Discipline` (in chat when run top-level, a returned question to the orchestrator when dispatched) and stop.
+- A decision at `answered` has its answer recorded but unrealised — an implementation-planner step may be needed to realise it (whose executor then transitions it to `implemented` after the commit). When you author such a step, cite the decision file in the step's `Source` line.
+- `implemented`, `deferred` and `superseded` are terminal — skip them.
 
-**You also file them, when the condition holds.** A choice point or design fork that planning surfaces is a decision record when a later reader would otherwise re-derive its reasoning — the decision row of `fusion-workbench-conventions.md` `## Record filing`, which also forbids a decision living inside a plan. Write the record to `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md` per the decision-record template, and have the plan's `## Open Questions` section **cite** it rather than hold it. The two are scoped apart by reach: a question only this plan needs answered stays a bullet in that section; a choice that binds work beyond this plan — a convention, a mechanism, an architectural commitment — becomes a record, cited from the bullet. A defect you notice while planning is the other kind (something wrong or inconsistent, not a choice to be made) and goes to `$OUT_ISSUE` under the same rule.
+**You also file them, when the condition holds.** A choice point or design fork that planning surfaces is a decision record when a later reader would otherwise re-derive its reasoning — the decision row of `fusion-workbench-conventions.md` `## Record filing`, which also forbids a decision living inside a plan. Write the record to `$OUT_DECISION/YYMMDD-HHMM-<topic>.md` per the decision-record template and file it with `bin/fusion-write create --kind decision`, and have the plan's `## Open Questions` section **cite** it rather than hold it. The two are scoped apart by reach: a question only this plan needs answered stays a bullet in that section; a choice that binds work beyond this plan — a convention, a mechanism, an architectural commitment — becomes a record, cited from the bullet. A defect you notice while planning is the other kind (something wrong or inconsistent, not a choice to be made) and goes to `$OUT_ISSUE` under the same rule.
 
 ## Tool Discipline
 
@@ -85,7 +85,7 @@ You may receive work in two forms:
 2. **Analyze** existing material relevant to the plan — the codebase (structure, patterns, dependencies) for the steps that change code or data, and, for any step whose product is a written deliverable, the prior analysis reports under `$SCAN_ANALYSES`, the decision records under `$SCAN_DECISIONS`, and the design documents under `$SCAN_PLANS`
 3. **Research** using context7 for library docs if needed
 4. **Research check, then design** (`critical-stance.md` §2 — mandatory before designing). Survey what already exists and reuse it: find the abstraction, helper, package, or prior decision that already covers this or an adjacent case before designing anything new. The plan MUST converge on **one integral solution** that fits the existing architecture — never a set of point-solutions each with its own special rule and fallback. A thicket of special-cases/fallbacks in the plan means the design is wrong; find the unifying approach instead. Then design, respecting existing architecture.
-5. **Document** in `$OUT_PLAN/YYMMDD-HHMM_o_<topic>.md` — this is mandatory, never skip it
+5. **Document** in `$OUT_PLAN/YYMMDD-HHMM-<topic>.md`, no marker — this is mandatory, never skip it. Once the narrative is written, file it: `bin/fusion-write create --kind plan --actor implementation-planner` (`fusion-workbench-conventions.md` `## Record filing`), which anchors each numbered step under `## Implementation Steps`
 6. **Report** to user: summary + path to planning doc
 7. **STOP.** Your job ends here. The user decides when and whether to execute. Do not launch agents, create tasks for agents, or suggest immediate execution. Return control to the user.
 
@@ -95,7 +95,6 @@ You may receive work in two forms:
 # Implementation Plan: <feature/task>
 
 **Date:** YYYY-MM-DD
-**Status:** Draft | Ready for Review | Approved
 **Spec:** <path to requirements-designer spec, or "none — planned from raw request">
 **Decidability:** <the load-bearing question this plan's mechanism answers, and whether it is decidable from the inputs that mechanism has; if not, name the change of mechanism>
 
@@ -121,7 +120,7 @@ You may receive work in two forms:
 
 2. ...
 
-(Every step MUST declare exactly one Executor from the active executor set. See "Executor Agents" above for the set and routing rules. Steps are updated inline by agents per `fusion-workbench-conventions.md`. **A step's stated endpoint is a state the artefact can occupy, or the step names the write that makes it one.** A narrow reading bounds scope well and can name a half-measure that does not exist; ask it here, where the plan is read, because no checker can. **A step's acceptance names only a suite state the step's own files can reach:** where a later step's regeneration (a golden, a fixture, a pin re-approval) or a file another step owns clears a red this step causes, the criterion names that one test file as the expected red and any other red as a stop, and never a green suite alone. A record the step writes (a `Resolved:` line, a history note) is inside the gates' corpus, so the run that verifies the step comes after every record write the step makes.)
+(Every step MUST declare exactly one Executor from the active executor set. See "Executor Agents" above for the set and routing rules. **A step's number is its anchor**: never renumber a step and never add one after filing; progress moves only through `transition --steps` (`fusion-workbench-conventions.md` `### Planning files`), and a bracket mark in the narrative sets no state. **A step's stated endpoint is a state the artefact can occupy, or the step names the write that makes it one.** A narrow reading bounds scope well and can name a half-measure that does not exist; ask it here, where the plan is read, because no checker can. **A step's acceptance names only a suite state the step's own files can reach:** where a later step's regeneration (a golden, a fixture, a pin re-approval) or a file another step owns clears a red this step causes, the criterion names that one test file as the expected red and any other red as a stop, and never a green suite alone. A record the step writes (a `Resolved:` line, a history note) is inside the gates' corpus, so the run that verifies the step comes after every record write the step makes.)
 
 ## Where this work stops
 

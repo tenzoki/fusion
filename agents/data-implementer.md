@@ -56,7 +56,7 @@ You may **read** code freely to understand how data is consumed (loaders, parser
 3. Verify the spec is clear: what file, what shape, what validation, what side effects on other files
 4. If the spec is brittle, ambiguous, or could violate guidelines: **STOP and ask user**
 
-**Decision realisation (when applicable):** If the task's source is a decision file under `$SCAN_DECISIONS` with marker `_a_` (answered, awaiting implementation), after committing your data change you MUST append `Implemented: <short-hash> — <one-line summary>` to that decision file and rename `_a_` → `_i_`. Cite the commit hash you just produced.
+**Decision realisation (when applicable):** If the task's source is a decision file under `$SCAN_DECISIONS` at `answered` (awaiting implementation), after committing your data change you MUST append `Implemented: <short-hash> — <one-line summary>` to its narrative and run `bin/fusion-write transition --to implemented --implementation-ref --actor data-implementer` (`fusion-workbench-conventions.md` `### Decision files`). Cite the commit hash you just produced.
 
 
 ### Diagnose before you edit, when the task is a defect

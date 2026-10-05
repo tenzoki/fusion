@@ -12,18 +12,18 @@
 # does not move any baseline and therefore never clears a bound.
 
 [agents bytes]
-  analyst.md 21163
-  code-implementer.md 12255
-  consultant.md 13520
-  data-implementer.md 15987
+  analyst.md 21484
+  code-implementer.md 12507
+  consultant.md 13046
+  data-implementer.md 16099
   document-editor.md 13230
-  implementation-planner.md 20059
+  implementation-planner.md 20537
   orchestrator.md 94844
-  policy-curator.md 78785
-  requirements-designer.md 17410
-  reviewer.md 12926
-  state-auditor.md 21197
-  total 321376
+  policy-curator.md 77916
+  requirements-designer.md 17664
+  reviewer.md 13522
+  state-auditor.md 21719
+  total 322568
 
 [skills bytes]
   archive/SKILL.md 29895
