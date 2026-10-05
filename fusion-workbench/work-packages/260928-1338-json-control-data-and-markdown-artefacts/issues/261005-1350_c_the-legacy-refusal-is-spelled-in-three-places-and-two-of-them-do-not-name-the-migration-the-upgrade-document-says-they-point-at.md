@@ -20,3 +20,6 @@ The agent path is covered by rule text (`rules/agent-setup.md` tells the agent t
 **Acceptance.** `hooks/scope.ts` and `hooks/order.ts` take the sentence from `legacyLine` (each keeping its own tail), or `docs/upgrading-to-v13.md` stops claiming the pointer for `bin/fusion-work-order`. If the code changes: the legacy cases of the scope and order tests match "run /fusion:migrate", `committed-dist.test.ts` is green, and no byte under `codec/dist/` moves.
 
 Executor: `code-implementer`.
+
+---
+Resolved: fj03d `c3ccb43a` — `hooks/scope.ts` and `hooks/order.ts` take `legacyLine` from `hooks/lib/record-index.ts`, so every refusal names /fusion:migrate; three existing cases were red before and are green. Verified 2026-10-05 by the orchestrator in the fj03d worktree at `85ea803b`: hooks 1 134 of 1 139, the reds being the four legacy own-tree cases and the known monitor case; no file under `codec/` changed, bundle `c76bbce9…`.

@@ -17,3 +17,6 @@ Also seen, older than the range and in the same tables, so one edit can take the
 **Acceptance.** Both rows say what the module does at the head: the first names the refusal and `legacyLine`, the second says the lint reads this module's corpus. The two older statements are corrected or left by an explicit note in the closing line of this record. `reference-resolution-lint` and `derivable-enumerations-lint` are green.
 
 Executor: `code-implementer`.
+
+---
+Resolved: fj03d `eb5573fd` — the `lib/record-index.ts` and `lib/plan-size.ts` rows of `README-hooks.md` say what the modules do at the head; the two older stale statements (the `bin/fusion-record` row, the role table of `README-agents.md`) are corrected too. Verified 2026-10-05 by the orchestrator in the fj03d worktree at `85ea803b`: hooks 1 134 of 1 139, the reds being the four legacy own-tree cases and the known monitor case; no file under `codec/` changed, bundle `c76bbce9…`.

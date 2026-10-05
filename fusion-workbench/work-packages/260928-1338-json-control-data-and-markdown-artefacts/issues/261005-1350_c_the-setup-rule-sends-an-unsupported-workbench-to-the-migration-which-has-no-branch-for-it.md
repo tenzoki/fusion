@@ -20,3 +20,6 @@ Today one contract version exists, so no workbench answers `unsupported` yet. Th
 **Acceptance.** The sentence separates the two: `legacy` goes to `/fusion:migrate`; on `unsupported` the agent stops, quotes the helper's stderr line and says the installed client is older than the workbench. `docs/upgrading-to-v13.md` or the conventions' exit table says the same in one clause. The dispatch-path bound stays green with no baseline moved.
 
 Executor: `code-implementer`.
+
+---
+Resolved: fj03d `bc97f476` — `rules/agent-setup.md` sends `legacy` to /fusion:migrate and, on `unsupported`, has the agent stop, quote the helper line and say the installed client is older than the workbench; the conventions rule says the same in one clause. Verified 2026-10-05 by the orchestrator in the fj03d worktree at `85ea803b`: hooks 1 134 of 1 139, the reds being the four legacy own-tree cases and the known monitor case; no file under `codec/` changed, bundle `c76bbce9…`.

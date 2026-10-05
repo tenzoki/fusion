@@ -20,3 +20,6 @@ inference: such a record is rare and is noticed elsewhere (the codec refuses a w
 **Acceptance.** On fusion's own tree each of the two lints fails, naming the control files, when `index.unreadable` is not empty; `bin/fusion-citation-check` prints an `unreadable=` count with one row per file, as `bin/fusion-plan-size` does, and its header says whether `verdict=` reads it. A case with one placed record whose control file does not validate pins each, and fails on the code at `cd1b5522`.
 
 Executor: `code-implementer`.
+
+---
+Resolved: fj03d `a759bb08` — both blocking lints fail on a non-empty `index.unreadable`, naming each file, and the checker prints `unreadable=<n>` with one row per file; `verdict=` does not read it, as it does not read `uuid-unresolved=`. One placed-record case per reader, each shown red. Not determined: whether a control file under `archive/` can enter that list. Verified 2026-10-05 by the orchestrator in the fj03d worktree at `85ea803b`: hooks 1 134 of 1 139, the reds being the four legacy own-tree cases and the known monitor case; no file under `codec/` changed, bundle `c76bbce9…`.

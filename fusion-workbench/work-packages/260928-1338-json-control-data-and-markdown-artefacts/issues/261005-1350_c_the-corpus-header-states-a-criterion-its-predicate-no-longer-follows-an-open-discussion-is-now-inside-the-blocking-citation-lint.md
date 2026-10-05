@@ -20,3 +20,6 @@ Severity: Low. Scope: `hooks/lib/citation-corpus.ts` (header and `isLiveRecord`)
 **Acceptance.** The header's criterion and the predicate agree, in whichever direction the user rules; a case in `workbench-citation-lint.test.ts` places an open and a closed discussion record and pins the answer for both.
 
 Executor: `code-implementer`, after the ruling.
+
+---
+Resolved: fj03d `541893ed` — the user ruled that an open discussion leaves the blocking lint. `inCitationCorpus()` in `hooks/lib/citation-corpus.ts` is `isLiveRecord()` less the discussion kind and is the lint's corpus; the reporter keeps `isLiveRecord()`, and the header says which reader follows which. A case pins an open and a closed discussion for both predicates. Verified 2026-10-05 by the orchestrator in the fj03d worktree at `85ea803b`: hooks 1 134 of 1 139, the reds being the four legacy own-tree cases and the known monitor case; no file under `codec/` changed, bundle `c76bbce9…`.

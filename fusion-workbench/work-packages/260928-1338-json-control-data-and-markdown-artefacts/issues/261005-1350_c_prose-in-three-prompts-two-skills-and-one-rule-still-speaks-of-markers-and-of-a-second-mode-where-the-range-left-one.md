@@ -20,3 +20,6 @@ Severity: Low. Scope: the files named below, on `fj03d` at `cd1b5522`.
 **Acceptance.** Items 1 to 4 name states where they mean states. Item 7 names the two lists the code has, or cites the tracking rule alone. Item 5 drops the unused read and its word in the sentence, or says what the output is for. Item 6 is renamed or left by an explicit note in the closing line of this record; a heading rename takes every anchor citing it with it (`reference-resolution-lint` green). The surface and dispatch-path bounds stay green with no baseline moved.
 
 Executor: `code-implementer`.
+
+---
+Resolved: fj03d `07985fdb` — items 1 to 5 and 7 are met (states named in the policy-curator and state-auditor prompts, the reconcile skill and the setup rule; the discuss skill says what its identity read is for; the check skill no longer names the removed constant). Item 6 is left on purpose: the heading `## On a JSON-controlled workbench` stays in `skills/wp/SKILL.md` and `skills/archive/SKILL.md`, because `codec/src/__tests__/install.test.ts` selects the shipped blocks by that heading and nothing under `codec/` changes in this work. Verified 2026-10-05 by the orchestrator in the fj03d worktree at `85ea803b`: hooks 1 134 of 1 139, the reds being the four legacy own-tree cases and the known monitor case; no file under `codec/` changed, bundle `c76bbce9…`.
