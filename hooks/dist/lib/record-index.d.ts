@@ -121,7 +121,7 @@ export declare function defaultContract(): string;
 export declare function readRecordIndex(workbench: string, ask?: Ask, contract?: string): IndexRead;
 /** One line naming why the workbench was not read, for a checker's stderr. */
 export declare function notReadLine(u: NotRead, workbench: string): string;
-/** One line refusing a legacy workbench by name, for a checker's stderr. */
+/** The one sentence refusing a legacy workbench by name, for stderr: the three checkers print it, and so do `scope.ts` and `order.ts`, each with its own tail. */
 export declare const legacyLine: (workbench: string) => string;
 /** A missing bundle is the plugin's fault, and a checker names it apart from a workbench it could not read. */
 export declare const bundleMissing: (u: NotRead) => boolean;

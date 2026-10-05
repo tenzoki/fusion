@@ -268,7 +268,7 @@
 import { join } from "node:path";
 import type { Failure, WorkGraphReport } from "./lib/work-graph.js";
 
-type Readers = { readWorkGraph: typeof import("./lib/work-graph.js").readWorkGraph; findWorkbenchRoot: typeof import("./lib/workbench-root.js").findWorkbenchRoot };
+type Readers = { readWorkGraph: typeof import("./lib/work-graph.js").readWorkGraph; findWorkbenchRoot: typeof import("./lib/workbench-root.js").findWorkbenchRoot; legacyLine: typeof import("./lib/record-index.js").legacyLine };
 
 const FORMATS = ["text", "tsv", "markdown", "json"] as const;
 type Format = (typeof FORMATS)[number];
@@ -391,11 +391,11 @@ function caveat(noField: number, unresolved: number): string {
 }
 
 /** One line naming why the workbench was not read, and the exit code that names it. */
-function failure(f: Failure, workbench: string): { line: string; code: 3 | 4 } {
+function failure(f: Failure, workbench: string, legacyLine: Readers["legacyLine"]): { line: string; code: 3 | 4 } {
   const refusal = (r: { class: string; reason: string; detail?: string }): string => `${r.class}/${r.reason}${r.detail === undefined ? "" : `: ${r.detail}`}`;
   switch (f.cause) {
     case "legacy":
-      return { code: 4, line: `the workbench at ${workbench} is legacy (no workbench.json: its control data is Markdown), which this version reads only once it has been migrated to JSON.` };
+      return { code: 4, line: legacyLine(workbench) };
     case "unsupported":
       return { code: 4, line: `the workbench at ${workbench} is unsupported by this version's codec${f.diagnosis === null ? "" : ` (${refusal(f.diagnosis)})`}.` };
     case "unanswered":
@@ -525,7 +525,7 @@ function parseFormat(argv: string[]): Format | null {
   return null;
 }
 
-function main(argv: string[], { readWorkGraph, findWorkbenchRoot }: Readers): number {
+function main(argv: string[], { readWorkGraph, findWorkbenchRoot, legacyLine }: Readers): number {
   const format = parseFormat(argv);
   if (format === null) {
     process.stderr.write(
@@ -545,7 +545,7 @@ function main(argv: string[], { readWorkGraph, findWorkbenchRoot }: Readers): nu
   const workbench = join(root, "fusion-workbench");
   const read = readWorkGraph(workbench);
   if (read.kind === "failed") {
-    const f = failure(read, workbench);
+    const f = failure(read, workbench, legacyLine);
     process.stderr.write(`fusion-work-order: ${f.line} No order was computed.\n`);
     return f.code;
   }
@@ -558,9 +558,9 @@ function main(argv: string[], { readWorkGraph, findWorkbenchRoot }: Readers): nu
 // `try`, so one missing from an incomplete install is caught like a throw of
 // the reader or of `orderOf`.
 try {
-  const [{ readWorkGraph }, { findWorkbenchRoot }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/work-graph.js"), import("./lib/workbench-root.js"), import("./lib/fail-open.js")]);
+  const [{ readWorkGraph }, { findWorkbenchRoot }, { legacyLine }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/work-graph.js"), import("./lib/workbench-root.js"), import("./lib/record-index.js"), import("./lib/fail-open.js")]);
   exitZeroOnStdoutEpipe(); // the reader may close stdout first
-  process.exitCode = main(process.argv.slice(2), { readWorkGraph, findWorkbenchRoot });
+  process.exitCode = main(process.argv.slice(2), { readWorkGraph, findWorkbenchRoot, legacyLine });
 } catch (e) {
   process.stderr.write(`fusion-work-order: an internal error stopped the order entry, a fusion bug or an incomplete install and not the workbench's. No order was computed.\n${e instanceof Error ? e.stack : String(e)}\n`);
   process.exitCode = 3;

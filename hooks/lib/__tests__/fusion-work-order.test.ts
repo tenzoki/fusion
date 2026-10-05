@@ -113,7 +113,7 @@ describe("bin/fusion-work-order over a JSON-controlled store", () => {
   }, CASE_TIMEOUT * 2);
 
   it.each([
-    ["legacy", { legacy: true }, (): void => undefined, "is legacy"],
+    ["legacy", { legacy: true }, (): void => undefined, "run /fusion:migrate"],
     ["unsupported", {}, (p: JsonProject): void => {
       const manifest = JSON.parse(readFileSync(resolve(p.workbench, "workbench.json"), "utf-8")) as { required_features: string[] };
       manifest.required_features.push("json-control-v9");

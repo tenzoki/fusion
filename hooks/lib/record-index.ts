@@ -181,7 +181,7 @@ export function notReadLine(u: NotRead, workbench: string): string {
   }
 }
 
-/** One line refusing a legacy workbench by name, for a checker's stderr. */
+/** The one sentence refusing a legacy workbench by name, for stderr: the three checkers print it, and so do `scope.ts` and `order.ts`, each with its own tail. */
 export const legacyLine = (workbench: string): string =>
   `the workbench at ${workbench} is legacy (no workbench.json: its control data is Markdown), which this version reads only once it has been migrated: run /fusion:migrate.`;
 

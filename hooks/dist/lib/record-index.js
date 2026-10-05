@@ -153,7 +153,7 @@ export function notReadLine(u, workbench) {
             return `the codec refused ${u.op} (${refusal(u.refusal)}).`;
     }
 }
-/** One line refusing a legacy workbench by name, for a checker's stderr. */
+/** The one sentence refusing a legacy workbench by name, for stderr: the three checkers print it, and so do `scope.ts` and `order.ts`, each with its own tail. */
 export const legacyLine = (workbench) => `the workbench at ${workbench} is legacy (no workbench.json: its control data is Markdown), which this version reads only once it has been migrated: run /fusion:migrate.`;
 /** A missing bundle is the plugin's fault, and a checker names it apart from a workbench it could not read. */
 export const bundleMissing = (u) => u.cause === "unanswered" && u.how === "bundle-missing";

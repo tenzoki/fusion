@@ -343,11 +343,11 @@ function caveat(noField, unresolved) {
     return `${parts.join("; ")}. \`ready=\` is optimistic by ${parts.length === 1 ? "that count" : "those counts"}, nothing here can tell by how much, and this report authorises no dispatch.`;
 }
 /** One line naming why the workbench was not read, and the exit code that names it. */
-function failure(f, workbench) {
+function failure(f, workbench, legacyLine) {
     const refusal = (r) => `${r.class}/${r.reason}${r.detail === undefined ? "" : `: ${r.detail}`}`;
     switch (f.cause) {
         case "legacy":
-            return { code: 4, line: `the workbench at ${workbench} is legacy (no workbench.json: its control data is Markdown), which this version reads only once it has been migrated to JSON.` };
+            return { code: 4, line: legacyLine(workbench) };
         case "unsupported":
             return { code: 4, line: `the workbench at ${workbench} is unsupported by this version's codec${f.diagnosis === null ? "" : ` (${refusal(f.diagnosis)})`}.` };
         case "unanswered":
@@ -466,7 +466,7 @@ function parseFormat(argv) {
     }
     return null;
 }
-function main(argv, { readWorkGraph, findWorkbenchRoot }) {
+function main(argv, { readWorkGraph, findWorkbenchRoot, legacyLine }) {
     const format = parseFormat(argv);
     if (format === null) {
         process.stderr.write(`fusion-work-order: unknown argument ${JSON.stringify(argv.join(" "))}\n${USAGE}\n`);
@@ -480,7 +480,7 @@ function main(argv, { readWorkGraph, findWorkbenchRoot }) {
     const workbench = join(root, "fusion-workbench");
     const read = readWorkGraph(workbench);
     if (read.kind === "failed") {
-        const f = failure(read, workbench);
+        const f = failure(read, workbench, legacyLine);
         process.stderr.write(`fusion-work-order: ${f.line} No order was computed.\n`);
         return f.code;
     }
@@ -492,9 +492,9 @@ function main(argv, { readWorkGraph, findWorkbenchRoot }) {
 // `try`, so one missing from an incomplete install is caught like a throw of
 // the reader or of `orderOf`.
 try {
-    const [{ readWorkGraph }, { findWorkbenchRoot }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/work-graph.js"), import("./lib/workbench-root.js"), import("./lib/fail-open.js")]);
+    const [{ readWorkGraph }, { findWorkbenchRoot }, { legacyLine }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/work-graph.js"), import("./lib/workbench-root.js"), import("./lib/record-index.js"), import("./lib/fail-open.js")]);
     exitZeroOnStdoutEpipe(); // the reader may close stdout first
-    process.exitCode = main(process.argv.slice(2), { readWorkGraph, findWorkbenchRoot });
+    process.exitCode = main(process.argv.slice(2), { readWorkGraph, findWorkbenchRoot, legacyLine });
 }
 catch (e) {
     process.stderr.write(`fusion-work-order: an internal error stopped the order entry, a fusion bug or an incomplete install and not the workbench's. No order was computed.\n${e instanceof Error ? e.stack : String(e)}\n`);
