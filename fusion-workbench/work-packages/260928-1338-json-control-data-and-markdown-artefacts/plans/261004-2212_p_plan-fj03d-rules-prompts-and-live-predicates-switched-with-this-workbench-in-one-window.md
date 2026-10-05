@@ -206,6 +206,13 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
      - the documented limits, including the unreachable `succeeded` edge (issue 261005-0626).
 
      `CLAUDE.md` is 5 B smaller. Room per path runs from 782 B (reviewer) to 4 652 B. `reference-resolution-lint` was re-approved at 2 016 paths and 360 anchors, with per-file figures. The bundle is `c76bbce9…`, and the reds are as at step 7. Gap filed: issue 261005-0803 (two skill sentences contradict the new rules).
+   - **Frozen 2026-10-05 08:1x at the user's request (restart).** `fj03d` is at `29dac3c5`, with a clean worktree. That commit is the fix for issues 261005-0741 (a test pins the legacy refusal of wp, discuss and archive) and 261005-0803 (two skill sentences). The implementer was stopped after committing and before its report, so the commit is **not yet verified**: its red/green evidence and suite run are missing. The bundle is still `c76bbce9…`. Both issues stay `_o_`. To resume:
+     1. Verify `29dac3c5`: full hooks and codec suites, with reds only the four legacy own-tree cases plus the monitor case.
+     2. Close the two issues.
+     3. Get the user's answer on the step-10 class question (90 grammar hits as converted and 15 homonyms as other kind, or a fifth class).
+     4. Run step 10, then step 11.
+
+     Also open: issue 261005-0626 (`attach-evidence`, no step owns it; documented as a limit in step 9), decision 261004-1721 (C9), and question 5 of `## Open Questions` (the two other checkouts, needed at step 12).
 
 10. **The classification re-run: nothing left to convert**
     - Executor: `analyst`
