@@ -39,10 +39,10 @@
   news/SKILL.md 8223
   post/SKILL.md 6694
   reconcile/SKILL.md 6671
-  setup/SKILL.md 15968
+  setup/SKILL.md 15958
   wp-order/SKILL.md 5591
-  wp/SKILL.md 6333
-  total 220871
+  wp/SKILL.md 6337
+  total 220865
 
 [hook-tests lines]
   archive-filter-key.test.ts 41

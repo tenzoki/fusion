@@ -75,5 +75,5 @@ Any other exit leaves the package filed in the ordinary mode: say so, with the `
 
 ## Guardrails
 
-- Never edit, rename, claim, finish or drop an existing work package. This workflow creates items at `open` and does nothing else to the store. A status moves elsewhere: the orchestrator maintains the store at the user's word, and the user can edit one by hand. Which operations exist and under what confirmation is `agents/orchestrator.md` `## Work packages`.
+- Never edit, rename, claim, finish or drop an existing work package. This workflow creates items at `open` and does nothing else to the store. A status moves only through `bin/fusion-write`, run by the orchestrator at the user's word; the narrative stays editable. Which operations exist and under what confirmation is `agents/orchestrator.md` `## Work packages`.
 - **Never file an item on an agent's behalf.** The backlog holds what the *user* files, and this workflow runs because the user typed `/fusion:wp` with work of their own. A finding an agent carried into the conversation does not become the user's by being routed through here: something broken is still an issue, something to settle is still a decision record, and neither is filed from this workflow.
