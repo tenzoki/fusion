@@ -48,7 +48,7 @@ Answered: 260501-1730-vector-store-comparative.md `## Recommendation` — sqlite
 
 and runs `W transition --actor orchestrator --record "$D" --to answered --reason "user ruled" --answer-ref '"260501-1730-vector-store-comparative.md"'`.
 
-**The code-implementer commits the integration** (`a3f7c2e`), appends `Implemented: a3f7c2e — pkg/vector/sqlite_vss.go added; loader wired in pkg/rag/retriever.go.` and runs `--to implemented --implementation-ref '"a3f7c2e"'`. Terminal.
+**The code-implementer integrates it** (`a3f7c2e`) and appends `Implemented: a3f7c2e — pkg/vector/sqlite_vss.go added; loader wired in pkg/rag/retriever.go.`; the orchestrator, its `Verification:` line read, runs `--to implemented --implementation-ref '"a3f7c2e"'`. Terminal.
 
 ---
 
@@ -56,7 +56,7 @@ and runs `W transition --actor orchestrator --record "$D" --to answered --reason
 
 Six months later a customer crosses 5M vectors. `261107-0915-vector-store-revisit.md` is filed and, once the user picks pgvector, moves as in Example 1. The original then gains `Superseded by: 261107-0915-vector-store-revisit.md — replaced by pgvector after a customer crossed 5M vectors; correct for v1's constraints.` and `--to superseded --superseded-by '{"workbench_id":"<w>","record_id":"<r>","display":"261107-0915-vector-store-revisit.md"}'`, the two ids from `bin/fusion-record` `show` of the new record.
 
-**`implemented` and `superseded` are both terminal.** The edge between them is the one allowed terminal-to-terminal transition, recording that an implemented decision was overridden.
+**`implemented` and `superseded` are both terminal.** The edge between them is the one allowed terminal-to-terminal transition.
 
 ---
 

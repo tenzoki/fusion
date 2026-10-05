@@ -40,9 +40,7 @@ You do NOT edit ontology, manifest, schema or fixture data — the `.yaml`, `.js
 
 1. Read the source file the dispatch references for full context
 2. Implement the task
-3. Update the source per `fusion-workbench-conventions.md` `## Inline State Tracking`:
-   - Issue → append its `Resolved:` note. Its state and a plan step's move by `bin/fusion-write transition` (`--to closed --disposition`, `--steps`), sent by whoever dispatched you once it has read your `Verification:` line, never by you; a bracket mark in the narrative sets no state
-   - Decision at `answered` (under `$SCAN_DECISIONS`) — if your task realises the recorded answer in code, append `Implemented: <short-hash> — <one-line summary>` and `transition --to implemented --implementation-ref --actor code-implementer`. Cite the commit hash you just produced.
+3. Append the source's note, an issue's `Resolved:` or, on a decision at `answered` (under `$SCAN_DECISIONS`) whose answer your task realises, its `Implemented:` line, and send no transition: the state of an issue, a plan step or a decision is moved by whoever dispatched you once it has read your `Verification:` line (`fusion-workbench-conventions.md` `## Inline State Tracking`).
 4. Report to whoever dispatched you, in the shape below
 
 ### Diagnose before you edit, when the task is a defect

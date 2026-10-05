@@ -13,17 +13,17 @@
 
 [agents bytes]
   analyst.md 21484
-  code-implementer.md 12507
+  code-implementer.md 12228
   consultant.md 13046
-  data-implementer.md 16099
+  data-implementer.md 16036
   document-editor.md 13230
-  implementation-planner.md 20533
-  orchestrator.md 94809
+  implementation-planner.md 20516
+  orchestrator.md 94838
   policy-curator.md 77916
   requirements-designer.md 17664
   reviewer.md 13522
   state-auditor.md 21719
-  total 322529
+  total 322199
 
 [skills bytes]
   archive/SKILL.md 26184

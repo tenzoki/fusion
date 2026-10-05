@@ -370,19 +370,19 @@ The terminal states are the `terminal` sets of `codec/contract/transitions.json`
 
 ### Issue files
 
-When an issue is resolved, append below the narrative's content:
+When an issue is resolved, its executor appends below the narrative's content:
 ```
 ---
 Resolved: <brief description of what was done>
 ```
-Then `transition --to closed --disposition '{"kind":"fixed","reason_ref":null}'`, the kind from the closed set `codec/schemas/record.schema.json` gives `disposition`.
+Whoever dispatched the executor then sends `transition --to closed --disposition '{"kind":"fixed","reason_ref":null}'`, once it has read the `Verification:` line, the kind from the closed set `codec/schemas/record.schema.json` gives `disposition`.
 
 When a later commit or record reverses the reasoning a closed issue's `Resolved:` note states, append:
 ```
 ---
 Revised by: <commit hash, or path to the reversing record> — <one-line reason>
 ```
-(**no transition**: the state stays `closed`.) The defect is still closed; only its stated reasoning moved. Leave the `Resolved:` note itself unedited: it records what was decided then, and rewriting it would erase the reversal instead of pointing at it. `Superseded by:` keeps its decision-record meaning and is never used on an issue file.
+(**no transition**: the state stays `closed`.) Leave the `Resolved:` note itself unedited: it records what was decided then, and rewriting it would erase the reversal instead of pointing at it. `Superseded by:` keeps its decision-record meaning and is never used on an issue file.
 
 ### Decision files
 
@@ -398,7 +398,7 @@ Answered: <citation> — <one-line summary>; ruled by <agent name or "user">, <p
 ---
 Implemented: <commit hash> or <citation> — <one-line summary>
 ```
-(`--to implemented --implementation-ref '"<commit hash>"'`, from `answered`, or from `open` if the implementation skipped the recorded-answer step)
+(`--to implemented --implementation-ref '"<commit hash>"'`, sent by the dispatcher as an issue's closure is, from `answered`, or from `open` if the implementation skipped the recorded-answer step)
 
 ```
 ---
@@ -427,7 +427,6 @@ Retired: <plan, commit or decision that removed the subject> — <one-line reaso
 - After completing each plan step, not just at session end.
 - After resolving an issue, before moving to the next task.
 - After answering or implementing a decision, before moving to the next task.
-- When a review confirms a plan step, issue, or decision is done: the reviewing agent transitions it.
 - When the user asks to close, defer, supersede, or reopen anything.
 
 ## Record filing

@@ -56,7 +56,7 @@ You may **read** code freely to understand how data is consumed (loaders, parser
 3. Verify the spec is clear: what file, what shape, what validation, what side effects on other files
 4. If the spec is brittle, ambiguous, or could violate guidelines: **STOP and ask user**
 
-**Decision realisation (when applicable):** If the task's source is a decision file under `$SCAN_DECISIONS` at `answered` (awaiting implementation), after committing your data change you MUST append `Implemented: <short-hash> — <one-line summary>` to its narrative and run `bin/fusion-write transition --to implemented --implementation-ref --actor data-implementer` (`fusion-workbench-conventions.md` `### Decision files`). Cite the commit hash you just produced.
+**The source record.** Append the source's note, an issue's `Resolved:` or, on a decision at `answered` (under `$SCAN_DECISIONS`) whose answer your task realises, its `Implemented:` line, and send no transition: the state of an issue, a plan step or a decision is moved by whoever dispatched you once it has read your `Verification:` line (`fusion-workbench-conventions.md` `## Inline State Tracking`).
 
 
 ### Diagnose before you edit, when the task is a defect

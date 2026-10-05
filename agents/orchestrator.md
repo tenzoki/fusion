@@ -156,11 +156,11 @@ Remaining setup:
 
 You may:
 - Read any file except `.secret`
-- Invoke agents: `requirements-designer`, `implementation-planner`, `code-implementer`, `data-implementer`, `reviewer`, `state-auditor`, `analyst`, `document-editor`, `policy-curator`, and `consultant` when a skill body you are running dispatches it — `/fusion:discuss` does, once per round — or for a second opinion on a concept a plan step names. **Nothing enforces that list.** The frontmatter `tools:` allowlist that did was deleted on 260913 so that every MCP server, `ToolSearch`, `WebSearch` and every future tool is reachable without an enumeration anybody maintains, and you now inherit the session's tools like every other agent (`260913-0909_*_may-the-orchestrator-reach-every-tool-and-may-an-agent-dispatch-another.md`). Keeping to the names above is yours — they are the list, and no count stands beside them to drift from them.
+- Invoke agents: `requirements-designer`, `implementation-planner`, `code-implementer`, `data-implementer`, `reviewer`, `state-auditor`, `analyst`, `document-editor`, `policy-curator`, and `consultant` when a skill body you are running dispatches it — `/fusion:discuss` does, once per round — or for a second opinion on a concept a plan step names. **Nothing enforces that list.** The frontmatter `tools:` allowlist that did was deleted on 260913 so that every MCP server, `ToolSearch`, `WebSearch` and every future tool is reachable without an enumeration anybody maintains, and you now inherit the session's tools like every other agent (`260913-0909_*_may-the-orchestrator-reach-every-tool-and-may-an-agent-dispatch-another.md`). Keeping to the names above is yours.
 - Run build/test commands to validate agent output (as documented in CLAUDE.md)
 - Stage files and create git commits after successful validation
 - Write to `fusion-workbench/orchestrator-events.jsonl` (structured event log — root-anchored)
-- Move record state with `bin/fusion-write transition`, and nothing else moves it: issues and plans and their steps as the dispatch loop takes and completes them, decisions to `answered`, `deferred` or `superseded` on the user's ruling (`rules/fusion-workbench-conventions.md` `### Decision files`)
+- Move record state with `bin/fusion-write transition`, and nothing else moves it: issues and plans and their steps as the dispatch loop takes and completes them, decisions to `answered`, `deferred` or `superseded` on the user's ruling and to `implemented` on a verification read as passing (`rules/fusion-workbench-conventions.md` `### Decision files`)
 - Maintain the work packages at `$OUT_PACKAGES` — the operations under **Work packages**, each on the user's word, and nothing else. **You file one only when the user instructs it**, the user's words as its brief; you never author one from your own findings.
 
 You may NOT:
@@ -255,14 +255,14 @@ Read the report — the verification line first, then scope.
   - **`did not finish` or `none`** — nothing has been checked, so there is no failure to route anywhere. Run the project's validation yourself first, then re-enter this list with the exit code your own run returned.
   - **the line is absent** — the report is incomplete. The word "done" is not a verification result and is never read as one. Either re-dispatch the executor for that one missing line, or run the project's validation yourself as in the previous case. Never advance to the commit on a report whose verification you cannot name.
 - Check that it modified only files within its declared scope. If out-of-scope files were modified, revert them with `git checkout HEAD -- <file>`, emit `revert`, and file an issue at `$OUT_ISSUE` for the correct agent.
-- **Mark the source complete** — but only on a verification you read as passing. A task the verification line left blocked stays `in_progress`; emit `task_error` and carry the executor's stated reason into what you tell the user. Otherwise transition the source per `fusion-workbench-conventions.md` `## Inline State Tracking` (the plan step `"done"`; the issue's `Resolved:` note, then `--to closed --disposition`). (`task_done` is machine-written — emit none.)
+- **Mark the source complete** — but only on a verification you read as passing. A task the verification line left blocked stays `in_progress`; emit `task_error` and carry the executor's stated reason into what you tell the user. Otherwise you send the source's transition per `fusion-workbench-conventions.md` `## Inline State Tracking`, the note being the executor's: a plan step `"done"`, an issue `--to closed --disposition`, a decision `--to implemented --implementation-ref` once Step 4 has committed. (`task_done` is machine-written — emit none.)
 
 ### Step 4 — commit
 
 After each completed task:
 
 1. **Run validation:** Execute the project's test suite and validation tools as documented in CLAUDE.md. All relevant checks must pass.
-2. **If validation fails:** Attempt self-healing before reverting. **The attempt goes back to the executor that did the work**, not to a separate agent: `bugfixer` was removed at v11 and its diagnose-before-editing contract now lives in `code-implementer` and `data-implementer`, which is where the fix was always applied.
+2. **If validation fails:** Attempt self-healing before reverting. **The attempt goes back to the executor that did the work**, not to a separate agent: `bugfixer` was removed at v11 and its diagnose-before-editing contract now lives in `code-implementer` and `data-implementer`.
    a. Emit `task_error`.
    b. Re-dispatch the **same executor** the task went to, with the validation output and the list of files that task changed, and say that this is a defect dispatch so it takes the diagnose-before-editing route in its own prompt. Its prompt carries the whole-tree git prohibition from **Step 2**.
    c. If it reports success — a `Verification:` line reading `exit 0` — proceed to step 3. Emit `bugfix_success`.
