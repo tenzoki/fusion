@@ -21,3 +21,5 @@ Options, none chosen:
 3. Step 6 is dropped, and v11 citations stay as they are (`store-prefixed`, reported by the checker).
 
 Acceptance: a ruling between the options; then `/fusion:migrate` Step 6 either runs to its census on a legacy workbench or is reordered or removed in `skills/migrate/SKILL.md` (FJ03d step 7 owns that file). If option 1, a test that runs the sweep on a legacy workbench and gets exit 0 with no `bound=` line. Executor: `code-implementer`.
+
+**Ruled:** 2026-10-05 by the user (Kai Stalmann), in chat ("2:1"): option 1. The sweep admits `legacy` as a rewriter only, with no `bound=` lines; the checker and plan-size keep refusing. Carried by FJ03d step 7.

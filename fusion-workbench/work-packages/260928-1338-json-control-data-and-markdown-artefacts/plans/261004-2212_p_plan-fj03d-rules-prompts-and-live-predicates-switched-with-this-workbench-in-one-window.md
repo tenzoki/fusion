@@ -165,6 +165,9 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
    - Changes: as listed; `skills/help/SKILL.md` `### 4. Update` gains the 13.0.0 paragraph (what changes, that every agent halts on an unmigrated workbench until `/fusion:migrate` has run, the two-launcher period of decision 261004-2212, client), relabels and drops the oldest, as `README-agents.md` `## Releasing` asks. The version act stays FJ05's.
    - Dependencies: 2, 3, 4.
    - Acceptance: `skills/` inside 3 370 bytes of room or the measured remainder logged; the tests that run shipped skill blocks green.
+   - **Ruled 2026-10-05 by the user ("1:1 2:1"):**
+     - `/fusion:wp`, `/fusion:discuss` and `/fusion:archive` refuse a legacy workbench by name and point at `/fusion:migrate`, as step 8's checkers do. Their legacy halves go, and the 31 hits stay convert.
+     - Issue 261005-0640 takes option 1: `bin/fusion-citation-sweep` admits `legacy` again as a rewriter only, printing no `bound=` lines. The checker and plan-size keep refusing, and `/fusion:migrate` Step 6 runs before Step 7 as now. This step carries that fix in `hooks/citation-sweep.ts` with its test case.
 
 8. **The live predicates and the own-tree lints on the record index**
    - Executor: `code-implementer`
