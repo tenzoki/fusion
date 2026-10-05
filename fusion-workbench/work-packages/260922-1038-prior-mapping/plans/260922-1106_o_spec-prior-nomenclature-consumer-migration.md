@@ -208,7 +208,7 @@ The tool is shaped for the sequel: the classifying pass, once the seven are rule
 
 **Acceptance criteria:**
 - [ ] After the run, `ls fusion-workbench/shared/` still lists `issues`, `memos`, `history`, `checkouts`, `forum`, `discussions`, and the root still holds `stilwerk/` and `.guard-state/`, each with unchanged content.
-- [x] The report carries one line per Review-class store present in the workbench, and the line names the decision record (`260922-1059_*_…`) that holds its question.
+- [x] The report carries one line per Review-class store present in the workbench, and the line names the decision record that holds its question (one of the seven records of stamp 260922 1059 that this spec's `**Cross-references:**` line cites in full).
 - [ ] The seven records stay at `_o_` at the end of this work; none is answered, deferred or superseded by it.
 
 **Decisions made:**
