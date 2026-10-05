@@ -26,9 +26,10 @@
  *
  * ## Corpus
  *
- * Every `.md` under the workbench, exactly as `markdownFilesUnder()` returns
- * it, plus at the directory the workbench root names: `CLAUDE.md`,
- * `rules/*.md`, `.claude/rules/*.md` and `docs/**\/*.md`, where present.
+ * Every `.md` under the workbench, exactly as `workbenchMarkdownFiles()`
+ * returns it (the whole tree less the migrations' kept originals), plus at
+ * the directory the workbench root names: `CLAUDE.md`, `rules/*.md`,
+ * `.claude/rules/*.md` and `docs/**\/*.md`, where present.
  * Workbench files are named `fusion-workbench/<rel>` in every row.
  *
  * Every name here is relative to the project root, and that spelling is not
@@ -251,7 +252,7 @@
  */
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative, sep } from "node:path";
-import { createScanner, declaredCitationFiles, declaredCitationNotes, markdownFilesUnder, partition, GATE_KINDS, } from "./lib/citation-scan.js";
+import { createScanner, declaredCitationFiles, declaredCitationNotes, markdownFilesUnder, workbenchMarkdownFiles, partition, GATE_KINDS, } from "./lib/citation-scan.js";
 import { isLiveRecord } from "./lib/citation-corpus.js";
 import { bundleMissing, legacyLine, notReadLine, readRecordIndex } from "./lib/record-index.js";
 import { loadConfig } from "./lib/config.js";
@@ -335,7 +336,7 @@ function main(argv) {
     const config = loadConfig({ projectRoot: root });
     const scanner = createScanner(workbenchRoot, { exhibits: config.citations.exhibits });
     const files = [
-        ...markdownFilesUnder(workbenchRoot).map((f) => ({
+        ...workbenchMarkdownFiles(workbenchRoot).map((f) => ({
             rel: `fusion-workbench/${f.rel}`,
             abs: f.abs,
             // the one place the workbench half of the verdict scope is decided, on

@@ -435,7 +435,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
-import { BRACKET_SLOT, createScanner, declaredCitationFiles, declaredCitationNotes, fencedContentLines, GATE_KINDS, markdownFilesUnder, markerAtHead, MARKER_SLOT, } from "./lib/citation-scan.js";
+import { BRACKET_SLOT, createScanner, declaredCitationFiles, declaredCitationNotes, fencedContentLines, GATE_KINDS, markdownFilesUnder, markerAtHead, workbenchMarkdownFiles, MARKER_SLOT, } from "./lib/citation-scan.js";
 import { loadConfig } from "./lib/config.js";
 import { bundleMissing, notReadLine, readRecordIndex } from "./lib/record-index.js";
 import { CITED_CONTAINER_ROOTS, isControlFile, JSON_STATE_DIR, narrativeOf, WORKBENCH_MANIFEST } from "./lib/stores.js";
@@ -816,8 +816,9 @@ function main(argv) {
     const json = read.format === "json-control";
     const bound = json ? boundFiles(root, read.index) : new Map();
     // the corpus first: guard (a) asks about it, and one list is what keeps the
-    // guard and the run from disagreeing about which files will be written
-    const files = markdownFilesUnder(root).map((f) => f.abs);
+    // guard and the run from disagreeing about which files will be written; a
+    // migration's kept originals are in neither, their bytes being the receipt's
+    const files = workbenchMarkdownFiles(root).map((f) => f.abs);
     for (const p of extra) {
         const abs = resolve(p);
         if (!existsSync(abs))

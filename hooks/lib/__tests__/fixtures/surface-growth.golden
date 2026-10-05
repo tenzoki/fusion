@@ -48,7 +48,7 @@
   archive-filter-key.test.ts 41
   citation-form.test.ts 360
   citation-grammar-boundaries.test.ts 255
-  citation-sweep.test.ts 673
+  citation-sweep.test.ts 689
   claude-md-weight.test.ts 208
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
@@ -63,7 +63,7 @@
   executor-verification-report-lint.test.ts 238
   fenced-code-exemption.test.ts 206
   fusion-checkout-name.test.ts 202
-  fusion-citation-check.test.ts 364
+  fusion-citation-check.test.ts 368
   fusion-claimed-package.test.ts 218
   fusion-commit-lock.test.ts 454
   fusion-count-sources.test.ts 413
@@ -116,5 +116,5 @@
   surface-growth-bound.test.ts 557
   window-bound.test.ts 24
   work-graph.test.ts 127
-  workbench-citation-lint.test.ts 275
-  total 24068
+  workbench-citation-lint.test.ts 308
+  total 24121

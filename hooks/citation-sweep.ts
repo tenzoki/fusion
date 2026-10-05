@@ -445,6 +445,7 @@ import {
   GATE_KINDS,
   markdownFilesUnder,
   markerAtHead,
+  workbenchMarkdownFiles,
   MARKER_SLOT,
   type CitationHit,
   type Scanner,
@@ -854,8 +855,9 @@ function main(argv: string[]): number {
   const bound = json ? boundFiles(root, read.index) : new Map<string, string[]>();
 
   // the corpus first: guard (a) asks about it, and one list is what keeps the
-  // guard and the run from disagreeing about which files will be written
-  const files = markdownFilesUnder(root).map((f) => f.abs);
+  // guard and the run from disagreeing about which files will be written; a
+  // migration's kept originals are in neither, their bytes being the receipt's
+  const files = workbenchMarkdownFiles(root).map((f) => f.abs);
   for (const p of extra) {
     const abs = resolve(p);
     if (!existsSync(abs)) usage(`${p} does not exist`);

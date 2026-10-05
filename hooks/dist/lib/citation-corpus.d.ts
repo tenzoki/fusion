@@ -91,6 +91,8 @@ import type { RecordIndex } from "./record-index.js";
  * judged and go red, and the reporter still PRINTS every row it finds in one.
  */
 export declare const FROZEN_PREFIXES: string[];
+/** Whether the WORKBENCH-RELATIVE path lies inside a migration's `originals/`. */
+export declare const isMigrationOriginal: (rel: string) => boolean;
 /**
  * The predicate itself, over a WORKBENCH-RELATIVE path and the workbench's
  * record index: live when the path is a narrative whose record is live, and

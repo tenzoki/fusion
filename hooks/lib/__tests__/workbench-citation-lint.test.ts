@@ -1,18 +1,18 @@
 import { describe, it, expect } from "vitest";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import {
   workbenchRoot,
   WORKBENCH_PRESENT,
-  markdownFilesUnder,
   MARKER_SLOT,
   MARKER_WORDS,
   report,
   scanRecordCitations,
   type Violation,
 } from "./helpers/citation-scan.js";
-import { FROZEN_PREFIXES, isLiveRecord } from "../citation-corpus.js";
+import { createScanner, workbenchMarkdownFiles } from "../citation-scan.js";
+import { FROZEN_PREFIXES, isLiveRecord, isMigrationOriginal } from "../citation-corpus.js";
 import type { IndexEntry, RecordIndex } from "../record-index.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { indexOf, jsonWorkbenchAt, placeRecord } from "./helpers/json-workbench.js";
@@ -79,7 +79,7 @@ function ownIndex(): RecordIndex {
 
 /** Workbench-relative paths of every file the gate judges under `root`. */
 function corpusFiles(root = workbenchRoot, index = ownIndex()): { rel: string; abs: string }[] {
-  return markdownFilesUnder(root).filter((f) => isLiveRecord(f.rel, index));
+  return workbenchMarkdownFiles(root).filter((f) => isLiveRecord(f.rel, index));
 }
 
 // --- the gate ---------------------------------------------------------------
@@ -208,6 +208,10 @@ describe("workbench citation lint: the corpus predicate", () => {
     const nested = ["shared/archive/issues/260101-0000_o_x.md", "work-packages/c/stashes/issues/260101-0000_o_x.md"];
     const index = indexHolding([...frozen, ...nested]);
     expect([...frozen, ...nested].filter((r) => isLiveRecord(r, index))).toEqual(nested);
+    // the migration's originals are anchored the same way, and nothing beside them is taken for one
+    const inside = "archive/migrations/m1/originals/shared/issues/260101-0000_o_x.md";
+    const beside = ["archive/migrations/m1/receipt.md", "archive/260102-0000-sweep/shared/issues/260101-0000_o_x.md", `shared/${inside}`];
+    expect([inside, ...beside].filter(isMigrationOriginal)).toEqual([inside]);
   });
 
   it("follows the record out of the corpus at a terminal state", () => {
@@ -239,11 +243,12 @@ describe("workbench citation lint: the storeless form rests on basename uniquene
   // were outside the claim while inside the index (issue
   // `260829-1347_*_the-grammars-marker-slot-is-one-letter-while-24-indexed-artifacts-carry-a-word-there-and-the-stamp-bare-rewrite-checks-no-boundary.md`).
   const STAMPED_RE = new RegExp(`^[0-9]{6}-[0-9]{4}(?:${MARKER_SLOT}|-).+\\.md$`);
-  const all = markdownFilesUnder(workbenchRoot).map((f) => f.rel);
+  const all = workbenchMarkdownFiles(workbenchRoot).map((f) => f.rel);
 
-  it("no two stamped artifacts share a marker-normalised basename, archive/ included", () => {
+  /** The stamped basenames among `rels`, marker-normalised, and those more than one path carries. */
+  function shared(rels: string[]): { stamped: number; collisions: string[] } {
     const seen = new Map<string, string[]>();
-    for (const rel of all) {
+    for (const rel of rels) {
       const base = rel.slice(rel.lastIndexOf("/") + 1);
       if (!STAMPED_RE.test(base)) continue;
       const key = base.replace(/^([0-9]{6}-[0-9]{4})_[a-z]_/, "$1_*_");
@@ -252,8 +257,36 @@ describe("workbench citation lint: the storeless form rests on basename uniquene
     const collisions = [...seen]
       .filter(([, paths]) => paths.length > 1)
       .map(([key, paths]) => `${key}: ${paths.join(" | ")}`);
-    expect(seen.size, "the walk saw stamped artifacts").toBeGreaterThan(0);
+    return { stamped: seen.size, collisions };
+  }
+
+  it("no two stamped artifacts share a marker-normalised basename, archive/ included", () => {
+    const { stamped, collisions } = shared(all);
+    expect(stamped, "the walk saw stamped artifacts").toBeGreaterThan(0);
     expect(collisions, "two artifacts share a basename; a storeless citation cannot tell them apart").toEqual([]);
+  });
+
+  it("a migration's kept original is no second artefact: out of the walk and out of the index, the swept archive still in", () => {
+    // The original keeps the record's own basename by design (decision
+    // `261005-1042_*_do-the-migrations-originals-leave-the-uniqueness-scope-or-get-names-that-do-not-collide.md`,
+    // option 1), so the scope the rule states ends at `originals/`.
+    const tmp = mkdtempSync(join(tmpdir(), "citation-originals-"));
+    try {
+      const wb = jsonWorkbenchAt(tmp);
+      const live = "shared/issues/260101-0000_o_kept.md";
+      const swept = "archive/260102-0000-sweep/shared/issues/260101-0001_c_swept.md";
+      for (const rel of [live, swept, `archive/migrations/m1/originals/${live}`]) {
+        mkdirSync(dirname(join(wb, rel)), { recursive: true });
+        writeFileSync(join(wb, rel), "# x\n");
+      }
+      const rels = workbenchMarkdownFiles(wb).map((f) => f.rel);
+      expect(rels).toEqual([swept, live]);
+      expect(shared(rels)).toEqual({ stamped: 2, collisions: [] });
+      const hits = createScanner(wb).scanCitationTokens("shared/issues/260101-0002-citing.md", [{ line: 1, text: "`260101-0000_*_kept.md` and `260101-0001_*_swept.md`" }]);
+      expect(hits.map((h) => [h.status, h.matches])).toEqual([["resolved", [live]], ["resolved", [swept]]]);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
   });
 
   it("the walk saw archive/, so the scope the rule states is the scope measured", () => {

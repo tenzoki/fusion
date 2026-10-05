@@ -123,6 +123,22 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     }
   }, CASE_TIMEOUT);
 
+  // issue 261005-1042_*_the-migrations-kept-originals-collide-with-the-migrated-records-in-the-uniqueness-lint-and-the-citation-checker.md
+  it("neither reads nor rewrites a migration's kept original, whose bytes the receipt hashes", () => {
+    const wb = scratch();
+    const original = join(wb, "archive/migrations/m1/originals/shared/issues/260101-0101_o_alpha.md");
+    mkdirSync(dirname(original), { recursive: true });
+    writeFileSync(original, DIRTY_DOC);
+    try {
+      const run = sweep(wb, wb, "--dry-run");
+      expect(run.status, run.stderr).toBe(0);
+      expect(run.stdout).not.toContain("originals/");
+      expect(last(run)).toMatch(/^files=0 rewrites=0 residual=0 /);
+    } finally {
+      rmSync(wb, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
   // issue 260901-0324_*_the-checker-and-the-sweep-key-file-exemptions-on-two-different-spellings-of-the-same-file.md
   it("fires a file-wide exemption from any working directory, the checker's own spelling", () => {
     const wb = scratch();

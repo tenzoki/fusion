@@ -43,6 +43,8 @@ function scratchProject(): string {
   placeRecord(wb, "decision-open", "shared/decisions/260101-0001_o_beta.md", "open", "# bar");
   placeRecord(wb, "issue-open", "shared/issues/260101-0000_o_alpha.md", "open", "see `shared/decisions/260101-0001_o_beta.md` and `260101-0001_*_beta.md`");
   put("fusion-workbench/archive/260102-0000-sweep/shared/issues/260101-0002_c_old.md", "cites `260199-9999_*_gone.md`");
+  // a migration's kept original of beta, under beta's own basename: neither a second match nor a corpus file
+  put("fusion-workbench/archive/migrations/m1/originals/shared/decisions/260101-0001_o_beta.md", "cites `260199-9998_*_gone.md`");
   put("rules/local.md", "the defect is `260101-0000_*_alpha.md`");
   put("CLAUDE.md", "# project");
   return root;
@@ -60,6 +62,8 @@ describe("fusion-citation-check over a scratch consuming project", () => {
       expect(lines).toContain("store-prefixed=1");
       expect(lines).toContain("dangling=1");
       expect(lines).toContain("resolved=2");
+      expect(lines).toContain("conflict=0");
+      expect(r.stdout).not.toContain("originals/");
       expect(lines).toContain("verdict=violations");
       // the verdict scope, in the block: four of the five files are edited (the
       // swept copy is not), and the two violations split one each way

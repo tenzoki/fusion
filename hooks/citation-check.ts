@@ -26,9 +26,10 @@
  *
  * ## Corpus
  *
- * Every `.md` under the workbench, exactly as `markdownFilesUnder()` returns
- * it, plus at the directory the workbench root names: `CLAUDE.md`,
- * `rules/*.md`, `.claude/rules/*.md` and `docs/**\/*.md`, where present.
+ * Every `.md` under the workbench, exactly as `workbenchMarkdownFiles()`
+ * returns it (the whole tree less the migrations' kept originals), plus at
+ * the directory the workbench root names: `CLAUDE.md`, `rules/*.md`,
+ * `.claude/rules/*.md` and `docs/**\/*.md`, where present.
  * Workbench files are named `fusion-workbench/<rel>` in every row.
  *
  * Every name here is relative to the project root, and that spelling is not
@@ -257,6 +258,7 @@ import {
   declaredCitationFiles,
   declaredCitationNotes,
   markdownFilesUnder,
+  workbenchMarkdownFiles,
   partition,
   GATE_KINDS,
   type CitationHit,
@@ -363,7 +365,7 @@ function main(argv: string[]): number {
   const scanner = createScanner(workbenchRoot, { exhibits: config.citations.exhibits });
 
   const files: CorpusFile[] = [
-    ...markdownFilesUnder(workbenchRoot).map((f) => ({
+    ...workbenchMarkdownFiles(workbenchRoot).map((f) => ({
       rel: `fusion-workbench/${f.rel}`,
       abs: f.abs,
       // the one place the workbench half of the verdict scope is decided, on

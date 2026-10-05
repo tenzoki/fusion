@@ -91,6 +91,31 @@
  */
 export const FROZEN_PREFIXES = ["archive/", "stashes/", ".migration-v2-backup/"];
 /**
+ * A migration's kept originals, which no citation reader takes.
+ *
+ * `/fusion:migrate` keeps every converted record's pre-migration bytes under
+ * `archive/migrations/<id>/originals/`, at the record's own workbench-relative
+ * path and so under its own basename, beside the rewritten narrative in the
+ * live tree. That copy is the rollback store the receipt hashes, not a second
+ * artefact: read as one, every migrated record resolved to two files (a
+ * `conflict` in the checker, a collision in the uniqueness lint), and a
+ * writing sweep would have rewritten bytes the receipt pins. The user's ruling
+ * of 2026-10-05 takes them out of the scope rather than renaming them, which
+ * would have changed what the migration writes; an original stays reachable
+ * through the receipt beside it (`rules/fusion-workbench-conventions.md`
+ * `## Filename Patterns`).
+ *
+ * THE ONE PLACE THE PATH IS TESTED. `lib/citation-scan.ts` applies it in the
+ * two walks every reader goes through: `workbenchIndex()`, which a citation
+ * resolves against, and `workbenchMarkdownFiles()`, the files a reader scans.
+ * Anchored at the workbench root like `FROZEN_PREFIXES`, and only the
+ * `originals/` subtree: the receipt and the plan beside it are not `.md` and
+ * were never read. The rest of `archive/` stays in both walks.
+ */
+const MIGRATION_ORIGINALS = /^archive\/migrations\/[^/]+\/originals\//;
+/** Whether the WORKBENCH-RELATIVE path lies inside a migration's `originals/`. */
+export const isMigrationOriginal = (rel) => MIGRATION_ORIGINALS.test(rel);
+/**
  * The predicate itself, over a WORKBENCH-RELATIVE path and the workbench's
  * record index: live when the path is a narrative whose record is live, and
  * never inside a frozen store.
