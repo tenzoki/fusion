@@ -27,3 +27,9 @@ No byte of `codec/dist/fusion-record.js` moves (the plan's stop condition). Work
 ## Recommendation
 
 Option 1. It leaves the migration as it was proven, and the originals are a rollback store, not records anybody cites.
+
+---
+Answered: 261005-1042_*_do-the-migrations-originals-leave-the-uniqueness-scope-or-get-names-that-do-not-collide.md `## Options` — option 1: the citation corpus, the uniqueness lint and the checker exclude `archive/migrations/*/originals/`, and the conventions rule says so; the migration output stays as proven; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: fj03d `0906bb36` — the citation index and the workbench file walk skip `archive/migrations/<id>/originals/`; `rules/fusion-workbench-conventions.md` `## Filename Patterns` states it. Reaches this repository with the merge of `fj03d` (plan step 13).
