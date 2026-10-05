@@ -24,7 +24,9 @@
 #                     control path> [--domain <token>, a package's alone]. The caller
 #                     writes the Markdown first, at a marker-free name; the codec
 #                     writes the control file beside it, in the kind's initial state;
-#                     a plan's numbered steps become its step anchors
+#                     a plan's numbered steps under `## Implementation Steps`
+#                     become its step anchors, each number once there (a
+#                     repeated one is a usage error)
 #   evidence          --record <package control path> --report <workbench path>
 #                     --verdict accept|revise|escalate: a reviewer's evidence record
 #                     beside its report, against the package's brief and plan, over

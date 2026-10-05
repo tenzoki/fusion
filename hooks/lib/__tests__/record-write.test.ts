@@ -151,11 +151,21 @@ describe("creation", () => {
     withJsonProject((p) => {
       const pkg = createPackage(p, "261005-0900-s");
       const file = (name: string, body: string) => Object.keys((run(p, "create", ["--kind", "plan", "--narrative-file", put(p, `${pkg.dir}/plans/${name}`, body), "--origin", pkg.path, "--actor", "user"]).o as Wrote).revisions)[0];
-      const stepped = file("261005-0901-s.md", "# plan\n\n## Context\n\n1. not a step\n\n## Implementation Steps\n\n1. first\n\n### 2. second\n\n```\n3. fenced\n```\n\n## Risks\n\n4. not a step\n");
+      const stepped = file("261005-0901-s.md", "# plan\n\n## Context\n\n1. not a step\n\n## Implementation Steps\n\n1. first\n\n### 2. second\n\n```\n3. fenced\n```\n\n## Risks\n\n4. not a step\n1. [HIGH] tagged, and no step\n");
       const bare = file("261005-0902-t.md", "# plan\n\n## Approach\n\n1. no section\n");
       expect([shown(p, stepped).control.control.steps, shown(p, bare).control.control.steps]).toEqual([[{ id: "1", state: "open" }, { id: "2", state: "open" }], []]);
       const done = run(p, "transition", ["--record", stepped, "--to", "in_progress", "--reason", "step 1", "--steps", JSON.stringify([{ id: "1", state: "done" }]), "--actor", "user"]).o;
       expect([done.kind, shown(p, stepped).control.control.steps]).toEqual(["landed", [{ id: "1", state: "done" }, { id: "2", state: "open" }]]);
+    });
+  });
+
+  it("a plan whose steps section repeats a number is refused as usage, naming the number and its lines, and nothing is sent", () => {
+    withJsonProject((p) => {
+      const pkg = createPackage(p, "261005-1600-r");
+      const twice = put(p, `${pkg.dir}/plans/261005-1601-r.md`, "# plan\n\n## Implementation Steps\n\n### Part A\n\n1. a\n2. b\n\n### Part B\n\n1. c\n3. d\n");
+      const r = run(p, "create", ["--kind", "plan", "--narrative-file", twice, "--origin", pkg.path, "--actor", "user"]);
+      expect([r.o.kind, mutations(r.sent), existsSync(resolve(p.workbench, twice.replace(/\.md$/, ".record.json")))]).toEqual(["usage", [], false]);
+      expect((r.o as { detail: string }).detail).toMatch(/step number 1 .*lines 7 and 12/);
     });
   });
 

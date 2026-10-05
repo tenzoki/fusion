@@ -65,9 +65,11 @@
  * one state of its kind no edge of `codec/contract/transitions.json` enters
  * and to the control fields its schema requires; a package's payload is its
  * domain, and the kernel fixes the rest. A plan's steps are read from its
- * narrative as an import reads them (`scanPlan` in `lib/legacy-import.ts`):
- * one `open` anchor per numbered step, a duplicated number anchoring none,
- * and no criteria, so `transition --steps` has ids to update.
+ * narrative by `planSteps`: one `open` anchor per numbered line under
+ * `## Implementation Steps`, outside fences, and no criteria, so
+ * `transition --steps` has ids to update. A number that occurs twice there
+ * is a usage error naming it and its lines: no operation adds an anchor
+ * later, so a plan is not filed with a step it cannot track.
  *
  * An evidence record is produced against the package `--record` names:
  * `brief_revision` is its narrative hash in `show`, `plan_revision` the
