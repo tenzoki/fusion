@@ -26,3 +26,6 @@ Severity: Medium. Scope: `hooks/lib/record-write.ts` (`creation`, the `kind === 
 4. No byte under `codec/dist/` changes.
 
 Executor: `code-implementer`.
+
+---
+Resolved: fj03d `e29fb624` — `create` reads a new plan's steps itself (`planSteps` in `hooks/lib/record-write.ts`): only numbered lines under `## Implementation Steps`, outside fences; a repeated number is a usage error (exit 2) naming the number and its lines, and nothing is sent. Two cases shown red on the old code. Verified 2026-10-05 by the orchestrator in the fj03d worktree at `88170d7e`: hooks 1 131 of 1 136, the reds being the four legacy own-tree cases and the known monitor case; codec 1 682 passed and 13 skipped by the executor, no file under `codec/` changed, bundle `c76bbce9…`.

@@ -30,3 +30,6 @@ Severity: Medium. Scope: `agents/orchestrator.md` (`## Work packages`, the Finis
 4. `reference-resolution-lint` and the dispatch-path bound are green; no baseline moves.
 
 Executor: `code-implementer`.
+
+---
+Resolved: fj03d `26f311c9` — `rules/fusion-workbench-conventions.md` `## Work packages` gives the `--outcome` object and the `--source` value, `### Decision files` the `--implementation-ref` form; the orchestrator prompt and the `bin/fusion-write` header point there. Each shape was run against the real command on a scratch workbench, and a test reads the example out of the rule file and finishes a package with it. Verified 2026-10-05 by the orchestrator in the fj03d worktree at `88170d7e`: hooks 1 131 of 1 136, the reds being the four legacy own-tree cases and the known monitor case; codec 1 682 passed and 13 skipped by the executor, no file under `codec/` changed, bundle `c76bbce9…`.

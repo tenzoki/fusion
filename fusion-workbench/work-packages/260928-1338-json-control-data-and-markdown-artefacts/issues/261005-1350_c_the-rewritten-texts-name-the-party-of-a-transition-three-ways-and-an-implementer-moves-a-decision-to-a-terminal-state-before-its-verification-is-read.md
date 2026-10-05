@@ -23,3 +23,6 @@ Severity: Medium. Scope: `rules/fusion-workbench-conventions.md` (`### When to u
 4. `reference-resolution-lint` and the dispatch-path bound are green; no baseline moves.
 
 Executor: `code-implementer`; item 3 needs the user's ruling first.
+
+---
+Resolved: fj03d `88170d7e` — the user ruled that the dispatcher sends a decision's transition to `implemented` after reading `Verification:`. The conventions rule, the orchestrator prompt, both implementer prompts (one identical sentence), the planner and Example 1 say so; the "reviewing agent" bullet is gone. Left open and refiled as 261005-1609: who fills the commit hash into the `Implemented:` note, the state-auditor as a second sender, and the one-actor opening sentence of `### Decision files`. Verified 2026-10-05 by the orchestrator in the fj03d worktree at `88170d7e`: hooks 1 131 of 1 136, the reds being the four legacy own-tree cases and the known monitor case; codec 1 682 passed and 13 skipped by the executor, no file under `codec/` changed, bundle `c76bbce9…`.
