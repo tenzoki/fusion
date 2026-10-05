@@ -23,3 +23,5 @@ Options, none chosen:
 Acceptance: a ruling between the options; then `/fusion:migrate` Step 6 either runs to its census on a legacy workbench or is reordered or removed in `skills/migrate/SKILL.md` (FJ03d step 7 owns that file). If option 1, a test that runs the sweep on a legacy workbench and gets exit 0 with no `bound=` line. Executor: `code-implementer`.
 
 **Ruled:** 2026-10-05 by the user (Kai Stalmann), in chat ("2:1"): option 1. The sweep admits `legacy` as a rewriter only, with no `bound=` lines; the checker and plan-size keep refusing. Carried by FJ03d step 7.
+
+**Resolved:** `fj03d` `5bffedff` (FJ03d step 7; reaches `fj-json-workbench` with the window merge). `hooks/citation-sweep.ts` admits `legacy` as a rewriter only: it prints `format=legacy`, writes no `bound=` line and checks for codec files only on json-control. The checker and plan-size still refuse. The 261004-2059 case runs on both formats; on legacy all six `circles/` citations are rewritten. Red against `3a11d9ea`, green at `5bffedff`. `/fusion:migrate` Step 6 runs before Step 7 and stops on exit 3 or 6, naming the stderr line.

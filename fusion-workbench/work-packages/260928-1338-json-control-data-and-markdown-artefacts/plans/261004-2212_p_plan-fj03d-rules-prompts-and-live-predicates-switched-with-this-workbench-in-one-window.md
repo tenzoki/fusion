@@ -168,6 +168,15 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
    - **Ruled 2026-10-05 by the user ("1:1 2:1"):**
      - `/fusion:wp`, `/fusion:discuss` and `/fusion:archive` refuse a legacy workbench by name and point at `/fusion:migrate`, as step 8's checkers do. Their legacy halves go, and the 31 hits stay convert.
      - Issue 261005-0640 takes option 1: `bin/fusion-citation-sweep` admits `legacy` again as a rewriter only, printing no `bound=` lines. The checker and plan-size keep refusing, and `/fusion:migrate` Step 6 runs before Step 7 as now. This step carries that fix in `hooks/citation-sweep.ts` with its test case.
+   - [DONE] 2026-10-05, `fj03d` `5bffedff`.
+     - All 33 hits are converted.
+     - `/fusion:wp`, `/fusion:discuss` and `/fusion:archive` refuse `legacy` in `legacyLine`'s wording, and their legacy halves are gone. `/fusion:archive` selects through the codec's `list` and moves record units through `bin/fusion-archive`. Filter 3's wildcarded citation key is kept.
+     - The sweep admits `legacy` as a rewriter only (`format=legacy`, no `bound=` line). The 261004-2059 case runs on both formats, and all six `circles/` citations are rewritten on legacy. Red against step 8's build, green now.
+     - `/fusion:migrate` Step 6 stops on exit 3 or 6 and names the stderr line.
+     - Help carries the 13.0.0 paragraph: `~/.fp`, `~/.fusion` untouched, and never `fusion --update` from the window launcher.
+     - Both own-tree sweep reds of step 8 are cleared. Remaining reds are three workbench-citation-lint cases, the stopping-section lint and the monitor case.
+     - `skills/` room went from 3 370 to 7 157 B. `reference-resolution-lint` was re-approved at 1 965 / 355. Codec is unchanged.
+     - Gap filed: issue 261005-0741 (no test pins the three skills' legacy refusal).
 
 8. **The live predicates and the own-tree lints on the record index**
    - Executor: `code-implementer`
