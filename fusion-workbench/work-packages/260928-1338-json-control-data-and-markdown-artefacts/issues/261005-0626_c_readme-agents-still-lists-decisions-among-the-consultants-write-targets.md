@@ -8,3 +8,5 @@ FJ03d step 6 settled issue 260929-1810 item 4 by making the consultant write no 
 Evidence, on `fj03d` after the step 6 commit: `README-agents.md` line 31, the `consultant` row of the agent table, names `decisions/` among its stores and "issue and decision files" among its outputs. `agents/consultant.md` `## Secondary Mode: Written Reports` now reads "You write no decision record, in either mode", and `## Scope` no longer names `$OUT_DECISION`.
 
 Acceptance: the `consultant` row names `consultations/` and `issues/` only, and "Consultation report + issue files". `README-agents.md` is step 9's file, so step 9 carries the edit. Executor: `code-implementer`.
+
+**Resolved:** `fj03d` `9928dd38` (FJ03d step 9; reaches `fj-json-workbench` with the window merge). `README-agents.md`'s role table now names only `consultations/` and `issues/` for the consultant.

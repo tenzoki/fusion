@@ -197,6 +197,15 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
      - `codec/README.md`: the sentence "`/fusion:setup` does not call it yet (FJ03d)" goes. No file under `codec/dist/` changes.
    - Dependencies: 3, 4, 7, 8.
    - Acceptance: `derivable-enumerations-lint`, the reference lint and the dispatch-path bound green; `shasum -a 256 codec/dist/fusion-record.js` prints `c76bbce9…`.
+   - [DONE] 2026-10-05, `fj03d` `9928dd38`. All 35 hits converted, plus stale sentences that no pattern hit: the role table matches steps 5 and 6, the consultant writes no `decisions/` (issue 261005-0626, README-agents), and the checker rows match step 8. `docs/upgrading-to-v13.md` is new and covers:
+     - what becomes JSON;
+     - what a legacy workbench meets;
+     - the migration, with step 12's figures in aggregate only;
+     - Prior §8.1's multi-checkout procedure;
+     - the two installations (`~/.fp`, `~/.fusion` untouched, never `fusion --update` from the v13 launcher);
+     - the documented limits, including the unreachable `succeeded` edge (issue 261005-0626).
+
+     `CLAUDE.md` is 5 B smaller. Room per path runs from 782 B (reviewer) to 4 652 B. `reference-resolution-lint` was re-approved at 2 016 paths and 360 anchors, with per-file figures. The bundle is `c76bbce9…`, and the reds are as at step 7. Gap filed: issue 261005-0803 (two skill sentences contradict the new rules).
 
 10. **The classification re-run: nothing left to convert**
     - Executor: `analyst`
