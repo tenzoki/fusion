@@ -26,6 +26,7 @@
 #   undecidable=402
 #   exempt=291
 #   uuid-unresolved=0
+#   unreadable=0
 #   verdict=violations            # or clean
 #     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  edited  rewritable  …
 #
@@ -37,7 +38,10 @@
 # out. A judged citation matching two files is a `conflict` violation (Prior's
 # spec, section 4.4), and a record reference in a control file that resolves
 # to no record is counted in uuid-unresolved= with one row each; verdict= does
-# not read that count. A `legacy` workbench is refused by name and pointed at
+# not read that count. A control file the codec could not read is counted in
+# unreadable= with one row each: its narrative is scoped not-edited although
+# its liveness is what did not read, and verdict= does not read that count
+# either. A `legacy` workbench is refused by name and pointed at
 # /fusion:migrate; it and anything else stop the check with nothing on stdout
 # (exit 3 or 4). hooks/lib/record-index.ts is the reader.
 #

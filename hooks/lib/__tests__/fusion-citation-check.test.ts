@@ -347,6 +347,19 @@ describe("fusion-citation-check on a JSON-controlled workbench", () => {
     });
   }, CASE_TIMEOUT);
 
+  it("counts and names a control file that does not read, and leaves the verdict to the files it could scope", () => {
+    withJsonProject((p) => {
+      // whether this narrative is live is what did not read: its row prints not-edited, and `unreadable=` says why
+      place(p, "shared/issues/260101-0000-broken.md", "cites `260199-9999_*_gone.md`\n");
+      place(p, "shared/issues/260101-0000-broken.record.json", "{\n");
+      const r = run(p.root);
+      expect(r.status, r.stderr).toBe(0);
+      const lines = r.stdout.trimEnd().split("\n");
+      for (const l of ["edited-files=0", "unedited-violations=1", "unreadable=1", "verdict=clean"]) expect(lines).toContain(l);
+      expect(lines.at(-1)).toMatch(/^ {2}fusion-workbench\/shared\/issues\/260101-0000-broken\.record\.json {2}unreadable {2}\S+\/\S+$/);
+    });
+  }, CASE_TIMEOUT);
+
   it("refuses a legacy workbench by name, exit 4, nothing on stdout, and points at /fusion:migrate", () => {
     withJsonProject((p) => {
       place(p, "shared/issues/260101-0000_o_x.md", "cites `260199-9999_*_gone.md`\n");

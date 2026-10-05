@@ -45,11 +45,13 @@
 // ---------------------------------------------------------------------------
 
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { tmpdir } from "node:os";
 import { fencedContentLines, workbenchRoot, WORKBENCH_PRESENT } from "./helpers/citation-scan.ts";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
-import { indexOf } from "./helpers/json-workbench.js";
+import { indexOf, jsonWorkbenchAt, placeRecord } from "./helpers/json-workbench.js";
+import { unreadControls } from "../citation-corpus.js";
 import { isSpec, measurePlanSizes } from "../plan-size.js";
 
 /** The heading, verbatim from `agents/implementation-planner.md:131`. */
@@ -126,13 +128,18 @@ function report(violations: Violation[]): string {
   return violations.map((v) => `  ${v.rel}  ${REMEDY[v.verdict]}`).join("\n");
 }
 
-/** The corpus: live plans of this workbench's record index, specs excluded, as `lib/plan-size.ts` measures them. */
-function livePlans(): { rel: string; text: string }[] {
-  const read = indexOf(workbenchRoot);
+/**
+ * The corpus: live plans of the record index of `wb`, specs excluded, as
+ * `lib/plan-size.ts` measures them. A plan control file that did not read is
+ * named and fails the gate: whether that plan is live is what could not be read.
+ */
+function livePlans(wb = workbenchRoot): { rel: string; text: string }[] {
+  const read = indexOf(wb);
   if (read.format === "legacy") throw new Error("fusion-workbench is legacy (no workbench.json: its control data is Markdown); run /fusion:migrate. The stopping-section gate takes its corpus from the record index and has none to judge.");
   if (read.format !== "json-control") throw new Error(`fusion-workbench was not read (${read.unread.cause}); the stopping-section gate has no corpus to judge.`);
-  const { rows } = measurePlanSizes(dirname(workbenchRoot), read.index, Number.MAX_SAFE_INTEGER);
-  return rows.map(({ rel }) => ({ rel, text: readFileSync(join(workbenchRoot, rel), "utf-8") })).sort((x, y) => x.rel.localeCompare(y.rel));
+  const { rows, unreadable } = measurePlanSizes(dirname(wb), read.index, Number.MAX_SAFE_INTEGER);
+  if (unreadable.length > 0) throw new Error(unreadControls(unreadable, "the stopping-section gate cannot say every live plan was read"));
+  return rows.map(({ rel }) => ({ rel, text: readFileSync(join(wb, rel), "utf-8") })).sort((x, y) => x.rel.localeCompare(y.rel));
 }
 
 describe("stopping-section lint: every live plan carries a filled '## Where this work stops'", () => {
@@ -147,6 +154,21 @@ describe("stopping-section lint: every live plan carries a filled '## Where this
       `a live plan must carry its stopping section, filled:\n${report(violations)}`,
     ).toEqual([]);
   }, 4 * CASE_TIMEOUT);
+});
+
+describe("stopping-section lint: the corpus", () => {
+  it("fails, naming the control file, when a plan's does not read", () => {
+    const tmp = mkdtempSync(join(tmpdir(), "stopping-unread-"));
+    try {
+      const wb = jsonWorkbenchAt(tmp);
+      placeRecord(wb, "plan-in-progress", "shared/plans/260101-0000-live.md", "in_progress");
+      expect(livePlans(wb).map((p) => p.rel)).toEqual(["shared/plans/260101-0000-live.md"]);
+      writeFileSync(join(wb, "shared/plans/260101-0001-broken.record.json"), "{\n");
+      expect(() => livePlans(wb)).toThrow(/1 control file did not read[\s\S]*\n {2}shared\/plans\/260101-0001-broken\.record\.json {2}\S+\/\S+/);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
 });
 
 describe("stopping-section lint: the mechanism", () => {

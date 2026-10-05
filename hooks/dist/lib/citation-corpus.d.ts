@@ -65,6 +65,15 @@
  * comment. FJ03b's note on `citation-check.ts` records the same departure for
  * the reporter.
  *
+ * A CONTROL FILE THAT DID NOT READ IS NEITHER IN NOR OUT, AND IS NEVER SILENT.
+ * `lib/record-index.ts` puts it in `unreadable` and in no map, so the predicate
+ * answers "not live" for its narrative although liveness is exactly what could
+ * not be read. Each reader therefore reads that list beside the predicate: the
+ * blocking check and the stopping-section lint fail on a non-empty one, naming
+ * every file through `unreadControls()` below, and `citation-check.ts` prints
+ * `unreadable=` with one row per file. Until FJ03d step 8 the marker in the name
+ * decided, so a file could not leave a gate this way.
+ *
  * THE HOLE THIS PREDICATE HAS, recorded because it is real: membership follows
  * the record's state, so a record LEAVES the corpus when it reaches a terminal
  * state, carrying whatever citations it holds. It is the cost of a recomputed
@@ -72,6 +81,20 @@
  * lets a record walk out of scope.
  */
 import type { RecordIndex } from "./record-index.js";
+/**
+ * The failure text of a gate whose corpus comes from the record index, for the
+ * control files that did not read: the count, what follows from it
+ * (`consequence`, the gate's own clause), and one row per file with the
+ * codec's finding. `problem` is the index's refusal or `lib/plan-size.ts`'s
+ * rendering of it.
+ */
+export declare function unreadControls(unread: Array<{
+    path: string;
+    problem: string | {
+        class: string;
+        reason: string;
+    };
+}>, consequence: string): string;
 /**
  * The frozen stores, excluded at the workbench root.
  *

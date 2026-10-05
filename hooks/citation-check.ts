@@ -16,7 +16,8 @@
  * a GATE_KINDS kind that matches more than one file is a `conflict`
  * violation, not an undecidable token (Prior's spec, section 4.4). Record
  * references that resolve to no control file are counted in
- * `uuid-unresolved=`, one row each after the violations.
+ * `uuid-unresolved=`, one row each after the violations. Control files the
+ * codec could not read are counted in `unreadable=`, one row each after those.
  *
  * A `legacy` workbench is refused by name and pointed at `/fusion:migrate`
  * (FJ03d step 8; section 9's FJ03 row keeps the old control parsers in import
@@ -159,14 +160,27 @@
  *   unrewritable-violations=<n>
  *   undecidable=<n>      exempt=<n>
  *   uuid-unresolved=<n>
+ *   unreadable=<n>
  *   verdict=clean|violations
  *     <file>:<line>  '<token>'  <status>  <scope>  <rewrite>  <problem>
  *     fusion-workbench/<control>  <pointer>  uuid-unresolved  <class>/<reason>
+ *     fusion-workbench/<control>  unreadable  <class>/<reason>
  *
  * The violations are dangling + store-prefixed + conflict, and `verdict=`
  * reads their edited half. An unresolved
  * record reference is a finding about a control file rather than a citation
  * in a text, and `verdict=` does not read `uuid-unresolved=`.
+ *
+ * `unreadable=` counts the control files the codec could not read
+ * (`index.unreadable` of `lib/record-index.ts`), as `bin/fusion-plan-size`
+ * counts its own. Such a record is in no map of the index, so its narrative is
+ * scoped `not-edited` although whether it is live is exactly what could not be
+ * read: every violation in it is still printed, and the count and its rows say
+ * which files the scope could not be taken for. `verdict=` DOES NOT READ IT,
+ * for the reason it does not read `uuid-unresolved=`: it is a finding about a
+ * control file, and `verdict=` stays the scoped half of the citation rows. A
+ * reader gating on `verdict=` reads `unreadable=` beside it; the blocking check
+ * fails on the same list (`lib/citation-corpus.ts`).
  *
  * `edited-files` is how many of `files` are in the verdict scope, and
  * `edited-violations` / `unedited-violations` split the printed rows the same
@@ -428,6 +442,7 @@ function main(argv: string[]): number {
     `undecidable=${undecided.length}`,
     `exempt=${p.exempt.length}`,
     `uuid-unresolved=${index.unresolvedRefs.length}`,
+    `unreadable=${index.unreadable.length}`,
     `verdict=${edited.length > 0 ? "violations" : "clean"}`,
   ];
   for (const h of violations) {
@@ -436,6 +451,7 @@ function main(argv: string[]): number {
   for (const r of index.unresolvedRefs) {
     out.push(`  fusion-workbench/${r.path}  ${r.at}  uuid-unresolved  ${r.problem.class}/${r.problem.reason}`);
   }
+  for (const u of index.unreadable) out.push(`  fusion-workbench/${u.path}  unreadable  ${u.problem.class}/${u.problem.reason}`);
   if (undecidable) for (const h of undecided) out.push(row(h));
   process.stdout.write(out.join("\n") + "\n");
   return 0;

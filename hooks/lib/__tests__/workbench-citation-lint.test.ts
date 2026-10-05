@@ -12,7 +12,7 @@ import {
   type Violation,
 } from "./helpers/citation-scan.js";
 import { createScanner, workbenchMarkdownFiles } from "../citation-scan.js";
-import { FROZEN_PREFIXES, isLiveRecord, isMigrationOriginal } from "../citation-corpus.js";
+import { FROZEN_PREFIXES, isLiveRecord, isMigrationOriginal, unreadControls } from "../citation-corpus.js";
 import type { IndexEntry, RecordIndex } from "../record-index.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { indexOf, jsonWorkbenchAt, placeRecord } from "./helpers/json-workbench.js";
@@ -77,8 +77,13 @@ function ownIndex(): RecordIndex {
   throw new Error(`fusion-workbench is ${why}. The citation gate takes its corpus from the record index and has none to judge.`);
 }
 
-/** Workbench-relative paths of every file the gate judges under `root`. */
+/**
+ * Workbench-relative paths of every file the gate judges under `root`. A
+ * control file that did not read is in no map of the index, so its narrative
+ * would leave the corpus unjudged and unnamed: the gate fails on it by name.
+ */
 function corpusFiles(root = workbenchRoot, index = ownIndex()): { rel: string; abs: string }[] {
+  if (index.unreadable.length > 0) throw new Error(unreadControls(index.unreadable, "the citation gate cannot say its corpus is whole"));
   return workbenchMarkdownFiles(root).filter((f) => isLiveRecord(f.rel, index));
 }
 
@@ -194,6 +199,20 @@ describe("workbench citation lint: the corpus predicate", () => {
         "shared/issues/260101-0000_c_open.md",
         "shared/plans/260101-0004_c_under-way.md",
       ]);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
+  it("fails, naming the control file, when one does not read: its narrative is never dropped in silence", () => {
+    const tmp = mkdtempSync(join(tmpdir(), "citation-unread-"));
+    try {
+      const wb = jsonWorkbenchAt(tmp);
+      placeRecord(wb, "issue-open", "shared/issues/260101-0000-open.md", "open");
+      for (const [rel, text] of [["shared/issues/260101-0001-broken.md", "# x\n"], ["shared/issues/260101-0001-broken.record.json", "{\n"]]) writeFileSync(join(wb, rel), text);
+      const read = indexOf(wb);
+      if (read.format !== "json-control") throw new Error(JSON.stringify(read));
+      expect(() => corpusFiles(wb, read.index)).toThrow(/1 control file did not read[\s\S]*\n {2}shared\/issues\/260101-0001-broken\.record\.json {2}\S+\/\S+/);
     } finally {
       rmSync(tmp, { recursive: true, force: true });
     }
