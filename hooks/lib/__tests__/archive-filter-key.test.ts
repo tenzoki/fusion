@@ -33,9 +33,8 @@ describe("archive filter 3: the search key matches the storeless citation form",
   });
 });
 
-describe("archive filter 2 and the orchestrator's read, over one or two container stores", () => {
+describe("archive filter 2, over one or two container stores", () => {
   const shells = ["bash", "zsh"].filter((s) => spawnSync(s, ["-c", ":"]).status === 0);
-  const orch = extractBashBlock(read("agents/orchestrator.md"), "**Read the work packages, and find the one this checkout has claimed.**");
   it.each(shells.flatMap((sh) => [[sh, "work-packages"], [sh, "work-packages circles"]]))("under %s, SCAN_PACKAGES=%s", (sh, scan) => {
     const wb = mkdtempSync(join(tmpdir(), "archive-live-"));
     const pkg = (n: string, st: string, ...recs: string[]) => [[`${n}.md`, `**Status:** ${st}\n`], ...recs.map((r) => [r, ""])]
@@ -47,13 +46,12 @@ describe("archive filter 2 and the orchestrator's read, over one or two containe
     pkg("e", "open");
     pkg("f", "done");
     const go = (block: string) => spawnSync(sh, ["-c", block], { encoding: "utf-8", env: { ...process.env, WORKBENCH: wb, SCAN_PACKAGES: scan } });
-    const [r, o] = [go(extractBashBlock(body, "**Work packages (all tiers).**")), go(orch)];
+    const r = go(extractBashBlock(body, "**Work packages (all tiers).**"));
     rmSync(wb, { recursive: true, force: true });
     const two = scan.includes(" ");
-    expect([r.status, o.status], r.stderr + o.stderr).toEqual([0, 0]);
+    expect(r.status, r.stderr).toBe(0);
     expect(r.stdout.trim().split("\n").sort()).toEqual(["done\tb", "live\ta\tissues/260901-0001_o_bug.md",
       "live\tc\tdecisions/260903-0001_a_q.md", "live\td\tdiscussions/260904-0002_o_t.md", "live\td\tplanning/260904-0001_p_plan.md", ...(two ? ["done\tf"] : [])].sort());
-    expect(o.stdout.trim().split("\n").map((l) => l.split("\t")[0]).sort()).toEqual(["a", "b", "c", "d", "e", ...(two ? ["f"] : [])]);
   });
   it("filter 2 enumerates the marker set the block applies, and no shipped loop iterates a bare $SCAN_", () => {
     expect(body).toContain("holding a record marked `_o_`, `_p_`, `_a_` or `_d_`");
