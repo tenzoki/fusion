@@ -64,7 +64,10 @@
  * names. A record kind starts at `INITIAL_CONTROL`, held by the test to the
  * one state of its kind no edge of `codec/contract/transitions.json` enters
  * and to the control fields its schema requires; a package's payload is its
- * domain, and the kernel fixes the rest.
+ * domain, and the kernel fixes the rest. A plan's steps are read from its
+ * narrative as an import reads them (`scanPlan` in `lib/legacy-import.ts`):
+ * one `open` anchor per numbered step, a duplicated number anchoring none,
+ * and no criteria, so `transition --steps` has ids to update.
  *
  * An evidence record is produced against the package `--record` names:
  * `brief_revision` is its narrative hash in `show`, `plan_revision` the

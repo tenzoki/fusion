@@ -64,7 +64,10 @@
  * names. A record kind starts at `INITIAL_CONTROL`, held by the test to the
  * one state of its kind no edge of `codec/contract/transitions.json` enters
  * and to the control fields its schema requires; a package's payload is its
- * domain, and the kernel fixes the rest.
+ * domain, and the kernel fixes the rest. A plan's steps are read from its
+ * narrative as an import reads them (`scanPlan` in `lib/legacy-import.ts`):
+ * one `open` anchor per numbered step, a duplicated number anchoring none,
+ * and no criteria, so `transition --steps` has ids to update.
  *
  * An evidence record is produced against the package `--record` names:
  * `brief_revision` is its narrative hash in `show`, `plan_revision` the
@@ -128,6 +131,7 @@ import { gate } from "./record-client.js";
 import { composeRows, logObserved, logResend, repairRetained } from "./record-change.js";
 import { utcStamp } from "./orchestrator-events.js";
 import { CONTAINER_ROOT_NAMES } from "./stores.js";
+import { scanPlan } from "./legacy-import.js";
 export const SUBCOMMANDS = ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "create", "evidence"];
 /** Per kind, the `transition` payload fields the codec admits; nothing else is sent. */
 export const PAYLOAD_FIELDS = {
@@ -405,6 +409,17 @@ function creation(c, workbenchId, operationId, see, now) {
         }
         const scope = kind === "package" ? { container: null, store: "work-packages" } : scopeOf(narrative);
         const payload = kind === "package" ? { domain: one(c, "--domain") } : structuredClone(INITIAL_CONTROL[kind]);
+        if (kind === "plan") {
+            let text;
+            try {
+                text = readFileSync(join(c.workbench, narrative), "utf-8");
+            }
+            catch (e) {
+                return unread(`the plan ${narrative} could not be read (${message(e)}), and its steps are its anchors; nothing was sent`);
+            }
+            const ids = scanPlan(text.split("\n")).steps.map((s) => s.id);
+            payload.steps = ids.filter((id) => ids.indexOf(id) === ids.lastIndexOf(id)).map((id) => ({ id, state: "open" }));
+        }
         const request = { ...envelope, kind, filed_by: { actor: one(c, "--actor"), person: c.identity.person ?? null }, origin: from, scope, narrative: { path: narrative }, payload };
         return { ok: { request, resend: { "--id": id } } };
     }

@@ -64,7 +64,10 @@
  * names. A record kind starts at `INITIAL_CONTROL`, held by the test to the
  * one state of its kind no edge of `codec/contract/transitions.json` enters
  * and to the control fields its schema requires; a package's payload is its
- * domain, and the kernel fixes the rest.
+ * domain, and the kernel fixes the rest. A plan's steps are read from its
+ * narrative as an import reads them (`scanPlan` in `lib/legacy-import.ts`):
+ * one `open` anchor per numbered step, a duplicated number anchoring none,
+ * and no criteria, so `transition --steps` has ids to update.
  *
  * An evidence record is produced against the package `--record` names:
  * `brief_revision` is its narrative hash in `show`, `plan_revision` the
@@ -129,6 +132,7 @@ import { gate, type Answer, type Ask, type Refusal } from "./record-client.js";
 import { composeRows, logObserved, logResend, repairRetained, type LogEvent, type PriorShow } from "./record-change.js";
 import { utcStamp } from "./orchestrator-events.js";
 import { CONTAINER_ROOT_NAMES } from "./stores.js";
+import { scanPlan } from "./legacy-import.js";
 
 export const SUBCOMMANDS = ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "create", "evidence"] as const;
 export type Sub = (typeof SUBCOMMANDS)[number];
@@ -429,7 +433,17 @@ function creation(c: Call, workbenchId: string, operationId: string, see: (path:
       from = { kind: "package", ref: { workbench_id: workbenchId, record_id: String(pkg.ok.control.id) } };
     }
     const scope = kind === "package" ? { container: null, store: "work-packages" } : scopeOf(narrative);
-    const payload = kind === "package" ? { domain: one(c, "--domain") } : structuredClone(INITIAL_CONTROL[kind]);
+    const payload: Record<string, unknown> = kind === "package" ? { domain: one(c, "--domain") } : structuredClone(INITIAL_CONTROL[kind]);
+    if (kind === "plan") {
+      let text: string;
+      try {
+        text = readFileSync(join(c.workbench, narrative), "utf-8");
+      } catch (e) {
+        return unread(`the plan ${narrative} could not be read (${message(e)}), and its steps are its anchors; nothing was sent`);
+      }
+      const ids = scanPlan(text.split("\n")).steps.map((s) => s.id);
+      payload.steps = ids.filter((id) => ids.indexOf(id) === ids.lastIndexOf(id)).map((id) => ({ id, state: "open" }));
+    }
     const request = { ...envelope, kind, filed_by: { actor: one(c, "--actor"), person: c.identity.person ?? null }, origin: from, scope, narrative: { path: narrative }, payload };
     return { ok: { request, resend: { "--id": id } } };
   }

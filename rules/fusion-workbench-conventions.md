@@ -366,7 +366,7 @@ The terminal states are the `terminal` sets of `codec/contract/transitions.json`
 - A step: `--steps '[{"id":"<n>","state":"in_progress"}]'`, later `"done"`, `<n>` its number under `## Implementation Steps`. The number is the anchor, so a step is never renumbered and none is added (decision `261001-1804_*_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md`). When only steps move, `--to` names the state the plan stands in.
 - A criterion: `--criteria '[{"id":"<id>","met":true}]'`.
 - The plan: `--to in_progress` when work starts, `--to closed` when it is done; closing does not require every step done.
-- `--steps` updates only anchors the plan has: an imported plan has one per numbered step, one filed by `create` none (`INITIAL_CONTROL` in `hooks/lib/record-write.ts`), so its progress is its state alone.
+- `--steps` updates only anchors the plan has: one per numbered step, imported or filed by `create` (`scanPlan` in `hooks/lib/legacy-import.ts`).
 
 ### Issue files
 
