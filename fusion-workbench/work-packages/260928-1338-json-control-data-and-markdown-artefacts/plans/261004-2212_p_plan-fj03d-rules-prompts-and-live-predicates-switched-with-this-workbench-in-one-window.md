@@ -146,6 +146,10 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
    - Changes: every **convert** hit of step 2 in the file. Claim, release, pause, done and dropped through `bin/fusion-write`; `**Mode:** autonomous` through `set-mode` with the user's provenance; adopting a spec or plan through `adopt-plan`; the closure step reads the plan from the package's `active_documents` with its role and narrative revision, not from `**Active spec/plan:**` (Prior §7, request 29); decision transitions through `transition` and the payload refs. Issue 260929-1810 items 1 and 2 (who moves which marker; `_b_`), issue 260929-2025 (the `task_start` row says what the hook writes), issue 260930-1640 row 7 (`## Staging check`: a codec-written control file is a `record` row to stage; `PAIR-SPLIT` means stage the other half in the same commit; the `in-flight` examples gain `workbench.json` and `.json-state/`; the routing line no longer sends a work package's `package.json` to an executor).
    - Dependencies: 2, 3, 4.
    - Acceptance: `grep -rn 'byte measurements' agents skills rules` names nothing; reference lint and the dispatch-path bound green, the orchestrator path at or under its row; `agents/` inside its room or the measured remainder logged per the growth record.
+   - [DONE] 2026-10-05, `fj03d` `0f57b119`. All 38 hits converted. The step-2 search leaves 5 lines: the kept event-log constants, the `**Mode:** apply` homonym and one historical anecdote. The setup claim walk is replaced by `bin/fusion-claimed-package`, which has its own test, and its executed copy in `archive-filter-key.test.ts` is removed. Two changes go beyond a translation:
+     - `adopt-plan` binds at the user's approval, not when the planner returns, so a Modify round binds no discarded revision.
+     - Bounded Closure is now `dropped` with outcome class `bounded`.
+     The prompt is 2 965 B smaller. Orchestrator path room is 4 647 B, `agents/` room 7 191 B. `reference-resolution-lint` was re-approved at 1 951 paths and 347 anchors, all from this file. Suites as before.
 
 6. **The other ten prompts**
    - Executor: `code-implementer`
