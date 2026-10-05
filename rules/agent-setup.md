@@ -13,15 +13,14 @@ it.
 
 `fusion-rules <self>` prints one file path (or `skill:<name>` pointer) per line. **Read
 every path it emits**: none is optional. A `skill:<name>` line means invoke that skill on
-demand, not read a file. The set is layered, not ranked: you read all of it.
+demand, not read a file. The set is layered, not ranked.
 
 ## What `fusion-rules` emits
 
 - `fusion-workbench-conventions.md`: always, for every agent. The framework ground truth
   (workbench layout, the work-package grammar, marker vocabularies, the Path Resolution contract).
 - **Pattern-matched domain rules**: coding, ontology, normative, verb, etc., selected per
-  your agent. The descriptive name of the pattern does not matter; you read
-  whatever is emitted regardless of what kind of rule it is.
+  your agent. The pattern's name does not matter; you read whatever is emitted.
 - **Project-local rules** from the consuming project's `./rules/` (fusion-agent-specific)
   and `.claude/rules/` (project-wide). Missing files are skipped silently. Read what is
   present.
@@ -42,10 +41,10 @@ item in scope, then the shared one. Search every directory it names, not the fir
 A non-zero exit says whose fault it is (full table in `fusion-workbench-conventions.md`
 `## Path Resolution` → Exit codes). **exit 4** is the one you will meet: an internal
 `fusion-paths` bug, so the user's workbench is fine and must not be sent anywhere to be
-repaired. **exit 3** is scope the resolver could not determine, and the user clears it; on
-a `legacy` or `unsupported` workbench, stop and tell the user to run `/fusion:migrate`. A 3
-from `fusion-rules` is a different thing entirely, that helper's own code for a malformed
-manifest, and says nothing about your paths.
+repaired. **exit 3** is scope the resolver could not determine, and the user clears it: on
+a `legacy` workbench, stop and tell the user to run `/fusion:migrate`; on an `unsupported`
+one, stop, quote the helper's stderr line and say the installed client is older than the
+workbench. A 3 from `fusion-rules` is that helper's own code for a malformed manifest.
 
 ## Voice profiles
 

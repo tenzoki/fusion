@@ -151,7 +151,7 @@ Signature `fusion-paths <name> [<item-dir>]`. Output: one `KEY=value` line per e
 | 3 | The item in scope cannot be determined. The header of `bin/fusion-claimed-package` lists the causes, among them two or more claimed items, this checkout's identifier unreadable inside a git work tree, and a workbench refused by name (`legacy`, `unsupported`). No output, and never a fall back to `shared/` | no |
 | 4 | Internal error: a prompt names a key the resolver cannot order or value, or one name is both an agent and a skill (a **fusion bug**) | no |
 
-**Exit 3 is unknown scope and nothing else.** A project that is not a git work tree takes no claim at all, so no item in scope is the true answer there and it exits 0 into `shared/`. The two look alike and are not, which is why `bin/fusion-identity` splits its 3 and 5 from its 4. On a `legacy` workbench the way out is `/fusion:migrate`, never an edit.
+**Exit 3 is unknown scope and nothing else.** A project that is not a git work tree takes no claim at all, so no item in scope is the true answer there and it exits 0 into `shared/`. The two look alike and are not, hence `bin/fusion-identity` splits its 3 and 5 from its 4. On a `legacy` workbench the way out is `/fusion:migrate`, never an edit; on an `unsupported` one, a newer client.
 
 The `0/1/2` core is shared with `bin/fusion-rules`; 3 and 4 are this resolver's own. `bin/fusion-rules` also exits 3, for an unrelated reason, a malformed `rules/context-manifest.yaml`, so read an exit 3 against the helper that returned it, never across the two.
 
