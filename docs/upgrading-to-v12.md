@@ -8,6 +8,9 @@ no behaviour moves: every agent does what it did under its old name. This note d
 stands at the latest v12.x release, as of `v12.0.1`, not as it stood at `v12.0.0`: a release that
 changes something the note describes edits the note in the same commit.
 
+**Updating to v13 or later?** v13 also moves every record's state into JSON control files, and
+`/fusion:migrate` there does both steps in one run: read `docs/upgrading-to-v13.md` as well.
+
 **Two things reach your project.** A name you type or your tooling sends stops resolving the day you
 update, and your workbench still carries the three v11 store names until you rename them. The first
 is loud; the second was quiet, and the module read the old names for one major version so that

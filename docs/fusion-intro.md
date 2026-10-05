@@ -82,38 +82,38 @@ Fusion ist absichtlich nicht autonom. Es hält an und fragt vor: Spec-Freigabe, 
 
 ### Arbeitspaket
 
-Ein Arbeitspaket (Work Package) ist eine abgegrenzte Arbeitseinheit, definiert durch **Auftrag** (Ziel), **Evidenzbasis** (Annahmen) und **Artefakt** (Ergebnis). Es ist *ein Verzeichnis*, `fusion-workbench/work-packages/<stamp>-<slug>/`, mit einem Record gleichen Namens darin, `work-packages/<stamp>-<slug>/<stamp>-<slug>.md`, **ohne Marker an beiden Namen**. Alles, was das Paket hervorbringt, liegt im selben Verzeichnis. Der Zustand steht als Kopffeld `**Status:**` im Record:
+Ein Arbeitspaket (Work Package) ist eine abgegrenzte Arbeitseinheit, definiert durch **Auftrag** (Ziel), **Evidenzbasis** (Annahmen) und **Artefakt** (Ergebnis). Es ist *ein Verzeichnis*, `fusion-workbench/work-packages/<stamp>-<slug>/`, mit einem Paar darin: der Erzählung gleichen Namens, `<stamp>-<slug>.md` (Markdown, der Auftrag), und der Steuerdatei `package.json` daneben, **ohne Marker an einem der Namen**. Alles, was das Paket hervorbringt, liegt im selben Verzeichnis. Der Zustand steht seit 13.0.0 im Feld `status` von `package.json`, das nur der Codec schreibt, über `bin/fusion-write`, nie von Hand:
 
 - `open` — niemand arbeitet daran
-- `claimed` — ein Checkout arbeitet gerade daran; `**Claim:**` nennt welcher
+- `claimed` — ein Checkout arbeitet gerade daran; `claim` nennt welcher
 - `paused` — bewusst zurückgestellt, nicht aufgegeben, soll wiederkommen; der Claim wird geräumt, und der Text sagt, worauf gewartet wird
-- `done` — die Arbeit ist gelandet; der Claim bleibt stehen und nennt, wer sie getan hat
+- `done` — die Arbeit ist gelandet; der Claim darf stehen bleiben und nennt, wer sie getan hat
 - `dropped` — nicht mehr aktuell; der Text sagt warum
 
-`done` und `dropped` sind terminal; ein abgeschlossenes Paket wird nie wieder geöffnet, sondern durch ein neues ersetzt, das es zitiert. `paused` ist der einzige lebende Wert, aus dem ein Paket zurückkehrt: Fortsetzen ist ein gewöhnlicher Claim. Zwei Entwurfsentscheidungen tragen den Rest: ein Record je Paket statt einer Listendatei, damit zwei Checkouts konfliktfrei mergen; und der Zustand im Feld statt im Namen, damit ein Zustandswechsel den Record ändert statt ihn umzubenennen und jede Zitierung ein Leben lang gültig bleibt.
+`done` und `dropped` sind terminal; ein abgeschlossenes Paket wird nie wieder geöffnet, sondern durch ein neues ersetzt, das es zitiert. `paused` ist der einzige lebende Wert, aus dem ein Paket zurückkehrt: Fortsetzen ist ein gewöhnlicher Claim. Zwei Entwurfsentscheidungen tragen den Rest: ein Verzeichnis je Paket statt einer Listendatei, damit zwei Checkouts konfliktfrei mergen; und der Zustand in der Steuerdatei statt im Namen, damit ein Zustandswechsel `package.json` neu schreibt statt etwas umzubenennen und jede Zitierung ein Leben lang gültig bleibt.
 
 Kleine Projekte brauchen kaum Arbeitspakete: eine Anfrage an den Orchestrator ohne Paket läuft einfach ohne, und die Artefakte landen in ihrem jeweiligen Store.
 
-Bis v11 hieß die Arbeitseinheit *Circle*: ein Verzeichnis unter `circles/` mit eigenem Record, sechs Zustandsmarkern, einer eigenen Kopie jedes Stores und einer Rangfolge darüber. Entfallen sind die sechs Zustände und die Rangfolge, nicht das Verzeichnis: der Container bleibt und trägt jetzt das Arbeitspaket, seit v12 unter `work-packages/`. `/fusion:migrate` wandelt eine Workbench um, die noch einen lebenden Circle-Record hat.
+Bis v11 hieß die Arbeitseinheit *Circle*: ein Verzeichnis unter `circles/` mit eigenem Record, sechs Zustandsmarkern, einer eigenen Kopie jedes Stores und einer Rangfolge darüber. Entfallen sind die sechs Zustände und die Rangfolge, nicht das Verzeichnis: der Container bleibt und trägt jetzt das Arbeitspaket, seit v12 unter `work-packages/`. Eine Workbench mit lebendem Circle-Record wird am Tag `v11.11.1` umgewandelt; seit v12 benennt `/fusion:migrate` die Stores um und überführt seit 13.0.0 den Zustand jedes Records in seine Steuerdatei.
 
 ### Arbeitspakete, Memo und der Weg zur Arbeit
 
 ```
-/fusion:wp <eine Zeile>                      Idee als Arbeitspaket ablegen (Status: open)
+/fusion:wp <eine Zeile>                      Idee als Arbeitspaket ablegen (status open)
 Store lesen, eines auswählen                 nichts rankt sie; die Reihenfolge ist deine
-Orchestrator claimed es                      Status: open → claimed, Claim: <dein Checkout>
+Orchestrator claimed es                      status open → claimed, claim nennt dein Checkout
 Paket-Pfad an den requirements-designer      er liest es als Anfrage und schreibt kein Byte hinein
 ```
 
-`/fusion:memo` kennt zwei Ziele je Person, benannt nach deiner git-E-Mail: eine Notiz (`shared/memos/notes-<person>.md`) oder eine Aufgabe (`task:`/`todo:` nach `tasks-<person>.md`). Eine Idee legt `/fusion:wp` als eigenes Verzeichnis unter `work-packages/` an. Kein Agent legt ein Arbeitspaket an; das ist Sache des Menschen. Der Orchestrator pflegt den Store — claimen, freigeben, abschließen, verwerfen, teilen, zusammenlegen — und zwar je Operation und je Paket nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
+`/fusion:memo` kennt zwei Ziele je Person, benannt nach deiner git-E-Mail: eine Notiz (`shared/memos/notes-<person>.md`) oder eine Aufgabe (`task:`/`todo:` nach `tasks-<person>.md`). Eine Idee legt `/fusion:wp` als eigenes Verzeichnis unter `work-packages/` an. Ein Agent legt ein Arbeitspaket nur innerhalb der Arbeit an, für die er beauftragt wurde, mit dem zerlegten Paket als Ursprung; laufen darf es dadurch noch nicht. Der Orchestrator pflegt den Store — claimen, freigeben, pausieren, abschließen, verwerfen, teilen, zusammenlegen — über `bin/fusion-write`, und zwar je Operation und je Paket nur auf dein Wort hin. Gerankt wird nichts: der Agent, der das tat, ist mit v11 entfallen.
 
 ### Issues und Decisions
 
-Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen, `_p_` in Arbeit, `_c_` geschlossen, `_d_` verschoben). „Entscheiden und festhalten“ ist eine **Decision** (`decisions/`, Marker `_o_` offen, `_a_` beantwortet, `_i_` umgesetzt, `_d_` verschoben, `_s_` abgelöst). Der Reviewer legt seine Befunde als Issues ab; bei Sitzungsende legt niemand welche an. Was eine Sitzung offen lässt, gehört in die Commit-Nachricht oder in einen Record, den du selbst schreibst.
+Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Zustände `open`, `in_progress`, `closed`, `deferred`). „Entscheiden und festhalten“ ist eine **Decision** (`decisions/`, Zustände `open`, `answered`, `implemented`, `deferred`, `superseded`). Der Zustand steht in der Steuerdatei `<name>.record.json` neben dem Text und wechselt nur über `bin/fusion-write transition`; ein Marker im Namen eines Records von vor `/fusion:migrate` ist Geschichte und wird nie als Zustand gelesen. Der Reviewer legt seine Befunde als Issues ab; bei Sitzungsende legt niemand welche an. Was eine Sitzung offen lässt, gehört in die Commit-Nachricht oder in einen Record, den du selbst schreibst.
 
 ## 5. Abschluss von Arbeitseinheit und Sitzung
 
-**Paket-Ende:** Ein Arbeitspaket kann mehrere Sitzungen dauern; Sitzungsende und Paket-Ende sind zwei verschiedene Dinge. Der `state-auditor` gleicht die Tracking-Dateien mit dem Code ab, wenn du ihn darum bittest. Der Reviewer läuft **einmal je Paket, beim Abschluss**, über alle Commits, die noch kein Review abgedeckt hat (`bin/fusion-review-coverage`). Der Orchestrator liest die Abbruchklauseln des Plans vor und fragt, ob jede hält. Dann geht `**Status:**` auf `done` oder `dropped`, der Claim bleibt stehen und nennt, wer die Arbeit getan hat, und eine Abschlussnotiz mit dem Commit-Bereich wird angehängt.
+**Paket-Ende:** Ein Arbeitspaket kann mehrere Sitzungen dauern; Sitzungsende und Paket-Ende sind zwei verschiedene Dinge. Der `state-auditor` gleicht die Tracking-Dateien mit dem Code ab, wenn du ihn darum bittest. Der Reviewer läuft **einmal je Paket, beim Abschluss**, über alle Commits, die noch kein Review abgedeckt hat (`bin/fusion-review-coverage`). Der Orchestrator liest die Abbruchklauseln des Plans vor und fragt, ob jede hält. Dann wird eine Abschlussnotiz mit dem Commit-Bereich angehängt, und `bin/fusion-write transition` setzt `status` auf `done` oder `dropped`; der Claim bleibt stehen und nennt, wer die Arbeit getan hat.
 
 **Sitzungsende:**
 
@@ -137,7 +137,7 @@ Bis v11 war das eine Pipeline aus acht Schritten mit einem Gate. Die übrigen Sc
 
 **Aufräumarbeiten, die dazugehören:**
 
-- **Archivierung:** `/fusion:archive` verschiebt terminale Arbeitspakete und terminale Marker aus `shared/` nach `fusion-workbench/archive/` und rollt das Guard-Event-Log unter datiertem Namen dorthin. Tier 2 nimmt gealterte Reviews dazu, Tier 3 gealterte History (Standardalter 14 Tage, z. B. `tier-3 21d`). Archivieren verschiebt, löscht nie.
+- **Archivierung:** `/fusion:archive` verschiebt terminale Arbeitspakete und terminale Records aus `shared/`, je mit ihrer Steuerdatei, nach `fusion-workbench/archive/` und rollt das Guard-Event-Log unter datiertem Namen dorthin. Tier 2 nimmt gealterte Reviews dazu, Tier 3 gealterte History (Standardalter 14 Tage, z. B. `tier-3 21d`). Archivieren verschiebt, löscht nie.
 - **`/fusion:cadence`:** schreibt zuerst das Aktivitätslog dieses Checkouts aus git und dem ganzen Workbench-Baum, liest es dann zurück und schreibt eine Übersicht (gestern, letzte 7 Tage, wiederkehrende Themen nach Anzahl der Tage) nach `shared/memos/cadence-<checkout>.md`. Das Log ist damit immer frisch; ein Vorlauf entfällt.
 
 Ein Hinweis zur Einordnung, als Beobachtung und nicht als Messung dieses Dokuments: die Buchhaltung (Setup, Reconcile, Reviews, Cleanup) macht einen großen Teil der Sitzungszeit aus. Die inkrementellen Mechanismen seit v10.8.1 sind die Antwort darauf.
@@ -147,19 +147,20 @@ Ein Hinweis zur Einordnung, als Beobachtung und nicht als Messung dieses Dokumen
 ```
 fusion-workbench/
 ├── work-packages/                # ein Verzeichnis je Arbeitspaket
-│   └── <stamp>-<slug>/           # der Record des Pakets, dazu was das Paket erzeugt hat
-│       ├── <stamp>-<slug>.md
+│   └── <stamp>-<slug>/           # das Paar des Pakets, dazu was das Paket erzeugt hat
+│       ├── <stamp>-<slug>.md     # die Erzählung
+│       ├── package.json          # die Steuerdatei, vom Codec geschrieben
 │       └── plans/ issues/ decisions/ reviews/ analyses/ history/
 ├── shared/                       # dieselben Arten, für Arbeit ohne Paket
 │   ├── plans/ issues/ decisions/ reviews/ analyses/
 │   ├── history/ investigations/ consultations/ memos/ forum/ checkouts/
 ├── archive/  stilwerk/  monitor
-└── (Zustand am Wurzelverzeichnis: orchestrator-events.jsonl, .guard-state/,
-     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors,
-     .check-stamps)
+└── (am Wurzelverzeichnis: workbench.json, .json-state/, orchestrator-events.jsonl,
+     .guard-state/, .commit-lock/, .session-marker, .checkout-id,
+     .cadence-anchors, .check-stamps)
 ```
 
-**Die Herkunftsregel trifft die Ablageentscheidung:** ein Artefakt gehört zu dem Arbeitspaket, aus dessen Auftrag es entstanden ist, und nach `shared/`, wenn kein Paket im Zugriff ist. Querbezüge werden zitiert, nicht durch Ablage abgebildet. Agenten schreiben keine Pfade fest; sie lösen sie zur Laufzeit über `bin/fusion-paths <agent>` auf — das nennt den Container des Pakets, das dieser Checkout geclaimt hat, sonst den gemeinsamen Store. Mit v11 entfallen sind der sechszustandsbehaftete Circle-Record und die Rangfolge darüber, nicht der Container; `/fusion:migrate` wandelt eine Workbench um, die noch einen lebenden Circle-Record hat.
+**Die Herkunftsregel trifft die Ablageentscheidung:** ein Artefakt gehört zu dem Arbeitspaket, aus dessen Auftrag es entstanden ist, und nach `shared/`, wenn kein Paket im Zugriff ist. Querbezüge werden zitiert, nicht durch Ablage abgebildet. Agenten schreiben keine Pfade fest; sie lösen sie zur Laufzeit über `bin/fusion-paths <agent>` auf — das nennt den Container des Pakets, das dieser Checkout geclaimt hat, sonst den gemeinsamen Store. Mit v11 entfallen sind der sechszustandsbehaftete Circle-Record und die Rangfolge darüber, nicht der Container; eine Workbench mit lebendem Circle-Record wird am Tag `v11.11.1` umgewandelt; seit v12 benennt `/fusion:migrate` die Stores um und überführt seit 13.0.0 den Zustand jedes Records in seine Steuerdatei.
 
 ## 8. Mehrere Personen, gemeinsame Workbench, und die Rolle von git
 
@@ -169,10 +170,10 @@ fusion-workbench/
 
 | Klasse | Einträge | git |
 |---|---|---|
-| R1 viele Dateien, je ein Schreiber | `shared/`, `archive/`, `stilwerk/` | tracken |
+| R1 viele Dateien, je ein Schreiber | `work-packages/`, `shared/`, `archive/`, `stilwerk/` | tracken |
 | R2 eine Datei, viele Anhänger | `orchestrator-events.jsonl` | tracken, mit `merge=union` |
-| R3 einmal geschrieben | `.fusion-setup`, `.asset-provenance` | tracken |
-| L bleibt im Checkout | `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.check-stamps`, `.commit-lock/`, `.guard-state/`, `monitor` | ignorieren |
+| R3 einmal geschrieben | `.fusion-setup`, `.asset-provenance`, `workbench.json` | tracken |
+| L bleibt im Checkout | `.session-marker`, `.checkout-id`, `.cadence-anchors`, `.check-stamps`, `.commit-lock/`, `.json-state/`, `.guard-state/`, `monitor` | ignorieren |
 
 Klasse L beschreibt *jetzt* (Sitzungszustand) oder *dieses Checkout* (`.checkout-id`, `.cadence-anchors`, `.check-stamps`) und würde im Diff nur rauschen oder, aus einem fremden Checkout gezogen, lügen. Dieses Repository wendet genau diese Partition an; seine `.gitignore` ist die Vorlage für eine eigene.
 
@@ -188,7 +189,7 @@ fusion-workbench/orchestrator-events.jsonl merge=union
 
 **Wer arbeitet gerade woran.** Setup Schritt 0c warnt vor einer zweiten Orchestrator-Sitzung auf demselben Checkout (`.session-marker`, Heartbeat vom PostToolUse-Hook, `running` bis 10 Minuten, danach `stale`). Für andere Checkouts meldet `bin/fusion-events presence` bei Setup, welche anderen Personen und weiteren eigenen Checkouts im Fenster (Standard 7 Tage) eine Sitzung gestartet haben. Der Blick reicht nur so weit wie der letzte Pull (`scope=pulled`): eine Sitzung, die seit dem letzten Fetch anderswo begann, ist unsichtbar, nicht abwesend.
 
-**Ein Arbeitspaket sagt, wer es fährt.** Es trägt ein Feld `**Claim:**` mit den acht Hex-Zeichen des Checkouts, dann der Person, dann dem Zeitstempel; fehlt das Feld, ist niemand dran. Verglichen wird auf den acht Zeichen und nie auf der Person: zwei Checkouts einer Person tragen eine git-Identität, also kann die Person allein die Frage nicht beantworten. Das Feld reist mit der Datei, also sieht jedes Checkout dasselbe. Claimen zwei Personen dasselbe Paket, bevor die jeweils andere Änderung gepullt wurde, kollidiert genau diese eine Zeile beim Merge; wer den Merge verliert, sieht den fremden Claim und wählt ein anderes Paket. Die Kollision wird erkannt und nicht verhindert — reserviert wird nichts im Voraus.
+**Ein Arbeitspaket sagt, wer es fährt.** Seine Steuerdatei trägt das Feld `claim` mit den acht Hex-Zeichen des Checkouts, der Person und dem Zeitstempel; ist es `null`, ist niemand dran. Verglichen wird auf den acht Zeichen und nie auf der Person: zwei Checkouts einer Person tragen eine git-Identität, also kann die Person allein die Frage nicht beantworten. Das Feld reist mit der Datei, also sieht jedes Checkout dasselbe. Einen fremden Claim übernimmt nichts: `bin/fusion-write` verweigert ihn. Claimen zwei Personen dasselbe Paket, bevor die jeweils andere Änderung gepullt wurde, kollidiert `package.json` beim Merge; wer den Merge verliert, sieht den fremden Claim und wählt ein anderes Paket. Die Kollision wird erkannt und nicht verhindert — reserviert wird nichts im Voraus.
 
 **Der Commit-Lock** (`bin/fusion-commit-lock`) ist ein Mutex um `git add` + `git commit` *innerhalb eines Checkouts*: er schützt den git-Index vor parallelen Agenten derselben Sitzung. Zwischen Checkouts gibt es keinen Lock, und das ist Absicht: dort gilt die normale Git-Disziplin, pullen, mergen, pushen.
 
