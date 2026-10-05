@@ -12,3 +12,6 @@ Evidence, from the step 11 rehearsal at `fj03d` `29dac3c5`:
 - A terminal package does have a control file: `work-packages/260801-1244-curator/package.json` shows `status=done`, `outcome.class=legacy-completed`.
 
 Acceptance: steps 11 and 15 name a terminal record that exists after migration (a terminal package's control file is the candidate the rehearsal read), or the user rules that Prior §8.3.7's "one terminal record" needs a terminal plan or decision pair and the importer's rule is revisited. The plan's wording is corrected either way.
+
+---
+Resolved: the user ruled on 2026-10-05 that the terminal record read back is a terminal package's control file; steps 11 and 15 of the FJ03d plan are amended to name `work-packages/260801-1244-curator/package.json`, which the second rehearsal read as `status=done`. The importer is unchanged: a terminal plan or spec that no converted record binds stays Markdown only.
