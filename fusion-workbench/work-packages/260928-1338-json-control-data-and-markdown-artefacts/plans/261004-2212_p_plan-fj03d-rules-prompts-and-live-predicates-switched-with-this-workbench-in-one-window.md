@@ -112,6 +112,7 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
    - Dependencies: 1.
    - Acceptance: every hit of the command's output appears in exactly one class; the command and the commit are in the report, so the count can be re-taken.
    - [DONE] 2026-10-05, analysis `261005-0504-fj03d-step2-classification-at-the-base-commit.md` with its per-hit table. 723 hits in 96 files at `84047ad7`: converted 105, convert 366, legacy-only 119, other kind 133; convert per step 3: 62, 4: 27, 5: 38, 6: 52, 7: 33, 8: 116, 9: 35, none: 3. The command widens this step's pattern set (`_s_`, `_b_`, `_t_`, class forms, escaped and quoted head-field readers). **Amended 2026-10-05 from the report:** step 4 also converts `bin/fusion-rules:598`, `rules-emission-golden.test.ts:281`, `bin/fusion-checkout-name:244` and `rules/context-manifest.md:120-121`, and carries issue 260930-1640 row 5 (`.gitignore`) with a `git check-ignore` case on a scratch workbench; step 8's expected reds include the legacy-fixture cases of `citation-sweep.test.ts`, `fusion-citation-check.test.ts`, `plan-size.test.ts` and `declared-citation-paths.test.ts:79-82`. Open before step 7: whether `/fusion:wp`, `/fusion:discuss` and `/fusion:archive` refuse a legacy workbench like step 8's checkers (31 hits as convert) or keep their legacy halves (legacy-only). Open before step 10: whether the 90 grammar hits read as converted and the 15 homonyms as other kind, or take a fifth class.
+   - **Ruled 2026-10-05 by the user, after discussion `261005-0856_*_fj03d-step10-class-reading-for-borderline-hits.md`: four classes stay, both readings confirmed, with these rules.** (a) Name grammar classes as **converted** because the line concerns the name or citation-token grammar only and decides no state, comments included; the reading does not rest on the Prior §7 duty, which reaches 66 of the 90 hits. (b) A line that describes the legacy grammar inside converted text classes as converted, basis `json`, as step 2 did. (c) The kept gate string `answered by **Mode:** autonomous` (Prior §7: "alte Gate-Strings erhalten") classes as **other kind** under a new basis label and is not carried over from its step-2 rows, which were convert. (d) **Other kind** also holds pattern matches where the control grammar is absent (homonyms, jargon examples, kept event-log strings); these are no record kind and are counted apart (step 10, step 17).
 
 3. **The conventions rule on JSON control**
    - Executor: `code-implementer`
@@ -212,7 +213,7 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
      3. Get the user's answer on the step-10 class question (90 grammar hits as converted and 15 homonyms as other kind, or a fifth class).
      4. Run step 10, then step 11.
 
-     **Resumed 2026-10-05.** Items 1 and 2 are done: `29dac3c5` verified in the worktree (codec 1 682 passed, 13 skipped; hooks 1 128 of 1 133, the reds being the three workbench-citation-lint cases, the stopping-section lint and the known monitor case; bundle `c76bbce9…`, worktree clean), and issues 261005-0741 and 261005-0803 are closed. Item 3 is with the user.
+     **Resumed 2026-10-05.** Items 1 and 2 are done: `29dac3c5` verified in the worktree (codec 1 682 passed, 13 skipped; hooks 1 128 of 1 133, the reds being the three workbench-citation-lint cases, the stopping-section lint and the known monitor case; bundle `c76bbce9…`, worktree clean), and issues 261005-0741 and 261005-0803 are closed. Item 3 is ruled (see step 2's note); step 10 is dispatched.
 
      Also open: issue 261005-0626 (`attach-evidence`, no step owns it; documented as a limit in step 9), decision 261004-1721 (C9), and question 5 of `## Open Questions` (the two other checkouts, needed at step 12).
 
@@ -221,7 +222,8 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
     - Files: a second analysis report in `$OUT_ANALYSIS`.
     - Changes: re-run step 2's command at the side branch head and class every hit; explain each difference from step 2 by the step that made it.
     - Dependencies: 3, 4, 5, 6, 7, 8, 9.
-    - Acceptance: no hit in class **convert**; every consumer §7 names has a test that runs its shipped block or helper, or the report names the gap as a finding for the orchestrator to file.
+    - Acceptance: no hit in class **convert**; every consumer §7 names has a test that runs its shipped block or helper, or the report names the gap as a finding for the orchestrator to file. **Added 2026-10-05 on the user's ruling under step 2:** the report carries the per-hit table with a Basis column and one count per basis beside the four class totals; it classes with the step-2 flowchart, the step-2 basis labels and rules (a) to (d), adds a basis label for any group those do not cover and states each new label's rule; it folds the result to Prior's three classes and states, apart from that fold, the count of every other-kind basis that is not a record kind, so that no such hit is reported as another record type.
+    - [IN PROGRESS] 2026-10-05.
 
 11. **The rehearsal on a migrated copy of this workbench**
     - Executor: `code-implementer`
@@ -270,7 +272,7 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
 17. **The hand-over to Prior**
     - Executor: `analyst` (drafts; the orchestrator appends and commits)
     - Files: `codec/fixtures/prior/REQUESTS.md`, a new section `## FJ03d (the hand-over)`.
-    - Changes: what landed and at which commits; step 10's classification result; the activation evidence on fusion's own workbench (receipt, read-back, no-op, suite, the window build's commit and bundle digest); that no codec byte moved, so no re-qualification is asked; what remains for FJ05.
+    - Changes: what landed and at which commits; step 10's classification result, with its per-basis counts beside the class totals and the count of pattern matches without control grammar stated apart (added 2026-10-05 on the user's ruling under step 2); the activation evidence on fusion's own workbench (receipt, read-back, no-op, suite, the window build's commit and bundle digest); that no codec byte moved, so no re-qualification is asked; what remains for FJ05.
     - Dependencies: 16.
     - Acceptance: the section is an append; the digest it states equals `shasum -a 256 codec/dist/fusion-record.js`.
 
