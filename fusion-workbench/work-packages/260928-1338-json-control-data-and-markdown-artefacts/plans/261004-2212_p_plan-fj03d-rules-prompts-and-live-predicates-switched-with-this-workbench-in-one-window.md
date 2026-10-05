@@ -125,6 +125,7 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
      - `## Record filing` and `## Decision Record Template`: filename marker-free, the record created by `create` after its narrative is written.
    - Dependencies: 2.
    - Acceptance: `reference-resolution-lint`, `path-literal-lint`, `provenance-header-lint` and `rules-emission-golden` green in the worktree, every dispatch path at or under its baseline row (decision 261004-2212, bound; a shortfall stops the step and returns its figure); the other suites unchanged against step 1's baseline.
+   - [DONE] 2026-10-05, `fj03d` `7fe0a7fe`. All 62 convert hits rewritten; the step-2 search now finds 3 lines in the file, each legacy-only. Decision 260927-2319 realised (an agent may originate a package with `--origin`); C9 still open, so the decision lines keep their forms paired with operations. The rule shrank 169 bytes; room per path now 789 (requirements-designer) to 1 358. `reference-resolution-lint`'s path count re-approved 1 926 → 1 936 as its failure text asks (all ten new references in the rule file). Suites as step 1. Gap filed: issue 261005-0527 (a plan filed by `create` has no step anchors), for step 6.
 
 4. **The other rule files and the staging-drift list**
    - Executor: `code-implementer`
