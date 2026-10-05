@@ -38,3 +38,7 @@ The answered order record puts FJ03d, the migration of this repository's workben
 ## Recommendation
 
 Option 1, with the release allowed to differ from the window commit, and FJ05 listing that difference and re-running the activation proof on the tag.
+
+## Answer
+
+Answered 2026-10-05 by the user (Kai Stalmann), in chat ("B1 als ~/.fp"): option 1, a separate install home from the pushed branch, with `FUSION_HOME=~/.fp` (not `~/.fusion-13`) and a launcher directory of its own. The user added, in chat: "~/.fusion auf keinen Fall ändern, damit wird produktiv an einen Consumer Projekt gearbeitet." So no step of FJ03d or FJ05 installs, updates, reinstalls or writes `~/.fusion`; the window launcher and any `fusion --update` run from it must be shown unable to reach `~/.fusion` before the install.

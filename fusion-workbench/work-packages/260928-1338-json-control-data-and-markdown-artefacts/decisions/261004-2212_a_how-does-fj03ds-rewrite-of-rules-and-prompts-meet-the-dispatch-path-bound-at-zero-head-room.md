@@ -33,3 +33,7 @@ Margins at `9c74070b`, by inference: summing the files the work tree's `bin/fusi
 ## Recommendation
 
 Option 1. The rewrite turns procedures (rename, annotate, glob) into calls of one helper, which should shrink the always-on text rather than grow it (inference, not yet measured). Option 2 stays available as the user's ruling on a measured shortfall, never as a default.
+
+## Answer
+
+Answered 2026-10-05 by the user (Kai Stalmann), in chat ("A1"): option 1, cut-only, net non-positive per dispatch path at every commit. A step that cannot fit stops and returns the shortfall to the user.
