@@ -241,7 +241,7 @@
 # ## Naming a holder, and why the name never enters a comparison
 #
 # A site that renders another checkout's holder reads the hex off the claim
-# (`**Claim:** <8 hex> — <person>, YYMMDD-HHMM`, the record template in
+# (`claim.checkout_id` of the package's `package.json`, the field table in
 # `rules/fusion-workbench-conventions.md` `## Work packages`),
 # calls `resolve <hex>` behind the usual `[ -x ]`, and renders the `person=`
 # and `alias=` lines it gets, each absent when the entry lacks it: an absent

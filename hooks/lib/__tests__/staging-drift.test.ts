@@ -9,7 +9,7 @@
 
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { classify, LIVE_PREFIXES, LIVE_STATE } from "../staging-drift.js";
@@ -24,6 +24,7 @@ import {
   withProject,
 } from "./helpers/guard-harness.js";
 import type { Project } from "./helpers/guard-harness.js";
+import { createPackage, withJsonProject } from "./helpers/json-workbench.js";
 
 /**
  * A workbench holding one committed record of each kind the classifier has an
@@ -522,6 +523,25 @@ describe("staging drift: the JSON surfaces, by path alone", () => {
       expect(keys(res.stdout).verdict).toBe("clean");
       expect(res.stdout).not.toContain("PAIR-SPLIT");
       expect(row(res.stdout, "workbench.json")).toMatch(/^ {2}in-flight/);
+    });
+  }, CASE_TIMEOUT);
+
+  it("ignores the codec's journal and tracks the manifest and a pair, with and without this repository's .gitignore", () => {
+    // Class L and R3 of `rules/workbench-tracking.md`, asked of git itself on a
+    // workbench the kernel wrote. fusion ships no ignore rule, so the bare case is
+    // a consuming project's; the second adds this repository's own `.gitignore`.
+    withJsonProject((project) => {
+      const pkg = createPackage(project, "261005-0600-a");
+      git(project.root, "init", "-q");
+      const status = (rel: string) =>
+        spawnSync("git", ["-c", "core.excludesFile=/dev/null", "check-ignore", "-q", `fusion-workbench/${rel}`], { cwd: project.root }).status;
+      const ignored = [".json-state/journal", ".json-state/ops/x.json"];
+      const tracked = ["workbench.json", pkg.path, pkg.narrative];
+      for (const rel of ignored) expect(status(rel), `${rel}, no project .gitignore`).toBe(0);
+      for (const rel of tracked) expect(status(rel), `${rel}, no project .gitignore`).toBe(1);
+      copyFileSync(resolve(pluginRoot, ".gitignore"), resolve(project.root, ".gitignore"));
+      for (const rel of [...ignored, ".guard-state/record-change-pending.jsonl"]) expect(status(rel), rel).toBe(0);
+      for (const rel of tracked) expect(status(rel), rel).toBe(1);
     });
   }, CASE_TIMEOUT);
 });

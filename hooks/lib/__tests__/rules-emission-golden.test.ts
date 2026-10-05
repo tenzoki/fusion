@@ -278,7 +278,7 @@ const ROLES: Record<string, Role> = {
 
   /**
    * The state-auditor: the worked transitions, because worked transition 1,
-   * `_o_ -> _a_`, is its act (gate 260827-0830). It carried
+   * `open -> answered`, is its act (gate 260827-0830). It carried
    * `bounded-dispatch.md` beside them until the bound's retirement on
    * 2026-09-10.
    */

@@ -117,8 +117,8 @@ The topic is **not** a per-invocation user argument in the standard flow. It is
 **Which item is claimed is not decided here, and this file does not define it.**
 `bin/fusion-rules` asks `bin/fusion-claimed-package`, which is the single
 implementation of that criterion and the one `bin/fusion-paths` calls from the
-same Setup step for its own reason; the criterion itself — the `**Status:**` and
-`**Claim:**` fields, and the refusal to pick when two items are claimed — is the *Contract*
+same Setup step for its own reason; the criterion itself — `status` and
+`claim.checkout_id` of `package.json`, and the refusal to pick when two items are claimed — is the *Contract*
 subsection of `rules/fusion-workbench-conventions.md` `## Path Resolution`, over the grammar
 `rules/fusion-workbench-conventions.md` `## Work packages` defines. This
 paragraph carried a second statement of
