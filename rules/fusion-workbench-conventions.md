@@ -207,9 +207,11 @@ The narrative carries the brief and nothing that decides state:
 | `active_documents` | `adopt-plan`, which moves a replaced plan into `references` |
 | `domain`, `filed_by`, `origin` | `create`, once |
 
+**`--outcome` takes three required fields**: `{"class":"completed","reason":"<what landed>","evidence":[]}` into `done`; into `dropped` the class is `bounded`, `cancelled`, `failed` or `dropped` and `reason` is non-empty.
+
 A narrative imported by `/fusion:migrate` may keep `**Domain:**`, `**Filed by:**` or `**Cross-references:**` lines: they are informational, and where one disagrees with `package.json` the JSON governs.
 
-**`mode` `autonomous` is the user's standing answer to the approvals about the solution**; `ordinary` is the default. It stands on the user's word and is written only on it, `set-mode --source` citing the record or artefact that holds the user's words: by the user, by `/fusion:wp` from the user's own words, or by the orchestrator in the same turn as a filing or a claim the user asked for, never from the brief's prose. Which approval conditions it answers, and which it never does, is `agents/orchestrator.md` `## Human approval rules`; a `gate_response` citing it records an answer the user gave, so `## Dispatching another agent` holds.
+**`mode` `autonomous` is the user's standing answer to the approvals about the solution**; `ordinary` is the default. It stands on the user's word and is written only on it, `set-mode --source` citing the narrative that holds the user's words, `'{"kind":"user-word","ref":{"kind":"other","path":"<it>","sha256":"sha256:<of its bytes>"}}'`: by the user, by `/fusion:wp` from the user's own words, or by the orchestrator in the same turn as a filing or a claim the user asked for, never from the brief's prose. Which approval conditions it answers, and which it never does, is `agents/orchestrator.md` `## Human approval rules`; a `gate_response` citing it records an answer the user gave, so `## Dispatching another agent` holds.
 
 **`status` takes five values and there is no sixth.** The first three are live; the last two are terminal, the `terminal` set of `package` in `codec/contract/transitions.json`.
 
@@ -219,9 +221,7 @@ A narrative imported by `/fusion:migrate` may keep `**Domain:**`, `**Filed by:**
 | `claimed` | a checkout is working on it now | names that checkout |
 | `paused` | set aside deliberately, not abandoned, expected back | null |
 | `done` | the work landed | may keep the checkout that did it |
-| `dropped` | no longer live; the narrative says why, citing the item that replaced it or the reason | may keep one that stood |
-
-`claimed` is the value no record kind has: it says *which checkout*, which is what stops two people doing one job.
+| `dropped` | no longer live; the narrative says why | may keep one that stood |
 
 **The edges are the kernel's**: `claim` from `open` or `paused`; `release` from `claimed` to `open`; `transition` from `open` or `claimed` to `paused`, from `paused` to `open`, from `claimed` to `done`, and from any live value to `dropped`. The codec refuses any other (exit 6). Pausing clears the claim, so resuming is an ordinary `claim` by anybody. **A paused item's narrative says *what* it is waiting for** and never a date, because nothing checks a date; where the thing waited on is another work package, that is a `depends_on` entry rather than prose. **`done` and `dropped` are terminal**: reopening one is filing a new item that cites it (`## Terminal states are history`).
 
@@ -229,7 +229,7 @@ A narrative imported by `/fusion:migrate` may keep `**Domain:**`, `**Filed by:**
 
 **There is no takeover.** A package another checkout holds stays claimed until that checkout releases or transitions it; no flag overrides the refusal, and none exists until a qualified codec revision provides one (request 38 in `codec/fixtures/prior/REQUESTS.md`). Within one workbench the codec refuses a second claim. Across checkouts the race is detected, not prevented: two that both pull, both see `open` and both claim conflict on `package.json` at the next merge, and the one who loses picks another item.
 
-**`depends_on` entries are written by `set-dependencies --on <condition>:<package control path>`.** **An entry stands on the user's confirmation, and no agent writes one without it**: a rule about who may write, not a description of what the field holds, which the migration's conversion once violated. **One agent route may propose an entry for the user to confirm**, the policy-curator's `**Edges:** on` survey (`agents/policy-curator.md` `## The fourth subject — work-package edges`), whose proposals are inert until somebody rules on them. **`mode` `autonomous` on the item that survey targets is the one route by which a proposed entry is written without a per-entry ruling**: the ledger is then applied whole, edges included, on the standing answer the field is, and `agents/orchestrator.md` `## Human approval rules` is the authority for which approval conditions it answers. Absent that, the write still stands on the user's confirmation, entry by entry. `bin/fusion-work-order` computes the order over the confirmed edges, and it stands unless the user overrides it. No agent asserts a ranking, and no field holds one. Binding decision: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3).
+**`depends_on` entries are written by `set-dependencies --on <condition>:<package control path>`.** **An entry stands on the user's confirmation, and no agent writes one without it**. **One agent route may propose an entry for the user to confirm**, the policy-curator's `**Edges:** on` survey (`agents/policy-curator.md` `## The fourth subject — work-package edges`), whose proposals are inert until somebody rules on them. **`mode` `autonomous` on the item that survey targets is the one route by which a proposed entry is written without a per-entry ruling**: the ledger is then applied whole, edges included, on the standing answer the field is, and `agents/orchestrator.md` `## Human approval rules` is the authority for which approval conditions it answers. Absent that, the write still stands on the user's confirmation, entry by entry. `bin/fusion-work-order` computes the order over the confirmed edges, and it stands unless the user overrides it. No agent asserts a ranking, and no field holds one. Binding decision: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3).
 
 **An entry asserts one relation and one only: the named item must reach its condition before this item may start.** `terminal` is reached at `done` or `dropped`, because neither is a node; `succeeded` is the stricter condition chosen explicitly, `done` with outcome `completed` and an accepted evidence record (`codec/contract/dependencies.json`). A `paused` target has reached neither, so the entry is live: the paused item is a node in `bin/fusion-work-order`'s graph and blocks every item naming it. A citation that orders nothing (a record the item rests on, a decision that binds it, work it merely touches) stays in the narrative's prose. Binding decisions: `260908-2018_*_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md` and, for the node set the terminal values come from, `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`.
 
@@ -366,7 +366,7 @@ The terminal states are the `terminal` sets of `codec/contract/transitions.json`
 - A step: `--steps '[{"id":"<n>","state":"in_progress"}]'`, later `"done"`, `<n>` its number under `## Implementation Steps`. The number is the anchor, so a step is never renumbered and none is added (decision `261001-1804_*_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md`). When only steps move, `--to` names the state the plan stands in.
 - A criterion: `--criteria '[{"id":"<id>","met":true}]'`.
 - The plan: `--to in_progress` when work starts, `--to closed` when it is done; closing does not require every step done.
-- `--steps` updates only anchors the plan has: one per numbered step, imported or filed by `create` (`scanPlan` in `hooks/lib/legacy-import.ts`).
+- `--steps` updates only anchors the plan has: one per numbered step, imported or filed by `create`.
 
 ### Issue files
 
@@ -398,7 +398,7 @@ Answered: <citation> — <one-line summary>; ruled by <agent name or "user">, <p
 ---
 Implemented: <commit hash> or <citation> — <one-line summary>
 ```
-(`--to implemented --implementation-ref`, from `answered`, or from `open` if the implementation skipped the recorded-answer step)
+(`--to implemented --implementation-ref '"<commit hash>"'`, from `answered`, or from `open` if the implementation skipped the recorded-answer step)
 
 ```
 ---

@@ -48,6 +48,8 @@
 #   issue     --disposition
 #   plan      --steps --criteria
 #   decision  --answer-ref --implementation-ref --superseded-by --deferral
+# The values of `--outcome` and of set-mode's `--source` are spelled in
+# `rules/fusion-workbench-conventions.md` `## Work packages`.
 # The table is `PAYLOAD_FIELDS` in `hooks/lib/record-write.ts`, held equal to
 # the codec's schemas by `hooks/lib/__tests__/record-write.test.ts`.
 #

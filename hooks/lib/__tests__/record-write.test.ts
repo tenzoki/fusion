@@ -258,7 +258,7 @@ describe("initialize, one case per row of Setup's table", () => {
 });
 
 describe("bin/fusion-write", () => {
-  it("prints KEY=value lines and exits by the header's table", () => {
+  it("prints KEY=value lines and exits by the header's table; the --outcome value the conventions spell finishes a package", () => {
     withJsonProject((p) => {
       repo(p);
       const [mine, theirs] = [createPackage(p, "260930-1300-a"), createPackage(p, "260930-1301-b")];
@@ -268,7 +268,9 @@ describe("bin/fusion-write", () => {
       expect(ok.stdout.split("\n").map((l) => l.split("=")[0])).toEqual(["result", "operation_id", "path", "revision", "event", ""]);
       const codes = [ok, cli("claim", "--record", mine.path, "--actor", "user"), cli("release", "--record", theirs.path, "--actor", "user", "--reason", "r"), cli("claim", "--bogus"), cli("log-repair")];
       codes.push(cli("create", "--kind", "issue", "--narrative-file", put(p, `${mine.dir}/issues/261001-0902-i.md`), "--origin", mine.path, "--actor", "user"), cli("evidence", "--record", mine.path, "--report", put(p, `${mine.dir}/reviews/261001-1000-r.md`), "--verdict", "accept", "--actor", "reviewer"));
-      expect(codes.map((r) => r.status)).toEqual([0, 6, 5, 2, 0, 0, 0]);
+      const outcome = /`--outcome` takes[^`]*`(\{[^`]+\})` into `done`/.exec(readFileSync(resolve(REPO_ROOT, "rules", "fusion-workbench-conventions.md"), "utf-8"))?.[1] ?? "the rule spells no --outcome value";
+      codes.push(cli("transition", "--record", mine.path, "--to", "done", "--reason", "r", "--outcome", outcome, "--actor", "orchestrator"));
+      expect([codes.map((r) => r.status), shown(p, mine.path).control.outcome]).toEqual([[0, 6, 5, 2, 0, 0, 0, 0], JSON.parse(outcome)]);
     });
   }, CASE_TIMEOUT);
 });
