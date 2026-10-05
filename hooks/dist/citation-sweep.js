@@ -42,27 +42,36 @@
  *
  * The workbench's format is asked before the corpus is read, through
  * `lib/record-index.ts` and the codec's `inspect`, and the first line of stdout
- * names it (`format=`). Only `json-control` is swept. Only the codec writes
- * JSON (Prior's spec, section 1.5), so no codec file is ever in the corpus: a
- * `<path>` naming a control file, the manifest or anything under
- * `.json-state/` is a usage error, and a declared one is left out with a line
- * on stderr. The census carries one `bound=<file>  <role>:<control>[, ...]`
- * line per file in the write set whose bytes a record binds by hash: a plan or
- * spec in a package's `active_documents`, read off `reconcile`'s references
- * with its role, or the report an evidence record names, its neighbour by
- * name. No request beyond the index's three is sent, however many records
- * there are. Guard (b) thereby names, before `--yes`, every rewrite that would
- * leave an adoption or a review's evidence stale (section 9). Nothing is
- * refused on that ground: the rewrite is revertible under guard (a), and the
- * staleness is the codec's to report. A binding whose target the index does
- * not hold (a reference to nothing, a record the codec could not read) names
- * no file and prints no line; `bin/fusion-citation-check` reports both. Nor
- * does a binding `reconcile` found ambiguous.
+ * names it (`format=`):
  *
- * A `legacy` workbench is refused by name and pointed at `/fusion:migrate`
- * (FJ03d step 8, with the checker and plan-size). It and every other answer
- * stop the run before a line of stdout (exit 3 or 6 below). None of them is
- * an empty workbench.
+ *   `json-control`  only the codec writes JSON (Prior's spec, section 1.5), so
+ *                   no codec file is ever in the corpus: a `<path>` naming a
+ *                   control file, the manifest or anything under
+ *                   `.json-state/` is a usage error, and a declared one is
+ *                   left out with a line on stderr. The census carries one
+ *                   `bound=` line per bound file, below.
+ *   `legacy`        swept as a rewriter only, with no `bound=` line: no
+ *                   record binds a file yet. `/fusion:migrate` Step 6 sweeps
+ *                   here, after the store rename and before Step 7 moves the
+ *                   control data to JSON (FJ03d step 7); the sweep reads
+ *                   names, never Markdown control data. The checker and
+ *                   plan-size still refuse a legacy workbench.
+ *
+ * A `bound=<file>  <role>:<control>[, ...]` line names each file in the write
+ * set whose bytes a record binds by hash: a plan or spec in a package's
+ * `active_documents`, read off `reconcile`'s references with its role, or the
+ * report an evidence record names, its neighbour by name. No request beyond
+ * the index's three is sent, however many records there are. Guard (b)
+ * thereby names, before `--yes`, every rewrite that would leave an adoption or
+ * a review's evidence stale (section 9). Nothing is refused on that ground:
+ * the rewrite is revertible under guard (a), and the staleness is the codec's
+ * to report. A binding whose target the index does not hold (a reference to
+ * nothing, a record the codec could not read) names no file and prints no
+ * line; `bin/fusion-citation-check` reports both. Nor does a binding
+ * `reconcile` found ambiguous.
+ *
+ * Any other answer stops the run before a line of stdout (exit 3 or 6 below).
+ * None of them is an empty workbench.
  *
  * ## The declared corpus
  *
@@ -280,7 +289,7 @@
  * where they sit: under the workbench outside `archive/`, under its
  * `archive/`, and outside the workbench (the declared `citations.extraPaths`
  * and any `<path>` argument), always all three and in that order — then the
- * `bound=` lines (in write-set order), then
+ * `bound=` lines (`json-control` only, in write-set order), then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
  * package-record=<n> package-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message
@@ -419,8 +428,7 @@
  *      outside the work tree or untracked by it. Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
- *   6  the workbench was not read: `legacy` (refused by name, pointing at
- *      `/fusion:migrate`), `unsupported`, a refusal of the codec
+ *   6  the workbench was not read: `unsupported`, a refusal of the codec
  *      (`recovery-blocked` among them), or no answer. The cause is on stderr
  *      and NOTHING is on stdout; nothing written.
  */
@@ -429,7 +437,7 @@ import { existsSync, readFileSync, realpathSync, statSync, writeFileSync } from 
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { BRACKET_SLOT, createScanner, declaredCitationFiles, declaredCitationNotes, fencedContentLines, GATE_KINDS, markdownFilesUnder, markerAtHead, MARKER_SLOT, } from "./lib/citation-scan.js";
 import { loadConfig } from "./lib/config.js";
-import { bundleMissing, legacyLine, notReadLine, readRecordIndex } from "./lib/record-index.js";
+import { bundleMissing, notReadLine, readRecordIndex } from "./lib/record-index.js";
 import { CITED_CONTAINER_ROOTS, isControlFile, JSON_STATE_DIR, narrativeOf, WORKBENCH_MANIFEST } from "./lib/stores.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
@@ -790,8 +798,8 @@ function boundFiles(root, index) {
 }
 /** The stderr line for a workbench that was not read, and its exit: 3 for a missing bundle, else 6. */
 function notRead(u, root) {
-    process.stderr.write(`${NAME}: ${u === "legacy" ? legacyLine(root) : notReadLine(u, root)} Nothing was swept.\n`);
-    return u !== "legacy" && bundleMissing(u) ? 3 : 6;
+    process.stderr.write(`${NAME}: ${notReadLine(u, root)} Nothing was swept.\n`);
+    return bundleMissing(u) ? 3 : 6;
 }
 // --- main --------------------------------------------------------------------
 const isTestFixture = (abs) => abs.endsWith(".ts") && abs.split(sep).join("/").includes("/lib/__tests__/");
@@ -802,11 +810,11 @@ function main(argv) {
     const projectRoot = dirname(root);
     // the format before anything else is read: see `## The format`
     const read = readRecordIndex(root);
-    if (read.format === "legacy")
-        return notRead("legacy", root);
     if (read.format === "unknown")
         return notRead(read.unread, root);
-    const bound = boundFiles(root, read.index);
+    // legacy is swept as a rewriter only: no record binds a file, so no `bound=` line
+    const json = read.format === "json-control";
+    const bound = json ? boundFiles(root, read.index) : new Map();
     // the corpus first: guard (a) asks about it, and one list is what keeps the
     // guard and the run from disagreeing about which files will be written
     const files = markdownFilesUnder(root).map((f) => f.abs);
@@ -816,7 +824,7 @@ function main(argv) {
             usage(`${p} does not exist`);
         if (statSync(abs).isDirectory())
             files.push(...markdownFilesUnder(abs).map((f) => f.abs));
-        else if (isCodecFile(root, abs))
+        else if (json && isCodecFile(root, abs))
             usage(`${p} is a file only the codec writes (Prior's spec, section 1.5); the sweep never rewrites one`);
         else
             files.push(abs);
@@ -832,7 +840,7 @@ function main(argv) {
     // counted twice
     const inCorpus = new Set(files.map(real));
     for (const f of declared.files) {
-        if (isCodecFile(root, f.abs))
+        if (json && isCodecFile(root, f.abs))
             process.stderr.write(`${NAME}: declared ${relOf(projectRoot, f.abs)} is a file only the codec writes; left out of the corpus\n`);
         else if (!inCorpus.has(real(f.abs)))
             files.push(f.abs);

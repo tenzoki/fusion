@@ -43,7 +43,7 @@ else
 fi
 ```
 
-The first line is the workbench's format. `"state":"json-control"` adds the three blocks of `## On a JSON-controlled workbench`, at Steps 3, 4 and 7; any other line, or none, is this body exactly as written.
+The first line is the workbench's format. `"state":"json-control"` goes on, with the three blocks of `## On a JSON-controlled workbench` at Steps 3, 4 and 7. `"state":"legacy"` stops here, before anything moves: tell the user the workbench is legacy (no `workbench.json`: its control data is Markdown), which this version reads only once it has been migrated: run `/fusion:migrate`. Any other line, or none, stops it too: quote it.
 
 **Read that file in full before Step 2**, the way an agent reads every path `fusion-rules` emits: its record-versus-live-state split is what decides which workbench entries this workflow must preserve rather than discard. If the block prints `UNRESOLVED` or the file as not read, say so and continue — the tier tables below still apply, but the classification behind them is then unread and is not written from memory (`bin/fusion-source-root`'s header, exit 2).
 
@@ -52,7 +52,7 @@ Hold the emitted `KEY=value` values for the rest of the workflow. `$WORKBENCH` i
 - **Exit 1** — no workbench above `pwd`. Halt: there is nothing to archive. Tell the user to run `/fusion:setup` at the project root.
 - **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them anywhere in it to repair something. Report it as a fusion bug and stop.
 
-**A `SCAN_*` value may name several directories, so run every tier glob once per path in it** — `for p in $(printf %s "$SCAN_PLANS"); do … "$WORKBENCH/$p" …; done`, never once against the whole value as if it were a directory name, and never as a bare `$SCAN_PLANS`, which zsh does not word-split. Why it may is `rules/fusion-workbench-conventions.md` `## Path Resolution` → invariant 2. `$SCAN_FORUM` is always single; `$SCAN_PACKAGES` names the container store itself, where every item lives whoever holds it, and its v11 name too while that directory exists.
+**A `SCAN_*` value may name several directories, so run every tier glob once per path in it** — `for p in $(printf %s "$SCAN_PLANS"); do … "$WORKBENCH/$p" …; done`, never once against the whole value as if it were a directory name, and never as a bare `$SCAN_PLANS`, which zsh does not word-split. Why it may is `rules/fusion-workbench-conventions.md` `## Path Resolution` → invariant 2. `$SCAN_FORUM` is always single.
 
 **An empty value is still an error, never an empty result.** The resolver refuses to emit `KEY=` for a key it cannot value, so an empty one in your hands means the substitution went wrong, not that there is nothing to archive. Halt on it (`HYG-NO-SILENT-FAIL`), report the failing key, and do not survey with a whole store silently skipped.
 
@@ -64,9 +64,9 @@ The workflow takes one of:
 - `<natural-language description>` — ad-hoc archive: describe what to move; the workflow surveys, applies safety filters, proposes, confirms.
 - (empty) — ask the user via `AskUserQuestion` whether they want a tier or a natural-language description.
 
-## Marker vocabulary
+## Record states
 
-Authored in `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` and `## State Markers — decisions`; which kinds carry no marker is the fourth column of `## Filename Patterns`, the forum entry's row included. **Terminal** means a record rather than live work: `_c_` for a defect or spec/plan, `_i_` and `_s_` for a decision, and only terminal artefacts bulk-archive without per-file review. **Terminal is not archive-class:** `_d_` is terminal for a defect or plan and is still excluded from every tier (safety filter 2). A **work package** carries no marker at all — its state is its `**Status:**` head field (`## Work packages`), and `done` and `dropped` are its terminal pair.
+A record's state is the `status` of its control file, which only the codec writes; a marker left in an old file name encodes none (`rules/fusion-workbench-conventions.md` `## Terminal states are history` lists each kind's terminal set). **Terminal** means a record rather than live work, and only terminal records bulk-archive without per-file review: `done` and `dropped` for a work package, `closed` for an issue or plan, `implemented` and `superseded` for a decision. **Terminal is not archive-class:** `deferred` is terminal and is still excluded from every tier (safety filter 2).
 
 ## Safety filters (apply to ALL modes)
 
@@ -80,14 +80,12 @@ These are non-negotiable defaults. The user can override them at the `refine` st
    - `$WORKBENCH/workbench.json` and `$WORKBENCH/.json-state/`, on either format and never at `refine`: moving either takes the workbench out of JSON control.
    - Anything already under the archive store.
 
-2. **Active markers — never archive in tier modes:**
-   - `_o_` (open) and `_p_` (in-progress) defects and plans — live work.
-   - `_d_` defects and plans — *deferred ≠ done*; the user may want to revisit. Terminal, but excluded by default.
-   - Work packages whose `**Status:**` is `open`, `claimed` or `paused` — live work by the field's own definition: a `claimed` item is somebody's in-flight job, and a `paused` one is set aside deliberately and expected back.
-   - `_a_` decisions — answer recorded but not yet realised in code/data. Archiving breaks decision↔implementation traceability. Promote to `_i_` when implementation lands; do not bulk-archive `_a_`.
-   - A `done` or `dropped` work package holding a record marked `_o_`, `_p_`, `_a_` or `_d_` (issue, plan, discussion or decision), or that any live record still cites, and any item another live item names in its `**Depends-on:**` or `**Cross-references:**` field: moving it takes the target of a pointer out of every store its consumers scan. Filter 3 covers the citing corpus; this clause covers both head fields, citations a grep over prose would miss.
+2. **Live and deferred records — never archive in tier modes:**
+   - Every record whose `status` is outside its kind's terminal set: an `open` or `in_progress` issue or plan, a work package `open`, `claimed` or `paused` (a `claimed` item is somebody's in-flight job, a `paused` one is set aside and expected back), an `open` or `answered` decision (archiving an answer not yet realised breaks decision↔implementation traceability).
+   - `deferred` records — *deferred ≠ done*; the user may want to revisit. Terminal, but excluded by default.
+   - A unit `bin/fusion-archive survey` holds: a `done` or `dropped` package holding a live record (`live`), and any unit a remaining record binds, a `depends_on` entry, an adopted plan or an evidence record among them (`binding`), or cites by its full workbench path (`citation`). Moving it takes the target of a pointer out of every store its consumers scan. Filter 3 covers the shipped citing corpus.
 
-3. **Citation check:** a candidate referenced (by relative path or filename) from the citing corpus is excluded regardless of tier or marker, and the report names the citing file. The corpus is the shipped text (`CLAUDE.md`, `README*.md`, `rules/`, `agents/`, `skills/`, `hooks/lib/`, `hooks/*.ts`, `bin/`, `docs/`) plus the project's own `CLAUDE.md`, `rules/` and `.claude/rules/`: every one of them is loaded into sessions or held by a lint, so its references must stay resolvable. A positive enumeration, each entry skipped when absent, so a consuming project collapses to `CLAUDE.md` and its own rules; an unresolved source root skips the check with a report line; `hooks/lib/__tests__/workbench-citation-lint.test.ts` names this filter as its twin (decision `260827-1756_*_which-citation-corpus-does-the-archive-safety-filter-protect.md`). For a work package the candidate is a whole container, so check the container's basename **and** the basename of every file inside it: the move takes the item's own plans, issues, decisions, reviews and analyses with it, and a check that read only the container's own name would let a cited plan leave the live tree unseen.
+3. **Citation check:** a candidate referenced (by relative path or filename) from the citing corpus is excluded regardless of tier or state, and the report names the citing file. The corpus is the shipped text (`CLAUDE.md`, `README*.md`, `rules/`, `agents/`, `skills/`, `hooks/lib/`, `hooks/*.ts`, `bin/`, `docs/`) plus the project's own `CLAUDE.md`, `rules/` and `.claude/rules/`: every one of them is loaded into sessions or held by a lint, so its references must stay resolvable. A positive enumeration, each entry skipped when absent, so a consuming project collapses to `CLAUDE.md` and its own rules; an unresolved source root skips the check with a report line; `hooks/lib/__tests__/workbench-citation-lint.test.ts` names this filter as its twin (decision `260827-1756_*_which-citation-corpus-does-the-archive-safety-filter-protect.md`). For a work package the candidate is a whole container, so check the container's basename **and** the basename of every file inside it: the move takes the item's own plans, issues, decisions, reviews and analyses with it, and a check that read only the container's own name would let a cited plan leave the live tree unseen.
 
 4. **Out of tier scope by construction.** The tiers below enumerate what they include; anything they do not name is unreachable from a tier. That covers investigations, consultations, memos and analyses in the shared store — they hold strategic deliverables, briefings and source artefacts, and they are archive-class only with the user's explicit natural-language ask.
 
@@ -97,25 +95,22 @@ These are non-negotiable defaults. The user can override them at the `refine` st
 
 Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The default age threshold for "aged" buckets is 14 days; override with `tier-N <D>d` (e.g. `tier-3 21d`).
 
-### Tier 1 — Terminal markers and age in the shared store
+### Tier 1 — Terminal records and age in the shared store
 
-**Age is a tier-1 basis for one bucket only, the message store.** A forum entry has one audience and one short lifetime by design, so an aged one is as finished as a marked record, and the archive moves it rather than deleting it. The accepted cost, stated once: a checkout dormant longer than the threshold can lose an entry unread, which is what selecting by age buys.
+**Age is a tier-1 basis for one bucket only, the message store.** A forum entry has one audience and one short lifetime by design, so an aged one is as finished as a terminal record, and the archive moves it rather than deleting it. The accepted cost, stated once: a checkout dormant longer than the threshold can lose an entry unread, which is what selecting by age buys.
 
 | Target | Selection | Reason |
 |---|---|---|
-| `$SCAN_ISSUES` | `*_c_*.md` | closed defect, terminal |
-| `$SCAN_PLANS` | `*_c_*.md` | closed plan, terminal |
-| `$SCAN_DECISIONS` | `*_i_*.md` | implemented decision, terminal |
-| `$SCAN_DECISIONS` | `*_s_*.md` | superseded decision, terminal |
-| `$SCAN_PACKAGES` | each container whose record reads `**Status:** done` or `dropped` and that holds no live record (filter 2) — **the whole container moves, not the record alone** | terminal work package — its body already says what landed, or why the job is no longer live. Selected by the head field, never by a filename, which carries no marker. Moving the record alone would separate a unit of work from the plans, issues, decisions, reviews and analyses in the container with it |
-| `$SCAN_FORUM` | `*.md` whose `YYMMDD` filename prefix is older than the threshold | a message is read once and soon and carries no marker, so age is the only signal that can select it |
+| issues, plans, decisions under `shared/` | `closed` issue or plan, `implemented` or `superseded` decision, by the codec's `list` (Step 3) | terminal record; its pair moves together |
+| work packages | each package `done` or `dropped`, by the same `list` — **the whole container moves, not the record alone** | terminal work package — its narrative already says what landed, or why the job is no longer live. Moving the record alone would separate a unit of work from the plans, issues, decisions, reviews and analyses in the container with it |
+| `$SCAN_FORUM` | `*.md` whose `YYMMDD` filename prefix is older than the threshold | a message is read once and soon and has no state, so age is the only signal that can select it |
 | `$WORKBENCH/.guard-state/events.jsonl` | the live log, whenever it is non-empty | append-only evidence — **rolled**, not selected. See *Rolling the guard event log* below |
 
 ### Rolling the guard event log
 
 `$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record across every session, classified as evidence rather than telemetry (`rules/workbench-tracking.md`, read in full at Step 1, and fusion's own record `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`). This roll is the only thing that bounds its size; no line or byte ceiling may be added anywhere.
 
-**It is the one target that is rolled rather than selected.** It carries no marker and no age, so no tier survey finds it: it is included whenever the live log is non-empty, skipped silently otherwise, and still waits for confirmation where Step 6 asks. Safety filter 1's `.guard-state/` entry covers the state files beside it, not the log.
+**It is the one target that is rolled rather than selected.** It has no state and no age, so no tier survey finds it: it is included whenever the live log is non-empty, skipped silently otherwise, and still waits for confirmation where Step 6 asks. Safety filter 1's `.guard-state/` entry covers the state files beside it, not the log.
 
 The destination keeps the path relative to `$WORKBENCH`; the filename carries the archive folder's stamp:
 
@@ -125,7 +120,7 @@ The destination keeps the path relative to `$WORKBENCH`; the filename carries th
 
 ### Tier 2 — Tier 1 + aged shared reviews
 
-Adds `$SCAN_REVIEWS/*.md` whose filename date prefix is older than the threshold. Reviews don't carry markers; aging is the only signal. Every review kind shares this one store and they are distinguished by the sender in the filename.
+Adds `$SCAN_REVIEWS/*.md` whose filename date prefix is older than the threshold. A review has no state; aging is the only signal, and one an evidence record names moves with that record through Step 4's survey. Every review kind shares this one store and they are distinguished by the sender in the filename.
 
 ### Tier 3 — Tier 2 + aged shared history
 
@@ -142,29 +137,11 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
 
 3. **Build the candidate list.**
 
-   **Work packages (all tiers).** On `json-control` neither walk below runs; the Step 3 block of `## On a JSON-controlled workbench` selects instead. An item is a **directory** and its record sits inside it under the directory's own name, so the walk goes two levels down and the candidate it yields is the container. An item's state is a head field, not a filename marker, so the selection reads the record. One pass over the store:
-
-   ```bash
-   for s in $(printf %s "$SCAN_PACKAGES"); do find "$WORKBENCH/$s" -mindepth 1 -maxdepth 1 -type d 2>/dev/null; done | sort | while IFS= read -r d; do b="$(basename "$d")"; f="$d/$b.md"; [ -f "$f" ] || f="$(find "$d" -mindepth 1 -maxdepth 1 -type f -name '_?_circle.md' 2>/dev/null | head -n 1)"; [ -f "$f" ] || continue; st="$(sed -n 's/^\*\*Status:\*\*[[:space:]]*//p' "$f" | head -n 1)"; case "$st" in done|dropped) live="$(find "$d/issues" "$d/plans" "$d/planning" "$d/discussions" "$d/decisions" -maxdepth 1 -type f -name '*.md' 2>/dev/null | sort | while IFS= read -r r; do case "$(basename "$r" | sed -nE 's/^[0-9]{6}-[0-9]{4}_([a-z])_.*/\1/p')" in (o|p|a|d) printf 'live\t%s\t%s\n' "$b" "${r#"$d"/}" ;; esac; done)"; if [ -n "$live" ]; then printf '%s\n' "$live"; else printf '%s\t%s\n' "$st" "$b"; fi ;; esac; done
-   ```
-
-   **A `live` line is filter 2 reaching inside the container**, since the move takes every record in it out of every scan. A container with any live record (filter 2's set) is excluded and named in the proposal with each live record; natural-language mode flags it `[ACTIVE]`.
-
-   **The fallback in that loop is the store's two record forms, not a defect.** A migrated workbench keeps its terminal records under their old marked name, because a terminal record is history and is not edited back (`rules/fusion-workbench-conventions.md` `## Terminal states are history`), so the walk reaches every container either way. Such a record's `**Status:**` is absent, or written in the older state vocabulary its marker belongs to (`closed`, `bounded`, `anticipated`, `active`) — never one of the five. It is **not selected**, it is **not a fault**, and legacy containers are reported once as a count rather than one line each. The workbench-state fault is narrower than it reads, and only this form reaches it: a record in the **item** form, `<container>/<container>.md`, whose `**Status:**` is missing or outside the five. Report that one, exclude it, do not guess which state was meant.
-
-   **Then check the two head fields** (filter 2's last clause). An item a live item names in `**Depends-on:**` or `**Cross-references:**` is excluded in every tier, listed with the item that names it, and left in place. The same walk, because the bare `"$WORKBENCH/$SCAN_PACKAGES"/*.md` this once used matches nothing now and aborts the command under zsh (Step 1's split rule):
-
-   ```bash
-   for s in $(printf %s "$SCAN_PACKAGES"); do find "$WORKBENCH/$s" -mindepth 1 -maxdepth 1 -type d 2>/dev/null; done | while IFS= read -r d; do f="$d/$(basename "$d").md"; [ -f "$f" ] || continue; st="$(sed -n 's/^\*\*Status:\*\*[[:space:]]*//p' "$f" | head -n 1)"; case "$st" in open|claimed|paused) sed -nE 's/^\*\*(Depends-on|Cross-references):\*\*[[:space:]]*//p' "$f" | tr ',' '\n' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//' ;; esac; done | sort -u
-   ```
-
-   That one needs no marked-record fallback and deliberately carries none: a marked record has no `**Status:**`, so it can never be `open`, `claimed` or `paused`, and reaching for it would add a read whose every answer is discarded.
-
-   Natural-language mode flags such an item `[ACTIVE]` instead, so the user can override at `refine`.
+   **Records (all tiers)** are selected by their state, never by a file name: the Step 3 block of `## On a JSON-controlled workbench`. A work package's candidate is its container. Filter 2's holds inside a container and across records are the survey's, after Step 4, and no `refine` lifts one: only a change to the record that holds it does.
 
    **Shared files (per tier).** Mechanically expand the tier's globs against the `$SCAN_*` values derived in Step 1. For aged buckets, parse the `YYMMDD` (or legacy `MMDD`) date prefix and compare to `today - threshold`.
 
-   **Natural-language mode.** Survey what the description suggests; apply safety filters as defaults but flag any active-marker hits with `[ACTIVE]` rather than silently dropping them — the user may want them at `refine`.
+   **Natural-language mode.** Survey what the description suggests; apply safety filters as defaults but flag any live-record hits with `[ACTIVE]` rather than silently dropping them — the user may want them at `refine`.
 
 4. **Citation check** (filter 3). The corpus is built first, existence-guarded, into the positional parameters; the two globbed kinds come through `find`, so a zsh `nomatch` cannot abort the loop (Step 1's split rule):
    ```bash
@@ -195,7 +172,7 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
 
 7. **Archive on confirmation.**
    - `mkdir -p "$WORKBENCH/archive/<YYMMDD-HHMM>-<slug>/"`
-   - For each candidate: recreate its parent path under the archive folder and `mv` it. A work package's candidate is its **container**, moved whole in one `mv` — never walked and moved file by file, which would leave the emptied directory behind and could half-complete.
+   - Record units first, through the Step 7 block of `## On a JSON-controlled workbench`: a work package's container moves whole there. Then, for each file left in `$KEEP`, recreate its parent path under the archive folder and `mv` it.
    - Move only — never copy.
    - **A collision never overwrites.** If a destination exists, leave the source in place, say so on stderr, and count it. Losing an artefact to a silent clobber is the one outcome this workflow must never produce (`HYG-NO-SILENT-FAIL`).
    - **Roll the guard event log** (all tiers, and natural-language mode when the description asks for it), after the moves above. `STAMP` and `SLUG` below are the two values already resolved for this invocation's archive folder name — the `date +%y%m%d-%H%M` reading and the kebab-case label from *Where archives go*. Do **not** take a second `date` reading: the folder and the file inside it would then disagree about when the roll happened.
@@ -258,7 +235,7 @@ Adds `$SCAN_HISTORY/*.md` whose filename date prefix is older than the threshold
 
 A record here is a pair, its Markdown and the control file the codec writes beside it (`package.json`, `<name>.record.json`, `<name>.evidence.json`), and the control file names its narrative by workbench path, so a `mv` would leave the pair unresolvable. **A record unit moves only through `bin/fusion-archive`**, whose header is the account: it fences the store against every codec write, holds each unit a remaining record binds, moves, verifies, and ends the fence. Forum entries, reports no evidence record names, history and the guard log move as Step 7 says.
 
-**Step 3, in place of both walks.** The state is the codec's: a package `done` or `dropped` yields its container; under `shared/` an issue or plan `closed`, or a decision `implemented` or `superseded`, yields its narrative. `deferred` and the live states stay (filter 2).
+**Step 3, the record selection.** The state is the codec's: a package `done` or `dropped` yields its container; under `shared/` an issue or plan `closed`, or a decision `implemented` or `superseded`, yields its narrative. `deferred` and the live states stay (filter 2).
 
 ```bash
 echo '{"op":"list"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" | grep -o '"path":"[^"]*","kind":"[a-z]*","id":"[^"]*","status":"[a-z]*","revision":"[^"]*","narrative":{"path":"[^"]*"' | sed -E 's/^"path":"([^"]*)","kind":"([a-z]*)".*"status":"([a-z]*)".*"path":"([^"]*)"$/\2 \3 \1 \4/' | while read -r k s c n; do case "$k $s" in "package done"|"package dropped") echo "$WORKBENCH/${c%/*}" ;; "issue closed"|"plan closed"|"decision implemented"|"decision superseded") case "$n" in shared/*) echo "$WORKBENCH/$n" ;; esac ;; esac; done

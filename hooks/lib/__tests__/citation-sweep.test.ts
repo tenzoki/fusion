@@ -164,11 +164,12 @@ function git(cwd: string, ...args: string[]) {
   return r.stdout;
 }
 
-/** A scratch repo whose workbench is committed, plus one dirty record inside it, committed too. */
-function scratchRepo(): { root: string; wb: string; doc: string } {
+/** A scratch repo whose workbench is committed, plus one dirty record inside it, committed too; `legacy` drops the manifest. */
+function scratchRepo(legacy = false): { root: string; wb: string; doc: string } {
   const root = realpathSync(mkdtempSync(join(tmpdir(), "sweep-repo-")));
   git(root, "init", "-q");
   const wb = scratchAt(root);
+  if (legacy) rmSync(join(wb, "workbench.json"));
   const doc = join(wb, "shared/decisions/260303-0303_o_doc.md");
   writeFileSync(doc, DIRTY_DOC);
   writeFileSync(join(wb, "shared/analyses/260606-0606-fenced-mv.md"), FENCED_DOC);
@@ -382,9 +383,9 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
     }
   }, CASE_TIMEOUT);
 
-  // issue 261004-2059: migrate Step 6 must respell each v11 container-root form as its live twin
-  it("respells every v11 `circles/` container-root citation exactly as its `work-packages/` twin", () => {
-    const { root, wb, doc } = scratchRepo();
+  // issue 261004-2059: migrate Step 6 must respell each v11 container-root form as its live twin, on the legacy workbench it runs over (FJ03d step 7)
+  it.each(["json-control", "legacy"])("respells every v11 `circles/` container-root citation exactly as its `work-packages/` twin, %s", (format) => {
+    const { root, wb, doc } = scratchRepo(format === "legacy");
     const [item, circle] = ["260505-0505-widget-bar", "260606-0606-old-circle"];
     const forms = [`${item}/${item}.md`, `${circle}/_t_circle.md`, item];
     mkdirSync(join(wb, "work-packages", circle), { recursive: true });
@@ -399,6 +400,7 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
       expect(run.status, run.stderr).toBe(0);
       const want = [`${item}.md`, circle, item].map((s) => `\`${s}\` \`${s}\``);
       expect(readFileSync(doc, "utf-8").split("\n")).toEqual(want);
+      expect([run.stdout.split("\n")[0], run.stdout.includes("bound=")]).toEqual([`format=${format}`, false]);
       expect(last(run)).toMatch(/ rewrites=6 residual=0 record=0 package-record=4 package-dir=2 /);
     } finally {
       rmSync(root, { recursive: true, force: true });
@@ -533,7 +535,7 @@ describe("citation-sweep on a JSON-controlled workbench", () => {
     });
   }, CASE_TIMEOUT);
 
-  it("refuses a <path> naming a control file, exit 1, and stops on an unsupported or a legacy workbench, exit 6, and on an internal error, exit 3, each with nothing on stdout", () => {
+  it("refuses a <path> naming a control file, exit 1, and stops on an unsupported workbench, exit 6, and on an internal error, exit 3, each with nothing on stdout; sweeps a legacy one as a rewriter with no bound= line", () => {
     withJsonProject((p) => {
       const pkg = createPackage(p, "260101-0001-alpha");
       const refused = sweep(p.root, p.workbench, join(p.workbench, pkg.path));
@@ -546,8 +548,12 @@ describe("citation-sweep on a JSON-controlled workbench", () => {
       expect([unread.status, unread.stdout, unread.stderr]).toMatchObject([6, "", expect.stringMatching(/unsupported .*unknown-feature.* Nothing was swept\.$/m)]);
     });
     withJsonProject((p) => {
+      place(p, "shared/issues/260101-0001_o_alpha.md", "# alpha\n");
+      place(p, "shared/analyses/260101-0002-cites.md", "see `shared/issues/260101-0001_o_alpha.md`\n");
       const legacy = sweep(p.root, p.workbench, "--dry-run");
-      expect([legacy.status, legacy.stdout, legacy.stderr]).toMatchObject([6, "", expect.stringMatching(/is legacy \(no workbench\.json: .*run \/fusion:migrate\. Nothing was swept\.$/m)]);
+      expect(legacy.status, legacy.stderr).toBe(0);
+      const lines = legacy.stdout.trim().split("\n");
+      expect([lines[0], lines.filter((l) => l.startsWith("bound=")), lines.at(-1)]).toEqual(["format=legacy", [], expect.stringMatching(/^files=1 rewrites=1 /)]);
     }, { legacy: true });
   }, CASE_TIMEOUT);
 });

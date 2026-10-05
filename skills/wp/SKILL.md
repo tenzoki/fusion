@@ -16,7 +16,7 @@ echo '{"op":"inspect"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" | grep -o '"st
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" wp
 ```
 
-The first line is the workbench's format. `"state":"json-control"` files through the codec, `## On a JSON-controlled workbench`; any other line, or none, is the flow below exactly as written. Read `WORKBENCH` and `OUT_PACKAGES`. Exit 1 means no workbench above `pwd`: tell the user to run `/fusion:setup` at the project root first. The other codes are `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes.
+The first line is the workbench's format. `"state":"json-control"` goes on. `"state":"legacy"` stops here, before anything is written: tell the user the workbench is legacy (no `workbench.json`: its control data is Markdown), which this version reads only once it has been migrated: run `/fusion:migrate`. Any other line, or none, stops it too: quote it. Read `WORKBENCH` and `OUT_PACKAGES`. Exit 1 means no workbench above `pwd`: tell the user to run `/fusion:setup` at the project root first. The other codes are `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes.
 
 **No read key is emitted, deliberately:** a skill's key set is read from its own file, and this workflow files and never lists, re-reads or consolidates the backlog. Consolidating is a maintenance operation the orchestrator performs at the user's word, and a run here that set out to do it has no resolved path to read from.
 
@@ -30,37 +30,32 @@ The first line is the workbench's format. `"state":"json-control"` files through
 
 ## The item
 
-**Created, not appended, and an item is a directory.** One new container at `$WORKBENCH/$OUT_PACKAGES/<YYMMDD-HHMM>-<topic>/`, holding one record under the container's own name: `<YYMMDD-HHMM>-<topic>/<YYMMDD-HHMM>-<topic>.md`. The stamp comes from `date +%y%m%d-%H%M` (`rules/fusion-workbench-conventions.md` `## Timestamps` — never guess it), and `<topic>` is a kebab-case slug of the title, lowercased, articles dropped, six words at most. **There is no marker on either name** — an item's state is its `**Status:**` head field, which is `open` at creation and always here. Create the container and the record and stop there: the per-kind subdirectories an item's own work fills are made on first write, not at filing.
+**Created, not appended, and an item is a directory.** One new container at `$WORKBENCH/$OUT_PACKAGES/<YYMMDD-HHMM>-<topic>/`, holding the record under the container's own name, `<YYMMDD-HHMM>-<topic>.md`, and the control file `package.json` the codec writes beside it. The stamp comes from `date +%y%m%d-%H%M` (`rules/fusion-workbench-conventions.md` `## Timestamps` — never guess it), and `<topic>` is a kebab-case slug of the title, lowercased, articles dropped, six words at most. **There is no marker on either name**: the state is the control file's, `open` at filing. The per-kind subdirectories an item's own work fills are made on first write, not at filing.
 
 If the container you derived already exists, neither overwrite nor append: pick a `<topic>` that tells the two apart, and say in your report that you did.
 
-The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-conventions.md` `## Work packages` defines the kind, its statuses and this floor; `<person>` and whether its absence halts are its `### Who filed it`, never this checkout's key:
+The record, and the minimum is almost nothing on purpose. `rules/fusion-workbench-conventions.md` `## Work packages` defines the kind, its statuses and this floor:
 
 ```markdown
 # <one-line title>
-
----
-**Status:** open
-**Filed by:** user, <person>
----
 
 ## Directive
 
 <one paragraph: what the work is, and why it might matter>
 ```
 
-`**Domain:**` and `**Mode:** autonomous` are optional and belong there only when the user's own content supplies them. `**Claim:**`, `**Active spec/plan:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** at filing, never present and empty: nothing is claimed at the moment of filing, no spec or plan exists yet, and a dependency or a cross-reference is the user's to add later. Do not invent any of them, and do not add an Options, Constraints or Recommendation section: those make a decision record, and the rule above records what filing at that cost produced.
+No head block: filer, domain and mode are the control file's. Do not add an Options, Constraints or Recommendation section: those make a decision record, and the rule above records what filing at that cost produced.
 
 ## Process
 
 1. Resolve per Step 0, then the invocation mode.
 2. Derive the stamp and the `<topic>` slug; check only that the container is free.
-3. `mkdir -p` the container and **create** the record inside it.
-4. Report: a new item at `**Status:** open`, and its path.
+3. `mkdir -p` the container, **create** the record inside it, then file it as below.
+4. Report: a new item at `open`, and its path.
 
 ## On a JSON-controlled workbench
 
-Status, filer, domain and mode live in the control file the codec writes beside the record, so the record carries the title and `## Directive` alone, no head block. The container and its name are derived and checked as above: `$D` is the container, `$N` the record in it, both relative to `$WORKBENCH`. Write the record first, then:
+`$D` is the container, `$N` the record in it, both relative to `$WORKBENCH`. With the record written:
 
 ```bash
 D="$OUT_PACKAGES/<YYMMDD-HHMM>-<topic>"; N="$D/<YYMMDD-HHMM>-<topic>.md"

@@ -26,29 +26,29 @@
   total 322568
 
 [skills bytes]
-  archive/SKILL.md 29895
+  archive/SKILL.md 26184
   cadence/SKILL.md 22288
-  check/SKILL.md 32779
+  check/SKILL.md 32803
   cleanup/SKILL.md 6763
   commit/SKILL.md 6119
   curate/SKILL.md 12135
-  discuss/SKILL.md 15852
-  help/SKILL.md 15189
+  discuss/SKILL.md 15561
+  help/SKILL.md 15790
   memo/SKILL.md 6824
-  migrate/SKILL.md 26721
+  migrate/SKILL.md 26924
   news/SKILL.md 8223
   post/SKILL.md 6694
   reconcile/SKILL.md 6671
   setup/SKILL.md 15968
-  wp-order/SKILL.md 5577
-  wp/SKILL.md 6960
-  total 224658
+  wp-order/SKILL.md 5591
+  wp/SKILL.md 6333
+  total 220871
 
 [hook-tests lines]
-  archive-filter-key.test.ts 62
+  archive-filter-key.test.ts 41
   citation-form.test.ts 360
   citation-grammar-boundaries.test.ts 255
-  citation-sweep.test.ts 667
+  citation-sweep.test.ts 673
   claude-md-weight.test.ts 208
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
@@ -117,4 +117,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 275
-  total 24083
+  total 24068
