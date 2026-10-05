@@ -15,81 +15,81 @@
 
 [analyst]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
   design-diagrams.md 5305
-  total 88067
+  total 88062
 
 [code-implementer]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
-  total 82762
+  total 82757
 
 [consultant]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
   user-facing-output.md 11109
-  total 93871
+  total 93866
 
 [data-implementer]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
-  total 82762
+  total 82757
 
 [document-editor]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
   user-facing-output.md 11109
   project-language.md 5772
-  total 99643
+  total 99638
 
 [implementation-planner]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
-  decision-record-examples.md 4479
+  decision-record-examples.md 4483
   design-diagrams.md 5305
-  total 92546
+  total 92545
 
 [orchestrator]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
   user-facing-output.md 11109
-  decision-record-examples.md 4479
+  decision-record-examples.md 4483
   commit-lock.md 11284
-  total 109634
+  total 109633
 
 [policy-curator]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
   user-facing-output.md 11109
-  total 93871
+  total 93866
 
 [requirements-designer]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
   user-facing-output.md 11109
-  decision-record-examples.md 4479
+  decision-record-examples.md 4483
   design-diagrams.md 5305
-  total 103655
+  total 103654
 
 [reviewer]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
   review-contract.md 6801
-  total 89563
+  total 89558
 
 [state-auditor]
   agent-setup.md 4349
-  fusion-workbench-conventions.md 68024
+  fusion-workbench-conventions.md 68019
   critical-stance.md 10389
-  decision-record-examples.md 4479
-  total 87241
+  decision-record-examples.md 4483
+  total 87240

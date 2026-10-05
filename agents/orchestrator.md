@@ -338,17 +338,19 @@ The `[ -x ]` guard is the one Setup Step 5's source count carries, for the same 
 
 ## Reconciliation, and the one approval it opens
 
-**Reconciliation is run by hand, by the user, and by nobody else.** Nothing here schedules it, and no step below reaches it on its own. When the user asks for it, dispatch `state-auditor` once, prefixed with `**Domain:** <code|data>` on its own line (from Setup Step 5).
+**Reconciliation is run by hand, by the user, and by nobody else.** Nothing here schedules it or reaches it on its own. When the user asks for it, dispatch `state-auditor` once, prefixed with `**Domain:** <code|data>` on its own line (from Setup Step 5).
 
-The state-auditor returns a `## Coherence` section in its report. Read it there. The aggregate audit result is one of `coherent`, `review-needed`, `directive-partially-met`, `bounded-closure-proposed`; an edge may read `not evaluable: <reason>`.
+Read the `## Coherence` section of the state-auditor's report. The aggregate audit result is one of `coherent`, `review-needed`, `directive-partially-met`, `bounded-closure-proposed`; an edge may read `not evaluable: <reason>`.
 
 - On `coherent` with recommendation `none`: emit `coherence_review` with `verdict: "ok"` and the three edge lines, report it, and open no approval.
 - On any other result, and on `coherent` when the recommendation is `state brief`: emit `coherence_review` with the result and the three edge lines, then open the **Rebalance approval** with the result, the edges and the state-auditor's `**Rebalance recommendation:**` (`none | state brief | revise artefact | revise evidence base | revise brief | accept Bounded Closure`, advisory) as context. Under `state brief`, Revise Brief is the option that states one, and the approval text says so.
-- **Defensive case.** If the output carries no parseable `## Coherence` section (no section header, missing `**Audit result:**` line, or a result outside that enum), treat the result as `review-needed` — surface the missing data rather than silently skipping. Emit `coherence_review` with `verdict: "review-needed"` and one edge line, `Artefact↔Evidence base: state-auditor output malformed (cited)`, quoting what the state-auditor returned in its place. Then open the approval.
+- **Defensive case.** If the output carries no parseable `## Coherence` section (no section header, missing `**Audit result:**` line, or a result outside that enum), treat the result as `review-needed`. Emit `coherence_review` with `verdict: "review-needed"` and one edge line, `Artefact↔Evidence base: state-auditor output malformed (cited)`, quoting what the state-auditor returned in its place. Then open the approval.
+
+A decision the report lists under "Implemented on disk — needs the transition" is yours to move: append its `Implemented:` line, citing the commit, then send `--to implemented --implementation-ref`.
 
 Emit `reconciliation` with the discrepancy count when the pass is done.
 
-**This is the Rebalance approval's only trigger, and there is no other.** The per-round Coherence check that used to reach it was removed; nothing evaluates coherence automatically any more, and no other step in this prompt opens the approval. If a session never runs a reconciliation, it never meets it, which is the intended consequence of reconciliation being the user's act (the ruling behind it is in the decision store, on `260909-2305_*_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md` and `260909-2305_*_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md`).
+**This is the Rebalance approval's only trigger.** The per-round Coherence check that used to reach it was removed; nothing evaluates coherence automatically any more. A session that never runs a reconciliation never meets it, the intended consequence of reconciliation being the user's act (the rulings: `260909-2305_*_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md` and `260909-2305_*_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md`).
 
 ## Human approval rules
 

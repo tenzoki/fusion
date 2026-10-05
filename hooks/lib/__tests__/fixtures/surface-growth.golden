@@ -18,12 +18,12 @@
   data-implementer.md 16036
   document-editor.md 13230
   implementation-planner.md 20516
-  orchestrator.md 94838
+  orchestrator.md 94823
   policy-curator.md 77909
   requirements-designer.md 17664
   reviewer.md 13522
-  state-auditor.md 21719
-  total 322192
+  state-auditor.md 21716
+  total 322174
 
 [skills bytes]
   archive/SKILL.md 26184
@@ -38,11 +38,11 @@
   migrate/SKILL.md 26924
   news/SKILL.md 8223
   post/SKILL.md 6694
-  reconcile/SKILL.md 6670
+  reconcile/SKILL.md 6792
   setup/SKILL.md 15958
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 220919
+  total 221041
 
 [hook-tests lines]
   archive-filter-key.test.ts 41

@@ -48,7 +48,7 @@ Answered: 260501-1730-vector-store-comparative.md `## Recommendation` — sqlite
 
 and runs `W transition --actor orchestrator --record "$D" --to answered --reason "user ruled" --answer-ref '"260501-1730-vector-store-comparative.md"'`.
 
-**The code-implementer integrates it** (`a3f7c2e`) and appends `Implemented: a3f7c2e — pkg/vector/sqlite_vss.go added; loader wired in pkg/rag/retriever.go.`; the orchestrator, its `Verification:` line read, runs `--to implemented --implementation-ref '"a3f7c2e"'`. Terminal.
+**The code-implementer integrates it** and appends `Implemented: pkg/vector/sqlite_vss.go — added; loader wired in pkg/rag/retriever.go.`; the orchestrator, its `Verification:` line read, commits (`a3f7c2e`) and runs `--to implemented --implementation-ref '"a3f7c2e"'`. Terminal.
 
 ---
 

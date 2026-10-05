@@ -339,7 +339,7 @@ A decision's `control.state` separates "the answer is recorded" from "the answer
 
 **The edges** (`codec/contract/transitions.json`): `open` to `answered`, `implemented` or `deferred`; `answered` to `implemented`, `deferred` or `superseded`; `implemented` to `superseded`, the one allowed terminal-to-terminal edge. Revisiting an implemented decision is a NEW decision, which may then supersede it. The legacy letters `_o_`, `_a_`, `_i_`, `_d_`, `_s_` map to these five as their initials say.
 
-**Worked transitions are authored in `rules/decision-record-examples.md`** (emitted to the transition agents, see `bin/fusion-rules` block 1b2; decision `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md` in the shared store); each transition's line is `### Decision files` below, and a superseding record is cited where it lives, never copied next to the superseded one.
+**Worked transitions are authored in `rules/decision-record-examples.md`** (emitted to the transition agents, see `bin/fusion-rules` block 1b2; decision `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md`); each transition's line is `### Decision files` below, and a superseding record is cited where it lives, never copied next to the superseded one.
 
 **Current evidence base vs evidence-base history**, mirroring foundation_V3 §1.2's two-layer model: `open` and `answered` are the **current evidence base**, the best-of-knowledge the project is working with; `implemented`, `superseded` and `deferred` are **evidence-base history**, the preserved record of what was decided, including what was replaced or postponed. Each decision store holds both layers, and the state carries the layer. A pass that lists the current evidence base filters on `open` + `answered`, one that shows project history takes all five, and either covers every path in `$SCAN_DECISIONS`, not just the container's.
 
@@ -347,7 +347,7 @@ A decision's `control.state` separates "the answer is recorded" from "the answer
 
 **State is never read off a filename.** A new name carries no marker and an old one's letter is history, so no glob over names answers which records are live. Enumerate through the codec: `bin/fusion-record`'s `list`, optionally scoped to a store, answers each pair's `path`, `kind` and `status`, and `show` one record's control data; live means a status outside its kind's `terminal` set in `codec/contract/transitions.json`.
 
-**Where an old name is matched** (a citation's wildcard, the legacy reader, `archive/`), the delimiter is an underscore, not brackets. `[` and `]` are shell-glob metacharacters: a bracketed letter inside a glob is a one-character class that matches nothing and, under `bash`, fails *silently*: the count comes back `0` (`HYG-NO-SILENT-FAIL`). That trap was hit five times in a single session. The underscore is inert in glob, regex and `find -name` alike.
+**Where an old name is matched** (a citation's wildcard, the legacy reader, `archive/`), the delimiter is an underscore, not brackets. `[` and `]` are shell-glob metacharacters: a bracketed letter inside a glob is a one-character class that matches nothing and, under `bash`, fails *silently*: the count comes back `0` (`HYG-NO-SILENT-FAIL`).  The underscore is inert in glob, regex and `find -name` alike.
 
 **And a record that states something *about* a citation names file and line, or fences the verbatim form.** A pointer and a statement about one are the same characters, and no reader (human or lint) can tell them apart; star a pointer and leave the letter on a marker that is being *named*, which leaves the second spelling an address that dies at its target's next transition. So do not spell it: name the citing line (`260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md:24`) and let the reader open it. A fenced code block is the exception, for where the spelling itself is the datum (a verbatim transcript), and the fence covers the results a **lookup** decides: inside one the lint stops asking whether the record exists, resolves to more than one, or has moved to another marker. It does not cover **`store-prefixed`**, which is read off the token's shape before anything is looked up, so a store segment inside a fence is still reported (`git:ff52dd4a`). The fence does keep the sweep off it, so an exhibit is never machine-rewritten; where the store has to be named, name it in words rather than spelling it into the token. Binding: `260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`.
 
@@ -386,7 +386,7 @@ Revised by: <commit hash, or path to the reversing record> — <one-line reason>
 
 ### Decision files
 
-Decision files have their own resolution lines matching the states: do NOT use `Resolved:` (that's for defect-issues only). Append one to the narrative, then make the transition beside it; a ref payload is a `reference` of `codec/schemas/common.schema.json` naming the same target as the line:
+Decision files have their own resolution lines matching the states: do NOT use `Resolved:` (that's for defect-issues only). Whoever sends a transition first appends its line, `Implemented:` excepted, whose writer and sender differ; a ref payload other than `--implementation-ref` is a `reference` of `codec/schemas/common.schema.json` naming the same target as the line:
 
 ```
 ---
@@ -396,9 +396,9 @@ Answered: <citation> — <one-line summary>; ruled by <agent name or "user">, <p
 
 ```
 ---
-Implemented: <commit hash> or <citation> — <one-line summary>
+Implemented: <citation> — <one-line summary>
 ```
-(`--to implemented --implementation-ref '"<commit hash>"'`, sent by the dispatcher as an issue's closure is, from `answered`, or from `open` if the implementation skipped the recorded-answer step)
+(the executor's note, citing the files and headings it changed and no commit hash, which does not exist yet. The dispatcher reads the `Verification:` line, commits and sends `--to implemented --implementation-ref '"<commit hash>"'`, from `answered`, or from `open` if the implementation skipped the recorded-answer step)
 
 ```
 ---
@@ -420,7 +420,7 @@ Retired: <plan, commit or decision that removed the subject> — <one-line reaso
 
 **Every citation above is the anchor form**, not `path:line`: `## Filename Patterns` states it and says why it moved.
 
-**Two of the five lines name who ruled, and three do not.** `Answered:` and `Deferred:` record an act only a person performs, which nothing on disk confirms, so the line names the party. `Implemented:`, `Superseded by:` and `Retired:` cite something a reader verifies without trusting anybody, so a name there would restate an attribution or attach one to a fact needing none. `<agent name or "user">, <person>` is `**Filed by:**`'s shape, its person half read under `### Who filed it`, halt and both file-anyway branches included. Both parties appear because the writer is not the ruler: the orchestrator writes the line and the user rules (`260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`). **Records written before this rule stand as they are, and no lint checks the field**: an absent `ruled by` means the record predates the rule, never that nobody ruled (`260905-1228_*_does-an-answered-record-carry-who-ruled-now-that-only-the-orchestrator-may-transition-it.md`).
+**Two of the five lines name who ruled, and three do not.** `Answered:` and `Deferred:` record an act only a person performs, which nothing on disk confirms, so the line names the party. `Implemented:`, `Superseded by:` and `Retired:` cite something a reader verifies without trusting anybody, so they name nobody. `<agent name or "user">, <person>` is `**Filed by:**`'s shape, its person half read under `### Who filed it`, halt and both file-anyway branches included. Both parties appear because the writer is not the ruler: the orchestrator writes the line and the user rules (`260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`). **Records written before this rule stand as they are, and no lint checks the field**: an absent `ruled by` means the record predates the rule, never that nobody ruled (`260905-1228_*_does-an-answered-record-carry-who-ruled-now-that-only-the-orchestrator-may-transition-it.md`).
 
 ### When to update
 
@@ -522,8 +522,7 @@ Body:
 No footer: a record gains its annotation line at the transition, per `## Inline State Tracking`. A stub left by the old placeholder footer stays as it stands.
 
 **There is no `Status:` head field, and you do not write one.** It duplicated the marker and
-drifted from it: 39 of 94 records carried a header naming a state their marker did not, a
-ratio that held six days across three hand corrections. `control.state` is the state and the
+drifted from it: 39 of 94 records carried a header naming a state their marker did not. `control.state` is the state and the
 only source, as the marker was before the migration. A record written before the removal still carries the field; leave
 it exactly as it stands, including when you transition it: those drifted headers are the
 evidence the removal was decided on. Binding decision:
