@@ -163,6 +163,14 @@ Each of these is known, stated, and not handled by anything shipped.
   that binding: `transition --steps` updates only the anchors the plan already has. A step mark
   the migration found outside a numbered step is kept in the record's import provenance as
   unanchored, and tracks nothing.
+- **`bin/fusion-citation-check` reports an ambiguous citation as a `conflict`, and the blocking
+  lint does not.** On a JSON-controlled workbench a citation token that matches more than one
+  record is a `conflict` row. In a file the checker counts as edited it makes
+  `verdict=violations`; anywhere else it is counted and printed and leaves the verdict alone. The
+  usual sources are a bare package name that exists both live and inside an archive sweep, and a
+  stamp cited without its slug. The repair is to spell the citation out until it names one
+  record. The blocking citation lint (`hooks/lib/__tests__/workbench-citation-lint.test.ts`) still
+  counts such a token as resolved, so the two readers differ on this point.
 - **Prior's qualification is a release fact, not a runtime dependency.** The codec bundle shipped
   in `codec/dist/` is the one Prior qualified, by digest. fusion runs in Claude Code with no Prior
   installation, binary, service or variable, and nothing at run time checks that qualification.
