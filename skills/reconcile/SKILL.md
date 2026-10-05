@@ -84,7 +84,7 @@ A pass that halted or returned nothing usable advances no mark: the mark claims 
 
 Action-first, per `rules/user-facing-output.md`:
 
-1. **What the pass changed** — the tracking files the agent updated, by kind and count, and every marker it moved.
+1. **What the pass changed** — the tracking files the agent updated, by kind and count, and every state it moved.
 2. **What it flagged and did not change** — discrepancies it reported, and every record it filed.
 3. **The Coherence audit result** — the aggregate word and the three edge lines, as the agent wrote them (`agents/state-auditor.md` `## Coherence`). An edge reading `not evaluable: <reason>` is reported with its reason, never as a pass.
 4. **What this run stood on** — the domain and where it came from, whether a brief was passed, and the anchor the walk used or that none was held.

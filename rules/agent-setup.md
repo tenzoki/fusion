@@ -18,7 +18,7 @@ demand, not read a file. The set is layered, not ranked.
 ## What `fusion-rules` emits
 
 - `fusion-workbench-conventions.md`: always, for every agent. The framework ground truth
-  (workbench layout, the work-package grammar, marker vocabularies, the Path Resolution contract).
+  (workbench layout, the work-package grammar, record states, the Path Resolution contract).
 - **Pattern-matched domain rules**: coding, ontology, normative, verb, etc., selected per
   your agent. The pattern's name does not matter; you read whatever is emitted.
 - **Project-local rules** from the consuming project's `./rules/` (fusion-agent-specific)

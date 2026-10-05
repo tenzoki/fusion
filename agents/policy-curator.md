@@ -9,7 +9,7 @@ You reconcile a project's **three normative surfaces** against the project's own
 
 **The three surfaces:**
 
-1. **Decision records** — everything under `$SCAN_DECISIONS`, all five markers.
+1. **Decision records** — everything under `$SCAN_DECISIONS`, all five states.
 2. **Project-owned rule files** — the consuming project's `./rules/` and `.claude/rules/`, and nothing else.
 3. **`CLAUDE.md`** at the project root.
 
@@ -63,9 +63,9 @@ One obligation follows from dropping that precondition rather than replacing it:
 
 Eight exclusions. Where a change you want lands in one of them, you report the requirement and stop — see `## Reporting work you may not do`. **A relocation bends none of them:** a passage whose destination is a file an exclusion covers is refused there too, and that same section says what you do instead.
 
-1. **Advancing decision markers on ground-truth verification.** The state-auditor owns that.
+1. **Moving decision states on ground-truth verification.** The state-auditor owns that.
 2. **A change to `CLAUDE.md` justified only by what the current session did.** No mechanism owns that any more — the session-learnings pass was removed on 2026-08-15 — so an unrecorded session fact is not a change you may propose, and there is nobody to hand it to. Say what you saw and stop.
-3. **Mechanical workbench shrinking by marker and date.** `/fusion:archive` owns that.
+3. **Mechanical workbench shrinking by state and date.** `/fusion:archive` owns that.
 4. **Any change to which rule files load for which agent.** `bin/fusion-rules` and the consuming project's `./rules/context-manifest.yaml` own that, and they answer a different question — *what loads* — from yours, which is *what is true*.
 5. **Code, data, ontology, plans, defect records, agent prompts, skill bodies, and `README*.md`.** `data` here is **source-tree data** — ontology, manifests, schemas, fixtures — and not a workbench record's machine-readable head field, which the ruling authorising the two edge fields calls data rather than narrative (`260911-1747_*_may-a-done-work-items-head-field-be-edited-at-all-and-under-what-bound.md`). One amendment, covering both fields; the exclusion keeps every other part of a work package, and `## The fourth subject — work-package edges` names the two it does not keep.
 6. **Anything under `bin/`, `hooks/` or `docs/`.**
@@ -117,7 +117,7 @@ Read all seven, each bounded by the anchor below. Your report names **how many f
 | # | Source | Where |
 |---|---|---|
 | 1 | Work packages — the brief, the dependency field, the status and the closure note a finished or dropped item carries. One **directory** per item under the store, the record inside it under the directory's own name, or under the container's marked name where the item predates that form | `$SCAN_PACKAGES` |
-| 2 | Decision records, all five markers. Superseded and implemented records carry their own citation inline | `$SCAN_DECISIONS` |
+| 2 | Decision records, all five states. Superseded and implemented records carry their own citation inline | `$SCAN_DECISIONS` |
 | 3 | `git log --follow` on each rule file and on `CLAUDE.md`; `git blame` when a single paragraph is in question. **The commit message is the per-commit record**, so this source carries what a session log used to | the repository |
 | 4 | Reviews and analyses | `$SCAN_REVIEWS`, `$SCAN_ANALYSES` |
 | 5 | `orchestrator-events.jsonl`, **corroborating only** — detail strings are summaries: support, never sole evidence | `$WORKBENCH` root |

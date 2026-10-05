@@ -77,7 +77,7 @@ Disagreement is not a fourth class. The result is the consultant's finding; open
 
 ## Step 4 — `--begin`: the record exists before the first result
 
-Take the stamp, the person and the domain, each guarded:
+Take the stamp and the domain, each guarded. The identity read enters no line of the record (`bin/fusion-write` reads its own); it shows, before the file exists, whether the create below can run:
 
 ```bash
 STAMP="$(date +%y%m%d-%H%M)"

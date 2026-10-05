@@ -280,7 +280,7 @@ if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ] && git ls-f
 fi
 ```
 
-Every line printed goes into the Done report verbatim; nothing printed means nothing to report. `workbench.json` (R3) and `.json-state` (class L), a JSON-controlled workbench's, are classed by `JSON_LIVE_STATE` in `hooks/lib/staging-drift.ts` until the rule names them.
+Every line printed goes into the Done report verbatim; nothing printed means nothing to report. The tracking rule names `workbench.json` (R3) and `.json-state/` (class L) with the rest.
 
 ## upstream — whether this checkout is behind its upstream (advisory)
 
