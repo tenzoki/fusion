@@ -15,3 +15,6 @@ Options, none chosen:
 3. Accept the gap: the prose is the enforcement, and step 10 names it as a finding.
 
 Acceptance: a ruling. With option 1 or 2, a test that fails when the refusal sentence or the state line goes away. Executor: `code-implementer`.
+
+---
+Resolved: fj03d `29dac3c5` — a ninth case in `codec/src/__tests__/install.test.ts` runs the shipped gate blocks of /fusion:wp, /fusion:discuss and /fusion:archive on a legacy workbench and pins the refusal sentence, the /fusion:migrate pointer and a byte-identical tree; shown red with each of the three removed. Verified 2026-10-05 by the orchestrator in the fj03d worktree: codec 1 682 passed, 13 skipped; hooks 1 128 of 1 133, the reds being the four legacy own-tree cases and the known monitor case; bundle `c76bbce9…`.

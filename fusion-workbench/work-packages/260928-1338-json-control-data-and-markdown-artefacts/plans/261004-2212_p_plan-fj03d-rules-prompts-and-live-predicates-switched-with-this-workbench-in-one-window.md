@@ -212,6 +212,8 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
      3. Get the user's answer on the step-10 class question (90 grammar hits as converted and 15 homonyms as other kind, or a fifth class).
      4. Run step 10, then step 11.
 
+     **Resumed 2026-10-05.** Items 1 and 2 are done: `29dac3c5` verified in the worktree (codec 1 682 passed, 13 skipped; hooks 1 128 of 1 133, the reds being the three workbench-citation-lint cases, the stopping-section lint and the known monitor case; bundle `c76bbce9…`, worktree clean), and issues 261005-0741 and 261005-0803 are closed. Item 3 is with the user.
+
      Also open: issue 261005-0626 (`attach-evidence`, no step owns it; documented as a limit in step 9), decision 261004-1721 (C9), and question 5 of `## Open Questions` (the two other checkouts, needed at step 12).
 
 10. **The classification re-run: nothing left to convert**

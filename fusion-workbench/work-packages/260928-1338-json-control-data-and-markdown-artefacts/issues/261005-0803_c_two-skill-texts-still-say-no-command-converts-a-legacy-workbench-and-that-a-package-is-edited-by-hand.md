@@ -11,3 +11,6 @@ Evidence:
 - `skills/wp/SKILL.md` `## Guardrails` (line 78): "the user can edit one by hand". `rules/fusion-workbench-conventions.md` `## Work packages` says `package.json` "is written by `bin/fusion-write` alone, never by hand".
 
 Acceptance: the setup bullet names `/fusion:migrate` as the conversion; the wp guardrail names no hand edit of a package's state. `reference-resolution-lint` and the `skills/` growth bound green. Executor: `code-implementer`.
+
+---
+Resolved: fj03d `29dac3c5` — `skills/setup/SKILL.md` names /fusion:migrate as the conversion of Markdown control data, and the `skills/wp/SKILL.md` guardrail says a status moves only through `bin/fusion-write`. Verified 2026-10-05 by the orchestrator in the fj03d worktree with the suites as stated on 261005-0741.
