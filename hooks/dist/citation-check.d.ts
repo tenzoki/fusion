@@ -127,10 +127,10 @@
  *
  * WHAT IS IN SCOPE, in three parts, which are disjoint and cover the corpus:
  *
- *   - A workbench file, by `isLiveRecord()` in `lib/citation-corpus.ts` — the
- *     blocking check's own corpus predicate, moved there so the two share one
- *     definition instead of authoring two: a narrative whose record is live,
- *     the frozen stores out.
+ *   - A workbench file, by `isLiveRecord()` in `lib/citation-corpus.ts`: a
+ *     narrative whose record is live, the frozen stores out. The blocking
+ *     check's corpus is the same predicate less the discussion kind, authored
+ *     beside it; an open discussion is in this scope and not in that corpus.
  *   - A workbench narrative with NO record — history, analyses, reviews,
  *     consultations, memos, investigations. Out of scope, by a JUDGEMENT
  *     rather than a derivation, reasoned at `lib/citation-corpus.ts`: a history

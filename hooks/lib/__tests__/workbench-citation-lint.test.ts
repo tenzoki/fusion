@@ -12,7 +12,7 @@ import {
   type Violation,
 } from "./helpers/citation-scan.js";
 import { createScanner, workbenchMarkdownFiles } from "../citation-scan.js";
-import { FROZEN_PREFIXES, isLiveRecord, isMigrationOriginal, unreadControls } from "../citation-corpus.js";
+import { FROZEN_PREFIXES, inCitationCorpus, isLiveRecord, isMigrationOriginal, unreadControls } from "../citation-corpus.js";
 import type { IndexEntry, RecordIndex } from "../record-index.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { indexOf, jsonWorkbenchAt, placeRecord } from "./helpers/json-workbench.js";
@@ -84,7 +84,7 @@ function ownIndex(): RecordIndex {
  */
 function corpusFiles(root = workbenchRoot, index = ownIndex()): { rel: string; abs: string }[] {
   if (index.unreadable.length > 0) throw new Error(unreadControls(index.unreadable, "the citation gate cannot say its corpus is whole"));
-  return workbenchMarkdownFiles(root).filter((f) => isLiveRecord(f.rel, index));
+  return workbenchMarkdownFiles(root).filter((f) => inCitationCorpus(f.rel, index));
 }
 
 // --- the gate ---------------------------------------------------------------
@@ -179,7 +179,7 @@ function indexHolding(live: string[], terminal: string[] = []): RecordIndex {
 }
 
 describe("workbench citation lint: the corpus predicate", () => {
-  it("takes a narrative whose record is live, whatever marker its name carries, and nothing without a record", () => {
+  it("takes a narrative whose record is live, whatever marker its name carries, nothing without a record, and no discussion in either state", () => {
     // Over records the codec reads, so the index this gate takes from the
     // workbench is the one put to the predicate. The marker in each name says
     // the opposite of the record's state: the record decides.
@@ -191,6 +191,11 @@ describe("workbench citation lint: the corpus predicate", () => {
       placeRecord(wb, "decision-answered", "shared/decisions/260101-0002_i_answered.md", "answered");
       placeRecord(wb, "decision-implemented", "shared/decisions/260101-0003_a_implemented.md", "implemented");
       placeRecord(wb, "plan-in-progress", "shared/plans/260101-0004_c_under-way.md", "in_progress");
+      // a discussion's record is rewritten at every round until it closes, and closed it is terminal:
+      // out of this gate in both states, while the reporter's scope keeps the open one
+      const [talking, talked] = ["shared/discussions/260101-0006-open.md", "shared/discussions/260101-0007-closed.md"];
+      placeRecord(wb, "discussion-open", talking, "open");
+      placeRecord(wb, "discussion-closed", talked, "closed");
       writeFileSync(join(wb, "shared/issues/260101-0005-no-record.md"), "a narrative nothing controls\n");
       const read = indexOf(wb);
       if (read.format !== "json-control") throw new Error(JSON.stringify(read));
@@ -199,6 +204,7 @@ describe("workbench citation lint: the corpus predicate", () => {
         "shared/issues/260101-0000_c_open.md",
         "shared/plans/260101-0004_c_under-way.md",
       ]);
+      expect([talking, talked].map((r) => [inCitationCorpus(r, read.index), isLiveRecord(r, read.index)])).toEqual([[false, true], [false, false]]);
     } finally {
       rmSync(tmp, { recursive: true, force: true });
     }
@@ -226,7 +232,7 @@ describe("workbench citation lint: the corpus predicate", () => {
     const frozen = FROZEN_PREFIXES.map((p) => `${p}b/shared/issues/260101-0000_o_x.md`);
     const nested = ["shared/archive/issues/260101-0000_o_x.md", "work-packages/c/stashes/issues/260101-0000_o_x.md"];
     const index = indexHolding([...frozen, ...nested]);
-    expect([...frozen, ...nested].filter((r) => isLiveRecord(r, index))).toEqual(nested);
+    expect([...frozen, ...nested].filter((r) => inCitationCorpus(r, index))).toEqual(nested);
     // the migration's originals are anchored the same way, and nothing beside them is taken for one
     const inside = "archive/migrations/m1/originals/shared/issues/260101-0000_o_x.md";
     const beside = ["archive/migrations/m1/receipt.md", "archive/260102-0000-sweep/shared/issues/260101-0000_o_x.md", `shared/${inside}`];
@@ -237,7 +243,7 @@ describe("workbench citation lint: the corpus predicate", () => {
     // The hole named in `lib/citation-corpus.ts`, pinned as behaviour so that a
     // later reader meets it as a fact rather than rediscovering it.
     const index = indexHolding(["shared/issues/a.md"], ["shared/issues/b.md"]);
-    expect(["shared/issues/a.md", "shared/issues/b.md"].map((r) => isLiveRecord(r, index))).toEqual([true, false]);
+    expect(["shared/issues/a.md", "shared/issues/b.md"].map((r) => inCitationCorpus(r, index))).toEqual([true, false]);
   });
 
   it.runIf(WORKBENCH_PRESENT)("excludes, in this workbench, the stores that carry no record", () => {

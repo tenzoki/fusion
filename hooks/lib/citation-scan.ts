@@ -342,8 +342,8 @@ export function isPlaceholder(token: string): boolean {
  * `<hex>.md`, no stamp and no slug, so no record citation can name one and the
  * segment would match nothing. `discussions` is here for citations OF a
  * discussion record, written in some other record. The citations written INSIDE
- * one are judged while its record is open, since `isLiveRecord()` follows the
- * record's state (`lib/citation-corpus.ts`).
+ * one never enter the blocking check; the reporter scopes them while its record
+ * is open (`lib/citation-corpus.ts`, `AN OPEN DISCUSSION`).
  */
 const STORES = [...RECORD_STORES, ...V11_RECORD_STORES, ...LEGACY_STORES].filter((s) => s !== "checkouts").join("|");
 

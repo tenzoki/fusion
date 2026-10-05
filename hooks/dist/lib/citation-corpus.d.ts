@@ -1,13 +1,18 @@
 /**
  * Which workbench records are LIVE — the files somebody still edits.
  *
- * One predicate, two readers with different stakes, and it is authored here so
- * they cannot drift apart:
+ * Two readers with different stakes, each with its predicate, both authored
+ * here so that the one difference between them is stated once:
  *
- *   - `lib/__tests__/workbench-citation-lint.test.ts` uses it as its CORPUS.
- *     A file it admits must carry no dangling citation or `npm test` goes red.
- *   - `citation-check.ts` uses it as its VERDICT SCOPE. Every violation it
- *     finds is printed whatever this predicate says; only `verdict=` narrows.
+ *   - `lib/__tests__/workbench-citation-lint.test.ts` takes `inCitationCorpus()`
+ *     as its CORPUS. A file it admits must carry no dangling citation or
+ *     `npm test` goes red.
+ *   - `citation-check.ts` takes `isLiveRecord()` as its VERDICT SCOPE. Every
+ *     violation it finds is printed whatever the predicate says; only
+ *     `verdict=` narrows.
+ *
+ * `inCitationCorpus()` is `isLiveRecord()` less the discussion kind, and
+ * nothing else separates the two (`AN OPEN DISCUSSION` below).
  *
  * It lived in that test file until 2026-09-01 and moved here whole, with its
  * reasoning, when decision `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`
@@ -59,11 +64,17 @@
  * not asked about them: it takes a WORKBENCH-RELATIVE path, and
  * `citation-check.ts` scopes a non-workbench file in without consulting it.
  *
- * AN OPEN DISCUSSION IS IN, where the marker predicate left it out. Its record
- * is rewritten at every round, so a repair is futile until it closes; the
- * contract gives `open` as live and the reader follows the contract, not this
- * comment. FJ03b's note on `citation-check.ts` records the same departure for
- * the reporter.
+ * AN OPEN DISCUSSION IS OUT OF THE BLOCKING CHECK AND IN THE REPORTER'S SCOPE.
+ * `/fusion:discuss` rewrites its record at every round, so by the criterion
+ * above a repair is futile until it closes, and closed it is terminal:
+ * `inCitationCorpus()` excludes the discussion kind in both states, as the
+ * marker predicate did. Step 8 had carried the contract's reading (`open` is
+ * live) into the blocking check against that criterion, and the user's ruling
+ * of 2026-10-05, on the review finding that named the contradiction, took it
+ * out again. `isLiveRecord()` still follows the record's state alone,
+ * the departure FJ03b recorded for `citation-check.ts`: there an open
+ * discussion is scoped `edited`, which costs its reader a row and blocks
+ * nothing. That ruling left the reporter as it was.
  *
  * A CONTROL FILE THAT DID NOT READ IS NEITHER IN NOR OUT, AND IS NEVER SILENT.
  * `lib/record-index.ts` puts it in `unreadable` and in no map, so the predicate
@@ -117,11 +128,16 @@ export declare const FROZEN_PREFIXES: string[];
 /** Whether the WORKBENCH-RELATIVE path lies inside a migration's `originals/`. */
 export declare const isMigrationOriginal: (rel: string) => boolean;
 /**
- * The predicate itself, over a WORKBENCH-RELATIVE path and the workbench's
- * record index: live when the path is a narrative whose record is live, and
- * never inside a frozen store.
+ * The reporter's verdict scope, over a WORKBENCH-RELATIVE path and the
+ * workbench's record index: live when the path is a narrative whose record is
+ * live, and never inside a frozen store.
  *
  * Twin: `skills/archive/SKILL.md` filter 3 enumerates the shipped files whose
  * citations an archive move must keep resolvable (decision 260827-1756).
  */
 export declare function isLiveRecord(rel: string, index: RecordIndex): boolean;
+/**
+ * The blocking check's corpus: a live record a person writes. The discussion
+ * kind is the one a mechanism rewrites, and it is out whatever its state.
+ */
+export declare function inCitationCorpus(rel: string, index: RecordIndex): boolean;
