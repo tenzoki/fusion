@@ -526,6 +526,22 @@ describe("staging drift: the JSON surfaces, by path alone", () => {
     });
   }, CASE_TIMEOUT);
 
+  it("reads a migration's receipt, a chunk file and a kept original with no store segment as one record subtree", () => {
+    withJson((project) => {
+      // `archive/migrations/<id>/` is class R1 of `rules/workbench-tracking.md`
+      // through `archive/`. Before the subtree rule, the receipt and the plan
+      // files fell to `unclassified`, and a kept original was `record` only
+      // when its old path happened to carry a store segment (FJ03d step 15).
+      const own = "archive/migrations/migration-20261006-v12";
+      const files = [`${own}/receipt.json`, `${own}/chunks/1.json`, `${own}/originals/work-packages/260716-1847-umbau/_c_circle.md`];
+      for (const rel of files) write(project.root, `fusion-workbench/${rel}`, "{}\n");
+      const res = runStagingDrift(project.root);
+      expect(keys(res.stdout).unstaged).toBe("3");
+      for (const rel of files) expect(row(res.stdout, rel), rel).toMatch(/^ {2}record\s+\?\? .*UNSTAGED.*class R1/);
+      expect(res.stdout).not.toContain("unclassified");
+    });
+  }, CASE_TIMEOUT);
+
   it("ignores the codec's journal and tracks the manifest and a pair, with and without this repository's .gitignore", () => {
     // Class L and R3 of `rules/workbench-tracking.md`, asked of git itself on a
     // workbench the kernel wrote. fusion ships no ignore rule, so the bare case is

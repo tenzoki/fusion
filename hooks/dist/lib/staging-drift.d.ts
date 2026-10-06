@@ -98,7 +98,8 @@
  *     `*.record.json`, `*.evidence.json`) is a `record` wherever its narrative
  *     is one, and the unstaged half of a pair whose other half is staged
  *     carries the fault code `pair-split` (`markSplitPairs`). Both are read
- *     from paths; no control file is opened.
+ *     from paths; no control file is opened. A migration's own directory,
+ *     `archive/migrations/<id>/`, is `record` as one subtree (`MIGRATIONS_PREFIX`).
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
  *     R2 and R3 (the JSON manifest and the codec's journal among them), plus
@@ -208,8 +209,8 @@ export declare const LIVE_PREFIXES: {
  *
  *   - **`classify`** asks *"is this file on disk a leftover commit message?"*
  *     and answers location-first, so this test runs last, over only what
- *     `LIVE_STATE`, `stashes/`, `ROOT_RECORDS` and `STORES` all declined to
- *     claim. Issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` is why: unscoped, the class swallowed authored
+ *     `LIVE_STATE`, `stashes/`, `MIGRATIONS_PREFIX`, `ROOT_RECORDS` and
+ *     `STORES` all declined to claim. Issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` is why: unscoped, the class swallowed authored
  *     records whose topic slug says "commit message" and the model was told to
  *     delete them.
  *   - **`commit-message-path.test.ts`** asks *"does a shipped prompt PRESCRIBE
@@ -286,8 +287,10 @@ export interface StagingReport {
  * store test so the session's own history file is not reported as a record it
  * has not finished writing; `stashes/` runs before it too, because a stash
  * snapshot is a frozen copy left behind by the removed stash skills rather
- * than a record this session authored; and `commit-message` runs at the end, claiming
- * only what no store owns and `ROOT_RECORDS` does not name.
+ * than a record this session authored; `archive/migrations/<id>/` runs there as
+ * well, because a kept original's path may or may not carry a store segment and
+ * the subtree takes one class either way; and `commit-message` runs at the end,
+ * claiming only what no store owns and `ROOT_RECORDS` does not name.
  *
  * ## Why `commit-message` no longer runs first
  *

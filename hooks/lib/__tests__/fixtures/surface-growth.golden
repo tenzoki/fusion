@@ -111,10 +111,10 @@
   sentence-identifier-containment.test.ts 456
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 717
+  staging-drift.test.ts 733
   store-name-migration.test.ts 124
   surface-growth-bound.test.ts 557
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 333
-  total 24193
+  total 24209

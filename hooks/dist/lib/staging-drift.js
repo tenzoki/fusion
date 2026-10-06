@@ -98,7 +98,8 @@
  *     `*.record.json`, `*.evidence.json`) is a `record` wherever its narrative
  *     is one, and the unstaged half of a pair whose other half is staged
  *     carries the fault code `pair-split` (`markSplitPairs`). Both are read
- *     from paths; no control file is opened.
+ *     from paths; no control file is opened. A migration's own directory,
+ *     `archive/migrations/<id>/`, is `record` as one subtree (`MIGRATIONS_PREFIX`).
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
  *     R2 and R3 (the JSON manifest and the codec's journal among them), plus
@@ -248,6 +249,25 @@ export const LIVE_PREFIXES = [
  */
 const STORES = [...RECORD_STORES, ...V11_RECORD_STORES, ...LEGACY_STORES];
 /**
+ * A migration's own directory, `archive/migrations/<id>/` (the codec's
+ * `MIGRATIONS_DIR`, `codec/src/migration.ts`): the frozen plan (`plan.json`,
+ * `parts/`, `chunks/`), the kept originals under `originals/`, each converted
+ * record's pre-migration bytes at its old workbench-relative path, and the
+ * receipt that `workbench.json` `migration.receipt` points at. `/fusion:migrate`
+ * writes them once and nothing writes them again.
+ *
+ * One rule for the subtree, read ahead of the container and store tests,
+ * because the kept path decides nothing: an original that happened to carry a
+ * store segment classified `record` through `STORES`, and one that did not
+ * (`_c_circle.md`, a package narrative `<dir>/<dir>.md`) fell to `unclassified`
+ * beside the receipt and every plan file — 57 of 161 rows on this repository's
+ * own migration. The class is `record` because `archive/` is class R1 of
+ * `rules/workbench-tracking.md` `## The four classes`, "track them": a file
+ * under it that no commit carries is a staging obligation like any record's,
+ * and `in-flight` would keep every one of them off the orchestrator's list.
+ */
+const MIGRATIONS_PREFIX = "archive/migrations/";
+/**
  * The root-anchored records: a file at the workbench root that a person authored
  * and a staging list therefore has to name.
  *
@@ -279,8 +299,8 @@ const ROOT_RECORDS = [];
  *
  * Broad is right for finding the next improvisation and wrong as a sole
  * discriminator, so this is NOT one: `classify` applies it last, over only what
- * `LIVE_STATE`, `stashes/`, `ROOT_RECORDS` and `STORES` have all declined to
- * claim. See the ordering contract on `classify` for why, and for what the
+ * `LIVE_STATE`, `stashes/`, `MIGRATIONS_PREFIX`, `ROOT_RECORDS` and `STORES`
+ * have all declined to claim. See the ordering contract on `classify` for why, and for what the
  * scoping gives up.
  */
 const COMMIT_MESSAGE = /commit[-._]?(msg|message)/i;
@@ -293,8 +313,8 @@ const COMMIT_MESSAGE = /commit[-._]?(msg|message)/i;
  *
  *   - **`classify`** asks *"is this file on disk a leftover commit message?"*
  *     and answers location-first, so this test runs last, over only what
- *     `LIVE_STATE`, `stashes/`, `ROOT_RECORDS` and `STORES` all declined to
- *     claim. Issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` is why: unscoped, the class swallowed authored
+ *     `LIVE_STATE`, `stashes/`, `MIGRATIONS_PREFIX`, `ROOT_RECORDS` and
+ *     `STORES` all declined to claim. Issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` is why: unscoped, the class swallowed authored
  *     records whose topic slug says "commit message" and the model was told to
  *     delete them.
  *   - **`commit-message-path.test.ts`** asks *"does a shipped prompt PRESCRIBE
@@ -350,8 +370,10 @@ function unquote(raw) {
  * store test so the session's own history file is not reported as a record it
  * has not finished writing; `stashes/` runs before it too, because a stash
  * snapshot is a frozen copy left behind by the removed stash skills rather
- * than a record this session authored; and `commit-message` runs at the end, claiming
- * only what no store owns and `ROOT_RECORDS` does not name.
+ * than a record this session authored; `archive/migrations/<id>/` runs there as
+ * well, because a kept original's path may or may not carry a store segment and
+ * the subtree takes one class either way; and `commit-message` runs at the end,
+ * claiming only what no store owns and `ROOT_RECORDS` does not name.
  *
  * ## Why `commit-message` no longer runs first
  *
@@ -404,6 +426,12 @@ export function classify(rel, sessionHistory) {
         return {
             klass: "unclassified",
             why: "a stash snapshot left by the removed stash skills — not a record this session authored",
+        };
+    }
+    if (rel.startsWith(MIGRATIONS_PREFIX)) {
+        return {
+            klass: "record",
+            why: "a migration's frozen plan, kept original or receipt under archive/migrations/ — archive/ travels (rules/workbench-tracking.md, class R1)",
         };
     }
     for (const record of ROOT_RECORDS) {
