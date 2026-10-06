@@ -51,6 +51,6 @@
  * `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`), and a check whose status is ignored is the failure it exists
  * to catch arriving one level up. Nor is it a release check — whether a release
  * may go out over an uncovered range is an unfiled decision belonging beside
- * `260810-0710_*_…`, and this program blocks nothing.
+ * `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`, and this program blocks nothing.
  */
 export {};

@@ -23,7 +23,10 @@
 #                     --narrative-file <workbench path> --origin user-request|<package
 #                     control path> [--domain <token>, a package's alone]. The caller
 #                     writes the Markdown first, at a marker-free name; the codec
-#                     writes the control file beside it, in the kind's initial state
+#                     writes the control file beside it, in the kind's initial state;
+#                     a plan's numbered steps under `## Implementation Steps`
+#                     become its step anchors, each number once there (a
+#                     repeated one is a usage error)
 #   evidence          --record <package control path> --report <workbench path>
 #                     --verdict accept|revise|escalate: a reviewer's evidence record
 #                     beside its report, against the package's brief and plan, over
@@ -45,6 +48,8 @@
 #   issue     --disposition
 #   plan      --steps --criteria
 #   decision  --answer-ref --implementation-ref --superseded-by --deferral
+# The values of `--outcome` and of set-mode's `--source` are spelled in
+# `rules/fusion-workbench-conventions.md` `## Work packages`.
 # The table is `PAYLOAD_FIELDS` in `hooks/lib/record-write.ts`, held equal to
 # the codec's schemas by `hooks/lib/__tests__/record-write.test.ts`.
 #

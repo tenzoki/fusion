@@ -10,7 +10,7 @@ The user invoked `/fusion:wp-order`. This workflow runs the helper `bin/fusion-w
 
 **The mechanism is not in this body.** The node set, the ordering, depth, blocking count, readiness, the optimism counts and the exit codes are documented in the headers of `bin/fusion-work-order` and of `hooks/order.ts`, which renders the computation and points to where it is done; those headers are the authoritative text. What this body carries is the flow and the sentences the user reads.
 
-**The order is the helper's computation, not a ranking.** No agent asserts one, and the user overrides any figure at will (`rules/fusion-workbench-conventions.md`, the `**Depends-on:**` paragraph).
+**The order is the helper's computation, not a ranking.** No agent asserts one, and the user overrides any figure at will (`rules/fusion-workbench-conventions.md` `## Work packages`, the `depends_on` paragraph).
 
 Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`).
 

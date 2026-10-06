@@ -2,7 +2,7 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
-Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the Origin Rule, the operative half of path resolution, the work-package grammar, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, timestamps, and the project's two language declarations.
+Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the Origin Rule, the operative half of path resolution, the work-package grammar, each record kind's states and the operations that move them, filename patterns, issue and decision filing, inline tracking, timestamps, and the project's two language declarations.
 
 **This document is the definition** of everything it still states in full. Topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to every agent:
 
@@ -25,8 +25,9 @@ No agent prompt and no skill body may carry a competing or supplementary definit
 ```
 fusion-workbench/
 ├── work-packages/                     # one directory per work package — see ## Work packages
-│   └── <stamp>-<slug>/                # the container: the item's record, plus what the item produced
-│       ├── <stamp>-<slug>.md          # the item record — the directory's own name
+│   └── <stamp>-<slug>/                # the container: the item's pair, plus what the item produced
+│       ├── <stamp>-<slug>.md          # the narrative — the directory's own name
+│       ├── package.json               # its control file
 │       ├── plans/
 │       ├── issues/
 │       ├── decisions/
@@ -56,6 +57,8 @@ fusion-workbench/
 │
 │   # ── Root-anchored. The hooks, the monitor and the bin/ helpers read these ──
 │   # ── HERE, at fixed root-relative paths. Do not move them.               ──
+├── workbench.json                      # the manifest: the codec, /fusion:setup (initialize), hooks/lib/staging-drift.ts
+├── .json-state/                        # the codec's lock and journal, never travels: the codec, hooks/lib/staging-drift.ts
 ├── orchestrator-events.jsonl           # bin/monitor, bin/fusion-events (hooks/events-query.ts), hooks/lib/orchestrator-events.ts, bin/fusion-commit-lock, hooks/lib/staging-drift.ts
 ├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts, hooks/lib/staging-drift.ts
 ├── .commit-lock/                       # bin/fusion-commit-lock, hooks/lib/staging-drift.ts (created and removed per commit)
@@ -64,15 +67,17 @@ fusion-workbench/
 └── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
 ```
 
+**A controlled record is a pair, and the pair is one artefact**: its Markdown narrative and, beside it, a control file only the codec writes (`package.json` in a container, `<stem>.record.json` beside an issue, plan, discussion or decision, `<stem>[.<n>].evidence.json` beside a review report). Both halves move, archive and commit together, in one commit; `hooks/lib/staging-drift.ts` marks a split pair `pair-split`. A workbench without `workbench.json` is `legacy`, its control data Markdown, and the resolvers refuse it by name until `/fusion:migrate` has run.
+
 **The container store is `work-packages/`**, renamed from `circles/` at v12: `260922-1114_*_does-the-container-store-take-the-name-work-packages-superseding-circles.md`.
 
-**Three legacy stores are absent from this tree on purpose.** A workbench may carry `stashes/`, written by the stash skills removed on 2026-08-15; `.migration-v2-backup/`, left by the retired `/fusion:migrate-workbench-v2` (fusion v2.3–v2.5) as its rollback copy; and `shared/backlog/`, the unit of work's store before containers, frozen since 2026-09-22 (`260922-0922_*_what-becomes-of-the-two-entries-in-the-unread-shared-backlog-store.md`). Nothing shipped writes to them any more: a line in the tree above would read as a store the module still creates. Frozen content is not live content: live-tree consumers keep it out, and `/fusion:migrate` renames nothing in it: it keeps the names it was frozen under. `skills/cadence/SKILL.md` and `skills/archive/SKILL.md` exclude `stashes/` and `.migration-v2-backup/` by path, and name none for `shared/backlog/`, which is empty and so excludes itself; `backlog` stays in the store-segment lists of `hooks/lib/staging-drift.ts` and `hooks/lib/citation-scan.ts`, so a citation of an archived entry is still read as store-prefixed rather than becoming invisible.
+**Three legacy stores are absent from this tree on purpose**, because nothing shipped writes them: `stashes/` (the stash skills removed on 2026-08-15), `.migration-v2-backup/` (the rollback copy of the retired `/fusion:migrate-workbench-v2`) and `shared/backlog/`, the store before containers, frozen since 2026-09-22 (`260922-0922_*_what-becomes-of-the-two-entries-in-the-unread-shared-backlog-store.md`). Frozen content is not live content: live-tree consumers keep it out, and `/fusion:migrate` renames nothing in it. `skills/cadence/SKILL.md` and `skills/archive/SKILL.md` exclude the first two by path, and the empty third excludes itself; `backlog` stays in the store-segment lists of `hooks/lib/staging-drift.ts` and `hooks/lib/citation-scan.ts`, so a citation of an archived entry still reads as store-prefixed rather than becoming invisible.
 
 **The root-anchored surfaces are not negotiable.** Each is bound to a fixed root-relative path by every consumer named beside it in the tree, and none of those consumers has a fallback path: relocating one into `shared/` breaks it silently. The column names a consumer that only *names* the path, in an exclusion or classification list, next to one that reads the file: what breaks on a move is the same dependency either way.
 
-They are root-anchored because none of them belongs to a unit of work. `orchestrator-events.jsonl` is session state, and a session may span work packages. `.guard-state/` counters are project-wide. `.commit-lock/` guards the project's git index, which no single work package owns. `.session-marker` answers "is an orchestrator already running in this project", which is meaningless scoped to one item. This placement is what makes the guarantee "hooks behave unchanged across the layout" structural rather than promised.
+They are root-anchored because none of them belongs to a unit of work. `workbench.json` names the whole workbench, and `.json-state/` holds the one write lock over it. `orchestrator-events.jsonl` is session state, and a session may span work packages. `.guard-state/` counters are project-wide. `.commit-lock/` guards the project's git index, which no single work package owns. `.session-marker` answers "is an orchestrator already running in this project", which is meaningless scoped to one item. This placement is what makes the guarantee "hooks behave unchanged across the layout" structural rather than promised.
 
-The list is exhaustive as written, and it is a list rather than a count on purpose: a count goes stale on the next helper that needs project-wide state, and this one already had. When a `bin/` helper or a hook adds a root-anchored surface, it lands in this tree and in the record-or-live-state split in `rules/workbench-tracking.md`, both in the same commit: this document is the definition, and an incomplete tree invites exactly the reasoning-by-omission it exists to prevent.
+The list is exhaustive, and a list rather than a count on purpose: a count goes stale on the next helper that needs project-wide state. A `bin/` helper or hook that adds a root-anchored surface adds it to this tree and to the record-or-live-state split in `rules/workbench-tracking.md` in the same commit: an incomplete tree invites exactly the reasoning-by-omission this definition exists to prevent.
 
 ### Which of them a tracked workbench tracks
 
@@ -84,7 +89,7 @@ Whether a consuming project tracks its workbench at all is that project's decisi
 
 **The review types collapse into one `reviews/`.** codereview and ontoreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header, so they do not earn a directory each.
 
-`fusion-workbench/.checkout-id` holds eight lowercase hex characters naming **this checkout** and nothing else: `bin/fusion-identity` mints it on first read and never again, and it is what a work package's `**Claim:**` names, beside the person. It is class L in `rules/workbench-tracking.md`, which says why it never travels.
+`fusion-workbench/.checkout-id` holds eight lowercase hex characters naming **this checkout** and nothing else: `bin/fusion-identity` mints it on first read and never again, and it is what a work package's `claim.checkout_id` names, beside the person. It is class L in `rules/workbench-tracking.md`, which says why it never travels.
 
 `fusion-workbench/.asset-provenance` records what `/fusion:setup` copied into the workbench: one line per asset in the shape `shasum -a 256` prints. The checksum is taken at the moment of copying, then comes the asset's path relative to the workbench. It is the third input that makes "is this project's copy stale, or has the project adapted it" decidable, which the two files alone are not: one difference, two causes. `/fusion:setup` is its only writer and its only reader, and an asset with no line is one the record says nothing about rather than one it classifies.
 
@@ -130,9 +135,9 @@ In **Setup step 2**, alongside `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" <agent>`.
 
 Signature `fusion-paths <name> [<item-dir>]`. Output: one `KEY=value` line per emitted key on stdout. Paths are workbench-relative except `WORKBENCH` itself, which is absolute. Multi-value keys are space-separated.
 
-**The second argument names the item in scope**, as a directory name that must already exist in the container store; one that does not is exit 1, a caller usage error rather than a workbench fault. It is how a dispatcher sends an agent into an item other than the one this checkout holds.
+**The second argument names the item in scope**, as the directory's own name in the container store; it must hold a `package.json` the codec reads, and one that does not is exit 1, a caller usage error rather than a workbench fault. It is how a dispatcher sends an agent into an item other than the one this checkout holds.
 
-**With no second argument the resolver reads the claim.** The item in scope is the one whose record carries `**Status:** claimed` and a `**Claim:**` naming this checkout's eight hex characters (`## Work packages`). No claimed item is a real answer and resolves to `shared/`, exit 0. **Two claimed items is refused, never resolved:** exit 3, both files named on stderr, no output at all. Taking either would file this item's work into that item's container, which is the same silent-wrong-place failure the exit-4 refusal prevents one step earlier. The criterion is implemented once, in `bin/fusion-claimed-package`, which `bin/fusion-paths` and `bin/fusion-rules` both call rather than each carrying a claim scan of its own; binding decision `260910-2145_*_how-does-the-resolver-learn-which-work-item-is-in-scope.md` (option 2), against a pointer file that would store one fact twice.
+**With no second argument the resolver reads the claim.** The item in scope is the package whose control file has `status` `claimed` and a `claim.checkout_id` equal to this checkout's eight hex characters (`## Work packages`). No claimed item is a real answer and resolves to `shared/`, exit 0. **Two claimed items is refused, never resolved:** exit 3, both files named on stderr, no output at all. Taking either would file this item's work into that item's container, which is the same silent-wrong-place failure the exit-4 refusal prevents one step earlier. The criterion is implemented once, in `bin/fusion-claimed-package`, which `bin/fusion-paths` and `bin/fusion-rules` both call rather than each carrying a claim scan of its own; binding decision `260910-2145_*_how-does-the-resolver-learn-which-work-item-is-in-scope.md` (option 2), against a pointer file that would store one fact twice.
 
 **Scope is per checkout, and holds by construction rather than by a rule.** A claim names one checkout, so an item another checkout holds does not match here and is not this checkout's scope: its writes go to `shared/`, or into the container of whatever it holds itself. The claim travels with git, so both checkouts read one store and reach different answers out of it. No pointer, no per-checkout state, nothing to reconcile.
 
@@ -143,10 +148,10 @@ Signature `fusion-paths <name> [<item-dir>]`. Output: one `KEY=value` line per e
 | 0 | Success | yes |
 | 1 | Usage error, including no workbench found above `pwd` | yes |
 | 2 | Unknown name: no such agent and no such skill | yes |
-| 3 | The item in scope cannot be determined: this checkout holds two or more claimed items, or its own identifier could not be read inside a git work tree. No output, and never a fall back to `shared/` | no |
+| 3 | The item in scope cannot be determined. The header of `bin/fusion-claimed-package` lists the causes, among them two or more claimed items, this checkout's identifier unreadable inside a git work tree, and a workbench refused by name (`legacy`, `unsupported`). No output, and never a fall back to `shared/` | no |
 | 4 | Internal error: a prompt names a key the resolver cannot order or value, or one name is both an agent and a skill (a **fusion bug**) | no |
 
-**Exit 3 is unknown scope and nothing else.** A project that is not a git work tree takes no claim at all, so no item in scope is the true answer there and it exits 0 into `shared/`. The two look alike and are not, which is why `bin/fusion-identity` splits its 3 and 5 from its 4.
+**Exit 3 is unknown scope and nothing else.** A project that is not a git work tree takes no claim at all, so no item in scope is the true answer there and it exits 0 into `shared/`. The two look alike and are not, hence `bin/fusion-identity` splits its 3 and 5 from its 4. On a `legacy` workbench the way out is `/fusion:migrate`, never an edit; on an `unsupported` one, a newer client.
 
 The `0/1/2` core is shared with `bin/fusion-rules`; 3 and 4 are this resolver's own. `bin/fusion-rules` also exits 3, for an unrelated reason, a malformed `rules/context-manifest.yaml`, so read an exit 3 against the helper that returned it, never across the two.
 
@@ -165,7 +170,7 @@ A key the resolver cannot value exits 4 rather than emitting `KEY=`. An empty ri
 
 ## Issues vs Decisions — when to use which
 
-A **defect** belongs in `issues/`, a **decision** in `decisions/`, and `## Record filing` below says when each is owed. What separates them is the resolution: "go fix it" is a defect, "decide and record" is a decision. A defect resolves to a fix in the tree, verifiable by reading a diff; a decision resolves to a recorded answer and, separately, to the implementation that realises it, which is why the two carry different marker vocabularies (`## State Markers — issues and planning`, `## State Markers — decisions`).
+A **defect** belongs in `issues/`, a **decision** in `decisions/`, and `## Record filing` below says when each is owed. What separates them is the resolution: "go fix it" is a defect, "decide and record" is a decision. A defect resolves to a fix in the tree, verifiable by reading a diff; a decision resolves to a recorded answer and, separately, to the implementation that realises it, which is why the two carry different state sets (`## State Markers — issues and planning`, `## State Markers — decisions`).
 
 - Defects: "term mapping is missing for entity X"; "test failure in pkg/foo"; "manifest doesn't validate".
 - Decisions: "which IdP for v1?"; "should we adopt approach X or Y?"; "what is the cut decision for the platform?".
@@ -178,67 +183,65 @@ This three-way distinction is about **what kind of thing** an artefact is, and t
 
 ## Work packages
 
-A **work package** is one unit of work: something somebody is going to do, or has decided not to. **It is a directory, and its record lives inside it.** The container is `work-packages/YYMMDD-HHMM-<slug>/` (`$OUT_PACKAGES`) and the record is `work-packages/YYMMDD-HHMM-<slug>/YYMMDD-HHMM-<slug>.md`: the same name twice, directory and record, with **no marker on either**. Everything the item produces goes into that directory too, in the same per-kind subdirectories `shared/` carries (`## fusion-workbench Layout`), so `ls` on one path is a unit of work's whole account of itself. Finding the record is finding the container, so a claim that resolves can never point at a directory that is not there.
+A **work package** is one unit of work: something somebody is going to do, or has decided not to. **It is a directory holding a pair**: the container `work-packages/YYMMDD-HHMM-<slug>/` (`$OUT_PACKAGES`), the narrative `YYMMDD-HHMM-<slug>.md` under the directory's own name, and the control file `package.json` beside it, with **no marker on any of them**. Everything the item produces goes into that directory too, in the same per-kind subdirectories `shared/` carries (`## fusion-workbench Layout`), so `ls` on one path is a unit of work's whole account of itself. Finding the pair is finding the container, so a claim that resolves can never point at a directory that is not there.
 
-One file per item rather than one list file, because two checkouts adding work at the same time then merge with no conflict. No marker, because an item's state is a head field: a state change edits the file instead of renaming it, so every citation of an item stays valid for the item's whole life.
+One directory per item rather than one list file, because two checkouts adding work at the same time then merge with no conflict. No marker, because a state change rewrites `package.json` and renames nothing, so every citation of an item stays valid for its whole life.
+
+The narrative carries the brief and nothing that decides state:
 
 ```markdown
 # <one-line brief>
-
----
-**Domain:** code | data
-**Status:** open | claimed | paused | done | dropped
-**Claim:** <8 hex> — <person>, YYMMDD-HHMM
-**Mode:** autonomous
-**Active spec/plan:** <storeless basename of the spec or plan in force>
-**Depends-on:** <basename>, <basename>
-**Cross-references:** <basename>, <basename>
-**Filed by:** user, <person>
-
----
 
 ## Directive
 
 <One paragraph: what this item aims for, and how a reader would know it was reached.>
 ```
 
-`**Claim:**`, `**Mode:**`, `**Active spec/plan:**`, `**Depends-on:**` and `**Cross-references:**` are **absent** when there is nothing to say, never present and empty. Every other field is always written.
+**`package.json` is written by `bin/fusion-write` alone**, never by hand: `create --kind package` files the pair once the narrative is written, then each field has one subcommand (flags and exit codes: that script's header):
 
-**`**Mode:** autonomous` is the user's standing answer to the approvals about the solution**; absent is the ordinary mode. It stands on the user's word and is written only on it: by the user by hand, by `/fusion:wp` from the user's own words, or by the orchestrator in the same command as a filing or a claim the user asked for, never from the brief's prose. Which approval conditions it answers, and which it never does, is `agents/orchestrator.md` `## Human approval rules`; a `gate_response` citing it records an answer the user gave, so `## Dispatching another agent` holds.
+| Field | Written by |
+|---|---|
+| `status`, `claim` | `claim`; `release`; `transition --to <status>`, with `--outcome` into `done` or `dropped` |
+| `mode` | `set-mode` |
+| `depends_on` | `set-dependencies` |
+| `active_documents` | `adopt-plan`, which moves a replaced plan into `references` |
+| `domain`, `filed_by`, `origin` | `create`, once |
 
-**`**Status:**` takes five values and there is no sixth.** The first three are live; the last two are terminal.
+**`--outcome` takes three required fields**: `{"class":"completed","reason":"<what landed>","evidence":[]}` into `done`; into `dropped` the class is `bounded`, `cancelled`, `failed` or `dropped` and `reason` is non-empty.
 
-| Value | Meaning | `**Claim:**` |
+A narrative imported by `/fusion:migrate` may keep `**Domain:**`, `**Filed by:**` or `**Cross-references:**` lines: they are informational, and where one disagrees with `package.json` the JSON governs.
+
+**`mode` `autonomous` is the user's standing answer to the approvals about the solution**; `ordinary` is the default. It stands on the user's word and is written only on it, `set-mode --source` citing the narrative that holds the user's words, `'{"kind":"user-word","ref":{"kind":"other","path":"<it>","sha256":"sha256:<of its bytes>"}}'`: by the user, by `/fusion:wp` from the user's own words, or by the orchestrator in the same turn as a filing or a claim the user asked for, never from the brief's prose. Which approval conditions it answers, and which it never does, is `agents/orchestrator.md` `## Human approval rules`; a `gate_response` citing it records an answer the user gave, so `## Dispatching another agent` holds.
+
+**`status` takes five values and there is no sixth.** The first three are live; the last two are terminal, the `terminal` set of `package` in `codec/contract/transitions.json`.
+
+| Value | Meaning | `claim` |
 |---|---|---|
-| `open` | nobody is working on it | absent |
-| `claimed` | a checkout is working on it now | present, naming that checkout |
-| `paused` | set aside deliberately, not abandoned, expected back | absent |
-| `done` | the work landed | stays, naming the checkout that did it |
-| `dropped` | no longer live; the body says why, citing the item that replaced it or the reason | stays if one stood |
+| `open` | nobody is working on it | null |
+| `claimed` | a checkout is working on it now | names that checkout |
+| `paused` | set aside deliberately, not abandoned, expected back | null |
+| `done` | the work landed | may keep the checkout that did it |
+| `dropped` | no longer live; the narrative says why | may keep one that stood |
 
-It is neither of the marker vocabularies this project carries (`## State Markers — issues and planning`, `## State Markers — decisions`), and the differences are the reason. `claimed` is the value none of them has, and it is the one this store exists to carry: it says *which checkout*, which is what stops two people doing one job. Nothing here splits "answered" from "realised" the way a decision's `_a_` and `_i_` do, because an item has no such seam: it is done when the work landed. `dropped` covers in one value what an issue's `_c_` and `_d_` split by marker; the body says which.
+**The edges are the kernel's**: `claim` from `open` or `paused`; `release` from `claimed` to `open`; `transition` from `open` or `claimed` to `paused`, from `paused` to `open`, from `claimed` to `done`, and from any live value to `dropped`. The codec refuses any other (exit 6). Pausing clears the claim, so resuming is an ordinary `claim` by anybody. **A paused item's narrative says *what* it is waiting for** and never a date, because nothing checks a date; where the thing waited on is another work package, that is a `depends_on` entry rather than prose. **`done` and `dropped` are terminal**: reopening one is filing a new item that cites it (`## Terminal states are history`).
 
-**`paused` is entered from `open` or `claimed` and left to `open`, `claimed` or `dropped`**, and it is the one live value an item returns from. `done` is the value no edge joins to `paused` in either direction: work that landed passed through somebody working on it, which is `claimed`. Pausing writes the reason and clears `**Claim:**`; resuming is a plain Claim. **A paused item's body says *what* it is waiting for** and never a date, because nothing checks a date; where the thing waited on is another work package, that statement is a `**Depends-on:**` entry rather than prose.
+**`claim` names the checkout, and the checkout is the whole key.** `claim.checkout_id` is what `bin/fusion-identity` prints as `CHECKOUT=`, and `claim.person` its `PERSON=` line, read the way `### Who filed it` reads it. Two checkouts of one person carry one git identity, so the person alone cannot answer whose claim this is; the checkout can, and comparing a claim against this checkout is an equality on those eight characters. `bin/fusion-write` refuses (exit 5) a claim when this checkout's identifier cannot be read, and a `release` or a `transition` out of `claimed` by any checkout but the holder.
 
-**`done` and `dropped` are terminal.** Reopening one is filing a new item that cites it, never an edit back to `open`. The general rule is `## Terminal states are history` below.
+**There is no takeover.** A package another checkout holds stays claimed until that checkout releases or transitions it; no flag overrides the refusal, and none exists until a qualified codec revision provides one (request 38 in `codec/fixtures/prior/REQUESTS.md`). Within one workbench the codec refuses a second claim. Across checkouts the race is detected, not prevented: two that both pull, both see `open` and both claim conflict on `package.json` at the next merge, and the one who loses picks another item.
 
-**`**Claim:**` names the checkout, and the checkout is the whole key.** `<8 hex>` is what `bin/fusion-identity` prints as `CHECKOUT=`, and the person half beside it is its `PERSON=` line, read the way `### Who filed it` reads it and absent rather than empty when the helper could not print one. Two checkouts of one person carry one git identity, so the person alone cannot answer whose claim this is; the checkout can, and comparing a claim against this checkout is an equality on those eight characters. **When the checkout half cannot be read at all** (`bin/fusion-identity` exits 3 or 5) the field is not written and the item is not claimed: a claim that names no checkout keys nothing, and writing one would say the item is held while leaving no way to say by whom. **On `paused` the field is absent**, because it says somebody is working on the item now and a paused item is not: resuming it is therefore an ordinary Claim by anybody rather than a takeover, an operation whose whole definition is contention. Who paused it is in the commit that paused it.
+**`depends_on` entries are written by `set-dependencies --on <condition>:<package control path>`.** **An entry stands on the user's confirmation, and no agent writes one without it**. **One agent route may propose an entry for the user to confirm**, the policy-curator's `**Edges:** on` survey (`agents/policy-curator.md` `## The fourth subject — work-package edges`), whose proposals are inert until somebody rules on them. **`mode` `autonomous` on the item that survey targets is the one route by which a proposed entry is written without a per-entry ruling**: the ledger is then applied whole, edges included, on the standing answer the field is, and `agents/orchestrator.md` `## Human approval rules` is the authority for which approval conditions it answers. Absent that, the write still stands on the user's confirmation, entry by entry. `bin/fusion-work-order` computes the order over the confirmed edges, and it stands unless the user overrides it. No agent asserts a ranking, and no field holds one. Binding decision: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3).
 
-**A takeover overwrites the field.** The item ends up naming one holder, which is what a reader and a helper both need; who held it before is in the commit that took it, which is where this project keeps the per-change record (`## Record filing`). The collision is detected and not prevented: two checkouts that both pull, both see no claim and both claim will conflict on that one line at the next merge, and the one who loses the race picks another item. Nothing here reserves an item ahead of the write, and no field value changes that.
+**An entry asserts one relation and one only: the named item must reach its condition before this item may start.** `terminal` is reached at `done` or `dropped`, because neither is a node; `succeeded` is the stricter condition chosen explicitly, `done` with outcome `completed` and an accepted evidence record (`codec/contract/dependencies.json`). A `paused` target has reached neither, so the entry is live: the paused item is a node in `bin/fusion-work-order`'s graph and blocks every item naming it. A citation that orders nothing (a record the item rests on, a decision that binds it, work it merely touches) stays in the narrative's prose. Binding decisions: `260908-2018_*_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md` and, for the node set the terminal values come from, `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`.
 
-**`**Depends-on:**` is a comma-separated list of item basenames** (`YYMMDD-HHMM-<slug>.md`, the same form a citation of the item takes). **An entry stands on the user's confirmation, and no agent writes one without it**: a rule about who may write, not a description of what the field holds, which the migration's conversion once violated. **One agent route may propose an entry for the user to confirm**, the policy-curator's `**Edges:** on` survey (`agents/policy-curator.md` `## The fourth subject — work-package edges`), whose proposals are inert until somebody rules on them. **`**Mode:** autonomous` on the item that survey targets is the one route by which a proposed entry is written without a per-entry ruling**: the ledger is then applied whole, edges included, on the standing answer the field is, and `agents/orchestrator.md` `## Human approval rules` is the authority for which approval conditions it answers. Absent that field the write still stands on the user's confirmation, entry by entry. `bin/fusion-work-order` computes the order over the confirmed edges, and it stands unless the user overrides it. No agent asserts a ranking, and there is no marker for one. Binding decision: `260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md` (option 3).
+**`active_documents` names the artefacts the work runs on**: plan records bound at the exact narrative revision accepted, any number in the role `spec` and at most one in the role `plan`. `adopt-plan --plan <control path> [--role spec]` writes it, and a later plan replaces the earlier one in the same write. **The write rides the act**: whoever makes a spec or plan the one this work runs on adopts it in the same turn, and no pass maintains it afterwards: a field a separate bookkeeping step owns drifts from what the work is actually running on. Empty means no artefact yet, and a reader takes that as the statement it is. Its second reader is the closure step, which reads the plan whose `## Where this work stops` it puts back to the user clause by clause; with none bound, that step has only the plan the session happens to be holding, which nothing persists. Binding record: `260910-2011_*_a-work-item-has-no-field-for-the-plan-it-runs-on-so-the-closure-step-lost-its-source.md`.
 
-**An entry there asserts one relation and one only: the named item must reach `done` or `dropped` before this item may start.** Both terminal values, because neither is a node and nothing here distinguishes them. A `paused` target has reached neither, so the entry is live: the paused item is a node in `bin/fusion-work-order`'s graph and blocks every item naming it. Every other citation an item carries (a record it rests on, a decision that binds it, work it merely touches) goes in `**Cross-references:**`, which orders nothing. The distinction is which of the two fields a basename sits in, never a verb inside the value. Binding decisions: `260908-2018_*_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md` and, for the node set the terminal values come from, `260908-2018_*_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md`.
+**Who files a package.** The user, by hand, through `/fusion:wp`, or by instructing the orchestrator, whose write carries the user's words as the brief, `--origin user-request` and `--actor user`. **An agent may also originate one** within the work it was commissioned for: `--actor` names the agent, so `filed_by` still tells an agent's filing from the user's, and `--origin` names the control path of the package whose scope it decomposes. That origin creates no mandate and no right to run: what runs is still approved through `mode` and the orchestrator's approval rules. A defect an agent finds is still an issue, a choice point a decision record. Binding decision: `260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md` (option 1).
 
-**`**Active spec/plan:**` names the artefact the work runs on**, as one or more storeless basenames with the marker wildcarded (`## Filename Patterns`), comma-separated where a spec and the plan drawn from it both stand, and holding at most one plan: a later plan replaces the earlier one at the write that adopts it, and the replaced basename moves to `**Cross-references:**`; a short qualifying clause beside a basename is allowed, and is what lets one field say which of the two is which. **The write rides the act**: whoever makes a spec or plan the one this work runs on writes the field in the same command, and no pass maintains it afterwards: a field a separate bookkeeping step owns is a field that drifts from what the work is actually running on. Absent means no artefact yet, and a reader takes that as the statement it is. Its second reader is the closure step, which reads the plan whose `## Where this work stops` it puts back to the user clause by clause; absent, that step has only the plan the session happens to be holding, which nothing persists. Binding record: `260910-2011_*_a-work-item-has-no-field-for-the-plan-it-runs-on-so-the-closure-step-lost-its-source.md`.
-
-**No agent originates a work package on its own initiative**: the user files, by hand, through `/fusion:wp`, or by instructing the orchestrator, whose write then carries the user's words as the brief and `**Filed by:** user` (`260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md`); a defect an agent finds is still an issue, a choice point a decision record.
-
-**Maintenance is the orchestrator's, at the user's word, with no agent dispatch.** Splitting one item's work across several, merging several statements of one job into one, and moving an item to `done` or `dropped` are edits somebody performs once the user has said so; the user is confirming each one anyway, and dispatching an agent to perform a confirmed edit costs a dispatch to save nothing. None of the operations adds work to the store, which is what keeps the no-agent-originates bound intact across them: the text a merge writes consolidates items already filed.
+**Maintenance is the orchestrator's, at the user's word, with no agent dispatch.** Splitting one item's work across several, merging several statements of one job into one, and moving an item to `done` or `dropped` are operations somebody performs once the user has said so; the user is confirming each one anyway, and dispatching an agent to perform a confirmed operation costs a dispatch to save nothing.
 
 ## Dispatching another agent
 
-**An agent may dispatch another agent.** Nothing forbids it and nothing enforces a ban, so a pass that needs to fan out, fans out. Two bounds hold for every agent, not for the orchestrator alone: the `consultant` is no executor, so no task is routed to it, and an agent dispatches it only for a second opinion on a concept or, through `/fusion:discuss`, as the second discussion partner; the `orchestrator` is dispatched by no agent at all. The dispatch leaves the bound that matters untouched, and that bound is `## Work packages` above: no agent originates one on its own initiative.
+**An agent may dispatch another agent.** Nothing forbids it and nothing enforces a ban, so a pass that needs to fan out, fans out. Two bounds hold for every agent, not for the orchestrator alone: the `consultant` is no executor, so no task is routed to it, and an agent dispatches it only for a second opinion on a concept or, through `/fusion:discuss`, as the second discussion partner; the `orchestrator` is dispatched by no agent at all. A dispatch grants no mandate: what an agent may file is `## Work packages` above, and what may run is the approval rules below.
 
 **Approvals are asked in the orchestrator's own loop, and a nested dispatch never reaches one** (`agents/orchestrator.md` `## Human approval rules` holds the conditions). So before an agent dispatches another agent, it reads that section through `$FUSION_PLUGIN_ROOT`, which every SessionStart exports. A row that applies to the dispatch it is about to make means it **does not make it**: it returns the question, with the row named, to whoever dispatched it, and that party carries it up to the orchestrator, where the user answers as before. A table it cannot read (the variable unset, the file absent) counts as a row applying, so it returns rather than proceeding blind. No row applying, the work goes on.
 
@@ -267,25 +270,27 @@ The reasoning, the stylometric-profile resolution (including the per-family miss
 
 Patterns attach to the **kind of artefact**, and the kind decides the store too.
 
-| Artefact kind | Written to | Pattern | State marker |
+| Artefact kind | Written to | Pattern | Control file beside it |
 |---|---|---|---|
-| Work item | `$OUT_PACKAGES` | `YYMMDD-HHMM-<slug>/YYMMDD-HHMM-<slug>.md` | no: the state is the `**Status:**` head field |
-| Spec / plan | `$OUT_PLAN` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
-| Defect | `$OUT_ISSUE` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
-| Decision record | `$OUT_DECISION` | `YYMMDD-HHMM_S_<topic>.md` | yes (decisions vocabulary, richer set) |
-| Discussion | `$OUT_DISCUSSION` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary, `_o_` and `_c_` only) |
-| Review (code / onto) | `$OUT_REVIEW` | `YYMMDD-HHMM-<sender>-<topic>.md` | no |
+| Work item | `$OUT_PACKAGES` | `YYMMDD-HHMM-<slug>/YYMMDD-HHMM-<slug>.md` | `package.json` |
+| Spec / plan | `$OUT_PLAN` | `YYMMDD-HHMM-<topic>.md` | `<stem>.record.json` |
+| Defect | `$OUT_ISSUE` | `YYMMDD-HHMM-<topic>.md` | `<stem>.record.json` |
+| Decision record | `$OUT_DECISION` | `YYMMDD-HHMM-<topic>.md` | `<stem>.record.json` |
+| Discussion | `$OUT_DISCUSSION` | `YYMMDD-HHMM-<topic>.md` | `<stem>.record.json` |
+| Review (code / onto) | `$OUT_REVIEW` | `YYMMDD-HHMM-<sender>-<topic>.md` | `<stem>[.<n>].evidence.json`, when evidence is recorded |
 | Analysis | `$OUT_ANALYSIS` | `YYMMDD-HHMM-<topic>.md` | no |
 | Consultation | `$OUT_CONSULT` | `YYMMDD-HHMM-<topic>.md` | no |
 | Memo | `$OUT_MEMO` | `notes-<person>.md` / `tasks-<person>.md` | no |
 | Forum entry | `$OUT_FORUM` | `YYMMDD-HHMM-<checkout>-<slug>.md` | no |
 | Cadence digest | `$OUT_MEMO` | `cadence-<checkout>.md` | no |
 
-**Of the kinds above, a discussion is the only one whose record is written unfinished**: it is on disk from round one, and its marker moves at the close rather than when somebody decides something. So read an `_o_` discussion as interrupted, not as pending.
+**A new record's name carries no marker**: its state is in the control file, which `create` writes in the kind's initial state once the narrative is written (`## Record filing`). A name written before `/fusion:migrate` keeps its marker (`YYMMDD-HHMM_o_<topic>.md`, the `.record.json` beside it under the same stem), and that letter encodes no current state: it is where the record stood at migration, and nothing renames it.
+
+**Of the kinds above, a discussion is the only one whose record is written unfinished**: it is on disk from round one, and its state moves at the close rather than when somebody decides something. So read an `open` discussion as interrupted, not as pending.
 
 `<sender>` on a review file is `reviewer`. It is mandatory, and the document header repeats it. Older files carry the senders it replaced: `coderev` and `ontorev`, merged into `reviewer` at v11, and `conceptrev`, retired with its agent on 2026-08-15.
 
-**Cite a record by its storeless basename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move and every archive sweep. **A citation carrying a store segment is a violation the checks report** (`shared/<store>/` in front of a record): the segment is what a sweep moves, so a citation spelling it dies at the sweep. A markerless artefact (work package, history, review, analysis, consultation, forum entry) is cited as `YYMMDD-HHMM-<topic>.md`, which is the same form a work package's `**Depends-on:**` entries take and needs no grammar of its own. The reader resolves either form by one workbench-wide lookup (`find "$WORKBENCH" -name '<basename>'`, the wildcard as a glob), which is correct because no two stamped artefacts share a marker-normalised basename: measured over the live tree and `archive/` at commit `4b8f769d` (2 235 basenames, 0 collisions) and re-taken on every run by `hooks/lib/__tests__/workbench-citation-lint.test.ts`. **A record held in another project's workbench is cited `foreign:<project>:<citation>`**, both leading segments literal and required, as in `foreign:menue-rs:260905-2054-reconciliation.md`; the qualifier is read before any lookup, so such a token is reported neither dangling nor store-prefixed. It is supplied by the writer and never inferred: nothing separates a genuine foreign record from a local one mislabelled, so the form is a claim you are making rather than a fact a lint checked. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. **No pattern above changes.** In living text (prompts, rules, docs), which outlives its target, cite a rule file by heading anchor (`file.md` `## Section`), never by line number: an edit above the line moves it silently, and no lint resolves `path:N`. **A resolution line takes the same anchor**, never `:line`: `Resolved:` on an issue and the five decision lines `## Inline State Tracking` spells. `path:line` was the rule until 2026-09-05, and why it moved is `260905-1228_*_does-a-resolution-line-cite-path-line-or-a-heading-anchor.md`'s; the commit still carries the moment, and what is given up is precision inside a file. When the target is a record the path half is its storeless basename (a rule file, a source file or a commit stays a path), and a commit hash takes no locator. **A workbench record's heading anchor into shipped text reads as the heading stood when the record was written**, and no lint resolves it in either direction: `hooks/lib/__tests__/reference-resolution-lint.test.ts` resolves anchors over the shipped surface and excludes the workbench, while `hooks/lib/__tests__/workbench-citation-lint.test.ts` and `bin/fusion-citation-check` resolve record citations inside the workbench and read no heading anchor. The anchor form was chosen for living text that outlives its target; a record is the other kind, point-in-time and carried by its commit, so a heading later reworded leaves the record correct about the moment it was written and stale about the tree. What would reopen this is a count of stale anchors in live records above a handful, which nobody has taken.
+**Cite a record by its storeless basename**, so the citation survives every archive sweep: a markerless name as it stands (`YYMMDD-HHMM-<topic>.md`: a new record, a work package, history, review, analysis, consultation, forum entry), a marked one with the marker wildcarded, `YYMMDD-HHMM_*_<topic>.md`, whatever letter it carries. **A citation carrying a store segment is a violation the checks report** (`shared/<store>/` in front of a record): the segment is what a sweep moves, so a citation spelling it dies at the sweep. The reader resolves either form by one workbench-wide lookup (`find "$WORKBENCH" -name '<basename>'`, the wildcard as a glob), which is correct because no two stamped artefacts share a marker-normalised basename: measured over the live tree and `archive/` at commit `4b8f769d` (2 235 basenames, 0 collisions) and re-taken on every run by `hooks/lib/__tests__/workbench-citation-lint.test.ts`. **A migration's kept originals are outside that scope**: `archive/migrations/<id>/originals/` holds each converted record's pre-migration bytes under its own basename, so the lookup, the checks and the sweep skip that subtree, and an original is reached through the receipt beside it. **A record held in another project's workbench is cited `foreign:<project>:<citation>`**, both leading segments literal and required, as in `foreign:menue-rs:260905-2054-reconciliation.md`; the qualifier is read before any lookup, so such a token is reported neither dangling nor store-prefixed. It is supplied by the writer and never inferred: nothing separates a genuine foreign record from a local one mislabelled, so the form is a claim you are making rather than a fact a lint checked. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. **No pattern above changes.** In living text (prompts, rules, docs), which outlives its target, cite a rule file by heading anchor (`file.md` `## Section`), never by line number: an edit above the line moves it silently, and no lint resolves `path:N`. **A resolution line takes the same anchor**, never `:line`: `Resolved:` on an issue and the five decision lines `## Inline State Tracking` spells. `path:line` was the rule until 2026-09-05, and why it moved is `260905-1228_*_does-a-resolution-line-cite-path-line-or-a-heading-anchor.md`'s; the commit still carries the moment, and what is given up is precision inside a file. When the target is a record the path half is its storeless basename (a rule file, a source file or a commit stays a path), and a commit hash takes no locator. **A workbench record's heading anchor into shipped text reads as the heading stood when the record was written**, and no lint resolves it: `hooks/lib/__tests__/reference-resolution-lint.test.ts` excludes the workbench, and `hooks/lib/__tests__/workbench-citation-lint.test.ts` and `bin/fusion-citation-check` read no heading anchor. A record is point-in-time and carried by its commit, so a heading reworded later leaves it correct about its moment and stale about the tree; a count of stale anchors in live records above a handful, which nobody has taken, would reopen this.
 
 **A record somebody deliberately deletes leaves no file and no marker, so the annotation sits on the surviving references.** Deletion is not archival: an archive sweep moves a record and it stays citable at its new path, while deletion preserves nothing and there is no corrected path to write. Whoever deletes a record therefore annotates every citation of it that survives elsewhere, **replacing** the dead citation rather than standing beside it, since a path that resolves to nothing is indistinguishable from an accident whatever sentence sits next to it. The identity is carried as the stamp and the slug in separate spans, and no basename is left behind for a lookup to fail on:
 
@@ -303,152 +308,125 @@ The two kinds sharing `$OUT_MEMO` differ in write semantics: the memo and task f
 
 ## State Markers — issues and planning
 
-Defect, spec/plan and discussion files carry a state marker: `YYMMDD-HHMM_S_<topic>.md`.
+An issue and a plan take four states in `control.state` of their `.record.json`, a discussion two:
 
-| Marker | Meaning |
+| State | Meaning |
 |--------|---------|
-| `_o_` | Open: initial state on creation |
-| `_p_` | In progress: agent is actively working on it |
-| `_c_` | Closed: resolved, or user decided to close. Stays `_c_` when a later commit or record reverses the reasoning in its `Resolved:` note; the body gains a `Revised by:` line instead (see `## Inline State Tracking`). |
-| `_d_` | Deferred: user decided, or agent proposed and user confirmed |
+| `open` | initial, written by `create` |
+| `in_progress` | an agent is working on it (not a discussion) |
+| `closed` | resolved, or the user closed it. Stays `closed` when a later commit or record reverses the reasoning in its `Resolved:` note; the narrative gains a `Revised by:` line instead (`## Inline State Tracking`) |
+| `deferred` | the user deferred it, or confirmed an agent's proposal (not a discussion) |
 
-**Rules** (`_p_` and `_d_` only where the kind's `## Filename Patterns` row allows them):
-- Every new file starts as `_o_`.
-- When an agent begins work: rename `_o_` → `_p_`.
-- When work is done: rename to `_c_`.
-- When the user defers: rename to `_d_`.
-- State change = `mv` (rename). Only the marker changes; `YYMMDD-HHMM` and `<topic>` stay the same.
+**A state changes by `bin/fusion-write transition --record <control path> --to <state> --reason <text>` and by nothing else**: no rename, no edit of the control file. `open` moves to any other state, `in_progress` to `closed` or `deferred` (`codec/contract/transitions.json`); closing or deferring an issue carries `--disposition` (`## Inline State Tracking`).
 
-History, review, analysis, investigation, consultation, memo, and cadence files do NOT carry state markers.
+**The marker letters are the legacy grammar**: `_o_`, `_p_`, `_c_`, `_d_` map to these four states, in this order, when `/fusion:migrate` imports a record, and they stand in the names written before it and in `archive/`. Neither is read for state.
+
+History, review, analysis, investigation, consultation, memo and cadence files carry no state.
 
 ## State Markers — decisions
 
-Decision records carry a richer state marker that distinguishes "the answer is recorded" from "the answer is realised in code/data".
+A decision's `control.state` separates "the answer is recorded" from "the answer is realised in code or data". Each move into a state carries the payload that state requires, and the narrative gains the matching line (`### Decision files`):
 
-| Marker | Meaning |
-|--------|---------|
-| `_o_` | Open: the question has been filed but not yet answered. Initial state on creation. |
-| `_a_` | Answered: a recorded answer exists somewhere on disk (typically an analysis, a plan, a commit message, or the decision record itself). The file body MUST cite the answer's location and name who ruled: `Answered: <citation> — <one-line summary>; ruled by <agent name or "user">, <person>`. Both halves take the forms `## Filename Patterns` and `## Inline State Tracking` define. The decision is not yet realised in code or data. `_a_` does not assert that realising it is still possible: when the subject was removed before anyone built against it, the body gains a `Retired:` line and the marker does not move. |
-| `_i_` | Implemented: the answer has been realised, and code or data on disk now reflects the decision. The file body MUST cite the implementation with `Implemented: <commit hash> or <citation> — <one-line summary>`. This is the terminal state for decisions whose realisation is verifiable. `_i_` does not assert that the implementation still exists: when it is later removed and no decision overrode it, the body gains a `Retired:` line and the marker does not move, so the marker alone cannot tell a live implementation from a retired one. |
-| `_d_` | Deferred: the user explicitly pushed the decision out (to v1.x, to a future workbench, etc.). The file body MUST cite the deferral target and name who ruled, in the form `## Inline State Tracking` spells. |
-| `_s_` | Superseded: a later decision has overridden this one. The file body MUST cite the superseding decision file: `Superseded by: <citation> — <reason>`. |
+| State | Meaning | Payload |
+|--------|---------|---------|
+| `open` | filed, not yet answered; initial | none |
+| `answered` | a recorded answer exists (an analysis, a plan, a commit message or the record itself); not yet realised in code or data | `--answer-ref` |
+| `implemented` | realised: code or data at a commit reflects the decision | `--implementation-ref` |
+| `deferred` | the user explicitly pushed it out (to v1.x, a future workbench) | `--deferral`, its target and who ruled |
+| `superseded` | a later decision overrode it | `--superseded-by` |
 
-**Worked transitions are authored in `rules/decision-record-examples.md`** (emitted to the transition agents, see `bin/fusion-rules` block 1b2; decision `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md` in the shared store); each rename's annotation form is `### Decision files` below, and a superseding record is cited where it lives, never copied next to the superseded one.
+**Neither `answered` nor `implemented` asserts that its subject still stands**: when it was removed with no later decision overriding it, the narrative gains a `Retired:` line and the state does not move.
 
-**`_i_` and `_s_` are terminal.** Do not rename them back to `_o_` or `_a_`. If an implemented decision needs revisiting, file a NEW decision, which may then supersede the `_i_` one: append `Superseded by:` and rename `_i_` → `_s_` (the one allowed terminal-to-terminal transition).
+**The edges** (`codec/contract/transitions.json`): `open` to `answered`, `implemented` or `deferred`; `answered` to `implemented`, `deferred` or `superseded`; `implemented` to `superseded`, the one allowed terminal-to-terminal edge. Revisiting an implemented decision is a NEW decision, which may then supersede it. The legacy letters `_o_`, `_a_`, `_i_`, `_d_`, `_s_` map to these five as their initials say.
 
-**Current evidence base vs evidence-base history:**
+**Worked transitions are authored in `rules/decision-record-examples.md`** (emitted to the transition agents, see `bin/fusion-rules` block 1b2; decision `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md`); each transition's line is `### Decision files` below, and a superseding record is cited where it lives, never copied next to the superseded one.
 
-The marker vocabulary mirrors foundation_V3 §1.2's two-layer model (there Grounding-Stand / Grounding-Historie):
-
-- `_o_` (open) and `_a_` (answered, awaiting realisation) are the **current evidence base**: the best-of-knowledge the project is working with.
-- `_i_` (implemented), `_s_` (superseded), and `_d_` (deferred) are **evidence-base history**: preserved record of what was decided, including elements that have been replaced or postponed.
-
-Each decision store holds both layers; the marker carries the layer information. Reconciliation passes that "list the current evidence base" filter on `_o_` + `_a_`; passes that "show project history" include all five. A scan of the current evidence base must cover every path in `$SCAN_DECISIONS`, not just the container's.
+**Current evidence base vs evidence-base history**, mirroring foundation_V3 §1.2's two-layer model: `open` and `answered` are the **current evidence base**, the best-of-knowledge the project is working with; `implemented`, `superseded` and `deferred` are **evidence-base history**, the preserved record of what was decided, including what was replaced or postponed. Each decision store holds both layers, and the state carries the layer. A pass that lists the current evidence base filters on `open` + `answered`, one that shows project history takes all five, and either covers every path in `$SCAN_DECISIONS`, not just the container's.
 
 ## Marker globs
 
-The delimiter is an underscore, not brackets, and that choice is what keeps the marker cheap to read as a glob. `[` and `]` are shell-glob metacharacters: a marker written in bracket form inside a glob is silently a *character class* matching the single marker letter, so a glob written with a bracketed `o` resolves to a one-character class, matches the empty set, and under `bash` fails *silently*. The unmatched pattern expands to itself, the customary `[ -e "$f" ] || continue` guard drops it, and the count comes back `0` on a workbench full of records (`HYG-NO-SILENT-FAIL`). That trap was hit five times in a single session. The underscore is inert in both glob and regex: `_o_spec-foo.md` matches literally, with no escaping and no character-class surprise.
+**State is never read off a filename.** A new name carries no marker and an old one's letter is history, so no glob over names answers which records are live. Enumerate through the codec: `bin/fusion-record`'s `list`, optionally scoped to a store, answers each pair's `path`, `kind` and `status`, and `show` one record's control data; live means a status outside its kind's `terminal` set in `codec/contract/transitions.json`.
 
-Two forms are correct. Use them verbatim:
-
-| Purpose | Form |
-|---|---|
-| Records in one state | `"$WORKBENCH/$SCAN_ISSUES"/*_o_*.md` |
-| All records, marker read from the name | `"$WORKBENCH/$SCAN_ISSUES"/*.md`, then `basename` → `sed -nE 's/^[0-9]{6}-[0-9]{4}_([a-z])_.*/\1/p'` |
-
-The second form is preferred wherever the task is counting or enumerating: it reads the marker as data rather than requiring one glob per state.
-
-`find` needs no special handling: `find "$WORKBENCH" -name '*_o_*.md'` is correct as written. The underscore is not a metacharacter to `find`'s `-name` matcher any more than it is to the shell.
-
-This applies to every marker in both vocabularies (`_o_`, `_p_`, `_c_`, `_d_` on issues, plans and discussions; `_o_`, `_a_`, `_i_`, `_s_`, `_d_` on decisions) anywhere a filename carrying one is matched by a glob, in any agent prompt or skill body. A work package carries no marker at all, so none of this reaches it: enumerate the store with `*.md` and read `**Status:**` out of the file.
+**Where an old name is matched** (a citation's wildcard, the legacy reader, `archive/`), the delimiter is an underscore, not brackets. `[` and `]` are shell-glob metacharacters: a bracketed letter inside a glob is a one-character class that matches nothing and, under `bash`, fails *silently*: the count comes back `0` (`HYG-NO-SILENT-FAIL`).  The underscore is inert in glob, regex and `find -name` alike.
 
 **And a record that states something *about* a citation names file and line, or fences the verbatim form.** A pointer and a statement about one are the same characters, and no reader (human or lint) can tell them apart; star a pointer and leave the letter on a marker that is being *named*, which leaves the second spelling an address that dies at its target's next transition. So do not spell it: name the citing line (`260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md:24`) and let the reader open it. A fenced code block is the exception, for where the spelling itself is the datum (a verbatim transcript), and the fence covers the results a **lookup** decides: inside one the lint stops asking whether the record exists, resolves to more than one, or has moved to another marker. It does not cover **`store-prefixed`**, which is read off the token's shape before anything is looked up, so a store segment inside a fence is still reported (`git:ff52dd4a`). The fence does keep the sweep off it, so an exhibit is never machine-rewritten; where the store has to be named, name it in words rather than spelling it into the token. Binding: `260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`.
 
 ## Terminal states are history
 
-`_c_` and `_d_` on an issue or a plan, `_c_` on a discussion, `_i_`, `_s_` and `_d_` on a decision, `done` and `dropped` on a work package: these are **terminal**, and a rename or an edit back to a live state is disallowed. Where continuation is needed, file a new record that cites the terminal one.
+The terminal states are the `terminal` sets of `codec/contract/transitions.json`, which the kernel reads: `closed` and `deferred` on an issue or a plan, `closed` on a discussion, `implemented`, `superseded` and `deferred` on a decision, `done` and `dropped` on a work package. No edge leads from one back to a live state, and the codec refuses one. Where continuation is needed, file a new record that cites the terminal one.
 
-**A terminal record is read as evidence and never reconciled in place.** No step mark, ticked criterion or header change is written into it after the transition, and an unticked box there is not outstanding work. This is what makes a reconciliation pass' scan finite: it opens the live records, and a terminal one tells it nothing it may act on. Binding decision: `260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` (option 5). **State, not spelling:** respelling a citation's pre-v4 bracket marker to the storeless wildcard names the same target and writes no state, as the sweep already does for an underscore one here (`260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md`).
+**A terminal record is read as evidence and never reconciled in place.** No step, criterion or header change is written into it after the transition (the codec refuses plan progress on a terminal plan), and an unticked box there is not outstanding work. This is what makes a reconciliation pass' scan finite: it opens the live records, and a terminal one tells it nothing it may act on. Binding decision: `260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` (option 5). **State, not spelling:** respelling a citation's pre-v4 bracket marker to the storeless wildcard names the same target and writes no state, as the sweep already does for an underscore one here (`260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md`).
 
 ## Inline State Tracking
 
-**Filename markers are not enough.** Content inside planning, issue, and decision files must also track progress, so that interruptions don't lose state.
+**State moves in the control file; the reasoning stays in the narrative.** Each change is one `transition` call, made when the change happens, so that an interruption loses nothing. No narrative line moves a state: a control head line in a live narrative is a `reconcile` finding, and a step mark there is prose.
 
 ### Planning files
 
-- When you start a step: mark it `[IN PROGRESS]`:
-  `3. [IN PROGRESS] **Step Title**`
-- When you complete a step: mark it `[DONE]`:
-  `1. [DONE] **Step Title**`
-- When all steps are `[DONE]`: set `**Status:** Complete` in the header and rename the filename marker to `_c_`.
+- A step: `--steps '[{"id":"<n>","state":"in_progress"}]'`, later `"done"`, `<n>` its number under `## Implementation Steps`. The number is the anchor, so a step is never renumbered and none is added (decision `261001-1804_*_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md`). When only steps move, `--to` names the state the plan stands in.
+- A criterion: `--criteria '[{"id":"<id>","met":true}]'`.
+- The plan: `--to in_progress` when work starts, `--to closed` when it is done; closing does not require every step done.
+- `--steps` updates only anchors the plan has: one per numbered step, imported or filed by `create`.
 
 ### Issue files
 
-When an issue is resolved, append below the existing content:
+When an issue is resolved, its executor appends below the narrative's content:
 ```
 ---
 Resolved: <brief description of what was done>
 ```
-Then rename the filename marker to `_c_`.
+Whoever dispatched the executor then sends `transition --to closed --disposition '{"kind":"fixed","reason_ref":null}'`, once it has read the `Verification:` line, the kind from the closed set `codec/schemas/record.schema.json` gives `disposition`.
 
 When a later commit or record reverses the reasoning a closed issue's `Resolved:` note states, append:
 ```
 ---
 Revised by: <commit hash, or path to the reversing record> — <one-line reason>
 ```
-(**no rename**: the marker stays `_c_`.) The defect is still closed; only its stated reasoning moved. Leave the `Resolved:` note itself unedited: it records what was decided then, and rewriting it would erase the reversal instead of pointing at it. `Superseded by:` keeps its decision-record meaning and is never used on an issue file.
+(**no transition**: the state stays `closed`.) Leave the `Resolved:` note itself unedited: it records what was decided then, and rewriting it would erase the reversal instead of pointing at it. `Superseded by:` keeps its decision-record meaning and is never used on an issue file.
 
 ### Decision files
 
-Decision files have their own resolution annotations matching the marker semantics: do NOT use `Resolved:` (that's for defect-issues only). Use one of:
+Decision files have their own resolution lines matching the states: do NOT use `Resolved:` (that's for defect-issues only). Whoever sends a transition first appends its line, `Implemented:` excepted, whose writer and sender differ; a ref payload other than `--implementation-ref` is a `reference` of `codec/schemas/common.schema.json` naming the same target as the line:
 
 ```
 ---
 Answered: <citation> — <one-line summary>; ruled by <agent name or "user">, <person>
 ```
-(rename `_o_` → `_a_`)
+(`--to answered --answer-ref`)
 
 ```
 ---
-Implemented: <commit hash> or <citation> — <one-line summary>
+Implemented: <citation> — <one-line summary>
 ```
-(rename `_a_` → `_i_`, or `_o_` → `_i_` if the implementation skipped the recorded-answer step)
+(the executor's note, citing the files and headings it changed and no commit hash, which does not exist yet. The dispatcher reads the `Verification:` line, commits and sends `--to implemented --implementation-ref '"<commit hash>"'`, from `answered`, or from `open` if the implementation skipped the recorded-answer step)
 
 ```
 ---
 Deferred: <target> — <one-line reason>; ruled by <agent name or "user">, <person>
 ```
-(rename to `_d_`)
+(`--to deferred --deferral`; the reason stays in the line)
 
 ```
 ---
 Superseded by: <citation of the new decision> — <reason>
 ```
-(rename to `_s_`)
+(`--to superseded --superseded-by`)
 
 ```
 ---
 Retired: <plan, commit or decision that removed the subject> — <one-line reason>
 ```
-(**no rename**: the marker stays where it stands.) For a decision whose subject was removed with
-no later decision overriding it; `Superseded by:` stays reserved for that case. It covers `_i_` and
-`_a_` alike, and the marker already says which case a reader is in: on `_i_` the citation names what
-removed the **implementation**; on `_a_`, where there is none, it names what removed the thing the
-answer would have been realised against, so the answer can no longer be realised. Nothing renames,
-so no glob, filter or count changes behaviour. And the filename still reads as implemented or
-answered, so a history pass has to open the body to learn otherwise.
+(**no transition**: the state stays.) For a decision whose subject was removed with no later decision overriding it, which `Superseded by:` stays reserved for. On `implemented` the citation names what removed the **implementation**; on `answered` what removed the thing the answer would have been realised against. Nothing moves, so a history pass has to open the narrative to learn it.
 
 **Every citation above is the anchor form**, not `path:line`: `## Filename Patterns` states it and says why it moved.
 
-**Two of the five lines name who ruled, and three do not.** `Answered:` and `Deferred:` record an act only a person performs, and nothing on disk confirms one, so the line names the party and a reader has something to check instead of nothing. `Implemented:`, `Superseded by:` and `Retired:` each cite something a reader verifies without trusting anybody (code at a commit, a record carrying its own `**Filed by:**` and its own ruler, the plan, commit or decision that removed the subject), so a name there would restate an attribution that already exists or attach one to a fact needing none. `<agent name or "user">, <person>` is `**Filed by:**`'s own shape, and its person half is read the same way: `### Who filed it` governs it unchanged, halt and both file-anyway branches included. Both parties appear because the writer is not the ruler: the orchestrator writes the line and the user rules (`260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`). **Records written before this rule stand as they are, and no lint checks the field**: an absent `ruled by` means the record predates the rule, never that nobody ruled (`260905-1228_*_does-an-answered-record-carry-who-ruled-now-that-only-the-orchestrator-may-transition-it.md`).
+**Two of the five lines name who ruled, and three do not.** `Answered:` and `Deferred:` record an act only a person performs, which nothing on disk confirms, so the line names the party. `Implemented:`, `Superseded by:` and `Retired:` cite something a reader verifies without trusting anybody, so they name nobody. `<agent name or "user">, <person>` is `**Filed by:**`'s shape, its person half read under `### Who filed it`, halt and both file-anyway branches included. Both parties appear because the writer is not the ruler: the orchestrator writes the line and the user rules (`260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`). **Records written before this rule stand as they are, and no lint checks the field**: an absent `ruled by` means the record predates the rule, never that nobody ruled (`260905-1228_*_does-an-answered-record-carry-who-ruled-now-that-only-the-orchestrator-may-transition-it.md`).
 
 ### When to update
 
 - After completing each plan step, not just at session end.
 - After resolving an issue, before moving to the next task.
 - After answering or implementing a decision, before moving to the next task.
-- When a review confirms a plan step, issue, or decision is done: the reviewing agent marks it.
 - When the user asks to close, defer, supersede, or reopen anything.
 
 ## Record filing
@@ -470,13 +448,13 @@ A record file is written when the change carries something the diff and its mess
 
 **Where it goes** is resolved for you by `bin/fusion-paths`, and there is no judgment left in it: the resolver applied `## Origin Rule` once at Setup, and a store whose key it did not emit for you is a kind you do not write. **Reach is cited, never copied.** Where a record binds work filed elsewhere, the citing record names it by basename in its `**Cross-references:**` header. Do not copy it, do not move it, do not file a duplicate: one record, one location, many citations.
 
-**Before writing, list what is already there.** One `ls` over the open (`_o_`) record names in every `$SCAN_ISSUES` store: names only, never bodies, because a costlier check gets skipped. A hit is a slug naming the same file or mechanism as yours; append one line to that record, `Also seen: YYMMDD-HHMM by <agent> — <one clause>`, write no second file and move no marker. In doubt, write the new record: a duplicate costs one merge, an unfiled defect costs the defect.
+**Before writing, list what is already there.** One `bin/fusion-record` `list` of every `$SCAN_ISSUES` store, reading the paths of the rows at `open` or `in_progress`: names only, never bodies, because a costlier check gets skipped. A hit is a slug naming the same file or mechanism as yours; append one line to that record's narrative, `Also seen: YYMMDD-HHMM by <agent> — <one clause>`, write no second file and move no state. In doubt, write the new record: a duplicate costs one merge, an unfiled defect costs the defect.
 
 **A record that is owed is its own file.** Never put an issue or a decision inside a plan, a review, an analysis, a code comment or chat output. Embedded items get lost.
 
 **An issue states the defect, the evidence path, and the acceptance test, then stops.** Later passes re-read every record many times; narrative past the close-condition is recurring cost. Counts in it follow `rules/critical-stance.md` §5.
 
-**Filename:** `YYMMDD-HHMM_o_<topic>.md` (always `_o_` on creation, for issues and decisions alike).
+**Filename:** `YYMMDD-HHMM-<topic>.md`, no marker. Write the narrative, then file the pair: `bin/fusion-write create --kind <kind> --narrative-file <workbench path> --origin <the package in scope's control path, else user-request> --actor <you>`; the codec writes the control file in the kind's initial state. Any exit but 0 leaves the narrative unfiled: report it with the `fusion-write:` line and delete nothing.
 
 **Issue file format:**
 ```
@@ -500,13 +478,13 @@ Two of that helper's exit codes are opposite instructions to you. **Exit 1** is 
 
 **A helper that is not installed is a third branch and neither of those two.** `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the session, so a helper added between releases is absent there and a bare call is exit 127, which is none of the codes above. When the guard fails, **file with the person half absent as exit 4 does, and report that attribution was dropped because the helper was missing.** The record looks like exit 4's and the reason does not: exit 4 means no identity was owed, this means one was owed and could not be read. Do not halt, or an install one release behind stops every filing in the project.
 
-**Which record kinds owe the field:** every kind whose template carries the line, and those are defects and decisions (the two formats above), review files (`rules/review-contract.md`, where it is a mandated header field), and work packages (`## Work packages`), whose person half is the user's, `**Filed by:** user, <person>`, whichever route wrote it: the user by hand, `/fusion:wp`, or the orchestrator on the user's instruction. Binding decision: `260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2).
+**Which record kinds owe the field:** every kind whose template carries the line, and those are defects and decisions (the two formats above), review files (`rules/review-contract.md`, where it is a mandated header field), and work packages (`## Work packages`), whose `filed_by` `create` writes from `--actor` and this checkout's `PERSON=`: `user` on every route the user takes, the agent's name when an agent originates one. Binding decision: `260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2).
 
-**One precondition:** a person uses the same git identity on every machine. Registering the second checkout in `shared/checkouts/` lifts it for `bin/fusion-events presence`, which joins the two identities and counts that person once. It does not reach a work package's `**Claim:**`, which compares on the checkout identifier alone and so reads a person's second machine as another party. That residual is deliberate: a comparison through a pulled file would answer differently across a fetch, and the claim's whole job is to be read the same way in every checkout.
+**One precondition:** a person uses the same git identity on every machine. Registering the second checkout in `shared/checkouts/` lifts it for `bin/fusion-events presence`, which joins the two identities and counts that person once. It does not reach a work package's `claim.checkout_id`, which compares on the checkout identifier alone and so reads a person's second machine as another party. That residual is deliberate: a comparison through a pulled file would answer differently across a fetch, and the claim's whole job is to be read the same way in every checkout.
 
 ## Decision Record Template
 
-File: `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md`
+File: `$OUT_DECISION/YYMMDD-HHMM-<topic>.md`, filed by `create --kind decision` once the body is written (`## Record filing`).
 
 Body:
 
@@ -544,9 +522,8 @@ Body:
 No footer: a record gains its annotation line at the transition, per `## Inline State Tracking`. A stub left by the old placeholder footer stays as it stands.
 
 **There is no `Status:` head field, and you do not write one.** It duplicated the marker and
-drifted from it: 39 of 94 records carried a header naming a state their marker did not, a
-ratio that held six days across three hand corrections. The marker on the filename is the
-state and the only source. A record written before the removal still carries the field; leave
+drifted from it: 39 of 94 records carried a header naming a state their marker did not. `control.state` is the state and the
+only source, as the marker was before the migration. A record written before the removal still carries the field; leave
 it exactly as it stands, including when you transition it: those drifted headers are the
 evidence the removal was decided on. Binding decision:
 `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`.

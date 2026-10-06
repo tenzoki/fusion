@@ -62,8 +62,6 @@ export declare const CONTAINER_ROOT_NAMES: readonly string[];
  * `WINDOW_LEGACY_NAMES` and the closing release leaves it alone.
  */
 export declare const ARCHIVED_CONTAINER_ROOTS: readonly string[];
-/** The live root names as a regex alternation, for the citation grammar. */
-export declare const CONTAINER_ROOT_ALT: string;
 /** Every container root name a citation or a staged path may spell: the live ones, then the v11 root. */
 export declare const CITED_CONTAINER_ROOTS: readonly string[];
 /** The workbench manifest, at the workbench root. */

@@ -85,7 +85,8 @@ credentials.json
 # about a session that ended. This repository applies exactly that partition, so every
 # path excluded below is class L. The partition's two consequences, one binding the
 # lifecycle skills and one binding any command that sweeps the tree, are stated there too.
-# KEPT: orchestrator-events.jsonl, .fusion-setup, .asset-provenance.
+# KEPT: orchestrator-events.jsonl, .fusion-setup, .asset-provenance, workbench.json, and
+# every control file beside its narrative (package.json, *.record.json, *.evidence.json).
 # The guard's own event log (.guard-state/events.jsonl) is class L like the rest of that
 # directory, and it is deliberately NOT excepted here: what preserves it is the archive
 # step of /fusion:cleanup, which rolls it into fusion-workbench/archive/ under a dated
@@ -107,6 +108,9 @@ fusion-workbench/.cadence-anchors
 # check this checkout never took.
 fusion-workbench/.check-stamps
 fusion-workbench/.guard-state/*
+# The codec's write lock and journal. The codec already writes `*` into
+# .json-state/.gitignore; this line states it where a reader of this file looks.
+fusion-workbench/.json-state/*
 fusion-workbench/.commit-lock/*
 # Verbatim copy of the tracked bin/monitor, re-created by /fusion:setup.
 fusion-workbench/monitor

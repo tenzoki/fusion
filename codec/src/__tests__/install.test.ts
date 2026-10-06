@@ -100,6 +100,12 @@
 // runs `bin/fusion-migrate survey` with `node` absent from PATH: the Node
 // refusal, nothing written.
 //
+// A ninth case (FJ03d, issue 261005-0741) runs the shipped gate blocks of wp,
+// discuss and archive on a legacy workbench: each reads `"state":"legacy"`
+// and writes nothing, and the section's prose after the block stops on that
+// line by name and points at `/fusion:migrate`. The stop is prose; dropping
+// the sentence or the state line turns the case red.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -334,9 +340,10 @@ function skillEnv(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
   return { ...base, PATH: `${base.PATH}${delimiter}${dir}`, FUSION_PLUGIN_ROOT: install.home, ...extra };
 }
 
-/** The ```bash blocks of the section of an INSTALLED `skills/<skill>/SKILL.md` whose `## ` heading starts with `heading`, verbatim. A `## ` line inside a fence (a template's) ends no section. */
-function shippedBlocks(skill: string, heading: string): string[] {
+/** The ```bash blocks of the section of an INSTALLED `skills/<skill>/SKILL.md` whose `## ` heading starts with `heading`, verbatim, and the section's text outside every fence. A `## ` line inside a fence (a template's) ends no section. */
+function shippedSection(skill: string, heading: string): { blocks: string[]; prose: string } {
   const blocks: string[] = [];
+  const prose: string[] = [];
   let inSection = false;
   let fence: string[] | null = null;
   for (const line of readFileSync(join(install.home, "skills", skill, "SKILL.md"), "utf-8").split("\n")) {
@@ -350,11 +357,13 @@ function shippedBlocks(skill: string, heading: string): string[] {
     else if (line.startsWith("## ")) {
       if (inSection) break;
       inSection = line.startsWith(heading);
-    }
+    } else if (inSection) prose.push(line);
   }
   if (!inSection) throw new Error(`skills/${skill}/SKILL.md has no section ${heading}`);
-  return blocks;
+  return { blocks, prose: prose.join("\n") };
 }
+
+const shippedBlocks = (skill: string, heading: string): string[] => shippedSection(skill, heading).blocks;
 
 /** A block with each placeholder replaced; a placeholder the block lacks, or one left over, fails the case by name. */
 function fill(block: string, values: Record<string, string>): string {
@@ -772,6 +781,29 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     rmSync(join(WORKBENCH, ".json-state", "maintenance.json"), { recursive: true });
     expect(block(fenceLine).stdout).toBe("");
   }, 180_000);
+
+  it("the shipped wp, discuss and archive gates read a legacy workbench as legacy, write nothing, and their prose stops there by name, pointing at /fusion:migrate", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    // A v12 workbench: the marker and one package's Markdown, no workbench.json.
+    const p = project("gates-legacy", { legacy: true });
+    const workbench = join(p.root, "fusion-workbench");
+    const stem = "261005-0900-v12-package";
+    mkdirSync(join(workbench, "work-packages", stem), { recursive: true });
+    writeFileSync(join(workbench, "work-packages", stem, `${stem}.md`), `# ${stem}\n\n---\n**Domain:** code\n**Status:** open\n**Filed by:** user\n\n---\n\n## Directive\n\nA v12 package.\n`);
+    // `.checkout-id` is bin/fusion-identity's cache, written by any first helper call: written here, so what follows compares records only.
+    expect(helper("fusion-identity", p.root, identityEnv()).status).toBe(0);
+    const before = tree(p.root);
+    // The skill, its gate's section, and which stdout line is the state line (discuss prints the workbench root first).
+    for (const [skill, heading, at] of [["wp", "## Step 0 —", 0], ["discuss", "## Step 1 —", 1], ["archive", "## Step 1 —", 0]] as const) {
+      const { blocks: [gate], prose } = shippedSection(skill, heading);
+      const r = run("bash", ["-c", gate], { cwd: p.root, env: skillEnv() });
+      expect([skill, r.stdout.split("\n")[at]], r.stderr).toEqual([skill, '"state":"legacy"']);
+      expect([skill, tree(p.root)]).toEqual([skill, before]);
+      const refusal = prose.split(/(?<=\.)\s+/).find((s) => s.startsWith('`"state":"legacy"` stops here'));
+      expect([skill, refusal]).toEqual([skill, expect.stringMatching(/^`"state":"legacy"` stops here, before anything (is written|moves): tell the user the workbench is legacy .* run `\/fusion:migrate`\.$/)]);
+    }
+  }, 60_000);
 
   it("the installed bin/fusion-archive holds a referenced issue and archives a terminal package, after which the store reads clean and the helpers name nothing archived", () => {
     expect(install.failure).toBeNull();

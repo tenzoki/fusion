@@ -595,7 +595,7 @@ fi
 
 # 1b2. The decision-marker WORKED EXAMPLES go to the agents that transition or
 #      plan decision transitions: orchestrator, requirements-designer, implementation-planner,
-#      state-auditor (worked transition 1, the _o_ -> _a_ rename, is its act).
+#      state-auditor (worked transition 1, open -> answered, is its act).
 #      Every agent still files records and still carries the marker VOCABULARY
 #      (fusion-workbench-conventions.md, always-on); what leaves the always-on
 #      floor is the tutorial. Audience change decided at the user's approval,

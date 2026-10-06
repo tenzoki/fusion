@@ -22,7 +22,7 @@ echo '{"op":"inspect"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" | grep -o '"st
 
 Halt on a non-zero exit from the first: there is no workbench to write into, and this body creates none — tell the user to run `/fusion:setup` at the project root.
 
-The second line is the workbench's format. On `"state":"json-control"` the record's state lives in a control file the codec writes, and Steps 4 and 8 take their JSON paragraphs; any other line, or none, is this body exactly as written.
+The second line is the workbench's format. On `"state":"json-control"` go on: the record's state lives in a control file the codec writes. `"state":"legacy"` stops here, before anything is written: tell the user the workbench is legacy (no `workbench.json`: its control data is Markdown), which this version reads only once it has been migrated: run `/fusion:migrate`. Any other line, or none, stops it too: quote it.
 
 Hold the resolver's `KEY=value` output. `$WORKBENCH` is absolute, `$OUT_DISCUSSION` is relative to it, and that pair is the only spelling of the store in this body. On a non-zero exit read the code before acting — the full table is `rules/fusion-workbench-conventions.md` `## Path Resolution` under Exit codes. Exit 1 is no workbench; exit 3 is scope the resolver could not determine, which the user clears; exit 4 is a fusion bug and their workbench is fine. **Never guess a path and never substitute a default**: an empty `$OUT_DISCUSSION` halts the run naming that key, because an empty expansion writes to the workbench root silently.
 
@@ -77,7 +77,7 @@ Disagreement is not a fourth class. The result is the consultant's finding; open
 
 ## Step 4 — `--begin`: the record exists before the first result
 
-Take the stamp, the person and the domain, each guarded:
+Take the stamp and the domain, each guarded. The identity read enters no line of the record (`bin/fusion-write` reads its own); it shows, before the file exists, whether the create below can run:
 
 ```bash
 STAMP="$(date +%y%m%d-%H%M)"
@@ -85,13 +85,7 @@ STAMP="$(date +%y%m%d-%H%M)"
 [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain"
 ```
 
-Never guess the stamp (`rules/fusion-workbench-conventions.md` `## Timestamps`); read `PERSON=` for the second half of `**Filed by:**` and `domain=` for `**Domain:**`. Then `mkdir -p "$WORKBENCH/$OUT_DISCUSSION"` and write one file:
-
-```
-$WORKBENCH/$OUT_DISCUSSION/<STAMP>_o_<topic>.md
-```
-
-`<topic>` is a kebab-case slug of the one-line topic, lowercase, articles dropped, six words at most. The marker is `_o_` while the discussion is open and `_c_` once it closes, the issues-and-planning vocabulary with no other state in between.
+Never guess the stamp (`rules/fusion-workbench-conventions.md` `## Timestamps`); read `domain=` for `**Domain:**`. Then `mkdir -p "$WORKBENCH/$OUT_DISCUSSION"` and write one file, `$WORKBENCH/$N`, `$N` being `$OUT_DISCUSSION/<STAMP>-<topic>.md`. `<topic>` is a kebab-case slug of the one-line topic, lowercase, articles dropped, six words at most. The name carries no marker: the state, `open` until it closes, is the control file's.
 
 **Write it before round one's result reaches the chat**, carrying every head field it will ever carry, an empty register, `**Rounds:** 0` and `**Outcome:** still running`. A record that appears only after a round is one an interrupted session loses.
 
@@ -102,7 +96,6 @@ The template, with the entry block of Step 3 inside every claim section:
 
 ---
 **Domain:** code | data
-**Filed by:** <agent name>, <person>
 **Partners:** <first partner> and consultant
 **Rounds:** <count actually run>
 **Ceiling:** <the ceiling in force, and each extension>
@@ -136,7 +129,7 @@ The template, with the entry block of Step 3 inside every claim section:
 <Qualified, and binding nothing. Written at `--close`.>
 ```
 
-**On JSON the pair carries no marker.** Write the record at `$WORKBENCH/$N`, `$N` being `$OUT_DISCUSSION/<STAMP>-<topic>.md`, with no `**Filed by:**` line, which the control file holds, then create its control file:
+The filer is the control file's, so the record has no `**Filed by:**` line. Then create the control file:
 
 ```bash
 O="$(dirname "$OUT_DISCUSSION")/package.json"; [ -f "$WORKBENCH/$O" ] || O=user-request
@@ -192,9 +185,7 @@ Prints the register's current conclusions in the chat and **leaves the discussio
 
 ## Step 8 — `--close`
 
-Write the recommendation into `## Recommendation`, replace `**Outcome:** still running` with the one the stopping rule produced, and rename the marker `_o_` → `_c_`. **Nothing else.** Only the marker changes; the stamp and the topic stay exactly as they were. Use `git mv` where the file is tracked, `mv` otherwise.
-
-**On JSON nothing is renamed.** Write the two fields into the Markdown, then close the control file you held at Step 4:
+Write the recommendation into `## Recommendation` and replace `**Outcome:** still running` with the one the stopping rule produced. **Nothing else, and nothing is renamed.** Then close the control file you held at Step 4:
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-write" transition --record "<its path= line>" --to closed --reason "<the outcome>" --actor <as at Step 4>; echo "exit=$?"
@@ -214,7 +205,7 @@ Commit nothing. Tell the user in one line that the record is uncommitted.
 
 ## Boundaries
 
-- **Writes one file**, the record, and rewrites it once per round; on JSON the codec writes its control file.
+- **Writes one file**, the record, and rewrites it once per round; the codec writes its control file.
 - **Dispatches `fusion:consultant`** and nothing else, once per round. No other agent, no sub-dispatch of its own.
 - **Commits nothing** and pushes nothing.
 - **Decides nothing.** The record holds what was disputed, what survived, what was given up and a recommendation that binds nothing.

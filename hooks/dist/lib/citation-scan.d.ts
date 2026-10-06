@@ -416,6 +416,19 @@ export declare function markdownFilesUnder(root: string): {
     abs: string;
 }[];
 /**
+ * Every `.md` a citation reader scans under a WORKBENCH root: the whole tree,
+ * the frozen stores included, less the migrations' kept originals
+ * (`isMigrationOriginal` in `./citation-corpus.ts`). The file half of the
+ * exclusion `workbenchIndex()` makes on the lookup half, so a reader that
+ * takes its files here and resolves through a scanner sees one scope.
+ * `markdownFilesUnder` stays the walk for a root that is no workbench (`docs/`,
+ * a `<path>` argument), where no path is a migration's.
+ */
+export declare function workbenchMarkdownFiles(workbenchRoot: string): {
+    rel: string;
+    abs: string;
+}[];
+/**
  * The three lists the baseline is stated in, plus the bucket of tokens that
  * were never judged. Disjoint, and every hit lands in exactly one.
  *

@@ -236,7 +236,7 @@ fi
 
 **One condition here asks**, at most once per checkout: a checkout with no registry entry.
 
-A second stood beside it and went with the unit-of-work container it was about. That container's record travelled between checkouts while the local pointer naming the running one did not, so a clone taken mid-run held a record that said "running" with no pointer beside it, and this selector offered to write one. No record carries a running state now and no such pointer is read anywhere, so the condition is unreachable rather than unchecked: a work package's `**Claim:**` names the checkout that holds it, which is a fact every checkout reads the same way off the file it pulled.
+A second stood beside it and went with the unit-of-work container it was about. That container's record travelled between checkouts while the local pointer naming the running one did not, so a clone taken mid-run held a record that said "running" with no pointer beside it, and this selector offered to write one. No record carries a running state now and no such pointer is read anywhere, so the condition is unreachable rather than unchecked: a work package's `package.json` names the checkout that holds it (`claim.checkout_id`), which is a fact every checkout reads the same way off the file it pulled.
 
 **This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`; its header documents the mint and the six exit codes, and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as your own Setup step 2 defines it (the bullet "Who, which checkout, which session"): three keys, `session_id` from the line a SessionStart hook printed into your context, and no line means no key.
 
@@ -280,7 +280,7 @@ if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ] && git ls-f
 fi
 ```
 
-Every line printed goes into the Done report verbatim; nothing printed means nothing to report. `workbench.json` (R3) and `.json-state` (class L), a JSON-controlled workbench's, are classed by `JSON_LIVE_STATE` in `hooks/lib/staging-drift.ts` until the rule names them.
+Every line printed goes into the Done report verbatim; nothing printed means nothing to report. The tracking rule names `workbench.json` (R3) and `.json-state/` (class L) with the rest.
 
 ## upstream — whether this checkout is behind its upstream (advisory)
 

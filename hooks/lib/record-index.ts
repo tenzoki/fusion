@@ -13,11 +13,11 @@
  *                   each entry carries `id`, `kind`, `status`, `live`, the
  *                   control path and the narrative path (`null` for an
  *                   evidence record, which names a report instead).
- *   `legacy`        the workbench has no manifest. The caller keeps its
- *                   legacy reader and says `format=legacy`: section 9 of
- *                   Prior's spec keeps a legacy session on matching readers
- *                   until the maintenance window, where FJ03a's resolvers
- *                   refuse.
+ *   `legacy`        the workbench has no manifest. The explicit checkers
+ *                   refuse it by name with `legacyLine` (FJ03d step 8):
+ *                   section 9 of Prior's FJ03 row keeps the old control
+ *                   parsers in import and `archive/` read mode only, so a
+ *                   legacy workbench is pointed at `/fusion:migrate`.
  *   `unknown`       with its cause: `unsupported`, `refused` (the codec's
  *                   typed refusal, `recovery-blocked` among them wherever the
  *                   protocol reports it), `unanswered`. None of them is an
@@ -180,6 +180,10 @@ export function notReadLine(u: NotRead, workbench: string): string {
       return `the codec refused ${u.op} (${refusal(u.refusal)}).`;
   }
 }
+
+/** The one sentence refusing a legacy workbench by name, for stderr: the three checkers print it, and so do `scope.ts` and `order.ts`, each with its own tail. */
+export const legacyLine = (workbench: string): string =>
+  `the workbench at ${workbench} is legacy (no workbench.json: its control data is Markdown), which this version reads only once it has been migrated: run /fusion:migrate.`;
 
 /** A missing bundle is the plugin's fault, and a checker names it apart from a workbench it could not read. */
 export const bundleMissing = (u: NotRead): boolean => u.cause === "unanswered" && u.how === "bundle-missing";

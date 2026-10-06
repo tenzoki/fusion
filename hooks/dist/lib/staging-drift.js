@@ -101,8 +101,8 @@
  *     from paths; no control file is opened.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
- *     R2 and R3, plus the session's own history file, plus `JSON_LIVE_STATE`,
- *     the JSON manifest and the codec's journal. Never a fault.
+ *     R2 and R3 (the JSON manifest and the codec's journal among them), plus
+ *     the session's own history file. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
  *     statement that it is **not** a record store and that nothing is claimed
  *     about it. The worked case is `stilwerk/`, the four voice profiles
@@ -192,7 +192,7 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<tas
  *
  * **Class L**, the entries that stay in the checkout they were written in: the
  * first five files here, `.session-marker` through `monitor`, and the
- * directories in `LIVE_PREFIXES`. This repository's own
+ * directories in `LIVE_PREFIXES`, the codec's `.json-state/` among them. This repository's own
  * `.gitignore` applies exactly that split, so in a project that follows it they
  * never reach `git status` at all. They are listed anyway because whether the
  * workbench is tracked, and how, is the project's decision — a consumer that
@@ -202,8 +202,8 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<tas
  * **Class R2 and class R3** are the opposite case and the more interesting one:
  * they are TRACKED by that same split, and they are still not a task's records.
  * `orchestrator-events.jsonl` is the whole of R2, appended to by every event
- * emission. `.fusion-setup` and `.asset-provenance` are the whole of R3, both
- * written by `/fusion:setup` in each checkout — one rule, one class, one reason,
+ * emission. `.fusion-setup`, `.asset-provenance` and `workbench.json` are the
+ * whole of R3, all written by `/fusion:setup` — one rule, one class, one reason,
  * so they classify together. Each is in flight for the whole session by
  * construction, so a per-commit report about them would fire every time and mean
  * nothing.
@@ -225,23 +225,13 @@ export const LIVE_STATE = [
     // class R3
     { path: ".fusion-setup", why: "the setup marker — written by /fusion:setup" },
     { path: ".asset-provenance", why: "the asset provenance record — written by /fusion:setup" },
+    { path: WORKBENCH_MANIFEST, why: "the JSON workbench manifest — written by setup through the codec" },
 ];
 /** Live-state directories, by workbench-relative prefix; all class L. */
 export const LIVE_PREFIXES = [
     { prefix: ".guard-state/", why: "hook state — written by every guarded tool call" },
     { prefix: ".commit-lock/", why: "the commit lock — held and released around every commit" },
-];
-/**
- * The JSON workbench's live state: the manifest (R3, written once by setup
- * through the codec) and the codec's journal directory (L, ignored by the
- * `.gitignore` the codec writes into it). A list of its own and not part of
- * `LIVE_STATE`, because the case above holds that list to
- * `rules/workbench-tracking.md`, which names no JSON surface yet. FJ03d merges
- * the two when the rule gains these rows. A trailing `/` marks a directory.
- */
-export const JSON_LIVE_STATE = [
-    { entry: WORKBENCH_MANIFEST, why: "the JSON workbench manifest — written by setup through the codec" },
-    { entry: `${JSON_STATE_DIR}/`, why: "the codec's local journal and write lock — never travels" },
+    { prefix: `${JSON_STATE_DIR}/`, why: "the codec's local journal and write lock — never travels" },
 ];
 /**
  * The artefact stores. A path with one of these as a segment holds authored
@@ -402,10 +392,6 @@ export function classify(rel, sessionHistory) {
     }
     for (const live of LIVE_PREFIXES) {
         if (rel.startsWith(live.prefix))
-            return { klass: "in-flight", why: live.why };
-    }
-    for (const live of JSON_LIVE_STATE) {
-        if (live.entry.endsWith("/") ? rel.startsWith(live.entry) : rel === live.entry)
             return { klass: "in-flight", why: live.why };
     }
     if (sessionHistory !== "" && rel === sessionHistory) {

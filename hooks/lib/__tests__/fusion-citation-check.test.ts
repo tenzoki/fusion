@@ -23,7 +23,7 @@ import { createScanner } from "../citation-scan.js";
 import { readRecordIndex } from "../record-index.js";
 import type { Answer, Ask } from "../record-client.js";
 import { HOOKS_DIR, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
-import { createPackage, must, place, send, setDependencies, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
+import { createPackage, jsonWorkbenchAt, must, place, placeRecord, send, setDependencies, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
 // The shared build, not the run's staging copy: the entry reaches the codec bundle and the
 // transitions contract relative to itself, and only `hooks/dist/` has a plugin root above it.
@@ -39,13 +39,12 @@ function scratchProject(): string {
     mkdirSync(dirname(join(root, rel)), { recursive: true });
     writeFileSync(join(root, rel), text);
   };
-  put("fusion-workbench/.fusion-setup", "{}");
-  put("fusion-workbench/shared/decisions/260101-0001_o_beta.md", "# bar");
-  put(
-    "fusion-workbench/shared/issues/260101-0000_o_alpha.md",
-    "see `shared/decisions/260101-0001_o_beta.md` and `260101-0001_*_beta.md`",
-  );
+  const wb = jsonWorkbenchAt(root);
+  placeRecord(wb, "decision-open", "shared/decisions/260101-0001_o_beta.md", "open", "# bar");
+  placeRecord(wb, "issue-open", "shared/issues/260101-0000_o_alpha.md", "open", "see `shared/decisions/260101-0001_o_beta.md` and `260101-0001_*_beta.md`");
   put("fusion-workbench/archive/260102-0000-sweep/shared/issues/260101-0002_c_old.md", "cites `260199-9999_*_gone.md`");
+  // a migration's kept original of beta, under beta's own basename: neither a second match nor a corpus file
+  put("fusion-workbench/archive/migrations/m1/originals/shared/decisions/260101-0001_o_beta.md", "cites `260199-9998_*_gone.md`");
   put("rules/local.md", "the defect is `260101-0000_*_alpha.md`");
   put("CLAUDE.md", "# project");
   return root;
@@ -58,11 +57,13 @@ describe("fusion-citation-check over a scratch consuming project", () => {
       const r = run(root);
       expect(r.status, r.stderr).toBe(0);
       const lines = r.stdout.trimEnd().split("\n");
-      expect(lines.slice(0, 3)).toEqual(["format=legacy", "anchor=workbench-root", "root=."]);
+      expect(lines.slice(0, 3)).toEqual(["format=json-control", "anchor=workbench-root", "root=."]);
       expect(lines).toContain("files=5");
       expect(lines).toContain("store-prefixed=1");
       expect(lines).toContain("dangling=1");
       expect(lines).toContain("resolved=2");
+      expect(lines).toContain("conflict=0");
+      expect(r.stdout).not.toContain("originals/");
       expect(lines).toContain("verdict=violations");
       // the verdict scope, in the block: four of the five files are edited (the
       // swept copy is not), and the two violations split one each way
@@ -94,61 +95,53 @@ describe("fusion-citation-check over a scratch consuming project", () => {
 // --- the verdict scope -------------------------------------------------------
 
 /**
- * One issue carrying `marker`, with one citation that resolves to nothing, and
- * nothing else. The same file under two markers is the whole experiment: the
- * corpus, the row and the counts are identical, and only `verdict=` differs.
+ * One issue whose record is at `state`, with one citation that resolves to
+ * nothing, and nothing else. The same file under two states is the whole
+ * experiment: the corpus, the row and the counts are identical, and only
+ * `verdict=` differs. Its name carries `_o_` either way: the record decides.
  */
-function oneIssue(marker: string): string {
+function oneIssue(state: "open" | "closed"): string {
   const root = realpathSync(mkdtempSync(join(tmpdir(), "citation-scope-")));
-  mkdirSync(join(root, "fusion-workbench/shared/issues"), { recursive: true });
-  writeFileSync(join(root, "fusion-workbench/.fusion-setup"), "{}");
-  writeFileSync(
-    join(root, `fusion-workbench/shared/issues/260101-0000_${marker}_x.md`),
-    "cites `260199-9999_*_gone.md`\n",
-  );
+  placeRecord(jsonWorkbenchAt(root), `issue-${state}`, ISSUE, state, "cites `260199-9999_*_gone.md`\n");
   return root;
 }
+
+const ISSUE = "shared/issues/260101-0000_o_x.md";
 
 describe("fusion-citation-check scopes the verdict to the files somebody still edits", () => {
   it("moves the verdict on an open record and not on a closed one, printing the row either way", () => {
     const seen: Record<string, string[]> = {};
-    for (const marker of ["o", "c"]) {
-      const root = oneIssue(marker);
+    for (const state of ["open", "closed"] as const) {
+      const root = oneIssue(state);
       try {
         const r = run(root);
         expect(r.status, r.stderr).toBe(0);
-        seen[marker] = r.stdout.trimEnd().split("\n");
+        seen[state] = r.stdout.trimEnd().split("\n");
       } finally {
         rmSync(root, { recursive: true, force: true });
       }
     }
-    // The row is printed under both markers — the scope narrows the verdict and
+    // The row is printed under both states — the scope narrows the verdict and
     // never the search, which is the constraint the answering decision names
     // first. Only the scope column and the three scope figures differ.
-    for (const marker of ["o", "c"]) {
-      const rows = seen[marker].filter((l) => l.startsWith("  "));
-      expect(rows, marker).toHaveLength(1);
-      expect(rows[0], marker).toContain(`260101-0000_${marker}_x.md:1`);
-      expect(seen[marker], marker).toContain("dangling=1");
+    for (const state of ["open", "closed"]) {
+      const rows = seen[state].filter((l) => l.startsWith("  "));
+      expect(rows, state).toHaveLength(1);
+      expect(rows[0], state).toContain(`${ISSUE}:1`);
+      expect(seen[state], state).toContain("dangling=1");
     }
-    expect(seen.o).toContain("verdict=violations");
-    expect(seen.o).toContain("edited-files=1");
-    expect(seen.o).toContain("edited-violations=1");
-    expect(seen.o).toContain("unedited-violations=0");
-    expect(seen.o.filter((l) => l.startsWith("  "))[0]).toContain("  dangling  edited  ");
+    for (const l of ["verdict=violations", "edited-files=1", "edited-violations=1", "unedited-violations=0"]) expect(seen.open).toContain(l);
+    expect(seen.open.filter((l) => l.startsWith("  "))[0]).toContain("  dangling  edited  ");
 
-    expect(seen.c).toContain("verdict=clean");
-    expect(seen.c).toContain("edited-files=0");
-    expect(seen.c).toContain("edited-violations=0");
-    expect(seen.c).toContain("unedited-violations=1");
-    expect(seen.c.filter((l) => l.startsWith("  "))[0]).toContain("  dangling  not-edited  ");
+    for (const l of ["verdict=clean", "edited-files=0", "edited-violations=0", "unedited-violations=1"]) expect(seen.closed).toContain(l);
+    expect(seen.closed.filter((l) => l.startsWith("  "))[0]).toContain("  dangling  not-edited  ");
   }, CASE_TIMEOUT);
 
-  it("keeps a project file in scope, where no marker exists and every file is live", () => {
-    // The third part of the scope, and the one no marker predicate can decide:
-    // `rules/*.md` is judged live by construction, so a dead citation there
-    // moves the verdict even though the workbench half is empty of live records.
-    const root = oneIssue("c");
+  it("keeps a project file in scope, where no record exists and every file is live", () => {
+    // The third part of the scope, and the one no record decides: `rules/*.md`
+    // is judged live by construction, so a dead citation there moves the
+    // verdict even though the workbench half is empty of live records.
+    const root = oneIssue("closed");
     try {
       mkdirSync(join(root, "rules"), { recursive: true });
       writeFileSync(join(root, "rules/local.md"), "see `260199-9999_*_gone.md`\n");
@@ -177,12 +170,7 @@ describe("fusion-citation-check names the violations no rewriter may touch", () 
   it("counts the exhibit and not the pointer, and leaves the verdict where it was", () => {
     const root = realpathSync(mkdtempSync(join(tmpdir(), "citation-unrewritable-")));
     try {
-      mkdirSync(join(root, "fusion-workbench/shared/issues"), { recursive: true });
-      writeFileSync(join(root, "fusion-workbench/.fusion-setup"), "{}");
-      writeFileSync(
-        join(root, "fusion-workbench/shared/issues/260101-0000_o_x.md"),
-        "cites `260199-9999_*_gone.md`\n\n```text\nthe exhibit: shared/decisions/260101-0001_o_beta.md\n```\n",
-      );
+      placeRecord(jsonWorkbenchAt(root), "issue-open", ISSUE, "open", "cites `260199-9999_*_gone.md`\n\n```text\nthe exhibit: shared/decisions/260101-0001_o_beta.md\n```\n");
       const lines = run(root).stdout.trimEnd().split("\n");
       expect(lines).toContain("dangling=1");
       expect(lines).toContain("store-prefixed=1");
@@ -214,7 +202,7 @@ function declaringProject(patterns: string[], withGit = true): string {
     mkdirSync(dirname(join(root, rel)), { recursive: true });
     writeFileSync(join(root, rel), text);
   };
-  put("fusion-workbench/.fusion-setup", "{}");
+  jsonWorkbenchAt(root);
   put("fusion.json", JSON.stringify({ citations: { extraPaths: patterns } }));
   put("src/a.go", "// see 260199-9999_*_gone.md");
   put("src/b.txt", "see 260199-9999_*_gone.md");
@@ -357,6 +345,28 @@ describe("fusion-citation-check on a JSON-controlled workbench", () => {
         `  fusion-workbench/${pkg.path}  /depends_on/0/target  uuid-unresolved  unresolved-reference/record-not-found`,
       ]);
     });
+  }, CASE_TIMEOUT);
+
+  it("counts and names a control file that does not read, and leaves the verdict to the files it could scope", () => {
+    withJsonProject((p) => {
+      // whether this narrative is live is what did not read: its row prints not-edited, and `unreadable=` says why
+      place(p, "shared/issues/260101-0000-broken.md", "cites `260199-9999_*_gone.md`\n");
+      place(p, "shared/issues/260101-0000-broken.record.json", "{\n");
+      const r = run(p.root);
+      expect(r.status, r.stderr).toBe(0);
+      const lines = r.stdout.trimEnd().split("\n");
+      for (const l of ["edited-files=0", "unedited-violations=1", "unreadable=1", "verdict=clean"]) expect(lines).toContain(l);
+      expect(lines.at(-1)).toMatch(/^ {2}fusion-workbench\/shared\/issues\/260101-0000-broken\.record\.json {2}unreadable {2}\S+\/\S+$/);
+    });
+  }, CASE_TIMEOUT);
+
+  it("refuses a legacy workbench by name, exit 4, nothing on stdout, and points at /fusion:migrate", () => {
+    withJsonProject((p) => {
+      place(p, "shared/issues/260101-0000_o_x.md", "cites `260199-9999_*_gone.md`\n");
+      const r = run(p.root);
+      expect([r.status, r.stdout]).toEqual([4, ""]);
+      expect(r.stderr).toMatch(/^fusion-citation-check: the workbench at .* is legacy \(no workbench\.json: .*run \/fusion:migrate\. Nothing was checked\.$/m);
+    }, { legacy: true });
   }, CASE_TIMEOUT);
 
   it("exits 4 with nothing on stdout when the workbench is unsupported", () => {

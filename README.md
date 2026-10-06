@@ -25,6 +25,8 @@ fusion --where      # print the install dir
 
 Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v12.2.3` to pin a release — every release since v5.5.0 is tagged; the default is the head of `main`, which is what `fusion --update` fetches), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
 
+**Upgrading from v12?** v13 moves every record's state out of Markdown into JSON control files beside it (`package.json`, `<name>.record.json`), written only through `bin/fusion-write`; the text stays Markdown. Every agent stops at Setup on a v12 workbench until `/fusion:migrate` has converted it, which needs Node 20.12.0 or later and asked one question on each real workbench it was measured on. Every installation that writes a migrated workbench must be on v13 first, since nothing detects one that is not. [`docs/upgrading-to-v13.md`](docs/upgrading-to-v13.md) is the procedure, the multi-checkout order and the documented limits.
+
 **Upgrading from v11.11.2 or earlier v11?** v12 renamed, and the window it left for the old names closed at 13.0.0. Seven agents took their PRIOR/Fusion names — `shaper` becomes `requirements-designer`, `planner` `implementation-planner`, `coder` `code-implementer`, `ontocoder` `data-implementer`, `reconciler` `state-auditor`, `editor` `document-editor`, `curator` `policy-curator` — and the old names stop resolving: `fusion coder` or `Agent(fusion:coder)` aborts at startup, and since 13.0.0 a plan step whose `Executor:` names one is no longer aliased. Three workbench stores were renamed, `circles/` to `work-packages/`, `planning/` to `plans/` and `shared/consult/` to `shared/consultations/`. Until 13.0.0 the old directories were read beside the new ones; since then they are not read, and `/fusion:setup` refuses a workbench holding one. **Run `/fusion:migrate` right after the update**, commit the renames as one commit and push it, and have the other checkouts pull: it renames the directories, rewriting no record, then on a yes migrates the records to JSON control, which rewrites live narratives; repairs are optional. The dispatch parameter `**Item:**` is now `**Work package:**`, and `OUT_BACKLOG`/`SCAN_BACKLOG` are `OUT_PACKAGES`/`SCAN_PACKAGES`. One silent case: a `rules/context-manifest.yaml` naming an old agent in its `agents:` does not load that unit for the new name, so rename them there. A workbench still in a pre-v11 shape converts at the `v11.11.1` tag first. `docs/upgrading-to-v12.md` is the note.
 
 **Upgrading from v11.0, v11.1, v11.2 or v11.3?** v11.4 removes one command. The name `log-activity` stops resolving: `/fusion:cadence` now writes the activity log itself and then digests it, so one command does both and the log is never stale. Type `/fusion:cadence` where you typed the old one. Two things change in the digest you get back: recurring themes are ranked by how many distinct **days** a theme appears in rather than how many sessions, and the `**Covers:**` line is gone, because the merged command reads the record it wrote rather than the session-history files, so who wrote them is no longer an input — the digest names no writers, in any window. `/fusion:cadence` now halts when there is no workbench above your working directory instead of writing a log into whatever directory you happened to stand in. Nothing in your project is rewritten and there is nothing to migrate; an existing `activity-log-<checkout>.md` is refreshed in place. `docs/upgrading-to-v11-4.md` is the note.
@@ -150,26 +152,29 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 ```
 fusion-workbench/
 ├── work-packages/                # one directory per work package
-│   └── <stamp>-<slug>/           # the package's record, plus what it produced
-│       ├── <stamp>-<slug>.md
+│   └── <stamp>-<slug>/           # the package's pair, plus what it produced
+│       ├── <stamp>-<slug>.md     # its narrative
+│       ├── package.json          # its control file, written by the codec
 │       └── plans/ issues/ decisions/ reviews/ analyses/ history/
 ├── shared/                       # the same kinds, for work belonging to no package
 │   ├── plans/ issues/ decisions/ reviews/ analyses/
 │   ├── history/ investigations/ consultations/ memos/ forum/ checkouts/
 ├── archive/  stilwerk/  monitor
-└── (root-anchored state: orchestrator-events.jsonl, .guard-state/,
-     .commit-lock/, .session-marker, .checkout-id, .cadence-anchors,
-     .check-stamps)
+└── (root-anchored: workbench.json, .json-state/, orchestrator-events.jsonl,
+     .guard-state/, .commit-lock/, .session-marker, .checkout-id,
+     .cadence-anchors, .check-stamps)
 ```
 
 **The Origin Rule makes the placement decision**: an artefact belongs to the work package whose brief caused it to come into existence, and to `shared/` when no package is in scope. Cross-cutting relevance is cited rather than copied. Agents never hard-code these paths — they resolve write and scan targets through `bin/fusion-paths` at Setup, which names the container of the work package this checkout has claimed, or the shared store when it holds none. What v11 removed here was the six-state Circle record and the ranking layer over it, not the container; the container store took the name `work-packages/` at v12, and `/fusion:migrate` renames a v11 workbench's stores to the v12 names.
 
-**State markers** (encoded as `_x_` in filenames):
+**State lives in JSON, the text in Markdown.** Since 13.0.0 every work package, issue, plan, discussion and decision is a pair: its Markdown narrative and a control file beside it (`package.json`, `<name>.record.json`) that only the codec writes, through `bin/fusion-write`. Nothing renames a file to change its state, and nothing edits a control file by hand. The states:
 
-- **issues / plans:** `_o_` open · `_p_` in progress · `_c_` closed · `_d_` deferred
-- **decisions:** `_o_` open question · `_a_` answered · `_i_` implemented · `_d_` deferred · `_s_` superseded
-**A work package carries no marker at all.** Its state is the `**Status:**` head field — `open`, `claimed`, `paused`, `done`, `dropped` — so a state change edits the file instead of renaming it and every citation of an item stays valid for the item's whole life. `claimed` is the value the other two vocabularies have no equivalent for, and it is what the store exists to carry: it names the checkout doing the work.
+- **issues / plans:** `open` · `in_progress` · `closed` · `deferred`
+- **decisions:** `open` · `answered` · `implemented` · `deferred` · `superseded`
+- **work packages:** `open` · `claimed` · `paused` · `done` · `dropped`
 
-Rule of thumb: file in `issues/` when the resolution is "go fix it," in `decisions/` when it's "decide and record," and as a work package under `work-packages/` when it is a job somebody is going to do. The full layout, the work-package grammar and the issue, planning and decision marker transitions live in [`rules/fusion-workbench-conventions.md`](rules/fusion-workbench-conventions.md).
+`claimed` is the value the record kinds have no equivalent for, and it is what the package store exists to carry: it names the checkout doing the work. A name written before `/fusion:migrate` keeps its `_o_`-style marker; the letter is history and is never read for state.
+
+Rule of thumb: file in `issues/` when the resolution is "go fix it," in `decisions/` when it's "decide and record," and as a work package under `work-packages/` when it is a job somebody is going to do. The full layout, the work-package grammar and the operations that move each record's state live in [`rules/fusion-workbench-conventions.md`](rules/fusion-workbench-conventions.md).
 
 Two surfaces open the workbench for you directly: `/fusion:memo` appends your personal notes and tasks to `shared/memos/`, `/fusion:wp` files each idea as its own work-package directory under `work-packages/`, and `/fusion:cadence` scans commits and the whole workbench tree into a per-day activity log at the project root and then digests that log into what you have actually been working on — topics since yesterday, topics of the last seven days, and the themes that keep recurring ranked by how many distinct days they show up in. The digest lands next to the memos as `cadence-<checkout>.md` and is overwritten on each run; the log underneath it is rewritten in the same pass, so there is nothing to refresh beforehand.

@@ -5,19 +5,21 @@
  * runs it, no test gates on it, no pipeline step invokes it. Read that module's
  * header for the ceiling's provenance and for why it is carried in no exit code.
  *
- * ## Two formats, asked before anything is read
+ * ## The format, asked before anything is read
  *
- * The codec's gate, through `lib/record-index.ts`, names the format on the
- * first line of stdout (`format=`). On `json-control` a plan is live when its
- * record says so, and a marker in its name decides nothing; on `legacy` the
- * marker reader runs as it always has. Any other answer (`unsupported`, a
+ * The codec's gate, through `lib/record-index.ts`, decides whether anything is
+ * read. On `json-control` a plan is live when its record says so, and a marker
+ * in its name decides nothing; the first line of stdout names the format
+ * (`format=`). A `legacy` workbench is refused by name and pointed at
+ * `/fusion:migrate` (FJ03d step 8: the marker reader is gone, per section 9's
+ * FJ03 row). Every answer but `json-control` (`legacy`, `unsupported`, a
  * refusal, `recovery-blocked` among them, or no answer) is exit 4 and never
  * `verdict=empty`: a workbench nobody read has no plans nobody measured.
  *
  * Output, one `KEY=value` per line in the shape `bin/fusion-staging-drift` and
  * `bin/fusion-review-coverage` use, then one line per live plan, largest first:
  *
- *   format=json-control|legacy
+ *   format=json-control
  *   anchor=workbench-root
  *   ceiling=40000
  *   plans=4
@@ -25,11 +27,11 @@
  *   largest=57891
  *   total=195402
  *   skipped-specs=4
- *   unreadable=0                                   (json-control only)
+ *   unreadable=0
  *   verdict=over
- *     over      57891  work-packages/<dir>/plans/…_p_….md  (17891 over — …)
- *     under     33472  shared/planning/…_o_….md
- *     unreadable  <plan control file>  <class>/<reason>  (json-control only)
+ *     over      57891  work-packages/<dir>/plans/<stem>.md  (17891 over — …)
+ *     under     33472  shared/plans/<stem>.md
+ *     unreadable  <plan control file>  <class>/<reason>
  *
  * `unreadable=` counts the plan control files the codec could not read. Whether
  * such a plan is live is what did not read, so it is neither measured nor
@@ -43,8 +45,9 @@
  *   3  the plugin itself could not run: the codec bundle is not installed, so
  *      nothing could be asked (the wrapper's own 3 covers the compiled hooks),
  *      or an internal error stopped this entry, named with its stack.
- *   4  the workbench was not read. The cause is on stderr and NOTHING is on
- *      stdout.
+ *   4  the workbench was not read: `legacy` (refused by name, pointing at
+ *      `/fusion:migrate`), unsupported, refused or unanswered. The cause is on
+ *      stderr and NOTHING is on stdout.
  *
  * **A plan over the ceiling is not an error exit**, for the reason
  * `bin/fusion-review-coverage` gives at the same place: a check that hands its

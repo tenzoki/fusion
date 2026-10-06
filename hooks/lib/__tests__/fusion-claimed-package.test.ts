@@ -90,7 +90,7 @@ describe("bin/fusion-claimed-package", () => {
     });
   }, CASE_TIMEOUT);
 
-  it.each([[{}, 0, "not a git work tree"], [{ legacy: true }, 3, "is legacy"]] as const)("outside a git work tree, with %j, the format is gated and the claim naming its minted checkout is not read", (options, status, reason) => {
+  it.each([[{}, 0, "not a git work tree"], [{ legacy: true }, 3, "run /fusion:migrate"]] as const)("outside a git work tree, with %j, the format is gated and the claim naming its minted checkout is not read", (options, status, reason) => {
     // No claim is held without git, so shared/ is the TRUE answer; a workbench not JSON-controlled is refused all the same.
     withJsonProject((p) => {
       if (!("legacy" in options)) claim(p, createPackage(p, ALPHA), checkout(p.root));
@@ -123,7 +123,7 @@ describe("bin/fusion-claimed-package", () => {
   }), CASE_TIMEOUT);
 
   it.each([
-    ["legacy", { legacy: true }, (): void => undefined, "is legacy"],
+    ["legacy", { legacy: true }, (): void => undefined, "run /fusion:migrate"],
     ["unsupported", {}, (p: JsonProject): void => {
       const manifest = JSON.parse(readFileSync(resolve(p.workbench, "workbench.json"), "utf-8")) as { required_features: string[] };
       manifest.required_features.push("json-control-v9");

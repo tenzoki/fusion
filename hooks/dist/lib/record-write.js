@@ -64,7 +64,12 @@
  * names. A record kind starts at `INITIAL_CONTROL`, held by the test to the
  * one state of its kind no edge of `codec/contract/transitions.json` enters
  * and to the control fields its schema requires; a package's payload is its
- * domain, and the kernel fixes the rest.
+ * domain, and the kernel fixes the rest. A plan's steps are read from its
+ * narrative by `planSteps`: one `open` anchor per numbered line under
+ * `## Implementation Steps`, outside fences, and no criteria, so
+ * `transition --steps` has ids to update. A number that occurs twice there
+ * is a usage error naming it and its lines: no operation adds an anchor
+ * later, so a plan is not filed with a step it cannot track.
  *
  * An evidence record is produced against the package `--record` names:
  * `brief_revision` is its narrative hash in `show`, `plan_revision` the
@@ -388,6 +393,31 @@ function pluginVersion() {
         return undefined;
     }
 }
+/**
+ * A new plan's step numbers, each with the 1-based lines it stands on: a
+ * numbered line, bare or as a `##`-to-`####` heading, under
+ * `## Implementation Steps` and outside fences. A new plan carries no bracket
+ * mark, so none makes a step of a numbered line elsewhere, as an import's
+ * reading of a legacy plan does.
+ */
+function planSteps(text) {
+    const steps = new Map();
+    let fence = null;
+    let inSteps = false;
+    text.split("\n").forEach((line, i) => {
+        const mark = /^\s*(```|~~~)/.exec(line)?.[1];
+        if (mark !== undefined)
+            fence = fence === null ? mark : fence === mark ? null : fence;
+        if (mark !== undefined || fence !== null)
+            return;
+        if (/^## /.test(line))
+            inSteps = /^##\s+implementation steps\b/i.test(line);
+        const id = inSteps ? /^(?:#{2,4}\s+)?(\d+[a-z]?)\.\s+/.exec(line)?.[1] : undefined;
+        if (id !== undefined)
+            steps.set(id, [...(steps.get(id) ?? []), i + 1]);
+    });
+    return steps;
+}
 /** The `create` of a new pair, or of an evidence record over its report, reading what it binds. */
 function creation(c, workbenchId, operationId, see, now) {
     const id = one(c, "--id") ?? randomUUID();
@@ -405,6 +435,20 @@ function creation(c, workbenchId, operationId, see, now) {
         }
         const scope = kind === "package" ? { container: null, store: "work-packages" } : scopeOf(narrative);
         const payload = kind === "package" ? { domain: one(c, "--domain") } : structuredClone(INITIAL_CONTROL[kind]);
+        if (kind === "plan") {
+            let text;
+            try {
+                text = readFileSync(join(c.workbench, narrative), "utf-8");
+            }
+            catch (e) {
+                return unread(`the plan ${narrative} could not be read (${message(e)}), and its steps are its anchors; nothing was sent`);
+            }
+            const steps = planSteps(text);
+            const twice = [...steps].filter(([, lines]) => lines.length > 1).map(([id, lines]) => `step number ${id} stands on lines ${lines.join(" and ")}`);
+            if (twice.length > 0)
+                return usage(`the plan ${narrative} repeats a number under ## Implementation Steps (${twice.join("; ")}), and a step's number is its anchor; number each step once. Nothing was sent`);
+            payload.steps = [...steps.keys()].map((id) => ({ id, state: "open" }));
+        }
         const request = { ...envelope, kind, filed_by: { actor: one(c, "--actor"), person: c.identity.person ?? null }, origin: from, scope, narrative: { path: narrative }, payload };
         return { ok: { request, resend: { "--id": id } } };
     }

@@ -8,66 +8,66 @@ For *why* fusion is built this way, see [`docs/philosophy.md`](philosophy.md). F
 
 A **work package** is one bounded unit of work: something somebody is going to do, or has decided not to. It is defined by three things: a **brief** (the outcome you're aiming for), its **evidence base** (what you know going in — the assumptions and facts the work builds on), and its **artefact** (what the work produces). When those three hold together, the package is done.
 
-**One directory per package, and no marker on either name.** A package lives at `fusion-workbench/work-packages/<stamp>-<slug>/`, and its record is the file of the directory's own name inside it, `work-packages/<stamp>-<slug>/<stamp>-<slug>.md`; everything the package produces lands in the same directory. One record per package rather than one list file, because two checkouts filing work at the same time then merge with no conflict. The package's state is a head field in that record:
+**One directory per package, and no marker on any name.** A package lives at `fusion-workbench/work-packages/<stamp>-<slug>/` and is a pair: its **narrative**, the Markdown file of the directory's own name, `<stamp>-<slug>.md`, and its **control file**, `package.json`, beside it. Everything the package produces lands in the same directory. The narrative holds the brief and nothing that decides state:
 
 ```markdown
 # split the manifest loader from the validator
-
----
-**Domain:** code
-**Status:** claimed
-**Claim:** 3f9a1c07 — Ada Lovelace <ada@example.com>, 260910-1145
-**Mode:** autonomous
-**Active spec/plan:** 260905-0910_*_implementation-split-the-manifest-loader.md
-**Depends-on:** 260901-1030-extract-the-schema-reader.md
-**Cross-references:** 260828-1610-loader-conventions.md
-**Filed by:** user, Ada Lovelace <ada@example.com>
----
 
 ## Directive
 
 …
 ```
 
-`**Status:**` takes five values and there is no sixth:
+The state lives in `package.json`, which only the codec writes, through `bin/fusion-write`, and never a hand. Each field has one subcommand ([`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) `## Work packages`):
+
+| Field | What it says | Written by |
+|---|---|---|
+| `status` | one of five values, below | `claim`, `release`, `transition` |
+| `claim` | which checkout holds the package: `checkout_id`, the person beside it, the time | `claim`, cleared by `release` and by a pause |
+| `mode` | `ordinary`, or `autonomous` with the record holding your words as its source | `set-mode` |
+| `depends_on` | the packages that must reach a condition before this one may start | `set-dependencies` |
+| `active_documents` | the spec and the plan the work runs on, each bound at the revision accepted | `adopt-plan` |
+| `domain`, `filed_by`, `origin` | set once, when the package is filed | `create` |
+
+`status` takes five values and there is no sixth:
 
 - **open** — nobody is working on it.
-- **claimed** — a checkout is working on it now, and `**Claim:**` names which.
-- **paused** — set aside deliberately, not abandoned, expected back. The claim is cleared, and the body says what it is waiting for.
-- **done** — the work landed. The claim stays, naming who did it.
-- **dropped** — no longer live; the body says why, citing the package that replaced it or the reason.
+- **claimed** — a checkout is working on it now, and `claim` names which.
+- **paused** — set aside deliberately, not abandoned, expected back. The claim is cleared, and the narrative says what it is waiting for.
+- **done** — the work landed. The claim may stay, naming who did it.
+- **dropped** — no longer live; the narrative says why, citing the package that replaced it or the reason.
 
-`done` and `dropped` are terminal. If work needs to continue, you file a new package that cites the old one. `paused` is the one live value a package comes back from, and it comes back by being claimed.
+`done` and `dropped` are terminal, and the codec refuses any move out of them. If work needs to continue, you file a new package that cites the old one. `paused` is the one live value a package comes back from, and it comes back by being claimed.
 
-**Two design choices are worth knowing, because everything else follows from them.** One file per package rather than one list file, so two checkouts adding work at the same time merge with no conflict. And the state in a field rather than in the filename, so a state change edits the file instead of renaming it and every citation of a package stays valid for the package's whole life.
+**Two design choices are worth knowing, because everything else follows from them.** One directory per package rather than one list file, so two checkouts adding work at the same time merge with no conflict. And the state in a control file rather than in the filename, so a state change rewrites `package.json` instead of renaming anything, and every citation of a package stays valid for the package's whole life.
 
-**`claimed` names a checkout, and that is what stops two people doing one job.** The value compared is the eight hex characters `bin/fusion-identity` prints for this checkout, never the person beside them — two checkouts of one person carry one git identity, so the person alone cannot answer whose claim this is. A takeover overwrites the field; who held it before is in the commit that took it. The collision is detected and not prevented: two checkouts that both pull, both see no claim and both claim will conflict on that one line at the next merge, and whoever loses the race picks another package.
+**`claimed` names a checkout, and that is what stops two people doing one job.** The value compared is the eight hex characters `bin/fusion-identity` prints for this checkout, never the person beside them — two checkouts of one person carry one git identity, so the person alone cannot answer whose claim this is. There is no takeover: `bin/fusion-write` refuses a claim of a held package, and a release or a finish by any checkout but the holder. Across checkouts the collision is detected and not prevented: two checkouts that both pull, both see `open` and both claim will conflict on `package.json` at the next merge, and whoever loses the race picks another package.
 
-**`**Depends-on:**` carries the edges you ruled on, or that your `**Mode:** autonomous` field ruled on for you**, as a comma-separated list of package basenames, and an entry asserts one relation and no other: the named package must reach `done` or `dropped` before this one may start. A `paused` target has reached neither, so the entry stays live and a paused package blocks every package naming it. Every other citation the package carries (a record it rests on, a decision that binds it, work it merely touches) goes in `**Cross-references:**`, which orders nothing. A helper may read the store and *report* an order over the `**Depends-on:**` edges; that report is a report, and you override it wherever you want to. The helper is `$FUSION_PLUGIN_ROOT/bin/fusion-work-order`, and everything it prints — which packages are ready, how deep each one sits, what each blocks, the entries that name no package and any cycle — is that report and nothing more. No agent asserts a ranking.
+**`depends_on` carries the edges you ruled on, or that your `autonomous` mode ruled on for you**, each naming another package and a condition, and an entry asserts one relation and no other: the named package must reach that condition before this one may start. `terminal` is met at `done` or `dropped`; `succeeded` asks more, `done` with an accepted evidence record. A `paused` target has reached neither, so the entry stays live and a paused package blocks every package naming it. Every other citation the package carries (a record it rests on, a decision that binds it, work it merely touches) stays in the narrative's prose, which orders nothing. A helper may read the store and *report* an order over the `depends_on` edges; that report is a report, and you override it wherever you want to. The helper is `$FUSION_PLUGIN_ROOT/bin/fusion-work-order`, and everything it prints — which packages are ready, how deep each one sits, what each blocks, the entries that name no package and any cycle — is that report and nothing more. No agent asserts a ranking.
 
-**`**Active spec/plan:**` names what the work runs on** — the spec or plan in force, as a storeless basename — and it is absent until one exists. Whoever makes a spec or plan the one this package runs on writes the field in the same act; no pass maintains it afterwards, because a field somebody else is supposed to keep up to date is a field that drifts. It has two readers: you, looking at the package and seeing what it is being built from, and the closure step, which reads that plan's `## Where this work stops` back to you clause by clause when the package finishes.
+**`active_documents` names what the work runs on** — the spec or plan in force, bound at the exact revision you approved — and it is empty until one exists. Whoever makes a spec or plan the one this package runs on adopts it in the same act, which for the orchestrator is the moment you approve the plan; no pass maintains it afterwards, because a field somebody else is supposed to keep up to date is a field that drifts. It has two readers: you, looking at the package and seeing what it is being built from, and the closure step, which reads that plan's `## Where this work stops` back to you clause by clause when the package finishes.
 
-**`**Mode:** autonomous` is your standing answer to the approvals about the solution**, and absent is the ordinary mode. It stands on your word and is written only on it: by you by hand, by `/fusion:wp` from your own words, or by the orchestrator in the same command as a filing or a claim you asked for. It is never inferred from the brief's prose, however plainly that prose says "just do it". Which approvals it answers, and which it never does, is section 3 below; the field on one package never rules on another package's state.
+**`autonomous` mode is your standing answer to the approvals about the solution**, and `ordinary` is the default. It stands on your word and is written only on it, its source citing where your words are: by `/fusion:wp` from your own words, or by the orchestrator in the same turn as a filing or a claim you asked for. It is never inferred from the brief's prose, however plainly that prose says "just do it". Which approvals it answers, and which it never does, is section 3 below; the field on one package never rules on another package's state.
 
 ### How a package comes into existence
 
-**You file it, and no agent ever does on its own initiative.** `/fusion:wp <one line>` writes the package — a title, one paragraph, `**Status:** open` — and a title plus one paragraph is the whole minimum ([`skills/wp/SKILL.md`](../skills/wp/SKILL.md)). Telling the orchestrator in chat to file one does the same: it writes the package in that shape, with your words as the brief, and the package is yours. The cheapness is the design: a package that costs more to write than a note is a package nobody writes. A defect an agent finds is still an issue, and a choice point is still a decision record; neither becomes a work package by being routed through here.
+**You file it, or an agent does within the work you commissioned.** `/fusion:wp <one line>` writes the narrative — a title and one paragraph — and files the pair at `open`, and a title plus one paragraph is the whole minimum ([`skills/wp/SKILL.md`](../skills/wp/SKILL.md)). Telling the orchestrator in chat to file one does the same: it writes the package in that shape, with your words as the brief, and the package is yours. The cheapness is the design: a package that costs more to write than a note is a package nobody writes. An agent may file one too, while decomposing a package it was dispatched for: its `filed_by` names the agent, its `origin` that package, and filing it grants no right to run it. A defect an agent finds is still an issue, and a choice point is still a decision record; neither becomes a work package by being routed through here.
 
-**What the orchestrator may do to the store, it does at your word.** Claiming, releasing, finishing, dropping, splitting one package into several and merging several into one are edits it performs once you have said so, one confirmation per operation on that package. None of them adds a job to the store on the orchestrator's own initiative, which is what keeps that bound intact across all of them.
+**What the orchestrator may do to the store, it does at your word.** Claiming, releasing, pausing, finishing, dropping, splitting one package into several and merging several into one are operations it performs once you have said so, one confirmation per operation on that package, each through `bin/fusion-write`.
 
 **A request you hand the orchestrator needs no package at all.** Most sessions are one task told to the orchestrator directly; the work-package store is what you reach for when you have several units of future work whose order is not obvious. Where a session *is* working a claimed package, its basename rides every dispatch, which is what lets the monitor say what this session is doing.
 
-**What v11 removed here was the record, not the container.** Until then the unit in that directory was a *Circle*, carrying a six-marker record, ranked by a portfolio agent and activated through a per-checkout pointer file that never travelled between checkouts. The six markers, the ranking and the pointer are gone. The directory and its own copy of every store stand, and the record inside it is the work package's. `/fusion:migrate` converts a workbench that still holds a live Circle record: the record becomes the package record, in the container it already sits in.
+**What v11 removed here was the record, not the container.** Until then the unit in that directory was a *Circle*, carrying a six-marker record, ranked by a portfolio agent and activated through a per-checkout pointer file that never travelled between checkouts. The six markers, the ranking and the pointer are gone. The directory and its own copy of every store stand, and the record inside it is the work package's. A workbench that still holds a live Circle record converts at the `v11.11.1` tag; from v12 on, `/fusion:migrate` renames the stores and, since 13.0.0, moves every record's state into its control file.
 
 **The idea-to-work path**, from filing to claiming:
 
 ```
-/fusion:wp …             you file the package, always at Status: open
+/fusion:wp …             you file the package, always at status open
        ↓
 you read the store       and pick the package worth doing. Nothing ranks it: the
                          ranking agent and its command both went at v11
        ↓
-the orchestrator claims  Status: open → claimed, Claim: <your checkout>,
+the orchestrator claims  status open → claimed, claim naming your checkout,
                          on your word
        ↓
 requirements-designer    the package's path is a valid request to the
@@ -103,7 +103,7 @@ The spec and the plan are the contract. Every later check — "is this work stil
 
 ## 3. The approvals
 
-Fusion stops and hands you the decision at defined points. A work package carrying `**Mode:** autonomous` (section 1) answers the stops that are about the *solution* of that package — the plan review, the package's claim and its finish, and the read of its plan's stop conditions at closure — and one stop that is not: an ordinary `data-implementer` task proceeds under the field, which `57e2b7eb` settled on 2026-09-22. The stops that weigh the project rather than the solution stay yours.
+Fusion stops and hands you the decision at defined points. A work package in `autonomous` mode (section 1) answers the stops that are about the *solution* of that package — the plan review, the package's claim and its finish, and the read of its plan's stop conditions at closure — and one stop that is not: an ordinary `data-implementer` task proceeds under the field, which `57e2b7eb` settled on 2026-09-22. The stops that weigh the project rather than the solution stay yours.
 
 **Approvals — fusion stops and asks before:**
 
@@ -113,7 +113,7 @@ Fusion stops and hands you the decision at defined points. A work package carryi
 - **destructive operations** — deleting files, removing features, dropping data,
 - an **ambiguous task** where scope or acceptance criteria can't be pinned down.
 
-At each approval you get plain choices: proceed, skip for later, defer, or modify the instruction. Under `**Mode:** autonomous` three approvals put no question at all — a structural ontology change, a destructive operation, and an ambiguous task instruction: the orchestrator files an open decision carrying the question the approval would have asked, skips the task, and goes on. You answer the decision record afterwards, and the log records that nobody answered it. The same field reaches two stops that are not rows in that list: a policy-curator survey's change ledger is applied whole instead of being put to you entry by entry, and the pause of the package this checkout already holds is confirmed by your instruction to claim another. Which rows the field answers is settled in [`agents/orchestrator.md`](../agents/orchestrator.md) `## Human approval rules`, not here.
+At each approval you get plain choices: proceed, skip for later, defer, or modify the instruction. Under `autonomous` mode three approvals put no question at all — a structural ontology change, a destructive operation, and an ambiguous task instruction: the orchestrator files an open decision carrying the question the approval would have asked, skips the task, and goes on. You answer the decision record afterwards, and the log records that nobody answered it. The same field reaches two stops that are not rows in that list: a policy-curator survey's change ledger is applied whole instead of being put to you entry by entry, and the pause of the package this checkout already holds is confirmed by your instruction to claim another. Which rows the field answers is settled in [`agents/orchestrator.md`](../agents/orchestrator.md) `## Human approval rules`, not here.
 
 **The Coherence check.** Work runs one task at a time; after each one the orchestrator reports and asks what is next. Nothing checks coherence on a schedule any more — the automatic per-batch check went on 2026-09-10 with the Turn loop it rode. What is left is a **reconciliation you ask for**, which reads three questions about what has landed:
 
@@ -161,7 +161,7 @@ Two paths reach the same place and cross different machinery. The first is one c
 8. The orchestrator **reports what landed and asks what is next**. Nothing checks coherence here unless you ask for a reconciliation.
 9. You say to go on. The test step is dispatched the same way, and nothing is left in the plan.
 10. **Reconciliation, if you ask for it** — the `state-auditor` verifies the tracking files against the actual code and returns its three-edge Coherence audit result. Nothing schedules this; it runs when you say so.
-11. The package's `**Status:**` moves to **done**, its `**Claim:**` stays naming who did the work, a closure note is appended citing the commit range, and the orchestrator **reports** what landed.
+11. A closure note is appended to the package's narrative citing the commit range, the package moves to **done** through `bin/fusion-write transition`, its claim staying to name who did the work, and the orchestrator **reports** what landed.
 
 Had the work been drifting at step 8 — say the code-implementer had started refactoring an unrelated module — a reconciliation asked for there would have flagged it and opened the **Rebalance approval** for you to steer. Nobody is flagged for you: asking is the trigger.
 
@@ -169,11 +169,11 @@ Had the work been drifting at step 8 — say the code-implementer had started re
 
 The same store, at a slower speed. Nothing here is executed, nothing is committed, and the steps can sit weeks apart.
 
-1. **You file the package.** Mid-session you notice something worth doing later and type `/fusion:wp split the manifest loader from the validator`. A new directory appears at `work-packages/<stamp>-split-manifest-loader-from-validator/`, holding one record of the same name — a title, one paragraph, `**Status:** open`, no marker on either. That is all that happens: the workflow files packages and never reads the store back, so nothing ranks or reshapes what you just wrote.
-2. **Nothing ranks it.** A `playmaker` agent did until v11, and no replacement was built: an order over the store is yours to hold. What a helper may do is *report* an order over the `**Depends-on:**` edges as the store carries them, with cycles named — and you override that report wherever you want to.
-3. **You read the store.** The packages stand side by side on disk with their statuses in their heads. A package holding several jobs wants **splitting first**, because everything downstream takes a package whole — a spec written from a dozen observations covers one of them and leaves the rest unread. Splitting is one of the orchestrator's operations and needs your word for that package.
-4. **You claim it.** The orchestrator sets `**Status:** claimed` and writes `**Claim:** <your checkout> — <you>, <stamp>`, on your say-so and in one edit. From that moment the session holds the package's basename and puts it on every dispatch, so the monitor can say what this session is doing.
-5. **You work it.** Hand the package's path to the requirements-designer and the first walkthrough takes over from there — the package is read as the request, and no byte of it is written by the requirements-designer or by anything else until the orchestrator closes it at your word.
+1. **You file the package.** Mid-session you notice something worth doing later and type `/fusion:wp split the manifest loader from the validator`. A new directory appears at `work-packages/<stamp>-split-manifest-loader-from-validator/`, holding a narrative of the same name — a title and one paragraph — and its `package.json` at `open`, no marker on any of them. That is all that happens: the workflow files packages and never reads the store back, so nothing ranks or reshapes what you just wrote.
+2. **Nothing ranks it.** A `playmaker` agent did until v11, and no replacement was built: an order over the store is yours to hold. What a helper may do is *report* an order over the `depends_on` edges as the store carries them, with cycles named — and you override that report wherever you want to.
+3. **You read the store.** The packages stand side by side on disk, each status in its `package.json`; `bin/fusion-work-order` lists them with theirs. A package holding several jobs wants **splitting first**, because everything downstream takes a package whole — a spec written from a dozen observations covers one of them and leaves the rest unread. Splitting is one of the orchestrator's operations and needs your word for that package.
+4. **You claim it.** The orchestrator runs `bin/fusion-write claim`, which sets `claimed` and names your checkout, on your say-so and in one call. From that moment the session holds the package's basename and puts it on every dispatch, so the monitor can say what this session is doing.
+5. **You work it.** Hand the package's path to the requirements-designer and the first walkthrough takes over from there — the package is read as the request, and no byte of it is written by the requirements-designer; only the orchestrator writes its control file, at your word, when it adopts the plan you approve and when it closes the package.
 
 None of steps 1 to 3 writes anything but the work-package store, so they are safe to walk in the middle of a running session. Filing a package disturbs nothing that a dispatch loop is holding.
 
@@ -182,5 +182,5 @@ None of steps 1 to 3 writes anything but the work-package store, so they are saf
 - [`docs/philosophy.md`](philosophy.md) — *why* fusion is built this way (the design ideas behind the unit of work, file-based coordination, and observation over enforcement).
 - [`README.md`](../README.md) — install, setup, your first session, best practices, configuration.
 - [`README-hooks.md`](../README-hooks.md) — the hook layer in full: what it traces, the one project setting, and the account of every check that was removed and the measurement behind it.
-- [`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) — the exact workbench layout, the work-package grammar, and the issue, planning and decision marker vocabularies.
+- [`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) — the exact workbench layout, the work-package grammar, and each record kind's states and the operations that move them.
 - Run `/fusion:help` inside Claude Code for an interactive explainer.

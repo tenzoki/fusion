@@ -33,47 +33,33 @@
  * corpus at any other number, which is what makes a wrong choice cost a line of
  * stdout rather than an argument with this file.
  *
- * ## The corpus, per format, and a duplication this header owns rather than hides
+ * ## The corpus is the record index's
  *
- * The live plans, requirements-designer specs excluded, and which plan is
- * live is the format's question. The caller asks the gate first
- * (`lib/record-index.ts`) and hands this module its answer:
+ * The live plans, requirements-designer specs excluded. The caller asks the
+ * gate first (`lib/record-index.ts`) and hands this module the index:
+ * `measurePlanSizes` weighs every plan record whose `live` is true, at its
+ * narrative. A marker in the narrative's name is history and decides nothing
+ * (section 4.4 of Prior's spec): a live record named `_c_` is measured, a
+ * closed one named `_o_` is not. A plan control file that did not read is
+ * counted and named, never dropped, since whether it is live is exactly what
+ * could not be read. The marker reader that judged a legacy workbench by
+ * `_o_`/`_p_` went at FJ03d step 8, when the caller began refusing one.
  *
- *   `legacy`        `measurePlanSizes`: live (`_o_`/`_p_`) plans in every
- *                   planning store, read off the file name (`LIVE_MARKERS`).
- *   `json-control`  `measureJsonPlanSizes`: every plan record whose `live` is
- *                   true, measured at its narrative. A marker in the narrative's
- *                   name is history and decides nothing (section 4.4 of
- *                   Prior's spec): a live record named `_c_` is measured, a
- *                   closed one named `_o_` is not. A plan control file that did
- *                   not read is counted and named, never dropped, since
- *                   whether it is live is exactly what could not be read.
+ * `isSpec` reads the narrative's name and first line, no control field.
  *
- * `isSpec` reads the narrative's name and first line in both, no control field.
- *
- * The legacy corpus is the same one `hooks/lib/__tests__/plan-stopping-section-lint.test.ts`
- * builds for its own check, and the two definitions are separate copies: that
- * one is test-scoped and this one ships, and folding either into the other
- * would move a green check for a reason this step does not have. The residual is
- * recorded here rather than discovered later, the way `bin/fusion-prose-metric`
- * records its own fence-rule duplication.
+ * `hooks/lib/__tests__/plan-stopping-section-lint.test.ts` takes its corpus
+ * from this function over fusion's own workbench, so the lint and the shipped
+ * helper read one definition of a live plan.
  */
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join, relative, sep } from "node:path";
-import { containerRoots, namesOf, RECORD_CONTROL_SUFFIX, storeDirs } from "./stores.js";
+import { readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { namesOf, RECORD_CONTROL_SUFFIX } from "./stores.js";
 /**
  * The ceiling, in bytes. Chosen, not measured — see the header. Below every
  * plan but one in the corpus fusion carried on 2026-09-10, so the result says
  * something on the day it lands.
  */
 export const DEFAULT_CEILING = 40000;
-/** The issues/planning markers that mean "this plan is still live work". */
-const LIVE_MARKERS = new Set(["o", "p"]);
-/** `YYMMDD-HHMM_S_<topic>.md` — the marker letter, or null if the name is not of that shape. */
-export function markerOf(base) {
-    const m = /^\d{6}-\d{4}_([a-z])_.+\.md$/.exec(base);
-    return m ? m[1] : null;
-}
 /**
  * A requirements-designer spec rather than an implementation-planner plan, by the requirements-designer's own two template
  * signatures (the `spec-` topic prefix and the `# Spec:` H1), either sufficient.
@@ -85,25 +71,7 @@ export function isSpec(base, firstLine) {
     return topic.startsWith("spec-") || /^#\s+Spec:/.test(firstLine);
 }
 /**
- * Every plans store under the workbench: each work package's, plus the shared
- * one, under either name during the window (`./stores.ts`).
- */
-export function planningStores(root) {
-    const wb = join(root, "fusion-workbench");
-    const stores = [];
-    for (const top of containerRoots(wb)) {
-        if (!existsSync(join(wb, top)))
-            continue;
-        for (const d of readdirSync(join(wb, top), { withFileTypes: true })) {
-            if (d.isDirectory())
-                stores.push(...storeDirs(join(wb, top, d.name), "plans"));
-        }
-    }
-    stores.push(...storeDirs(join(wb, "shared"), "plans"));
-    return stores.filter((s) => existsSync(s)).map((s) => relative(wb, s).split(sep).join("/")).sort();
-}
-/**
- * Weigh `rels` (workbench-relative live planning files) against `ceiling`.
+ * Weigh `rels` (workbench-relative live plan narratives) against `ceiling`.
  *
  * Rows come back largest first, so the reader meets the plan the result is
  * about before the ones it is not. A file that cannot be read is skipped rather
@@ -134,27 +102,12 @@ function weigh(wb, rels, ceiling) {
     const verdict = rows.length === 0 ? "empty" : rows.some((r) => r.over) ? "over" : "under";
     return { ceiling, rows, skippedSpecs, verdict };
 }
-/** The legacy reader: the live plans under `root`'s workbench by their file-name marker, against `ceiling`. */
-export function measurePlanSizes(root, ceiling = DEFAULT_CEILING) {
-    const wb = join(root, "fusion-workbench");
-    const rels = [];
-    for (const store of planningStores(root)) {
-        for (const base of readdirSync(join(wb, store)).sort()) {
-            if (!base.endsWith(".md"))
-                continue;
-            const marker = markerOf(base);
-            if (marker !== null && LIVE_MARKERS.has(marker))
-                rels.push(`${store}/${base}`);
-        }
-    }
-    return weigh(wb, rels, ceiling);
-}
 /**
- * The JSON reader: every plan record of `index` whose `live` is true, at its
+ * The corpus: every plan record of `index` whose `live` is true, at its
  * narrative, against `ceiling`. Plan control files in `index.unreadable` come
  * back named, since their liveness is what did not read.
  */
-export function measureJsonPlanSizes(root, index, ceiling = DEFAULT_CEILING) {
+export function measurePlanSizes(root, index, ceiling = DEFAULT_CEILING) {
     const rels = [...index.byControl.values()]
         .filter((e) => e.kind === "plan" && e.live && e.narrative !== null)
         .map((e) => e.narrative);

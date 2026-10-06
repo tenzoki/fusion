@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import { tmpdir } from "node:os";
 import { HOOKS_DIR, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { createScanner, GATE_KINDS, type CitationHit, type Lines } from "../citation-scan.js";
-import { createPackage, must, place, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
+import { createPackage, jsonWorkbenchAt, must, place, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
 // The shared build, as `fusion-citation-check.test.ts` runs it: the entry reaches the codec bundle relative to itself.
 const ENTRY = join(HOOKS_DIR, "dist", "citation-sweep.js");
@@ -24,13 +24,12 @@ function sweep(cwd: string, wb: string, ...args: string[]) {
   return spawnSync(process.execPath, [ENTRY, "--root", wb, ...args], { cwd, encoding: "utf-8" });
 }
 
-/** A scratch workbench at `<dir>/fusion-workbench` with five indexed records. */
+/** A scratch JSON workbench at `<dir>/fusion-workbench` with five indexed narratives and no record: the sweep reads names. */
 function scratchAt(dir: string): string {
-  const wb = join(dir, "fusion-workbench");
+  const wb = jsonWorkbenchAt(dir);
   for (const d of ["shared/issues", "shared/history", "shared/analyses", "shared/decisions"]) {
     mkdirSync(join(wb, d), { recursive: true });
   }
-  writeFileSync(join(wb, ".fusion-setup"), "{}");
   writeFileSync(join(wb, "shared/issues/260101-0101_o_alpha.md"), "x");
   writeFileSync(join(wb, "shared/analyses/260101-0101-alpha-analysis.md"), "x");
   writeFileSync(join(wb, "shared/history/260202-0202-beta-log.md"), "x");
@@ -68,7 +67,7 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     rmSync(wb, { recursive: true, force: true });
     expect(run.status, run.stderr).toBe(0);
     // every row names the file relative to the PROJECT ROOT, not to cwd (here the workbench)
-    expect([format, out[0]]).toEqual(["format=legacy", "fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=2"]);
+    expect([format, out[0]]).toEqual(["format=json-control", "fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=2"]);
     expect(out[1]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260202-0202' {2}resolved$/);
     expect(out[2]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260101-0101' {2}ambiguous$/);
     expect(out.at(-1)).toBe("files=1 rewrites=2 residual=2 record=1 package-record=0 package-dir=0 bare-record=1 stamp-bare=0 mode=dry-run");
@@ -124,6 +123,22 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     }
   }, CASE_TIMEOUT);
 
+  // issue 261005-1042_*_the-migrations-kept-originals-collide-with-the-migrated-records-in-the-uniqueness-lint-and-the-citation-checker.md
+  it("neither reads nor rewrites a migration's kept original, whose bytes the receipt hashes", () => {
+    const wb = scratch();
+    const original = join(wb, "archive/migrations/m1/originals/shared/issues/260101-0101_o_alpha.md");
+    mkdirSync(dirname(original), { recursive: true });
+    writeFileSync(original, DIRTY_DOC);
+    try {
+      const run = sweep(wb, wb, "--dry-run");
+      expect(run.status, run.stderr).toBe(0);
+      expect(run.stdout).not.toContain("originals/");
+      expect(last(run)).toMatch(/^files=0 rewrites=0 residual=0 /);
+    } finally {
+      rmSync(wb, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
   // issue 260901-0324_*_the-checker-and-the-sweep-key-file-exemptions-on-two-different-spellings-of-the-same-file.md
   it("fires a file-wide exemption from any working directory, the checker's own spelling", () => {
     const wb = scratch();
@@ -165,11 +180,12 @@ function git(cwd: string, ...args: string[]) {
   return r.stdout;
 }
 
-/** A scratch repo whose workbench is committed, plus one dirty record inside it, committed too. */
-function scratchRepo(): { root: string; wb: string; doc: string } {
+/** A scratch repo whose workbench is committed, plus one dirty record inside it, committed too; `legacy` drops the manifest. */
+function scratchRepo(legacy = false): { root: string; wb: string; doc: string } {
   const root = realpathSync(mkdtempSync(join(tmpdir(), "sweep-repo-")));
   git(root, "init", "-q");
   const wb = scratchAt(root);
+  if (legacy) rmSync(join(wb, "workbench.json"));
   const doc = join(wb, "shared/decisions/260303-0303_o_doc.md");
   writeFileSync(doc, DIRTY_DOC);
   writeFileSync(join(wb, "shared/analyses/260606-0606-fenced-mv.md"), FENCED_DOC);
@@ -226,7 +242,7 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
       const run = sweep(root, wb, "--write");
       expect(run.status).toBe(5);
       expect(readFileSync(doc, "utf-8")).toBe(DIRTY_DOC);
-      expect(run.stdout.trim().split("\n").slice(0, 2)).toEqual(["format=legacy", "fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=1"]);
+      expect(run.stdout.trim().split("\n").slice(0, 2)).toEqual(["format=json-control", "fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=1"]);
       expect(last(run)).toMatch(/^files=1 rewrites=1 .* mode=dry-run$/);
       expect(run.stderr.trim()).toBe(
         "fusion-citation-sweep: refused (no --yes): the census above is what --write would change; pass --yes to write it; nothing written",
@@ -383,9 +399,9 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
     }
   }, CASE_TIMEOUT);
 
-  // issue 261004-2059: migrate Step 6 must respell each v11 container-root form as its live twin
-  it("respells every v11 `circles/` container-root citation exactly as its `work-packages/` twin", () => {
-    const { root, wb, doc } = scratchRepo();
+  // issue 261004-2059: migrate Step 6 must respell each v11 container-root form as its live twin, on the legacy workbench it runs over (FJ03d step 7)
+  it.each(["json-control", "legacy"])("respells every v11 `circles/` container-root citation exactly as its `work-packages/` twin, %s", (format) => {
+    const { root, wb, doc } = scratchRepo(format === "legacy");
     const [item, circle] = ["260505-0505-widget-bar", "260606-0606-old-circle"];
     const forms = [`${item}/${item}.md`, `${circle}/_t_circle.md`, item];
     mkdirSync(join(wb, "work-packages", circle), { recursive: true });
@@ -400,6 +416,7 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
       expect(run.status, run.stderr).toBe(0);
       const want = [`${item}.md`, circle, item].map((s) => `\`${s}\` \`${s}\``);
       expect(readFileSync(doc, "utf-8").split("\n")).toEqual(want);
+      expect([run.stdout.split("\n")[0], run.stdout.includes("bound=")]).toEqual([`format=${format}`, false]);
       expect(last(run)).toMatch(/ rewrites=6 residual=0 record=0 package-record=4 package-dir=2 /);
     } finally {
       rmSync(root, { recursive: true, force: true });
@@ -534,7 +551,7 @@ describe("citation-sweep on a JSON-controlled workbench", () => {
     });
   }, CASE_TIMEOUT);
 
-  it("refuses a <path> naming a control file, exit 1, and stops on an unsupported workbench, exit 6, and on an internal error, exit 3, each with nothing on stdout", () => {
+  it("refuses a <path> naming a control file, exit 1, and stops on an unsupported workbench, exit 6, and on an internal error, exit 3, each with nothing on stdout; sweeps a legacy one as a rewriter with no bound= line", () => {
     withJsonProject((p) => {
       const pkg = createPackage(p, "260101-0001-alpha");
       const refused = sweep(p.root, p.workbench, join(p.workbench, pkg.path));
@@ -546,6 +563,14 @@ describe("citation-sweep on a JSON-controlled workbench", () => {
       const unread = sweep(p.root, p.workbench);
       expect([unread.status, unread.stdout, unread.stderr]).toMatchObject([6, "", expect.stringMatching(/unsupported .*unknown-feature.* Nothing was swept\.$/m)]);
     });
+    withJsonProject((p) => {
+      place(p, "shared/issues/260101-0001_o_alpha.md", "# alpha\n");
+      place(p, "shared/analyses/260101-0002-cites.md", "see `shared/issues/260101-0001_o_alpha.md`\n");
+      const legacy = sweep(p.root, p.workbench, "--dry-run");
+      expect(legacy.status, legacy.stderr).toBe(0);
+      const lines = legacy.stdout.trim().split("\n");
+      expect([lines[0], lines.filter((l) => l.startsWith("bound=")), lines.at(-1)]).toEqual(["format=legacy", [], expect.stringMatching(/^files=1 rewrites=1 /)]);
+    }, { legacy: true });
   }, CASE_TIMEOUT);
 });
 

@@ -147,6 +147,28 @@ describe("creation", () => {
     });
   });
 
+  it("a plan filed by create anchors each numbered step under ## Implementation Steps, and transition --steps records one; a plan without the section is filed with no steps", () => {
+    withJsonProject((p) => {
+      const pkg = createPackage(p, "261005-0900-s");
+      const file = (name: string, body: string) => Object.keys((run(p, "create", ["--kind", "plan", "--narrative-file", put(p, `${pkg.dir}/plans/${name}`, body), "--origin", pkg.path, "--actor", "user"]).o as Wrote).revisions)[0];
+      const stepped = file("261005-0901-s.md", "# plan\n\n## Context\n\n1. not a step\n\n## Implementation Steps\n\n1. first\n\n### 2. second\n\n```\n3. fenced\n```\n\n## Risks\n\n4. not a step\n1. [HIGH] tagged, and no step\n");
+      const bare = file("261005-0902-t.md", "# plan\n\n## Approach\n\n1. no section\n");
+      expect([shown(p, stepped).control.control.steps, shown(p, bare).control.control.steps]).toEqual([[{ id: "1", state: "open" }, { id: "2", state: "open" }], []]);
+      const done = run(p, "transition", ["--record", stepped, "--to", "in_progress", "--reason", "step 1", "--steps", JSON.stringify([{ id: "1", state: "done" }]), "--actor", "user"]).o;
+      expect([done.kind, shown(p, stepped).control.control.steps]).toEqual(["landed", [{ id: "1", state: "done" }, { id: "2", state: "open" }]]);
+    });
+  });
+
+  it("a plan whose steps section repeats a number is refused as usage, naming the number and its lines, and nothing is sent", () => {
+    withJsonProject((p) => {
+      const pkg = createPackage(p, "261005-1600-r");
+      const twice = put(p, `${pkg.dir}/plans/261005-1601-r.md`, "# plan\n\n## Implementation Steps\n\n### Part A\n\n1. a\n2. b\n\n### Part B\n\n1. c\n3. d\n");
+      const r = run(p, "create", ["--kind", "plan", "--narrative-file", twice, "--origin", pkg.path, "--actor", "user"]);
+      expect([r.o.kind, mutations(r.sent), existsSync(resolve(p.workbench, twice.replace(/\.md$/, ".record.json")))]).toEqual(["usage", [], false]);
+      expect((r.o as { detail: string }).detail).toMatch(/step number 1 .*lines 7 and 12/);
+    });
+  });
+
   it("evidence binds the package's brief, its plan and the report's bytes: an edited report is report-changed, and its row is {created_kind: evidence}", () => {
     withJsonProject((p) => {
       repo(p);
@@ -236,7 +258,7 @@ describe("initialize, one case per row of Setup's table", () => {
 });
 
 describe("bin/fusion-write", () => {
-  it("prints KEY=value lines and exits by the header's table", () => {
+  it("prints KEY=value lines and exits by the header's table; the --outcome value the conventions spell finishes a package", () => {
     withJsonProject((p) => {
       repo(p);
       const [mine, theirs] = [createPackage(p, "260930-1300-a"), createPackage(p, "260930-1301-b")];
@@ -246,7 +268,9 @@ describe("bin/fusion-write", () => {
       expect(ok.stdout.split("\n").map((l) => l.split("=")[0])).toEqual(["result", "operation_id", "path", "revision", "event", ""]);
       const codes = [ok, cli("claim", "--record", mine.path, "--actor", "user"), cli("release", "--record", theirs.path, "--actor", "user", "--reason", "r"), cli("claim", "--bogus"), cli("log-repair")];
       codes.push(cli("create", "--kind", "issue", "--narrative-file", put(p, `${mine.dir}/issues/261001-0902-i.md`), "--origin", mine.path, "--actor", "user"), cli("evidence", "--record", mine.path, "--report", put(p, `${mine.dir}/reviews/261001-1000-r.md`), "--verdict", "accept", "--actor", "reviewer"));
-      expect(codes.map((r) => r.status)).toEqual([0, 6, 5, 2, 0, 0, 0]);
+      const outcome = /`--outcome` takes[^`]*`(\{[^`]+\})` into `done`/.exec(readFileSync(resolve(REPO_ROOT, "rules", "fusion-workbench-conventions.md"), "utf-8"))?.[1] ?? "the rule spells no --outcome value";
+      codes.push(cli("transition", "--record", mine.path, "--to", "done", "--reason", "r", "--outcome", outcome, "--actor", "orchestrator"));
+      expect([codes.map((r) => r.status), shown(p, mine.path).control.outcome]).toEqual([[0, 6, 5, 2, 0, 0, 0, 0], JSON.parse(outcome)]);
     });
   }, CASE_TIMEOUT);
 });

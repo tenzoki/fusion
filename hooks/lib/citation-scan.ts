@@ -299,6 +299,7 @@
 
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { isAbsolute, join, relative, sep } from "node:path";
+import { isMigrationOriginal } from "./citation-corpus.js";
 import { git, GIT_TIMED_OUT } from "./git.js";
 import {
   ARCHIVED_CONTAINER_ROOTS,
@@ -340,9 +341,9 @@ export function isPlaceholder(token: string): boolean {
  * `LEGACY_STORES` from `./stores.ts`, minus `checkouts`. A registry entry is
  * `<hex>.md`, no stamp and no slug, so no record citation can name one and the
  * segment would match nothing. `discussions` is here for citations OF a
- * discussion record, written in some other record; nothing reads the citations
- * written INSIDE one, because a discussion record is machine-rewritten every
- * round and so is no live record to `isLiveRecord()`.
+ * discussion record, written in some other record. The citations written INSIDE
+ * one never enter the blocking check; the reporter scopes them while its record
+ * is open (`lib/citation-corpus.ts`, `AN OPEN DISCUSSION`).
  */
 const STORES = [...RECORD_STORES, ...V11_RECORD_STORES, ...LEGACY_STORES].filter((s) => s !== "checkouts").join("|");
 
@@ -1133,6 +1134,10 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
    * (`./stores.ts`), with no format question asked and no JSON opened, so the
    * PostToolUse hook that reaches this grammar stays off the codec; on a
    * legacy workbench no file carries one of those names.
+   *
+   * Nor is a migration's kept original (`isMigrationOriginal` in
+   * `./citation-corpus.ts`, which says why): it carries its record's own
+   * basename, and indexed it made every migrated record match twice.
    */
   let wbIndex: WorkbenchEntry[] | null = null;
   function workbenchIndex(): WorkbenchEntry[] {
@@ -1145,7 +1150,8 @@ export function createScanner(workbenchRoot: string, opts: { exhibits?: string[]
             relDir: relative(workbenchRoot, e.parentPath).split(sep).join("/"),
             base: e.name,
           }))
-          .filter((e) => e.relDir !== JSON_STATE_DIR && !e.relDir.startsWith(`${JSON_STATE_DIR}/`));
+          .filter((e) => e.relDir !== JSON_STATE_DIR && !e.relDir.startsWith(`${JSON_STATE_DIR}/`))
+          .filter((e) => !isMigrationOriginal(`${e.relDir}/`));
     return wbIndex;
   }
 
@@ -1728,6 +1734,19 @@ export function markdownFilesUnder(root: string): { rel: string; abs: string }[]
       return { rel: relative(root, abs).split(sep).join("/"), abs };
     })
     .sort((a, b) => a.rel.localeCompare(b.rel));
+}
+
+/**
+ * Every `.md` a citation reader scans under a WORKBENCH root: the whole tree,
+ * the frozen stores included, less the migrations' kept originals
+ * (`isMigrationOriginal` in `./citation-corpus.ts`). The file half of the
+ * exclusion `workbenchIndex()` makes on the lookup half, so a reader that
+ * takes its files here and resolves through a scanner sees one scope.
+ * `markdownFilesUnder` stays the walk for a root that is no workbench (`docs/`,
+ * a `<path>` argument), where no path is a migration's.
+ */
+export function workbenchMarkdownFiles(workbenchRoot: string): { rel: string; abs: string }[] {
+  return markdownFilesUnder(workbenchRoot).filter((f) => !isMigrationOriginal(f.rel));
 }
 
 /**

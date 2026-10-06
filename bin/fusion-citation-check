@@ -7,7 +7,7 @@
 #
 # Output on stdout, one KEY=value per line, then one row per violation:
 #
-#   format=json-control           # or legacy, see below
+#   format=json-control
 #   anchor=workbench-root
 #   root=.
 #   files=312
@@ -19,28 +19,31 @@
 #   resolved=1180
 #   dangling=3
 #   store-prefixed=28
-#   conflict=1                    # json-control only
+#   conflict=1
 #   edited-violations=2
 #   unedited-violations=29
 #   unrewritable-violations=11
 #   undecidable=402
 #   exempt=291
-#   uuid-unresolved=0             # json-control only
+#   uuid-unresolved=0
+#   unreadable=0
 #   verdict=violations            # or clean
 #     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  edited  rewritable  …
 #
 # THE FORMAT IS ASKED FIRST, through the codec's inspect (codec/README.md
-# "The CLI"), and the first line names it. On `json-control` a workbench
-# file is in the verdict scope when its record's status is outside its kind's
-# terminal set in codec/contract/transitions.json, read from the JSON and
-# never from a marker in the file's name; a file with no record is out. A
-# judged citation matching two files is a `conflict` violation there (Prior's
+# "The CLI"), and the first line names it; only `json-control` is read. A
+# workbench file is in the verdict scope when its record's status is outside
+# its kind's terminal set in codec/contract/transitions.json, read from the
+# JSON and never from a marker in the file's name; a file with no record is
+# out. A judged citation matching two files is a `conflict` violation (Prior's
 # spec, section 4.4), and a record reference in a control file that resolves
 # to no record is counted in uuid-unresolved= with one row each; verdict= does
-# not read that count. On `legacy` everything below holds byte for byte, and
-# neither of the two json-control lines is printed. Anything else stops the
-# check with nothing on stdout (exit 3 or 4). hooks/lib/record-index.ts is the
-# reader.
+# not read that count. A control file the codec could not read is counted in
+# unreadable= with one row each: its narrative is scoped not-edited although
+# its liveness is what did not read, and verdict= does not read that count
+# either. A `legacy` workbench is refused by name and pointed at
+# /fusion:migrate; it and anything else stop the check with nothing on stdout
+# (exit 3 or 4). hooks/lib/record-index.ts is the reader.
 #
 # ONLY A ROW IN A FILE SOMEBODY STILL EDITS MOVES `verdict=` (2026-09-01,
 # decision 260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md,
@@ -51,13 +54,11 @@
 # pinned at `violations` and carried no information. Archived-ness is NOT the
 # criterion — the frozen stores are under a quarter of that mass.
 #
-# In scope: a live workbench record — a work-package record in any state,
-# portfolio.md, an open issue, a decision carrying `_o_` or `_a_`, a plan
-# carrying `_o_` or `_p_` — and everything outside the workbench, where no
-# marker exists and every file is live (CLAUDE.md, rules/, .claude/rules/,
-# docs/ and every declared path). Out of scope: the frozen stores, an issue or
-# decision at a terminal marker, a closed or deferred plan, and the kinds that
-# carry no marker at all — history, analyses, reviews, consult, memos,
+# In scope: a workbench narrative whose record is live, and everything outside
+# the workbench, where no record exists and every file is live (CLAUDE.md,
+# rules/, .claude/rules/, docs/ and every declared path). Out of scope: the
+# frozen stores, a record in a terminal state, and the narratives that carry
+# no record at all — history, analyses, reviews, consultations, memos,
 # investigations, which record what was true when they were written. That last
 # class is a judgement rather than a derivation and is reasoned in
 # hooks/lib/citation-corpus.ts, the one place the predicate is authored: the
@@ -132,7 +133,8 @@
 #      nothing could be asked, or an internal error stopped the check. Its own
 #      code and not 2: "there is nothing to check" is an answer about the
 #      project, and a broken install must never be reported as one.
-#   4  the workbench was not read: unsupported by this codec, a refusal of the
+#   4  the workbench was not read: legacy (refused by name, pointing at
+#      /fusion:migrate), unsupported by this codec, a refusal of the
 #      codec (recovery-blocked among them), or no answer. The cause is on
 #      stderr and nothing is on stdout.
 #

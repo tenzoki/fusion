@@ -5,34 +5,32 @@
  * decision `260828-0904_*_does-fusion-ship-a-citation-checker-to-consuming-projects.md`
  * asked for. Called through `bin/fusion-citation-check` by whoever runs it.
  *
- * ## Two formats, chosen by the gate
+ * ## The format, asked by the gate
  *
  * The workbench's format is asked first, through `lib/record-index.ts` and the
- * codec's `inspect`, and the first line of stdout names it (`format=`):
+ * codec's `inspect`, and the first line of stdout names it (`format=`). Only
+ * `json-control` is read: the verdict scope of a workbench file is
+ * `isLiveRecord()` over the index, its record's `live` (a status outside its
+ * kind's terminal set) and never a marker in its name; a narrative with no
+ * record, a report or a legacy file in the archive, is not live. A citation of
+ * a GATE_KINDS kind that matches more than one file is a `conflict`
+ * violation, not an undecidable token (Prior's spec, section 4.4). Record
+ * references that resolve to no control file are counted in
+ * `uuid-unresolved=`, one row each after the violations. Control files the
+ * codec could not read are counted in `unreadable=`, one row each after those.
  *
- *   `json-control`  the verdict scope of a workbench file is its record's
- *                   `live` (a status outside its kind's terminal set), read
- *                   from the index and never from a marker in its name; a
- *                   narrative with no record, a report or a legacy file in the
- *                   archive, is not live. A citation of a GATE_KINDS kind that
- *                   matches more than one file is a `conflict` violation, not
- *                   an undecidable token (Prior's spec, section 4.4). Record
- *                   references that resolve to no control file are counted
- *                   in `uuid-unresolved=`, one row each after the violations.
- *   `legacy`        everything below, byte for byte as before this line
- *                   existed: the verdict scope is `isLiveRecord`, an
- *                   ambiguous token is undecidable, and there is no
- *                   `conflict=` or `uuid-unresolved=` line.
- *
- * Any other answer stops the check before a line of stdout (exit 3 or 4
- * below). The grammar is the same on both formats, and on both it indexes no
- * control file (`lib/citation-scan.ts` `workbenchIndex`).
+ * A `legacy` workbench is refused by name and pointed at `/fusion:migrate`
+ * (FJ03d step 8; section 9's FJ03 row keeps the old control parsers in import
+ * and `archive/` read mode only). It and every other answer stop the check
+ * before a line of stdout (exit 3 or 4 below). The grammar indexes no control
+ * file (`lib/citation-scan.ts` `workbenchIndex`).
  *
  * ## Corpus
  *
- * Every `.md` under the workbench, exactly as `markdownFilesUnder()` returns
- * it, plus at the directory the workbench root names: `CLAUDE.md`,
- * `rules/*.md`, `.claude/rules/*.md` and `docs/**\/*.md`, where present.
+ * Every `.md` under the workbench, exactly as `workbenchMarkdownFiles()`
+ * returns it (the whole tree less the migrations' kept originals), plus at
+ * the directory the workbench root names: `CLAUDE.md`, `rules/*.md`,
+ * `.claude/rules/*.md` and `docs/**\/*.md`, where present.
  * Workbench files are named `fusion-workbench/<rel>` in every row.
  *
  * Every name here is relative to the project root, and that spelling is not
@@ -129,20 +127,19 @@
  *
  * WHAT IS IN SCOPE, in three parts, which are disjoint and cover the corpus:
  *
- *   - A workbench file, by `isLiveRecord()` in `lib/citation-corpus.ts` — the
- *     blocking check's own corpus predicate, moved there so the two share one
- *     definition instead of authoring two. Circle records in any state,
- *     `portfolio.md`, open issues, live decisions, live plans; the frozen
- *     stores out, terminal issues and decisions out.
- *   - A workbench record kind that carries NO marker — history, analyses,
- *     reviews, consult, memos, investigations. Out of scope, by a JUDGEMENT
+ *   - A workbench file, by `isLiveRecord()` in `lib/citation-corpus.ts`: a
+ *     narrative whose record is live, the frozen stores out. The blocking
+ *     check's corpus is the same predicate less the discussion kind, authored
+ *     beside it; an open discussion is in this scope and not in that corpus.
+ *   - A workbench narrative with NO record — history, analyses, reviews,
+ *     consultations, memos, investigations. Out of scope, by a JUDGEMENT
  *     rather than a derivation, reasoned at `lib/citation-corpus.ts`: a history
  *     entry records what was true then, so correcting its citation falsifies
  *     the record rather than repairing it. This class is where most of the
  *     scoping happens — 191 of the 312 rows measured when the question was put.
  *   - Everything outside the workbench — `CLAUDE.md`, `rules/*.md`,
  *     `.claude/rules/*.md`, `docs/**` and every declared path. IN scope: no
- *     marker exists there and every one of those files is live.
+ *     record exists there and every one of those files is live.
  *
  * The scope reaches the `verdict=` line and NOTHING else. `dangling`, `store-prefixed`,
  * `files` and the row list are unchanged by it, and no exit code carries the
@@ -151,26 +148,39 @@
  *
  * ## Output, one `KEY=value` per line, then one row per violation
  *
- *   format=json-control|legacy
+ *   format=json-control
  *   anchor=workbench-root
  *   root=<project directory>
  *   files=<n>            edited-files=<n>
  *   declared-patterns=<n>   declared-files=<n>   declared-exhibits=<n>
  *   tokens=<n>           judged=<n>
  *   resolved=<n>         dangling=<n>        store-prefixed=<n>
- *   conflict=<n>                                  (json-control only)
+ *   conflict=<n>
  *   edited-violations=<n>   unedited-violations=<n>
  *   unrewritable-violations=<n>
  *   undecidable=<n>      exempt=<n>
- *   uuid-unresolved=<n>                           (json-control only)
+ *   uuid-unresolved=<n>
+ *   unreadable=<n>
  *   verdict=clean|violations
  *     <file>:<line>  '<token>'  <status>  <scope>  <rewrite>  <problem>
  *     fusion-workbench/<control>  <pointer>  uuid-unresolved  <class>/<reason>
+ *     fusion-workbench/<control>  unreadable  <class>/<reason>
  *
- * On `json-control` the violations are dangling + store-prefixed + conflict,
- * and `verdict=` reads their edited half as it always has. An unresolved
+ * The violations are dangling + store-prefixed + conflict, and `verdict=`
+ * reads their edited half. An unresolved
  * record reference is a finding about a control file rather than a citation
  * in a text, and `verdict=` does not read `uuid-unresolved=`.
+ *
+ * `unreadable=` counts the control files the codec could not read
+ * (`index.unreadable` of `lib/record-index.ts`), as `bin/fusion-plan-size`
+ * counts its own. Such a record is in no map of the index, so its narrative is
+ * scoped `not-edited` although whether it is live is exactly what could not be
+ * read: every violation in it is still printed, and the count and its rows say
+ * which files the scope could not be taken for. `verdict=` DOES NOT READ IT,
+ * for the reason it does not read `uuid-unresolved=`: it is a finding about a
+ * control file, and `verdict=` stays the scoped half of the citation rows. A
+ * reader gating on `verdict=` reads `unreadable=` beside it; the blocking check
+ * fails on the same list (`lib/citation-corpus.ts`).
  *
  * `edited-files` is how many of `files` are in the verdict scope, and
  * `edited-violations` / `unedited-violations` split the printed rows the same
@@ -249,7 +259,8 @@
  *   3  the plugin itself could not run: the codec bundle is not installed,
  *      so nothing could be asked (the wrapper's own 3 covers the compiled
  *      hooks), or an internal error stopped this entry, named with its stack.
- *   4  the workbench was not read: `unsupported`, a refusal of the codec
+ *   4  the workbench was not read: `legacy` (refused by name, pointing at
+ *      `/fusion:migrate`), `unsupported`, a refusal of the codec
  *      (`recovery-blocked` among them, inside an `ok: true` answer too), or
  *      no answer. The cause is on stderr and NOTHING is on stdout.
  */

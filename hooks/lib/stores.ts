@@ -93,9 +93,6 @@ export const CONTAINER_ROOT_NAMES: readonly string[] = namesOf(CONTAINER_STORE);
  */
 export const ARCHIVED_CONTAINER_ROOTS: readonly string[] = [CONTAINER_STORE, V11_CONTAINER_ROOT];
 
-/** The live root names as a regex alternation, for the citation grammar. */
-export const CONTAINER_ROOT_ALT = CONTAINER_ROOT_NAMES.join("|");
-
 /** Every container root name a citation or a staged path may spell: the live ones, then the v11 root. */
 export const CITED_CONTAINER_ROOTS: readonly string[] = [...CONTAINER_ROOT_NAMES, V11_CONTAINER_ROOT];
 

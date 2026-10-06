@@ -11,7 +11,8 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { declaredCitationFiles, declaredCitationNotes } from "../citation-scan.js";
-import { HOOKS_DIR } from "./helpers/guard-harness.js";
+import { CASE_TIMEOUT, HOOKS_DIR } from "./helpers/guard-harness.js";
+import { jsonWorkbenchAt } from "./helpers/json-workbench.js";
 
 /** A git repo with `src/a.go` and `src/b.go` in the index and in the work tree. */
 function repo(): string {
@@ -73,12 +74,11 @@ describe("a declared pattern whose index entry has no work-tree file is named", 
 describe("a declared exhibit is exempt whole, and the declaration is printed beside the verdict", () => {
   it("exempts the declared record's fenced store-prefixed token and still reports the same token elsewhere", () => {
     const root = repo();
-    mkdirSync(join(root, "fusion-workbench", "shared", "issues"), { recursive: true });
-    writeFileSync(join(root, "fusion-workbench", ".fusion-setup"), "{}");
+    mkdirSync(join(jsonWorkbenchAt(root), "shared", "issues"), { recursive: true });
     writeFileSync(join(root, "fusion.json"), '{"citations":{"exhibits":["260101-0101_*_exhibit.md"]}}');
     for (const f of ["260101-0101_o_exhibit.md", "260102-0102_o_pointer.md"]) writeFileSync(join(root, "fusion-workbench", "shared", "issues", f), "```\nshared/issues/260101-0101_o_alpha.md\n```\n");
     const run = spawnSync(process.execPath, [join(HOOKS_DIR, "dist", "citation-check.js")], { cwd: root, encoding: "utf-8" });
     rmSync(root, { recursive: true, force: true });
     expect([run.stdout.includes("declared-exhibits=1"), run.stdout.split("\n").filter((l) => / {2}store-prefixed {2}/.test(l)).map((l) => l.trim().split(":")[0])]).toEqual([true, ["fusion-workbench/shared/issues/260102-0102_o_pointer.md"]]);
-  });
+  }, CASE_TIMEOUT);
 });

@@ -7,7 +7,7 @@
 # Output on stdout, one KEY=value per line, then one line per live plan,
 # largest first:
 #
-#   format=json-control|legacy
+#   format=json-control
 #   anchor=workbench-root
 #   ceiling=40000
 #   plans=4
@@ -15,19 +15,19 @@
 #   largest=57891
 #   total=195402
 #   skipped-specs=4
-#   unreadable=0                                   (json-control only)
+#   unreadable=0
 #   verdict=over
-#     over      57891  work-packages/<dir>/plans/…_p_….md  (17891 over — …)
-#     under     33472  shared/planning/…_o_….md
-#     unreadable  <plan control file>  <class>/<reason>  (json-control only)
+#     over      57891  work-packages/<dir>/plans/<stem>.md  (17891 over — …)
+#     under     33472  shared/plans/<stem>.md
+#     unreadable  <plan control file>  <class>/<reason>
 #
 # The corpus is the live plans, requirements-designer specs excluded and
 # counted on `skipped-specs=`. A spec is not a plan and the ceiling is not
 # about it. Which plan is live is the format's question, asked through the
-# codec's gate before anything is read and named on the first line: on
-# json-control a plan record whose status is not terminal, measured at its
-# narrative, whatever marker that file's name carries; on legacy the _o_ / _p_
-# marker in every planning store, as before. A plan control file the codec
+# codec's gate before anything is read and named on the first line: a plan
+# record whose status is not terminal, measured at its narrative, whatever
+# marker that file's name carries. A legacy workbench is refused by name
+# (exit 4) and pointed at /fusion:migrate. A plan control file the codec
 # could not read is counted on `unreadable=` and named, never measured.
 #
 # Exit codes:
@@ -41,7 +41,8 @@
 #      entry. Its own code and not 2: "there are no plans to check" is an
 #      answer about the project, and a broken install must never be reported
 #      as one.
-#   4  the workbench was not read: unsupported by this codec, refused by it
+#   4  the workbench was not read: legacy (refused by name, pointing at
+#      /fusion:migrate), unsupported by this codec, refused by it
 #      (recovery-blocked among the refusals) or not answered. The cause is on
 #      stderr, NOTHING is on stdout, and it is never `verdict=empty`.
 #

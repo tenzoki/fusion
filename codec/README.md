@@ -179,8 +179,7 @@ directory is an entry like any other. When `.json-state` is not a directory,
 or its `journal` or `ops` stands and is not one, the check runs before the
 lock, so a refused target keeps its bytes and gains no `.json-state/`; a
 `journal` or `ops` that is a file is `conflict/target-not-empty` naming
-`.json-state/journal` or `.json-state/ops`. `/fusion:setup` does not call it
-yet (FJ03d).
+`.json-state/journal` or `.json-state/ops`.
 
 **`inspect.pending`** is `null`, or `{operation_id, id, blocked}` naming the
 committed `initialize` in `.json-state/journal/`, until its intent leaves the

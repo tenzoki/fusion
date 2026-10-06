@@ -23,10 +23,11 @@
  * suite importing the source does not run from.
  */
 
-import { cpSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { ask, type Answer, type CodecRequest } from "../../record-client.js";
+import { readRecordIndex, type IndexRead } from "../../record-index.js";
 import { REPO_ROOT } from "./guard-harness.js";
 
 /** The committed bundle of this tree. */
@@ -137,6 +138,35 @@ export function setDependencies(project: JsonProject, pkg: Package, on: Array<{ 
   return mutate(project, pkg, "set-dependencies", {
     depends_on: on.map((d) => ({ target: { workbench_id: id, record_id: d.target.id }, condition: d.condition })),
   });
+}
+
+/** The record index of `workbench`, read through this tree's bundle and contract. */
+export function indexOf(workbench: string): IndexRead {
+  return readRecordIndex(workbench, (w, r) => ask(w, r, { bundle: BUNDLE }), resolve(REPO_ROOT, "codec", "contract", "transitions.json"));
+}
+
+/** A JSON workbench at `<root>/fusion-workbench`, from the fixture manifest, for a case that builds its tree by hand. */
+export function jsonWorkbenchAt(root: string): string {
+  const workbench = resolve(root, "fusion-workbench");
+  mkdirSync(workbench, { recursive: true });
+  for (const f of [".fusion-setup", "workbench.json"]) cpSync(resolve(FIXTURE, f), resolve(workbench, f));
+  return workbench;
+}
+
+let placed = 0;
+
+/**
+ * A record pair at narrative `rel` under `workbench`: the codec's fixture
+ * `valid/record/<fixture>.json` with its own id, no references and `state`.
+ * Placed, because `create` refuses the marker names an imported record keeps.
+ */
+export function placeRecord(workbench: string, fixture: string, rel: string, state: string, text = "# x\n"): void {
+  const record = JSON.parse(readFileSync(resolve(REPO_ROOT, "codec", "fixtures", "valid", "record", `${fixture}.json`), "utf-8"));
+  const control = { ...record, id: `f03d0000-0000-4000-8000-${String(++placed).padStart(12, "0")}`, references: [], narrative: { path: rel }, control: { ...record.control, state } };
+  for (const [path, content] of [[rel, text], [rel.replace(/\.md$/, ".record.json"), JSON.stringify(control, null, 2) + "\n"]]) {
+    mkdirSync(dirname(resolve(workbench, path)), { recursive: true });
+    writeFileSync(resolve(workbench, path), content, "utf-8");
+  }
 }
 
 /**

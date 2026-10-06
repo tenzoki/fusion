@@ -53,7 +53,7 @@ mkdir -p ./fusion-workbench && "$FUSION_PLUGIN_ROOT/bin/fusion-write" initialize
 ```
 
 - **`result=initialized` or `result=reused`, `exit=0`**: the workbench is JSON-controlled (a new one, or one whose earlier run stopped before the marker). Continue.
-- **`result=legacy`, `exit=0`**: a workbench set up before the JSON cutover, marked by its `.fusion-setup` or holding a fusion store (`work-packages`, `circles`, `shared`) whose marker was lost; the marker block below writes it again. Its control data stays Markdown, which no command converts yet. Continue exactly as before, and say nothing about it.
+- **`result=legacy`, `exit=0`**: a workbench set up before the JSON cutover, marked by its `.fusion-setup` or holding a fusion store (`work-packages`, `circles`, `shared`) whose marker was lost; the marker block below writes it again. `/fusion:migrate` converts its Markdown control data. Continue exactly as before, and say nothing about it.
 - **Any other exit: stop Setup here and create nothing more.** Say the `fusion-write:` line to the user. On `exit=6` name every entry the codec named: `.DS_Store` and `.gitkeep` count like any file. The directory holds no fusion store, so it is no workbench: the user moves those entries away, or runs Setup where the workbench should be. On `exit=7` the outcome is unknown: run Setup again, and it finishes the intent `inspect` names. Never resend or retry by hand.
 
 Then the stores, in this order before the marker:

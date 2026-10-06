@@ -2,15 +2,13 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
-Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showing how a decision file moves through the marker vocabulary `_o_ → _a_ → _i_ → _s_` (and one `_o_ → _d_`). Optional reading; the conventions file is normative.
+Companion to `fusion-workbench-conventions.md`, which is normative. Three end-to-end examples of a decision's `control.state` moving `open → answered → implemented → superseded`, and once `open → deferred`, each move one `transition` of `"$FUSION_PLUGIN_ROOT/bin/fusion-write"` (`W` below) beside the narrative line its `### Decision files` spells.
 
 ---
 
-## Example 1: Happy path: `_o_ → _a_ → _i_`
+## Example 1: Happy path: `open → answered → implemented`
 
-**Initial state (filed by requirements-designer after the user said "we'll need to pick a vector store, but not now"):**
-
-`260501-1430_o_vector-store-pick.md`, filed in the shared decision store because this checkout has claimed no work package:
+**Filed by requirements-designer after the user said "we'll need to pick a vector store, but not now".** No package is claimed, so `$OUT_DECISION` is the shared store; the narrative `260501-1430-vector-store-pick.md` is written first, then `W create --kind decision --narrative-file <it> --origin user-request --actor requirements-designer` writes `260501-1430-vector-store-pick.record.json` beside it at `open`. `D` below is that control path.
 
 ```markdown
 # Which vector store for v1?
@@ -28,89 +26,49 @@ The RAG pipeline needs a vector store for chunk retrieval. Open at v1: which lib
 
 ## Options
 
-1. **sqlite-vss** — embedded, single-file, no extra service. Pros: zero ops, ships in app binary. Cons: limited scaling beyond ~1M vectors.
-2. **pgvector** — PostgreSQL extension. Pros: SQL semantics, mature ops. Cons: requires Postgres deployment.
-3. **Pinecone (managed)** — hosted service. Pros: scales freely. Cons: vendor lock-in, egress costs.
+1. **sqlite-vss** — embedded, single-file, no extra service. Pros: zero ops. Cons: limited scaling beyond ~1M vectors.
+2. **pgvector** — PostgreSQL extension. Pros: SQL semantics, mature ops. Cons: requires Postgres.
+3. **Pinecone (managed)** — hosted. Pros: scales freely. Cons: vendor lock-in, egress costs.
 
 ## Constraints
 
 - Must run offline (no internet at customer site).
-- Must support per-tenant isolation.
 
 ## Recommendation
 
 sqlite-vss for v1; revisit if a customer crosses 1M vectors.
 ```
 
-**The head carries no `Status:` field.** It left the template; the marker on the filename is the state and the only source. `fusion-workbench-conventions.md` `## Decision Record Template` says why, and what to do with records that still carry it.
-
-**The state-auditor's next pass (analyst has authored a comparative-analysis report selecting sqlite-vss):** it reports where the answer sits and moves no marker. Only the orchestrator performs `_o_` → `_a_`, and only to relay a ruling the user gave.
-
-**Orchestrator, once the user has ruled:**
-
-Append to file body:
+**The state-auditor's next pass** (an analyst report selected sqlite-vss) reports where the answer sits and transitions nothing. Only the orchestrator moves a decision to `answered`, and only to relay a ruling the user gave. **Once the user has ruled**, it appends
 
 ```markdown
 ---
-Answered: 260501-1730-vector-store-comparative.md `## Recommendation` — sqlite-vss selected for v1 (pgvector kept as v1.x escape hatch); ruled by user, Ada Lovelace <ada@example.com>.
+Answered: 260501-1730-vector-store-comparative.md `## Recommendation` — sqlite-vss for v1; ruled by user, Ada Lovelace <ada@example.com>.
 ```
 
-Rename file: `260501-1430_o_vector-store-pick.md` → `260501-1430_a_vector-store-pick.md`.
+and runs `W transition --actor orchestrator --record "$D" --to answered --reason "user ruled" --answer-ref '"260501-1730-vector-store-comparative.md"'`.
 
-**The code-implementer commits the integration (`pkg/vector/sqlite_vss.go` lands):**
-
-Append to file body:
-
-```markdown
----
-Implemented: a3f7c2e — pkg/vector/sqlite_vss.go added; loader wired in pkg/rag/retriever.go.
-```
-
-Rename file: `260501-1430_a_vector-store-pick.md` → `260501-1430_i_vector-store-pick.md`. Terminal state.
+**The code-implementer integrates it** and appends `Implemented: pkg/vector/sqlite_vss.go — added; loader wired in pkg/rag/retriever.go.`; the orchestrator, its `Verification:` line read, commits (`a3f7c2e`) and runs `--to implemented --implementation-ref '"a3f7c2e"'`. Terminal.
 
 ---
 
-## Example 2: Supersession: `_i_ → _s_`
+## Example 2: Supersession: `implemented → superseded`
 
-Six months later, a customer crosses 5M vectors and sqlite-vss thrashes. A new decision is filed:
+Six months later a customer crosses 5M vectors. `261107-0915-vector-store-revisit.md` is filed and, once the user picks pgvector, moves as in Example 1. The original then gains `Superseded by: 261107-0915-vector-store-revisit.md — replaced by pgvector after a customer crossed 5M vectors; correct for v1's constraints.` and `--to superseded --superseded-by '{"workbench_id":"<w>","record_id":"<r>","display":"261107-0915-vector-store-revisit.md"}'`, the two ids from `bin/fusion-record` `show` of the new record.
 
-`261107-0915_o_vector-store-revisit.md` is created in the shared decision store (with its own Options, Recommendation, etc.). After the user picks pgvector, it transitions `_o_ → _a_ → _i_` per Example 1.
-
-The original decision file is then updated:
-
-Append to body of `260501-1430_i_vector-store-pick.md`:
-
-```markdown
----
-Superseded by: 261107-0915_*_vector-store-revisit.md — sqlite-vss replaced with pgvector after first customer crossed 5M vectors. Original choice was correct for the constraints known at v1; superseded by scale change.
-```
-
-Rename: `260501-1430_i_vector-store-pick.md` → `260501-1430_s_vector-store-pick.md`.
-
-**`_i_` and `_s_` are both terminal.** Going `_i_ → _s_` is the one allowed terminal-to-terminal transition (normed in the conventions' terminal-states rule) because it records the historical fact that a previously-implemented decision has been overridden.
+**`implemented` and `superseded` are both terminal.** The edge between them is the one allowed terminal-to-terminal transition.
 
 ---
 
-## Example 3: User defers: `_o_ → _d_`
+## Example 3: User defers: `open → deferred`
 
-The user reads the open decision, decides "not now":
-
-Append to body of `260501-1430_o_vector-store-pick.md`:
-
-```markdown
----
-Deferred: v1.x — pilot customers expected at <1M vectors; revisit when first customer crosses 500k; ruled by user, Ada Lovelace <ada@example.com>.
-```
-
-Rename: `260501-1430_o_vector-store-pick.md` → `260501-1430_d_vector-store-pick.md`.
-
-Skipping `_a_` is fine: the deferral itself is the answer.
+The user reads the open decision and says "not now". The narrative gains `Deferred: v1.x — pilot customers expected below 1M vectors; revisit at 500k; ruled by user, Ada Lovelace <ada@example.com>.` and the record `--to deferred --deferral '{"target":{"kind":"external","name":"v1.x"},"ruled_by":{"actor":"user","person":"Ada Lovelace <ada@example.com>"}}'`. Skipping `answered` is fine: the deferral is the answer.
 
 ---
 
 ## Anti-patterns
 
-- **Don't rename `_i_` back to `_o_` or `_a_`** to "reopen" an implemented decision. File a new decision (which can `Supersede` the old one).
-- **Don't omit the cited path** in `Answered:` / `Implemented:` / `Superseded by:` lines. The whole point of the vocabulary is traceability. Cite it as a heading anchor, never `path:line`, and **don't omit `ruled by`** on `Answered:` / `Deferred:` — those two record a ruling nothing on disk can confirm, which is why they alone name the party.
-- **Don't use `Resolved:`** in decision files: that footer is for `issues/` only. Use the marker-specific footer.
-- **Don't use the issue-state vocabulary `_c_`** in decisions. Decisions never close: they answer, implement, defer, or get superseded.
+- **Don't "reopen" an implemented decision.** No edge leads back; file a new decision, which may supersede the old one.
+- **Don't omit the cited path** in `Answered:` / `Implemented:` / `Superseded by:` lines or their refs. Cite a heading anchor, never `path:line`, and **don't omit `ruled by`** on `Answered:` / `Deferred:`: only those two record a ruling nothing on disk confirms.
+- **Don't use `Resolved:`** or an issue's `closed` in decision files. Decisions never close: they answer, implement, defer, or get superseded.
+- **Don't edit the control file or rename the narrative.** The state is `control.state`, written by the codec alone.

@@ -49,11 +49,11 @@
 const USAGE = "usage: scope.js claimed <workbench> <checkout> | scope.js gate <workbench> | scope.js item <workbench> <dir>";
 const NO_FALLBACK = "Nothing is resolved and nothing falls back to the shared store.";
 /** One line naming why the item in scope is unknown. */
-function reason(u, workbench) {
+function reason(u, workbench, legacyLine) {
     const refusal = (r) => `${r.class}/${r.reason}${r.detail === undefined ? "" : `: ${r.detail}`}`;
     switch (u.cause) {
         case "legacy":
-            return `the workbench at ${workbench} is legacy (no workbench.json: its control data is Markdown), which this version reads only once it has been migrated to JSON, so the item in scope is unknown.`;
+            return `${legacyLine(workbench)} The item in scope is unknown.`;
         case "unsupported":
             return `the workbench at ${workbench} is unsupported by this version's codec${u.diagnosis === null ? "" : ` (${refusal(u.diagnosis)})`}, so the item in scope is unknown.`;
         case "unanswered":
@@ -68,7 +68,7 @@ function reason(u, workbench) {
 }
 /** The program a reader ran, which is the name every line of stderr carries. */
 const tagOf = (sub) => (sub === "item" ? "fusion-paths" : "fusion-claimed-package");
-function main(argv, { claimedBy, isPackage, formatOf }) {
+function main(argv, { claimedBy, isPackage, formatOf, legacyLine }) {
     const [sub, workbench, arg] = argv;
     const arity = sub === "gate" ? 2 : 3;
     if (argv.length !== arity || (sub !== "claimed" && sub !== "gate" && sub !== "item") || workbench === "" || arg === "") {
@@ -82,7 +82,7 @@ function main(argv, { claimedBy, isPackage, formatOf }) {
         const refused = formatOf(workbench);
         if (refused === null)
             return 0;
-        err(`${reason(refused, workbench)} ${NO_FALLBACK}`);
+        err(`${reason(refused, workbench, legacyLine)} ${NO_FALLBACK}`);
         return 3;
     }
     if (sub === "item") {
@@ -95,7 +95,7 @@ function main(argv, { claimedBy, isPackage, formatOf }) {
             err(`no work package '${arg}' in the container store under ${workbench}: ${item.detail}. The second argument names a package that must already exist.`);
             return 1;
         }
-        err(`${reason(item, workbench)} ${NO_FALLBACK}`);
+        err(`${reason(item, workbench, legacyLine)} ${NO_FALLBACK}`);
         return 3;
     }
     const scope = claimedBy(workbench, arg);
@@ -112,14 +112,14 @@ function main(argv, { claimedBy, isPackage, formatOf }) {
             err(`${NO_FALLBACK} Release all but one.`);
             return 3;
         case "unknown":
-            err(`${reason(scope, workbench)} ${NO_FALLBACK}`);
+            err(`${reason(scope, workbench, legacyLine)} ${NO_FALLBACK}`);
             return 3;
     }
 }
 try {
-    const [lib, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/scope.js"), import("./lib/fail-open.js")]);
+    const [lib, { legacyLine }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/scope.js"), import("./lib/record-index.js"), import("./lib/fail-open.js")]);
     exitZeroOnStdoutEpipe();
-    process.exitCode = main(process.argv.slice(2), lib);
+    process.exitCode = main(process.argv.slice(2), { ...lib, legacyLine });
 }
 catch (e) {
     process.stderr.write(`${tagOf(process.argv[2])}: an internal fault stopped the scope entry, a fusion bug or an incomplete install and not the workbench's, so the item in scope is unknown. ${NO_FALLBACK}\n${e instanceof Error ? e.stack : String(e)}\n`);

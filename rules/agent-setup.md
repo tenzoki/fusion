@@ -13,15 +13,14 @@ it.
 
 `fusion-rules <self>` prints one file path (or `skill:<name>` pointer) per line. **Read
 every path it emits**: none is optional. A `skill:<name>` line means invoke that skill on
-demand, not read a file. The set is layered, not ranked: you read all of it.
+demand, not read a file. The set is layered, not ranked.
 
 ## What `fusion-rules` emits
 
 - `fusion-workbench-conventions.md`: always, for every agent. The framework ground truth
-  (workbench layout, the work-package grammar, marker vocabularies, the Path Resolution contract).
+  (workbench layout, the work-package grammar, record states, the Path Resolution contract).
 - **Pattern-matched domain rules**: coding, ontology, normative, verb, etc., selected per
-  your agent. The descriptive name of the pattern does not matter; you read
-  whatever is emitted regardless of what kind of rule it is.
+  your agent. The pattern's name does not matter; you read whatever is emitted.
 - **Project-local rules** from the consuming project's `./rules/` (fusion-agent-specific)
   and `.claude/rules/` (project-wide). Missing files are skipped silently. Read what is
   present.
@@ -42,9 +41,10 @@ item in scope, then the shared one. Search every directory it names, not the fir
 A non-zero exit says whose fault it is (full table in `fusion-workbench-conventions.md`
 `## Path Resolution` → Exit codes). **exit 4** is the one you will meet: an internal
 `fusion-paths` bug, so the user's workbench is fine and must not be sent anywhere to be
-repaired. **exit 3** is scope the resolver could not determine, and the user clears it. A 3
-from `fusion-rules` is a different thing entirely, that helper's own code for a malformed
-manifest, and says nothing about your paths.
+repaired. **exit 3** is scope the resolver could not determine, and the user clears it: on
+a `legacy` workbench, stop and tell the user to run `/fusion:migrate`; on an `unsupported`
+one, stop, quote the helper's stderr line and say the installed client is older than the
+workbench. A 3 from `fusion-rules` is that helper's own code for a malformed manifest.
 
 ## Voice profiles
 
@@ -52,8 +52,7 @@ If `fusion-rules` emitted a `chat-voice-*.yaml` path (it does for every agent), 
 **apply its anti-patterns and its terse-and-direct whitelist to every line a human may
 read**, your report to the dispatcher included. If it also emitted a `default-voice-*.yaml`
 path (prose agents only), read it as your long-form writing profile for narrative output.
-If a profile you expect is absent, note the absence (in your history file if you keep one)
-and proceed.
+If a profile you expect is absent, note the absence in your report and proceed.
 
 The full user-facing style contract, `user-facing-output.md`, is emitted only to the agents
 whose output the user reads directly (decision 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md). If you did not receive it, your
@@ -68,6 +67,5 @@ work around. The resolution is defined in `rules/fusion-workbench-conventions.md
 `## Project language`.
 
 Receiving **only** the chat path does not exempt you from the artefact language. That one
-path names your chat surface; the files you write (reviews, defect records, the task
-queue, your own session history) persist, and no profile you hold names their language.
+path names your chat surface; the files you write (reviews, records, plans) persist, and no profile you hold names their language.
 Read the declarations in `CLAUDE.md` and resolve it there, under that same rule.
