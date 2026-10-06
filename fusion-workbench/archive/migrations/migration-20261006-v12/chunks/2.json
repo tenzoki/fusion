@@ -1,0 +1,1495 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "chunk",
+  "migration_id": "migration-20261006-v12",
+  "chunk": 2,
+  "writes": [
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md",
+      "from": "shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:2ac5b66e5f576d0f30a4123ddc66a977ca2921971d07725b6a0664dd7ddac6e6"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/plans/260909-1615_o_spec-cut-fusion-to-a-working-minimum.md",
+      "from": "shared/plans/260909-1615_o_spec-cut-fusion-to-a-working-minimum.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:0fafa5b491cbbb339d892752956a9f28ab42971caf24b5e6abf120c16b99d3fe"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.md",
+      "from": "shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:baf0a68e7c36f650b90c38243e2be7da1c355ef4eb7fb521b364ff014943b1fe"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260716-1847-workbench-umbau/_c_circle.md",
+      "from": "work-packages/260716-1847-workbench-umbau/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:cb542500eea545caf2c32d44955f71a384d6508a64e3042f89d5ec6b4db50690"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260718-1924-v5x-overhaul/_c_circle.md",
+      "from": "work-packages/260718-1924-v5x-overhaul/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:9cebd9130ad59275981a33ba54410b1c0ed814485130f655ead0c10583efdfe1"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260801-1244-curator/_c_circle.md",
+      "from": "work-packages/260801-1244-curator/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:b8390efa9d4fa14a6e44a219861eba669be8f487206abbf61fcbac1fd5e0f22f"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260801-1244-guard-rules-write/_c_circle.md",
+      "from": "work-packages/260801-1244-guard-rules-write/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:862e874b79d5b53b92fb008d51e27f5c5d492045359be810cc85d70a7cca55a0"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260801-1244-rule-provenance-header/_c_circle.md",
+      "from": "work-packages/260801-1244-rule-provenance-header/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:7a38dd3b1e1314010946170545ed5fb2da8c47ab5e71ccb2dfb892506aee3a6f"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260804-1205-shell-reachability-model/_s_circle.md",
+      "from": "work-packages/260804-1205-shell-reachability-model/_s_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:33d1b2cc761ede3064fb1be0e7d49da949210c39ad3b373a827932f5d76eb7c2"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md",
+      "from": "work-packages/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:836e08e23d5a7666052f81752db78783b697de81cbf41ceb9851b34c43698569"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260807-0923-guard-misst-statt-orakelt/_c_circle.md",
+      "from": "work-packages/260807-0923-guard-misst-statt-orakelt/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:3b8f8cf3c32fd2ecafccd2c2cfdac4fb4b2753224ac70eb623b21c3d7b51f7cf"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260813-0858-playmaker-maintains-backlog-store/_c_circle.md",
+      "from": "work-packages/260813-0858-playmaker-maintains-backlog-store/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:da5c91ef6f659f7beb09c90eb8d42a311f7ff529c0031af4dc05fb4f49ac5f19"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260815-0007-remove-eight-mechanisms-and-cap-growth/_c_circle.md",
+      "from": "work-packages/260815-0007-remove-eight-mechanisms-and-cap-growth/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:6bf1f28d1ab513efe62370cedce16f5fb6c2b972c224de59dd8850e7809fb58e"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260816-1741-guard-becomes-observation-only/_b_circle.md",
+      "from": "work-packages/260816-1741-guard-becomes-observation-only/_b_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:025d09a6f5db87567387db3096c7e8dd91b2cb88dceee2ab36c1a533b0e57a4d"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260819-1645-four-constraints-on-deep-change/_c_circle.md",
+      "from": "work-packages/260819-1645-four-constraints-on-deep-change/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:c58b9c1fbeaf2d3e527c5bd6c4e8db87d7b9060b38443c7ec5f469021fd4c9cf"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md",
+      "from": "work-packages/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:47a0b44822294478297bdc26d2362e03bd3d996e493e4d0f12bbe32811746ec1"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md",
+      "from": "work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:4632044032e311e5bd6e978dc1ae6250ed991a22cecadd87afd5911a577b73ab"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/_c_circle.md",
+      "from": "work-packages/260821-1042-reply-bounded-whole-question-answered/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:5130caa885aaeb66c7d70b583489a6a65482e3d90f1c96973aee1f53aac54bc1"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md",
+      "from": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:f0450cfe5f85c6bb2c9120f625dff2e9f71a0be00dee8f692f060a9778e76741"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md",
+      "from": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:8dd498af137e66b833b7a42a1b71a4761df25cafc86ed8ba4c68153d8bd3a711"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md",
+      "from": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:bc6469331fc0b03ba61b2203c3fa94e60aef887769c29bf5921e2b1b5c28f47c"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260823-0023-settle-what-travels-between-checkouts/_c_circle.md",
+      "from": "work-packages/260823-0023-settle-what-travels-between-checkouts/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:7dac4e945be10f8fb4efe4dcb186a55800a348dc65c2bbd4b08f8437f69ca815"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260824-0530-record-attribution-and-circle-claim/_c_circle.md",
+      "from": "work-packages/260824-0530-record-attribution-and-circle-claim/_c_circle.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:618629c8a5cb48419de02ef3211a166104eeea749e72cee4285363bd9778fb58"
+    },
+    {
+      "kind": "control",
+      "path": "shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:2284a0f55514ad9e7d316d4b9206839f81924fec94c291fcc5795c82f7af6d25",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "0cb28fcb-455a-476a-8688-1c276dbaa041",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-08-22",
+              "Status": "Partially Complete",
+              "Source": "\"wir bauen fusion jetzt zu einem multiuser tool um. [...] Die blockierende Decision (nur ein aktiver Orchestrator) wird aufgehoben und reframed, so dass wir mehere User auf einer workbench arbeiten lassen können, bzw. ev. auch mehrere Instanzen auf einer Maschine. Workbench- und Zustandsdaten, die jetzt gitignored sind, müssen daher ins repo.\" Three shaping rounds, eight answers from the user, recorded in `260822-1009-orchestrator-session.md`.",
+              "Decidability": "The load-bearing question is whether a workbench record can be attributed to the person and to the session that produced it, from inputs fusion already holds. The person is decidable and needs no new input: `/fusion:memo` reads `$USER` from the environment today (`skills/memo/SKILL.md:38`), and every agent can do the same. The session is decidable for the hooks and not for the agent. Claude Code passes `session_id` to PreToolUse and PostToolUse, fusion declares it at `hooks/guard.ts:84` and `hooks/tracker.ts:132`, and nothing reads it; no agent ever receives it. Whether an agent could obtain it rests on one measurement nobody has taken, namely whether the SessionStart input package carries the field and whether a hook can relay it to the model as `additionalContext`. **No capability in this spec depends on that measurement**, because attribution in records is by person, the session identifier appears only in the event log the hooks write, and nothing here walks from a record back to a session. C4 states the measurement as its own first step and names what happens if it fails."
+            },
+            "step_marks": {},
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "faac92145c182148a5828c1f566ebcb439e60fa3"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md",
+            "sha256": "sha256:2ac5b66e5f576d0f30a4123ddc66a977ca2921971d07725b6a0664dd7ddac6e6",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md",
+      "source_sha256": "sha256:2ac5b66e5f576d0f30a4123ddc66a977ca2921971d07725b6a0664dd7ddac6e6",
+      "after_sha256": "sha256:bdc1296491cd254fcbc1a27aaa65165f35f9789cf9cdb7f048074ee5afc9362f",
+      "deletions": [
+        {
+          "offset": 63,
+          "length": 31
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/plans/260909-1615_o_spec-cut-fusion-to-a-working-minimum.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:6dac71730fcb3648c038f6920e24ebaa336744d3f697d45bc3cafae7cdfbd753",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "48fbf64a-dc46-4736-877c-aea514da377e",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "shared/plans/260909-1615_o_spec-cut-fusion-to-a-working-minimum.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <kai@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-09",
+              "Status": "Partially Complete",
+              "Source": "The user's request to cut fusion's ceremony, following `260909-1047-size-versus-bookkeeping-across-three-projects.md` and its verification `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md`. Four clarification questions were answered: depth (d), cumulative across all four tiers; no agent-written session history; no closing pipeline; a zero-sum bound on everything a dispatch loads, `CLAUDE.md` included.",
+              "Revised against": "`260909-1628-adversarial-review-of-the-cut-fusion-to-a-working-minimum-spec.md`, whose measurements govern this draft wherever it and the first draft disagree. Three issues it filed are answered here: `260909-1631_*_the-cut-spec-removes-agentstate-yaml-whose-existence-gates-every-machine-written-event-row.md`, `260909-1632_*_the-cut-specs-analyst-row-forbids-the-project-writes-its-own-claude-md-gate-requires.md`, `260909-1633_*_the-zero-sum-bounds-baseline-is-armed-at-the-moment-that-absolves-the-cut-it-must-measure.md`.",
+              "Filed by": "shaper, Kai Stalmann <kai@qantr.com>"
+            },
+            "step_marks": {}
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/plans/260909-1615_o_spec-cut-fusion-to-a-working-minimum.md",
+            "sha256": "sha256:0fafa5b491cbbb339d892752956a9f28ab42971caf24b5e6abf120c16b99d3fe",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/plans/260909-1615_o_spec-cut-fusion-to-a-working-minimum.md",
+      "source_sha256": "sha256:0fafa5b491cbbb339d892752956a9f28ab42971caf24b5e6abf120c16b99d3fe",
+      "after_sha256": "sha256:ddeb887249f9b3a108e661b36861f9dd891aa8b5dbbb06acff6f0de41fe1f000",
+      "deletions": [
+        {
+          "offset": 62,
+          "length": 31
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:3cfe1d3244c3c74afaafb8919e1d634184e7ce0777d93f685599539e0bf3df53",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "0d649a25-cc33-4c3f-ac39-fe07fd8793eb",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-11",
+              "Status": "Partially Complete",
+              "Decidability": "The load-bearing question is whether \"this session did what it set out to do\" can be answered for a session that stated no goal while it ran. It cannot: the nine commits are the only surviving statement of intent, and a goal reconstructed from them afterwards cannot fail against them. The mechanism therefore changes rather than the answer. Acceptance below is read against preconditions each of which a command decides on its own: a version string in a named file, a gate that exits zero or does not, a coverage figure that is printed and quoted. Nothing here asks whether the session was successful.",
+              "Source": "The user asked for two things in one pass. Ship the nine commits that stand above the v11.0.0 tag as a release, and settle the population figure in the analysis report that one of those commits added, after two measurements in the same session overturned it and a third, taken with word anchors over the same corpus at the same commit, returned the report's own number and showed the other two to have been counting a different subject."
+            },
+            "step_marks": {},
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "86ab0b806cbfc9cbaca587b2d047981c3c55f3d7"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.md",
+            "sha256": "sha256:baf0a68e7c36f650b90c38243e2be7da1c355ef4eb7fb521b364ff014943b1fe",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.md",
+      "source_sha256": "sha256:baf0a68e7c36f650b90c38243e2be7da1c355ef4eb7fb521b364ff014943b1fe",
+      "after_sha256": "sha256:732237145ed45fc32d63f98d7bb75bbbe5c3344b74499c7c3c7b6ec0c09d27d6",
+      "deletions": [
+        {
+          "offset": 69,
+          "length": 31
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260716-1847-workbench-umbau/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:99a45a64db9f06f6b2eff818ad0c49181aa4256c18c55eae7dee19b522f6c569",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "d44e5fdf-c664-44f3-a724-455c1cb3a984",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260716-1847-workbench-umbau/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Status": "closed (coherent)",
+              "Filed by": "orchestrator (Circle 1; aktiviert 2026-07-17 im End-to-End-Lauf, Schritt 9; geschlossen 2026-07-17 nach coherent-Verdikt)",
+              "Active spec/plan": "260716-1910_*_plan-workbench-umbau-circle-container.md",
+              "Active session history": "260717-1832-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260716-1847-workbench-umbau/_c_circle.md",
+            "sha256": "sha256:cb542500eea545caf2c32d44955f71a384d6508a64e3042f89d5ec6b4db50690",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260718-1924-v5x-overhaul/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:07c0cd76e7cc15d6dc6ca2fda29d8c6599ba19333d1d134e458f462f17d4ef83",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "fbe6f451-f9a6-40d7-ae3e-9cfc553a5354",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260718-1924-v5x-overhaul/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Status": "closed (coherent)",
+              "Filed by": "orchestrator (Nutzer-Auftrag „Ausführung starten\", 2026-07-18)",
+              "Aktiviert": "2026-07-18",
+              "Active spec/plan": "260718-1001_*_master-plan-fusion-v5x-overhaul.md",
+              "Active session history": "260717-1832-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260718-1924-v5x-overhaul/_c_circle.md",
+            "sha256": "sha256:9cebd9130ad59275981a33ba54410b1c0ed814485130f655ead0c10583efdfe1",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260801-1244-curator/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:ab387119de57d7dd7a69ccd90efd5a27f816263a6bcceca5c604ceca991c6721",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "97f7a6b1-4279-4091-b241-7b8aa8fa0275",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260801-1244-curator/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Status": "closed",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260814-0845_*_plan-curator.md",
+              "Active session history": "260813-2345-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260801-1244-curator/_c_circle.md",
+            "sha256": "sha256:b8390efa9d4fa14a6e44a219861eba669be8f487206abbf61fcbac1fd5e0f22f",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260801-1244-guard-rules-write/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:3b00b9bbb41976fbee71930e3acd6516cab502e9394de81ff4240ee2293d7069",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "87a1dddc-c1ee-455d-93d8-ca408723765d",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260801-1244-guard-rules-write/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Status": "closed (coherent)",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260801-1122_*_spec-normative-consolidation.md (spec, covers all four Circles of this body of work) · 260804-1633_*_plan-c5b-remediation-and-ship.md (C5b remediation and ship) · 260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md (Ausstiegsplan) · predecessor 260802-1856_*_plan-guard-rules-write.md (steps 1–8 complete, 9/10 superseded)",
+              "Active session history": "260805-2117-orchestrator-session.md (latest; 11 orchestrator sessions total under history/)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260801-1244-guard-rules-write/_c_circle.md",
+            "sha256": "sha256:862e874b79d5b53b92fb008d51e27f5c5d492045359be810cc85d70a7cca55a0",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260801-1244-rule-provenance-header/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:742f9ed5c2f68ca411d277b257718c759419136ecce40d9b4cebfc48875117a1",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "cc98be12-d52c-44f2-a107-ac19ce7374df",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260801-1244-rule-provenance-header/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Status": "anticipated",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260802-1103_*_spec-rule-provenance-header.md (this Circle's spec, C8 only; it supersedes C8's four open questions and is what the planner works from. Parent spec, covering all four Circles of this body of work and still authoritative for the other three: 260801-1122_*_spec-normative-consolidation.md — the per-Circle implementation plan is produced by the planner.)",
+              "Active session history": "(none yet)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260801-1244-rule-provenance-header/_c_circle.md",
+            "sha256": "sha256:7a38dd3b1e1314010946170545ed5fb2da8c47ab5e71ccb2dfb892506aee3a6f",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260804-1205-shell-reachability-model/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:ccc9e78c688520a2d4a4d6a0d86ddb7c8670ee33cefb4319b1bf90398ba7a281",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "0e613eea-c27a-4c29-ac19-6b144aa244d5",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "dropped",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260804-1205-shell-reachability-model/_s_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "dropped",
+          "reason": "superseded (legacy Circle marker)",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "s",
+            "head": {
+              "Domain": "code",
+              "Status": "active (parked mid-Turn-1 pending decision `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`; the record was activated `_a_`→`_t_` on 260806-2313 and this field was corrected by hand on 260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md, which is the defect filed at `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`)",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260806-2353_*_plan-shell-reachability-model.md",
+              "Active session history": "260806-2158-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260804-1205-shell-reachability-model/_s_circle.md",
+            "sha256": "sha256:33d1b2cc761ede3064fb1be0e7d49da949210c39ad3b373a827932f5d76eb7c2",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260805-2005-textschicht-gegen-code-nachziehen/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:e14e617f62562ca1187c744c18b45387449e5df4f513b8bab353a3fd252dacb0",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "af0bed62-9eb1-4af8-b8e0-ccbb36e94118",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Status": "closed (coherent)",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260805-2353_*_plan-textschicht-gegen-code.md (the record's own `## Directive` and `## Grounding snapshot` are the spec; no separate spec file exists)",
+              "Active session history": "260805-2350-orchestrator-session.md (sole orchestrator session; 5 Turns)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md",
+            "sha256": "sha256:836e08e23d5a7666052f81752db78783b697de81cbf41ceb9851b34c43698569",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260807-0923-guard-misst-statt-orakelt/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:12b9c4cd9ba186200a02ae3e8269dcca347ddcfd0797dd28b94af744544a2aca",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "aab58dab-8f7e-4ba2-b149-f55ffc8edf16",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260807-0923-guard-misst-statt-orakelt/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Status": "closed (kohärent geschlossen 260807-1650, ausgeliefert als v6.0.0 und v6.0.1)",
+              "Filed by": "orchestrator (Directive vom Nutzer im Chat, 260807-0923-guard-misst-statt-orakelt)",
+              "Active spec/plan": "260807-0931_*_plan-guard-misst-statt-orakelt.md",
+              "Active session history": "260806-2158-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260807-0923-guard-misst-statt-orakelt/_c_circle.md",
+            "sha256": "sha256:3b8f8cf3c32fd2ecafccd2c2cfdac4fb4b2753224ac70eb623b21c3d7b51f7cf",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260813-0858-playmaker-maintains-backlog-store/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:d1f12ac55e296d9c0b03921f48c40dcee1d3847c0651c6a4d573edb160f7fc41",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "c04e248e-e430-451a-8801-acb54badebe2",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260813-0858-playmaker-maintains-backlog-store/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Status": "closed",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260813-1306_*_the-playmaker-maintains-the-backlog-store.md",
+              "Active session history": "260813-0806-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260813-0858-playmaker-maintains-backlog-store/_c_circle.md",
+            "sha256": "sha256:da5c91ef6f659f7beb09c90eb8d42a311f7ff529c0031af4dc05fb4f49ac5f19",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260815-0007-remove-eight-mechanisms-and-cap-growth/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:7390ec13571692cdcd2e3b3edf27f529023fc785024bf2a2eb020640cfae99fe",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "8c768ff2-38b1-48a0-90e2-51abcfe401ce",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260815-0007-remove-eight-mechanisms-and-cap-growth/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Status": "closed",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md",
+              "Active session history": "260814-2306-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260815-0007-remove-eight-mechanisms-and-cap-growth/_c_circle.md",
+            "sha256": "sha256:6bf1f28d1ab513efe62370cedce16f5fb6c2b972c224de59dd8850e7809fb58e",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260816-1741-guard-becomes-observation-only/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:5df22c9eae0c845f13dc5ba3035daf2398ab8b585bcaee2d81eaee0df4cbe383",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "8626192f-4499-45ec-92ae-46605c76427e",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "dropped",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260816-1741-guard-becomes-observation-only/_b_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "bounded",
+          "reason": "closed bounded (legacy Circle marker)",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "b",
+            "head": {
+              "Domain": "code",
+              "Status": "bounded",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260816-1915_*_the-compliance-guard-becomes-observation-only.md",
+              "Active session history": "260816-1841-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260816-1741-guard-becomes-observation-only/_b_circle.md",
+            "sha256": "sha256:025d09a6f5db87567387db3096c7e8dd91b2cb88dceee2ab36c1a533b0e57a4d",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260819-1645-four-constraints-on-deep-change/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:39ea20d0922d8b744bdd72215186737106fda6da8f537f976d04340e13ca9a87",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "2e6b5254-4f50-4525-af4b-4f56b44b60f6",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260819-1645-four-constraints-on-deep-change/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260819-2016_*_four-constraints-on-deep-change.md",
+              "Active session history": "260819-2006-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260819-1645-four-constraints-on-deep-change/_c_circle.md",
+            "sha256": "sha256:c58b9c1fbeaf2d3e527c5bd6c4e8db87d7b9060b38443c7ec5f469021fd4c9cf",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:8f636ee1b5727334488b0543ee3b7ad89bb43877cbff22bd6fb9937221676c90",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "bd22d169-3143-4e3f-9fa6-e4e732189282",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "dropped",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "bounded",
+          "reason": "closed bounded (legacy Circle marker)",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "b",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260820-2324_*_plan-style-rules-arrive-and-get-measured.md",
+              "Active session history": "260820-2103-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md",
+            "sha256": "sha256:47a0b44822294478297bdc26d2362e03bd3d996e493e4d0f12bbe32811746ec1",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:de607c28649321e77ce431c03c3b4d45a4756c13346f3bcebfec2cf893a14398",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "61c50d3f-30ff-4850-828c-8f6ef1387087",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-08-20",
+              "Status": "Partially Complete",
+              "Source": "In-Circle clarification dispatched by the orchestrator against the Directive of",
+              "Measured at": "HEAD `a5b73da`, 2026-08-20. Every figure below was produced during this shaping run"
+            },
+            "step_marks": {},
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "c866d8172351bc4f24e090ba5013908e67a12d25"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md",
+            "sha256": "sha256:4632044032e311e5bd6e978dc1ae6250ed991a22cecadd87afd5911a577b73ab",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md",
+      "source_sha256": "sha256:4632044032e311e5bd6e978dc1ae6250ed991a22cecadd87afd5911a577b73ab",
+      "after_sha256": "sha256:6d76f4d5f32dd96d73533364315891ea6e5fb83fcf1f16f50d93bd062b0ef5ce",
+      "deletions": [
+        {
+          "offset": 120,
+          "length": 31
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:eeaea687a2c8a2a34424034ff49e38a85d0fda8280902e55ac70db3a060de6f1",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "1a34bf2a-8cd3-424f-97a3-16007a6215b4",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "(none yet)",
+              "Active session history": "260822-0019-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/_c_circle.md",
+            "sha256": "sha256:5130caa885aaeb66c7d70b583489a6a65482e3d90f1c96973aee1f53aac54bc1",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:08183ea24468fa217511dc912ddf353c93fd30e4798cbea15e03a4de3c1e5d20",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "8c3c5bff-3a06-4336-ab27-394f295711e3",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator",
+              "Cross-references": "`260821-1042-reply-bounded-whole-question-answered`"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md",
+            "sha256": "sha256:f0450cfe5f85c6bb2c9120f625dff2e9f71a0be00dee8f692f060a9778e76741",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md",
+            "sha256": "sha256:f0450cfe5f85c6bb2c9120f625dff2e9f71a0be00dee8f692f060a9778e76741",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:ec4048c3a357edfbd14c0631776dd66fd697e9a392b33bf3c7e917bac4f5e1e3",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "4131ffc7-d804-4342-bf70-e082b2fc8fb0",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator",
+              "Cross-references": "`260821-1042-reply-bounded-whole-question-answered`"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md",
+            "sha256": "sha256:8dd498af137e66b833b7a42a1b71a4761df25cafc86ed8ba4c68153d8bd3a711",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md",
+            "sha256": "sha256:8dd498af137e66b833b7a42a1b71a4761df25cafc86ed8ba4c68153d8bd3a711",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:d30c5aeea914260f40c8b2dd7788e247b04a48ee5cb2fb110e6ac070b86728ea",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "f98787aa-22c7-46e5-8b21-b0858142a9fd",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator",
+              "Cross-references": "`260821-1042-reply-bounded-whole-question-answered`"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md",
+            "sha256": "sha256:bc6469331fc0b03ba61b2203c3fa94e60aef887769c29bf5921e2b1b5c28f47c",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md",
+            "sha256": "sha256:bc6469331fc0b03ba61b2203c3fa94e60aef887769c29bf5921e2b1b5c28f47c",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260823-0023-settle-what-travels-between-checkouts/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:b0992696fccf9ce051ca39e6e6695404825afce72e86fddcbfbe41c9a1b5b924",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "e488fed0-c685-4d47-be17-b49a930732f8",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260823-0023-settle-what-travels-between-checkouts/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260823-0800_*_c2-what-travels-between-checkouts-is-settled.md",
+              "Active session history": "260823-0721-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260823-0023-settle-what-travels-between-checkouts/_c_circle.md",
+            "sha256": "sha256:7dac4e945be10f8fb4efe4dcb186a55800a348dc65c2bbd4b08f8437f69ca815",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260824-0530-record-attribution-and-circle-claim/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:940840eb295e83953e6b5348eeec51d17ab3528ed5c05bf1247f2776917959b8",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "ba9c3d0b-79d1-41e0-b452-7c825b0dda65",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": null
+        },
+        "narrative": {
+          "path": "work-packages/260824-0530-record-attribution-and-circle-claim/_c_circle.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": "c",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper (anticipated-circle mode)",
+              "Active spec/plan": "260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md",
+              "Active session history": "260824-0539-orchestrator-session.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260824-0530-record-attribution-and-circle-claim/_c_circle.md",
+            "sha256": "sha256:618629c8a5cb48419de02ef3211a166104eeea749e72cee4285363bd9778fb58",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    }
+  ]
+}

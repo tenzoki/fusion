@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "1e096257-b4dd-40f9-b91a-f2a655fcc118",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md",
+    "260928-1338-json-control-data-and-markdown-artefacts.md",
+    "260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+    "260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md, 260928-1338-json-control-data-and-markdown-artefacts.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+      "sha256": "sha256:81a8a6714e9c8f42bc8fbb57c65186b8111c1ae996f834a37fd87bd2a3a1c784",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+      "sha256": "sha256:81a8a6714e9c8f42bc8fbb57c65186b8111c1ae996f834a37fd87bd2a3a1c784",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

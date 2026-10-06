@@ -1,0 +1,56 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "c83a58f5-6c14-457c-9e4c-e1d687abda22",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": {
+    "checkout_id": "5e8248d7",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": null
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": null,
+      "head": {
+        "Domain": "code",
+        "Status": "done",
+        "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260920-2222",
+        "Active spec/plan": "260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md (the plan; no spec, planned from the directive)",
+        "Cross-references": "260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md",
+        "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md",
+      "sha256": "sha256:2c8da8167cf1d0ed1e0d1bf9a0d213d7ffc217802945ac5d20a11bb3268ed6eb",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

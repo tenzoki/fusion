@@ -1,0 +1,42 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "32576887-cc06-4def-a563-993971f7e52c",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260928-1338-json-control-data-and-markdown-artefacts.md",
+    "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+    "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md",
+      "sha256": "sha256:ec15c9bc7a28b388079e929138af225a4c52372834363f7bfac70690605931b3",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

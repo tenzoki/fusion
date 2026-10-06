@@ -1,0 +1,37 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7a2173fd-24a6-49b7-b17c-ee632e18496a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-1810_o_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+    "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-1810_o_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md",
+      "sha256": "sha256:ebb4b37ee83579ef539cc4a6bf0646515dcc889a20858211815f24bc68f90664",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

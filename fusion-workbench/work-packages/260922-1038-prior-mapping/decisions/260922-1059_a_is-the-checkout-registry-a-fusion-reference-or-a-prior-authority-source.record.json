@@ -1,0 +1,45 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "b5961de9-6fb7-413d-8212-50aebc1d54bd",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+    "260922-1038-prior-mapping.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+      "sha256": "sha256:b28b8ee4760ef8e4834102e53e6cd6c14062f3f786306839e65b8c17444f3de2",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "b5961de9-6fb7-413d-8212-50aebc1d54bd",
+      "display": "260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

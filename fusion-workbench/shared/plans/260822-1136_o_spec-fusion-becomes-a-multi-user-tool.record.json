@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "0cb28fcb-455a-476a-8688-1c276dbaa041",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-08-22",
+        "Status": "Partially Complete",
+        "Source": "\"wir bauen fusion jetzt zu einem multiuser tool um. [...] Die blockierende Decision (nur ein aktiver Orchestrator) wird aufgehoben und reframed, so dass wir mehere User auf einer workbench arbeiten lassen können, bzw. ev. auch mehrere Instanzen auf einer Maschine. Workbench- und Zustandsdaten, die jetzt gitignored sind, müssen daher ins repo.\" Three shaping rounds, eight answers from the user, recorded in `260822-1009-orchestrator-session.md`.",
+        "Decidability": "The load-bearing question is whether a workbench record can be attributed to the person and to the session that produced it, from inputs fusion already holds. The person is decidable and needs no new input: `/fusion:memo` reads `$USER` from the environment today (`skills/memo/SKILL.md:38`), and every agent can do the same. The session is decidable for the hooks and not for the agent. Claude Code passes `session_id` to PreToolUse and PostToolUse, fusion declares it at `hooks/guard.ts:84` and `hooks/tracker.ts:132`, and nothing reads it; no agent ever receives it. Whether an agent could obtain it rests on one measurement nobody has taken, namely whether the SessionStart input package carries the field and whether a hook can relay it to the model as `additionalContext`. **No capability in this spec depends on that measurement**, because attribution in records is by person, the session identifier appears only in the event log the hooks write, and nothing here walks from a record back to a session. C4 states the measurement as its own first step and names what happens if it fails."
+      },
+      "step_marks": {},
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "faac92145c182148a5828c1f566ebcb439e60fa3"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md",
+      "sha256": "sha256:2ac5b66e5f576d0f30a4123ddc66a977ca2921971d07725b6a0664dd7ddac6e6",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

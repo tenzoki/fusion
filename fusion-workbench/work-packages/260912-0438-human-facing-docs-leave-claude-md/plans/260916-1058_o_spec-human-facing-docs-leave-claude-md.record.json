@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "1a9982e1-673c-492b-9422-2fd3cad2dba4",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260912-0438-human-facing-docs-leave-claude-md.md",
+    "260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+    "260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md",
+    "260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-16",
+        "Status": "Draft",
+        "Source": "Work item `260912-0438-human-facing-docs-leave-claude-md.md`. A project's `CLAUDE.md` should carry only what Claude genuinely needs under fusion in every session; everything else belongs behind links. The aim covers fusion's own repository and the convention fusion ships to other projects.",
+        "Cross-references": "260912-0438-human-facing-docs-leave-claude-md.md, 260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md, 260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md, 260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md"
+      },
+      "step_marks": {},
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "7140d25a1874b61804f6b907099296b9abf234b2"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md",
+      "sha256": "sha256:1c1f1232fec5e8f60d3116fd2443d5acd82bd30ff1e31e4858217dd97018e64e",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

@@ -1,7 +1,6 @@
 # Spec: v11.0.1, and the correction it carries
 
 **Date:** 2026-09-11
-**Status:** Partially Complete
 **Decidability:** The load-bearing question is whether "this session did what it set out to do" can be answered for a session that stated no goal while it ran. It cannot: the nine commits are the only surviving statement of intent, and a goal reconstructed from them afterwards cannot fail against them. The mechanism therefore changes rather than the answer. Acceptance below is read against preconditions each of which a command decides on its own: a version string in a named file, a gate that exits zero or does not, a coverage figure that is printed and quoted. Nothing here asks whether the session was successful.
 
 **Source:** The user asked for two things in one pass. Ship the nine commits that stand above the v11.0.0 tag as a release, and settle the population figure in the analysis report that one of those commits added, after two measurements in the same session overturned it and a third, taken with word anchors over the same corpus at the same commit, returned the report's own number and showed the other two to have been counting a different subject.

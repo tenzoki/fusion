@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "239afc69-6af3-4aaf-b967-b796c8f899d3",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260909-2215-gate-firing-read-before-the-cut.md `### What a `coherence_review` row does and does not say`; 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step A1; 260909-2215_*_step-a1s-denominator-names-a-field-eleven-rows-carry-and-the-plans-own-figure-uses-ninety-four.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md",
+      "sha256": "sha256:dad736fea97529eedd3eb06a4c6305ff6c14509cd5db6e7084411ff76ff784fa",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260910-0900-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

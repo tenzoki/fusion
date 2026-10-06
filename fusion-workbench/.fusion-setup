@@ -1,1 +1,1 @@
-{"setup_at":"2026-09-09T10:22:53+0200","plugin_version":"12.2.1"}
+{"setup_at":"2026-09-09T10:22:53+0200","plugin_version":"13.0.0","migration":{"id":"migration-20261006-v12","receipt":"archive/migrations/migration-20261006-v12/receipt.json","migrated_at":"2026-10-06T15:40:07.064Z"}}

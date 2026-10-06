@@ -1,0 +1,39 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "b12c8b9f-068b-4cc9-bce0-e782ad1137b1",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Status": "answered",
+        "Filed by": "orchestrator (raised by the user)",
+        "Cross-references": "`skills/help/SKILL.md`; a defect record about the user-facing documentation lagging two releases and still describing a removed guard, cited here at the stamp `260813-0825` — no file with that slug has ever existed and the intended target is not recoverable, measured in `260814-1332-curator-run.md` and re-filed as a defect on 2026-08-19; `bin/fusion-source-root`; `bin/fusion-paths`; `bin/fusion-rules`"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md",
+      "sha256": "sha256:d32709b14d89469386601768bc1e02993cbf0d2b85ed2dbb3b1acd3d987cb79a",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

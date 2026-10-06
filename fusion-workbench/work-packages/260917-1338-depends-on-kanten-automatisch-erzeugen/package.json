@@ -1,0 +1,49 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "822a568c-f421-4f8d-bb50-57ad86220e71",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": null,
+  "status": "dropped",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260917-1338-depends-on-kanten-automatisch-erzeugen/260917-1338-depends-on-kanten-automatisch-erzeugen.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "dropped",
+    "reason": "dropped (legacy item record; its narrative states why)",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": null,
+      "head": {
+        "Status": "dropped",
+        "Cross-references": "260917-2253-depends-on-edges-proposed-and-confirmed.md",
+        "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-1338-depends-on-kanten-automatisch-erzeugen/260917-1338-depends-on-kanten-automatisch-erzeugen.md",
+      "sha256": "sha256:d2337c30443e6186d6478b92ced3c600826bd1faed2077813ac58a490c2f1e39",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

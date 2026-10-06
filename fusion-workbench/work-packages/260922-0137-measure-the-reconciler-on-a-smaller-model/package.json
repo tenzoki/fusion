@@ -1,0 +1,56 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "6ed63468-cdd3-4025-a294-9f49237e76a5",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": {
+    "checkout_id": "5e8248d7",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": null
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260922-0137-measure-the-reconciler-on-a-smaller-model/260922-0137-measure-the-reconciler-on-a-smaller-model.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": null,
+      "head": {
+        "Domain": "code",
+        "Status": "done",
+        "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260923-0710",
+        "Active spec/plan": "260923-0713_*_reconciler-on-haiku-measurement.md (the plan; the Directive stands as its spec)",
+        "Cross-references": "260827-1305_*_which-agents-run-on-a-smaller-model.md, 260827-1305-does-agent-frontmatter-model-reach-the-dispatch.md, 260909-1700-cut-fusion-to-working-minimum.md",
+        "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-0137-measure-the-reconciler-on-a-smaller-model/260922-0137-measure-the-reconciler-on-a-smaller-model.md",
+      "sha256": "sha256:6f7357a4163349218636072ccacdaedaf323f39676ec9a34ccbd226ff7625da9",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

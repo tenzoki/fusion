@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8c3c5bff-3a06-4336-ab27-394f295711e3",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator",
+        "Cross-references": "`260821-1042-reply-bounded-whole-question-answered`"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md",
+      "sha256": "sha256:f0450cfe5f85c6bb2c9120f625dff2e9f71a0be00dee8f692f060a9778e76741",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md",
+      "sha256": "sha256:f0450cfe5f85c6bb2c9120f625dff2e9f71a0be00dee8f692f060a9778e76741",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

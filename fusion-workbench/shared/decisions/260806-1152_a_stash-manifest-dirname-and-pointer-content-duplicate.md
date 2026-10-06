@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** open
 **Filed by:** reconciler (workbench-wide pass 260806-1152; the question was embedded in `archive/260817-1907-safe-cleanup-scoped/260717-0032_*_stash-manifest-field-count-says-nine-lists-ten.md` since 2026-07-17 and never filed separately)
 **Cross-references:** `rules/workbench-stash-and-lock.md` (ten-field manifest schema), `skills/circle-stash/SKILL.md`, `skills/circle-pop/SKILL.md`
 

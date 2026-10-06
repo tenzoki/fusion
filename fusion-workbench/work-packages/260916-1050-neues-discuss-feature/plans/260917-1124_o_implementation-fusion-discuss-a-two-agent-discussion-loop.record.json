@@ -1,0 +1,115 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "45c6ff3f-ecf1-4c5f-b36f-d9f9874b16ea",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-17",
+        "Status": "Complete",
+        "Spec": "`260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`, approved by the user at 11:27 on 2026-09-17",
+        "Decidability": "The load-bearing question is whether the loop's stop is decidable from the register alone. It is. Condition A reads two properties of the register (does any entry carry the undecidable verdict; did this round produce a refutation that was not there before) and condition B reads a counter. Both are total, because every entry is written carrying a verdict in the round it enters and the register is read only after a round. One field is *not* a settled fact when it is written, and the design keeps it out of the stop: `contested` means \"neither partner has conceded as of this round\", a per-round reading a later round may clear. A rule that asked \"has anyone conceded for good\" would be undecidable at every round but the last, the deciding input being a future round. C4 avoids that question rather than approximating it, by making the verdict the second partner's finding and `contested` a flag the stopping rule never reads. No change of mechanism is needed."
+      },
+      "step_marks": {
+        "1": "DONE",
+        "2": "DONE",
+        "3": "DONE",
+        "4": "DONE",
+        "5": "DONE",
+        "6": "DONE",
+        "7": "DONE",
+        "8": "DONE",
+        "9": "DONE",
+        "10": "DONE",
+        "11": "DONE",
+        "12": "DONE",
+        "13": "DONE"
+      },
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "9084eed6892aec29b3262cdd693762bdd5433707"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md",
+      "sha256": "sha256:7df5cda91b3bf1104cf2d04c10d090cb6368b376dc5201850c8904ad6d76065b",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "done"
+      },
+      {
+        "id": "2",
+        "state": "done"
+      },
+      {
+        "id": "3",
+        "state": "done"
+      },
+      {
+        "id": "4",
+        "state": "done"
+      },
+      {
+        "id": "5",
+        "state": "done"
+      },
+      {
+        "id": "6",
+        "state": "done"
+      },
+      {
+        "id": "7",
+        "state": "done"
+      },
+      {
+        "id": "8",
+        "state": "done"
+      },
+      {
+        "id": "9",
+        "state": "done"
+      },
+      {
+        "id": "10",
+        "state": "done"
+      },
+      {
+        "id": "11",
+        "state": "done"
+      },
+      {
+        "id": "12",
+        "state": "done"
+      },
+      {
+        "id": "13",
+        "state": "done"
+      }
+    ],
+    "criteria": [],
+    "acceptance": null
+  }
+}

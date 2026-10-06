@@ -1,7 +1,6 @@
 # Spec: prerequisites are confirmed once, and every ordering figure is computed from them
 
 **Date:** 2026-09-11
-**Status:** Draft
 **Source:** Re-sharpen of the work item `260908-2018-prerequisites-confirmed-once-order-computed.md`,
 shaped 2026-09-08 against a tree that no longer exists. The user still wants the mechanism. This
 document replaces the item's own `## Grounding snapshot` as the ground the work is planned on, and

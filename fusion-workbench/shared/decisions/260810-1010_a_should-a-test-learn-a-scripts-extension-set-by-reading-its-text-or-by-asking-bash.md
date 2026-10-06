@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** answered
 **Filed by:** orchestrator (session `260810-0844-orchestrator-session.md`, Turn 3 — from a residual the T14 executor measured and correctly declined to patch)
 **Cross-references:** `260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md` (round 1, closed by `38fe341`); `260810-0939_*_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md` (round 2, closed by `c546ef0`); `hooks/lib/__tests__/fusion-count-sources.test.ts`; `bin/fusion-count-sources`; `rules/critical-stance.md` §4
 

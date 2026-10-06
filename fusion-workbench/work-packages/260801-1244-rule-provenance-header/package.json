@@ -1,0 +1,51 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "cc98be12-d52c-44f2-a107-ac19ce7374df",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260801-1244-rule-provenance-header/_c_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "c",
+      "head": {
+        "Domain": "code",
+        "Status": "anticipated",
+        "Filed by": "shaper (anticipated-circle mode)",
+        "Active spec/plan": "260802-1103_*_spec-rule-provenance-header.md (this Circle's spec, C8 only; it supersedes C8's four open questions and is what the planner works from. Parent spec, covering all four Circles of this body of work and still authoritative for the other three: 260801-1122_*_spec-normative-consolidation.md — the per-Circle implementation plan is produced by the planner.)",
+        "Active session history": "(none yet)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260801-1244-rule-provenance-header/_c_circle.md",
+      "sha256": "sha256:7a38dd3b1e1314010946170545ed5fb2da8c47ab5e71ccb2dfb892506aee3a6f",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

@@ -1,7 +1,6 @@
 # Spec: the style rules every agent loads are the ones fusion ships, and their effect is measured
 
 **Date:** 2026-08-20
-**Status:** Partially Complete
 **Source:** In-Circle clarification dispatched by the orchestrator against the Directive of
 `260820-2051-style-rules-arrive-and-get-measured`, with sixteen open defect records and one
 answered decision named as the material.

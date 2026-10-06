@@ -1,0 +1,1358 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "findings",
+  "migration_id": "migration-20261006-v12",
+  "n": 1,
+  "findings": [
+    {
+      "class": "empty-container-tree",
+      "severity": "reported",
+      "path": "work-packages/260717-1638-marker-format-ohne-glob-metazeichen",
+      "detail": "no file at all; not migrated"
+    },
+    {
+      "class": "empty-container-tree",
+      "severity": "reported",
+      "path": "work-packages/260719-1536-brest-unite-co-creator-conversion",
+      "detail": "no file at all; not migrated"
+    },
+    {
+      "class": "empty-container-tree",
+      "severity": "reported",
+      "path": "work-packages/260719-1536-plane-mirror-integration",
+      "detail": "no file at all; not migrated"
+    },
+    {
+      "class": "empty-container-tree",
+      "severity": "reported",
+      "path": "work-packages/260801-1244-guard-bash-inspection",
+      "detail": "no file at all; not migrated"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260801-1244-rule-provenance-header/_c_circle.md",
+      "detail": "marker _c_, head \"anticipated\""
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260804-1205-shell-reachability-model/_s_circle.md",
+      "detail": "marker _s_, head \"active (parked mid-Turn-1 pending decision `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`; the record was activated `_a_`→`_t_` on 260806-2313 and this field was corrected by hand on 260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md, which is the defect filed at `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`)\""
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260819-1645-four-constraints-on-deep-change/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md",
+      "detail": "marker _b_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260823-0023-settle-what-travels-between-checkouts/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-0530-record-attribution-and-circle-claim/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/_b_circle.md",
+      "detail": "marker _b_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260828-2342-citation-form-drops-store-segment/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260906-2258-bounded-executor-dispatches/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260907-0829-message-between-checkouts-read-before-pull/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "circle-head-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260908-1410-cut-skills-surface-add-post-body/_c_circle.md",
+      "detail": "marker _c_, head null"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md",
+      "detail": "**Status:** \"open\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md",
+      "detail": "**Status:** \"open\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md",
+      "detail": "**Status:** \"open\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+      "detail": "**Status:** \"open\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "status-head-in-live-record",
+      "severity": "reported",
+      "path": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+      "detail": "**Status:** \"answered\" removed"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "detail": "line 140"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "detail": "line 142"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "detail": "line 144"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "detail": "line 146"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "detail": "line 149"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 106"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 114"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 129"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 142"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 150"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 161"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 172"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 188"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 201"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 226"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 234"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 251"
+    },
+    {
+      "class": "mark-outside-numbered-step",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "line 271"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md",
+      "detail": "rules/workbench-stash-and-lock.md"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md",
+      "detail": "skills/circle-stash/SKILL.md"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md",
+      "detail": "skills/circle-pop/SKILL.md"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+      "detail": "260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md` (round 1, closed by `38fe341`); `260810-0939_*_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md` (round 2, closed by `c546ef0`); `hooks/lib/__tests__/fusion-count-sources.test.ts`; `bin/fusion-count-sources`; `rules/critical-stance.md` §4"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md",
+      "detail": "260810-1632-coderev-turn-1-range-430d73a-to-head.md` (the pass that named the pattern); `archive/260817-1907-safe-cleanup-scoped/260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`; `260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`; `260810-1632_*_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`; `archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "detail": "260810-1918_*_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; the queued frozen-state task"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "detail": "filed as `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+      "detail": "archive/260817-1907-safe-cleanup-scoped/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.md",
+      "detail": "260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` finding 3 and recommendation (c); the three records transferred by hand from the KRK project on 260811 (`260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`, `260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`, and the witness merged into `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md`)"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md",
+      "detail": "rules/fusion-workbench-conventions.md` `## Path Resolution"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md",
+      "detail": "whose contract makes every emitted path workbench-relative except `WORKBENCH`; `bin/fusion-paths"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md",
+      "detail": "skills/help/SKILL.md`; a defect record about the user-facing documentation lagging two releases and still describing a removed guard"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md",
+      "detail": "cited here at the stamp `260813-0825` — no file with that slug has ever existed and the intended target is not recoverable"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md",
+      "detail": "measured in `260814-1332-curator-run.md` and re-filed as a defect on 2026-08-19; `bin/fusion-source-root`; `bin/fusion-paths`; `bin/fusion-rules"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "detail": "hooks/lib/__tests__/surface-growth-bound.test.ts"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "detail": "hooks/lib/__tests__/fixtures/surface-growth.golden"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "detail": "hooks/lib/__tests__/helpers/growth-bound.ts"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md",
+      "detail": "260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `archive/260817-1907-safe-cleanup-scoped/260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+      "detail": "260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md` (the decision this unblocked); `install.sh`; `CLAUDE.md` `### HTTPS installer` and `## Release process` step 5"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md",
+      "detail": "null"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.md",
+      "detail": "null"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md",
+      "detail": "in work-packages/260820-2051-style-rules-arrive-and-get-measured"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md",
+      "detail": "in work-packages/260821-1042-reply-bounded-whole-question-answered"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md",
+      "detail": "260821-1042-reply-bounded-whole-question-answered"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md",
+      "detail": "in work-packages/260821-1042-reply-bounded-whole-question-answered"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md",
+      "detail": "260821-1042-reply-bounded-whole-question-answered"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md",
+      "detail": "in work-packages/260821-1042-reply-bounded-whole-question-answered"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md",
+      "detail": "260821-1042-reply-bounded-whole-question-answered"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md",
+      "detail": "in work-packages/260824-1853-close-every-open-defect"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md",
+      "detail": "260801-1020_*_scan-keys-never-reach-the-archive-store.md`; `260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md`; `260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, where the first was found); `rules/fusion-workbench-conventions.md` `## Path Resolution (Pfadauflösung)` and `## State Markers — decisions` (the Grounding-Historie layer); `rules/workbench-path-resolution.md`; `bin/fusion-paths`; `agents/orchestrator.md` Phase 4; `skills/archive/SKILL.md`; plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-scan-scope)"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md",
+      "detail": "in work-packages/260824-1853-close-every-open-defect"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md",
+      "detail": "260805-0629_*_dispatch-prompt-carries-no-origin-so-a-sub-agents-history-lands-by-pointer-alone.md`; `260823-0700_*_every-sub-agent-files-its-history-into-the-active-circle-because-the-resolver-cannot-make-the-origin-rules-judgement.md`; `rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)` and `## Issue and Decision Filing — MANDATORY`; `rules/agent-setup.md` `## What fusion-paths emits`; `rules/workbench-path-resolution.md`; plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-origin)"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md",
+      "detail": "in work-packages/260824-1853-close-every-open-defect"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md",
+      "detail": "260810-0819_*_head-carries-six-records-twice-and-the-class-fix-was-deferred-to-a-decision-never-filed.md`; `260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`; `260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md`; `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md`; `archive/260817-1907-safe-cleanup-scoped/260807-1941_*_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md` (the closed instance that first deferred the class to a decision); `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` (the mirror measurement); `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning`; `rules/commit-lock.md`; `agents/orchestrator.md` Step 3b; `agents/coder.md` (the executor's closing rename); plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-rename-staging) and step 12 (the instance fix for the two absorption records)"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md",
+      "detail": "Implemented: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md",
+      "detail": "Superseded by: on _a_"
+    },
+    {
+      "class": "decision-line-disagrees-with-marker",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md",
+      "detail": "Deferred: on _a_"
+    },
+    {
+      "class": "answered-without-answer-line",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md",
+      "detail": "_a_ whose last Answered: line is empty"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md",
+      "detail": "in work-packages/260824-1853-close-every-open-defect"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md",
+      "detail": "260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`; `260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`; `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`; `rules/circle-records.md` `## Circle record template`; `agents/orchestrator.md` `## Scope` and `## Circle head fields`; `agents/shaper.md` `## Four invocation modes`; `skills/next/SKILL.md` Step 6.2; plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-record-writers)"
+    },
+    {
+      "class": "answered-without-answer-line",
+      "severity": "reported",
+      "path": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md",
+      "detail": "_a_ with no Answered: line"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md",
+      "detail": "in work-packages/260825-2023-presence-travels-monitor-filters-own-checkout"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_a_which-surface-is-authoritative-when-the-event-log-and-the-dashboard-disagree.md",
+      "detail": "in work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_a_which-surface-is-authoritative-when-the-event-log-and-the-dashboard-disagree.md",
+      "detail": "260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md` `## What to consider` item 2 (the question, left unfiled there); `hooks/lib/orchestrator-events.ts` (the machine-written rows since v10.8.0; `turn_start`/`turn_end` stay prompt-emitted); `bin/fusion-events` (reads the log); `bin/monitor` (renders it); `bin/fusion-review-coverage` (anchors on git); `rules/workbench-tracking.md` `## The four classes` (the log travels, the dashboard does not)"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/plans/260827-1756_p_repair-the-twenty-open-defect-records.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/plans/260827-1756_p_repair-the-twenty-open-defect-records.md",
+      "detail": "in work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/decisions/260904-1659_o_what-happens-to-the-directive-pointer-when-the-cited-plan-cites-the-record-back.md",
+      "detail": "in work-packages/260904-1619-tracked-checkout-registry-names-each-instance"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/plans/260904-1651_p_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/plans/260904-1651_p_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md",
+      "detail": "in work-packages/260904-1619-tracked-checkout-registry-names-each-instance"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-0820_o_is-a-token-side-measurement-of-the-splits-net-cost-worth-building.md",
+      "detail": "in work-packages/260906-2258-bounded-executor-dispatches"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-2330_o_does-the-shapers-portfolio-activation-mode-write-a-new-spec-or-revise-in-place.md",
+      "detail": "in work-packages/260906-2258-bounded-executor-dispatches"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260908-1836_o_should-the-dispatch-bound-gates-context-list-cover-the-prompts-own-prose-name-for-the-value.md",
+      "detail": "in work-packages/260906-2258-bounded-executor-dispatches"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260908-1836_o_should-the-dispatch-bound-gates-context-list-cover-the-prompts-own-prose-name-for-the-value.md",
+      "detail": "260907-1450_*_plan-bounded-executor-dispatches.md` `### 14. A lint against the dispatch bound returning to the prose`; `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260908-1836_o_should-the-dispatch-bound-gates-context-list-cover-the-prompts-own-prose-name-for-the-value.md",
+      "detail": "the measured failure the gate exists to prevent"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260906-2258-bounded-executor-dispatches/plans/260907-0820_o_spec-bounded-executor-dispatches.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260906-2258-bounded-executor-dispatches/plans/260907-0820_o_spec-bounded-executor-dispatches.md",
+      "detail": "in work-packages/260906-2258-bounded-executor-dispatches"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260907-0829-message-between-checkouts-read-before-pull/decisions/260907-2003_o_what-does-the-directive-pointer-swap-do-when-the-cited-plan-declines-to-restate-the-directive.md",
+      "detail": "in work-packages/260907-0829-message-between-checkouts-read-before-pull"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md",
+      "detail": "in work-packages/260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md",
+      "detail": "in work-packages/260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md",
+      "detail": "in work-packages/260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.md",
+      "detail": "in work-packages/260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md",
+      "detail": "in work-packages/260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md",
+      "detail": "260909-1700-cut-fusion-to-working-minimum"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260911-2141_a_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.md",
+      "detail": "in work-packages/260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md",
+      "detail": "in work-packages/260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md",
+      "detail": "in work-packages/260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md",
+      "detail": "in work-packages/260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md",
+      "detail": "in work-packages/260909-1700-cut-fusion-to-working-minimum"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md",
+      "detail": "260909-1615_*_spec-cut-fusion-to-a-working-minimum.md `### C6: The portfolio layer becomes a flat list"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md",
+      "detail": "260908-2018-prerequisites-confirmed-once-order-computed"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md",
+      "detail": "in work-packages/260909-1700-cut-fusion-to-working-minimum"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md",
+      "detail": "260909-2215-gate-firing-read-before-the-cut.md `### The same gates across three projects`; 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step A1"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md",
+      "detail": "in work-packages/260909-1700-cut-fusion-to-working-minimum"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md",
+      "detail": "260909-2215-gate-firing-read-before-the-cut.md `### What a `coherence_review` row does and does not say`; 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step A1; 260909-2215_*_step-a1s-denominator-names-a-field-eleven-rows-carry-and-the-plans-own-figure-uses-ninety-four.md"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md",
+      "detail": "in work-packages/260909-1700-cut-fusion-to-working-minimum"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md",
+      "detail": "260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step C9; 76d833be; 07961552; 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.md",
+      "detail": "in work-packages/260909-1700-cut-fusion-to-working-minimum"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.md",
+      "detail": "260910-2133_*_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md; 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step C9; 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md; 07961552"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md",
+      "detail": "in work-packages/260909-1700-cut-fusion-to-working-minimum"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md",
+      "detail": "260910-2145_*_restore-the-per-work-item-container.md; 9b792042 (S1); f50b9aa4 (S2); hooks/lib/__tests__/helpers/growth-bound.ts"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+      "detail": "in work-packages/260912-0438-human-facing-docs-leave-claude-md"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md",
+      "detail": "in work-packages/260912-0438-human-facing-docs-leave-claude-md"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md",
+      "detail": "in work-packages/260912-0438-human-facing-docs-leave-claude-md"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md",
+      "detail": "in work-packages/260916-1050-neues-discuss-feature"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md",
+      "detail": "in work-packages/260916-1050-neues-discuss-feature"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md",
+      "detail": "in work-packages/260916-1050-neues-discuss-feature"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "detail": "null"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md",
+      "detail": "in work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md",
+      "detail": "in work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.md",
+      "detail": "in work-packages/260922-1038-prior-mapping"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.md",
+      "detail": "nomenclature.md"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+      "detail": "in work-packages/260922-1038-prior-mapping"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+      "detail": "nomenclature.md"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+      "detail": "in work-packages/260922-1038-prior-mapping"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+      "detail": "nomenclature.md"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+      "detail": "in work-packages/260922-1038-prior-mapping"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+      "detail": "nomenclature.md"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.md",
+      "detail": "in work-packages/260922-1038-prior-mapping"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.md",
+      "detail": "nomenclature.md"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+      "detail": "in work-packages/260922-1038-prior-mapping"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+      "detail": "nomenclature.md"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md",
+      "detail": "in work-packages/260922-1038-prior-mapping"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md",
+      "detail": "nomenclature.md"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md",
+      "detail": "null"
+    },
+    {
+      "class": "live-record-in-terminal-container",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md",
+      "detail": "in work-packages/260922-1038-prior-mapping"
+    },
+    {
+      "class": "reference-not-a-citation",
+      "severity": "reported",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md",
+      "detail": "nomenclature.md"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1919_a_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1451_a_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answered-without-answer-line",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md",
+      "detail": "_a_ with no Answered: line"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answered-without-answer-line",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md",
+      "detail": "_a_ with no Answered: line"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "answered-without-answer-line",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md",
+      "detail": "_a_ with no Answered: line"
+    },
+    {
+      "class": "answer-ref-self",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md",
+      "detail": "the Answered: line cites nothing resolvable; the record's original answers"
+    },
+    {
+      "class": "filed-by-not-owed",
+      "severity": "reported",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "detail": "null"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "e5137487-8940-4ff6-af90-781082f3156c",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": null
+  },
+  "references": [
+    "260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Status": "open",
+        "Filed by": "orchestrator (session `260810-1402`)",
+        "Cross-references": "`260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` (this record carries its parts b and c); `archive/260817-1907-safe-cleanup-scoped/260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance that produced part a1, now closed by `26ea3c3`)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md",
+      "sha256": "sha256:420d2c5dff4054c373b8da33c2387bb9e4be8f081eccad44b14c2ce8adfdc014",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260811-0752-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

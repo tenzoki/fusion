@@ -2,7 +2,6 @@
 
 **Date:** 2026-09-11
 **Revised:** 2026-09-11 21:41, against the three answers at gate G1 and the reports steps A1 and D1 produced. Step labels are stable across the revision and a retired label is never reused: `B2`, `D2`, `D3` and gate `G2` are gone, `B4` and gate `G3` are new, so every citation of a step in the reports and the records still names the step it named.
-**Status:** Draft
 **Amended:** 2026-09-12, citations only. The `bin/` helper roster left `CLAUDE.md`'s Layout table for `README-hooks.md` `### The bin/ helper roster` (decision `260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md`, option 1), so every instruction below that sent the helper's mandatory row to `CLAUDE.md` now sends it to the roster's new home. No figure taken at `ae172380` was rewritten and no step label moved; what the move dissolves is stated where those figures stand.
 **Spec:** `260911-1528_*_spec-prerequisites-confirmed-once-order-computed.md`
 **Decidability:** The load-bearing question is *what order does the work-item store impose on itself*, and after step B1 it is decidable by construction from inputs the mechanism holds. The answer at gate G1 fixed a two-field grammar: an entry in `**Depends-on:**` asserts one relation, stated by rule where the field is defined, and a citation that binds an item without ordering it sits in a second field, `**Cross-references:**`. Nothing then reads the text of a value to learn what the writer meant, which was the undecidability the first draft of this line named. The node set is decidable from `**Status:**`, which G1 also settled: `open` and `claimed` are nodes, `done` and `dropped` are not. Every figure downstream is a pure function of the node set and the edge set.
@@ -134,13 +133,13 @@ Coherence self-check, run before this was finalised. Twelve nodes, thirteen edge
 
 **G1 and G3 are gates, not steps, and carry no Executor.** Putting a question to the user is nobody's dispatch: `coder`, `ontocoder` and `analyst` each run non-interactively and none of them holds `AskUserQuestion`. The orchestrator proxies both.
 
-1. [DONE] **A1: re-ground the three inherited decisions against the tree at HEAD**
+1. **A1: re-ground the three inherited decisions against the tree at HEAD**
    - Executor: `analyst`
    - Files: wrote `260911-1916-re-grounding-three-open-decisions.md`
    - Changes: delivered. It found the relation-type record's option 2 unwritable for want of a verb slot, cut the closed-prerequisite record into the three questions it actually contained, and established that the template record was a ratification rather than a choice. All three findings were carried at the gate.
    - Dependencies: none
 
-2. [DONE] **D1: the candidate-edge survey, which decides whether the proposal pass is built at all**
+2. **D1: the candidate-edge survey, which decides whether the proposal pass is built at all**
    - Executor: `analyst`
    - Files: wrote `260911-1915-candidate-prerequisite-edges.md`
    - Changes: delivered. One candidate, quoted tier, and the arithmetic showing one is the corpus maximum. The first stopping condition is met and phase D is not built; see `## What the two reports removed from this plan`.
@@ -148,21 +147,21 @@ Coherence self-check, run before this was finalised. Twelve nodes, thirteen edge
 
    **G1: answered 2026-09-11.** Three of the four questions were ruled and their records carry the answer lines; the fourth, whether a terminal item's head field may be corrected, left the gate without a subject when the dependent-side ruling put that item outside the node set. The record stays open and outside this plan.
 
-3. [DONE] **B1: the two-field grammar, stated once where the fields are defined**
+3. **B1: the two-field grammar, stated once where the fields are defined**
    - Executor: `coder`
    - Files: `rules/fusion-workbench-conventions.md`, the `## Backlog entries — work items` section and, if the sentence there is the one that resolves it, `## Origin Rule (Herkunftsregel)` corollary 2
    - Changes: three edits and one closure. Add `**Cross-references:** <basename>, <basename>` to the template block; amend the absent-never-empty sentence so it covers all three optional fields; state what an entry in `**Depends-on:**` asserts and where a non-blocking citation goes instead. **The relation sentence names both terminal values, not just `done`**, which is derived rather than open: under the ruling a `dropped` target is as absent from the node set as a `done` one, so "until the named item is `done`" would claim a distinction the mechanism does not make. Then close `260911-1916_*_the-origin-rule-names-a-work-item-cross-references-header-the-item-template-does-not-define.md`, whose acceptance test is that `rules/fusion-workbench-conventions.md` states in one place whether a work item carries the field; defining it in the template satisfies that test, and the executor checks the Origin Rule corollary reads consistently with the definition rather than editing it reflexively.
    - **Measure first, write second.** Take the `reviewer` path total before the edit (`bin/fusion-rules reviewer` from the repository root, prompt plus every emitted path plus `CLAUDE.md`), subtract from the `reviewer` row in `hooks/lib/__tests__/fixtures/dispatch-path.baseline`, and report what the edit spends and what it leaves. **The figure that is left is an input to gate G3** and must be in the step's report as a number, because G3 cannot be put to the user without it. The helper's roster row is **not** in this step: it belongs to the helper, and the helper is gated.
    - Dependencies: G1
 
-4. [DONE] **B3: the two skill bodies learn the grammar, and the migration stops guessing**
+4. **B3: the two skill bodies learn the grammar, and the migration stops guessing**
    - Executor: `coder`
    - Files: `skills/migrate/SKILL.md`, the `**Depends-on:**` bullet at the record-conversion step; `skills/memo/SKILL.md`, the filing template and the sentence at line 127
    - Changes: in `/fusion:migrate`, replace the conversion rule rather than extending it. A conversion cannot confirm a prerequisite, so it writes **nothing** into `**Depends-on:**` and routes every name that survives the existing resolvability test into `**Cross-references:**` instead, absent when nothing survives. That one rule retires the keep-if-resolvable, drop-prose, drop-terminal-target apparatus the 730-byte bullet carries today, so the edit may take bytes off this surface rather than adding them. In `/fusion:memo`, add the field to the filing template's absent-at-filing sentence. **The cardinality in that sentence moves**: it reads "do not invent any of the three" and the three become four, which is the kind of prose count `rules/critical-stance.md` §5 is about.
    - Both files are charged to the **skills** surface, 457 bytes at `ae172380`, a different budget from B1's that buys nothing from it. One step rather than two because one budget measured once beats two executors each guessing what the other spent. Measure the surface before and after and report both.
    - Dependencies: G1, B1 (the definition B3's two bodies point at)
 
-5. [DONE] **B4: the working model's own account of the item head**
+5. **B4: the working model's own account of the item head**
    - Executor: `coder`
    - Files: `docs/working-model.md`, the head-field example around line 18 and the `**Depends-on:**` paragraph at line 42
    - Changes: add the field to the worked example and say in one clause what each of the two fields asserts, so a reader meets the same grammar `rules/fusion-workbench-conventions.md` defines. The document is on no dispatch path and in no bounded surface, so this step competes with nothing. It is separate from B3 because it is unbounded: mixing an unmeasured file into a step whose whole discipline is a byte measurement blurs the measurement.
@@ -170,31 +169,31 @@ Coherence self-check, run before this was finalised. Twelve nodes, thirteen edge
 
    **G3: does the helper get built now, against a store of one node and zero edges?** The question, the three options and the measurement behind them are in `260911-2141_*_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.md`, filed with this revision, and the gate reads that record rather than a restatement here. One figure goes to the user with it: what step B1 left of the `reviewer` path's 591 bytes. The second this gate carried, the 291-byte shortest Layout row, left the dispatch paths with the roster on 2026-09-12 and is a cost on nothing. Under the defer answer the work stops after B4 and the deferral names its trigger; under either build answer phase C proceeds in the shape the chosen option names.
 
-6. [DONE] **C1: `hooks/lib/work-graph.ts`, the computation**
+6. **C1: `hooks/lib/work-graph.ts`, the computation**
    - Executor: `coder`
    - Files: new `hooks/lib/work-graph.ts`
    - Changes: one exported pure function of a workbench root returning the report, plus the types. **The node set is `open` and `claimed` only**, which is the G1 ruling and what narrows this step from its first draft. Match every work-item record with `ITEM_RECORD_RE` imported from `hooks/lib/citation-corpus.ts`, never re-spelled here; parse its `**Status:**`, and drop a `done` or `dropped` item from the node set with its outgoing entries unread. Per node, parse `**Depends-on:**` out of the head; an entry is a basename `<dirname>.md` and resolves by lookup in the node map, so an entry naming no node, a terminal item included, is reported by name, the node keeps its place and the edge is dropped. Never read `archive/**/circles/`. Edge direction: `A **Depends-on:** B` is the edge A to B, "A may start after B". Cycles by Tarjan's strongly-connected components over the whole edge set, a component of size above one being a cycle and a self-edge a cycle of one; topological order by Kahn over the condensation, prerequisites first, ties broken on the item basename ascending, which is chronological then lexical and stable across runs. `depth` is the longest path to a node with no prerequisites, 0 where there are none, taken on the condensation so a cycle does not make it unbounded. `blocks` is the size of the reverse-reachable set excluding self. **`readiness` is two-valued and derived, not configured**: every node is non-terminal, so every resolved out-edge is an unmet prerequisite, and a node is `ready` exactly when it has none. Also count the nodes carrying no `**Depends-on:**` field, which is what C2 prints its caveat from. The module header states that the graph spans live work items only and why a `done` item and a terminal Circle record are both outside it. Store nothing: no cache, no index file, no write of any kind.
    - Dependencies: G3
 
-7. [DONE] **C2: `hooks/order.ts`, `bin/fusion-work-order`, and the roster row the helper obliges**
+7. **C2: `hooks/order.ts`, `bin/fusion-work-order`, and the roster row the helper obliges**
    - Executor: `coder`
    - Files: new `hooks/order.ts`, new `bin/fusion-work-order`, `README-hooks.md` `### The bin/ helper roster`
    - Changes: the entry point prints the `KEY=value` block, then one row per item in topological order, then the cycle and unresolved rows. The block: `anchor=workbench-root`, `items=`, `edges=`, `unresolved-edges=`, `cycles=`, `ready=`, `roots=`, `no-depends-on-field=` and `verdict=` taking `acyclic`, `cyclic` or `empty`. Each item row carries its order index, depth, blocks, readiness and basename, at fixed column widths like `bin/fusion-plan-size`'s. A cycle is one `cycle=` row naming its members in basename order; an entry naming no node is one `unresolved=` row naming the dependent and the entry as written. **One `note=` line is mandatory whenever `no-depends-on-field=` is above zero**, saying that an absent field is not a claim of independence and that `ready=` is optimistic by that count: it is the requirement the template ruling attached to its accepted con, and the line kind is `bin/fusion-forum`'s. **No exit code carries the verdict**: 0 the check ran, 1 usage, 2 no workbench above the working directory, 3 the compiled hooks are missing. `verdict=empty` reaches 0 like the other two, since "there are no items" is an answer about the project and a broken install must never be reported as one. The wrapper resolves `hooks/dist/order.js` relative to itself, and its own header carries the usage block, the output shape and the exit table. **The roster row lands here**, in `README-hooks.md` `### The bin/ helper roster`, because `derivable-enumerations-lint.test.ts` section 7 fails the suite the moment the `bin/` file exists without one. It follows the `bin/fusion-claimed-item` shape, 291 bytes, whose whole body is the header-is-the-documentation sentence plus the two facts a reader needs; the four-figure rows are not a precedent this step may take. **Measure the `reviewer` and `analyst` paths before and after and report both**, and if the row does not fit, stop rather than overrun: see `## Where this work stops`. Run `npm run build` and commit `hooks/dist/`, or `committed-dist.test.ts` goes red.
    - Dependencies: C1
 
-8. [DONE] **C3: the fixture test**
+8. **C3: the fixture test**
    - Executor: `coder`
    - Files: new `hooks/lib/__tests__/work-graph.test.ts`
    - Changes: build a fixture store on disk under a scratch root carrying a chain, a fan-out, a cycle, an entry naming no existing item, **and a `done` item carrying an outgoing entry**, then exercise depth, transitive count, topological order, readiness, cycle naming, the dangling-edge rule and the terminal-exclusion rule against it. The last is new and is the fixture's most valuable case: it is the one behaviour the real store cannot demonstrate and the one the G1 ruling turns on. Files on disk rather than an in-memory graph, because the parse of the head field is half of what can be wrong. Add the two assertions the spec asks for and the real store cannot make: that running twice over an unchanged fixture produces identical bytes, and that no path the module opens matches `archive/`. **Blocked on the precondition cut, which this plan names and does not plan.** The hook-test surface holds 1 line at `ae172380`; the six most recent helper tests run 140 to 220 lines, so the cut must free between 139 and 219 lines, the exact figure known only once this file is written. Identifying which tests to cut belongs to that other work, and no baseline moves here.
    - Dependencies: C2, and the precondition cut
 
-9. [DONE] **C4: the two documentation surfaces the helper adds**
+9. **C4: the two documentation surfaces the helper adds**
    - Executor: `coder`
    - Files: `README-hooks.md` (the entry-point table and the `hooks/lib` table), `docs/working-model.md`
    - Changes: one `README-hooks.md` row for `order.ts` and one for `lib/work-graph.ts`, both mandatory, the second gated by `derivable-enumerations-lint.test.ts` section 5 in both directions. In `docs/working-model.md`, beside the paragraph B4 amended, name the command and say the figures are a report the user overrides at will. Neither file is on a dispatch path or in a bounded surface, so C4 competes with nothing. `/fusion:help` is deliberately not touched: the skills surface holds 457 bytes and C4's criterion is one documented command, which these two files satisfy. The helper's roster row is in C2, in this same file's `### The bin/ helper roster`.
    - Dependencies: C2
 
-10. [DONE] **M1: measure the surfaces and run the suite**
+10. **M1: measure the surfaces and run the suite**
     - Executor: `coder`
     - Files: none; this step writes no file and reports
     - Changes: run `npm test` in `hooks/` and report it green. Then take, and report as figures rather than as a claim that nothing broke: the three surface totals against their budgets, and all eleven dispatch-path totals against their baseline rows, by the method `hooks/lib/__tests__/fixtures/dispatch-path.baseline` documents. **Where phase C ran**, also run `bin/fusion-work-order` at the project root, take `git status` before and after, report both, and run it twice and compare the bytes. Where phase C did not run, M1 covers the B-phase surfaces alone and says so, and the acceptance test's parts 1 and 3 are recorded as not run rather than as passed.

@@ -1,0 +1,43 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8a904f25-d0c1-41ba-b5a2-526eaf0f4368",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "analyst",
+        "Attribution backfilled 260825 (not written by the filing agent)": "`analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.",
+        "Cross-references": "`260805-0629_*_dispatch-prompt-carries-no-origin-so-a-sub-agents-history-lands-by-pointer-alone.md`; `260823-0700_*_every-sub-agent-files-its-history-into-the-active-circle-because-the-resolver-cannot-make-the-origin-rules-judgement.md`; `rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)` and `## Issue and Decision Filing — MANDATORY`; `rules/agent-setup.md` `## What fusion-paths emits`; `rules/workbench-path-resolution.md`; plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-origin)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md",
+      "sha256": "sha256:2a17015cf315971e5bbd7b28ca63abad15c548eb9363ccccb19168dfde68332d",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "8a904f25-d0c1-41ba-b5a2-526eaf0f4368",
+      "display": "260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

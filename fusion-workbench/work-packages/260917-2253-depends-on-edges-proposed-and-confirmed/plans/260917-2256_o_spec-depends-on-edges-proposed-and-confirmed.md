@@ -1,7 +1,6 @@
 # Spec: Depends-on edges are proposed from the prose and confirmed by the user
 
 **Date:** 2026-09-17
-**Status:** Draft
 **Source:** The work item `260917-2253-depends-on-edges-proposed-and-confirmed.md`, dispatched by the
 orchestrator with the six unspecified points of
 `260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md` and the
@@ -137,16 +136,16 @@ first of them.
 
 **Acceptance criteria:**
 
-- [DONE] `260909-1700-cut-fusion-to-working-minimum.md` carries no `**Depends-on:**` field, and the change
+- `260909-1700-cut-fusion-to-working-minimum.md` carries no `**Depends-on:**` field, and the change
       is one line removed with nothing else in that record touched.
-- [DONE] The reason is recorded where a later reader meets it, naming the answered decision that authorises
+- The reason is recorded where a later reader meets it, naming the answered decision that authorises
       editing a terminal item's machine-readable head field.
-- [DONE] Every `**Depends-on:**` entry in the store is one the user confirmed, checkable by reading the
+- Every `**Depends-on:**` entry in the store is one the user confirmed, checkable by reading the
       work-item records.
-- [DONE] `260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md`
+- `260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md`
       and `260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md`
       each carry a `Resolved:` note and close.
-- [DONE] `bin/fusion-work-order` reports the same figures before and after, because the entry it names is a
+- `bin/fusion-work-order` reports the same figures before and after, because the entry it names is a
       terminal item's and was never read.
 
 **Decisions made:**

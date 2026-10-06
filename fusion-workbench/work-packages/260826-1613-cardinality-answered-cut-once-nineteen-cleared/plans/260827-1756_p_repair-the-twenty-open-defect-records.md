@@ -1,7 +1,6 @@
 # Implementation Plan: repair the twenty open defect records
 
 **Date:** 2026-08-27
-**Status:** Partially Complete
 **Spec:** none: planned from the dispatch directive; the Circle record `260826-1613-cardinality-answered-cut-once-nineteen-cleared` carries the Directive
 **Decidability:** Two questions carry this plan. First, for each of the twenty records, does it resolve to a fix, to a recorded no-change, or to a direction the user gives at the gate? That is decidable from the records themselves: every one names its site and its close condition, and the split below is complete over the twenty by enumeration. Second, for every step that adds bytes to a growth-bounded surface, is there a named source for those bytes? That is decidable from the four bounds' own instruments, measured at `0fb5085` in `## Current State`, and the answer is that two surfaces need no cut and two need one, so the plan carries one measured cut under one gate. What is not decidable from the plan's inputs is the right answer to the six choice points planning surfaced; those are filed as decision records in this Circle's store and are answered by the user at the gate, not approximated here.
 
@@ -142,35 +141,35 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
 
 ### Bundle A: record-only closures
 
-1. [DONE] **Correct the false scan-set clause in the active Circle record** (record 1)
+1. **Correct the false scan-set clause in the active Circle record** (record 1)
    - Executor: `coder`, acting on the user's explicit approval at this gate. The section is playmaker-appended and the orchestrator writes none of it; the record is `_t_`, so the no-edit rule for terminal records does not apply.
    - Files: `circles/…/_t_circle.md`, `## Activation proposal`, third paragraph.
    - Changes: replace the clause "the Circle's inheritance is currently stranded, in the sense that closing its parent removed all nineteen records from every agent's scan set; activation is what brings them back into scope" with the true statement (records inside a non-active Circle are in another Circle's scan set only when a run names that Circle as `fusion-paths`' second argument; nothing was removed and nothing is brought back), and append at the paragraph's end `Corrected 260827 per 260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md`. Close the record with `Resolved:` and rename to `_c_`.
    - Dependencies: none.
    - Acceptance: `grep -c "removed all nineteen records" circles/…/_t_circle.md` returns 0; the corrected paragraph cites the issue; the issue carries `_c_`.
 
-4. [DONE] **Append the correction to the 260826-1705-playmaker-direct-dispatch.md playmaker history log** (record 4)
+4. **Append the correction to the 260826-1705-playmaker-direct-dispatch.md playmaker history log** (record 4)
    - Executor: `coder`.
    - Files: `260826-1705-playmaker-direct-dispatch.md`.
    - Changes: append one dated line after the `## Warnings` list: the warning name `stranded-records-in-terminal-circles` encoded a mechanism `bin/fusion-paths` does not have; the 260827-1637-playmaker-direct-dispatch.md run retired the name and stated the true reading under `records-reachable-only-under-their-terminal-circle`. The log's original lines stay as written. The portfolio needs nothing: verify that `fusion-workbench/portfolio.md` (`**Generated:** 260827-1637-playmaker-direct-dispatch.md`) carries no copy, and say so in the `Resolved:` note. Rename to `_c_`.
    - Dependencies: none.
    - Acceptance: the history file ends with the correction line naming the issue; `grep -c stranded-records portfolio.md` returns 0.
 
-6. [DONE] **Measure the 49 criteria of the bounded Circle's spec, once** (record 6)
+6. **Measure the 49 criteria of the bounded Circle's spec, once** (record 6)
    - Executor: `analyst`.
    - Files: reads `260820-2249_*_spec-style-rules-arrive-and-get-measured.md` and the tree; writes `$OUT_ANALYSIS/YYMMDD-HHMM-the-style-rules-spec-measured-against-the-tree.md`.
    - Changes: for each of the 49 criteria, state met / not met / not applicable with a `path:line` or command; no edit to the spec. The spec's disposition (ticked in place by a reconciler dispatch outside this plan, or declared history by rule text) is the user's direction under `260824-2013_*`, taken at the gate; the record closes with `Resolved:` citing the analysis and the direction.
    - Dependencies: none for the measurement; the closure waits for the gate direction.
    - Acceptance: the analysis carries 49 rows, each with evidence; the issue's `Resolved:` cites it and the direction given.
 
-11. [DONE] **Close the event-log inversion record on the v10.8.0 repair, and file the surface question** (record 11)
+11. **Close the event-log inversion record on the v10.8.0 repair, and file the surface question** (record 11)
     - Executor: `coder` (record only).
     - Files: the issue file; R3 already filed.
     - Changes: append `Resolved:` stating that `task_start`/`task_done` are written by the hooks (`hooks/lib/orchestrator-events.ts`, commits `94ad2f4`, `d7cdfa7`) and the `commit` row by `bin/fusion-commit-lock with` (`2bea3ac`), that `turn_start`/`turn_end` remain prompt-emitted by construction (no hook sees a Turn) and that freeze mode stays reachable, and that item 2 of `## What to consider` is R3. Restate the diagnostic in the note as an observed frequency with one counter-example, since no shipped text states it as a law. Rename to `_c_`.
     - Dependencies: none (R3 need not be answered for the closure; it needs to exist).
     - Acceptance: the `Resolved:` note cites the three commits and R3 by starred path.
 
-14. [DONE] **Record the no-change on the closure note's eighth count** (record 14)
+14. **Record the no-change on the closure note's eighth count** (record 14)
     - Executor: `coder` (record only).
     - Files: the issue file.
     - Changes: append `Resolved:` stating that the record's own `## Fix direction` foresaw no edit, that the terminal record stays as the specimen, and that the decision it was filed to inform is answered: `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_*` `## Answer` (options 2 and 3, `rules/critical-stance.md` §5, commit `ae00e84`). Rename to `_c_`.
@@ -179,28 +178,28 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
 
 ### Bundle B: small shipped fixes that need no cut
 
-10a. [DONE] **Extend the two-session paragraph to helpers** (record 10, option 3)
+10a. **Extend the two-session paragraph to helpers** (record 10, option 3)
     - Executor: `coder` (documentation describing the release mechanism).
     - Files: `CLAUDE.md` `## Release process`, the paragraph beginning "The same pin makes any Circle that builds an agent…".
     - Changes: one added sentence: a `bin/` helper added in a session is absent from `$FUSION_PLUGIN_ROOT` until `fusion --update`, so every `[ -x ]` call site takes its miss branch for the rest of that session; cite the issue. Not bounded.
     - Dependencies: none. Record 10 closes at step 10b.
     - Acceptance: the paragraph names helpers beside agents and cites the record by starred path.
 
-13a. [DONE] **Name the fourth retired key in both configuration files** (record 13)
+13a. **Name the fourth retired key in both configuration files** (record 13)
     - Executor: `ontocoder`.
     - Files: `fusion.json` `_retired`, `templates/fusion.json` `_retired`, edited identically in one commit.
     - Changes: "the three top-level keys that held it — guard, decisions, escalation" becomes the four, `churn` last, with its retirement date; the source of truth is `RETIRED_TOP_LEVEL_KEYS` in `hooks/lib/config.ts:349`.
     - Dependencies: none; 13b lands in the same commit.
     - Acceptance: `npx vitest run lib/__tests__/config.test.ts` green (the two files stay byte-identical outside `PROJECT_SET_KEYS`); both `_retired` strings name four keys.
 
-13b. [DONE] **Name the fourth retired key in the orchestrator's Setup Step 2 parenthesis** (record 13)
+13b. **Name the fourth retired key in the orchestrator's Setup Step 2 parenthesis** (record 13)
     - Executor: `coder`.
     - Files: `agents/orchestrator.md:114`.
     - Changes: the parenthesis `(guard, decisions, escalation)` gains `churn`. About 8 bytes on `agents/`. The record's "worth considering" pin between the JSON prose and the loader is declined: the hook-test surface has 1 line free, and `shared/decisions/260811-1522_a_*` is the same question, answered and unrealised; say so in the `Resolved:` note. Rename to `_c_`.
     - Dependencies: same commit as 13a.
     - Acceptance: `grep -c churn agents/orchestrator.md` rises by one at line 114.
 
-15. [DONE] **Correct the reason in the citation pin's re-approval note** (record 15)
+15. **Correct the reason in the citation pin's re-approval note** (record 15)
     - Executor: `coder`.
     - Files: `hooks/lib/__tests__/reference-resolution-lint.test.ts:479` (the single comment line carrying the `2026-08-26 (C4 Turn 3 task Z-2)` entry).
     - Changes: replace the clause "`hooks/**.ts` is scanned for class (c) record citations only, and that docstring's one record citation was left untouched" with the two separate facts: `hooks/dist/` contributes nothing because `surface()`'s two hook loops are non-recursive and `isFile()`-filtered, so no compiled artifact is read; `hooks/lib/*.ts` contributes no paths because those files are `recordsOnly`. Same line, so the line count is unchanged; no path or anchor token is added, so `BASELINE` does not move.
@@ -214,7 +213,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Dependencies: none.
     - Acceptance: the two rows name `bin/fusion-events`; a `.cadence-anchors` row exists; `npx vitest run lib/__tests__/reference-resolution-lint.test.ts lib/__tests__/rules-emission-golden.test.ts` green after the re-approval.
 
-18a. [DONE] **Account for all three inert leftovers in the guard-state paragraph** (record 18, rule half)
+18a. **Account for all three inert leftovers in the guard-state paragraph** (record 18, rule half)
     - Executor: `coder`.
     - Files: `rules/workbench-tracking.md` `## The four classes`, the paragraph beginning "`.guard-state/` is not one thing".
     - Changes: the sentence "and they are the whole of it" becomes an enumeration of the live set (the two throttle records, `dispatch-map.json`, `events.jsonl`) followed by the three leftovers a workbench set up under an older fusion may hold, each with the commit that retired its writer: `escalation.json` (260816), `churn.json` (`a69d56e`), `state-drift.json` (`f45f76a`). Not bounded (emitted to no agent).
@@ -230,7 +229,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
    - Dependencies: none. Step 17 edits the same `:104` sentence and follows this one.
    - Acceptance: `grep -niE "read enough|no more" agents/playmaker.md` shows the amended cap; `grep -c "Activation proposal" agents/playmaker.md` unchanged or higher with the block bounded at `:177`; `npx vitest run lib/__tests__/surface-growth-bound.test.ts lib/__tests__/playmaker-backlog-mandate-lint.test.ts` green.
 
-17. [DONE] **Add the stale-Grounding warning and the archive-resolving dependency report** (record 17)
+17. **Add the stale-Grounding warning and the archive-resolving dependency report** (record 17)
     - Executor: `coder`.
     - Files: `agents/playmaker.md` Step 3 (criteria and dependencies-closed flag), Step 4/5 warnings list at `:158`, and the `:104` cap carve-out from step 2.
     - Changes: per R4's answer. Under the recommendation: for each `_a_` Circle, count the records its `## Grounding snapshot` cites that carry a terminal marker or resolve under the archive store (filename markers and `find`, no bodies); at half or more, append `stale-grounding: <circle-dir>: <n> of <m> cited records terminal or archived; HEAD <k> commits past the snapshot's recorded commit` to `## Warnings` with a recommendation to re-sharpen via the shaper's portfolio-activation mode; rank unchanged. A dependency resolving under `archive/` is reported as `archived`, never counted as closed. Close with `Resolved:`; rename to `_c_`.
@@ -239,49 +238,49 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
 
 ### Bundle D: the one measured cut, and the steps it pays for
 
-21. [DONE] **Size the need and rank the cut candidates on `skills/` and the hook tests** (the Directive's "measure once")
+21. **Size the need and rank the cut candidates on `skills/` and the hook tests** (the Directive's "measure once")
     - Executor: `analyst`.
     - Files: reads `skills/*/SKILL.md`, `hooks/lib/__tests__/**`, `hooks/lib/__tests__/helpers/growth-bound.ts`, the C4 analysis `260826-0715-cut-candidates-for-two-growth-bounded-surfaces.md`, this plan's steps 5, 12, 18b/10b, 19, 20; writes `$OUT_ANALYSIS/YYMMDD-HHMM-cut-candidates-for-skills-and-the-hook-tests.md`.
     - Changes: (a) state the byte need of steps 5, 12, 18b/10b and 20 as drafted text sizes, and the line need of step 19 (285 by its record, re-measured); (b) rank `skills/` candidates by what the project loses, each with a verified byte span. Seeds measured for this plan, unranked: `skills/archive/SKILL.md:137-153` `### Rolling the guard event log`, 2 452 bytes, which restates `rules/workbench-tracking.md` and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` and could shrink to a citation; `skills/setup/SKILL.md:183-252` Step 0e, 6 762 bytes; `skills/setup/SKILL.md:346-372` Step 0i, 2 828 bytes; `skills/setup/SKILL.md` grew 12 693 bytes over its baseline and is where the head room went. (c) rank hook-test candidates: the 78 lines of the C4 reserve's candidates 5 to 8 that still stand, plus new ones; respect the arithmetic the C4 analysis states (shrinking in place frees one for one; deleting a baselined file frees only size minus baseline) and its list of large candidates that must not be cut. (d) If the user has said at the gate that the C4's five hook-test-needing records join this Circle, add their line need to (a) so the cut is sized once.
     - Dependencies: none (it reads the drafts of the later steps as text estimates; the drafting is the executor's at those steps).
     - Acceptance: the analysis states two totals (bytes on `skills/`, lines on the hook tests) and a ranked list reaching each, with what is lost per candidate.
 
-22. [DONE] **Perform the cut, under the one user gate** (the Directive's "cut once")
+22. **Perform the cut, under the one user gate** (the Directive's "cut once")
     - Executor: `coder`.
     - Files: the candidates the user approved from step 21's list; `hooks/lib/__tests__/fixtures/surface-growth.golden` (regenerated with `UPDATE_SURFACE_GOLDEN=1`, then re-run without); `reference-resolution-lint.test.ts` `BASELINE` only if a cut removes a plugin-path or anchor token.
     - Changes: the approved cuts, and nothing else in the same commit. **No baseline map moves**: `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` is open with option 1 recommended (a cut never re-baselines), and this step follows the recommendation rather than pre-empting the record; the commit message names the cut and the analysis.
     - Dependencies: step 21; the user's approval of its list.
     - Acceptance: `npm test` green; `skills/` free bytes and hook-test free lines each at or above the need step 21 stated; the commit message cites the analysis by path.
 
-5. [DONE] **Setup repairs a tracked workbench's `.gitignore` and reports the rest** (record 5)
+5. **Setup repairs a tracked workbench's `.gitignore` and reports the rest** (record 5)
    - Executor: `coder`.
    - Files: `skills/setup/SKILL.md`, a new Step 0j after 0i (or folded into 0h, which already asks git the neighbouring question).
    - Changes: per the two answered decisions `shared/decisions/260825-1030_a_*`: in a git work tree where `fusion-workbench/` is tracked, ask `git check-ignore -q` per root entry; an excluded class R2 or R3 entry (`orchestrator-events.jsonl`, `.fusion-setup`, and the other R2/R3 entries `rules/workbench-tracking.md` lists) is repaired by a negation line appended to `.gitignore`; a tracked class L entry is reported in the Done report, except `.checkout-id`, which is handled as the second decision's `## Answer` states; an R1 exclusion is never touched. The step asks nothing (Step 0g stays the one question). The reasoning is cited from `rules/workbench-tracking.md`, not restated. Close with `Resolved:`; rename to `_c_`.
    - Dependencies: step 22.
    - Acceptance: against a scratch consuming root whose `.gitignore` excludes `orchestrator-events.jsonl`, Setup appends the negation and reports it; against one tracking `portfolio.md`, Setup reports and does not edit; `npx vitest run lib/__tests__/surface-growth-bound.test.ts lib/__tests__/path-literal-lint.test.ts` green.
 
-12. [DONE] **Widen the archive safety filter to the corpus the citation gate guards** (record 12)
+12. **Widen the archive safety filter to the corpus the citation gate guards** (record 12)
     - Executor: `coder`.
     - Files: `skills/archive/SKILL.md` filter 3 and Step 4's grep; one comment line in `hooks/lib/__tests__/workbench-citation-lint.test.ts` naming the skill as the filter's twin (same line count).
     - Changes: per R5's answer. Under the recommendation, filter 3's grep runs over a positive enumeration of the shipped corpus (`CLAUDE.md`, `README*.md`, `rules/`, `agents/`, `skills/`, `hooks/lib/`, `hooks/*.ts`, `bin/`, `docs/`) plus the project's `rules/` and `.claude/rules/`, each guarded by existence so a consuming project without them collapses to `CLAUDE.md` and its own rules. The filter's report line names the citing file. Close with `Resolved:`; rename to `_c_`.
     - Dependencies: step 22; R5 answered.
     - Acceptance: in this repository, `/fusion:cleanup --only archive --dry-run` (tier-1 survey) keeps every Circle the record's table names as cited from outside the workbench, and names the citing file; `npm test` stays green after a real tier-1 run.
 
-20. [DONE] **Exclude a terminal Circle that carries open records from every tier** (record 20)
+20. **Exclude a terminal Circle that carries open records from every tier** (record 20)
     - Executor: `coder`.
     - Files: `skills/archive/SKILL.md` (Tier 1 first row, filter 2, the survey in Step 3, the report in Step 5); `skills/cleanup/SKILL.md` Step 4.
     - Changes: the record's proposed line, verbatim in substance: a terminal Circle is archivable when its own directory holds no `_o_`/`_p_` issue or plan and no `_o_`/`_a_` decision; one that fails is excluded from every tier mode, listed in the survey with its open count, and left in place; natural-language mode may override at `refine`. Cleanup Step 4's summary names the excluded Circles and their counts. Close with `Resolved:`; rename to `_c_`.
     - Dependencies: step 22.
     - Acceptance: the record's three criteria: a `_c_` Circle with one `_o_` issue inside is listed as excluded with the count and not moved; a `_c_` Circle with only terminal records inside is selected as before; the cleanup summary names what was left behind. Run against a scratch workbench.
 
-18b. [DONE] **Setup's leftover offer covers all three inert files, and Step 2 names the helpers the install lacks** (records 18 and 10, options 2)
+18b. **Setup's leftover offer covers all three inert files, and Step 2 names the helpers the install lacks** (records 18 and 10, options 2)
     - Executor: `coder`.
     - Files: `skills/setup/SKILL.md` Step 3 (the `escalation.json` offer) and Step 2 (Rules check).
     - Changes: Step 3 probes the three leftovers `rules/workbench-tracking.md` now names and offers them in the one existing question, listing what was found; the `legacy-halt-clearing.test.ts` promise (the offer exists for the halt flag) is unchanged. Step 2 adds one line: in this repository (`bin/fusion-plugin-cwd` exit 0), list `bin/` executables present in the work tree and absent from `$FUSION_PLUGIN_ROOT/bin/`, and name them in the Done report; nothing changes behaviour. Close records 18 and 10 with `Resolved:` (record 10's note cites part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` as the deliberately unanswered remainder); rename both to `_c_`.
     - Dependencies: step 22; step 18a.
     - Acceptance: with a `churn.json` in a scratch workbench's `.guard-state/`, Setup's question lists it; in this repository with a helper missing from the install, the Done report names it; `npx vitest run lib/__tests__/legacy-halt-clearing.test.ts` green.
 
-19. [IN PROGRESS] (split: commit-lock cases landed; dispatch cases deferred) **Restore the ten integration cases for the machine-written rows** (record 19)
+19. (split: commit-lock cases landed; dispatch cases deferred) **Restore the ten integration cases for the machine-written rows** (record 19)
     - Executor: `coder`.
     - Files: a new `hooks/lib/__tests__/orchestrator-events-integration.test.ts` (or the cases folded into `hooks-wiring.test.ts`); `hooks/lib/__tests__/surface-growth-bound.test.ts` gains no baseline entry for the new file (it counts as growth in full, which is the instrument working).
     - Changes: the seven dispatch cases (one row per hook with identity, `task`, `session_id`; the `agentstate.yaml` gate; absent-key-never-empty; heartbeat refresh and its negative) and the three `fusion-commit-lock` cases (row on landed HEAD; no row without HEAD movement; no row outside a session), as the record's `## Acceptance` lists them, against a scratch consuming root. Also star the citation at `hooks-wiring.test.ts:75` (`260827-0410_o_*` → `260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md`), same line, so the record's rename does not redden `workbench-citation-lint`. Close with `Resolved:`; rename to `_c_`.
@@ -297,7 +296,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
    - Dependencies: R2 answered.
    - Acceptance: both instances carry the clause; the templates state where a conditional goes; `npx vitest run lib/__tests__/plan-stopping-section-lint.test.ts lib/__tests__/surface-growth-bound.test.ts` green.
 
-8. [DONE] **Write the reach of the person-half obligation** (record 8)
+8. **Write the reach of the person-half obligation** (record 8)
    - Executor: `coder`.
    - Files: per R6's answer. Under the recommendation: `rules/fusion-workbench-conventions.md` `### Who filed it` (one sentence: the field is owed by every record kind whose template carries it, and those kinds are named), `rules/review-contract.md` (the line joins its mandated fields), `## History Logging` (the line joins the history entry).
    - Changes: about 300 always-on bytes (13 213 free); `rules/review-contract.md` is conditional and reported, not bounded. No gate is added, and the `Resolved:` note says why (1 line free; the miss branch closed by the v10.8.0 identity export in `hooks/session-start.ts`). Rename to `_c_`.
@@ -317,7 +316,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Executor: `coder`, inside steps 16 and 22 (and 12 if the corpus enumeration adds path tokens); no separate commit. Listed so the obligation has a number.
     - Acceptance: every `BASELINE` change carries a note in the established form on the same line.
 
-24. [DONE] **Close every record in the same commit as its fix**, `Resolved:` line then rename, per `rules/fusion-workbench-conventions.md` `## Inline State Tracking`; a record closed by a decision cites the record's `## Answer` as the resolution. Where a record's closure renames a file that shipped text cites with a spelled marker (`hooks-wiring.test.ts:75` is the one instance found), the citation is starred in that commit.
+24. **Close every record in the same commit as its fix**, `Resolved:` line then rename, per `rules/fusion-workbench-conventions.md` `## Inline State Tracking`; a record closed by a decision cites the record's `## Answer` as the resolution. Where a record's closure renames a file that shipped text cites with a spelled marker (`hooks-wiring.test.ts:75` is the one instance found), the citation is starred in that commit.
 
 ## Where this work stops
 

@@ -1,0 +1,51 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "7b448aab-dc6e-4a12-a6da-641bdf547e99",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "dropped",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/_b_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "bounded",
+    "reason": "closed bounded (legacy Circle marker)",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "b",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>",
+        "Claim": "Unclaimed",
+        "Active spec/plan": "260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md",
+        "Active session history": "260825-2123-orchestrator-session.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/_b_circle.md",
+      "sha256": "sha256:e31650eb0d2c4c29640885b7d1cc01b2dcc26a1ea7d70878d41eb2d674099b10",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "fa43cce5-87ca-4a9d-b2f4-711b7fa136a9",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": ""
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md",
+      "sha256": "sha256:0754dc479b218fd7e84ae532042e19132ae49e75c666b949184f42b09510f8c7",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260911-1916-re-grounding-three-open-decisions.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

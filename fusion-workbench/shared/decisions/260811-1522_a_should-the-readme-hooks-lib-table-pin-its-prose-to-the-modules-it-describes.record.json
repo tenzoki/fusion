@@ -1,0 +1,39 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8d5453b7-11a5-459f-88a5-448351e3a850",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md"
+  },
+  "filed_by": {
+    "actor": "coder",
+    "person": "while closing archive/260817-1907-safe-cleanup-scoped/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Status": "open",
+        "Filed by": "coder, while closing `archive/260817-1907-safe-cleanup-scoped/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`",
+        "Cross-references": "`archive/260817-1907-safe-cleanup-scoped/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` (the drift that raised the question); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:347` (the lint that watches the table's rows for existence and not for content); `hooks/lib/domain-cascade.ts` `describeReach()` + `README-hooks.md` `## How far the domain-cascade reach gate reaches` (the working precedent); `260811-1141_*_…` (the fix whose four synchronised edits missed the fifth site)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+      "sha256": "sha256:b8d0a2a918b2d146990b411501d3b2aad48332c01c6ca3465b3327dda060cce4",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260811-0752-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

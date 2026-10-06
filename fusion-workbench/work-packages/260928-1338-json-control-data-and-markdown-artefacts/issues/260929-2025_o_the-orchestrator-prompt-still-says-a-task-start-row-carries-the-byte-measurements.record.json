@@ -1,0 +1,36 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ea7ea5a5-b640-4802-b14c-8a89c6088fc7",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-2025_o_the-orchestrator-prompt-still-says-a-task-start-row-carries-the-byte-measurements.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Evidence": "`grep -n 'byte measurements' agents/orchestrator.md` names the one row. The executor of step 2 searched `agents/`, `skills/`, `rules/`, `docs/`, `templates/`, `README.md`, `README-agents.md` and `CLAUDE.md` and found no other passage. The ruling that removed the measurement: `260929-1919_*_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md`.",
+        "Owner": "FJ03d, the part of FJ03 that changes agent text (`260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md` `## The cut of FJ03`). The edit is charged to the growth bound on `agents/`; it removes words.",
+        "Acceptance": "the row describes what the hook writes, and `grep -rn 'byte measurements' agents skills rules` names nothing."
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-2025_o_the-orchestrator-prompt-still-says-a-task-start-row-carries-the-byte-measurements.md",
+      "sha256": "sha256:2ae0d5924d9ddf42a00f4826bb7b51e144416f8c4228190862f1077521c02aff",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

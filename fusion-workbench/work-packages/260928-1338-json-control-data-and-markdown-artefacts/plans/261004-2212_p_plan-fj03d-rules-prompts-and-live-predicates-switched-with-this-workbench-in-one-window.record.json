@@ -1,0 +1,156 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "76f818ef-1569-43b8-8b7f-885f652c559c",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260928-1338-json-control-data-and-markdown-artefacts.md",
+    "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+    "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+    "260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md",
+    "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+    "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+    "260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md",
+    "261004-2212_*_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md",
+    "261004-2212_*_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md",
+    "261004-1721_*_how-is-a-later-partial-override-of-a-decision-recorded.md",
+    "260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+    "261003-1004-fj04-step12-proof-on-copies-of-real-workbenches.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "p",
+      "head": {
+        "Date": "2026-10-04",
+        "Status": "Approved 2026-10-04 (plan approval answered by **Mode:** autonomous). The user ruled 2026-10-05: decision 261004-2212 (byte bound) option 1, cut-only; decision 261004-2212 (client) option 1 with the install home `~/.fp`; and, binding on every step: **`~/.fusion` is never changed** — no step installs, updates, reinstalls or writes there, because a consumer project is worked on productively from it. Step 13 proves before the install that neither the window launcher nor `fusion --update` from it can write `~/.fusion` (the risk row on `fusion --update` reinstalling `heads/main` into `~/.fusion` is a blocker until so proven), and FJ05 does not change `~/.fusion` either without the user's own act.",
+        "Spec": "none as a requirements-designer spec. Prior's `concept/fusion-json-workbench-spec.md` at Prior `5609ff1` (main): §1, §3 (layout, tracking classes), §7 (the consumer table and its closing classification paragraph), §8.1 and §8.3 (preconditions, application, read-back), §9 (the FJ03d and FJ05 rows, the order paragraph, the mandatory checks). Prior's release boundary: `Prior: docs/design/fusion-fj04-correction-prior-response.md` `## Validation and release boundary` (\"Plugin activation and use evidence belong to the remaining FJ03d/FJ05 release work\").",
+        "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md (closed; its `## Where this work stops` carries this plan's preconditions), 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md (`## The cut of FJ03`), 260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md, 260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md, 260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md, 260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md, 261004-2212_*_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md, 261004-2212_*_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md, 261004-1721_*_how-is-a-later-partial-override-of-a-decision-recorded.md, 260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md, 261003-1004-fj04-step12-proof-on-copies-of-real-workbenches.md",
+        "Planned against": "fusion `9c74070b`, `plugin.json` 13.0.0; bundle 689 747 bytes, `sha256:c76bbce9cc86634f5e9c227e8496511dc71eb845768704f43e68200ab841e52e` (qualified, Prior `d6abeb8`). `origin/main` (`48f0c9ff`, 12.2.3) is an ancestor of HEAD (`git merge-base --is-ancestor origin/main HEAD` exit 0). Installed client `~/.fusion` 12.2.1.",
+        "Growth bound": "room measured at `9c74070b` as baseline sum plus head-room minus the surface's current size: `agents/` 4 226 bytes, `skills/` 3 370 bytes, hook tests 4 681 lines. The dispatch-path bound stands at 0 head-room with 620 to 1 189 bytes of margin per path (inference: summed by hand, the test's own report governs). Rule and prompt edits follow decision 261004-2212 (dispatch path), recommended option 1, cut-only; surface bounds follow the answered record 260929-1810 on the growth bound (replace first, raise the measured remainder, log it). No baseline moves.",
+        "Confidentiality": "this plan touches fusion's own workbench only. No other project is copied, measured or named.",
+        "Decidability": "Four questions. **(1) Is the consumer classification complete?** Decidable relative to a fixed pattern set: §7 names the patterns (the five control head fields, marker scans, marker renames, inline progress parsers), so one recorded search command at one commit enumerates every textual hit, and each hit gets exactly one of four disjoint classes (step 2). Not decidable by text search: a reader that builds a marker pattern at run time matches no pattern. The mechanism therefore adds a behavioural check: the rehearsal (step 11) runs every shipped helper, lint and skill block over a migrated copy of this workbench, where a surviving Markdown control reader shows up as a refusal, a wrong count or a red lint. **(2) Do rules, data and the installed client switch together?** Decidable by order: the side branch carries every text change, nothing of it reaches the work tree this repository's sessions read until the merge in step 13, and steps 13 to 15 run in one window with each step checking the previous one's result. Whether another checkout writes during the window is not decidable from inside this checkout (no lock spans checkouts, Prior §6). The mechanism is FJ04's: source hashes frozen in the migration plan detect a write during the run, and quiescence is a stated precondition the user confirms. A v12 client writing after activation is detected by nothing; the upgrade document states it as a limit (step 9). **(3) Do the text changes fit the bounds?** Decidable per commit by the bound tests. **(4) Which records are live after migration?** Decidable from each control file's `status` and the `terminal` sets of `codec/contract/transitions.json`, the table the kernel reads. No predicate reads a marker letter for live state after step 8."
+      },
+      "step_marks": {},
+      "unanchored_marks": {
+        "line 106": "DONE",
+        "line 114": "DONE",
+        "line 129": "DONE",
+        "line 142": "DONE",
+        "line 150": "DONE",
+        "line 161": "DONE",
+        "line 172": "DONE",
+        "line 188": "DONE",
+        "line 201": "DONE",
+        "line 226": "DONE",
+        "line 234": "DONE",
+        "line 251": "DONE",
+        "line 271": "DONE"
+      },
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "4813c9a4c8109d6c6ce99fd99f8c7d3f9469469b"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "sha256": "sha256:2f279106411860061c734b4e96c6759e996b45c513a9d6526769adfb73622dec",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      },
+      {
+        "id": "8",
+        "state": "open"
+      },
+      {
+        "id": "9",
+        "state": "open"
+      },
+      {
+        "id": "10",
+        "state": "open"
+      },
+      {
+        "id": "11",
+        "state": "open"
+      },
+      {
+        "id": "12",
+        "state": "open"
+      },
+      {
+        "id": "13",
+        "state": "open"
+      },
+      {
+        "id": "14",
+        "state": "open"
+      },
+      {
+        "id": "15",
+        "state": "open"
+      },
+      {
+        "id": "16",
+        "state": "open"
+      },
+      {
+        "id": "17",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "88f7b586-6715-4ead-99a1-f82332e6946b",
+        "display": "260928-1338-json-control-data-and-markdown-artefacts.md"
+      },
+      "revision": "sha256:63fc429617cf3a86129136120c50ff131fa49818e5e93dc2c7cf611dbbba4c7b"
+    }
+  }
+}

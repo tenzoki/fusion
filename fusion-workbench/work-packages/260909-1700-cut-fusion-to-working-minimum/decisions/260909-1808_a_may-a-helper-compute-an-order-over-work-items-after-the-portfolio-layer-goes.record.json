@@ -1,0 +1,42 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "1d4696c6-9dc7-48d8-85a9-ac402f0e5f9a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260909-1615_*_spec-cut-fusion-to-a-working-minimum.md `### C6: The portfolio layer becomes a flat list`, 260908-2018-prerequisites-confirmed-once-order-computed"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md",
+      "sha256": "sha256:3ea1bfb59eb8735693faceea9c5aacca3b2a06fb4cc249053b90a3f21544e431",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "1d4696c6-9dc7-48d8-85a9-ac402f0e5f9a",
+      "display": "260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

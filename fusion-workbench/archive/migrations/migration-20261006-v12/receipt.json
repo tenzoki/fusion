@@ -1,0 +1,130 @@
+{
+  "schema": "fusion.migration-receipt/v1",
+  "migration_id": "migration-20261006-v12",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "source_layout": "fusion-v12",
+  "plan": {
+    "path": "archive/migrations/migration-20261006-v12/plan.json",
+    "sha256": "sha256:5062ea1422fd7204acf9fe9c302136026fd8f4fa2e1e6fea4256b112872f3d80"
+  },
+  "parts": [
+    {
+      "path": "archive/migrations/migration-20261006-v12/chunks/1.json",
+      "sha256": "sha256:ef6e0b7199db3e2b8b74310bcb23b7dfb220ec71d934de250aff2adb00635794"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/chunks/2.json",
+      "sha256": "sha256:708228ec47388002a176ef84aca95d4948f51a941d126149997f27503c191d50"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/chunks/3.json",
+      "sha256": "sha256:36c43e7fae3b8289b0d7a01b35290e8766d68215f81874b97c6748f29e9f6296"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/chunks/4.json",
+      "sha256": "sha256:08a489f8f0c975cf8113d6ec27523d8bd87cf263bf875649ab4fd23860e0cf85"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/chunks/5.json",
+      "sha256": "sha256:7d5ebc22bb52d4ef8515c25ef133ee6c408e72d3c05a2ee2d4b14856366e1048"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/chunks/6.json",
+      "sha256": "sha256:46a11af76b2a86e911c03929fe0e4890cb892337437133fafbdeec03fc46c117"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/chunks/7.json",
+      "sha256": "sha256:12d0e85d095349313786f5b7cf143e4ca71b519e2815dc0935ebbcc8069808af"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/parts/records-1.json",
+      "sha256": "sha256:e7193ff4f311dad34d16d009d4adb5f36b841e5f294387fe46b84923d70c0145"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/parts/inventory-1.json",
+      "sha256": "sha256:29d51677552adb883191d38b2863f8685d08d7f38e1f15ce94ba82bde363c2d8"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/parts/findings-1.json",
+      "sha256": "sha256:1124bef8e997204668ffb51cba32fad681d6a4106057472805980816fe2c723c"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/parts/repairs-1.json",
+      "sha256": "sha256:4c7c078acf69d3a15222c1a7275e741ba4cfc94d9ef4dc435c1fb886fc26ead3"
+    },
+    {
+      "path": "archive/migrations/migration-20261006-v12/parts/answers-1.json",
+      "sha256": "sha256:8178058bfd6dba5eb4d4b51aa917b20366dcc966747f45ebb7805355b03494f4"
+    }
+  ],
+  "verify_operation_id": "e6089163-5c40-4518-bfa2-2eb30f8217e9",
+  "after_inventory_sha256": "sha256:36934aca0545341e5476ae1384deaf3865b07aa91d7839be66199775fe7f6c02",
+  "checks": [
+    {
+      "name": "pairs",
+      "result": "passed",
+      "checked": 147
+    },
+    {
+      "name": "ids",
+      "result": "passed",
+      "checked": 147
+    },
+    {
+      "name": "graph",
+      "result": "passed",
+      "checked": 1
+    },
+    {
+      "name": "references",
+      "result": "passed",
+      "checked": 433
+    },
+    {
+      "name": "acceptance",
+      "result": "passed",
+      "checked": 2
+    },
+    {
+      "name": "closure",
+      "result": "passed",
+      "checked": 19
+    },
+    {
+      "name": "validate",
+      "result": "passed",
+      "checked": 147
+    },
+    {
+      "name": "reconcile",
+      "result": "passed",
+      "checked": 147
+    }
+  ],
+  "counts": {
+    "package_live": 2,
+    "package_terminal": 41,
+    "record_live": 104,
+    "record_closure": 0,
+    "plain_terminal": 1182,
+    "empty_container": 4
+  },
+  "versions": {
+    "schemas": [
+      "urn:fusion:schema:fusion.campaign/v1",
+      "urn:fusion:schema:fusion.common/v1",
+      "urn:fusion:schema:fusion.evidence/v1",
+      "urn:fusion:schema:fusion.migration-plan/v1",
+      "urn:fusion:schema:fusion.migration-proposal/v1",
+      "urn:fusion:schema:fusion.migration-receipt/v1",
+      "urn:fusion:schema:fusion.package/v1",
+      "urn:fusion:schema:fusion.protocol/v1",
+      "urn:fusion:schema:fusion.record/v1",
+      "urn:fusion:schema:fusion.workbench/v1"
+    ],
+    "features": [
+      "json-control-v1"
+    ]
+  },
+  "manifest_revision": "sha256:bd03306f86d542665684584bcd3628db2e97263eb2ad9a1a5e18b5814963fd53"
+}

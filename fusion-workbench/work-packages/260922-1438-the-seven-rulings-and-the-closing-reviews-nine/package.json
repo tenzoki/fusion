@@ -1,0 +1,57 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "340157a7-17aa-4ca6-9ae1-eab1689e2c7e",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": {
+    "checkout_id": "5e8248d7",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": null
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260922-1438-the-seven-rulings-and-the-closing-reviews-nine/260922-1438-the-seven-rulings-and-the-closing-reviews-nine.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": null,
+      "head": {
+        "Domain": "code",
+        "Status": "done",
+        "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-1438",
+        "Mode": "autonomous",
+        "Active spec/plan": "260922-1447_*_the-six-rulings-of-260922-and-the-nine-findings-of-the-closing-review.md (the plan)",
+        "Cross-references": "260922-0906-fix-package-over-every-open-issue.md, 260922-1208-reviewer-closing-pass-over-the-51-issue-package-451bb312-to-bf515cad.md, 260922-1420-bracket-citations-read-and-swept-once.md",
+        "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1438-the-seven-rulings-and-the-closing-reviews-nine/260922-1438-the-seven-rulings-and-the-closing-reviews-nine.md",
+      "sha256": "sha256:13aa45d9038370c193512055ecca36ebce50f89e6b392120dd67343737648f54",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

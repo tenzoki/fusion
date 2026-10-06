@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "61c50d3f-30ff-4850-828c-8f6ef1387087",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-08-20",
+        "Status": "Partially Complete",
+        "Source": "In-Circle clarification dispatched by the orchestrator against the Directive of",
+        "Measured at": "HEAD `a5b73da`, 2026-08-20. Every figure below was produced during this shaping run"
+      },
+      "step_marks": {},
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "c866d8172351bc4f24e090ba5013908e67a12d25"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md",
+      "sha256": "sha256:4632044032e311e5bd6e978dc1ae6250ed991a22cecadd87afd5911a577b73ab",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

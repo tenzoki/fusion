@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** answered
 **Filed by:** reconciler
 **Cross-references:** `260815-1455_*_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`, `260814-2017_*_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`, `260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`, `260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`, `260814-2306-orchestrator-session.md` (three `## Coherence` sections)
 

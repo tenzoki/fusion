@@ -1,0 +1,36 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "40f80768-8605-4ea3-9996-0d5308401c81",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-0626_o_no-shipped-prompt-binds-a-reviewers-evidence-record-to-its-package-so-a-succeeded-edge-cannot-be-met.md"
+  },
+  "filed_by": {
+    "actor": "code-implementer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Filed by": "code-implementer, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-0626_o_no-shipped-prompt-binds-a-reviewers-evidence-record-to-its-package-so-a-succeeded-edge-cannot-be-met.md",
+      "sha256": "sha256:c2b7ac0cef2c36f91372e42db066986051de0c4ace61addb9a7fd31cb4251107",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

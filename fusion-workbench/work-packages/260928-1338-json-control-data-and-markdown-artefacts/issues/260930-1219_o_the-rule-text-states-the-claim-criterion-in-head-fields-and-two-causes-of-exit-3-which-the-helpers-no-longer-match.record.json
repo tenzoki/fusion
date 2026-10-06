@@ -1,0 +1,37 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d27a285b-34ab-4a61-8238-9ab80401f0ff",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1219_o_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Filed by": "analyst, Kai Stalmann <ks@qantr.com>",
+        "The two passages, at `4bbc9d19`": "",
+        "Evidence": "`grep -n 'Status:\\*\\* claimed\\|two or more claimed items' rules/fusion-workbench-conventions.md` names the two lines; `sed -n 29,47p rules/agent-setup.md` is the second passage. Against them: `sed -n 23,47p bin/fusion-claimed-package` and `sed -n 44,55p bin/fusion-paths`. Observed at `4bbc9d19`: in this repository the work tree's `bin/fusion-paths analyst` exits 3 naming `legacy`, a cause neither passage lists. The plan that left the text for later: `260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md`, step 6 and the fourth row of `## Risks & Mitigations`.",
+        "Owner": "FJ03d, the part of FJ03 that changes rule text (the same plan, `## The cut of FJ03`). The edit is charged to the growth bound on the rule files. No session reads the branch's helpers before the migration, so nothing is misdirected until FJ03d activates.",
+        "Acceptance": "both passages state the criterion as `status` and `claim.checkout_id` of the package's JSON record; the exit table's row 3 names every cause the header of `bin/fusion-claimed-package` lists, or cites that header as the list; `## What fusion-paths emits` says what a reader does on a `legacy` or `unsupported` workbench; `grep -rnE '\\*\\*(Status|Claim):\\*\\*' rules/agent-setup.md` names nothing, and in `rules/fusion-workbench-conventions.md` no match stands under `## Path Resolution (Pfadauflösung)`."
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1219_o_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md",
+      "sha256": "sha256:c89a61594597c9dec7885f0f93f190799a2885c1744ff9027bcfc3c407b32dbf",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

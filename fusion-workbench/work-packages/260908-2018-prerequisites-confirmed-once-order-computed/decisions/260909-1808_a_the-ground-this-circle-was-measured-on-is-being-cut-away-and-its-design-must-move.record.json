@@ -1,0 +1,45 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "5eddc8e7-cd80-4ab7-a8d7-0c191f060bb4",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260909-1615_*_spec-cut-fusion-to-a-working-minimum.md",
+    "260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260909-1615_*_spec-cut-fusion-to-a-working-minimum.md, 260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md, 260909-1700-cut-fusion-to-working-minimum"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md",
+      "sha256": "sha256:c9eebb06b1df4d960e1a2c22a3f8545433d637e3357b35230dcbde05fe5e83e8",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "e9d3543d-9535-4fb1-b9bc-6b4730166b5b",
+      "display": "260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "28be75df-bd9a-48b8-a0f2-161bb18d3a87",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": {
+    "checkout_id": "5e8248d7",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": null
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260922-1420-bracket-citations-read-and-swept-once/260922-1420-bracket-citations-read-and-swept-once.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": null,
+      "head": {
+        "Domain": "code",
+        "Status": "done",
+        "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-1601",
+        "Mode": "autonomous",
+        "Active spec/plan": "260922-1628_*_the-grammar-reads-the-bracket-marker-and-the-tree-is-swept-once.md (the plan)",
+        "Cross-references": "260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md, 260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md, 260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md, 260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md",
+        "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1420-bracket-citations-read-and-swept-once/260922-1420-bracket-citations-read-and-swept-once.md",
+      "sha256": "sha256:6570b62b9866f75d2aa518e378e0851723b87246907291f1234f36d7ead98252",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

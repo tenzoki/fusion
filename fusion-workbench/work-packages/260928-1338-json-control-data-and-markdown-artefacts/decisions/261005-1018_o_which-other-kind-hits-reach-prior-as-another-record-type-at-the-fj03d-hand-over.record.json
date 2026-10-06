@@ -1,0 +1,42 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "06b835f0-f111-4125-bfed-29551c86df67",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261005-1018_o_which-other-kind-hits-reach-prior-as-another-record-type-at-the-fj03d-hand-over.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "261005-1016-fj03d-step10-classification-re-run-at-the-side-branch-head.md",
+    "261005-0856_*_fj03d-step10-class-reading-for-borderline-hits.md",
+    "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "261005-1016-fj03d-step10-classification-re-run-at-the-side-branch-head.md, 261005-0856_*_fj03d-step10-class-reading-for-borderline-hits.md, 261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261005-1018_o_which-other-kind-hits-reach-prior-as-another-record-type-at-the-fj03d-hand-over.md",
+      "sha256": "sha256:6763e91f4911897ddcf92ca2e3ec330e69648c330a43254d5f967d032d949553",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

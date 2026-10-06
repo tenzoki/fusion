@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "6a796f99-4a32-4575-a621-9183868a5096",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260910-2145_*_restore-the-per-work-item-container.md; 9b792042 (S1); f50b9aa4 (S2); hooks/lib/__tests__/helpers/growth-bound.ts"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md",
+      "sha256": "sha256:3a2695f351ef3669bddcef445853babb26ac7248f34b2f9807de68b4fb1e6cc5",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260910-0900-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

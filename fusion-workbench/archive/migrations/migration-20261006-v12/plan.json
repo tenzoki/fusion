@@ -1,0 +1,174 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "index",
+  "migration_id": "migration-20261006-v12",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "source_layout": "fusion-v12",
+  "proposal": {
+    "path": ".json-state/migration/migration-20261006-v12.json",
+    "sha256": "sha256:4375a4cd2764ade8ec243bef2cc4ad6335e382b5378fefb6676fa13d6614f0be"
+  },
+  "source_inventory_sha256": "sha256:99638d05a5f0bf4e6352552c55c12410505da25ea9306f27cbb1fd797d631baa",
+  "exclusions": [
+    ".session-marker",
+    ".checkout-id",
+    ".cadence-anchors",
+    ".check-stamps",
+    "monitor",
+    "orchestrator-events.jsonl",
+    ".fusion-setup",
+    ".asset-provenance",
+    ".guard-state",
+    ".commit-lock"
+  ],
+  "schedule": {
+    "plan": "77a50316-aa26-42c3-aefd-92c6f7a4a75c",
+    "apply": [
+      {
+        "chunk": 1,
+        "operation_id": "355a7ab6-9613-4f69-915f-c279eabeb525"
+      },
+      {
+        "chunk": 2,
+        "operation_id": "12a36b88-5f3e-412b-9f39-fd1f450730f3"
+      },
+      {
+        "chunk": 3,
+        "operation_id": "b566a008-f0a5-4c21-b610-cca9d47520af"
+      },
+      {
+        "chunk": 4,
+        "operation_id": "95ede1de-35ca-45cb-9f62-dc5defaef738"
+      },
+      {
+        "chunk": 5,
+        "operation_id": "264c4bed-b93d-41be-b963-790391ab47ed"
+      },
+      {
+        "chunk": 6,
+        "operation_id": "9ff169e6-1b68-4b15-aa36-896eb51aac77"
+      },
+      {
+        "chunk": 7,
+        "operation_id": "9c56a06f-b7ef-4547-9a88-b71eb1cc3c2c"
+      }
+    ],
+    "verify": "e6089163-5c40-4518-bfa2-2eb30f8217e9",
+    "rollback": [
+      {
+        "chunk": 0,
+        "operation_id": "99281e1b-b45e-4d8f-8d85-c7e85e2a6d3a"
+      },
+      {
+        "chunk": 1,
+        "operation_id": "3cbdd741-9c02-4b43-8aa7-2dc3708aa715"
+      },
+      {
+        "chunk": 2,
+        "operation_id": "709f0a26-080a-44e8-b7db-419b9b6f0ad3"
+      },
+      {
+        "chunk": 3,
+        "operation_id": "3d481ed4-86e9-4c27-95ae-d59195f96466"
+      },
+      {
+        "chunk": 4,
+        "operation_id": "4748ca35-126a-495e-86c3-31f99effa43a"
+      },
+      {
+        "chunk": 5,
+        "operation_id": "6bb4e5f0-68c4-4f9f-a0a0-a21b54728595"
+      },
+      {
+        "chunk": 6,
+        "operation_id": "cc17392e-d942-45c4-abe3-257a1b69302b"
+      },
+      {
+        "chunk": 7,
+        "operation_id": "7101cd5a-37b9-4afe-bfb8-96fa909ad752"
+      }
+    ],
+    "unassigned": []
+  },
+  "parts": [
+    {
+      "part": "chunk",
+      "n": 1,
+      "path": "archive/migrations/migration-20261006-v12/chunks/1.json",
+      "sha256": "sha256:ef6e0b7199db3e2b8b74310bcb23b7dfb220ec71d934de250aff2adb00635794",
+      "writes": 48
+    },
+    {
+      "part": "chunk",
+      "n": 2,
+      "path": "archive/migrations/migration-20261006-v12/chunks/2.json",
+      "sha256": "sha256:708228ec47388002a176ef84aca95d4948f51a941d126149997f27503c191d50",
+      "writes": 50
+    },
+    {
+      "part": "chunk",
+      "n": 3,
+      "path": "archive/migrations/migration-20261006-v12/chunks/3.json",
+      "sha256": "sha256:36c43e7fae3b8289b0d7a01b35290e8766d68215f81874b97c6748f29e9f6296",
+      "writes": 49
+    },
+    {
+      "part": "chunk",
+      "n": 4,
+      "path": "archive/migrations/migration-20261006-v12/chunks/4.json",
+      "sha256": "sha256:08a489f8f0c975cf8113d6ec27523d8bd87cf263bf875649ab4fd23860e0cf85",
+      "writes": 48
+    },
+    {
+      "part": "chunk",
+      "n": 5,
+      "path": "archive/migrations/migration-20261006-v12/chunks/5.json",
+      "sha256": "sha256:7d5ebc22bb52d4ef8515c25ef133ee6c408e72d3c05a2ee2d4b14856366e1048",
+      "writes": 50
+    },
+    {
+      "part": "chunk",
+      "n": 6,
+      "path": "archive/migrations/migration-20261006-v12/chunks/6.json",
+      "sha256": "sha256:46a11af76b2a86e911c03929fe0e4890cb892337437133fafbdeec03fc46c117",
+      "writes": 49
+    },
+    {
+      "part": "chunk",
+      "n": 7,
+      "path": "archive/migrations/migration-20261006-v12/chunks/7.json",
+      "sha256": "sha256:12d0e85d095349313786f5b7cf143e4ca71b519e2815dc0935ebbcc8069808af",
+      "writes": 35
+    },
+    {
+      "part": "records",
+      "n": 1,
+      "path": "archive/migrations/migration-20261006-v12/parts/records-1.json",
+      "sha256": "sha256:e7193ff4f311dad34d16d009d4adb5f36b841e5f294387fe46b84923d70c0145"
+    },
+    {
+      "part": "inventory",
+      "n": 1,
+      "path": "archive/migrations/migration-20261006-v12/parts/inventory-1.json",
+      "sha256": "sha256:29d51677552adb883191d38b2863f8685d08d7f38e1f15ce94ba82bde363c2d8"
+    },
+    {
+      "part": "findings",
+      "n": 1,
+      "path": "archive/migrations/migration-20261006-v12/parts/findings-1.json",
+      "sha256": "sha256:1124bef8e997204668ffb51cba32fad681d6a4106057472805980816fe2c723c"
+    },
+    {
+      "part": "repairs",
+      "n": 1,
+      "path": "archive/migrations/migration-20261006-v12/parts/repairs-1.json",
+      "sha256": "sha256:4c7c078acf69d3a15222c1a7275e741ba4cfc94d9ef4dc435c1fb886fc26ead3"
+    },
+    {
+      "part": "answers",
+      "n": 1,
+      "path": "archive/migrations/migration-20261006-v12/parts/answers-1.json",
+      "sha256": "sha256:8178058bfd6dba5eb4d4b51aa917b20366dcc966747f45ebb7805355b03494f4"
+    }
+  ]
+}

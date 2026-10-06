@@ -1,0 +1,1146 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "chunk",
+  "migration_id": "migration-20261006-v12",
+  "chunk": 7,
+  "writes": [
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_where-does-the-legacy-markdown-reader-live-and-what-does-the-codecs-migration-operation-take.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_where-does-the-legacy-markdown-reader-live-and-what-does-the-codecs-migration-operation-take.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:be1d6423c747f9458b2c876ec16a70bee3ec9973d336f91d8c051835b743f7d9"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ec15c9bc7a28b388079e929138af225a4c52372834363f7bfac70690605931b3"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:5a57d7a9a08a9ace4eb269624b9a546e4136902c86120bd586b353b8a46a3966"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:c69b6d3231e9b749b8e20056b3d5fe43ee6b65c1e3aa903c39f0a2d33f9631cd"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-1721_o_how-is-a-later-partial-override-of-a-decision-recorded.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-1721_o_how-is-a-later-partial-override-of-a-decision-recorded.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:74783c7605def014779840c59b75158f10a6a34e6a648f1b171319286d1fc721"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:0c20d2a254278cdf0c003108d82bbea839865c069756e4e9c41e63c80675417b"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:365c59774a65747f98b0361cb747c7c9018518d045a3e10a027a5f26f6a481f6"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261005-1018_o_which-other-kind-hits-reach-prior-as-another-record-type-at-the-fj03d-hand-over.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261005-1018_o_which-other-kind-hits-reach-prior-as-another-record-type-at-the-fj03d-hand-over.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:6763e91f4911897ddcf92ca2e3ec330e69648c330a43254d5f967d032d949553"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-1810_o_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-1810_o_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ebb4b37ee83579ef539cc4a6bf0646515dcc889a20858211815f24bc68f90664"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-2025_o_the-orchestrator-prompt-still-says-a-task-start-row-carries-the-byte-measurements.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-2025_o_the-orchestrator-prompt-still-says-a-task-start-row-carries-the-byte-measurements.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:2ae0d5924d9ddf42a00f4826bb7b51e144416f8c4228190862f1077521c02aff"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1219_o_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1219_o_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:c89a61594597c9dec7885f0f93f190799a2885c1744ff9027bcfc3c407b32dbf"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1640_o_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1640_o_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:d4aea109ad151da9b51517a6671361e78edb471f811b9d7cb1a621fbddd7f660"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261001-0841_o_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261001-0841_o_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:45f47d7a2944410eca3d5e958ef858452e8d396f10aeb222b9684f89707febd6"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-0626_o_no-shipped-prompt-binds-a-reviewers-evidence-record-to-its-package-so-a-succeeded-edge-cannot-be-met.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-0626_o_no-shipped-prompt-binds-a-reviewers-evidence-record-to-its-package-so-a-succeeded-edge-cannot-be-met.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:c2b7ac0cef2c36f91372e42db066986051de0c4ace61addb9a7fd31cb4251107"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-1018_o_six-consumers-the-prior-spec-names-have-no-test-that-runs-their-shipped-text.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-1018_o_six-consumers-the-prior-spec-names-have-no-test-that-runs-their-shipped-text.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:27aaffda84926c92ce7d8c8cd99e974b157b4696e926f6be5516f0ef71a696dc"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:2f279106411860061c734b4e96c6759e996b45c513a9d6526769adfb73622dec"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/261001-1930-work-order-slash-command-and-machine-readable-output.md",
+      "from": "work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/261001-1930-work-order-slash-command-and-machine-readable-output.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:d9a6797524cf668ff8b4ed5754ccf6eddaba5e3d8f9736849dd41ae6459ffb5d"
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_where-does-the-legacy-markdown-reader-live-and-what-does-the-codecs-migration-operation-take.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:17d7998f8c8418b08d9dcfeedfd623629b8ab1241d38df51bb38b29c2d75de4b",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "3903cf95-a3e7-4573-ab20-173e627408ca",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_where-does-the-legacy-markdown-reader-live-and-what-does-the-codecs-migration-operation-take.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "260929-1810_*_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+          "261001-1030_*_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 260929-1810_*_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md, 261001-1030_*_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_where-does-the-legacy-markdown-reader-live-and-what-does-the-codecs-migration-operation-take.md",
+            "sha256": "sha256:be1d6423c747f9458b2c876ec16a70bee3ec9973d336f91d8c051835b743f7d9",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:62dc89982995c65fcf6cbe07f7ca36707196ac82d50b3b51b57d68a10c8f3c7c",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "32576887-cc06-4def-a563-993971f7e52c",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md",
+            "sha256": "sha256:ec15c9bc7a28b388079e929138af225a4c52372834363f7bfac70690605931b3",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:a1f68b84069a50219af2338497fb0b3a77ee13ce3ea5dfa1ef96f04e93ff7a6c",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "d0ca8a32-654f-489b-855f-2df972333b7e",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "261002-2128_*_should-a-second-run-no-op-plan-stay-a-later-operation-that-blocks-rollback.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 261002-2128_*_should-a-second-run-no-op-plan-stay-a-later-operation-that-blocks-rollback.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md",
+            "sha256": "sha256:5a57d7a9a08a9ace4eb269624b9a546e4136902c86120bd586b353b8a46a3966",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md",
+            "sha256": "sha256:5a57d7a9a08a9ace4eb269624b9a546e4136902c86120bd586b353b8a46a3966",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:4c488faf7a8b9d8ee09dfcc39e4c2a45e31cf5d1172718ff0b42187256f1520b",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "9fa6a7f3-c0b2-4605-8a16-211a7bff077a",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "261003-1004-fj04-step12-proof-on-copies-of-real-workbenches.md",
+          "261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 261003-1004-fj04-step12-proof-on-copies-of-real-workbenches.md, 261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "no-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md",
+            "sha256": "sha256:c69b6d3231e9b749b8e20056b3d5fe43ee6b65c1e3aa903c39f0a2d33f9631cd",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md",
+            "sha256": "sha256:c69b6d3231e9b749b8e20056b3d5fe43ee6b65c1e3aa903c39f0a2d33f9631cd",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-1721_o_how-is-a-later-partial-override-of-a-decision-recorded.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:a9c393045d062820da2c17bae6863a5343b883e583048081f71325482d9bb98b",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "da6fad62-541e-4b6f-aa00-99c0311fa194",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-1721_o_how-is-a-later-partial-override-of-a-decision-recorded.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "261004-1641_*_how-mark-partly-overridden-decision-261001-1804.md",
+          "261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "261004-1641_*_how-mark-partly-overridden-decision-261001-1804.md, 261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-1721_o_how-is-a-later-partial-override-of-a-decision-recorded.md",
+            "sha256": "sha256:74783c7605def014779840c59b75158f10a6a34e6a648f1b171319286d1fc721",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "answer_ref": null,
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:e0b3007231e558ab1efd1d860c29bf451bfa50ab1dbca6ba2b1f9cf6059dad34",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "71c07ada-88bf-4008-bc3a-d242dd9c1d71",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md",
+          "260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+          "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "no-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md",
+            "sha256": "sha256:0c20d2a254278cdf0c003108d82bbea839865c069756e4e9c41e63c80675417b",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md",
+            "sha256": "sha256:0c20d2a254278cdf0c003108d82bbea839865c069756e4e9c41e63c80675417b",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:f1d51db354456f85a08365f7634d0b8bafe3b96b6c433046126af5211bdfbb62",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "c9a501ec-d585-4450-80ac-c4bf23ccfd6f",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+          "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "no-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md",
+            "sha256": "sha256:365c59774a65747f98b0361cb747c7c9018518d045a3e10a027a5f26f6a481f6",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md",
+            "sha256": "sha256:365c59774a65747f98b0361cb747c7c9018518d045a3e10a027a5f26f6a481f6",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261005-1018_o_which-other-kind-hits-reach-prior-as-another-record-type-at-the-fj03d-hand-over.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:9344459fb7219e3885bfc81b6c34b06a118be4b9033211e2287264ba10642c3d",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "06b835f0-f111-4125-bfed-29551c86df67",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261005-1018_o_which-other-kind-hits-reach-prior-as-another-record-type-at-the-fj03d-hand-over.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "261005-1016-fj03d-step10-classification-re-run-at-the-side-branch-head.md",
+          "261005-0856_*_fj03d-step10-class-reading-for-borderline-hits.md",
+          "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "261005-1016-fj03d-step10-classification-re-run-at-the-side-branch-head.md, 261005-0856_*_fj03d-step10-class-reading-for-borderline-hits.md, 261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261005-1018_o_which-other-kind-hits-reach-prior-as-another-record-type-at-the-fj03d-hand-over.md",
+            "sha256": "sha256:6763e91f4911897ddcf92ca2e3ec330e69648c330a43254d5f967d032d949553",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "answer_ref": null,
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-1810_o_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:e8f3636593573cd5a8c183b0f6c37a39ed0243038d66379f2ca0ec55e164461b",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "7a2173fd-24a6-49b7-b17c-ee632e18496a",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-1810_o_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+          "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-1810_o_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md",
+            "sha256": "sha256:ebb4b37ee83579ef539cc4a6bf0646515dcc889a20858211815f24bc68f90664",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-2025_o_the-orchestrator-prompt-still-says-a-task-start-row-carries-the-byte-measurements.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:93afc2e84c9c25405453a9e044c1f6d5d9531121828dc872f53116e0f1d792e7",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "ea7ea5a5-b640-4802-b14c-8a89c6088fc7",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-2025_o_the-orchestrator-prompt-still-says-a-task-start-row-carries-the-byte-measurements.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Evidence": "`grep -n 'byte measurements' agents/orchestrator.md` names the one row. The executor of step 2 searched `agents/`, `skills/`, `rules/`, `docs/`, `templates/`, `README.md`, `README-agents.md` and `CLAUDE.md` and found no other passage. The ruling that removed the measurement: `260929-1919_*_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md`.",
+              "Owner": "FJ03d, the part of FJ03 that changes agent text (`260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md` `## The cut of FJ03`). The edit is charged to the growth bound on `agents/`; it removes words.",
+              "Acceptance": "the row describes what the hook writes, and `grep -rn 'byte measurements' agents skills rules` names nothing."
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-2025_o_the-orchestrator-prompt-still-says-a-task-start-row-carries-the-byte-measurements.md",
+            "sha256": "sha256:2ae0d5924d9ddf42a00f4826bb7b51e144416f8c4228190862f1077521c02aff",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1219_o_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:6c842ce98f48bc5698b96e26d6328fd6f317bad5f03c02db514509785dfe94df",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "d27a285b-34ab-4a61-8238-9ab80401f0ff",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1219_o_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md"
+        },
+        "filed_by": {
+          "actor": "analyst",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Filed by": "analyst, Kai Stalmann <ks@qantr.com>",
+              "The two passages, at `4bbc9d19`": "",
+              "Evidence": "`grep -n 'Status:\\*\\* claimed\\|two or more claimed items' rules/fusion-workbench-conventions.md` names the two lines; `sed -n 29,47p rules/agent-setup.md` is the second passage. Against them: `sed -n 23,47p bin/fusion-claimed-package` and `sed -n 44,55p bin/fusion-paths`. Observed at `4bbc9d19`: in this repository the work tree's `bin/fusion-paths analyst` exits 3 naming `legacy`, a cause neither passage lists. The plan that left the text for later: `260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md`, step 6 and the fourth row of `## Risks & Mitigations`.",
+              "Owner": "FJ03d, the part of FJ03 that changes rule text (the same plan, `## The cut of FJ03`). The edit is charged to the growth bound on the rule files. No session reads the branch's helpers before the migration, so nothing is misdirected until FJ03d activates.",
+              "Acceptance": "both passages state the criterion as `status` and `claim.checkout_id` of the package's JSON record; the exit table's row 3 names every cause the header of `bin/fusion-claimed-package` lists, or cites that header as the list; `## What fusion-paths emits` says what a reader does on a `legacy` or `unsupported` workbench; `grep -rnE '\\*\\*(Status|Claim):\\*\\*' rules/agent-setup.md` names nothing, and in `rules/fusion-workbench-conventions.md` no match stands under `## Path Resolution (Pfadauflösung)`."
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1219_o_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md",
+            "sha256": "sha256:c89a61594597c9dec7885f0f93f190799a2885c1744ff9027bcfc3c407b32dbf",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1640_o_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:b6d2053356663bd630ae443704ec2bf75d96a395c00978d0ca9e9bb93ed763f3",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "e4d2772b-4773-4f8a-83f0-887715d0cd86",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1640_o_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.md"
+        },
+        "filed_by": {
+          "actor": "analyst",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md",
+          "260930-1219_*_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md",
+          "260929-1810_*_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md",
+          "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Filed by": "analyst, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md (step 8), 260930-1219_*_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md (the claim criterion and exit 3 in the same two rule files; not repeated here), 260929-1810_*_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md (the marker grammar in `agents/orchestrator.md`; not repeated here), 260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+              "Acceptance for FJ03d": ""
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1640_o_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.md",
+            "sha256": "sha256:d4aea109ad151da9b51517a6671361e78edb471f811b9d7cb1a621fbddd7f660",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261001-0841_o_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:c3edbddf83c355acb291d8b748c4ae80caea28c766f119061ac3588f389aa55a",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "8a5fe65a-edcb-406b-a9de-996b7f9e6b8f",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261001-0841_o_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.md"
+        },
+        "filed_by": {
+          "actor": "reviewer",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260930-1712_*_the-codecs-reconcile-grows-with-the-square-of-the-record-count-and-outlasts-the-clients-timeout-from-about-1200-records.md",
+          "260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md",
+          "261001-0837-reviewer-fj03b-initialize-and-fj03c.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Filed by": "reviewer, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260930-1712_*_the-codecs-reconcile-grows-with-the-square-of-the-record-count-and-outlasts-the-clients-timeout-from-about-1200-records.md (closed), 260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md (steps 4, 7, 7a, 8 (d)), 261001-0837-reviewer-fj03b-initialize-and-fj03c.md",
+              "Evidence": "",
+              "Fix direction": "",
+              "Acceptance": ""
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261001-0841_o_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.md",
+            "sha256": "sha256:45f47d7a2944410eca3d5e958ef858452e8d396f10aeb222b9684f89707febd6",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-0626_o_no-shipped-prompt-binds-a-reviewers-evidence-record-to-its-package-so-a-succeeded-edge-cannot-be-met.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:1365cc2cab9e86f4d124cf841fff65f44fd733f89adeb764851346cbdd92b4d0",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "40f80768-8605-4ea3-9996-0d5308401c81",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-0626_o_no-shipped-prompt-binds-a-reviewers-evidence-record-to-its-package-so-a-succeeded-edge-cannot-be-met.md"
+        },
+        "filed_by": {
+          "actor": "code-implementer",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Filed by": "code-implementer, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-0626_o_no-shipped-prompt-binds-a-reviewers-evidence-record-to-its-package-so-a-succeeded-edge-cannot-be-met.md",
+            "sha256": "sha256:c2b7ac0cef2c36f91372e42db066986051de0c4ace61addb9a7fd31cb4251107",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-1018_o_six-consumers-the-prior-spec-names-have-no-test-that-runs-their-shipped-text.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:08e48db3903a7480317aecf06d531f2d2ebfdde1cb27e699b255745e24ffd531",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "0e0a4d5a-7f4d-4f80-9484-7c8032bb2ac9",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "issue",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-1018_o_six-consumers-the-prior-spec-names-have-no-test-that-runs-their-shipped-text.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "261005-1016-fj03d-step10-classification-re-run-at-the-side-branch-head.md",
+          "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "261005-1016-fj03d-step10-classification-re-run-at-the-side-branch-head.md, 261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-1018_o_six-consumers-the-prior-spec-names-have-no-test-that-runs-their-shipped-text.md",
+            "sha256": "sha256:27aaffda84926c92ce7d8c8cd99e974b157b4696e926f6be5516f0ef71a696dc",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:a61f6951c2be9780d783d95b7fcbd3a0c7afa18fd5ca29a1833e37de2d50d6e0",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "76f818ef-1569-43b8-8b7f-885f652c559c",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+          "260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md",
+          "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+          "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+          "260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md",
+          "261004-2212_*_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md",
+          "261004-2212_*_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md",
+          "261004-1721_*_how-is-a-later-partial-override-of-a-decision-recorded.md",
+          "260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+          "261003-1004-fj04-step12-proof-on-copies-of-real-workbenches.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "p",
+            "head": {
+              "Date": "2026-10-04",
+              "Status": "Approved 2026-10-04 (plan approval answered by **Mode:** autonomous). The user ruled 2026-10-05: decision 261004-2212 (byte bound) option 1, cut-only; decision 261004-2212 (client) option 1 with the install home `~/.fp`; and, binding on every step: **`~/.fusion` is never changed** — no step installs, updates, reinstalls or writes there, because a consumer project is worked on productively from it. Step 13 proves before the install that neither the window launcher nor `fusion --update` from it can write `~/.fusion` (the risk row on `fusion --update` reinstalling `heads/main` into `~/.fusion` is a blocker until so proven), and FJ05 does not change `~/.fusion` either without the user's own act.",
+              "Spec": "none as a requirements-designer spec. Prior's `concept/fusion-json-workbench-spec.md` at Prior `5609ff1` (main): §1, §3 (layout, tracking classes), §7 (the consumer table and its closing classification paragraph), §8.1 and §8.3 (preconditions, application, read-back), §9 (the FJ03d and FJ05 rows, the order paragraph, the mandatory checks). Prior's release boundary: `Prior: docs/design/fusion-fj04-correction-prior-response.md` `## Validation and release boundary` (\"Plugin activation and use evidence belong to the remaining FJ03d/FJ05 release work\").",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md (closed; its `## Where this work stops` carries this plan's preconditions), 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md (`## The cut of FJ03`), 260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md, 260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md, 260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md, 260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md, 261004-2212_*_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md, 261004-2212_*_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md, 261004-1721_*_how-is-a-later-partial-override-of-a-decision-recorded.md, 260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md, 261003-1004-fj04-step12-proof-on-copies-of-real-workbenches.md",
+              "Planned against": "fusion `9c74070b`, `plugin.json` 13.0.0; bundle 689 747 bytes, `sha256:c76bbce9cc86634f5e9c227e8496511dc71eb845768704f43e68200ab841e52e` (qualified, Prior `d6abeb8`). `origin/main` (`48f0c9ff`, 12.2.3) is an ancestor of HEAD (`git merge-base --is-ancestor origin/main HEAD` exit 0). Installed client `~/.fusion` 12.2.1.",
+              "Growth bound": "room measured at `9c74070b` as baseline sum plus head-room minus the surface's current size: `agents/` 4 226 bytes, `skills/` 3 370 bytes, hook tests 4 681 lines. The dispatch-path bound stands at 0 head-room with 620 to 1 189 bytes of margin per path (inference: summed by hand, the test's own report governs). Rule and prompt edits follow decision 261004-2212 (dispatch path), recommended option 1, cut-only; surface bounds follow the answered record 260929-1810 on the growth bound (replace first, raise the measured remainder, log it). No baseline moves.",
+              "Confidentiality": "this plan touches fusion's own workbench only. No other project is copied, measured or named.",
+              "Decidability": "Four questions. **(1) Is the consumer classification complete?** Decidable relative to a fixed pattern set: §7 names the patterns (the five control head fields, marker scans, marker renames, inline progress parsers), so one recorded search command at one commit enumerates every textual hit, and each hit gets exactly one of four disjoint classes (step 2). Not decidable by text search: a reader that builds a marker pattern at run time matches no pattern. The mechanism therefore adds a behavioural check: the rehearsal (step 11) runs every shipped helper, lint and skill block over a migrated copy of this workbench, where a surviving Markdown control reader shows up as a refusal, a wrong count or a red lint. **(2) Do rules, data and the installed client switch together?** Decidable by order: the side branch carries every text change, nothing of it reaches the work tree this repository's sessions read until the merge in step 13, and steps 13 to 15 run in one window with each step checking the previous one's result. Whether another checkout writes during the window is not decidable from inside this checkout (no lock spans checkouts, Prior §6). The mechanism is FJ04's: source hashes frozen in the migration plan detect a write during the run, and quiescence is a stated precondition the user confirms. A v12 client writing after activation is detected by nothing; the upgrade document states it as a limit (step 9). **(3) Do the text changes fit the bounds?** Decidable per commit by the bound tests. **(4) Which records are live after migration?** Decidable from each control file's `status` and the `terminal` sets of `codec/contract/transitions.json`, the table the kernel reads. No predicate reads a marker letter for live state after step 8."
+            },
+            "step_marks": {},
+            "unanchored_marks": {
+              "line 106": "DONE",
+              "line 114": "DONE",
+              "line 129": "DONE",
+              "line 142": "DONE",
+              "line 150": "DONE",
+              "line 161": "DONE",
+              "line 172": "DONE",
+              "line 188": "DONE",
+              "line 201": "DONE",
+              "line 226": "DONE",
+              "line 234": "DONE",
+              "line 251": "DONE",
+              "line 271": "DONE"
+            },
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "4813c9a4c8109d6c6ce99fd99f8c7d3f9469469b"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+            "sha256": "sha256:2f279106411860061c734b4e96c6759e996b45c513a9d6526769adfb73622dec",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "in_progress",
+          "steps": [
+            {
+              "id": "1",
+              "state": "open"
+            },
+            {
+              "id": "2",
+              "state": "open"
+            },
+            {
+              "id": "3",
+              "state": "open"
+            },
+            {
+              "id": "4",
+              "state": "open"
+            },
+            {
+              "id": "5",
+              "state": "open"
+            },
+            {
+              "id": "6",
+              "state": "open"
+            },
+            {
+              "id": "7",
+              "state": "open"
+            },
+            {
+              "id": "8",
+              "state": "open"
+            },
+            {
+              "id": "9",
+              "state": "open"
+            },
+            {
+              "id": "10",
+              "state": "open"
+            },
+            {
+              "id": "11",
+              "state": "open"
+            },
+            {
+              "id": "12",
+              "state": "open"
+            },
+            {
+              "id": "13",
+              "state": "open"
+            },
+            {
+              "id": "14",
+              "state": "open"
+            },
+            {
+              "id": "15",
+              "state": "open"
+            },
+            {
+              "id": "16",
+              "state": "open"
+            },
+            {
+              "id": "17",
+              "state": "open"
+            }
+          ],
+          "criteria": [],
+          "acceptance": {
+            "ref": {
+              "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+              "record_id": "88f7b586-6715-4ead-99a1-f82332e6946b",
+              "display": "260928-1338-json-control-data-and-markdown-artefacts.md"
+            },
+            "revision": "sha256:63fc429617cf3a86129136120c50ff131fa49818e5e93dc2c7cf611dbbba4c7b"
+          }
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md",
+      "source_sha256": "sha256:2f279106411860061c734b4e96c6759e996b45c513a9d6526769adfb73622dec",
+      "after_sha256": "sha256:63fc429617cf3a86129136120c50ff131fa49818e5e93dc2c7cf611dbbba4c7b",
+      "deletions": [
+        {
+          "offset": 194,
+          "length": 715
+        },
+        {
+          "offset": 14680,
+          "length": 7
+        },
+        {
+          "offset": 16982,
+          "length": 7
+        },
+        {
+          "offset": 21920,
+          "length": 7
+        },
+        {
+          "offset": 23872,
+          "length": 7
+        },
+        {
+          "offset": 25876,
+          "length": 7
+        },
+        {
+          "offset": 27765,
+          "length": 7
+        },
+        {
+          "offset": 30241,
+          "length": 7
+        },
+        {
+          "offset": 32845,
+          "length": 7
+        },
+        {
+          "offset": 35318,
+          "length": 7
+        },
+        {
+          "offset": 38821,
+          "length": 7
+        },
+        {
+          "offset": 41515,
+          "length": 7
+        },
+        {
+          "offset": 51027,
+          "length": 7
+        },
+        {
+          "offset": 55903,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:db011a9f2148733287786ab10a611e21f351e67ba423644a50d5258a18a5738f",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "18b0d79f-41c5-4e5f-8fff-27a2384e6ec8",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/261001-1930-work-order-slash-command-and-machine-readable-output.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 261001-2139",
+              "Active spec/plan": "261001-1934_*_spec-work-order-slash-command-and-machine-readable-output.md (spec), 261002-0733_*_plan-work-order-markdown-and-json-formats.md (plan)",
+              "Cross-references": "260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260908-2018-prerequisites-confirmed-once-order-computed.md, 261001-1955_*_plan-work-order-slash-command-and-tsv-output.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/261001-1930-work-order-slash-command-and-machine-readable-output.md",
+            "sha256": "sha256:d9a6797524cf668ff8b4ed5754ccf6eddaba5e3d8f9736849dd41ae6459ffb5d",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    }
+  ]
+}

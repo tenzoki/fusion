@@ -1,0 +1,1923 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "chunk",
+  "migration_id": "migration-20261006-v12",
+  "chunk": 5,
+  "writes": [
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md",
+      "from": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:4bfe723135e099d4d5989b2bfbc7ac1b1914d9362a406a6ca1e67015e8c54fb3"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md",
+      "from": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:7df5cda91b3bf1104cf2d04c10d090cb6368b376dc5201850c8904ad6d76065b"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-1338-depends-on-kanten-automatisch-erzeugen/260917-1338-depends-on-kanten-automatisch-erzeugen.md",
+      "from": "work-packages/260917-1338-depends-on-kanten-automatisch-erzeugen/260917-1338-depends-on-kanten-automatisch-erzeugen.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:d2337c30443e6186d6478b92ced3c600826bd1faed2077813ac58a490c2f1e39"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/260917-2253-depends-on-edges-proposed-and-confirmed.md",
+      "from": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/260917-2253-depends-on-edges-proposed-and-confirmed.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:5bdecaba0b0a6683c01c1dcad0347240012be1a883b6d1144caaf99ea9c0478e"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/discussions/260917-2258_o_spec-depends-on-edges-zero-yield.md",
+      "from": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/discussions/260917-2258_o_spec-depends-on-edges-zero-yield.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:c842c66e837406a2af48a9ae617e9357ab42b328107d15aa3dfd429b1fe48b28"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "from": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:0f3fcf86c674f6dd0679344ec0deca3e137caed56f806d11ef68848c41bd56a2"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md",
+      "from": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:b4367784359e5656a28d22e9e7c36239812d5e7f0472375d04335f52b9bf5751"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260918-0706-strike-unconfirmed-depends-on-entry/260918-0706-strike-unconfirmed-depends-on-entry.md",
+      "from": "work-packages/260918-0706-strike-unconfirmed-depends-on-entry/260918-0706-strike-unconfirmed-depends-on-entry.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:0182aa12ebe3f6ff93497a85a249969515f04bcf388cc24ba81de4df9009c934"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md",
+      "from": "work-packages/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:043ed968819297a3a460a34e11d86132f825e5d275a71abf486e87fffbb5a5d0"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md",
+      "from": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:2c8da8167cf1d0ed1e0d1bf9a0d213d7ffc217802945ac5d20a11bb3268ed6eb"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md",
+      "from": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:10c7cdbcd2ce3459b6411668217f84c586e159caa9e7d53f0333bca502aaee85"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten.md",
+      "from": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:7d1b5108d4e3d04fb6587f139c222ec539f4d86c4c93800a4c401ac26f0bc2cc"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md",
+      "from": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:2ee9238c3cd2a05d1e60b6f9c2ff4dcac644c03097245ec4a28578b9b95b4942"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-0137-measure-the-reconciler-on-a-smaller-model/260922-0137-measure-the-reconciler-on-a-smaller-model.md",
+      "from": "work-packages/260922-0137-measure-the-reconciler-on-a-smaller-model/260922-0137-measure-the-reconciler-on-a-smaller-model.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:6f7357a4163349218636072ccacdaedaf323f39676ec9a34ccbd226ff7625da9"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-0906-fix-package-over-every-open-issue/260922-0906-fix-package-over-every-open-issue.md",
+      "from": "work-packages/260922-0906-fix-package-over-every-open-issue/260922-0906-fix-package-over-every-open-issue.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ab864a72ecd66b45af67e150af80e0b848d049780f4c175386c561308ed31f18"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/260922-1038-prior-mapping.md",
+      "from": "work-packages/260922-1038-prior-mapping/260922-1038-prior-mapping.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:71e0ea567c87eb4280092fbeb2014200f844aea79438a1a578c9e4872e415bad"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.md",
+      "from": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:02e841d235f43f7b72cf6f98875e505baf0263fff1f82e062b7631082ac25797"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+      "from": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ab2dba05e8270fa0c4657d5816d3d26542f681507bb3320150789757e33b01f1"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+      "from": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:b28b8ee4760ef8e4834102e53e6cd6c14062f3f786306839e65b8c17444f3de2"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+      "from": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:f97e3f564e22d6e259025f0097057e0f13dcf4816f8a33cec543e7b37738dd28"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.md",
+      "from": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:db6bb891a2f51c576cc53070c577b2b798d6ad97e32b358b75918ddae2c73a2a"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+      "from": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:923b7fe0bedc7836fe3d7b4e7f9626ee6c9404ad3bc555f9e7a31b9d393bfff2"
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:9ffa10bdd9081070a5c574b0afb07917abedfee6600fdc651891332a5d3aaf8c",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "c8c913b7-b3c6-4456-9a75-f2c049d29700",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-17",
+              "Status": "Draft",
+              "Source": "Work item `260916-1050-neues-discuss-feature.md` `## Directive`, eight numbered points and two questions the user left open. Both open points were put back to him and answered on 2026-09-17; the answers are recorded under the capabilities they settle."
+            },
+            "step_marks": {},
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "13ac4194289387f54a6eb35f51cb21052c1875be"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md",
+            "sha256": "sha256:4bfe723135e099d4d5989b2bfbc7ac1b1914d9362a406a6ca1e67015e8c54fb3",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md",
+      "source_sha256": "sha256:4bfe723135e099d4d5989b2bfbc7ac1b1914d9362a406a6ca1e67015e8c54fb3",
+      "after_sha256": "sha256:911c272f27b0e6a8682ee95bd24dfcdc41b8f0475473af1a995e03fe2dd0fabf",
+      "deletions": [
+        {
+          "offset": 102,
+          "length": 18
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:890b377ef431fd94b4364bd015289f88b717c54475cadcabbdee69da9492233a",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "45c6ff3f-ecf1-4c5f-b36f-d9f9874b16ea",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-17",
+              "Status": "Complete",
+              "Spec": "`260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`, approved by the user at 11:27 on 2026-09-17",
+              "Decidability": "The load-bearing question is whether the loop's stop is decidable from the register alone. It is. Condition A reads two properties of the register (does any entry carry the undecidable verdict; did this round produce a refutation that was not there before) and condition B reads a counter. Both are total, because every entry is written carrying a verdict in the round it enters and the register is read only after a round. One field is *not* a settled fact when it is written, and the design keeps it out of the stop: `contested` means \"neither partner has conceded as of this round\", a per-round reading a later round may clear. A rule that asked \"has anyone conceded for good\" would be undecidable at every round but the last, the deciding input being a future round. C4 avoids that question rather than approximating it, by making the verdict the second partner's finding and `contested` a flag the stopping rule never reads. No change of mechanism is needed."
+            },
+            "step_marks": {
+              "1": "DONE",
+              "2": "DONE",
+              "3": "DONE",
+              "4": "DONE",
+              "5": "DONE",
+              "6": "DONE",
+              "7": "DONE",
+              "8": "DONE",
+              "9": "DONE",
+              "10": "DONE",
+              "11": "DONE",
+              "12": "DONE",
+              "13": "DONE"
+            },
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "9084eed6892aec29b3262cdd693762bdd5433707"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md",
+            "sha256": "sha256:7df5cda91b3bf1104cf2d04c10d090cb6368b376dc5201850c8904ad6d76065b",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [
+            {
+              "id": "1",
+              "state": "done"
+            },
+            {
+              "id": "2",
+              "state": "done"
+            },
+            {
+              "id": "3",
+              "state": "done"
+            },
+            {
+              "id": "4",
+              "state": "done"
+            },
+            {
+              "id": "5",
+              "state": "done"
+            },
+            {
+              "id": "6",
+              "state": "done"
+            },
+            {
+              "id": "7",
+              "state": "done"
+            },
+            {
+              "id": "8",
+              "state": "done"
+            },
+            {
+              "id": "9",
+              "state": "done"
+            },
+            {
+              "id": "10",
+              "state": "done"
+            },
+            {
+              "id": "11",
+              "state": "done"
+            },
+            {
+              "id": "12",
+              "state": "done"
+            },
+            {
+              "id": "13",
+              "state": "done"
+            }
+          ],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md",
+      "source_sha256": "sha256:7df5cda91b3bf1104cf2d04c10d090cb6368b376dc5201850c8904ad6d76065b",
+      "after_sha256": "sha256:16721ce90aff6ea1b4c2c837150197a2434e1368fe43749c6743eb959720c877",
+      "deletions": [
+        {
+          "offset": 117,
+          "length": 21
+        },
+        {
+          "offset": 17803,
+          "length": 7
+        },
+        {
+          "offset": 18531,
+          "length": 7
+        },
+        {
+          "offset": 19573,
+          "length": 7
+        },
+        {
+          "offset": 20271,
+          "length": 7
+        },
+        {
+          "offset": 21515,
+          "length": 7
+        },
+        {
+          "offset": 22177,
+          "length": 7
+        },
+        {
+          "offset": 23768,
+          "length": 7
+        },
+        {
+          "offset": 24925,
+          "length": 7
+        },
+        {
+          "offset": 26538,
+          "length": 7
+        },
+        {
+          "offset": 27362,
+          "length": 7
+        },
+        {
+          "offset": 28232,
+          "length": 7
+        },
+        {
+          "offset": 33362,
+          "length": 7
+        },
+        {
+          "offset": 35289,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260917-1338-depends-on-kanten-automatisch-erzeugen/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:337d53bc733e2e976b8f8cbcd6ed02c5cedd2e4deb53b6a32697a7f1003c8c3b",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "822a568c-f421-4f8d-bb50-57ad86220e71",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": null,
+        "status": "dropped",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260917-1338-depends-on-kanten-automatisch-erzeugen/260917-1338-depends-on-kanten-automatisch-erzeugen.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "dropped",
+          "reason": "dropped (legacy item record; its narrative states why)",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Status": "dropped",
+              "Cross-references": "260917-2253-depends-on-edges-proposed-and-confirmed.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-1338-depends-on-kanten-automatisch-erzeugen/260917-1338-depends-on-kanten-automatisch-erzeugen.md",
+            "sha256": "sha256:d2337c30443e6186d6478b92ced3c600826bd1faed2077813ac58a490c2f1e39",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:d78d495b2b1a4c75fe8a60e922bf1147e5f4c633a18ae4c97088dbcd5690b31a",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "382890d4-7aa9-47e8-bc77-a6de939be2db",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "paused",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/260917-2253-depends-on-edges-proposed-and-confirmed.md"
+        },
+        "depends_on": [
+          {
+            "target": {
+              "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+              "record_id": "d5897f34-6aae-4557-bc7b-033f3dc63c93",
+              "display": "260918-0706-strike-unconfirmed-depends-on-entry.md"
+            },
+            "condition": "terminal"
+          }
+        ],
+        "active_documents": [
+          {
+            "ref": {
+              "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+              "record_id": "fae13f3f-b8d5-4e37-b72c-f21caa1fd0f4",
+              "display": "260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md"
+            },
+            "role": "spec",
+            "revision": "sha256:27c8eff4a6ee23a5cecb59f17eadaf6dd0210be20ebbb1e9fcc5c0025f1d7cca"
+          },
+          {
+            "ref": {
+              "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+              "record_id": "e97a93f4-8b38-493f-9e01-17f1d86776ed",
+              "display": "260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md"
+            },
+            "role": "plan",
+            "revision": "sha256:66da14c9a2d39ff14ed91d838650e030906ac29a29178b125b10735835517bb2"
+          }
+        ],
+        "references": [
+          "260917-1338-depends-on-kanten-automatisch-erzeugen.md",
+          "260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md",
+          "260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md",
+          "260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md",
+          "260908-2018-prerequisites-confirmed-once-order-computed.md",
+          "260909-1700-cut-fusion-to-working-minimum.md",
+          "260912-0438-human-facing-docs-leave-claude-md.md"
+        ],
+        "evidence": [],
+        "outcome": null,
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "paused",
+              "Active spec/plan": "260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md (the spec), 260918-0712_*_implementation-depends-on-edges-proposed-and-confirmed.md (the plan drawn from it, and the one carrying the stopping section)",
+              "Depends-on": "260918-0706-strike-unconfirmed-depends-on-entry.md",
+              "Cross-references": "260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md, 260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md, 260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md, 260908-2018-prerequisites-confirmed-once-order-computed.md, 260909-1700-cut-fusion-to-working-minimum.md, 260912-0438-human-facing-docs-leave-claude-md.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/260917-2253-depends-on-edges-proposed-and-confirmed.md",
+            "sha256": "sha256:5bdecaba0b0a6683c01c1dcad0347240012be1a883b6d1144caaf99ea9c0478e",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/260917-2253-depends-on-edges-proposed-and-confirmed.md",
+      "source_sha256": "sha256:5bdecaba0b0a6683c01c1dcad0347240012be1a883b6d1144caaf99ea9c0478e",
+      "after_sha256": "sha256:f980327635b476aada5a48cba1a2b218cf1aa82886f00f6bf3ea1434a92701cc",
+      "deletions": [
+        {
+          "offset": 95,
+          "length": 322
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/discussions/260917-2258_o_spec-depends-on-edges-zero-yield.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:1ae2d2cde42eff06f4d0430ee8f03da2d06a339d2e713554fe850d9e29c654d0",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "aa724d72-e79b-4c5f-83da-9609f68a01f4",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "discussion",
+        "narrative": {
+          "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/discussions/260917-2258_o_spec-depends-on-edges-zero-yield.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md",
+          "260917-2253-depends-on-edges-proposed-and-confirmed.md",
+          "260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md",
+          "260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md",
+          "260911-1915-candidate-prerequisite-edges.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Partners": "orchestrator and consultant",
+              "Rounds": "4",
+              "Ceiling": "8",
+              "Outcome": "still running",
+              "Cross-references": "260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md, 260917-2253-depends-on-edges-proposed-and-confirmed.md, 260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md, 260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md, 260911-1915-candidate-prerequisite-edges.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/discussions/260917-2258_o_spec-depends-on-edges-zero-yield.md",
+            "sha256": "sha256:c842c66e837406a2af48a9ae617e9357ab42b328107d15aa3dfd429b1fe48b28",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "participants": [],
+          "outcome_refs": []
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:45fe41a06a8e174e0cb393b11fdccce0cdb600e7c9d4ee3aa034f05bb50dbf55",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "fae13f3f-b8d5-4e37-b72c-f21caa1fd0f4",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-17",
+              "Status": "Draft",
+              "Source": "The work item `260917-2253-depends-on-edges-proposed-and-confirmed.md`, dispatched by the"
+            },
+            "step_marks": {},
+            "unanchored_marks": {
+              "line 140": "DONE",
+              "line 142": "DONE",
+              "line 144": "DONE",
+              "line 146": "DONE",
+              "line 149": "DONE"
+            },
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "5919fbdf6d4341225398f635d6052f11e80a9ade"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+            "sha256": "sha256:0f3fcf86c674f6dd0679344ec0deca3e137caed56f806d11ef68848c41bd56a2",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "source_sha256": "sha256:0f3fcf86c674f6dd0679344ec0deca3e137caed56f806d11ef68848c41bd56a2",
+      "after_sha256": "sha256:27c8eff4a6ee23a5cecb59f17eadaf6dd0210be20ebbb1e9fcc5c0025f1d7cca",
+      "deletions": [
+        {
+          "offset": 101,
+          "length": 18
+        },
+        {
+          "offset": 9520,
+          "length": 7
+        },
+        {
+          "offset": 9695,
+          "length": 7
+        },
+        {
+          "offset": 9864,
+          "length": 7
+        },
+        {
+          "offset": 9993,
+          "length": 7
+        },
+        {
+          "offset": 10273,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:ee597db5fea2c11d33f30a30d7ad191b995d02abef131cab98a1a337605c7991",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "e97a93f4-8b38-493f-9e01-17f1d86776ed",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-18",
+              "Status": "Draft",
+              "Spec": "`260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md`, as corrected by",
+              "Decidability": "The load-bearing question is *which relation does this sentence assert between two units of work*, and it is **not decidable** from the inputs the mechanism has — `260911-1915-candidate-prerequisite-edges.md` measured at least five relation types in this workbench's prose with nothing in the text separating them, and `rules/critical-stance.md` §4 names exactly this shape. **The pass therefore does predict, on one arm of its split, and says so rather than denying it.** What changes is not that the reading happens but what it may do: an ordering whose direction the pass fixed from what two items' artifacts and directives do is marked `inferred`, carries the sentence it rests on, and is **never applied on the mechanism's own say-so** — it is a proposal the user rules on, and a rejection leaves the store byte-identical. Where the direction is not fixed the entry goes to the field that orders nothing, so a prediction can never *silently* become an ordering; where the pass cannot fix which two items the sentence binds it proposes nothing and reports the sentence. That is the change of mechanism §4 requires: an undecidable prediction demoted to a labelled, citable proposal under a human ruling rather than promoted to a decision. **A plan claiming this classifier is reliable would be wrong; this one claims only that every entry is checkable and that no unchecked entry reaches a record.**"
+            },
+            "step_marks": {},
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "51b64c0f559b9ab62d8b86b16ea8167bccda73d0"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md",
+            "sha256": "sha256:b4367784359e5656a28d22e9e7c36239812d5e7f0472375d04335f52b9bf5751",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [
+            {
+              "id": "1",
+              "state": "open"
+            },
+            {
+              "id": "2",
+              "state": "open"
+            },
+            {
+              "id": "3",
+              "state": "open"
+            },
+            {
+              "id": "4",
+              "state": "open"
+            },
+            {
+              "id": "5",
+              "state": "open"
+            },
+            {
+              "id": "6",
+              "state": "open"
+            },
+            {
+              "id": "7",
+              "state": "open"
+            },
+            {
+              "id": "8",
+              "state": "open"
+            }
+          ],
+          "criteria": [],
+          "acceptance": {
+            "ref": {
+              "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+              "record_id": "382890d4-7aa9-47e8-bc77-a6de939be2db",
+              "display": "260917-2253-depends-on-edges-proposed-and-confirmed.md"
+            },
+            "revision": "sha256:66da14c9a2d39ff14ed91d838650e030906ac29a29178b125b10735835517bb2"
+          }
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md",
+      "source_sha256": "sha256:b4367784359e5656a28d22e9e7c36239812d5e7f0472375d04335f52b9bf5751",
+      "after_sha256": "sha256:66da14c9a2d39ff14ed91d838650e030906ac29a29178b125b10735835517bb2",
+      "deletions": [
+        {
+          "offset": 81,
+          "length": 18
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260918-0706-strike-unconfirmed-depends-on-entry/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:b087598fb7f43af045c266566ecbafb5eacbe8728a348a4f0b9c0fa91b8909ab",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "d5897f34-6aae-4557-bc7b-033f3dc63c93",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260918-0706-strike-unconfirmed-depends-on-entry/260918-0706-strike-unconfirmed-depends-on-entry.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260918-0706",
+              "Cross-references": "260917-2253-depends-on-edges-proposed-and-confirmed.md, 260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md, 260911-1747_*_may-a-done-work-items-head-field-be-edited-at-all-and-under-what-bound.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260918-0706-strike-unconfirmed-depends-on-entry/260918-0706-strike-unconfirmed-depends-on-entry.md",
+            "sha256": "sha256:0182aa12ebe3f6ff93497a85a249969515f04bcf388cc24ba81de4df9009c934",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:d6e3e728d61bc51d893c607502348bd344c13e9e1548ac7b103d0bc160214503",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "27f71e42-d43c-4bc7-8df5-ca60d384773e",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260918-1102",
+              "Active spec/plan": "260918-1124_*_autonomous-defect-package-fifteen-fixes-with-a-second-opinion-each.md (the plan; no spec, planned from the directive)",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md",
+            "sha256": "sha256:043ed968819297a3a460a34e11d86132f825e5d275a71abf486e87fffbb5a5d0",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:7967bb63446288321450f0d1bc21e988780ecd5ff520274d1e07fd7a67a1416b",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "c83a58f5-6c14-457c-9e4c-e1d687abda22",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260920-2222",
+              "Active spec/plan": "260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md (the plan; no spec, planned from the directive)",
+              "Cross-references": "260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md",
+            "sha256": "sha256:2c8da8167cf1d0ed1e0d1bf9a0d213d7ffc217802945ac5d20a11bb3268ed6eb",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:81606be1f0ac7dae1a3394c16f7f4d170a88da689bb02234e32e5d7d1b6144c7",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "650ff810-decc-4b73-a51c-8c059537d7c7",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md"
+        },
+        "filed_by": {
+          "actor": "planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260918-1335_*_the-live-state-comment-keeps-two-retired-rows-for-a-consequence-classify-cannot-produce.md",
+          "260918-1409_*_the-live-state-list-claims-class-l-in-full-while-two-class-l-entries-classify-as-unclassified.md",
+          "260911-1339_*_staging-drift-still-classifies-a-pointer-a-rule-says-nothing-creates-and-names-a-turn-boundary-trigger-it-does-not-have.md",
+          "260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260918-1335_*_the-live-state-comment-keeps-two-retired-rows-for-a-consequence-classify-cannot-produce.md, 260918-1409_*_the-live-state-list-claims-class-l-in-full-while-two-class-l-entries-classify-as-unclassified.md, 260911-1339_*_staging-drift-still-classifies-a-pointer-a-rule-says-nothing-creates-and-names-a-turn-boundary-trigger-it-does-not-have.md, 260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md",
+            "sha256": "sha256:10c7cdbcd2ce3459b6411668217f84c586e159caa9e7d53f0333bca502aaee85",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260921-0742_*_does-live-state-keep-rows-for-retired-surfaces.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:da5d82d39f2aec3311c28bbb3a88a398967d7a71d14ecef6ced97a271442a4cb",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "6635f482-6d35-4ce7-aa36-e138137147d1",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260921-1709",
+              "Mode": "autonomous",
+              "Active spec/plan": "260921-1726_*_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md (the plan; no spec, planned from the directive)",
+              "Cross-references": "260921-1653-open-defect-survey-at-11-9-1.md, 260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten.md",
+            "sha256": "sha256:7d1b5108d4e3d04fb6587f139c222ec539f4d86c4c93800a4c401ac26f0bc2cc",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:f5f3436b2f4d667b4b96e6d61202cc70286944be2ac130240ef0cf0e55670b00",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "c80a12d7-7cf6-4bd8-a6b5-96e32c7582b9",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-21",
+              "Status": "Draft",
+              "Spec": "none — planned from the work item's `## Directive` (`260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten.md`) against the survey `260921-1653-open-defect-survey-at-11-9-1.md`, on the model of `260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md`",
+              "Decidability": "The load-bearing question is whether each of the 26 still-present records is closable at HEAD `3d02c7fd` by one bounded edit whose acceptance is a command the executor can run, and whether the six fixes that add hook-test lines fit the surface after one funding cut. Both are decidable from the inputs the steps have: every presence claim below was re-read against the tree at that commit (the site is quoted per step, taken from the survey and re-checked where the plan differs from it), every acceptance is a `grep`, a `wc`, a `node -e` probe, a helper run or the suite with a stated result, and the line budget is a subtraction the bound test performs on every run (14 lines of head-room at HEAD, measured by `hooks/lib/__tests__/surface-growth-bound.test.ts`; step 17 frees roughly 146). Three inputs are not decidable from the plan and are handed on rather than approximated. (1) Whether the ten-pair experiment of step 2 reads 0 of 20 after step 1: the plan states both outcomes and what each does to the five load records. (2) Whether a working answer taken under an open decision is the one the user wants: every one is named in `## Working answers` below and in the decision record it hangs on, no marker moves, and the user rules with the implementation in front of them, which is the directive's own mechanism. (3) Whether a second opinion accepts a concept: the directive's stop rule, three rejections in a row, ends the package.",
+              "Domain": "code"
+            },
+            "step_marks": {
+              "1": "DONE",
+              "2": "DONE",
+              "3": "DONE",
+              "4": "DONE",
+              "5": "DONE",
+              "6": "DONE",
+              "7": "DONE",
+              "8": "DONE",
+              "9": "DONE",
+              "10": "DONE",
+              "11": "DONE",
+              "12": "DONE",
+              "13": "DONE",
+              "14": "DONE",
+              "15": "DONE",
+              "16": "DONE",
+              "17": "DONE",
+              "18": "DONE",
+              "19": "DONE",
+              "20": "DONE",
+              "21": "DONE",
+              "22": "DONE",
+              "24": "DONE",
+              "25": "DONE",
+              "26": "DONE",
+              "27": "DONE",
+              "28": "DONE"
+            },
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "d9fe9a7ccac335aa5080ad9a4625f1e771df1109"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md",
+            "sha256": "sha256:2ee9238c3cd2a05d1e60b6f9c2ff4dcac644c03097245ec4a28578b9b95b4942",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [
+            {
+              "id": "1",
+              "state": "done"
+            },
+            {
+              "id": "2",
+              "state": "done"
+            },
+            {
+              "id": "3",
+              "state": "done"
+            },
+            {
+              "id": "4",
+              "state": "done"
+            },
+            {
+              "id": "5",
+              "state": "done"
+            },
+            {
+              "id": "6",
+              "state": "done"
+            },
+            {
+              "id": "7",
+              "state": "done"
+            },
+            {
+              "id": "8",
+              "state": "done"
+            },
+            {
+              "id": "9",
+              "state": "done"
+            },
+            {
+              "id": "10",
+              "state": "done"
+            },
+            {
+              "id": "11",
+              "state": "done"
+            },
+            {
+              "id": "12",
+              "state": "done"
+            },
+            {
+              "id": "13",
+              "state": "done"
+            },
+            {
+              "id": "14",
+              "state": "done"
+            },
+            {
+              "id": "15",
+              "state": "done"
+            },
+            {
+              "id": "16",
+              "state": "done"
+            },
+            {
+              "id": "17",
+              "state": "done"
+            },
+            {
+              "id": "18",
+              "state": "done"
+            },
+            {
+              "id": "19",
+              "state": "done"
+            },
+            {
+              "id": "20",
+              "state": "done"
+            },
+            {
+              "id": "21",
+              "state": "done"
+            },
+            {
+              "id": "22",
+              "state": "done"
+            },
+            {
+              "id": "23",
+              "state": "open"
+            },
+            {
+              "id": "24",
+              "state": "done"
+            },
+            {
+              "id": "25",
+              "state": "done"
+            },
+            {
+              "id": "26",
+              "state": "done"
+            },
+            {
+              "id": "27",
+              "state": "done"
+            },
+            {
+              "id": "28",
+              "state": "done"
+            }
+          ],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md",
+      "source_sha256": "sha256:2ee9238c3cd2a05d1e60b6f9c2ff4dcac644c03097245ec4a28578b9b95b4942",
+      "after_sha256": "sha256:3a4560f7eb809be4ca9e7498f54995b4fb77fb9227a3514c6873b9983f34f129",
+      "deletions": [
+        {
+          "offset": 129,
+          "length": 18
+        },
+        {
+          "offset": 14803,
+          "length": 7
+        },
+        {
+          "offset": 19250,
+          "length": 7
+        },
+        {
+          "offset": 22301,
+          "length": 7
+        },
+        {
+          "offset": 23908,
+          "length": 7
+        },
+        {
+          "offset": 24918,
+          "length": 7
+        },
+        {
+          "offset": 25881,
+          "length": 7
+        },
+        {
+          "offset": 27034,
+          "length": 7
+        },
+        {
+          "offset": 28558,
+          "length": 7
+        },
+        {
+          "offset": 30565,
+          "length": 7
+        },
+        {
+          "offset": 31712,
+          "length": 7
+        },
+        {
+          "offset": 33633,
+          "length": 7
+        },
+        {
+          "offset": 35791,
+          "length": 7
+        },
+        {
+          "offset": 37476,
+          "length": 7
+        },
+        {
+          "offset": 39010,
+          "length": 7
+        },
+        {
+          "offset": 40839,
+          "length": 7
+        },
+        {
+          "offset": 42296,
+          "length": 7
+        },
+        {
+          "offset": 43850,
+          "length": 7
+        },
+        {
+          "offset": 46502,
+          "length": 7
+        },
+        {
+          "offset": 49342,
+          "length": 7
+        },
+        {
+          "offset": 52513,
+          "length": 7
+        },
+        {
+          "offset": 55375,
+          "length": 7
+        },
+        {
+          "offset": 57573,
+          "length": 7
+        },
+        {
+          "offset": 62995,
+          "length": 7
+        },
+        {
+          "offset": 66238,
+          "length": 7
+        },
+        {
+          "offset": 68383,
+          "length": 7
+        },
+        {
+          "offset": 71423,
+          "length": 7
+        },
+        {
+          "offset": 74173,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-0137-measure-the-reconciler-on-a-smaller-model/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:48959c1538bb0d70cd9f7c390080fb47a16711e8c901b2eadb3e801fec17498c",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "6ed63468-cdd3-4025-a294-9f49237e76a5",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260922-0137-measure-the-reconciler-on-a-smaller-model/260922-0137-measure-the-reconciler-on-a-smaller-model.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260923-0710",
+              "Active spec/plan": "260923-0713_*_reconciler-on-haiku-measurement.md (the plan; the Directive stands as its spec)",
+              "Cross-references": "260827-1305_*_which-agents-run-on-a-smaller-model.md, 260827-1305-does-agent-frontmatter-model-reach-the-dispatch.md, 260909-1700-cut-fusion-to-working-minimum.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-0137-measure-the-reconciler-on-a-smaller-model/260922-0137-measure-the-reconciler-on-a-smaller-model.md",
+            "sha256": "sha256:6f7357a4163349218636072ccacdaedaf323f39676ec9a34ccbd226ff7625da9",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-0906-fix-package-over-every-open-issue/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:5aa3a51390057504a8554710be5e4cebe6141b6d76821405e7ce9cca993c84b8",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "3757d5e0-91f3-4d64-b6c2-fe49faf49904",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260922-0906-fix-package-over-every-open-issue/260922-0906-fix-package-over-every-open-issue.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-0906",
+              "Mode": "autonomous",
+              "Active spec/plan": "260922-0922_*_the-51-open-issues-at-451bb312-worked-autonomously-as-one-package.md (the plan)",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-0906-fix-package-over-every-open-issue/260922-0906-fix-package-over-every-open-issue.md",
+            "sha256": "sha256:ab864a72ecd66b45af67e150af80e0b848d049780f4c175386c561308ed31f18",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1038-prior-mapping/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:87f6cc0232298afab03cc11f5f7f161c9809fdc8f2473fc6db0f9d72bf31dcd0",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "9510b771-1527-4efa-a9b4-cc46dd1e96d8",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260922-1038-prior-mapping/260922-1038-prior-mapping.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260923-0812",
+              "Active spec/plan": "260922-1045_*_spec-prior-nomenclature-plugin-source.md (spec, part 1), 260922-1106_*_spec-prior-nomenclature-consumer-migration.md (spec, part 2)",
+              "Cross-references": "nomenclature.md (this container), 260923-0839-implement-prior-nomenclature.md (the implementation, filed at closure), 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md, 260922-1114_*_plan-prior-nomenclature-plugin-source.md, 260922-1129_*_plan-prior-nomenclature-consumer-migration.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/260922-1038-prior-mapping.md",
+            "sha256": "sha256:71e0ea567c87eb4280092fbeb2014200f844aea79438a1a578c9e4872e415bad",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:43c12549afd4ebcd42d7e32d73e574a454bef86bc158e343bf1a7a44ef20b8dd",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "b60d1bac-87db-4206-8a2f-b826825d1e74",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+          "260922-1038-prior-mapping.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.md",
+            "sha256": "sha256:02e841d235f43f7b72cf6f98875e505baf0263fff1f82e062b7631082ac25797",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "b60d1bac-87db-4206-8a2f-b826825d1e74",
+            "display": "260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:8ed4774e3fe021be268a40f659e5ddc831428b474143c63f03828f875509597b",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "c0f5f02c-291c-4f5c-a7ac-c0044aece7a5",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+          "260922-1038-prior-mapping.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+            "sha256": "sha256:ab2dba05e8270fa0c4657d5816d3d26542f681507bb3320150789757e33b01f1",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "c0f5f02c-291c-4f5c-a7ac-c0044aece7a5",
+            "display": "260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:6ca0845cc4dbdbdedfbdb3a619bac9724d67b40d26c532d0f5a194ad2abee76a",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "b5961de9-6fb7-413d-8212-50aebc1d54bd",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+          "260922-1038-prior-mapping.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+            "sha256": "sha256:b28b8ee4760ef8e4834102e53e6cd6c14062f3f786306839e65b8c17444f3de2",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "b5961de9-6fb7-413d-8212-50aebc1d54bd",
+            "display": "260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:9932ece6aff623c9b93e3646ae35806f0991586c6f5ac90da85c9b0ac13381ed",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "18d85016-6821-4ddc-a47f-dc6847eeeaca",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+          "260922-1038-prior-mapping.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+            "sha256": "sha256:f97e3f564e22d6e259025f0097057e0f13dcf4816f8a33cec543e7b37738dd28",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "18d85016-6821-4ddc-a47f-dc6847eeeaca",
+            "display": "260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:f1b837af355adbd1f22d46e74f26444213819960b34ccdf7e9561a44b2f294fc",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "50515d81-7920-4b4e-8539-a1277e316d60",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+          "260922-1038-prior-mapping.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.md",
+            "sha256": "sha256:db6bb891a2f51c576cc53070c577b2b798d6ad97e32b358b75918ddae2c73a2a",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "50515d81-7920-4b4e-8539-a1277e316d60",
+            "display": "260922-1059_a_which-english-name-does-stilwerk-take-and-when.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:c4a2aab62da434db7f4d0608884c18480ff18bb9aa0b01fcb79a89a9fa14f588",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "04f96f12-90c5-482b-ba58-bed1d145ce73",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+          "260922-1038-prior-mapping.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+            "sha256": "sha256:923b7fe0bedc7836fe3d7b4e7f9626ee6c9404ad3bc555f9e7a31b9d393bfff2",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "04f96f12-90c5-482b-ba58-bed1d145ce73",
+            "display": "260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    }
+  ]
+}

@@ -1,7 +1,6 @@
 # Spec: human-directed documentation leaves `CLAUDE.md`
 
 **Date:** 2026-09-16
-**Status:** Draft
 **Source:** Work item `260912-0438-human-facing-docs-leave-claude-md.md`. A project's `CLAUDE.md` should carry only what Claude genuinely needs under fusion in every session; everything else belongs behind links. The aim covers fusion's own repository and the convention fusion ships to other projects.
 **Cross-references:** 260912-0438-human-facing-docs-leave-claude-md.md, 260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md, 260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md, 260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md
 

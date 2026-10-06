@@ -1,0 +1,39 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d433aaf9-b123-4678-80c0-24129df73cca",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Status": "answered",
+        "Filed by": "orchestrator (on the executor of the drift-lint residuals task of session `260810-1646-orchestrator-session.md`)",
+        "Cross-references": "`260810-1918_*_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; the queued frozen-state task, filed as `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "sha256": "sha256:77954707ab925e3085e271dd3299d4fa459e1ee6b0ee93f14e597a3c6de4be2a",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260810-1646-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

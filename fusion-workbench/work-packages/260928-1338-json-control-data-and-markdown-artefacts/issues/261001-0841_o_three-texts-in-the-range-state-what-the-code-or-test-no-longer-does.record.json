@@ -1,0 +1,41 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8a5fe65a-edcb-406b-a9de-996b7f9e6b8f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261001-0841_o_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260930-1712_*_the-codecs-reconcile-grows-with-the-square-of-the-record-count-and-outlasts-the-clients-timeout-from-about-1200-records.md",
+    "260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md",
+    "261001-0837-reviewer-fj03b-initialize-and-fj03c.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Filed by": "reviewer, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260930-1712_*_the-codecs-reconcile-grows-with-the-square-of-the-record-count-and-outlasts-the-clients-timeout-from-about-1200-records.md (closed), 260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md (steps 4, 7, 7a, 8 (d)), 261001-0837-reviewer-fj03b-initialize-and-fj03c.md",
+        "Evidence": "",
+        "Fix direction": "",
+        "Acceptance": ""
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261001-0841_o_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.md",
+      "sha256": "sha256:45f47d7a2944410eca3d5e958ef858452e8d396f10aeb222b9684f89707febd6",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

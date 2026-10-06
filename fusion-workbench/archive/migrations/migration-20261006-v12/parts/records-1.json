@@ -1,0 +1,898 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "records",
+  "migration_id": "migration-20261006-v12",
+  "n": 1,
+  "counts": {
+    "package_live": 2,
+    "package_terminal": 41,
+    "record_live": 104,
+    "record_closure": 0,
+    "plain_terminal": 1182,
+    "empty_container": 4
+  },
+  "records": {
+    "5b4ecef9-0953-4a0d-9ca6-46375e211953": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.record.json",
+      "narrative": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md"
+    },
+    "8e385eeb-f8e0-494c-b4df-5ae529dfbd6d": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.record.json",
+      "narrative": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md"
+    },
+    "e5137487-8940-4ff6-af90-781082f3156c": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.record.json",
+      "narrative": "shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md"
+    },
+    "c4878fb2-9f6d-4631-9041-a23cbf842ea4": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.record.json",
+      "narrative": "shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md"
+    },
+    "d433aaf9-b123-4678-80c0-24129df73cca": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.record.json",
+      "narrative": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md"
+    },
+    "8d5453b7-11a5-459f-88a5-448351e3a850": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.record.json",
+      "narrative": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md"
+    },
+    "5cf538dd-b9c5-4fd0-a587-9f65523ff584": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.record.json",
+      "narrative": "shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.md"
+    },
+    "1bdb2e14-92e9-463e-8cce-214f4d7ea470": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.record.json",
+      "narrative": "shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md"
+    },
+    "b12c8b9f-068b-4cc9-bce0-e782ad1137b1": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.record.json",
+      "narrative": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md"
+    },
+    "4004a285-6700-4330-b987-545654132fcc": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.record.json",
+      "narrative": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md"
+    },
+    "1b60d8bd-fc1e-4506-9379-fcaf16f76626": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.record.json",
+      "narrative": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md"
+    },
+    "5f0e45ef-857e-4cff-bccb-64af3468542b": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.record.json",
+      "narrative": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md"
+    },
+    "1ccae1ec-1e5f-4d91-a1f5-3ea20c6494da": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.record.json",
+      "narrative": "shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md"
+    },
+    "22d95860-b3ba-4d83-bf89-00829173424a": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.record.json",
+      "narrative": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md"
+    },
+    "8c10de16-7ea3-4a73-b3e8-f3132556736c": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.record.json",
+      "narrative": "shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md"
+    },
+    "3a139cc8-12a7-4a66-8f87-ef455e656aa0": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.record.json",
+      "narrative": "shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md"
+    },
+    "dd9f6b15-bcbc-487b-9c39-18cc2b82875f": {
+      "kind": "issue",
+      "row": "record-live",
+      "control": "shared/issues/260928-1520_o_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.record.json",
+      "narrative": "shared/issues/260928-1520_o_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.md"
+    },
+    "0cb28fcb-455a-476a-8688-1c276dbaa041": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.record.json",
+      "narrative": "shared/plans/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md"
+    },
+    "48fbf64a-dc46-4736-877c-aea514da377e": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "shared/plans/260909-1615_o_spec-cut-fusion-to-a-working-minimum.record.json",
+      "narrative": "shared/plans/260909-1615_o_spec-cut-fusion-to-a-working-minimum.md"
+    },
+    "0d649a25-cc33-4c3f-ac39-fe07fd8793eb": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.record.json",
+      "narrative": "shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.md"
+    },
+    "d44e5fdf-c664-44f3-a724-455c1cb3a984": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260716-1847-workbench-umbau/package.json",
+      "narrative": "work-packages/260716-1847-workbench-umbau/_c_circle.md"
+    },
+    "fbe6f451-f9a6-40d7-ae3e-9cfc553a5354": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260718-1924-v5x-overhaul/package.json",
+      "narrative": "work-packages/260718-1924-v5x-overhaul/_c_circle.md"
+    },
+    "97f7a6b1-4279-4091-b241-7b8aa8fa0275": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260801-1244-curator/package.json",
+      "narrative": "work-packages/260801-1244-curator/_c_circle.md"
+    },
+    "87a1dddc-c1ee-455d-93d8-ca408723765d": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260801-1244-guard-rules-write/package.json",
+      "narrative": "work-packages/260801-1244-guard-rules-write/_c_circle.md"
+    },
+    "cc98be12-d52c-44f2-a107-ac19ce7374df": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260801-1244-rule-provenance-header/package.json",
+      "narrative": "work-packages/260801-1244-rule-provenance-header/_c_circle.md"
+    },
+    "0e613eea-c27a-4c29-ac19-6b144aa244d5": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260804-1205-shell-reachability-model/package.json",
+      "narrative": "work-packages/260804-1205-shell-reachability-model/_s_circle.md"
+    },
+    "af0bed62-9eb1-4af8-b8e0-ccbb36e94118": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260805-2005-textschicht-gegen-code-nachziehen/package.json",
+      "narrative": "work-packages/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md"
+    },
+    "aab58dab-8f7e-4ba2-b149-f55ffc8edf16": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260807-0923-guard-misst-statt-orakelt/package.json",
+      "narrative": "work-packages/260807-0923-guard-misst-statt-orakelt/_c_circle.md"
+    },
+    "c04e248e-e430-451a-8801-acb54badebe2": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260813-0858-playmaker-maintains-backlog-store/package.json",
+      "narrative": "work-packages/260813-0858-playmaker-maintains-backlog-store/_c_circle.md"
+    },
+    "8c768ff2-38b1-48a0-90e2-51abcfe401ce": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260815-0007-remove-eight-mechanisms-and-cap-growth/package.json",
+      "narrative": "work-packages/260815-0007-remove-eight-mechanisms-and-cap-growth/_c_circle.md"
+    },
+    "8626192f-4499-45ec-92ae-46605c76427e": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260816-1741-guard-becomes-observation-only/package.json",
+      "narrative": "work-packages/260816-1741-guard-becomes-observation-only/_b_circle.md"
+    },
+    "2e6b5254-4f50-4525-af4b-4f56b44b60f6": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260819-1645-four-constraints-on-deep-change/package.json",
+      "narrative": "work-packages/260819-1645-four-constraints-on-deep-change/_c_circle.md"
+    },
+    "bd22d169-3143-4e3f-9fa6-e4e732189282": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260820-2051-style-rules-arrive-and-get-measured/package.json",
+      "narrative": "work-packages/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md"
+    },
+    "61c50d3f-30ff-4850-828c-8f6ef1387087": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.record.json",
+      "narrative": "work-packages/260820-2051-style-rules-arrive-and-get-measured/plans/260820-2249_o_spec-style-rules-arrive-and-get-measured.md"
+    },
+    "1a34bf2a-8cd3-424f-97a3-16007a6215b4": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260821-1042-reply-bounded-whole-question-answered/package.json",
+      "narrative": "work-packages/260821-1042-reply-bounded-whole-question-answered/_c_circle.md"
+    },
+    "8c3c5bff-3a06-4336-ab27-394f295711e3": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.record.json",
+      "narrative": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md"
+    },
+    "4131ffc7-d804-4342-bf70-e082b2fc8fb0": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.record.json",
+      "narrative": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md"
+    },
+    "f98787aa-22c7-46e5-8b21-b0858142a9fd": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.record.json",
+      "narrative": "work-packages/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md"
+    },
+    "e488fed0-c685-4d47-be17-b49a930732f8": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260823-0023-settle-what-travels-between-checkouts/package.json",
+      "narrative": "work-packages/260823-0023-settle-what-travels-between-checkouts/_c_circle.md"
+    },
+    "ba9c3d0b-79d1-41e0-b452-7c825b0dda65": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260824-0530-record-attribution-and-circle-claim/package.json",
+      "narrative": "work-packages/260824-0530-record-attribution-and-circle-claim/_c_circle.md"
+    },
+    "cd8043eb-141d-4f51-a778-dcc7a93884d2": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260824-1853-close-every-open-defect/package.json",
+      "narrative": "work-packages/260824-1853-close-every-open-defect/_c_circle.md"
+    },
+    "9c8417b4-a9d8-47b7-98c5-fa69fe0a4eba": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.record.json",
+      "narrative": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md"
+    },
+    "8a904f25-d0c1-41ba-b5a2-526eaf0f4368": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.record.json",
+      "narrative": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md"
+    },
+    "483b2ef0-116c-4d53-8c19-c0a8ef12f126": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.record.json",
+      "narrative": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md"
+    },
+    "d8f6ebf1-1d65-4984-889b-856e4c2b0207": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.record.json",
+      "narrative": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md"
+    },
+    "7b448aab-dc6e-4a12-a6da-641bdf547e99": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/package.json",
+      "narrative": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/_b_circle.md"
+    },
+    "06314397-5f3c-424e-9fd0-b4afcc2902d1": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.record.json",
+      "narrative": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md"
+    },
+    "a28225bd-7ec8-4c63-862a-90ad2996cece": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/package.json",
+      "narrative": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/_c_circle.md"
+    },
+    "56456233-d58c-45d9-af98-f53108633568": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_a_which-surface-is-authoritative-when-the-event-log-and-the-dashboard-disagree.record.json",
+      "narrative": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_a_which-surface-is-authoritative-when-the-event-log-and-the-dashboard-disagree.md"
+    },
+    "1ce64950-4a34-4300-a4b6-e59c7f416a1b": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/plans/260827-1756_p_repair-the-twenty-open-defect-records.record.json",
+      "narrative": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/plans/260827-1756_p_repair-the-twenty-open-defect-records.md"
+    },
+    "dea2a8d0-e9e5-4bcd-8671-f32241e3b3d7": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260828-2342-citation-form-drops-store-segment/package.json",
+      "narrative": "work-packages/260828-2342-citation-form-drops-store-segment/_c_circle.md"
+    },
+    "a0ae3aab-0ec6-45ab-8aec-dc440aa65801": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/package.json",
+      "narrative": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/_c_circle.md"
+    },
+    "af0fef01-435d-49a9-99a5-5e526b7e1f6e": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/decisions/260904-1659_o_what-happens-to-the-directive-pointer-when-the-cited-plan-cites-the-record-back.record.json",
+      "narrative": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/decisions/260904-1659_o_what-happens-to-the-directive-pointer-when-the-cited-plan-cites-the-record-back.md"
+    },
+    "007e6b20-63d9-4781-9e60-562545666939": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/plans/260904-1651_p_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.record.json",
+      "narrative": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/plans/260904-1651_p_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md"
+    },
+    "3b86a03a-656b-4da8-9d1c-dfe355ad0d4a": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260906-2258-bounded-executor-dispatches/package.json",
+      "narrative": "work-packages/260906-2258-bounded-executor-dispatches/_c_circle.md"
+    },
+    "c6743bfa-b0bb-4dfa-943c-b287016132da": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-0820_o_is-a-token-side-measurement-of-the-splits-net-cost-worth-building.record.json",
+      "narrative": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-0820_o_is-a-token-side-measurement-of-the-splits-net-cost-worth-building.md"
+    },
+    "02978515-c2a3-44cf-ab60-bc52f60b9034": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-2330_o_does-the-shapers-portfolio-activation-mode-write-a-new-spec-or-revise-in-place.record.json",
+      "narrative": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-2330_o_does-the-shapers-portfolio-activation-mode-write-a-new-spec-or-revise-in-place.md"
+    },
+    "f472a845-c9f3-4942-a61c-216c47c9a689": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260908-1836_o_should-the-dispatch-bound-gates-context-list-cover-the-prompts-own-prose-name-for-the-value.record.json",
+      "narrative": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260908-1836_o_should-the-dispatch-bound-gates-context-list-cover-the-prompts-own-prose-name-for-the-value.md"
+    },
+    "bd8af3aa-f1ef-4eef-a988-41c664b3deb6": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260906-2258-bounded-executor-dispatches/plans/260907-0820_o_spec-bounded-executor-dispatches.record.json",
+      "narrative": "work-packages/260906-2258-bounded-executor-dispatches/plans/260907-0820_o_spec-bounded-executor-dispatches.md"
+    },
+    "d29bfa20-56f4-42b2-b638-1b1623b4c7da": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260907-0829-message-between-checkouts-read-before-pull/package.json",
+      "narrative": "work-packages/260907-0829-message-between-checkouts-read-before-pull/_c_circle.md"
+    },
+    "892f2973-8bf5-4227-a6ea-5a8d8486d6b8": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260907-0829-message-between-checkouts-read-before-pull/decisions/260907-2003_o_what-does-the-directive-pointer-swap-do-when-the-cited-plan-declines-to-restate-the-directive.record.json",
+      "narrative": "work-packages/260907-0829-message-between-checkouts-read-before-pull/decisions/260907-2003_o_what-does-the-directive-pointer-swap-do-when-the-cited-plan-declines-to-restate-the-directive.md"
+    },
+    "11598ce2-5141-4d11-b580-487b088057a0": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260908-1410-cut-skills-surface-add-post-body/package.json",
+      "narrative": "work-packages/260908-1410-cut-skills-surface-add-post-body/_c_circle.md"
+    },
+    "d8c399ea-5039-4ceb-bf97-52b2760a33ca": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/package.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/260908-2018-prerequisites-confirmed-once-order-computed.md"
+    },
+    "bc371be3-f3d6-48ba-9297-ee3aafeb7a27": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.record.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md"
+    },
+    "8775177b-1704-43a6-b336-132adbda62df": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.record.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md"
+    },
+    "fa43cce5-87ca-4a9d-b2f4-711b7fa136a9": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.record.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md"
+    },
+    "f2e550f7-9482-4c69-a278-2835523a30e1": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.record.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.md"
+    },
+    "5eddc8e7-cd80-4ab7-a8d7-0c191f060bb4": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.record.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md"
+    },
+    "f3a80a56-e00f-41e5-86ba-d657d6305210": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260911-2141_a_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.record.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260911-2141_a_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.md"
+    },
+    "e9d3543d-9535-4fb1-b9bc-6b4730166b5b": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.record.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md"
+    },
+    "05cb129e-fb2d-4db8-8f44-c4160ef75c62": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.record.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md"
+    },
+    "fd1f4ba0-7293-4134-a0c2-3ce506b92785": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.record.json",
+      "narrative": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md"
+    },
+    "7dfb5422-66f1-4b42-bc84-c419b2e5ad74": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260909-1700-cut-fusion-to-working-minimum/package.json",
+      "narrative": "work-packages/260909-1700-cut-fusion-to-working-minimum/260909-1700-cut-fusion-to-working-minimum.md"
+    },
+    "1d4696c6-9dc7-48d8-85a9-ac402f0e5f9a": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.record.json",
+      "narrative": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md"
+    },
+    "492bc70d-d253-47df-8575-6f7f518df1bf": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.record.json",
+      "narrative": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md"
+    },
+    "239afc69-6af3-4aaf-b967-b796c8f899d3": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.record.json",
+      "narrative": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md"
+    },
+    "a476d34a-889a-4ac1-b1fa-e4fa7401ec0f": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.record.json",
+      "narrative": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md"
+    },
+    "2cad3a89-0d84-4f66-b4f1-947fe900502b": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.record.json",
+      "narrative": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.md"
+    },
+    "6a796f99-4a32-4575-a621-9183868a5096": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.record.json",
+      "narrative": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md"
+    },
+    "1c53c069-6610-4449-91ee-db7efe0c7405": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260912-0438-human-facing-docs-leave-claude-md/package.json",
+      "narrative": "work-packages/260912-0438-human-facing-docs-leave-claude-md/260912-0438-human-facing-docs-leave-claude-md.md"
+    },
+    "68af2145-2149-473c-a54e-0d86ff9577b2": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.record.json",
+      "narrative": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md"
+    },
+    "debab921-5f0f-4174-8b7b-bd8167de0bdb": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.record.json",
+      "narrative": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md"
+    },
+    "1a9982e1-673c-492b-9422-2fd3cad2dba4": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.record.json",
+      "narrative": "work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md"
+    },
+    "c477a8eb-dc90-472d-9875-48f5bc8717dc": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260916-1050-neues-discuss-feature/package.json",
+      "narrative": "work-packages/260916-1050-neues-discuss-feature/260916-1050-neues-discuss-feature.md"
+    },
+    "9b103c13-f965-4c9b-aa28-23fb786385b1": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.record.json",
+      "narrative": "work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md"
+    },
+    "c8c913b7-b3c6-4456-9a75-f2c049d29700": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.record.json",
+      "narrative": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md"
+    },
+    "45c6ff3f-ecf1-4c5f-b36f-d9f9874b16ea": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.record.json",
+      "narrative": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1124_o_implementation-fusion-discuss-a-two-agent-discussion-loop.md"
+    },
+    "822a568c-f421-4f8d-bb50-57ad86220e71": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260917-1338-depends-on-kanten-automatisch-erzeugen/package.json",
+      "narrative": "work-packages/260917-1338-depends-on-kanten-automatisch-erzeugen/260917-1338-depends-on-kanten-automatisch-erzeugen.md"
+    },
+    "382890d4-7aa9-47e8-bc77-a6de939be2db": {
+      "kind": "package",
+      "row": "package-live",
+      "control": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/package.json",
+      "narrative": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/260917-2253-depends-on-edges-proposed-and-confirmed.md"
+    },
+    "aa724d72-e79b-4c5f-83da-9609f68a01f4": {
+      "kind": "discussion",
+      "row": "record-live",
+      "control": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/discussions/260917-2258_o_spec-depends-on-edges-zero-yield.record.json",
+      "narrative": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/discussions/260917-2258_o_spec-depends-on-edges-zero-yield.md"
+    },
+    "fae13f3f-b8d5-4e37-b72c-f21caa1fd0f4": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.record.json",
+      "narrative": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md"
+    },
+    "e97a93f4-8b38-493f-9e01-17f1d86776ed": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.record.json",
+      "narrative": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md"
+    },
+    "d5897f34-6aae-4557-bc7b-033f3dc63c93": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260918-0706-strike-unconfirmed-depends-on-entry/package.json",
+      "narrative": "work-packages/260918-0706-strike-unconfirmed-depends-on-entry/260918-0706-strike-unconfirmed-depends-on-entry.md"
+    },
+    "27f71e42-d43c-4bc7-8df5-ca60d384773e": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung/package.json",
+      "narrative": "work-packages/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung/260918-1048-defekte-selbstaendig-abarbeiten-mit-zweitmeinung.md"
+    },
+    "c83a58f5-6c14-457c-9e4c-e1d687abda22": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/package.json",
+      "narrative": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten.md"
+    },
+    "650ff810-decc-4b73-a51c-8c059537d7c7": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.record.json",
+      "narrative": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md"
+    },
+    "6635f482-6d35-4ce7-aa36-e138137147d1": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/package.json",
+      "narrative": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten.md"
+    },
+    "c80a12d7-7cf6-4bd8-a6b5-96e32c7582b9": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.record.json",
+      "narrative": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md"
+    },
+    "6ed63468-cdd3-4025-a294-9f49237e76a5": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260922-0137-measure-the-reconciler-on-a-smaller-model/package.json",
+      "narrative": "work-packages/260922-0137-measure-the-reconciler-on-a-smaller-model/260922-0137-measure-the-reconciler-on-a-smaller-model.md"
+    },
+    "3757d5e0-91f3-4d64-b6c2-fe49faf49904": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260922-0906-fix-package-over-every-open-issue/package.json",
+      "narrative": "work-packages/260922-0906-fix-package-over-every-open-issue/260922-0906-fix-package-over-every-open-issue.md"
+    },
+    "9510b771-1527-4efa-a9b4-cc46dd1e96d8": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260922-1038-prior-mapping/package.json",
+      "narrative": "work-packages/260922-1038-prior-mapping/260922-1038-prior-mapping.md"
+    },
+    "b60d1bac-87db-4206-8a2f-b826825d1e74": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.record.json",
+      "narrative": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_does-guard-state-become-a-prior-runtime-record-or-go.md"
+    },
+    "c0f5f02c-291c-4f5c-a7ac-c0044aece7a5": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.record.json",
+      "narrative": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md"
+    },
+    "b5961de9-6fb7-413d-8212-50aebc1d54bd": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.record.json",
+      "narrative": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md"
+    },
+    "18d85016-6821-4ddc-a47f-dc6847eeeaca": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.record.json",
+      "narrative": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md"
+    },
+    "50515d81-7920-4b4e-8539-a1277e316d60": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.record.json",
+      "narrative": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.md"
+    },
+    "04f96f12-90c5-482b-ba58-bed1d145ce73": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.record.json",
+      "narrative": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md"
+    },
+    "b5d69cca-4f86-48e8-89d1-3278fa255633": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.record.json",
+      "narrative": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md"
+    },
+    "2d9c8f44-2a33-4eea-8add-b81306dd6df0": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.record.json",
+      "narrative": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md"
+    },
+    "28be75df-bd9a-48b8-a0f2-161bb18d3a87": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260922-1420-bracket-citations-read-and-swept-once/package.json",
+      "narrative": "work-packages/260922-1420-bracket-citations-read-and-swept-once/260922-1420-bracket-citations-read-and-swept-once.md"
+    },
+    "340157a7-17aa-4ca6-9ae1-eab1689e2c7e": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260922-1438-the-seven-rulings-and-the-closing-reviews-nine/package.json",
+      "narrative": "work-packages/260922-1438-the-seven-rulings-and-the-closing-reviews-nine/260922-1438-the-seven-rulings-and-the-closing-reviews-nine.md"
+    },
+    "06bac936-3140-4e54-ae87-3ae6dc8087e2": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260923-0839-implement-prior-nomenclature/package.json",
+      "narrative": "work-packages/260923-0839-implement-prior-nomenclature/260923-0839-implement-prior-nomenclature.md"
+    },
+    "2ca8ec57-5493-41dd-8ac2-01ff917628ad": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/260924-1216-own-command-for-new-packages-and-per-person-memos/package.json",
+      "narrative": "work-packages/260924-1216-own-command-for-new-packages-and-per-person-memos/260924-1216-own-command-for-new-packages-and-per-person-memos.md"
+    },
+    "88f7b586-6715-4ead-99a1-f82332e6946b": {
+      "kind": "package",
+      "row": "package-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/package.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/260928-1338-json-control-data-and-markdown-artefacts.md"
+    },
+    "1e096257-b4dd-40f9-b91a-f2a655fcc118": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md"
+    },
+    "3e1ba624-7bb1-4156-b8c9-a6b94ecb64d4": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md"
+    },
+    "279de65f-0543-4ad0-ae56-be65fa260b33": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md"
+    },
+    "8f47f743-58f2-4f69-bad0-738cd925b8ad": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+    },
+    "84fb196b-de90-4a2e-b98f-13a014251a94": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md"
+    },
+    "0ba9e7ce-5f45-412d-a493-c1f60fc1d2ee": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md"
+    },
+    "35a772a3-d534-494f-9fbb-81ec66d0ea0a": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1919_a_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1919_a_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md"
+    },
+    "1e69a7f4-de25-414a-a35a-e36b1bfa4132": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md"
+    },
+    "8b9319bf-9c4f-4a02-b2e5-7ce9cd0c4bbd": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1451_a_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1451_a_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md"
+    },
+    "7a7a9a8d-730b-48fd-a732-20ac0ba73a92": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md"
+    },
+    "5effa738-6f6c-416f-8d59-f94e44f70557": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md"
+    },
+    "24cb4dff-faad-4214-94a6-a6336ca87d77": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md"
+    },
+    "61be9a62-92a9-4069-b28e-c6c9c47eb0c7": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-archive-host-learn-every-binding-the-remaining-records-make.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-archive-host-learn-every-binding-the-remaining-records-make.md"
+    },
+    "c07058d9-c942-44a2-ac81-4a63e8aaf5e8": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md"
+    },
+    "d070db54-bb6e-4ff9-abc9-e6e25c755813": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.md"
+    },
+    "61a2c418-4d96-4066-a3b9-c40f59df3d8f": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md"
+    },
+    "3903cf95-a3e7-4573-ab20-173e627408ca": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_where-does-the-legacy-markdown-reader-live-and-what-does-the-codecs-migration-operation-take.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_where-does-the-legacy-markdown-reader-live-and-what-does-the-codecs-migration-operation-take.md"
+    },
+    "32576887-cc06-4def-a563-993971f7e52c": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_which-markdown-artefacts-become-records-when-a-legacy-workbench-migrates.md"
+    },
+    "d0ca8a32-654f-489b-855f-2df972333b7e": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md"
+    },
+    "9fa6a7f3-c0b2-4605-8a16-211a7bff077a": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md"
+    },
+    "da6fad62-541e-4b6f-aa00-99c0311fa194": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-1721_o_how-is-a-later-partial-override-of-a-decision-recorded.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-1721_o_how-is-a-later-partial-override-of-a-decision-recorded.md"
+    },
+    "71c07ada-88bf-4008-bc3a-d242dd9c1d71": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md"
+    },
+    "c9a501ec-d585-4450-80ac-c4bf23ccfd6f": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md"
+    },
+    "06b835f0-f111-4125-bfed-29551c86df67": {
+      "kind": "decision",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261005-1018_o_which-other-kind-hits-reach-prior-as-another-record-type-at-the-fj03d-hand-over.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261005-1018_o_which-other-kind-hits-reach-prior-as-another-record-type-at-the-fj03d-hand-over.md"
+    },
+    "7a2173fd-24a6-49b7-b17c-ee632e18496a": {
+      "kind": "issue",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-1810_o_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-1810_o_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md"
+    },
+    "ea7ea5a5-b640-4802-b14c-8a89c6088fc7": {
+      "kind": "issue",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-2025_o_the-orchestrator-prompt-still-says-a-task-start-row-carries-the-byte-measurements.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260929-2025_o_the-orchestrator-prompt-still-says-a-task-start-row-carries-the-byte-measurements.md"
+    },
+    "d27a285b-34ab-4a61-8238-9ab80401f0ff": {
+      "kind": "issue",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1219_o_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1219_o_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md"
+    },
+    "e4d2772b-4773-4f8a-83f0-887715d0cd86": {
+      "kind": "issue",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1640_o_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1640_o_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.md"
+    },
+    "8a5fe65a-edcb-406b-a9de-996b7f9e6b8f": {
+      "kind": "issue",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261001-0841_o_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261001-0841_o_three-texts-in-the-range-state-what-the-code-or-test-no-longer-does.md"
+    },
+    "40f80768-8605-4ea3-9996-0d5308401c81": {
+      "kind": "issue",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-0626_o_no-shipped-prompt-binds-a-reviewers-evidence-record-to-its-package-so-a-succeeded-edge-cannot-be-met.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-0626_o_no-shipped-prompt-binds-a-reviewers-evidence-record-to-its-package-so-a-succeeded-edge-cannot-be-met.md"
+    },
+    "0e0a4d5a-7f4d-4f80-9484-7c8032bb2ac9": {
+      "kind": "issue",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-1018_o_six-consumers-the-prior-spec-names-have-no-test-that-runs-their-shipped-text.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261005-1018_o_six-consumers-the-prior-spec-names-have-no-test-that-runs-their-shipped-text.md"
+    },
+    "76f818ef-1569-43b8-8b7f-885f652c559c": {
+      "kind": "plan",
+      "row": "record-live",
+      "control": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.record.json",
+      "narrative": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+    },
+    "18b0d79f-41c5-4e5f-8fff-27a2384e6ec8": {
+      "kind": "package",
+      "row": "package-terminal",
+      "control": "work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/package.json",
+      "narrative": "work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/261001-1930-work-order-slash-command-and-machine-readable-output.md"
+    }
+  }
+}

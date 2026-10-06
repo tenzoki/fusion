@@ -1,0 +1,88 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "e97a93f4-8b38-493f-9e01-17f1d86776ed",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-18",
+        "Status": "Draft",
+        "Spec": "`260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md`, as corrected by",
+        "Decidability": "The load-bearing question is *which relation does this sentence assert between two units of work*, and it is **not decidable** from the inputs the mechanism has — `260911-1915-candidate-prerequisite-edges.md` measured at least five relation types in this workbench's prose with nothing in the text separating them, and `rules/critical-stance.md` §4 names exactly this shape. **The pass therefore does predict, on one arm of its split, and says so rather than denying it.** What changes is not that the reading happens but what it may do: an ordering whose direction the pass fixed from what two items' artifacts and directives do is marked `inferred`, carries the sentence it rests on, and is **never applied on the mechanism's own say-so** — it is a proposal the user rules on, and a rejection leaves the store byte-identical. Where the direction is not fixed the entry goes to the field that orders nothing, so a prediction can never *silently* become an ordering; where the pass cannot fix which two items the sentence binds it proposes nothing and reports the sentence. That is the change of mechanism §4 requires: an undecidable prediction demoted to a labelled, citable proposal under a human ruling rather than promoted to a decision. **A plan claiming this classifier is reliable would be wrong; this one claims only that every entry is checkable and that no unchecked entry reaches a record.**"
+      },
+      "step_marks": {},
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "51b64c0f559b9ab62d8b86b16ea8167bccda73d0"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md",
+      "sha256": "sha256:b4367784359e5656a28d22e9e7c36239812d5e7f0472375d04335f52b9bf5751",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      },
+      {
+        "id": "8",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "382890d4-7aa9-47e8-bc77-a6de939be2db",
+        "display": "260917-2253-depends-on-edges-proposed-and-confirmed.md"
+      },
+      "revision": "sha256:66da14c9a2d39ff14ed91d838650e030906ac29a29178b125b10735835517bb2"
+    }
+  }
+}

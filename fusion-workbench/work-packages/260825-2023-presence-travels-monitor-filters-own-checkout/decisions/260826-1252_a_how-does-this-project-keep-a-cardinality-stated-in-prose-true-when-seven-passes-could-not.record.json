@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "06314397-5f3c-424e-9fd0-b4afcc2902d1",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": ""
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "no-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md",
+      "sha256": "sha256:72d1ebb3a417a63c9d9df9e37148bb7e9418a28e615930107052f93587eb517b",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md",
+      "sha256": "sha256:72d1ebb3a417a63c9d9df9e37148bb7e9418a28e615930107052f93587eb517b",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

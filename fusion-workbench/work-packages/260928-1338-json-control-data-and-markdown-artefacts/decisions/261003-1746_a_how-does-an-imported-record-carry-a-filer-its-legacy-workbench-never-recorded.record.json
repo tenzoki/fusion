@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "9fa6a7f3-c0b2-4605-8a16-211a7bff077a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260928-1338-json-control-data-and-markdown-artefacts.md",
+    "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+    "261003-1004-fj04-step12-proof-on-copies-of-real-workbenches.md",
+    "261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 261003-1004-fj04-step12-proof-on-copies-of-real-workbenches.md, 261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "no-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md",
+      "sha256": "sha256:c69b6d3231e9b749b8e20056b3d5fe43ee6b65c1e3aa903c39f0a2d33f9631cd",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261003-1746_a_how-does-an-imported-record-carry-a-filer-its-legacy-workbench-never-recorded.md",
+      "sha256": "sha256:c69b6d3231e9b749b8e20056b3d5fe43ee6b65c1e3aa903c39f0a2d33f9631cd",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

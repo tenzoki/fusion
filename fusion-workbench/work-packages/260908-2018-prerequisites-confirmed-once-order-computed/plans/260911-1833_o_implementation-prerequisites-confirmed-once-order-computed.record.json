@@ -1,0 +1,102 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "05cb129e-fb2d-4db8-8f44-c4160ef75c62",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-11",
+        "Revised": "2026-09-11 21:41, against the three answers at gate G1 and the reports steps A1 and D1 produced. Step labels are stable across the revision and a retired label is never reused: `B2`, `D2`, `D3` and gate `G2` are gone, `B4` and gate `G3` are new, so every citation of a step in the reports and the records still names the step it named.",
+        "Status": "Draft",
+        "Amended": "2026-09-12, citations only. The `bin/` helper roster left `CLAUDE.md`'s Layout table for `README-hooks.md` `### The bin/ helper roster` (decision `260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md`, option 1), so every instruction below that sent the helper's mandatory row to `CLAUDE.md` now sends it to the roster's new home. No figure taken at `ae172380` was rewritten and no step label moved; what the move dissolves is stated where those figures stand.",
+        "Spec": "`260911-1528_*_spec-prerequisites-confirmed-once-order-computed.md`",
+        "Decidability": "The load-bearing question is *what order does the work-item store impose on itself*, and after step B1 it is decidable by construction from inputs the mechanism holds. The answer at gate G1 fixed a two-field grammar: an entry in `**Depends-on:**` asserts one relation, stated by rule where the field is defined, and a citation that binds an item without ordering it sits in a second field, `**Cross-references:**`. Nothing then reads the text of a value to learn what the writer meant, which was the undecidability the first draft of this line named. The node set is decidable from `**Status:**`, which G1 also settled: `open` and `claimed` are nodes, `done` and `dropped` are not. Every figure downstream is a pure function of the node set and the edge set."
+      },
+      "step_marks": {
+        "1": "DONE",
+        "2": "DONE",
+        "3": "DONE",
+        "4": "DONE",
+        "5": "DONE",
+        "6": "DONE",
+        "7": "DONE",
+        "8": "DONE",
+        "9": "DONE",
+        "10": "DONE"
+      },
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "a397776079739f33a7beed846dad35340c1a1584"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md",
+      "sha256": "sha256:3f33c3ddb9936f76fc51bc84d21c2a516c4fa105626c3c3eb91f5fa87ee09aa2",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "done"
+      },
+      {
+        "id": "2",
+        "state": "done"
+      },
+      {
+        "id": "3",
+        "state": "done"
+      },
+      {
+        "id": "4",
+        "state": "done"
+      },
+      {
+        "id": "5",
+        "state": "done"
+      },
+      {
+        "id": "6",
+        "state": "done"
+      },
+      {
+        "id": "7",
+        "state": "done"
+      },
+      {
+        "id": "8",
+        "state": "done"
+      },
+      {
+        "id": "9",
+        "state": "done"
+      },
+      {
+        "id": "10",
+        "state": "done"
+      }
+    ],
+    "criteria": [],
+    "acceptance": null
+  }
+}

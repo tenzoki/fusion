@@ -1,0 +1,50 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "2e6b5254-4f50-4525-af4b-4f56b44b60f6",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260819-1645-four-constraints-on-deep-change/_c_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "c",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper (anticipated-circle mode)",
+        "Active spec/plan": "260819-2016_*_four-constraints-on-deep-change.md",
+        "Active session history": "260819-2006-orchestrator-session.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260819-1645-four-constraints-on-deep-change/_c_circle.md",
+      "sha256": "sha256:c58b9c1fbeaf2d3e527c5bd6c4e8db87d7b9060b38443c7ec5f469021fd4c9cf",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

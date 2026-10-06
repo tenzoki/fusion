@@ -1,0 +1,51 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "11598ce2-5141-4d11-b580-487b088057a0",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260908-1410-cut-skills-surface-add-post-body/_c_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "c",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>",
+        "Claim": "Unclaimed",
+        "Active spec/plan": "260908-1612_*_cut-the-skills-surface-and-add-the-post-step-body.md",
+        "Active session history": "260908-1530-orchestrator-session.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-1410-cut-skills-surface-add-post-body/_c_circle.md",
+      "sha256": "sha256:3dc4081b9727d06708eaf502f8f9f766339a026fe9ddfb35c355955c96f4c89d",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

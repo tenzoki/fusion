@@ -1,0 +1,51 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "87a1dddc-c1ee-455d-93d8-ca408723765d",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260801-1244-guard-rules-write/_c_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "c",
+      "head": {
+        "Domain": "code",
+        "Status": "closed (coherent)",
+        "Filed by": "shaper (anticipated-circle mode)",
+        "Active spec/plan": "260801-1122_*_spec-normative-consolidation.md (spec, covers all four Circles of this body of work) · 260804-1633_*_plan-c5b-remediation-and-ship.md (C5b remediation and ship) · 260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md (Ausstiegsplan) · predecessor 260802-1856_*_plan-guard-rules-write.md (steps 1–8 complete, 9/10 superseded)",
+        "Active session history": "260805-2117-orchestrator-session.md (latest; 11 orchestrator sessions total under history/)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260801-1244-guard-rules-write/_c_circle.md",
+      "sha256": "sha256:862e874b79d5b53b92fb008d51e27f5c5d492045359be810cc85d70a7cca55a0",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

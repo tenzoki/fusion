@@ -1,0 +1,50 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "ba9c3d0b-79d1-41e0-b452-7c825b0dda65",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260824-0530-record-attribution-and-circle-claim/_c_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "c",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper (anticipated-circle mode)",
+        "Active spec/plan": "260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md",
+        "Active session history": "260824-0539-orchestrator-session.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260824-0530-record-attribution-and-circle-claim/_c_circle.md",
+      "sha256": "sha256:618629c8a5cb48419de02ef3211a166104eeea749e72cee4285363bd9778fb58",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

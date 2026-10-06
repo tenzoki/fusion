@@ -1,7 +1,6 @@
 # Implementation Plan: the `**Depends-on:**` proposal pass
 
 **Date:** 2026-09-18
-**Status:** Draft
 **Spec:** `260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md`, as corrected by
 `260917-2258_*_spec-depends-on-edges-zero-yield.md` (three rounds, six conceded claims) and by the
 binding corrections the dispatch carried. Where spec and discussion differ the discussion governs;

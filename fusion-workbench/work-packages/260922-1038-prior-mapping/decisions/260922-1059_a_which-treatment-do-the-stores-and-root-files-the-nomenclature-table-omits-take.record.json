@@ -1,0 +1,45 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "04f96f12-90c5-482b-ba58-bed1d145ce73",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+    "260922-1038-prior-mapping.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+      "sha256": "sha256:923b7fe0bedc7836fe3d7b4e7f9626ee6c9404ad3bc555f9e7a31b9d393bfff2",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "04f96f12-90c5-482b-ba58-bed1d145ce73",
+      "display": "260922-1059_a_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

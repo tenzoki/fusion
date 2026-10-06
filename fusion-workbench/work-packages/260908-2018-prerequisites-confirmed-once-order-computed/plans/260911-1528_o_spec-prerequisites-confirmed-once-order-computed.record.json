@@ -1,0 +1,47 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "e9d3543d-9535-4fb1-b9bc-6b4730166b5b",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-11",
+        "Status": "Draft",
+        "Source": "Re-sharpen of the work item `260908-2018-prerequisites-confirmed-once-order-computed.md`,"
+      },
+      "step_marks": {},
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "a78d017f3d821cc20b180b44a548b1a5a2ab9546"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md",
+      "sha256": "sha256:75f7be2c5b3c11d41bdd558e0e90c75ba856c4eb0ec45f0fc970f6f9f93a7edb",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

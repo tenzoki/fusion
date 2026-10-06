@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "bc371be3-f3d6-48ba-9297-ee3aafeb7a27",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": ""
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md",
+      "sha256": "sha256:cca1fbad4705e0ed792af75380062a2624bb10871303ed703e0665938476939a",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260911-1916-re-grounding-three-open-decisions.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c6743bfa-b0bb-4dfa-943c-b287016132da",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-0820_o_is-a-token-side-measurement-of-the-splits-net-cost-worth-building.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260907-0820_*_spec-bounded-executor-dispatches.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper (portfolio-activation mode), Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "`260907-0820_*_spec-bounded-executor-dispatches.md` (C5); `260907-0710-planability-of-the-bounded-dispatch-spec.md` (findings 3 and 4); `260812-0303-simplify-speed-and-why-rules-do-not-hold.md` (section 2, section 3)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-0820_o_is-a-token-side-measurement-of-the-splits-net-cost-worth-building.md",
+      "sha256": "sha256:8be5c2bd789b184566ea75d843c9f420f3c8b7d1272d05003ed9df04bf7068d4",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

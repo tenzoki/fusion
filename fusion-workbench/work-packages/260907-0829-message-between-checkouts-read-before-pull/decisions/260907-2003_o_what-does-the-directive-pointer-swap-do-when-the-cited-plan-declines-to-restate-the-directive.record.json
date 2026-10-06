@@ -1,0 +1,41 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "892f2973-8bf5-4227-a6ea-5a8d8486d6b8",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260907-0829-message-between-checkouts-read-before-pull/decisions/260907-2003_o_what-does-the-directive-pointer-swap-do-when-the-cited-plan-declines-to-restate-the-directive.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md",
+    "260907-1942_*_message-between-checkouts-read-before-pull.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "`260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md`, `260907-1942_*_message-between-checkouts-read-before-pull.md`"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260907-0829-message-between-checkouts-read-before-pull/decisions/260907-2003_o_what-does-the-directive-pointer-swap-do-when-the-cited-plan-declines-to-restate-the-directive.md",
+      "sha256": "sha256:68d3ec6fbd422bced913aba5734b97da97746a4b3da3457f6032450720e7abac",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "492bc70d-d253-47df-8575-6f7f518df1bf",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260909-2215-gate-firing-read-before-the-cut.md `### The same gates across three projects`; 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step A1"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md",
+      "sha256": "sha256:ae480e26b802e8852f8d2fa1a317a9bc713f9c3cec1d88cb2ac15b76d3a42653",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260910-0900-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

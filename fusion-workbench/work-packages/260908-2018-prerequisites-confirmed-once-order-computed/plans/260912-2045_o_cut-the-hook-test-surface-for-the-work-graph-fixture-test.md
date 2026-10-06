@@ -1,7 +1,6 @@
 # Implementation Plan: cut the hook test surface so the work-graph fixture test can land
 
 **Date:** 2026-09-12
-**Status:** Draft
 **Spec:** none for the cut itself. Its requirement is set by `260911-1528_*_spec-prerequisites-confirmed-once-order-computed.md` `## Preconditions` and by step C3 of `260911-1833_*_implementation-prerequisites-confirmed-once-order-computed.md`, both of which name this work and deliberately refuse to specify it.
 **Decidability:** Two questions, and they separate cleanly. **How much margin a given removal frees** is decidable exactly, from inputs the mechanism holds: margin is `floor + headRoom - total`, and a removal's yield is a pure function of the tree and `TEST_LINE_BASELINE`, computable before a byte moves. Step S1 computes it. **Whether a given guarantee is worth its lines** is decidable by no mechanism at all: it is a reading of what a test holds against what a release would stop catching, and no count, ratio or heuristic decides it. So the mechanism does not try: S2 produces evidence per candidate and G1 puts the judgement to the user, one row at a time. A plan that had an agent pick the cut from a size ranking would be approximating exactly the question §4 of `rules/critical-stance.md` says not to approximate.
 
@@ -115,13 +114,13 @@ Coherence self-check, run before this was finalised. Six nodes inside the work a
 
 **G1 is a gate, not a step, and carries no Executor.** `coder`, `ontocoder` and `analyst` all run non-interactively and none holds `AskUserQuestion`. The orchestrator proxies it.
 
-1. [DONE] **S1: compute the yield per candidate and bound the reading list**
+1. **S1: compute the yield per candidate and bound the reading list**
    - Executor: `coder`
    - Files: none; this step writes no file and reports. It may use a throwaway script under the session scratch directory.
    - Changes: re-derive, from the tree and from `TEST_LINE_BASELINE`, the three figures in `## Current State` (`total`, `floor`, `margin`) and a per-file table carrying current lines, baseline entry, whole-file yield (`size − baseline + 1`) and non-code line count (comment plus blank). Report, as figures: the Class A roster with its sum, the Class B eligible roster ordered by yield, and the Class C reservoir per file. **Report any disagreement with `## Current State` as a disagreement rather than silently substituting**: those figures were taken at 2026-09-12 20:45 and the tree may have moved. Exclude nothing from the table; exclusion is S2's judgement and the gate's, not a filter applied before either of them can see it. Do not edit a test, do not touch a baseline, do not commit.
    - Dependencies: none
 
-2. [DONE] **S2: the reading, and the ledger it produces**
+2. **S2: the reading, and the ledger it produces**
    - Executor: `analyst`
    - Files: writes one analysis report to its own `$OUT_ANALYSIS`. Reads `hooks/lib/__tests__/**/*.ts`, S1's table, `README-hooks.md` `### Three gates that can fail the suite over text nobody compiled`, `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining`, and the two records named below.
    - Changes: a ledger with one row per candidate, and **every row carries all five of these or it is not a row**: (a) the file and, for a Class C row, the line range; (b) what it asserts, in the terms of the behaviour it holds, not the API it calls; (c) whether anything else in the suite asserts the same thing, cited `file:line`, or the plain statement that nothing does; (d) **what would reach a release unnoticed if it went**: the guarantee, named as a failure that would ship; (e) the measured yield from S1's table. A row's verdict is one of `duplicate` (another test asserts it, cited), `superseded` (its subject no longer exists), `prose` (a Class C trim removing no assertion), or `load-bearing` (it stays). Only the first three enter the ledger's total.
@@ -135,7 +134,7 @@ Coherence self-check, run before this was finalised. Six nodes inside the work a
 
 **G1 — the user reads the ledger and approves it row by row.** The gate is per row rather than per report because the rows are not alike: a `duplicate` row gives up nothing, a `superseded` row gives up something already gone, a `prose` row gives up documentation, and each is a different price. The orchestrator puts the ledger's total and its three marks first, then the rows in yield order, and asks which are approved. Approving none is a valid answer and routes to S4.
 
-3. [DONE] **S3: apply exactly the approved rows**
+3. **S3: apply exactly the approved rows**
    - Executor: `coder`
    - Files: the test files named in the approved rows; `hooks/lib/__tests__/surface-growth-bound.test.ts` (the `TEST_LINE_BASELINE` map, **entry removals only**, for any file deleted whole); `hooks/lib/__tests__/fixtures/surface-growth.golden`
    - Changes: apply the approved rows and **nothing else**: no row the gate did not approve, no adjacent tidy-up, no assertion removed that no row names. For each file deleted whole, drop its `TEST_LINE_BASELINE` entry in the same commit, or `carries no baseline entry for a file that is gone` fails. **No other edit to that file:** `TEST_LINE_HEAD_ROOM` does not move, no baseline value changes, no head-room constant changes, and no comment in `## Re-baselining` or the arming logs is touched. Regenerate the golden with `cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts`, read the diff, then run again without the flag; a regeneration run is deliberately never green. Then `cd hooks && npm test`.

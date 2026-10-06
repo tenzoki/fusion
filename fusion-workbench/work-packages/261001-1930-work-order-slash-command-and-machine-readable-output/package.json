@@ -1,0 +1,56 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "18b0d79f-41c5-4e5f-8fff-27a2384e6ec8",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": {
+    "checkout_id": "5e8248d7",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": null
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/261001-1930-work-order-slash-command-and-machine-readable-output.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": null,
+      "head": {
+        "Domain": "code",
+        "Status": "done",
+        "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 261001-2139",
+        "Active spec/plan": "261001-1934_*_spec-work-order-slash-command-and-machine-readable-output.md (spec), 261002-0733_*_plan-work-order-markdown-and-json-formats.md (plan)",
+        "Cross-references": "260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260908-2018-prerequisites-confirmed-once-order-computed.md, 261001-1955_*_plan-work-order-slash-command-and-tsv-output.md",
+        "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/261001-1930-work-order-slash-command-and-machine-readable-output.md",
+      "sha256": "sha256:d9a6797524cf668ff8b4ed5754ccf6eddaba5e3d8f9736849dd41ae6459ffb5d",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

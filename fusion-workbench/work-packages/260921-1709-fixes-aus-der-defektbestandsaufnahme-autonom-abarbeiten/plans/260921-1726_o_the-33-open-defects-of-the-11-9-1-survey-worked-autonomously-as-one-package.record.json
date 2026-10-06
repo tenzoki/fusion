@@ -1,0 +1,190 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c80a12d7-7cf6-4bd8-a6b5-96e32c7582b9",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-21",
+        "Status": "Draft",
+        "Spec": "none — planned from the work item's `## Directive` (`260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten.md`) against the survey `260921-1653-open-defect-survey-at-11-9-1.md`, on the model of `260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md`",
+        "Decidability": "The load-bearing question is whether each of the 26 still-present records is closable at HEAD `3d02c7fd` by one bounded edit whose acceptance is a command the executor can run, and whether the six fixes that add hook-test lines fit the surface after one funding cut. Both are decidable from the inputs the steps have: every presence claim below was re-read against the tree at that commit (the site is quoted per step, taken from the survey and re-checked where the plan differs from it), every acceptance is a `grep`, a `wc`, a `node -e` probe, a helper run or the suite with a stated result, and the line budget is a subtraction the bound test performs on every run (14 lines of head-room at HEAD, measured by `hooks/lib/__tests__/surface-growth-bound.test.ts`; step 17 frees roughly 146). Three inputs are not decidable from the plan and are handed on rather than approximated. (1) Whether the ten-pair experiment of step 2 reads 0 of 20 after step 1: the plan states both outcomes and what each does to the five load records. (2) Whether a working answer taken under an open decision is the one the user wants: every one is named in `## Working answers` below and in the decision record it hangs on, no marker moves, and the user rules with the implementation in front of them, which is the directive's own mechanism. (3) Whether a second opinion accepts a concept: the directive's stop rule, three rejections in a row, ends the package.",
+        "Domain": "code"
+      },
+      "step_marks": {
+        "1": "DONE",
+        "2": "DONE",
+        "3": "DONE",
+        "4": "DONE",
+        "5": "DONE",
+        "6": "DONE",
+        "7": "DONE",
+        "8": "DONE",
+        "9": "DONE",
+        "10": "DONE",
+        "11": "DONE",
+        "12": "DONE",
+        "13": "DONE",
+        "14": "DONE",
+        "15": "DONE",
+        "16": "DONE",
+        "17": "DONE",
+        "18": "DONE",
+        "19": "DONE",
+        "20": "DONE",
+        "21": "DONE",
+        "22": "DONE",
+        "24": "DONE",
+        "25": "DONE",
+        "26": "DONE",
+        "27": "DONE",
+        "28": "DONE"
+      },
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "d9fe9a7ccac335aa5080ad9a4625f1e771df1109"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten/plans/260921-1726_o_the-33-open-defects-of-the-11-9-1-survey-worked-autonomously-as-one-package.md",
+      "sha256": "sha256:2ee9238c3cd2a05d1e60b6f9c2ff4dcac644c03097245ec4a28578b9b95b4942",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "done"
+      },
+      {
+        "id": "2",
+        "state": "done"
+      },
+      {
+        "id": "3",
+        "state": "done"
+      },
+      {
+        "id": "4",
+        "state": "done"
+      },
+      {
+        "id": "5",
+        "state": "done"
+      },
+      {
+        "id": "6",
+        "state": "done"
+      },
+      {
+        "id": "7",
+        "state": "done"
+      },
+      {
+        "id": "8",
+        "state": "done"
+      },
+      {
+        "id": "9",
+        "state": "done"
+      },
+      {
+        "id": "10",
+        "state": "done"
+      },
+      {
+        "id": "11",
+        "state": "done"
+      },
+      {
+        "id": "12",
+        "state": "done"
+      },
+      {
+        "id": "13",
+        "state": "done"
+      },
+      {
+        "id": "14",
+        "state": "done"
+      },
+      {
+        "id": "15",
+        "state": "done"
+      },
+      {
+        "id": "16",
+        "state": "done"
+      },
+      {
+        "id": "17",
+        "state": "done"
+      },
+      {
+        "id": "18",
+        "state": "done"
+      },
+      {
+        "id": "19",
+        "state": "done"
+      },
+      {
+        "id": "20",
+        "state": "done"
+      },
+      {
+        "id": "21",
+        "state": "done"
+      },
+      {
+        "id": "22",
+        "state": "done"
+      },
+      {
+        "id": "23",
+        "state": "open"
+      },
+      {
+        "id": "24",
+        "state": "done"
+      },
+      {
+        "id": "25",
+        "state": "done"
+      },
+      {
+        "id": "26",
+        "state": "done"
+      },
+      {
+        "id": "27",
+        "state": "done"
+      },
+      {
+        "id": "28",
+        "state": "done"
+      }
+    ],
+    "criteria": [],
+    "acceptance": null
+  }
+}

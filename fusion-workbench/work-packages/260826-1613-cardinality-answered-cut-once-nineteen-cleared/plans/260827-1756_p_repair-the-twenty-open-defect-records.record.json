@@ -1,0 +1,170 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "1ce64950-4a34-4300-a4b6-e59c7f416a1b",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/plans/260827-1756_p_repair-the-twenty-open-defect-records.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "p",
+      "head": {
+        "Date": "2026-08-27",
+        "Status": "Partially Complete",
+        "Spec": "none: planned from the dispatch directive; the Circle record `260826-1613-cardinality-answered-cut-once-nineteen-cleared` carries the Directive",
+        "Decidability": "Two questions carry this plan. First, for each of the twenty records, does it resolve to a fix, to a recorded no-change, or to a direction the user gives at the gate? That is decidable from the records themselves: every one names its site and its close condition, and the split below is complete over the twenty by enumeration. Second, for every step that adds bytes to a growth-bounded surface, is there a named source for those bytes? That is decidable from the four bounds' own instruments, measured at `0fb5085` in `## Current State`, and the answer is that two surfaces need no cut and two need one, so the plan carries one measured cut under one gate. What is not decidable from the plan's inputs is the right answer to the six choice points planning surfaced; those are filed as decision records in this Circle's store and are answered by the user at the gate, not approximated here."
+      },
+      "step_marks": {
+        "1": "DONE",
+        "4": "DONE",
+        "5": "DONE",
+        "6": "DONE",
+        "8": "DONE",
+        "11": "DONE",
+        "12": "DONE",
+        "14": "DONE",
+        "15": "DONE",
+        "17": "DONE",
+        "19": "IN PROGRESS",
+        "20": "DONE",
+        "21": "DONE",
+        "22": "DONE",
+        "24": "DONE",
+        "10a": "DONE",
+        "13a": "DONE",
+        "13b": "DONE",
+        "18a": "DONE",
+        "18b": "DONE"
+      },
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "cb7fa7beb74c2fc5e32d050edbe3e632d640cc86"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/plans/260827-1756_p_repair-the-twenty-open-defect-records.md",
+      "sha256": "sha256:55fa5fb010252080e393cbbbaeb1f53f68213ac777bdf6637f9140f7bf53fc5f",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "done"
+      },
+      {
+        "id": "4",
+        "state": "done"
+      },
+      {
+        "id": "6",
+        "state": "done"
+      },
+      {
+        "id": "11",
+        "state": "done"
+      },
+      {
+        "id": "14",
+        "state": "done"
+      },
+      {
+        "id": "10a",
+        "state": "done"
+      },
+      {
+        "id": "13a",
+        "state": "done"
+      },
+      {
+        "id": "13b",
+        "state": "done"
+      },
+      {
+        "id": "15",
+        "state": "done"
+      },
+      {
+        "id": "16",
+        "state": "open"
+      },
+      {
+        "id": "18a",
+        "state": "done"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "17",
+        "state": "done"
+      },
+      {
+        "id": "21",
+        "state": "done"
+      },
+      {
+        "id": "22",
+        "state": "done"
+      },
+      {
+        "id": "5",
+        "state": "done"
+      },
+      {
+        "id": "12",
+        "state": "done"
+      },
+      {
+        "id": "20",
+        "state": "done"
+      },
+      {
+        "id": "18b",
+        "state": "done"
+      },
+      {
+        "id": "19",
+        "state": "in_progress"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      },
+      {
+        "id": "8",
+        "state": "done"
+      },
+      {
+        "id": "9",
+        "state": "open"
+      },
+      {
+        "id": "23",
+        "state": "open"
+      },
+      {
+        "id": "24",
+        "state": "done"
+      }
+    ],
+    "criteria": [],
+    "acceptance": null
+  }
+}

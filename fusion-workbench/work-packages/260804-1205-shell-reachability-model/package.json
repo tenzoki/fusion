@@ -1,0 +1,51 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "0e613eea-c27a-4c29-ac19-6b144aa244d5",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "dropped",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260804-1205-shell-reachability-model/_s_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "dropped",
+    "reason": "superseded (legacy Circle marker)",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "s",
+      "head": {
+        "Domain": "code",
+        "Status": "active (parked mid-Turn-1 pending decision `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`; the record was activated `_a_`→`_t_` on 260806-2313 and this field was corrected by hand on 260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md, which is the defect filed at `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`)",
+        "Filed by": "shaper (anticipated-circle mode)",
+        "Active spec/plan": "260806-2353_*_plan-shell-reachability-model.md",
+        "Active session history": "260806-2158-orchestrator-session.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260804-1205-shell-reachability-model/_s_circle.md",
+      "sha256": "sha256:33d1b2cc761ede3064fb1be0e7d49da949210c39ad3b373a827932f5d76eb7c2",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

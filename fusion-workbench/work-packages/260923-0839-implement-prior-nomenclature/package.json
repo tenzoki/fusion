@@ -1,0 +1,56 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "06bac936-3140-4e54-ae87-3ae6dc8087e2",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": {
+    "checkout_id": "5e8248d7",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": null
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260923-0839-implement-prior-nomenclature/260923-0839-implement-prior-nomenclature.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": null,
+      "head": {
+        "Domain": "code",
+        "Status": "done",
+        "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260923-0839",
+        "Cross-references": "260922-1038-prior-mapping.md, 260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1106_*_spec-prior-nomenclature-consumer-migration.md, 260922-1114_*_plan-prior-nomenclature-plugin-source.md, 260922-1129_*_plan-prior-nomenclature-consumer-migration.md",
+        "Active spec/plan": "260922-1045_*_spec-prior-nomenclature-plugin-source.md (spec, part 1), 260922-1114_*_plan-prior-nomenclature-plugin-source.md (plan, part 1: the one this item runs on and closes against; part 2's plan 260922-1129_*_plan-prior-nomenclature-consumer-migration.md interleaves with it and is cross-referenced)",
+        "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260923-0839-implement-prior-nomenclature/260923-0839-implement-prior-nomenclature.md",
+      "sha256": "sha256:31dc988a225c6e86c2f686ea6b1f30a2bd67ed32c5fb0fbc108edcf25ba20932",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

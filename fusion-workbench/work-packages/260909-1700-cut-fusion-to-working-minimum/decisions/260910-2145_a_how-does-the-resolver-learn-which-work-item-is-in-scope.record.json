@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "2cad3a89-0d84-4f66-b4f1-947fe900502b",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.md"
+  },
+  "filed_by": {
+    "actor": "planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260910-2133_*_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md; 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step C9; 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md; 07961552"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.md",
+      "sha256": "sha256:46156a7240e5b250aadc36a8179c8b98d9e23f53c60cb2ea782598b7e0285973",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260910-2145_*_restore-the-per-work-item-container.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

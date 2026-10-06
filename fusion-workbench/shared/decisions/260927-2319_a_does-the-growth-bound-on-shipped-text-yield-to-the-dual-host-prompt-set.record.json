@@ -1,0 +1,52 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8c10de16-7ea3-4a73-b3e8-f3132556736c",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260927-2304-fusion-dual-host-design-review.md",
+    "260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md",
+    "260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260927-2304-fusion-dual-host-design-review.md, 260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md, 260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+      "sha256": "sha256:7a4844cd49c959539c876fbe85aef0a746eb722b604d0b1db6e73855765a7efb",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+      "sha256": "sha256:7a4844cd49c959539c876fbe85aef0a746eb722b604d0b1db6e73855765a7efb",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

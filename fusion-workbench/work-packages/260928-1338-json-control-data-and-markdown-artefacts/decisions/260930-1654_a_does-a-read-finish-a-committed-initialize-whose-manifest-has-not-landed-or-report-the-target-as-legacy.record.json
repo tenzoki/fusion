@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7a7a9a8d-730b-48fd-a732-20ac0ba73a92",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md",
+    "260929-1810_*_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+    "260929-1810_*_what-does-the-claude-side-declare-about-a-read-that-finishes-a-committed-intent.md",
+    "260928-1338-json-control-data-and-markdown-artefacts.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md, 260929-1810_*_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md, 260929-1810_*_what-does-the-claude-side-declare-about-a-read-that-finishes-a-committed-intent.md, 260928-1338-json-control-data-and-markdown-artefacts.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md",
+      "sha256": "sha256:016e96734644a164b38e0fd15daf00045bcae866ea04b4df1a22e5002b942e39",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md",
+      "sha256": "sha256:016e96734644a164b38e0fd15daf00045bcae866ea04b4df1a22e5002b942e39",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

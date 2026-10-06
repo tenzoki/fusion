@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "f472a845-c9f3-4942-a61c-216c47c9a689",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260908-1836_o_should-the-dispatch-bound-gates-context-list-cover-the-prompts-own-prose-name-for-the-value.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "`260907-1450_*_plan-bounded-executor-dispatches.md` `### 14. A lint against the dispatch bound returning to the prose`; `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`, the measured failure the gate exists to prevent"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260906-2258-bounded-executor-dispatches/decisions/260908-1836_o_should-the-dispatch-bound-gates-context-list-cover-the-prompts-own-prose-name-for-the-value.md",
+      "sha256": "sha256:e80af6b565e95eff64fb3999178c529f41b88c5dc14b77b1178b57f2ae50ec99",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "1b60d8bd-fc1e-4506-9379-fcaf16f76626",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": null
+  },
+  "references": [
+    "260815-2147-orchestrator-session.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Status": "answered",
+        "Filed by": "orchestrator",
+        "Cross-references": "hooks/lib/__tests__/surface-growth-bound.test.ts (`## Updating the golden`), hooks/lib/__tests__/fixtures/surface-growth.golden, hooks/lib/__tests__/helpers/growth-bound.ts, 260815-2147-orchestrator-session.md (`## Turn 1 — a finding that changed the session's rhythm`)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "sha256": "sha256:8a8e17dc85a41aba3b38483298a24455e865772cea56530a60720fcf6805b776",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260816-1500-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

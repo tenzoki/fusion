@@ -1,0 +1,52 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d0ca8a32-654f-489b-855f-2df972333b7e",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260928-1338-json-control-data-and-markdown-artefacts.md",
+    "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+    "261002-2128_*_should-a-second-run-no-op-plan-stay-a-later-operation-that-blocks-rollback.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 261002-2128_*_should-a-second-run-no-op-plan-stay-a-later-operation-that-blocks-rollback.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md",
+      "sha256": "sha256:5a57d7a9a08a9ace4eb269624b9a546e4136902c86120bd586b353b8a46a3966",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261002-2252_a_does-step-10a-run-now-and-on-which-base-given-main-is-at-12-2-3.md",
+      "sha256": "sha256:5a57d7a9a08a9ace4eb269624b9a546e4136902c86120bd586b353b8a46a3966",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "22d95860-b3ba-4d83-bf89-00829173424a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Status": "answered",
+        "Filed by": "orchestrator (on the user's answer, as a prerequisite to `260816-0719`)",
+        "Cross-references": "`260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md` (the decision this unblocked); `install.sh`; `CLAUDE.md` `### HTTPS installer` and `## Release process` step 5"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+      "sha256": "sha256:9681df37d2d6a4df275ee9cf4af07dae5c063584084458cf6c64b5034f2de340",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260816-1500-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

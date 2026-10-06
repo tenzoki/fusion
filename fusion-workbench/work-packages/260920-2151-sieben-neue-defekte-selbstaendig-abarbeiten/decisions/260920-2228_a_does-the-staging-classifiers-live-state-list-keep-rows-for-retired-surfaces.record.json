@@ -1,0 +1,43 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "650ff810-decc-4b73-a51c-8c059537d7c7",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md"
+  },
+  "filed_by": {
+    "actor": "planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260918-1335_*_the-live-state-comment-keeps-two-retired-rows-for-a-consequence-classify-cannot-produce.md",
+    "260918-1409_*_the-live-state-list-claims-class-l-in-full-while-two-class-l-entries-classify-as-unclassified.md",
+    "260911-1339_*_staging-drift-still-classifies-a-pointer-a-rule-says-nothing-creates-and-names-a-turn-boundary-trigger-it-does-not-have.md",
+    "260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260918-1335_*_the-live-state-comment-keeps-two-retired-rows-for-a-consequence-classify-cannot-produce.md, 260918-1409_*_the-live-state-list-claims-class-l-in-full-while-two-class-l-entries-classify-as-unclassified.md, 260911-1339_*_staging-drift-still-classifies-a-pointer-a-rule-says-nothing-creates-and-names-a-turn-boundary-trigger-it-does-not-have.md, 260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260920-2151-sieben-neue-defekte-selbstaendig-abarbeiten/decisions/260920-2228_a_does-the-staging-classifiers-live-state-list-keep-rows-for-retired-surfaces.md",
+      "sha256": "sha256:10c7cdbcd2ce3459b6411668217f84c586e159caa9e7d53f0333bca502aaee85",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260921-0742_*_does-live-state-keep-rows-for-retired-surfaces.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

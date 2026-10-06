@@ -1,0 +1,51 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "d44e5fdf-c664-44f3-a724-455c1cb3a984",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260716-1847-workbench-umbau/_c_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "c",
+      "head": {
+        "Domain": "code",
+        "Status": "closed (coherent)",
+        "Filed by": "orchestrator (Circle 1; aktiviert 2026-07-17 im End-to-End-Lauf, Schritt 9; geschlossen 2026-07-17 nach coherent-Verdikt)",
+        "Active spec/plan": "260716-1910_*_plan-workbench-umbau-circle-container.md",
+        "Active session history": "260717-1832-orchestrator-session.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260716-1847-workbench-umbau/_c_circle.md",
+      "sha256": "sha256:cb542500eea545caf2c32d44955f71a384d6508a64e3042f89d5ec6b4db50690",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

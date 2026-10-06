@@ -1,0 +1,39 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c4878fb2-9f6d-4631-9041-a23cbf842ea4",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "on the reviewer's recommendation"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Status": "open",
+        "Filed by": "orchestrator (session `260810-1402`), on the reviewer's recommendation",
+        "Cross-references": "`260810-1632-coderev-turn-1-range-430d73a-to-head.md` (the pass that named the pattern); `archive/260817-1907-safe-cleanup-scoped/260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`; `260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`; `260810-1632_*_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`; `archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md",
+      "sha256": "sha256:2546c56e7cdea9b045869c79244575f671c95e0098243afa63639968d52f1f30",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260811-0752-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

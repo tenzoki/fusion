@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8775177b-1704-43a6-b336-132adbda62df",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": ""
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md",
+      "sha256": "sha256:22fd7eb10cff03784324183da49c2385c527b9cfc15d08e1607d0c3d875798ca",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260911-1916-re-grounding-three-open-decisions.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

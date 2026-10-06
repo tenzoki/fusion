@@ -1,0 +1,45 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "18d85016-6821-4ddc-a47f-dc6847eeeaca",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+    "260922-1038-prior-mapping.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+      "sha256": "sha256:f97e3f564e22d6e259025f0097057e0f13dcf4816f8a33cec543e7b37738dd28",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "18d85016-6821-4ddc-a47f-dc6847eeeaca",
+      "display": "260922-1059_a_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

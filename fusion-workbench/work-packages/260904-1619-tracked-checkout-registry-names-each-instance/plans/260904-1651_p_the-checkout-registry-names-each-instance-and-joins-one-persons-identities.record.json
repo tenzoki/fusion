@@ -1,0 +1,124 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "007e6b20-63d9-4781-9e60-562545666939",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/plans/260904-1651_p_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "p",
+      "head": {
+        "Date": "2026-09-04",
+        "Status": "Complete except step 15, which belongs to the next session after `fusion --update`",
+        "Spec": "none; the Directive is `## Directive` of `260904-1619-tracked-checkout-registry-names-each-instance`, written by the shaper into the record, and it is not restated here",
+        "Decidability": "Two questions carry the mechanism, and they have opposite answers. *Given two event lines, is this one person or two?* Decidable, from a table a human wrote: each registry entry states one git identity and the person who claims it, so the classification becomes `canon(g) = map[g] ?? g` over the git identities the log carries, and `other_people` is the size of the set of canonical values rather than of raw strings. The function is total over every input the log can hold, and on an empty map it is the identity function, so a project with no entries gets the figures HEAD gives, from the same code path rather than from a fallback branch. *Did this checkout previously hold a different identifier?* **Not decidable**, and the plan says so rather than answering it. After `git clean -xdf` no local file distinguishes a first mint from a re-mint, and no tracked surface says which of the identifiers it carries belonged to this tree; the registry entry does not help, because the pointer that named it is the file that was deleted. So the repair changes mechanism instead of strengthening the claim: the mint stops being silent and reports two facts that *are* decidable, that the file did not exist before this call, and how many other checkout identifiers this workbench already carries, leaving the inference to the human whose tree it is. Step 10's acceptance criterion is that stated outcome and not a detection."
+      },
+      "step_marks": {
+        "1": "DONE",
+        "2": "DONE",
+        "3": "DONE",
+        "4": "DONE",
+        "5": "DONE",
+        "6": "DONE",
+        "7": "DONE",
+        "8": "DONE",
+        "9": "DONE",
+        "10": "DONE",
+        "11": "DONE",
+        "12": "DONE",
+        "13": "DONE",
+        "14": "DONE"
+      },
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "539ad3463920f8278ae3b3ce7e20c7248c020b9f"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260904-1619-tracked-checkout-registry-names-each-instance/plans/260904-1651_p_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md",
+      "sha256": "sha256:7d89eccc14ab846b34e1f074369fb2164b5931511324b784df9b6f3b05fe7905",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "done"
+      },
+      {
+        "id": "2",
+        "state": "done"
+      },
+      {
+        "id": "3",
+        "state": "done"
+      },
+      {
+        "id": "4",
+        "state": "done"
+      },
+      {
+        "id": "5",
+        "state": "done"
+      },
+      {
+        "id": "6",
+        "state": "done"
+      },
+      {
+        "id": "7",
+        "state": "done"
+      },
+      {
+        "id": "8",
+        "state": "done"
+      },
+      {
+        "id": "9",
+        "state": "done"
+      },
+      {
+        "id": "10",
+        "state": "done"
+      },
+      {
+        "id": "11",
+        "state": "done"
+      },
+      {
+        "id": "12",
+        "state": "done"
+      },
+      {
+        "id": "13",
+        "state": "done"
+      },
+      {
+        "id": "14",
+        "state": "done"
+      },
+      {
+        "id": "15",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": null
+  }
+}

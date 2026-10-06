@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** answered
 **Filed by:** orchestrator
 **Cross-references:** hooks/lib/__tests__/surface-growth-bound.test.ts (`## Updating the golden`), hooks/lib/__tests__/fixtures/surface-growth.golden, hooks/lib/__tests__/helpers/growth-bound.ts, 260815-2147-orchestrator-session.md (`## Turn 1 — a finding that changed the session's rhythm`)
 

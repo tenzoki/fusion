@@ -1,0 +1,42 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "5effa738-6f6c-416f-8d59-f94e44f70557",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+    "260930-1451_*_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md",
+    "260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md, 260930-1451_*_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md, 260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md",
+      "sha256": "sha256:2e9a2de4d92f551f9117722c46689c2e6b111c7139da331cd04f966fe55b0d45",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

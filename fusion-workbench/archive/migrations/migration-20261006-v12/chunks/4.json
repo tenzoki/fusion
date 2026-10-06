@@ -1,0 +1,1450 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "chunk",
+  "migration_id": "migration-20261006-v12",
+  "chunk": 4,
+  "writes": [
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md",
+      "from": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:cca1fbad4705e0ed792af75380062a2624bb10871303ed703e0665938476939a"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md",
+      "from": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:22fd7eb10cff03784324183da49c2385c527b9cfc15d08e1607d0c3d875798ca"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md",
+      "from": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:0754dc479b218fd7e84ae532042e19132ae49e75c666b949184f42b09510f8c7"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.md",
+      "from": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:5fe143d992a59aa2f1512e02777034c66100dd72363a308003675c6e152f1676"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md",
+      "from": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:c9eebb06b1df4d960e1a2c22a3f8545433d637e3357b35230dcbde05fe5e83e8"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260911-2141_a_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.md",
+      "from": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260911-2141_a_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:c2d4028da26f80372184d58a4fc5c1b5d3da3a745fd16977c5b5f38b6c0372b6"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md",
+      "from": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:75f7be2c5b3c11d41bdd558e0e90c75ba856c4eb0ec45f0fc970f6f9f93a7edb"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md",
+      "from": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:3f33c3ddb9936f76fc51bc84d21c2a516c4fa105626c3c3eb91f5fa87ee09aa2"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md",
+      "from": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:060bf7b0b977c4f15ed91045f6ed1b18848f892c1a91db27b1d0113fd0fcbdcf"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/260909-1700-cut-fusion-to-working-minimum.md",
+      "from": "work-packages/260909-1700-cut-fusion-to-working-minimum/260909-1700-cut-fusion-to-working-minimum.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ac67181d99c6f19c5b3ed26d8344ac65ff15568caf08c88dd4620377f2f1183b"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md",
+      "from": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:3ea1bfb59eb8735693faceea9c5aacca3b2a06fb4cc249053b90a3f21544e431"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md",
+      "from": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:ae480e26b802e8852f8d2fa1a317a9bc713f9c3cec1d88cb2ac15b76d3a42653"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md",
+      "from": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:dad736fea97529eedd3eb06a4c6305ff6c14509cd5db6e7084411ff76ff784fa"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md",
+      "from": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:e75aa38e124ed7800b22f4ff13809a5b23a0c38958fa8d6e77648bff776312a6"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.md",
+      "from": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:46156a7240e5b250aadc36a8179c8b98d9e23f53c60cb2ea782598b7e0285973"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md",
+      "from": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:3a2695f351ef3669bddcef445853babb26ac7248f34b2f9807de68b4fb1e6cc5"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/260912-0438-human-facing-docs-leave-claude-md.md",
+      "from": "work-packages/260912-0438-human-facing-docs-leave-claude-md/260912-0438-human-facing-docs-leave-claude-md.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:5b86f3ff9e6904ea024780ffdc2df2f69dededdeb0bf4dca3b7d6fc836c7fd5e"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+      "from": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:55ea7820ef280116b5beed82ef05e3be32b0c4efa8827dffb72cf5b64fc0a33e"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md",
+      "from": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:480ed1571ed00e5a4f0c09bd5234eabe0cd8ee22ea253869db9e378f3fc11055"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md",
+      "from": "work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:1c1f1232fec5e8f60d3116fd2443d5acd82bd30ff1e31e4858217dd97018e64e"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/260916-1050-neues-discuss-feature.md",
+      "from": "work-packages/260916-1050-neues-discuss-feature/260916-1050-neues-discuss-feature.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:8378807b324a5ce9b37aae7e76dd178f660542fd781fc3e6bcc511a882338d5d"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md",
+      "from": "work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:061b0ff8959b0900150405788af82b5625b640fac452722939d09d0eea6a1b5d"
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:2fa4af0a949a8689adedba23149ec88baf6015138dd4bc149dcee5506ad059f4",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "bc371be3-f3d6-48ba-9297-ee3aafeb7a27",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": ""
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-new-field-name-only-the-ordering-edge-or-the-four-relation-types-beside-it.md",
+            "sha256": "sha256:cca1fbad4705e0ed792af75380062a2624bb10871303ed703e0665938476939a",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260911-1916-re-grounding-three-open-decisions.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:caf7a62173e883d9d5a53ef5107311e5f4d6a2627897e1bf1f6607afd773e7ce",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "8775177b-1704-43a6-b336-132adbda62df",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": ""
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_does-the-record-template-mandate-the-prerequisite-field-or-merely-permit-it.md",
+            "sha256": "sha256:22fd7eb10cff03784324183da49c2385c527b9cfc15d08e1607d0c3d875798ca",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260911-1916-re-grounding-three-open-decisions.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:60f63aa882bf098b53e68a87b9b246cfefbe0629f9d09dddb5d903bc8d8b63d6",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "fa43cce5-87ca-4a9d-b2f4-711b7fa136a9",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": ""
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_a_is-a-closed-prerequisite-a-satisfied-edge-or-no-edge-and-what-is-an-archived-one.md",
+            "sha256": "sha256:0754dc479b218fd7e84ae532042e19132ae49e75c666b949184f42b09510f8c7",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260911-1916-re-grounding-three-open-decisions.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:d0ae4b817482f1caa60ee50e9404b2e774d4d218f2899ee66d63f67c5fb3132b",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "f2e550f7-9482-4c69-a278-2835523a30e1",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.md"
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Domain": "code",
+              "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": ""
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.md",
+            "sha256": "sha256:5fe143d992a59aa2f1512e02777034c66100dd72363a308003675c6e152f1676",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "answer_ref": null,
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:51fdfcfc75067e9fcfb72f02162894f49ec8f544aa74d0ba11a72b05db9fdd39",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "5eddc8e7-cd80-4ab7-a8d7-0c191f060bb4",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260909-1615_*_spec-cut-fusion-to-a-working-minimum.md",
+          "260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260909-1615_*_spec-cut-fusion-to-a-working-minimum.md, 260909-1808_*_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md, 260909-1700-cut-fusion-to-working-minimum"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260909-1808_a_the-ground-this-circle-was-measured-on-is-being-cut-away-and-its-design-must-move.md",
+            "sha256": "sha256:c9eebb06b1df4d960e1a2c22a3f8545433d637e3357b35230dcbde05fe5e83e8",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "e9d3543d-9535-4fb1-b9bc-6b4730166b5b",
+            "display": "260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260911-2141_a_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:b7bd7c48a0ebbce99e36fe61c998fb7cd9c1c245e948b2fa8b6b2d3b2a1fea61",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "f3a80a56-e00f-41e5-86ba-d657d6305210",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260911-2141_a_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.md"
+        },
+        "filed_by": {
+          "actor": "planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": ""
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260911-2141_a_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.md",
+            "sha256": "sha256:c2d4028da26f80372184d58a4fc5c1b5d3da3a745fd16977c5b5f38b6c0372b6",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "f3a80a56-e00f-41e5-86ba-d657d6305210",
+            "display": "260911-2141_a_is-the-order-helper-built-now-against-a-one-node-zero-edge-store-or-deferred-until-the-backlog-carries-one.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:93008d65a8e0c457bb1cd1116264e7440832716b74886fb45a6631e6578fef39",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "e9d3543d-9535-4fb1-b9bc-6b4730166b5b",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-11",
+              "Status": "Draft",
+              "Source": "Re-sharpen of the work item `260908-2018-prerequisites-confirmed-once-order-computed.md`,"
+            },
+            "step_marks": {},
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "a78d017f3d821cc20b180b44a548b1a5a2ab9546"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md",
+            "sha256": "sha256:75f7be2c5b3c11d41bdd558e0e90c75ba856c4eb0ec45f0fc970f6f9f93a7edb",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1528_o_spec-prerequisites-confirmed-once-order-computed.md",
+      "source_sha256": "sha256:75f7be2c5b3c11d41bdd558e0e90c75ba856c4eb0ec45f0fc970f6f9f93a7edb",
+      "after_sha256": "sha256:3bddcf6548ee14f1407fec3e03f37267c5c61e8f20f5651825d8fcd82c84aed3",
+      "deletions": [
+        {
+          "offset": 112,
+          "length": 18
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:9d103add9ee733190062e74904cc096755d9fe06f61f1cca94ab7246dc358cd8",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "05cb129e-fb2d-4db8-8f44-c4160ef75c62",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-11",
+              "Revised": "2026-09-11 21:41, against the three answers at gate G1 and the reports steps A1 and D1 produced. Step labels are stable across the revision and a retired label is never reused: `B2`, `D2`, `D3` and gate `G2` are gone, `B4` and gate `G3` are new, so every citation of a step in the reports and the records still names the step it named.",
+              "Status": "Draft",
+              "Amended": "2026-09-12, citations only. The `bin/` helper roster left `CLAUDE.md`'s Layout table for `README-hooks.md` `### The bin/ helper roster` (decision `260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md`, option 1), so every instruction below that sent the helper's mandatory row to `CLAUDE.md` now sends it to the roster's new home. No figure taken at `ae172380` was rewritten and no step label moved; what the move dissolves is stated where those figures stand.",
+              "Spec": "`260911-1528_*_spec-prerequisites-confirmed-once-order-computed.md`",
+              "Decidability": "The load-bearing question is *what order does the work-item store impose on itself*, and after step B1 it is decidable by construction from inputs the mechanism holds. The answer at gate G1 fixed a two-field grammar: an entry in `**Depends-on:**` asserts one relation, stated by rule where the field is defined, and a citation that binds an item without ordering it sits in a second field, `**Cross-references:**`. Nothing then reads the text of a value to learn what the writer meant, which was the undecidability the first draft of this line named. The node set is decidable from `**Status:**`, which G1 also settled: `open` and `claimed` are nodes, `done` and `dropped` are not. Every figure downstream is a pure function of the node set and the edge set."
+            },
+            "step_marks": {
+              "1": "DONE",
+              "2": "DONE",
+              "3": "DONE",
+              "4": "DONE",
+              "5": "DONE",
+              "6": "DONE",
+              "7": "DONE",
+              "8": "DONE",
+              "9": "DONE",
+              "10": "DONE"
+            },
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "a397776079739f33a7beed846dad35340c1a1584"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md",
+            "sha256": "sha256:3f33c3ddb9936f76fc51bc84d21c2a516c4fa105626c3c3eb91f5fa87ee09aa2",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [
+            {
+              "id": "1",
+              "state": "done"
+            },
+            {
+              "id": "2",
+              "state": "done"
+            },
+            {
+              "id": "3",
+              "state": "done"
+            },
+            {
+              "id": "4",
+              "state": "done"
+            },
+            {
+              "id": "5",
+              "state": "done"
+            },
+            {
+              "id": "6",
+              "state": "done"
+            },
+            {
+              "id": "7",
+              "state": "done"
+            },
+            {
+              "id": "8",
+              "state": "done"
+            },
+            {
+              "id": "9",
+              "state": "done"
+            },
+            {
+              "id": "10",
+              "state": "done"
+            }
+          ],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260911-1833_o_implementation-prerequisites-confirmed-once-order-computed.md",
+      "source_sha256": "sha256:3f33c3ddb9936f76fc51bc84d21c2a516c4fa105626c3c3eb91f5fa87ee09aa2",
+      "after_sha256": "sha256:91e701d3e4df44231d72f2cb5695ec2b187e477c7f08ae703b8f3b5029c9b928",
+      "deletions": [
+        {
+          "offset": 476,
+          "length": 18
+        },
+        {
+          "offset": 18398,
+          "length": 7
+        },
+        {
+          "offset": 18916,
+          "length": 7
+        },
+        {
+          "offset": 19679,
+          "length": 7
+        },
+        {
+          "offset": 21588,
+          "length": 7
+        },
+        {
+          "offset": 23030,
+          "length": 7
+        },
+        {
+          "offset": 24484,
+          "length": 7
+        },
+        {
+          "offset": 26481,
+          "length": 7
+        },
+        {
+          "offset": 28768,
+          "length": 7
+        },
+        {
+          "offset": 30103,
+          "length": 7
+        },
+        {
+          "offset": 30980,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:b2bb5dc2f6e506c2c72585feecb58d4a2b091e2c27088f776d3f3baeec75101f",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "fd1f4ba0-7293-4134-a0c2-3ce506b92785",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-12",
+              "Status": "Draft",
+              "Spec": "none for the cut itself. Its requirement is set by `260911-1528_*_spec-prerequisites-confirmed-once-order-computed.md` `## Preconditions` and by step C3 of `260911-1833_*_implementation-prerequisites-confirmed-once-order-computed.md`, both of which name this work and deliberately refuse to specify it.",
+              "Decidability": "Two questions, and they separate cleanly. **How much margin a given removal frees** is decidable exactly, from inputs the mechanism holds: margin is `floor + headRoom - total`, and a removal's yield is a pure function of the tree and `TEST_LINE_BASELINE`, computable before a byte moves. Step S1 computes it. **Whether a given guarantee is worth its lines** is decidable by no mechanism at all: it is a reading of what a test holds against what a release would stop catching, and no count, ratio or heuristic decides it. So the mechanism does not try: S2 produces evidence per candidate and G1 puts the judgement to the user, one row at a time. A plan that had an agent pick the cut from a size ranking would be approximating exactly the question §4 of `rules/critical-stance.md` says not to approximate."
+            },
+            "step_marks": {
+              "1": "DONE",
+              "2": "DONE",
+              "3": "DONE"
+            },
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "c7a926c0b88aeb29843f156a2803f617feda91cd"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md",
+            "sha256": "sha256:060bf7b0b977c4f15ed91045f6ed1b18848f892c1a91db27b1d0113fd0fcbdcf",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [
+            {
+              "id": "1",
+              "state": "done"
+            },
+            {
+              "id": "2",
+              "state": "done"
+            },
+            {
+              "id": "3",
+              "state": "done"
+            },
+            {
+              "id": "4",
+              "state": "open"
+            }
+          ],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md",
+      "source_sha256": "sha256:060bf7b0b977c4f15ed91045f6ed1b18848f892c1a91db27b1d0113fd0fcbdcf",
+      "after_sha256": "sha256:438dafff4924a49a304fe3c754d7e06f9c0f7448c887045f32d1d4e4631b3893",
+      "deletions": [
+        {
+          "offset": 111,
+          "length": 18
+        },
+        {
+          "offset": 13128,
+          "length": 7
+        },
+        {
+          "offset": 14170,
+          "length": 7
+        },
+        {
+          "offset": 17870,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:30c54f3a19e38115c626174d18e1eba68e2b66a2e76ccfda4ca353cef813e0b7",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "7dfb5422-66f1-4b42-bc84-c419b2e5ad74",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "legacy-unknown",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "shaper",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/260909-1700-cut-fusion-to-working-minimum.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260909-1702",
+              "Filed by": "shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/260909-1700-cut-fusion-to-working-minimum.md",
+            "sha256": "sha256:ac67181d99c6f19c5b3ed26d8344ac65ff15568caf08c88dd4620377f2f1183b",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:cbd243b6bd4e5a3fee9abdf3a5b0183bde0bf66dce200217c22cfcce4c1cbf82",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "1d4696c6-9dc7-48d8-85a9-ac402f0e5f9a",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260909-1615_*_spec-cut-fusion-to-a-working-minimum.md `### C6: The portfolio layer becomes a flat list`, 260908-2018-prerequisites-confirmed-once-order-computed"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md",
+            "sha256": "sha256:3ea1bfb59eb8735693faceea9c5aacca3b2a06fb4cc249053b90a3f21544e431",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "1d4696c6-9dc7-48d8-85a9-ac402f0e5f9a",
+            "display": "260909-1808_a_may-a-helper-compute-an-order-over-work-items-after-the-portfolio-layer-goes.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:98b782abf0ae53ad7348a59953dd3e43f511ad68c530763181007d87e4343873",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "492bc70d-d253-47df-8575-6f7f518df1bf",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260909-2215-gate-firing-read-before-the-cut.md `### The same gates across three projects`; 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step A1"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_does-a-gate-protected-in-one-consuming-project-bind-fusions-own-cut.md",
+            "sha256": "sha256:ae480e26b802e8852f8d2fa1a317a9bc713f9c3cec1d88cb2ac15b76d3a42653",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260910-0900-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:b382ba474edc306de0359bb423ac7bfc598e7dd75eab9b0f7a9ed118af870c1d",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "239afc69-6af3-4aaf-b967-b796c8f899d3",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260909-2215-gate-firing-read-before-the-cut.md `### What a `coherence_review` row does and does not say`; 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step A1; 260909-2215_*_step-a1s-denominator-names-a-field-eleven-rows-carry-and-the-plans-own-figure-uses-ninety-four.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260909-2305_a_which-quantity-does-the-head-list-protect-a-gates-evaluation-rate-or-its-rate-of-returning-to-the-user.md",
+            "sha256": "sha256:dad736fea97529eedd3eb06a4c6305ff6c14509cd5db6e7084411ff76ff784fa",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260910-0900-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:0f182738d7741079b27dd79b2620bac52cd6b8985be20f16c91d15d1b49ef8ab",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "a476d34a-889a-4ac1-b1fa-e4fa7401ec0f",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step C9; 76d833be; 07961552; 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md",
+            "sha256": "sha256:e75aa38e124ed7800b22f4ff13809a5b23a0c38958fa8d6e77648bff776312a6",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260910-0900-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:ef1e76e26dda413f093baa666ffa17f0200abfebb2d7e96a56b3921ab5c73045",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "2cad3a89-0d84-4f66-b4f1-947fe900502b",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.md"
+        },
+        "filed_by": {
+          "actor": "planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260910-2133_*_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md; 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step C9; 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md; 07961552"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2145_a_how-does-the-resolver-learn-which-work-item-is-in-scope.md",
+            "sha256": "sha256:46156a7240e5b250aadc36a8179c8b98d9e23f53c60cb2ea782598b7e0285973",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260910-2145_*_restore-the-per-work-item-container.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:418856573d371f46aaceeb4b938950b3ab0348436ffe362f4260eba77651783c",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "6a796f99-4a32-4575-a621-9183868a5096",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260910-2145_*_restore-the-per-work-item-container.md; 9b792042 (S1); f50b9aa4 (S2); hooks/lib/__tests__/helpers/growth-bound.ts"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2256_a_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md",
+            "sha256": "sha256:3a2695f351ef3669bddcef445853babb26ac7248f34b2f9807de68b4fb1e6cc5",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260910-0900-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:d4553f75b2a0d98da36b25f4945512e2f8078081eee2b34cc0a9d16c09397c5d",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "1c53c069-6610-4449-91ee-db7efe0c7405",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": null,
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/260912-0438-human-facing-docs-leave-claude-md.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260916-1129",
+              "Active spec/plan": "260916-1058_*_spec-human-facing-docs-leave-claude-md.md (spec), 260916-1126_*_implementation-human-facing-docs-leave-claude-md.md (plan drawn from it)",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/260912-0438-human-facing-docs-leave-claude-md.md",
+            "sha256": "sha256:5b86f3ff9e6904ea024780ffdc2df2f69dededdeb0bf4dca3b7d6fc836c7fd5e",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:ca7687a9be0ef883756b9a0b56ec905137fff3238d266ebf69186be06adab9d6",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "68af2145-2149-473c-a54e-0d86ff9577b2",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260912-0438-human-facing-docs-leave-claude-md.md",
+          "260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260912-0438-human-facing-docs-leave-claude-md.md, 260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+            "sha256": "sha256:55ea7820ef280116b5beed82ef05e3be32b0c4efa8827dffb72cf5b64fc0a33e",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+            "sha256": "sha256:55ea7820ef280116b5beed82ef05e3be32b0c4efa8827dffb72cf5b64fc0a33e",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:b79ae843221d7e81ebd3a7884f4f09f5515a9d54256464f8b4ca27e65f6fa8ff",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "debab921-5f0f-4174-8b7b-bd8167de0bdb",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md"
+        },
+        "filed_by": {
+          "actor": "planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260916-1058_*_spec-human-facing-docs-leave-claude-md.md",
+          "260916-1126_*_implementation-human-facing-docs-leave-claude-md.md",
+          "260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+          "260912-0438-human-facing-docs-leave-claude-md.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260916-1058_*_spec-human-facing-docs-leave-claude-md.md, 260916-1126_*_implementation-human-facing-docs-leave-claude-md.md, 260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md, 260912-0438-human-facing-docs-leave-claude-md.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md",
+            "sha256": "sha256:480ed1571ed00e5a4f0c09bd5234eabe0cd8ee22ea253869db9e378f3fc11055",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md",
+            "sha256": "sha256:480ed1571ed00e5a4f0c09bd5234eabe0cd8ee22ea253869db9e378f3fc11055",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:a27a92ad560a76095b8de6e25e57257cf795d89c8067afc54b1cc048777aca3e",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "1a9982e1-673c-492b-9422-2fd3cad2dba4",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260912-0438-human-facing-docs-leave-claude-md.md",
+          "260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+          "260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md",
+          "260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-16",
+              "Status": "Draft",
+              "Source": "Work item `260912-0438-human-facing-docs-leave-claude-md.md`. A project's `CLAUDE.md` should carry only what Claude genuinely needs under fusion in every session; everything else belongs behind links. The aim covers fusion's own repository and the convention fusion ships to other projects.",
+              "Cross-references": "260912-0438-human-facing-docs-leave-claude-md.md, 260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md, 260911-2237_*_where-does-the-bin-helper-roster-belong-when-a-third-of-claude-md-is-pointers-charged-eleven-times.md, 260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md"
+            },
+            "step_marks": {},
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "7140d25a1874b61804f6b907099296b9abf234b2"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md",
+            "sha256": "sha256:1c1f1232fec5e8f60d3116fd2443d5acd82bd30ff1e31e4858217dd97018e64e",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/plans/260916-1058_o_spec-human-facing-docs-leave-claude-md.md",
+      "source_sha256": "sha256:1c1f1232fec5e8f60d3116fd2443d5acd82bd30ff1e31e4858217dd97018e64e",
+      "after_sha256": "sha256:cf39935edd370324b90b05485f37540ec07b71a6e6a637b653d1ad6007779318",
+      "deletions": [
+        {
+          "offset": 78,
+          "length": 18
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260916-1050-neues-discuss-feature/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:e68e0a02ed18bd8af99d198d86d1c124ea87538653899b51df915facbd26b6f7",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "c477a8eb-dc90-472d-9875-48f5bc8717dc",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": null,
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260916-1050-neues-discuss-feature/260916-1050-neues-discuss-feature.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260917-1111",
+              "Active spec/plan": "`260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md` (spec), `260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md` (the plan drawn from it)",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/260916-1050-neues-discuss-feature.md",
+            "sha256": "sha256:8378807b324a5ce9b37aae7e76dd178f660542fd781fc3e6bcc511a882338d5d",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:8cb540d8a3fab2bb206379d45a36e58d1a552ff9790506a79022033478fbf64a",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "9b103c13-f965-4c9b-aa28-23fb786385b1",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md"
+        },
+        "filed_by": {
+          "actor": "planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md",
+          "260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md",
+          "260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md",
+          "260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md",
+          "260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "`260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`, `260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md`, `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, `260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md`, `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md",
+            "sha256": "sha256:061b0ff8959b0900150405788af82b5625b640fac452722939d09d0eea6a1b5d",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "9b103c13-f965-4c9b-aa28-23fb786385b1",
+            "display": "260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    }
+  ]
+}

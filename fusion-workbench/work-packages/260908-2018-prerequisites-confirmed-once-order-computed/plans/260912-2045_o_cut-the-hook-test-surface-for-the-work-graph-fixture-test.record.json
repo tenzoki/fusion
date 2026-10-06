@@ -1,0 +1,69 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "fd1f4ba0-7293-4134-a0c2-3ce506b92785",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-12",
+        "Status": "Draft",
+        "Spec": "none for the cut itself. Its requirement is set by `260911-1528_*_spec-prerequisites-confirmed-once-order-computed.md` `## Preconditions` and by step C3 of `260911-1833_*_implementation-prerequisites-confirmed-once-order-computed.md`, both of which name this work and deliberately refuse to specify it.",
+        "Decidability": "Two questions, and they separate cleanly. **How much margin a given removal frees** is decidable exactly, from inputs the mechanism holds: margin is `floor + headRoom - total`, and a removal's yield is a pure function of the tree and `TEST_LINE_BASELINE`, computable before a byte moves. Step S1 computes it. **Whether a given guarantee is worth its lines** is decidable by no mechanism at all: it is a reading of what a test holds against what a release would stop catching, and no count, ratio or heuristic decides it. So the mechanism does not try: S2 produces evidence per candidate and G1 puts the judgement to the user, one row at a time. A plan that had an agent pick the cut from a size ranking would be approximating exactly the question §4 of `rules/critical-stance.md` says not to approximate."
+      },
+      "step_marks": {
+        "1": "DONE",
+        "2": "DONE",
+        "3": "DONE"
+      },
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "c7a926c0b88aeb29843f156a2803f617feda91cd"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/plans/260912-2045_o_cut-the-hook-test-surface-for-the-work-graph-fixture-test.md",
+      "sha256": "sha256:060bf7b0b977c4f15ed91045f6ed1b18848f892c1a91db27b1d0113fd0fcbdcf",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "done"
+      },
+      {
+        "id": "2",
+        "state": "done"
+      },
+      {
+        "id": "3",
+        "state": "done"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": null
+  }
+}

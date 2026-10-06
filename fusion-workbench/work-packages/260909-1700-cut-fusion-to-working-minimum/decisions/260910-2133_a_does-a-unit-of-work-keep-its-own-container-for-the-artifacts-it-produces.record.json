@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a476d34a-889a-4ac1-b1fa-e4fa7401ec0f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md step C9; 76d833be; 07961552; 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260909-1700-cut-fusion-to-working-minimum/decisions/260910-2133_a_does-a-unit-of-work-keep-its-own-container-for-the-artifacts-it-produces.md",
+      "sha256": "sha256:e75aa38e124ed7800b22f4ff13809a5b23a0c38958fa8d6e77648bff776312a6",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260910-0900-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

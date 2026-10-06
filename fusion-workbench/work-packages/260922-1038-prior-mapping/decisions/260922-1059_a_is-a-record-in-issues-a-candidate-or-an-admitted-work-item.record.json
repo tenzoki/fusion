@@ -1,0 +1,45 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c0f5f02c-291c-4f5c-a7ac-c0044aece7a5",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+    "260922-1038-prior-mapping.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+      "sha256": "sha256:ab2dba05e8270fa0c4657d5816d3d26542f681507bb3320150789757e33b01f1",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "c0f5f02c-291c-4f5c-a7ac-c0044aece7a5",
+      "display": "260922-1059_a_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

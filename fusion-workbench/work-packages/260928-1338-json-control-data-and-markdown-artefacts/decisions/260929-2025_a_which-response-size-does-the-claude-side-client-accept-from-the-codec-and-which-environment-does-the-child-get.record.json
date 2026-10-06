@@ -1,0 +1,52 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "1e69a7f4-de25-414a-a35a-e36b1bfa4132",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+    "260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+    "260928-1338-json-control-data-and-markdown-artefacts.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md, 260928-1338-json-control-data-and-markdown-artefacts.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md",
+      "sha256": "sha256:9c100a3b4c9dd2862d63aa5eaf45c7f7d1d150c8f914cc49713508356b32fc66",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md",
+      "sha256": "sha256:9c100a3b4c9dd2862d63aa5eaf45c7f7d1d150c8f914cc49713508356b32fc66",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

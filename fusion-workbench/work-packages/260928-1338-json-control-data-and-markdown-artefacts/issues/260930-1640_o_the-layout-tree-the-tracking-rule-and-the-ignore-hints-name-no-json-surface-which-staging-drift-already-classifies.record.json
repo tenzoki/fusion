@@ -1,0 +1,40 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "e4d2772b-4773-4f8a-83f0-887715d0cd86",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1640_o_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md",
+    "260930-1219_*_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md",
+    "260929-1810_*_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md",
+    "260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Filed by": "analyst, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md (step 8), 260930-1219_*_the-rule-text-states-the-claim-criterion-in-head-fields-and-two-causes-of-exit-3-which-the-helpers-no-longer-match.md (the claim criterion and exit 3 in the same two rule files; not repeated here), 260929-1810_*_the-shipped-prompts-disagree-on-who-moves-which-marker-and-one-names-a-marker-no-vocabulary-has.md (the marker grammar in `agents/orchestrator.md`; not repeated here), 260929-1810_*_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+        "Acceptance for FJ03d": ""
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/260930-1640_o_the-layout-tree-the-tracking-rule-and-the-ignore-hints-name-no-json-surface-which-staging-drift-already-classifies.md",
+      "sha256": "sha256:d4aea109ad151da9b51517a6671361e78edb471f811b9d7cb1a621fbddd7f660",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

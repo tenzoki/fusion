@@ -1,0 +1,46 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "aa724d72-e79b-4c5f-83da-9609f68a01f4",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "discussion",
+  "narrative": {
+    "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/discussions/260917-2258_o_spec-depends-on-edges-zero-yield.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md",
+    "260917-2253-depends-on-edges-proposed-and-confirmed.md",
+    "260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md",
+    "260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md",
+    "260911-1915-candidate-prerequisite-edges.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Partners": "orchestrator and consultant",
+        "Rounds": "4",
+        "Ceiling": "8",
+        "Outcome": "still running",
+        "Cross-references": "260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md, 260917-2253-depends-on-edges-proposed-and-confirmed.md, 260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md, 260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md, 260911-1915-candidate-prerequisite-edges.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/discussions/260917-2258_o_spec-depends-on-edges-zero-yield.md",
+      "sha256": "sha256:c842c66e837406a2af48a9ae617e9357ab42b328107d15aa3dfd429b1fe48b28",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "participants": [],
+    "outcome_refs": []
+  }
+}

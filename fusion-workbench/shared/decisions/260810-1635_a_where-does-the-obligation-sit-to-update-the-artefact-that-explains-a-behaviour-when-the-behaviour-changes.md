@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** open
 **Filed by:** orchestrator (session `260810-1402`), on the reviewer's recommendation
 **Cross-references:** `260810-1632-coderev-turn-1-range-430d73a-to-head.md` (the pass that named the pattern); `archive/260817-1907-safe-cleanup-scoped/260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`; `260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`; `260810-1632_*_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`; `archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`
 

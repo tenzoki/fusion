@@ -1,0 +1,47 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c8c913b7-b3c6-4456-9a75-f2c049d29700",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-17",
+        "Status": "Draft",
+        "Source": "Work item `260916-1050-neues-discuss-feature.md` `## Directive`, eight numbered points and two questions the user left open. Both open points were put back to him and answered on 2026-09-17; the answers are recorded under the capabilities they settle."
+      },
+      "step_marks": {},
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "13ac4194289387f54a6eb35f51cb21052c1875be"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/plans/260917-1119_o_spec-fusion-discuss-a-two-agent-discussion-loop.md",
+      "sha256": "sha256:4bfe723135e099d4d5989b2bfbc7ac1b1914d9362a406a6ca1e67015e8c54fb3",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

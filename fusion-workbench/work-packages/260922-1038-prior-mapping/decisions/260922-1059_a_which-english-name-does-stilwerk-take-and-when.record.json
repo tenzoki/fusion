@@ -1,0 +1,45 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "50515d81-7920-4b4e-8539-a1277e316d60",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+    "260922-1038-prior-mapping.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1038-prior-mapping.md, nomenclature.md (this container)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/decisions/260922-1059_a_which-english-name-does-stilwerk-take-and-when.md",
+      "sha256": "sha256:db6bb891a2f51c576cc53070c577b2b798d6ad97e32b358b75918ddae2c73a2a",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "50515d81-7920-4b4e-8539-a1277e316d60",
+      "display": "260922-1059_a_which-english-name-does-stilwerk-take-and-when.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

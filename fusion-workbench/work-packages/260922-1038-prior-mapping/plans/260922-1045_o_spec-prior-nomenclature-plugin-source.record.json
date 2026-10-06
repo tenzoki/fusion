@@ -1,0 +1,61 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "b5d69cca-4f86-48e8-89d1-3278fa255633",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260922-1038-prior-mapping.md",
+    "260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md",
+    "260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md",
+    "260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md",
+    "260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+    "260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md",
+    "260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+    "260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+    "260922-1059_*_which-english-name-does-stilwerk-take-and-when.md",
+    "260922-1059_*_does-guard-state-become-a-prior-runtime-record-or-go.md",
+    "260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-22",
+        "Status": "Decided (three questions ruled by the user on 2026-09-22; the defaults in the last section stand unless vetoed)",
+        "Source": "Work item `260922-1038-prior-mapping.md`, Directive part (1): \"spezifiziere und plane die fusion anpassungen an die neue nomenklatur\". The authoritative input is `nomenclature.md` in the same container. Part (2), the migration tooling for consuming projects, is a separate spec; this one names the boundary and nothing past it.",
+        "Cross-references": "260922-1038-prior-mapping.md, nomenclature.md (this container), 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md, 260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md, 260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md, 260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md, 260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md, 260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md, 260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md, 260922-1059_*_which-english-name-does-stilwerk-take-and-when.md, 260922-1059_*_does-guard-state-become-a-prior-runtime-record-or-go.md, 260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+        "Survey commit": "`9ff0f9fc`. Every count below was taken there with `grep -rEo` over the shipped surfaces and is stamped to that commit; the counting script is not shipped and the counts are evidence for scope, not acceptance figures."
+      },
+      "step_marks": {},
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "68271c8014b6d2198a32d717064235505f32179a"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md",
+      "sha256": "sha256:c92b9eaf9feeafd3ebf76308bfedd84c38a5ed3fd05fa442aaa2759d2ae5c4f9",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

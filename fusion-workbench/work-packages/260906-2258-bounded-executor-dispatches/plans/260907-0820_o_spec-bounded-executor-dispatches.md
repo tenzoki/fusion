@@ -1,7 +1,6 @@
 # Spec: bound how long a dispatched agent runs before it returns
 
 **Date:** 2026-09-07
-**Status:** Draft
 **Activated from Circle:** 260906-2258-bounded-executor-dispatches
 **Source:** the Circle's filed Directive of 260906, reworked three times. The first planability check
 `260907-0710-planability-of-the-bounded-dispatch-spec.md` found eight gaps and the user closed four of

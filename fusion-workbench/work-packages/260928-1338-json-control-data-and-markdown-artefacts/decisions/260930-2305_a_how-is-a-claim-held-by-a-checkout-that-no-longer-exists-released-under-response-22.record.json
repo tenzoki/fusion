@@ -1,0 +1,42 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "24cb4dff-faad-4214-94a6-a6336ca87d77",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+    "260929-0709_*_fj02-kernel-plan-and-three-open-choices.md",
+    "260928-1338-json-control-data-and-markdown-artefacts.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md, 260929-0709_*_fj02-kernel-plan-and-three-open-choices.md, 260928-1338-json-control-data-and-markdown-artefacts.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md",
+      "sha256": "sha256:d2ea1d32953be14d86be676aee16d4e1d4bb185389e39e6d1bc7e7632c4cd7ec",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

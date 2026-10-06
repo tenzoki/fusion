@@ -1,0 +1,52 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "0ba9e7ce-5f45-412d-a493-c1f60fc1d2ee",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260928-1338-json-control-data-and-markdown-artefacts.md",
+    "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+    "260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+      "sha256": "sha256:a0dfb373fb44690299f3433f7b9c935d1d1b3e8d7b7d3b74279bc07d2d5a9416",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+      "sha256": "sha256:a0dfb373fb44690299f3433f7b9c935d1d1b3e8d7b7d3b74279bc07d2d5a9416",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

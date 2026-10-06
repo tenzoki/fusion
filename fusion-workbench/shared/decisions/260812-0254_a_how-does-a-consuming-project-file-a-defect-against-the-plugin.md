@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** answered
 **Filed by:** orchestrator (on the user's request)
 **Cross-references:** `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` finding 3 and recommendation (c); the three records transferred by hand from the KRK project on 260811 (`260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`, `260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`, and the witness merged into `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md`)
 

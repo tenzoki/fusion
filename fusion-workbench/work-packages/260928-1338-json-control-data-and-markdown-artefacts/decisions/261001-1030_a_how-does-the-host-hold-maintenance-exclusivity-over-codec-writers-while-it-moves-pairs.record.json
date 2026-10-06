@@ -1,0 +1,42 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c07058d9-c942-44a2-ac81-4a63e8aaf5e8",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md",
+    "260928-2251_*_does-the-kernel-take-one-workbench-wide-write-lock-or-keep-a-lock-per-record-under-the-journal.md",
+    "261001-0638_*_json-pairs-cannot-be-archived-until-request-36-is-answered-and-the-archive-safety-filter-reserves-no-json-surface.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md, 260928-2251_*_does-the-kernel-take-one-workbench-wide-write-lock-or-keep-a-lock-per-record-under-the-journal.md, 261001-0638_*_json-pairs-cannot-be-archived-until-request-36-is-answered-and-the-archive-safety-filter-reserves-no-json-surface.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md",
+      "sha256": "sha256:e0ad8eab6cf6043c11ce5244f3241fa29ea25129415eee0eaa4269b0e89574b4",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

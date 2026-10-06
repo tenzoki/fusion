@@ -1,7 +1,6 @@
 # Spec: `/fusion:discuss` — a two-agent discussion loop with a claim register
 
 **Date:** 2026-09-17
-**Status:** Draft
 **Source:** Work item `260916-1050-neues-discuss-feature.md` `## Directive`, eight numbered points and two questions the user left open. Both open points were put back to him and answered on 2026-09-17; the answers are recorded under the capabilities they settle.
 
 ## Directive

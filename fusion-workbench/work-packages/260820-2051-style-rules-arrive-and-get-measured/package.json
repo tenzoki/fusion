@@ -1,0 +1,50 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "bd22d169-3143-4e3f-9fa6-e4e732189282",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "dropped",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "bounded",
+    "reason": "closed bounded (legacy Circle marker)",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "b",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper (anticipated-circle mode)",
+        "Active spec/plan": "260820-2324_*_plan-style-rules-arrive-and-get-measured.md",
+        "Active session history": "260820-2103-orchestrator-session.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md",
+      "sha256": "sha256:47a0b44822294478297bdc26d2362e03bd3d996e493e4d0f12bbe32811746ec1",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

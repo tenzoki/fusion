@@ -1,0 +1,51 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "97f7a6b1-4279-4091-b241-7b8aa8fa0275",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "legacy-unknown",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/260801-1244-curator/_c_circle.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": "c",
+      "head": {
+        "Domain": "code",
+        "Status": "closed",
+        "Filed by": "shaper (anticipated-circle mode)",
+        "Active spec/plan": "260814-0845_*_plan-curator.md",
+        "Active session history": "260813-2345-orchestrator-session.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260801-1244-curator/_c_circle.md",
+      "sha256": "sha256:b8390efa9d4fa14a6e44a219861eba669be8f487206abbf61fcbac1fd5e0f22f",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

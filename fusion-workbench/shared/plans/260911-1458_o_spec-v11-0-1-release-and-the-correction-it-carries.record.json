@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "0d649a25-cc33-4c3f-ac39-fe07fd8793eb",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-11",
+        "Status": "Partially Complete",
+        "Decidability": "The load-bearing question is whether \"this session did what it set out to do\" can be answered for a session that stated no goal while it ran. It cannot: the nine commits are the only surviving statement of intent, and a goal reconstructed from them afterwards cannot fail against them. The mechanism therefore changes rather than the answer. Acceptance below is read against preconditions each of which a command decides on its own: a version string in a named file, a gate that exits zero or does not, a coverage figure that is printed and quoted. Nothing here asks whether the session was successful.",
+        "Source": "The user asked for two things in one pass. Ship the nine commits that stand above the v11.0.0 tag as a release, and settle the population figure in the analysis report that one of those commits added, after two measurements in the same session overturned it and a third, taken with word anchors over the same corpus at the same commit, returned the report's own number and showed the other two to have been counting a different subject."
+      },
+      "step_marks": {},
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "86ab0b806cbfc9cbaca587b2d047981c3c55f3d7"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/plans/260911-1458_o_spec-v11-0-1-release-and-the-correction-it-carries.md",
+      "sha256": "sha256:baf0a68e7c36f650b90c38243e2be7da1c355ef4eb7fb521b364ff014943b1fe",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

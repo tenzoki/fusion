@@ -1,0 +1,1555 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "chunk",
+  "migration_id": "migration-20261006-v12",
+  "chunk": 6,
+  "writes": [
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md",
+      "from": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:c92b9eaf9feeafd3ebf76308bfedd84c38a5ed3fd05fa442aaa2759d2ae5c4f9"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md",
+      "from": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:3a1d2a327bef9a20ae46542b387c3bf252c26b3f8141b113857066ff0ddf9a71"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1420-bracket-citations-read-and-swept-once/260922-1420-bracket-citations-read-and-swept-once.md",
+      "from": "work-packages/260922-1420-bracket-citations-read-and-swept-once/260922-1420-bracket-citations-read-and-swept-once.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:6570b62b9866f75d2aa518e378e0851723b87246907291f1234f36d7ead98252"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1438-the-seven-rulings-and-the-closing-reviews-nine/260922-1438-the-seven-rulings-and-the-closing-reviews-nine.md",
+      "from": "work-packages/260922-1438-the-seven-rulings-and-the-closing-reviews-nine/260922-1438-the-seven-rulings-and-the-closing-reviews-nine.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:13aa45d9038370c193512055ecca36ebce50f89e6b392120dd67343737648f54"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260923-0839-implement-prior-nomenclature/260923-0839-implement-prior-nomenclature.md",
+      "from": "work-packages/260923-0839-implement-prior-nomenclature/260923-0839-implement-prior-nomenclature.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:31dc988a225c6e86c2f686ea6b1f30a2bd67ed32c5fb0fbc108edcf25ba20932"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260924-1216-own-command-for-new-packages-and-per-person-memos/260924-1216-own-command-for-new-packages-and-per-person-memos.md",
+      "from": "work-packages/260924-1216-own-command-for-new-packages-and-per-person-memos/260924-1216-own-command-for-new-packages-and-per-person-memos.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:8fdd0b4c94300915618d6b06b35316d689656c719fb63f1c2089dc8136d56540"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/260928-1338-json-control-data-and-markdown-artefacts.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/260928-1338-json-control-data-and-markdown-artefacts.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:b845d4ed95727ec615cc1312afc4e8d81703519bf51ca1d8a2f84a7b07106fba"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:81a8a6714e9c8f42bc8fbb57c65186b8111c1ae996f834a37fd87bd2a3a1c784"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:40b7d3d324cf608c1cc3b7803244de9430af35dbc937ba4b8a4976c21eca673f"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:906df81ef336f052c665b83bdc8d9dbdabb1f965b2aa7a780afd31ed40539bb7"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:1acb8967113f2370278c74fe789e3a089601232214ec27c97e0c201fb9b531f0"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:01a22c09aa0b5f071bf2800de0c49d14dc406695e51192bbb81e6aa1748ae6d1"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:a0dfb373fb44690299f3433f7b9c935d1d1b3e8d7b7d3b74279bc07d2d5a9416"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1919_a_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1919_a_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:24d0a42fb28df62b76e945cb36562e400cf15c0f691809d1d18768a764c81b7d"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:9c100a3b4c9dd2862d63aa5eaf45c7f7d1d150c8f914cc49713508356b32fc66"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1451_a_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1451_a_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:7f60b5a599c9b4c7103de843c9097340981e56df7b6992b59b3883eb065d6813"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:016e96734644a164b38e0fd15daf00045bcae866ea04b4df1a22e5002b942e39"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:2e9a2de4d92f551f9117722c46689c2e6b111c7139da331cd04f966fe55b0d45"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:d2ea1d32953be14d86be676aee16d4e1d4bb185389e39e6d1bc7e7632c4cd7ec"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-archive-host-learn-every-binding-the-remaining-records-make.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-archive-host-learn-every-binding-the-remaining-records-make.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:258847dc11cbc50951633474752489492442eb83f48358d1c2091d4606ad4f29"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:e0ad8eab6cf6043c11ce5244f3241fa29ea25129415eee0eaa4269b0e89574b4"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:64d3d8811f2dd48f163d53f4e99d74ae568198b6d84cad9fb5f5255f2c46926b"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md",
+      "from": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:7e246874915a8d6750782e5c061417f5299de70fa30a695f49642010137c3148"
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:4cd9d4fe33d811d3aa222754dc6031d42ffa9d7f9fe63c3407a3ceeeb0a6e0b0",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "b5d69cca-4f86-48e8-89d1-3278fa255633",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260922-1038-prior-mapping.md",
+          "260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md",
+          "260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md",
+          "260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md",
+          "260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+          "260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md",
+          "260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+          "260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+          "260922-1059_*_which-english-name-does-stilwerk-take-and-when.md",
+          "260922-1059_*_does-guard-state-become-a-prior-runtime-record-or-go.md",
+          "260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-22",
+              "Status": "Decided (three questions ruled by the user on 2026-09-22; the defaults in the last section stand unless vetoed)",
+              "Source": "Work item `260922-1038-prior-mapping.md`, Directive part (1): \"spezifiziere und plane die fusion anpassungen an die neue nomenklatur\". The authoritative input is `nomenclature.md` in the same container. Part (2), the migration tooling for consuming projects, is a separate spec; this one names the boundary and nothing past it.",
+              "Cross-references": "260922-1038-prior-mapping.md, nomenclature.md (this container), 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md, 260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md, 260910-2256_*_may-the-growth-bounds-be-raised-for-the-duration-of-the-container-restoration.md, 260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md, 260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md, 260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md, 260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md, 260922-1059_*_which-english-name-does-stilwerk-take-and-when.md, 260922-1059_*_does-guard-state-become-a-prior-runtime-record-or-go.md, 260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+              "Survey commit": "`9ff0f9fc`. Every count below was taken there with `grep -rEo` over the shipped surfaces and is stamped to that commit; the counting script is not shipped and the counts are evidence for scope, not acceptance figures."
+            },
+            "step_marks": {},
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "68271c8014b6d2198a32d717064235505f32179a"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md",
+            "sha256": "sha256:c92b9eaf9feeafd3ebf76308bfedd84c38a5ed3fd05fa442aaa2759d2ae5c4f9",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1045_o_spec-prior-nomenclature-plugin-source.md",
+      "source_sha256": "sha256:c92b9eaf9feeafd3ebf76308bfedd84c38a5ed3fd05fa442aaa2759d2ae5c4f9",
+      "after_sha256": "sha256:c021ddde7572cdda75bd397333ab49f5b500b8f7b67763a37c90f45372dd5c27",
+      "deletions": [
+        {
+          "offset": 108,
+          "length": 124
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:e9e17d60124fc16bf3ad6090a4682bee78e74a01e829fd388707e570e9427250",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "2d9c8f44-2a33-4eea-8add-b81306dd6df0",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "plan",
+        "narrative": {
+          "path": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md"
+        },
+        "filed_by": {
+          "actor": "legacy-unknown",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260922-1038-prior-mapping.md",
+          "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+          "260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+          "260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md",
+          "260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+          "260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+          "260922-1059_*_which-english-name-does-stilwerk-take-and-when.md",
+          "260922-1059_*_does-guard-state-become-a-prior-runtime-record-or-go.md",
+          "260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+          "260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md",
+          "260830-1816_*_do-the-frozen-stores-enter-the-sweeps-and-the-checkers-corpus-the-way-the-live-tree-does.md",
+          "260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md",
+          "260830-1841_*_where-may-a-store-prefixed-citation-begin-and-which-rooting-forms-does-the-grammar-name.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Date": "2026-09-22",
+              "Status": "Decided (two questions ruled by the user on 2026-09-22; the defaults in the last section stand unless vetoed)",
+              "Source": "Work item `260922-1038-prior-mapping.md`, Directive part (2): \"spezifiziere und plane die migrationstools, so dass consumer an die neue nomenklatur angepasst werden können\". The authoritative input is `nomenclature.md` in this container, above all `### Fusion workbench migration` and its closing sentence, and `## Naming rules for new work` rule 8. Part (1), the plugin source, is `260922-1045_*_spec-prior-nomenclature-plugin-source.md` in the same container; this spec builds on its rulings and names the boundary.",
+              "Cross-references": "260922-1038-prior-mapping.md, nomenclature.md (this container), 260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md, 260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md, 260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md, 260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md, 260922-1059_*_which-english-name-does-stilwerk-take-and-when.md, 260922-1059_*_does-guard-state-become-a-prior-runtime-record-or-go.md, 260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md, 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md, 260830-1816_*_do-the-frozen-stores-enter-the-sweeps-and-the-checkers-corpus-the-way-the-live-tree-does.md, 260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md, 260830-1841_*_where-may-a-store-prefixed-citation-begin-and-which-rooting-forms-does-the-grammar-name.md",
+              "Survey commit": "`6420c14e`, working tree of 2026-09-22 11:03. Every count below names the command that produced it, and the counts are evidence for scope, not acceptance figures."
+            },
+            "step_marks": {},
+            "derived": {
+              "/filed_by/actor": {
+                "rule": "unknown"
+              },
+              "/filed_by/person": {
+                "rule": "git-first-add",
+                "evidence": "68271c8014b6d2198a32d717064235505f32179a"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md",
+            "sha256": "sha256:3a1d2a327bef9a20ae46542b387c3bf252c26b3f8141b113857066ff0ddf9a71",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "steps": [],
+          "criteria": [],
+          "acceptance": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md",
+      "source_sha256": "sha256:3a1d2a327bef9a20ae46542b387c3bf252c26b3f8141b113857066ff0ddf9a71",
+      "after_sha256": "sha256:837deba0f43011ee00d80cee79b1d89dff760896cef58596cd96c7be82241a07",
+      "deletions": [
+        {
+          "offset": 116,
+          "length": 122
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1420-bracket-citations-read-and-swept-once/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:2962c9d1de026866fac18794a5a3784f3c003683da5311197bee2a056b1fd953",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "28be75df-bd9a-48b8-a0f2-161bb18d3a87",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260922-1420-bracket-citations-read-and-swept-once/260922-1420-bracket-citations-read-and-swept-once.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-1601",
+              "Mode": "autonomous",
+              "Active spec/plan": "260922-1628_*_the-grammar-reads-the-bracket-marker-and-the-tree-is-swept-once.md (the plan)",
+              "Cross-references": "260921-1718_*_does-the-grammar-read-a-storeless-bracket-marked-citation-or-state-the-asymmetry-as-a-decision.md, 260921-2002_*_does-reading-the-bracket-marker-form-sweep-the-frozen-stores-or-does-the-sweep-first-learn-to-skip-them.md, 260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md, 260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1420-bracket-citations-read-and-swept-once/260922-1420-bracket-citations-read-and-swept-once.md",
+            "sha256": "sha256:6570b62b9866f75d2aa518e378e0851723b87246907291f1234f36d7ead98252",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260922-1438-the-seven-rulings-and-the-closing-reviews-nine/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:9ee98cb948020a8a5f42ae5161a2ef90de5da9328f127a547dea8e5c0f2d6f07",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "340157a7-17aa-4ca6-9ae1-eab1689e2c7e",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260922-1438-the-seven-rulings-and-the-closing-reviews-nine/260922-1438-the-seven-rulings-and-the-closing-reviews-nine.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-1438",
+              "Mode": "autonomous",
+              "Active spec/plan": "260922-1447_*_the-six-rulings-of-260922-and-the-nine-findings-of-the-closing-review.md (the plan)",
+              "Cross-references": "260922-0906-fix-package-over-every-open-issue.md, 260922-1208-reviewer-closing-pass-over-the-51-issue-package-451bb312-to-bf515cad.md, 260922-1420-bracket-citations-read-and-swept-once.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1438-the-seven-rulings-and-the-closing-reviews-nine/260922-1438-the-seven-rulings-and-the-closing-reviews-nine.md",
+            "sha256": "sha256:13aa45d9038370c193512055ecca36ebce50f89e6b392120dd67343737648f54",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260923-0839-implement-prior-nomenclature/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:13fbdf211d0e94f44b5bb4983113aa3c281b2f6547dfe96711838613bdb48647",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "06bac936-3140-4e54-ae87-3ae6dc8087e2",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": {
+          "checkout_id": "5e8248d7",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260923-0839-implement-prior-nomenclature/260923-0839-implement-prior-nomenclature.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260923-0839",
+              "Cross-references": "260922-1038-prior-mapping.md, 260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1106_*_spec-prior-nomenclature-consumer-migration.md, 260922-1114_*_plan-prior-nomenclature-plugin-source.md, 260922-1129_*_plan-prior-nomenclature-consumer-migration.md",
+              "Active spec/plan": "260922-1045_*_spec-prior-nomenclature-plugin-source.md (spec, part 1), 260922-1114_*_plan-prior-nomenclature-plugin-source.md (plan, part 1: the one this item runs on and closes against; part 2's plan 260922-1129_*_plan-prior-nomenclature-consumer-migration.md interleaves with it and is cross-referenced)",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260923-0839-implement-prior-nomenclature/260923-0839-implement-prior-nomenclature.md",
+            "sha256": "sha256:31dc988a225c6e86c2f686ea6b1f30a2bd67ed32c5fb0fbc108edcf25ba20932",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260924-1216-own-command-for-new-packages-and-per-person-memos/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:cf29300d27abb3c91bcadeb55b85a857096bbcfaa5c41638abe34069318c7602",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "2ca8ec57-5493-41dd-8ac2-01ff917628ad",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "done",
+        "claim": null,
+        "mode": {
+          "value": "ordinary",
+          "source": null
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260924-1216-own-command-for-new-packages-and-per-person-memos/260924-1216-own-command-for-new-packages-and-per-person-memos.md"
+        },
+        "depends_on": [],
+        "active_documents": [],
+        "references": [],
+        "evidence": [],
+        "outcome": {
+          "class": "legacy-completed",
+          "reason": "",
+          "evidence": []
+        },
+        "provenance": {
+          "source": "legacy-terminal",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "done",
+              "Cross-references": "260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md, 260923-0839-implement-prior-nomenclature.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260924-1216-own-command-for-new-packages-and-per-person-memos/260924-1216-own-command-for-new-packages-and-per-person-memos.md",
+            "sha256": "sha256:8fdd0b4c94300915618d6b06b35316d689656c719fb63f1c2089dc8136d56540",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/package.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:46f36008d9a236caac0504427117fdae8817a9fb4a8d952e9514c0afd6d115c5",
+      "control": {
+        "schema": "fusion.package/v1",
+        "id": "88f7b586-6715-4ead-99a1-f82332e6946b",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "domain": "code",
+        "status": "claimed",
+        "claim": {
+          "checkout_id": "114caf11",
+          "person": "Kai Stalmann <ks@qantr.com>",
+          "claimed_at": null
+        },
+        "mode": {
+          "value": "autonomous",
+          "source": {
+            "kind": "legacy",
+            "raw": "**Mode:** autonomous"
+          }
+        },
+        "origin": {
+          "kind": "user-request",
+          "ref": null
+        },
+        "filed_by": {
+          "actor": "user",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/260928-1338-json-control-data-and-markdown-artefacts.md"
+        },
+        "depends_on": [],
+        "active_documents": [
+          {
+            "ref": {
+              "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+              "record_id": "76f818ef-1569-43b8-8b7f-885f652c559c",
+              "display": "261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+            },
+            "role": "plan",
+            "revision": "sha256:63fc429617cf3a86129136120c50ff131fa49818e5e93dc2c7cf611dbbba4c7b"
+          }
+        ],
+        "references": [
+          "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md",
+          "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+          "260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md",
+          "260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md",
+          "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+          "260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md",
+          "260928-1550_*_plan-fj01-codec-port-bundle-wrapper-and-first-record-round-trip.md",
+          "260928-2110_*_plan-fj01b-fj00-follow-up-prior-rulings-applied-and-the-contract-frozen.md",
+          "260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md",
+          "260929-1417_*_plan-fj02b-plan-progress-and-evidence-creation-through-the-kernel.md",
+          "260927-2304-fusion-dual-host-design-review.md",
+          "260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+          "260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+          "260922-1038-prior-mapping.md"
+        ],
+        "evidence": [],
+        "outcome": null,
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": null,
+            "head": {
+              "Domain": "code",
+              "Status": "claimed",
+              "Claim": "114caf11 — Kai Stalmann <ks@qantr.com>, 260928-1338",
+              "Mode": "autonomous",
+              "Active spec/plan": "261004-2212_*_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md (plan, approved 2026-10-04 by **Mode:** autonomous; no spec)",
+              "Cross-references": "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md (FJ04, closed 2026-10-04), 261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md (archive revision, closed 2026-10-01), 260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md (FJ03c, closed 2026-10-01), 260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md (initialize, closed 2026-09-30), 260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md (FJ03b, closed 2026-09-30), 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md (FJ03a, closed 2026-09-30), 260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md (FJ00, closed 2026-09-28), 260928-1550_*_plan-fj01-codec-port-bundle-wrapper-and-first-record-round-trip.md (FJ01, closed 2026-09-28), 260928-2110_*_plan-fj01b-fj00-follow-up-prior-rulings-applied-and-the-contract-frozen.md (FJ01b, closed 2026-09-28), 260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md (FJ02, closed 2026-09-29), 260929-1417_*_plan-fj02b-plan-progress-and-evidence-creation-through-the-kernel.md (FJ02b, closed 2026-09-29), 260927-2304-fusion-dual-host-design-review.md, 260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 260922-1038-prior-mapping.md",
+              "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/260928-1338-json-control-data-and-markdown-artefacts.md",
+            "sha256": "sha256:b845d4ed95727ec615cc1312afc4e8d81703519bf51ca1d8a2f84a7b07106fba",
+            "kind": "other"
+          }
+        },
+        "extensions": {}
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/260928-1338-json-control-data-and-markdown-artefacts.md",
+      "source_sha256": "sha256:b845d4ed95727ec615cc1312afc4e8d81703519bf51ca1d8a2f84a7b07106fba",
+      "after_sha256": "sha256:9804282963d1676489c27ded8400938872b1acb0cf6b6c54b9aedf6e9fd1b393",
+      "deletions": [
+        {
+          "offset": 117,
+          "length": 294
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:2daa692b11b3737047daac137ec59356fbddfa5789cab01f5d0c599aeea6953b",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "1e096257-b4dd-40f9-b91a-f2a655fcc118",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md",
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+          "260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md, 260928-1338-json-control-data-and-markdown-artefacts.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+            "sha256": "sha256:81a8a6714e9c8f42bc8fbb57c65186b8111c1ae996f834a37fd87bd2a3a1c784",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1341_a_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+            "sha256": "sha256:81a8a6714e9c8f42bc8fbb57c65186b8111c1ae996f834a37fd87bd2a3a1c784",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:0cd032e33fae548a6e38d350f0fa9055a1cc8e72acec04baddc25e6b4bc922ab",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "3e1ba624-7bb1-4156-b8c9-a6b94ecb64d4",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md",
+          "260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+          "260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md, 260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md, 260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md",
+            "sha256": "sha256:40b7d3d324cf608c1cc3b7803244de9430af35dbc937ba4b8a4976c21eca673f",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md",
+            "sha256": "sha256:40b7d3d324cf608c1cc3b7803244de9430af35dbc937ba4b8a4976c21eca673f",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:c7c6c6976bba05acdf62423472186f2d8f9662426d0febb9147a24f220f2e719",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "279de65f-0543-4ad0-ae56-be65fa260b33",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+          "260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+          "260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+          "260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md",
+          "260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md, 260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md, 260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md, 260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md",
+            "sha256": "sha256:906df81ef336f052c665b83bdc8d9dbdabb1f965b2aa7a780afd31ed40539bb7",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md",
+            "sha256": "sha256:906df81ef336f052c665b83bdc8d9dbdabb1f965b2aa7a780afd31ed40539bb7",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:bcafd33b89f17e920fec49b62cf134a43a99b24a47671c9fab6e86ad3322d566",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "8f47f743-58f2-4f69-bad0-738cd925b8ad",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+          "260929-1417_*_plan-fj02b-plan-progress-and-evidence-creation-through-the-kernel.md",
+          "260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260929-1417_*_plan-fj02b-plan-progress-and-evidence-creation-through-the-kernel.md, 260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+            "sha256": "sha256:1acb8967113f2370278c74fe789e3a089601232214ec27c97e0c201fb9b531f0",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_in-which-order-do-the-parts-of-fj03-and-fj04-land-while-fusions-own-workbench-is-still-in-the-v12-form.md",
+            "sha256": "sha256:1acb8967113f2370278c74fe789e3a089601232214ec27c97e0c201fb9b531f0",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:12ad1354db9254cd7c988482bcf0181707e47d660664902fa1c53e187b99596a",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "84fb196b-de90-4a2e-b98f-13a014251a94",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+          "260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+          "260928-1550_*_which-process-boundary-and-shipped-form-does-the-codec-take.md",
+          "260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md, 260928-1550_*_which-process-boundary-and-shipped-form-does-the-codec-take.md, 260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+            "sha256": "sha256:01a22c09aa0b5f071bf2800de0c49d14dc406695e51192bbb81e6aa1748ae6d1",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+            "sha256": "sha256:01a22c09aa0b5f071bf2800de0c49d14dc406695e51192bbb81e6aa1748ae6d1",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:55b1c04da9ea885cdefc65d37ead307cbeb0f81a3a5a34a429c98e124fb7b057",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "0ba9e7ce-5f45-412d-a493-c1f60fc1d2ee",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+          "260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260928-2251_*_plan-fj02-operation-kernel-revisions-and-local-transactions.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+            "sha256": "sha256:a0dfb373fb44690299f3433f7b9c935d1d1b3e8d7b7d3b74279bc07d2d5a9416",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+            "sha256": "sha256:a0dfb373fb44690299f3433f7b9c935d1d1b3e8d7b7d3b74279bc07d2d5a9416",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1919_a_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:89d9a05d1a9e3d5dc3e6c295725ce1d858d2d6b9e52f79e249694803b747b11b",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "35a772a3-d534-494f-9fbb-81ec66d0ea0a",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1919_a_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+          "260929-1810_*_what-does-the-claude-side-declare-about-a-read-that-finishes-a-committed-intent.md",
+          "260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+          "260928-1338-json-control-data-and-markdown-artefacts.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260929-1810_*_what-does-the-claude-side-declare-about-a-read-that-finishes-a-committed-intent.md, 260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md, 260928-1338-json-control-data-and-markdown-artefacts.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1919_a_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md",
+            "sha256": "sha256:24d0a42fb28df62b76e945cb36562e400cf15c0f691809d1d18768a764c81b7d",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1919_a_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md",
+            "sha256": "sha256:24d0a42fb28df62b76e945cb36562e400cf15c0f691809d1d18768a764c81b7d",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:982a2f33d0bd889c104edbdd9301384f3a313cee9c82a9b77fe3ef501a57e94d",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "1e69a7f4-de25-414a-a35a-e36b1bfa4132",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+          "260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+          "260928-1338-json-control-data-and-markdown-artefacts.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260929-1810_*_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md, 260928-1338-json-control-data-and-markdown-artefacts.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md",
+            "sha256": "sha256:9c100a3b4c9dd2862d63aa5eaf45c7f7d1d150c8f914cc49713508356b32fc66",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-2025_a_which-response-size-does-the-claude-side-client-accept-from-the-codec-and-which-environment-does-the-child-get.md",
+            "sha256": "sha256:9c100a3b4c9dd2862d63aa5eaf45c7f7d1d150c8f914cc49713508356b32fc66",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1451_a_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:cbf33413d3a9074292e58ce3ffdbabc4046ceb45ef68a4464b327e52559f8baf",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "8b9319bf-9c4f-4a02-b2e5-7ce9cd0c4bbd",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1451_a_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md",
+          "260929-1810_*_what-does-the-claude-side-declare-about-a-read-that-finishes-a-committed-intent.md",
+          "260929-1919_*_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 260930-1451_*_plan-fj03b-observers-checkers-citations-and-the-monitor-on-json.md, 260929-1810_*_what-does-the-claude-side-declare-about-a-read-that-finishes-a-committed-intent.md, 260929-1919_*_the-dispatch-hook-reaches-the-claimed-package-helper-through-fusion-rules-so-how-does-it-stay-off-the-codec.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1451_a_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md",
+            "sha256": "sha256:7f60b5a599c9b4c7103de843c9097340981e56df7b6992b59b3883eb065d6813",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1451_a_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md",
+            "sha256": "sha256:7f60b5a599c9b4c7103de843c9097340981e56df7b6992b59b3883eb065d6813",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:af56a51735db2ab681a3ae1b0f69cb09ccf2ae056c38c861035eb09b6e9f8462",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "7a7a9a8d-730b-48fd-a732-20ac0ba73a92",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md",
+          "260929-1810_*_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md",
+          "260929-1810_*_what-does-the-claude-side-declare-about-a-read-that-finishes-a-committed-intent.md",
+          "260928-1338-json-control-data-and-markdown-artefacts.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260930-1654_*_plan-initialize-the-codec-creates-a-new-workbench-and-list-names-its-state.md, 260929-1810_*_which-write-creates-the-manifest-of-a-new-json-controlled-workbench.md, 260929-1810_*_what-does-the-claude-side-declare-about-a-read-that-finishes-a-committed-intent.md, 260928-1338-json-control-data-and-markdown-artefacts.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md",
+            "sha256": "sha256:016e96734644a164b38e0fd15daf00045bcae866ea04b4df1a22e5002b942e39",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-1654_a_does-a-read-finish-a-committed-initialize-whose-manifest-has-not-landed-or-report-the-target-as-legacy.md",
+            "sha256": "sha256:016e96734644a164b38e0fd15daf00045bcae866ea04b4df1a22e5002b942e39",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:007b86c187f66b5d8babd37632d38968bfc0eb6ac7c4804d86adaf759c543ead",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "5effa738-6f6c-416f-8d59-f94e44f70557",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+          "260930-1451_*_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md",
+          "260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md, 260930-1451_*_where-does-the-monitor-take-a-records-status-from-and-how-does-an-event-name-a-record-and-its-host.md, 260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-does-the-write-client-log-a-change-it-cannot-append-or-did-not-observe.md",
+            "sha256": "sha256:2e9a2de4d92f551f9117722c46689c2e6b111c7139da331cd04f966fe55b0d45",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:2cf30b2f1834ee88cd2d5ca397412b33b52dc614a7b97cfd7dc1c4d444cdbe21",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "24cb4dff-faad-4214-94a6-a6336ca87d77",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+          "260929-0709_*_fj02-kernel-plan-and-three-open-choices.md",
+          "260928-1338-json-control-data-and-markdown-artefacts.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md, 260929-0709_*_fj02-kernel-plan-and-three-open-choices.md, 260928-1338-json-control-data-and-markdown-artefacts.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260930-2305_a_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md",
+            "sha256": "sha256:d2ea1d32953be14d86be676aee16d4e1d4bb185389e39e6d1bc7e7632c4cd7ec",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-archive-host-learn-every-binding-the-remaining-records-make.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:9a38bce7175c3ede616c5bc09b2d20d7329fe0663ef9ba4b71a53ca88cc15cc5",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "61be9a62-92a9-4069-b28e-c6c9c47eb0c7",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-archive-host-learn-every-binding-the-remaining-records-make.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md",
+          "260930-2305_*_how-is-a-json-controlled-pair-archived-when-its-control-record-names-its-narrative-by-workbench-path.md",
+          "261001-0638_*_json-pairs-cannot-be-archived-until-request-36-is-answered-and-the-archive-safety-filter-reserves-no-json-surface.md",
+          "260828-0904_*_is-an-archived-record-a-citation-target.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md, 260930-2305_*_how-is-a-json-controlled-pair-archived-when-its-control-record-names-its-narrative-by-workbench-path.md, 261001-0638_*_json-pairs-cannot-be-archived-until-request-36-is-answered-and-the-archive-safety-filter-reserves-no-json-surface.md, 260828-0904_*_is-an-archived-record-a-citation-target.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-archive-host-learn-every-binding-the-remaining-records-make.md",
+            "sha256": "sha256:258847dc11cbc50951633474752489492442eb83f48358d1c2091d4606ad4f29",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:630e33c27de9776683de7d3d680d55acff56ad1d233965cab9e853e1ff96c453",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "c07058d9-c942-44a2-ac81-4a63e8aaf5e8",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md",
+          "260928-2251_*_does-the-kernel-take-one-workbench-wide-write-lock-or-keep-a-lock-per-record-under-the-journal.md",
+          "261001-0638_*_json-pairs-cannot-be-archived-until-request-36-is-answered-and-the-archive-safety-filter-reserves-no-json-surface.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md, 260928-2251_*_does-the-kernel-take-one-workbench-wide-write-lock-or-keep-a-lock-per-record-under-the-journal.md, 261001-0638_*_json-pairs-cannot-be-archived-until-request-36-is-answered-and-the-archive-safety-filter-reserves-no-json-surface.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1030_a_how-does-the-host-hold-maintenance-exclusivity-over-codec-writers-while-it-moves-pairs.md",
+            "sha256": "sha256:e0ad8eab6cf6043c11ce5244f3241fa29ea25129415eee0eaa4269b0e89574b4",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "261001-1030_*_plan-the-archive-revision-archive-leaves-json-control-and-json-archival-follows-its-qualification.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:3bbec48feea8844c58de1fba6d49a4aca49b19687a0bc023edf176f11bf2b624",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "d070db54-bb6e-4ff9-abc9-e6e25c755813",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.md"
+        },
+        "filed_by": {
+          "actor": "analyst",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "analyst, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md (the implemented decision this record amends: option 2, `git ls-files`, with `fusion-workbench/` as the one exclusion); work package 260928-1338-json-control-data-and-markdown-artefacts (the archive revision whose session fixtures surface the question); `hooks/lib/__tests__/domain-cascade.test.ts:254` (the test the change would otherwise turn red)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.md",
+            "sha256": "sha256:64d3d8811f2dd48f163d53f4e99d74ae568198b6d84cad9fb5f5255f2c46926b",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+            "record_id": "d070db54-bb6e-4ff9-abc9-e6e25c755813",
+            "display": "261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.md"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:6af0beb87159b332dfcb16354832f26f0711023b02867a86fd9177b0ce037bd9",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "61a2c418-4d96-4066-a3b9-c40f59df3d8f",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md"
+        },
+        "filed_by": {
+          "actor": "implementation-planner",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260928-1338-json-control-data-and-markdown-artefacts.md",
+          "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "260929-1417_*_plan-fj02b-plan-progress-and-evidence-creation-through-the-kernel.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md, 260929-1417_*_plan-fj02b-plan-progress-and-evidence-creation-through-the-kernel.md"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1804_a_what-stable-step-anchor-does-an-imported-plan-carry-and-which-criteria.md",
+            "sha256": "sha256:7e246874915a8d6750782e5c061417f5299de70fa30a695f49642010137c3148",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "261001-1804_*_plan-fj04-the-migration-of-a-legacy-workbench-proven-on-copies.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    }
+  ]
+}

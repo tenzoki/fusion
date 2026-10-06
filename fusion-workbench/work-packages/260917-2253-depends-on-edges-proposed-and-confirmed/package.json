@@ -1,0 +1,84 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "382890d4-7aa9-47e8-bc77-a6de939be2db",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "paused",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/260917-2253-depends-on-edges-proposed-and-confirmed.md"
+  },
+  "depends_on": [
+    {
+      "target": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "d5897f34-6aae-4557-bc7b-033f3dc63c93",
+        "display": "260918-0706-strike-unconfirmed-depends-on-entry.md"
+      },
+      "condition": "terminal"
+    }
+  ],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "fae13f3f-b8d5-4e37-b72c-f21caa1fd0f4",
+        "display": "260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md"
+      },
+      "role": "spec",
+      "revision": "sha256:27c8eff4a6ee23a5cecb59f17eadaf6dd0210be20ebbb1e9fcc5c0025f1d7cca"
+    },
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "e97a93f4-8b38-493f-9e01-17f1d86776ed",
+        "display": "260918-0712_o_implementation-depends-on-edges-proposed-and-confirmed.md"
+      },
+      "role": "plan",
+      "revision": "sha256:66da14c9a2d39ff14ed91d838650e030906ac29a29178b125b10735835517bb2"
+    }
+  ],
+  "references": [
+    "260917-1338-depends-on-kanten-automatisch-erzeugen.md",
+    "260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md",
+    "260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md",
+    "260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md",
+    "260908-2018-prerequisites-confirmed-once-order-computed.md",
+    "260909-1700-cut-fusion-to-working-minimum.md",
+    "260912-0438-human-facing-docs-leave-claude-md.md"
+  ],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": null,
+      "head": {
+        "Domain": "code",
+        "Status": "paused",
+        "Active spec/plan": "260917-2256_*_spec-depends-on-edges-proposed-and-confirmed.md (the spec), 260918-0712_*_implementation-depends-on-edges-proposed-and-confirmed.md (the plan drawn from it, and the one carrying the stopping section)",
+        "Depends-on": "260918-0706-strike-unconfirmed-depends-on-entry.md",
+        "Cross-references": "260917-1338-depends-on-kanten-automatisch-erzeugen.md, 260909-1020_*_three-source-aspects-unnamed-and-the-proposal-pass-has-no-agent-or-surface.md, 260911-1747_*_the-migration-wrote-a-conflict-relation-into-depends-on-and-nobody-confirmed-it.md, 260911-0715_*_a-depends-on-entry-asserts-an-ordering-where-the-section-it-was-derived-from-asserts-a-conflict.md, 260908-2018-prerequisites-confirmed-once-order-computed.md, 260909-1700-cut-fusion-to-working-minimum.md, 260912-0438-human-facing-docs-leave-claude-md.md",
+        "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/260917-2253-depends-on-edges-proposed-and-confirmed.md",
+      "sha256": "sha256:5bdecaba0b0a6683c01c1dcad0347240012be1a883b6d1144caaf99ea9c0478e",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** answered
 **Filed by:** orchestrator (on the user's request)
 **Cross-references:** `rules/fusion-workbench-conventions.md` `## Path Resolution`, whose contract makes every emitted path workbench-relative except `WORKBENCH`; `bin/fusion-paths`
 

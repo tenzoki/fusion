@@ -1,0 +1,43 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "483b2ef0-116c-4d53-8c19-c0a8ef12f126",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "analyst",
+        "Attribution backfilled 260825 (not written by the filing agent)": "`analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.",
+        "Cross-references": "`260810-0819_*_head-carries-six-records-twice-and-the-class-fix-was-deferred-to-a-decision-never-filed.md`; `260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`; `260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md`; `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md`; `archive/260817-1907-safe-cleanup-scoped/260807-1941_*_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md` (the closed instance that first deferred the class to a decision); `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` (the mirror measurement); `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning`; `rules/commit-lock.md`; `agents/orchestrator.md` Step 3b; `agents/coder.md` (the executor's closing rename); plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-rename-staging) and step 12 (the instance fix for the two absorption records)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md",
+      "sha256": "sha256:b00dc2a1adb08cb2398bff00f1f1234b90a8e04c30cb2f6bcf6fb2dced8dcef4",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "483b2ef0-116c-4d53-8c19-c0a8ef12f126",
+      "display": "260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** answered
 **Filed by:** orchestrator (raised by the user)
 **Cross-references:** `skills/help/SKILL.md`; a defect record about the user-facing documentation lagging two releases and still describing a removed guard, cited here at the stamp `260813-0825` — no file with that slug has ever existed and the intended target is not recoverable, measured in `260814-1332-curator-run.md` and re-filed as a defect on 2026-08-19; `bin/fusion-source-root`; `bin/fusion-paths`; `bin/fusion-rules`
 

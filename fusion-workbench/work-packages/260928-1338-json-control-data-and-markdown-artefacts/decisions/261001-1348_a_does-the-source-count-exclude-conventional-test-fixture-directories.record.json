@@ -1,0 +1,44 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d070db54-bb6e-4ff9-abc9-e6e25c755813",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "analyst, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md (the implemented decision this record amends: option 2, `git ls-files`, with `fusion-workbench/` as the one exclusion); work package 260928-1338-json-control-data-and-markdown-artefacts (the archive revision whose session fixtures surface the question); `hooks/lib/__tests__/domain-cascade.test.ts:254` (the test the change would otherwise turn red)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.md",
+      "sha256": "sha256:64d3d8811f2dd48f163d53f4e99d74ae568198b6d84cad9fb5f5255f2c46926b",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "d070db54-bb6e-4ff9-abc9-e6e25c755813",
+      "display": "261001-1348_a_does-the-source-count-exclude-conventional-test-fixture-directories.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

@@ -1,0 +1,188 @@
+# Does the prose register get a measurable gate, and which surface would it measure?
+
+---
+**Domain:** code
+**Status:** answered
+**Filed by:** analyst
+**Cross-references:** `260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `archive/260817-1907-safe-cleanup-scoped/260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`
+
+---
+
+## Question
+
+`hooks/lib/__tests__/` holds 41 test files. Every one measures structure: path literals,
+marker format, citation resolution, provenance headers, derivable enumerations, review
+coverage, domain cascade order, deliverable language, byte growth of the four shipped
+surfaces. Not one measures a prose property.
+
+The style rules are therefore the only normative surface in this project that is stated and
+never gated, and they are also the surface the corpus most visibly contradicts: the always-on
+context runs at 16.3 em-dashes per 1000 words against a stated ceiling of 1.
+
+The question must be answered before the corpus is repunctuated rather than after. This
+project's own history is that an ungated normative claim drifts back; the growth bounds exist
+because exactly that happened to the shipped surfaces. If no gate holds the corpus at its
+ceiling, the repunctuation is a one-time cleanup with a known decay curve.
+
+## Options
+
+1. **Gate the shipped prose only.** A test over `rules/*.md`, `agents/*.md`,
+   `skills/*/SKILL.md` and `CLAUDE.md` that fails when em-dash density exceeds the stated
+   ceiling.
+   - Pros: the surface is fixed, version-controlled and already the subject of four other
+     lint gates, so the pattern is established. It measures the cause identified in finding 10
+     rather than the symptom. It composes with the growth bounds: same files, same suite.
+     One number, mechanically checkable, no judgement.
+   - Cons: measures one figure out of thirteen inventoried. Correctio, prosopopoeia, verbless
+     fragments and sententia are not mechanically detectable at acceptable precision. A file
+     can pass at zero em-dashes and still be written in the register.
+2. **Gate the agent output store.** A test or a `bin/` helper over `shared/history/`,
+   `shared/reviews/` and the Circle equivalents.
+   - Pros: measures what the user actually reads. Would have caught the reported sample.
+   - Cons: the output store has never been read by a test, and it grows every session, so the
+     gate would fail on artifacts nobody is going to edit. `rules/fusion-workbench-conventions.md`
+     `## Project language` already settles the analogous case against retroactive rewriting.
+     A gate that fails on unfixable history is a gate that gets disabled.
+3. **Both, with different mechanisms.** Gate the shipped prose as a `npm test` failure; report
+   on the output store as an advisory helper in the shape of `bin/fusion-staging-drift`, which
+   names a condition and never blocks.
+   - Pros: each surface gets the enforcement it can carry. The advisory shape is an established
+     pattern here with two existing members.
+   - Cons: two mechanisms to maintain for one property. The advisory half has the known
+     weakness of every advisory: it is read when someone looks.
+4. **Neither. Fix the corpus and rely on the imitation effect.** If finding 10's inference
+   holds, a compliant corpus produces compliant output with no gate at all.
+   - Pros: no new mechanism, and it is the only option that addresses all thirteen figures
+     rather than the one that is countable.
+   - Cons: rests entirely on an inference that has not been tested. Recommendation 4 of the
+     analysis is the test, and it cannot run until the corpus is fixed.
+
+## Constraints
+
+- Any gate must not fail on a shrink. `hooks/lib/__tests__/helpers/growth-bound.ts` establishes
+  the principle for the byte bounds and the same holds here: this measures a rate, and reducing
+  it is never a failure.
+- Existing artifacts are not rewritten. `rules/fusion-workbench-conventions.md`
+  `## Project language` settles this for the analogous language case and the reasoning carries.
+- A gate must not itself add prose to the always-on corpus. A rule file explaining the gate
+  would be counted by the gate and would raise the very number it measures.
+- Whatever is chosen must survive the four failing growth bounds. A new test file adds lines to
+  the hook test surface, which is bounded at 2500 lines
+  (`hooks/lib/__tests__/surface-growth-bound.test.ts`).
+
+## Recommendation
+
+**Option 4 first, then re-ask.** The analysis's causal claim is an inference, not a measured
+result, and option 4 is the only one that tests it. Fix the corpus, run the falsification
+measurement from recommendation 4 of the analysis against the next session's output, and
+re-open this record with a number.
+
+If the output rate does not fall with the corpus rate, option 1 becomes the answer: it is the
+cheapest, it fits an established pattern, and its known weakness (it measures one figure) is
+acceptable because that figure is the one whose removal forces the restructuring the other
+figures ride on.
+
+Option 2 is not recommended in any branch. The store it would measure is append-only history
+that this project has already decided not to rewrite.
+
+The last constraint above is the one that will bite: a new test file competes for head-room
+with every other addition to the hook test surface, so option 3's two mechanisms are more
+expensive than they look.
+
+---
+Answered: `260816-0804-orchestrator-session.md:88` — **Option 4**, chosen by the user
+at an orchestrator gate on 2026-08-16. No gate is built now. The corpus is repunctuated first,
+the falsification measurement from recommendation 4 of the analysis runs against a later
+session's output, and this record is re-opened with a number rather than an inference.
+
+The user's scope choice narrows what "fix the corpus" means for the first pass:
+`rules/user-facing-output.md` alone, 38 em-dashes of the corpus total of 372. The remaining six
+files keep their rates, so the measurement that re-opens this record will run against a corpus
+still above the ceiling. Whoever re-opens it must not read a null result as falsifying finding
+10's causal inference: a 2563-word repair inside a 22 763-word corpus is a weak dose, and the
+inference is only tested by a corpus at or near the ceiling.
+
+This record stays answered rather than implemented until that measurement exists. It is not
+`_i_`, because option 4's content is precisely a test that has not yet run.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; the first act of option 4 has landed and the second has not, which is exactly
+the state the answer said this record would sit in.**
+
+*The repunctuation happened, at the scope the user set.* `6049d3e` took
+`rules/user-facing-output.md` from **38 em-dashes to 6**, measured at that commit and its parent.
+At HEAD the file carries 6 em-dashes across 2799 words — **2.1 per 1000**, against the stated
+ceiling of 1. So the one file in scope came down by a factor of six and still sits above its own
+ceiling, which is a fact the re-measurement will have to carry rather than discover.
+
+*The measurement that would move this record has not run.* `shared/analyses/` holds only the
+original `260816-0740-rhetorical-register-of-agent-output.md`; no falsification pass against a later
+session's output exists. The record's own closing sentence governs: it is not `_i_`, because option
+4's content is precisely a test that has not yet run.
+
+*The dose warning in the answer stands and has got weaker, not stronger.* The answer already
+cautioned that 2563 repaired words inside a 22 763-word corpus is a weak dose. Since then the
+always-on corpus has **grown** — `rules/workbench-tracking.md` was added in `b200902` and
+`bin/fusion-rules` emits it — so the repaired fraction is smaller today than when the caution was
+written. Whoever re-opens this record must not read a null result as falsifying finding 10.
+
+**What binds a deep change.** No gate measures a prose property, and none is authorised to be built
+until the measurement runs. A change that adds a prose gate now would be answering this record's
+question ahead of the evidence the user's own choice made a precondition. A change that adds prose
+to the always-on set makes the pending measurement weaker and should say so.
+
+---
+**Correction appended 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md** (coder, plan step 15 of
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+Three corrections, appended beneath the statements they correct and overwriting none of them.
+
+**1. The always-on set is a derivation, not a list.** It is the unindented `emit_if_exists` calls
+in `bin/fusion-rules` plus the unconditional `emit_voice_profile "chat-voice" "$CHAT_LANG"` call,
+resolved against the project's chat language. At HEAD `86edaac` that is `bin/fusion-rules:418-422`
+and `:431`. Option 1 above names a file set for a gate to measure. Whoever builds that gate derives
+the set from the program at run time; this record deliberately does not hand them a list, because
+every hand-written copy of this set in this project has gone stale.
+
+**2. The 260819-1400 reconciliation's growth clause is inverted.** It reads "the always-on corpus
+has **grown**, `rules/workbench-tracking.md` was added in `b200902` and `bin/fusion-rules` emits
+it". It does not. `grep -c workbench-tracking bin/fusion-rules` returns 0 at HEAD `86edaac`, and
+`b200902` moved text **out** of the emitted set rather than into it: its own commit message records
+the always-on set falling from 98 874 to 95 458 bytes per dispatch. The audience was settled by
+`260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`,
+whose answer is no agent, and the condition is filed as
+`260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
+
+**3. The dose caution survives the correction and rests on a different fact.** The corpus did not
+grow. What makes the dose weak is that `CLAUDE.md` is always-on prose an agent holds while no
+helper emits it, so no repair scoped to the emitted set reaches it, and its prose was not repaired
+in this Circle by
+`260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+option 3. Measured at HEAD `86edaac` with `bin/fusion-prose-metric`, the authoritative counter
+since plan step 1 of the Circle above: the six emitted files now carry 8 prose em-dashes over
+13 292 prose words, 0.6 per 1000 and under the stated ceiling; `CLAUDE.md` carries 126 over 8 892,
+14.2 per 1000. It is 40 per cent of the 22 184 prose words an agent holds and 94 per cent of the
+em-dashes left in them. Whoever re-opens this record must not read a null result as falsifying
+finding 10 on that ground alone, and must say which of the two halves the measured session was
+conditioned by.
+
+**What this note does not change.** The marker stays `_a_`. Option 4's content is a measurement
+that has not run, and no correction to a denominator runs it.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). **The protocol this record's measurement runs under**, cited here
+so the link runs both ways:
+`260820-2354-prose-register-measurement-protocol.md`.
+**The pre-repair window, its total row:** five files frozen by path, measured at `fac97f4` with
+`bin/fusion-prose-metric`, 54 prose em-dashes over 5 219 prose words, 10.3 per 1000; lowest per-file
+rate 5.0, highest 18.8; author mix coder three, playmaker one, orchestrator one (protocol section 8).
+**The threshold:** the prediction is met when the post-repair window's total row rate is strictly
+below 5.0 prose em-dashes per 1000 prose words (section 7). **The window condition:** the
+post-repair window opens at the commit that closed that Circle, holds the five most recent usable
+history files written after it by a session that read neither that Circle's own history files nor
+this one's, and is usable only at five files; fewer than five leaves this marker at `_a_` (sections 4
+to 6 and 12). The marker stays `_a_`: a pointer is not a measurement. Filed as
+`260821-0413_*_the-decision-record-the-measurement-reports-on-does-not-cite-the-protocol-that-defines-it.md`.
+
+---
+**Reconciliation 260921-2230 (reconciler, domain `code`, HEAD `cb8776f3`) — marker unchanged at `_a_`.** The option-4 measurement has still not run: the shared analyses hold only the original `260816-0740-rhetorical-register-of-agent-output.md`, and no prose gate exists. One fact the protocol did not foresee: the history store is write-frozen since 2026-09-10 (`rules/fusion-workbench-conventions.md` `## Session history`), so the post-repair window is closed at the files it holds; it can be measured over what exists but never re-sampled, and a later session's output would have to be measured from another surface.

@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "9b103c13-f965-4c9b-aa28-23fb786385b1",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md"
+  },
+  "filed_by": {
+    "actor": "planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md",
+    "260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md",
+    "260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md",
+    "260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md",
+    "260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "`260917-1119_*_spec-fusion-discuss-a-two-agent-discussion-loop.md`, `260917-1124_*_implementation-fusion-discuss-a-two-agent-discussion-loop.md`, `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, `260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md`, `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260916-1050-neues-discuss-feature/decisions/260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md",
+      "sha256": "sha256:061b0ff8959b0900150405788af82b5625b640fac452722939d09d0eea6a1b5d",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "9b103c13-f965-4c9b-aa28-23fb786385b1",
+      "display": "260917-1124_a_does-a-machine-rewritten-record-kind-enter-the-citation-corpus.md"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

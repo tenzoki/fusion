@@ -1,0 +1,41 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "5f0e45ef-857e-4cff-bccb-64af3468542b",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md"
+  },
+  "filed_by": {
+    "actor": "reconciler",
+    "person": null
+  },
+  "references": [
+    "260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Status": "answered",
+        "Filed by": "reconciler",
+        "Cross-references": "`260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md` (the closure that deferred this question and filed no successor); `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the first application); `hooks/lib/__tests__/reference-resolution-lint.test.ts` `BASELINE` (the third)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md",
+      "sha256": "sha256:a8c777216545929974e8bed3e940098b6ed0b74d6a89c701d54ce5189c74fec3",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260816-1500-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "da6fad62-541e-4b6f-aa00-99c0311fa194",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-1721_o_how-is-a-later-partial-override-of-a-decision-recorded.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "261004-1641_*_how-mark-partly-overridden-decision-261001-1804.md",
+    "261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "261004-1641_*_how-mark-partly-overridden-decision-261001-1804.md, 261001-1804_*_how-are-legacy-values-with-no-v1-counterpart-mapped-at-import.md"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-1721_o_how-is-a-later-partial-override-of-a-decision-recorded.md",
+      "sha256": "sha256:74783c7605def014779840c59b75158f10a6a34e6a648f1b171319286d1fc721",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

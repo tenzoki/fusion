@@ -1,0 +1,49 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "9c8417b4-a9d8-47b7-98c5-fa69fe0a4eba",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "analyst",
+        "Attribution backfilled 260825 (not written by the filing agent)": "`analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.",
+        "Cross-references": "`260801-1020_*_scan-keys-never-reach-the-archive-store.md`; `260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md`; `260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, where the first was found); `rules/fusion-workbench-conventions.md` `## Path Resolution (Pfadauflösung)` and `## State Markers — decisions` (the Grounding-Historie layer); `rules/workbench-path-resolution.md`; `bin/fusion-paths`; `agents/orchestrator.md` Phase 4; `skills/archive/SKILL.md`; plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-scan-scope)"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md",
+      "sha256": "sha256:227193f3048720283ad9b4ba588658711bf87785e252724295eb080975d1ced5",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260824-1853-close-every-open-defect/decisions/260824-2013_a_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md",
+      "sha256": "sha256:227193f3048720283ad9b4ba588658711bf87785e252724295eb080975d1ced5",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

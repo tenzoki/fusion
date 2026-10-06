@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** open
 **Filed by:** orchestrator (session `260810-1402`)
 **Cross-references:** `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` (this record carries its parts b and c); `archive/260817-1907-safe-cleanup-scoped/260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance that produced part a1, now closed by `26ea3c3`)
 

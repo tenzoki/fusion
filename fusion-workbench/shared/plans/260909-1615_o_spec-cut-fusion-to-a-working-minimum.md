@@ -1,7 +1,6 @@
 # Spec: cut fusion to a working minimum
 
 **Date:** 2026-09-09
-**Status:** Partially Complete
 **Source:** The user's request to cut fusion's ceremony, following `260909-1047-size-versus-bookkeeping-across-three-projects.md` and its verification `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md`. Four clarification questions were answered: depth (d), cumulative across all four tiers; no agent-written session history; no closing pipeline; a zero-sum bound on everything a dispatch loads, `CLAUDE.md` included.
 **Revised against:** `260909-1628-adversarial-review-of-the-cut-fusion-to-a-working-minimum-spec.md`, whose measurements govern this draft wherever it and the first draft disagree. Three issues it filed are answered here: `260909-1631_*_the-cut-spec-removes-agentstate-yaml-whose-existence-gates-every-machine-written-event-row.md`, `260909-1632_*_the-cut-specs-analyst-row-forbids-the-project-writes-its-own-claude-md-gate-requires.md`, `260909-1633_*_the-zero-sum-bounds-baseline-is-armed-at-the-moment-that-absolves-the-cut-it-must-measure.md`.
 **Filed by:** shaper, Kai Stalmann <kai@qantr.com>

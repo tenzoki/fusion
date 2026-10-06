@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "debab921-5f0f-4174-8b7b-bd8167de0bdb",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md"
+  },
+  "filed_by": {
+    "actor": "planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260916-1058_*_spec-human-facing-docs-leave-claude-md.md",
+    "260916-1126_*_implementation-human-facing-docs-leave-claude-md.md",
+    "260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
+    "260912-0438-human-facing-docs-leave-claude-md.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260916-1058_*_spec-human-facing-docs-leave-claude-md.md, 260916-1126_*_implementation-human-facing-docs-leave-claude-md.md, 260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md, 260912-0438-human-facing-docs-leave-claude-md.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md",
+      "sha256": "sha256:480ed1571ed00e5a4f0c09bd5234eabe0cd8ee22ea253869db9e378f3fc11055",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1126_a_may-the-drift-check-report-weight-when-it-cannot-decide-topic.md",
+      "sha256": "sha256:480ed1571ed00e5a4f0c09bd5234eabe0cd8ee22ea253869db9e378f3fc11055",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

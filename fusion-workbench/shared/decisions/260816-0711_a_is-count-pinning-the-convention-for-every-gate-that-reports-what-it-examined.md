@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** answered
 **Filed by:** reconciler
 **Cross-references:** `260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md` (the closure that deferred this question and filed no successor); `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the first application); `hooks/lib/__tests__/reference-resolution-lint.test.ts` `BASELINE` (the third)
 

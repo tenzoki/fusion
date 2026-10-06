@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "af0fef01-435d-49a9-99a5-5e526b7e1f6e",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260904-1619-tracked-checkout-registry-names-each-instance/decisions/260904-1659_o_what-happens-to-the-directive-pointer-when-the-cited-plan-cites-the-record-back.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": ""
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260904-1619-tracked-checkout-registry-names-each-instance/decisions/260904-1659_o_what-happens-to-the-directive-pointer-when-the-cited-plan-cites-the-record-back.md",
+      "sha256": "sha256:ff1a183e7b1e1db89120aefccf2f96120a1525fac9a673e0774ba251d0ce4d58",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

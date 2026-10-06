@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "3a139cc8-12a7-4a66-8f87-ef455e656aa0",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md",
+    "260927-2304-fusion-dual-host-design-review.md",
+    "260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+    "260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md, 260927-2304-fusion-dual-host-design-review.md, 260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md, 260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+      "sha256": "sha256:b5397a1d2c6bd49f9ae832c1ecb53ef668466a3a4543a8b54579d6647ee10a71",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+      "sha256": "sha256:b5397a1d2c6bd49f9ae832c1ecb53ef668466a3a4543a8b54579d6647ee10a71",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

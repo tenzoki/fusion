@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "f2e550f7-9482-4c69-a278-2835523a30e1",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.md"
+  },
+  "filed_by": {
+    "actor": "shaper",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Domain": "code",
+        "Filed by": "shaper, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": ""
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260908-2018-prerequisites-confirmed-once-order-computed/decisions/260908-2018_o_what-pays-for-the-playmaker-change-when-the-agent-surface-holds-698-bytes.md",
+      "sha256": "sha256:5fe143d992a59aa2f1512e02777034c66100dd72363a308003675c6e152f1676",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

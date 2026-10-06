@@ -1,0 +1,39 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8e385eeb-f8e0-494c-b4df-5ae529dfbd6d",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": null
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Status": "answered",
+        "Filed by": "orchestrator (session `260810-0844-orchestrator-session.md`, Turn 3 — from a residual the T14 executor measured and correctly declined to patch)",
+        "Cross-references": "`260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md` (round 1, closed by `38fe341`); `260810-0939_*_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md` (round 2, closed by `c546ef0`); `hooks/lib/__tests__/fusion-count-sources.test.ts`; `bin/fusion-count-sources`; `rules/critical-stance.md` §4"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+      "sha256": "sha256:66e9aa3c2a77e59d33a09139d2b60d2233ddeceebd6f06e6d62e7d78c14644a5",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260810-0844-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

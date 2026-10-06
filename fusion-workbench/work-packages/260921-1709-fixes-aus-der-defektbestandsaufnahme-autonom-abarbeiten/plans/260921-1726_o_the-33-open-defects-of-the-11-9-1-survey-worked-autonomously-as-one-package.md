@@ -1,7 +1,6 @@
 # Implementation Plan: the 33 open defect records of the 11.9.1 survey, worked autonomously as one package
 
 **Date:** 2026-09-21
-**Status:** Draft
 **Spec:** none — planned from the work item's `## Directive` (`260921-1709-fixes-aus-der-defektbestandsaufnahme-autonom-abarbeiten.md`) against the survey `260921-1653-open-defect-survey-at-11-9-1.md`, on the model of `260920-2228_*_seven-new-defects-worked-autonomously-with-a-second-opinion-each.md`
 **Decidability:** The load-bearing question is whether each of the 26 still-present records is closable at HEAD `3d02c7fd` by one bounded edit whose acceptance is a command the executor can run, and whether the six fixes that add hook-test lines fit the surface after one funding cut. Both are decidable from the inputs the steps have: every presence claim below was re-read against the tree at that commit (the site is quoted per step, taken from the survey and re-checked where the plan differs from it), every acceptance is a `grep`, a `wc`, a `node -e` probe, a helper run or the suite with a stated result, and the line budget is a subtraction the bound test performs on every run (14 lines of head-room at HEAD, measured by `hooks/lib/__tests__/surface-growth-bound.test.ts`; step 17 frees roughly 146). Three inputs are not decidable from the plan and are handed on rather than approximated. (1) Whether the ten-pair experiment of step 2 reads 0 of 20 after step 1: the plan states both outcomes and what each does to the five load records. (2) Whether a working answer taken under an open decision is the one the user wants: every one is named in `## Working answers` below and in the decision record it hangs on, no marker moves, and the user rules with the implementation in front of them, which is the directive's own mechanism. (3) Whether a second opinion accepts a concept: the directive's stop rule, three rejections in a row, ends the package.
 **Domain:** code
@@ -113,7 +112,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package A — the load block
 
-1. [DONE] **Make the git helper distinguish a timeout from a decline, retry a timeout once, and budget it from the measured tail**
+1. **Make the git helper distinguish a timeout from a decline, retry a timeout once, and budget it from the measured tail**
    - Executor: `coder`
    - Record: `260906-0035_*_the-git-helper-reports-a-timeout-as-not-a-repository-in-every-consuming-project.md` (closed at step 2, not here: its acceptance is the experiment); working answer per `260906-0035_*_what-should-the-git-helpers-budget-be-and-is-a-timeout-retried.md` option 1
    - Site at HEAD: `hooks/lib/git.ts` `export const GIT_TIMEOUT_MS = 5_000;` and `git()` returning `string | null` from one `try { execFileSync(...) } catch { return null; }`; its docstring enumerates the four conditions the `null` collapses. Callers: `hooks/lib/staging-drift.ts` (`rev-parse --show-toplevel`, `status --porcelain` under `GIT_STATUS_TIMEOUT_MS = 10_000`, `rev-parse HEAD` in `currentHead`), `hooks/lib/review-coverage.ts` (`log`, `rev-list`, `show -s --format=%ct`), `hooks/lib/citation-scan.ts` (`rev-parse --show-toplevel`, `ls-files`, both inside `declaredCitationFiles()`, off the hook path). On this Node a timeout throws `err.code === "ETIMEDOUT"`, `err.signal === "SIGTERM"` (probed: `node -e 'try{require("child_process").execFileSync("sleep",["2"],{timeout:100,stdio:["ignore","pipe","ignore"]})}catch(e){console.log(e.code,e.signal)}'` prints `ETIMEDOUT SIGTERM`).
@@ -126,7 +125,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** consultant
    - Dependencies: none
 
-2. [DONE] **Run the ten-pair experiment at step 1's commit, and close the five load records on what it reads**
+2. **Run the ten-pair experiment at step 1's commit, and close the five load records on what it reads**
    - Executor: `coder`
    - Records: `260906-0035_*_the-git-helper-reports-a-timeout-as-not-a-repository-in-every-consuming-project.md`, `260905-2356_*_the-hook-suite-is-not-isolated-from-a-second-copy-of-itself-and-fails-at-forty-percent-under-one.md`, `260905-2134_*_review-coverage-test-fails-in-a-full-suite-run-and-passes-in-isolation.md`, `260908-0032_*_two-hook-tests-are-load-sensitive-and-fail-only-in-the-parallel-full-run.md`, `260916-1943_*_guard-state-shape-fails-three-cases-under-suite-load-and-passes-in-isolation.md`
    - Site at HEAD: `260905-2356_*`'s acceptance is ten pairs of concurrent `npm test` runs at one commit, counting red runs out of twenty; the other four close on it by their own text (`260905-2356_*` `## What this record replaces`, `260908-0032_*`'s six-run acceptance is subsumed, `260916-1943_*` asks for a deliberate reproduction). Nothing has run it since `ea17e354`.
@@ -140,7 +139,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package B — text and message fixes, one commit per record
 
-3. [DONE] **Rewrite the two remaining line-number citations in shipped text as anchors and prose** (row 9, text half; the record closes at step 20 with its lint half)
+3. **Rewrite the two remaining line-number citations in shipped text as anchors and prose** (row 9, text half; the record closes at step 20 with its lint half)
    - Executor: `coder`
    - Record: `260906-0335_*_nine-of-twelve-line-number-citations-in-shipped-text-name-the-wrong-line-and-no-gate-resolves-one.md` (closed at step 20)
    - Site at HEAD: `grep -rnoE '`[A-Za-z0-9_./-]+\.(md|ts|sh|json|mjs):[0-9]+(-[0-9]+)?`' agents skills rules README*.md CLAUDE.md docs` prints three hits: `rules/fusion-workbench-conventions.md:68` twice (`skills/setup/SKILL.md:49`) and `README-hooks.md:292` (`docs/philosophy.md:19`). Line 49 of `skills/setup/SKILL.md` is the Probe 2 bullet; the claim the conventions make (two live trees, refuses permanently, routes to a migration with nothing to do) is the Probe 3 bullet at line 50.
@@ -152,7 +151,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-4. [DONE] **Make the style rule name the unit of work by something the design has** (row 21)
+4. **Make the style rule name the unit of work by something the design has** (row 21)
    - Executor: `coder`
    - Record: `260911-0752_*_the-user-facing-style-rule-bans-a-noun-in-one-line-and-requires-it-in-another.md`
    - Site at HEAD: `rules/user-facing-output.md:45` "**No fusion noun.** Not Circle, …"; `:60` "**Every `AskUserQuestion` is self-contained**: Circle name, path or task title inside the question text".
@@ -164,7 +163,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-5. [DONE] **Say in the migrate body that the conventions do not admit a container holding two records** (row 26)
+5. **Say in the migrate body that the conventions do not admit a container holding two records** (row 26)
    - Executor: `coder`
    - Record: `260915-2144_*_a-compressed-sentence-in-migrate-now-says-the-conventions-admit-the-shape-they-forbid.md`
    - Site at HEAD: `skills/migrate/SKILL.md:183` "… producing one container holding two records and therefore no defined state, which the conventions admit and no consumer handles."
@@ -176,7 +175,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-6. [DONE] **Restore the truncated guardrail citation in the archive body** (row 28)
+6. **Restore the truncated guardrail citation in the archive body** (row 28)
    - Executor: `coder`
    - Record: `260916-0830_*_a-guardrail-citation-is-truncated-so-no-gate-reads-it-and-no-reader-resolves-it.md`
    - Site at HEAD: `skills/archive/SKILL.md:258` ends "(fusion's own record `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…`)"; line 112 carries the full basename, `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`.
@@ -188,7 +187,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-7. [DONE] **Give the memo body the empty-checkout halt at the point it composes a filename** (row 29)
+7. **Give the memo body the empty-checkout halt at the point it composes a filename** (row 29)
    - Executor: `coder`
    - Record: `260916-0831_*_the-memo-body-does-not-carry-the-empty-checkout-clause-the-conventions-now-bind-it-by.md`
    - Site at HEAD: `skills/memo/SKILL.md:37` "`$CO` is the `CHECKOUT=` line of …, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`." No halt clause (`grep -in 'halt\|exit 3\|exit 5\|no line' skills/memo/SKILL.md` prints nothing). The wording to copy is `skills/cadence/SKILL.md:42`.
@@ -200,7 +199,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-8. [DONE] **Cut the holder-naming section down to the bound it still carries** (row 31)
+8. **Cut the holder-naming section down to the bound it still carries** (row 31)
    - Executor: `coder`
    - Record: `260916-2144_*_the-holder-naming-section-documents-a-command-a-consumer-and-a-field-shape-that-are-all-gone.md`
    - Site at HEAD: `bin/fusion-checkout-name:225-245`, the section `## Naming a holder, and why the name never enters a comparison`: "`/fusion:next` Step 6.1 is the worked case: it reads the claim's `<person>, checkout <id>` … renders `held by <person> on <alias>`". `skills/next/` is absent from `ls -1 skills/`; no shipped file carries `held by`; the claim's shape is `**Claim:** <8 hex> — <person>, YYMMDD-HHMM`.
@@ -212,7 +211,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-9. [DONE] **Name only a command that exists in the domain-cascade remediation text** (row 32, text half; the record closes at step 21 with its gate half)
+9. **Name only a command that exists in the domain-cascade remediation text** (row 32, text half; the record closes at step 21 with its gate half)
    - Executor: `coder`
    - Record: `260916-2145_*_a-gates-remediation-text-names-two-commands-that-do-not-exist-and-no-gate-resolves-a-command-token.md` (closed at step 21)
    - Site at HEAD: `hooks/lib/__tests__/domain-cascade.test.ts:519-520` "run bin/fusion-session-domain (the route /fusion:next,\n       /fusion:direct and /fusion:reconcile take), or take it from a".
@@ -224,7 +223,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
    - **Second opinion:** none
    - Dependencies: none
 
-10. [DONE] **Drop "operative" and state the two dispatch exclusions as project-wide** (row 24)
+10. **Drop "operative" and state the two dispatch exclusions as project-wide** (row 24)
     - Executor: `coder`
     - Record: `260913-1108_*_the-positive-dispatch-rule-turns-on-an-undefined-word-and-leaves-both-exclusions-bound-to-the-orchestrator-alone.md`
     - Site at HEAD: "operative agent" at `rules/fusion-workbench-conventions.md` `## Dispatching another agent` (first paragraph), `README-agents.md:45` and `:300`; nowhere defined (`grep -rn "operative agent" CLAUDE.md README*.md agents rules docs skills hooks/lib` prints those three). The exclusions live at `agents/orchestrator.md:608-609` only ("Never invokes … `orchestrator` — no recursion"); the consultant-side line the record cited is gone.
@@ -236,7 +235,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none (before step 11 by necessity: same paragraph)
 
-11. [DONE] **Replace the analyst delegation with a read of the gate list by the dispatching agent** (row 23)
+11. **Replace the analyst delegation with a read of the gate list by the dispatching agent** (row 23)
     - Executor: `coder`
     - Record: `260913-1108_*_the-gate-determination-is-delegated-to-an-analyst-that-holds-no-more-of-the-gate-list-than-the-caller.md`; working answer per `260921-1718_*_how-does-a-dispatched-agent-learn-the-gate-conditions-before-it-dispatches-another-agent.md` option 1
     - Site at HEAD: `rules/fusion-workbench-conventions.md` `## Dispatching another agent`, second paragraph: "So an agent that may be approaching a gate condition **halts and does not proceed**. An `analyst` determines whether one is present: no condition, and the work goes on; a condition, and it travels up to the orchestrator, where the user answers as before." `bin/fusion-rules <any agent>` emits no `agents/*.md`; `agents/analyst.md` carries no gate-determination type. `README-agents.md:45` and `:300` restate the halt.
@@ -248,7 +247,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 10
 
-12. [DONE] **State what a second plan does to `**Active spec/plan:**`** (row 25)
+12. **State what a second plan does to `**Active spec/plan:**`** (row 25)
     - Executor: `coder`
     - Record: `260915-2143_*_the-active-spec-plan-field-is-append-only-and-nothing-says-what-a-second-plan-does-to-it.md`
     - Site at HEAD: `agents/orchestrator.md:217` "… beside any value already there — a spec and the plan drawn from it both stand, each with a short clause saying which"; `:441` "where it names a spec and a plan both, the one carrying `## Where this work stops`"; `rules/fusion-workbench-conventions.md` `## Backlog entries — work items` "comma-separated where a spec and the plan drawn from it both stand".
@@ -260,7 +259,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-13. [DONE] **Let the resolver's unknown-name message name the work-tree preference and the two remedies** (row 14)
+13. **Let the resolver's unknown-name message name the work-tree preference and the two remedies** (row 14)
     - Executor: `coder`
     - Record: `260908-1324_*_a-work-tree-behind-the-install-hides-skills-the-install-has-and-nothing-warns.md`
     - Site at HEAD: `bin/fusion-paths:212` and `:233`, the two exit-2 messages, name the agent/skill shape and not which root was searched; `:197-199` set `PLUGIN_ROOT="$PWD"` when `bin/fusion-plugin-cwd` says the cwd is the plugin repo.
@@ -272,7 +271,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-14. [DONE] **Declare the v11 upgrade note live, and make it true** (row 27)
+14. **Declare the v11 upgrade note live, and make it true** (row 27)
     - Executor: `coder`
     - Record: `260915-2145_*_the-v11-upgrade-note-is-maintained-as-live-in-one-commit-of-this-range-and-frozen-in-the-other.md`; working answer per `260921-1718_*_does-the-v11-upgrade-note-track-live-v11-behaviour-or-stay-frozen-at-v11-0-0.md` option 1
     - Site at HEAD: `docs/upgrading-to-v11.md:25` "taking `open`, `claimed`, `done` or `dropped`" (four; the set is five with `paused`); `:17` "The release is tagged `v11.0.0`"; the file was edited on the live side by `950a606e`, `9d5b1e80`, `4d692c57`; `README-agents.md` `## Releasing` step 0 carries the help-topic obligation and no upgrade-note one.
@@ -284,7 +283,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-15. [DONE] **State the fabricated-name bound in the scanner's header and close on it** (row 3)
+15. **State the fabricated-name bound in the scanner's header and close on it** (row 3)
     - Executor: `coder`
     - Record: `260830-2235_*_the-fabricated-name-exemption-keys-on-the-literal-foo-so-every-realistic-probe-fixture-is-read-as-a-real-citation.md`; working answer per `260921-1718_*_which-decidable-property-if-any-exempts-a-realistic-probe-fixture-from-the-citation-gate.md` option 1
     - Site at HEAD: `hooks/lib/citation-scan.ts:511-527`, `FABRICATED_NAME` and its docstring; the header's exemption list; `hooks/lib/citation-form.ts:65-75` already names the record as the reason `dangling` is not reported at write time.
@@ -296,7 +295,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: none
 
-16. [DONE] **Fix the side finding: the vitest config's store-prefixed citation, and put `.mjs` in the corpus**
+16. **Fix the side finding: the vitest config's store-prefixed citation, and put `.mjs` in the corpus**
     - Executor: `coder`
     - Record: `260921-1718_*_the-vitest-config-cites-a-decision-with-its-store-segment-in-a-file-no-citation-corpus-reads.md` (this container's issues store, filed by this plan)
     - Site at HEAD: `hooks/vitest.config.mjs:43` cites the fork-cap decision with the shared decision store's segment in front of it; `fusion.json` `citations.extraPaths` is `["bin/*", "hooks/*.ts", "hooks/lib/*.ts"]`.
@@ -310,7 +309,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package C — the funding cut, then the test-bearing and code fixes it pays for
 
-17. [DONE] **Roll the three re-baselining log sections out of the growth-bound test into a workbench record**
+17. **Roll the three re-baselining log sections out of the growth-bound test into a workbench record**
     - Executor: `coder`
     - Record: none (the funding cut the directive's point 4 asks for; the cut is named, never a baseline edit)
     - Site at HEAD: `hooks/lib/__tests__/surface-growth-bound.test.ts` lines 92 to 243 hold `## The arming, 2026-08-15`, `## The cleanup re-baseline, 2026-08-17 — the hook tests, and them alone` and `## The merge re-baseline, 2026-09-05 — skills/ and the hook tests`, 152 comment lines of dated log; lines 245 to 257 already say the head-room-raise log was moved out of this file into `README-hooks.md` and that "the move is itself a reduction of this surface". No file cites the three headings (`grep -rn` over `README*.md`, `rules`, `agents`, `skills`, `docs`, `hooks/lib` prints nothing). The precedent is the pin log of `reference-resolution-lint.test.ts` (its header, lines 451 to 457: "roll, never drop", decision `260822-1229`, option 2).
@@ -323,7 +322,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: step 2 (the suite is trusted alone again)
 
-18. [DONE] **Make the lock write a commit row only for a commit object created in the held region** (row 33)
+18. **Make the lock write a commit row only for a commit object created in the held region** (row 33)
     - Executor: `coder`
     - Record: `260918-0834_*_the-lock-reads-any-head-movement-as-a-landed-commit-so-a-reset-inside-the-held-region-writes-a-row.md`
     - Site at HEAD: `bin/fusion-commit-lock` `emit_commit_event`: `[ "$head" = "$before" ] && return 0` then `commit_is_log_only "$before" && return 0`; the `with` branch captures `head_before` after `do_acquire`; nothing reads a region start or the reflog. `hooks/lib/__tests__/fusion-commit-lock.test.ts` `describe("fusion-commit-lock: the machine-written commit row")` has no reset case; its five-line model is the case "writes no row when the wrapped command left HEAD where it was".
@@ -335,7 +334,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-19. [DONE] **Report a citation that spells the record's current marker at write time** (row 11)
+19. **Report a citation that spells the record's current marker at write time** (row 11)
     - Executor: `coder`
     - Record: `260908-0027_*_the-write-time-citation-check-is-silent-on-the-class-that-produced-every-violation-of-this-session.md`
     - Site at HEAD: `hooks/lib/citation-scan.ts:1150-1152`: `findRecord(stamp + rest)` matches the literal marker, so the test file's `CLOSED_ISSUE` fixture cited with its own current marker letter spelled out returns `found(hit)`, status `resolved`; the `markerM` branch at `:1154` runs only when nothing was found. `hooks/lib/citation-form.ts:168` `REPORTED_STATUSES = ["store-prefixed", "stale-marker"]`. `hooks/lib/__tests__/citation-form.test.ts` `describe("which verdicts reach the writer")` has cases for both reported statuses, for `dangling` (silent) and for the wildcard form (silent), and none for this class; its fixtures are `CLOSED_ISSUE`, `STALE_MARKER`, `STORELESS`.
@@ -347,7 +346,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-20. [DONE] **Read a citation wrapped across two lines, refuse a line-number citation, and state the count** (rows 20 and 9, lint half)
+20. **Read a citation wrapped across two lines, refuse a line-number citation, and state the count** (rows 20 and 9, lint half)
     - Executor: `coder`
     - Records: `260911-0752_*_a-citation-wrapped-across-a-line-break-is-checked-by-neither-class-and-fails-silently.md`; `260906-0335_*_nine-of-twelve-line-number-citations-in-shipped-text-name-the-wrong-line-and-no-gate-resolves-one.md` (its text half is step 3)
     - Site at HEAD: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `scanHeadingAnchors` (lines 390 to 432) runs `ANCHOR_RE` per `{ line, text }` and joins nothing; `scanPluginPaths` (303 to 362) resolves a path token and never looks at what follows it. The conventions already mandate anchors and forbid line numbers in living text (`rules/fusion-workbench-conventions.md` `## Filename Patterns`).
@@ -359,7 +358,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** none
     - Dependencies: step 17
 
-21. [DONE] **Pin the slash-command class, with an enumerated retired set** (row 32, gate half)
+21. **Pin the slash-command class, with an enumerated retired set** (row 32, gate half)
     - Executor: `coder`
     - Record: `260916-2145_*_a-gates-remediation-text-names-two-commands-that-do-not-exist-and-no-gate-resolves-a-command-token.md` (its text half is step 9); working answer per `260921-1718_*_does-a-slash-command-token-in-shipped-text-become-a-pinned-class-and-what-exempts-a-historical-mention.md` option 1
     - Site at HEAD: over the lint's surface, `/fusion:<name>` tokens naming no `skills/<name>/` directory: `bin/fusion-checkout-name:228` (`next`, repaired at step 8), `agents/shaper.md:55` (`direct`, named as removed), `rules/fusion-workbench-conventions.md:68` and `hooks/lib/citation-corpus.ts:202` (`migrate-workbench-v2`, named as retired); `activity-log-k1.md` and two test files are outside the surface. `ls -1 skills/` prints fourteen directories.
@@ -371,7 +370,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17; step 8 (the one live pointer in `bin/` is gone) and step 9
 
-22. [DONE] **Pin the dispatch row's identity, the absent-key rule and the heartbeat's refresh and negatives** (row 1)
+22. **Pin the dispatch row's identity, the absent-key rule and the heartbeat's refresh and negatives** (row 1)
     - Executor: `coder`
     - Record: `260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md`
     - Site at HEAD: `hooks/lib/__tests__/guard-state-shape.test.ts:253-319` asserts `event`, `task`, `agent`, `session_id`, `detail` on a `task_start` row and nothing about `person`/`checkout`; `grep -rln heartbeatSessionMarker hooks/lib/__tests__/` prints nothing. `heartbeatSessionMarker` (`hooks/lib/orchestrator-events.ts:233-240`) refreshes `fusion-workbench/.session-marker`'s mtime when the marker exists and is at least 60 s old, never creates one, and is called from `hooks/tracker.ts` only. The harness (`helpers/guard-harness.ts`) offers `runDispatch(root, payload, overrides)` and `runTracker(root, toolName, toolInput, overrides)`; `overrides` is an env map, so `FUSION_PERSON` and `FUSION_CHECKOUT` can be set per case. The `agentstate.yaml` gate case of the original list is moot (`6357ebfc`).
@@ -396,7 +395,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-24. [DONE] **Classify an unresolvable head-field identifier `undecidable` rather than `dangling`** (row 5)
+24. **Classify an unresolvable head-field identifier `undecidable` rather than `dangling`** (row 5)
     - Executor: `coder`
     - Record: `260831-2121_*_the-head-field-exemption-reads-only-a-bare-stamp-so-a-name-shaped-identifier-in-a-head-field-is-judged.md`; working answer per `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md`, the fourth direction narrowed as `## Working answers` states
     - Site at HEAD: `hooks/lib/citation-scan.ts:1084` `kind === "stamp-bare" && isHeadFieldValue(...)` is the whole head-field exemption; `:1192-1227` the `STAMP_RE` branch returns `dangling` for a `stamp-name` token nothing matches; `CitationStatus` (`:857-871`) has no `undecidable` member, `partition()` (`:1505-1524`) builds the `undecidable` bucket from `stamp-bare` and `ambiguous`. `grep -rn IDENTIFIER_HEAD_FIELDS hooks/` prints nothing.
@@ -408,7 +407,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17; step 23 by preference (same file, same `consider()` block)
 
-25. [DONE] **Let presence read the work item off the party's latest dispatch row** (row 19)
+25. **Let presence read the work item off the party's latest dispatch row** (row 19)
     - Executor: `coder`
     - Record: `260910-2144_*_presence-cannot-name-what-another-checkout-is-working-on-because-no-event-row-carries-it-any-more.md`; working answer per `260921-1718_*_where-does-presence-read-what-another-checkout-is-working-on-now-that-no-session-row-carries-it.md` option 1
     - Site at HEAD: `hooks/lib/events-query.ts:307-331` builds parties from `session_start` lines only and sets `circle: circleOf(line.history_file)`; `EventLine` (`:89-118`) parses no `work_item`; `hooks/lib/orchestrator-events.ts:506-516` writes `work_item` on every `task_start` row that carries a `**Work-item:**` line; `bin/fusion-events:65-70` states that every line renders `unknown` since 2026-09-10.
@@ -420,7 +419,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
     - **Second opinion:** consultant
     - Dependencies: step 17
 
-26. [DONE] **Let a project declare a record an exhibit** (row 10)
+26. **Let a project declare a record an exhibit** (row 10)
     - Executor: `coder`
     - Record: `260906-0416_*_a-project-may-widen-the-citation-corpus-and-never-narrow-it-so-an-exhibit-has-no-declarable-form.md`; working answer per `260906-0416_*_should-a-project-be-able-to-declare-a-record-an-exhibit-and-what-does-that-declaration-cover.md` option 2
     - Site at HEAD: `hooks/lib/config.ts:209-242` and `:625-635` read `citations.extraPaths` and nothing else under `citations`; `hooks/lib/citation-scan.ts:1038` `const fileExempt = rel in RECORD_EXAMPLE_FILES` is the only whole-file exemption and is a literal; `hooks/citation-check.ts:335-353` prints `declared-patterns=` and `declared-files=`; `templates/fusion.json` and `fusion.json` carry the `_citations` note byte-identically (`config.test.ts` pins it).
@@ -434,7 +433,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package D — closures
 
-27. [DONE] **Close the six already-fixed and the one obsolete record on the survey's evidence**
+27. **Close the six already-fixed and the one obsolete record on the survey's evidence**
     - Executor: `coder`
     - Records: `260828-0044_*_thirty-four-of-sixty-two-records-filed-on-260827-carry-no-person-half-after-the-reach-was-settled.md` (fixed: 329 of 330 `2609*` records under `issues/`, `decisions/`, `reviews/` carry the person half, the history kind closed at `0ec15cb9`); `260911-1511_*_coderev-is-a-substring-of-codereview-so-a-sweep-without-word-boundaries-counts-two-retired-folder-names-as-agents.md` (fixed: the convention stands in `260911-1316-five-retired-agents-and-the-container-contradiction-read-site-by-site.md` beside its figures; the other half is a habit no file holds); `260909-1345_*_the-size-analysis-understates-the-always-on-peak-and-the-august-cut.md`, `260909-1347_*_the-eightfold-bookkeeping-rise-excludes-337-legacy-stamped-records-from-the-two-anchor-months.md`, `260909-1348_*_recommendation-7-names-an-archive-confirmation-the-cleanup-pipeline-does-not-put.md`, `260909-1349_*_finding-17s-setup-pointer-claims-name-the-wrong-agents.md` (errata: the analysis is write-once and unchanged; the correction is `260909-1345-verification-of-the-size-versus-bookkeeping-analysis.md` items C1, C2, O1, C6, C7, cited by the analysis's consumer `260909-1615_*_spec-cut-fusion-to-a-working-minimum.md`; nothing in the tree can move further, and the `Resolved:` line says so in those words rather than "fixed"); `260908-0920_*_v10-24-1-is-tagged-and-was-never-entered-in-the-marketplace.md` (obsolete: the marketplace reads `11.9.1`, `install.sh` and `README.md` pin `v11.9.1`, the tag `v10.24.1` exists and never will be entered, as the record itself foresaw; its residual, which tags may be partial, is one sentence the `Resolved:` line adds to `README-agents.md` `## Releasing` step 5 in this same commit: a tag cut from anything but `main` is partial by definition and is not entered).
     - Files: the seven records; `README-agents.md` (`## Releasing` step 5, one sentence)
@@ -447,7 +446,7 @@ Field key. **Record** is the storeless citation of the defect closed. **Site at 
 
 ### Package E — the bump
 
-28. [DONE] **Bump the plugin version to 11.10.0 after the step-0 pre-tag checks**
+28. **Bump the plugin version to 11.10.0 after the step-0 pre-tag checks**
     - Executor: `coder`
     - Record: none (the directive's own final instruction)
     - Site at HEAD: `.claude-plugin/plugin.json` reads `"version": "11.9.1"`; `skills/help/SKILL.md` `### 4. Update` carries paragraphs for 11.9.0 and 11.8.0 installs.

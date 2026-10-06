@@ -2,7 +2,6 @@
 
 ---
 **Domain:** code
-**Status:** answered
 **Filed by:** orchestrator (on the executor of the drift-lint residuals task of session `260810-1646-orchestrator-session.md`)
 **Cross-references:** `260810-1918_*_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; the queued frozen-state task, filed as `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
 

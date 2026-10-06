@@ -1,0 +1,63 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "2d9c8f44-2a33-4eea-8add-b81306dd6df0",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260922-1038-prior-mapping.md",
+    "260922-1045_*_spec-prior-nomenclature-plugin-source.md",
+    "260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+    "260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md",
+    "260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md",
+    "260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md",
+    "260922-1059_*_which-english-name-does-stilwerk-take-and-when.md",
+    "260922-1059_*_does-guard-state-become-a-prior-runtime-record-or-go.md",
+    "260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md",
+    "260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md",
+    "260830-1816_*_do-the-frozen-stores-enter-the-sweeps-and-the-checkers-corpus-the-way-the-live-tree-does.md",
+    "260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md",
+    "260830-1841_*_where-may-a-store-prefixed-citation-begin-and-which-rooting-forms-does-the-grammar-name.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-22",
+        "Status": "Decided (two questions ruled by the user on 2026-09-22; the defaults in the last section stand unless vetoed)",
+        "Source": "Work item `260922-1038-prior-mapping.md`, Directive part (2): \"spezifiziere und plane die migrationstools, so dass consumer an die neue nomenklatur angepasst werden können\". The authoritative input is `nomenclature.md` in this container, above all `### Fusion workbench migration` and its closing sentence, and `## Naming rules for new work` rule 8. Part (1), the plugin source, is `260922-1045_*_spec-prior-nomenclature-plugin-source.md` in the same container; this spec builds on its rulings and names the boundary.",
+        "Cross-references": "260922-1038-prior-mapping.md, nomenclature.md (this container), 260922-1045_*_spec-prior-nomenclature-plugin-source.md, 260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md, 260922-1059_*_what-becomes-of-memos-which-the-concept-has-no-type-for.md, 260922-1059_*_is-the-frozen-history-store-audit-evidence-or-typed-record-history.md, 260922-1059_*_is-the-checkout-registry-a-fusion-reference-or-a-prior-authority-source.md, 260922-1059_*_which-english-name-does-stilwerk-take-and-when.md, 260922-1059_*_does-guard-state-become-a-prior-runtime-record-or-go.md, 260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md, 260910-2145_*_does-the-container-store-keep-the-directory-name-circles.md, 260830-1816_*_do-the-frozen-stores-enter-the-sweeps-and-the-checkers-corpus-the-way-the-live-tree-does.md, 260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md, 260830-1841_*_where-may-a-store-prefixed-citation-begin-and-which-rooting-forms-does-the-grammar-name.md",
+        "Survey commit": "`6420c14e`, working tree of 2026-09-22 11:03. Every count below names the command that produced it, and the counts are evidence for scope, not acceptance figures."
+      },
+      "step_marks": {},
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "68271c8014b6d2198a32d717064235505f32179a"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-1038-prior-mapping/plans/260922-1106_o_spec-prior-nomenclature-consumer-migration.md",
+      "sha256": "sha256:3a1d2a327bef9a20ae46542b387c3bf252c26b3f8141b113857066ff0ddf9a71",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "fae13f3f-b8d5-4e37-b72c-f21caa1fd0f4",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md"
+  },
+  "filed_by": {
+    "actor": "legacy-unknown",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Date": "2026-09-17",
+        "Status": "Draft",
+        "Source": "The work item `260917-2253-depends-on-edges-proposed-and-confirmed.md`, dispatched by the"
+      },
+      "step_marks": {},
+      "unanchored_marks": {
+        "line 140": "DONE",
+        "line 142": "DONE",
+        "line 144": "DONE",
+        "line 146": "DONE",
+        "line 149": "DONE"
+      },
+      "derived": {
+        "/filed_by/actor": {
+          "rule": "unknown"
+        },
+        "/filed_by/person": {
+          "rule": "git-first-add",
+          "evidence": "5919fbdf6d4341225398f635d6052f11e80a9ade"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260917-2253-depends-on-edges-proposed-and-confirmed/plans/260917-2256_o_spec-depends-on-edges-proposed-and-confirmed.md",
+      "sha256": "sha256:0f3fcf86c674f6dd0679344ec0deca3e137caed56f806d11ef68848c41bd56a2",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": null
+  }
+}

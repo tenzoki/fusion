@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "3e1ba624-7bb1-4156-b8c9-a6b94ecb64d4",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260928-1338-json-control-data-and-markdown-artefacts.md",
+    "260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md",
+    "260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+    "260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 260928-1341_*_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md, 260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md, 260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md",
+      "sha256": "sha256:40b7d3d324cf608c1cc3b7803244de9430af35dbc937ba4b8a4976c21eca673f",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260928-1550_a_which-process-boundary-and-shipped-form-does-the-codec-take.md",
+      "sha256": "sha256:40b7d3d324cf608c1cc3b7803244de9430af35dbc937ba4b8a4976c21eca673f",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

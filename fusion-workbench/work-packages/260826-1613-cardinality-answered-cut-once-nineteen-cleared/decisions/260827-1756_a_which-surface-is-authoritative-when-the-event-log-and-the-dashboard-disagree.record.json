@@ -1,0 +1,38 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "56456233-d58c-45d9-af98-f53108633568",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_a_which-surface-is-authoritative-when-the-event-log-and-the-dashboard-disagree.md"
+  },
+  "filed_by": {
+    "actor": "planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "`260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md` `## What to consider` item 2 (the question, left unfiled there); `hooks/lib/orchestrator-events.ts` (the machine-written rows since v10.8.0; `turn_start`/`turn_end` stay prompt-emitted); `bin/fusion-events` (reads the log); `bin/monitor` (renders it); `bin/fusion-review-coverage` (anchors on git); `rules/workbench-tracking.md` `## The four classes` (the log travels, the dashboard does not)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_a_which-surface-is-authoritative-when-the-event-log-and-the-dashboard-disagree.md",
+      "sha256": "sha256:c25c08af4ccf8b87c685aa4f5693e88b2b4404973675ae6a6f6e4b4812131a44",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "260827-1749-orchestrator-session.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

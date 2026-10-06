@@ -1,0 +1,42 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "02978515-c2a3-44cf-ab60-bc52f60b9034",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-2330_o_does-the-shapers-portfolio-activation-mode-write-a-new-spec-or-revise-in-place.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260907-2321-shaper-fourth-rework-after-the-break-even.md",
+    "260907-0820_*_spec-bounded-executor-dispatches.md",
+    "260907-1450_*_plan-bounded-executor-dispatches.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "o",
+      "head": {
+        "Domain": "code",
+        "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "`260907-2321-shaper-fourth-rework-after-the-break-even.md` (the run that named the departure), `260907-0820_*_spec-bounded-executor-dispatches.md` (the spec revised in place four times), `260907-1450_*_plan-bounded-executor-dispatches.md` (whose `**Spec:**` field a rename would break)"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260906-2258-bounded-executor-dispatches/decisions/260907-2330_o_does-the-shapers-portfolio-activation-mode-write-a-new-spec-or-revise-in-place.md",
+      "sha256": "sha256:a74fa24748c731cbf896f79e7bbb543ed84852a6770cc584a2f76a7082fd15c0",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

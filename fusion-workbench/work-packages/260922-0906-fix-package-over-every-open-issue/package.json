@@ -1,0 +1,56 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "3757d5e0-91f3-4d64-b6c2-fe49faf49904",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "done",
+  "claim": {
+    "checkout_id": "5e8248d7",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": null
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260922-0906-fix-package-over-every-open-issue/260922-0906-fix-package-over-every-open-issue.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": {
+    "class": "legacy-completed",
+    "reason": "",
+    "evidence": []
+  },
+  "provenance": {
+    "source": "legacy-terminal",
+    "legacy_fields": {
+      "file_marker": null,
+      "head": {
+        "Domain": "code",
+        "Status": "done",
+        "Claim": "5e8248d7 — Kai Stalmann <ks@qantr.com>, 260922-0906",
+        "Mode": "autonomous",
+        "Active spec/plan": "260922-0922_*_the-51-open-issues-at-451bb312-worked-autonomously-as-one-package.md (the plan)",
+        "Filed by": "user, Kai Stalmann <ks@qantr.com>"
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260922-0906-fix-package-over-every-open-issue/260922-0906-fix-package-over-every-open-issue.md",
+      "sha256": "sha256:ab864a72ecd66b45af67e150af80e0b848d049780f4c175386c561308ed31f18",
+      "kind": "other"
+    }
+  },
+  "extensions": {}
+}

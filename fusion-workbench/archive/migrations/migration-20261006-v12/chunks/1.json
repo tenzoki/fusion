@@ -1,0 +1,1093 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "chunk",
+  "migration_id": "migration-20261006-v12",
+  "chunk": 1,
+  "writes": [
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md",
+      "from": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:64028fe89ce6a8584bcd4ef7869c174672198becb5449b27bda9fae514ac1169"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+      "from": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:66e9aa3c2a77e59d33a09139d2b60d2233ddeceebd6f06e6d62e7d78c14644a5"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md",
+      "from": "shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:420d2c5dff4054c373b8da33c2387bb9e4be8f081eccad44b14c2ce8adfdc014"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md",
+      "from": "shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:2546c56e7cdea9b045869c79244575f671c95e0098243afa63639968d52f1f30"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "from": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:77954707ab925e3085e271dd3299d4fa459e1ee6b0ee93f14e597a3c6de4be2a"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+      "from": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:b8d0a2a918b2d146990b411501d3b2aad48332c01c6ca3465b3327dda060cce4"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.md",
+      "from": "shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:610538ad0b06fea94bcd604e55d9c8ec9d97c39a15995de930acf3ff2ef0b221"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md",
+      "from": "shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:7827c9d69d557a8eb536cd83496d9e1ff34380737c958344e0efe4fc48babba9"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md",
+      "from": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:d32709b14d89469386601768bc1e02993cbf0d2b85ed2dbb3b1acd3d987cb79a"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md",
+      "from": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:9c5f35c99b67bf0972a9868296f95177ef6c78836dc885cb9071baf9f8b0c8ef"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "from": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:8a8e17dc85a41aba3b38483298a24455e865772cea56530a60720fcf6805b776"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md",
+      "from": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:a8c777216545929974e8bed3e940098b6ed0b74d6a89c701d54ce5189c74fec3"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md",
+      "from": "shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:89f1152a87a19fc7bdee7ff6c56ea100bfaa3c432c0a5dc6591037fb5f00f03f"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+      "from": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:9681df37d2d6a4df275ee9cf4af07dae5c063584084458cf6c64b5034f2de340"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+      "from": "shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:7a4844cd49c959539c876fbe85aef0a746eb722b604d0b1db6e73855765a7efb"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+      "from": "shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:b5397a1d2c6bd49f9ae832c1ecb53ef668466a3a4543a8b54579d6647ee10a71"
+    },
+    {
+      "kind": "original",
+      "path": "archive/migrations/migration-20261006-v12/originals/shared/issues/260928-1520_o_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.md",
+      "from": "shared/issues/260928-1520_o_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.md",
+      "source_sha256": null,
+      "after_sha256": "sha256:0ee6e9a08d8b070e56d0720b81a9e423c653d3e5d4e5ba430d781fdd2d228d93"
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:2cf99a04c3a862468eab24c02fb1328b12fc38425d3313f4c294094bb43be1b8",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "5b4ecef9-0953-4a0d-9ca6-46375e211953",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md"
+        },
+        "filed_by": {
+          "actor": "reconciler",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "open",
+              "Filed by": "reconciler (workbench-wide pass 260806-1152; the question was embedded in `archive/260817-1907-safe-cleanup-scoped/260717-0032_*_stash-manifest-field-count-says-nine-lists-ten.md` since 2026-07-17 and never filed separately)",
+              "Cross-references": "`rules/workbench-stash-and-lock.md` (ten-field manifest schema), `skills/circle-stash/SKILL.md`, `skills/circle-pop/SKILL.md`"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md",
+            "sha256": "sha256:64028fe89ce6a8584bcd4ef7869c174672198becb5449b27bda9fae514ac1169",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260811-0752-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md",
+      "source_sha256": "sha256:64028fe89ce6a8584bcd4ef7869c174672198becb5449b27bda9fae514ac1169",
+      "after_sha256": "sha256:0ba68dffb152f2414b1ce3725cd39c319a177d748cec9c3b222976eb77ddb03b",
+      "deletions": [
+        {
+          "offset": 123,
+          "length": 17
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:f090d71747e7c27711bb934b682dd34e77f31a08ea449f5bdb3ddbbde673b356",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "8e385eeb-f8e0-494c-b4df-5ae529dfbd6d",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "orchestrator (session `260810-0844-orchestrator-session.md`, Turn 3 — from a residual the T14 executor measured and correctly declined to patch)",
+              "Cross-references": "`260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md` (round 1, closed by `38fe341`); `260810-0939_*_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md` (round 2, closed by `c546ef0`); `hooks/lib/__tests__/fusion-count-sources.test.ts`; `bin/fusion-count-sources`; `rules/critical-stance.md` §4"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+            "sha256": "sha256:66e9aa3c2a77e59d33a09139d2b60d2233ddeceebd6f06e6d62e7d78c14644a5",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260810-0844-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md",
+      "source_sha256": "sha256:66e9aa3c2a77e59d33a09139d2b60d2233ddeceebd6f06e6d62e7d78c14644a5",
+      "after_sha256": "sha256:dcd7369283952bdd6010c889695e9cf1730d9feae133cf1874bc5929b603139e",
+      "deletions": [
+        {
+          "offset": 123,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:a441b4a70e27a70217894f057c80562f74ba202d91124072382db5e6032460de",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "e5137487-8940-4ff6-af90-781082f3156c",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [
+          "260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "open",
+              "Filed by": "orchestrator (session `260810-1402`)",
+              "Cross-references": "`260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` (this record carries its parts b and c); `archive/260817-1907-safe-cleanup-scoped/260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance that produced part a1, now closed by `26ea3c3`)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md",
+            "sha256": "sha256:420d2c5dff4054c373b8da33c2387bb9e4be8f081eccad44b14c2ce8adfdc014",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260811-0752-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md",
+      "source_sha256": "sha256:420d2c5dff4054c373b8da33c2387bb9e4be8f081eccad44b14c2ce8adfdc014",
+      "after_sha256": "sha256:7092265853cf986b6aefcde1d9f51b8bbdd29cea73d9e25b9dab672ada8a8a73",
+      "deletions": [
+        {
+          "offset": 156,
+          "length": 17
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:2f767a727468f298996ebc921a909332ee19d16db0792fa29a9c3b2f6f9287b2",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "c4878fb2-9f6d-4631-9041-a23cbf842ea4",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "on the reviewer's recommendation"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "open",
+              "Filed by": "orchestrator (session `260810-1402`), on the reviewer's recommendation",
+              "Cross-references": "`260810-1632-coderev-turn-1-range-430d73a-to-head.md` (the pass that named the pattern); `archive/260817-1907-safe-cleanup-scoped/260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`; `260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`; `260810-1632_*_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`; `archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md",
+            "sha256": "sha256:2546c56e7cdea9b045869c79244575f671c95e0098243afa63639968d52f1f30",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260811-0752-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md",
+      "source_sha256": "sha256:2546c56e7cdea9b045869c79244575f671c95e0098243afa63639968d52f1f30",
+      "after_sha256": "sha256:60d139a76d5076ed542ddd3eeceb7b03e1508db98730ba1f63ea0e8094122912",
+      "deletions": [
+        {
+          "offset": 132,
+          "length": 17
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:ba6093e2e1ae20a1f97bf80bd1c3ad2262ce0401ad2249c5bc59efe8712de99a",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "d433aaf9-b123-4678-80c0-24129df73cca",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "orchestrator (on the executor of the drift-lint residuals task of session `260810-1646-orchestrator-session.md`)",
+              "Cross-references": "`260810-1918_*_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; the queued frozen-state task, filed as `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+            "sha256": "sha256:77954707ab925e3085e271dd3299d4fa459e1ee6b0ee93f14e597a3c6de4be2a",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260810-1646-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md",
+      "source_sha256": "sha256:77954707ab925e3085e271dd3299d4fa459e1ee6b0ee93f14e597a3c6de4be2a",
+      "after_sha256": "sha256:f33a2d97728bb8d171ea2d1b2f00c58cb09d9b9124f44d422b6e0afe78e7f5e6",
+      "deletions": [
+        {
+          "offset": 134,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:aa05014009e80eb1d165d940d63b280004c0aa32d062c4bccf003b79dff9c1c1",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "8d5453b7-11a5-459f-88a5-448351e3a850",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md"
+        },
+        "filed_by": {
+          "actor": "coder",
+          "person": "while closing archive/260817-1907-safe-cleanup-scoped/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "open",
+              "Filed by": "coder, while closing `archive/260817-1907-safe-cleanup-scoped/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`",
+              "Cross-references": "`archive/260817-1907-safe-cleanup-scoped/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` (the drift that raised the question); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:347` (the lint that watches the table's rows for existence and not for content); `hooks/lib/domain-cascade.ts` `describeReach()` + `README-hooks.md` `## How far the domain-cascade reach gate reaches` (the working precedent); `260811-1141_*_…` (the fix whose four synchronised edits missed the fifth site)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+            "sha256": "sha256:b8d0a2a918b2d146990b411501d3b2aad48332c01c6ca3465b3327dda060cce4",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260811-0752-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md",
+      "source_sha256": "sha256:b8d0a2a918b2d146990b411501d3b2aad48332c01c6ca3465b3327dda060cce4",
+      "after_sha256": "sha256:3cf777ce20083e9e45af3885e64099680e27817ddd4cef8dfbca7f0f4e6c8520",
+      "deletions": [
+        {
+          "offset": 167,
+          "length": 17
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:b6bb0966dc0d31c68f889631576e961a3bf858ef43e4eca2fed3a9f15119fd01",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "5cf538dd-b9c5-4fd0-a587-9f65523ff584",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "orchestrator (on the user's request)",
+              "Cross-references": "`260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` finding 3 and recommendation (c); the three records transferred by hand from the KRK project on 260811 (`260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`, `260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`, and the witness merged into `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md`)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.md",
+            "sha256": "sha256:610538ad0b06fea94bcd604e55d9c8ec9d97c39a15995de930acf3ff2ef0b221",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260816-1500-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260812-0254_a_how-does-a-consuming-project-file-a-defect-against-the-plugin.md",
+      "source_sha256": "sha256:610538ad0b06fea94bcd604e55d9c8ec9d97c39a15995de930acf3ff2ef0b221",
+      "after_sha256": "sha256:aa1d993458844e542751cc8208bf7429595505617d9f4c601c90efafd06ee644",
+      "deletions": [
+        {
+          "offset": 87,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:262300b3f6c1663963d64e389f1847bd95ea2f3c9a9d3b72f862d5670b197deb",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "1bdb2e14-92e9-463e-8cce-214f4d7ea470",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "orchestrator (on the user's request)",
+              "Cross-references": "`rules/fusion-workbench-conventions.md` `## Path Resolution`, whose contract makes every emitted path workbench-relative except `WORKBENCH`; `bin/fusion-paths`"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md",
+            "sha256": "sha256:7827c9d69d557a8eb536cd83496d9e1ff34380737c958344e0efe4fc48babba9",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260816-1500-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260812-0254_a_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md",
+      "source_sha256": "sha256:7827c9d69d557a8eb536cd83496d9e1ff34380737c958344e0efe4fc48babba9",
+      "after_sha256": "sha256:03cd1366185af3cefca7b38f52fbffa1b88dc8ec20f65afcd90861a90f3670f3",
+      "deletions": [
+        {
+          "offset": 92,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:5010a4e1c12581ab559f396c6ef98b1e9b5a30cc49c8bf5e6e8652fda84e8289",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "b12c8b9f-068b-4cc9-bce0-e782ad1137b1",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "orchestrator (raised by the user)",
+              "Cross-references": "`skills/help/SKILL.md`; a defect record about the user-facing documentation lagging two releases and still describing a removed guard, cited here at the stamp `260813-0825` — no file with that slug has ever existed and the intended target is not recoverable, measured in `260814-1332-curator-run.md` and re-filed as a defect on 2026-08-19; `bin/fusion-source-root`; `bin/fusion-paths`; `bin/fusion-rules`"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md",
+            "sha256": "sha256:d32709b14d89469386601768bc1e02993cbf0d2b85ed2dbb3b1acd3d987cb79a",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md",
+      "source_sha256": "sha256:d32709b14d89469386601768bc1e02993cbf0d2b85ed2dbb3b1acd3d987cb79a",
+      "after_sha256": "sha256:acfa0c4e4de3ef3fd2a4c7b1082b5873d4bd734e90741e18b6f86047d8e50bd2",
+      "deletions": [
+        {
+          "offset": 117,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:1a62152b11bcbe0b6db88d3de07dd285a89b50c57802fb97bf411456655ffc02",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "4004a285-6700-4330-b987-545654132fcc",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md"
+        },
+        "filed_by": {
+          "actor": "reconciler",
+          "person": null
+        },
+        "references": [
+          "260815-1455_*_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md",
+          "260814-2017_*_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md",
+          "260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md",
+          "260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md",
+          "260814-2306-orchestrator-session.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "reconciler",
+              "Cross-references": "`260815-1455_*_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`, `260814-2017_*_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`, `260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`, `260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`, `260814-2306-orchestrator-session.md` (three `## Coherence` sections)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md",
+            "sha256": "sha256:9c5f35c99b67bf0972a9868296f95177ef6c78836dc885cb9071baf9f8b0c8ef",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260816-1500-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md",
+      "source_sha256": "sha256:9c5f35c99b67bf0972a9868296f95177ef6c78836dc885cb9071baf9f8b0c8ef",
+      "after_sha256": "sha256:0052c546ba60f450a951574ed754eece019181189f270879f08dea6fab914f90",
+      "deletions": [
+        {
+          "offset": 92,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:0a1b91ea777ffb449cf3499fab19c9626cedf5238a88e032787ddce26c89ff46",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "1b60d8bd-fc1e-4506-9379-fcaf16f76626",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [
+          "260815-2147-orchestrator-session.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "orchestrator",
+              "Cross-references": "hooks/lib/__tests__/surface-growth-bound.test.ts (`## Updating the golden`), hooks/lib/__tests__/fixtures/surface-growth.golden, hooks/lib/__tests__/helpers/growth-bound.ts, 260815-2147-orchestrator-session.md (`## Turn 1 — a finding that changed the session's rhythm`)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+            "sha256": "sha256:8a8e17dc85a41aba3b38483298a24455e865772cea56530a60720fcf6805b776",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260816-1500-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260815-2322_a_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md",
+      "source_sha256": "sha256:8a8e17dc85a41aba3b38483298a24455e865772cea56530a60720fcf6805b776",
+      "after_sha256": "sha256:8ff519d793b524957ea427ae1a2ed2cd8b913fa0818648bdd5237aec4721b8c8",
+      "deletions": [
+        {
+          "offset": 101,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:d3e4f1e1d738d8e8db75524bcf23d9a16ff7239b3b068e3212904e00be260bfc",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "5f0e45ef-857e-4cff-bccb-64af3468542b",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md"
+        },
+        "filed_by": {
+          "actor": "reconciler",
+          "person": null
+        },
+        "references": [
+          "260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "reconciler",
+              "Cross-references": "`260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md` (the closure that deferred this question and filed no successor); `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the first application); `hooks/lib/__tests__/reference-resolution-lint.test.ts` `BASELINE` (the third)"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md",
+            "sha256": "sha256:a8c777216545929974e8bed3e940098b6ed0b74d6a89c701d54ce5189c74fec3",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260816-1500-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md",
+      "source_sha256": "sha256:a8c777216545929974e8bed3e940098b6ed0b74d6a89c701d54ce5189c74fec3",
+      "after_sha256": "sha256:165e6669bd52db1e013ad58320faeab4c521ff82a29d7b144749687aae3b2f4c",
+      "deletions": [
+        {
+          "offset": 102,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:d92e3919f7b80dd00d6a50e63d7a7825ddd5dce3c98ac7dd8462f89be098442f",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "1ccae1ec-1e5f-4d91-a1f5-3ea20c6494da",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md"
+        },
+        "filed_by": {
+          "actor": "analyst",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "analyst",
+              "Cross-references": "`260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `archive/260817-1907-safe-cleanup-scoped/260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md",
+            "sha256": "sha256:89f1152a87a19fc7bdee7ff6c56ea100bfaa3c432c0a5dc6591037fb5f00f03f",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260816-0804-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md",
+      "source_sha256": "sha256:89f1152a87a19fc7bdee7ff6c56ea100bfaa3c432c0a5dc6591037fb5f00f03f",
+      "after_sha256": "sha256:9a4d299a72322737d563f4c602a14400ebc8811ba9ca737af7a449c4cc2caffe",
+      "deletions": [
+        {
+          "offset": 107,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:c710adf675dc9d96a10bb518bebb847a5ed68b2616c1cce2d14b08de70698134",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "22d95860-b3ba-4d83-bf89-00829173424a",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": null
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Status": "answered",
+              "Filed by": "orchestrator (on the user's answer, as a prerequisite to `260816-0719`)",
+              "Cross-references": "`260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md` (the decision this unblocked); `install.sh`; `CLAUDE.md` `### HTTPS installer` and `## Release process` step 5"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+            "sha256": "sha256:9681df37d2d6a4df275ee9cf4af07dae5c063584084458cf6c64b5034f2de340",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": "260816-1500-orchestrator-session.md",
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "rewrite",
+      "path": "shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md",
+      "source_sha256": "sha256:9681df37d2d6a4df275ee9cf4af07dae5c063584084458cf6c64b5034f2de340",
+      "after_sha256": "sha256:7bd070ec6a7e3d7c7b5fe3105e698c2e48cc7a41007b70860d60cf24b761a1dd",
+      "deletions": [
+        {
+          "offset": 83,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:b85f3b87d35534d760f73c2b29143b75000d22cc4f44cba9f5bb5a86020ca15b",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "8c10de16-7ea3-4a73-b3e8-f3132556736c",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260927-2304-fusion-dual-host-design-review.md",
+          "260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md",
+          "260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260927-2304-fusion-dual-host-design-review.md, 260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md, 260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+            "sha256": "sha256:7a4844cd49c959539c876fbe85aef0a746eb722b604d0b1db6e73855765a7efb",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
+            "sha256": "sha256:7a4844cd49c959539c876fbe85aef0a746eb722b604d0b1db6e73855765a7efb",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:46957f7a689e10e5026e55da6eef349175a9e77bd9369765ad8da89d8c389acb",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "3a139cc8-12a7-4a66-8f87-ef455e656aa0",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "decision",
+        "narrative": {
+          "path": "shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [
+          "260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md",
+          "260927-2304-fusion-dual-host-design-review.md",
+          "260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md",
+          "260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md"
+        ],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "a",
+            "head": {
+              "Domain": "code",
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>",
+              "Cross-references": "260920-2157_*_may-the-orchestrator-file-a-work-item-when-the-user-instructs-it.md, 260927-2304-fusion-dual-host-design-review.md, 260922-1059_*_is-a-record-in-issues-a-candidate-or-an-admitted-work-item.md, 260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md"
+            },
+            "derived": {
+              "/control/answer_ref": {
+                "rule": "answer-ref-self",
+                "evidence": "unresolvable-answer-line"
+              }
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+            "sha256": "sha256:b5397a1d2c6bd49f9ae832c1ecb53ef668466a3a4543a8b54579d6647ee10a71",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "answered",
+          "answer_ref": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
+            "sha256": "sha256:b5397a1d2c6bd49f9ae832c1ecb53ef668466a3a4543a8b54579d6647ee10a71",
+            "kind": "decision"
+          },
+          "implementation_ref": null,
+          "superseded_by": null,
+          "deferral": null
+        }
+      }
+    },
+    {
+      "kind": "control",
+      "path": "shared/issues/260928-1520_o_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.record.json",
+      "source_sha256": null,
+      "after_sha256": "sha256:749817e63135228dea1f4a79b38bd899a89d136cc831c05a77813c58944a61f8",
+      "control": {
+        "schema": "fusion.record/v1",
+        "id": "dd9f6b15-bcbc-487b-9c39-18cc2b82875f",
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "kind": "issue",
+        "narrative": {
+          "path": "shared/issues/260928-1520_o_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.md"
+        },
+        "filed_by": {
+          "actor": "orchestrator",
+          "person": "Kai Stalmann <ks@qantr.com>"
+        },
+        "references": [],
+        "provenance": {
+          "source": "imported",
+          "legacy_fields": {
+            "file_marker": "o",
+            "head": {
+              "Filed by": "orchestrator, Kai Stalmann <ks@qantr.com>"
+            }
+          },
+          "backup": {
+            "path": "archive/migrations/migration-20261006-v12/originals/shared/issues/260928-1520_o_the-monitor-wildcard-bind-case-times-out-on-a-host-its-own-probe-declares-usable.md",
+            "sha256": "sha256:0ee6e9a08d8b070e56d0720b81a9e423c653d3e5d4e5ba430d781fdd2d228d93",
+            "kind": "other"
+          }
+        },
+        "extensions": {},
+        "control": {
+          "state": "open",
+          "disposition": null
+        }
+      }
+    }
+  ]
+}

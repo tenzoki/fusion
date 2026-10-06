@@ -1,0 +1,13 @@
+{
+  "schema": "fusion.workbench/v1",
+  "id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "required_features": [
+    "json-control-v1"
+  ],
+  "migration": {
+    "id": "migration-20261006-v12",
+    "source_layout": "fusion-v12",
+    "receipt": "archive/migrations/migration-20261006-v12/receipt.json"
+  },
+  "extensions": {}
+}

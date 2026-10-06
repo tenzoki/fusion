@@ -1,7 +1,6 @@
 # Implementation Plan: the checkout registry names each instance, and one person's identities count as one
 
 **Date:** 2026-09-04
-**Status:** Complete except step 15, which belongs to the next session after `fusion --update`
 **Spec:** none; the Directive is `## Directive` of `260904-1619-tracked-checkout-registry-names-each-instance`, written by the shaper into the record, and it is not restated here
 **Decidability:** Two questions carry the mechanism, and they have opposite answers. *Given two event lines, is this one person or two?* Decidable, from a table a human wrote: each registry entry states one git identity and the person who claims it, so the classification becomes `canon(g) = map[g] ?? g` over the git identities the log carries, and `other_people` is the size of the set of canonical values rather than of raw strings. The function is total over every input the log can hold, and on an empty map it is the identity function, so a project with no entries gets the figures HEAD gives, from the same code path rather than from a fallback branch. *Did this checkout previously hold a different identifier?* **Not decidable**, and the plan says so rather than answering it. After `git clean -xdf` no local file distinguishes a first mint from a re-mint, and no tracked surface says which of the identifiers it carries belonged to this tree; the registry entry does not help, because the pointer that named it is the file that was deleted. So the repair changes mechanism instead of strengthening the claim: the mint stops being silent and reports two facts that *are* decidable, that the file did not exist before this call, and how many other checkout identifiers this workbench already carries, leaving the inference to the human whose tree it is. Step 10's acceptance criterion is that stated outcome and not a detection.
 
@@ -124,7 +123,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
 
 ## Implementation Steps
 
-1. [DONE] **Gate: does a registry entry carry hostname, account name and folder path?**
+1. **Gate: does a registry entry carry hostname, account name and folder path?**
    - Executor: `analyst`
    - **Human gate:** yes, and the gate is the decision record's own option set rather than the Proceed / Skip / Defer / Modify pattern, because the options are already written and the answer decides an interface rather than whether to run a task. Put `260904-1058_*_does-a-registry-entry-carry-hostname-account-name-and-folder-path.md` to the user as it stands: its four options, its recommendation of option 2, and the three values measured in this checkout that option 2 would publish (`k1i9`, `k1`, `/Users/k1/Projects/productive/fusion`). Do not compose a fifth option.
    - Files: this Circle's copy of `260904-1058_*_does-a-registry-entry-carry-hostname-account-name-and-folder-path.md`, renamed from `_o_` to `_a_`
@@ -132,7 +131,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: `ls` shows the record under `_a_`, its `Answered:` line names a history file that exists, and the added sentence names exactly one of the four options. If the user defers, the record is renamed `_d_` and step 2 proceeds under option 1, which is the only answer that requires nothing.
    - Dependencies: none
 
-2. [DONE] **`bin/fusion-checkout-name`, the registry's only writer and principal reader**
+2. **`bin/fusion-checkout-name`, the registry's only writer and principal reader**
    - Executor: `coder`
    - Files: `bin/fusion-checkout-name` (new, bash, executable), `hooks/lib/__tests__/fusion-checkout-name.test.ts` (new), `.gitignore` (one `!bin/fusion-checkout-name` line), `CLAUDE.md` (one Layout-table row)
    - Changes: a self-contained bash program in the shape of `bin/fusion-identity` and `bin/fusion-cadence-anchor`. It resolves the workbench through its sibling `bin/fusion-workbench-root` and this checkout's hex through its sibling `bin/fusion-identity`; it never calls back into anything that calls it. Store: `<workbench>/shared/checkouts/<8hex>.md`, created on first `register` and never otherwise. Subcommands:
@@ -145,14 +144,14 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: `bash bin/fusion-checkout-name --help` prints the usage block and exits 2; the new test passes; `git ls-files bin/` equals the directory listing (`committed-dist.test.ts`); `derivable-enumerations-lint` and `reference-resolution-lint` stay green, the latter meaning every record this header cites resolves in the storeless form.
    - Dependencies: 1
 
-3. [DONE] **The layout tree and the four-class partition gain the store, and each still tiles**
+3. **The layout tree and the four-class partition gain the store, and each still tiles**
    - Executor: `coder`
    - Files: `rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`, the tree and the paragraph on what `shared/` holds), `rules/workbench-tracking.md` (`## The four classes`, the R1 row)
    - Changes: `checkouts/` joins the `shared/` block of the tree with a one-line comment saying it is written by `bin/fusion-checkout-name` and by nothing else; the paragraph that lists the four shared-only stores gains it as a fifth, with its reason, which is that a checkout is not produced by executing a Directive and so cannot originate in a Circle. In `rules/workbench-tracking.md` the R1 row's entry list gains `shared/` unchanged (the store is inside `shared/`, so the row already covers it) and one sentence states explicitly that the new store is R1 by the same reasoning as the shared decision store, one writer per file by construction, so the partition owes no exception. Neither file defines the entry grammar; both cite the helper header for it.
    - Acceptance: the diff adds the store to the tree and to the `shared/`-only paragraph; a reader can point at exactly one class for `shared/checkouts/` and at no entry of the tree that falls in none; the always-on rule core measures under its bound, with 19 115 bytes free before this step and the step costing under 1 200.
    - Dependencies: 2
 
-4. [DONE] **`presence` counts one person as one person, and the empty registry runs the same code**
+4. **`presence` counts one person as one person, and the empty registry runs the same code**
    - Executor: `coder`
    - Files: `hooks/lib/events-query.ts`, `hooks/events-query.ts`, `bin/fusion-events`, `hooks/lib/__tests__/fusion-events.test.ts`, `hooks/dist/` (rebuilt)
    - Changes: `PresenceOptions` gains `identityMap: Record<string, string>`, a map from a git identity to the person who claims it, and `renderParty` gains an `aliasOf: (hex: string) => string | null`. `measurePresence` applies `canon(g) = identityMap[g] ?? g` to `identity.person` and to `line.person` at the classification (lines 260-266) and at the `people` set (line 293), and nowhere else: the party key, the sort and the `checkouts` set stay on the raw values, because they are about lines rather than about people. `renderParty` appends a sixth TAB field carrying the alias or `-`. The wrapper builds both from one `bin/fusion-checkout-name roster` call, guarded with `[ -x ]`, exported as `FUSION_EVENTS_ROSTER` **before** the early `exec` as well as after it, so the SessionStart-export path is not the one that silently loses the map; `hooks/events-query.ts` parses that string and passes both in. `hooks/lib/events-query.ts` opens no file and runs no subprocess, which is the property its own header claims and this step preserves.
@@ -161,7 +160,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: `npm test` green; `bin/fusion-events presence` in this tree, which has no registry entries yet, prints the same stdout it prints at HEAD; the diff shows no new file read inside `hooks/lib/events-query.ts`.
    - Dependencies: 2
 
-5. [DONE] **`/fusion:setup` registers this checkout, once, and reports what it wrote**
+5. **`/fusion:setup` registers this checkout, once, and reports what it wrote**
    - Executor: `coder`
    - **Human gate:** no. The step asks the *user* a question at run time; it needs no approval to be written.
    - Files: `skills/setup/SKILL.md` (Step 0i, and one clause in Step 0c)
@@ -171,28 +170,28 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: the surface-growth test passes with no baseline edited; running `./bin/fusion-checkout-name register --alias <a> --person <p>` by hand in this tree produces `shared/checkouts/5e8248d7.md` carrying the six fields; the diff shows the false sentence rewritten; `path-literal-lint` stays green, meaning the skill body names the helper and never the store path.
    - Dependencies: 2, 4
 
-6. [DONE] **`/fusion:next` names the holder's checkout instead of its hex**
+6. **`/fusion:next` names the holder's checkout instead of its hex**
    - Executor: `coder`
    - Files: `skills/next/SKILL.md` (Step 6.1)
    - Changes: the refusal message resolves the claim's hex through `bin/fusion-checkout-name resolve`, guarded with `[ -x ]`, and reads "held by <person> on <alias>" where an entry exists and exactly what it reads today where none does. **The comparison itself is untouched**, and the step adds one sentence saying so and why: it runs on the hex and on the person as written, both values the two sides hold locally, and a comparison depending on a pulled file would answer differently before and after a fetch.
    - Acceptance: the diff shows a rendering change and no change to any test in the claim comparison; the surface-growth test passes.
    - Dependencies: 2
 
-7. [DONE] **The monitor header carries this checkout's name**
+7. **The monitor header carries this checkout's name**
    - Executor: `coder`
    - Files: `bin/monitor`
    - Changes: a reader beside `_read_checkout_id()` that reads `<workbench>/shared/checkouts/<own hex>.md` and returns the first `**Alias:**` value, cached like the identifier is and re-read per request so an alias written mid-session is honoured on the next poll. Three branches, not two: the header shows `<alias> · <hex>` when an entry for this checkout carries an alias, the hex alone when the registry exists but holds no entry for this checkout, and exactly what it renders at HEAD when no registry exists at all. Its docstring states why the file is read directly rather than through the helper (a verbatim copy served out of the workbench, with no reliable plugin root at poll time, reading `.checkout-id` directly today for the same reason) and cites the helper header as the grammar's authoritative home. **The own-checkout filter at `bin/monitor:1350-1357` is not touched**, and the docstring says so: it reads a class L file and must not acquire a dependency on a pulled one.
    - Acceptance: with an entry carrying an alias present the header renders `<alias> · <hex>`; with a registry present but no entry for this hex it renders the hex alone; with no registry at all it renders exactly what it renders at HEAD; `grep -n "_read_checkout_id" bin/monitor` shows the filter still calling it; `monitor-warnings-panel.test.ts` stays green.
    - Dependencies: 2
 
-8. [DONE] **SessionStart exports `FUSION_ALIAS` beside the three values it already exports**
+8. **SessionStart exports `FUSION_ALIAS` beside the three values it already exports**
    - Executor: `coder`
    - Files: `hooks/hooks.json` (the fifth SessionStart command), `hooks/lib/__tests__/hooks-wiring.test.ts`
    - Changes: the command that already runs `bin/fusion-identity` and seds `PERSON=` and `CHECKOUT=` gains one clause: where `$c` is non-empty and `bin/fusion-checkout-name` is executable, run `resolve "$c"`, sed `alias=`, and append `export FUSION_ALIAS=%q` when it is non-empty. Every existing failure path is unchanged, including the trailing `|| true` that keeps a failed identity read from failing the hook. No fourth command is added: one process already holds the hex, and a second run of `bin/fusion-identity` would evaluate the criterion twice.
    - Acceptance: `hooks-wiring.test.ts` asserts the fifth command mentions `fusion-checkout-name`, guards it with `[ -x ]`, and still exports the two values it exported before; a session started in a tree with no entry exports no `FUSION_ALIAS` rather than an empty one.
    - Dependencies: 2
 
-9. [DONE] **Gate: does the identity helper's exit-1 halt survive a registry that can name the person?**
+9. **Gate: does the identity helper's exit-1 halt survive a registry that can name the person?**
    - Executor: `analyst`
    - **Human gate:** yes, on the same terms as step 1. Put `260904-1058_*_does-the-identity-helpers-exit-1-halt-survive-a-registry-that-can-name-the-person.md` to the user as it stands: its three options, its recommendation of option 1, the two clauses of the halt's stated reason, and the analysis's `speculation:` that option 2's failure is invisible by construction because a record naming a person and joined to no commit reads identically to one that is joined. Do not compose a fourth option.
     - Files: this Circle's copy of `260904-1058_*_does-the-identity-helpers-exit-1-halt-survive-a-registry-that-can-name-the-person.md`, renamed from `_o_` to `_a_`
@@ -200,28 +199,28 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: the record carries `_a_` (or `_d_`), its `Answered:` line names a history file that exists, and the added sentence names exactly one option. A deferral leaves step 10's behaviour half untouched and its mint half unaffected, since the two are independent.
    - Dependencies: none
 
-10. [DONE] **The mint stops being silent, and the halt's reason says what it now rests on**
+10. **The mint stops being silent, and the halt's reason says what it now rests on**
     - Executor: `coder`
     - Files: `bin/fusion-identity`, `rules/fusion-workbench-conventions.md` (`### Who filed it`, the exit-1 paragraph), `hooks/lib/__tests__/fusion-identity.test.ts`
     - Changes, two independent halves. **The mint half, unconditional.** On the branch that writes `.checkout-id`, after the read-back confirms what the file holds, print two stderr lines: that an identifier was minted because the file did not exist, naming it, and, where the workbench already carries other checkout identifiers, how many and where they were seen. The evidence is two counts and no parsing: distinct `"checkout":"…"` values in `orchestrator-events.jsonl` other than the new one, and `*.md` filenames under `shared/checkouts/` other than the new one, both cheap and both surviving `git clean -xdf` because both are tracked. The second line names the two causes it cannot tell apart, a first identity in a workbench others have written to and a re-mint after `.checkout-id` was swept, and points at the sweep. **Exit codes, stdout and the halt condition are untouched**: nothing here can make a caller halt where it does not halt today, which the constraint requires and the test pins. The helper's `## Minting` header paragraph gains the reason, citing `260904-1058_*_git-clean-deletes-the-checkout-identifier-and-the-next-read-mints-a-new-one-in-silence.md`. **The halt half, per step 9's answer.** Under option 1 the header's two-clause sentence becomes one clause, that a tree which intends to commit and cannot is misconfigured and its records reach no other checkout, and the `### Who filed it` paragraph gains the same clause with one sentence saying a registry does not weaken it; behaviour does not move. Under option 2 or 3 the behaviour change is written here, together with what step 9's record says distinguishes such a record downstream.
     - Acceptance: the issue's own test, run by hand in a scratch workbench and asserted in the test file: delete `.checkout-id` in a workbench that has already written event lines, run the helper, and the outcome is stated on stderr rather than silent, while stdout and the exit code are what they were. A separate case asserts exit 1 fires in exactly the cases it fires in at HEAD. Keep the additions under 45 lines.
     - Dependencies: 2, 9
 
-11. [DONE] **The unchecked precondition is corrected to what is now true, and to what is still not**
+11. **The unchecked precondition is corrected to what is now true, and to what is still not**
     - Executor: `coder`
     - Files: `rules/fusion-workbench-conventions.md` (the `### Who filed it` paragraph beginning "One precondition, and no code checks it")
     - Changes: the sentence claims one precondition and names one consequence, and after step 4 exactly half of it is false. It is rewritten to say both halves: where two git identities are registered to one person, `bin/fusion-events presence` counts them as one person and the precondition no longer binds that reading; the claim comparison in `/fusion:next` still compares the identity as written, so a person on a second machine whose git configuration differs is still refused their own Circle, and that is deliberate rather than unfinished, because routing the comparison through a pulled file would make it answer differently before and after a fetch. The paragraph says where the repair is (the registry) and what a person does about the residual (register, and use the override the refusal already offers).
     - Acceptance: the diff replaces the sentence rather than appending to it; no other sentence in the section changes; the always-on rule core measures under its bound.
     - Dependencies: 4, 10
 
-12. [DONE] **The shipped documentation gains one helper, one store and one upgrade note**
+12. **The shipped documentation gains one helper, one store and one upgrade note**
     - Executor: `coder`
     - Files: `CLAUDE.md` (the `bin/fusion-checkout-name` Layout row from step 2, plus one sentence in the workbench row naming the new store), `README-hooks.md` (only if step 4 changed a `hooks/lib` module's stated contract), `docs/upgrading-to-v<next>.md` (new), `.claude-plugin/plugin.json` (version), `<marketplace>/.claude-plugin/marketplace.json` (version), `install.sh` and `README.md` (the `FUSION_REF=tags/v<version>` examples)
     - Changes: the CLAUDE.md row follows the house form, summarising rather than restating the helper header, and states the two things a reader should carry away from here: the alias is an attribute and the hex stays the key everywhere, and a resolution failure renders the hex rather than a substituted name. The upgrade note says what a consuming project sees on its next Setup, that one file appears under `shared/checkouts/` for this checkout and nothing else changes, that no existing record or event line is rewritten, and that deleting the store restores the previous behaviour exactly. Bump the version across the four surfaces the release process names, and read `plugin.json`'s `description` against the marketplace entry's before pushing.
     - Acceptance: `derivable-enumerations-lint` green, meaning CLAUDE.md's Layout table has one row per `bin/` helper; `reference-resolution-lint` green; the four version strings equal.
     - Dependencies: 3, 5, 11
 
-13. [DONE] **Verification, measured rather than asserted**
+13. **Verification, measured rather than asserted**
     - Executor: `coder`
     - Files: none beyond what earlier steps wrote; this step runs commands and records their output in the session history
     - Changes: run and record `cd hooks && npm run build && npm test`, which covers the four growth bounds, `committed-dist`, `path-literal-lint`, `derivable-enumerations-lint`, `reference-resolution-lint`, `workbench-citation-lint` and `plan-stopping-section-lint`; `bin/fusion-citation-check` over this project; `bin/fusion-review-coverage --since <previous tag>`, whose result is stated in the release commit or the session log per the release process, advisory and not a gate; and `claude plugin validate .`. Then the two before-and-after readings that are this Circle's own claim: `bin/fusion-events presence` with the store absent, and again with two entries mapping two git identities to one person, recording both outputs.
@@ -229,7 +228,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
     - Dependencies: 12
     - Result: run at HEAD `9b488aac`, recorded in `260905-0545-coder-verification-measured-rather-than-asserted.md`. Two halves of the acceptance are met and one is not. **Not met:** `npm test` is red on one suite, `citation-sweep.test.ts`, inherited and filed as `260904-1839_*_citation-sweep-test-is-red-at-head-and-was-already-red-before-this-session-started.md`; the history entry names its cause (the corpus, not the sweep) and its eight files. **Met:** no growth-bound baseline was edited, measured by an empty diff over the baseline files since `v10.20.0`; and the review-coverage result is recorded whatever it says, `commits=16 uncovered=16 verdict=uncovered`, which discharges the release precondition. **The presence criterion holds, and as written it is one field too tight:** the store-absent and the store-present readings differ in `other_people` (2 to 1) *and* in the sixth `party=` field, because that field renders the alias whenever a store exists at all. A control reading with the store held fixed and only `**Person:**` deciding the join differs from reading B in `other_people` and in nothing else, one line of `diff`.
 
-14. [DONE] **The decision and issue markers move to what happened**
+14. **The decision and issue markers move to what happened**
     - Executor: `coder`
     - Files: `260904-1058_*_does-fusion-gain-a-tracked-checkout-registry-and-in-which-shape.md` and `260904-1058_*_is-the-checkout-alias-the-identifier-or-an-attribute-of-the-minted-one.md`, both in the shared decision store; the two records steps 1 and 9 answered, in this Circle's; `260904-1058_*_git-clean-deletes-the-checkout-identifier-and-the-next-read-mints-a-new-one-in-silence.md`, in the shared issue store
     - Changes: the two answered decisions move `_a_` to `_i_` with an `Implemented:` line naming the commit that realised each. The two records answered at steps 1 and 9 move `_a_` to `_i_` where their answer required code, and stay `_a_` where it did not. The issue moves `_o_` to `_c_` with the outcome named in the terms of its own acceptance test, that the second branch was taken and the first was ruled out by the Directive's no-migration constraint, or to `_d_` with the reason if step 9 or step 10 left it unmet.

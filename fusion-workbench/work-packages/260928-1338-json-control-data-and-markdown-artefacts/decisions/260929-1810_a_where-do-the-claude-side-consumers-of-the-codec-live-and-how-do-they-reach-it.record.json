@@ -1,0 +1,54 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "84fb196b-de90-4a2e-b98f-13a014251a94",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [
+    "260928-1338-json-control-data-and-markdown-artefacts.md",
+    "260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md",
+    "260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md",
+    "260928-1550_*_which-process-boundary-and-shipped-form-does-the-codec-take.md",
+    "260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md"
+  ],
+  "provenance": {
+    "source": "imported",
+    "legacy_fields": {
+      "file_marker": "a",
+      "head": {
+        "Domain": "code",
+        "Filed by": "implementation-planner, Kai Stalmann <ks@qantr.com>",
+        "Cross-references": "260928-1338-json-control-data-and-markdown-artefacts.md, 260929-1810_*_plan-fj03a-the-record-client-the-format-gate-and-scope-and-order-on-json.md, 260928-1341_*_does-the-json-codec-live-in-its-own-package-or-under-hooks.md, 260928-1550_*_which-process-boundary-and-shipped-form-does-the-codec-take.md, 260929-1810_*_does-the-2026-09-27-ruling-on-the-growth-bound-reach-the-hook-tests-and-shipped-text-fj03-changes.md"
+      },
+      "derived": {
+        "/control/answer_ref": {
+          "rule": "answer-ref-self",
+          "evidence": "unresolvable-answer-line"
+        }
+      }
+    },
+    "backup": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+      "sha256": "sha256:01a22c09aa0b5f071bf2800de0c49d14dc406695e51192bbb81e6aa1748ae6d1",
+      "kind": "other"
+    }
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/260929-1810_a_where-do-the-claude-side-consumers-of-the-codec-live-and-how-do-they-reach-it.md",
+      "sha256": "sha256:01a22c09aa0b5f071bf2800de0c49d14dc406695e51192bbb81e6aa1748ae6d1",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
