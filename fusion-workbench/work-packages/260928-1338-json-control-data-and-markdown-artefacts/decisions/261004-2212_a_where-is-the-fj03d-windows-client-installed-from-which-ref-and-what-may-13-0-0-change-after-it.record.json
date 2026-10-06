@@ -39,13 +39,13 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": {
       "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_where-is-the-fj03d-windows-client-installed-from-which-ref-and-what-may-13-0-0-change-after-it.md",
       "sha256": "sha256:365c59774a65747f98b0361cb747c7c9018518d045a3e10a027a5f26f6a481f6",
       "kind": "decision"
     },
-    "implementation_ref": null,
+    "implementation_ref": "80fb15c7",
     "superseded_by": null,
     "deferral": null
   }

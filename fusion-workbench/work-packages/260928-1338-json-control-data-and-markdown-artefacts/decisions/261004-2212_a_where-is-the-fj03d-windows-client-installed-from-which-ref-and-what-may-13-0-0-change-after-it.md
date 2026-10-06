@@ -42,3 +42,6 @@ Option 1, with the release allowed to differ from the window commit, and FJ05 li
 ## Answer
 
 Answered 2026-10-05 by the user (Kai Stalmann), in chat ("B1 als ~/.fp"): option 1, a separate install home from the pushed branch, with `FUSION_HOME=~/.fp` (not `~/.fusion-13`) and a launcher directory of its own. The user added, in chat: "~/.fusion auf keinen Fall ändern, damit wird produktiv an einen Consumer Projekt gearbeitet." So no step of FJ03d or FJ05 installs, updates, reinstalls or writes `~/.fusion`; the window launcher and any `fusion --update` run from it must be shown unable to reach `~/.fusion` before the install.
+
+---
+Implemented: `~/.fp/.claude-plugin/plugin.json` 13.0.0 (byte-identical to the pushed branch head's), launcher `~/.fp-bin/fusion` with `FUSION_DIR="/Users/kai/.fp"`, `~/.fusion/.claude-plugin/plugin.json` 12.2.1 unchanged; installed by FJ03d steps 13 and 15 with `FUSION_REF=heads/fj-json-workbench FUSION_HOME=~/.fp FUSION_BIN=~/.fp-bin bash install.sh` — option 1: a separate install home from the pushed branch with a launcher directory of its own, `~/.fusion` untouched.

@@ -32,3 +32,6 @@ Option 1, which is what the user ruled.
 
 ---
 Answered: this record `## Options` option 1 — agents may originate work packages; the bound "no agent originates a work package on its own initiative" is withdrawn, and the record that narrowed it is superseded; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: `rules/fusion-workbench-conventions.md` `## Work packages` ("An agent may also originate one within the work it was commissioned for: `--actor` names the agent, so `filed_by` still tells an agent's filing from the user's, and `--origin` names the control path of the package whose scope it decomposes. That origin creates no mandate and no right to run"), FJ03d step 3; `agents/orchestrator.md` `## Scope` keeps the orchestrator's own rule of filing only on the user's instruction, and neither `README-agents.md` `## Invariants` nor `docs/working-model.md` states the withdrawn bound any more — option 1: an agent originates a package under its own name and origin, approval of what runs staying with `mode` and the orchestrator's approval rules.

@@ -37,3 +37,6 @@ Option 1. The rewrite turns procedures (rename, annotate, glob) into calls of on
 ## Answer
 
 Answered 2026-10-05 by the user (Kai Stalmann), in chat ("A1"): option 1, cut-only, net non-positive per dispatch path at every commit. A step that cannot fit stops and returns the shortfall to the user.
+
+---
+Implemented: `rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`, `## Path Resolution (Pfadauflösung)`, `## Work packages`, `## Filename Patterns`, both `## State Markers` sections, `## Marker globs`, `## Inline State Tracking`, `## Record filing`), `rules/workbench-tracking.md`, `rules/agent-setup.md`, `rules/decision-record-examples.md`, `rules/orchestrator-rebalance.md`, the eleven `agents/*.md`, `skills/*/SKILL.md` and `CLAUDE.md`, FJ03d steps 3 to 9, each step net non-positive per dispatch path as the plan notes' room figures record — option 1, cut-only: `hooks/lib/__tests__/rules-emission-golden.test.ts` passes 22 of 22 on the merged tree with `DISPATCH_HEAD_ROOM` still 0 and no baseline moved.

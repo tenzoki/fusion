@@ -40,13 +40,13 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": {
       "path": "archive/migrations/migration-20261006-v12/originals/shared/decisions/260927-2319_a_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
       "sha256": "sha256:b5397a1d2c6bd49f9ae832c1ecb53ef668466a3a4543a8b54579d6647ee10a71",
       "kind": "decision"
     },
-    "implementation_ref": null,
+    "implementation_ref": "7fe0a7fe",
     "superseded_by": null,
     "deferral": null
   }

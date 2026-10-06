@@ -39,13 +39,13 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": {
       "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261004-2212_a_how-does-fj03ds-rewrite-of-rules-and-prompts-meet-the-dispatch-path-bound-at-zero-head-room.md",
       "sha256": "sha256:0c20d2a254278cdf0c003108d82bbea839865c069756e4e9c41e63c80675417b",
       "kind": "decision"
     },
-    "implementation_ref": null,
+    "implementation_ref": "6f37d798",
     "superseded_by": null,
     "deferral": null
   }
