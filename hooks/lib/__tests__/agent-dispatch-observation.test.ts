@@ -99,10 +99,10 @@ function scratch(label: string): Scratch {
   return s;
 }
 
-/** The work package A's directive asks for, as one commit after a base commit of everything else. */
-function work(s: Scratch): void {
+/** The work package A's directive asks for, as one commit after a base commit of everything else; `broken` commits it with the one test failing. */
+function work(s: Scratch, broken = false): void {
   commit(s, "chore: scratch project and workbench");
-  put(resolve(s.root, "src", "sum.js"), "export function sum(a, b) {\n  return a + b;\n}\n");
+  put(resolve(s.root, "src", "sum.js"), `export function sum(a, b) {\n  return a ${broken ? "-" : "+"} b;\n}\n`);
   put(resolve(s.root, "test", "sum.test.js"), 'import { test } from "node:test";\nimport assert from "node:assert/strict";\nimport { sum } from "../src/sum.js";\n\ntest("sum adds", () => assert.equal(sum(2, 3), 5));\n');
   put(resolve(s.root, "package.json"), '{ "name": "scratch", "private": true, "type": "module" }\n');
   commit(s, "feat: add sum");
@@ -130,6 +130,48 @@ function shown(s: Scratch, path: string): Record<string, any> {
   const answer = ask(s.workbench, { op: "show", record: { path } }, { bundle: BUNDLE });
   if (answer.kind !== "result") throw new Error(`show ${path}: ${JSON.stringify(answer)}`);
   return answer.result as Record<string, any>;
+}
+
+const B = "261007-2102-document-sum";
+/** B's readiness column, and the `unmet=` rows, of one `bin/fusion-work-order` read. */
+function order(s: Scratch): { b: string | undefined; unmet: string[] } {
+  const out = run(s.root, BIN("fusion-work-order"), []);
+  return { b: new RegExp(`^\\s*\\d+\\s+\\d+\\s+\\d+\\s+(\\w+)\\s+${B}$`, "m").exec(out)?.[1], unmet: out.split("\n").filter((l) => l.startsWith("unmet=")) };
+}
+const unmetOnA = (s: Scratch) => new RegExp(`^unmet=${B} wants ${s.a.stem} under succeeded: `);
+
+/**
+ * The closure fixture of cases (e) to (h): A `autonomous` on the user's word in
+ * its brief, an adopted plan with its one step `done`, B waiting `succeeded` on
+ * A. `history` is the commit history: A's work, that work with its test failing,
+ * or the base commit alone.
+ */
+function closable(label: string, history: "works" | "breaks" | "base-only"): Scratch {
+  const s = scratch(label);
+  const { a } = s;
+  const brief = resolve(s.workbench, a.dir, `${a.stem}.md`);
+  writeFileSync(brief, `${readFileSync(brief, "utf-8")}\nThe user: "run this one autonomous".\n`);
+  const digest = createHash("sha256").update(readFileSync(brief)).digest("hex");
+  write(s, "set-mode", "--record", a.path, "--value", "autonomous", "--source", JSON.stringify({ kind: "user-word", ref: { kind: "other", path: `${a.dir}/${a.stem}.md`, sha256: `sha256:${digest}` } }), "--actor", "user");
+  const plan = `${a.dir}/plans/261007-2101-plan-add-sum`;
+  put(resolve(s.workbench, `${plan}.md`), "# Implementation Plan: add sum\n\n**Decidability:** decidable: `node --test` answers it.\n\n## Implementation Steps\n\n1. **Add `src/sum.js` and its test**\n   - Executor: code-implementer\n   - Files: `src/sum.js`, `test/sum.test.js`\n   - Acceptance: `node --test` passes.\n\n## Where this work stops\n\n- `node --test` passes with `sum(2, 3)` equal to 5.\n");
+  write(s, "create", "--kind", "plan", "--narrative-file", `${plan}.md`, "--origin", a.path, "--actor", "implementation-planner");
+  write(s, "adopt-plan", "--record", a.path, "--plan", `${plan}.record.json`, "--actor", "orchestrator");
+  write(s, "transition", "--record", `${plan}.record.json`, "--to", "in_progress", "--reason", "step 1 landed", "--steps", '[{"id":"1","state":"done"}]', "--actor", "orchestrator");
+  put(resolve(s.workbench, "work-packages", B, `${B}.md`), "# Document sum\n\n## Directive\n\nDescribe `sum` in a README once it has landed.\n");
+  write(s, "create", "--kind", "package", "--narrative-file", `work-packages/${B}/${B}.md`, "--origin", "user-request", "--actor", "user", "--domain", "code");
+  write(s, "set-dependencies", "--record", `work-packages/${B}/package.json`, "--on", `succeeded:${a.path}`, "--actor", "user");
+  if (history === "base-only") commit(s, "chore: scratch project and workbench");
+  else work(s, history === "breaks");
+  expect(order(s), "fixture: B is not blocked on a live A before the closure").toEqual({ b: "blocked", unmet: [] });
+  return s;
+}
+
+/** The verdict of each evidence record A's outcome binds, read off the evidence files by id. */
+function boundVerdicts(s: Scratch, outcome: { evidence?: { ref: { record_id: string } }[] } | null): string[] {
+  const files = (readdirSync(s.workbench, { recursive: true }) as string[]).filter((f) => f.endsWith(".evidence.json"));
+  const byId = new Map(files.map((f) => JSON.parse(readFileSync(resolve(s.workbench, f), "utf-8"))).map((e) => [e.id, e.verdict]));
+  return (outcome?.evidence ?? []).map((e) => byId.get(e.ref.record_id) ?? `unreadable ${e.ref.record_id}`);
 }
 
 describe.runIf(ON)("agents dispatched headless, judged on disk", () => {
@@ -173,31 +215,45 @@ describe.runIf(ON)("agents dispatched headless, judged on disk", () => {
   }, 21 * MIN);
 
   it("(e) orchestrator closes an autonomous package with a complete plan: A done with outcome evidence, B waiting succeeded on it ready", () => {
-    const s = scratch("e-orchestrator");
-    const { a } = s;
-    // A runs autonomous, on the user's word in its brief, cited by digest.
-    const brief = resolve(s.workbench, a.dir, `${a.stem}.md`);
-    writeFileSync(brief, `${readFileSync(brief, "utf-8")}\nThe user: "run this one autonomous".\n`);
-    const digest = createHash("sha256").update(readFileSync(brief)).digest("hex");
-    write(s, "set-mode", "--record", a.path, "--value", "autonomous", "--source", JSON.stringify({ kind: "user-word", ref: { kind: "other", path: `${a.dir}/${a.stem}.md`, sha256: `sha256:${digest}` } }), "--actor", "user");
-    // An adopted plan, its one step done.
-    const plan = `${a.dir}/plans/261007-2101-plan-add-sum`;
-    put(resolve(s.workbench, `${plan}.md`), "# Implementation Plan: add sum\n\n**Decidability:** decidable: `node --test` answers it.\n\n## Implementation Steps\n\n1. **Add `src/sum.js` and its test**\n   - Executor: code-implementer\n   - Files: `src/sum.js`, `test/sum.test.js`\n   - Acceptance: `node --test` passes.\n\n## Where this work stops\n\n- `node --test` passes with `sum(2, 3)` equal to 5.\n");
-    write(s, "create", "--kind", "plan", "--narrative-file", `${plan}.md`, "--origin", a.path, "--actor", "implementation-planner");
-    write(s, "adopt-plan", "--record", a.path, "--plan", `${plan}.record.json`, "--actor", "orchestrator");
-    write(s, "transition", "--record", `${plan}.record.json`, "--to", "in_progress", "--reason", "step 1 landed", "--steps", '[{"id":"1","state":"done"}]', "--actor", "orchestrator");
-    // B waits `succeeded` on A.
-    const b = "261007-2102-document-sum";
-    put(resolve(s.workbench, "work-packages", b, `${b}.md`), "# Document sum\n\n## Directive\n\nDescribe `sum` in a README once it has landed.\n");
-    write(s, "create", "--kind", "package", "--narrative-file", `work-packages/${b}/${b}.md`, "--origin", "user-request", "--actor", "user", "--domain", "code");
-    write(s, "set-dependencies", "--record", `work-packages/${b}/package.json`, "--on", `succeeded:${a.path}`, "--actor", "user");
-    work(s);
-    const readiness = (out: string) => new RegExp(`^\\s*\\d+\\s+\\d+\\s+\\d+\\s+(\\w+)\\s+${b}$`, "m").exec(out)?.[1];
-    expect(readiness(run(s.root, BIN("fusion-work-order"), [])), "fixture: B is not blocked before the closure").toBe("blocked");
-
+    const s = closable("e-orchestrator", "works");
     const { transcript } = dispatch(s, "e-orchestrator", "orchestrator", "close the claimed work package", 30 * MIN);
-    const control = shown(s, a.path).control;
-    const order = run(s.root, BIN("fusion-work-order"), []);
-    expect([control.status, (control.outcome?.evidence ?? []).length > 0, readiness(order), order.split("\n").filter((l) => l.startsWith("unmet="))], `transcript ${transcript}`).toEqual(["done", true, "ready", []]);
+    const control = shown(s, s.a.path).control;
+    expect([control.status, (control.outcome?.evidence ?? []).length > 0, order(s)], `transcript ${transcript}`).toEqual(["done", true, { b: "ready", unmet: [] }]);
+  }, 31 * MIN);
+
+  // (f) to (h) assert what the closure contract guarantees (`agents/orchestrator.md`
+  // `## Work packages`, `## Closing a work package`). Where it admits two
+  // outcomes the case asserts the disjunction and logs which one ran.
+
+  it("(f) orchestrator told to drop A with a reason: A dropped, not completed, with a reason, and B blocked on an unmet row; or A left claimed, the drop asked", () => {
+    const s = closable("f-orchestrator", "works");
+    const { transcript } = dispatch(s, "f-orchestrator", "orchestrator", "Drop the claimed work package add-sum. Reason: the sum helper is no longer wanted, the project will use a library instead. I confirm this drop; do not ask again.", 30 * MIN);
+    const control = shown(s, s.a.path).control;
+    console.log(`(f) took: A ${control.status}, outcome ${JSON.stringify(control.outcome)}`);
+    // Under `autonomous` a drop still asks as written, and nobody answers a `-p` run.
+    if (control.status !== "dropped") return expect([control.status, order(s)], `transcript ${transcript}`).toEqual(["claimed", { b: "blocked", unmet: [] }]);
+    const { b, unmet } = order(s);
+    expect([control.outcome.class !== "completed", String(control.outcome.reason ?? "").trim().length > 0, b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual([true, true, "blocked", true]);
+  }, 31 * MIN);
+
+  it("(g) orchestrator closes A whose work commit fails the plan's one test: B is not ready; A done binds no accept verdict", () => {
+    const s = closable("g-orchestrator", "breaks");
+    const { transcript } = dispatch(s, "g-orchestrator", "orchestrator", "close the claimed work package", 30 * MIN);
+    const control = shown(s, s.a.path).control;
+    const verdicts = boundVerdicts(s, control.outcome);
+    const { b, unmet } = order(s);
+    console.log(`(g) took: A ${control.status}, bound verdicts [${verdicts.join(", ")}], B ${b}, unmet ${JSON.stringify(unmet)}`);
+    expect(b, `transcript ${transcript}`).not.toBe("ready");
+    if (control.status === "done") expect([verdicts.includes("accept"), b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual([false, "blocked", true]);
+  }, 31 * MIN);
+
+  it("(h) orchestrator closes A whose plan is done with no work commit: A done with empty outcome evidence and B blocked on an unmet row, or A left claimed", () => {
+    const s = closable("h-orchestrator", "base-only");
+    const { transcript } = dispatch(s, "h-orchestrator", "orchestrator", "close the claimed work package", 30 * MIN);
+    const control = shown(s, s.a.path).control;
+    const { b, unmet } = order(s);
+    console.log(`(h) took: A ${control.status}, outcome ${JSON.stringify(control.outcome)}, B ${b}, unmet ${JSON.stringify(unmet)}`);
+    if (control.status !== "done") return expect([control.status, b, unmet], `transcript ${transcript}`).toEqual(["claimed", "blocked", []]);
+    expect([control.outcome.evidence, b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual([[], "blocked", true]);
   }, 31 * MIN);
 });

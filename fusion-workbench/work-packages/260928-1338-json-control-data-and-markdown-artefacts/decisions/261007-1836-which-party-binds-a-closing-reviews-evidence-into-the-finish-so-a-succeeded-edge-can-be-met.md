@@ -49,3 +49,6 @@ We recommend option 1, contingent on the user accepting the reordered closure st
 
 ---
 Answered: this record `## Options` option 1 — the orchestrator binds the closing review's evidence in the finish through a client flag `transition --evidence`, and the closure note follows the status write; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: `bin/fusion-write` header (`transition --evidence`), `hooks/lib/record-write.ts` (`evidenceBinding`), `agents/orchestrator.md` `## Closing a work package` step 4, `agents/state-auditor.md` Setup — the finish binds the closing review's evidence and the note follows; observed in case (e) of the opt-in agent suite.

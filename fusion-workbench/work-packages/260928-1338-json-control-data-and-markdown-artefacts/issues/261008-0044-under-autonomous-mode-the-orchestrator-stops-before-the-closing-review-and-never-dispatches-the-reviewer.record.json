@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7230059e-4c1c-4001-b0dd-c3f78d618cb9",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261008-0044-under-autonomous-mode-the-orchestrator-stops-before-the-closing-review-and-never-dispatches-the-reviewer.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
