@@ -45,6 +45,7 @@
   total 221041
 
 [hook-tests lines]
+  agent-dispatch-observation.test.ts 203
   archive-filter-key.test.ts 41
   citation-form.test.ts 360
   citation-grammar-boundaries.test.ts 255
@@ -117,4 +118,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 333
-  total 24348
+  total 24551
