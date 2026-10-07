@@ -1,0 +1,24 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "cd9c6898-c283-4e31-88c0-4d16ddaa1fd9",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "discussion",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/discussions/261007-0707-other-kind-hits-prior-record-type.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "participants": [],
+    "outcome_refs": []
+  }
+}

@@ -23,3 +23,6 @@ Step 10 classed 137 hits as other kind at `fj03d` `29dac3c5`: `codec-contract` 9
 ## Constraints
 
 The per-basis counts go to Prior in either case (plan step 17, as amended 2026-10-05). No hit may be reported as another record type when the control grammar is absent from it.
+
+---
+Answered: 261007-0707-other-kind-hits-prior-record-type.md `## Recommendation` — two rulings of 2026-10-07: (i) `codec/` is read per line under rulings (a) to (d) like every other directory: 36 `migrate` hits to class 2, 14 `name-grammar` and 41 `json` to class 1, 2 homonyms apart, so no codec hit stays under "anderer Record-Typ"; (ii) the 16 `history` lines are stated apart with their reason, never as another record type. Class 3 holds the 7 `analysis-head` hits; the fold re-takes as 233 / 155 / 7 / 38 apart over 433; ruled by user, Kai Stalmann <ks@qantr.com>.
