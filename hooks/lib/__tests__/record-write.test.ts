@@ -274,3 +274,115 @@ describe("bin/fusion-write", () => {
     });
   }, CASE_TIMEOUT);
 });
+
+// ---------------------------------------------------------------------------
+// `transition --evidence`: the closing review's evidence bound into the
+// finish's outcome, which is the one field `succeeded` reads (decision
+// 261007-1836, option 1).
+// ---------------------------------------------------------------------------
+
+const FINISHED = JSON.stringify({ class: "completed", reason: "landed", evidence: [] });
+
+describe("transition --evidence", () => {
+  it("composes each entry exactly as attach-evidence composes its one, and appends it to the outcome's evidence", () => {
+    withJsonProject((p) => {
+      repo(p);
+      const pkg = createPackage(p, "261007-1900-c");
+      expect(run(p, "claim", ["--record", pkg.path, "--actor", "user"]).o.kind).toBe("landed");
+      const ev = Object.keys((run(p, "evidence", ["--record", pkg.path, "--report", put(p, `${pkg.dir}/reviews/261007-1901-c-review.md`), "--verdict", "accept", "--actor", "reviewer"]).o as Wrote).revisions)[0];
+      const attached = run(p, "attach-evidence", ["--record", pkg.path, "--evidence", ev, "--actor", "user"]);
+      const finish = run(p, "transition", ["--record", pkg.path, "--to", "done", "--reason", "r", "--outcome", FINISHED, "--evidence", ev, "--actor", "orchestrator"]);
+      expect([attached.o.kind, finish.o.kind]).toEqual(["landed", "landed"]);
+      const sentOf = (r: { sent: CodecRequest[] }, op: string) => r.sent.find((q) => q.op === op) as Record<string, any>;
+      const entry = sentOf(attached, "attach-evidence").evidence;
+      expect(sentOf(finish, "transition").payload.outcome).toEqual({ class: "completed", reason: "landed", evidence: [entry] });
+      expect(shown(p, pkg.path).control.outcome.evidence).toEqual([entry]);
+    });
+  }, CASE_TIMEOUT);
+
+  it("is a usage error without --outcome, on a record that is not a package, and naming a record that is not evidence; nothing is sent", () => {
+    withJsonProject((p) => {
+      repo(p);
+      const pkg = createPackage(p, "261007-1910-u");
+      const issue = Object.keys((run(p, "create", ["--kind", "issue", "--narrative-file", put(p, `${pkg.dir}/issues/261007-1911-u.md`), "--origin", pkg.path, "--actor", "user"]).o as Wrote).revisions)[0];
+      const ev = Object.keys((run(p, "evidence", ["--record", pkg.path, "--report", put(p, `${pkg.dir}/reviews/261007-1912-u-review.md`), "--verdict", "accept", "--actor", "reviewer"]).o as Wrote).revisions)[0];
+      const finish = (record: string, ...extra: string[]) => run(p, "transition", ["--record", record, "--to", "done", "--reason", "r", ...extra, "--actor", "orchestrator"]);
+      const refused = [finish(pkg.path, "--evidence", ev), finish(issue, "--outcome", FINISHED, "--evidence", ev), finish(pkg.path, "--outcome", FINISHED, "--evidence", issue)];
+      expect(refused.map((r) => [r.o.kind, mutations(r.sent)])).toEqual(Array(3).fill(["usage", []]));
+      expect(refused.map((r) => (r.o as { detail: string }).detail)).toEqual([expect.stringContaining("with --outcome"), expect.stringContaining("is a issue record"), expect.stringContaining("is a issue record")]);
+      expect(refused[2].o).toMatchObject({ detail: expect.stringContaining("names an evidence record") });
+    });
+  }, CASE_TIMEOUT);
+});
+
+// ---------------------------------------------------------------------------
+// The shipped helpers, end to end: a successor waiting `succeeded` on a
+// package becomes ready once that package is finished with its closing
+// review's evidence bound, through `bin/fusion-write` and
+// `bin/fusion-work-order` alone. The three controls pin the conditions the
+// orchestrator's closure states: no evidence, a verdict other than accept,
+// and a closure note written into the brief before the finish.
+// ---------------------------------------------------------------------------
+
+describe("a succeeded edge, through bin/fusion-write and bin/fusion-work-order", () => {
+  const BIN = (name: string) => resolve(REPO_ROOT, "bin", name);
+  const cli = (p: JsonProject, ...args: string[]) => spawnSync(BIN("fusion-write"), args, { cwd: p.root, env: GIT_ENV, encoding: "utf-8" });
+  const order = (p: JsonProject) => spawnSync(BIN("fusion-work-order"), [], { cwd: p.root, encoding: "utf-8" }).stdout;
+  const readiness = (out: string, stem: string) => new RegExp(`^\\s*\\d+\\s+\\d+\\s+\\d+\\s+(\\w+)\\s+${stem}$`, "m").exec(out)?.[1];
+  const unmet = (out: string) => out.split("\n").filter((l) => l.startsWith("unmet="));
+
+  /** A claimed by this checkout, B waiting `succeeded` on it, and A's review filed with `verdict`; returns A, B's stem and the evidence path. */
+  function closing(p: JsonProject, verdict: string): { a: string; aDir: string; b: string; ev: string } {
+    repo(p);
+    const [a, b] = [createPackage(p, "261007-2000-a"), createPackage(p, "261007-2001-b")];
+    const steps = [cli(p, "claim", "--record", a.path, "--actor", "orchestrator"), cli(p, "set-dependencies", "--record", b.path, "--on", `succeeded:${a.path}`, "--actor", "user")];
+    const ev = cli(p, "evidence", "--record", a.path, "--report", put(p, `${a.dir}/reviews/261007-2002-a-review.md`, "# review\n"), "--verdict", verdict, "--actor", "reviewer");
+    expect([...steps, ev].map((r) => r.status)).toEqual([0, 0, 0]);
+    return { a: a.path, aDir: a.dir, b: "261007-2001-b", ev: /^path=(.+)$/m.exec(ev.stdout)![1] };
+  }
+  const finish = (p: JsonProject, a: string, ...extra: string[]) => cli(p, "transition", "--record", a, "--to", "done", "--reason", "closed", "--outcome", FINISHED, ...extra, "--actor", "orchestrator");
+
+  it("B is blocked while A is live, and ready with no unmet row once A is finished with --evidence naming its accepted review, the closure note appended after it included", () => {
+    withJsonProject((p) => {
+      const { a, aDir, b, ev } = closing(p, "accept");
+      const before = order(p);
+      expect([readiness(before, b), unmet(before)]).toEqual(["blocked", []]);
+      expect(finish(p, a, "--evidence", ev).status).toBe(0);
+      const after = order(p);
+      expect([shown(p, a).control.status, readiness(after, b), unmet(after)]).toEqual(["done", "ready", []]);
+      // The closure note follows the status write; the edge stays met once the brief moves.
+      const brief = resolve(p.workbench, aDir, "261007-2000-a.md");
+      writeFileSync(brief, `${readFileSync(brief, "utf-8")}\nClosed: the note, after the finish.\n`);
+      const noted = order(p);
+      expect([readiness(noted, b), unmet(noted)]).toEqual(["ready", []]);
+    });
+  }, 4 * CASE_TIMEOUT);
+
+  it("control: a finish without --evidence leaves B blocked on an unmet row naming the missing evidence", () => {
+    withJsonProject((p) => {
+      const { a, b } = closing(p, "accept");
+      expect(finish(p, a).status).toBe(0);
+      const after = order(p);
+      expect([readiness(after, b), unmet(after)]).toEqual(["blocked", [expect.stringMatching(new RegExp(`^unmet=${b} wants 261007-2000-a under succeeded: succeeded: 0 accepted evidence binding`))]]);
+    });
+  }, 4 * CASE_TIMEOUT);
+
+  it("control: a revise verdict bound the same way lands and leaves B blocked on an unmet row", () => {
+    withJsonProject((p) => {
+      const { a, b, ev } = closing(p, "revise");
+      expect(finish(p, a, "--evidence", ev).status).toBe(0);
+      const after = order(p);
+      expect([shown(p, a).control.outcome.evidence.length, readiness(after, b), unmet(after)]).toEqual([1, "blocked", [expect.stringMatching(new RegExp(`^unmet=${b} wants 261007-2000-a under succeeded: succeeded: 0 accepted evidence binding`))]]);
+    });
+  }, 4 * CASE_TIMEOUT);
+
+  it("control: a closure note appended to A's brief before the finish makes the finish refused brief-changed, exit 6, and A stays claimed", () => {
+    withJsonProject((p) => {
+      const { a, aDir, ev } = closing(p, "accept");
+      const brief = resolve(p.workbench, aDir, "261007-2000-a.md");
+      writeFileSync(brief, `${readFileSync(brief, "utf-8")}\nClosed: a note written too early.\n`);
+      const r = finish(p, a, "--evidence", ev);
+      expect([r.status, /brief-changed/.test(r.stderr), shown(p, a).control.status]).toEqual([6, true, "claimed"]);
+    });
+  }, 4 * CASE_TIMEOUT);
+});

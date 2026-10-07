@@ -15,8 +15,9 @@
  *               migration and no retry. `initialize` is Setup's alone, below.
  *   show        the record the mutation names, and each record a request
  *               field is read from (the plan of `adopt-plan`, the evidence of
- *               `attach-evidence`, the targets of `set-dependencies`, the
- *               origin of `create`, the package of `evidence`). Its revision
+ *               `attach-evidence` and of `transition --evidence`, the targets
+ *               of `set-dependencies`, the origin of `create`, the package of
+ *               `evidence`). Its revision
  *               is the `expected_revision` sent, so the write lands only
  *               against the record this call inspected.
  *   check       ownership, below; and every payload field against the kind
@@ -51,6 +52,14 @@
  * codec admits for it; `lib/__tests__/record-write.test.ts` holds it equal to
  * the schemas. A field outside the target's kind is a usage error, decided
  * after `show` named the kind and before the mutation is sent.
+ *
+ * `transition --evidence <evidence control path>`, repeatable, binds evidence
+ * into a package's finish: each record is `show`n and composed by
+ * `evidenceBinding`, as `attach-evidence` composes its one, and appended to
+ * `--outcome`'s `evidence`, the one field a `succeeded` edge reads.
+ * It is a usage error without `--outcome`, on a record that is not a package,
+ * and naming a record that is not evidence. A re-send recomposes the entries
+ * from `show`, so its line is unchanged.
  *
  * ## Creation
  *
@@ -166,7 +175,7 @@ const ON_RECORD = ["--record", "--expected-revision"];
 const FLAGS: Record<Sub, readonly string[]> = {
   claim: [...ON_RECORD, "--claimed-at"],
   release: [...ON_RECORD, "--reason"],
-  transition: [...ON_RECORD, "--to", "--reason", ...ALL_PAYLOAD.map(flagOf)],
+  transition: [...ON_RECORD, "--to", "--reason", ...ALL_PAYLOAD.map(flagOf), "--evidence"],
   "set-mode": [...ON_RECORD, "--value", "--source"],
   "set-dependencies": [...ON_RECORD, "--on", "--clear"],
   "adopt-plan": [...ON_RECORD, "--plan", "--role"],
@@ -188,7 +197,8 @@ const REQUIRED: Record<Sub, readonly string[]> = {
 /** What a re-send repeats beside `--operation-id`, as the unknown outcome printed it. */
 const resendFlags = (s: Sub): string[] =>
   s === "claim" ? ["--expected-revision", "--claimed-at"] : s === "create" ? ["--id"] : s === "evidence" ? ["--id", "--accepted-at"] : ["--expected-revision"];
-const REPEATED = new Set(["--on"]);
+/** A flag given more than once: `--on`, and `--evidence` on a finish; `attach-evidence` binds one record. */
+const repeated = (s: Sub, f: string): boolean => f === "--on" || (s === "transition" && f === "--evidence");
 const BARE = new Set(["--clear"]);
 
 export interface Identity {
@@ -230,7 +240,7 @@ export function parseFlags(sub: string, argv: string[]): { call: Omit<Call, "wor
   for (let i = 0; i < argv.length; i++) {
     const f = argv[i];
     if (!known.has(f)) return { usage: `${sub} takes no ${JSON.stringify(f)}` };
-    if (flags.has(f) && !REPEATED.has(f)) return { usage: `${f} is given twice` };
+    if (flags.has(f) && !repeated(s, f)) return { usage: `${f} is given twice` };
     const value = BARE.has(f) ? "" : argv[++i];
     if (value === undefined) return { usage: `${f} needs a value` };
     flags.set(f, [...(flags.get(f) ?? []), value]);
@@ -244,6 +254,7 @@ export function parseFlags(sub: string, argv: string[]): { call: Omit<Call, "wor
     if (value !== "ordinary" && value !== "autonomous") return { usage: "--value is ordinary or autonomous" };
     if ((value === "autonomous") !== flags.has("--source")) return { usage: "autonomous needs --source, the user's word or a record; ordinary takes none" };
   }
+  if (s === "transition" && flags.has("--evidence") && !flags.has("--outcome")) return { usage: "--evidence binds evidence into a package's outcome, and is given with --outcome" };
   if (s === "set-dependencies" && flags.has("--on") === flags.has("--clear")) return { usage: "set-dependencies takes one or more --on <terminal|succeeded>:<control path>, or --clear" };
   if (s === "create") {
     const kind = flags.get("--kind")![0];
@@ -321,6 +332,16 @@ function claimWritten(c: Call, target: Shown, fields: Record<string, unknown>): 
   return null;
 }
 
+/**
+ * One evidence binding, the codec's `evidence_ref`: the record at the revision
+ * `show` answered, with the policy it was produced under read off the record.
+ * `attach-evidence` sends it as its `evidence`, `transition --evidence` appends
+ * it to the outcome's.
+ */
+function evidenceBinding(ev: Shown, workbenchId: string): Record<string, unknown> {
+  return { ref: { workbench_id: workbenchId, record_id: String(ev.control.id), revision: ev.revision }, policy: ev.control.execution_policy };
+}
+
 /** The fields the subcommand adds to the request, reading any other record it names. */
 function fieldsOf(c: Call, target: Shown, workbenchId: string, claimedAt: string | undefined, see: (path: string) => Or<Shown>): Or<Record<string, unknown>> {
   const ref = (s: Shown) => ({ workbench_id: workbenchId, record_id: String(s.control.id) });
@@ -331,6 +352,8 @@ function fieldsOf(c: Call, target: Shown, workbenchId: string, claimedAt: string
       return { ok: { reason: one(c, "--reason") } };
     case "transition": {
       const allowed = PAYLOAD_FIELDS[target.kind] ?? [];
+      const bound = c.flags.get("--evidence") ?? [];
+      if (bound.length > 0 && target.kind !== "package") return usage(`--evidence binds into a package's outcome; ${one(c, "--record")} is a ${target.kind} record`);
       const payload: Record<string, unknown> = {};
       for (const field of ALL_PAYLOAD) {
         const raw = one(c, flagOf(field));
@@ -341,6 +364,18 @@ function fieldsOf(c: Call, target: Shown, workbenchId: string, claimedAt: string
         } catch {
           return usage(`${flagOf(field)} takes a JSON value`);
         }
+      }
+      if (bound.length > 0) {
+        const outcome = payload.outcome;
+        if (!isObject(outcome) || (outcome.evidence !== undefined && !Array.isArray(outcome.evidence))) return usage("--evidence appends to --outcome's evidence, so --outcome is an object whose evidence, if given, is a list");
+        const entries = [...((outcome.evidence as unknown[] | undefined) ?? [])];
+        for (const path of bound) {
+          const ev = see(path);
+          if ("stop" in ev) return ev;
+          if (ev.ok.kind !== "evidence") return usage(`--evidence names an evidence record; ${path} is a ${ev.ok.kind} record`);
+          entries.push(evidenceBinding(ev.ok, workbenchId));
+        }
+        payload.outcome = { ...outcome, evidence: entries };
       }
       return { ok: { to: one(c, "--to"), reason: one(c, "--reason"), ...(Object.keys(payload).length > 0 && { payload }) } };
     }
@@ -374,8 +409,7 @@ function fieldsOf(c: Call, target: Shown, workbenchId: string, claimedAt: string
     case "attach-evidence": {
       const ev = see(one(c, "--evidence")!);
       if ("stop" in ev) return ev;
-      // The binding carries the policy the evidence record was produced under, read off the record.
-      return { ok: { evidence: { ref: { ...ref(ev.ok), revision: ev.ok.revision }, policy: ev.ok.control.execution_policy } } };
+      return { ok: { evidence: evidenceBinding(ev.ok, workbenchId) } };
     }
     default:
       throw new Error(`fieldsOf: ${c.sub} is a creation, built by creation()`);

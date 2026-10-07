@@ -46,3 +46,6 @@ Rejected: leaving `succeeded` unreachable through the agents and documenting it.
 ## Recommendation
 
 We recommend option 1, contingent on the user accepting the reordered closure step. It is the only option where one write by one party produces the field the condition reads, and it leaves the shared rule corpus and the tightest dispatch path untouched. Option 2 is the cleaner long-term placement of the closure note. It is also a separate change to how a closure reads and who reads it, and we would file it as its own question if the stale-row clause proves noisy.
+
+---
+Answered: this record `## Options` option 1 — the orchestrator binds the closing review's evidence in the finish through a client flag `transition --evidence`, and the closure note follows the status write; ruled by user, Kai Stalmann <ks@qantr.com>.

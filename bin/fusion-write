@@ -15,6 +15,10 @@
 #   claim             this checkout claims the package
 #   release           --reason <text>
 #   transition        --to <state> --reason <text> [payload flags]
+#                     [--evidence <control path of an evidence record>], repeatable,
+#                     a package's and only with --outcome: each record is bound
+#                     into the outcome's evidence as attach-evidence binds one,
+#                     which is what a `succeeded` edge reads
 #   set-mode          --value ordinary | --value autonomous --source <JSON>
 #   set-dependencies  --on <terminal|succeeded>:<control path> (repeatable) | --clear
 #   adopt-plan        --plan <control path> [--role plan|spec]

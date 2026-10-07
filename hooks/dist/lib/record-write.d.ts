@@ -15,8 +15,9 @@
  *               migration and no retry. `initialize` is Setup's alone, below.
  *   show        the record the mutation names, and each record a request
  *               field is read from (the plan of `adopt-plan`, the evidence of
- *               `attach-evidence`, the targets of `set-dependencies`, the
- *               origin of `create`, the package of `evidence`). Its revision
+ *               `attach-evidence` and of `transition --evidence`, the targets
+ *               of `set-dependencies`, the origin of `create`, the package of
+ *               `evidence`). Its revision
  *               is the `expected_revision` sent, so the write lands only
  *               against the record this call inspected.
  *   check       ownership, below; and every payload field against the kind
@@ -51,6 +52,14 @@
  * codec admits for it; `lib/__tests__/record-write.test.ts` holds it equal to
  * the schemas. A field outside the target's kind is a usage error, decided
  * after `show` named the kind and before the mutation is sent.
+ *
+ * `transition --evidence <evidence control path>`, repeatable, binds evidence
+ * into a package's finish: each record is `show`n and composed by
+ * `evidenceBinding`, as `attach-evidence` composes its one, and appended to
+ * `--outcome`'s `evidence`, the one field a `succeeded` edge reads.
+ * It is a usage error without `--outcome`, on a record that is not a package,
+ * and naming a record that is not evidence. A re-send recomposes the entries
+ * from `show`, so its line is unchanged.
  *
  * ## Creation
  *

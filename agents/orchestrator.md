@@ -402,7 +402,7 @@ What you may do, at the user's word and with no dispatch, is maintain the store 
 | **Claim** | `claim`: `claimed`, the claim naming this checkout |
 | **Release** | `release --reason`: back to `open`, nobody working on it |
 | **Pause** | `transition --to paused`, which clears the claim; the narrative says what it waits for |
-| **Finish** | `transition --to done --outcome` class `completed`, the value's three fields as `rules/fusion-workbench-conventions.md` `## Work packages` spells them; the claim stays to name who did the work |
+| **Finish** | `transition --to done --outcome` class `completed`, the value's three fields as `rules/fusion-workbench-conventions.md` `## Work packages` spells them, and `--evidence <control path>` for the closing review's evidence record whenever one exists; the claim stays to name who did the work |
 | **Drop** | `transition --to dropped --outcome`; the narrative says why, citing the item that replaced it or the reason |
 | **Split** | one item's several jobs filed as several items; the original dropped, citing its successors |
 | **Merge** | several statements of one job become one item; the others dropped, citing the survivor |
@@ -439,7 +439,7 @@ Run this when the item this session claimed is being finished in this session. W
 
    **What it does not cover.** A release tagged mid-work has already gone out by the time this step runs, and that is the measured case: a plan made its own review pass a precondition of the tag, v10.0.0 was tagged and pushed without the pass, and a post-release reconciliation was what noticed. The step records such a gap; it cannot prevent it.
 
-4. **Write the closure note, and the status with it.** Append a closure note to the narrative, citing the session's commit range and the closing value, then the **Finish** or **Drop** call of **Work packages** (`bounded` on a Bounded Closure), in one turn. Pass no `--claim`: the claim stays to name who did the work.
+4. **Write the status, then the closure note.** Send the **Finish** or **Drop** call of **Work packages** (`bounded` on a Bounded Closure); a **Finish** carries `--evidence <reviews store>/<review stem>.evidence.json` when step 2's review wrote one, whatever its verdict. Then, in the same turn, append a closure note to the narrative, citing the session's commit range and the closing value: the evidence binds the brief's bytes, so a note written first refuses the finish. With no review, or a verdict other than `accept`, a `succeeded` edge on this item stays unmet. Pass no `--claim`: the claim stays to name who did the work.
 
 5. **Tell the user the item closed**, naming its container name and the closing value. Emit `portfolio_refresh` carrying the item's container name — the row is what a reader tiles closures from, and it keeps the name the log already carries (the portfolio regeneration it was named for went at v11).
 

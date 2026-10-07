@@ -148,12 +148,16 @@ Each of these is known, stated, and not handled by anything shipped.
 - **There is no takeover of a stale claim.** A package another checkout holds stays claimed until
   that checkout releases or transitions it; `bin/fusion-write` refuses everyone else, and no flag
   overrides it. A takeover needs a codec revision that does not exist yet.
-- **A `succeeded` dependency is not met through the agents.** `depends_on` takes two conditions:
-  `terminal` (the target is `done` or `dropped`) and `succeeded` (`done` with an accepted evidence
-  record bound to it). The reviewer records its evidence, but no shipped prompt binds it to the
-  package (`bin/fusion-write attach-evidence`), so a `succeeded` edge stays unmet unless you bind
-  the evidence yourself. Every edge the migration converts is `terminal`, and an imported `done`
-  package carries the outcome `legacy-completed`, which never meets `succeeded`.
+- **A `succeeded` dependency is met only by a finish that binds an accepted review.** `depends_on`
+  takes two conditions: `terminal` (the target is `done` or `dropped`) and `succeeded` (`done` with
+  an accepted evidence binding in its outcome). The orchestrator's closure finishes a package with
+  `--evidence` naming its closing review's evidence record, so the edge is met when that review
+  recorded `accept`. A closure with no review, or a verdict of `revise` or `escalate`, leaves it
+  unmet. A binding made with `bin/fusion-write attach-evidence` alone never meets it, because it is
+  not the outcome's. A package you finish by hand needs `transition --to done --outcome <value>
+  --evidence <evidence control path>`, sent before anything is appended to its narrative. Every edge
+  the migration converts is `terminal`, and an imported `done` package carries the outcome
+  `legacy-completed`, which never meets `succeeded`.
 - **Unknown filers stay unknown, and the person is taken from git.** Where a record never said who
   filed it, the migration writes the actor `legacy-unknown` and takes the person from the author of
   the commit that first added the file, following renames. Both are marked as derived in the
