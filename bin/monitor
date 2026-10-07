@@ -1747,7 +1747,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(b'{"error": "not found"}')
 
 
-import socket, signal, subprocess
+import socket, socketserver, signal, subprocess
 
 # Kill any previous monitor on this port.
 #
@@ -1880,7 +1880,15 @@ class ReuseServer(http.server.ThreadingHTTPServer):
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
         except (AttributeError, OSError):
             pass
-        super().server_bind()
+        # Not HTTPServer.server_bind: that one sets server_name from
+        # socket.getfqdn(host), a reverse lookup that took 30.0 s for `::` and
+        # `0.0.0.0` against a LAN resolver (measured 2026-10-07), during which
+        # the socket is bound but not listening. Nothing here reads a qualified
+        # name, so the bound host string stands in for it, with no lookup.
+        socketserver.TCPServer.server_bind(self)
+        host, port = self.server_address[:2]
+        self.server_name = host
+        self.server_port = port
 
 
 class DualStackServer(ReuseServer):
@@ -1947,6 +1955,15 @@ class DualStackServer(ReuseServer):
 # denied, and revoking it here is a system-settings change no fix is worth.
 # Treat the claim as unverified-at-HEAD rather than as either fact or fiction:
 # do not delete it, and do not build anything that only works if it is true.
+#
+# 2026-10-07, measured on this machine: a monitor started with MONITOR_BIND
+# unset wrote no URL file for 20 s, `lsof` showed its socket `CLOSED` (bound,
+# not yet listening), and `sample` put the main thread in a reverse lookup
+# called from the server's constructor: `getfqdn('::')` and `getfqdn('0.0.0.0')`
+# each took 30.0 s against the LAN resolver, `getfqdn('127.0.0.1')` 0.03 s.
+# ReuseServer.server_bind above no longer makes that lookup. **Inference**, not
+# re-measured: the 2026-08-06 "parked in CLOSED" state was this same lookup,
+# which a loopback bind answers at once, rather than the Local Network service.
 #
 # Only the wildcard goes dual-stack. An explicit MONITOR_BIND names one
 # address and gets exactly that address, on the family it belongs to: a

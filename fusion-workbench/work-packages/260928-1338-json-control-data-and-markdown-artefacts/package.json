@@ -32,11 +32,10 @@
     {
       "ref": {
         "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
-        "record_id": "76f818ef-1569-43b8-8b7f-885f652c559c",
-        "display": "261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+        "record_id": "f660c255-791b-4a80-ab87-044d4cab02e1"
       },
       "role": "plan",
-      "revision": "sha256:63fc429617cf3a86129136120c50ff131fa49818e5e93dc2c7cf611dbbba4c7b"
+      "revision": "sha256:98041a318b2e25791071e82bae5710ae427d352119fc83d2bdb95150f64dd817"
     }
   ],
   "references": [
@@ -54,7 +53,12 @@
     "260927-2304-fusion-dual-host-design-review.md",
     "260927-2319_*_may-an-agent-originate-a-work-package-on-its-own-initiative.md",
     "260927-2319_*_does-the-growth-bound-on-shipped-text-yield-to-the-dual-host-prompt-set.md",
-    "260922-1038-prior-mapping.md"
+    "260922-1038-prior-mapping.md",
+    {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "76f818ef-1569-43b8-8b7f-885f652c559c",
+      "display": "261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+    }
   ],
   "evidence": [],
   "outcome": null,

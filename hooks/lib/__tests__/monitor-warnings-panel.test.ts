@@ -274,6 +274,32 @@ function ptyAvailable(): PtyProbe {
   return ptyProbe;
 }
 
+/**
+ * A `sitecustomize` that makes every reverse name lookup hang, put on each
+ * monitor's PYTHONPATH. No case has a reason to resolve a name, and CPython's
+ * `HTTPServer.server_bind` used to call `socket.getfqdn(host)`: measured
+ * 2026-10-07, `getfqdn('::')` took 30.0 s against this host's LAN resolver,
+ * the wildcard case's whole budget, so the case passed or failed on the router.
+ * With the stub a lookup back in the bind fails every case on every host.
+ */
+const RESOLVER_STUB = `
+import socket, time
+def _hang(*_a, **_k):
+    time.sleep(60)
+    raise OSError("resolver stub: no name lookups in the monitor suite")
+socket.getfqdn = _hang
+socket.gethostbyaddr = _hang
+`;
+
+let resolverStubDir: string | undefined;
+function resolverStub(): string {
+  if (resolverStubDir === undefined) {
+    resolverStubDir = mkdtempSync(join(tmpdir(), "fusion-resolver-stub-"));
+    writeFileSync(join(resolverStubDir, "sitecustomize.py"), RESOLVER_STUB);
+  }
+  return resolverStubDir;
+}
+
 interface MonitorOpts {
   /** Extra environment for the monitor process (merged over process.env). */
   env?: Record<string, string>;
@@ -321,6 +347,7 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<Bound> 
     ...process.env,
     MONITOR_BIND: "127.0.0.1",
     MONITOR_URL_FILE: urlFile,
+    PYTHONPATH: [resolverStub(), process.env.PYTHONPATH].filter(Boolean).join(":"),
     ...opts.env,
   };
   if (opts.bind === null) delete env.MONITOR_BIND;
