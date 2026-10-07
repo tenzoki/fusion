@@ -106,6 +106,10 @@
 // line by name and points at `/fusion:migrate`. The stop is prose; dropping
 // the sentence or the state line turns the case red.
 //
+// A tenth case group (plan 261007-1836 step 6) runs reconcile's, cadence's,
+// check's `## gitignore`, migrate's Step 7 Node gate and help's blocks the same
+// way; its own comment, above it, says how.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -115,8 +119,8 @@
 
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
+import { platform, release, tmpdir } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -134,8 +138,8 @@ const HOST_TOOLS = ["bash", "tar", "cp", "rm", "mkdir", "cat", "chmod", "find", 
 const OPTIONAL_TOOLS = ["gzip"];
 /** What `bin/fusion-identity` calls beyond HOST_TOOLS; on PATH for the scope case and for preparing a project. */
 const IDENTITY_TOOLS = ["git", "od", "tr", "grep", "sort", "wc", "ls"];
-/** What the shipped skill blocks call beyond both lists: discuss's stamp, `bin/fusion-session-domain`'s `awk`, archive's `basename`, and the `mv` and `rmdir` of migrate's rename block. */
-const SKILL_TOOLS = ["date", "awk", "basename", "mv", "rmdir"];
+/** What the shipped skill blocks call beyond both lists: discuss's stamp, `bin/fusion-session-domain`'s `awk`, archive's `basename`, the `mv` and `rmdir` of migrate's rename block, and the `tail` and `cut` of `bin/fusion-cadence-anchor`, cadence's window block and check's `## gitignore` loop. */
+const SKILL_TOOLS = ["date", "awk", "basename", "mv", "rmdir", "tail", "cut"];
 
 interface Install {
   tmp: string;
@@ -340,7 +344,7 @@ function skillEnv(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
   return { ...base, PATH: `${base.PATH}${delimiter}${dir}`, FUSION_PLUGIN_ROOT: install.home, ...extra };
 }
 
-/** The ```bash blocks of the section of an INSTALLED `skills/<skill>/SKILL.md` whose `## ` heading starts with `heading`, verbatim, and the section's text outside every fence. A `## ` line inside a fence (a template's) ends no section. */
+/** The ```bash blocks of the section of an INSTALLED `skills/<skill>/SKILL.md` whose `## ` heading starts with `heading`, verbatim, and the section's text outside every fence. A `## ` line inside a fence (a template's) ends no section. A `# ` heading names the body's title section, which the first `## ` ends: help's one block stands there. */
 function shippedSection(skill: string, heading: string): { blocks: string[]; prose: string } {
   const blocks: string[] = [];
   const prose: string[] = [];
@@ -354,7 +358,7 @@ function shippedSection(skill: string, heading: string): { blocks: string[]; pro
         fence = null;
       }
     } else if (line.startsWith("```")) fence = [line];
-    else if (line.startsWith("## ")) {
+    else if (line.startsWith("## ") || (heading.startsWith("# ") && line.startsWith("# "))) {
       if (inSection) break;
       inSection = line.startsWith(heading);
     } else if (inSection) prose.push(line);
@@ -1072,4 +1076,249 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     expect(wrapper.status).toBe(3);
     expect(wrapper.stdout).toBe("");
   });
+});
+
+// ---------------------------------------------------------------------------
+// The tenth case group (plan 261007-1836 step 6, issue 261005-1018): the skill
+// blocks no case above ran, each lifted by its heading out of the INSTALLED
+// `skills/*/SKILL.md` and run by `bash` verbatim, a placeholder filled and
+// nothing else changed. A resolver value a body tells the model to write in
+// literally (`$WORKBENCH`, `$OUT_MEMO`, `$CO`) is passed as the environment
+// variable of that name, as the wp and archive cases above pass theirs. Each
+// case starts from a project Setup's own Step 0 blocks initialised. Help's
+// block stands under the body's `# ` title, before the first `## `, and is
+// lifted by that title (`shippedSection`). Reconcile's Step 3 block prints
+// only `changed=`, so the file a transition moved is named by the helper's
+// `changed-files`, the list behind that line.
+// ---------------------------------------------------------------------------
+
+describe("the shipped reconcile, cadence, check gitignore, migrate Step 7 and help blocks, verbatim on a JSON workbench", () => {
+  /** A project Setup's Step 0 initialised, git identity set, nothing committed. */
+  function setUp(name: string): Project & { wb: string } {
+    const p = project(name, { empty: true });
+    for (const b of shippedBlocks("setup", "## Step 0 —")) {
+      const r = run("bash", ["-c", fill(b, {})], { cwd: p.root, env: skillEnv() });
+      expect(r.status, r.stderr).toBe(0);
+    }
+    return { ...p, wb: join(p.root, "fusion-workbench") };
+  }
+  const git = (cwd: string, ...args: string[]) => run("git", args, { cwd, env: identityEnv() });
+  const committed = (cwd: string, message: string) => expect([git(cwd, "add", "-A").status, git(cwd, "commit", "-q", "-m", message).status]).toEqual([0, 0]);
+  const write = (cwd: string, ...args: string[]) => {
+    const r = run(join(install.home, "bin", "fusion-write"), args, { cwd, env: skillEnv() });
+    expect([r.status, kv(r.stdout, "result")], r.stderr).toEqual([0, "landed"]);
+    return r.stdout;
+  };
+  /** An open issue filed through bin/fusion-write over a narrative written first; its control path. */
+  const fileIssue = (p: { root: string; wb: string }, stem: string): string => {
+    mkdirSync(join(p.wb, "shared", "issues"), { recursive: true });
+    writeFileSync(join(p.wb, "shared", "issues", `${stem}.md`), `# ${stem}\n\nAn issue the install test filed.\n`);
+    return kv(write(p.root, "create", "--kind", "issue", "--narrative-file", `shared/issues/${stem}.md`, "--origin", "user-request", "--actor", "user"), "path")!;
+  };
+  const closeIssue = (p: { root: string }, path: string) => write(p.root, "transition", "--record", path, "--to", "closed", "--reason", "rejected", "--disposition", JSON.stringify({ kind: "rejected", reason_ref: null }), "--actor", "user");
+
+  it("/fusion:reconcile: Step 1 finds the root from below and halts without one, Step 2 reads the domain and the mark, Step 3 sees a transition, Step 4 sets HEAD", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = setUp("reconcile-project");
+    const env = skillEnv();
+    const one = (heading: string): string[] => shippedBlocks("reconcile", heading);
+    const [locate, ...r1] = one("## Step 1 —");
+    const [domainBlock, markRead, ...r2] = one("## Step 2 —");
+    const [changed, ...r3] = one("## Step 3 —");
+    const [markSet, ...r4] = one("## Step 4 —");
+    expect([r1, r2, r3, r4]).toEqual([[], [], [], []]);
+    // Every later block runs after Step 1's cd, from a directory below the root, as one shell.
+    const below = join(p.root, "src", "deep");
+    mkdirSync(below, { recursive: true });
+    const sh = (b: string) => run("bash", ["-c", `${locate}${b}`], { cwd: below, env });
+
+    const located = run("bash", ["-c", `${locate}pwd\n`], { cwd: below, env });
+    expect([located.status, located.stdout], located.stderr).toEqual([0, `${realpathSync(p.root)}\n`]);
+    const nowhere = join(install.tmp, "reconcile-no-workbench");
+    mkdirSync(nowhere);
+    const halted = run("bash", ["-c", locate], { cwd: nowhere, env });
+    expect([halted.status, halted.stdout]).toEqual([1, `No fusion workbench above ${realpathSync(nowhere)}. Run /fusion:setup first.\n`]);
+
+    // Step 2: the domain defaulted with no event log, then read from a hook-written session_start row; no mark held.
+    const defaulted = sh(domainBlock);
+    expect([defaulted.status, defaulted.stdout], defaulted.stderr).toEqual([0, "domain=code\nsource=default\n"]);
+    writeFileSync(join(p.wb, "orchestrator-events.jsonl"), `${JSON.stringify({ ts: "2026-10-07T10:00:00Z", event: "session_start", writer: "session-start-hook", domain: "data" })}\n`);
+    const read = sh(domainBlock);
+    expect([read.status, read.stdout], read.stderr).toEqual([0, "domain=data\nsource=event-log\n"]);
+    const noMark = sh(markRead);
+    expect([noMark.status, noMark.stdout], noMark.stderr).toEqual([1, ""]);
+
+    // Step 3 without a mark is unknown, which dispatches.
+    const issue = fileIssue(p, "261007-1900-reconcile-issue");
+    writeFileSync(join(p.root, ".gitignore"), "fusion-workbench/.checkout-id\nfusion-workbench/.cadence-anchors\n");
+    committed(p.root, "filed");
+    expect(sh(changed).stdout).toBe("changed=unknown\n");
+
+    // Step 4 sets HEAD; Step 2 then reads it back, and Step 3 proves nothing moved.
+    const head = git(p.root, "rev-parse", "HEAD").stdout.trim();
+    const set = sh(markSet);
+    expect([set.status, set.stdout], set.stderr).toEqual([0, ""]);
+    expect(readFileSync(join(p.wb, ".cadence-anchors"), "utf-8")).toBe(`last_reconcile_commit=${head}\n`);
+    expect([sh(markRead).status, sh(markRead).stdout]).toEqual([0, `${head}\n`]);
+    expect(sh(changed).stdout).toBe("changed=no\n");
+
+    // A transition, uncommitted, moves the issue's control file alone: Step 3 says yes, and the list behind it names that `.record.json`.
+    closeIssue(p, issue);
+    expect(sh(changed).stdout).toBe("changed=yes\n");
+    const files = run(join(install.home, "bin", "fusion-cadence-anchor"), ["changed-files", "last_reconcile_commit"], { cwd: p.root, env });
+    expect([files.status, files.stdout], files.stderr).toEqual([0, `fusion-workbench/${issue}\n`]);
+    expect(issue).toMatch(/\.record\.json$/);
+  }, 60_000);
+
+  it("/fusion:cadence ## Process: the resolver, identity, window, scan, week-check and digest-directory blocks", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = setUp("cadence-project");
+    const blocks = shippedBlocks("cadence", "## Process");
+    expect(blocks.length).toBe(6);
+    const [paths, identity, window, scan, weeks, digestDir] = blocks;
+    const sh = (b: string, extra: NodeJS.ProcessEnv = {}) => run("bash", ["-c", b], { cwd: p.root, env: { ...skillEnv(), ...extra } });
+
+    // 0. The resolver names the three keys the body reads.
+    const resolved = sh(paths);
+    expect([resolved.status, resolved.stdout], resolved.stderr).toEqual([0, `WORKBENCH=${realpathSync(p.wb)}\nOUT_MEMO=shared/memos\nSCAN_HISTORY=shared/history\n`]);
+    const keys = { WORKBENCH: kv(resolved.stdout, "WORKBENCH")!, OUT_MEMO: "shared/memos", SCAN_HISTORY: "shared/history" };
+
+    // 1. This checkout: CHECKOUT= from the identity helper, an unregistered checkout prints no alias, then the local date.
+    const CO = readFileSync(join(p.wb, ".checkout-id"), "utf-8").trim();
+    const who = sh(identity, { CO });
+    expect(who.status, who.stderr).toBe(0);
+    expect([kv(who.stdout, "CHECKOUT"), kv(who.stdout, "alias"), who.stdout.trimEnd().split("\n").at(-1)]).toEqual([CO, undefined, expect.stringMatching(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)]);
+
+    // 2. The windows, with no log and then over a log whose newest day is the high-water mark.
+    const windowLine = /^today=(\d{4}-\d{2}-\d{2}) week_start=(\d{4}-\d{2}-\d{2}) yday_start=(\d{4}-\d{2}-\d{2}) weekend=(yes \(Fri–Sun\)|no) since=(\S+)\n$/;
+    const first = sh(window, { CO });
+    expect(first.status, first.stderr).toBe(0);
+    const [, today, weekStart, ydayStart, weekend, since] = windowLine.exec(first.stdout) ?? [];
+    expect(since, first.stdout).toBe("none");
+    const days = (from: string, to: string) => (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000;
+    const monday = new Date(`${today}T00:00:00Z`).getUTCDay() === 1;
+    expect([days(weekStart, today), days(ydayStart, today), weekend]).toEqual([7, monday ? 3 : 1, monday ? "yes (Fri–Sun)" : "no"]);
+    const log = join(p.root, `activity-log-${CO}.md`);
+    writeFileSync(log, "# Activity Log\n\n## Daily Log\n\n## 2026-09-28 (Mon) [9-10]\n\n## 2026-10-01 (Thu) [9-12]\n");
+    expect(windowLine.exec(sh(window, { CO }).stdout)?.[5]).toBe("2026-10-01");
+
+    // 3b. The scan: every narrative outside the four excluded paths, by `ls -l -T`, which GNU ls rejects (the block's own stated limit).
+    const issue = fileIssue(p, "261007-1910-cadence-issue");
+    for (const rel of ["archive/261001-0900-old/a.md", "stashes/s.md", "stilwerk/notes.md", ".migration-v2-backup/b.md", "shared/memos/notes.md", "work-packages/261007-1911-wp/plans/p.md"]) {
+      mkdirSync(dirname(join(p.wb, rel)), { recursive: true });
+      writeFileSync(join(p.wb, rel), "# x\n");
+    }
+    const listed = (r: ReturnType<typeof run>) => {
+      expect(r.status, `the scan block exited ${r.status} on ${platform()} ${release()}; its comment says GNU ls rejects \`-T\`: ${r.stderr}`).toBe(0);
+      return r.stdout.split("\n").filter((l) => l.length > 0).map((l) => l.slice(l.indexOf(`${keys.WORKBENCH}/`) + keys.WORKBENCH.length + 1)).sort();
+    };
+    const narrative = issue.replace(".record.json", ".md");
+    expect(listed(sh(scan, keys))).toEqual([narrative, "shared/memos/notes.md", "work-packages/261007-1911-wp/plans/p.md"]);
+    const emptyKey = sh(scan, { ...keys, OUT_MEMO: "" });
+    expect([emptyKey.status, emptyKey.stdout, emptyKey.stderr]).toEqual([1, "", "fusion bug: cadence resolver key empty or unset: OUT_MEMO\n"]);
+
+    // A transition-only change after the mark: the control file moves, the narrative does not, and the scan of `*.md` lists nothing.
+    // Pinned as it stands: on a JSON workbench a state change made by a transition alone does not reach the activity log. The gap goes to an issue (plan 261007-1836 step 6), not into this test.
+    const old = new Date("2020-01-01T00:00:00Z");
+    for (const rel of (readdirSync(p.wb, { recursive: true }) as string[]).filter((f) => f.endsWith(".md"))) utimesSync(join(p.wb, rel), old, old);
+    const controlBefore = readFileSync(join(p.wb, issue));
+    const narrativeBefore = readFileSync(join(p.wb, narrative));
+    closeIssue(p, issue);
+    expect([readFileSync(join(p.wb, issue)).equals(controlBefore), readFileSync(join(p.wb, narrative)).equals(narrativeBefore)]).toEqual([false, true]);
+    expect(listed(sh(scan, { ...keys, SINCE: today }))).toEqual([]);
+
+    // 6. The week check: one ISO week, one row; then a second week with no row is a MISMATCH. One python3 process, on PATH for this block alone.
+    const py = findOnHostPath("python3");
+    if (py === null) throw new Error("python3 is not on this host's PATH; cadence's week-check block needs it");
+    const pyDir = join(install.tmp, "path-python3");
+    mkdirSync(pyDir);
+    symlinkSync(py, join(pyDir, "python3"));
+    const withPy = { CO, PATH: `${skillEnv().PATH}${delimiter}${pyDir}` };
+    writeFileSync(log, "# Activity Log\n\n## Active Hours per Week\n\n| Week of (Mon) | Days active | Avg active hours/day |\n|---------------|-------------|----------------------|\n| 2026-09-28    | 2           | 2.0                  |\n\n## Daily Log\n\n## 2026-09-28 (Mon) [9-10]\n\n## 2026-10-01 (Thu) [9-12]\n");
+    const matched = sh(weeks, withPy);
+    expect([matched.status, matched.stdout], matched.stderr).toEqual([0, "2 daily entries, 1 week rows, 1 distinct ISO weeks\n"]);
+    writeFileSync(log, `${readFileSync(log, "utf-8")}\n## 2026-10-06 (Tue) [9-10]\n`);
+    const mismatched = sh(weeks, withPy);
+    expect([mismatched.status, mismatched.stdout], mismatched.stderr).toEqual([0, "3 daily entries, 1 week rows, 2 distinct ISO weeks\nMISMATCH: 2 distinct ISO weeks vs 1 week rows\n"]);
+
+    // 9. The digest's directory, and the refusal that keeps an empty pair from naming `/`.
+    const made = sh(digestDir, keys);
+    expect([made.status, made.stdout, existsSync(join(p.wb, "shared", "memos"))], made.stderr).toEqual([0, "", true]);
+    const refused = sh(digestDir, { ...keys, WORKBENCH: "" });
+    expect([refused.status, refused.stderr]).toEqual([1, "fusion bug: WORKBENCH or OUT_MEMO empty — refusing to write the digest\n"]);
+  }, 60_000);
+
+  it("/fusion:check ## gitignore: appends the negation an excluded workbench.json needs, reports an unignored .json-state/ as class L, and prints nothing on a clean project", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = setUp("check-gitignore-project");
+    const [loop, ...rest] = shippedBlocks("check", "## gitignore —");
+    expect(rest).toEqual([]);
+    const sh = () => run("bash", ["-c", loop], { cwd: p.root, env: skillEnv() });
+
+    // Not yet tracked: the project's choice, nothing to say.
+    expect([sh().status, sh().stdout]).toEqual([0, ""]);
+
+    // Tracked, with workbench.json excluded and .checkout-id ignored as class L should be.
+    writeFileSync(join(p.root, ".gitignore"), "fusion-workbench/workbench.json\nfusion-workbench/.checkout-id\n");
+    committed(p.root, "workbench tracked");
+    expect(git(p.root, "ls-files", "--error-unmatch", "fusion-workbench/workbench.json").status).not.toBe(0);
+    // `.json-state/` is ignored by the `*` file the codec writes into it; without that file it is untracked and no rule covers it.
+    rmSync(join(p.wb, ".json-state", ".gitignore"));
+    const repaired = sh();
+    expect([repaired.status, repaired.stdout], repaired.stderr).toEqual([
+      0,
+      `gitignore: workbench.json was excluded — negation appended to ${realpathSync(p.root)}/.gitignore\ngitignore: class L entry .json-state is untracked and covered by no ignore rule — not repaired, report it\n`,
+    ]);
+    expect(readFileSync(join(p.root, ".gitignore"), "utf-8")).toBe("fusion-workbench/workbench.json\nfusion-workbench/.checkout-id\n!fusion-workbench/workbench.json\n");
+    expect(git(p.root, "check-ignore", "-q", "fusion-workbench/workbench.json").status).toBe(1);
+
+    // The codec's ignore file back: a clean project, and the negation is not appended twice.
+    writeFileSync(join(p.wb, ".json-state", ".gitignore"), "*\n");
+    const clean = sh();
+    expect([clean.status, clean.stdout], clean.stderr).toEqual([0, ""]);
+    expect(readFileSync(join(p.root, ".gitignore"), "utf-8")).toBe("fusion-workbench/workbench.json\nfusion-workbench/.checkout-id\n!fusion-workbench/workbench.json\n");
+  }, 60_000);
+
+  it("/fusion:migrate ## Step 7's Node gate: NODE= on the host's node, the refusal for a node too old and for none on PATH", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const [gate, ...rest] = shippedBlocks("migrate", "## Step 7 —");
+    expect(rest, "## Step 7 — carries more than its Node gate block").toEqual([]);
+    const want = (JSON.parse(readFileSync(join(install.home, "codec", "package.json"), "utf-8")) as { engines: { node: string } }).engines.node.replace(">=", "");
+    const refusal = `REFUSED: the JSON migration needs Node ${want} or later, and node is missing or older. Install it and run /fusion:migrate again.\n`;
+    const sh = (PATH: string) => run("bash", ["-c", gate], { cwd: install.tmp, env: { PATH, HOME: join(install.tmp, "home-dir"), FUSION_PLUGIN_ROOT: install.home } });
+
+    const host = sh(install.path);
+    expect([host.status, host.stdout], host.stderr).toEqual([0, `NODE=${process.version}\n`]);
+
+    // A `node` first on PATH that reports an old version and fails the block's `-e` comparison.
+    const oldNode = join(install.tmp, "path-old-node");
+    mkdirSync(oldNode);
+    stub(oldNode, "node", 'case "$1" in --version) echo v18.0.0 ;; -e) exit 1 ;; esac');
+    const old = sh(`${oldNode}${delimiter}${install.path}`);
+    expect([old.status, old.stdout], old.stderr).toEqual([0, refusal]);
+
+    // No `node` at all: the install's PATH directory, every entry but node.
+    const noNode = join(install.tmp, "path-gate-no-node");
+    mkdirSync(noNode);
+    for (const name of readdirSync(install.path)) if (name !== "node") symlinkSync(join(install.path, name), join(noNode, name));
+    const none = sh(noNode);
+    expect([none.status, none.stdout], none.stderr).toEqual([0, refusal]);
+  });
+
+  it("/fusion:help: the FUSION_SRC block prints the install home with FUSION_PLUGIN_ROOT set, and UNRESOLVED without it", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const [resolveRoot, ...rest] = shippedBlocks("help", "# Fusion — self-explainer");
+    expect(rest).toEqual([]);
+    const p = setUp("help-project");
+    const set = run("bash", ["-c", resolveRoot], { cwd: p.root, env: skillEnv() });
+    expect([set.status, set.stdout], set.stderr).toEqual([0, `source root: ${install.home}\n`]);
+    const { FUSION_PLUGIN_ROOT: _unset, ...without } = skillEnv();
+    const unset = run("bash", ["-c", resolveRoot], { cwd: p.root, env: without });
+    expect([unset.status, unset.stdout, unset.stderr]).toEqual([0, "source root: UNRESOLVED (FUSION_PLUGIN_ROOT is unset)\n", ""]);
+  }, 60_000);
 });
