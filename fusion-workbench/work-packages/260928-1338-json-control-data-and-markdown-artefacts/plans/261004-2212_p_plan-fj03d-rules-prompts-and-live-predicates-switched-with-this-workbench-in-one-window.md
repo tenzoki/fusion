@@ -313,6 +313,17 @@ Rules for every step of Part A. Work happens in the worktree of step 1; no commi
     - Changes: what landed and at which commits; step 10's classification result, with its per-basis counts beside the class totals and the count of pattern matches without control grammar stated apart (added 2026-10-05 on the user's ruling under step 2); the activation evidence on fusion's own workbench (receipt, read-back, no-op, suite, the window build's commit and bundle digest); that no codec byte moved, so no re-qualification is asked; what remains for FJ05.
     - Dependencies: 16.
     - Acceptance: the section is an append; the digest it states equals `shasum -a 256 codec/dist/fusion-record.js`.
+    - 2026-10-07, `e7695d9c`. The section `## FJ03d (the hand-over)` is appended to `REQUESTS.md` from the analyst's draft `261007-1105-fj03d-step17-hand-over-draft.md`, unedited. Its fold rests on the user's two rulings of 2026-10-07 on decision 261005-1018 (`codec/` read per line; the 16 `history` lines stated apart), argued in discussion `261007-0707-other-kind-hits-prior-record-type.md`. The fold is 233 / 155 / 7 with 38 stated apart over 433 at `29dac3c5`, and 241 / 155 / 7 / 38 over 441 at HEAD. The section asks request 61. The digest stated equals `shasum` (`c76bbce9…`). Codec 1 682 passed and 13 skipped, and the three Markdown lints are green.
+    - **Prior answered request 61 on 2026-10-07 with yes**, at Prior `7da6690` (`Prior: docs/design/fusion-fj03d-prior-response.md`, read on disk): "The 38 separately stated and individually explained hits count as classified. Request 61 is closed." Prior re-took the fold at `29dac3c5`, `b65eb4b0` and `e7695d9c` and got the same figures. Spec §7's closing paragraph now admits "begründet separat ausgewiesene Treffer" with place and reason, and Prior names the disposition "no consumer of the old Fusion control grammar, with evidence". The classification no longer holds FJ03d up, and no repin is needed (requests 59 and 60 stay closed at `f9ecae78` / `c76bbce9…`).
+    - Two corrections from Prior's response:
+      - The section's last sentence says "FJ05 is planned against `b65eb4b0`". That is wrong: FJ05 is not planned. The pinned bytes of `REQUESTS.md` stay as they are, and Prior treats FJ05 as the next plan to write.
+      - The 13 skipped codec checks are the optional Go-golden assertions in `prior-mapping.test.ts`, which are not passing tests. Release evidence runs with `CODEC_REQUIRE_GOLDENS=1`.
+    - Prior's response names five things FJ05's acceptance still needs:
+      - a review of `99eef20d`, `95720e4c`, `b65eb4b0` and `e7695d9c`;
+      - the release artifact with fresh install, assets, a consuming-project smoke test, a repeated migration, and the launcher's update ref;
+      - a disposition of the six consumer test gaps (issue 261005-1018);
+      - a resolution or bounded scope for issue 261005-0626 (the `succeeded` edge);
+      - the documented limits checked against the release.
 
 ## Where this work stops
 
