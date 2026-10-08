@@ -178,6 +178,17 @@ Each of these is known, stated, and not handled by anything shipped.
 - **Prior's qualification is a release fact, not a runtime dependency.** The codec bundle shipped
   in `codec/dist/` is the one Prior qualified, by digest. fusion runs in Claude Code with no Prior
   installation, binary, service or variable, and nothing at run time checks that qualification.
+- **Six agent behaviours on a JSON workbench were never observed.** The opt-in suite that
+  dispatches agents headless does not reach them, as
+  `261007-2348-agent-dispatch-and-skill-block-observation-at-495aca7d.md` records:
+  - the orchestrator's interactive approval paths: a `-p` run answers no question;
+  - a closure whose review returns `revise`, so a finish binding that verdict. Under `autonomous`
+    the orchestrator may instead hold a closure whose work is visibly not done on disk (a
+    `gate_hit`, the package left `claimed`), and that hold is all the suite has seen;
+  - `policy-curator` apply mode, which waits on the user's approval of a ledger;
+  - `reviewer` with `**Review domain:** ontology`;
+  - `state-auditor` with live records to reconcile and a stated `**Directive:**`;
+  - repetition: each case ran once, and one run proves one run.
 
 ## What needs no action
 

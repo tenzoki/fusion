@@ -18,12 +18,12 @@
   data-implementer.md 16036
   document-editor.md 13230
   implementation-planner.md 20516
-  orchestrator.md 95230
+  orchestrator.md 95673
   policy-curator.md 77909
   requirements-designer.md 17664
   reviewer.md 13522
   state-auditor.md 21781
-  total 322646
+  total 323089
 
 [skills bytes]
   archive/SKILL.md 26184
@@ -45,7 +45,7 @@
   total 221041
 
 [hook-tests lines]
-  agent-dispatch-observation.test.ts 259
+  agent-dispatch-observation.test.ts 269
   archive-filter-key.test.ts 41
   citation-form.test.ts 360
   citation-grammar-boundaries.test.ts 255
@@ -118,4 +118,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 333
-  total 24607
+  total 24617

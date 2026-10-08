@@ -138,7 +138,14 @@ function order(s: Scratch): { b: string | undefined; unmet: string[] } {
   const out = run(s.root, BIN("fusion-work-order"), []);
   return { b: new RegExp(`^\\s*\\d+\\s+\\d+\\s+\\d+\\s+(\\w+)\\s+${B}$`, "m").exec(out)?.[1], unmet: out.split("\n").filter((l) => l.startsWith("unmet=")) };
 }
+const beside = (stem: string, e: string) => e.startsWith(stem) && /^(\.\d+)?\.evidence\.json$/.test(e.slice(stem.length));
 const unmetOnA = (s: Scratch) => new RegExp(`^unmet=${B} wants ${s.a.stem} under succeeded: `);
+/** The hold the ruling allows (`## Closing a work package` step 1): the last `gate_hit` in the scratch event log with no `gate_response` after it, its detail; else undefined. */
+function hold(s: Scratch): string | undefined {
+  const rows = readFileSync(resolve(s.workbench, "orchestrator-events.jsonl"), "utf-8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
+  const i = rows.map((r) => r.event).lastIndexOf("gate_hit");
+  return i >= 0 && !rows.slice(i).some((r) => r.event === "gate_response") ? String(rows[i].detail ?? "") : undefined;
+}
 
 /**
  * The closure fixture of cases (e) to (h): A `autonomous` on the user's word in
@@ -194,7 +201,6 @@ describe.runIf(ON)("agents dispatched headless, judged on disk", () => {
     work(s);
     const { transcript } = dispatch(s, "b-reviewer", "reviewer", "**Review domain:** code\n\nReview the last commit, `HEAD~1..HEAD`, which adds `src/sum.js` and its test for the claimed work package. Write your review and record your verdict as your prompt says.", 20 * MIN);
     const files = readdirSync(resolve(s.workbench, s.a.dir, "reviews"));
-    const beside = (stem: string, e: string) => e.startsWith(stem) && /^(\.\d+)?\.evidence\.json$/.test(e.slice(stem.length));
     const paired = files.filter((f) => f.endsWith(".md")).filter((r) => files.some((e) => beside(r.slice(0, -3), e)));
     expect(paired.length, `no review with an .evidence.json beside it in ${s.a.dir}/reviews (${files.join(", ")}); transcript ${transcript}`).toBeGreaterThan(0);
   }, 21 * MIN);
@@ -221,39 +227,43 @@ describe.runIf(ON)("agents dispatched headless, judged on disk", () => {
     expect([control.status, (control.outcome?.evidence ?? []).length > 0, order(s)], `transcript ${transcript}`).toEqual(["done", true, { b: "ready", unmet: [] }]);
   }, 31 * MIN);
 
-  // (f) to (h) assert what the closure contract guarantees (`agents/orchestrator.md`
-  // `## Work packages`, `## Closing a work package`). Where it admits two
-  // outcomes the case asserts the disjunction and logs which one ran.
+  // (f) to (h) assert the closure contract (`agents/orchestrator.md` `## Work
+  // packages`, `## Closing a work package`) as fixed for issues 261008-0044.
+  // (g) and (h) admit the hold the user ruled on 2026-10-08: A `claimed` with an
+  // unanswered `gate_hit` and B blocked, or the closure as written; each logs which.
 
-  it("(f) orchestrator told to drop A with a reason: A dropped, not completed, with a reason, and B blocked on an unmet row; or A left claimed, the drop asked", () => {
+  it("(f) orchestrator told to drop A with a reason: A dropped, not completed, with a reason, its plan terminal, and B blocked on an unmet row", () => {
     const s = closable("f-orchestrator", "works");
     const { transcript } = dispatch(s, "f-orchestrator", "orchestrator", "Drop the claimed work package add-sum. Reason: the sum helper is no longer wanted, the project will use a library instead. I confirm this drop; do not ask again.", 30 * MIN);
     const control = shown(s, s.a.path).control;
-    console.log(`(f) took: A ${control.status}, outcome ${JSON.stringify(control.outcome)}`);
-    // Under `autonomous` a drop still asks as written, and nobody answers a `-p` run.
-    if (control.status !== "dropped") return expect([control.status, order(s)], `transcript ${transcript}`).toEqual(["claimed", { b: "blocked", unmet: [] }]);
+    const plan = JSON.parse(readFileSync(resolve(s.workbench, s.a.dir, "plans", "261007-2101-plan-add-sum.record.json"), "utf-8")).control.state;
+    console.log(`(f) took: A ${control.status}, outcome ${JSON.stringify(control.outcome)}, plan ${plan}`);
     const { b, unmet } = order(s);
-    expect([control.outcome.class !== "completed", String(control.outcome.reason ?? "").trim().length > 0, b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual([true, true, "blocked", true]);
+    expect([control.status, control.outcome?.class !== "completed", String(control.outcome?.reason ?? "").trim().length > 0, ["closed", "deferred"].includes(plan), b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual(["dropped", true, true, true, "blocked", true]);
   }, 31 * MIN);
 
-  it("(g) orchestrator closes A whose work commit fails the plan's one test: B is not ready; A done binds no accept verdict", () => {
+  it("(g) orchestrator closes A whose work commit fails the plan's one test: A held with a gate_hit and B blocked, or a review with evidence in A's container, A done binding it with no accept verdict, B blocked on an unmet row", () => {
     const s = closable("g-orchestrator", "breaks");
     const { transcript } = dispatch(s, "g-orchestrator", "orchestrator", "close the claimed work package", 30 * MIN);
     const control = shown(s, s.a.path).control;
     const verdicts = boundVerdicts(s, control.outcome);
     const { b, unmet } = order(s);
-    console.log(`(g) took: A ${control.status}, bound verdicts [${verdicts.join(", ")}], B ${b}, unmet ${JSON.stringify(unmet)}`);
-    expect(b, `transcript ${transcript}`).not.toBe("ready");
-    if (control.status === "done") expect([verdicts.includes("accept"), b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual([false, "blocked", true]);
+    const held = hold(s);
+    console.log(`(g) took: ${held === undefined ? "closure" : `hold "${held}"`}, A ${control.status}, bound verdicts [${verdicts.join(", ")}], B ${b}, unmet ${JSON.stringify(unmet)}`);
+    if (control.status !== "done") return expect([control.status, held !== undefined, b, unmet], `transcript ${transcript}`).toEqual(["claimed", true, "blocked", []]);
+    const files = readdirSync(resolve(s.workbench, s.a.dir, "reviews"));
+    const paired = files.filter((f) => f.endsWith(".md") && files.some((e) => beside(f.slice(0, -3), e)));
+    expect([paired.length > 0, control.status, verdicts.length > 0 && verdicts.every((v) => v !== "accept" && !v.startsWith("unreadable")), b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual([true, "done", true, "blocked", true]);
   }, 31 * MIN);
 
-  it("(h) orchestrator closes A whose plan is done with no work commit: A done with empty outcome evidence and B blocked on an unmet row, or A left claimed", () => {
+  it("(h) orchestrator closes A whose plan is done with no work commit: A held with a gate_hit and B blocked, or A done with empty outcome evidence and B blocked on an unmet row", () => {
     const s = closable("h-orchestrator", "base-only");
     const { transcript } = dispatch(s, "h-orchestrator", "orchestrator", "close the claimed work package", 30 * MIN);
     const control = shown(s, s.a.path).control;
     const { b, unmet } = order(s);
-    console.log(`(h) took: A ${control.status}, outcome ${JSON.stringify(control.outcome)}, B ${b}, unmet ${JSON.stringify(unmet)}`);
-    if (control.status !== "done") return expect([control.status, b, unmet], `transcript ${transcript}`).toEqual(["claimed", "blocked", []]);
-    expect([control.outcome.evidence, b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual([[], "blocked", true]);
+    const held = hold(s);
+    console.log(`(h) took: ${held === undefined ? "closure" : `hold "${held}"`}, A ${control.status}, outcome ${JSON.stringify(control.outcome)}, B ${b}, unmet ${JSON.stringify(unmet)}`);
+    if (control.status !== "done") return expect([control.status, held !== undefined, b, unmet], `transcript ${transcript}`).toEqual(["claimed", true, "blocked", []]);
+    expect([control.status, control.outcome?.evidence, b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual(["done", [], "blocked", true]);
   }, 31 * MIN);
 });

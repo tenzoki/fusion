@@ -403,7 +403,7 @@ What you may do, at the user's word and with no dispatch, is maintain the store 
 | **Release** | `release --reason`: back to `open`, nobody working on it |
 | **Pause** | `transition --to paused`, which clears the claim; the narrative says what it waits for |
 | **Finish** | `transition --to done --outcome` class `completed`, the value's three fields as `rules/fusion-workbench-conventions.md` `## Work packages` spells them, and `--evidence <control path>` for the closing review's evidence record whenever one exists; the claim stays to name who did the work |
-| **Drop** | `transition --to dropped --outcome`; the narrative says why, citing the item that replaced it or the reason |
+| **Drop** | `transition --to dropped --outcome`, then its bound plan (`active_documents`, role `plan`) `--to closed --reason` citing the drop; the narrative says why, citing the item that replaced it or the reason |
 | **Split** | one item's several jobs filed as several items; the original dropped, citing its successors |
 | **Merge** | several statements of one job become one item; the others dropped, citing the survivor |
 
@@ -423,13 +423,13 @@ Run this when the item this session claimed is being finished in this session. W
 
 1. **Detect the transition.** The item is the container name you have held since Setup step 5. `show` its `package.json`: a `status` already `done` or `dropped` is terminal and this section does nothing. **Revise Brief**, **Revise Evidence base** and **Revise Artefact** at the Rebalance approval all continue the work: touch no field and skip the rest of this section.
 
-   The closing value is `done` when the work landed, and `dropped` when the user chose **Accept Bounded Closure** at the Rebalance approval or Bounded Closure was forced by **Rebalance bounding** — in that case the body says what was learned and why the job is no longer live.
+   The closing value is `done`, or `dropped` when the user chose **Accept Bounded Closure** at the Rebalance approval or Bounded Closure was forced by **Rebalance bounding** — in that case the body says what was learned and why the job is no longer live. Under `mode` `autonomous` you may hold the closure only when the work is visibly not done on disk (a test the plan's acceptance names fails, a file it says exists is missing): emit `gate_hit` naming what; the item stays `claimed`. Otherwise the closure runs as written.
 
-2. **The review — the one pass this work gets** (decision `260827-1120_*_how-often-does-the-review-pass-run.md`). Closure paths only; continued work waits. Take the coverage read once more (**Review coverage**), then route by what the uncovered commits changed, scoped to their files **plus the carried `**Not-opened:**` list**:
+2. **The review — the one pass this work gets** (decision `260827-1120_*_how-often-does-the-review-pass-run.md`). Closure paths only; continued work waits. Take the coverage read once more (**Review coverage**) with `--since` the commit that filed the item (`git log --diff-filter=A --format=%h -- <container>/package.json`), then route by what the uncovered commits changed, scoped to their files **plus the carried `**Not-opened:**` list**:
    - Code files → emit `review_start`, invoke `reviewer` with `**Review domain:** code`, emit `review_done`.
    - Ontology/data files (`.yaml`, `.json`, `.toml`, `.csv` in `ontology/` or `manifests/`) → the same with `**Review domain:** ontology`. Both kinds in one uncovered range are **one** dispatch carrying `**Review domain:** both`, not two.
 
-   - `uncovered 0` **and** an empty carried list → skip cleanly; an uncovered list that is empty only because nothing was committed is the same skip.
+   - `uncovered 0` with no carried file named, or no code or data file in range → skip cleanly; the finish then carries no `--evidence`.
 
    Findings land as issues (the reviewer files them) for the follow-on work; the closure note at step 3 names them and any remaining gap — coverage is advisory and never blocks the closure. A bounded reviewer return is continued here, before step 3; on the stall, closure proceeds and the gap goes into that note like any uncovered range.
 
