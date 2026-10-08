@@ -1210,24 +1210,34 @@ describe("the shipped reconcile, cadence, check gitignore, migrate Step 7 and he
       mkdirSync(dirname(join(p.wb, rel)), { recursive: true });
       writeFileSync(join(p.wb, rel), "# x\n");
     }
-    const listed = (r: ReturnType<typeof run>) => {
+    // The block prints the find's `ls` lines, then the event log's `record_change` rows (JSON objects); each half is read apart.
+    const scanned = (r: ReturnType<typeof run>) => {
       expect(r.status, `the scan block exited ${r.status} on ${platform()} ${release()}; its comment says GNU ls rejects \`-T\`: ${r.stderr}`).toBe(0);
-      return r.stdout.split("\n").filter((l) => l.length > 0).map((l) => l.slice(l.indexOf(`${keys.WORKBENCH}/`) + keys.WORKBENCH.length + 1)).sort();
+      const lines = r.stdout.split("\n").filter((l) => l.length > 0);
+      return {
+        files: lines.filter((l) => !l.startsWith("{")).map((l) => l.slice(l.indexOf(`${keys.WORKBENCH}/`) + keys.WORKBENCH.length + 1)).sort(),
+        changes: lines.filter((l) => l.startsWith("{")).map((l) => JSON.parse(l) as { ts: string; op: string; path: string; change: unknown }),
+      };
     };
     const narrative = issue.replace(".record.json", ".md");
-    expect(listed(sh(scan, keys))).toEqual([narrative, "shared/memos/notes.md", "work-packages/261007-1911-wp/plans/p.md"]);
+    // The issue's `create` row is the filing the find already lists, so it is not listed a second time.
+    expect(scanned(sh(scan, keys))).toEqual({ files: [narrative, "shared/memos/notes.md", "work-packages/261007-1911-wp/plans/p.md"], changes: [] });
     const emptyKey = sh(scan, { ...keys, OUT_MEMO: "" });
     expect([emptyKey.status, emptyKey.stdout, emptyKey.stderr]).toEqual([1, "", "fusion bug: cadence resolver key empty or unset: OUT_MEMO\n"]);
 
-    // A transition-only change after the mark: the control file moves, the narrative does not, and the scan of `*.md` lists nothing.
-    // Pinned as it stands: on a JSON workbench a state change made by a transition alone does not reach the activity log. The gap goes to an issue (plan 261007-1836 step 6), not into this test.
+    // A transition-only change after the mark: the control file moves, the narrative does not, so the find lists nothing,
+    // and the state change reaches the scan as the event log's `record_change` row, dated today (issue 261007-1852).
     const old = new Date("2020-01-01T00:00:00Z");
     for (const rel of (readdirSync(p.wb, { recursive: true }) as string[]).filter((f) => f.endsWith(".md"))) utimesSync(join(p.wb, rel), old, old);
     const controlBefore = readFileSync(join(p.wb, issue));
     const narrativeBefore = readFileSync(join(p.wb, narrative));
     closeIssue(p, issue);
     expect([readFileSync(join(p.wb, issue)).equals(controlBefore), readFileSync(join(p.wb, narrative)).equals(narrativeBefore)]).toEqual([false, true]);
-    expect(listed(sh(scan, { ...keys, SINCE: today }))).toEqual([]);
+    const afterTransition = scanned(sh(scan, { ...keys, SINCE: today }));
+    expect(afterTransition.files).toEqual([]);
+    expect(afterTransition.changes.map((c) => [c.ts.slice(0, 10), c.op, c.path, c.change])).toEqual([[today, "transition", issue, { from: "open", to: "closed" }]]);
+    // `$SINCE` bounds the rows as it bounds the find: a mark after today lists neither.
+    expect(scanned(sh(scan, { ...keys, SINCE: "2999-01-01" }))).toEqual({ files: [], changes: [] });
 
     // 6. The week check: one ISO week, one row; then a second week with no row is a MISMATCH. One python3 process, on PATH for this block alone.
     const py = findOnHostPath("python3");

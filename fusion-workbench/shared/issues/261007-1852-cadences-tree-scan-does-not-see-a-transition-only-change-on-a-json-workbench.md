@@ -10,3 +10,5 @@ Found beside step 6 of the plan above, outside its four defects, hence the share
 Evidence: `codec/src/__tests__/install.test.ts`, the `/fusion:cadence` `## Process` case of the tenth group: after an uncommitted `transition` the control file's bytes change, the narrative's do not, and the scan block with `SINCE` set to today lists nothing. The case asserts this current behaviour and names it as a gap.
 
 Acceptance: with `SINCE` set to today, the scan block lists the record whose control file a `transition` rewrote that day (or the activity log draws state changes from the event log's `record_change` rows), and the case in `install.test.ts` asserts that instead of the gap. Suggested owner: `code-implementer`.
+
+Resolved: 2026-10-08, cadence's step-3b scan block now also lists the event log's `record_change` rows (not `create`) dated on or after `$SINCE`, so a transition-only change reaches the activity log with the moment it happened; the install test's cadence `## Process` case asserts the transition row and the `$SINCE` bound instead of the gap. The surface-growth golden records the skill's growth (22 288 to 23 028 bytes) inside its bound.

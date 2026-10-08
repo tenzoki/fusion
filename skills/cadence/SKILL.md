@@ -85,12 +85,15 @@ empty=
 # macOS/BSD find+ls; on GNU coreutils replace `ls -l -T` with `ls -l --full-time`
 # (BSD `-T` prints full timestamps; GNU `-T` expects a tabsize argument and errors)
 find "$WORKBENCH" -type f -name '*.md' -not -path '*/archive/*' -not -path '*/stashes/*' -not -path '*/stilwerk/*' -not -path '*/.migration-v2-backup/*' ${SINCE:+-newermt "$SINCE"} -exec ls -l -T {} +
+# State changes: a transition rewrites the control file alone, so they come from the event log; `create` is the filing the find already lists.
+grep -hs '"event":"record_change"' "$WORKBENCH/orchestrator-events.jsonl" | grep -v '"op":"create"' | awk -v s="$SINCE" 'match($0, /"ts":"[^"]*"/) && substr($0, RSTART + 6, 10) >= s'
 ```
 
 **Substitute the resolver values before you run anything above.** They are step-0 keys, not shell variables: nothing exports them and the Bash tool starts a fresh shell per call, so write their values into every block literally. The assertion is looking for exactly the key you forgot, which expands to the empty string. **A non-zero exit there stops the workflow:** report it as a fusion bug, name the key the message names, and write **neither file**. An empty *directory* is legitimate and still earns a normal run saying the week was quiet; an empty *key* never is, because a run built on one asserts a quiet week that nothing ever checked and the reader cannot tell the two apart.
 
 - **Derive each item's code from its containing directory's basename**, per the legend. A file directly in the workbench root is `w`; a file in the directory `$SCAN_HISTORY` names is `h`.
 - Parse filenames for embedded stamps (e.g. `260408-1523-topic.md` means April 8, 15:23) and read headers for date metadata where they carry it; fall back to mtime when the filename has no stamp. `-newermt` is behaviour-preserving: an older mtime can only feed dates step 2 already closed.
+- **Each `record_change` row is one item**, dated by its `ts`, never by the stem's filename stamp, coded by its `path` as a file is, its topic the record and its `change`. A state change is the record's topic, not event-log bookkeeping for step 7. The row, not the control file's mtime, is the source: it carries the moment of the change and travels with a pull, where a pulled control file's mtime is the pull's.
 
 **Scan the tree; do not enumerate the stores.** The record's job is *all* activity, and an enumeration would under-report the day someone adds a store — where a missing source looks exactly like a quiet day. **The four excluded paths are not optional and must not be dropped**; `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` names this body as one of the two consumers holding them. They carry moved, frozen or configured content rather than activity: archived and stashed files would re-report their original days at their move date, and a v2-migration backup carries copies with the originals' timestamps, so old working days would appear a second time.
 
