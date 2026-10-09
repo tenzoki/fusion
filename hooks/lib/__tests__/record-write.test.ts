@@ -98,13 +98,16 @@ describe("takeover, request 62", () => {
     return { pkg: pkg.path, source: JSON.stringify({ workbench_id: must(p, { op: "inspect" }).result.id, record_id: shown(p, word).control.id }) };
   }
 
-  it("composes previous_claim and expected_revision from show and the claim for this checkout; five usage errors and two refusals land nothing; the row names both holders", () => {
+  it("composes previous_claim and expected_revision from show and the claim for this checkout; nine usage errors and two refusals land nothing; the row names both holders", () => {
     withJsonProject((p) => {
       const { pkg, source } = orphaned(p);
       const on = ["--record", pkg, "--actor", "orchestrator"];
       const take = (from: string, src: string | null, id: Identity = { checkout: ME }) => run(p, "claim", [...on, "--take-over-from", from, ...(src === null ? [] : ["--source", src])], id);
-      const usages = [take(OTHER, null), run(p, "claim", [...on, "--source", source]), take(ME, source), take(OTHER, "not json"), take(OTHER, "null")];
-      expect(usages.map((r) => [r.o.kind, mutations(r.sent)])).toEqual(Array(5).fill(["usage", []]));
+      const taking = [...on, "--take-over-from", OTHER, "--source", source], resent = ["--operation-id", "f03a0000-0000-4000-8000-000000000001", "--expected-revision", "sha256:x", "--claimed-at", "2026-10-09T00:00:00Z"];
+      const usages = [take(OTHER, null), run(p, "claim", [...on, "--source", source]), take(ME, source), take(OTHER, "not json"), take(OTHER, "null"), take("", source), run(p, "claim", [...on, "--previous-claim", "{}"]), run(p, "claim", [...taking, "--previous-claim", "[]"]), run(p, "claim", [...taking, ...resent])];
+      expect(usages.map((r) => [r.o.kind, mutations(r.sent)])).toEqual(Array(9).fill(["usage", []]));
+      // The last four each reach their own branch of parseFlags: an empty holder, --previous-claim off a takeover, not an object, missing from a re-send.
+      expect(usages.slice(5).map((r) => (r.o as { detail: string }).detail)).toEqual([/^--take-over-from names the holder/, /re-send alone$/, /^--previous-claim takes a JSON object$/, /^a re-send gives --operation-id with --expected-revision and --claimed-at and --previous-claim/].map((re) => expect.stringMatching(re)));
       const before = shown(p, pkg);
       // The holder is not the one named: exit 5, nothing sent. A source that does not resolve: evidence validation refuses it, nothing written.
       const wrongHolder = take("0c0c0c0c", source);

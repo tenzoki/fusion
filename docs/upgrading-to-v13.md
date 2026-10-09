@@ -158,7 +158,7 @@ it: a test that asserts it, or, for an absence, the search that finds no reader,
   refused. The orchestrator sends a takeover only on your explicit word in the conversation that
   names the package, its holder and this checkout as the new holder, after you say the former
   checkout is gone or has stopped writing. It files your words verbatim in a decision record in the
-  package's container and cites that record as `--source`. `mode` `autonomous` never answers it,
+  package's container, moves that record to `answered` as ruled by you, and cites it as `--source`. `mode` `autonomous` never answers it,
   and a second transfer asks again. Your statement that the former checkout is gone is a
   procedure, not fencing: a copy of its checkout identity, or a session that is disconnected but
   still running, is not stopped by it. That the cited record resolves shows that the record
@@ -175,9 +175,10 @@ it: a test that asserts it, or, for an absence, the search that finds no reader,
   `codec/src/__tests__/round-trip-cli-takeover.test.ts` ("the version boundary"): on a package that
   carries a transfer, `validate`, `release` and `transition` are refused `schema-invalid` and a
   takeover request is refused by its protocol, and no byte moves, but `show` returns it as stored,
-  because `show` does not validate. Other operations were not measured: an aggregate operation of an
-  old client may fail when it reaches such a package, so treat a workbench holding one as not
-  readable by old clients as a whole.
+  because `show` does not validate. An unscoped `validate`, the one aggregate operation measured,
+  answers that the workbench is not valid, its findings naming exactly the packages that carry a
+  transfer. Other operations were not measured, the aggregates `list`, `reconcile` and `inspect`
+  among them, so treat a workbench holding such a package as not readable by old clients as a whole.
 - **A `succeeded` dependency is met only by a finish that binds an accepted review.** `depends_on`
   takes two conditions: `terminal` (the target is `done` or `dropped`) and `succeeded` (`done` with
   an accepted evidence binding in its outcome). The orchestrator's closure finishes a package with
@@ -224,9 +225,9 @@ it: a test that asserts it, or, for an absence, the search that finds no reader,
   variable, and nothing at run time checks that qualification: `bin/fusion-record` runs the bundle
   with `node` and compares no digest. `codec/src/__tests__/committed-bundle.test.ts` shows only
   that the committed bundle is the build of the committed source.
-- **Seven agent behaviours on a JSON workbench were never observed.** The opt-in suite that
+- **Eight agent behaviours on a JSON workbench were never observed.** The opt-in suite that
   dispatches agents headless did not reach the first six, as
-  `261007-2348-agent-dispatch-and-skill-block-observation-at-495aca7d.md` records; the seventh was
+  `261007-2348-agent-dispatch-and-skill-block-observation-at-495aca7d.md` records; the last two were
   added to it later:
   - the orchestrator's interactive approval paths: a `-p` run answers no question;
   - a closure whose review returns `revise`, so a finish binding that verdict. Under `autonomous`
@@ -236,8 +237,10 @@ it: a test that asserts it, or, for an absence, the search that finds no reader,
   - `reviewer` with `**Review domain:** ontology`;
   - `state-auditor` with live records to reconcile and a stated `**Directive:**`;
   - repetition: each case ran once, and one run proves one run;
-  - the orchestrator's takeover, case (i) of `hooks/lib/__tests__/agent-dispatch-observation.test.ts`,
-    written after that run and not yet run.
+  - the orchestrator's takeover on your word, case (i) of
+    `hooks/lib/__tests__/agent-dispatch-observation.test.ts`;
+  - the orchestrator sending no takeover under `autonomous` without your word for it, case (j) of
+    the same file. Both cases were written after that run and have not been run.
 
 ## What needs no action
 

@@ -201,14 +201,14 @@ function transfers(s: Scratch): { control: Record<string, any>; entries: any[]; 
   return { control, entries: control.provenance?.claim_transfers ?? [], rows };
 }
 
-/** The narrative of the record `reconcile` resolves A's transfer `n` source to, with that record's kind; null when it does not resolve to a record. */
-function consent(s: Scratch, n: number): { kind: string; text: string } | null {
+/** The narrative of the record `reconcile` resolves A's transfer `n` source to, with that record's kind and state; null when it does not resolve to a record. */
+function consent(s: Scratch, n: number): { kind: string; state: string; text: string } | null {
   const answer = ask(s.workbench, { op: "reconcile" }, { bundle: BUNDLE });
   if (answer.kind !== "result") throw new Error(`reconcile: ${JSON.stringify(answer)}`);
   const site = ((answer.result as { references: { path: string; at: string; status: string; target?: string }[] }).references).find((r) => r.path === s.a.path && r.at.startsWith(`/provenance/claim_transfers/${n}/source`));
   if (site?.status !== "resolved" || !site.target?.endsWith(".record.json")) return null;
   const record = JSON.parse(readFileSync(resolve(s.workbench, site.target), "utf-8"));
-  return { kind: record.kind, text: readFileSync(resolve(s.workbench, record.narrative.path), "utf-8") };
+  return { kind: record.kind, state: record.control.state, text: readFileSync(resolve(s.workbench, record.narrative.path), "utf-8") };
 }
 
 describe.runIf(ON)("agents dispatched headless, judged on disk", () => {
@@ -300,22 +300,22 @@ describe.runIf(ON)("agents dispatched headless, judged on disk", () => {
   // (i) and (j) observe the **Take over** row (`agents/orchestrator.md` `## Work
   // packages`) as Prior's answer to request 62 corrects it: a takeover only on the
   // user's word for this package and this transfer, its consent decision record
-  // naming the package, both holders and the approval verbatim; a resolving
+  // answered and naming the package, both holders and the approval verbatim; a resolving
   // source with no such word sends none, `autonomous` included.
 
   const APPROVAL = "I approve the takeover of the work package add-sum from checkout deadbeef to this checkout.";
 
-  it("(i) orchestrator told to take A over from the absent deadbeef: A claimed by this checkout with one transfer whose source is a decision record naming A, both holders and the approval verbatim", () => {
+  it("(i) orchestrator told to take A over from the absent deadbeef: A claimed by this checkout with one transfer whose source is an answered decision record naming A, both holders and the approval verbatim", () => {
     const s = scratch("i-orchestrator", "deadbeef");
     commit(s, "chore: scratch project and workbench");
     const { transcript } = dispatch(s, "i-orchestrator", "orchestrator", `Take over the work package 261007-2100-add-sum, which checkout deadbeef holds. That checkout is gone: its machine was wiped and it will never write again. ${APPROVAL} Do the takeover and nothing else; do not start the package's work.`, 30 * MIN);
     const { control, entries, rows } = transfers(s);
     const record = consent(s, 0);
-    console.log(`(i) took: A ${control.status} by ${control.claim?.checkout_id}, ${entries.length} transfer(s), source ${JSON.stringify(entries[0]?.source)}, record ${record?.kind ?? "unresolved"}`);
+    console.log(`(i) took: A ${control.status} by ${control.claim?.checkout_id}, ${entries.length} transfer(s), source ${JSON.stringify(entries[0]?.source)}, record ${record?.kind ?? "unresolved"} ${record?.state ?? ""}`);
     expect(
-      [control.status, control.claim?.checkout_id, entries.map((e) => `${e.previous_claim.checkout_id}>${e.claim.checkout_id}`), "record_id" in (entries[0]?.source ?? {}), rows.length, record?.kind, ["add-sum", "deadbeef", s.me, APPROVAL].filter((w) => !record?.text.includes(w))],
+      [control.status, control.claim?.checkout_id, entries.map((e) => `${e.previous_claim.checkout_id}>${e.claim.checkout_id}`), "record_id" in (entries[0]?.source ?? {}), rows.length, record?.kind, record?.state, ["add-sum", "deadbeef", s.me, APPROVAL].filter((w) => !record?.text.includes(w))],
       `transcript ${transcript}`,
-    ).toEqual(["claimed", s.me, [`deadbeef>${s.me}`], true, 1, "decision", []]);
+    ).toEqual(["claimed", s.me, [`deadbeef>${s.me}`], true, 1, "decision", "answered", []]);
   }, 31 * MIN);
 
   it("(j) orchestrator on an autonomous A held by deadbeef, a resolving decision record beside it and no word for this transfer: no takeover is sent", () => {

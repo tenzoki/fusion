@@ -13,3 +13,6 @@ The upgrade limits call a measured aggregate unmeasured, and omit observation ca
 **Fix direction.** Bullet 1: name the measured unscoped `validate` (answers, invalid, its findings naming the transferred packages), and say that the other aggregate operations (`list`, `reconcile`, `inspect`) were not measured. Bullet 2: add case (j), or fold (i) and (j) into one item, and make the count match.
 
 **Acceptance.** Both sentences match the test file. The cardinality is derived or enumerated (`rules/critical-stance.md` §5). `surface-growth-bound.test.ts` and `reference-resolution-lint.test.ts` are green.
+
+---
+Resolved: `docs/upgrading-to-v13.md` `## Documented limits`: the old-client bullet names the measured unscoped `validate` (answers, not valid, its findings naming exactly the transferred packages) and says `list`, `reconcile` and `inspect` were not measured; the unobserved-behaviours bullet reads "Eight", enumerates case (j) as its own item beside case (i), and says both were written after that run and have not been run.

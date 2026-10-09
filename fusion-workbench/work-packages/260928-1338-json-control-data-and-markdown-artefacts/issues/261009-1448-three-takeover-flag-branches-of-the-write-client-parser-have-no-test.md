@@ -18,3 +18,6 @@ There is also one edge in behaviour, which is not a test gap: `--take-over-from 
 None of these is wrong today. Each of them is the shape `8bb82215` had to repair after the fact.
 
 **Acceptance.** `record-write.test.ts` gains the three cases. Each one asserts `usage` and that no mutation was sent. Optionally, an empty `--take-over-from` is a usage error. The hooks suite stays green within its growth room.
+
+---
+Resolved: `hooks/lib/__tests__/record-write.test.ts` `describe("takeover, request 62")` gains the three cases (`--previous-claim` on an ordinary claim, a `--previous-claim` that is not a JSON object, a takeover re-send without `--previous-claim`), each asserting `usage`, no mutation sent, and the usage text of its own branch. `--take-over-from ""` is now a usage error in `hooks/lib/record-write.ts` `parseFlags` (it was ownership, exit 5), with a fourth case; that case was red against the parser without the new line. `hooks/dist/` rebuilt.

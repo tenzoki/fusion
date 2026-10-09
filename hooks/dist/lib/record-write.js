@@ -241,6 +241,8 @@ export function parseFlags(sub, argv) {
     // `--source` is set-mode's too, so the pairing and the object check below are a claim's alone.
     if (s === "claim" && takeover !== flags.has("--source"))
         return { usage: "a takeover gives --take-over-from <checkout> and --source <JSON> together, and an ordinary claim neither" };
+    if (takeover && flags.get("--take-over-from")[0] === "")
+        return { usage: "--take-over-from names the holder's checkout, and is not empty" };
     if (!takeover && flags.has("--previous-claim"))
         return { usage: "--previous-claim is repeated by a takeover's re-send alone" };
     for (const f of ["--source", "--previous-claim"].filter((x) => takeover && flags.has(x))) {
