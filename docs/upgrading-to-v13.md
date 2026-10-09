@@ -84,6 +84,14 @@ in its record, and not asked about.
 **If it is interrupted**, run `/fusion:migrate` again: it asks whether to continue or undo, and a
 re-run never starts a second plan.
 
+**If `circles/` will not empty.** This is a known defect that 13.0.0 does not fix. When the only
+thing left in `circles/` is a Finder `.DS_Store`, or another file that already exists under
+`work-packages/`, the store rename will not overwrite it, so `circles/` stays. The JSON migration
+then refuses because `circles/` still exists. Delete `fusion-workbench/circles/.DS_Store` by hand
+(or the other leftover file, once you have checked that its copy under `work-packages/` is the one
+to keep), remove the then-empty `circles/`, and run `/fusion:migrate` again. The defect is recorded
+in `261009-2148-the-rename-pass-cannot-drain-a-circles-store-whose-only-entry-is-a-colliding-ds-store-and-the-json-run-refuses-on-it.md`.
+
 **Undo.** `bin/fusion-migrate rollback` restores the workbench from the migration's own journal
 while no ordinary write has followed it. The first ordinary write, such as a claim, a filed issue
 or a transition, ends that: the rollback is refused from then on, and the way forward is a fix
@@ -225,10 +233,10 @@ it: a test that asserts it, or, for an absence, the search that finds no reader,
   variable, and nothing at run time checks that qualification: `bin/fusion-record` runs the bundle
   with `node` and compares no digest. `codec/src/__tests__/committed-bundle.test.ts` shows only
   that the committed bundle is the build of the committed source.
-- **Eight agent behaviours on a JSON workbench were never observed.** The opt-in suite that
-  dispatches agents headless did not reach the first six, as
-  `261007-2348-agent-dispatch-and-skill-block-observation-at-495aca7d.md` records; the last two were
-  added to it later:
+- **Six agent behaviours on a JSON workbench were never observed.** The opt-in suite that
+  dispatches agents headless reached none of them, neither in
+  `261007-2348-agent-dispatch-and-skill-block-observation-at-495aca7d.md` nor at the release
+  candidate in `261009-2101-agent-dispatch-observation-at-f2cc68f0.md`:
   - the orchestrator's interactive approval paths: a `-p` run answers no question;
   - a closure whose review returns `revise`, so a finish binding that verdict. Under `autonomous`
     the orchestrator may instead hold a closure whose work is visibly not done on disk (a
@@ -236,11 +244,11 @@ it: a test that asserts it, or, for an absence, the search that finds no reader,
   - `policy-curator` apply mode, which waits on the user's approval of a ledger;
   - `reviewer` with `**Review domain:** ontology`;
   - `state-auditor` with live records to reconcile and a stated `**Directive:**`;
-  - repetition: each case ran once, and one run proves one run;
-  - the orchestrator's takeover on your word, case (i) of
-    `hooks/lib/__tests__/agent-dispatch-observation.test.ts`;
-  - the orchestrator sending no takeover under `autonomous` without your word for it, case (j) of
-    the same file. Both cases were written after that run and have not been run.
+  - repetition: cases (a) to (e) of `hooks/lib/__tests__/agent-dispatch-observation.test.ts` have
+    passed twice and cases (f) to (j) once, and one run proves one run.
+
+  The orchestrator's takeover on your word, case (i), and its refusal to send one under
+  `autonomous` without your word, case (j), have each run once, at `f2cc68f0`, and passed.
 
 ## What needs no action
 
