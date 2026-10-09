@@ -140,14 +140,14 @@ describe("takeover, request 62", () => {
 });
 
 describe("what is sent", () => {
-  it("a flag outside the subcommand, or a payload field the record's kind does not carry, is a usage error and sends nothing", () => {
+  it("a flag outside the subcommand, or a payload field the record's kind does not carry, is a usage error and sends nothing; set-mode's own --source is no takeover's", () => {
     withJsonProject((p) => {
-      const pkg = createPackage(p, "260930-1300-p");
-      const on = ["--record", pkg.path, "--actor", "user"];
-      for (const [sub, extra] of [["release", ["--reason", "r", "--force", "x"]], ["set-mode", ["--value", "autonomous"]], ["transition", ["--to", "dropped", "--reason", "r", "--disposition", "null"]]] as const) {
+      const pkg = createPackage(p, "260930-1300-p"), on = ["--record", pkg.path, "--actor", "user"];
+      for (const [sub, extra, why] of [["release", ["--reason", "r", "--force", "x"], /takes no "--force"/], ["set-mode", ["--value", "autonomous"], /^autonomous needs --source/], ["transition", ["--to", "dropped", "--reason", "r", "--disposition", "null"], /disposition/]] as const) {
         const r = run(p, sub, [...on, ...extra]);
-        expect([r.o.kind, mutations(r.sent)], `${sub} ${extra.join(" ")}`).toEqual(["usage", []]);
+        expect([r.o.kind, (r.o as { detail: string }).detail, mutations(r.sent)], `${sub} ${extra.join(" ")}`).toEqual(["usage", expect.stringMatching(why), []]);
       }
+      expect(run(p, "set-mode", [...on, "--value", "autonomous", "--source", JSON.stringify({ workbench_id: must(p, { op: "inspect" }).result.id, record_id: shown(p, pkg.path).control.id })]).o.kind).toBe("landed");
       for (const extra of [["--kind", "package"], ["--kind", "issue", "--domain", "code"], ["--kind", "campaign"]]) expect(run(p, "create", [...extra, "--narrative-file", "x.md", "--origin", "user-request", "--actor", "user"]).o.kind, extra.join(" ")).toBe("usage");
     });
   });

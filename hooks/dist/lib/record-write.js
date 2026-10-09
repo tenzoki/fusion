@@ -238,11 +238,12 @@ export function parseFlags(sub, argv) {
     if (missing !== undefined)
         return { usage: `${sub} needs ${missing}` };
     const takeover = flags.has("--take-over-from");
-    if (takeover !== flags.has("--source"))
+    // `--source` is set-mode's too, so the pairing and the object check below are a claim's alone.
+    if (s === "claim" && takeover !== flags.has("--source"))
         return { usage: "a takeover gives --take-over-from <checkout> and --source <JSON> together, and an ordinary claim neither" };
     if (!takeover && flags.has("--previous-claim"))
         return { usage: "--previous-claim is repeated by a takeover's re-send alone" };
-    for (const f of ["--source", "--previous-claim"].filter((x) => flags.has(x))) {
+    for (const f of ["--source", "--previous-claim"].filter((x) => takeover && flags.has(x))) {
         if (!isObject(json(flags.get(f)[0])))
             return { usage: `${f} takes a JSON object` };
     }
