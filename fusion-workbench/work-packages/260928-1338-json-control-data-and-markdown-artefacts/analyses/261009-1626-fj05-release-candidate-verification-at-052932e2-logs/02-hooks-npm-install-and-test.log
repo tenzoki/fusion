@@ -1,0 +1,378 @@
+
+added 52 packages, and audited 53 packages in 1s
+
+14 packages are looking for funding
+  run `npm fund` for details
+
+9 vulnerabilities (3 moderate, 4 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+> test
+> node scripts/run-tests.mjs
+
+
+ RUN  v2.1.9 /private/tmp/claude-501/-Users-kai-Projects-productive-F04-FUSION-fusion/8107f641-77c5-43c4-8b80-214295bb05dc/scratchpad/clone-C/hooks
+
+ ✓ lib/__tests__/config.test.ts (51 tests) 49ms
+ ✓ lib/__tests__/domain-cascade.test.ts (62 tests) 107ms
+ ✓ lib/__tests__/reference-resolution-lint.test.ts (41 tests) 257ms
+ ✓ lib/__tests__/rules-emission-golden.test.ts (22 tests) 1560ms
+   ✓ the audience argument > moves nothing else for any agent — the other conditionals stay keyed on the name 368ms
+ ✓ lib/__tests__/monitor-warnings-panel.test.ts (26 tests) 8313ms
+   ✓ bin/monitor — the browser launch > a spawn with no terminal on stdout opens nothing, and still serves 2606ms
+   ✓ bin/monitor — the browser launch > MONITOR_NO_BROWSER suppresses the launch on a terminal too 2608ms
+ ↓ lib/__tests__/agent-dispatch-observation.test.ts (14 tests | 14 skipped)
+ ✓ lib/__tests__/surface-growth-bound.test.ts (12 tests) 9ms
+ ✓ lib/__tests__/staging-drift.test.ts (27 tests) 10743ms
+   ✓ staging drift: the defect it was built for > names a modified queue, an untracked history entry and a workbench commit-message file 352ms
+   ✓ staging drift: the defect it was built for > an authored record whose own name says "commit message" is a record, not a message file 326ms
+   ✓ staging drift: the defect it was built for > and the record fault it really is reaches the model, instead of being suppressed 624ms
+   ✓ staging drift: the defect it was built for > finding an unstaged record is not a non-zero exit 310ms
+   ✓ staging drift: what it reports without raising an alarm > names an untracked non-record file and calls the tree clean — the live stilwerk case 308ms
+   ✓ staging drift: what it reports without raising an alarm > treats the machine-written surfaces and this session's own history file as in flight 320ms
+   ✓ staging drift: what it reports without raising an alarm > reads every history file under a store as a record, the session's own included 315ms
+   ✓ staging drift: what it reports without raising an alarm > reads a backlog entry as a record, not as the user note it used to be 311ms
+   ✓ staging drift: what it reports without raising an alarm > reads a work package's own record as a record, and claims nothing about a sibling no store owns 363ms
+   ✓ staging drift: what it reports without raising an alarm > does not call a staged record a fault — it is on its way into a commit 318ms
+   ✓ staging drift: the JSON surfaces, by path alone > names a container's package.json left unstaged as a fault 353ms
+   ✓ staging drift: the JSON surfaces, by path alone > names one pair-split row, both paths in it, for a staged narrative whose control file is not 335ms
+   ✓ staging drift: the JSON surfaces, by path alone > calls a staged change to the control file alone clean, and the manifest in flight 323ms
+   ✓ staging drift: the JSON surfaces, by path alone > reads a migration's receipt, a chunk file and a kept original with no store segment as one record subtree 326ms
+   ✓ staging drift: the JSON surfaces, by path alone > ignores the codec's journal and tracks the manifest and a pair, with and without this repository's .gitignore 441ms
+   ✓ staging drift: the trigger is HEAD moving > says nothing while a record sits unstaged mid-Turn — the normal and correct state 550ms
+   ✓ staging drift: the trigger is HEAD moving > names the missed record on the tool call where HEAD moved 609ms
+   ✓ staging drift: the trigger is HEAD moving > stays silent when the commit carried everything 647ms
+   ✓ staging drift: the trigger is HEAD moving > stays silent when the only thing left behind is unclassified 621ms
+   ✓ staging drift: the trigger is HEAD moving > reports once per miss, and again when the miss grows 1229ms
+   ✓ staging drift: anchoring and side effects > does not stand down in fusion's own repository, where the defect was measured 616ms
+   ✓ staging drift: anchoring and side effects > stages nothing, commits nothing, and writes no workbench record 667ms
+ ✓ lib/__tests__/fusion-events.test.ts (44 tests) 594ms
+ ✓ lib/__tests__/fusion-commit-lock.test.ts (20 tests) 3508ms
+   ✓ fusion-commit-lock: the machine-written commit row > writes no row when the landed commit's only path is the event log, so the tree settles 312ms
+   ✓ fusion-commit-lock: the machine-written commit row > writes no row when the landed commit's only path is the event log, below the git toplevel, so the tree settles 323ms
+   ✓ fusion-commit-lock: the machine-written commit row > writes the row for a log merge union-merged, whose combined diff lists the log alone 305ms
+   ✓ fusion-commit-lock: the machine-written commit row > writes the row for a log merge conflicted and resolved only in the log, whose combined diff lists the log alone 352ms
+   ✓ fusion-commit-lock: the machine-written commit row > writes the row when the held region landed a code commit and then a log-only one 385ms
+   ✓ fusion-commit-lock: the machine-written commit row > writes the row for a region listing no path at all, and for the log plus another path 433ms
+ ✓ lib/__tests__/derivable-enumerations-lint.test.ts (21 tests) 14ms
+ ✓ lib/__tests__/review-coverage.test.ts (27 tests) 11193ms
+   ✓ review coverage: the tiling > names the hole between two passes, commit by commit 452ms
+   ✓ review coverage: the tiling > reports a fully tiled range as covered 392ms
+   ✓ review coverage: the tiling > counts a commit once when two reviews overlap 385ms
+   ✓ review coverage: the tiling > honours an explicit --since over the session anchor 360ms
+   ✓ review coverage: a range it cannot pin > refuses `..HEAD` by name instead of resolving it 342ms
+   ✓ review coverage: a range it cannot pin > lists a review with no **Reviewed-range:** line, with the reason 349ms
+   ✓ review coverage: a range it cannot pin > names a hash that no longer resolves rather than counting it as coverage 345ms
+   ✓ review coverage: a range it cannot pin > reports an unmeasurable window as unchecked, with the reason 320ms
+   ✓ review coverage: a range it cannot pin > exits 2 with no workbench above it, and 0 when it merely found a gap 587ms
+   ✓ review coverage: a range it cannot pin > refuses an empty --since with exit 1 rather than falling back to the session anchor 315ms
+   ✓ review coverage: the declared out-of-scope list > carries the newest review's **Not-opened:** files 338ms
+   ✓ review coverage: the declared out-of-scope list > keeps a recorded `none` apart from a missing line 793ms
+   ✓ review coverage: the declared out-of-scope list > finds a review inside a Circle's own store, not only the shared one 347ms
+   ✓ review coverage: what the hook says, and when > says nothing on an ordinary tool call, however wide the gap 363ms
+   ✓ review coverage: what the hook says, and when > names the uncovered commits when a review file lands 407ms
+   ✓ review coverage: what the hook says, and when > speaks once for a gap that persists and again for one that grows 1078ms
+   ✓ review coverage: what the hook says, and when > stays quiet when the landed review closes the range 398ms
+   ✓ review coverage: what the hook says, and when > does not stand down in fusion's own repository 410ms
+   ✓ review coverage: the header block ends at the first `##` heading > reads no field out of the prose below it 339ms
+   ✓ review coverage: whose files it measures > neither scans nor triggers on a sender no mandate covers 606ms
+   ✓ review coverage: whose files it measures > still names a file whose sender it cannot recognise 345ms
+   ✓ review coverage: an uninterpretable **Not-opened:** value > reaches the report verbatim and the dispatch scope not at all 371ms
+   ✓ review coverage: where the default anchor comes from > reads the hook's own row and not the model's row for the same session 351ms
+   ✓ review coverage: where the default anchor comes from > reads its own checkout's newest row, not another checkout's block 437ms
+   ✓ review coverage: where the default anchor comes from > names the one source rather than a list of them 322ms
+ ✓ lib/__tests__/hook-fail-open.test.ts (17 tests) 1961ms
+   ✓ an unwritable .guard-state/ does not cost a hook its verdict > tracker replies with a valid envelope, exits 0, and still says why on stderr 469ms
+   ✓ a report that fails decides nothing — the verdict stands either way > delivers the tracker's report with its throttle record unwritable (260809-2045) 497ms
+ ✓ lib/__tests__/provenance-header-lint.test.ts (27 tests) 8ms
+ ✓ lib/__tests__/sentence-identifier-containment.test.ts (23 tests) 4ms
+ ✓ lib/__tests__/workbench-citation-lint.test.ts (12 tests) 2735ms
+   ✓ workbench citation lint: every citation in a live record resolves > passes on the whole corpus — no dangling citation in any live record 1190ms
+   ✓ workbench citation lint: the corpus predicate > takes a narrative whose record is live, whatever marker its name carries, nothing without a record, and no discussion in either state 755ms
+   ✓ workbench citation lint: the corpus predicate > fails, naming the control file, when one does not read: its narrative is never dropped in silence 735ms
+ ✓ lib/__tests__/commit-message-path.test.ts (13 tests) 11ms
+ ✓ lib/__tests__/fusion-citation-check.test.ts (16 tests) 13480ms
+   ✓ fusion-citation-check over a scratch consuming project > reads the whole workbench and the project files, and reports both violations 846ms
+   ✓ fusion-citation-check scopes the verdict to the files somebody still edits > moves the verdict on an open record and not on a closed one, printing the row either way 1647ms
+   ✓ fusion-citation-check scopes the verdict to the files somebody still edits > keeps a project file in scope, where no record exists and every file is live 829ms
+   ✓ fusion-citation-check names the violations no rewriter may touch > counts the exhibit and not the pointer, and leaves the verdict where it was 826ms
+   ✓ fusion-citation-check reads the non-Markdown paths a project declares > adds the declared .go file, leaves the undeclared .txt out, and prints both figures 867ms
+   ✓ fusion-citation-check reads the non-Markdown paths a project declares > names a pattern that matched nothing on stderr, and reports the other one as before 857ms
+   ✓ fusion-citation-check reads the non-Markdown paths a project declares > refuses an absolute pattern and one carrying a `..` segment, before git is asked 1706ms
+   ✓ fusion-citation-check reads the non-Markdown paths a project declares > reads unavailable rather than a zero where git would not answer, and still exits 0 805ms
+   ✓ the record index behind the citation check > maps an old marker citation, its wildcard, a marker-free name and a depends_on UUID to their records 2430ms
+   ✓ fusion-citation-check on a JSON-controlled workbench > scopes the verdict by the record's status, and reports a conflict and an unresolved UUID 1156ms
+   ✓ fusion-citation-check on a JSON-controlled workbench > counts and names a control file that does not read, and leaves the verdict to the files it could scope 800ms
+   ✓ fusion-citation-check on a JSON-controlled workbench > refuses a legacy workbench by name, exit 4, nothing on stdout, and points at /fusion:migrate 316ms
+   ✓ fusion-citation-check on a JSON-controlled workbench > exits 4 with nothing on stdout when the workbench is unsupported 323ms
+ ✓ lib/__tests__/context-manifest.test.ts (34 tests) 19374ms
+   ✓ context-manifest: HYG-NO-REGRESS — byte-identical when absent > no manifest, no topic → output identical to the baseline for every agent 393ms
+   ✓ context-manifest: topic resolution from the claimed work item > derives topic keywords from the item's slug when no CLI topic is given 2147ms
+   ✓ context-manifest: topic resolution from the claimed work item > an explicit Topic: line in the narrative overrides the slug, and a Tags: line resolves each tag 5399ms
+   ✓ context-manifest: topic resolution from the claimed work item > nothing claimed → only [always] units match (empty topic set) 940ms
+   ✓ context-manifest: topic resolution from the claimed work item > an item claimed by another checkout resolves no topic, and an unclaimed one neither 4664ms
+   ✓ context-manifest: topic resolution from the claimed work item > two claimed items resolve no topic, and the helper's reason is not swallowed 3325ms
+   ✓ context-manifest: topic resolution from the claimed work item > a workbench the helper refuses by name resolves no topic: exit 0, the state on stderr 437ms
+ ✓ lib/__tests__/citation-sweep.test.ts (25 tests) 35805ms
+   ✓ citation-sweep rewrites through the scanner's own token walk > rewrites the store-prefixed and literal-marker tokens, lists every bare stamp, and never expands one 820ms
+   ✓ citation-sweep rewrites through the scanner's own token walk > a truncated citation, a head-field date and a word-marked filename are each one token and never chained 806ms
+   ✓ citation-sweep rewrites through the scanner's own token walk > groups the residual by file in corpus order rather than by line across the corpus 802ms
+   ✓ citation-sweep rewrites through the scanner's own token walk > neither reads nor rewrites a migration's kept original, whose bytes the receipt hashes 791ms
+   ✓ citation-sweep rewrites through the scanner's own token walk > fires a file-wide exemption from any working directory, the checker's own spelling 1592ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > writes on a clean tracked tree with --yes, leaves the fenced mv line as written, and the swept tree dry-runs to rewrites=0 1641ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > respells a bracket marker to the wildcard, hyphen absorbed, and leaves a word in brackets alone 886ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > without --yes prints the census, writes nothing, and exits 5 912ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > passes a pending change outside the corpus and refuses one inside it, exit 4, naming that file alone 1739ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > refuses an untracked workbench, exit 4 889ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > refuses a workbench outside any git work tree, exit 4 832ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > sweeps a file the project declared, and guard (a) covers it with no new guard code 1825ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > refuses an untracked <path> argument, exit 4, and passes a tracked one 1818ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > --kinds writes only the named kinds, the census splits by where files sit, and a bad option is a usage error 2101ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > respells every v11 `circles/` container-root citation exactly as its `work-packages/` twin, json-control 975ms
+   ✓ citation-sweep --write: the two mechanical guards, then the write, then idempotency > respells every v11 `circles/` container-root citation exactly as its `work-packages/` twin, legacy 448ms
+   ✓ citation-sweep --repair undoes the retired stamp-bare rewrite, token by token > restores a self-naming head field, strips every chained tail, and leaves exhibits and other files alone 1780ms
+   ✓ citation-sweep --repair undoes the retired stamp-bare rewrite, token by token > strips a glued letter run when the basename names a record here, and never touches a surviving path segment 1742ms
+   ✓ citation-sweep on a JSON-controlled workbench > names before --yes each rewrite of a plan and a spec adopted, and of a report an evidence record binds, and no unbound file, asking the codec three times 4768ms
+   ✓ citation-sweep on a JSON-controlled workbench > refuses a <path> naming a control file, exit 1, and stops on an unsupported workbench, exit 6, and on an internal error, exit 3, each with nothing on stdout; sweeps a legacy one as a rewriter with no bound= line 2737ms
+   ✓ citation-sweep never rewrites a reported token out of the checker's sight > every judged token still has a judged status at its own column after the sweep 903ms
+   ✓ citation-sweep over fusion's own tree > --dry-run over this repository's workbench reports rewrites=0 3242ms
+   ✓ citation-sweep over fusion's own tree > --repair --dry-run over this repository's workbench reports repairs=0 1679ms
+ ✓ lib/__tests__/hook-route-exclusion.test.ts (9 tests) 3884ms
+   ✓ every other configured hook command stays off the same helpers > runs each command for every tool its matcher names, and no stub is called 3347ms
+ ✓ lib/__tests__/review-coverage-mandate.test.ts (15 tests) 5ms
+ ✓ lib/__tests__/path-literal-lint.test.ts (27 tests) 11ms
+ ✓ lib/__tests__/legacy-import.test.ts (24 tests) 694ms
+ ✓ lib/__tests__/fusion-count-sources.test.ts (19 tests) 2227ms
+ ✓ lib/__tests__/rules-voice-profile.test.ts (18 tests) 559ms
+ ✓ lib/__tests__/citation-form.test.ts (27 tests) 2152ms
+   ✓ the tracker reports citation form when a record lands > hands the writer the violation, once, and records it as an event 1027ms
+   ✓ the tracker reports citation form when a record lands > says nothing when the record's citations are in the right form 517ms
+   ✓ the tracker reports citation form when a record lands > says nothing about a file that is not a workbench record 500ms
+ ✓ lib/__tests__/committed-dist.test.ts (4 tests) 1471ms
+ ✓ lib/__tests__/guard-bash-integration.test.ts (13 tests) 4768ms
+   ✓ ordinary work is allowed and writes nothing > and goes on writing nothing across the commands agents actually run 2139ms
+   ✓ every guard-log row names the Claude Code session that wrote it > carries the payload's session_id on the guard's row and on the tracker's 674ms
+ ✓ lib/__tests__/guard-state-shape.test.ts (14 tests) 8305ms
+   ✓ a malformed state file no longer swallows the tracker's reply > reports the coverage gap with review-coverage.json = {} — the shape the issue was measured with 770ms
+   ✓ a malformed state file no longer swallows the tracker's reply > reports the coverage gap with review-coverage.json = a state object with no reported field at all 668ms
+   ✓ a malformed state file no longer swallows the tracker's reply > reports the coverage gap with review-coverage.json = reported as an array rather than a string 653ms
+   ✓ a malformed state file no longer swallows the tracker's reply > reports the coverage gap with review-coverage.json = null — valid JSON with no properties to read 665ms
+   ✓ a malformed state file no longer swallows the tracker's reply > reports the coverage gap with review-coverage.json = truncated JSON — one of the two rows the old catch did handle 659ms
+   ✓ a malformed state file no longer swallows the tracker's reply > reports the coverage gap with review-coverage.json = an empty file — the other row the old catch did handle 662ms
+   ✓ the malformed file is repaired, not just survived > still reports the gap, and repairs the file instead of failing again 650ms
+   ✓ the malformed file is repaired, not just survived > costs nothing on a review landing with nothing to report 579ms
+   ✓ a well-formed state file is carried forward, not emptied > reads back the signature the previous call wrote and stays quiet 1193ms
+   ✓ the dispatch row is gated on the payload's session identifier alone > the heartbeat refreshes a session marker older than 60 s, keeps a younger one's mtime, and creates none 781ms
+ ✓ lib/__tests__/citation-grammar-boundaries.test.ts (36 tests) 15ms
+ ✓ lib/__tests__/fusion-forum.test.ts (12 tests) 7276ms
+   ✓ bin/fusion-forum > state=ok over an empty store: new=0 is a real answer and reaches exit 0 443ms
+   ✓ bin/fusion-forum > a mark that resolves cuts the answer to what the fetch brought in, and seen keeps unknown anchor keys 973ms
+   ✓ bin/fusion-forum > a mark that does not resolve reads the whole store as new, and says so 490ms
+   ✓ bin/fusion-forum > this checkout's own entries are dropped, and an unreadable identifier drops none and reports 921ms
+   ✓ bin/fusion-forum > admits only a message-shaped basename, names its writer, and reports the rest as skipped 438ms
+   ✓ bin/fusion-forum > exit 5, once per state: no work tree, a detached HEAD, no upstream, an upstream that does not resolve 419ms
+   ✓ bin/fusion-forum > state=workbench-untracked at exit 5 once the workbench is in no tree at the fetched ref, never new=0 604ms
+   ✓ bin/fusion-forum > with the mark helper absent beside it, new reports the unreadable mark and seen exits 5 with one line 441ms
+   ✓ bin/fusion-forum > a branch tracking a local ref skips the fetch and says the comparison is that local 412ms
+   ✓ bin/fusion-forum > the rest of the table: exit 6 on a fetch that cannot complete, exit 3 with no workbench, exit 2 on usage 918ms
+   ✓ bin/fusion-forum > show renders the blob at the pinned commit, and exits 1 rather than leaking git's 128 780ms
+ ✓ lib/__tests__/record-client.test.ts (13 tests) 8527ms
+   ✓ the gate names the workbench's state > refuses a manifest requiring a feature no codec knows as unsupported, with the codec's diagnosis 494ms
+   ✓ a refusal and an unanswered call stay two answers > is unanswered/timeout when the child does not answer in time, and asks once 1504ms
+   ✓ a refusal and an unanswered call stay two answers > is unanswered/unparseable for output that is not the one-line envelope, none at all included 329ms
+   ✓ the request reaches the kernel, and a read of a settled store writes nothing > lands create, claim, set-dependencies and transition, and reads them back 3350ms
+   ✓ the request reaches the kernel, and a read of a settled store writes nothing > leaves no .json-state behind when it reads a workbench that has no journal 1562ms
+   ✓ the default bundle is the one beside the compiled module > answers from <plugin>/codec/dist, and says bundle-missing once that file is gone 400ms
+ ✓ lib/__tests__/plan-stopping-section-lint.test.ts (10 tests) 2534ms
+   ✓ stopping-section lint: every live plan carries a filled '## Where this work stops' > passes over the live planning corpus 1067ms
+   ✓ stopping-section lint: the corpus > fails, naming the control file, when a plan's does not read 1464ms
+ ✓ lib/__tests__/fusion-paths.test.ts (73 tests) 64856ms
+   ✓ bin/fusion-paths > no item in scope: one store, the shared one > points every OUT_* into shared/ 425ms
+   ✓ bin/fusion-paths > no item in scope: one store, the shared one > emits WORKBENCH as the only absolute path 424ms
+   ✓ bin/fusion-paths > no item in scope: one store, the shared one > collapses every SCAN_* to the shared store alone 824ms
+   ✓ bin/fusion-paths > no item in scope: one store, the shared one > resolves the same values whatever the retired pointer holds 810ms
+   ✓ bin/fusion-paths > no item in scope: one store, the shared one > is not an error state to hold no item — that answer is exit 0 and silent 805ms
+   ✓ bin/fusion-paths > an item in scope > puts every OUT_* in the claimed item's container and every SCAN_* in both 4650ms
+   ✓ bin/fusion-paths > an item in scope > lists no v11 store name since 13.0.0 closed the window, even where that directory exists 3602ms
+   ✓ bin/fusion-paths > an item in scope > takes the second argument over the claim 2162ms
+   ✓ bin/fusion-paths > an item in scope > exits 1 — the caller's mistake, not the workbench's — when it names no package in the container store 691ms
+   ✓ bin/fusion-paths > an item in scope > exits 1 — the caller's mistake, not the workbench's — when it is a directory there and no package 726ms
+   ✓ bin/fusion-paths > an item in scope > refuses two claimed items with exit 3 and no output 3279ms
+   ✓ bin/fusion-paths > an item in scope > exits 3, the state named, on a legacy workbench — with and without a named item 897ms
+   ✓ bin/fusion-paths > the package keys > emits both keys for a prompt that names them 441ms
+   ✓ bin/fusion-paths > the package keys > emits neither to a shipped prompt that names neither 1294ms
+   ✓ bin/fusion-paths > the package keys > gives the orchestrator both keys — it maintains the store at the user's word 457ms
+   ✓ bin/fusion-paths > the package keys > gives requirements-designer the read key and withholds the write key 438ms
+   ✓ bin/fusion-paths > the package keys > gives wp the write key and withholds the read key 454ms
+   ✓ bin/fusion-paths > the forum keys > emits both, each naming one store 462ms
+   ✓ bin/fusion-paths > per-agent emission > gives a code-implementer no OUT_PLAN 433ms
+   ✓ bin/fusion-paths > per-agent emission > gives a document-editor no OUT_ISSUE and no store key whatsoever 450ms
+   ✓ bin/fusion-paths > per-agent emission > gives every agent WORKBENCH, and every workbench writer at least one key 4664ms
+   ✓ bin/fusion-paths > per-agent emission > routes writers to their own output kind 2125ms
+   ✓ bin/fusion-paths > per-agent emission > emits no key it cannot resolve 1277ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > orchestrator: emits every key it names and no other 447ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > code-implementer: emits every key it names and no other 410ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > data-implementer: emits every key it names and no other 436ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > reviewer: emits every key it names and no other 441ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > implementation-planner: emits every key it names and no other 444ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > requirements-designer: emits every key it names and no other 428ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > state-auditor: emits every key it names and no other 420ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > analyst: emits every key it names and no other 444ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > consultant: emits every key it names and no other 422ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > document-editor: emits every key it names and no other 429ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > policy-curator: emits every key it names and no other 432ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > archive: emits every key it names and no other 422ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > cadence: emits every key it names and no other 448ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > check: emits every key it names and no other 445ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > cleanup: emits every key it names and no other 460ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > commit: emits every key it names and no other 457ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > curate: emits every key it names and no other 448ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > discuss: emits every key it names and no other 451ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > help: emits every key it names and no other 414ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > memo: emits every key it names and no other 426ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > migrate: emits every key it names and no other 425ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > news: emits every key it names and no other 430ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > post: emits every key it names and no other 419ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > reconcile: emits every key it names and no other 422ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > setup: emits every key it names and no other 425ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > wp: emits every key it names and no other 414ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > wp-order: emits every key it names and no other 420ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > gives memo OUT_MEMO under its own name — no agent prompt writes memos 844ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > gives state-auditor OUT_DECISION — it files decision records (state-auditor.md:65) 449ms
+   ✓ bin/fusion-paths > the emitted key set is exactly the set the prompt names > emits no history key to any agent — the store is closed to writes 5034ms
+   ✓ bin/fusion-paths > internal error is exit 4, not exit 3 (issue 260716-2001) > exits 4 with a bug-not-your-fault message when a key has no value 483ms
+   ✓ bin/fusion-paths > internal error is exit 4, not exit 3 (issue 260716-2001) > is fusion's, where exit 3 is the workbench's and 1 and 2 are the caller's 1013ms
+   ✓ bin/fusion-paths > a key named in a prompt but unknown to the resolver cannot ship silently > exits 4 naming the prompt, the key and the fix 424ms
+   ✓ bin/fusion-paths > a key named in a prompt but unknown to the resolver cannot ship silently > does not mistake the prompts' own `$OUT_*` boilerplate for a key 438ms
+   ✓ bin/fusion-paths > a key named in a prompt but unknown to the resolver cannot ship silently > every emitted key set is complete and self-consistent for every agent 4600ms
+   ✓ bin/fusion-paths > a key named in a prompt but unknown to the resolver cannot ship silently > resolves every skill too, with no stderr 6658ms
+   ✓ bin/fusion-paths > plugin-repo preference (decision 260806-0015, option c) > derives the key set from the work tree's prompt when cwd is the plugin repo 446ms
+ ✓ lib/__tests__/domain-cascade-order-lint.test.ts (7 tests) 4ms
+ ✓ lib/__tests__/executor-verification-report-lint.test.ts (14 tests) 5ms
+ ✓ lib/__tests__/fenced-code-exemption.test.ts (17 tests) 69ms
+ ✓ lib/__tests__/work-graph.test.ts (8 tests) 5ms
+ ✓ lib/__tests__/migrate.test.ts (7 tests) 48055ms
+   ✓ bin/fusion-migrate refuses without Node, and before anything else > refuses the v11-named twin with the route to the rename, and a backup that does not verify stops the first repair 1292ms
+   ✓ bin/fusion-migrate refuses without Node, and before anything else > takes the person from git's first add, through a staged rename too, else carries it unknown with the reason, and run prints its reported lines before refusing 2732ms
+   ✓ bin/fusion-migrate migrates, rolls back and restores with the plugin and Node alone > needs no repair, applies an optional one with consent, migrates through canonical paths, reads back, rolls back after activation and restores the backup 13328ms
+   ✓ bin/fusion-migrate migrates, rolls back and restores with the plugin and Node alone > a rollback refused after a create ends the fence it began, and the next create lands (issue 261004-1516) 8631ms
+   ✓ bin/fusion-migrate migrates, rolls back and restores with the plugin and Node alone > a refusal a restore clears leaves the fence: an edited narrative put back rolls back; a deleted receipt takes --end-fence (issue 261004-1807, C1) 14940ms
+   ✓ bin/fusion-migrate migrates, rolls back and restores with the plugin and Node alone > resumes after a kill following each chunk and one inside a chunk 6417ms
+ ✓ lib/__tests__/fusion-identity.test.ts (13 tests) 1250ms
+   ✓ bin/fusion-identity > exit 1 fires in exactly the cases it fires in at HEAD 404ms
+ ✓ lib/__tests__/fusion-checkout-name.test.ts (12 tests) 2206ms
+   ✓ bin/fusion-checkout-name > a refresh rewrites the git identity and the stamp, and leaves alias and person standing 333ms
+   ✓ bin/fusion-checkout-name > resolve --at names a writer whose registration reached a commit and not this tree 341ms
+ ✓ lib/__tests__/claude-md-weight.test.ts (13 tests) 512ms
+ ✓ lib/__tests__/guard-project-config-integration.test.ts (7 tests) 2249ms
+   ✓ a retired key reaches the user, on every guarded call > repeats it on every guarded call, write tool and Bash alike 718ms
+ ✓ lib/__tests__/fusion-claimed-package.test.ts (23 tests) 23952ms
+   ✓ bin/fusion-claimed-package > prints both lines for the one package this checkout claimed 2495ms
+   ✓ bin/fusion-claimed-package > refuses two claims rather than taking the first 3942ms
+   ✓ bin/fusion-claimed-package > exit 0 with no output when no package is claimed at all 1327ms
+   ✓ bin/fusion-claimed-package > exit 0 with no output when the claim names another checkout 2157ms
+   ✓ bin/fusion-claimed-package > exit 0 with no output when the claim sits on a terminal package 2399ms
+   ✓ bin/fusion-claimed-package > exit 0 with no output when the container store does not exist yet 923ms
+   ✓ bin/fusion-claimed-package > outside a git work tree, with {}, the format is gated and the claim naming its minted checkout is not read 1350ms
+   ✓ bin/fusion-claimed-package > outside a git work tree, with {"legacy":true}, the format is gated and the claim naming its minted checkout is not read 372ms
+   ✓ bin/fusion-claimed-package > exit 3, naming the record, when a claimed package carries conflict markers 1914ms
+   ✓ bin/fusion-claimed-package > exit 3, naming the record, when a claimed package carries a field the schema refuses 1972ms
+   ✓ bin/fusion-claimed-package > exit 3, naming the record, when a claimed package has lost its narrative 1876ms
+   ✓ bin/fusion-claimed-package > exit 3, naming the record, when a claimed package carries a status outside the five 1859ms
+   ✓ bin/fusion-claimed-package > exit 3, the state on stderr and nothing on stdout, when the workbench is legacy 441ms
+   ✓ bin/fusion-claimed-package > exit 3, the state on stderr and nothing on stdout, when the workbench is unsupported 441ms
+ ✓ lib/__tests__/store-name-migration.test.ts (15 tests) 1905ms
+   ✓ the apply > folds a container present under both roots file by file with git mv, planning/ included 411ms
+ ✓ lib/__tests__/legacy-halt-clearing.test.ts (7 tests) 1466ms
+   ✓ a project carrying a halt recorded as protected_path_measured > keeps the file exactly as the upgrade left it, across a write and a Bash call 493ms
+   ✓ a project carrying a halt recorded as protected_path > keeps the file exactly as the upgrade left it, across a write and a Bash call 481ms
+ ✓ lib/__tests__/fusion-prose-metric.test.ts (12 tests) 167ms
+ ✓ lib/__tests__/record-archive.test.ts (13 tests) 48645ms
+   ✓ survey: which units may leave > the chain is held over two rounds, the incoming reference holds T, live records and full-path prose citations hold, and a line naming no unit is refused 947ms
+   ✓ survey: which units may leave > a container inherits a descendant's hold, an ambiguous id holds every unit carrying it, and an unreadable record holds everything 2378ms
+   ✓ survey: a takeover's consent source > holds a resolved record source and an unresolved but present artefact source, at the transfer's pointer 2931ms
+   ✓ survey: a takeover's consent source > a terminal package and the decision holding the user's word move together, and the store reads clean 6479ms
+   ✓ move: fence, recheck, move, verify, end > the eligible units leave whole to the same paths under archive/, and the store reads clean without them 4133ms
+   ✓ move: fence, recheck, move, verify, end > an evidence group in shared/ moves whole, and a binding to one of its records holds it whole 5032ms
+   ✓ move: fence, recheck, move, verify, end > a write between survey and fence is caught by the recheck, and a taken destination refuses its unit; the fence ends with nothing moved 3444ms
+   ✓ move: fence, recheck, move, verify, end > verification catches a narrative left behind, which validate and reconcile cannot see, and the move is restored 2648ms
+   ✓ recovery: resume and abandon > a crash after the first unit: abandon is refused, and resume finishes the move and ends the fence 4047ms
+   ✓ recovery: resume and abandon > a crash with a hash changed since: resume puts the first unit back and ends the fence 2830ms
+   ✓ recovery: resume and abandon > a crash between inventory and begin, and one after begin with nothing moved, are each closed by abandon 3789ms
+   ✓ recovery: resume and abandon > with no fence standing resume sends no maintenance request: it moves nothing it cannot verify, and closes a verified move and an unfixed one 5099ms
+   ✓ bin/fusion-archive and bin/fusion-write > exit by the header's table, and a write meeting the fence names resume and abandon 4886ms
+ ✓ lib/__tests__/legacy-repair.test.ts (12 tests) 761ms
+ ✓ lib/__tests__/marker-format-lint.test.ts (17 tests) 6ms
+ ✓ lib/__tests__/edge-answers.test.ts (12 tests) 919ms
+ ✓ lib/__tests__/deliverable-language-lint.test.ts (7 tests) 4ms
+ ✓ lib/__tests__/hooks-wiring.test.ts (7 tests) 206ms
+ ✓ lib/__tests__/fusion-session-domain.test.ts (10 tests) 207ms
+ ✓ lib/__tests__/identity-mint-notice.test.ts (3 tests) 618ms
+ ✓ lib/__tests__/session-start-event.test.ts (7 tests) 11ms
+ ✓ lib/__tests__/glob-nomatch-lint.test.ts (6 tests) 5ms
+ ✓ lib/__tests__/session-start-subdirectory.test.ts (6 tests) 1495ms
+ ✓ lib/__tests__/fusion-stores.test.ts (2 tests) 10ms
+ ✓ lib/__tests__/archive-filter-key.test.ts (3 tests) 39ms
+ ✓ lib/__tests__/window-bound.test.ts (1 test) 1ms
+ ✓ lib/__tests__/plan-size.test.ts (9 tests) 6511ms
+   ✓ plan-size: the ceiling reports and never gates > exits 0 over a plan above the ceiling, and prints the verdict 818ms
+   ✓ plan-size: the ceiling reports and never gates > an empty corpus is a real answer, not a failure 792ms
+   ✓ plan-size: the ceiling reports and never gates > --ceiling re-reads the same corpus at another number 2422ms
+   ✓ plan-size: the corpus > is live plans only, across every plans store, largest first — terminal states, specs and files with no record out 737ms
+   ✓ plan-size on a JSON-controlled workbench > measures a live plan named _c_, not a closed one named _o_, and names a plan control that does not read 834ms
+   ✓ plan-size on a JSON-controlled workbench > refuses a legacy workbench by name, exit 4, nothing on stdout, and points at /fusion:migrate 339ms
+   ✓ plan-size on a JSON-controlled workbench > exits 4 with nothing on stdout when the workbench is unsupported, never verdict=empty 323ms
+ ✓ lib/__tests__/paths.test.ts (4 tests) 1ms
+ ✓ lib/__tests__/declared-citation-paths.test.ts (4 tests) 974ms
+   ✓ a declared exhibit is exempt whole, and the declaration is printed beside the verdict > exempts the declared record's fenced store-prefixed token and still reports the same token elsewhere 838ms
+ ✓ lib/__tests__/record-change.test.ts (6 tests) 13050ms
+   ✓ composing rows > gives one row per record written, with ids from the request or the prior show; initialize gives none 4338ms
+   ✓ composing rows > leaves an unread identity half and an unset session out, never null 1377ms
+   ✓ appending by key > duplicate delivery: the same rows twice, after a torn line, give one line each 1365ms
+   ✓ appending by key > a failed append retains the rows as they were, reports pending, and resends nothing 1589ms
+   ✓ appending by key > delayed logging: a retained row lands after a later one with its own ts, a torn retained line stays, and the monitor's stable sort places it and leaves out a row whose ts is no stamp 2393ms
+   ✓ appending by key > a re-send writes no fresh row: unlogged with nothing retained, the retained row once it is 1988ms
+ ✓ lib/__tests__/record-write.test.ts (27 tests) 87422ms
+   ✓ ownership, response 22 (a) > the owner releases; another checkout, an unreadable identity and a non-claimed source each take their own branch; a claim is written for this checkout alone 7819ms
+   ✓ one request, and no retry > a write landed between show and the mutation is revision-mismatch: one request, no row 1631ms
+   ✓ one request, and no retry > an unanswered mutation is unknown and not retried; the re-send answers the stored bytes and writes no row 2879ms
+   ✓ takeover, request 62 > composes previous_claim and expected_revision from show and the claim for this checkout; nine usage errors and two refusals land nothing; the row names both holders 6505ms
+   ✓ takeover, request 62 > after an unknown outcome the re-send repeats the frozen request byte for byte and reads no show; the history keeps one entry 3956ms
+   ✓ what is sent > a flag outside the subcommand, or a payload field the record's kind does not carry, is a usage error and sends nothing; set-mode's own --source is no takeover's 2124ms
+   ✓ creation > creates a pair of each kind in its initial state, filed by this checkout's person, each with a {created} row 5048ms
+   ✓ creation > a plan filed by create anchors each numbered step under ## Implementation Steps, and transition --steps records one; a plan without the section is filed with no steps 3416ms
+   ✓ creation > a plan whose steps section repeats a number is refused as usage, naming the number and its lines, and nothing is sent 797ms
+   ✓ creation > evidence binds the package's brief, its plan and the report's bytes: an edited report is report-changed, and its row is {created_kind: evidence} 5654ms
+   ✓ initialize, one case per row of Setup's table > json-control is reused, the marker there or not, and nothing is sent 749ms
+   ✓ initialize, one case per row of Setup's table > legacy, no marker, empty: a new workbench, and the re-inspect names its id; .DS_Store is refused by name, and a store without its marker is legacy 1757ms
+   ✓ initialize, one case per row of Setup's table > legacy with a pending intent resends it once; blocked, it stops 1267ms
+   ✓ initialize, one case per row of Setup's table > unsupported, a refused or unanswered inspect, and an unanswered initialize stop, and nothing is retried 1034ms
+   ✓ initialize, one case per row of Setup's table > the re-inspect catches a replay answered after workbench.json was deleted 1529ms
+   ✓ initialize, one case per row of Setup's table > bin/fusion-write initialize needs no marker and exits by the header's table 2144ms
+   ✓ bin/fusion-write > prints KEY=value lines and exits by the header's table; the --outcome value the conventions spell finishes a package 6965ms
+   ✓ transition --evidence > composes each entry exactly as attach-evidence composes its one, and appends it to the outcome's evidence 4463ms
+   ✓ transition --evidence > is a usage error without --outcome, on a record that is not a package, and naming a record that is not evidence; nothing is sent 3207ms
+   ✓ a succeeded edge, through bin/fusion-write and bin/fusion-work-order > B is blocked while A is live, and ready with no unmet row once A is finished with --evidence naming its accepted review, the closure note appended after it included 7850ms
+   ✓ a succeeded edge, through bin/fusion-write and bin/fusion-work-order > control: a finish without --evidence leaves B blocked on an unmet row naming the missing evidence 5504ms
+   ✓ a succeeded edge, through bin/fusion-write and bin/fusion-work-order > control: a revise verdict bound the same way lands and leaves B blocked on an unmet row 5850ms
+   ✓ a succeeded edge, through bin/fusion-write and bin/fusion-work-order > control: a closure note appended to A's brief before the finish makes the finish refused brief-changed, exit 6, and A stays claimed 4787ms
+ ✓ lib/__tests__/fusion-work-order.test.ts (7 tests) 24517ms
+   ✓ bin/fusion-work-order over a JSON-controlled store > prints the order over the codec's edges, the cycle reconcile reports, and no row for a satisfied terminal target 12067ms
+   ✓ bin/fusion-work-order over a JSON-controlled store > prints unresolved= for an entry the codec resolves to nothing, with the note, and names a row that does not read 4165ms
+   ✓ bin/fusion-work-order over a JSON-controlled store > prints no note= where every item carries an entry and every entry resolves 3417ms
+   ✓ bin/fusion-work-order over a JSON-controlled store > answers verdict=empty at exit 0 for a workbench whose container store does not exist yet, the summary and header with no row in every format 3791ms
+   ✓ bin/fusion-work-order over a JSON-controlled store > exits 1 with empty stdout on any other argument, an alias and --format=json included, and 2 with no workbench above 492ms
+
+ Test Files  67 passed | 1 skipped (68)
+      Tests  1152 passed | 14 skipped (1166)
+   Start at  16:27:09
+   Duration  89.53s (transform 938ms, setup 0ms, collect 2.43s, tests 484.26s, environment 6ms, prepare 2.17s)
+
+EXIT=0
