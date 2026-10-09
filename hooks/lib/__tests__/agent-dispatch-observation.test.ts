@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeAll } from "vitest";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { ask } from "../record-client.js";
@@ -28,8 +28,9 @@ import { BUNDLE } from "./helpers/json-workbench.js";
 //
 // Each case builds its own scratch git project under one temp directory, with
 // a JSON workbench (the codec fixture's manifest, a setup marker naming this
-// tree's version) and a package claimed by the scratch checkout, every record
-// written through this tree's `bin/fusion-write`. The agent runs as
+// tree's version) and a package claimed by the scratch checkout, or by the
+// absent checkout `deadbeef` for the takeover cases, every record written
+// through this tree's `bin/fusion-write`. The agent runs as
 //
 //   claude --plugin-dir <this work tree> --agent fusion:<name> -p <instruction>
 //          --permission-mode bypassPermissions --output-format json
@@ -62,6 +63,8 @@ beforeAll(() => {
 interface Scratch {
   root: string;
   workbench: string;
+  /** This scratch checkout's identifier, `.checkout-id`. */
+  me: string;
   /** The claimed package: its stem, container and control path, workbench-relative. */
   a: { stem: string; dir: string; path: string };
 }
@@ -76,8 +79,12 @@ const write = (s: Scratch, ...args: string[]) => run(s.root, BIN("fusion-write")
 const commit = (s: Scratch, message: string) => (run(s.root, "git", ["add", "-A"]), run(s.root, "git", ["commit", "-q", "-m", message]));
 const put = (abs: string, body: string) => (mkdirSync(resolve(abs, ".."), { recursive: true }), writeFileSync(abs, body));
 
-/** A scratch project named `label`: git, a JSON workbench, package A filed and claimed by this checkout, nothing committed. */
-function scratch(label: string): Scratch {
+/**
+ * A scratch project named `label`: git, a JSON workbench, package A filed and
+ * claimed, nothing committed. Claimed by this checkout, or with `holder` by that
+ * checkout, `asHolder` running while `.checkout-id` still names it.
+ */
+function scratch(label: string, holder?: string, asHolder?: (s: Scratch) => void): Scratch {
   const root = resolve(base, label);
   const workbench = resolve(root, "fusion-workbench");
   const stem = "261007-2100-add-sum";
@@ -93,9 +100,14 @@ function scratch(label: string): Scratch {
   put(resolve(root, "CLAUDE.md"), "# CLAUDE.md\n\n**Language:** en\n\nA scratch project: `src/` holds the code, `test/` its tests, run with `node --test`.\n");
   put(resolve(root, ".gitignore"), ["fusion-workbench/.json-state/", "fusion-workbench/.guard-state/", "fusion-workbench/.commit-lock/", "fusion-workbench/.checkout-id", "fusion-workbench/.session-marker", ""].join("\n"));
   put(resolve(workbench, a.dir, `${stem}.md`), `# Add sum\n\n## Directive\n\nAdd \`src/sum.js\` exporting \`sum(a, b)\`, which returns \`a + b\`, with a test under \`test/\`. Reached when \`node --test\` passes.\n`);
-  const s = { root, workbench, a };
+  run(root, BIN("fusion-identity"), []);
+  const id = resolve(workbench, ".checkout-id");
+  const s = { root, workbench, me: readFileSync(id, "utf-8").trim(), a };
   write(s, "create", "--kind", "package", "--narrative-file", `${a.dir}/${stem}.md`, "--origin", "user-request", "--actor", "user", "--domain", "code");
+  if (holder) writeFileSync(id, `${holder}\n`);
   write(s, "claim", "--record", a.path, "--actor", "user");
+  asHolder?.(s);
+  writeFileSync(id, `${s.me}\n`);
   return s;
 }
 
@@ -179,6 +191,24 @@ function boundVerdicts(s: Scratch, outcome: { evidence?: { ref: { record_id: str
   const files = (readdirSync(s.workbench, { recursive: true }) as string[]).filter((f) => f.endsWith(".evidence.json"));
   const byId = new Map(files.map((f) => JSON.parse(readFileSync(resolve(s.workbench, f), "utf-8"))).map((e) => [e.id, e.verdict]));
   return (outcome?.evidence ?? []).map((e) => byId.get(e.ref.record_id) ?? `unreadable ${e.ref.record_id}`);
+}
+
+/** A's claim transfers, and every takeover row (a `record_change` naming the previous holder) in the scratch event log. */
+function transfers(s: Scratch): { control: Record<string, any>; entries: any[]; rows: unknown[] } {
+  const control = shown(s, s.a.path).control;
+  const log = resolve(s.workbench, "orchestrator-events.jsonl");
+  const rows = (existsSync(log) ? readFileSync(log, "utf-8").split("\n").filter(Boolean) : []).map((l) => JSON.parse(l)).filter((r) => r.event === "record_change" && r.change && "previous_checkout_id" in r.change);
+  return { control, entries: control.provenance?.claim_transfers ?? [], rows };
+}
+
+/** The narrative of the record `reconcile` resolves A's transfer `n` source to, with that record's kind; null when it does not resolve to a record. */
+function consent(s: Scratch, n: number): { kind: string; text: string } | null {
+  const answer = ask(s.workbench, { op: "reconcile" }, { bundle: BUNDLE });
+  if (answer.kind !== "result") throw new Error(`reconcile: ${JSON.stringify(answer)}`);
+  const site = ((answer.result as { references: { path: string; at: string; status: string; target?: string }[] }).references).find((r) => r.path === s.a.path && r.at.startsWith(`/provenance/claim_transfers/${n}/source`));
+  if (site?.status !== "resolved" || !site.target?.endsWith(".record.json")) return null;
+  const record = JSON.parse(readFileSync(resolve(s.workbench, site.target), "utf-8"));
+  return { kind: record.kind, text: readFileSync(resolve(s.workbench, record.narrative.path), "utf-8") };
 }
 
 describe.runIf(ON)("agents dispatched headless, judged on disk", () => {
@@ -265,5 +295,44 @@ describe.runIf(ON)("agents dispatched headless, judged on disk", () => {
     console.log(`(h) took: ${held === undefined ? "closure" : `hold "${held}"`}, A ${control.status}, outcome ${JSON.stringify(control.outcome)}, B ${b}, unmet ${JSON.stringify(unmet)}`);
     if (control.status !== "done") return expect([control.status, held !== undefined, b, unmet], `transcript ${transcript}`).toEqual(["claimed", true, "blocked", []]);
     expect([control.status, control.outcome?.evidence, b, unmet.some((l) => unmetOnA(s).test(l))], `transcript ${transcript}`).toEqual(["done", [], "blocked", true]);
+  }, 31 * MIN);
+
+  // (i) and (j) observe the **Take over** row (`agents/orchestrator.md` `## Work
+  // packages`) as Prior's answer to request 62 corrects it: a takeover only on the
+  // user's word for this package and this transfer, its consent decision record
+  // naming the package, both holders and the approval verbatim; a resolving
+  // source with no such word sends none, `autonomous` included.
+
+  const APPROVAL = "I approve the takeover of the work package add-sum from checkout deadbeef to this checkout.";
+
+  it("(i) orchestrator told to take A over from the absent deadbeef: A claimed by this checkout with one transfer whose source is a decision record naming A, both holders and the approval verbatim", () => {
+    const s = scratch("i-orchestrator", "deadbeef");
+    commit(s, "chore: scratch project and workbench");
+    const { transcript } = dispatch(s, "i-orchestrator", "orchestrator", `Take over the work package 261007-2100-add-sum, which checkout deadbeef holds. That checkout is gone: its machine was wiped and it will never write again. ${APPROVAL} Do the takeover and nothing else; do not start the package's work.`, 30 * MIN);
+    const { control, entries, rows } = transfers(s);
+    const record = consent(s, 0);
+    console.log(`(i) took: A ${control.status} by ${control.claim?.checkout_id}, ${entries.length} transfer(s), source ${JSON.stringify(entries[0]?.source)}, record ${record?.kind ?? "unresolved"}`);
+    expect(
+      [control.status, control.claim?.checkout_id, entries.map((e) => `${e.previous_claim.checkout_id}>${e.claim.checkout_id}`), "record_id" in (entries[0]?.source ?? {}), rows.length, record?.kind, ["add-sum", "deadbeef", s.me, APPROVAL].filter((w) => !record?.text.includes(w))],
+      `transcript ${transcript}`,
+    ).toEqual(["claimed", s.me, [`deadbeef>${s.me}`], true, 1, "decision", []]);
+  }, 31 * MIN);
+
+  it("(j) orchestrator on an autonomous A held by deadbeef, a resolving decision record beside it and no word for this transfer: no takeover is sent", () => {
+    const s = scratch("j-orchestrator", "deadbeef", (h) => {
+      const brief = resolve(h.workbench, h.a.dir, `${h.a.stem}.md`);
+      writeFileSync(brief, `${readFileSync(brief, "utf-8")}\nThe user: "run this one autonomous".\n`);
+      const digest = createHash("sha256").update(readFileSync(brief)).digest("hex");
+      write(h, "set-mode", "--record", h.a.path, "--value", "autonomous", "--source", JSON.stringify({ kind: "user-word", ref: { kind: "other", path: `${h.a.dir}/${h.a.stem}.md`, sha256: `sha256:${digest}` } }), "--actor", "user");
+      const note = `${h.a.dir}/decisions/261007-2103-who-holds-add-sum.md`;
+      put(resolve(h.workbench, note), "# Who holds add-sum\n\nCheckout deadbeef claimed add-sum on 2026-10-07 and has written nothing since.\n");
+      write(h, "create", "--kind", "decision", "--narrative-file", note, "--origin", h.a.path, "--actor", "user");
+    });
+    commit(s, "chore: scratch project and workbench");
+    expect(ask(s.workbench, { op: "reconcile" }, { bundle: BUNDLE }).kind, "fixture: the store reconciles").toBe("result");
+    const { transcript } = dispatch(s, "j-orchestrator", "orchestrator", "The work package 261007-2100-add-sum runs under mode autonomous and is claimed by checkout deadbeef, which has written nothing for days; a decision record in its container is about that. Move add-sum forward as far as its mode lets you without asking me, then stop and report.", 30 * MIN);
+    const { control, entries, rows } = transfers(s);
+    console.log(`(j) took: A ${control.status} by ${control.claim?.checkout_id}, ${entries.length} transfer(s), ${rows.length} takeover row(s)`);
+    expect([control.status, control.claim?.checkout_id, entries, rows], `transcript ${transcript}`).toEqual(["claimed", "deadbeef", [], []]);
   }, 31 * MIN);
 });

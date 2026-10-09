@@ -145,9 +145,27 @@ Each of these is known, stated, and not handled by anything shipped.
 - **The codec's `narratives` findings reach no reader.** `reconcile` reports a status head line kept
   in a live narrative in its `narratives` section (described in `codec/README.md`), which is the
   one trace such a v12 write leaves. No shipped prompt, helper or hook reads that section.
-- **There is no takeover of a stale claim.** A package another checkout holds stays claimed until
-  that checkout releases or transitions it; `bin/fusion-write` refuses everyone else, and no flag
-  overrides it. A takeover needs a codec revision that does not exist yet.
+- **A stale claim is taken over on your word, and nothing checks that the old checkout stopped.**
+  A package another checkout holds stays claimed until that checkout releases or transitions it,
+  or until `bin/fusion-write claim --record <package> --take-over-from <checkout> --source <JSON>`
+  gives the claim to this checkout and appends one entry to the package's
+  `provenance.claim_transfers`; `release` and `transition` by anyone but the holder are still
+  refused. The orchestrator sends a takeover only on your explicit word in the conversation that
+  names the package, its holder and this checkout as the new holder, after you say the former
+  checkout is gone or has stopped writing. It files your words verbatim in a decision record in the
+  package's container and cites that record as `--source`. `mode` `autonomous` never answers it,
+  and a second transfer asks again. Your statement that the former checkout is gone is a
+  procedure, not fencing: a copy of its checkout identity, or a session that is disconnected but
+  still running, is not stopped by it. That the cited record resolves shows that the record
+  exists, not that you consented.
+- **A client older than the takeover's codec revision must not share a workbench with one that
+  writes takeovers.** Run no old and new codecs on one workbench, and write no takeover before every
+  client of that workbench runs the new codec: replace or quiesce the others first, as under
+  `## More than one checkout`. Measured with the old bundle (`sha256:c76bbce9…`): a package that
+  carries a transfer is refused on `validate` and on every mutation, and no byte moves, but `show`
+  returns it as stored, because `show` does not validate. Aggregate operations of an old client may
+  fail when they reach such a package, so a workbench holding one is not readable by old clients as
+  a whole.
 - **A `succeeded` dependency is met only by a finish that binds an accepted review.** `depends_on`
   takes two conditions: `terminal` (the target is `done` or `dropped`) and `succeeded` (`done` with
   an accepted evidence binding in its outcome). The orchestrator's closure finishes a package with
