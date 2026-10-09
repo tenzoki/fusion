@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "dbcb36b8-a1c9-4157-bc4d-66742ffef024",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261009-2028-migrate-reads-a-broken-branch-ref-as-a-repository-with-no-commit-and-derives-untracked-for-every-file.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
