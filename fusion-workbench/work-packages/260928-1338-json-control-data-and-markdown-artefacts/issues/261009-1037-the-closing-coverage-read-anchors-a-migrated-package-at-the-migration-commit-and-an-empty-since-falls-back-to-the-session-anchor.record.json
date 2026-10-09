@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "b3131a51-4935-461e-899d-f814a2e52f75",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261009-1037-the-closing-coverage-read-anchors-a-migrated-package-at-the-migration-commit-and-an-empty-since-falls-back-to-the-session-anchor.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
