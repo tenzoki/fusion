@@ -21,12 +21,16 @@
  * each path followed back through the renames git reports, so a marker move
  * and the v11-to-v12 store rename both lead to the original add, as does a
  * rename staged in the index and not yet committed. The person
- * is `%an <%ae>` as written, with no mailmap. A file git does not track, a
- * workbench in no repository and a shallow history each give no person, with
- * that reason as evidence. The run's own identity is never read. "No
- * repository" is git's 128 from `rev-parse --show-toplevel` alone; every other
- * git call that does not exit 0 (a spawn error, a signal, a timeout, a full
- * buffer, a fatal status) stops the run as a fault, never as an empty answer.
+ * is `%an <%ae>` as written, with no mailmap. A file git does not track (every
+ * file, before the first commit), a workbench in no repository and a shallow
+ * history each give no person, with that reason as evidence. The run's own
+ * identity is never read. Whether a repository exists is the filesystem's
+ * answer, not git's: a `.git` entry (a directory, or a worktree's or
+ * submodule's file) at or above the workbench. Without one git is never run
+ * and need not be installed. Inside one, every git call that does not answer
+ * (missing git, a refused repository such as dubious ownership, a signal, a
+ * timeout, a full buffer, a fatal status) stops the run as a fault naming the
+ * call, never as an empty answer or as "no repository".
  *
  * ## The session
  *

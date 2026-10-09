@@ -120,6 +120,25 @@ describe("bin/fusion-migrate refuses without Node, and before anything else", ()
     expect(r.stdout).not.toContain("reported=git\tnot a repository");
     expect([r.status, r.stdout.length > 1 << 20, r.stdout.split("\n").filter((l) => l.startsWith("ignored=bulk/")).length]).toEqual([6, true, 1400]);
   }, 2 * CASE_TIMEOUT);
+
+  // issues 261009-1958: a `.git` entry decides whether a repository exists; inside one every git failure is stated, a signal too
+  it("needs no git without a .git, states git missing, refusing or killed inside one, and reads a repository with no commit as untracked", () => {
+    const { root, wb, home } = project();
+    const [nogit, killer] = [join(root, "nogit"), join(root, "killer")];
+    for (const d of [nogit, killer]) mkdirSync(d);
+    symlinkSync(process.execPath, join(nogit, "node"));
+    writeFileSync(join(killer, "git"), `#!/bin/sh\ncase "$*" in *ls-files*) kill -9 $$;; esac\nexec ${GIT}/git "$@"\n`, { mode: 0o755 });
+    const survey = (env: Record<string, string>) => spawnSync(process.execPath, [resolve(REPO_ROOT, "hooks", "dist", "migrate.js"), "survey", wb], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home, ...env } });
+    const person = (r: ReturnType<typeof survey>) => [r.status, r.stdout.split("\n").filter((l) => l.startsWith("derived=/filed_by/person")), r.stderr];
+    const fault = (why: RegExp) => [3, [], expect.stringMatching(why)];
+    expect(person(survey({ PATH: `${killer}:${PATH}` }))).toEqual(fault(/^fusion-migrate: git ls-files .* failed: killed by SIGKILL\n$/));
+    expect(person(survey({ GIT_TEST_ASSUME_DIFFERENT_OWNER: "1", GIT_CONFIG_NOSYSTEM: "1" }))).toEqual(fault(/git rev-parse --show-toplevel .* failed: exit 128: /));
+    expect(person(survey({ PATH: nogit }))).toEqual(fault(/git rev-parse --show-toplevel .* failed: ENOENT/));
+    rmSync(join(root, ".git"), { recursive: true, force: true });
+    expect(person(survey({ PATH: nogit }))).toEqual([0, ["derived=/filed_by/person\tunknown\tno-repository\t5"], ""]);
+    git(root, "init", "-q");
+    expect(person(survey({}))).toEqual([0, ["derived=/filed_by/person\tunknown\tuntracked\t5"], ""]);
+  }, 2 * CASE_TIMEOUT);
 });
 
 describe("bin/fusion-migrate migrates, rolls back and restores with the plugin and Node alone", () => {

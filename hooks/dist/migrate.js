@@ -21,12 +21,16 @@
  * each path followed back through the renames git reports, so a marker move
  * and the v11-to-v12 store rename both lead to the original add, as does a
  * rename staged in the index and not yet committed. The person
- * is `%an <%ae>` as written, with no mailmap. A file git does not track, a
- * workbench in no repository and a shallow history each give no person, with
- * that reason as evidence. The run's own identity is never read. "No
- * repository" is git's 128 from `rev-parse --show-toplevel` alone; every other
- * git call that does not exit 0 (a spawn error, a signal, a timeout, a full
- * buffer, a fatal status) stops the run as a fault, never as an empty answer.
+ * is `%an <%ae>` as written, with no mailmap. A file git does not track (every
+ * file, before the first commit), a workbench in no repository and a shallow
+ * history each give no person, with that reason as evidence. The run's own
+ * identity is never read. Whether a repository exists is the filesystem's
+ * answer, not git's: a `.git` entry (a directory, or a worktree's or
+ * submodule's file) at or above the workbench. Without one git is never run
+ * and need not be installed. Inside one, every git call that does not answer
+ * (missing git, a refused repository such as dubious ownership, a signal, a
+ * timeout, a full buffer, a fatal status) stops the run as a fault naming the
+ * call, never as an empty answer or as "no repository".
  *
  * ## The session
  *
@@ -106,19 +110,22 @@ function writeState(session, s) {
     writeFileSync(join(session, "state.json.tmp"), `${JSON.stringify(s, null, 2)}\n`);
     renameSync(join(session, "state.json.tmp"), join(session, "state.json"));
 }
-// --- reading the workbench ---------------------------------------------------------
-/** One git call that must answer: its stdout on exit 0, null on `absent` where the caller names one, a fault on anything else. */
-function git(cwd, args, absent = null) {
+function git(cwd, args, no) {
     const r = spawnSync("git", ["-C", cwd, ...args], { encoding: "utf-8", timeout: 600_000, maxBuffer: 1 << 30 });
     if (r.error === undefined && r.status === 0)
         return r.stdout;
-    if (r.error === undefined && r.status === absent)
+    if (r.error === undefined && no !== undefined && r.status === no)
         return null;
     const why = r.error !== undefined ? (r.error.code ?? r.error.message) : r.status === null ? `killed by ${r.signal}` : `exit ${r.status}: ${(r.stderr ?? "").trim().split("\n")[0]}`;
     throw new Stop(EXIT.fault, `git ${args.join(" ")} over ${cwd} failed: ${why}`);
 }
-/** The work tree's toplevel, or null where git answers 128, "not a repository". */
-const repoTop = (wb) => git(wb, ["rev-parse", "--show-toplevel"], 128)?.trim() ?? null;
+/** The work tree's toplevel, or null where no `.git` entry stands at or above the workbench; git is not run then. */
+function repoTop(wb) {
+    for (let d = wb; !existsSync(join(d, ".git")); d = dirname(d))
+        if (dirname(d) === d)
+            return null;
+    return git(wb, ["rev-parse", "--show-toplevel"]).trim();
+}
 /** Untracked and ignored files under the workbench, by git; empty lists outside a repository. */
 function gitLists(wb) {
     if (repoTop(wb) === null)
@@ -137,6 +144,9 @@ function firstAdds(wb, untracked) {
         return () => ({ unknown: "no-repository" });
     if (git(wb, ["rev-parse", "--is-shallow-repository"]).trim() === "true")
         return () => ({ unknown: "shallow-history" });
+    // No commit yet (`git init` alone): `log` would be fatal, and no file has a first add.
+    if (git(wb, ["rev-parse", "--verify", "-q", "HEAD"], 1) === null)
+        return () => ({ unknown: "untracked" });
     const prefix = relative(realpathSync(top), wb);
     const log = git(top, ["-c", "core.quotePath=off", "log", "--reverse", "-M", "--diff-filter=AR", "--name-status", "-z", "--no-mailmap", "--format=%x01%H%x09%an <%ae>", "--", prefix || "."]);
     const origin = new Map();

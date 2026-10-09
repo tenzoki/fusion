@@ -20,3 +20,6 @@ A signal without `r.error` (an external `kill`, the OOM killer) gives `status ==
 **Fix direction.** Return `null` only when a caller named an `absent` status (`absent !== null && r.status === absent`). Better: split the helper so that a caller without an absent case gets `string`, and drop the four `!`.
 
 **Acceptance.** A case in `hooks/lib/__tests__/migrate.test.ts` with such a stub: exit 3, stderr names `git ls-files` and `killed by SIGKILL`, and it contains no `TypeError`. The case fails on `26ada996`.
+
+---
+Resolved: the `git` helper in `hooks/migrate.ts` now has two overloads. Called without a "no" status, it returns `string` and treats every outcome other than exit 0 as a fault, so the four `!` assertions are gone. Called with one, it returns null only when `no !== undefined && r.status === no`, and since a status is never null there, a signal or a spawn error is always a fault naming the call (`killed by SIGKILL`). The only caller that names a "no" is the new `rev-parse --verify -q HEAD`, with 1. The case in `hooks/lib/__tests__/migrate.test.ts` puts a `git` stub on PATH that runs `kill -9 $$` on `ls-files`. On `26ada996` it printed the "fusion bug" text and a `TypeError`. It now prints exactly `fusion-migrate: git ls-files … failed: killed by SIGKILL` with exit 3.
