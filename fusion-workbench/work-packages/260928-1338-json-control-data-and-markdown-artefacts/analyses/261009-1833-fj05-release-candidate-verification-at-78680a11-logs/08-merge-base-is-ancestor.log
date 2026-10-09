@@ -1,0 +1,13 @@
+clone origin before: /Users/kai/Projects/productive/F04-FUSION/fusion
+clone refs/remotes/origin/main before fetch (= the live tree's local main): 4dc1ea13b87f356c8d9640d32dbeff69ba0660e0
+clone origin re-pointed to: git@github.com:tenzoki/fusion.git
+$ git fetch origin main
+Von github.com:tenzoki/fusion
+ * branch              main       -> FETCH_HEAD
+   4dc1ea13..48f0c9ff  main       -> origin/main
+fetch EXIT=0
+origin/main after fetch: 48f0c9ff758ef13ead8bf590bc984307260f3af7 (2026-10-02T21:16:56+02:00 chore(release): fusion 12.2.3 — package-store walk under zsh, claim scan names what it skips)
+live tree's last-fetched origin/main: 48f0c9ff758ef13ead8bf590bc984307260f3af7
+$ git merge-base --is-ancestor origin/main 78680a11
+EXIT=0
+merge-base: 48f0c9ff758ef13ead8bf590bc984307260f3af7

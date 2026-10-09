@@ -1,0 +1,19 @@
+clone HEAD: 78680a11b454e91c33e2a727f9c8d02d956b408b
+$ node room.mjs <clone of 78680a11>
+agents (bytes): total=323031 floor=310567 head_room=18000 budget=328567 room=5536
+skills (bytes): total=222505 floor=188768 head_room=39260 budget=228028 room=5523
+hook-tests (lines): total=24870 floor=24037 head_room=4835 budget=28872 room=4002
+dispatch-path analyst (bytes): total=123245 floor=123995 head_room=0 room=750
+dispatch-path code-implementer (bytes): total=105683 floor=106836 head_room=0 room=1153
+dispatch-path consultant (bytes): total=120611 floor=122046 head_room=0 room=1435
+dispatch-path data-implementer (bytes): total=109491 floor=110546 head_room=0 room=1055
+dispatch-path document-editor (bytes): total=126567 floor=127524 head_room=0 room=957
+dispatch-path implementation-planner (bytes): total=126760 floor=127593 head_room=0 room=833
+dispatch-path orchestrator (bytes): total=218947 floor=222589 head_room=0 room=3642
+dispatch-path policy-curator (bytes): total=185474 floor=187121 head_room=0 room=1647
+dispatch-path requirements-designer (bytes): total=135017 floor=135872 head_room=0 room=855
+dispatch-path reviewer (bytes): total=113778 floor=114309 head_room=0 room=531
+dispatch-path state-auditor (bytes): total=119719 floor=120813 head_room=0 room=1094
+dispatch-path (bytes): tightest=reviewer room=531
+EXIT=0
+--- git status --porcelain after the measurement:

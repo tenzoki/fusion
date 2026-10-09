@@ -1,0 +1,12 @@
+recorded: 2026-10-09 18:26 CEST
+node v25.7.0
+npm 11.10.1
+git version 2.53.0
+claude 2.1.295 (Claude Code)
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G83
+arch arm64
+codec node_modules installed by: npm ci (lockfile tracked at C')
+hooks node_modules installed by: npm install with hooks/package-lock.json copied from the live tree (gitignored), sha256 e7efb262924d6c27d7f3f9343e51463531b5dbb698edeb11ea77c0d6fbe961b1
+source clone: git clone --no-hardlinks /Users/kai/Projects/productive/F04-FUSION/fusion; clone-C at 78680a11b454e91c33e2a727f9c8d02d956b408b (detached)
