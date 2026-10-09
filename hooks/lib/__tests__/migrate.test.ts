@@ -62,7 +62,7 @@ function project(): { root: string; wb: string; home: string } {
   mkdirSync(join(root, "home"));
   return { root, wb, home: join(root, "home") };
 }
-const mig = (cwd: string, home: string, ...args: string[]) => spawnSync(BIN, args, { cwd, encoding: "utf-8", env: { PATH, HOME: home } });
+const mig = (cwd: string, home: string, ...args: string[]) => spawnSync(BIN, args, { cwd, encoding: "utf-8", env: { PATH, HOME: home }, maxBuffer: 1 << 30 });
 const value = (out: string, key: string) => out.split("\n").find((l) => l.startsWith(`${key}=`))?.slice(key.length + 1);
 
 describe("bin/fusion-migrate refuses without Node, and before anything else", () => {
@@ -105,6 +105,20 @@ describe("bin/fusion-migrate refuses without Node, and before anything else", ()
     expect(person(root)).toEqual(["derived=/filed_by/person\tunknown\tno-repository\t5"]);
     const r = mig(root, home, "run");
     expect([r.status, r.stdout, r.stderr]).toEqual([6, expect.stringContaining("reported=git\tnot a repository"), expect.stringContaining("blocking invalid-claim")]);
+  }, 2 * CASE_TIMEOUT);
+
+  // issue 261009-1855: a listing over Node's 1 MB spawn buffer read as no repository, or dropped
+  it("lists every path of an ignored listing over 1 MB instead of dropping the listing", () => {
+    const { root, wb, home } = project();
+    // ~810-byte paths, 1400 of them, the sweep test's fixture: about 1.13 MB of listing
+    const deep = join(wb, "bulk", ...["a", "b", "c"].map((c) => c.repeat(200)));
+    mkdirSync(deep, { recursive: true });
+    for (let i = 0; i < 1400; i++) writeFileSync(join(deep, `${String(i).padStart(4, "0")}${"f".repeat(196)}.txt`), "");
+    writeFileSync(join(root, ".git/info/exclude"), "fusion-workbench/bulk/\n");
+    edit(wb, "work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md", "**Status:** open", "**Status:** claimed");
+    const r = mig(root, home, "run");
+    expect(r.stdout).not.toContain("reported=git\tnot a repository");
+    expect([r.status, r.stdout.length > 1 << 20, r.stdout.split("\n").filter((l) => l.startsWith("ignored=bulk/")).length]).toEqual([6, true, 1400]);
   }, 2 * CASE_TIMEOUT);
 });
 

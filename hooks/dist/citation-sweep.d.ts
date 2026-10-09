@@ -426,7 +426,9 @@
  *   4  guard (a) refused: not a git work tree, workbench untracked, an
  *      uncommitted change on a file in this run's corpus, an extra path
  *      outside the work tree or untracked by it, or a git call that did not
- *      complete (`git-failed`, never read as untracked). Nothing written.
+ *      complete or exited with a status that is no answer to its question,
+ *      git's fatal 128 on a damaged index among them (`git-failed`, never
+ *      read as untracked or as a clean tree). Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
  *   6  the workbench was not read: `unsupported`, a refusal of the codec

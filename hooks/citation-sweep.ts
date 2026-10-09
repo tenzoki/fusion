@@ -426,7 +426,9 @@
  *   4  guard (a) refused: not a git work tree, workbench untracked, an
  *      uncommitted change on a file in this run's corpus, an extra path
  *      outside the work tree or untracked by it, or a git call that did not
- *      complete (`git-failed`, never read as untracked). Nothing written.
+ *      complete or exited with a status that is no answer to its question,
+ *      git's fatal 128 on a damaged index among them (`git-failed`, never
+ *      read as untracked or as a clean tree). Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
  *   6  the workbench was not read: `unsupported`, a refusal of the codec
@@ -530,26 +532,32 @@ function parse(argv: string[]): Options {
 // --- guard (a): a tracked workbench, and no pending change in its corpus -----
 
 /**
- * One git call. `failed` names why git gave no answer (not spawned, a full
- * buffer, a signal), and a caller reads `status` only when it is null: a call
- * that did not complete is never a "no". `quiet` discards stdout for a question
- * answered by the exit status alone, so a listing of any size is never held.
+ * One git call, read by one rule: `answers` lists the exit statuses that answer
+ * the question asked. Anything else (not spawned, a full buffer, a signal, or a
+ * status outside `answers`, such as git's fatal 128 on a damaged index or a
+ * missing tree) sets `failed` to why, with git's first stderr line, and a
+ * caller reads `status` only when `failed` is null: a call git did not answer
+ * is never a "no" and never a clean tree. `quiet` discards stdout for a
+ * question answered by the exit status alone, so a listing is never held.
  */
-function git(cwd: string, args: string[], quiet = false): { status: number | null; stdout: string; failed: string | null } {
+function git(cwd: string, args: string[], answers: readonly number[], quiet = false): { status: number | null; stdout: string; failed: string | null } {
   const r = spawnSync("git", args, { cwd, encoding: "utf-8", maxBuffer: 1 << 30, stdio: ["ignore", quiet ? "ignore" : "pipe", "pipe"] });
-  const failed = r.error !== undefined ? ((r.error as NodeJS.ErrnoException).code ?? r.error.message) : r.status === null ? `killed by ${r.signal}` : null;
+  const said = (r.stderr ?? "").trim().split("\n")[0];
+  const failed = r.error !== undefined ? ((r.error as NodeJS.ErrnoException).code ?? r.error.message)
+    : r.status === null ? `killed by ${r.signal}`
+    : answers.includes(r.status) ? null : `exit ${r.status}${said ? `: ${said}` : ""}`;
   return { status: r.status, stdout: r.stdout ?? "", failed };
 }
 
 /** The refusal for a git call that gave no answer, naming the call and why. */
 function gitFailed(args: string[], why: string): string {
-  return `refused (git-failed): git ${args.join(" ")} did not complete (${why}), so its answer is unknown; nothing written`;
+  return `refused (git-failed): git ${args.join(" ")} gave no answer (${why}), so its answer is unknown; nothing written`;
 }
 
-/** Whether git tracks `rel`, by exit status alone; a string is a refusal. */
+/** Whether git tracks `rel`: `--error-unmatch` exits 0 on a match, 1 on none. A string is a refusal. */
 function isTracked(toplevel: string, rel: string): boolean | string {
   const args = ["ls-files", "--error-unmatch", "--", rel === "" ? "." : rel];
-  const r = git(toplevel, args, true);
+  const r = git(toplevel, args, [0, 1], true);
   return r.failed !== null ? gitFailed(args, r.failed) : r.status === 0;
 }
 
@@ -570,7 +578,7 @@ function real(p: string): string {
  */
 function porcelainPaths(toplevel: string): string[] | string {
   const args = ["status", "--porcelain", "-z"];
-  const r = git(toplevel, args);
+  const r = git(toplevel, args, [0]);
   if (r.failed !== null) return gitFailed(args, r.failed);
   const fields = r.stdout.split("\0").filter((f) => f.length > 0);
   const out: string[] = [];
@@ -609,8 +617,12 @@ function dirtyCorpusPaths(toplevel: string, corpus: string[]): string[] | string
 
 /** One line naming the refused condition, or null when the tree qualifies. */
 function refusal(root: string, extra: string[], corpus: string[]): string | null {
-  const top = git(root, ["rev-parse", "--show-toplevel"]);
-  if (top.failed !== null) return `refused (no-git): git could not be run (${top.failed}), so no commit exists to return to; nothing written`;
+  // 128 is git's answer for "not a repository"; a status it did not answer with is git-failed
+  const args = ["rev-parse", "--show-toplevel"];
+  const top = git(root, args, [0, 128]);
+  if (top.failed !== null) {
+    return top.status === null ? `refused (no-git): git could not be run (${top.failed}), so no commit exists to return to; nothing written` : gitFailed(args, top.failed);
+  }
   if (top.status !== 0) {
     return `refused (not-a-git-work-tree): ${root} is not inside a git work tree, so a rewrite there has no way back; nothing written`;
   }

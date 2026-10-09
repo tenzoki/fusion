@@ -23,7 +23,10 @@
  * rename staged in the index and not yet committed. The person
  * is `%an <%ae>` as written, with no mailmap. A file git does not track, a
  * workbench in no repository and a shallow history each give no person, with
- * that reason as evidence. The run's own identity is never read.
+ * that reason as evidence. The run's own identity is never read. "No
+ * repository" is git's 128 from `rev-parse --show-toplevel` alone; every other
+ * git call that does not exit 0 (a spawn error, a signal, a timeout, a full
+ * buffer, a fatal status) stops the run as a fault, never as an empty answer.
  *
  * ## The session
  *
@@ -104,14 +107,24 @@ function writeState(session, s) {
     renameSync(join(session, "state.json.tmp"), join(session, "state.json"));
 }
 // --- reading the workbench ---------------------------------------------------------
+/** One git call that must answer: its stdout on exit 0, null on `absent` where the caller names one, a fault on anything else. */
+function git(cwd, args, absent = null) {
+    const r = spawnSync("git", ["-C", cwd, ...args], { encoding: "utf-8", timeout: 600_000, maxBuffer: 1 << 30 });
+    if (r.error === undefined && r.status === 0)
+        return r.stdout;
+    if (r.error === undefined && r.status === absent)
+        return null;
+    const why = r.error !== undefined ? (r.error.code ?? r.error.message) : r.status === null ? `killed by ${r.signal}` : `exit ${r.status}: ${(r.stderr ?? "").trim().split("\n")[0]}`;
+    throw new Stop(EXIT.fault, `git ${args.join(" ")} over ${cwd} failed: ${why}`);
+}
+/** The work tree's toplevel, or null where git answers 128, "not a repository". */
+const repoTop = (wb) => git(wb, ["rev-parse", "--show-toplevel"], 128)?.trim() ?? null;
 /** Untracked and ignored files under the workbench, by git; empty lists outside a repository. */
 function gitLists(wb) {
-    const ls = (...flags) => {
-        const r = spawnSync("git", ["-C", wb, "ls-files", "-z", "--others", "--exclude-standard", ...flags, "--", "."], { encoding: "utf-8", timeout: 30_000 });
-        return r.status === 0 ? r.stdout.split("\0").filter(Boolean) : null;
-    };
-    const untracked = ls();
-    return untracked === null ? { untracked: [], ignored: [], git: false } : { untracked, ignored: ls("--ignored") ?? [], git: true };
+    if (repoTop(wb) === null)
+        return { untracked: [], ignored: [], git: false };
+    const ls = (...flags) => git(wb, ["ls-files", "-z", "--others", "--exclude-standard", ...flags, "--", "."]).split("\0").filter(Boolean);
+    return { untracked: ls(), ignored: ls("--ignored"), git: true };
 }
 function survey(wb) {
     const r = send(wb, { op: "migration", phase: "survey" });
@@ -119,18 +132,15 @@ function survey(wb) {
 }
 /** The git pass of the header: workbench path to its first add, or why there is none. */
 function firstAdds(wb, untracked) {
-    const git = (...a) => spawnSync("git", ["-C", wb, ...a], { encoding: "utf-8", timeout: 600_000, maxBuffer: 1 << 30 });
-    const top = git("rev-parse", "--show-toplevel");
-    if (top.status !== 0)
+    const top = repoTop(wb);
+    if (top === null)
         return () => ({ unknown: "no-repository" });
-    if (git("rev-parse", "--is-shallow-repository").stdout.trim() === "true")
+    if (git(wb, ["rev-parse", "--is-shallow-repository"]).trim() === "true")
         return () => ({ unknown: "shallow-history" });
-    const prefix = relative(realpathSync(top.stdout.trim()), wb);
-    const log = spawnSync("git", ["-C", top.stdout.trim(), "-c", "core.quotePath=off", "log", "--reverse", "-M", "--diff-filter=AR", "--name-status", "-z", "--no-mailmap", "--format=%x01%H%x09%an <%ae>", "--", prefix || "."], { encoding: "utf-8", timeout: 600_000, maxBuffer: 1 << 30 });
-    if (log.status !== 0)
-        throw new Stop(EXIT.fault, `git log over ${wb} failed: ${log.stderr.trim()}`);
+    const prefix = relative(realpathSync(top), wb);
+    const log = git(top, ["-c", "core.quotePath=off", "log", "--reverse", "-M", "--diff-filter=AR", "--name-status", "-z", "--no-mailmap", "--format=%x01%H%x09%an <%ae>", "--", prefix || "."]);
     const origin = new Map();
-    for (const block of log.stdout.split("\x01").slice(1)) {
+    for (const block of log.split("\x01").slice(1)) {
         const [head, ...rest] = block.split("\0");
         const [hash, person] = head.replace(/\n+$/, "").split("\t");
         const at = { person, commit: hash };
@@ -149,10 +159,7 @@ function firstAdds(wb, untracked) {
         }
     }
     // A rename staged and not yet committed (`/fusion:migrate` Step 4's `git mv`) is followed the same way, so the moved path keeps its first add.
-    const staged = spawnSync("git", ["-C", top.stdout.trim(), "-c", "core.quotePath=off", "diff", "--cached", "-M", "--diff-filter=R", "--name-status", "-z", "--", prefix || "."], { encoding: "utf-8", timeout: 600_000, maxBuffer: 1 << 30 });
-    if (staged.status !== 0)
-        throw new Stop(EXIT.fault, `git diff --cached over ${wb} failed: ${staged.stderr.trim()}`);
-    const s = staged.stdout.split("\0");
+    const s = git(top, ["-c", "core.quotePath=off", "diff", "--cached", "-M", "--diff-filter=R", "--name-status", "-z", "--", prefix || "."]).split("\0");
     for (let i = 0; i + 2 < s.length; i += 3) {
         const was = origin.get(s[i + 1]);
         if (!was)

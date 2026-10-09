@@ -23,7 +23,10 @@
  * rename staged in the index and not yet committed. The person
  * is `%an <%ae>` as written, with no mailmap. A file git does not track, a
  * workbench in no repository and a shallow history each give no person, with
- * that reason as evidence. The run's own identity is never read.
+ * that reason as evidence. The run's own identity is never read. "No
+ * repository" is git's 128 from `rev-parse --show-toplevel` alone; every other
+ * git call that does not exit 0 (a spawn error, a signal, a timeout, a full
+ * buffer, a fatal status) stops the run as a fault, never as an empty answer.
  *
  * ## The session
  *

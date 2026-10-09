@@ -324,6 +324,31 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
     }
   }, CASE_TIMEOUT);
 
+  // issue 261009-1855: git's fatal 128 read as "untracked" and as a clean tree
+  it("refuses a damaged index and a missing HEAD tree as git-failed, exit 4, and leaves an uncommitted edit as it was", () => {
+    const damage: [string, (root: string) => void][] = [
+      ["ls-files --error-unmatch -- fusion-workbench", (root) => writeFileSync(join(root, ".git/index"), "garbage")],
+      ["status --porcelain -z", (root) => {
+        const tree = git(root, "rev-parse", "HEAD^{tree}").trim();
+        rmSync(join(root, ".git/objects", tree.slice(0, 2), tree.slice(2)));
+      }],
+    ];
+    for (const [call, harm] of damage) {
+      const { root, wb, doc } = scratchRepo();
+      try {
+        const edited = `${DIRTY_DOC}\nstill being written`;
+        writeFileSync(doc, edited);
+        harm(root);
+        const run = sweep(root, wb, "--write", "--yes");
+        expect([run.status, run.stdout]).toEqual([4, ""]);
+        expect(run.stderr).toMatch(new RegExp(`^fusion-citation-sweep: refused \\(git-failed\\): git ${call.replace(/[-^]/g, "\\$&")} gave no answer \\(exit 128: .+\\), so its answer is unknown; nothing written\\n$`));
+        expect(readFileSync(doc, "utf-8")).toBe(edited);
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    }
+  }, CASE_TIMEOUT);
+
   it("refuses a workbench outside any git work tree, exit 4", () => {
     const wb = scratch();
     const doc = join(wb, "shared/decisions/260303-0303_o_doc.md");
