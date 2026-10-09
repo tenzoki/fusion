@@ -38,9 +38,9 @@ fetches the head of `main`, so v12 reaches it once the release is merged there; 
 | `curator` | `policy-curator` |
 
 `orchestrator`, `reviewer`, `analyst` and `consultant` keep their names, and the roster stays at
-eleven. The reviewer now also answers to the two profile identifiers `code-reviewer` and
-`data-reviewer`, selected as before by its `**Review domain:**` line (`README-agents.md`
-`## The agents`).
+eleven. `code-reviewer` and `data-reviewer` are Prior catalog names: on Claude they map to
+`reviewer` with a `**Review domain:**` line (`README-agents.md` `## The agents`) and are not
+dispatchable names.
 
 ### Three stores
 

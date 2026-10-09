@@ -9,3 +9,5 @@
 **Acceptance:** `skills/cleanup/SKILL.md` Step 2 states that a narrative and its control file are staged in the same split, citing the conventions' layout section rather than restating it, and the surface-growth bound stays green.
 
 Cross-references: 261009-0647-v13-functional-completeness-against-v12.md
+
+Resolved: 2026-10-09, FJ05 plan step 3. `skills/cleanup/SKILL.md` `## Step 2 — Commit in meaningful splits` now states that a narrative and its control file are staged in the same split, never in two, citing `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` without restating it.
