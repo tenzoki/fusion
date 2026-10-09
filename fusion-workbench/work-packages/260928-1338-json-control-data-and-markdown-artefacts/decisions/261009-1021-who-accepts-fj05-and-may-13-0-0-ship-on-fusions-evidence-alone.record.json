@@ -17,8 +17,11 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
-    "answer_ref": null,
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "a500a680-4a4e-4c14-beb7-b584ef1f78a3"
+    },
     "implementation_ref": null,
     "superseded_by": null,
     "deferral": null

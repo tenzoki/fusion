@@ -33,3 +33,6 @@ The FJ05 plan ends in the release act: `main` fast-forwarded to the release cand
 ## Recommendation
 
 Option 3. Prior already holds the contract and has qualified every codec revision so far, so its statement on the shared evidence is cheap to ask for and expensive to miss. The host-specific evidence is fusion's, and Prior has said it neither runs nor authorizes the Claude-side release. Under option 3 the plan's step 19 waits for Prior's answer on the shared part only.
+
+---
+Answered: 261009-1021-who-accepts-fj05-and-may-13-0-0-ship-on-fusions-evidence-alone.md `## Options` — option 3, split by subject: Prior confirms the shared-contract evidence (codec and migration) before the release act, everything host-specific is accepted by the user alone; asked as "Prior soll vorher zumindest den gemeinsamen Teil bestätigen, also Codec und Migration", answered "2"; ruled by user, Kai Stalmann <ks@qantr.com>

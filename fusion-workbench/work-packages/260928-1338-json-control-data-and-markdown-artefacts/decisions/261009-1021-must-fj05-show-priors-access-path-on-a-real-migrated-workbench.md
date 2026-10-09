@@ -32,3 +32,6 @@ Section 1.9 of Prior's specification says "Abnahme verlangt Nachweise für beide
 ## Recommendation
 
 Option 2, using a copy of fusion's own workbench at the release candidate. Its location can be recorded, unlike the foreign copies. Option 3 belongs after the release, as the host-parity analysis recommends. Whether a "yes" from Prior on option 2 gates the release act follows from the ruling on 261009-1021-who-accepts-fj05-and-may-13-0-0-ship-on-fusions-evidence-alone.md.
+
+---
+Answered: 261009-1021-must-fj05-show-priors-access-path-on-a-real-migrated-workbench.md `## Options` — option 1, no Prior read of a real migrated workbench in FJ05; the user's words: "1, prior Anbindung machen wir später, wir müssen v13 releasen können und die migrierte workbench pushen, damit weiter gearbeitet werden kann."; ruled by user, Kai Stalmann <ks@qantr.com>
