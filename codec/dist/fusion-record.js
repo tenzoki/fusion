@@ -11925,6 +11925,7 @@ function asTransition(req, to, reason, payload) {
   };
 }
 function claimPlan(req) {
+  if (req.takeover !== void 0) return takeoverPlan(req, req.takeover);
   const { to } = operationEdges("claim");
   return transitionPlan(asTransition(req, to, "claim", { claim: req.claim }), (pair) => {
     if (pair.kind !== "package" || pair.control.status !== to) return { ok: true, value: void 0 };
@@ -11940,6 +11941,64 @@ function releasePlan(req) {
     const what = pair.kind === "package" ? "the package" : `the ${pair.kind} record`;
     return { ok: false, error: { class: "conflict", reason: "not-claimed", detail: `${what} is ${String(state)}; release gives up the claim of a package that is ${from.join(" or ")}` } };
   });
+}
+function takeoverPlan(req, takeover) {
+  return (ctx) => {
+    const r = livePackage(ctx, req, "a takeover", "replaces a package's standing claim");
+    if (!r.ok) return r;
+    const pair = r.value;
+    const { to: claimed } = operationEdges("claim");
+    const status = pair.control.status;
+    if (status !== claimed) {
+      return refusal2("conflict", "takeover-not-claimed", `the package is ${String(status)}; a takeover replaces the claim of a package that is ${claimed}, and is never landed as an ordinary claim`);
+    }
+    const stored2 = pair.control.claim;
+    if (!isObject5(stored2) || canonical(stored2) !== canonical(takeover.previous_claim)) {
+      return refusal2("conflict", "takeover-holder-mismatch", `the standing claim is ${canonical(stored2 ?? null)}; the request names ${canonical(takeover.previous_claim)} as the previous claim`);
+    }
+    const previous = takeover.previous_claim.checkout_id;
+    if (req.claim.checkout_id === previous) {
+      return refusal2("schema-invalid", "takeover-same-checkout", `the new claim names checkout ${previous}, which holds the claim already; a takeover moves it to another checkout`);
+    }
+    if (req.claim.claimed_at === null) {
+      return refusal2("schema-invalid", "claimed-at-required", "package: a takeover makes a new claim, whose claimed_at is known to the caller and never guessed; it is null");
+    }
+    const source = takeover.source;
+    const resolved = resolveReference(ctx, "kind" in source ? source.ref : source);
+    if (!resolved.ok) return resolved;
+    const provenance = isObject5(pair.control.provenance) ? pair.control.provenance : {};
+    const history = Array.isArray(provenance.claim_transfers) ? provenance.claim_transfers : [];
+    const entry = {
+      previous_claim: stored2,
+      claim: req.claim,
+      inspected_revision: req.expected_revision,
+      operation_id: req.operation_id,
+      actor: req.actor,
+      transferred_at: req.claim.claimed_at,
+      source
+    };
+    const next = { ...pair.control, claim: req.claim, provenance: { ...provenance, claim_transfers: [...history, entry] } };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after the takeover is not a valid package");
+    if (!v.ok) return v;
+    const write = recordWrite(req.record.path, next);
+    return {
+      ok: true,
+      value: {
+        writes: [{ path: write.path, bytes: write.bytes }],
+        result: {
+          operation_id: req.operation_id,
+          path: req.record.path,
+          from: claimed,
+          to: claimed,
+          revision: write.revision,
+          previous_revision: req.expected_revision,
+          previous_checkout_id: previous,
+          checkout_id: req.claim.checkout_id
+        },
+        revisions: { [req.record.path]: write.revision }
+      }
+    };
+  };
 }
 var isTerminal = (kind, state) => typeof state === "string" && (transitions().kinds[kind]?.terminal.includes(state) ?? false);
 function livePackage(ctx, req, op, does) {
@@ -12262,6 +12321,14 @@ function referenceSites(pair) {
     each("/evidence", c.evidence, "ref");
     each("/outcome/evidence", field(c.outcome, "evidence"), "ref");
     backup();
+    const transfers = field(c.provenance, "claim_transfers");
+    if (Array.isArray(transfers)) {
+      transfers.forEach((entry, i) => {
+        const from = field(entry, "source");
+        if (field(from, "kind") === "user-word") add(`/provenance/claim_transfers/${i}/source/ref`, field(from, "ref"));
+        else add(`/provenance/claim_transfers/${i}/source`, from);
+      });
+    }
     return sites;
   }
   each("/references", c.references);
@@ -12830,7 +12897,13 @@ var campaign_schema_default = {
         { $ref: "#/$defs/formation" }
       ]
     },
-    provenance: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/provenance" },
+    provenance: {
+      description: "fusion.common/v1's provenance without claim_transfers, which only a package carries (request 62).",
+      allOf: [
+        { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/provenance" },
+        { not: { type: "object", required: ["claim_transfers"] } }
+      ]
+    },
     extensions: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/extensions" }
   },
   $defs: {
@@ -13437,10 +13510,76 @@ var common_schema_default = {
       properties: {
         source: { type: "string", enum: ["created", "imported", "legacy-terminal"] },
         legacy_fields: { type: "object" },
-        backup: { $ref: "#/$defs/artefact_ref" }
+        backup: { $ref: "#/$defs/artefact_ref" },
+        claim_transfers: {
+          type: "array",
+          description: "The typed history of administrative claim takeovers (request 62, accepted with corrections in Prior's answer to 62). Package-only: fusion.record/v1 and fusion.campaign/v1 refuse the member, and fusion.evidence/v1 has no provenance. Absent on a package never transferred, so an empty array is refused. Append-only, one entry per landed takeover in the order they landed; import and migration write none and backfill none. No rule ties one entry to the next: a release and an ordinary claim may come between two takeovers, so an entry's previous_claim is the claim standing immediately before that transfer, not the previous entry's claim.",
+          minItems: 1,
+          items: { $ref: "#/$defs/claim_transfer" }
+        }
       },
       if: { type: "object", properties: { source: { enum: ["imported", "legacy-terminal"] } }, required: ["source"] },
       then: { type: "object", properties: { backup: { $ref: "#/$defs/artefact_ref" } }, required: ["backup"] }
+    },
+    claim: {
+      type: "object",
+      description: "A package's claim, the three-field shape fusion.package/v1 gives package.claim: the checkout it is assigned to, the person, and when. claimed_at is null only where a historical time is unknown (an imported claim); it is never guessed. A domain assignment, never a host lease.",
+      additionalProperties: false,
+      required: ["checkout_id", "claimed_at", "person"],
+      properties: {
+        checkout_id: { $ref: "#/$defs/checkout_id" },
+        person: { type: ["string", "null"], minLength: 1 },
+        claimed_at: {
+          oneOf: [
+            { type: "null" },
+            { $ref: "#/$defs/timestamp" }
+          ]
+        }
+      }
+    },
+    claim_transfer: {
+      type: "object",
+      description: "One landed takeover of a standing claim (request 62, part 3, as Prior's answer to 62 corrects it). Closed, every member required. previous_claim is the claim standing immediately before this transfer, compared in all three fields by the kernel; it alone may carry a null claimed_at. claim is the new claim, its claimed_at never null. inspected_revision is the request's expected_revision. actor is the request's actor and is never the reserved legacy-unknown, on an imported package too. transferred_at is the host-supplied time of the new claim, frozen in the request and copied from claim.claimed_at; it is not a certified commit time, and replay or recovery never refreshes it. source is the request's takeover.source verbatim: evidence of the user's consent, checked to resolve at the write, never an authorisation, which stays the host's. Rule JSON Schema cannot check: transferred_at equals claim.claimed_at.",
+      additionalProperties: false,
+      required: ["actor", "claim", "inspected_revision", "operation_id", "previous_claim", "source", "transferred_at"],
+      properties: {
+        previous_claim: { $ref: "#/$defs/claim" },
+        claim: {
+          allOf: [
+            { $ref: "#/$defs/claim" },
+            { type: "object", properties: { claimed_at: { $ref: "#/$defs/timestamp" } } }
+          ]
+        },
+        inspected_revision: { $ref: "#/$defs/sha256" },
+        operation_id: { $ref: "#/$defs/uuid" },
+        actor: {
+          allOf: [
+            { $ref: "#/$defs/actor" },
+            { not: { type: "object", properties: { actor: { $ref: "#/$defs/legacy_unknown_actor" } }, required: ["actor"] } }
+          ]
+        },
+        transferred_at: { $ref: "#/$defs/timestamp" },
+        source: {
+          description: "A record, or the user's word held in a record or artefact: the two non-null shapes a package's mode.source admits. null and the legacy shape are not admitted. fusion.protocol/v1's takeover.source refers here.",
+          oneOf: [
+            { $ref: "#/$defs/record_ref" },
+            {
+              type: "object",
+              additionalProperties: false,
+              required: ["kind", "ref"],
+              properties: {
+                kind: { const: "user-word" },
+                ref: {
+                  oneOf: [
+                    { $ref: "#/$defs/record_ref" },
+                    { $ref: "#/$defs/artefact_ref" }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
     },
     extensions: {
       type: "object",
@@ -14663,6 +14802,16 @@ var protocol_schema_default = {
             person: { type: ["string", "null"], minLength: 1 },
             claimed_at: { oneOf: [{ type: "null" }, { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/timestamp" }] }
           }
+        },
+        takeover: {
+          type: "object",
+          description: "The administrative takeover of a standing claim (request 62, accepted with corrections in Prior's answer to 62). Absent, claim is today's operation, conflict/already-claimed on a claimed package included; present, it is never null. previous_claim is the complete standing claim as show returned it, its claimed_at null where the stored one is; source is the user's consent evidence in the shape fusion.common/v1's claim_transfer gives it, never an authorisation. expected_revision is the inspected revision, and claim the new holder, its claimed_at non-null. Rules JSON Schema cannot check, refused by the operation in this order after the kernel's normal sequence: the stored bytes hash to expected_revision; the record is a live package; it is claimed (conflict/takeover-not-claimed); previous_claim equals the stored claim in all three fields (conflict/takeover-holder-mismatch); claim names another checkout than previous_claim (schema-invalid/takeover-same-checkout); claim.claimed_at is non-null; source resolves in this workbench. None falls back to an ordinary claim.",
+          additionalProperties: false,
+          required: ["previous_claim", "source"],
+          properties: {
+            previous_claim: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/claim" },
+            source: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/claim_transfer/properties/source" }
+          }
         }
       }
     },
@@ -14952,7 +15101,13 @@ var record_schema_default = {
       uniqueItems: true,
       items: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/reference" }
     },
-    provenance: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/provenance" },
+    provenance: {
+      description: "fusion.common/v1's provenance without claim_transfers, which only a package carries (request 62).",
+      allOf: [
+        { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/provenance" },
+        { not: { type: "object", required: ["claim_transfers"] } }
+      ]
+    },
     extensions: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/extensions" },
     control: { type: "object" }
   },

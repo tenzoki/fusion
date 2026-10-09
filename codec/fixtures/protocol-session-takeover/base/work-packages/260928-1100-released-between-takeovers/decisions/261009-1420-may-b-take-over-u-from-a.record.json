@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7a6ee014-0000-4000-8000-000000000014",
+  "workbench_id": "7a6e0000-0000-4000-8000-000000000000",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1100-released-between-takeovers/decisions/261009-1420-may-b-take-over-u-from-a.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

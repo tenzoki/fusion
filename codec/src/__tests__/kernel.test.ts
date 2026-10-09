@@ -1202,3 +1202,53 @@ describe("a held migration intent is released only to the request carrying its i
     expect(pendingIds(wb)).toEqual([]);
   });
 });
+
+// --- a takeover through the existing kernel (request 62; Prior's answer to 62, part 9) --------
+
+describe("a one-write claim with takeover cut at every point of CUTS", () => {
+  const HELD = { checkout_id: "deadbeef", person: "kai", claimed_at: "2026-09-28T13:41:00+02:00" };
+  const NEW = { checkout_id: "a216a4b9", person: "kai", claimed_at: "2026-10-09T14:00:00+02:00" };
+  const SOURCE = { kind: "user-word", ref: { workbench_id: "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964", record_id: "d068e1ae-3f62-429a-880a-2785763aaf01" } };
+  /** The open package of a fresh copy at rest in claimed, held by a checkout that is gone. */
+  const claimedCopy = (): string => {
+    const root = fresh();
+    writeFileSync(join(root, OPEN), serialise({ ...controlOf(root, OPEN), status: "claimed", claim: HELD }));
+    return root;
+  };
+  const takeoverRequest = (root: string) => ({
+    op: "claim",
+    workbench: root,
+    operation_id: OP_ID,
+    record: { path: OPEN },
+    expected_revision: revision(root, OPEN),
+    actor: { actor: "orchestrator", person: "kai" },
+    claim: NEW,
+    takeover: { previous_claim: HELD, source: SOURCE },
+  });
+
+  for (const cut of cutsFor(1)) {
+    it(`${cut}: a read recovers one claim replacement and one history entry, transferred_at the frozen request time; the identical retry answers the uncut bytes; a fresh id on the inspected revision is revision-mismatch`, async () => {
+      const clean = claimedCopy();
+      const cleanAnswer = await dispatch(takeoverRequest(clean));
+      expect(cleanAnswer.ok, JSON.stringify(cleanAnswer)).toBe(true);
+
+      const root = claimedCopy();
+      const req = takeoverRequest(root);
+      await expect(dispatch(req, { kernel: { faults: { cutAt: cut } } })).rejects.toBeInstanceOf(CutReached);
+      expect(journalEntries(root), "the intent is pending after the cut").toEqual([OP_ID]);
+
+      const shown = okResult(await dispatch({ op: "show", workbench: root, record: { path: OPEN } }));
+      expect(journalEntries(root), "recovered: the intent left the journal").toEqual([]);
+      const control = shown.control as { claim: unknown; provenance: { claim_transfers: Array<{ previous_claim: unknown; claim: unknown; transferred_at: string }> } };
+      expect(control.claim).toEqual(NEW);
+      expect(control.provenance.claim_transfers, "one entry, not two").toHaveLength(1);
+      expect(control.provenance.claim_transfers[0]).toMatchObject({ previous_claim: HELD, claim: NEW, transferred_at: NEW.claimed_at });
+      expect(bytesOf(root, OPEN).equals(bytesOf(clean, OPEN)), "the bytes of the uncut run").toBe(true);
+
+      const again = await dispatch(req);
+      expect(JSON.stringify(again), "replay bytes unchanged").toBe(JSON.stringify(cleanAnswer));
+      expect(bytesOf(root, OPEN).equals(bytesOf(clean, OPEN)), "the retry rewrote nothing").toBe(true);
+      expect(await dispatch({ ...req, operation_id: OTHER_ID })).toMatchObject({ ok: false, error: { class: "conflict", reason: "revision-mismatch" } });
+    });
+  }
+});

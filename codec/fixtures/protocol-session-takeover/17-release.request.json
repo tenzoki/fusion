@@ -1,0 +1,1 @@
+{"op":"release","workbench":"<workbench>","operation_id":"7a6e0017-0000-4000-8000-000000000017","record":{"path":"work-packages/260928-0900-taken-over-once/package.json"},"expected_revision":"sha256:0d6f1fd32369f7058bab4bc84433982f61c8f94189e52293b3eb8d0813b2fb54","actor":{"actor":"orchestrator","person":"Kai Stalmann <ks@qantr.com>"},"reason":"B is done with P."}

@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"schema-invalid","reason":"takeover-same-checkout","detail":"the new claim names checkout cccc0003, which holds the claim already; a takeover moves it to another checkout"}}

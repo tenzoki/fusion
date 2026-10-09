@@ -46,13 +46,14 @@ and `bin/`, and drops `codec/node_modules` as it drops `hooks/node_modules`.
 What an installed copy runs is the bundle, `dist/fusion-record.js`, and
 nothing else in it; what an installed copy carries for a reader or for the
 Prior side is `schemas/`, `contract/` and `fixtures/` (the language-neutral
-fixture index, the Prior DTO pairs, the scratch workbench, the six recorded
+fixture index, the Prior DTO pairs, the scratch workbench, the seven recorded
 protocol sessions under `fixtures/protocol-session/` (FJ01),
 `fixtures/protocol-session-fj02/` (FJ02),
 `fixtures/protocol-session-fj02b/` (FJ02b),
 `fixtures/protocol-session-initialize/` (`initialize`),
-`fixtures/protocol-session-archive/` (the archive revision) and
-`fixtures/protocol-session-migration/` (FJ04's `migration`), and Prior's FJ01 handback under
+`fixtures/protocol-session-archive/` (the archive revision),
+`fixtures/protocol-session-migration/` (FJ04's `migration`) and
+`fixtures/protocol-session-takeover/` (the claim takeover), and Prior's FJ01 handback under
 `fixtures/prior-handback/`). `src/`, `scripts/`,
 `package.json` and the tests are copied because the copy is whole, and are
 unused at runtime: nothing in an install compiles, tests or imports them.
@@ -152,6 +153,43 @@ decide, as before. `ops.test.ts` derives the table from the schema positions
 the Claude client's `PAYLOAD_FIELDS` test reads and pins it to Prior's table.
 The check is the `transition` entry's own: `claim` and `release` compose their
 payload and keep their answers.
+
+**Claim with takeover** (request 62, accepted with corrections in Prior's
+answer to 62). `claim` carrying `takeover: {previous_claim, source}` replaces
+the standing claim of a claimed package; without the member `claim` is the
+operation above, `conflict/already-claimed` on a claimed package included.
+It is no edge: `claimed` stays `claimed` and `contract/transitions.json` is
+unchanged. The member's shape is checked where every request's is, in
+`dispatch` against the protocol schema, before the kernel: both members
+required, `takeover: null` refused, `source` a `record_ref` or the user's
+word around a record or an artefact reference (`schema-invalid/request`).
+After the kernel's normal sequence the plan checks, in order and with no
+fallback to an ordinary claim: the revision (`conflict/revision-mismatch`); a
+package (`schema-invalid/not-a-package`); live (`conflict/package-terminal`);
+claimed (`conflict/takeover-not-claimed`); `previous_claim` equal to the
+stored claim in all three fields, a null `claimed_at` included
+(`conflict/takeover-holder-mismatch`); a new checkout
+(`schema-invalid/takeover-same-checkout`); a non-null new `claimed_at`
+(`schema-invalid/claimed-at-required`); the source resolving in this
+workbench (the resolver's refusal); the result a valid package. The source
+check is evidence validation, not authorisation: a source that resolves is
+evidence of the user's consent, never a credential, and the codec decides
+no authority; who may take over is the host's question. A refusal adds no
+takeover mutation and no history entry. On success the one domain control
+file is written under the kernel's intent and the request's `operation_id`:
+`claim` replaced and one entry appended to `provenance.claim_transfers`,
+`{previous_claim, claim, inspected_revision, operation_id, actor,
+transferred_at, source}`. `transferred_at` is the new claim's `claimed_at`,
+the host's time frozen in the request and never a commit time; replay and
+recovery do not refresh it. The answer is the claim answer with
+`previous_checkout_id` and `checkout_id` added. History outlives the claim:
+`release`, an ordinary `claim`, `transition` and `set-mode` leave it as it
+is, and no rule ties one entry to the next, so a release and an ordinary
+claim may stand between two takeovers. The history is package-only: the
+record and campaign schemas refuse it. The bundle Prior qualified before the
+takeover, `c76bbce9…`, refuses a transferred package in `validate` and in
+every mutation and answers `show` with the record as stored; it rewrites no
+byte (`round-trip-cli-takeover.test.ts`).
 
 **Evidence creation** is `create` with `kind: evidence` (response 19), the
 sole write route for a new evidence record; `## Evidence records on disk`
@@ -563,7 +601,10 @@ and record names its `provenance.backup` at `/provenance/backup`, after its
 other sites in the schema's field order; both are artefact references,
 `resolved` at their hash or `unresolved` (`missing-evidence/artefact-changed`,
 `unresolved-reference/artefact-missing`), and a backup under `archive/` still
-resolves. `ops.test.ts` derives the position set from the schemas per kind and
+resolves. A package names each takeover's source at
+`/provenance/claim_transfers/<i>/source/ref` (the user's word) or
+`/provenance/claim_transfers/<i>/source` (a record), the spelling of the mode's
+source, after its backup. `ops.test.ts` derives the position set from the schemas per kind and
 holds `referenceSites` equal to it, so a schema field without a site fails the
 suite. A host decides from this one answer which records a remaining record
 binds. This moved one entry of the same recorded FJ02 answer, the evidence
@@ -947,7 +988,7 @@ never by its file format.
 |---|---|
 | `schemas/*.schema.json` | JSON Schema (draft 2020-12), one file per contract, each keyed by its `$id` |
 | `contract/` | The transition, dependency and Prior-mapping tables as data; `prior-mapping.json` is the contract as the Prior side ruled it (Prior `c512c4c`, reviewing `dbd1aa1`), every row confirmed |
-| `fixtures/manifest.json` | The language-neutral fixture index: every fixture outside `fixtures/prior/`, `fixtures/workbench/`, `fixtures/protocol-session/`, `fixtures/prior-handback/`, `fixtures/protocol-session-fj02/`, `fixtures/protocol-session-fj02b/`, `fixtures/protocol-session-initialize/`, `fixtures/protocol-session-archive/`, `fixtures/legacy-v12/` and `fixtures/protocol-session-migration/` (the ten `fixtures.test.ts` exempts), with the schema it is checked against and the outcome expected. Prior's Go side reads this same file and asserts the same outcomes; its shape is `fixtures/manifest.schema.json` |
+| `fixtures/manifest.json` | The language-neutral fixture index: every fixture outside `fixtures/prior/`, `fixtures/workbench/`, `fixtures/protocol-session/`, `fixtures/prior-handback/`, `fixtures/protocol-session-fj02/`, `fixtures/protocol-session-fj02b/`, `fixtures/protocol-session-initialize/`, `fixtures/protocol-session-archive/`, `fixtures/legacy-v12/`, `fixtures/protocol-session-migration/` and `fixtures/protocol-session-takeover/` (the eleven `fixtures.test.ts` exempts), with the schema it is checked against and the outcome expected. Prior's Go side reads this same file and asserts the same outcomes; its shape is `fixtures/manifest.schema.json` |
 | `fixtures/valid/`, `fixtures/invalid/`, `fixtures/bytes/` | The fixtures the manifest indexes |
 | `fixtures/prior/` | Round-trip fixtures for the Prior DTO mapping; not indexed by the manifest. The 13 `prior.json` are Go-emitted goldens (`go-golden@dbd1aa1`, taken at Prior `c512c4c`), copied byte for byte and never edited here; each `fusion.json` beside one is the codec's import of it, and `UPDATE_PRIOR_FIXTURES=1 npm test` regenerates it when the mapping changes on purpose |
 | `fixtures/prior-handback/` | Prior's FJ01 handback: the five files after Prior's own `claimed → paused` transition through the pinned bundle (the record, its revision, the `show` response, the `transition` request and response), counterchecked by `prior-handback.test.ts`; not indexed by the manifest |
@@ -957,6 +998,7 @@ never by its file format.
 | `fixtures/protocol-session-initialize/` | The `initialize` recorded session: twenty-six pairs over a root of targets, not one workbench (`<workbench>/legacy`, `/file`, `/new`, `/pending`, `/crowded`, `/diverged`, `/nonfile`, `/unreadable`). It covers `inspect` and `list` on an empty directory and a v12 store (`state: legacy`); `initialize` refused on the store (`target-not-empty`, byte-identical after) and on a file (`workbench-missing`), landed on the empty directory, replayed before and after a `create` with an `inspect` after each replay, refused under its id with another request (`operation-id-reused`) and under another id (`manifest-present`); then `inspect.pending` (`{operation_id, id, blocked}`) over a committed intent alone and beside another entry, each landed by the request rebuilt from the target and `pending` alone, over a diverged and a non-file manifest (`blocked: true`, the `initialize` `recovery-blocked` with every file kept), and over an unreadable intent (`pending-initialize-unreadable`, whose current detail is the historical `26-inspect.response.json` with `26-inspect.detail-delta.json` applied); each successful `inspect` answers its historical recording with `<nn>-inspect.maintenance-delta.json` applied. `base/` is the root the session starts from; `seed/<nn>-inspect/` holds each intent, the readable ones cut in process from the request their `initialize` exchange sends, with the request digest as the placeholder `<request-digest:<nn>-initialize>` a replayer computes; gated by `round-trip-cli-initialize.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_INITIALIZE=1`, replay procedure and the placeholder rule in its `README.md`; not indexed by the manifest |
 | `fixtures/protocol-session-archive/` | The archive revision's recorded session: fifty-one pairs over one workbench under JSON control (`base/`: a live issue, a closed chain it names, a closed issue naming another, the closed unit of two failed moves, an open record of every other kind, and two done packages, each with its evidence group), with the host's moves, copies and one link between exchanges. It covers `reconcile` naming every binding before the sweep; request 37's refusal once per kind; `maintenance` `begin` refused `recovery-blocked` over a seeded intent, then landing it and setting the fence, the intent's request answering its stored bytes under the fence and a fresh one `maintenance-active`; after a sweep into `archive/` of a terminal issue pair, a created pair and a whole package with its evidence group, `validate`, `reconcile` and `list` without them, a reference to the archived issue `record-not-found`, an archive-only copy of a current id no second carrier, scopes into `archive/` and through a link `archived-path`, archived paths `record-not-found`, the pre-archive `create` replayed without recreating its files, `end`; three failed moves under a fence each (a control file without its narrative and a container without its evidence group, which neither `validate` nor `reconcile` sees, and a narrative without its control file, `narrative-missing`), each restored and ended; and `inspect` over a journal that is a file. `base/` is the workbench the session starts from; `seed/11-maintenance/` holds the intent, cut in process from exchange 14's request with its digest as the placeholder `<request-digest:14-transition>`, and L diverged, `seed/12-maintenance/` L restored; each fence's `since`, the clock's, is recorded as `<since:<nn>-maintenance>`; gated by `round-trip-cli-archive.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_ARCHIVE=1`, the host's actions, the placeholder rules and the replay procedure in its `README.md`; not indexed by the manifest |
 | `fixtures/protocol-session-migration/` | The FJ04 recorded migration session: seventy pairs covering `migration` in all five phases with the `maintenance`, `claim` and read operations that bracket them, over four bases (A runs the migration, records the second-run no-op and rolls back across it with the no-op bound; B rolls back across activation; C rolls back two landed chunks; D keeps a refusal after real work, a claim and then a no-op, refused on the tree and then in the audit), each a fresh copy of `fixtures/legacy-v12/workbench/` with no `base/` of its own, and seven seeds under `seed/<nn>-<op>/` (the generated issues that make three chunks, the repairs, four proposals and chunk 2's committed intent) plus six host edits, each applied just before its exchange; each fence's `since` is recorded as `<since:<nn>-<op>>`; gated by `round-trip-cli-migration.test.ts`, regenerated only under `UPDATE_PROTOCOL_SESSION_MIGRATION=1`, the host's actions, the placeholder rules and the replay procedure in its `README.md`; not indexed by the manifest |
+| `fixtures/protocol-session-takeover/` | The claim takeover's recorded session (request 62, FJ05 plan step 6): thirty-seven pairs over one workbench under JSON control (`base/`: four packages claimed by checkouts that are gone or will be taken over, one of them imported with a claim that names no person and no time, an open, a paused and a dropped package, an issue, the five decision records that hold the user's word and a memo that holds it once more). It covers a takeover landing; Prior's eight cases (evidence validation of an unknown, foreign and changed source, a wrong holder by checkout and by time, a stale revision, a missing and a null source, identical and divergent replay before and after the package moved on, the new holder's release, A to B to C, and A to B, release, an ordinary claim by C and C to D, the general-transition bypass); the four further refusals; the imported claim taken over; `reconcile` naming every transfer source; `validate`. `base/` is the workbench the session starts from; the one substitution is `<workbench>`; gated by `round-trip-cli-takeover.test.ts`, which also runs the qualified bundle `c76bbce9…` over the workbench the session leaves; regenerated only under `UPDATE_PROTOCOL_SESSION_TAKEOVER=1`, replay procedure in its `README.md`; not indexed by the manifest |
 | `fixtures/workbench/` | A minimal v12-shaped scratch workbench (`workbench.json`, `.fusion-setup`, two package pairs, one shared issue pair) the store and CLI suites copy to a temp directory before every case; not indexed by the manifest |
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |
 | `scripts/build.mjs` | esbuild, pinned exactly, `--bundle --platform=node --format=esm --target=node20`, JSON inlined, staging path then atomic rename into `dist/`; a second run writes nothing |
@@ -972,7 +1014,7 @@ never by its file format.
 | `src/transitions.ts` | `allowed(kind, from, to, payload)` and `dependencySatisfied(condition, target)` over `contract/transitions.json` and `contract/dependencies.json`; a typed refusal, never a state change |
 | `src/references.ts` | Parses the three prose citation forms and the structured `record_ref`, `artefact_ref` and `foreign_ref` shapes into one union and renders them back; resolves nothing against a file system |
 | `src/prior/` | The Prior DTO mapping, both directions, row by row from `contract/prior-mapping.json`: `candidates.ts`, `packages.ts`, `campaign.ts`; `gojson.ts` reproduces Go's `encoding/json` bytes so that `computePriorRevision` equals Prior's stored revision |
-| `src/__tests__/` | One suite per module, plus `fixtures.test.ts` over the manifest, the six recorded-session gates (`round-trip-cli.test.ts`, `round-trip-cli-fj02.test.ts`, `round-trip-cli-fj02b.test.ts`, `round-trip-cli-initialize.test.ts`, `round-trip-cli-archive.test.ts`, `round-trip-cli-migration.test.ts`) and `prior-handback.test.ts` |
+| `src/__tests__/` | One suite per module, plus `fixtures.test.ts` over the manifest, the seven recorded-session gates (`round-trip-cli.test.ts`, `round-trip-cli-fj02.test.ts`, `round-trip-cli-fj02b.test.ts`, `round-trip-cli-initialize.test.ts`, `round-trip-cli-archive.test.ts`, `round-trip-cli-migration.test.ts`, `round-trip-cli-takeover.test.ts`) and `prior-handback.test.ts` |
 | `src/__tests__/helpers/seed.ts` | Seeds a temp workbench with a deterministic evidence record and its report (and a correction on request): the report is written as a plain file and the record is created through `create` with `kind: evidence`, the kernel choosing its path. `placeEvidence` writes a pair by hand, with no check, only for the cases whose record `create` refuses. Used by the evidence and `reconcile` cases and by the FJ02 recorder, which checks its `seed/09-attach-evidence/` against it |
 | `src/__tests__/helpers/session.ts` | The machinery the FJ02, FJ02b, `initialize` and archive recorders share: the wrapper spawned once per exchange over a temp copy of the session's `base` (the scratch workbench unless a session names its own, as the `initialize` and archive sessions do), the `<workbench>` substitution, a `seed/<nn>-<op>/` set copied just before its exchange, the file listing and the bytes a comparison reads, and the regeneration switch. It holds no assertion about a session; the FJ01 recorder keeps its own copy |
 

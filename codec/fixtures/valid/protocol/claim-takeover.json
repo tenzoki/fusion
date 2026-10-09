@@ -1,0 +1,33 @@
+{
+  "op": "claim",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "5b8e2d1f-7c4a-4e69-9d3b-1a0f8e7c6d52",
+  "record": {
+    "path": "work-packages/260928-1200-parser-fix/package.json"
+  },
+  "expected_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actor": {
+    "actor": "orchestrator",
+    "person": "kai"
+  },
+  "claim": {
+    "checkout_id": "a216a4b9",
+    "person": "kai",
+    "claimed_at": "2026-09-28T16:00:00+02:00"
+  },
+  "takeover": {
+    "previous_claim": {
+      "checkout_id": "deadbeef",
+      "person": "kai",
+      "claimed_at": "2026-09-28T13:41:00+02:00"
+    },
+    "source": {
+      "kind": "user-word",
+      "ref": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "3b0e6f52-8c1d-4a7e-9f20-6d4c1b8a5e31",
+        "display": "261009-1400_*_may-this-checkout-take-over-the-parser-fix-package-from-deadbeef.md"
+      }
+    }
+  }
+}

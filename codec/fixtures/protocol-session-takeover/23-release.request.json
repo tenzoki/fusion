@@ -1,0 +1,1 @@
+{"op":"release","workbench":"<workbench>","operation_id":"7a6e0023-0000-4000-8000-000000000023","record":{"path":"work-packages/260928-1100-released-between-takeovers/package.json"},"expected_revision":"sha256:907bdf82c732dfca39cf812404d4b00206332483f9a1413cb2a312bebfbc4b62","actor":{"actor":"orchestrator","person":"Kai Stalmann <ks@qantr.com>"},"reason":"B hands U back."}

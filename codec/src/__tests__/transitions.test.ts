@@ -154,6 +154,18 @@ describe("allowed(package, ...) outcome rules on the target state", () => {
     expectResult(allowed("package", "claimed", "claimed", { claim: CLAIM }), false, "conflict");
   });
 
+  it("the takeover of request 62 adds no edge: claimed -> claimed stays a conflict, and the claim operation's edges are open and paused into claimed alone", () => {
+    // The takeover changes the holder, not the status, so it lives in the
+    // `claim` operation and the protocol schema; the edge table and its
+    // goldens are unchanged (addendum part 10; Prior's answer to 62, part 10).
+    expect(hasEdge("package", "claimed", "claimed")).toBe(false);
+    expect(table.kinds["package"]!.edges.filter((e) => e.operation === "claim").map((e) => [e.from, e.to])).toEqual([
+      ["open", "claimed"],
+      ["paused", "claimed"],
+    ]);
+    expect(JSON.stringify(table)).not.toContain("takeover");
+  });
+
   it("an unknown kind or state is schema-invalid", () => {
     expectResult(allowed("campaign", "open", "done"), false, "schema-invalid");
     expectResult(allowed("package", "open", "archived"), false, "schema-invalid");

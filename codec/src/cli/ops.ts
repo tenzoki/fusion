@@ -32,7 +32,9 @@
 //   claim      `transition` into the state the table's `claim` edges enter,
 //   release     and out along its `release` edges: the transition plan
 //               function with defaults and clearer refusals, never a second
-//               route (decision 260928-1735, option 1)
+//               route (decision 260928-1735, option 1); `claim` with
+//               `takeover` replaces a standing claim and appends one entry to
+//               `provenance.claim_transfers` (request 62), and is no edge
 //   set-mode    a package's mode, `autonomous` only with a resolving source
 //               in the user's word
 //   set-dependencies
@@ -164,6 +166,7 @@ import {
   type SetDependenciesRequest,
   type SetModeRequest,
   type ShowRequest,
+  type Takeover,
   type TransitionPayload,
   type TransitionRequest,
   type ValidateRequest,
@@ -1539,6 +1542,7 @@ function asTransition(req: ClaimRequest | ReleaseRequest, to: string, reason: st
 }
 
 function claimPlan(req: ClaimRequest): PlanFunction {
+  if (req.takeover !== undefined) return takeoverPlan(req, req.takeover);
   const { to } = operationEdges("claim");
   return transitionPlan(asTransition(req, to, "claim", { claim: req.claim }), (pair) => {
     if (pair.kind !== "package" || pair.control.status !== to) return { ok: true, value: undefined };
@@ -1555,6 +1559,107 @@ function releasePlan(req: ReleaseRequest): PlanFunction {
     const what = pair.kind === "package" ? "the package" : `the ${pair.kind} record`;
     return { ok: false, error: { class: "conflict", reason: "not-claimed", detail: `${what} is ${String(state)}; release gives up the claim of a package that is ${from.join(" or ")}` } };
   });
+}
+
+// --- claim with takeover (request 62) ---------------------------------------------------
+//
+// The administrative takeover of a standing claim, as Prior's answer to 62
+// corrects the addendum. It is no edge of the table: `claimed` stays
+// `claimed` and the holder changes, so it does not run through
+// `transitionPlan`, and `contract/transitions.json` is untouched. The request's
+// shape (check 1) is the protocol schema's, judged in `dispatch` before the
+// kernel; the kernel's own sequence (sweep, recovery, replay, the fence) then
+// runs before this plan, and its storage and recovery refusals stand beside
+// the ones below. In order, the first that fails refuses, and none falls back
+// to an ordinary claim:
+//
+//    2  the stored bytes hash to `expected_revision`  conflict/revision-mismatch
+//    3  a package                                     schema-invalid/not-a-package
+//    4  live                                          conflict/package-terminal
+//    5  claimed                                       conflict/takeover-not-claimed
+//    6  previous_claim equals the stored claim in all three fields, compared
+//       canonically, a null claimed_at included      conflict/takeover-holder-mismatch
+//    7  the new claim names another checkout          schema-invalid/takeover-same-checkout
+//    8  the new claim's claimed_at is non-null        schema-invalid/claimed-at-required
+//    9  the source resolves in this workbench         the resolver's refusal
+//   10  the record after the write is a valid package schema-invalid/result-invalid
+//
+// A refusal adds no takeover mutation and no history entry; recovery of an
+// earlier committed intent, which the kernel ran before this plan, stands.
+//
+// Check 9 is evidence validation, not authorisation: a source that resolves
+// is evidence of the user's consent and no credential, and says nothing of
+// whether the former checkout has stopped writing. The kernel receives no
+// identity it may authorise on; who may take over is the host's question.
+//
+// On success the one domain control file is written once, under the kernel's
+// intent and the request's `operation_id`: `claim` replaced, `status` kept,
+// and one entry appended to `provenance.claim_transfers`, which is created
+// when absent. `transferred_at` is the new claim's `claimed_at`, the time the
+// host put into the request; it is no commit time, and a replay or a recovery
+// lands the planned bytes and never refreshes it. No rule ties one entry to
+// the next: a release and an ordinary claim may stand between two takeovers.
+
+/** `claim` with `takeover`: checks 2 to 10 above, then the one write; the answer is the claim answer with both checkouts added. */
+function takeoverPlan(req: ClaimRequest, takeover: Takeover): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    const r = livePackage(ctx, req, "a takeover", "replaces a package's standing claim");
+    if (!r.ok) return r;
+    const pair = r.value;
+    const { to: claimed } = operationEdges("claim");
+    const status = pair.control.status;
+    if (status !== claimed) {
+      return refusal("conflict", "takeover-not-claimed", `the package is ${String(status)}; a takeover replaces the claim of a package that is ${claimed}, and is never landed as an ordinary claim`);
+    }
+    const stored = pair.control.claim;
+    if (!isObject(stored) || canonical(stored) !== canonical(takeover.previous_claim)) {
+      return refusal("conflict", "takeover-holder-mismatch", `the standing claim is ${canonical(stored ?? null)}; the request names ${canonical(takeover.previous_claim)} as the previous claim`);
+    }
+    const previous = takeover.previous_claim.checkout_id;
+    if (req.claim.checkout_id === previous) {
+      return refusal("schema-invalid", "takeover-same-checkout", `the new claim names checkout ${previous}, which holds the claim already; a takeover moves it to another checkout`);
+    }
+    if (req.claim.claimed_at === null) {
+      return refusal("schema-invalid", "claimed-at-required", "package: a takeover makes a new claim, whose claimed_at is known to the caller and never guessed; it is null");
+    }
+    const source = takeover.source;
+    const resolved = resolveReference(ctx, "kind" in source ? source.ref : source);
+    if (!resolved.ok) return resolved;
+
+    const provenance = (isObject(pair.control.provenance) ? pair.control.provenance : {}) as Record<string, unknown>;
+    const history = Array.isArray(provenance.claim_transfers) ? provenance.claim_transfers : [];
+    const entry = {
+      previous_claim: stored,
+      claim: req.claim,
+      inspected_revision: req.expected_revision,
+      operation_id: req.operation_id,
+      actor: req.actor,
+      transferred_at: req.claim.claimed_at,
+      source,
+    };
+    const next = { ...pair.control, claim: req.claim, provenance: { ...provenance, claim_transfers: [...history, entry] } };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after the takeover is not a valid package");
+    if (!v.ok) return v;
+
+    const write = recordWrite(req.record.path, next);
+    return {
+      ok: true,
+      value: {
+        writes: [{ path: write.path, bytes: write.bytes }],
+        result: {
+          operation_id: req.operation_id,
+          path: req.record.path,
+          from: claimed,
+          to: claimed,
+          revision: write.revision,
+          previous_revision: req.expected_revision,
+          previous_checkout_id: previous,
+          checkout_id: req.claim.checkout_id,
+        },
+        revisions: { [req.record.path]: write.revision },
+      },
+    };
+  };
 }
 
 // --- the package operations' common entry ---------------------------------------------
@@ -2150,6 +2255,17 @@ export function referenceSites(pair: Pair): ReferenceSite[] {
     each("/evidence", c.evidence, "ref");
     each("/outcome/evidence", field(c.outcome, "evidence"), "ref");
     backup();
+    // Each takeover's consent evidence, spelt as the mode's source is
+    // (request 62, part 6). Package-only: the record and campaign schemas
+    // refuse the history, so no other kind is read for it.
+    const transfers = field(c.provenance, "claim_transfers");
+    if (Array.isArray(transfers)) {
+      transfers.forEach((entry, i) => {
+        const from = field(entry, "source");
+        if (field(from, "kind") === "user-word") add(`/provenance/claim_transfers/${i}/source/ref`, field(from, "ref"));
+        else add(`/provenance/claim_transfers/${i}/source`, from);
+      });
+    }
     return sites;
   }
   each("/references", c.references);

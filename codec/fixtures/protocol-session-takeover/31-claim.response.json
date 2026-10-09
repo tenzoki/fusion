@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"conflict","reason":"package-terminal","detail":"the package is dropped, which is terminal; its record is history and a takeover writes nothing into it"}}

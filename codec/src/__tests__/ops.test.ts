@@ -36,7 +36,7 @@ import {
   type TransitionRequest,
 } from "../cli/protocol.js";
 import { installInlined } from "../cli/schemas.js";
-import { commitIntent, requestDigest, type Intent, type Write } from "../journal.js";
+import { canonical, commitIntent, requestDigest, type Intent, type Write } from "../journal.js";
 import { CutReached, mutate, readContext } from "../kernel.js";
 import { controlFiles, KINDS, lockPathFor, openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
 import { MAX_RECORD_BYTES, strictParse } from "../strict-json.js";
@@ -1332,6 +1332,304 @@ describe("claim, release and set-mode over the shared kernel", () => {
     expectOrdinary("after set-mode without provenance");
     expect((await dispatch(setModeRequest(root, { value: "autonomous", source: { kind: "user-word", ref: userWordFile() } }, { operation_id: randomUUID() }))).ok).toBe(true);
     expect((packageIn(root).mode as { value: string }).value).toBe("autonomous");
+  });
+});
+
+// --- claim with takeover (request 62) ------------------------------------------------------
+
+describe("claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals", () => {
+  const PACKAGE = transitions().kinds["package"]!;
+  const WB_ID = "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964";
+  const ISSUE_ID = "d068e1ae-3f62-429a-880a-2785763aaf01";
+  const STALE = "sha256:" + "0".repeat(64);
+  const A = { checkout_id: "deadbeef", person: "kai", claimed_at: "2026-09-28T13:41:00+02:00" };
+  const B = { checkout_id: "a216a4b9", person: "kai", claimed_at: "2026-10-09T14:00:00+02:00" };
+  const C = { checkout_id: "c0ffee01", person: "kai", claimed_at: "2026-10-09T15:00:00+02:00" };
+  const D = { checkout_id: "d00d0002", person: "kai", claimed_at: "2026-10-09T16:00:00+02:00" };
+  const OPERATOR = { actor: "orchestrator", person: "kai" };
+  /** The user's word, held in a record of this workbench (the scratch issue stands in for the decision record). */
+  const WORD = { kind: "user-word" as const, ref: { workbench_id: WB_ID, record_id: ISSUE_ID } };
+  const BARE = { workbench_id: WB_ID, record_id: ISSUE_ID };
+
+  const control = (): Record<string, unknown> => {
+    const p = strictParse(bytesOf(OPEN));
+    if (!p.ok) throw new Error(p.detail);
+    return p.value as Record<string, unknown>;
+  };
+  /** The open package of the scratch workbench at rest in `status`, holding `claim`, with `provenance` when given. */
+  const seed = (status: string, claim: unknown, provenance?: unknown): void => {
+    const p = strictParse(readFileSync(join(FIXTURE, OPEN)));
+    if (!p.ok) throw new Error(p.detail);
+    const base = p.value as Record<string, unknown>;
+    const terminal = PACKAGE.terminal.includes(status);
+    const outcome = terminal ? { class: PACKAGE.outcome_classes?.[status]?.[0], reason: "seeded at rest", evidence: [] } : null;
+    writeFileSync(join(root, OPEN), serialise({ ...base, status, claim, outcome, ...(provenance !== undefined ? { provenance } : {}) }));
+  };
+  const takeover = (previous: unknown, claim: unknown, over: Record<string, unknown> = {}, source: unknown = WORD): ClaimRequest =>
+    ({
+      op: "claim",
+      workbench: root,
+      operation_id: randomUUID(),
+      record: { path: OPEN },
+      expected_revision: revision(OPEN),
+      actor: OPERATOR,
+      claim,
+      takeover: { previous_claim: previous, source },
+      ...over,
+    }) as ClaimRequest;
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+  const stateDir = (sub: string): string[] => (existsSync(join(root, ".json-state", sub)) ? readdirSync(join(root, ".json-state", sub)).sort() : []);
+  /** A refusal writes nothing: the package's bytes, no intent, no stored answer under its id. */
+  const refusedAndUnchanged = async (req: ClaimRequest, expected: { class: string; reason: string }, label: string): Promise<void> => {
+    const before = bytesOf(OPEN);
+    const ops = stateDir("ops");
+    expect(errorOf(await dispatch(req)), label).toEqual(expected);
+    expect(bytesOf(OPEN).equals(before), `${label}: the record's bytes`).toBe(true);
+    expect(stateDir("journal"), `${label}: no intent`).toEqual([]);
+    expect(stateDir("ops"), `${label}: no stored answer`).toEqual(ops);
+  };
+  const memo = (): { path: string; sha256: string; kind: "memo" } => {
+    const path = "shared/memos/261009-1400-take-over-the-parser-fix.md";
+    mkdirSync(join(root, "shared", "memos"), { recursive: true });
+    writeFileSync(join(root, path), "Take over the parser fix from deadbeef; that checkout is gone.\n");
+    return { path, sha256: revision(path), kind: "memo" };
+  };
+
+  it("lands: the claim replaced, status kept, one entry appended with every member, transferred_at the request's claimed_at, nothing else moved, one file written", async () => {
+    seed("claimed", A);
+    const before = control();
+    const req = takeover(A, B);
+    const r = await dispatch(req);
+    const result = okResult(r);
+    expect(Object.keys(result)).toEqual(["operation_id", "path", "from", "to", "revision", "previous_revision", "previous_checkout_id", "checkout_id"]);
+    expect(result).toEqual({ operation_id: req.operation_id, path: OPEN, from: "claimed", to: "claimed", revision: revision(OPEN), previous_revision: req.expected_revision, previous_checkout_id: A.checkout_id, checkout_id: B.checkout_id });
+    if (r.ok) expect(r.revisions, "one domain control file").toEqual({ [OPEN]: revision(OPEN) });
+    const after = control();
+    expect(after.status).toBe("claimed");
+    expect(after.claim).toEqual(B);
+    const entry = { previous_claim: A, claim: B, inspected_revision: req.expected_revision, operation_id: req.operation_id, actor: OPERATOR, transferred_at: B.claimed_at, source: WORD };
+    expect(after.provenance).toEqual({ ...(before.provenance as object), claim_transfers: [entry] });
+    expect(Object.keys((after.provenance as { claim_transfers: object[] }).claim_transfers[0] as object), "the schema's member order").toEqual(["previous_claim", "claim", "inspected_revision", "operation_id", "actor", "transferred_at", "source"]);
+    const { claim: _c1, provenance: _p1, ...restBefore } = before;
+    const { claim: _c2, provenance: _p2, ...restAfter } = after;
+    expect(restAfter, "no other field moves").toEqual(restBefore);
+    expect(bytesOf(OPEN).toString("utf-8")).toBe(serialise(after));
+    expect(okResult(await dispatch({ op: "validate", workbench: root })).valid).toBe(true);
+  });
+
+  it("an imported previous claim with a null claimed_at and person is named as stored and lands; the entry keeps the nulls", async () => {
+    const imported = { checkout_id: "deadbeef", person: null, claimed_at: null };
+    seed("claimed", imported, { source: "created", legacy_fields: {} });
+    expect(okResult(await dispatch(takeover(imported, B))).checkout_id).toBe(B.checkout_id);
+    expect(((control().provenance as { claim_transfers: Array<{ previous_claim: unknown }> }).claim_transfers[0] as { previous_claim: unknown }).previous_claim).toEqual(imported);
+  });
+
+  // --- 1. denied authority: the codec's evidence validation ---
+
+  it("case 1, evidence validation (no authority is decided here): a source naming an unknown record, another workbench, a changed or missing artefact is refused, and the record is unchanged", async () => {
+    seed("claimed", A);
+    const artefact = memo();
+    const unknown = { workbench_id: WB_ID, record_id: "00000000-0000-4000-8000-00000000dead" };
+    const cases: Array<[string, unknown, { class: string; reason: string }]> = [
+      ["the user's word in an unknown record", { kind: "user-word", ref: unknown }, { class: "unresolved-reference", reason: "record-not-found" }],
+      ["an unknown bare record", unknown, { class: "unresolved-reference", reason: "record-not-found" }],
+      ["a record of another workbench", { kind: "user-word", ref: { ...BARE, workbench_id: "00000000-0000-4000-8000-000000000000" } }, { class: "unresolved-reference", reason: "foreign-workbench" }],
+      ["an artefact at another hash", { kind: "user-word", ref: { ...artefact, sha256: STALE } }, { class: "missing-evidence", reason: "artefact-changed" }],
+      ["an artefact that is not there", { kind: "user-word", ref: { ...artefact, path: "shared/memos/absent.md" } }, { class: "unresolved-reference", reason: "artefact-missing" }],
+    ];
+    for (const [label, source, expected] of cases) await refusedAndUnchanged(takeover(A, B, {}, source), expected, label);
+    // The same request with a source that resolves lands: what refused it was the evidence alone.
+    expect((await dispatch(takeover(A, B, {}, { kind: "user-word", ref: artefact }))).ok).toBe(true);
+  });
+
+  // --- 2. wrong holder ---
+
+  it("case 2, wrong holder: a previous_claim naming another checkout, or the right checkout with another person or claimed_at, is conflict/takeover-holder-mismatch; the comparison is all three fields, never the checkout alone", async () => {
+    seed("claimed", A);
+    for (const [label, previous] of [
+      ["another checkout", { ...A, checkout_id: "0badf00d" }],
+      ["another person", { ...A, person: "someone else" }],
+      ["another claimed_at", { ...A, claimed_at: "2026-09-28T13:42:00+02:00" }],
+      ["a null claimed_at where one is stored", { ...A, claimed_at: null }],
+      ["a null person where one is stored", { ...A, person: null }],
+    ] as const) {
+      await refusedAndUnchanged(takeover(previous, B), { class: "conflict", reason: "takeover-holder-mismatch" }, label);
+    }
+  });
+
+  // --- 3. stale revision ---
+
+  it("case 3, stale revision: a revision that never was, and one taken before an intervening write, are conflict/revision-mismatch, and nothing is written", async () => {
+    seed("claimed", A);
+    await refusedAndUnchanged(takeover(A, B, { expected_revision: STALE }), { class: "conflict", reason: "revision-mismatch" }, "a revision that never was");
+    const inspected = revision(OPEN);
+    expect((await dispatch({ op: "set-mode", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: inspected, actor: ACTOR, mode: { value: "autonomous", source: BARE } })).ok).toBe(true);
+    expect(revision(OPEN)).not.toBe(inspected);
+    await refusedAndUnchanged(takeover(A, B, { expected_revision: inspected }), { class: "conflict", reason: "revision-mismatch" }, "a revision taken before an intervening write");
+  });
+
+  it("check order: the revision before the holder, the state before the holder, the holder before the checkout, the checkout before the time, the time before the source", async () => {
+    seed("claimed", A);
+    const wrong = { ...A, checkout_id: "0badf00d" };
+    const dangling = { kind: "user-word", ref: { workbench_id: WB_ID, record_id: "00000000-0000-4000-8000-00000000dead" } };
+    await refusedAndUnchanged(takeover(wrong, B, { expected_revision: STALE }), { class: "conflict", reason: "revision-mismatch" }, "2 before 6");
+    await refusedAndUnchanged(takeover(wrong, { ...B, checkout_id: wrong.checkout_id }), { class: "conflict", reason: "takeover-holder-mismatch" }, "6 before 7");
+    await refusedAndUnchanged(takeover(A, { ...A, claimed_at: null }), { class: "schema-invalid", reason: "takeover-same-checkout" }, "7 before 8");
+    await refusedAndUnchanged(takeover(A, { ...B, claimed_at: null }, {}, dangling), { class: "schema-invalid", reason: "claimed-at-required" }, "8 before 9");
+    seed("open", null);
+    await refusedAndUnchanged(takeover(wrong, B), { class: "conflict", reason: "takeover-not-claimed" }, "5 before 6");
+  });
+
+  // --- 4. missing source ---
+
+  it("case 4, missing source: takeover without source, with source null, a legacy source, or takeover null is schema-invalid/request in dispatch", async () => {
+    seed("claimed", A);
+    const base = takeover(A, B);
+    const variants: Array<[string, unknown]> = [
+      ["without source", { previous_claim: A }],
+      ["source null", { previous_claim: A, source: null }],
+      ["a legacy source", { previous_claim: A, source: { kind: "legacy", raw: "**Claim:** deadbeef" } }],
+      ["without previous_claim", { source: WORD }],
+      ["an incomplete previous_claim", { previous_claim: { checkout_id: A.checkout_id, person: A.person }, source: WORD }],
+      ["an unknown member", { previous_claim: A, source: WORD, force: true }],
+      ["takeover null", null],
+    ];
+    for (const [label, member] of variants) await refusedAndUnchanged({ ...base, operation_id: randomUUID(), takeover: member } as unknown as ClaimRequest, { class: "schema-invalid", reason: "request" }, label);
+  });
+
+  // --- 5. replay ---
+
+  it("case 5, replay: an identical replay answers the stored bytes and appends no second entry, even after the package moved on; a divergent one is operation-id-reused; the same takeover under a fresh id is revision-mismatch, and re-read it is takeover-holder-mismatch", async () => {
+    seed("claimed", A);
+    const req = takeover(A, B);
+    const landed = await dispatch(req);
+    expect(landed.ok, JSON.stringify(landed)).toBe(true);
+    const after = bytesOf(OPEN);
+    expect(JSON.stringify(await dispatch(req))).toBe(JSON.stringify(landed));
+    expect(bytesOf(OPEN).equals(after), "the replay wrote nothing").toBe(true);
+
+    expect(errorOf(await dispatch({ ...req, takeover: { previous_claim: A, source: BARE } }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+    expect(errorOf(await dispatch({ ...req, claim: C }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+    await refusedAndUnchanged({ ...req, operation_id: randomUUID() }, { class: "conflict", reason: "revision-mismatch" }, "a fresh id on the inspected revision");
+    await refusedAndUnchanged({ ...req, operation_id: randomUUID(), expected_revision: revision(OPEN) }, { class: "conflict", reason: "takeover-holder-mismatch" }, "a fresh id, re-read");
+
+    // The package moves on; the identical replay still answers the stored bytes, the lookup preceding every check.
+    expect((await dispatch({ op: "release", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: OPERATOR, reason: "done here" })).ok).toBe(true);
+    const released = bytesOf(OPEN);
+    expect(JSON.stringify(await dispatch(req))).toBe(JSON.stringify(landed));
+    expect(bytesOf(OPEN).equals(released)).toBe(true);
+    expect((control().provenance as { claim_transfers: unknown[] }).claim_transfers).toHaveLength(1);
+  });
+
+  // --- 6. release after transfer ---
+
+  it("case 6, release after transfer: the new holder's release lands, status open and claim null, the history byte-unchanged", async () => {
+    seed("claimed", A);
+    expect((await dispatch(takeover(A, B))).ok).toBe(true);
+    const history = canonical((control().provenance as { claim_transfers: unknown }).claim_transfers);
+    const released = await dispatch({ op: "release", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: OPERATOR, reason: "the new holder is done" });
+    expect(okResult(released)).toMatchObject({ from: "claimed", to: "open" });
+    expect(control()).toMatchObject({ status: "open", claim: null });
+    expect(canonical((control().provenance as { claim_transfers: unknown }).claim_transfers)).toBe(history);
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: OPEN } })).valid).toBe(true);
+  });
+
+  // --- 7. successive transfers ---
+
+  it("case 7, A to B to C: two entries in the order they landed, the second's previous_claim the standing claim B; the original provenance survives", async () => {
+    seed("claimed", A);
+    const original = control().provenance as Record<string, unknown>;
+    expect((await dispatch(takeover(A, B))).ok).toBe(true);
+    expect((await dispatch(takeover(B, C, {}, BARE))).ok).toBe(true);
+    const provenance = control().provenance as { claim_transfers: Array<Record<string, unknown>> } & Record<string, unknown>;
+    expect(provenance.claim_transfers.map((e) => [(e.previous_claim as { checkout_id: string }).checkout_id, (e.claim as { checkout_id: string }).checkout_id])).toEqual([
+      ["deadbeef", "a216a4b9"],
+      ["a216a4b9", "c0ffee01"],
+    ]);
+    expect(provenance.claim_transfers[1]?.source).toEqual(BARE);
+    expect({ source: provenance.source, legacy_fields: provenance.legacy_fields }).toEqual(original);
+    expect(control().claim).toEqual(C);
+  });
+
+  it("case 7, A to B, release, an ordinary claim by C, C to D: two entries, the second starting at C and not at B; no chain rule refuses the history", async () => {
+    seed("claimed", A);
+    expect((await dispatch(takeover(A, B))).ok).toBe(true);
+    expect((await dispatch({ op: "release", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: OPERATOR, reason: "released" })).ok).toBe(true);
+    expect((await dispatch({ op: "claim", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: ACTOR, claim: C })).ok).toBe(true);
+    expect((control().provenance as { claim_transfers: unknown[] }).claim_transfers, "the ordinary claim appends nothing").toHaveLength(1);
+    expect((await dispatch(takeover(C, D, {}, { kind: "user-word", ref: memo() }))).ok).toBe(true);
+    const entries = (control().provenance as { claim_transfers: Array<{ previous_claim: unknown; claim: unknown }> }).claim_transfers;
+    expect(entries.map((e) => [e.previous_claim, e.claim])).toEqual([
+      [A, B],
+      [C, D],
+    ]);
+    expect(okResult(await dispatch({ op: "validate", workbench: root })).valid).toBe(true);
+  });
+
+  // --- 8. the general-transition bypass ---
+
+  it("case 8, the general-transition bypass: transition to claimed with a foreign claim is transition-refused, a transition payload carrying takeover is schema-invalid/request, and claim without takeover is already-claimed, as before", async () => {
+    seed("claimed", A);
+    const through = (payload: unknown) => ({ op: "transition", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: OPERATOR, to: "claimed", reason: "bypass", payload });
+    const before = bytesOf(OPEN);
+    expect(errorOf(await dispatch(through({ claim: B })))).toEqual({ class: "conflict", reason: "transition-refused" });
+    expect(errorOf(await dispatch(through({ claim: B, takeover: { previous_claim: A, source: WORD } })))).toEqual({ class: "schema-invalid", reason: "request" });
+    const { takeover: _t, ...ordinary } = takeover(A, B);
+    expect(errorOf(await dispatch(ordinary))).toEqual({ class: "conflict", reason: "already-claimed" });
+    expect(bytesOf(OPEN).equals(before)).toBe(true);
+    expect(control().provenance).not.toHaveProperty("claim_transfers");
+  });
+
+  // --- the four further refusals ---
+
+  for (const status of ["open", "paused"]) {
+    it(`a takeover of a package that is ${status} is conflict/takeover-not-claimed, never landed as an ordinary claim`, async () => {
+      seed(status, null);
+      await refusedAndUnchanged(takeover(A, B), { class: "conflict", reason: "takeover-not-claimed" }, status);
+    });
+  }
+
+  for (const status of PACKAGE.terminal) {
+    it(`a takeover of a package at rest in ${status} is conflict/package-terminal`, async () => {
+      seed(status, A);
+      await refusedAndUnchanged(takeover(A, B), { class: "conflict", reason: "package-terminal" }, status);
+    });
+  }
+
+  it("a takeover of an issue is schema-invalid/not-a-package; a takeover to the holding checkout is schema-invalid/takeover-same-checkout; a new claim without a time is claimed-at-required", async () => {
+    const issueBefore = bytesOf(ISSUE);
+    expect(errorOf(await dispatch(takeover(A, B, { record: { path: ISSUE }, expected_revision: revision(ISSUE) })))).toEqual({ class: "schema-invalid", reason: "not-a-package" });
+    expect(bytesOf(ISSUE).equals(issueBefore)).toBe(true);
+    seed("claimed", A);
+    await refusedAndUnchanged(takeover(A, { ...A, claimed_at: B.claimed_at }), { class: "schema-invalid", reason: "takeover-same-checkout" }, "the same checkout");
+    await refusedAndUnchanged(takeover(A, { ...B, claimed_at: null }), { class: "schema-invalid", reason: "claimed-at-required" }, "a null new claimed_at");
+  });
+
+  it("the actor legacy-unknown is refused in the request, so no entry can carry it", async () => {
+    seed("claimed", A);
+    await refusedAndUnchanged(takeover(A, B, { actor: { actor: "legacy-unknown", person: null } }), { class: "schema-invalid", reason: "request" }, "legacy-unknown");
+  });
+
+  // --- reconcile ---
+
+  it("reconcile lists each transfer's source as a reference site, spelt as the mode's source is, resolved; a source whose record is gone is unresolved and still listed", async () => {
+    seed("claimed", A);
+    const artefact = memo();
+    expect((await dispatch(takeover(A, B, {}, { kind: "user-word", ref: artefact }))).ok).toBe(true);
+    expect((await dispatch(takeover(B, C, {}, BARE))).ok).toBe(true);
+    const sites = (okResult(await dispatch({ op: "reconcile", workbench: root })).references as Array<{ path: string; at: string }>).filter((e) => e.path === OPEN);
+    expect(sites).toEqual([
+      { path: OPEN, at: "/provenance/claim_transfers/0/source/ref", status: "resolved", target: artefact.path },
+      { path: OPEN, at: "/provenance/claim_transfers/1/source", status: "resolved", target: ISSUE },
+    ]);
+    rmSync(join(root, ISSUE));
+    rmSync(join(root, ISSUE.replace(/\.record\.json$/, ".md")), { force: true });
+    const after = (okResult(await dispatch({ op: "reconcile", workbench: root })).references as Array<{ path: string; at: string }>).filter((e) => e.path === OPEN);
+    expect(after[1]).toEqual({ path: OPEN, at: "/provenance/claim_transfers/1/source", status: "unresolved", class: "unresolved-reference", reason: "record-not-found" });
   });
 });
 
@@ -2938,9 +3236,15 @@ describe("reconcile", () => {
     };
     const derive = (root: Node, kind: string): string[] => {
       const out = new Set<string>();
+      // A member an `allOf` branch forbids (`not: {required: [m]}`, as the
+      // record and campaign schemas forbid `provenance.claim_transfers`) is
+      // no position of this kind, whatever the shared definition beside it
+      // declares.
+      const forbidden = new Set<string>();
       const walk = (node: unknown, at: string, doc: Node, seen: ReadonlySet<string>): void => {
         if (node === null || typeof node !== "object") return;
         const n = node as Node;
+        for (const branch of (n.allOf as Node[] | undefined) ?? []) for (const m of (((branch.not as Node | undefined)?.required as string[] | undefined) ?? [])) forbidden.add(`${at}/${m}`);
         // A branch for another record kind is not this kind's.
         const kindConst = ((n.properties as Node | undefined)?.kind as Node | undefined)?.const;
         if (at === "" && typeof kindConst === "string" && kindConst !== kind) return;
@@ -2959,7 +3263,7 @@ describe("reconcile", () => {
       };
       walk(root, "", root, new Set());
       out.delete("/narrative"); // the record's own narrative: `records`' question, never a binding to another file
-      return [...out].sort();
+      return [...out].filter((p) => ![...forbidden].some((f) => p === f || p.startsWith(`${f}/`))).sort();
     };
     const schemaOf = (kind: string): Node => [...docs.values()].find((d) => d.title === (kind === "package" ? "fusion.package/v1" : kind === "evidence" ? "fusion.evidence/v1" : "fusion.record/v1")) as Node;
 
@@ -2968,8 +3272,8 @@ describe("reconcile", () => {
     const R = { workbench_id: "w", record_id: "r" };
     const saturated: Record<string, Array<Record<string, unknown>>> = {
       package: [
-        { origin: { ref: R }, mode: { source: R }, depends_on: [{ target: R }], active_documents: [{ ref: R, role: "plan" }], references: [R], evidence: [{ ref: R }], outcome: { evidence: [{ ref: R }] }, provenance: { backup: R } },
-        { mode: { source: { kind: "user-word", ref: R } } },
+        { origin: { ref: R }, mode: { source: R }, depends_on: [{ target: R }], active_documents: [{ ref: R, role: "plan" }], references: [R], evidence: [{ ref: R }], outcome: { evidence: [{ ref: R }] }, provenance: { backup: R, claim_transfers: [{ source: R }] } },
+        { mode: { source: { kind: "user-word", ref: R } }, provenance: { claim_transfers: [{ source: { kind: "user-word", ref: R } }] } },
       ],
       evidence: [{ report: R, predecessor: R }],
       issue: [{ references: [R], provenance: { backup: R }, control: { disposition: { reason_ref: R } } }],
@@ -2985,6 +3289,10 @@ describe("reconcile", () => {
     // The derivation itself reaches what request 40 names, so an empty walk cannot pass.
     expect(derive(schemaOf("evidence"), "evidence")).toEqual(["/predecessor", "/report"]);
     for (const kind of ["package", "issue", "plan", "discussion", "decision"]) expect(derive(schemaOf(kind), kind), kind).toContain("/provenance/backup");
+    // A takeover's source is a site of a package alone (request 62, part 6): the shared provenance declares it, the record schema forbids it.
+    expect(derive(schemaOf("package"), "package")).toEqual(expect.arrayContaining(["/provenance/claim_transfers/*/source", "/provenance/claim_transfers/*/source/ref"]));
+    for (const kind of ["issue", "plan", "discussion", "decision"]) expect(derive(schemaOf(kind), kind).filter((p) => p.includes("claim_transfers")), kind).toEqual([]);
+    expect(referenceSites({ kind: "issue", control: { provenance: { claim_transfers: [{ source: R }] } } } as unknown as Pair), "an issue carrying the history, which validate refuses, is read for no transfer site").toEqual([]);
   });
 
   it("an evidence record's report and a provenance backup are each one row, resolved at their hash; a changed report, and a backup no file carries, are unresolved", async () => {

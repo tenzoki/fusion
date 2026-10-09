@@ -1,0 +1,103 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "5c3ed178-501a-4135-83ac-5f2d07f7722a",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "domain": "data",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "a216a4b9",
+    "person": "kai",
+    "claimed_at": "2026-10-11T10:00:00+02:00"
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/260928-1338-json-control-data-and-markdown-artefacts.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+        "record_id": "f9dc47c3-35cb-41cf-8cdb-c84e75ef2c0f",
+        "display": "260928-1341_o_plan-fj00-schemas-dto-mapping-and-reference-status-contract.md"
+      },
+      "role": "plan",
+      "revision": "sha256:9805ef62eaea78fe71d142fed03313a25e56386ee24cac9e16b92b6d31181d95"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {},
+    "claim_transfers": [
+      {
+        "previous_claim": {
+          "checkout_id": "deadbeef",
+          "person": "kai",
+          "claimed_at": "2026-09-28T13:41:00+02:00"
+        },
+        "claim": {
+          "checkout_id": "0badc0de",
+          "person": "kai",
+          "claimed_at": "2026-10-09T14:00:00+02:00"
+        },
+        "inspected_revision": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "operation_id": "6a1f0c2e-4b7d-4e93-8a5c-0d9e2f1b3c47",
+        "actor": {
+          "actor": "orchestrator",
+          "person": "kai"
+        },
+        "transferred_at": "2026-10-09T14:00:00+02:00",
+        "source": {
+          "kind": "user-word",
+          "ref": {
+            "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+            "record_id": "3b0e6f52-8c1d-4a7e-9f20-6d4c1b8a5e31",
+            "display": "261009-1400_*_may-this-checkout-take-over-the-parser-fix-package-from-deadbeef.md"
+          }
+        }
+      },
+      {
+        "previous_claim": {
+          "checkout_id": "c0ffee11",
+          "person": "anna",
+          "claimed_at": "2026-10-10T08:30:00+02:00"
+        },
+        "claim": {
+          "checkout_id": "a216a4b9",
+          "person": "kai",
+          "claimed_at": "2026-10-11T10:00:00+02:00"
+        },
+        "inspected_revision": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "operation_id": "d4e5f6a7-b8c9-4d0e-9f1a-2b3c4d5e6f70",
+        "actor": {
+          "actor": "orchestrator",
+          "person": "kai"
+        },
+        "transferred_at": "2026-10-11T10:00:00+02:00",
+        "source": {
+          "kind": "user-word",
+          "ref": {
+            "path": "shared/memos/notes-kai.md",
+            "sha256": "sha256:736c916c0736c46bc5c894285f5df6760e7eeed181c3b1cbae4bfcf385878728",
+            "kind": "memo"
+          }
+        }
+      }
+    ]
+  },
+  "extensions": {}
+}

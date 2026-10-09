@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"schema-invalid","reason":"claimed-at-required","detail":"package: a takeover makes a new claim, whose claimed_at is known to the caller and never guessed; it is null"}}

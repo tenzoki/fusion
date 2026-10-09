@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7a6ee008-0000-4000-8000-000000000008",
+  "workbench_id": "7a6e0000-0000-4000-8000-000000000000",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/260928-1400-an-issue.md"
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

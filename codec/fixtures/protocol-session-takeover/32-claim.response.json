@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"schema-invalid","reason":"not-a-package","detail":"shared/issues/260928-1400-an-issue.record.json is a issue record; a takeover replaces a package's standing claim"}}

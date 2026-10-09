@@ -1,0 +1,37 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "7a6ee003-0000-4000-8000-000000000003",
+  "workbench_id": "7a6e0000-0000-4000-8000-000000000000",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "aaaa0001",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-01T09:00:00+02:00"
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/260928-1100-released-between-takeovers/260928-1100-released-between-takeovers.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

@@ -139,7 +139,7 @@
     "path": "valid/package/claimed.json",
     "schema": "urn:fusion:schema:fusion.package/v1",
     "expect": "valid",
-    "note": "claimed with a full claim (checkout_id, person, claimed_at) and one active plan."
+    "note": "claimed with a full claim (checkout_id, person, claimed_at) and one active plan. Never taken over: provenance carries no claim_transfers, byte-equal to its shape before request 62."
   },
   {
     "path": "valid/package/paused.json",
@@ -194,6 +194,30 @@
     "schema": "urn:fusion:schema:fusion.package/v1",
     "expect": "valid",
     "note": "Exercises fusion.common/v1's record_ref, artefact_ref, foreign_ref and all three legacy citation strings through references, plus both depends_on conditions and provenance imported with a backup; common exposes no record-level schema, so no fixture lives under common/."
+  },
+  {
+    "path": "valid/package/claimed-one-transfer.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "claimed.json taken over once (request 62): claim is the new holder and provenance.claim_transfers holds one entry, every member present, source the user's word held in a decision record, transferred_at equal to the new claim's claimed_at."
+  },
+  {
+    "path": "valid/package/claimed-two-transfers.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "Two successive takeovers A to B to C: two entries in the order they landed, the second source a bare record_ref."
+  },
+  {
+    "path": "valid/package/claimed-two-transfers-unchained.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "A to B by takeover, a release, an ordinary claim by C, then C to D: the second entry's previous_claim is C's claim, not the first entry's claim. No schema rule ties one entry to the next (Prior's answer to 62, part 3c). The second source is the user's word held in an artefact."
+  },
+  {
+    "path": "valid/package/imported-claimed-transfer-null-previous-claimed-at.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "valid",
+    "note": "An imported package whose imported claim had no time and no person was taken over: the entry's previous_claim carries claimed_at null and person null as stored, which only the previous claim may (Prior's answer to 62, part 3b)."
   },
   {
     "path": "invalid/package/unknown-key.json",
@@ -446,6 +470,55 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "extensions is an object; null is not an empty extensions block."
+  },
+  {
+    "path": "invalid/package/claim-transfers-empty.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claimed-one-transfer.json with claim_transfers []: absent is the only spelling of never transferred."
+  },
+  {
+    "path": "invalid/package/claim-transfer-unknown-member.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claimed-one-transfer.json with an unknown member in the entry: a transfer entry is closed."
+  },
+  {
+    "path": "invalid/package/claim-transfer-member-missing.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claimed-one-transfer.json without the entry's transferred_at: every entry member is required."
+  },
+  {
+    "path": "invalid/package/claim-transfer-new-claimed-at-null.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claimed-one-transfer.json with the entry's new claim at claimed_at null: only the previous claim may carry a null time."
+  },
+  {
+    "path": "invalid/package/claim-transfer-previous-claim-unknown-member.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claimed-one-transfer.json with an unknown member in the entry's previous_claim: the claim definition is closed."
+  },
+  {
+    "path": "invalid/package/claim-transfer-source-null.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claimed-one-transfer.json with the entry's source null: a transfer always carries the user's consent evidence."
+  },
+  {
+    "path": "invalid/package/claim-transfer-actor-legacy-unknown-imported.json",
+    "schema": "urn:fusion:schema:fusion.package/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "imported-claimed-transfer-null-previous-claimed-at.json with the entry's actor legacy-unknown: the reserved actor is refused in a transfer entry even on an imported package (Prior's answer to 62, part 3b)."
   },
   {
     "path": "valid/record/issue-open.json",
@@ -891,6 +964,13 @@
     "note": "control is required."
   },
   {
+    "path": "invalid/record/issue-with-claim-transfers.json",
+    "schema": "urn:fusion:schema:fusion.record/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "issue-open.json with provenance.claim_transfers: the history is package-only, and fusion.record/v1 refuses it on every kind."
+  },
+  {
     "path": "valid/campaign/minimal.json",
     "schema": "urn:fusion:schema:fusion.campaign/v1",
     "expect": "valid",
@@ -1062,6 +1142,13 @@
     "note": "workbench_id is required."
   },
   {
+    "path": "invalid/campaign/claim-transfers.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "minimal.json with provenance.claim_transfers: the history is package-only."
+  },
+  {
     "path": "valid/evidence/accept-prior-enforced.json",
     "schema": "urn:fusion:schema:fusion.evidence/v1",
     "expect": "valid",
@@ -1204,6 +1291,13 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "An uncertainty is a non-empty sentence."
+  },
+  {
+    "path": "invalid/evidence/claim-transfers.json",
+    "schema": "urn:fusion:schema:fusion.evidence/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "revise-claude-guided.json with a provenance carrying claim_transfers: an evidence record has no provenance, so the history cannot reach it."
   },
   {
     "path": "bytes/bom.bin",
@@ -1454,6 +1548,12 @@
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "valid",
     "note": "maintenance end carries its own operation_id, since a stored answer is keyed by it, and names the begin it ends in fence."
+  },
+  {
+    "path": "valid/protocol/claim-takeover.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "claim with takeover (request 62): previous_claim the standing claim as show returned it, source the user's word held in a decision record, expected_revision the inspected revision, claim the new holder."
   },
   {
     "path": "invalid/protocol/inspect-unknown-key.json",
@@ -1832,6 +1932,62 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "maintenance end requires fence, the operation_id of the begin it ends."
+  },
+  {
+    "path": "invalid/protocol/claim-takeover-null.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claim-takeover.json with takeover null: null is not absence, and takeover is an object when present (Prior's answer to 62, part 1)."
+  },
+  {
+    "path": "invalid/protocol/claim-takeover-without-source.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claim-takeover.json without takeover.source."
+  },
+  {
+    "path": "invalid/protocol/claim-takeover-without-previous-claim.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claim-takeover.json without takeover.previous_claim."
+  },
+  {
+    "path": "invalid/protocol/claim-takeover-source-null.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claim-takeover.json with takeover.source null."
+  },
+  {
+    "path": "invalid/protocol/claim-takeover-source-legacy.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claim-takeover.json with a legacy source: of mode.source's shapes only the record and the user's word are admitted."
+  },
+  {
+    "path": "invalid/protocol/claim-takeover-previous-claim-incomplete.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claim-takeover.json with a previous_claim lacking claimed_at: the complete standing claim is named, a historical field is never inferred."
+  },
+  {
+    "path": "invalid/protocol/claim-takeover-unknown-key.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "claim-takeover.json with an unknown member in takeover: the member is closed."
+  },
+  {
+    "path": "invalid/protocol/transition-payload-takeover.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "transition.json with takeover in its payload: a transition cannot carry a takeover, its payload is closed (request 62, the general-transition bypass)."
   },
   {
     "path": "valid/migration/index.json",

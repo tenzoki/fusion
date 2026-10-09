@@ -1,0 +1,19 @@
+{
+  "op": "claim",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "5b8e2d1f-7c4a-4e69-9d3b-1a0f8e7c6d52",
+  "record": {
+    "path": "work-packages/260928-1200-parser-fix/package.json"
+  },
+  "expected_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actor": {
+    "actor": "orchestrator",
+    "person": "kai"
+  },
+  "claim": {
+    "checkout_id": "a216a4b9",
+    "person": "kai",
+    "claimed_at": "2026-09-28T16:00:00+02:00"
+  },
+  "takeover": null
+}

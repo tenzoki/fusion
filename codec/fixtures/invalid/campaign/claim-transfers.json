@@ -1,0 +1,112 @@
+{
+  "schema": "fusion.campaign/v1",
+  "id": "0481b6e2-0fdc-4dec-886c-5d6df0af2799",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "charter": {
+    "schema_version": 1,
+    "campaign_id": "camp-2026-09-parser",
+    "revision": "prior-opaque:charter-r1",
+    "authorisation_ref": "shared/decisions/260928-0900_a_authorise-the-parser-campaign.md",
+    "objective": "Close every parser defect the scanner has qualified.",
+    "item_kinds": [
+      "defect",
+      "performance"
+    ],
+    "candidate_sources": [
+      "scanner-a",
+      "scanner-b"
+    ],
+    "workflow_templates": [
+      "repair-and-review"
+    ],
+    "stop_conditions": [
+      "budget exhausted",
+      "intake closed and all attempts terminal"
+    ],
+    "intake_policy": "checkpoint",
+    "selection_policy": "policy-v3",
+    "package_policy": "formation-v1",
+    "acceptance_policy": "prior-enforced-review",
+    "autonomy_policy": "bounded",
+    "backend_policy": "claude-code",
+    "delivery_policy": "commit-per-package",
+    "data_boundary": [
+      "modules/fusion"
+    ],
+    "capabilities": [
+      "read",
+      "write",
+      "test"
+    ],
+    "budget_account": "acct-fusion",
+    "limits": {
+      "max_attempts": 3,
+      "max_failures": 2,
+      "max_consecutive_failures": 2,
+      "max_reviews": 5,
+      "resource_units": 100
+    }
+  },
+  "state": {
+    "campaign_id": "camp-2026-09-parser",
+    "revision": null,
+    "state": "draft",
+    "previous_terminal": null,
+    "reason": null,
+    "charter_hash": "prior-json-sha256:292b78473f123f90fd1f186910c5ed146ba1c24250bab1d5fe854c71634f4ea3",
+    "counters": {
+      "attempts": 0,
+      "failures": 0,
+      "consecutive_failures": 0,
+      "reviews": 0,
+      "resource_units": 0
+    },
+    "settlement": {
+      "owned_runs": 0,
+      "open_intents": 0,
+      "unknown_effects": 0,
+      "quarantined": 0
+    },
+    "requested_outcome": null,
+    "sessions": [],
+    "runs": [],
+    "baseline_hash": null,
+    "completion_evidence": null
+  },
+  "register": null,
+  "formation": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {},
+    "claim_transfers": [
+      {
+        "previous_claim": {
+          "checkout_id": "deadbeef",
+          "person": "kai",
+          "claimed_at": "2026-09-28T13:41:00+02:00"
+        },
+        "claim": {
+          "checkout_id": "a216a4b9",
+          "person": "kai",
+          "claimed_at": "2026-10-09T14:00:00+02:00"
+        },
+        "inspected_revision": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "operation_id": "6a1f0c2e-4b7d-4e93-8a5c-0d9e2f1b3c47",
+        "actor": {
+          "actor": "orchestrator",
+          "person": "kai"
+        },
+        "transferred_at": "2026-10-09T14:00:00+02:00",
+        "source": {
+          "kind": "user-word",
+          "ref": {
+            "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+            "record_id": "3b0e6f52-8c1d-4a7e-9f20-6d4c1b8a5e31",
+            "display": "261009-1400_*_may-this-checkout-take-over-the-parser-fix-package-from-deadbeef.md"
+          }
+        }
+      }
+    ]
+  },
+  "extensions": {}
+}

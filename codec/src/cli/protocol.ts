@@ -242,8 +242,30 @@ export interface CreateEvidenceRequest extends Base<"create"> {
   payload: EvidencePayload;
 }
 
+/** A package's claim, as `package.claim` and `fusion.common/v1`'s `$defs/claim` shape it. */
+export interface Claim {
+  checkout_id: string;
+  person: string | null;
+  claimed_at: string | null;
+}
+
+/** The user's consent evidence for a takeover: a record, or the user's word held in a record or an artefact. */
+export type TakeoverSource = RecordRef | { kind: "user-word"; ref: RecordRef | ArtefactRef };
+
+/**
+ * The administrative takeover of a standing claim (request 62, accepted with
+ * corrections in Prior's answer to 62): the complete standing claim the
+ * caller inspected, and the evidence of the user's consent. Absent, `claim`
+ * is the ordinary operation; the protocol schema refuses `null`.
+ */
+export interface Takeover {
+  previous_claim: Claim;
+  source: TakeoverSource;
+}
+
 export interface ClaimRequest extends Mutation<"claim"> {
-  claim: { checkout_id: string; person: string | null; claimed_at: string | null };
+  claim: Claim;
+  takeover?: Takeover;
 }
 
 export interface ReleaseRequest extends Mutation<"release"> {

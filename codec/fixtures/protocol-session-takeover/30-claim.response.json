@@ -1,0 +1,1 @@
+{"ok":false,"error":{"class":"conflict","reason":"takeover-not-claimed","detail":"the package is paused; a takeover replaces the claim of a package that is claimed, and is never landed as an ordinary claim"}}

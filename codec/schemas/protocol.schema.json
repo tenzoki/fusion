@@ -238,6 +238,16 @@
             "person": { "type": ["string", "null"], "minLength": 1 },
             "claimed_at": { "oneOf": [{ "type": "null" }, { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/timestamp" }] }
           }
+        },
+        "takeover": {
+          "type": "object",
+          "description": "The administrative takeover of a standing claim (request 62, accepted with corrections in Prior's answer to 62). Absent, claim is today's operation, conflict/already-claimed on a claimed package included; present, it is never null. previous_claim is the complete standing claim as show returned it, its claimed_at null where the stored one is; source is the user's consent evidence in the shape fusion.common/v1's claim_transfer gives it, never an authorisation. expected_revision is the inspected revision, and claim the new holder, its claimed_at non-null. Rules JSON Schema cannot check, refused by the operation in this order after the kernel's normal sequence: the stored bytes hash to expected_revision; the record is a live package; it is claimed (conflict/takeover-not-claimed); previous_claim equals the stored claim in all three fields (conflict/takeover-holder-mismatch); claim names another checkout than previous_claim (schema-invalid/takeover-same-checkout); claim.claimed_at is non-null; source resolves in this workbench. None falls back to an ordinary claim.",
+          "additionalProperties": false,
+          "required": ["previous_claim", "source"],
+          "properties": {
+            "previous_claim": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/claim" },
+            "source": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/claim_transfer/properties/source" }
+          }
         }
       }
     },

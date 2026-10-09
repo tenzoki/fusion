@@ -24,7 +24,13 @@
         { "$ref": "#/$defs/formation" }
       ]
     },
-    "provenance": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/provenance" },
+    "provenance": {
+      "description": "fusion.common/v1's provenance without claim_transfers, which only a package carries (request 62).",
+      "allOf": [
+        { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/provenance" },
+        { "not": { "type": "object", "required": ["claim_transfers"] } }
+      ]
+    },
     "extensions": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/extensions" }
   },
   "$defs": {
