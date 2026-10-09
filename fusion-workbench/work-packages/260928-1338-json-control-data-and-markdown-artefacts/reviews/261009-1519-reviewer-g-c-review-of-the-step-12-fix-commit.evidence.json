@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "11bb8eae-6ea8-4c89-b586-471aaa9140d6",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "885f6178244554be27b38aac3ba31daa8d4ae439",
+    "git_range": null
+  },
+  "brief_revision": "sha256:d88269aa28a528919b7e3abdbb6f59909005d19fda715812ec1fa8b190d713b4",
+  "plan_revision": "sha256:02ec99b61fd5745217c093cf822bf01e4d3525441bd8560f0d9a378f84d87d3f",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/reviews/261009-1519-reviewer-g-c-review-of-the-step-12-fix-commit.md",
+    "sha256": "sha256:5ea0d55184afb636b8a4e63453d7a7ef40276785a5526e2ed279f455ed84accf",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-09T13:20:02Z",
+  "extensions": {}
+}

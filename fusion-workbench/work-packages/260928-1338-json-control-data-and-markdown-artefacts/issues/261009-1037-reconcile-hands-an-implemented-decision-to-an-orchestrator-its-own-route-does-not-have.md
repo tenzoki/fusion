@@ -11,3 +11,5 @@ Since `85ea803b` the state-auditor moves no decision to `implemented`; it report
 **Acceptance:** `skills/reconcile/SKILL.md` names who sends `--to implemented` when no orchestrator runs, and the surface-growth bound stays green.
 
 Cross-references: 261009-1037-reviewer-g-a-pre-release-review-of-13-0-0.md
+
+Also seen: 261009-1519 by reviewer — since `a563ff6a` every takeover leaves its consent decision at `answered` (`agents/orchestrator.md` **Take over** row), so on this route each one joins the repeated "needs the transition" list too.
