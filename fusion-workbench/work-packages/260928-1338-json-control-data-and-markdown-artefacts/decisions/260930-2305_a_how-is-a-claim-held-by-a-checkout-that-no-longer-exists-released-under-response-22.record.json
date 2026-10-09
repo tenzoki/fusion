@@ -33,9 +33,9 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": "260930-2305_*_plan-fj03c-the-write-client-setup-and-the-skills-on-json.md",
-    "implementation_ref": null,
+    "implementation_ref": "0a0d6148",
     "superseded_by": null,
     "deferral": null
   }
