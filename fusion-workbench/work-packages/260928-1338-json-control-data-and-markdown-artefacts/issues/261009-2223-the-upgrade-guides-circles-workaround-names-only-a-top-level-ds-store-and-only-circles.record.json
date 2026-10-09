@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "aff6e14e-d07d-424f-ac0b-7c842e30432d",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261009-2223-the-upgrade-guides-circles-workaround-names-only-a-top-level-ds-store-and-only-circles.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
