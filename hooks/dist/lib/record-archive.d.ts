@@ -53,7 +53,10 @@
  *                                 named external target binds no local file
  *
  * A control file that does not read (the index's `unreadable`) has bindings
- * nobody can know, so every unit is held.
+ * nobody can know, so every unit is held. A takeover's consent source, at
+ * `/provenance/claim_transfers/<i>/source` (or `…/source/ref`), is one more
+ * `reconcile` site under this table, with no rule or exemption of its own
+ * (Prior's answer to request 62, part 6).
  *
  * Prose binds too, where it names a path. A remaining record's narrative that
  * cites a unit by a full workbench path holds it, because that path no longer

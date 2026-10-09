@@ -89,6 +89,56 @@ describe("one request, and no retry", () => {
   });
 });
 
+describe("takeover, request 62", () => {
+  /** A package OTHER holds, and a decision record in its container whose id is the `--source` that resolves. */
+  function orphaned(p: JsonProject): { pkg: string; source: string } {
+    const pkg = createPackage(p, "261009-1400-t");
+    claim(p, pkg, OTHER);
+    const word = Object.keys((run(p, "create", ["--kind", "decision", "--narrative-file", put(p, `${pkg.dir}/decisions/261009-1401-t.md`, "# Take over\n\nThe user: take it over from 0b0b0b0b, it is gone.\n"), "--origin", pkg.path, "--actor", "user"]).o as Wrote).revisions)[0];
+    return { pkg: pkg.path, source: JSON.stringify({ workbench_id: must(p, { op: "inspect" }).result.id, record_id: shown(p, word).control.id }) };
+  }
+
+  it("composes previous_claim and expected_revision from show and the claim for this checkout; five usage errors and two refusals land nothing; the row names both holders", () => {
+    withJsonProject((p) => {
+      const { pkg, source } = orphaned(p);
+      const on = ["--record", pkg, "--actor", "orchestrator"];
+      const take = (from: string, src: string | null, id: Identity = { checkout: ME }) => run(p, "claim", [...on, "--take-over-from", from, ...(src === null ? [] : ["--source", src])], id);
+      const usages = [take(OTHER, null), run(p, "claim", [...on, "--source", source]), take(ME, source), take(OTHER, "not json"), take(OTHER, "null")];
+      expect(usages.map((r) => [r.o.kind, mutations(r.sent)])).toEqual(Array(5).fill(["usage", []]));
+      const before = shown(p, pkg);
+      // The holder is not the one named: exit 5, nothing sent. A source that does not resolve: evidence validation refuses it, nothing written.
+      const wrongHolder = take("0c0c0c0c", source);
+      const unresolved = take(OTHER, JSON.stringify({ ...JSON.parse(source), record_id: "f03a0000-0000-4000-8000-0000000000ff" }));
+      expect([wrongHolder.o.kind, mutations(wrongHolder.sent), unresolved.o]).toMatchObject(["ownership", [], { kind: "refused", refusal: { class: "unresolved-reference", reason: "record-not-found" } }]);
+      expect(shown(p, pkg).revision).toBe(before.revision);
+      const landed = take(OTHER, source, { checkout: ME, person: "P" });
+      const sent = landed.sent.find((r) => r.op === "claim") as Record<string, any>;
+      expect([landed.o.kind, sent.expected_revision, sent.takeover, sent.claim]).toEqual(["landed", before.revision, { previous_claim: before.control.claim, source: JSON.parse(source) }, { checkout_id: ME, person: "P", claimed_at: expect.any(String) }]);
+      expect(shown(p, pkg).control.provenance.claim_transfers).toEqual([expect.objectContaining({ previous_claim: before.control.claim, claim: sent.claim, inspected_revision: before.revision })]);
+      expect(rows(p).filter((r) => r.op === "claim").map((r) => r.change)).toEqual([{ from: "claimed", to: "claimed", previous_checkout_id: OTHER, checkout_id: ME }]);
+      // The new holder is the holder: release lands, and OTHER's no longer would.
+      expect([run(p, "release", [...on, "--reason", "r"], { checkout: OTHER }).o.kind, run(p, "release", [...on, "--reason", "r"]).o.kind]).toEqual(["ownership", "landed"]);
+    });
+  }, CASE_TIMEOUT);
+
+  it("after an unknown outcome the re-send repeats the frozen request byte for byte and reads no show; the history keeps one entry", () => {
+    withJsonProject((p) => {
+      const { pkg, source } = orphaned(p);
+      const args = ["--record", pkg, "--actor", "orchestrator", "--take-over-from", OTHER, "--source", source];
+      const lost = run(p, "claim", args, { checkout: ME }, (w, r) => (r.op === "claim" ? (real(w, r), UNANSWERED) : real(w, r)));
+      const u = lost.o as Outcome & { kind: "unknown" };
+      expect([u.kind, Object.keys(u.resend)]).toEqual(["unknown", ["--expected-revision", "--claimed-at", "--previous-claim"]]);
+      const again = run(p, "claim", [...args, "--operation-id", u.operationId, ...Object.entries(u.resend).flat()]);
+      const first = lost.sent.find((r) => r.op === "claim");
+      expect([again.o.kind, again.sent.map((r) => r.op), JSON.stringify(again.sent.at(-1))]).toEqual(["landed", ["inspect", "claim"], JSON.stringify(first)]);
+      expect([shown(p, pkg).control.provenance.claim_transfers.length, rows(p).filter((r) => r.op === "claim")]).toEqual([1, []]);
+      // A re-send whose frozen previous claim names another checkout than --take-over-from is a usage error.
+      const bent = Object.entries({ ...u.resend, "--previous-claim": JSON.stringify({ checkout_id: ME, person: null, claimed_at: null }) }).flat();
+      expect(run(p, "claim", [...args, "--operation-id", u.operationId, ...bent]).o.kind).toBe("usage");
+    });
+  }, CASE_TIMEOUT);
+});
+
 describe("what is sent", () => {
   it("a flag outside the subcommand, or a payload field the record's kind does not carry, is a usage error and sends nothing", () => {
     withJsonProject((p) => {

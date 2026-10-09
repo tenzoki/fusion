@@ -1306,6 +1306,8 @@ describe("bin/monitor — record_change rows", () => {
     const body = page.slice(page.indexOf("function formatDetail("), page.indexOf("// Parse an event timestamp as UTC"));
     const fmt = new Function("escapeHtml", "formatLocalTime", `${body}\nreturn formatEvent;`)((t: string) => t, (t: string) => t) as (e: Row) => string;
     expect(fmt(rc("09:02", { from: "open", to: "claimed" }, { host: "prior" }))).toContain(`>prior package ${PKG}: open -> claimed<`);
+    // A takeover's row (request 62): the status stays claimed, the two holders ride in its change.
+    expect(fmt(rc("09:03", { from: "claimed", to: "claimed", previous_checkout_id: "0b0b0b0b", checkout_id: "5e8248d7" }, { op: "claim" }))).toContain(`>claude package ${PKG}: claimed -> claimed<`);
     const old: [Row, string][] = [[{ event: "task_start", task: "t1", agent: "code-implementer", detail: "x", bytes_prompt: 10 }, "code-implementer: [t1] x"],
       [{ event: "guard_block", detail: "b" }, "orchestrator: b"], [{ event: "gate_hit", detail: { gate: "approval" } }, "orchestrator: gate=approval"], [{ event: "turn_start", detail: "t" }, "orchestrator: t"]];
     for (const [ev, want] of old) expect(fmt({ ts: "2026-08-25T09:00:00", ...ev })).toContain(`>${want}<`);

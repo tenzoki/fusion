@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -81,6 +81,45 @@ describe("survey: which units may leave", () => {
     put(wb, "shared/issues/260930-0000-broken.record.json", "{}\n");
     const all = surveyed(wb, [D2]);
     expect([all.kind, read(all).held[D2].slice(0, 2)]).toEqual(["nothing", ["unreadable", "shared/issues/260930-0000-broken.record.json"]]);
+  }));
+});
+
+// A takeover's consent source (request 62) is one more `reconcile` site under
+// the same holds: Prior's answer to 62, part 6, grants it no rule of its own.
+const WB = "a4c1be00-0000-4000-8000-000000000000";
+const BY = { actor: "user", person: null };
+/** An ordinary claim by `to`, or with `source` a takeover of the standing claim, at the revision `show` answers. */
+function claimed(wb: string, path: string, to: string, source?: object): void {
+  const s = must(wb, { op: "show", record: { path } });
+  must(wb, { op: "claim", operation_id: randomUUID(), record: { path }, expected_revision: s.revision, actor: BY, claim: { checkout_id: to, person: null, claimed_at: "2026-10-09T10:00:00Z" }, ...(source && { takeover: { previous_claim: s.control.claim, source } }) });
+}
+
+describe("survey: a takeover's consent source", () => {
+  it("holds a resolved record source and an unresolved but present artefact source, at the transfer's pointer", () => withBase((wb) => {
+    const brief = I.replace(".record.json", ".md");
+    const sha256 = `sha256:${createHash("sha256").update(readFileSync(join(wb, brief))).digest("hex")}`;
+    claimed(wb, `${P}/package.json`, "deadbeef");
+    claimed(wb, `${P}/package.json`, "c0ffee01", { workbench_id: WB, record_id: ID(6) });
+    claimed(wb, `${P}/package.json`, "c0ffee02", { kind: "user-word", ref: { kind: "issue", path: brief, sha256 } });
+    writeFileSync(join(wb, brief), `${readFileSync(join(wb, brief), "utf-8")}\nA line added after the takeover.\n`);
+    const sites = must(wb, { op: "reconcile" }).references.filter((r: { at: string }) => r.at.startsWith("/provenance/claim_transfers/"));
+    expect(sites.map((r: { at: string; status: string; reason?: string }) => [r.at, r.status])).toEqual([["/provenance/claim_transfers/0/source", "resolved"], ["/provenance/claim_transfers/1/source/ref", "unresolved"]]);
+    const o = read(surveyed(wb, [F, I, D2]));
+    expect([o.kept, o.held]).toEqual([[D2], { [F]: ["binding", `${P}/package.json`, "/provenance/claim_transfers/0/source", F], [I]: ["binding", `${P}/package.json`, "/provenance/claim_transfers/1/source/ref", brief] }]);
+  }));
+
+  it("a terminal package and the decision holding the user's word move together, and the store reads clean", () => withBase((wb) => {
+    const Q = "work-packages/261009-1500-taken", q = `${Q}/package.json`, word = `${Q}/decisions/261009-1501-take-over.md`;
+    must(wb, { op: "create", operation_id: randomUUID(), id: randomUUID(), kind: "package", filed_by: BY, origin: { kind: "user-request", ref: null }, scope: { container: null, store: "work-packages" }, narrative: { path: `${Q}/261009-1500-taken.md`, content: "# Taken\n" }, payload: { domain: "code" } });
+    const decision = randomUUID();
+    must(wb, { op: "create", operation_id: randomUUID(), id: decision, kind: "decision", filed_by: BY, origin: { kind: "user-request", ref: null }, scope: { container: Q, store: "decisions" }, narrative: { path: word, content: "# Take over\n\nThe user: take 261009-1500-taken over from deadbeef to c0ffee01.\n" }, payload: { state: "open", answer_ref: null, implementation_ref: null, superseded_by: null, deferral: null } });
+    claimed(wb, q, "deadbeef");
+    claimed(wb, q, "c0ffee01", { workbench_id: WB, record_id: decision });
+    const to = (path: string, state: string, payload: object) => must(wb, { op: "transition", operation_id: randomUUID(), record: { path }, expected_revision: must(wb, { op: "show", record: { path } }).revision, actor: BY, to: state, reason: "r", payload });
+    to(word.replace(".md", ".record.json"), "deferred", { deferral: { target: { kind: "external", name: "v1.x" }, ruled_by: BY } });
+    to(q, "dropped", { outcome: { class: "cancelled", reason: "taken over, then given up", evidence: [] } });
+    const o = moved(wb, [Q]);
+    expect([o.kind, read(o).kept, at(wb, `archive/${INTO}/${word}`), must(wb, { op: "validate" }).valid, must(wb, { op: "reconcile" }).references.filter((r: { status: string }) => r.status !== "resolved")]).toEqual(["done", [Q], true, true, []]);
   }));
 });
 

@@ -13,6 +13,16 @@
 # who acts, `user` or an agent's name: attribution, never authorisation.
 #
 #   claim             this checkout claims the package
+#                     [--take-over-from <checkout> --source <JSON>], both or
+#                     neither: a takeover of the claim <checkout> holds, sent
+#                     only on the user's explicit word for this package and
+#                     this transfer. --source is a JSON object, the record
+#                     (or user-word) holding that word; the codec checks
+#                     that it resolves, which is evidence validation, never
+#                     consent or authority. <checkout> must hold the claim
+#                     in `show` (else exit 5) and is not this checkout
+#                     (exit 2). `REQUESTS.md` `## FJ05 (the takeover
+#                     addendum, …)` part 8, as Prior's answer to 62 corrects it
 #   release           --reason <text>
 #   transition        --to <state> --reason <text> [payload flags]
 #                     [--evidence <control path of an evidence record>], repeatable,
@@ -59,16 +69,18 @@
 #
 # A re-send, the one route after an unknown outcome, repeats the same
 # arguments with `--operation-id <id> --expected-revision <sha256>` (and
-# `--claimed-at <time>` for claim; `--id <uuid>` for create, and with
-# `--accepted-at <time>` for evidence), exactly as the unknown outcome printed
-# them. It composes no `record_change` row.
+# `--claimed-at <time>` for claim, with `--previous-claim <JSON>` for a
+# takeover; `--id <uuid>` for create, and with `--accepted-at <time>` for
+# evidence), exactly as the unknown outcome printed them. A takeover's re-send
+# is that frozen request and reads no `show`. It composes no `record_change` row.
 #
 # Output on stdout, `KEY=value`:
 #   landed    result=landed, operation_id=, a path= and revision= pair per
 #             record written, event= (logged | pending | unlogged | none)
 #   refused   result=refused, operation_id=
 #   unknown   result=unknown, operation_id=, then what the re-send repeats:
-#             expected_revision= and claimed_at=, or id= and accepted_at=
+#             expected_revision= and claimed_at= (and previous_claim= for a
+#             takeover), or id= and accepted_at=
 #   log-repair  appended=, retained=
 #   initialize  result=initialized|reused|legacy, workbench_id= (not for legacy),
 #             operation_id= when one was sent; on a stop result=<kind> of the
@@ -102,7 +114,8 @@
 #      writes a claim (`claim`, or a `transition` into `claimed` or carrying a
 #      non-null `--claim`) must name this checkout's identifier as its
 #      `checkout_id`; a foreign claim, standing or written, or an unreadable
-#      identity refuses, and no flag overrides it. Nothing sent.
+#      identity refuses, and no flag overrides it. A takeover whose
+#      --take-over-from is not the standing holder. Nothing sent.
 #   6  the codec refused the mutation, its class and reason on stderr
 #      (`conflict/revision-mismatch` when the record moved after `show`;
 #      for initialize `target-not-empty` or `manifest-present`, naming entries).

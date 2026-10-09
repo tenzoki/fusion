@@ -44,7 +44,30 @@
  * retried. What is not checked,
  * because this host does not have it, is stated in `REQUESTS.md` under
  * "Stated for objection: the Claude side binds a caller by its checkout
- * identity alone". A takeover waits for request 38.
+ * identity alone".
+ *
+ * ## Takeover (request 62)
+ *
+ * `claim --take-over-from <checkout> --source <JSON>`, the two flags together
+ * or neither, moves a standing claim to this checkout: the codec's `claim`
+ * with `takeover`, as `REQUESTS.md` `## FJ05 (the takeover addendum, …)`
+ * part 8 and Prior's answer to 62 fix it. `show` must name `<checkout>` as
+ * the holder, or the call is refused as ownership and nothing is sent; that
+ * is a checkout-only pre-check, and the kernel compares all three fields.
+ * `previous_claim` is the standing claim as `show` answered it,
+ * `expected_revision` that `show`'s revision, and the new claim names this
+ * checkout, as `claimWritten` requires. A `<checkout>` that is this checkout
+ * is a usage error, and so is a `--source` that is not a JSON object; its
+ * finer shape is the protocol schema's, refused by the codec. The codec's
+ * check that the source resolves is evidence validation: it proves neither
+ * the user's consent nor any authority, and nothing here decides who may
+ * take over. That is the user's explicit word for this package and this
+ * transfer, which the caller holds before it sends; `release` and
+ * `transition` gain no route past the holder check.
+ *
+ * The unknown outcome of a takeover prints `--previous-claim` beside the
+ * revision and the time, and its re-send repeats that frozen request: it
+ * reads no `show`, which after a landed takeover would name the new holder.
  *
  * ## Payload fields
  *
@@ -94,7 +117,8 @@
  *
  * An unanswered mutation may have landed. The caller re-sends it explicitly
  * with the operation id and the fields the unknown outcome printed (the
- * expected revision, `claimed_at` for `claim`, the id for a creation and
+ * expected revision, `claimed_at` for `claim` and the previous claim for a
+ * takeover, the id for a creation and
  * `accepted_at` for evidence), so the codec sees the same request and answers
  * its stored bytes. An evidence re-send re-reads the brief, the plan, the
  * report and the tree; if one moved, the request differs and the codec

@@ -44,7 +44,30 @@
  * retried. What is not checked,
  * because this host does not have it, is stated in `REQUESTS.md` under
  * "Stated for objection: the Claude side binds a caller by its checkout
- * identity alone". A takeover waits for request 38.
+ * identity alone".
+ *
+ * ## Takeover (request 62)
+ *
+ * `claim --take-over-from <checkout> --source <JSON>`, the two flags together
+ * or neither, moves a standing claim to this checkout: the codec's `claim`
+ * with `takeover`, as `REQUESTS.md` `## FJ05 (the takeover addendum, …)`
+ * part 8 and Prior's answer to 62 fix it. `show` must name `<checkout>` as
+ * the holder, or the call is refused as ownership and nothing is sent; that
+ * is a checkout-only pre-check, and the kernel compares all three fields.
+ * `previous_claim` is the standing claim as `show` answered it,
+ * `expected_revision` that `show`'s revision, and the new claim names this
+ * checkout, as `claimWritten` requires. A `<checkout>` that is this checkout
+ * is a usage error, and so is a `--source` that is not a JSON object; its
+ * finer shape is the protocol schema's, refused by the codec. The codec's
+ * check that the source resolves is evidence validation: it proves neither
+ * the user's consent nor any authority, and nothing here decides who may
+ * take over. That is the user's explicit word for this package and this
+ * transfer, which the caller holds before it sends; `release` and
+ * `transition` gain no route past the holder check.
+ *
+ * The unknown outcome of a takeover prints `--previous-claim` beside the
+ * revision and the time, and its re-send repeats that frozen request: it
+ * reads no `show`, which after a landed takeover would name the new holder.
  *
  * ## Payload fields
  *
@@ -94,7 +117,8 @@
  *
  * An unanswered mutation may have landed. The caller re-sends it explicitly
  * with the operation id and the fields the unknown outcome printed (the
- * expected revision, `claimed_at` for `claim`, the id for a creation and
+ * expected revision, `claimed_at` for `claim` and the previous claim for a
+ * takeover, the id for a creation and
  * `accepted_at` for evidence), so the codec sees the same request and answers
  * its stored bytes. An evidence re-send re-reads the brief, the plan, the
  * report and the tree; if one moved, the request differs and the codec
@@ -173,7 +197,7 @@ const CREATING: ReadonlySet<string> = new Set(["create", "evidence"]);
 /** Flags each subcommand takes, beyond `--actor` and `--operation-id`. */
 const ON_RECORD = ["--record", "--expected-revision"];
 const FLAGS: Record<Sub, readonly string[]> = {
-  claim: [...ON_RECORD, "--claimed-at"],
+  claim: [...ON_RECORD, "--claimed-at", "--take-over-from", "--source", "--previous-claim"],
   release: [...ON_RECORD, "--reason"],
   transition: [...ON_RECORD, "--to", "--reason", ...ALL_PAYLOAD.map(flagOf), "--evidence"],
   "set-mode": [...ON_RECORD, "--value", "--source"],
@@ -195,8 +219,8 @@ const REQUIRED: Record<Sub, readonly string[]> = {
   evidence: ["--record", "--report", "--verdict"],
 };
 /** What a re-send repeats beside `--operation-id`, as the unknown outcome printed it. */
-const resendFlags = (s: Sub): string[] =>
-  s === "claim" ? ["--expected-revision", "--claimed-at"] : s === "create" ? ["--id"] : s === "evidence" ? ["--id", "--accepted-at"] : ["--expected-revision"];
+const resendFlags = (s: Sub, takeover: boolean): string[] =>
+  s === "claim" ? ["--expected-revision", "--claimed-at", ...(takeover ? ["--previous-claim"] : [])] : s === "create" ? ["--id"] : s === "evidence" ? ["--id", "--accepted-at"] : ["--expected-revision"];
 /** A flag given more than once: `--on`, and `--evidence` on a finish; `attach-evidence` binds one record. */
 const repeated = (s: Sub, f: string): boolean => f === "--on" || (s === "transition" && f === "--evidence");
 const BARE = new Set(["--clear"]);
@@ -247,7 +271,13 @@ export function parseFlags(sub: string, argv: string[]): { call: Omit<Call, "wor
   }
   const missing = ["--actor", ...REQUIRED[s]].find((f) => !flags.has(f));
   if (missing !== undefined) return { usage: `${sub} needs ${missing}` };
-  const resend = resendFlags(s);
+  const takeover = flags.has("--take-over-from");
+  if (takeover !== flags.has("--source")) return { usage: "a takeover gives --take-over-from <checkout> and --source <JSON> together, and an ordinary claim neither" };
+  if (!takeover && flags.has("--previous-claim")) return { usage: "--previous-claim is repeated by a takeover's re-send alone" };
+  for (const f of ["--source", "--previous-claim"].filter((x) => flags.has(x))) {
+    if (!isObject(json(flags.get(f)![0]))) return { usage: `${f} takes a JSON object` };
+  }
+  const resend = resendFlags(s, takeover);
   if (resend.some((f) => flags.has(f) !== flags.has("--operation-id"))) return { usage: `a re-send gives --operation-id with ${resend.join(" and ")}, as the unknown outcome printed them; a first call gives none of them` };
   if (s === "set-mode") {
     const value = flags.get("--value")![0];
@@ -265,7 +295,15 @@ export function parseFlags(sub: string, argv: string[]): { call: Omit<Call, "wor
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
-const one = (c: Call, f: string): string | undefined => c.flags.get(f)?.[0];
+/** A flag's JSON value, or undefined when it is not JSON. */
+const json = (raw: string): unknown => {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return undefined;
+  }
+};
+const one =(c: Call, f: string): string | undefined => c.flags.get(f)?.[0];
 const refusal = (a: Answer & { kind: "refused" }): Refusal => ({ class: a.class, reason: a.reason, ...(a.detail !== undefined && { detail: a.detail }) });
 const named = (r: Refusal): string => `${r.class}/${r.reason}${r.detail === undefined ? "" : `: ${r.detail}`}`;
 const message = (e: unknown): string => (e instanceof Error ? e.message : String(e));
@@ -422,6 +460,7 @@ type Built = { request: { op: string; [field: string]: unknown }; resend: Record
 /** A mutation of the record `--record` names, at the revision its `show` answered. */
 function mutation(c: Call, workbenchId: string, operationId: string, see: (path: string) => Or<Shown>, now: () => Date): Or<Built> {
   const path = one(c, "--record")!;
+  if (c.sub === "claim" && c.flags.has("--take-over-from")) return takeover(c, path, operationId, see, now);
   const seen = see(path);
   if ("stop" in seen) return seen;
   const refusedOwner = ownership(c, seen.ok);
@@ -434,6 +473,35 @@ function mutation(c: Call, workbenchId: string, operationId: string, see: (path:
   if (refusedClaim !== null) return { stop: refusedClaim };
   const request = { op: c.sub, operation_id: operationId, record: { path }, expected_revision: expectedRevision, actor: { actor: one(c, "--actor"), person: c.identity.person ?? null }, ...fields.ok };
   return { ok: { request, resend: { "--expected-revision": expectedRevision, ...(claimedAt !== undefined && { "--claimed-at": claimedAt }) } } };
+}
+
+/**
+ * `claim` with `takeover`, by `## Takeover (request 62)`: composed from the
+ * holder `show` names, or, on a re-send, from the frozen fields alone.
+ */
+function takeover(c: Call, path: string, operationId: string, see: (path: string) => Or<Shown>, now: () => Date): Or<Built> {
+  const from = one(c, "--take-over-from")!;
+  if (from === c.identity.checkout) return usage(`--take-over-from names this checkout (${from}), which a takeover moves the claim to; nothing was sent`);
+  const frozen = one(c, "--previous-claim");
+  let previous: unknown, expectedRevision: string;
+  if (frozen !== undefined) {
+    previous = json(frozen);
+    expectedRevision = one(c, "--expected-revision")!;
+    if (isObject(previous) && previous.checkout_id !== from) return usage(`--previous-claim names checkout ${String(previous.checkout_id)}, and --take-over-from ${from}; a re-send repeats both as the unknown outcome printed them`);
+  } else {
+    const seen = see(path);
+    if ("stop" in seen) return seen;
+    const holder = seen.ok.control.status === "claimed" && isObject(seen.ok.control.claim) ? seen.ok.control.claim.checkout_id : null;
+    if (holder !== from) return { stop: { kind: "ownership", detail: `${path} is ${holder === null ? "claimed by no checkout" : `claimed by checkout ${String(holder)}`}, not by ${from}, which --take-over-from names; nothing was sent` } };
+    previous = seen.ok.control.claim;
+    expectedRevision = seen.ok.revision;
+  }
+  const claimedAt = one(c, "--claimed-at") ?? `${utcStamp(now())}Z`;
+  const fields = { claim: { checkout_id: c.identity.checkout, person: c.identity.person ?? null, claimed_at: claimedAt }, takeover: { previous_claim: previous, source: json(one(c, "--source")!) } };
+  const refusedClaim = claimWritten(c, { kind: "package", control: {}, revision: expectedRevision, narrative: null }, fields);
+  if (refusedClaim !== null) return { stop: refusedClaim };
+  const request = { op: "claim", operation_id: operationId, record: { path }, expected_revision: expectedRevision, actor: { actor: one(c, "--actor"), person: c.identity.person ?? null }, ...fields };
+  return { ok: { request, resend: { "--expected-revision": expectedRevision, "--claimed-at": claimedAt, "--previous-claim": JSON.stringify(previous) } } };
 }
 
 /** `<container>/<store>/<name>`, or `shared/<store>/<name>`: where a record or a report is filed. The codec judges the rest. */

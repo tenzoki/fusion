@@ -110,6 +110,14 @@
 // check's `## gitignore`, migrate's Step 7 Node gate and help's blocks the same
 // way; its own comment, above it, says how.
 //
+// An eleventh case (FJ05 plan step 7, request 62) takes claims over through
+// the installed `bin/fusion-write` alone, no Prior present: a package claimed
+// by the absent checkout `deadbeef` is taken over with a `user-word` source and
+// released by its new holder, after a non-holder's release exits 5; a second
+// goes A to B to C; a third goes A to B, release, an ordinary claim by C, C to
+// D, the transfer sequence Prior's answer to 62 adds. The checkout is switched
+// by rewriting `.checkout-id`, as a copy of the project would carry another.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -901,6 +909,59 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     expect(out["fusion-claimed-package"]).toBe("");
     expect([kv(out["fusion-work-order"], "items"), out["fusion-work-order"].split("\n").filter((l) => l.startsWith("  ")).map((l) => l.trim().split(/\s+/).slice(3))]).toEqual(["1", [["ready", live]]]);
     expect(["resolved", "dangling", "verdict"].map((k) => kv(out["fusion-citation-check"], k))).toEqual(["1", "0", "clean"]);
+  }, 120_000);
+
+  it("the installed bin/fusion-write takes a claim over from an absent checkout, twice in a row and around a release and an ordinary claim, with no Prior present", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const p = project("takeover-project", { empty: true });
+    const env = skillEnv();
+    for (const b of shippedBlocks("setup", "## Step 0 —")) expect(run("bash", ["-c", fill(b, {})], { cwd: p.root, env }).status).toBe(0);
+    expect([...env.PATH!.split(delimiter), env.HOME!].flatMap((d) => (existsSync(d) ? readdirSync(d) : [])).filter((n) => /prior/i.test(n))).toEqual([]);
+    const WORKBENCH = join(p.root, "fusion-workbench");
+    const workbench_id = record(p, { op: "inspect" }).id as string;
+    const as = (checkout: string) => writeFileSync(join(WORKBENCH, ".checkout-id"), `${checkout}\n`);
+    const write = (...args: string[]) => run(join(install.home, "bin", "fusion-write"), args, { cwd: p.root, env });
+    const landed = (r: ReturnType<typeof run>) => (expect([r.status, kv(r.stdout, "result")], r.stderr).toEqual([0, "landed"]), r.stdout);
+    const file = (rel: string, text: string) => (mkdirSync(dirname(join(WORKBENCH, rel)), { recursive: true }), writeFileSync(join(WORKBENCH, rel), text), rel);
+    /** A package, and the decision in its container holding the user's word: its id is what --source cites. */
+    const filed = (stem: string) => {
+      const pkg = kv(landed(write("create", "--kind", "package", "--narrative-file", file(`work-packages/${stem}/${stem}.md`, `# ${stem}\n`), "--origin", "user-request", "--domain", "code", "--actor", "user")), "path")!;
+      const word = kv(landed(write("create", "--kind", "decision", "--narrative-file", file(`work-packages/${stem}/decisions/${stem}-word.md`, "# Take over\n\nThe user: take it over, the former checkout is gone.\n"), "--origin", pkg, "--actor", "user")), "path")!;
+      return { pkg, ref: { workbench_id, record_id: (record(p, { op: "show", record: { path: word } }).control as { id: string }).id } };
+    };
+    const take = (pkg: string, from: string, source: object) => write("claim", "--record", pkg, "--take-over-from", from, "--source", JSON.stringify(source), "--actor", "orchestrator");
+    const history = (pkg: string) => (((record(p, { op: "show", record: { path: pkg } }).control as { provenance: { claim_transfers?: { previous_claim: { checkout_id: string }; claim: { checkout_id: string } }[] } }).provenance.claim_transfers ?? []).map((t) => `${t.previous_claim.checkout_id}>${t.claim.checkout_id}`));
+
+    // One: claimed by deadbeef, which is gone; a user-word source; a non-holder's release exits 5; the new holder releases.
+    const one = filed("261009-1600-one");
+    as("deadbeef"); landed(write("claim", "--record", one.pkg, "--actor", "user"));
+    as("c0ffee01"); landed(take(one.pkg, "deadbeef", { kind: "user-word", ref: one.ref }));
+    as("0badc0de");
+    const foreign = write("release", "--record", one.pkg, "--reason", "not mine", "--actor", "user");
+    expect([foreign.status, foreign.stderr], foreign.stdout).toEqual([5, expect.stringContaining("claimed by checkout c0ffee01")]);
+    as("c0ffee01"); landed(write("release", "--record", one.pkg, "--reason", "handed back", "--actor", "user"));
+    expect([(record(p, { op: "show", record: { path: one.pkg } }).control as { status: string }).status, history(one.pkg)]).toEqual(["open", ["deadbeef>c0ffee01"]]);
+
+    // Two: A to B to C, each on its own word.
+    const two = filed("261009-1601-two");
+    as("a0a0a0a0"); landed(write("claim", "--record", two.pkg, "--actor", "user"));
+    as("b0b0b0b0"); landed(take(two.pkg, "a0a0a0a0", two.ref));
+    as("c0c0c0c0"); landed(take(two.pkg, "b0b0b0b0", two.ref));
+    // Three: A to B, B releases, C claims as usual, C to D; the second entry starts at C.
+    const three = filed("261009-1602-three");
+    as("a0a0a0a0"); landed(write("claim", "--record", three.pkg, "--actor", "user"));
+    as("b0b0b0b0"); landed(take(three.pkg, "a0a0a0a0", three.ref)); landed(write("release", "--record", three.pkg, "--reason", "r", "--actor", "user"));
+    as("c0c0c0c0"); landed(write("claim", "--record", three.pkg, "--actor", "user"));
+    as("d0d0d0d0"); landed(take(three.pkg, "c0c0c0c0", three.ref));
+    expect([history(two.pkg), history(three.pkg)]).toEqual([["a0a0a0a0>b0b0b0b0", "b0b0b0b0>c0c0c0c0"], ["a0a0a0a0>b0b0b0b0", "c0c0c0c0>d0d0d0d0"]]);
+
+    // The rows name both holders; the store validates, and reconcile resolves every transfer source.
+    const rows = readFileSync(join(WORKBENCH, "orchestrator-events.jsonl"), "utf-8").split("\n").filter((l) => l.includes('"record_change"')).map((l) => JSON.parse(l) as { op: string; change: Record<string, unknown> });
+    expect(rows.filter((r) => "previous_checkout_id" in r.change).map((r) => r.change)).toEqual([["deadbeef", "c0ffee01"], ["a0a0a0a0", "b0b0b0b0"], ["b0b0b0b0", "c0c0c0c0"], ["a0a0a0a0", "b0b0b0b0"], ["c0c0c0c0", "d0d0d0d0"]].map(([a, b]) => ({ from: "claimed", to: "claimed", previous_checkout_id: a, checkout_id: b })));
+    expect(record(p, { op: "validate" }).valid).toBe(true);
+    const sites = (record(p, { op: "reconcile" }).references as { at: string; status: string }[]).filter((r) => r.at.startsWith("/provenance/claim_transfers/"));
+    expect([sites.length, sites.every((r) => r.status === "resolved")]).toEqual([5, true]);
   }, 120_000);
 
   it("the installed copy renames a v11-named workbench with the shipped block, migrates it without a repair in three chunks, reads it back, claims, resumes a kill after chunk 2, rolls back and restores the backup, with no Prior present", () => {

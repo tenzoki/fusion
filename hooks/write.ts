@@ -89,7 +89,9 @@ async function main(argv: string[]): Promise<number> {
       // `--expected-revision` prints as `expected_revision=`, `--id` as `id=`: one line per flag the re-send repeats.
       const again = Object.entries(o.resend);
       out([`result=unknown`, `operation_id=${o.operationId}`, ...again.map(([f, v]) => `${f.slice(2).replace(/-/g, "_")}=${v}`)]);
-      err(`${o.detail}. The ${sub} may have landed; nothing was retried. To learn its outcome, send the same arguments again with --operation-id ${o.operationId} ${again.map(([f, v]) => `${f} ${v}`).join(" ")}.`);
+      // A takeover's `--previous-claim` is JSON, quoted so the line pastes into a shell as printed.
+      const word = (v: string) => (/^[\w.:+/-]+$/.test(v) ? v : `'${v.replace(/'/g, `'\\''`)}'`);
+      err(`${o.detail}. The ${sub} may have landed; nothing was retried. To learn its outcome, send the same arguments again with --operation-id ${o.operationId} ${again.map(([f, v]) => `${f} ${word(v)}`).join(" ")}.`);
       break;
     }
     default:
