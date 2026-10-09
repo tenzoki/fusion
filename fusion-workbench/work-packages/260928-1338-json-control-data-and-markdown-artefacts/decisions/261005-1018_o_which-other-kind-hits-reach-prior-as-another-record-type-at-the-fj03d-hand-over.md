@@ -26,3 +26,5 @@ The per-basis counts go to Prior in either case (plan step 17, as amended 2026-1
 
 ---
 Answered: 261007-0707-other-kind-hits-prior-record-type.md `## Recommendation` — two rulings of 2026-10-07: (i) `codec/` is read per line under rulings (a) to (d) like every other directory: 36 `migrate` hits to class 2, 14 `name-grammar` and 41 `json` to class 1, 2 homonyms apart, so no codec hit stays under "anderer Record-Typ"; (ii) the 16 `history` lines are stated apart with their reason, never as another record type. Class 3 holds the 7 `analysis-head` hits; the fold re-takes as 233 / 155 / 7 / 38 apart over 433; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+Implemented: `e7695d9c`, `codec/fixtures/prior/REQUESTS.md` `### The classification (step 10, at fj03d 29dac3c5)` folds the hits 233 / 155 / 7 / 38 as the answer rules; Prior accepted the fold at Prior `7da6690`.

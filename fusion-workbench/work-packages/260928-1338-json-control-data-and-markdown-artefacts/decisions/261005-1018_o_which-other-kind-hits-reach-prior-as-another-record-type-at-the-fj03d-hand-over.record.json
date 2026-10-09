@@ -33,9 +33,9 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": "261007-0707-other-kind-hits-prior-record-type.md",
-    "implementation_ref": null,
+    "implementation_ref": "e7695d9c",
     "superseded_by": null,
     "deferral": null
   }

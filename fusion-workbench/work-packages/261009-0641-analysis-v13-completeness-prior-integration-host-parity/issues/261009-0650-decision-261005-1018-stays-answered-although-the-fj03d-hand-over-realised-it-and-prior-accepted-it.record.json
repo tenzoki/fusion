@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "e18a5b8c-574c-4586-be10-2102887db91d",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261009-0641-analysis-v13-completeness-prior-integration-host-parity/issues/261009-0650-decision-261005-1018-stays-answered-although-the-fj03d-hand-over-realised-it-and-prior-accepted-it.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

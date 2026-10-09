@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8a22e388-c8b9-4968-a7fa-ac15e711e9ad",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261009-0641-analysis-v13-completeness-prior-integration-host-parity/issues/261009-0647-cleanup-splits-name-no-rule-that-keeps-a-record-pair-in-one-commit.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
