@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "b7fe6388-8807-42d3-995d-867647ee9610",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261009-1624-the-axibra-ruling-makes-a-migration-a-release-precondition-but-step-20-does-not-list-it.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "dedbd4d0-1fb6-4fd0-a66a-9a0f030c719f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "06c11022b064f785128d0479dad7b295dc0a54bb",
+    "git_range": null
+  },
+  "brief_revision": "sha256:d88269aa28a528919b7e3abdbb6f59909005d19fda715812ec1fa8b190d713b4",
+  "plan_revision": "sha256:02ec99b61fd5745217c093cf822bf01e4d3525441bd8560f0d9a378f84d87d3f",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/reviews/261009-1624-reviewer-coverage-pass-over-4e1e1b47-to-052932e2.md",
+    "sha256": "sha256:bab9ed22facc1753ec02969635f9022eae96f85ddf60bbfed011d2a82dd4742f",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-09T14:25:23Z",
+  "extensions": {}
+}
