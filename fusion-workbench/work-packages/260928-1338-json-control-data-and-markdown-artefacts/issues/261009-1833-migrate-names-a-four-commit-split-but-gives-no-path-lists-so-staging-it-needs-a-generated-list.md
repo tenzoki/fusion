@@ -1,0 +1,9 @@
+/fusion:migrate names a four-commit split but gives no path lists, so staging it needs a generated list
+---
+The JSON migration's report proposes a commit split (originals with their new control files; rewritten records; the manifest; then the citation repairs separately), but neither `skills/migrate/SKILL.md` `**Report.**` nor `bin/fusion-migrate` (`survey`, `run`, `status`, …) emits the paths of each split. On a real workbench that is about 1 700 paths, which no committer writes out by hand, so the staging shape `agents/orchestrator.md` `### Step 4 — commit` and `/fusion:commit` require (every path written out, never a list a command produced) cannot be met.
+---
+**Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
+
+**Evidence.** The user's trial migration of a real consuming workbench with release candidate `78680a11` installed (a throwaway copy, never pushed) ended with 750 new and 192 modified files. The session that committed it landed five commits (1 496, 184, 46, 6 and 1 files) and reported that for 1 732 paths it generated the four lists from `git status` and cross-checked them for completeness and disjointness, departing from the staging rule. The six citation-repair files sat inside the 192 modified ones and had to be separated by hand. The commits were correct; the procedure that produced them is the one the staging rule forbids, for the reason recorded in `rules/commit-lock.md` `### The staging list is written out path by path`.
+
+**Acceptance.** After `run`, the migration hands the committer each split's exact path list from its own receipt (a subcommand or files beside the receipt), so the lists come from the party that knows why each path belongs, and the report names them. Or a ruling records that a migration commit is a stated exception to the staging shape, with what the cross-check must show.
