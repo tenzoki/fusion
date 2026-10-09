@@ -1,0 +1,30 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "350b91f7-e724-4f21-8225-ccfe95c78b69",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/decisions/261009-1024-fusion-is-the-one-source-of-role-texts-and-workflow-rules-for-both-hosts.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/decisions/261009-1024-fusion-is-the-one-source-of-role-texts-and-workflow-rules-for-both-hosts.md",
+      "sha256": "sha256:87404bb8ee8399ca8d0d27e5adb2aec4b0fa74781119ec57834bdbf27c852919",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
