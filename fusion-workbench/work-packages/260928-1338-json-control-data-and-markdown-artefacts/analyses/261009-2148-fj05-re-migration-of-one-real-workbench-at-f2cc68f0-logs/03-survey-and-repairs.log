@@ -1,0 +1,43 @@
+# copy A, Step 7 before the run
+## Node block: NODE=v25.7.0
+## status: state=legacy fence=- backup=absent repairs=0 run=none
+## survey, exit 0 (no record names in it)
+layout=legacy
+eligible=sha256:21b76c93d4568cd397438b665923aaf22b460738160631e62249fbfcf698c05a
+pending=0
+count=package-live	72
+count=package-terminal	48
+count=record-live	627
+count=record-closure	1
+count=plain-terminal	1059
+count=empty-container	0
+findings=reported	circle-head-disagrees-with-marker	12
+findings=reported	terminal-value-without-v1-state	5
+findings=reported	status-head-in-live-record	63
+findings=reported	mark-outside-numbered-step	65
+findings=reported	unknown-step-mark	3
+findings=reported	duplicate-step-number	5
+findings=reported	unresolvable-active-document	2
+findings=reported	active-document-role-unclear	1
+findings=reported	reference-not-a-citation	165
+findings=reported	filed-by-unreadable	6
+findings=reported	decision-line-disagrees-with-marker	43
+findings=reported	answer-ref-self	82
+findings=reported	filed-by-missing	128
+findings=reported	filed-by-not-owed	49
+findings=reported	live-record-in-terminal-container	175
+findings=reported	answered-without-answer-line	26
+derived=/control/answer_ref	answer-ref-self	no-answer-line	26
+derived=/control/answer_ref	answer-ref-self	unresolvable-answer-line	56
+derived=/control/steps	duplicate-numbers-unanchored	*	1
+derived=/control/steps/<i>/state	unrecognised-mark-open	*	3
+derived=/filed_by/actor	unknown	-	183
+derived=/filed_by/person	git-first-add	*	183
+derived=/references/<i>	binding-carried-as-reference	role-unclear	1
+## repair --list, exit 0
+blocking=0
+unrepairable= lines: 0; ask= lines: 0
+## repair --list --optional, exit 0 (not walked, per Step 7)
+optional=285
+finding= 285 edit= 285 ask= 666
+tree before the survey and after both listings: d2a61a05a4f1f7e210e5afaf68590e3e24183e4a69bfd3a4af7e97d1de23c76b files=8434 dirs=1019 (equal; measured live, see the report)

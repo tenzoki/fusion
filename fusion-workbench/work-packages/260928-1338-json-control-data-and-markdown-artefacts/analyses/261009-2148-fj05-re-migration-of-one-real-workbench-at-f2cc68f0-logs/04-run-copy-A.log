@@ -1,0 +1,65 @@
+# copy A: bin/fusion-migrate run (Migrate now = the one Step 7 question), exit 0, 74.1 s wall, load 4.2 at start, 9.7 at end
+# untracked=/ignored= lines are counted by location, not listed
+reported=monitor	not detected: a monitor only reads
+proposal=.json-state/migration/migration-20261009-v12.json	sha256:ff3fd706b58dccb9727e84953e576840bf54d90d8c05ef055ed63b00664b55cb	748 records
+planned=migration-20261009-v12	sha256:7576ea50e0696398407583f8cf53ae87914eac1105ffe377656b02ff091f4616	35 chunks
+applied=1
+applied=2
+applied=3
+applied=4
+applied=5
+applied=6
+applied=7
+applied=8
+applied=9
+applied=10
+applied=11
+applied=12
+applied=13
+applied=14
+applied=15
+applied=16
+applied=17
+applied=18
+applied=19
+applied=20
+applied=21
+applied=22
+applied=23
+applied=24
+applied=25
+applied=26
+applied=27
+applied=28
+applied=29
+applied=30
+applied=31
+applied=32
+applied=33
+applied=34
+applied=35
+verified=archive/migrations/migration-20261009-v12/receipt.json	sha256:0bb9f3014a68d5779b9ac59d612ecb8dafb18ff81a2c1017ab95ad697ab16117
+setup=.fusion-setup
+migrated=migration-20261009-v12
+result=json-control
+untracked= lines: 2 (both under archive/)
+ignored= lines: 281: root-runtime-files-and-dirs=14 archive=61 .migration-v2-backup=206 
+## phases (mtimes of the stored answers)
+ops 38 first 3642 ms after backup proposal-after-backup 1868
+intervals_ms 1774 1789 1757 1776 1762 1749 1718 1720 1814 1780 1763 1859 1735 1764 1731 1741 1782 1770 2328 1795 1812 1903 1924 1824 1887 1908 1870 1914 1859 1856 1920 1768 1934 2613 2270 1585 2537 377
+setup-after-last-op -342
+## status after
+state=json-control
+fence=-
+backup=present
+repairs=0
+migration=migration-20261009-v12
+planned=yes
+chunks=35/35
+verified=yes
+done=true
+rolled_back=false
+## second run, exit 0, 0.17 s, stored answers 38 -> 38
+migrated=migration-20261009-v12
+result=no-op
+note=nothing was sent: the session records this migration as verified

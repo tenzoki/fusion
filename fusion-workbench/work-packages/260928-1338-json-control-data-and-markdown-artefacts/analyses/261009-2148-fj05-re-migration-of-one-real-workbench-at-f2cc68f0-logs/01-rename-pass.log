@@ -1,0 +1,61 @@
+# copy A, installed skills/migrate/SKILL.md blocks run verbatim (skillblk.sh): 1 locate, 2 guard, 3 survey, 4 apply; container names replaced by <c>; LEFT/FROZEN/UNCLASSIFIED rows counted, not listed
+## A-blk1
+## A-blk2
+INSTALLED=13.0.0
+READS_V12=yes
+## A-blk3 (survey before)
+  circles/<c>/planning/ -> circles/<c>/plans/  0 entries
+  circles/<c>/planning/ -> circles/<c>/plans/  0 entries
+  circles/ -> work-packages/  3 entries
+  COLLISION: work-packages/.DS_Store exists; circles/.DS_Store stays
+MODE=git
+FOUND=1
+LEGACY=0
+COLLISIONS=1
+EMPTY=7
+UNTRACKED=1
+DIRTY=0
+UNKNOWN=0
+LEFT=22
+LEFT/FROZEN/UNCLASSIFIED rows: 30
+## A-blk4 (apply)
+COLLISION: ./fusion-workbench/work-packages/.DS_Store already exists. ./fusion-workbench/circles/.DS_Store stays where it is.
+NOTE: ./fusion-workbench/circles/<c>/analyses is untracked, moved with mv (not in the diff).
+NOTE: ./fusion-workbench/circles/<c>/plans is untracked, moved with mv (not in the diff).
+NOTE: ./fusion-workbench/circles/<c>/reviews is untracked, moved with mv (not in the diff).
+NOTE: ./fusion-workbench/circles/<c>/analyses is untracked, moved with mv (not in the diff).
+NOTE: ./fusion-workbench/circles/<c>/issues is untracked, moved with mv (not in the diff).
+NOTE: ./fusion-workbench/circles/<c>/plans is untracked, moved with mv (not in the diff).
+NOTE: ./fusion-workbench/circles/<c>/reviews is untracked, moved with mv (not in the diff).
+NOTE: ./fusion-workbench/circles is not empty and stays.
+---
+moved=7 mv-fallbacks=7 collisions=1 left=0 mode=git
+## A-blk3 (survey after apply)
+  circles/ -> work-packages/  1 entries
+  COLLISION: work-packages/.DS_Store exists; circles/.DS_Store stays
+MODE=git
+FOUND=1
+LEGACY=0
+COLLISIONS=1
+EMPTY=0
+UNTRACKED=1
+DIRTY=0
+UNKNOWN=0
+LEFT=22
+## probe T (clone of A here): bin/fusion-migrate run
+exit=5
+fusion-migrate: the v11 store names stand (circles); rename them first with /fusion:migrate's rename pass. Nothing was written.
+tree before = after: yes
+## hand step: rm fusion-workbench/circles/.DS_Store; rmdir fusion-workbench/circles
+## A-blk3 (survey after hand step)
+  (no legacy store: already in the v12 format)
+MODE=git
+FOUND=0
+LEGACY=0
+COLLISIONS=0
+EMPTY=0
+UNTRACKED=0
+DIRTY=0
+UNKNOWN=0
+LEFT=22
+git status --porcelain lines after the pass: 0 (nothing staged, so no rename commit)

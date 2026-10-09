@@ -1,0 +1,19 @@
+# copy R (clone of A's pre-run tree): run, then rollback before any ordinary write
+before: wb=d2a61a05a4f1f7e210e5afaf68590e3e24183e4a69bfd3a4af7e97d1de23c76b files=8434 dirs=1019
+before: outside=5487299b871d3700148f87b2b9e9342c702d2cd358e87fe92dcd6e10fe435ee6
+before: porcelain=891a1bada11c
+before: head=c049ea22634d36098e8176b8710f2136269b4a8a
+## run: exit 0, 78.1 s, load 12.8; 748 records, 35 chunks, result=json-control
+## rollback: exit 0, 40.5 s, load 12.6
+   1 result
+   1 rolled-back
+  36 rolled-back-chunk
+result=legacy
+status after: state=legacy fence=- rolled_back=true
+after: wb (all)=28b4db63cac8e6cfc1af9e647077c24968ca9e781f9a5c9649f8286e99d1eb7a files=8512 dirs=1212
+after: wb without .json-state and archive/migrations=d2a61a05a4f1f7e210e5afaf68590e3e24183e4a69bfd3a4af7e97d1de23c76b files=8434 dirs=1019
+after: outside=5487299b871d3700148f87b2b9e9342c702d2cd358e87fe92dcd6e10fe435ee6
+after: porcelain=891a1bada11c
+archive/migrations: files=0 dirs=189 leaf-empty=154
+workbench.json present: no
+## codec migration survey on R after the rollback, 3 runs: 2 182 304 answer bytes each (13.0 % of 16 777 216), 0.87 / 0.89 s median / max; tree unchanged

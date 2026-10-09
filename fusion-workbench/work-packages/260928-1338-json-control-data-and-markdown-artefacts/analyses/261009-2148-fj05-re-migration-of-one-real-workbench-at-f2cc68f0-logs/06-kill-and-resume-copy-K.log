@@ -1,0 +1,14 @@
+# copy K (clone of A's pre-run tree): kill inside chunk 18 of 35, through a stand-in bundle (install-kill) that SIGKILLs the real bundle once the chunk's journal entry exists
+## first attempt discarded: the stand-in's own stdout write was cut at 65 536 bytes (an asynchronous write before process.exit), so the run stopped at the survey with exit 7; K was discarded and re-cloned from R's untouched pre-run tree, the stand-in fixed with writeSync
+## run through the stand-in: exit 7
+killed chunk=18 after_ms=1310
+fusion-migrate: the outcome of migration apply chunk 18 (operation <id>) is unknown: the codec exited 9 on migration: nothing on stderr. Nothing is lost; `bin/fusion-migrate resume` (or `rollback`, if that was the command) sends the same request again.
+## status after the kill: state=legacy fence=<id> backup=present planned=yes chunks=17/35 verified=no done=false; journal entries 1; stored answers 18 (plan + 17 chunks)
+## resume through the pristine install: exit 0, 34.5 s, load 12.2
+verified=archive/migrations/migration-20261009-v12/receipt.json	sha256:f85b93ca4171cac50df6da1ea3caca4c673b892930d46246cb1385679321f9c8
+setup=.fusion-setup
+migrated=migration-20261009-v12
+result=json-control
+applied= lines: 18 (chunks 18 to 35)
+## after: state=json-control fence=- chunks=35/35 verified=yes done=true; journal entries 0; validate ok=true checked=748 valid=true findings=0
+## second resume: result=no-op, exit 0

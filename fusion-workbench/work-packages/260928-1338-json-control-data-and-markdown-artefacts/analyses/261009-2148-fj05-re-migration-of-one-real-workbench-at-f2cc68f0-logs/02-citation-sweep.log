@@ -1,0 +1,16 @@
+# copy A, Step 6: fusion-citation-sweep --kinds record,package-record,package-dir; summary lines only
+## dry run, exit 0
+format=legacy
+scope=workbench files=6 rewrites=54
+scope=archive files=0 rewrites=0
+scope=extra-paths files=0 rewrites=0
+files=6 rewrites=54 residual=26527 record=13 package-record=41 package-dir=0 bare-record=0 stamp-bare=0 mode=dry-run
+## write --yes, exit 0
+format=legacy
+scope=workbench files=6 rewrites=54
+scope=archive files=0 rewrites=0
+scope=extra-paths files=0 rewrites=0
+files=6 rewrites=54 residual=26527 record=13 package-record=41 package-dir=0 bare-record=0 stamp-bare=0 mode=write
+git status --porcelain after: 6 x ' M' under fusion-workbench/, 0 outside
+A tree after sweep (pre-run): d2a61a05a4f1f7e210e5afaf68590e3e24183e4a69bfd3a4af7e97d1de23c76b files=8434 dirs=1019
+K and R cloned from A here: same tree hash, same .git stat list, same porcelain digest

@@ -1,0 +1,24 @@
+# source: three hashes (workbench content tree hash; .git content tree hash; whole-project stat list path,type,size,mtime,mode). No helper ran on the source.
+when=before 2026-10-09T21:14:50
+wb=caec9d0c84e58f8f2ac74de02ce5b1d9bd9a9092852ad349ca0880b1891abd12 files=8435 dirs=1022
+git=ce761dde0f565a7e106e3c8e3dbd411d619c3922f9258536fb95298ecb4e24fa files=7924 dirs=319
+statlist=69b7237278b743dce59fb2f928492b1696d075e2af7db884c7a85aee3c1391e3
+head=c049ea22634d36098e8176b8710f2136269b4a8a
+
+when=after-copy 2026-10-09T21:15:53
+wb=caec9d0c84e58f8f2ac74de02ce5b1d9bd9a9092852ad349ca0880b1891abd12 files=8435 dirs=1022
+git=ce761dde0f565a7e106e3c8e3dbd411d619c3922f9258536fb95298ecb4e24fa files=7924 dirs=319
+statlist=69b7237278b743dce59fb2f928492b1696d075e2af7db884c7a85aee3c1391e3
+head=c049ea22634d36098e8176b8710f2136269b4a8a
+
+when=end 2026-10-09T21:49:09
+wb=caec9d0c84e58f8f2ac74de02ce5b1d9bd9a9092852ad349ca0880b1891abd12 files=8435 dirs=1022
+git=ce761dde0f565a7e106e3c8e3dbd411d619c3922f9258536fb95298ecb4e24fa files=7924 dirs=319
+statlist=69b7237278b743dce59fb2f928492b1696d075e2af7db884c7a85aee3c1391e3
+head=c049ea22634d36098e8176b8710f2136269b4a8a
+
+# base copy B (cp -c -R -p, APFS clone of the whole project)
+wb=caec9d0c84e58f8f2ac74de02ce5b1d9bd9a9092852ad349ca0880b1891abd12 files=8435 dirs=1022
+git=ce761dde0f565a7e106e3c8e3dbd411d619c3922f9258536fb95298ecb4e24fa files=7924 dirs=319
+statlist=69b7237278b743dce59fb2f928492b1696d075e2af7db884c7a85aee3c1391e3
+# copies: remote removed (remotes-after=0); core.hooksPath re-pointed from the source's absolute .githooks to an empty scratch dir; repo-local user.name/email set

@@ -1,0 +1,46 @@
+# copy A after activation: codec reads (aggregates only)
+validate ok=true answer-bytes=247 {"state":"json-control","checked":748,"valid":true,"findings":0}
+list ok=true answer-bytes=415304 {"state":"json-control","scope":null,"records":748}
+reconcile ok=true answer-bytes=512872 {"state":"json-control","scope":null,"checked":748,"intents":0,"records":0,"references":1626,"evidence":0,"dependencies":21,"narratives":0}
+## show of every listed record (showall.mjs)
+listed=748 shown=748 refused=0
+183 actor:legacy-unknown
+26 derived:/control/answer_ref:answer-ref-self:no-answer-line
+56 derived:/control/answer_ref:answer-ref-self:unresolvable-answer-line
+3 derived:/control/steps/<i>/state:unrecognised-mark-open:*
+1 derived:/control/steps:duplicate-numbers-unanchored:*
+183 derived:/filed_by/actor:unknown:*
+183 derived:/filed_by/person:git-first-add:*
+1 derived:/references/<i>:binding-carried-as-reference:role-unclear
+138 kind-state:decision:answered
+3 kind-state:decision:open
+1 kind-state:issue:in_progress
+436 kind-state:issue:open
+4 kind-state:package:claimed
+34 kind-state:package:done
+14 kind-state:package:dropped
+55 kind-state:package:open
+13 kind-state:package:paused
+1 kind-state:plan:closed
+7 kind-state:plan:in_progress
+42 kind-state:plan:open
+141 kind:decision
+437 kind:issue
+120 kind:package
+50 kind:plan
+699 source:imported
+49 source:legacy-terminal
+unanchored_marks: records=11 marks=69
+## git-first-add persons against git log --follow --diff-filter=A --no-mailmap (follow.mjs)
+git-first-add=183 agree=183 disagree-commit=0 disagree-person=0 follow-found-nothing=0
+## read-back, one open package (source imported, status open) and one terminal package (source legacy-terminal, status done), readback.sh
+show open exit=0 ok=true package open imported
+show terminal exit=0 ok=true package done legacy-terminal
+fusion-paths analyst <open dir> exit=0 named=yes
+fusion-paths analyst <terminal dir> exit=0 named=yes
+fusion-paths analyst (no item) exit=0
+fusion-claimed-package exit=0 lines=2
+fusion-work-order --format tsv exit=0 open-named=yes terminal-named=no rows=86
+fusion-citation-check exit=0 format=json-control verdict=violations open-named=yes terminal-named=yes
+fusion-citation-sweep --dry-run exit=0 format=json-control files=1710 rewrites=8115 residual=26515 record=0 package-record=0 package-dir=0 bare-record=8115 stamp-bare=0 mode=dry-run
+fusion-claimed-package prints PACKAGE= and CONTAINER=: the copy carries the source's .checkout-id, which holds a claim

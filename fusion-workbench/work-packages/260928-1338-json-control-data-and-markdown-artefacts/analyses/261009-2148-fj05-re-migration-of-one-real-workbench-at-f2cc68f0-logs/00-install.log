@@ -1,0 +1,21 @@
+# install of f2cc68f0 through its own install.sh, env -i PATH HOME FUSION_PLUGIN_ROOT, stub curl serving git archive f2cc68f0
+Downloading fusion (heads/main) over HTTPS...
+Installing to <scratch>/homes/install/.fusion ...
+fusion 13.0.0 installed.
+<scratch>/homes/install/.local/bin is not on your PATH yet.
+Add it once (zsh):
+  echo 'export PATH="<scratch>/homes/install/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
+Then start fusion with:  fusion
+(Or run it now with the full path: <scratch>/homes/install/.local/bin/fusion)
+
+Update later:  fusion --update     Remove:  fusion --uninstall     Path:  fusion --where
+install-exit=0
+plugin.json version: "version":"13.0.0"
+bundle sha256: fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f, bytes 699011
+diff -r against git archive f2cc68f0, install.sh copy loop paths: 0 lines
+PATH entries matching /prior/i: 0
+env seen by every helper:
+PATH
+HOME
+FUSION_PLUGIN_ROOT
+node v25.7.0, git 2.53.0, macOS 26.6.2, Apple M2 Max 64 GiB
