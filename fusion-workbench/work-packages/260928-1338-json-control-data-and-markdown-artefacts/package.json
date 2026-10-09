@@ -32,10 +32,10 @@
     {
       "ref": {
         "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
-        "record_id": "f660c255-791b-4a80-ab87-044d4cab02e1"
+        "record_id": "a84fecbf-8431-4a58-99b7-062f766e86ee"
       },
       "role": "plan",
-      "revision": "sha256:98041a318b2e25791071e82bae5710ae427d352119fc83d2bdb95150f64dd817"
+      "revision": "sha256:02ec99b61fd5745217c093cf822bf01e4d3525441bd8560f0d9a378f84d87d3f"
     }
   ],
   "references": [
@@ -58,6 +58,10 @@
       "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
       "record_id": "76f818ef-1569-43b8-8b7f-885f652c559c",
       "display": "261004-2212_p_plan-fj03d-rules-prompts-and-live-predicates-switched-with-this-workbench-in-one-window.md"
+    },
+    {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "f660c255-791b-4a80-ab87-044d4cab02e1"
     }
   ],
   "evidence": [],

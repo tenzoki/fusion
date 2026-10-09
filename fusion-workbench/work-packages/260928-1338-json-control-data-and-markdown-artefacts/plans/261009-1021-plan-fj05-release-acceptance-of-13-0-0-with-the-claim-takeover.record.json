@@ -1,0 +1,124 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a84fecbf-8431-4a58-99b7-062f766e86ee",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/plans/261009-1021-plan-fj05-release-acceptance-of-13-0-0-with-the-claim-takeover.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      },
+      {
+        "id": "8",
+        "state": "open"
+      },
+      {
+        "id": "9",
+        "state": "open"
+      },
+      {
+        "id": "10",
+        "state": "open"
+      },
+      {
+        "id": "11",
+        "state": "open"
+      },
+      {
+        "id": "12",
+        "state": "open"
+      },
+      {
+        "id": "13",
+        "state": "open"
+      },
+      {
+        "id": "14",
+        "state": "open"
+      },
+      {
+        "id": "15",
+        "state": "open"
+      },
+      {
+        "id": "16",
+        "state": "open"
+      },
+      {
+        "id": "17",
+        "state": "open"
+      },
+      {
+        "id": "18",
+        "state": "open"
+      },
+      {
+        "id": "19",
+        "state": "open"
+      },
+      {
+        "id": "20",
+        "state": "open"
+      },
+      {
+        "id": "21",
+        "state": "open"
+      },
+      {
+        "id": "22",
+        "state": "open"
+      },
+      {
+        "id": "23",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "88f7b586-6715-4ead-99a1-f82332e6946b"
+      },
+      "revision": "sha256:02ec99b61fd5745217c093cf822bf01e4d3525441bd8560f0d9a378f84d87d3f"
+    }
+  }
+}

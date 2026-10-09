@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a500a680-4a4e-4c14-beb7-b584ef1f78a3",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/decisions/261009-1021-who-accepts-fj05-and-may-13-0-0-ship-on-fusions-evidence-alone.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
