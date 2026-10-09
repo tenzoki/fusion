@@ -115,36 +115,41 @@ not read. Nothing detects this; only the order above prevents it (see the first 
 
 ## Two installations on one machine
 
-Until 13.0.0 is released, a v13 build runs from an install home of its own, `~/.fp`, through a
-launcher of its own, and your existing install in `~/.fusion` stays as it is for every other
-project until you replace it yourself:
+`fusion --update` installs 13.0.0 into `~/.fusion`, and from then on every project on the machine
+that it serves is legacy until migrated. For a machine whose projects do not all migrate on the
+same day, install the release into a home and launcher of its own, and keep your existing install
+in `~/.fusion` for the projects not yet migrated:
 
 ```bash
-FUSION_REF=heads/<branch> FUSION_HOME=~/.fp FUSION_BIN=<a directory of its own> bash install.sh
+FUSION_REF=tags/v13.0.0 FUSION_HOME=<a home of its own> FUSION_BIN=<a directory of its own> bash install.sh
 ```
 
 Both launchers are named `fusion`, so start the v13 one by its full path, and open a migrated
-project only through it.
+project only through it. Migrate one project at a time.
 
 **Never run `fusion --update` from the v13 launcher.** It downloads `install.sh` from `main` and
 runs it with no variables, which reinstalls `heads/main` into `~/.fusion`. To refresh the v13
 install, run the installer again with the same three variables.
 
-The same arrangement serves after the release, for a machine whose projects do not all migrate on
-the same day: pin the release with `FUSION_REF=tags/v13.0.0` into a separate home, migrate one
-project at a time, and keep the old launcher only for the projects not yet migrated.
-
 ## Documented limits
 
-Each of these is known, stated, and not handled by anything shipped.
+Each of these is known, stated, and not handled by anything shipped. Each closes on what shows
+it: a test that asserts it, or, for an absence, the search that finds no reader, at 13.0.0.
 
 - **A v12 installation writing after the migration is detected by nothing.** A new manifest cannot
   lock an old program out. If a session started through a v12 launcher edits a migrated workbench,
   its Markdown status lines are written beside control files that say otherwise, and no hook,
   helper or check reports it. The procedure under `## More than one checkout` is the only guard.
+  Shown by absence: a v12 client predates `workbench.json` and has no code that reads it, and no
+  shipped file outside the codec's `reconcile` (next bullet) compares a narrative's `**Status:**`
+  line with its control file; `bin/fusion-work-order`, `hooks/lib/scope.ts` and
+  `hooks/lib/work-graph.ts` each state in their header that they read none.
 - **The codec's `narratives` findings reach no reader.** `reconcile` reports a status head line kept
   in a live narrative in its `narratives` section (described in `codec/README.md`), which is the
-  one trace such a v12 write leaves. No shipped prompt, helper or hook reads that section.
+  one trace such a v12 write leaves. No shipped prompt, helper or hook reads that section. Shown by
+  `codec/src/__tests__/ops.test.ts` ("narratives: every status line in the head of a live
+  narrative…", and the case after the recorded `02-transition`) for the report, and by absence for
+  the reader: `narratives` appears in no shipped caller of `reconcile`.
 - **A stale claim is taken over on your word, and nothing checks that the old checkout stopped.**
   A package another checkout holds stays claimed until that checkout releases or transitions it,
   or until `bin/fusion-write claim --record <package> --take-over-from <checkout> --source <JSON>`
@@ -157,15 +162,22 @@ Each of these is known, stated, and not handled by anything shipped.
   and a second transfer asks again. Your statement that the former checkout is gone is a
   procedure, not fencing: a copy of its checkout identity, or a session that is disconnected but
   still running, is not stopped by it. That the cited record resolves shows that the record
-  exists, not that you consented.
+  exists, not that you consented. Shown by `codec/src/__tests__/round-trip-cli-takeover.test.ts`
+  (Prior's eight cases over thirty-seven recorded exchanges), `hooks/lib/__tests__/record-write.test.ts`
+  (`describe("takeover, request 62")`, and the owner-only release case) and, for the procedure,
+  `agents/orchestrator.md`'s **Take over** row and its `autonomous` sorting, which lists take over
+  among the operations that ask as written. No input to the codec or the client says whether a
+  checkout has stopped, so nothing can test that it did.
 - **A client older than the takeover's codec revision must not share a workbench with one that
   writes takeovers.** Run no old and new codecs on one workbench, and write no takeover before every
   client of that workbench runs the new codec: replace or quiesce the others first, as under
-  `## More than one checkout`. Measured with the old bundle (`sha256:c76bbce9…`): a package that
-  carries a transfer is refused on `validate` and on every mutation, and no byte moves, but `show`
-  returns it as stored, because `show` does not validate. Aggregate operations of an old client may
-  fail when they reach such a package, so a workbench holding one is not readable by old clients as
-  a whole.
+  `## More than one checkout`. Measured with the old bundle (`sha256:c76bbce9…`) in
+  `codec/src/__tests__/round-trip-cli-takeover.test.ts` ("the version boundary"): on a package that
+  carries a transfer, `validate`, `release` and `transition` are refused `schema-invalid` and a
+  takeover request is refused by its protocol, and no byte moves, but `show` returns it as stored,
+  because `show` does not validate. Other operations were not measured: an aggregate operation of an
+  old client may fail when it reaches such a package, so treat a workbench holding one as not
+  readable by old clients as a whole.
 - **A `succeeded` dependency is met only by a finish that binds an accepted review.** `depends_on`
   takes two conditions: `terminal` (the target is `done` or `dropped`) and `succeeded` (`done` with
   an accepted evidence binding in its outcome). The orchestrator's closure finishes a package with
@@ -175,16 +187,25 @@ Each of these is known, stated, and not handled by anything shipped.
   not the outcome's. A package you finish by hand needs `transition --to done --outcome <value>
   --evidence <evidence control path>`, sent before anything is appended to its narrative. Every edge
   the migration converts is `terminal`, and an imported `done` package carries the outcome
-  `legacy-completed`, which never meets `succeeded`.
+  `legacy-completed`, which never meets `succeeded`. Shown by `codec/src/__tests__/transitions.test.ts`
+  (the four `succeeded:` cases) and `hooks/lib/__tests__/record-write.test.ts` (a finish with
+  `--evidence` naming an accepted review makes the waiting package ready; one without leaves it
+  blocked).
 - **Unknown filers stay unknown, and the person is taken from git.** Where a record never said who
   filed it, the migration writes the actor `legacy-unknown` and takes the person from the author of
   the commit that first added the file, following renames. Both are marked as derived in the
   record's provenance, and neither is asked. Without a git repository the person is unknown too.
+  Shown by `hooks/lib/__tests__/migrate.test.ts` ("takes the person from git's first add, through a
+  staged rename too, else carries it unknown with the reason…") and the `describe` on the reserved
+  actor in `codec/src/__tests__/migration.test.ts`.
 - **A plan step's number is its anchor.** Step progress binds to the number of a step under
   `## Implementation Steps`. Renumbering steps, or inserting one, after the plan is filed breaks
   that binding: `transition --steps` updates only the anchors the plan already has. A step mark
   the migration found outside a numbered step is kept in the record's import provenance as
-  unanchored, and tracks nothing.
+  unanchored, and tracks nothing. Shown by `hooks/lib/__tests__/record-write.test.ts` (a plan filed
+  by `create` anchors each numbered step), `codec/src/__tests__/ops.test.ts` (an id the plan lacks is
+  `unknown-step-id`, nothing written) and the `mark-outside-numbered-step` case of
+  `hooks/lib/__tests__/legacy-import.test.ts`.
 - **`bin/fusion-citation-check` reports an ambiguous citation as a `conflict`, and the blocking
   lint does not.** On a JSON-controlled workbench a citation token that matches more than one
   record is a `conflict` row. In a file the checker counts as edited it makes
@@ -192,13 +213,21 @@ Each of these is known, stated, and not handled by anything shipped.
   usual sources are a bare package name that exists both live and inside an archive sweep, and a
   stamp cited without its slug. The repair is to spell the citation out until it names one
   record. The blocking citation lint (`hooks/lib/__tests__/workbench-citation-lint.test.ts`) still
-  counts such a token as resolved, so the two readers differ on this point.
+  counts such a token as resolved, so the two readers differ on this point. Shown by
+  `hooks/lib/__tests__/fusion-citation-check.test.ts` ("…reports a conflict and an unresolved UUID")
+  for the checker, and for the lint by `hooks/lib/citation-scan.ts`, whose `scanRecordCitations()`
+  counts an `ambiguous` token as resolved; no test asserts that side.
 - **Prior's qualification is a release fact, not a runtime dependency.** The codec bundle shipped
-  in `codec/dist/` is the one Prior qualified, by digest. fusion runs in Claude Code with no Prior
-  installation, binary, service or variable, and nothing at run time checks that qualification.
-- **Six agent behaviours on a JSON workbench were never observed.** The opt-in suite that
-  dispatches agents headless does not reach them, as
-  `261007-2348-agent-dispatch-and-skill-block-observation-at-495aca7d.md` records:
+  in `codec/dist/` is meant to be the one Prior qualified, by digest; the record of that
+  qualification is Prior's answer in `codec/fixtures/prior/REQUESTS.md`, and the release states the
+  digest it ships. fusion runs in Claude Code with no Prior installation, binary, service or
+  variable, and nothing at run time checks that qualification: `bin/fusion-record` runs the bundle
+  with `node` and compares no digest. `codec/src/__tests__/committed-bundle.test.ts` shows only
+  that the committed bundle is the build of the committed source.
+- **Seven agent behaviours on a JSON workbench were never observed.** The opt-in suite that
+  dispatches agents headless did not reach the first six, as
+  `261007-2348-agent-dispatch-and-skill-block-observation-at-495aca7d.md` records; the seventh was
+  added to it later:
   - the orchestrator's interactive approval paths: a `-p` run answers no question;
   - a closure whose review returns `revise`, so a finish binding that verdict. Under `autonomous`
     the orchestrator may instead hold a closure whose work is visibly not done on disk (a
@@ -206,7 +235,9 @@ Each of these is known, stated, and not handled by anything shipped.
   - `policy-curator` apply mode, which waits on the user's approval of a ledger;
   - `reviewer` with `**Review domain:** ontology`;
   - `state-auditor` with live records to reconcile and a stated `**Directive:**`;
-  - repetition: each case ran once, and one run proves one run.
+  - repetition: each case ran once, and one run proves one run;
+  - the orchestrator's takeover, case (i) of `hooks/lib/__tests__/agent-dispatch-observation.test.ts`,
+    written after that run and not yet run.
 
 ## What needs no action
 

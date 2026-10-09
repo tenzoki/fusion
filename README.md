@@ -23,7 +23,7 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v12.2.3` to pin a release — every release since v5.5.0 is tagged; the default is the head of `main`, which is what `fusion --update` fetches), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v13.0.0` to pin a release — every release since v5.5.0 is tagged; the default is the head of `main`, which is what `fusion --update` fetches), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
 
 **Upgrading from v12?** v13 moves every record's state out of Markdown into JSON control files beside it (`package.json`, `<name>.record.json`), written only through `bin/fusion-write`; the text stays Markdown. Every agent stops at Setup on a v12 workbench until `/fusion:migrate` has converted it, which needs Node 20.12.0 or later and asked one question on each real workbench it was measured on. Every installation that writes a migrated workbench must be on v13 first, since nothing detects one that is not. [`docs/upgrading-to-v13.md`](docs/upgrading-to-v13.md) is the procedure, the multi-checkout order and the documented limits.
 
