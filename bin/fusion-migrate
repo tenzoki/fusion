@@ -17,7 +17,8 @@
 # `hooks/dist/migrate.js`, whose header is the account of the session, the
 # ids and setup metadata. The host reads the Markdown and composes; the codec
 # (`bin/fusion-record`'s bundle) writes every control, plan and answer byte.
-# Plugin and Node only: no other runtime, service or variable is read.
+# Plugin and Node only outside a git repository. Inside one (a `.git` entry at
+# or above the workbench) git is required too, and is asked.
 #
 #   survey          counts of the record cut, findings by class, the derived
 #                   and defaulted values by rule, and each blocking finding
@@ -73,7 +74,9 @@
 #   1  no fusion workbench above the working directory.
 #   2  usage.
 #   3  install incomplete (this entry or the codec bundle missing) or an
-#      internal fault; `status` names where the run stands.
+#      internal fault; `status` names where the run stands. Inside a git
+#      repository, a git that is missing or refuses (not installed, dubious
+#      ownership, killed) is an exit 3 naming the call and the reason.
 #   4  Node is missing or older than codec/package.json's engines; nothing
 #      was read or written.
 #   5  a precondition refused: v11 store names, a codec without `migration`,

@@ -32,3 +32,6 @@ Agrees with git, checked: a worktree's and a submodule's `.git` file, the workbe
 **Fix direction (inference).** Keep the filesystem's answer, but ask it the question git asks. Count a `.git` directory only when it holds `HEAD`, and a `.git` file only when it starts `gitdir:`. Stop the walk at an entry of `GIT_CEILING_DIRECTORIES`. With `GIT_DIR` set, ask git. Or state these setups in the header's `## The git pass` as out of scope. That is the cheaper answer and an acceptable one at this frequency.
 
 **Acceptance.** Either a case in `hooks/lib/__tests__/migrate.test.ts` per row above with the `26ada996` outcome restored for the first, second and fourth rows, or a sentence in the header naming them as unsupported. The user picks which.
+
+---
+Resolved: by the header sentence the acceptance allows, at the user's ruling (documentation only, no code change). `hooks/migrate.ts` header `## The git pass` now names the setups where git answers otherwise as unsupported: an empty or non-git `.git` entry and a `.git` hidden by `GIT_CEILING_DIRECTORIES` stop the run with exit 3, and a repository named by `GIT_DIR` and `GIT_WORK_TREE` with no `.git` above the workbench is migrated as if there were no repository. `hooks/dist/migrate.{js,d.ts}` rebuilt; `npm test` in `hooks/` exit 0.

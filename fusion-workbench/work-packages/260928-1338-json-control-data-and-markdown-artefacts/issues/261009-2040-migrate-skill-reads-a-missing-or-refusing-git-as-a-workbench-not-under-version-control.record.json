@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a83b92b7-fe1e-4310-a4a2-15822c41af33",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261009-2040-migrate-skill-reads-a-missing-or-refusing-git-as-a-workbench-not-under-version-control.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

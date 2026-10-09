@@ -11,7 +11,8 @@
  * the proposal into `.json-state/migration/`, and drives the codec's
  * `migration` phases through `lib/record-client.ts`, one request per process.
  * It writes no control file, no plan file and no stored answer; the codec
- * alone writes those. It needs the plugin and Node and nothing else.
+ * alone writes those. Outside a git repository it needs the plugin and Node
+ * and nothing else; inside one it needs git as well (`## The git pass`).
  *
  * ## The git pass
  *
@@ -30,7 +31,11 @@
  * and need not be installed. Inside one, every git call that does not answer
  * (missing git, a refused repository such as dubious ownership, a signal, a
  * timeout, a full buffer, a fatal status) stops the run as a fault naming the
- * call, never as an empty answer or as "no repository".
+ * call, never as an empty answer or as "no repository". Where git would
+ * answer otherwise, the setup is not supported: an empty or non-git `.git`
+ * entry and a `.git` hidden by `GIT_CEILING_DIRECTORIES` stop the run with
+ * exit 3, and a repository named by `GIT_DIR` and `GIT_WORK_TREE` with no
+ * `.git` above the workbench is migrated as if there were no repository.
  *
  * ## The session
  *
