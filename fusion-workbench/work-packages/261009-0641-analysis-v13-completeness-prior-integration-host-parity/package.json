@@ -3,7 +3,7 @@
   "id": "3f6ddeb2-282a-490d-8d13-f81b8fe7ef02",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -35,7 +35,11 @@
   "active_documents": [],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "three analyses answer v13 completeness, Prior integration and host parity; request 38 status corrected in the closure note",
+    "evidence": []
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
