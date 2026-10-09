@@ -18,16 +18,16 @@
   data-implementer.md 16036
   document-editor.md 13230
   implementation-planner.md 20516
-  orchestrator.md 95673
+  orchestrator.md 95660
   policy-curator.md 77909
   requirements-designer.md 17664
   reviewer.md 13522
   state-auditor.md 21781
-  total 323089
+  total 323076
 
 [skills bytes]
   archive/SKILL.md 26184
-  cadence/SKILL.md 23028
+  cadence/SKILL.md 23482
   check/SKILL.md 32719
   cleanup/SKILL.md 6911
   commit/SKILL.md 6119
@@ -42,7 +42,7 @@
   setup/SKILL.md 15958
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 221929
+  total 222383
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 269
@@ -106,7 +106,7 @@
   record-write.test.ts 388
   reference-resolution-lint.test.ts 1011
   review-coverage-mandate.test.ts 353
-  review-coverage.test.ts 857
+  review-coverage.test.ts 927
   rules-emission-golden.test.ts 1189
   rules-voice-profile.test.ts 319
   sentence-identifier-containment.test.ts 456
@@ -118,4 +118,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 333
-  total 24617
+  total 24687

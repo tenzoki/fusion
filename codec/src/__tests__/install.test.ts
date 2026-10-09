@@ -1210,13 +1210,17 @@ describe("the shipped reconcile, cadence, check gitignore, migrate Step 7 and he
       mkdirSync(dirname(join(p.wb, rel)), { recursive: true });
       writeFileSync(join(p.wb, rel), "# x\n");
     }
-    // The block prints the find's `ls` lines, then the event log's `record_change` rows (JSON objects); each half is read apart.
+    // The block prints the find's `ls` lines, then the event log's `record_change` rows, each after its local date; each half is read apart.
+    const changeLine = /^(\d{4}-\d{2}-\d{2}) (\{.*)$/;
     const scanned = (r: ReturnType<typeof run>) => {
       expect(r.status, `the scan block exited ${r.status} on ${platform()} ${release()}; its comment says GNU ls rejects \`-T\`: ${r.stderr}`).toBe(0);
       const lines = r.stdout.split("\n").filter((l) => l.length > 0);
       return {
-        files: lines.filter((l) => !l.startsWith("{")).map((l) => l.slice(l.indexOf(`${keys.WORKBENCH}/`) + keys.WORKBENCH.length + 1)).sort(),
-        changes: lines.filter((l) => l.startsWith("{")).map((l) => JSON.parse(l) as { ts: string; op: string; path: string; change: unknown }),
+        files: lines.filter((l) => !changeLine.test(l)).map((l) => l.slice(l.indexOf(`${keys.WORKBENCH}/`) + keys.WORKBENCH.length + 1)).sort(),
+        changes: lines.flatMap((l) => {
+          const m = changeLine.exec(l);
+          return m ? [{ local: m[1], ...(JSON.parse(m[2]) as { ts: string; op: string; path: string; change: unknown }) }] : [];
+        }),
       };
     };
     const narrative = issue.replace(".record.json", ".md");
@@ -1233,11 +1237,26 @@ describe("the shipped reconcile, cadence, check gitignore, migrate Step 7 and he
     const narrativeBefore = readFileSync(join(p.wb, narrative));
     closeIssue(p, issue);
     expect([readFileSync(join(p.wb, issue)).equals(controlBefore), readFileSync(join(p.wb, narrative)).equals(narrativeBefore)]).toEqual([false, true]);
-    const afterTransition = scanned(sh(scan, { ...keys, SINCE: today }));
-    expect(afterTransition.files).toEqual([]);
-    expect(afterTransition.changes.map((c) => [c.ts.slice(0, 10), c.op, c.path, c.change])).toEqual([[today, "transition", issue, { from: "open", to: "closed" }]]);
-    // `$SINCE` bounds the rows as it bounds the find: a mark after today lists neither.
-    expect(scanned(sh(scan, { ...keys, SINCE: "2999-01-01" }))).toEqual({ files: [], changes: [] });
+    // The row's `ts` is UTC and `$SINCE` is a local date, so the block dates and bounds the row by its local date (issue 261009-1037).
+    // Three zones, so no hour of the run can hide the conversion: east of UTC by 14 hours and west by 11, one of the two always
+    // falls on another day than UTC; each zone's expected date is computed from the row's own `ts`, never from the clock.
+    const [row] = scanned(sh(scan, { ...keys, SINCE: "", TZ: "UTC" })).changes;
+    const at = new Date(/Z$|[+-]\d\d:\d\d$/.test(row.ts) ? row.ts : `${row.ts}Z`);
+    const localIn = (timeZone: string) => {
+      const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(at).map((x) => [x.type, x.value]));
+      return `${parts.year}-${parts.month}-${parts.day}`;
+    };
+    const dayAfter = (d: string) => new Date(Date.parse(`${d}T00:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
+    const zones = ["UTC", "Pacific/Kiritimati", "Pacific/Pago_Pago"];
+    expect(zones.slice(1).some((z) => localIn(z) !== localIn("UTC")), `no zone's date differs from UTC's for ts ${row.ts}`).toBe(true);
+    for (const TZ of zones) {
+      const local = localIn(TZ);
+      const afterTransition = scanned(sh(scan, { ...keys, SINCE: local, TZ }));
+      expect(afterTransition.files).toEqual([]);
+      expect(afterTransition.changes.map((c) => [c.local, c.op, c.path, c.change]), TZ).toEqual([[local, "transition", issue, { from: "open", to: "closed" }]]);
+      // `$SINCE` bounds the rows as it bounds the find, by the local date: a mark one local day later lists neither.
+      expect(scanned(sh(scan, { ...keys, SINCE: dayAfter(local), TZ })), TZ).toEqual({ files: [], changes: [] });
+    }
 
     // 6. The week check: one ISO week, one row; then a second week with no row is a MISMATCH. One python3 process, on PATH for this block alone.
     const py = findOnHostPath("python3");

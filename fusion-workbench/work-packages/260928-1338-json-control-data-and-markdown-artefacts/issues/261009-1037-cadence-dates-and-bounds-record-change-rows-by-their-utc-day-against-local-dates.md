@@ -11,3 +11,5 @@
 **Acceptance:** the scan block selects and dates a row by its local date; the install case passes with `TZ` set so that the row's UTC date and the local date differ (for example `TZ=Pacific/Kiritimati`), and with `TZ=UTC`; codec suite green with `CODEC_REQUIRE_GOLDENS=1`.
 
 Cross-references: 261009-1037-reviewer-g-a-pre-release-review-of-13-0-0.md
+
+Resolved: skills/cadence/SKILL.md `## Process` step 3b converts each `record_change` row's UTC `ts` to the local date in one `node` process, bounds it against `$SINCE` by that date and prints it before the row; the row is dated by it. codec/src/__tests__/install.test.ts, the cadence `## Process` case, runs the scan block under `TZ=UTC`, `Pacific/Kiritimati` and `Pacific/Pago_Pago`, each expected date computed from the row's own `ts` (one of the two non-UTC zones differs from the UTC date at any hour, asserted), and a mark one local day later lists nothing.

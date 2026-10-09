@@ -75,7 +75,10 @@ function main(argv: string[]): number {
     const arg = argv[i];
     if (arg === "--since" || arg === "--head") {
       const value = argv[i + 1];
-      if (value === undefined || value.startsWith("--")) {
+      // An empty value is refused, not read as absent: `--since ""` is what a
+      // command substitution that printed nothing hands over, and reading it as
+      // "use the session anchor" measured the wrong window with exit 0.
+      if (value === undefined || value === "" || value.startsWith("--")) {
         process.stderr.write(`fusion-review-coverage: ${arg} needs a value\n${USAGE}\n`);
         return 1;
       }

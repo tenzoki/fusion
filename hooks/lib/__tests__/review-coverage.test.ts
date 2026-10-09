@@ -34,8 +34,9 @@
 
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 import {
   CASE_TIMEOUT,
   childEnv,
@@ -433,6 +434,75 @@ describe("review coverage: a range it cannot pin", () => {
         const out = runCli(p.root, "--nope");
         expect(out.status).toBe(1);
         expect(out.stderr).toContain("usage:");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "refuses an empty --since with exit 1 rather than falling back to the session anchor",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        commit(p.root, "one");
+        writeState(p.root, start);
+
+        // What a command substitution that printed nothing hands over. Read as
+        // absent, it measured the session window, exit 0, in silence (issue
+        // 261009-1037, the closing coverage read's second defect).
+        const out = runCli(p.root, "--since", "");
+        expect(out.status).toBe(1);
+        expect(out.stdout).toBe("");
+        expect(out.stderr).toContain("usage:");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("review coverage: the closing read's anchor", () => {
+  /** The command `## Closing a work package` step 2 spells, read off the prompt. */
+  const closingAnchorCommand = (): string => {
+    const prompt = readFileSync(join(pluginRoot, "agents", "orchestrator.md"), "utf-8");
+    const m = /`(git -C "\$WORKBENCH" log [^`]*<step 1's narrative\.path>[^`]*)`/.exec(prompt);
+    if (!m) throw new Error("agents/orchestrator.md no longer spells the closing read's anchor command");
+    return m[1];
+  };
+
+  it(
+    "anchors a migrated package at its narrative's filing, not at the migration that added package.json",
+    () => {
+      withRepo((p) => {
+        // Filed before the migration: the narrative alone, in the v11 store.
+        const legacy = "fusion-workbench/circles/260901-1200-probe";
+        mkdirSync(resolve(p.root, legacy), { recursive: true });
+        writeFileSync(resolve(p.root, legacy, "_o_circle.md"), "# Probe\n\nThe brief, long enough to be followed across a rename.\n", "utf-8");
+        git(p.root, "add", "-A");
+        git(p.root, "commit", "-m", "file the probe package");
+        const filed = git(p.root, "rev-parse", "HEAD");
+        commit(p.root, "work-before-migration");
+
+        // The migration: the store renamed, and package.json added beside it.
+        git(p.root, "mv", "fusion-workbench/circles", "fusion-workbench/work-packages");
+        const narrative = "work-packages/260901-1200-probe/_o_circle.md";
+        writeFileSync(
+          resolve(p.root, "fusion-workbench/work-packages/260901-1200-probe/package.json"),
+          JSON.stringify({ narrative: { path: narrative } }) + "\n",
+          "utf-8",
+        );
+        git(p.root, "add", "-A");
+        git(p.root, "commit", "-m", "the workbench is on JSON control");
+
+        const cmd = closingAnchorCommand().replace("<step 1's narrative.path>", narrative);
+        const run = spawnSync("bash", ["-c", cmd], {
+          cwd: p.root,
+          encoding: "utf-8",
+          env: { ...childEnv(), WORKBENCH: resolve(p.root, "fusion-workbench") },
+        });
+        expect(run.status, run.stderr).toBe(0);
+        const anchor = run.stdout.trim();
+        expect(anchor).not.toBe("");
+        expect(git(p.root, "rev-parse", anchor)).toBe(filed);
       });
     },
     CASE_TIMEOUT,
