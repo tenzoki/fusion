@@ -1,0 +1,21 @@
+{
+  "args": [
+    "--plugin-dir",
+    "/private/tmp/claude-501/-Users-kai-Projects-productive-F04-FUSION-fusion/fbbc7e91-326c-4326-9768-4bb2d4f22897/scratchpad/obs/clone-C",
+    "--agent",
+    "fusion:policy-curator",
+    "-p",
+    "**Mode:** survey\n\nSurvey this project's decision records, rule files and CLAUDE.md against its history. Return the survey report and stop.",
+    "--permission-mode",
+    "bypassPermissions",
+    "--output-format",
+    "json"
+  ],
+  "cwd": "/private/var/folders/6v/31t6lk3x7yb8wj8pt1gyz93h0000gn/T/fusion-agent-run-a6dcNy/d-policy-curator",
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "wall_ms": 72398,
+  "stdout": "{\"duration_api_ms\":66840,\"stop_reason\":\"end_turn\",\"session_id\":\"8a67a0b3-a0ea-4ed9-a200-2b7b62ff09c3\",\"total_cost_usd\":0.48963780000000007,\"usage\":{\"input_tokens\":18,\"cache_creation_input_tokens\":35584,\"cache_read_input_tokens\":518269,\"output_tokens\":5062,\"output_tokens_details\":{\"thinking_tokens\":705},\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":35584,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"global\",\"iterations\":[{\"input_tokens\":2,\"output_tokens\":485,\"cache_read_input_tokens\":70354,\"cache_creation_input_tokens\":287,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":287},\"type\":\"message\"}],\"speed\":\"standard\",\"fallback_credit\":null},\"modelUsage\":{\"claude-opus-5-5\":{\"inputTokens\":18,\"outputTokens\":5062,\"cacheReadInputTokens\":518269,\"cacheCreationInputTokens\":35584,\"webSearchRequests\":0,\"costUSD\":0.48963780000000007,\"contextWindow\":1000000,\"maxOutputTokens\":128000,\"thinkingTokens\":705,\"canonicalModel\":\"claude-opus-5-5\",\"provider\":\"firstParty\",\"costBasis\":\"list\"}},\"permission_denials\":[],\"terminal_reason\":\"completed\",\"fast_mode_state\":\"off\",\"fast_mode_disabled_reason\":\"sdk_opt_in_required\",\"subagent_stats\":{\"spawned\":0,\"requested\":{\"background\":0,\"foreground\":0,\"unset\":0},\"started_in_background\":0,\"max_depth\":0,\"spawned_by_subagents\":0,\"completed\":0,\"failed\":0,\"killed\":{\"parent\":0,\"user\":0,\"system\":0},\"refused\":{\"depth_limit\":0,\"concurrency_limit\":0,\"budget\":0},\"by_type\":{}},\"safety_stops\":0,\"is_error\":false,\"num_turns\":11,\"subtype\":\"success\",\"api_error_status\":null,\"result\":\"Nothing needs approving: I found nothing in the project's written rules to change, and nothing was edited.\\n\\nThere are no decision records and no project rule files (neither `rules/` nor `.claude/rules/` exists). That leaves `CLAUDE.md` as the only rule text. I checked each of its claims, and all of them hold today: `src/` holds the code (`sum.js`), `test/` holds its tests (`sum.test.js`), and `node --test` passes with 1 test run, 1 passed, 0 failed.\\n\\n- **Report file:** `fusion-workbench/work-packages/261007-2100-add-sum/analyses/261009-2051-curator-run.md`\\n- **Proposed changes:** none in any of the eight groups.\\n- **Candidates:** none. Nothing is on offer.\\n- **Size check:** no bytes would be deleted or moved from any file, so the 20 percent limit was never reached.\\n\\nWhat was empty, so it isn't mistaken for coverage:\\n- **No earlier run:** this is the first check on record, so I read the whole history: 2 commits, the one piece of work in progress and its event log.\\n- **Nothing to compare against:** the review and analysis folders are empty, and there is no archive.\\n- **Voice profile:** none was provided for this project, so none was applied.\\n\\nThe next check will only read what changed after commit `a29739c`.\",\"ttft_ms\":6235,\"type\":\"result\",\"duration_ms\":69973,\"uuid\":\"189ad800-b0aa-49ce-a961-24869eeeb5d4\",\"ttft_stream_ms\":6071,\"time_to_request_ms\":28,\"first_content_frame_ms\":6072,\"queued_turn_count\":0,\"result_index\":0}\n",
+  "stderr": ""
+}

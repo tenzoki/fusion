@@ -1,0 +1,21 @@
+{
+  "args": [
+    "--plugin-dir",
+    "/private/tmp/claude-501/-Users-kai-Projects-productive-F04-FUSION-fusion/fbbc7e91-326c-4326-9768-4bb2d4f22897/scratchpad/obs/clone-C",
+    "--agent",
+    "fusion:orchestrator",
+    "-p",
+    "close the claimed work package",
+    "--permission-mode",
+    "bypassPermissions",
+    "--output-format",
+    "json"
+  ],
+  "cwd": "/private/var/folders/6v/31t6lk3x7yb8wj8pt1gyz93h0000gn/T/fusion-agent-run-a6dcNy/e-orchestrator",
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "wall_ms": 140359,
+  "stdout": "{\"duration_api_ms\":123957,\"stop_reason\":\"end_turn\",\"session_id\":\"7bb7543a-7545-463b-80cf-951c44c55fab\",\"total_cost_usd\":1.4353026000000002,\"usage\":{\"input_tokens\":32,\"cache_creation_input_tokens\":73245,\"cache_read_input_tokens\":1476691,\"output_tokens\":7693,\"output_tokens_details\":{\"thinking_tokens\":768},\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":73245,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"global\",\"iterations\":[{\"input_tokens\":2,\"output_tokens\":468,\"cache_read_input_tokens\":114674,\"cache_creation_input_tokens\":1369,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":1369},\"type\":\"message\"}],\"speed\":\"standard\",\"fallback_credit\":null},\"modelUsage\":{\"claude-opus-5-5\":{\"inputTokens\":52,\"outputTokens\":12166,\"cacheReadInputTokens\":1821323,\"cacheCreationInputTokens\":121555,\"webSearchRequests\":0,\"costUSD\":1.4353026000000002,\"contextWindow\":1000000,\"maxOutputTokens\":128000,\"thinkingTokens\":1183,\"canonicalModel\":\"claude-opus-5-5\",\"provider\":\"firstParty\",\"costBasis\":\"list\"}},\"permission_denials\":[],\"terminal_reason\":\"completed\",\"fast_mode_state\":\"off\",\"fast_mode_disabled_reason\":\"sdk_opt_in_required\",\"subagent_stats\":{\"spawned\":1,\"requested\":{\"background\":0,\"foreground\":1,\"unset\":0},\"started_in_background\":0,\"max_depth\":1,\"spawned_by_subagents\":0,\"completed\":1,\"failed\":0,\"killed\":{\"parent\":0,\"user\":0,\"system\":0},\"refused\":{\"depth_limit\":0,\"concurrency_limit\":0,\"budget\":0},\"by_type\":{\"fusion:reviewer\":1}},\"safety_stops\":0,\"is_error\":false,\"num_turns\":18,\"subtype\":\"success\",\"api_error_status\":null,\"result\":\"\\\"Add sum\\\" is closed and marked done in commit c025806. Nothing failed.\\n\\n- **Tests:** `node --test` passes at the current commit. `sum(2, 3)` returns 5, which is the condition the plan set for finishing.\\n- **Review:** commit 596c05a (\\\"add sum\\\") was reviewed and accepted with nothing reported, so every commit in this piece of work has now been reviewed.\\n- **No questions asked:** you set this item to run on its own, so I closed it without asking you to check the finishing condition. That condition is copied word for word into the item's closing note.\\n- **Plan:** its only step was finished, so I closed the plan along with the item.\\n\\nThe next item, \\\"Document sum\\\", is still open and was waiting on this one, so it can start now.\\n\\nWhat next?\\n1. Take on \\\"Document sum\\\" now.\\n2. Something else (tell me what).\\n3. Stop here and end the session.\\n\\nAnswer with a number or in your own words.\\n\\n**Details:** the review report is `work-packages/261007-2100-add-sum/reviews/261009-2053-reviewer-add-sum-closing.md`. The event log has one new line since the commit; it gets committed when the session ends.\",\"ttft_ms\":1430,\"type\":\"result\",\"duration_ms\":137919,\"uuid\":\"6e710117-6649-43e9-96fd-6abf0aa5640f\",\"ttft_stream_ms\":1004,\"time_to_request_ms\":29,\"first_content_frame_ms\":1004,\"queued_turn_count\":0,\"result_index\":0}\n",
+  "stderr": ""
+}

@@ -1,0 +1,21 @@
+{
+  "args": [
+    "--plugin-dir",
+    "/private/tmp/claude-501/-Users-kai-Projects-productive-F04-FUSION-fusion/fbbc7e91-326c-4326-9768-4bb2d4f22897/scratchpad/obs/clone-C",
+    "--agent",
+    "fusion:reviewer",
+    "-p",
+    "Run your Setup up to and including the `fusion-paths` call, and nothing after it: no task, no file written, no question asked. Then reply with every line `fusion-paths` printed on stdout, verbatim, one per line, and nothing else.",
+    "--permission-mode",
+    "bypassPermissions",
+    "--output-format",
+    "json"
+  ],
+  "cwd": "/private/var/folders/6v/31t6lk3x7yb8wj8pt1gyz93h0000gn/T/fusion-agent-run-a6dcNy/a-reviewer",
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "wall_ms": 12816,
+  "stdout": "{\"duration_api_ms\":8572,\"stop_reason\":\"end_turn\",\"session_id\":\"ff6e5b7a-d4f9-4d56-988c-b85e9d1d515e\",\"total_cost_usd\":0.2019668,\"usage\":{\"input_tokens\":6,\"cache_creation_input_tokens\":21266,\"cache_read_input_tokens\":69574,\"output_tokens\":895,\"output_tokens_details\":{\"thinking_tokens\":120},\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":21266,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"global\",\"iterations\":[{\"input_tokens\":2,\"output_tokens\":313,\"cache_read_input_tokens\":30018,\"cache_creation_input_tokens\":1107,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":1107},\"type\":\"message\"}],\"speed\":\"standard\",\"fallback_credit\":null},\"modelUsage\":{\"claude-opus-5-5\":{\"inputTokens\":6,\"outputTokens\":895,\"cacheReadInputTokens\":69574,\"cacheCreationInputTokens\":21266,\"webSearchRequests\":0,\"costUSD\":0.2019668,\"contextWindow\":1000000,\"maxOutputTokens\":128000,\"thinkingTokens\":120,\"canonicalModel\":\"claude-opus-5-5\",\"provider\":\"firstParty\",\"costBasis\":\"list\"}},\"permission_denials\":[],\"terminal_reason\":\"completed\",\"fast_mode_state\":\"off\",\"fast_mode_disabled_reason\":\"sdk_opt_in_required\",\"subagent_stats\":{\"spawned\":0,\"requested\":{\"background\":0,\"foreground\":0,\"unset\":0},\"started_in_background\":0,\"max_depth\":0,\"spawned_by_subagents\":0,\"completed\":0,\"failed\":0,\"killed\":{\"parent\":0,\"user\":0,\"system\":0},\"refused\":{\"depth_limit\":0,\"concurrency_limit\":0,\"budget\":0},\"by_type\":{}},\"safety_stops\":0,\"is_error\":false,\"num_turns\":4,\"subtype\":\"success\",\"api_error_status\":null,\"result\":\"WORKBENCH=/private/var/folders/6v/31t6lk3x7yb8wj8pt1gyz93h0000gn/T/fusion-agent-run-a6dcNy/a-reviewer/fusion-workbench\\nOUT_ISSUE=work-packages/261007-2100-add-sum/issues\\nOUT_DECISION=work-packages/261007-2100-add-sum/decisions\\nOUT_REVIEW=work-packages/261007-2100-add-sum/reviews\\nSCAN_PLANS=work-packages/261007-2100-add-sum/plans shared/plans\\nSCAN_ISSUES=work-packages/261007-2100-add-sum/issues shared/issues\\nSCAN_DECISIONS=work-packages/261007-2100-add-sum/decisions shared/decisions\\nSCAN_REVIEWS=work-packages/261007-2100-add-sum/reviews shared/reviews\",\"ttft_ms\":1970,\"type\":\"result\",\"duration_ms\":10247,\"uuid\":\"8c0a400f-34ce-4a4a-82d5-987690079a33\",\"ttft_stream_ms\":874,\"time_to_request_ms\":31,\"first_content_frame_ms\":874,\"queued_turn_count\":0,\"result_index\":0}\n",
+  "stderr": ""
+}
