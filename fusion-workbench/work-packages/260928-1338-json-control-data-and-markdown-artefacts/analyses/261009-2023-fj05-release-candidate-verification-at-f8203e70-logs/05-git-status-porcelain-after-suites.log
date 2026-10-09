@@ -1,0 +1,15 @@
+f8203e7007335b1bb4ee540098e6797242d2a321
+EXIT=0
+--- lines:
+       0
+--- ignored (for information):
+!! codec/node_modules/
+!! hooks/node_modules/
+!! hooks/package-lock.json
+--- hooks/dist/migrate.* after the hooks suite (for information):
+npm test runs scripts/run-tests.mjs: tsc compiles all of hooks/ into a staging dir, then syncIntoDist replaces a dist file only where its bytes differ (scripts/build.mjs:177).
+20:23:22 hooks/dist/migrate.js
+20:23:22 hooks/dist/migrate.d.ts
+20:23:22 hooks/migrate.ts
+mtimes equal the 20:23:22 checkout: the compiled migrate.{js,d.ts} equalled the committed bytes, so no replacement was needed.
+note: written a second time, after the room measurement (log 09); an earlier append ran stat from the wrong directory. The status result is the same in both writes.

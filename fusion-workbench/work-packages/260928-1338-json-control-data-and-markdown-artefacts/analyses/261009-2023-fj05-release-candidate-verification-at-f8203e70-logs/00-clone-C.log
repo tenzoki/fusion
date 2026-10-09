@@ -1,0 +1,3 @@
+Klone nach 'clone-C3'...
+Fertig.
+HEAD ist jetzt bei f8203e70 fix(migrate): the filesystem decides whether a repository exists, not git's exit code

@@ -1,0 +1,123 @@
+
+ RUN  v2.1.9 /private/tmp/claude-501/-Users-kai-Projects-productive-F04-FUSION-fusion/fbbc7e91-326c-4326-9768-4bb2d4f22897/scratchpad/clone-C3/codec
+
+stdout | src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > has the cases plan FJ00 step 9 names
+fixtures/prior: 13 round-trip cases (register 5, plan 4, campaign 4)
+
+stdout | src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > every derived fixture is stamped with the Prior commit it was derived from
+fixtures/prior: 0 derived-from-source, 13 Go-emitted golden(s)
+
+stdout | src/__tests__/prior-mapping.test.ts > contract/prior-mapping.json coverage > every prior_key is exercised by at least one fixture
+fixtures/prior: 163 of 163 prior_keys exercised
+
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > has the cases plan FJ00 step 9 names
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/admission-persists-stable-item-and-current-attempt > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/admission-persists-stable-item-and-current-attempt > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/admission-persists-stable-item-and-current-attempt > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/admission-persists-stable-item-and-current-attempt > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/admission-persists-stable-item-and-current-attempt > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/admission-persists-stable-item-and-current-attempt > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/duplicate-intake-and-source-change-require-requalification > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/duplicate-intake-and-source-change-require-requalification > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/duplicate-intake-and-source-change-require-requalification > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/duplicate-intake-and-source-change-require-requalification > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/duplicate-intake-and-source-change-require-requalification > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/duplicate-intake-and-source-change-require-requalification > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/frozen-selection-replays-explanation-and-stale-prevents-admission > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/frozen-selection-replays-explanation-and-stale-prevents-admission > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/frozen-selection-replays-explanation-and-stale-prevents-admission > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/frozen-selection-replays-explanation-and-stale-prevents-admission > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/frozen-selection-replays-explanation-and-stale-prevents-admission > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/frozen-selection-replays-explanation-and-stale-prevents-admission > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/merge-chains-resolve-and-cycles-rollback > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/merge-chains-resolve-and-cycles-rollback > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/merge-chains-resolve-and-cycles-rollback > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/merge-chains-resolve-and-cycles-rollback > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/merge-chains-resolve-and-cycles-rollback > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/merge-chains-resolve-and-cycles-rollback > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/policy-records-every-exclusion-reason-and-closed-watermark > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/policy-records-every-exclusion-reason-and-closed-watermark > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/policy-records-every-exclusion-reason-and-closed-watermark > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/policy-records-every-exclusion-reason-and-closed-watermark > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/policy-records-every-exclusion-reason-and-closed-watermark > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > register/policy-records-every-exclusion-reason-and-closed-watermark > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/adaptive-formation-records-merge-split-and-deferral > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/adaptive-formation-records-merge-split-and-deferral > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/adaptive-formation-records-merge-split-and-deferral > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/adaptive-formation-records-merge-split-and-deferral > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/adaptive-formation-records-merge-split-and-deferral > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/adaptive-formation-records-merge-split-and-deferral > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/admission-crash-requires-observation-before-dispatch > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/admission-crash-requires-observation-before-dispatch > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/admission-crash-requires-observation-before-dispatch > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/admission-crash-requires-observation-before-dispatch > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/admission-crash-requires-observation-before-dispatch > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/admission-crash-requires-observation-before-dispatch > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/dependency-cycle-is-deferred > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/dependency-cycle-is-deferred > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/dependency-cycle-is-deferred > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/dependency-cycle-is-deferred > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/dependency-cycle-is-deferred > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/dependency-cycle-is-deferred > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/failed-package-does-not-block-unrelated-package > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/failed-package-does-not-block-unrelated-package > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/failed-package-does-not-block-unrelated-package > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/failed-package-does-not-block-unrelated-package > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/failed-package-does-not-block-unrelated-package > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > plan/failed-package-does-not-block-unrelated-package > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/discard-failed-and-cancelled-remain-distinct > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/discard-failed-and-cancelled-remain-distinct > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/discard-failed-and-cancelled-remain-distinct > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/discard-failed-and-cancelled-remain-distinct > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/discard-failed-and-cancelled-remain-distinct > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/discard-failed-and-cancelled-remain-distinct > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/restart-cannot-reset-failures-reviews-or-resource-limits > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/restart-cannot-reset-failures-reviews-or-resource-limits > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/restart-cannot-reset-failures-reviews-or-resource-limits > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/restart-cannot-reset-failures-reviews-or-resource-limits > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/restart-cannot-reset-failures-reviews-or-resource-limits > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/restart-cannot-reset-failures-reviews-or-resource-limits > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/revocation-amendment-and-terminal-outcomes > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/revocation-amendment-and-terminal-outcomes > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/revocation-amendment-and-terminal-outcomes > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/revocation-amendment-and-terminal-outcomes > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/revocation-amendment-and-terminal-outcomes > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/revocation-amendment-and-terminal-outcomes > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/unknown-effect-and-baseline-deterioration-pause > is the aggregate its directory says
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/unknown-effect-and-baseline-deterioration-pause > imports to exactly fusion.json (UPDATE_PRIOR_FIXTURES=1 rewrites it)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/unknown-effect-and-baseline-deterioration-pause > validates against the schemas through validate()
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/unknown-effect-and-baseline-deterioration-pause > export(import(prior)) equals prior after canonical re-serialisation
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/unknown-effect-and-baseline-deterioration-pause > the recomputed revision and hashes equal the stored ones
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > campaign/unknown-effect-and-baseline-deterioration-pause > is a Go-emitted golden (CODEC_REQUIRE_GOLDENS=1)
+ ✓ src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > every derived fixture is stamped with the Prior commit it was derived from
+ ✓ src/__tests__/prior-mapping.test.ts > contract/prior-mapping.json coverage > the table has 163 field rows and 7 state rows, every one confirmed by Prior's ruling
+ ✓ src/__tests__/prior-mapping.test.ts > contract/prior-mapping.json coverage > every prior_key is exercised by at least one fixture
+ ✓ src/__tests__/prior-mapping.test.ts > contract/prior-mapping.json coverage > every Go field the serialiser knows has a row (the table names every field of the three aggregates)
+ ✓ src/__tests__/prior-mapping.test.ts > contract/prior-mapping.json coverage > the state rows are read, not applied: every Prior package state resolves to its proposal, confirmed
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > an unknown Package.State is schema-invalid, naming the path
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > a map key that differs from the entry's ID is schema-invalid
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > a WorkItemID naming no known work item is unresolved-reference
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > a package member, an attempt, a deferral or an active item naming nothing is unresolved-reference
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > an attempt's ItemID or an active item naming no known work item is unresolved-reference
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > Version 0, an empty required string and Go's zero time are schema-invalid
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > a merge target without the outcome merged is a legacy inconsistency, and the reverse is schema-invalid
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > the inventory mode is returned beside the blocks: checked refuses an unknown id, carry-only carries it and says so
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > an unknown disposition outcome or refresh policy is schema-invalid
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > intake closed without a watermark, and archived without a previous terminal, are schema-invalid
+ ✓ src/__tests__/prior-mapping.test.ts > typed refusals, never defaults > an admission without a selection has no Disposition to export to
+ ✓ src/__tests__/prior-mapping.test.ts > corrections Prior ruled > signed Score, Severity and EstimatedScope import, validate against record.schema.json and export the same bytes
+ ✓ src/__tests__/prior-mapping.test.ts > corrections Prior ruled > duplicate evidence entries survive the round trip and computeEvidenceHash still equals the stored hash
+ ✓ src/__tests__/prior-mapping.test.ts > corrections Prior ruled > an empty Evidence Ref or Revision imports as null, exports as the empty string, and a failed qualification is never promoted
+ ✓ src/__tests__/prior-mapping.test.ts > corrections Prior ruled > a charter with a repeated ItemKinds entry round-trips with computeCharterHash equal
+ ✓ src/__tests__/prior-mapping.test.ts > corrections Prior ruled > a package in stale with a FailureReason imports and exports
+ ✓ src/__tests__/prior-mapping.test.ts > gojson reproduces encoding/json > escapes the HTML-safe set and the line separators as Go does, and keeps DEL and non-ASCII raw
+ ✓ src/__tests__/prior-mapping.test.ts > gojson reproduces encoding/json > writes nil as null, empty as [], and the time string verbatim
+ ✓ src/__tests__/prior-mapping.test.ts > gojson reproduces encoding/json > refuses what Go could not have written: a missing field, a non-integer, a non-Go time, an unsafe integer
+ ✓ src/__tests__/prior-mapping.test.ts > gojson reproduces encoding/json > names the aggregate by its own fields and refuses anything else
+
+ Test Files  1 passed (1)
+      Tests  104 passed (104)
+   Start at  20:28:54
+   Duration  547ms (transform 96ms, setup 0ms, collect 95ms, tests 171ms, environment 0ms, prepare 72ms)
+
+EXIT=0

@@ -1,0 +1,359 @@
+
+> test
+> node scripts/build.mjs && vitest run
+
+dist/fusion-record.js: unchanged
+
+ RUN  v2.1.9 /private/tmp/claude-501/-Users-kai-Projects-productive-F04-FUSION-fusion/fbbc7e91-326c-4326-9768-4bb2d4f22897/scratchpad/clone-C3/codec
+
+stdout | src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > has the cases plan FJ00 step 9 names
+fixtures/prior: 13 round-trip cases (register 5, plan 4, campaign 4)
+
+stdout | src/__tests__/prior-mapping.test.ts > fixtures/prior round trips > every derived fixture is stamped with the Prior commit it was derived from
+fixtures/prior: 0 derived-from-source, 13 Go-emitted golden(s)
+
+stdout | src/__tests__/prior-mapping.test.ts > contract/prior-mapping.json coverage > every prior_key is exercised by at least one fixture
+fixtures/prior: 163 of 163 prior_keys exercised
+
+ ✓ src/__tests__/prior-mapping.test.ts (104 tests) 511ms
+   ✓ fixtures/prior round trips > register/admission-persists-stable-item-and-current-attempt > validates against the schemas through validate() 472ms
+ ✓ src/__tests__/round-trip-cli-fj02.test.ts (39 tests) 9900ms
+ ✓ src/__tests__/round-trip-cli-fj02b.test.ts (49 tests) 9889ms
+ ✓ src/__tests__/transitions.test.ts (170 tests) 12ms
+ ✓ src/__tests__/round-trip-cli-initialize.test.ts (91 tests) 12498ms
+ ✓ src/__tests__/protocol.test.ts (45 tests) 263ms
+ ✓ src/__tests__/references.test.ts (47 tests) 8ms
+stdout | src/__tests__/fixtures.test.ts > fixtures/ coverage > reports the count of fixtures per schema and per outcome
+fixtures: 370 manifest entries
+  bytes                          8  (valid 0, invalid 8)
+  urn:fusion:schema:fusion.campaign/v1  26  (valid 4, invalid 22)
+  urn:fusion:schema:fusion.evidence/v1  22  (valid 3, invalid 19)
+  urn:fusion:schema:fusion.migration-plan/v1  48  (valid 11, invalid 37)
+  urn:fusion:schema:fusion.migration-proposal/v1  19  (valid 3, invalid 16)
+  urn:fusion:schema:fusion.migration-receipt/v1   9  (valid 1, invalid 8)
+  urn:fusion:schema:fusion.package/v1  58  (valid 15, invalid 43)
+  urn:fusion:schema:fusion.protocol/v1  93  (valid 31, invalid 62)
+  urn:fusion:schema:fusion.record/v1  67  (valid 19, invalid 48)
+  urn:fusion:schema:fusion.workbench/v1  19  (valid 4, invalid 15)
+  urn:fusion:schema:fusion.workbench/v2   1  (valid 0, invalid 1)
+  per outcome: valid 91, invalid 279
+
+ ✓ src/__tests__/fixtures.test.ts (373 tests) 300ms
+ ✓ src/__tests__/round-trip-cli.test.ts (18 tests) 3289ms
+   ✓ the wrapper's own two answers > without a workbench in the request or the environment, the walk-up from the working directory supplies it 637ms
+ ✓ src/__tests__/store.test.ts (106 tests) 15162ms
+   ✓ openWorkbench > the scratch workbench is under JSON control and carries the manifest id 477ms
+   ✓ the workbench write lock > FJ01's lock content with a dead PID and a fresh mtime (no host line: read as this host's) is replaced at once too 392ms
+   ✓ the workbench write lock > Prior's live-owner regression: an hour-old lock whose PID is alive is waited on and never replaced 376ms
+   ✓ the workbench write lock > a lock naming another host is never replaced, whatever its PID and age, and the timeout names the host 347ms
+   ✓ the workbench write lock > a lock recording no PID is waited on while young and replaced once older than 60 s 648ms
+   ✓ the workbench write lock > the takeover race (C10): two waiters judge one stale lock; exactly one holds, in either order, and a third that finds the name free never overlaps 1197ms
+   ✓ the workbench write lock > a takeover claim whose own holder is dead is taken over one level up 455ms
+   ✓ the workbench write lock > a leftover claim naming a replaced instance neither blocks nor is honoured, and the next holder removes it with old temp files 397ms
+   ✓ the self-ignore of .json-state/ (class L) > an empty or edited .gitignore is replaced with * 381ms
+   ✓ the self-ignore of .json-state/ (class L) > a correct .gitignore is left alone: nothing is written 302ms
+   ✓ the self-ignore of .json-state/ (class L) > a .json-state/ created without it (by the FJ01 bundle, by Prior's regression) gains it at the first lock 501ms
+   ✓ the self-ignore of .json-state/ (class L) > in a git repository whose root .gitignore re-includes everything, nothing under .json-state/ is listed or added after a write (C3) 1399ms
+stdout | src/__tests__/validate.test.ts > the default set over codec/schemas/ > loads whatever is present without throwing
+codec/schemas/: 10 schema(s) loaded: urn:fusion:schema:fusion.campaign/v1, urn:fusion:schema:fusion.common/v1, urn:fusion:schema:fusion.evidence/v1, urn:fusion:schema:fusion.migration-plan/v1, urn:fusion:schema:fusion.migration-proposal/v1, urn:fusion:schema:fusion.migration-receipt/v1, urn:fusion:schema:fusion.package/v1, urn:fusion:schema:fusion.protocol/v1, urn:fusion:schema:fusion.record/v1, urn:fusion:schema:fusion.workbench/v1
+
+ ✓ src/__tests__/validate.test.ts (9 tests) 559ms
+ ✓ src/__tests__/strict-json.test.ts (47 tests) 21ms
+ ✓ src/__tests__/prior-handback.test.ts (6 tests) 983ms
+ ✓ src/__tests__/journal.test.ts (20 tests) 5821ms
+   ✓ commitIntent and readIntents > an intent commits as one directory, journal/<id>/, holding intent.json and one staged file per distinct post-bytes, and reads back whole 496ms
+   ✓ commitIntent and readIntents > an intent staging a narrative of 1 MiB less a few bytes commits, reads back and recovers, and its answer stays under the cap (C12) 359ms
+   ✓ commitIntent and readIntents > a committed intent with a staged file missing, or one whose bytes do not match its name, or an unreadable intent.json, is conflict/journal-unreadable naming it 1529ms
+   ✓ commitIntent and readIntents > removeIntent takes the id out of journal/ and leaves nothing behind 339ms
+   ✓ recover > a one-write intent recovers from every prefix of landed writes (none, the one) 591ms
+   ✓ recover > a two-write intent recovers from every prefix of landed writes (none, first only, both), creating the parent directory 679ms
+ ✓ src/__tests__/round-trip-cli-archive.test.ts (107 tests) 22326ms
+ ✓ src/__tests__/round-trip-cli-takeover.test.ts (59 tests) 22646ms
+   ✓ the version boundary (Prior's answer to 62, part 7): the old qualified bundle refuses a transferred package and rewrites nothing; old records validate in the new bundle > over the workbench the session leaves: validate, release and transition of a transferred package are refused schema-invalid, a takeover request is refused by its protocol, show answers the bytes with the history whole, and not one byte of the tree moves 3438ms
+   ✓ the version boundary (Prior's answer to 62, part 7): the old qualified bundle refuses a transferred package and rewrites nothing; old records validate in the new bundle > every record the manifest at 031645d2 expects valid validates in the schema set the new bundle inlines 888ms
+ ✓ src/__tests__/committed-bundle.test.ts (4 tests) 15363ms
+   ✓ the gate can tell a changed source from an unchanged one > a line appended to the entry point changes the bundle's bytes (on a temp copy of the live tree) 1079ms
+ ✓ src/__tests__/kernel.test.ts (62 tests) 47664ms
+   ✓ a one-write transition cut at every point of CUTS > after-intent: show recovers the landed state; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id on the old revision is revision-mismatch 880ms
+   ✓ a one-write transition cut at every point of CUTS > after-write:0: show recovers the landed state; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id on the old revision is revision-mismatch 451ms
+   ✓ a one-write transition cut at every point of CUTS > after-answer: show recovers the landed state; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id on the old revision is revision-mismatch 642ms
+   ✓ a one-write transition cut at every point of CUTS > the lost answer (after-write:0): the record moved and no answer is stored; the identical retry is answered, not refused, and rewrites nothing 382ms
+   ✓ a one-write transition cut at every point of CUTS > a crash inside the intent's commit leaves a dot-temp directory in journal/; the next write sweeps it, and it is never journal-unreadable 452ms
+   ✓ a one-write transition cut at every point of CUTS > a crash inside the intent's removal leaves a dot-named directory; the next write sweeps it and lands, and the first operation still replays 548ms
+   ✓ a two-write create cut at every point of CUTS > after-intent: no half pair survives a recovery; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id is record-exists 741ms
+   ✓ a two-write create cut at every point of CUTS > after-write:0: no half pair survives a recovery; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id is record-exists 865ms
+   ✓ a two-write create cut at every point of CUTS > after-write:1: no half pair survives a recovery; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id is record-exists 1114ms
+   ✓ a two-write create cut at every point of CUTS > after-answer: no half pair survives a recovery; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id is record-exists 997ms
+   ✓ recovery through the committed bundle > a hand-written pending intent over two files, one landed and one not, is recovered by a spawned show 790ms
+   ✓ a file edited by hand under a pending intent > blocks: the record is untouched, show answers recovery-blocked, a mutation of it is refused, and one of another record lands 388ms
+   ✓ a file edited by hand under a pending intent > the second: the intent directory deleted by hand accepts what landed 311ms
+   ✓ a file edited by hand under a pending intent > with that intent blocked and write.lock held by a live process, reads answer without the lock while a write waits (C22) 761ms
+   ✓ the kernel's compare-and-swap (moved from store.test.ts) > writes the deterministic bytes, returns their revision, and the record reads back 516ms
+   ✓ the kernel's compare-and-swap (moved from store.test.ts) > write, read, write again: identical bytes and the same revision; the no-op write still lands its answer 539ms
+   ✓ the kernel's compare-and-swap (moved from store.test.ts) > a second writer with the revision the first one replaced is refused 459ms
+   ✓ the kernel's lock (moved from store.test.ts) > takes the lock under .json-state/, and releases it after the write 501ms
+   ✓ the kernel's lock (moved from store.test.ts) > waits on a live lock and proceeds once it is released 931ms
+   ✓ the kernel's lock (moved from store.test.ts) > replaces a lock older than 60 s that records no holder, and one whose holder is gone 883ms
+   ✓ the kernel's lock (moved from store.test.ts) > does not replace a lock that is old but whose holder is still running 321ms
+   ✓ processes > two bundle processes at once with the same expected_revision and different ids: exactly one lands, the other is revision-mismatch 944ms
+   ✓ processes > a holder killed by SIGKILL while it holds the lock is replaced at once: the next bundle's transition lands well inside 60 s (C9) 1119ms
+   ✓ processes > Prior's live-owner regression through the committed bundle: the codec waits, and the lock and the record are unchanged 544ms
+   ✓ the read protocol > a read that straddles a landed operation is retried and returns one consistent state 373ms
+   ✓ the read protocol > the interleaving of C17: the writer's answer and its intent's removal falling between the after-snapshot's two listings is retried, not accepted 329ms
+   ✓ a three-write replacement adopt-plan cut at every point of CUTS > after-intent: a read recovers to the three-file post state; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id on the old revision is revision-mismatch 2322ms
+   ✓ a three-write replacement adopt-plan cut at every point of CUTS > after-write:0: a read recovers to the three-file post state; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id on the old revision is revision-mismatch 2468ms
+   ✓ a three-write replacement adopt-plan cut at every point of CUTS > after-write:1: a read recovers to the three-file post state; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id on the old revision is revision-mismatch 1765ms
+   ✓ a three-write replacement adopt-plan cut at every point of CUTS > after-write:2: a read recovers to the three-file post state; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id on the old revision is revision-mismatch 2430ms
+   ✓ a three-write replacement adopt-plan cut at every point of CUTS > after-answer: a read recovers to the three-file post state; an identical retry returns the uncut answer; a divergent one is operation-id-reused; a fresh id on the old revision is revision-mismatch 2060ms
+   ✓ stored answers are never pruned: content revisions return > 01, 02 and 03 as recorded, on two copies: each package is back at the bytes and the revision 01 answered, which is the one 02 expects 3575ms
+   ✓ stored answers are never pruned: content revisions return > the answer retained: the replayed 02 answers the recorded bytes and lands nothing; the package stays open at 01's revision 2488ms
+   ✓ stored answers are never pruned: content revisions return > only 02's answer deleted: the replayed 02 passes the CAS and lands a second time; the package is claimed at 02's recorded revision 2210ms
+   ✓ stored answers are never pruned: content revisions return > the CAS is intact where the answers were kept: a release under a fresh operation id against 02's revision is conflict/revision-mismatch 2263ms
+   ✓ initialize through the kernel > two initializers in one process, the first paused holding the lock: exactly one lands, the manifest id is the winner's, the other is manifest-present 422ms
+   ✓ initialize through the kernel > two bundle processes at once over one empty directory: exactly one lands and the manifest id is the winner's 1593ms
+   ✓ initialize through the kernel > before the commit point: a stale lock of a dead PID and a dot-named half-built intent do not stop it 455ms
+   ✓ initialize through the kernel > after-intent: the identical request answers the uncut bytes and the manifest is written once; another id is then manifest-present 478ms
+   ✓ initialize through the kernel > after-write:0: the identical request answers the uncut bytes and the manifest is written once; another id is then manifest-present 453ms
+   ✓ initialize through the kernel > after-answer: the identical request answers the uncut bytes and the manifest is written once; another id is then manifest-present 487ms
+   ✓ a removal entry: after null, a migration rollback's only > cut at every point, the same request lands it: the file gone, the answer stored, recovery idempotent 769ms
+   ✓ a one-write claim with takeover cut at every point of CUTS > after-intent: a read recovers one claim replacement and one history entry, transferred_at the frozen request time; the identical retry answers the uncut bytes; a fresh id on the inspected revision is revision-mismatch 463ms
+   ✓ a one-write claim with takeover cut at every point of CUTS > after-write:0: a read recovers one claim replacement and one history entry, transferred_at the frozen request time; the identical retry answers the uncut bytes; a fresh id on the inspected revision is revision-mismatch 650ms
+   ✓ a one-write claim with takeover cut at every point of CUTS > after-answer: a read recovers one claim replacement and one history entry, transferred_at the frozen request time; the identical retry answers the uncut bytes; a fresh id on the inspected revision is revision-mismatch 604ms
+ ✓ src/__tests__/round-trip-cli-migration.test.ts (110 tests) 113367ms
+ ✓ src/__tests__/ops.test.ts (228 tests) 120744ms
+   ✓ the inlined schemas and tables > are the same set the directory loader reads 762ms
+   ✓ initialize > a manifest that is valid, unsupported, or a directory is manifest-present, before the lock and under it 418ms
+   ✓ initialize > the same request answers the stored bytes, after a later create too; a changed request under the id is operation-id-reused 818ms
+   ✓ initialize > the exemption: a .json-state/ with the self-ignore, an empty journal/ and ops/, and the sweep's dot entries lands 444ms
+   ✓ inspect.pending and list.state > another initialize over the pending window lands the committed intent first and is then manifest-present 338ms
+   ✓ inspect.pending and list.state > extra root content beside the committed intent: pending still names it, and the state stays legacy 470ms
+   ✓ inspect.pending and list.state > a divergent manifest and a non-file manifest: pending is named and blocked, and the state is the one the bytes give 643ms
+   ✓ inspect.pending and list.state > a blocked intent: every initialize is a typed refusal, and every file stays byte-identical 812ms
+   ✓ inspect.pending and list.state > journal data that does not read or contradicts itself is refused pending-initialize-unreadable, never pending: null 742ms
+   ✓ inspect.pending and list.state > a .json-state or a journal that is no directory: inspect is pending-initialize-unreadable naming the journal and its code, and the bundle answers with exit 0 1101ms
+   ✓ inspect.pending and list.state > a workbench.json link loop: inspect is unsupported with schema-invalid/manifest-unreadable, and the bundle answers with exit 0 502ms
+   ✓ inspect.pending and list.state > more than one committed initialize is refused pending-initialize-ambiguous, naming the intent directories 721ms
+   ✓ inspect.pending and list.state > reconstruction: the request built from the target and inspect.pending alone answers the committed result; over a copy it is operation-id-reused 969ms
+   ✓ inspect.pending and list.state > a successful replay is no proof of the manifest: after workbench.json is deleted the replay still succeeds, and inspect answers legacy 471ms
+   ✓ inspect.pending and list.state > precedence on initialize: replay before manifest-present, which a fresh initialize over any manifest entry answers 495ms
+   ✓ inspect.pending and list.state > list answers state: legacy with records [] on an empty and a v12 directory, json-control with records [] after initialize; unsupported stays refused 440ms
+   ✓ inspect.pending and list.state > a directory named workbench.json: inspect shows manifest-not-a-file, every other read refuses with it, and the bundle answers with exit 0 447ms
+   ✓ transition > open to claimed with a claim: the record is rewritten deterministically and the new revision is returned 303ms
+   ✓ transition > the same operation_id with the same request returns the stored answer and touches nothing 818ms
+   ✓ transition > the same operation_id with a different request is conflict/operation-id-reused 324ms
+   ✓ transition > claimed to open drops the claim; claimed to done keeps the historical claim and needs an outcome 744ms
+   ✓ transition > issue: open to closed with a fixed disposition lands; closing without one is refused and the record untouched 718ms
+   ✓ transition > decision: open to answered by a citation string (carried unresolved), then to implemented by a reference that resolves 579ms
+   ✓ transition > decision: implementation_ref as a git commit, and an artefact reference checked against the bytes on disk 343ms
+   ✓ transition > per kind, a field foreign to the kind is schema-invalid/payload-field-not-admitted, a present null too: the record's bytes unchanged, no intent, no stored answer; the move with its own fields then lands 1618ms
+   ✓ transition > every admitted field lands on its own kind 1815ms
+   ✓ claim, release and set-mode over the shared kernel > the shared-enforcement proof: claim and transition to claimed write byte-identical records and answer alike 537ms
+   ✓ claim, release and set-mode over the shared kernel > the shared-enforcement proof: a stale revision, a claimed package, a malformed claim and claimed_at null are refused in one class on both routes 1224ms
+   ✓ claim, release and set-mode over the shared kernel > claim over every package status with and without a standing claim: the class the table gives, and transition's for the same input 3526ms
+   ✓ claim, release and set-mode over the shared kernel > release over every package status with and without a standing claim: the class the table gives, and transition's for the same input 3004ms
+   ✓ claim, release and set-mode over the shared kernel > claim and release answer transition's response shape, replay by operation_id, and refuse a divergent reuse 482ms
+   ✓ claim, release and set-mode over the shared kernel > set-mode autonomous with a user-word artefact that resolves lands, validates, and replays; ordinary then writes source null 378ms
+   ✓ claim, release and set-mode over the shared kernel > set-mode autonomous with a user-word record reference, or a bare record reference, that resolves lands 313ms
+   ✓ claim, release and set-mode over the shared kernel > set-mode refuses a dangling, foreign or changed source, a null source, a legacy source and a source on ordinary, and writes nothing 436ms
+   ✓ claim, release and set-mode over the shared kernel > the scratch open package never becomes autonomous by any route but set-mode with provenance 559ms
+   ✓ claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals > lands: the claim replaced, status kept, one entry appended with every member, transferred_at the request's claimed_at, nothing else moved, one file written 367ms
+   ✓ claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals > an imported previous claim with a null claimed_at and person is named as stored and lands; the entry keeps the nulls 347ms
+   ✓ claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals > case 1, evidence validation (no authority is decided here): a source naming an unknown record, another workbench, a changed or missing artefact is refused, and the record is unchanged 1086ms
+   ✓ claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals > case 3, stale revision: a revision that never was, and one taken before an intervening write, are conflict/revision-mismatch, and nothing is written 367ms
+   ✓ claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals > check order: the revision before the holder, the state before the holder, the holder before the checkout, the checkout before the time, the time before the source 302ms
+   ✓ claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals > case 5, replay: an identical replay answers the stored bytes and appends no second entry, even after the package moved on; a divergent one is operation-id-reused; the same takeover under a fresh id is revision-mismatch, and re-read it is takeover-holder-mismatch 404ms
+   ✓ claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals > case 6, release after transfer: the new holder's release lands, status open and claim null, the history byte-unchanged 336ms
+   ✓ claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals > case 7, A to B to C: two entries in the order they landed, the second's previous_claim the standing claim B; the original provenance survives 382ms
+   ✓ claim with takeover (request 62, Prior's answer to 62): Prior's eight cases and the four further refusals > case 7, A to B, release, an ordinary claim by C, C to D: two entries, the second starting at C and not at B; no chain rule refuses the history 625ms
+   ✓ create > package, with content: one operation writes both halves; the record is the kernel's, deterministic and valid 315ms
+   ✓ create > package, without content: the narrative already there is left as it is, and the control file is the one write 356ms
+   ✓ create > issue, with content: one operation writes both halves; the record is the kernel's, deterministic and valid 683ms
+   ✓ create > issue, without content: the narrative already there is left as it is, and the control file is the one write 406ms
+   ✓ create > plan, with content: one operation writes both halves; the record is the kernel's, deterministic and valid 606ms
+   ✓ create > discussion, with content: one operation writes both halves; the record is the kernel's, deterministic and valid 620ms
+   ✓ create > discussion, without content: the narrative already there is left as it is, and the control file is the one write 399ms
+   ✓ create > decision, with content: one operation writes both halves; the record is the kernel's, deterministic and valid 491ms
+   ✓ create > decision, without content: the narrative already there is left as it is, and the control file is the one write 305ms
+   ✓ create > a create into a container that exists but lacks the store directory creates it 928ms
+   ✓ create > a package payload's references are carried; its domain is required and never null 425ms
+   ✓ create > an identical retry returns the stored answer and touches nothing; a divergent one is operation-id-reused; a fresh id is record-exists 436ms
+   ✓ create > a request within 16 bytes of the 1 MiB request cap lands through the bundle; its stored answer reads back; identical and divergent retries (C12) 1420ms
+   ✓ create > the same near-cap create cut after its intent: the intent and its staged narrative read back, and recovery lands the pair 331ms
+   ✓ create > an agent filing under a package origin that resolves lands with mode ordinary whatever the payload attempts, and filed_by as sent 582ms
+   ✓ create > an origin that does not resolve to a package of this workbench is refused and nothing is written 577ms
+   ✓ create > a record payload is its control in the kind's initial state; anything else is refused and nothing is written 492ms
+   ✓ create > the valid fixtures create.json and create-with-content.json land on the scratch workbench 571ms
+   ✓ legacy-unknown in every actor position: refused in a request, read on an import (decision 261003-1746) > create: a discussion naming legacy-unknown among its participants is refused, wherever it stands in the list 884ms
+   ✓ legacy-unknown in every actor position: refused in a request, read on an import (decision 261003-1746) > create: a decision whose payload carries a deferral ruled by legacy-unknown is refused as a request, before the initial-state check 361ms
+   ✓ legacy-unknown in every actor position: refused in a request, read on an import (decision 261003-1746) > transition: a decision deferred with legacy-unknown as who ruled is refused and the record stays open 570ms
+   ✓ legacy-unknown in every actor position: refused in a request, read on an import (decision 261003-1746) > claim and release: legacy-unknown as the actor is refused 877ms
+   ✓ legacy-unknown in every actor position: refused in a request, read on an import (decision 261003-1746) > an imported record with a legacy-unknown participant and a legacy-terminal one with a legacy-unknown ruler read, validate, and the discussion still moves 1771ms
+   ✓ main.ts on dist/fusion-record.js > show on stdin: one response line on stdout, nothing on stderr, exit 0 356ms
+   ✓ main.ts on dist/fusion-record.js > --file reads the request from a file; FUSION_WORKBENCH is the default workbench 635ms
+   ✓ main.ts on dist/fusion-record.js > a transition through the bundle lands and replays 1133ms
+   ✓ main.ts on dist/fusion-record.js > claim and release through the bundle land; a claim with claimed_at null is refused there too 1227ms
+   ✓ main.ts on dist/fusion-record.js > a request that is not strict JSON is answered schema-invalid on stdout, exit 0 649ms
+   ✓ main.ts on dist/fusion-record.js > usage errors exit 2 with the reason on stderr and nothing on stdout 502ms
+   ✓ main.ts on dist/fusion-record.js > without a workbench anywhere the answer is unknown-scope, exit 0 425ms
+   ✓ set-dependencies and adopt-plan > targets that resolve to packages land whatever their state and condition: the conditions are not evaluated; the list replaces the stored one; replays 856ms
+   ✓ set-dependencies and adopt-plan > targets that do not resolve, that are records, that are evidence records, that are foreign: refused, nothing written 639ms
+   ✓ set-dependencies and adopt-plan > a two-node cycle is conflict/cycle naming both ids, and nothing is written 591ms
+   ✓ set-dependencies and adopt-plan > a three-node cycle is conflict/cycle naming the three ids in edge order, and nothing is written 1002ms
+   ✓ set-dependencies and adopt-plan > a cycle the request neither makes nor can break (not through this package) does not refuse it; a cycle through it does 775ms
+   ✓ set-dependencies and adopt-plan > a plan adopted by a package without one: the entry and the record's acceptance, two writes in one intent; replays 429ms
+   ✓ set-dependencies and adopt-plan > a replacement adopt-plan lands all three files: one plan entry, the replaced ref in references, the replaced record's acceptance cleared; maxContains is never reached 1506ms
+   ✓ set-dependencies and adopt-plan > the revision check: a narrative edited after show is conflict/plan-revision-mismatch naming both hashes, nothing written; the new hash lands 489ms
+   ✓ set-dependencies and adopt-plan > a plan record in the terminal state closed is conflict/plan-terminal, nothing written 466ms
+   ✓ set-dependencies and adopt-plan > a plan record in the terminal state deferred is conflict/plan-terminal, nothing written 400ms
+   ✓ set-dependencies and adopt-plan > a replaced plan record already closed is history and not written: two writes, its ref still moved, the new plan adopted 799ms
+   ✓ set-dependencies and adopt-plan > a replaced plan record already deferred is history and not written: two writes, its ref still moved, the new plan adopted 633ms
+   ✓ set-dependencies and adopt-plan > a plan adopted by another package is conflict/plan-adopted-elsewhere naming the holder 695ms
+   ✓ set-dependencies and adopt-plan > specs are adopted alongside the plan, any number, distinct by record_id: two writes each; a record is adopted in one role 1643ms
+   ✓ set-dependencies and adopt-plan > re-adopting the plan in force at a new revision rewrites its entry and moves nothing: two writes 966ms
+   ✓ set-dependencies and adopt-plan > a replaced plan whose record is gone is still moved into references; there is no acceptance to clear, so two writes 1668ms
+   ✓ set-dependencies and adopt-plan > a terminal package, a record and a stale revision are refused 489ms
+   ✓ attach-evidence, evidence records in the walk, and evidence checked on done > attach lands: the binding appended, deterministic bytes, the evidence file validated with the rest; replays; a divergent replay is operation-id-reused 576ms
+   ✓ attach-evidence, evidence records in the walk, and evidence checked on done > each refusal of bindEvidence with the one field changed: nothing written 1371ms
+   ✓ attach-evidence, evidence records in the walk, and evidence checked on done > plan_revision: bound against the plan in force; a plan at another revision is missing-evidence/plan-changed 1072ms
+   ✓ attach-evidence, evidence records in the walk, and evidence checked on done > a terminal package, a record and a stale revision are refused before the evidence is read 425ms
+   ✓ attach-evidence, evidence records in the walk, and evidence checked on done > a correction <basename>.2.evidence.json over the unchanged report binds beside the first; one without a predecessor meets the first record's name and is conflict/record-exists 773ms
+   ✓ attach-evidence, evidence records in the walk, and evidence checked on done > validate on an evidence file: valid beside its report; report-changed, report-missing and report-not-neighbour are findings (C2) 384ms
+   ✓ attach-evidence, evidence records in the walk, and evidence checked on done > a brief change makes bound evidence stale while a status change alone does not (spec section 9) 1526ms
+   ✓ attach-evidence, evidence records in the walk, and evidence checked on done > done: an outcome binding fresh evidence lands; one binding it at the wrong revision is refused and the record untouched 577ms
+   ✓ reconcile > the bundle answers reconcile as dispatch does 394ms
+   ✓ reconcile > intents: a blocked intent with every file state (post, pre, diverged) and its operation; nothing repaired; a recoverable one is recovered by the read and not reported 964ms
+   ✓ reconcile > records: every validate finding, and an evidence file outside a reviews/ store, which validate does not report 345ms
+   ✓ reconcile > references: resolved, unresolved, ambiguous, foreign and unchecked, over every field that carries one 540ms
+   ✓ reconcile > the role: every active-document binding carries its stored role after at, resolved, unresolved and ambiguous alike, and no target it did not resolve to; no other entry carries one 1027ms
+   ✓ reconcile > evidence: fresh after attach and after status changes alone, stale once the brief changes, and a binding naming no record 762ms
+   ✓ reconcile > dependencies: every edge through dependencySatisfied against the target's live JSON, satisfied or unmet with the reason 1175ms
+   ✓ reconcile > dependencies: a cycle no set-dependencies closed (a merge or a hand edit) is reported with its ids; it blocks no other set-dependencies; scope reports it only when a package of the scope is on it 1041ms
+   ✓ reconcile > local locks are not cross-checkout protection: a lock held in one copy stops nothing in another, and reconcile in the first reports nothing about it 753ms
+   ✓ transition: plan progress > a state change carrying steps and criteria lands both; the rest of the record is untouched 1404ms
+   ✓ transition: plan progress > a progress-only update lands with to equal to open and with to equal to in_progress 1019ms
+   ✓ transition: plan progress > omitted entries keep their value and their position, compared field by field with the stored record 821ms
+   ✓ transition: plan progress > an included entry equal to the stored one is admitted, beside one that changes, and changes nothing itself 560ms
+   ✓ transition: plan progress > a criterion moves null -> true -> false -> null: re-evaluation has no direction 839ms
+   ✓ transition: plan progress > an identical replay returns the stored answer, also after the plan moved on; a divergent one is operation-id-reused 719ms
+   ✓ transition: plan progress > a stale expected_revision is conflict/revision-mismatch, nothing written 466ms
+   ✓ transition: plan progress > done -> open and in_progress -> open are conflict/transition-refused naming the step, nothing written 471ms
+   ✓ transition: plan progress > a payload naming an id twice is duplicate-step-id or duplicate-criterion-id; an id the plan lacks is unknown-step-id or unknown-criterion-id; nothing written 668ms
+   ✓ transition: plan progress > a stored plan whose steps or criteria repeat an id (written by hand) refuses progress on that array; a move without progress lands as before 568ms
+   ✓ transition: plan progress > a closed and a deferred plan refuse a progress-only update and a state change carrying progress; nothing written 1146ms
+   ✓ transition: plan progress > a progress-only update that changes nothing is refused: the exception is for progress, never a general self-transition 447ms
+   ✓ transition: plan progress > steps or criteria on an issue, a decision or a package are schema-invalid/payload-field-not-admitted, nothing written; the same move without them lands 925ms
+   ✓ transition: plan progress > the progress-only and the state-changing route refuse a stale revision and a terminal record in the same class 808ms
+   ✓ transition: plan progress > an adopted plan keeps its acceptance, the package's entry and its revision binding; reconcile reports an evidence binding against that plan fresh after progress 1099ms
+   ✓ create: evidence > an identical replay returns the same answer; a divergent one is operation-id-reused; a fresh operation id with the same evidence id is id-in-use; nothing written by any 568ms
+   ✓ create: evidence > corrections over the unchanged report take .2, then .3, then one above the highest; an identical replay of the first correction after later ones still answers .2 1092ms
+   ✓ create: evidence > the narrowed guarantee: with the highest correction deleted by hand the next takes its suffix again; a gap below the highest is not refilled; no chosen path collides with a file that stands 1064ms
+   ✓ create: evidence > a correction under the same basename over a changed report is refused, nothing written: naming the new hash is predecessor-report-changed, naming the old one report-changed 346ms
+   ✓ create: evidence > a correction whose predecessor names another report takes that report's first-record name 1242ms
+   ✓ create: evidence > predecessor null at a taken name is conflict/record-exists, never read as a correction 336ms
+   ✓ create: evidence > each refusal of the check list with the one field changed, nothing written; the unchanged request then lands 1119ms
+   ✓ create: evidence > a record into shared/reviews/ lands under the shared scope 329ms
+   ✓ create: evidence > host prior, prior-enforced and accept land as sent and confer nothing: attach checks policy and freshness on its own; a claude-guided record stays claude-guided 707ms
+   ✓ archive/: outside the current record store > a replay of a create completed before its pair was archived answers its stored bytes and recreates nothing 510ms
+   ✓ maintenance: the fence (request 39) > while the fence stands every mutation kind is refused maintenance-active before its intent, nothing written or stored; reads answer 582ms
+   ✓ maintenance: the fence (request 39) > initialize never meets the fence: a fenced store has a manifest, and the answer is manifest-present 342ms
+   ✓ maintenance: the fence (request 39) > the replay lookup comes first: an operation completed before the fence, and the begin itself, answer their stored bytes under it 374ms
+   ✓ maintenance: the fence (request 39) > end: under the begin's own id operation-id-reused, naming another fence maintenance-active, with no fence maintenance-not-active; the matching end removes it and mutations land 635ms
+   ✓ maintenance: the fence (request 39) > begin over a pending intent recovery cannot land is refused recovery-blocked and sets no fence; settled by hand, it lands after the roll-forward 311ms
+   ✓ maintenance: the fence (request 39) > a fence outlives the process that set it: begun through the bundle, its lock left by a dead holder, the next writer is still refused 1127ms
+   ✓ maintenance: the fence (request 39) > a fence file that does not read still fences, the end included, and inspect refuses it typed, never answering null 511ms
+   ✓ maintenance: the fence (request 39) > an entry that stands and is no regular file fences, through dispatch and the bundle, and stays as it was: dangling-symlink 1308ms
+   ✓ maintenance: the fence (request 39) > an entry that stands and is no regular file fences, through dispatch and the bundle, and stays as it was: symlink-to-directory 1337ms
+   ✓ maintenance: the fence (request 39) > an entry that stands and is no regular file fences, through dispatch and the bundle, and stays as it was: directory 1393ms
+   ✓ maintenance: the fence (request 39) > the bundle answers maintenance and the fenced inspect as dispatch does 1243ms
+ ✓ src/__tests__/install.test.ts (20 tests) 240410ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the installed bin/fusion-record answers show on a scratch workbench beside it, with node the only runtime 651ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the installed bin/fusion-claimed-package names the package this checkout claimed, from JSON, and refuses a legacy workbench by name 5966ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the installed bin/fusion-work-order prints the order over the codec's edges, with node the only runtime, and refuses a legacy workbench by name 3580ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the installed citation check, plan-size check, sweep and staging drift answer from JSON, with node the only runtime beside what bin/fusion-identity needs 7599ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the installed bin/fusion-record initialises an empty workbench the two FJ03a helpers read, and refuses a v12 directory leaving it byte-identical 3701ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the shipped Setup, wp and discuss blocks run verbatim on the installed copy, and bin/fusion-write logs one record_change row per landed revision 44586ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the shipped wp, discuss and archive gates read a legacy workbench as legacy, write nothing, and their prose stops there by name, pointing at /fusion:migrate 2800ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the installed bin/fusion-archive holds a referenced issue and archives a terminal package, after which the store reads clean and the helpers name nothing archived 17695ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the installed bin/fusion-write takes a claim over from an absent checkout, twice in a row and around a release and an ordinary claim, with no Prior present 19435ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the installed copy renames a v11-named workbench with the shipped block, migrates it without a repair in three chunks, reads it back, claims, resumes a kill after chunk 2, rolls back and restores the backup, with no Prior present 29298ms
+   ✓ install.sh from a tarball-shaped copy of the tree > the installer warns, in the guard.js words, when the source carries no codec bundle 22597ms
+   ✓ the shipped reconcile, cadence, check gitignore, migrate Step 7 and help blocks, verbatim on a JSON workbench > /fusion:reconcile: Step 1 finds the root from below and halts without one, Step 2 reads the domain and the mark, Step 3 sees a transition, Step 4 sets HEAD 3193ms
+   ✓ the shipped reconcile, cadence, check gitignore, migrate Step 7 and help blocks, verbatim on a JSON workbench > /fusion:cadence ## Process: the resolver, identity, window, scan, week-check and digest-directory blocks 4184ms
+   ✓ the shipped reconcile, cadence, check gitignore, migrate Step 7 and help blocks, verbatim on a JSON workbench > /fusion:check ## gitignore: appends the negation an excluded workbench.json needs, reports an unignored .json-state/ as class L, and prints nothing on a clean project 1468ms
+   ✓ the shipped reconcile, cadence, check gitignore, migrate Step 7 and help blocks, verbatim on a JSON workbench > /fusion:help: the FUSION_SRC block prints the install home with FUSION_PLUGIN_ROOT set, and UNRESOLVED without it 1262ms
+stdout | src/__tests__/migration.test.ts > a generated store of the largest measured copy's size > freezes in one intent within its bound, every plan file under 1 MiB
+[migration] largest-size freeze: 42 files, 3411518 bytes, largest 983029, 35 chunks, 1352 ms in process
+
+stdout | src/__tests__/migration.test.ts > a generated store of the largest measured copy's size > applies every chunk, then verifies, each request within the 5 s allowance in process
+[migration] largest-size apply: 35 chunks, median 1349 ms, max 1972 ms; verify 1455 ms, in process
+
+ ✓ src/__tests__/migration.test.ts (96 tests) 292191ms
+   ✓ migration survey > lists every entry in the four forms, bytewise by path, and leaves the store byte-identical with no .json-state/ 468ms
+   ✓ migration plan: the frozen plan > freezes chunk files, parts and the index in one intent, the index last, each file valid and bound by the index 448ms
+   ✓ migration plan: the frozen plan > replays its stored answer; the same id with another proposal is operation-id-reused; a changed proposal under its old hash is source-changed 528ms
+   ✓ migration plan: the frozen plan > a workbench just over one chunk: a pair is never split, the next chunk takes it whole 644ms
+   ✓ migration plan: the frozen plan > a freeze cut after its commit point is held for its own request: reads and other requests leave it, the same request lands it 796ms
+   ✓ migration plan: each refusal writes nothing outside .json-state/ > a proposal whose bytes are not the request's: source-changed 311ms
+   ✓ migration plan: each refusal writes nothing outside .json-state/ > a control carrying another id than its key: duplicate-id 331ms
+   ✓ migration plan: each refusal writes nothing outside .json-state/ > a second run over a verified receipt is a no-op naming it; a receipt whose manifest revision differs is receipt-unverified 486ms
+   ✓ migration apply > lands three chunks in order, chunk 1 setting the fence under its own id; each answer names its writes, the fence and the control revisions 7761ms
+   ✓ migration apply > every request replays its stored answer, before and after activation, and a replay writes nothing 7777ms
+   ✓ migration apply > a chunk sent before its predecessor is chunk-out-of-order; one beyond the last too; an unscheduled or unassigned id is operation-id-unscheduled; each writes nothing 3822ms
+   ✓ migration apply > before chunk 1 the whole eligible inventory is rechecked: an added file refuses, an excluded root entry and .json-state/ do not 3337ms
+   ✓ migration apply > a source edited after plan is refused at the next chunk, naming it, whichever chunk converts it; the chunks before stand 2342ms
+   ✓ migration apply > a fence that is not chunk 1's refuses: maintenance-active 3434ms
+   ✓ migration apply > a crash between the fence and chunk 1's intent: the fence stands named by chunk 1, and the same request lands 2528ms
+   ✓ migration apply > a cut inside a chunk is held from reads and other requests and finished by the same request; a cut between chunks goes on with the next 6729ms
+   ✓ migration apply > a file edited after a chunk's commit point blocks its recovery and stays as edited; restored, the same request lands 2647ms
+   ✓ migration verify > writes the receipt binding every part by hash and then the manifest, last; the answer names both 4895ms
+   ✓ migration verify > a failed check writes no receipt and no manifest: a dependency cycle is check-failed naming the graph 4370ms
+   ✓ migration verify > a store differing from the expected final state is source-changed; the wrong id is operation-id-unscheduled 5000ms
+   ✓ migration verify > a changed plan part is plan-file-changed, and so is a part the index does not name 5501ms
+   ✓ migration verify > every cut of verify is named by inspect.pending's verify variant, reconstructible; reads and other requests leave it; only its own request finishes it 19379ms
+   ✓ migration verify > a verify intent that disagrees with itself is pending-migration-unreadable; two verifies, or one beside an initialize, are pending-migration-ambiguous 7313ms
+   ✓ migration verify > a second plan after activation is a no-op naming the receipt and changing nothing 7191ms
+   ✓ migration rollback > before activation: chunks backwards, chunk 0 removes the plan files, maintenance end on legacy closes the fence; the store is the survey before plan, plus named empty directories 9008ms
+   ✓ migration rollback > a full abort before chunk 1 needs no fence: chunk 0 alone, its evidence naming none 1149ms
+   ✓ migration rollback > a rollback cut inside its intent has restored the narratives before it removes an original; its own request finishes it 2905ms
+   ✓ migration rollback > a removal entry meeting a dangling link where its file stood is diverged: recovery is blocked and the link stays 2481ms
+   ✓ migration rollback > a file chunk k wrote and changed since is after-state-changed 2533ms
+   ✓ migration rollback > after activation: under a maintenance begin, against the receipt's baseline, exempting exactly verify, the end of chunk 1's fence and that begin, bound in rollback.json; then back to legacy, and the begin's end on legacy 7572ms
+   ✓ migration rollback > after activation, ordinary work refuses the rollback even when it was undone; so does an edited narrative the plan left unconverted 3346ms
+   ✓ migration rollback > after activation, an edited file refuses the rollback against the receipt's baseline, naming it 5527ms
+   ✓ the exclusion allowlist (R1) > an operational log appended during the run, and a guard directory that comes and goes, are tolerated and left in place 5345ms
+   ✓ the exclusion allowlist (R1) > a link in place of orchestrator-events.jsonl and a directory in place of .fusion-setup are differences, never skipped 5249ms
+   ✓ the operation baseline (R3), the activated tree (C11) and rollback.json (52) > pre-existing answers are told apart from later ones by the baseline, whatever their mtimes say 3456ms
+   ✓ the operation baseline (R3), the activated tree (C11) and rollback.json (52) > the answers parts are the codec's to order: a whole entry repeated, an id repeated with other fields, or entries out of bytewise order are plan-file-changed 2287ms
+   ✓ the operation baseline (R3), the activated tree (C11) and rollback.json (52) > a missing baseline answer refuses the first rollback after activation 2928ms
+   ✓ the operation baseline (R3), the activated tree (C11) and rollback.json (52) > a changed baseline answer refuses the first rollback after activation 2841ms
+   ✓ the operation baseline (R3), the activated tree (C11) and rollback.json (52) > an unrelated maintenance begin and end between activation and the rollback's begin refuse it 2521ms
+   ✓ the operation baseline (R3), the activated tree (C11) and rollback.json (52) > the untouched store's first rollback after activation compares the activated tree, the manifest included 3360ms
+   ✓ the operation baseline (R3), the activated tree (C11) and rollback.json (52) > an altered rollback.json is refused at a later chunk before it is trusted; replays never read it, after chunk 0 removed it too 3662ms
+   ✓ the operation baseline (R3), the activated tree (C11) and rollback.json (52) > completed cleanup admits the matching legacy end and its replay, and old apply, verify and rollback replays answer without plan files 3839ms
+   ✓ chunk 0's evidence and legacy end (51) > a cleanup cut before its stored answer cannot authorise end; one cut after its answer is pending and refuses it; its own request lands it 3189ms
+   ✓ chunk 0's evidence and legacy end (51) > legacy end refuses a progress list that does not hold: a listed answer changed, or progress_sha256 not its list's 3531ms
+   ✓ chunk 0's evidence and legacy end (51) > a crash after chunk 1's fence and before its intent, then a full abort: chunk 0 names the fence, lists itself alone, and the matching end closes it 423ms
+   ✓ recovery is the same request's alone (R4, C14), and reconstruction in two forms (departure 5) > the same id with a changed digest never recovers its migration intent: operation-id-reused, nothing landed 2387ms
+   ✓ recovery is the same request's alone (R4, C14), and reconstruction in two forms (departure 5) > requests sent without workbench are reconstructed bare: the no-op lists only the end, and the rollback exempts its end and begin and proves the no-op 3458ms
+   ✓ recovery is the same request's alone (R4, C14), and reconstruction in two forms (departure 5) > the limit: an end that spelled its workbench otherwise than the resolved root reconstructs in neither form, and the rollback refuses 2209ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > one verified no-op, then a complete rollback and the legacy end; three no-ops, all three bound bytewise 7139ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > a no-op replay creates no new exception: the binding lists the no-op once 4508ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > a no-op answer whose request digest does not reconstruct stays a later operation and refuses, beside a proven one 3316ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > a no-op through a different proposal that names the same migration refuses 2797ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > a no-op-shaped answer naming another receipt, manifest revision or migration refuses; the same answer unaltered is proven 3071ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > after the first reverse chunk, a bound no-op answer removed, or changed by one byte, refuses the next chunk 3706ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > a no-op-shaped answer stored after the binding refuses the next chunk: no exception is added once the binding is frozen 3921ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > ordinary work, then a no-op, refuses naming the work and not the no-op; with the work's bytes restored, the audit refuses and not the tree 3506ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > request bindings: a no-op sent without workbench and one naming the resolved root are both proven; one spelling it otherwise is not 6985ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > a no-op replay after the cleanup and the legacy end answers from its stored answer and writes nothing 3447ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > a fresh no-op under the standing rollback fence, once the binding is frozen, is maintenance-active and stores nothing 3397ms
+   ✓ the verified second-run no-op does not by itself block rollback (Prior d0fce6c) > a binding over the strict reader's 1 MiB is refused before any write, naming the no-op count; the tree stays byte-identical 4140ms
+   ✓ the reserved actor legacy-unknown on an imported record (decision 261003-1746) > plan freezes an imported control carrying it with its derived entries, and show reads it back byte for byte 2784ms
+   ✓ a generated store of the largest measured copy's size > applies every chunk, then verifies, each request within the 5 s allowance in process 49236ms
+
+ Test Files  22 passed (22)
+      Tests  1810 passed (1810)
+   Start at  20:23:44
+   Duration  293.14s (transform 1.81s, setup 0ms, collect 6.80s, tests 933.93s, environment 2ms, prepare 1.54s)
+
+EXIT=0
