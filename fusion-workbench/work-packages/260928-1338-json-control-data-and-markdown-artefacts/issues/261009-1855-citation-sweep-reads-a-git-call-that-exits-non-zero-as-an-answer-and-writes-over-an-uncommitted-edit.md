@@ -1,0 +1,14 @@
+The citation sweep reads a git call that exits non-zero as an answer, and writes over an uncommitted edit
+---
+`78680a11` refuses a git call that never completed (`failed` set) as `git-failed`, but a call that completes with git's fatal exit 128 is still read as an answer. `isTracked` reads 128 as "untracked", and `porcelainPaths` reads a failed `git status` as a clean tree, so guard (a)'s dirty-tree check passes and `--write --yes` overwrites an uncommitted edit.
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+
+**Evidence.** `hooks/citation-sweep.ts:553` returns `r.status === 0`: every status other than 0 is read as untracked, though `git ls-files --error-unmatch` exits 1 for an unmatched path and 128 for a fatal error. `hooks/citation-sweep.ts:573-575` checks only `r.failed` and then splits `r.stdout`; a status of 128 with empty stdout gives `[]`, which is read as no dirty file. Reproduced on the `78680a11` build, `hooks/dist/citation-sweep.js`, in two scratch repos:
+
+- `.git/index` overwritten with garbage: `git ls-files` exits 128 (`index file smaller than expected`), and the sweep says `refused (workbench-untracked)`. That is the wrong reason. It is the same misreading class issue `261009-1735-citation-sweep-reads-a-git-output-over-1-mb-as-an-untracked-workbench-and-refuses-to-write.md` closed for ENOBUFS.
+- HEAD's tree object deleted, and one corpus file with an uncommitted edit: `git status` exits 128 (`bad tree object HEAD`), `git ls-files` exits 0, and the sweep exits 0 with `files=1 rewrites=1 … mode=write`. The edited file was rewritten in place, and its uncommitted text now sits under a rewrite that no revert separates from it.
+
+Both cases need a damaged repository, which is why this is Medium and not High. The guard exists for the case where a rewrite has no way back, though, and here it answers "clean" without checking. The `git-failed` branch itself has no test (`grep git-failed hooks/lib/__tests__` finds nothing): the new case pins the success path only.
+
+**Acceptance.** `isTracked` reads 0 as tracked, 1 as untracked, and any other status as `git-failed`, naming the first stderr line. `porcelainPaths` refuses as `git-failed` on any non-zero status. Two cases in `hooks/lib/__tests__/citation-sweep.test.ts` cover this. (1) A corrupt index gives exit 4 `git-failed`, not `workbench-untracked`. (2) A missing HEAD tree object with a dirty corpus file gives exit 4 `git-failed`, and the file is byte-identical afterwards. The header's exit-4 paragraph (`hooks/citation-sweep.ts:426-429`) names a non-zero git exit beside a call that did not complete.

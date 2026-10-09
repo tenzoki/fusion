@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "0cece620-6912-4a98-bea0-a65f7ea5fb90",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261009-1855-migrate-gitlists-has-no-maxbuffer-so-a-listing-over-1-mb-reads-as-not-a-repository.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

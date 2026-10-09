@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "af45473b-6e60-4eb7-b880-b4192743b343",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "453610b589dd40db3375e76cdd88d85bc7ef7ef2",
+    "git_range": null
+  },
+  "brief_revision": "sha256:d88269aa28a528919b7e3abdbb6f59909005d19fda715812ec1fa8b190d713b4",
+  "plan_revision": "sha256:02ec99b61fd5745217c093cf822bf01e4d3525441bd8560f0d9a378f84d87d3f",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/reviews/261009-1855-reviewer-citation-sweep-buffer-fix-78680a11.md",
+    "sha256": "sha256:6256cef14d94dffade8c47a13849e40b5a22aff37e37c09d4dd39f1f3ec6e429",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-09T16:58:06Z",
+  "extensions": {}
+}
