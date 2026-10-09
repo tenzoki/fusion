@@ -32,10 +32,14 @@
  * (missing git, a refused repository such as dubious ownership, a signal, a
  * timeout, a full buffer, a fatal status) stops the run as a fault naming the
  * call, never as an empty answer or as "no repository". Where git would
- * answer otherwise, the setup is not supported: an empty or non-git `.git`
- * entry and a `.git` hidden by `GIT_CEILING_DIRECTORIES` stop the run with
- * exit 3, and a repository named by `GIT_DIR` and `GIT_WORK_TREE` with no
+ * answer otherwise, the setup is not supported: a `.git` file that is not a
+ * gitfile, a `.git` directory that is not a repository when no repository
+ * encloses it, and a `.git` hidden by `GIT_CEILING_DIRECTORIES` stop the run
+ * with exit 3, and a repository named by `GIT_DIR` and `GIT_WORK_TREE` with no
  * `.git` above the workbench is migrated as if there were no repository.
+ * Inside an enclosing repository, a `.git` directory that is not a repository
+ * is passed over as git passes it, and the run proceeds over the enclosing
+ * repository.
  *
  * ## The session
  *

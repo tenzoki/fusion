@@ -16,3 +16,6 @@ README-hooks.md and the v13 upgrade guide still name Node as fusion-migrate's on
 The resolved issue's acceptance named only the two headers and the exit-3 row, so the README row and the guide were outside it. The skill's copy of the same omission is the cross-referenced skill issue's and is not repeated here.
 
 **Acceptance.** The roster row and the guide's requirements line name git as needed when the workbench lies inside a git repository, and the roster's exit-3 gloss covers a missing or refusing git. `npm test` in `hooks/` exit 0 (growth bounds).
+
+---
+Resolved: `README-hooks.md` `### The bin/ helper roster`, the `bin/fusion-migrate` row, now reads "Plugin and Node only outside a git repository; inside one git is required too." and its exit table glosses 3 as "install incomplete or a missing or refusing git". `docs/upgrading-to-v13.md`, the machine-requirements paragraph, adds that outside a git repository the plugin and Node suffice, that inside one git is required too, and that a missing or refusing git stops the migration with exit 3 naming the call and the reason, as `bin/fusion-migrate`'s header says. `npm test` in `hooks/` exit 0.

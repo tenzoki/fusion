@@ -12,7 +12,9 @@ workbench made by `/fusion:setup` under v13 is JSON from the start and needs no 
 
 **What v13 needs on the machine:** Node `>=20.12.0`, the `engines` floor of `codec/package.json`
 and `hooks/package.json`. The migration checks it before its first codec call and stops with a
-`REFUSED` line when `node` is missing or older.
+`REFUSED` line when `node` is missing or older. Outside a git repository the plugin and Node
+suffice. Inside one (a `.git` entry at or above the workbench) git is required too, and a git that
+is missing or refuses stops the migration with exit 3, naming the call and the reason.
 
 ## What becomes JSON and what stays Markdown
 
@@ -84,12 +86,16 @@ in its record, and not asked about.
 **If it is interrupted**, run `/fusion:migrate` again: it asks whether to continue or undo, and a
 re-run never starts a second plan.
 
-**If `circles/` will not empty.** This is a known defect that 13.0.0 does not fix. When the only
-thing left in `circles/` is a Finder `.DS_Store`, or another file that already exists under
-`work-packages/`, the store rename will not overwrite it, so `circles/` stays. The JSON migration
-then refuses because `circles/` still exists. Delete `fusion-workbench/circles/.DS_Store` by hand
-(or the other leftover file, once you have checked that its copy under `work-packages/` is the one
-to keep), remove the then-empty `circles/`, and run `/fusion:migrate` again. The defect is recorded
+**If an old store name will not empty.** This is a known defect that 13.0.0 does not fix. The
+store rename never overwrites, so a file that already exists under the new name stays under the
+old one, at any depth, and so does its directory. The JSON migration then refuses with exit 5 while
+`circles/`, a `planning/` or a `consult/` remains, at the top, under `shared/` or in a package. Its
+refusal names each one. List what is left with `find fusion-workbench/circles -type f`, and the
+same for each other name. Delete every `.DS_Store`, which is Finder metadata. Compare any other
+leftover with its copy under the new name (`work-packages/`, `plans/` or `consultations/`) using
+`cmp`. If they are identical, or the new copy is the one to keep, delete the old one. If the old
+copy is the one to keep, move it over the new one with `mv`. Then remove the emptied directories
+with `rmdir`, innermost first, and run `/fusion:migrate` again. The defect is recorded
 in `261009-2148-the-rename-pass-cannot-drain-a-circles-store-whose-only-entry-is-a-colliding-ds-store-and-the-json-run-refuses-on-it.md`.
 
 **Undo.** `bin/fusion-migrate rollback` restores the workbench from the migration's own journal
