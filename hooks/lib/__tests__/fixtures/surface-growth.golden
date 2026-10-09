@@ -49,7 +49,7 @@
   archive-filter-key.test.ts 41
   citation-form.test.ts 360
   citation-grammar-boundaries.test.ts 255
-  citation-sweep.test.ts 689
+  citation-sweep.test.ts 709
   claude-md-weight.test.ts 208
   commit-message-path.test.ts 385
   committed-dist.test.ts 328
@@ -118,4 +118,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 333
-  total 24850
+  total 24870

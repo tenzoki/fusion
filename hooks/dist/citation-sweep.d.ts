@@ -424,8 +424,9 @@
  *      or the codec bundle is, so nothing could be asked; or an internal
  *      error stopped it, with nothing on stdout (the `try` at the end).
  *   4  guard (a) refused: not a git work tree, workbench untracked, an
- *      uncommitted change on a file in this run's corpus, or an extra path
- *      outside the work tree or untracked by it. Nothing written.
+ *      uncommitted change on a file in this run's corpus, an extra path
+ *      outside the work tree or untracked by it, or a git call that did not
+ *      complete (`git-failed`, never read as untracked). Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
  *   6  the workbench was not read: `unsupported`, a refusal of the codec

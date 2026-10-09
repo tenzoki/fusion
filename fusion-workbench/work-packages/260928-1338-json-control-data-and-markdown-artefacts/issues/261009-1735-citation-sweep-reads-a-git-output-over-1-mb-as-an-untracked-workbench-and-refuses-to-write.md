@@ -1,0 +1,13 @@
+The citation sweep reads a git output over 1 MB as an untracked workbench and refuses to write
+---
+`hooks/citation-sweep.ts` `function git` calls `spawnSync("git", …)` without `maxBuffer`, so Node's 1 MB default applies. The write-mode precondition `git ls-files --error-unmatch -- <workbench>` lists every tracked workbench file; above 1 MB Node aborts with ENOBUFS, `status` is `null`, and the sweep reports `refused (workbench-untracked)` (exit 4) and writes nothing.
+---
+**Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
+
+**Evidence.** Seen during the user's trial migration of a real consuming workbench with the release candidate `052932e2` installed (`~/.fp`, 13.0.0): 54 citation repairs offered by `/fusion:migrate` were refused. The workbench tracks 8 151 files; `git ls-files -- fusion-workbench` there prints 1 124 616 bytes. The dry run takes no such check, which is why it passed. Installed site: `hooks/dist/citation-sweep.js`, the `tracked` check in the write precondition. The same wrapper also runs the per-path `--error-unmatch` and the dirty-corpus check, so any of them can misread a large output the same way.
+
+**Neighbour to inspect.** `hooks/lib/record-write.ts` also spawns git without `maxBuffer`; whether any of its calls can exceed 1 MB is to be checked, not assumed.
+
+**Acceptance.** A test in which the git wrapper's output exceeds 1 MB (or a spawn error such as ENOBUFS occurs) shows the sweep does not report `workbench-untracked`: either the check succeeds, or a spawn failure is reported as its own refusal naming the error. The tracked-check no longer needs the full listing at all if it can be asked with bounded output.
+---
+Resolved: `hooks/citation-sweep.ts` asks every tracked question (workbench and each `<path>`) through `isTracked`, which runs `git ls-files --error-unmatch` with stdout discarded and reads the exit status alone, so no listing is held whatever its size. The `git` wrapper now carries `maxBuffer: 1 << 30` for the one output still read (`git status --porcelain -z`), and its `failed` field names why a call gave no answer (spawn error code such as ENOBUFS, or the killing signal); every caller honours it, refusing with `refused (git-failed): git <args> did not complete (<why>)` instead of reading it as untracked. `hooks/lib/record-write.ts` needed nothing: its only git spawn is `rev-parse HEAD^{tree}`, a 40- or 64-hex answer. Pinned by the new case `writes into a tracked workbench whose git ls-files listing exceeds 1 MB` in `hooks/lib/__tests__/citation-sweep.test.ts` (refused `workbench-untracked` on the unfixed build, passes on the fix); `hooks/dist/` rebuilt.

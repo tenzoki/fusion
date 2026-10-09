@@ -174,7 +174,7 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
 
 function git(cwd: string, ...args: string[]) {
   const r = spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...args], {
-    cwd, encoding: "utf-8",
+    cwd, encoding: "utf-8", maxBuffer: 1 << 30,
   });
   if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);
   return r.stdout;
@@ -299,6 +299,26 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
         "fusion-citation-sweep: refused (workbench-untracked): fusion-workbench is not tracked by git (git ls-files --error-unmatch), so a rewrite there has no way back; nothing written",
       );
       expect(readFileSync(doc, "utf-8")).toBe(DIRTY_DOC);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
+  // issue 261009-1735: a listing over Node's 1 MB spawn buffer read as an untracked workbench
+  it("writes into a tracked workbench whose git ls-files listing exceeds 1 MB", () => {
+    const { root, wb, doc } = scratchRepo();
+    try {
+      // ~830-byte paths, 1400 of them: about 1.16 MB of listing, none of it corpus
+      const deep = join(wb, "bulk", ...["a", "b", "c"].map((c) => c.repeat(200)));
+      mkdirSync(deep, { recursive: true });
+      for (let i = 0; i < 1400; i++) writeFileSync(join(deep, `${String(i).padStart(4, "0")}${"f".repeat(196)}.txt`), "");
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "bulk");
+      expect(git(root, "ls-files", "--", "fusion-workbench").length).toBeGreaterThan(1 << 20);
+      const run = sweep(root, wb, "--write", "--yes");
+      expect(run.stderr).not.toMatch(/workbench-untracked/);
+      expect(run.status, run.stderr).toBe(0);
+      expect(readFileSync(doc, "utf-8")).toBe("see `260101-0101_*_alpha.md`");
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

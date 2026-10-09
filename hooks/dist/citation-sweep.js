@@ -424,8 +424,9 @@
  *      or the codec bundle is, so nothing could be asked; or an internal
  *      error stopped it, with nothing on stdout (the `try` at the end).
  *   4  guard (a) refused: not a git work tree, workbench untracked, an
- *      uncommitted change on a file in this run's corpus, or an extra path
- *      outside the work tree or untracked by it. Nothing written.
+ *      uncommitted change on a file in this run's corpus, an extra path
+ *      outside the work tree or untracked by it, or a git call that did not
+ *      complete (`git-failed`, never read as untracked). Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
  *   6  the workbench was not read: `unsupported`, a refusal of the codec
@@ -507,9 +508,26 @@ function parse(argv) {
     return { root: resolve(root), write, yes, repair, kinds: kinds ?? new Set(SWEEP_KINDS), extra };
 }
 // --- guard (a): a tracked workbench, and no pending change in its corpus -----
-function git(cwd, ...args) {
-    const r = spawnSync("git", args, { cwd, encoding: "utf-8" });
-    return { status: r.status, stdout: r.stdout ?? "", failed: r.error !== undefined };
+/**
+ * One git call. `failed` names why git gave no answer (not spawned, a full
+ * buffer, a signal), and a caller reads `status` only when it is null: a call
+ * that did not complete is never a "no". `quiet` discards stdout for a question
+ * answered by the exit status alone, so a listing of any size is never held.
+ */
+function git(cwd, args, quiet = false) {
+    const r = spawnSync("git", args, { cwd, encoding: "utf-8", maxBuffer: 1 << 30, stdio: ["ignore", quiet ? "ignore" : "pipe", "pipe"] });
+    const failed = r.error !== undefined ? (r.error.code ?? r.error.message) : r.status === null ? `killed by ${r.signal}` : null;
+    return { status: r.status, stdout: r.stdout ?? "", failed };
+}
+/** The refusal for a git call that gave no answer, naming the call and why. */
+function gitFailed(args, why) {
+    return `refused (git-failed): git ${args.join(" ")} did not complete (${why}), so its answer is unknown; nothing written`;
+}
+/** Whether git tracks `rel`, by exit status alone; a string is a refusal. */
+function isTracked(toplevel, rel) {
+    const args = ["ls-files", "--error-unmatch", "--", rel === "" ? "." : rel];
+    const r = git(toplevel, args, true);
+    return r.failed !== null ? gitFailed(args, r.failed) : r.status === 0;
 }
 /** A path as the filesystem spells it, falling back for one that is not there. */
 function real(p) {
@@ -527,7 +545,11 @@ function real(p) {
  * instead of the ` -> ` infix the quoted form uses. Both halves are returned.
  */
 function porcelainPaths(toplevel) {
-    const fields = git(toplevel, "status", "--porcelain", "-z").stdout.split("\0").filter((f) => f.length > 0);
+    const args = ["status", "--porcelain", "-z"];
+    const r = git(toplevel, args);
+    if (r.failed !== null)
+        return gitFailed(args, r.failed);
+    const fields = r.stdout.split("\0").filter((f) => f.length > 0);
     const out = [];
     for (let i = 0; i < fields.length; i++) {
         const f = fields[i];
@@ -545,12 +567,15 @@ function porcelainPaths(toplevel) {
  * is work-tree-relative and the corpus is absolute, so both are resolved
  * through the filesystem's own spelling before they are compared: the toplevel
  * is already a realpath, and a corpus entry may have been reached through a
- * symlinked `--root`.
+ * symlinked `--root`. A string is the refusal of a listing git did not give.
  */
 function dirtyCorpusPaths(toplevel, corpus) {
+    const listed = porcelainPaths(toplevel);
+    if (typeof listed === "string")
+        return listed;
     const files = new Set(corpus.map(real));
     const hits = new Set();
-    for (const p of porcelainPaths(toplevel)) {
+    for (const p of listed) {
         const abs = resolve(toplevel, p);
         if (p.endsWith("/")) {
             // an untracked directory stands for every corpus file beneath it
@@ -565,19 +590,23 @@ function dirtyCorpusPaths(toplevel, corpus) {
 }
 /** One line naming the refused condition, or null when the tree qualifies. */
 function refusal(root, extra, corpus) {
-    const top = git(root, "rev-parse", "--show-toplevel");
-    if (top.failed)
-        return `refused (no-git): git could not be run, so no commit exists to return to; nothing written`;
+    const top = git(root, ["rev-parse", "--show-toplevel"]);
+    if (top.failed !== null)
+        return `refused (no-git): git could not be run (${top.failed}), so no commit exists to return to; nothing written`;
     if (top.status !== 0) {
         return `refused (not-a-git-work-tree): ${root} is not inside a git work tree, so a rewrite there has no way back; nothing written`;
     }
     const toplevel = realpathSync(top.stdout.trim());
     const wbRel = relative(toplevel, realpathSync(root));
-    const tracked = git(toplevel, "ls-files", "--error-unmatch", "--", wbRel === "" ? "." : wbRel);
-    if (tracked.status !== 0) {
+    const tracked = isTracked(toplevel, wbRel);
+    if (typeof tracked === "string")
+        return tracked;
+    if (!tracked) {
         return `refused (workbench-untracked): ${wbRel || "."} is not tracked by git (git ls-files --error-unmatch), so a rewrite there has no way back; nothing written`;
     }
     const dirty = dirtyCorpusPaths(toplevel, corpus);
+    if (typeof dirty === "string")
+        return dirty;
     if (dirty.length > 0) {
         const named = dirty.slice(0, 10).join(", ") + (dirty.length > 10 ? `, and ${dirty.length - 10} more` : "");
         return `refused (dirty-tree): uncommitted changes name ${dirty.length} ${dirty.length === 1 ? "file" : "files"} this run reads: ${named}; commit or stash them first, so the sweep is its own diff and the way back is one revert; nothing written`;
@@ -590,9 +619,11 @@ function refusal(root, extra, corpus) {
         if (rel.startsWith("..") || resolve(toplevel, rel) !== abs) {
             return `refused (path-outside-repo): ${p} is not inside the work tree at ${toplevel}, so its rewrite would have no way back; nothing written`;
         }
-        if (git(toplevel, "ls-files", "--error-unmatch", "--", rel === "" ? "." : rel).status !== 0) {
+        const known = isTracked(toplevel, rel);
+        if (typeof known === "string")
+            return known;
+        if (!known)
             untracked.push(rel === "" ? "." : rel);
-        }
     }
     if (untracked.length > 0) {
         const one = untracked.length === 1;

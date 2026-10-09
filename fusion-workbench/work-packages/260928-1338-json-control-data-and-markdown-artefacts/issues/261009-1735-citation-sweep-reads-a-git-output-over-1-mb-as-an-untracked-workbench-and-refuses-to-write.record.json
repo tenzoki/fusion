@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "191b3179-1245-40d7-ae6e-2a0a1d1b85be",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261009-1735-citation-sweep-reads-a-git-output-over-1-mb-as-an-untracked-workbench-and-refuses-to-write.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}
