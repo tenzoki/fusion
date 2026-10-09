@@ -1,0 +1,20 @@
+clone HEAD: 26ada996b301d9d9cb626f146e419896c0f7bfc7
+$ bin/fusion-review-coverage --since cd1b5522 --head 78680a11   (control: the earlier candidate read in this clone)
+EXIT=0
+anchor=workbench-root
+since=cd1b5522
+head=78680a11
+commits=83
+reviews=122
+unusable=25
+uncovered=0
+verdict=covered
+carried=hooks/dist/order.js
+carried-from=work-packages/261001-1930-work-order-slash-command-and-machine-readable-output/reviews/261002-0926-reviewer-closing-pass-over-the-markdown-and-json-formats.md
+
+--- paths outside fusion-workbench/ per commit after 78680a11:
+e6a5dfc5: 
+035f7c1d: 
+5511c509: 
+26ada996: hooks/citation-sweep.ts hooks/dist/citation-sweep.d.ts hooks/dist/citation-sweep.js hooks/dist/migrate.d.ts hooks/dist/migrate.js hooks/lib/__tests__/citation-sweep.test.ts hooks/lib/__tests__/fixtures/surface-growth.golden hooks/lib/__tests__/migrate.test.ts hooks/migrate.ts 
+--- git status --porcelain:

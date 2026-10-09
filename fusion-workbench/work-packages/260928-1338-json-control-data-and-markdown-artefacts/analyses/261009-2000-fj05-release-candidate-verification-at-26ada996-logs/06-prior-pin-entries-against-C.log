@@ -1,0 +1,24 @@
+pin=fusion-codec
+pin_file=/Users/kai/Projects/productive/F09-Prior/tests/testdata/fusion-codec/UPSTREAM.json
+pin_commit=dd4bf3d49602c75ba5c52c4caddce5e32216847b
+checked_against=26ada996
+prefix=codec/
+entries=413 equal=412 differ=1
+DIFF fixtures/prior/REQUESTS.md pinned=44cad87dcd55a54081e46f5cd8c49a665dc8ec30b3ca95976e1c9b1fa5a35f44 at_commit=a577780c2b7660acdcd3f61fb9041419fd0b64a1e0c0c372305a2a9eb73fdfc0
+EXIT=0
+
+pin=fusion-fj01
+pin_file=/Users/kai/Projects/productive/F09-Prior/tests/testdata/fusion-fj01/UPSTREAM.json
+pin_commit=dd4bf3d49602c75ba5c52c4caddce5e32216847b
+pin_bundle_digest=sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f
+checked_against=26ada996
+prefix=(none)
+entries=715 equal=714 differ=1
+DIFF codec/fixtures/prior/REQUESTS.md pinned=44cad87dcd55a54081e46f5cd8c49a665dc8ec30b3ca95976e1c9b1fa5a35f44 at_commit=a577780c2b7660acdcd3f61fb9041419fd0b64a1e0c0c372305a2a9eb73fdfc0
+EXIT=0
+
+Prior repository: /Users/kai/Projects/productive/F09-Prior, HEAD 34a2710e22749e0dacf90a10f339b30de8067552 (2026-10-09T16:13:47+02:00), branch main; both pin files byte-equal to 34a2710 (git diff 34a2710 -- <both> empty: 0 bytes)
+3af98b5fc53656d561deb61598b3fced0db713ca7cd46622be944a418affb5a7  /Users/kai/Projects/productive/F09-Prior/tests/testdata/fusion-codec/UPSTREAM.json
+75b079f90426ac2dfbe000efe0ec5a0af66c76c5e1d5992dda22b3a5d499a09b  /Users/kai/Projects/productive/F09-Prior/tests/testdata/fusion-fj01/UPSTREAM.json
+codec/ paths changed 78680a11..26ada996: 0
+script: pin-check.mjs, unchanged copy of the 78680a11 run's script (copied into this logs directory)

@@ -1,0 +1,8 @@
+26ada996b301d9d9cb626f146e419896c0f7bfc7
+EXIT=0
+--- lines:
+       0
+--- ignored (for information):
+!! codec/node_modules/
+!! hooks/node_modules/
+!! hooks/package-lock.json
