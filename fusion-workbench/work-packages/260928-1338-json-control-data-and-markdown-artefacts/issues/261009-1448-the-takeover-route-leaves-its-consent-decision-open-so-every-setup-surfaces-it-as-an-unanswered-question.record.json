@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "5a66d729-3b14-45ea-bd11-ec19b3c4b1ca",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261009-1448-the-takeover-route-leaves-its-consent-decision-open-so-every-setup-surfaces-it-as-an-unanswered-question.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

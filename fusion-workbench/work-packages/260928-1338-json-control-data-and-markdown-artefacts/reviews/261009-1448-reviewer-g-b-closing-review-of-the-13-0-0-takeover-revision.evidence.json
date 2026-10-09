@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "8536c0d9-ce1a-4107-9236-e51639ce790f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "b367f03d920010f392a97b975f5176e607d192d4",
+    "git_range": null
+  },
+  "brief_revision": "sha256:d88269aa28a528919b7e3abdbb6f59909005d19fda715812ec1fa8b190d713b4",
+  "plan_revision": "sha256:02ec99b61fd5745217c093cf822bf01e4d3525441bd8560f0d9a378f84d87d3f",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/reviews/261009-1448-reviewer-g-b-closing-review-of-the-13-0-0-takeover-revision.md",
+    "sha256": "sha256:66c87383cb8f67bd8a743618c06078564ec49a2362734bf474fbaf45c4581f49",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-09T12:55:35Z",
+  "extensions": {}
+}
