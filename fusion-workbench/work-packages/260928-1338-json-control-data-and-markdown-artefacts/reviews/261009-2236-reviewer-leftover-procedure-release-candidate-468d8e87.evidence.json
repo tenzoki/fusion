@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "04338fe7-d957-4265-aa52-cd4c4ea3916f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "c05e095d8b105aee9d53895fb3892e0d6d3ea7ba",
+    "git_range": null
+  },
+  "brief_revision": "sha256:d88269aa28a528919b7e3abdbb6f59909005d19fda715812ec1fa8b190d713b4",
+  "plan_revision": "sha256:02ec99b61fd5745217c093cf822bf01e4d3525441bd8560f0d9a378f84d87d3f",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/reviews/261009-2236-reviewer-leftover-procedure-release-candidate-468d8e87.md",
+    "sha256": "sha256:3c523103c0b5a7c9a86717f94fbfb2fae5561d60b07d7d0f1fc9d1345f2fb909",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-09T20:37:52Z",
+  "extensions": {}
+}
