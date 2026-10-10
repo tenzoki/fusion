@@ -17,8 +17,8 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
-    "answer_ref": null,
+    "state": "answered",
+    "answer_ref": "261010-1235-in-which-language-is-the-prior-module-executable-built-and-how-does-it-consume-priors-module-api.md",
     "implementation_ref": null,
     "superseded_by": null,
     "deferral": null

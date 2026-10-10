@@ -32,3 +32,6 @@ The bundle needs one executable that Prior starts as a separate process and that
 ## Recommendation
 
 Option 1, contingent on Prior accepting a vendored copy as the consumption route until it publishes one; request 67 asks that question. Should Prior refuse, the fallback is Option 1 against whatever fetchable form Prior names, never Option 3.
+
+---
+Answered: `codec/fixtures/prior/REQUESTS.md` `## Module bundle (request 67, the contract proposal)`, Prior answer 67.4 and 67.10 at Prior `da02626` — option 1 as to language (Go); consumption amended from a vendored copy to a build in a disposable clean Prior checkout at the pinned revision against `github.com/kai/prior/moduleapi/v1`, no vendored copy, no `replace`, the build identity naming both source revisions; ruled by user, Kai Stalmann <ks@qantr.com>
