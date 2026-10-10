@@ -3566,3 +3566,17 @@ After the tag, plan step 21 proves the fresh install from `tags/v13.0.0`, its as
 | 65 | **asked** above: does the shared-contract evidence, codec and migration, meet section 9's mandatory checks at C = `468d8e87` | this section |
 
 No request 66 is asked (decision A2, option 1). These rows supersede the rows for 59 to 64 in `#### Requests 59 to 64, as they stand` above.
+
+### Prior's answer to 65 at 167c605
+
+**Read at:** Prior commit `167c605` (2026-10-10 06:35, "docs: accept FJ05 shared release evidence and close request 65"), parent `34a2710`, not yet pushed by Prior. The answer is `Prior: docs/design/fusion-fj05-release-evidence-prior-response.md`, 10 452 bytes, `sha256:d952711ae806a72f7d0d4889f463c29940e45f919baaf04bbc9dd7919dea03a6` as `git show 167c605:<path> | shasum -a 256` prints it, read from the commit, not from a working tree. Prior names its handoff as fusion `91885653` and C as `468d8e870962988b22416ac2a4c1975ca7db2fb4`.
+
+**Prior's verdict, quoted:** "65: Yes. The combined codec and migration evidence meets section 9's mandatory checks for the shared contract at C." "No codec change, re-pin or repeated conformance run is required. Fusion may record its step-19 Prior gate as satisfied and proceed to the user-owned release decision."
+
+**Prior's own check of the bytes:** both pins taken at `34a2710` compared entry by entry against C: 413 shared entries and 715 runtime entries, each differing only in `REQUESTS.md`; the bundle 699 011 bytes, `sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f`. The `f2cc68f0..468d8e87` diff over `hooks/`, `bin/`, `skills/`, `agents/`, `rules/` and `codec/` is the comment change in `hooks/migrate.ts` and its two built outputs only, so the measured migration behaviour is C's.
+
+**The split by subject, as Prior judges it:** rows 1, 3, 5, 6 and 9 satisfied; row 2 split (provenance fields and refusals shared and covered, an agent's truthfulness and consent host behaviour); row 4 satisfied for the shared part, the citation sweep and the legacy-name rename host evidence; row 7 split as proposed (the local lock is no cross-checkout fencing claim); row 8 satisfied within the bounded evidence, one real project as the user ruled, the manual rename recovery a documented host limitation; row 10 host acceptance, not declared complete by this answer.
+
+**Prior's stated limits:** this closes request 65 only. It is no acceptance of host-specific behaviour and no declaration that FJ05 is finished: the user's release approval, the post-tag install, assets, update path and second-project smoke test, and the marketplace entry remain separate, and "No publication is performed or authorized by this response". The release precondition "with Claude and with Prior" is to be read under decision A2: the deferred Prior integration test is not a release condition; the user's approval and the successful real migration remain the user's conditions. The deferred host findings stay visible and are not waived. Prior's production takeover stays refused until its own authority qualification. The final `FJ05 (released as v13.0.0)` handoff is to record the actual tag and `main` identity and the remaining post-tag proofs.
+
+**So step 19 is satisfied.** Requests 59 to 65 are complete; none is open.
