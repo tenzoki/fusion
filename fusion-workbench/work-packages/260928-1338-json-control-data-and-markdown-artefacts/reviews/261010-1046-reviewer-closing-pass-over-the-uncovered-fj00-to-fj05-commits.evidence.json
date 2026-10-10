@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "4730fcc7-e8fe-4ad7-9a74-0a65bcdbdfe5",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "9f29592f8b28468163200117a4f8465848abe84b",
+    "git_range": null
+  },
+  "brief_revision": "sha256:d88269aa28a528919b7e3abdbb6f59909005d19fda715812ec1fa8b190d713b4",
+  "plan_revision": "sha256:02ec99b61fd5745217c093cf822bf01e4d3525441bd8560f0d9a378f84d87d3f",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/reviews/261010-1046-reviewer-closing-pass-over-the-uncovered-fj00-to-fj05-commits.md",
+    "sha256": "sha256:a41f2e80da7ccc36c92506a999f78c295c01cdb0d55ddd6452ca06d1054337c4",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-10T08:47:33Z",
+  "extensions": {}
+}

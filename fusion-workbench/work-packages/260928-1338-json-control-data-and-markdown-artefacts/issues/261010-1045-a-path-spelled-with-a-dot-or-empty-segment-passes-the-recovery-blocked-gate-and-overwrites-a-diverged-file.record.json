@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "5aa9992a-2e9f-4644-b54f-d42ace1b3d48",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/260928-1338-json-control-data-and-markdown-artefacts/issues/261010-1045-a-path-spelled-with-a-dot-or-empty-segment-passes-the-recovery-blocked-gate-and-overwrites-a-diverged-file.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
