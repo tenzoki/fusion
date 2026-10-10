@@ -1,0 +1,43 @@
+# clause 3, the headless analyst run
+cwd <S>/proj; environment: the session's own minus every CLAUDE*/FUSION_* variable (as agent-dispatch-observation.test.ts filters it), plus FUSION_PLUGIN_ROOT=<S>/fhome
+command: claude --plugin-dir <S>/fhome --agent fusion:analyst --model haiku -p "<instruction>" --permission-mode bypassPermissions --output-format json
+instruction: "Smoke test of the installed plugin. Run only your Setup steps 1 and 2 (locate the workbench; run bin/fusion-rules analyst and bin/fusion-paths analyst). Then reply with the fusion-paths output verbatim and the absolute path of the workbench, and stop. Write no file, file no record, run nothing else."
+claude 2.1.296; started 08:57:26, ended 08:57:39 (wall 12.5 s)
+{"exit":0,"is_error":false,"subtype":"success","num_turns":4,"duration_ms":9267,"total_cost_usd":0.008080190000000001,"modelUsage":["claude-haiku-5-5"]}
+--- tool calls, from the session transcript
+1 Bash "$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"
+2 Bash "$FUSION_PLUGIN_ROOT/bin/fusion-rules" analyst
+3 Bash "$FUSION_PLUGIN_ROOT/bin/fusion-paths" analyst
+--- the agent's reply
+The smoke test passed: the workbench resolves and `fusion-paths` emits its variables.
+
+`fusion-paths analyst` output, verbatim:
+
+```
+WORKBENCH=<S>/proj/fusion-workbench
+OUT_ISSUE=work-packages/261010-0856-smoke-test-first-package/issues
+OUT_DECISION=work-packages/261010-0856-smoke-test-first-package/decisions
+OUT_ANALYSIS=work-packages/261010-0856-smoke-test-first-package/analyses
+SCAN_PLANS=work-packages/261010-0856-smoke-test-first-package/plans shared/plans
+SCAN_ISSUES=work-packages/261010-0856-smoke-test-first-package/issues shared/issues
+SCAN_DECISIONS=work-packages/261010-0856-smoke-test-first-package/decisions shared/decisions
+SCAN_REVIEWS=work-packages/261010-0856-smoke-test-first-package/reviews shared/reviews
+SCAN_ANALYSES=work-packages/261010-0856-smoke-test-first-package/analyses shared/analyses
+```
+
+Workbench path: `<S>/proj/fusion-workbench`
+
+`fusion-workbench-root` itself printed the project root, `<S>/proj`. The `fusion-workbench` directory sits directly beneath it.
+
+I also did not open the three rule files `fusion-rules` emitted, since you limited the run to the two commands. I wrote no files, filed no records, and ran nothing else.
+--- cross-check: <S>/fhome/bin/fusion-paths analyst run directly in <S>/proj, exit 0; the agent's fenced block equals it (diff empty)
+WORKBENCH=<S>/proj/fusion-workbench
+OUT_ISSUE=work-packages/261010-0856-smoke-test-first-package/issues
+OUT_DECISION=work-packages/261010-0856-smoke-test-first-package/decisions
+OUT_ANALYSIS=work-packages/261010-0856-smoke-test-first-package/analyses
+SCAN_PLANS=work-packages/261010-0856-smoke-test-first-package/plans shared/plans
+SCAN_ISSUES=work-packages/261010-0856-smoke-test-first-package/issues shared/issues
+SCAN_DECISIONS=work-packages/261010-0856-smoke-test-first-package/decisions shared/decisions
+SCAN_REVIEWS=work-packages/261010-0856-smoke-test-first-package/reviews shared/reviews
+SCAN_ANALYSES=work-packages/261010-0856-smoke-test-first-package/analyses shared/analyses
+--- side effects: git status after the run: ' M fusion-workbench/orchestrator-events.jsonl' (one session_start row by the installed SessionStart hook: checkout 6be3efe7, domain code); nothing else

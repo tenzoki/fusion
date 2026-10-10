@@ -1,0 +1,25 @@
+# clause 1, the fresh install from the v13.0.0 tag, 2026-10-10 08:53
+installer: fetched from https://raw.githubusercontent.com/tenzoki/fusion/v13.0.0/install.sh (curl exit 0)
+sha256 raw         620f703197b9d5663be04e679a299ad23e5ce8dc3813e0ba72d9c17a7e0abd7e
+sha256 git show    620f703197b9d5663be04e679a299ad23e5ce8dc3813e0ba72d9c17a7e0abd7e  (git show v13.0.0:install.sh) -> cmp identical
+tag: v13.0.0 (tag object 7a5fc8f8) -> 468d8e870962988b22416ac2a4c1975ca7db2fb4; ls-remote origin refs/heads/main = 468d8e87
+command: env -i PATH=<S>/pbin:/usr/bin:/bin:/usr/sbin:/sbin HOME=<S>/home FUSION_REF=tags/v13.0.0 FUSION_HOME=<S>/fhome FUSION_BIN=<S>/fbin bash install-raw.sh
+PATH dir <S>/pbin holds symlinks to node, git, curl, claude only; no entry on PATH matches /prior/i
+--- installer output (exit 0)
+Downloading fusion (tags/v13.0.0) over HTTPS...
+Installing to <S>/fhome ...
+fusion 13.0.0 installed.
+<S>/fbin is not on your PATH yet.
+Add it once (zsh):
+  echo 'export PATH="<S>/fbin:$PATH"' >> ~/.zshrc && source ~/.zshrc
+Then start fusion with:  fusion
+(Or run it now with the full path: <S>/fbin/fusion)
+
+Update later:  fusion --update     Remove:  fusion --uninstall     Path:  fusion --where
+--- comparison with git archive v13.0.0 over install.sh's copy loop
+copy loop: .claude-plugin agents skills rules hooks codec bin stilwerk templates docs README.md README-agents.md README-hooks.md LICENSE (LICENSE absent at the tag, so absent in both)
+diff -r <archive selection> <S>/fhome: exit 0, 0 lines
+files 1507 / 1507, dirs 265 / 265, executable files 30 / 30 (same list), path-list sha256 2fe17d68… on both
+installed plugin.json version: 13.0.0
+bundle codec/dist/fusion-record.js: 699011 bytes, sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f
+installed tree content hash (find|shasum over relative paths) 24ead1f4…b166, equal to ~/.fp's (installed from 468d8e87 at step 20's note)

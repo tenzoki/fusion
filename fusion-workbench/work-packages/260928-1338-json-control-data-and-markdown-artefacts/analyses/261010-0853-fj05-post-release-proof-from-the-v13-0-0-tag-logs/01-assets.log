@@ -1,0 +1,11 @@
+# clause 1, every asset present: /fusion:check's assets block, run verbatim from <S>/fhome/skills/check/SKILL.md in the scratch project after setup
+--- block 6 with prelude 5 of skills/check/SKILL.md (15 lines), sha256 7a2ac201c24e
+stilwerk/default-voice-en.yaml case1-equal
+stilwerk/default-voice-de.yaml case1-equal
+stilwerk/chat-voice-en.yaml case1-equal
+stilwerk/chat-voice-de.yaml case1-equal
+block-exit=0
+# the monitor block (selector monitor) from the same file
+--- block 1 of skills/check/SKILL.md (1 lines), sha256 f67d3cb275b4
+block-exit=0
+monitor copied: yes

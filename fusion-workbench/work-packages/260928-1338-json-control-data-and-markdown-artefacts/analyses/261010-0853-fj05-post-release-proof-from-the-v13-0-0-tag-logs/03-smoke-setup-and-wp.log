@@ -1,0 +1,47 @@
+# clause 3, smoke test in a second project: /fusion:setup and /fusion:wp, blocks run verbatim from the installed files
+project: <S>/proj, git init -b main, repo-local user 'Step21 Scratch', one commit (README.md); not fusion
+runner: skillblk.sh extracts the n-th ```bash block of the installed SKILL.md and runs it under
+  env -i PATH=<S>/pbin:/usr/bin:/bin:/usr/sbin:/sbin HOME=<S>/home FUSION_PLUGIN_ROOT=<S>/fhome bash -c "<block>"
+
+--- skills/setup/SKILL.md
+block 1 (pwd)                         -> <S>/proj, exit 0
+block 2 (superseded-format probe)     -> OLD=0, exit 0
+block 3 (mkdir + fusion-write initialize)
+  result=initialized
+  workbench_id=067292a6-2a3f-40d4-98b6-0cdeba3247dd
+  operation_id=bdc7f60c-edf5-4373-a119-b5a54ed8fd4f
+  exit=0
+block 4 (store mkdir)                 -> exit 0
+block 5 (marker + checks due)         -> marker=written
+                                         checks_due=monitor,concurrency,assets,config,permissions,gitattributes,identity,gitignore,upstream,leftovers,claude-md
+block 6 (voice profiles)              -> default-voice-en.yaml, default-voice-de.yaml, chat-voice-en.yaml, chat-voice-de.yaml copied; exit 0
+block 7 (source root)                 -> source root: <S>/fhome
+block 8 (fusion-rules + fusion-paths orchestrator)
+  rules: agent-setup, fusion-workbench-conventions, critical-stance, user-facing-output, decision-record-examples, commit-lock (all <S>/fhome/rules), chat-voice-en, default-voice-en (./fusion-workbench/stilwerk)
+  WORKBENCH=<S>/proj/fusion-workbench OUT_ISSUE=shared/issues OUT_DECISION=shared/decisions OUT_PACKAGES=work-packages SCAN_*=shared/... ; exit 0
+block 9 (helpers in work tree, not in install) -> no output, block-exit=1: fusion-plugin-cwd answers non-zero outside fusion's own repository, so the && chain ends there. Expected; it measures only in fusion's repo.
+block 10 (event log touch)            -> exit 0
+workbench after setup: .asset-provenance .checkout-id .fusion-setup .guard-state .json-state archive orchestrator-events.jsonl shared stilwerk work-packages workbench.json
+workbench.json: {"schema":"fusion.workbench/v1","id":"067292a6-…","required_features":["json-control-v1"],"migration":null,"extensions":{}}
+=> a JSON-controlled workbench (inspect: "state":"json-control")
+
+--- skills/wp/SKILL.md
+block 1 (Step 0): "state":"json-control"; WORKBENCH=<S>/proj/fusion-workbench; OUT_PACKAGES=work-packages; exit 0
+narratives written by hand per "## The item" (title + ## Directive), two containers:
+  work-packages/261010-0856-smoke-test-first-package/
+  work-packages/261010-0856-smoke-test-second-package/
+block 2 ("On a JSON-controlled workbench"), placeholders substituted and nothing else
+  (diff of the block: <YYMMDD-HHMM>-<topic> -> 261010-0856-smoke-test-<first|second>-package, <code|data> -> code):
+  first:  result=landed operation_id=9ecccb27-… path=work-packages/261010-0856-smoke-test-first-package/package.json event=logged exit=0
+  second: result=landed operation_id=50dca57d-… path=work-packages/261010-0856-smoke-test-second-package/package.json event=logged exit=0
+
+--- the claim (no /fusion:wp block claims: wp files only; the claim is the orchestrator's Claim row, bin/fusion-write claim)
+fusion-identity: PERSON=Step21 Scratch <step21@scratch.invalid> CHECKOUT=6be3efe7, exit 0
+fusion-write claim --record work-packages/261010-0856-smoke-test-first-package/package.json --actor user
+  result=landed operation_id=5678d619-… revision=sha256:901d1311… event=logged exit=0
+show: claim {checkout_id 6be3efe7, claimed_at 2026-10-10T06:56:37Z}
+fusion-claimed-package (checkout A): PACKAGE=work-packages/261010-0856-smoke-test-first-package/261010-0856-smoke-test-first-package.md CONTAINER=work-packages/261010-0856-smoke-test-first-package
+
+--- the tracked workbench (for the absent-checkout scaffold)
+.gitignore: the class-L entries of check's gitignore selector (.checkout-id .session-marker .cadence-anchors .check-stamps .commit-lock monitor .guard-state/* .json-state/*)
+commit b7881f7 "fusion workbench, two packages"; check's gitignore block (block 12) run verbatim afterwards: no output, exit 0

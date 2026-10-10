@@ -1,0 +1,49 @@
+# clause 2, the update path of the scratch launcher <S>/fbin/fusion
+launcher, as written by the tag's install.sh:
+4:FUSION_DIR="<S>/fhome"
+7:    curl -fsSL "https://raw.githubusercontent.com/tenzoki/fusion/main/install.sh" -o /tmp/fusion-install.sh       && bash /tmp/fusion-install.sh
+-> FUSION_DIR is baked in for a run and for --where; --update downloads main's install.sh to /tmp/fusion-install.sh and runs it with the caller's environment, passing neither FUSION_DIR nor the launcher's own directory
+
+--- real installs before (sha256)
+8a63f46e1d0402e4cdd3e8306e7e33f576e4d52df37608f108d7efeaee513121  ~/.local/bin/fusion
+3b89f1c4b0ccbc829ace23e3b32a6aeaa2c607c6c9faa36b6278d110b572d7ca  ~/.fusion/.claude-plugin/plugin.json
+035f46cc6f61edbcfb62085685dbd52d95df9b01078d25ffa50fb401e211eac0  ~/.fp-bin/fusion
+2bb670a9fd8eef68186c01712f4a34cbef4d8d9d579c6748a604300a510efc0b  ~/.fusion tree
+24ead1f4c1b63eecaa39385f9e6c92480e390cefe432e530f5a89473d5f3b166  ~/.fp tree
+tmp: ls: /tmp/fusion-install.sh: No such file or directory
+
+--- --where (env -i, HOME=<S>/home): exit 0
+<S>/fhome
+
+--- --update A: env -i PATH HOME=<S>/home2, no FUSION_HOME/FUSION_BIN (the bare form a user types): exit 0
+Downloading fusion (heads/main) over HTTPS...
+Installing to <S>/home2/.fusion ...
+fusion 13.0.0 installed.
+<S>/home2/.local/bin is not on your PATH yet.
+Add it once (zsh):
+  echo 'export PATH="<S>/home2/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
+Then start fusion with:  fusion
+(Or run it now with the full path: <S>/home2/.local/bin/fusion)
+
+Update later:  fusion --update     Remove:  fusion --uninstall     Path:  fusion --where
+written since the mark: 1507 files under <S>/home2/.fusion, the launcher <S>/home2/.local/bin/fusion, and /tmp/fusion-install.sh (new, 7879 bytes)
+<S>/fhome and <S>/fbin/fusion: unchanged (tree 24ead1f4…, launcher 33f35de7…)
+/tmp/fusion-install.sh == git show origin/main:install.sh (origin/main = 468d8e87): cmp identical
+<S>/home2/.fusion vs git archive v13.0.0 selection: diff -r exit 0
+=> the ref fetched is heads/main (468d8e87); the home written is $HOME/.fusion, not the launcher's own. With the real HOME this is ~/.fusion.
+
+--- --update B: env -i PATH HOME=<S>/home3 FUSION_HOME=<S>/fhome FUSION_BIN=<S>/fbin: exit 0
+Downloading fusion (heads/main) over HTTPS...
+Installing to <S>/fhome ...
+fusion 13.0.0 installed.
+written since the mark: 1507 files under <S>/fhome and <S>/fbin/fusion; <S>/home3 empty (0 entries)
+<S>/fhome after: tree 24ead1f4… (unchanged bytes), diff -r against the archive exit 0; launcher 33f35de7… (rewritten, same bytes)
+
+--- real installs after all clauses (sha256)
+8a63f46e1d0402e4cdd3e8306e7e33f576e4d52df37608f108d7efeaee513121  ~/.local/bin/fusion
+3b89f1c4b0ccbc829ace23e3b32a6aeaa2c607c6c9faa36b6278d110b572d7ca  ~/.fusion/.claude-plugin/plugin.json
+035f46cc6f61edbcfb62085685dbd52d95df9b01078d25ffa50fb401e211eac0  ~/.fp-bin/fusion
+2bb670a9fd8eef68186c01712f4a34cbef4d8d9d579c6748a604300a510efc0b  ~/.fusion tree
+24ead1f4c1b63eecaa39385f9e6c92480e390cefe432e530f5a89473d5f3b166  ~/.fp tree
+tmp: -rw-r--r--  1 kai  wheel  7879 10 Okt. 08:55 /tmp/fusion-install.sh
+=> ~/.local/bin/fusion 8a63f46e…, ~/.fusion plugin.json 3b89f1c4… (12.2.1), ~/.fusion tree, ~/.fp tree and ~/.fp-bin/fusion unchanged; only the tmp line differs (written by both --update runs, removed at cleanup)

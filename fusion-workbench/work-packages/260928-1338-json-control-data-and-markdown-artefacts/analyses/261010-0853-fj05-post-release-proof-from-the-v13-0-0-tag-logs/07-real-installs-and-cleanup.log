@@ -1,0 +1,12 @@
+# the user's real installs, read-only, before the run (08:54) and after cleanup (about 09:26)
+8a63f46e1d0402e4cdd3e8306e7e33f576e4d52df37608f108d7efeaee513121  ~/.local/bin/fusion           (before = after)
+3b89f1c4b0ccbc829ace23e3b32a6aeaa2c607c6c9faa36b6278d110b572d7ca  ~/.fusion/.claude-plugin/plugin.json, version 12.2.1 (before = after)
+035f46cc6f61edbcfb62085685dbd52d95df9b01078d25ffa50fb401e211eac0  ~/.fp-bin/fusion              (before = after)
+2bb670a9fd8eef68186c01712f4a34cbef4d8d9d579c6748a604300a510efc0b  ~/.fusion tree (relative path + content) (before = after)
+24ead1f4c1b63eecaa39385f9e6c92480e390cefe432e530f5a89473d5f3b166  ~/.fp tree                    (before = after; equal to the fresh tag install's tree)
+/tmp/fusion-install.sh: absent before; written by both --update runs (main's install.sh, = the tag's); removed at cleanup; absent after
+
+# cleanup
+removed: <S> entirely (fhome, fbin, home, home2 with its .fusion and .local/bin, home3, proj, ref, refsel, dl, raw, scripts, pbin, the copy of foreign workbench 1 earlier at 09:01:37)
+removed: the headless run's session transcript under ~/.claude/projects/<the scratch project's slug>/ (it named only scratch paths)
+removed: /tmp/fusion-install.sh

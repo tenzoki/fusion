@@ -1,0 +1,69 @@
+# clause 3, one bin/fusion-write takeover of a package claimed by an absent checkout
+--- the absent checkout B
+git clone <S>/proj <S>/projB (the clone carries no .checkout-id, which is ignored)
+fusion-identity in B: minted 863f5f2f (stderr notes the workbench already carries another checkout identifier); CHECKOUT=863f5f2f exit 0
+fusion-write claim --record work-packages/261010-0856-smoke-test-second-package/package.json --actor user (in B): result=landed operation_id=e425d286-… revision=sha256:f519f2b8… exit=0
+B: commit 28f211a 'checkout B claims package 2'; A: git pull --ff-only <S>/projB main; then rm -rf <S>/projB (B absent)
+show in A: package 1 claim 6be3efe7 (A); package 2 claim 863f5f2f (absent B)
+
+--- the consent record (agents/orchestrator.md, Take over row)
+narrative work-packages/261010-0856-smoke-test-second-package/decisions/261010-0858-takeover-of-smoke-test-second-package.md:
+  | # Takeover of smoke-test-second-package
+  | 
+  | Smoke-test scaffold for the fusion v13.0.0 post-release proof (plan step 21). The words below stand in for a user's word; they were written by the analyst running the smoke test, in a scratch project, and carry no real approval.
+  | 
+  | The user: "Checkout 863f5f2f is gone: its clone was deleted and it will never write again. I approve the takeover of the work package 261010-0856-smoke-test-second-package from checkout 863f5f2f to this checkout, 6be3efe7."
+  | 
+  | Answered: 261010-0858-takeover-of-smoke-test-second-package.md — the takeover of 261010-0856-smoke-test-second-package from 863f5f2f to 6be3efe7 is approved; ruled by user, Step21 Scratch <step21@scratch.invalid>
+fusion-write create --kind decision --narrative-file <that> --origin work-packages/261010-0856-smoke-test-second-package/package.json --actor user
+  result=landed
+  operation_id=929b71dd-bc35-45e1-b5fc-29d9693395f9
+  path=work-packages/261010-0856-smoke-test-second-package/decisions/261010-0858-takeover-of-smoke-test-second-package.record.json
+  revision=sha256:9b91c6ab4df9e34c74149e2902e57d5ad36975cd7b14f291ef3b436a5de46009
+  event=logged
+  exit=0
+record id d5721c8c-d567-4b1d-94e3-d3776a0406a5; Answered: line appended to the narrative (above)
+fusion-write transition --record <decision>.record.json --to answered --reason "…" --answer-ref '{"workbench_id":"067292a6-2a3f-40d4-98b6-0cdeba3247dd","record_id":"d5721c8c-d567-4b1d-94e3-d3776a0406a5"}' --actor user
+  result=landed operation_id=1efa9188-… exit=0
+
+--- the takeover
+fusion-write claim --record work-packages/261010-0856-smoke-test-second-package/package.json --take-over-from 863f5f2f --source '{"workbench_id":"067292a6-2a3f-40d4-98b6-0cdeba3247dd","record_id":"d5721c8c-d567-4b1d-94e3-d3776a0406a5"}' --actor user
+  result=landed operation_id=7c7312c0-9101-4a40-b0c6-0bc6a5510df2 revision=sha256:2eb166b9… event=logged exit=0
+show after:
+{
+ "ok": true,
+ "status": "claimed",
+ "claim": {
+  "checkout_id": "6be3efe7",
+  "person": "Step21 Scratch <step21@scratch.invalid>",
+  "claimed_at": "2026-10-10T06:58:22Z"
+ },
+ "claim_transfers": [
+  {
+   "previous_claim": {
+    "checkout_id": "863f5f2f",
+    "person": "Step21 Scratch <step21@scratch.invalid>",
+    "claimed_at": "2026-10-10T06:56:48Z"
+   },
+   "claim": {
+    "checkout_id": "6be3efe7",
+    "person": "Step21 Scratch <step21@scratch.invalid>",
+    "claimed_at": "2026-10-10T06:58:22Z"
+   },
+   "inspected_revision": "sha256:f519f2b893abe266be9eedc24ca5d0b232f4b5563867faa12ce7d47e746a6526",
+   "operation_id": "7c7312c0-9101-4a40-b0c6-0bc6a5510df2",
+   "actor": {
+    "actor": "user",
+    "person": "Step21 Scratch <step21@scratch.invalid>"
+   },
+   "transferred_at": "2026-10-10T06:58:22Z",
+   "source": {
+    "workbench_id": "067292a6-2a3f-40d4-98b6-0cdeba3247dd",
+    "record_id": "d5721c8c-d567-4b1d-94e3-d3776a0406a5"
+   }
+  }
+ ]
+}
+record_change row: op claim, change {from claimed, to claimed, previous_checkout_id 863f5f2f, checkout_id 6be3efe7}
+validate: ok true, valid true, checked 3, findings 0
+reconcile: checked 3, intents 0, records 0, narratives 0; references: /control/answer_ref resolved, /provenance/claim_transfers/0/source resolved (both to the decision record)

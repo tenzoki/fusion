@@ -1,0 +1,62 @@
+# clause 4, section 9's read-back on foreign workbench 1 (location and name not recorded)
+--- readiness, read-only (GIT_OPTIONAL_LOCKS=0)
+08:52:55 first look: fusion-workbench/workbench.json present; the status call of that look failed on a misspelt git option and read nothing
+08:58:35 full check: workbench.json present; 'git status -sb' prints only '## main...origin/main' (level, no ahead/behind, no changed or untracked entry); HEAD = origin/main = 3b1558e6, committed 2026-10-10T08:52:23+02:00; the last four commits are the migration's commits (originals and pairs, rewritten records, manifest, events row)
+wait: none; the precondition held at the first complete check
+
+--- source digests (workbench content tree, .git content tree, whole-project stat list)
+[before-copy] 08:58:52
+  workbench  def7190134c8a4b516f86b69ff8756422bd15c69760f7206bcd312d5a7e57817 files=10015 dirs=1212
+  .git       b5aacd312b882bb4848997157658816b6d47d2cbca6d2191b2c1c9caaacdb63a files=696 dirs=277
+  stat-list  d8269a7bc07632361e9d68f2ca264d374c1075c88ba23fc2898c62cc1feb0cf7 entries=256258
+  HEAD       3b1558e6ed16782b7d431cfc16cf050134a869e8 origin/main 3b1558e6ed16782b7d431cfc16cf050134a869e8
+[after-copy] 08:59:52
+  workbench  def7190134c8a4b516f86b69ff8756422bd15c69760f7206bcd312d5a7e57817 files=10015 dirs=1212
+  .git       b5aacd312b882bb4848997157658816b6d47d2cbca6d2191b2c1c9caaacdb63a files=696 dirs=277
+  stat-list  d8269a7bc07632361e9d68f2ca264d374c1075c88ba23fc2898c62cc1feb0cf7 entries=256258
+  HEAD       3b1558e6ed16782b7d431cfc16cf050134a869e8 origin/main 3b1558e6ed16782b7d431cfc16cf050134a869e8
+[end-before-delete] 09:01:23
+  workbench  def7190134c8a4b516f86b69ff8756422bd15c69760f7206bcd312d5a7e57817 files=10015 dirs=1212
+  .git       b5aacd312b882bb4848997157658816b6d47d2cbca6d2191b2c1c9caaacdb63a files=696 dirs=277
+  stat-list  d8269a7bc07632361e9d68f2ca264d374c1075c88ba23fc2898c62cc1feb0cf7 entries=256258
+  HEAD       3b1558e6ed16782b7d431cfc16cf050134a869e8 origin/main 3b1558e6ed16782b7d431cfc16cf050134a869e8
+[after-delete] 09:02:00
+  workbench  def7190134c8a4b516f86b69ff8756422bd15c69760f7206bcd312d5a7e57817 files=10015 dirs=1212
+  .git       b5aacd312b882bb4848997157658816b6d47d2cbca6d2191b2c1c9caaacdb63a files=696 dirs=277
+  stat-list  d8269a7bc07632361e9d68f2ca264d374c1075c88ba23fc2898c62cc1feb0cf7 entries=256258
+  HEAD       3b1558e6ed16782b7d431cfc16cf050134a869e8 origin/main 3b1558e6ed16782b7d431cfc16cf050134a869e8
+=> all four readings equal
+
+--- copy
+cp -c -R -p <source> <S>/fcopy (APFS clone): exit 0, 43 s, free space 456 GiB before and after
+copy: remote origin removed (git remote empty); core.hooksPath was an absolute path to the source's own .githooks/, re-pointed to an empty <S>/emptyhooks
+copy workbench tree def71901… = source; git status --porcelain empty
+
+--- read-back run 1 (env -i, HOME=<S>/home with no git config, copy without a repo-local identity)
+list exit=0 ok=true records=748 by kind:status {"decision:answered":138,"issue:open":436,"plan:open":42,"package:done":34,"package:dropped":14,"package:open":55,"decision:open":3,"plan:in_progress":7,"package:paused":13,"issue:in_progress":1,"package:claimed":4,"plan:closed":1}
+show open: exit=0 ok=true kind=undefined status=open source=imported narrative=present revision=sha256:3b9c2335f8f2…
+show terminal: exit=0 ok=true kind=undefined status=done source=legacy-terminal narrative=present revision=sha256:ab4d90ae391e…
+fusion-paths analyst <open>: exit=0 OUT_ISSUE=work-packages/<open>/issues OUT_ANALYSIS=work-packages/<open>/analyses 
+fusion-paths analyst <terminal>: exit=0 OUT_ISSUE=work-packages/<terminal>/issues OUT_ANALYSIS=work-packages/<terminal>/analyses 
+fusion-paths analyst (no item): exit=1  fusion-identity: inside a git work tree, but git user.name and user.email are not set.
+fusion-work-order --format tsv: exit=0 lines=86 open-named=true terminal-named=false header=#format=2
+fusion-work-order (text) exit=0 items=72 edges=19 unmet-edges=0 unresolved-edges=0 cycles=0 ready=49 roots=59
+validate: exit=0 ok=true valid=true checked=748 findings=0
+fusion-claimed-package: exit=1 
+(kind=undefined on the show lines was this script's field name, corrected for run 2; fusion-paths (no item) and fusion-claimed-package exit 1 = fusion-identity's documented stop: no git user.name/user.email. The harness set none, as 261009-2148 set one before its reads.)
+
+--- read-back run 2 (after git config user.name 'Step21 Scratch' / user.email in the copy, the 261009-2148 harness)
+list exit=0 ok=true records=748 by kind:status {"decision:answered":138,"issue:open":436,"plan:open":42,"package:done":34,"package:dropped":14,"package:open":55,"decision:open":3,"plan:in_progress":7,"package:paused":13,"issue:in_progress":1,"package:claimed":4,"plan:closed":1}
+show open: exit=0 ok=true kind=package status=open source=imported narrative=present revision=sha256:3b9c2335f8f2…
+show terminal: exit=0 ok=true kind=package status=done source=legacy-terminal narrative=present revision=sha256:ab4d90ae391e…
+fusion-paths analyst <open>: exit=0 OUT_ISSUE=work-packages/<open>/issues OUT_ANALYSIS=work-packages/<open>/analyses 
+fusion-paths analyst <terminal>: exit=0 OUT_ISSUE=work-packages/<terminal>/issues OUT_ANALYSIS=work-packages/<terminal>/analyses 
+fusion-paths analyst (no item): exit=0 OUT_ISSUE=work-packages/<claimed>/issues OUT_ANALYSIS=work-packages/<claimed>/analyses 
+fusion-work-order --format tsv: exit=0 lines=86 open-named=true terminal-named=false header=#format=2
+fusion-work-order (text) exit=0 items=72 edges=19 unmet-edges=0 unresolved-edges=0 cycles=0 ready=49 roots=59
+validate: exit=0 ok=true valid=true checked=748 findings=0
+fusion-claimed-package: exit=0 PACKAGE=,CONTAINER=
+(the copy carries the source's .checkout-id, which holds one of the 4 claimed packages, so fusion-paths with no item resolves into that package: <claimed>)
+copy workbench after the reads: def71901… (unchanged by every read)
+
+--- end: copy deleted 09:01:37; source digests after deletion equal (above)
