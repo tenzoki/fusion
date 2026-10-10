@@ -1,0 +1,74 @@
+{
+  "$id": "urn:fusion:schema:fusion.explorer-role-input/v1",
+  "title": "fusion.explorer-role-input/v1",
+  "description": "The explorer's immutable role input, the explorer profile's input_schema. The caller's task carries the three domain fields question, path_scope and findings_limit and nothing else. The host adds project_context and output_contract itself and refuses a task that already carries a field of either name (internal/fusionhost/external_explorer.go at 8bab88a); it validates the composed object against this schema, freezes it, and the same bytes travel as RoleCall.input on every role call. Prior answer 67.6: the question and path scope are bounded and the findings limit is at most four; 67.2: project_context is host-supplied and frozen with the attempt; 67.7: output_contract is the actual result schema object, not a filename. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["question", "path_scope", "findings_limit", "project_context", "output_contract"],
+  "properties": {
+    "question": {
+      "description": "Caller's task: one bounded repository question.",
+      "type": "string",
+      "minLength": 1
+    },
+    "path_scope": {
+      "description": "Caller's task: the repository-relative paths the answer is bounded to; at least one.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "findings_limit": {
+      "description": "Caller's task: the most findings the result may carry. The result schema has no maxItems; the host and the module enforce this limit apart from it.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "project_context": {
+      "description": "Host-added: the project instruction files the host selected, root AGENTS.md falling back to CLAUDE.md, empty when neither exists. A reference to CLAUDE.md in the role's neutral text means these entries.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instructions"],
+      "properties": {
+        "instructions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256", "text"],
+            "properties": {
+              "path": {
+                "description": "Repository-relative, no traversal, each path once.",
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "description": "Over the supplied UTF-8 bytes of text, in the host's sha256:<hex> form.",
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "text": {
+                "description": "The whole file; never truncated.",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "output_contract": {
+      "description": "Host-added: the parsed object of the profile's result_schema asset, schemas/explorer-result.v1.json, whose $id this schema does not repeat. The host validates the role's answer against that same object.",
+      "type": "object",
+      "required": ["$id", "type", "required", "properties"],
+      "properties": {
+        "$id": { "type": "string", "minLength": 1 },
+        "type": { "const": "object" },
+        "required": { "type": "array" },
+        "properties": { "type": "object" }
+      }
+    }
+  }
+}

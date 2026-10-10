@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://prior.local/fusion/explorer-result-1.json",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["answer","findings","uncertainties"],
+  "properties":{
+    "answer":{"type":"string","minLength":1},
+    "findings":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["location","observation"],"properties":{"location":{"type":"string","minLength":1},"observation":{"type":"string","minLength":1}}}},
+    "uncertainties":{"type":"array","items":{"type":"string","minLength":1}},
+    "suggested_follow_up":{"enum":["analyst","implementation-planner","defect-fixer","none"]}
+  }
+}

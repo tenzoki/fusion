@@ -1,0 +1,13 @@
+{
+  "id": "explorer",
+  "parts": [
+    { "file": "parts/01-neutral.md", "tag": "neutral" },
+    { "file": "parts/02-prior.md", "tag": "prior" }
+  ],
+  "input_schema": "schemas/explorer-role-input.v1.json",
+  "result_schema": "schemas/explorer-result.v1.json",
+  "tools_ceiling": ["read", "list", "search"],
+  "may_delegate": false,
+  "writes_workbench": { "claude-code": false, "prior": false },
+  "execution_policy": { "claude-code": "claude-guided", "prior": "prior-enforced" }
+}

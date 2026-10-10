@@ -1,0 +1,26 @@
+{
+  "id": "explorer",
+  "capability": "fusion.explorer.v1",
+  "steps": [
+    {
+      "id": "explore",
+      "role": "explorer",
+      "input_from": {
+        "invocation_schema": "schemas/explorer-request.v1.json",
+        "role_input": "role_input",
+        "role_input_schema": "schemas/explorer-role-input.v1.json",
+        "forwarded": "verbatim",
+        "recovery_ref": "audit_ref"
+      },
+      "completion": {
+        "role_state": "settled",
+        "result_schema": "schemas/explorer-result.v1.json",
+        "findings_limit": "role_input.findings_limit",
+        "envelope_schema": "schemas/explorer-envelope.v1.json",
+        "status": "completed"
+      }
+    }
+  ],
+  "revise_bound": 0,
+  "requires": ["host.role.read.v1", "host.role.run.v1", "host.role.complete.v1"]
+}

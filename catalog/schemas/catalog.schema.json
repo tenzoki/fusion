@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.catalog/v1",
+  "title": "fusion.catalog/v1",
+  "description": "The role catalog, catalog/catalog.json, copied unchanged into the Prior bundle as catalog.json. One entry per canonical role; every Prior role id (Prior modules/fusion/profiles.json at 167c605) and every Claude agent name (agents/*.md) appears exactly once across the entries, through claude_name, prior_ids or an alias. Both keys are exactly the two Prior reads (internal/fusionhost/external_catalog.go at 8bab88a decodes with DisallowUnknownFields and an exact key count), so no further key is admitted here either. Support states: only prior supported is executable on Prior; planned ships for inspection and refuses dispatch, aliases included; unsupported refuses dispatch and needs no profile (Prior answer 67.2). Rules JSON Schema cannot check and the catalog tests (plan step 5) enforce: canonical ids are unique across entries (jq -r '.roles[].id' | sort | uniq -d prints nothing); claude_name values are unique; every prior_ids entry that differs from the canonical id is listed in aliases with its domain; no alias id equals a canonical id or another alias; every role whose prior state is not unsupported has catalog/profiles/<id>/profile.json, and the bundle carries profiles/<id>.json and profiles/<id>.md for it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "roles"],
+  "properties": {
+    "schema": { "const": "fusion.catalog/v1" },
+    "roles": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/role" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "description": "Prior's asset identifier shape (external_catalog.go assetID).",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "support_state": {
+      "type": "string",
+      "enum": ["supported", "planned", "unsupported"]
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "claude_name", "prior_ids", "aliases", "support"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "claude_name": {
+          "description": "The Claude Code agent name, agents/<claude_name>.md; null for a role with no Claude agent.",
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/id" }
+          ]
+        },
+        "prior_ids": {
+          "description": "Every Prior role id this entry covers; empty for a role Prior has never named. An id other than the canonical one is an alias and must appear in aliases.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "aliases": {
+          "description": "New-binding aliases of the canonical role, each carrying the domain the binding preserves (Prior answer 67.3: code-reviewer and data-reviewer alias reviewer with domains code and ontology).",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "domain"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "domain": {
+                "type": "string",
+                "enum": ["code", "ontology"]
+              }
+            }
+          }
+        },
+        "support": {
+          "description": "One state per host, never an absent key.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["claude-code", "prior"],
+          "properties": {
+            "claude-code": { "$ref": "#/$defs/support_state" },
+            "prior": { "$ref": "#/$defs/support_state" }
+          }
+        }
+      }
+    }
+  }
+}

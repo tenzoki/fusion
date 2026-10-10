@@ -1,0 +1,109 @@
+{
+  "$id": "urn:fusion:schema:fusion.explorer-envelope/v1",
+  "title": "fusion.explorer-envelope/v1",
+  "description": "The module's answer to a fusion.explorer.v1 invocation, the asset Prior selects as EnvelopeSchema (internal/fusionhost/external_explorer.go at 8bab88a). Exactly two members. domain is the module's own verdict: completed carries the role's result, which the host validates against the profile's result_schema and the findings limit; refused and recovery-required carry a null result, the latter when the role stands at accepted or a required audit is missing or invalid, never a fabricated audit or a fresh inference (Prior answer 67.5). host_evidence is the module's report of the host's own observations, copied from the role answer, or null when no answer exists, as for an accepted role; it is not independent evidence, and the host checks it against the pinned run (67.6). completed requires a settled role with host evidence present, and a refused or recovery-required answer cannot certify settlement. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["domain", "host_evidence"],
+  "properties": {
+    "domain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "result", "violations"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "refused", "recovery-required"]
+        },
+        "result": {
+          "description": "On completed, the stored role answer, valid against schemas/explorer-result.v1.json with at most findings_limit findings; otherwise null.",
+          "type": ["object", "null"]
+        },
+        "violations": {
+          "description": "Why the answer is not completed; empty on completed.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "detail"],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1
+              },
+              "detail": { "type": "string" }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": { "status": { "const": "completed" } }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "result": { "type": "object" },
+              "violations": { "type": "array", "maxItems": 0 }
+            }
+          },
+          "else": {
+            "type": "object",
+            "properties": {
+              "result": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "host_evidence": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["run_id", "principal_id", "observed_at", "role_state"],
+          "properties": {
+            "run_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "principal_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "observed_at": {
+              "description": "RFC 3339, as the host's role answer serialises its time.",
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+            },
+            "role_state": {
+              "description": "The role state the host reported when the answer was read.",
+              "type": "string",
+              "enum": ["absent", "accepted", "answered", "settled", "refused"]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "object",
+            "properties": { "status": { "const": "completed" } }
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": { "host_evidence": { "type": "object" } }
+      }
+    }
+  ]
+}

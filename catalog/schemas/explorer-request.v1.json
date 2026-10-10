@@ -1,0 +1,25 @@
+{
+  "$id": "urn:fusion:schema:fusion.explorer-request/v1",
+  "title": "fusion.explorer-request/v1",
+  "description": "The invocation input of fusion.explorer.v1, the asset Prior selects as RequestSchema (internal/fusionhost/external_explorer.go at 8bab88a) and validates at preparation and again on every invoke; the module validates it on receipt. Composition, which trusted host code performs (BuildInvocation): run_id is the host-provisioned run and role_input the role input the host froze, placed here byte for byte. The module forwards role_input unchanged as RoleCall.input on read, run, complete and restart; the host refuses a role call whose input differs from the frozen one. audit_ref is the host's recovery overlay: absent at preparation, set by the host on a fresh outer operation after a recorded recovery, and sent by the module only as RoleCall.audit_ref to host.role.complete.v1, never into the role input. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "role_input"],
+  "properties": {
+    "run_id": {
+      "description": "The host-provisioned run this attempt binds; the module creates none.",
+      "type": "string",
+      "minLength": 1
+    },
+    "role_input": {
+      "description": "The frozen role input, validated in full against schemas/explorer-role-input.v1.json (the explorer profile's input_schema) before composition. Typed loosely here so that this schema never restates that one.",
+      "type": "object",
+      "minProperties": 1
+    },
+    "audit_ref": {
+      "description": "A host-recorded recovery audit reference. Its presence never changes role_input.",
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

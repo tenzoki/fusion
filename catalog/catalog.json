@@ -1,0 +1,120 @@
+{
+  "schema": "fusion.catalog/v1",
+  "roles": [
+    {
+      "id": "orchestrator",
+      "claude_name": "orchestrator",
+      "prior_ids": ["orchestrator"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "consultant",
+      "claude_name": "consultant",
+      "prior_ids": ["consultant"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "explorer",
+      "claude_name": null,
+      "prior_ids": ["explorer"],
+      "aliases": [],
+      "support": { "claude-code": "unsupported", "prior": "supported" }
+    },
+    {
+      "id": "analyst",
+      "claude_name": "analyst",
+      "prior_ids": ["analyst"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "requirements-designer",
+      "claude_name": "requirements-designer",
+      "prior_ids": ["requirements-designer"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "implementation-planner",
+      "claude_name": "implementation-planner",
+      "prior_ids": ["implementation-planner"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "plan-reviewer",
+      "claude_name": null,
+      "prior_ids": ["plan-reviewer"],
+      "aliases": [],
+      "support": { "claude-code": "unsupported", "prior": "unsupported" }
+    },
+    {
+      "id": "work-planner",
+      "claude_name": null,
+      "prior_ids": ["work-planner"],
+      "aliases": [],
+      "support": { "claude-code": "unsupported", "prior": "unsupported" }
+    },
+    {
+      "id": "code-implementer",
+      "claude_name": "code-implementer",
+      "prior_ids": ["code-implementer"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "planned" }
+    },
+    {
+      "id": "data-implementer",
+      "claude_name": "data-implementer",
+      "prior_ids": ["data-implementer"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "defect-fixer",
+      "claude_name": null,
+      "prior_ids": ["defect-fixer"],
+      "aliases": [],
+      "support": { "claude-code": "unsupported", "prior": "unsupported" }
+    },
+    {
+      "id": "reviewer",
+      "claude_name": "reviewer",
+      "prior_ids": ["code-reviewer", "data-reviewer"],
+      "aliases": [
+        { "id": "code-reviewer", "domain": "code" },
+        { "id": "data-reviewer", "domain": "ontology" }
+      ],
+      "support": { "claude-code": "supported", "prior": "planned" }
+    },
+    {
+      "id": "state-auditor",
+      "claude_name": "state-auditor",
+      "prior_ids": ["state-auditor"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "planned" }
+    },
+    {
+      "id": "work-package-manager",
+      "claude_name": null,
+      "prior_ids": ["work-package-manager"],
+      "aliases": [],
+      "support": { "claude-code": "unsupported", "prior": "unsupported" }
+    },
+    {
+      "id": "document-editor",
+      "claude_name": "document-editor",
+      "prior_ids": ["document-editor"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "policy-curator",
+      "claude_name": "policy-curator",
+      "prior_ids": ["policy-curator"],
+      "aliases": [],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    }
+  ]
+}

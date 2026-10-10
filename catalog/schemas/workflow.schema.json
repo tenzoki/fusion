@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:fusion:schema:fusion.workflow/v1",
+  "title": "fusion.workflow/v1",
+  "description": "A workflow definition, catalog/workflows/<id>.v1.json, copied unchanged into the bundle as workflows/<id>.v1.json. The five keys are exactly the ones Prior reads (internal/fusionhost/external_catalog.go at 8bab88a, DisallowUnknownFields and an exact key count); a step's input_from and completion are free objects to Prior, which requires them non-empty, so the hand-over and the completion condition are stated there. revise_bound N is the maximum number of revisions after the initial attempt: N permits at most N+1 attempts, each on one host-provisioned run whose attempt map the host allocates and persists before dispatch (Prior answer 67.5). requires lists the host services the workflow calls; Prior compares it with the exact service map before starting the process and refuses on any absence (67.6). The module performs no preflight of its own: the module API's HostCaller exposes CallHost only, and no claim of a module-side check is made here or in the adapter. Rules JSON Schema cannot check and the catalog tests enforce: every step role resolves in the catalog to a role whose prior state is not unsupported, and every host_service appears in requires.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "capability", "steps", "revise_bound", "requires"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "capability": {
+      "description": "The module capability this workflow serves under module.invoke.",
+      "type": "string",
+      "pattern": "^fusion\\.[a-z][a-z0-9-]*\\.v[0-9]+$"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/step" }
+    },
+    "revise_bound": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "requires": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/host_service" }
+    }
+  },
+  "$defs": {
+    "host_service": {
+      "type": "string",
+      "pattern": "^host\\.[a-z][a-z0-9.-]*\\.v[0-9]+$"
+    },
+    "step": {
+      "description": "Exactly one of role (a catalog role the step dispatches) and host_service (a host capability the step calls).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "input_from", "completion"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "role": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "host_service": { "$ref": "#/$defs/host_service" },
+        "input_from": {
+          "description": "The hand-over: where the step's input comes from and which schema binds it.",
+          "type": "object",
+          "minProperties": 1
+        },
+        "completion": {
+          "description": "The condition under which the step is complete.",
+          "type": "object",
+          "minProperties": 1
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["role"],
+          "properties": { "role": true, "host_service": false }
+        },
+        {
+          "required": ["host_service"],
+          "properties": { "host_service": true, "role": false }
+        }
+      ]
+    }
+  }
+}
