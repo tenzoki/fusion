@@ -1,0 +1,132 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "39838955-5104-4329-b0ed-d083f87b86a2",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/plans/261010-1235-plan-fusion-prior-module-bundle-explorer-then-four-role-repair.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      },
+      {
+        "id": "8",
+        "state": "open"
+      },
+      {
+        "id": "9",
+        "state": "open"
+      },
+      {
+        "id": "10",
+        "state": "open"
+      },
+      {
+        "id": "11",
+        "state": "open"
+      },
+      {
+        "id": "12",
+        "state": "open"
+      },
+      {
+        "id": "13",
+        "state": "open"
+      },
+      {
+        "id": "14",
+        "state": "open"
+      },
+      {
+        "id": "15",
+        "state": "open"
+      },
+      {
+        "id": "16",
+        "state": "open"
+      },
+      {
+        "id": "17",
+        "state": "open"
+      },
+      {
+        "id": "18",
+        "state": "open"
+      },
+      {
+        "id": "19",
+        "state": "open"
+      },
+      {
+        "id": "20",
+        "state": "open"
+      },
+      {
+        "id": "21",
+        "state": "open"
+      },
+      {
+        "id": "22",
+        "state": "open"
+      },
+      {
+        "id": "23",
+        "state": "open"
+      },
+      {
+        "id": "24",
+        "state": "open"
+      },
+      {
+        "id": "25",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "02daf987-9486-402b-bce1-cc997a7c5b48"
+      },
+      "revision": "sha256:d0ff957ce0a04dfd432d3993aaffe1b8be6aea8433068e8d4ec7bb1e2ac7a205"
+    }
+  }
+}

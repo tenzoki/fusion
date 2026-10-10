@@ -3,8 +3,12 @@
   "id": "02daf987-9486-402b-bce1-cc997a7c5b48",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "open",
-  "claim": null,
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-10T10:27:42Z"
+  },
   "mode": {
     "value": "ordinary",
     "source": null
@@ -21,7 +25,16 @@
     "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/261008-1215-fusion-as-an-external-prior-module-bundle.md"
   },
   "depends_on": [],
-  "active_documents": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "39838955-5104-4329-b0ed-d083f87b86a2"
+      },
+      "role": "plan",
+      "revision": "sha256:d0ff957ce0a04dfd432d3993aaffe1b8be6aea8433068e8d4ec7bb1e2ac7a205"
+    }
+  ],
   "references": [],
   "evidence": [],
   "outcome": null,
