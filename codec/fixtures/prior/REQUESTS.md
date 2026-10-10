@@ -3682,3 +3682,216 @@ None of these gates 13.0.0. None asks Prior anything now.
 These rows supersede the rows in `### Requests 59 to 65, as they stand` above. **No request is open.**
 
 This section asks Prior nothing, and it opens no new request.
+
+## Module bundle (request 67, the contract proposal)
+
+**Written against:** fusion `537df66d` on `main` (2026-10-10 15:08), `v13.0.0-14-g537df66d`. Outside `fusion-workbench/` it differs from `v13.0.0` (`468d8e87`) in this file alone (`git diff --stat v13.0.0 537df66d -- . ':!fusion-workbench'`). At `537df66d` this file is 3 684 lines, `sha256:c0d0753cf51d259de222b1c7908a138a9917a97ac703f072f2c92a646d97f8da`. Prior was read at `167c605` (2026-10-10 06:35), the commit that answered 65. `git log --all` there names no later commit. Every Prior path below is read with `git show 167c605:<path>`, never from Prior's working tree. **The codec bundle is unmoved:** `codec/dist/fusion-record.js`, 699 011 bytes, `sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f`, the bundle `v13.0.0` ships.
+
+This section opens the separate external workflow delivery that `Prior: docs/design/fusion-prior-workflow-delivery-request.md` asks for: one pinned fusion revision with an extracted module bundle, the authored profile catalog, the bounded explorer workflow and the four-role repair contract, and the unchanged Claude Code distribution. Fusion's work package is `261008-1215-fusion-as-an-external-prior-module-bundle.md`, and its plan is `261010-1235-plan-fusion-prior-module-bundle-explorer-then-four-role-repair.md`. The plan builds nothing of the catalog, the adapter or the bundle before Prior's answer to this request is recorded. This request covers the bundle and the explorer. Request 69 will cover the repair's host services, its principals and its acceptance fixture.
+
+**It asks nothing about the codec.** The codec contract of requests 59 and 60 stays closed, and no codec byte or pinned path moves; as before, Prior's two pins differ from fusion's head in this file alone. No line above is edited.
+
+### What the request rests on, at `167c605`
+
+| Fact | Where |
+|---|---|
+| `moduleapi/v1` has 10 non-test files (`auth.go`, `doc.go`, `frame.go`, `host.go`, `manifest.go`, `protocol.go`, `reference.go`, `role_wire.go`, `roles.go`, `server.go`), 30 795 bytes, importing the Go standard library only. The module path is `github.com/kai/prior` (`go.mod`, `go 1.26.0`), which is not fetchable | `git ls-tree -r --long 167c605 moduleapi/v1/` |
+| "The SDK is the reference implementation for other languages; cross-language vectors must be added before claiming a non-Go binding works." | `docs/design/prior-module-api-v1.md`, line 106 |
+| The delivery request forbids pointing execution back into the fusion checkout and requiring "a local Go `replace` directive", and gives Prior "catalog/CLI routing" | `docs/design/fusion-prior-workflow-delivery-request.md`, item 1 and the paragraph that begins "With the delivery" |
+| Each role `Invocation.operation_id` is `capability + ":" + run_id`, and the durable role operation is `role:<run_id>`. "Host code provisions runs", together with "a copied run-to-profile allowlist". After a host restart, completion of a run in recovery "requires a host-recorded close audit; supplying an invented `audit_ref` does not suffice" | `docs/design/prior-module-api-v1.md` `## Durable role services`; `moduleapi/v1/role_wire.go` |
+| The manifest has one `executable` and no platform field. The bundle digest is `sha256:` over the compact `BundleIndex` of every regular file. `StartProcess` takes an absolute executable path and an explicit environment only, so no `PATH` reaches the module | `moduleapi/v1/manifest.go`; `docs/design/prior-installed-module-bundles.md` `## Inventory and persistence`; `internal/module/process.go` |
+| No CLI under `cmd/` uses `BundleManager`. "Operator install/activation commands and production repair routing remain the later CLI cutover", and "No provisional profile schema or workflow fallback is invented here." | `docs/design/prior-installed-module-bundles.md` `## Remaining integration` |
+| The host resolves a role's instructions from the embedded `modules/fusion/profiles.json` (17 entries, 3 580 bytes, one line of instruction each) and appends an `output_contract` sentence | `internal/fusionhost/roles.go` `BindRoles`, lines 72 to 96 |
+| The embedded module is `fusion` 1.8.0. Its repair keys each role call as `repair-role:<role>`, one per role and run. It refuses a role binding above 28 000 bytes and an answer above 16 384 bytes, and `client.go` sends the profile's `instruction` beside the prompt, not inside it | `modules/fusion/manifest.json`; `internal/repair/roles.go` `ask`, lines 38 to 75; `internal/repair/client.go` `Call` |
+| Initial V1 targets: "macOS arm64 with Docker Desktop and native Ubuntu 24.04 LTS amd64/arm64" | `concept/implementation-plan.md`, line 76 (Q-PLATFORM) |
+| "Git and a POSIX shell are Fusion prerequisites" | `concept/architecture.md`, line 737 |
+| `docs/design/fusion-dual-host-implementation-plan.md` and `docs/design/fusion-dual-host-boundary.md` are not in the commit | `git cat-file -e 167c605:docs/design/<file>` fails for both |
+
+### Fusion's proposal in brief
+
+One fusion source renders two outputs. A new package `catalog/` holds the role catalog, the role text split into `neutral`, `claude` and `prior` parts, the workflow definitions and the result schemas. Its Claude render reproduces `agents/<id>.md` byte for byte for the converted roles. Its Prior render becomes the bundle's profile assets. A separate adapter builds the module executable. Neither new surface reaches a Claude installation, because `install.sh` copies a fixed list of directories.
+
+The bundle, built reproducibly into an empty directory outside the repository:
+
+| Path in the payload | Content |
+|---|---|
+| `module.json` | the module API v1 manifest: `schema_version` 1, `module_id`, `version`, `runtime_api` `"1"`, `executable`, `data` |
+| `bin/fusion-module` | the executable (see 67.9 for the platform question) |
+| `catalog.json` | `{"schema": "fusion.catalog/v1", "roles": [{"id", "claude_name" \| null, "prior_ids": [..], "aliases": [{"id", "domain"}], "support": {"claude-code": S, "prior": S}}]}`, where `S` is `supported`, `planned` or `unsupported`, and `unsupported` is a state, never an absent key |
+| `profiles/<id>.md` | the rendered Prior instructions of each role whose `prior` state is not `unsupported` |
+| `profiles/<id>.json` | `{"id", "input_schema", "result_schema", "tools_ceiling": [Prior tool classes], "may_delegate", "writes_workbench": {"claude-code": bool, "prior": bool}, "execution_policy": {"claude-code": "claude-guided", "prior": "prior-enforced"}}` |
+| `workflows/explorer.v1.json` | `{"id", "capability", "steps": [{"id", "role" \| "host_service", "input_from", "completion"}], "revise_bound", "requires": [host capability names]}` |
+| `schemas/*.v1.json` | the request, result and envelope schemas |
+| `build-identity.json` | source commit, toolchain versions, platform, per-file sha256 |
+
+### 67. Does this bundle and explorer contract meet the delivery request?
+
+**Closes:** nothing in the codec. On fusion's side, the answer is recorded by plan step 3 and governs steps 4 to 11. The open fusion decision `261010-1235-in-which-language-is-the-prior-module-executable-built-and-how-does-it-consume-priors-module-api.md` waits for 67.4, 67.9 and 67.10. The answered decision `261010-1235-how-is-the-host-neutral-role-text-the-source-of-both-the-claude-agents-and-the-prior-profiles.md` (option 1) rests on 67.2. Preferred form: a Prior response document at a Prior commit that gives each of 67.1 to 67.10 one verdict, as for 62: accepted, corrected (with the correction), refused, or deferred (naming the Prior item it waits for).
+
+#### 67.1 Which committed text governs the delivery (G1)
+
+The delivery request "continues FH03/FH04/FH05/FH08". Those items are defined in `docs/design/fusion-dual-host-implementation-plan.md`, which is not in `167c605`, and neither is `fusion-dual-host-boundary.md`. The user's ruling of 2026-10-09 (`261009-1024-fusion-is-the-one-source-of-role-texts-and-workflow-rules-for-both-hosts.md`) cites the first at line 460. Fusion reads both files as context, not as contract.
+
+**Fusion's proposal:** this delivery is governed by the committed delivery request, `docs/design/prior-module-api-v1.md`, `docs/design/prior-installed-module-bundles.md`, and Prior's answer to this request. FH03, FH04, FH05 and FH08 serve as names until a Prior commit carries the plan that defines them.
+
+**Asked:** Does Prior confirm this? If not, which commit will carry the dual-host plan and the boundary document, and which of their sections bind this delivery?
+
+#### 67.2 The profile catalog, and where the host resolves a role's instructions (G2)
+
+At `167c605` the host resolves instructions from the embedded `profiles.json`, and the bundles document invents no profile schema for an external bundle.
+
+**Fusion's proposal:**
+
+- The bundle carries `catalog.json`, `profiles/<id>.md` and `profiles/<id>.json` in the shapes above, listed in the manifest's `data`.
+- Prior's host resolves a bound role's instructions from `profiles/<id>.md` in the installed, digest-verified payload of the bound bundle. It derives the tool ceiling, `may_delegate` and `writes_workbench` from `profiles/<id>.json`, and it refuses a role whose `prior` state is `unsupported`.
+- The host keeps owning the principal, model, tool authority, budget and limits, as `## Durable role services` states. The ceiling in `profiles/<id>.json` narrows what a host may grant. It never widens it.
+
+A rendered profile is the role's `neutral` part plus its `prior` part. The neutral parts are byte-equal to spans of the committed Claude prompts: 8 574 bytes for `code-implementer`, 8 727 for `reviewer` and 12 192 for `state-auditor`. The explorer has no Claude prompt, so its parts are authored new.
+
+**References the neutral text makes that Prior cannot resolve.** The neutral parts cite `CLAUDE.md` 15 times as the source of project facts (the build and test command, the source root, the project's rules) and `rules/user-facing-output.md` 3 times, once at the end of each role. Prior has no target for either: there is no `CLAUDE.md` in `167c605`, and the bundle carries no rule corpus. The ruling forbids changing the neutral bytes, because they are the Claude bytes too. So the referent has to come from the Prior side. The `prior` part can say what "`CLAUDE.md`" means on Prior, but it cannot invent a file.
+
+**Context only.** Prior's embedded implementer prompt says "You cannot execute commands" (`internal/repair/roles.go`, line 131). Fusion's neutral implementer text requires the role to run the project's build and test command to completion and to report its exit code. Prior's own `profiles.json` gives `code-implementer` the tool class `process`. Whether a Prior implementer may run a check is a host-services question for request 69's G8. An answer to this question that fixed a profile's tools would decide request 69 in advance, so fusion asks that it does not.
+
+**Asked:**
+
+1. Does Prior accept the catalog and profile file shapes, and host resolution of instructions from `profiles/<id>.md` in the installed payload?
+2. Does the host supply the project's instructions to a role? If so, from which file, in which bound, and in the instructions or the role input? Fusion's `prior` part would then name that source wherever the neutral text says `CLAUDE.md`.
+3. May the bundle carry the cited rule file, `rules/user-facing-output.md`, as payload data that the host appends to the instructions or that the `prior` part names? If not, fusion's `prior` part states the rule's content in its own words.
+
+#### 67.3 Module id, version and old runs (G3)
+
+**Fusion's proposal:**
+
+- `module_id` is `fusion`, and `version` is the fusion release that carries the bundle (13.1.0 is proposed). Both match the manifest's patterns.
+- The embedded `fusion` 1.8.0 runs stay under their own pin. The bundles document already keeps exact old pins usable after deactivation or upgrade, refuses to rebind an owner to another module or version, and never replaces an existing module and version with a different digest.
+- The catalog lists every Prior role id at `167c605` and every Claude agent name once. `code-reviewer` and `data-reviewer` are aliases of `reviewer` with domain `code` or `ontology`, as fusion's shipped `README-agents.md` `## The agents` already states.
+- **The alias never re-keys an old run.** Embedded repair runs are stored under `repair-role:code-reviewer` (`internal/repair/roles.go` `ask`), and their snapshot maps that role to the principal `reviewer` (lines 322 to 331). Those runs stay readable under their stored keys and principals. The alias applies only when a new run is bound. Request 69 tests this readability.
+
+**Asked:**
+
+1. Is an installed external module `fusion` at version 13.x admissible beside the embedded `fusion` 1.8.0, or must the external bundle carry a module id of its own?
+2. Does Prior accept the alias rule, with old runs keyed `repair-role:code-reviewer` read unchanged?
+
+#### 67.4 How the adapter consumes `moduleapi/v1` (G4)
+
+Fusion has not ruled this. Decision `261010-1235-in-which-language-is-the-prior-module-executable-built-and-how-does-it-consume-priors-module-api.md` stays open, and the user wants Prior's answer first.
+
+**Fusion's proposal:** the adapter is Go. The SDK is the reference implementation, and a non-Go binding would first need Prior's cross-language vectors. A static build (`CGO_ENABLED=0 -trimpath -buildvcs=false`) needs no runtime on Prior's machine and no `PATH`.
+
+`github.com/kai/prior` is not fetchable, and a local `replace` is forbidden. That leaves two routes:
+
+- **(a) Built in a Prior checkout.** Fusion's adapter source, at the pinned fusion revision, is built inside a clean checkout of Prior at the pinned Prior revision, against Prior's own `moduleapi/v1`. The import then resolves inside Prior's module, with no fetch, no `replace` and no copy in fusion's tree. Nothing is committed to Prior. The build identity names two source revisions, fusion's and Prior's, and the Go toolchain version.
+- **(b) A vendored copy.** The 10 non-test files of `moduleapi/v1` at the pinned Prior revision are copied into fusion's tree, unchanged except for the import path. A provenance file names the revision and each file's sha256, and a check compares the copy with `git show <rev>:moduleapi/v1/<file>` whenever a Prior checkout is given. The copy accepts no independent fixes and is removed once Prior publishes a fetchable module.
+
+The user has voiced a preference for building in a Prior checkout, route (a). That is a preference, not a ruling.
+
+**Asked:** Which route does Prior accept while the module path is not fetchable: (a), (b), or a fetchable form Prior names, and by when? Under (a), where in Prior's tree does the adapter source sit during the build, and does Prior's `go.mod` (`go 1.26.0`) govern the toolchain?
+
+#### 67.5 Run ids, attempts and `audit_ref` (G5)
+
+Prior's host provisions runs, and the module cannot. `BindRoles` binds "exactly the four slice roles with fixed run identities" (`internal/fusionhost/roles.go`), and the embedded repair keys one operation per role and run.
+
+**Fusion's proposal:**
+
+- The module never mints a run id or an audit reference.
+- The workflow invocation's input carries the host-provisioned run id for each step. On a re-invocation after a host restart, it also carries the `audit_ref` the host recorded for any run in recovery.
+- On every invocation, each step first calls `host.role.read.v1` with its run id. It runs only on `absent`. It treats `accepted` as `recovery-required` and never re-runs it, and it completes an `answered` role with the input's `audit_ref` when one is required.
+- The explorer needs one run id.
+- **Attempts.** The repair of request 69 proposes a bounded revise loop, and one run id per role and run cannot carry it. Fusion proposes that the host provision one run id per attempt, up to the workflow's `revise_bound`, as a list per profile in the invocation input (`"runs": {"code-implementer": ["<attempt 1>", "<attempt 2>"]}`). Attempt *i* uses entry *i*, and no attempt reuses another's id.
+
+**Asked:**
+
+1. Does Prior accept run ids and `audit_ref` carried in the invocation input?
+2. May the host provision several run ids for one profile within one workflow run, so that each attempt has its own durable identity? Who mints them: the host, as fusion proposes, or another form Prior prefers, such as an attempt index inside the run id?
+
+#### 67.6 Routing an installed external workflow, and the explorer capability (G6)
+
+The delivery request gives Prior "catalog/CLI routing". At `167c605`, installation and dispatch of an external module are a library only, so a real explorer run through the installed process needs a route that Prior builds.
+
+**Fusion's proposal:** the explorer is the module capability `fusion.explorer.v1`, invoked by `module.invoke`.
+
+- **Input,** `schemas/explorer-request.v1.json`: one bounded repository question, its path scope, a findings bound of at most 4 (as Prior's embedded explorer has), and the run id of 67.5.
+- **Result:** Prior's `modules/fusion/schemas/explorer-result.json`, adopted unchanged as `schemas/explorer-result.v1.json` (`answer`, `findings`, `uncertainties`, `suggested_follow_up`), so that embedded explorer results decode against it. Its `suggested_follow_up` enum names `defect-fixer`, which fusion has no agent for, and the catalog lists it as an id that is `unsupported` on both hosts.
+- **Envelope:** fusion's domain verdict is kept apart from Prior's evidence, `{"domain": {"status": "completed" | "refused" | "recovery-required", "result": <explorer-result.v1> | null, "violations": [..]}, "host_evidence": {"run_id", "principal_id", "observed_at", "role_state"}}`. The host evidence is copied from the host's answer and never asserted by the module.
+- **Requires:** `host.role.run.v1`, `host.role.read.v1` and `host.role.complete.v1`. The module refuses before any dispatch when one is not offered.
+- **Routing:** Prior resolves `fusion.explorer.v1` to the active installed `fusion` version, binds the owner, provisions the run id and starts the process.
+
+**Asked:**
+
+1. Are the capability name, the input schema and the envelope acceptable?
+2. Which command or library entry will dispatch an installed external workflow for request 68, and when will it exist? Request 68 cannot run without it.
+
+#### 67.7 The output contract and the role-input budget (G7)
+
+Today Prior's host appends an `output_contract` sentence to every embedded instruction (`internal/fusionhost/roles.go`, line 96). The embedded repair prompts carry their output contract and token targets inline: 500 output tokens for the explorer, 600 for the reviewer, 800 for the auditor and "under 1000 tokens" for the implementer.
+
+**Fusion's proposal:**
+
+- The `prior` part of each profile authors the role-side wording of the output contract: return exactly one JSON object that matches the schema in the role input.
+- The schema itself travels in the role input as `output_contract`, taken from `profiles/<id>.json` `result_schema`.
+- **Profile text travels apart from the role input,** as `client.go` sends `instruction` beside `prompt`. A rendered profile is 8.5 to 12.2 KB of neutral text plus a `prior` part. Counted against the embedded repair's 28 000-byte budget, it would leave too little room for the brief. Kept apart, it never enters a `RoleCall`, so it never meets the 1 MiB frame either.
+
+**Asked:**
+
+1. Does the host keep appending its `output_contract` sentence for external profiles? If it does, fusion's `prior` part does not restate it. If not, the part carries the whole contract.
+2. Does rendered profile text count against the role-input budget, or does it travel apart as `instruction` does, as fusion proposes? If a budget applies to instructions, what is it?
+
+#### 67.8 Delivery channel and development trust (G11)
+
+**Fusion's proposal:**
+
+- The bundle is delivered as a deterministic tarball at a location outside both repositories, together with three things: its bundle digest, computed by the documented `BundleIndex` algorithm with `manifest_path` `module.json`, its `build-identity.json`, and the build command.
+- Prior extracts the tarball and runs `InspectBundle` with the explicit manifest path. It compares the identity with the stated digest, then installs with explicit trust and activates.
+- The bundle is unsigned. As the bundles document says, a digest never confers trust, so trusting each digest is the operator's explicit act.
+- The tarball's location (a local path, or a release asset) is proposed here and ruled by Prior's answer and the user.
+
+**Asked:**
+
+1. Is an unsigned bundle under explicit operator trust enough for requests 68 and 70?
+2. Which delivery location does Prior want?
+3. Will Prior require a signature or a publisher manifest later? If it will, from which request on?
+
+#### 67.9 One bundle, or one bundle per platform
+
+Prior V1 starts with three targets: macOS arm64, and Ubuntu 24.04 amd64 and arm64 (Q-PLATFORM). The manifest names one `executable` and has no platform field, and the bundles document states no platform rule. A Go build is one binary per target, so the bundle's shape depends on Prior's reading.
+
+- **(a) One bundle.** The manifest's `executable` is a POSIX `sh` launcher, `bin/fusion-module`, starting `#!/bin/sh`. It selects `bin/<os>-<arch>/fusion-module` by an absolute-path `/usr/bin/uname` call and `exec`s it. It must run without `PATH`, since `StartProcess` passes none. The executable digest Prior checks would be the launcher's. The three binaries are payload files that `Start` rehashes like every other file, and installation keeps their execute bit (mode 0500). One bundle identity serves all three targets.
+- **(b) One bundle per platform.** Each target is its own bundle with its own identity, and a release states three digests. The executable Prior hashes is the binary that runs.
+
+Fusion can build either. (a) keeps one digest per release for requests 68 and 70. (b) keeps the hashed executable and the running process the same file.
+
+**Asked:** Is (a) admissible: a launcher as the manifest's executable that runs without `PATH`, with the running binary verified as a payload file? Or must each platform be its own bundle with its own identity?
+
+#### 67.10 Who may build the executable
+
+The delivery request's acceptance "will not be satisfied by an embedded fallback or a synthetic module relabelled as Fusion".
+
+- **(A) Fusion builds it.** The executable comes from fusion: built from fusion's source at the pinned revision, as 67.4 describes, and delivered in the bundle.
+- **(B) Prior builds it.** Prior writes and builds an interpreter that runs fusion's catalog and workflow data from the bundle, and fusion delivers the data alone.
+
+**Fusion's proposal is A.** It follows from the user's ruling of 2026-10-09, under which fusion delivers the role catalog "samt ausführbarem Workflow", and it needs no Prior-side work before the explorer can run. A Prior answer for B would change item 1 of fusion's work package: the executable would leave fusion's delivery, 67.4 and 67.9 would become Prior's to settle, and fusion's open decision on the executable would be answered differently.
+
+**Asked:** Would Prior accept B, an interpreter Prior writes and builds that runs fusion's catalog and workflow data, as the real external Fusion module under that clause? Or must the executable come from fusion, as in A?
+
+### What fusion does with the answer
+
+- Plan step 3 records each answer by question number, together with the Prior commit that holds it. Where an answer changes a proposal, the record names the later plan step it changes. Steps 4 onward follow the answer, not this proposal.
+- If Prior refuses or defers 67.2, 67.5 or 67.6, the work stops at that answer. The package is paused, its narrative names the Prior item it waits for, and no embedded or synthetic substitute is built.
+- An answer for B in 67.10 sends fusion's plan back to the user before step 4, because it changes item 1 of the package.
+- 67.4 and 67.9 matter only under A. Their answers go to the user, who rules the open decision on the executable.
+
+### Requests 59 to 67, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 59 | **complete** at Prior `d6abeb8`, for `f9ecae78`; re-asked as 63 | `Prior: docs/design/fusion-fj04-correction-prior-response.md` `## 59: shared fixtures` |
+| 60 | **complete** at `d6abeb8`; `c76bbce9…` qualified; re-asked as 64 | the same document, `## 60: runtime qualification` |
+| 61 | **answered Yes** at Prior `7da6690` | `Prior: docs/design/fusion-fj03d-prior-response.md` |
+| 62 | **accepted with corrections** at Prior `f32bf4a` | `Prior: docs/design/fusion-claim-takeover-prior-response.md` |
+| 63 | **complete** at Prior `34a2710`, for `dd4bf3d4` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 63 — Shared schemas and fixtures` |
+| 64 | **complete** at `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, the bundle `v13.0.0` ships | the same document, `## 64 — Runtime snapshot and replay` |
+| 65 | **complete**: "Yes" at Prior `167c605`, for C = `468d8e87`, now `v13.0.0` | `Prior: docs/design/fusion-fj05-release-evidence-prior-response.md` |
+| 66 | **never asked** (decision A2, option 1) | `## FJ05 (the release evidence at 468d8e87)` above |
+| 67 | **asked** above: the module bundle and explorer contract, questions 67.1 to 67.10, written against fusion `537df66d` and Prior `167c605` | this section |
+
+These rows supersede the rows in `### Requests 59 to 66, as they stand` above. Request 67 is the one open request.
