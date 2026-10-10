@@ -3,7 +3,7 @@
   "id": "88f7b586-6715-4ead-99a1-f82332e6946b",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -65,7 +65,20 @@
     }
   ],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "FJ00 to FJ05 landed; FJ05 accepted (shared contract by Prior, request 65 at Prior 167c605; host side by the user); fusion v13.0.0 released at 468d8e87 with post-tag proof and marketplace entry",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "4730fcc7-e8fe-4ad7-9a74-0a65bcdbdfe5",
+          "revision": "sha256:46315343c2b15e0f3bb3a99365d102e12b1b2ded6de1b98e56db9f296fb6fe35"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "imported",
     "legacy_fields": {

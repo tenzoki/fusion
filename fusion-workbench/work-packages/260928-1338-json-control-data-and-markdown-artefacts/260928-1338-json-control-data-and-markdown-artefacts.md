@@ -14,3 +14,21 @@ Implement the Fusion side of the specification Prior holds at `concept/fusion-js
 **Paused 2026-10-09:** the user asked to run the analysis package `261009-0641-analysis-v13-completeness-prior-integration-host-parity` autonomously; this item waits for that analysis and for the user's own test of the 13.0.0 window build, then for FJ05's release acceptance (a review pass over the plan range and the fresh-install evidence).
 
 **Resumed 2026-10-09:** the analysis package `261009-0641-analysis-v13-completeness-prior-integration-host-parity` is done. The user ruled that FJ05 closes the administrative takeover of an orphaned claim (Prior request 38, accepted in principle at Prior `b912302`) before 13.0.0 is released: fusion specifies the contract addendum, Prior reviews it, then the codec revision, both hosts, a new pin and a conformance run.
+
+**Closed 2026-10-10 (done, outcome completed):** FJ00 to FJ05 landed on `fj-json-workbench`, released as fusion `v13.0.0` at `468d8e87` (`origin/main` fast-forwarded from `48f0c9ff`, kept as `backup/261010-v12.2.3`); this session's range `f38ad6d0..` HEAD. The shared contract was accepted by Prior (request 65, Prior `167c605`), the host side by the user. The closing review `261010-1046-reviewer-closing-pass-over-the-uncovered-fj00-to-fj05-commits.md` (verdict revise, nothing high or critical) brings coverage since `d84b8dfd` to `covered` and files ten issues for 13.0.1; with this session's deferred findings, the open issues in this container carry past 13.0.0. Mode autonomous: the plan's stop conditions were not put to the user; they are carried here verbatim from `261009-1021-plan-fj05-release-acceptance-of-13-0-0-with-the-claim-takeover.md` `## Where this work stops`, and the user's rulings that changed what they ask (one foreign workbench instead of two; no Prior test as a release precondition; the real migration after the release, accepted after the fact) are in that plan's step notes:
+
+- Prior answered request 62 with acceptance, or with corrections that steps 5 to 8 carried, and the answer is recorded in `REQUESTS.md`.
+- The takeover is implemented in the codec, the client and the shipped text, and decision `260930-2305_*_how-is-a-claim-held-by-a-checkout-that-no-longer-exists-released-under-response-22.md` is `implemented` with step 8's commit.
+- Prior qualified the bundle digest that C carries (requests 63 and 64), and the answer is recorded.
+- Issues 261009-0647 and 261009-0644 are closed.
+- Every high or medium finding of G-A and G-B is closed, and G-C reported none, or the user ruled on each one it reported.
+- At C, in an isolated clone: the hooks suite is green, the codec suite with `CODEC_REQUIRE_GOLDENS=1` reports 0 skipped, the digest equals the qualified one, and `bin/fusion-review-coverage --since cd1b5522 --head C` reads `verdict=covered`.
+- Both foreign copies were re-migrated at C: valid, no-op second run, resumed kill, byte-identical rollback, source hashes unchanged, and no record names their locations.
+- The observation suite ran once at C, every case is recorded, its transcripts are in the workbench, and every failure has an issue.
+- Decisions `261009-1021-who-accepts-fj05-and-may-13-0-0-ship-on-fusions-evidence-alone.md` and `261009-1021-must-fj05-show-priors-access-path-on-a-real-migrated-workbench.md` were answered by the user before steps 17 and 18 ran.
+- Precondition of the release act: the user approved step 20 and confirmed their own test with Claude and with Prior, and Prior's answer was "yes" where decision A1 requires one.
+- `origin/main` and `v13.0.0^{commit}` both equal C.
+- A fresh install from the tag equals `git archive v13.0.0` on every installed path, read back one open and one terminal record from a freshly migrated real v12 copy, and passed the smoke test in a second project.
+- The marketplace entry reads 13.0.0, with its description agreeing with `plugin.json`'s.
+- `~/.fusion` and `~/.local/bin/fusion` are byte-identical to the values recorded at step 14, at every step after it.
+- The closing report is appended to `REQUESTS.md` and pushed.
