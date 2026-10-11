@@ -1,0 +1,1 @@
+ If the aggregate result is anything but `coherent`, or `coherent` with recommendation `state brief`, the host (not the state-auditor) puts the Rebalance choice to the user after consuming this result. The state-auditor asks the user nothing and has no surface to ask on.

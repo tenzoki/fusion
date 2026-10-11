@@ -1,0 +1,1 @@
+3. Record nothing in a workbench: this role writes no workbench record on Prior. The source's note, an issue's resolution line and a decision's implementation line are the host's to write from your answer once it has read your `Verification:` line, and no state moves on your word.

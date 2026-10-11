@@ -92,8 +92,12 @@ export const PRIOR_PROFILE_KEYS = [
 // inlines "the cited rule file", nothing wider.
 export const INCLUDE_DIRECTIVE = /^\{\{include ([^}]*)\}\}$/;
 export const INCLUDABLE_PATH = /^rules\/[a-z0-9-]+\.md$/;
-// What the Prior render must not carry afterwards: any directive opener.
-export const DIRECTIVE_OPENER = /\{\{/;
+// What the Prior render must not carry afterwards, and what a neutral or
+// claude part may never hold: a line that is a directive. The test is the
+// whole-line form the resolver acts on, not a bare `{{`: the committed
+// reviewer prompt names `{{.X}}` inside a sentence as a template example,
+// and that text is bytes the Claude render must reproduce.
+export const DIRECTIVE_LINE = /^\{\{.*\}\}\s*$/m;
 
 export class RenderError extends Error {}
 
@@ -192,7 +196,7 @@ export function resolveIncludes(part: Buffer, where: string, ctx: IncludeContext
   for (const line of text.split("\n")) {
     const m = INCLUDE_DIRECTIVE.exec(line);
     if (m === null) {
-      if (DIRECTIVE_OPENER.test(line)) {
+      if (DIRECTIVE_LINE.test(line)) {
         throw new RenderError(`${where}: unresolved directive: ${line.trim()}`);
       }
       out.push(line);
@@ -208,8 +212,8 @@ export function resolveIncludes(part: Buffer, where: string, ctx: IncludeContext
     }
     const bytes = readFileSync(file);
     const body = bytes.toString("utf8");
-    if (DIRECTIVE_OPENER.test(body)) {
-      throw new RenderError(`${where}: included file ${path} carries a directive opener`);
+    if (DIRECTIVE_LINE.test(body)) {
+      throw new RenderError(`${where}: included file ${path} carries a directive line`);
     }
     // The included file ends with its own newline, which closes the directive line.
     out.push(`${provenanceLine(path, ctx.commit, bytes)}\n\n${body.replace(/\n$/, "")}`);
@@ -231,10 +235,10 @@ export function renderParts(catalogDir: string, profile: Profile, host: "claude"
       if (ctx === undefined) throw new RenderError(`${path}: a prior part needs an include context`);
       chunks.push(resolveIncludes(bytes, path, ctx));
     } else {
-      // A neutral or claude part is bytes: a directive there would reach the
-      // Claude prompt unresolved, so it is refused here rather than rendered.
-      if (DIRECTIVE_OPENER.test(bytes.toString("latin1"))) {
-        throw new RenderError(`${path}: a ${part.tag} part carries a directive opener`);
+      // A neutral or claude part is bytes: a directive line there would reach
+      // the Claude prompt unresolved, so it is refused here rather than rendered.
+      if (DIRECTIVE_LINE.test(bytes.toString("latin1"))) {
+        throw new RenderError(`${path}: a ${part.tag} part carries a directive line`);
       }
       chunks.push(bytes);
     }

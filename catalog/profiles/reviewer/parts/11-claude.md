@@ -1,0 +1,1 @@
+ loaded in Setup step 2 (`bin/fusion-rules` emits any `*ontology*`, `*normative*` or `*verb*` rule files from `./rules/`)

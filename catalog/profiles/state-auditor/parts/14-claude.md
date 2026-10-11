@@ -1,0 +1,1 @@
+ If the aggregate result is anything but `coherent`, or `coherent` with recommendation `state brief`, the orchestrator (not the state-auditor) opens the Rebalance approval after consuming this result (`agents/orchestrator.md` `## Reconciliation, and the one approval it opens`). The state-auditor does not present `AskUserQuestion`.

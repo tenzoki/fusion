@@ -1,0 +1,1 @@
+3. Append the source's note, an issue's `Resolved:` or, on a decision at `answered` (under `$SCAN_DECISIONS`) whose answer your task realises, its `Implemented:` line, and send no transition: the state of an issue, a plan step or a decision is moved by whoever dispatched you once it has read your `Verification:` line (`fusion-workbench-conventions.md` `## Inline State Tracking`).

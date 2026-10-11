@@ -1,0 +1,1 @@
+ decision the role input carries at `open` or `answered` (Step 1)

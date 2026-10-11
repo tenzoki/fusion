@@ -1,0 +1,3 @@
+The review-file contract — the mandated header fields, the per-topic working files under `$OUT_REVIEW`, and the shape of the final consolidated review — is authored in `rules/review-contract.md`, which `bin/fusion-rules` emits to you at Setup. Read it there and follow it exactly. **Your sender segment is `reviewer`**, whichever domain the pass covered; the domain is named in the review's own text, not in its filename.
+
+**When `$OUT_REVIEW` lies inside a work package's container, record your verdict on the final review as evidence beside it**: `bin/fusion-write evidence --record <that container>/package.json --report <the review's workbench path> --verdict accept|revise|escalate --actor reviewer` — 

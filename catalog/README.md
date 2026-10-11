@@ -50,9 +50,10 @@ Writes into an empty `<dir>`, for every role whose `prior` state is not
   directive a `prior` part may carry, `{{include rules/<name>.md}}` on a line
   of its own, is replaced by the file's bytes under a provenance line,
   `Included from fusion: <path> (commit <HEAD>, sha256:<hex>)`, so the
-  rendered text has no runtime include (Prior answer 67.2). A directive in a
-  `neutral` or `claude` part, an include outside `rules/`, or a target that
-  does not exist is an error.
+  rendered text has no runtime include (Prior answer 67.2). A directive line
+  in a `neutral` or `claude` part, an include outside `rules/`, or a target
+  that does not exist is an error; a `{{` inside a sentence is not a
+  directive (the reviewer prompt names `{{.X}}` as a template example).
 - `profiles/<id>.json`: the profile with exactly the seven keys Prior's loader
   decodes, `parts` dropped, in Prior's struct order.
 
@@ -97,4 +98,7 @@ is inlined through the include directive.
 `hooks/lib/__tests__/reference-resolution-lint.test.ts` does not scan
 `catalog/`. A citation inside a part that points at a heading or a file that
 no longer exists is caught by nothing here; the tests check tokens, includes,
-schemas, id resolution and byte equality, and no more.
+schemas, id resolution and byte equality, and no more. The token lint over a
+Prior render reads the overlay and not the inlined rule's bytes, which name
+Claude surfaces by their names and are carried verbatim by contract; that
+each `prior` part says what those names mean on Prior is read by a person.

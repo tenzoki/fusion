@@ -1,0 +1,2 @@
+**An issue whose answer was written down, in a later analysis or design document, but not built is not closed.** Append an annotation citing where the answer is recorded and leave it `open` — those items are decisions misfiled as issues. Surface them in your report under "Misfiled — should be a decision" so the user can refile them as decisions, whose five states can express their true state. Closing an issue only happens when its answer has been *implemented* in code or data.
+

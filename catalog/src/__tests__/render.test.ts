@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import {
+  INCLUDE_DIRECTIVE,
   PRIOR_ALIAS_KEYS,
   PRIOR_CATALOG_KEYS,
   PRIOR_HOSTS,
@@ -375,7 +376,7 @@ describe("render prior (fixture)", () => {
     ]);
   });
 
-  it("refuses a directive in a neutral part, an include outside rules/, and a missing include target", () => {
+  it("refuses a directive line in a neutral part, an include outside rules/, and a missing include target", () => {
     const bad = (partText: string, tag: "neutral" | "prior") => {
       const dir = tmp("prior-bad");
       writeFileSync(join(dir, "catalog.json"), readFileSync(join(catalogDir, "catalog.json")));
@@ -386,7 +387,10 @@ describe("render prior (fixture)", () => {
       writeFileSync(join(dir, "profiles", "alpha", "parts", "01.md"), partText);
       return () => renderPrior(dir, tmp("prior-bad-out"), { fusionRoot, commit });
     };
-    expect(bad("x {{include rules/user-facing-output.md}}\n", "neutral")).toThrow(/neutral part carries a directive/);
+    expect(bad("{{include rules/user-facing-output.md}}\n", "neutral")).toThrow(/neutral part carries a directive/);
+    // A `{{` inside a sentence is not a directive: the committed reviewer
+    // prompt carries `{{.X}}` as a template example, and that renders.
+    expect(bad("no literal `{{.X}}` leaks\n", "neutral")).not.toThrow();
     expect(bad("{{include ../secret.md}}\n", "prior")).toThrow(/outside the rule corpus/);
     expect(bad("{{include rules/absent.md}}\n", "prior")).toThrow(/include target missing/);
     expect(bad("{{other}}\n", "prior")).toThrow(/unresolved directive/);
@@ -417,10 +421,24 @@ describe("render prior (live catalog)", () => {
     }
   });
 
-  it("no rendered profile carries a Claude token or an unresolved include", () => {
+  // The inlined rule file is Claude Code's own text, carried with its bytes
+  // preserved and its provenance hashed (Prior answer 67.2 (iv)), so it names
+  // Claude surfaces by their names. The token lint reads the overlay around
+  // it: what the overlay says about those surfaces is the prior part's job.
+  const inlined = partsOf("prior").flatMap((p) =>
+    readFileSync(p.path, "utf8")
+      .split("\n")
+      .map((line) => INCLUDE_DIRECTIVE.exec(line)?.[1].trim())
+      .filter((path): path is string => path !== undefined)
+      .map((path) => readFileSync(join(FUSION, path), "utf8").replace(/\n$/, "")),
+  );
+
+  it("no rendered profile carries a Claude token outside an inlined rule, or an unresolved include", () => {
     for (const file of result.written.filter((w) => w.endsWith(".md"))) {
       const md = readFileSync(join(out, file), "utf8");
-      expect(tokenHits(md), file).toEqual([]);
+      let overlay = md;
+      for (const body of inlined) overlay = overlay.split(body).join("");
+      expect(tokenHits(overlay), file).toEqual([]);
       expect(md, file).not.toMatch(/\{\{include/);
     }
   });

@@ -1,0 +1,5 @@
+For each review the input carries:
+- Do not rewrite findings. Report confirmed or resolved items with a brief note citing the evidence (file:line or commit), for the host to annotate.
+
+On Prior the report of Step 4 is one JSON object matching the `output_contract` schema carried in the role input, and nothing else: no markdown fence, no prose around it, no field the schema does not name. That schema is `schemas/audit-result.v1.json`, planned (fusion plan step 12, under Prior's answer to request 69) and not yet published, which is one reason this role's Prior state is `planned`; it is planned to carry what Step 4 lists, the tracking changes of Step 3, and the values of the `## Coherence` section (the audit result, the three edge lines, the recommendation) as fields, so the host parses the result instead of a markdown section. Until it is published, the format below fixes the content and not the encoding. The host validates the object against the same schema it placed in the input and appends no contract sentence of its own (Prior answer 67.7).
+

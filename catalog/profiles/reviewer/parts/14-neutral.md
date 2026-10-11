@@ -1,0 +1,1 @@
+`accept` when the work meets its brief and plan, `revise` when a finding asks for a fix, `escalate` when the user must rule.
