@@ -4386,3 +4386,153 @@ Committed at `b20edb6` under `docs/qualification/fusion-module-request68/`, 16 f
 #### What the plan takes from this
 
 **P67-3 is complete for this digest and platform**: `sha256:cd37dac7f3593b37ded744f969f9b38ad49515b66710fb5e5974647ff6d3b2dd` on macOS arm64. **The Directive's first proof, a real external explorer from the delivered bundle, is reached.** Prior names no defect in fusion's delivery, so no issue is filed and the answer is a "Yes" for this request; the sentence it rests on is 68.6's "Neither required a change to Fusion or production host code." Linux amd64 and arm64 stay built, not qualified, as `### The three targets: one started, two built` said they would, and nothing waits on them. Step 11 closes on this record; step 12 drafts the repair workflow on step 7's executor as it stands, and step 13 writes request 69 against the items Prior names as next. No request is open.
+
+## Module bundle (request 69, the four-role repair)
+
+**Written against:** fusion `d40b21fa` on `main` (2026-10-11 17:59, "feat(catalog): the repair workflow definition and its eight schemas, drafted"), `v13.0.0-27-gd40b21fa`. Outside `fusion-workbench/` it differs from `v13.0.0` (`468d8e87`) in 155 files (`git diff --stat v13.0.0 d40b21fa -- . ':!fusion-workbench'`); under `codec/` it differs in this file alone (`git diff --stat v13.0.0 d40b21fa -- codec`). At `d40b21fa` this file is 4 388 lines, `sha256:512973f6b490aa407ed72846909f70492c74487e24a1d48088c2348235ac2579`. Prior was read at `b20edb683c429f08692e66df9f1daa50ca759594` (2026-10-11 13:00, "test(fusion): qualify delivered explorer and answer request 68"), the commit that answered 68, one commit past the adapter's pin `6080ba76`. `moduleapi/v1`, `go.mod` and `go.sum` are byte-identical from `167c605` through `b20edb6` (`git -C <Prior> diff --stat 167c605 b20edb6 -- moduleapi go.mod go.sum` prints nothing). Every Prior path below is read with `git show b20edb6:<path>`, never from Prior's working tree. **The codec bundle is unmoved:** `codec/dist/fusion-record.js`, 699 011 bytes, `sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f`.
+
+This is the request P67-4 waits for, "attempt/context composition, independent principals, host authority and old-run preservation" in the words of Prior's answer to 68 (`Prior: docs/design/fusion-explorer-qualification-prior-response.md`, lines 194 to 195). It proposes the repair contract that plan step 12 drafted at `d40b21fa`, `catalog/workflows/repair.v1.json` and its eight schemas, and asks Prior what it builds, what it names differently, and what it refuses. It asks for no run: the reviewed repair with a restart is request 70's, from the bundle built at the candidate C. **It asks nothing about the codec**, and no line above is edited. It asks for no new CLI command.
+
+### What the request rests on, at `b20edb6`
+
+| Fact | Where |
+|---|---|
+| The host offers three role services and no other over the module API: `host.role.run.v1`, `host.role.read.v1`, `host.role.complete.v1`. None of the six service names proposed below occurs anywhere in the commit (the whole-tree `git grep` under this table prints nothing) | `moduleapi/v1/role_wire.go`, lines 10 to 12 |
+| A frame's encoded body is at most 1 MiB; a module reaches host services through a scoped `HostCaller`, and host calls are serialized | `docs/design/prior-module-api-v1.md`, lines 27, 44 and 60 |
+| "Host code provisions runs and supplies `ModuleRoleScope`"; principal, model, instructions, tool authority, budget and limits are the host's | the same document, lines 141 to 145 |
+| 67.5, verbatim: "Use one durable run per attempt. The host allocates and persists the attempt map before dispatch, and freezes each attempt's input before its first role call." `revise_bound` N permits at most N+1 attempts. "Request 69 specifies which roles participate in each revision and the exact attempt map." | `docs/design/fusion-module-bundle-prior-response.md` `## 67.5`, lines 138 to 143 |
+| The settlement clarification of 68, point (iii): with the bound exhausted, a retry requires a newly provisioned run and a new workflow owner and binding, with fresh host authorization and budget admission | `#### The settlement clarification: the contract reading accepted` above |
+| At `6080ba76` the host composes a role input once, before the invocation (`BuildInvocation`), from the caller's task plus its own `project_context` and `output_contract`, and freezes it | `### The schemas, and where Prior reads them` above; `internal/fusionhost/external_explorer.go` |
+| The embedded repair keys one durable operation per role as `repair-role:<role>` for `explorer`, `code-implementer`, `code-reviewer` and `state-auditor`; its snapshot maps the first three to the principals `explorer`, `implementer` and `reviewer`; its review is `AuthorID` `implementer`, `ReviewerID` `reviewer` | `internal/repair/roles.go`, lines 23, 39, 169 and 330 to 331 |
+| Embedded tool classes: `code-implementer` has `read, list, search, create, write, rename, delete, process`; `code-reviewer` `read, list, search`; `state-auditor` `read, list, search, runtime-inspect, git-inspect`. The embedded implementer prompt says "You cannot execute commands" | `modules/fusion/profiles.json`; `internal/repair/roles.go`, line 131 |
+| The request-68 run: owner `request68-owner`, run `request68-explorer`, principal `request68-explorer-principal`, its evidence under `docs/qualification/fusion-module-request68/`; refused outer operations stay `accepted` in Prior's generic operation store, their terminal recording P67-5's | `### Prior's answer to 68 at b20edb6` above |
+| The embedded repair's steps E1 to E28, the proposed workflow W0 to W12, and the five points on which the embedded repair and fusion's orchestrator rules disagree (E9, E12 with O20, O12, O23, O25) | `261010-1504-span-map-and-repair-correspondence.md` `## Findings` `### 4`, `### 5`, `### 6` and `## Implications` |
+
+The grep the first row cites, run in Prior's repository: `git grep -n -E 'host\.(role\.compose|workspace|capture|integrate|snapshot|workbench)\.v1' b20edb6`, which prints nothing.
+
+### Fusion's proposal in brief
+
+Step 12's files at `d40b21fa`, cited here and pasted nowhere:
+
+| Path | What it is |
+|---|---|
+| `catalog/workflows/repair.v1.json` | capability `fusion.repair.v1`: ten steps in order, `explore`, `workspace`, `implement`, `capture`, `review`, `integrate`, `snapshot`, `read-record`, `audit`, `close`; `revise_bound` 1; `requires` the three role services and the six proposed below |
+| `catalog/schemas/repair-request.v1.json` | the outer invocation, the asset Prior would select as `RequestSchema`: `task` (the bounds of Prior's embedded `plan.go` `Task`: at most 8 criteria, 8 context paths, 4 write paths, 4 mandatory checks, plus `base_revision` and `findings_limit`), `task_sha256` (host-minted), `record` (the workbench record to close, its codec control path and kind, `issue` or `package`), `runs` (the attempt map), `audit_ref` optional |
+| `catalog/schemas/repair-result.v1.json` | the envelope, the asset Prior would select as `EnvelopeSchema`: `domain.status` in `completed`, `escalated`, `refused`, `recovery-required`; `domain.result` the record of what ran, with `stopped_at` on `escalated`; `host_evidence` an array, one entry per run read (`step`, `attempt`, `run_id`, `principal_id`, `observed_at`, `role_state`), or null |
+| `catalog/schemas/implementer-request.v1.json`, `implementer-result.v1.json` | the implementer's immutable role input (brief with the exploration, `write_paths`, `checks`, `workspace`, `attempt` with the previous review, plus the host's `project_context` and `output_contract`) and its result: the three-field report of the role's neutral text, `files_changed`, `verification` (one entry per check in one of the forms `exit`, `did-not-finish`, `none`), `result` `done` or `blocked`, where `done` requires every entry `exit` 0 |
+| `catalog/schemas/review-request.v1.json`, `review-response.v1.json` | the reviewer's role input (`domain`, the brief, `base_revision`, `tree`, `diff`, `validations`, `criteria_sha256`, `inputs_sha256`, the `binding` block, `attempt`, the two host fields) and its result: Prior's embedded `review-response.json` shape at `167c605`, its seven keys and constraints unchanged, `decision` in `accept`, `revise`, `escalate`, plus `domain` echoed and `findings` |
+| `catalog/schemas/audit-request.v1.json`, `audit-result.v1.json` | the auditor's role input (`domain`, `directive`, `since`, the `integration` record in Prior's `integration.Plan` key form, `workbench` and `workbench_revision`, `runtime`, `proposed_outcome`, the two host fields) and its result: Prior's `agreements`, `discrepancies`, `unknowns`, `limitations`, plus fusion's three-edge `coherence`, a `report` and `tracking_changes` the host applies |
+
+The workflow follows the step-1 correspondence: explore, then per attempt a host workspace, the implementer in it within the bound write scope, a host capture that runs the checks, and an independent review bound to that capture; `accept` integrates, `revise` returns to a fresh workspace for the next attempt while the bound allows, `escalate` stops; after integration a host snapshot, a workbench read, the audit over both, and the close through the codec gated on a passed audit. The explorer workflow's one-step executor of step 7 runs every role step unchanged.
+
+**The six host services.** The definition's `requires` names nine services. Three are Prior's (`host.role.read.v1`, `host.role.run.v1`, `host.role.complete.v1`); the six below are not offered at `b20edb6`, and every step of the definition that rests on one says so in its `service_status` or `compose_status` field. Each is listed with what it does and its bound, as step 12 drafted them:
+
+| Service | What it does | Bound |
+|---|---|---|
+| `host.role.compose.v1` | composes and freezes a role input mid-run: the module sends the task, the host adds `project_context` and `output_contract`, validates against the profile's `input_schema`, freezes the result for the named run and answers the frozen bytes | once per run; a task carrying either host field is refused; a repeat answers the stored state |
+| `host.workspace.v1` | an isolated workspace detached at `base_revision` | one per attempt, never shared between attempts; writes only within `write_paths`; a repeat for the same run returns the same workspace and creates none |
+| `host.capture.v1` | captures the tree and the diff against `base_revision`, runs every check in the host's container without network, one entry per check (`name`, `status`, `detail`, `tree`, `contained`, `required`) | a changed path outside `write_paths` refuses the attempt; the answer is persisted under the run and a repeat answers the stored one |
+| `host.integrate.v1` | stages, re-runs all checks, re-checks the review binding, commits, advances the accepted reference | once per workflow run; `correction-required` on any failure; recovery observes only and never repeats a reference update |
+| `host.snapshot.v1` | the host's own observations: accepted reference and tree, changed paths against `write_paths`, blob and file comparison, the states and evidence of the named runs | read-only; it says what it did not observe |
+| `host.workbench.v1` | codec reads as pages of a stated size with a continuation handle; codec writes as one request the host executes under its authority, answered within the frame or by a handle | the module holds no workbench path; the closure once per run, a repeat returns the stored closure; a write only behind a passed audit |
+
+Why composition is a service rather than a step of `BuildInvocation`: the explorer's one role input is known before the invocation, and `BuildInvocation` composes it there. The repair's role inputs are not: the implementer's brief carries the explorer's settled answer, the review carries the capture's tree, diff and validations, the audit carries the integration, the snapshot and the workbench read. Each exists only after an earlier step has run, so the host can add its two fields and freeze only when the module presents the task. The ownership of 67.2 is unchanged: `project_context` and `output_contract` stay the host's, the task never carries them, and the frozen bytes travel unchanged as `RoleCall.input` on every call of that run.
+
+**The attempt map** (`repair-request.v1.json` `runs`), as 67.5 left it to this request: `runs.explorer`, `runs.attempts[0].code-implementer`, `runs.attempts[0].reviewer`, `runs.attempts[1].code-implementer`, `runs.attempts[1].reviewer`, `runs.state-auditor`, six run ids under `revise_bound` 1, all host-minted, persisted before dispatch, each attempt's input frozen before its first role call. The module refuses a map of another length, or one in which a run id appears twice, before its first role call. Attempt *i* uses entry *i* and no attempt reuses another's id.
+
+### 69. Does this repair contract meet P67-4?
+
+**Closes:** nothing in the codec. On fusion's side, plan step 14 records the answer, step 15 freezes every `.v1` schema and workflow definition on it (`catalog/schemas/FROZEN`), and steps 16 to 18 build the Prior overlays, the adapter's repair workflow and its conformance on the frozen files. Preferred form: a Prior response document at a Prior commit that gives each of 69.1 to 69.6 one verdict, as for 67: accepted, corrected (with the correction), refused, or deferred (naming the Prior item it waits for); for 69.1, one verdict per service, naming for each whether Prior builds it as proposed, builds it under another name or shape (with the name and the shape), or refuses it.
+
+#### 69.1 Host services for workspace, checks, integration and bounded workbench access (G8)
+
+The six services above, with their bounds. All six run under the host's authority: the module names a run, an attempt, a write scope or a record, and the host decides what it does with its own repository, container, Git objects and workbench. Nothing in the proposal gives the module a path into the host's tree except `workspace.root`, which its implementer's tools reach and nothing else does.
+
+Three bounds come from the frame. (i) `host.capture.v1` answers the whole diff, and `review-request.v1.json` carries the whole diff in the reviewer's role input; a diff that does not fit a 1 MiB frame cannot be answered within it. The embedded repair bounds the implementer's replacement text at 12 000 bytes (`roles.go` line 131); fusion proposes no byte bound of its own and asks whether Prior bounds the diff in the service's answer, answers it by a handle, or refuses the attempt. (ii) `host.workbench.v1` reads come as pages of a size the host states, with a continuation handle until the last page, so a record of any size is read within the frame. (iii) A write is one codec request, the transition `repair.v1.json`'s `close` step names (an issue to `closed` with disposition `fixed`, a package to `done` with outcome `completed`), executed by the host's own codec under its own authority, answered within the frame or by a handle. The codec the host runs is the qualified bundle of requests 59 and 60, unmoved; the module never holds a workbench path and never runs the codec itself.
+
+**Asked:**
+
+1. For each of the six: does Prior build it as proposed, build it under another name or shape, or refuse it? A refusal or deferral of any one of them is a refusal of this question as a whole, since the definition requires all six at preflight.
+2. Is `host.role.compose.v1` the form Prior wants for mid-run composition, or does Prior prefer that the module compose the task and the host add its two fields and freeze at the first `host.role.run.v1` of that run? Either keeps the two fields the host's.
+3. How does `host.capture.v1` answer a diff that exceeds the frame?
+4. What does `host.workbench.v1` state as its page size, and what is its handle's form when a write's answer does not fit the frame?
+
+#### 69.2 The attempt map, and the roles of each revision
+
+Each attempt is implementer then reviewer, on its own pair of runs. Attempt 0 implements the brief; the review of attempt *i* reads the capture of attempt *i*, the tree, the diff and the validations, and is bound to them (`binding.input_revisions` is `[base_revision, tree]`), so a review is valid for the tree it saw and for no other. On `revise` the implementer of attempt *i*+1 receives the previous attempt's review in `attempt.previous_review` and works in a fresh workspace detached at the same `base_revision`; the explorer is not re-run. On `accept` the reviewer's run of that attempt is the one `host.integrate.v1` re-checks. The explorer and the auditor run once each, outside the attempts. With `revise_bound` 1 the map has two attempts; a definition with another bound has `revise_bound` + 1, and the module checks the count against the definition it ships, never against the invocation.
+
+**Asked:**
+
+1. Does Prior accept this map and this role participation per revision?
+2. Who provisions the six runs, and when: the host, all six before dispatch, as 67.5 says, so that the second attempt's pair stands `absent` while the first attempt runs?
+3. When attempt 0 is accepted, the second pair is never used. Does it stay `absent` under its binding for the run's lifetime, and does Prior reclaim its grant?
+
+#### 69.3 Restart semantics, and the retry rule
+
+The step executor is the explorer's (step 7): on every invocation and re-invocation, every role step reads its run first and acts only on `absent`; `settled` reuses the stored answer; `answered` completes with the outer invocation's `audit_ref` when one is required; `accepted` is `recovery-required` and is never rerun. The steps run in order and each role run settles before the next starts, so at most one run stands at `answered` on a restart, and the one `audit_ref` of the outer invocation belongs to it. The six host services answer a repeat for the same run with the stored answer, so a re-invocation after a kill at any persisted boundary replays nothing: no second workspace, no second capture, no second integration, no second closure.
+
+The envelope adds `escalated` as a fourth status beside the explorer's three, with `stopped_at` naming the step (`implement`, `capture`, `review`, `integrate` or `audit`) and `result` carrying what ran. `host_evidence` is an array with one entry per run read, each copied from the host's role answer and checked by the host against its durable record, as 67.6 rules it for the explorer; null when no run was read.
+
+The retry rule follows the settlement clarification of 68. A refused or escalated workflow run is never made executable again under its map: a repeat invocation over it reads the settled runs and answers the same refusal or escalation with no model call. A retry is a new invocation with a newly provisioned attempt map, a new owner and binding, fresh authorization and budget, and that invocation reads nothing from the old runs.
+
+**Asked:**
+
+1. Does Prior accept `escalated` as a status of the outer envelope, and the one-entry-per-run `host_evidence`?
+2. Does Prior confirm the retry rule for the repair as it clarified it for the explorer, and how does it record an escalated outer operation, given that at `6080ba76` a refused one stays `accepted` in the generic operation store (P67-5)?
+
+#### 69.4 Independent principals and read-only tools for reviewer and auditor (G9)
+
+The reviewer's principal differs from the implementer's in every attempt, and the auditor's from every implementer's and reviewer's; `repair.v1.json` states both as `independent_principal` conditions on `host_evidence.principal_id`, which the module checks on the copied evidence and the host checks on its record. The embedded repair already requires author and auditor to differ (E5) and names the reviewer `reviewer` beside the author `implementer` (`roles.go` line 169); the proposal extends that to one principal per role per run.
+
+The tool ceilings of the three profiles at `d40b21fa` (`catalog/profiles/<id>/profile.json` `tools_ceiling`) are the embedded classes: the reviewer `read, list, search`; the auditor `read, list, search, runtime-inspect, git-inspect`; the implementer the eight classes up to `process`. All three declare `writes_workbench.prior` false: on Prior neither the reviewer nor the auditor writes anything, the review's findings and the audit's `tracking_changes` travel in the result for the host to file or apply, and the Claude-side persistence instructions stay in the `claude` parts (step 1's Finding 3). Step 16's Prior overlays state that read-only, host-persisted behaviour in the role text; the ceiling, by 67.2, narrows the grant and creates no permission.
+
+**Asked:**
+
+1. Does the host grant a distinct principal per run so that the three conditions hold by construction, and refuse a map whose principals would coincide?
+2. Does the host enforce the two read-only ceilings as grants, so that a reviewer or auditor has no write, process or workbench tool whatever its text says?
+
+#### 69.5 Old-run readability, the restart point and the acceptance fixture (G10)
+
+Three things stay readable once the external repair exists, and request 70 asks Prior to show each: the embedded `fusion` 1.8.0 runs under their stored keys `repair-role:<role>` and principals (67.3: the alias `code-reviewer` to `reviewer` re-keys none), the request-68 run `request68-explorer` under its binding and evidence, and the results of both decoded by the schemas as frozen at step 15, the explorer's four included. "Readable" means Prior's read-only paths: a finished run read as a predecessor (E24) and the status of a prepared or running one (E25), with no re-execution.
+
+The restart point for 70 is a kill at a persisted step boundary followed by a re-invocation that replays nothing (69.3); fusion's conformance of step 18 kills at each boundary in turn, against a fake host, and counts model calls. The acceptance fixture fusion proposes for 70 is step 18's: a toy repository with one failing test, one package and one plan, served by the host services; a reviewed repair to an audited close; a `revise` verdict looped within the bound on distinct run ids, then `escalate`; a corrupted review binding refused; an attempt map short of the bound refused before any role call; and step 9's explorer results decoded by the frozen schemas.
+
+**Asked:**
+
+1. Which old-run checks will Prior run for 70, and over which stored runs?
+2. Is the fixture shape above what Prior wants for the repair acceptance, and which restart point does Prior exercise on its host: a kill at every boundary, or one named boundary?
+
+#### 69.6 Where the proposal departs from the embedded repair: five questions
+
+The step-1 analysis found five points on which Prior's embedded repair and fusion's orchestrator rules disagree. Step 12 settled each in the definition; each settlement needs Prior's word, because it changes behaviour Prior's host has today.
+
+1. **Review placement** (E12 against O20). The embedded repair reviews every repair before integration; fusion's orchestrator reviews once per work package, at closure. The definition takes Prior's placement: one review per attempt, before integration, bound to the attempt's tree. Does Prior accept it, with the review step keyed per attempt rather than once per run?
+2. **The healing loop** (E12 against O12). The embedded repair has no loop; a rejection ends the run. Fusion's orchestrator gives one self-healing attempt. The definition takes fusion's retry under Prior's identity rule: `revise_bound` 1, two attempts, each on its own pair of runs, so that no role operation is ever re-run under one identity. Does Prior accept a loop as a property of the workflow definition, the host provisioning the runs it needs?
+3. **The audit trigger** (E20 against O25). The embedded audit runs on every repair; fusion's reconciliation runs by hand, on the user's word. The definition takes Prior's trigger: every repair audits before it closes, and the audit gates the close. The user-run reconcile stays a Claude rule beside it and reaches Prior nowhere. Does Prior accept it?
+4. **Command execution** (E9). The embedded implementer "cannot execute commands"; fusion's neutral implementer text requires the role to run the project's build and test command to completion and to report its exit code, and the Claude bytes cannot change. The definition keeps both: the implementer's ceiling includes `process`, confined to its workspace and without network, and the host runs every check itself in `host.capture.v1` and again in `host.integrate.v1`, so the implementer's `verification` entries are a claim the capture decides and never evidence. If Prior withholds `process`, every attempt reports `verification` entries of status `none` and, under `implementer-result.v1.json` as drafted, `result` `blocked`, which stops the workflow as `escalated` at `implement`; a refusal here therefore changes that schema's `done` rule at step 15, not the workflow. Does Prior grant `process` to the implementer within the workspace, or withhold it?
+5. **Findings and blocking** (E12 against O23). An embedded rejection blocks integration; in fusion's orchestrator a review's findings land as issues and coverage never blocks closure. The definition takes both halves: the verdict routes (`accept` integrates, `revise` loops, `escalate` stops), and `review-response.v1.json` carries `findings` for the host to file, so a defect the reviewer names is neither lost nor silently downgraded. Does Prior accept the three-valued verdict in place of its two-valued `accepted` or `rejected`, and file or carry the findings?
+
+### What fusion does with the answer
+
+- Plan step 14 records each answer by question number, and per service for 69.1, together with the Prior commit that holds it. Step 15 freezes the files as answered: a service Prior names differently is renamed, a bound Prior tightens is adopted, a shape Prior corrects is corrected, and only then does `catalog/schemas/FROZEN` list the files.
+- If Prior refuses or defers any of the six services of 69.1, the package is paused, as the plan's `## Where this work stops` states: its narrative names the Prior item it waits for, and no embedded or synthetic substitute is built.
+- An answer withholding `process` in 69.6 (4) changes `implementer-result.v1.json`'s `done` rule before the freeze; every other answer in 69.6 changes `repair.v1.json`'s routing before the freeze.
+- An answer to 69.2 that provisions runs other than before dispatch, or to 69.3 that reads the retry rule otherwise, changes step 17's executor before step 18 tests it.
+
+### Requests 59 to 69, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 59 | **complete** at Prior `d6abeb8`, for `f9ecae78`; re-asked as 63 | `Prior: docs/design/fusion-fj04-correction-prior-response.md` `## 59: shared fixtures` |
+| 60 | **complete** at `d6abeb8`; `c76bbce9…` qualified; re-asked as 64 | the same document, `## 60: runtime qualification` |
+| 61 | **answered Yes** at Prior `7da6690` | `Prior: docs/design/fusion-fj03d-prior-response.md` |
+| 62 | **accepted with corrections** at Prior `f32bf4a` | `Prior: docs/design/fusion-claim-takeover-prior-response.md` |
+| 63 | **complete** at Prior `34a2710`, for `dd4bf3d4` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 63 — Shared schemas and fixtures` |
+| 64 | **complete** at `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, the bundle `v13.0.0` ships | the same document, `## 64 — Runtime snapshot and replay` |
+| 65 | **complete**: "Yes" at Prior `167c605`, for C = `468d8e87`, now `v13.0.0` | `Prior: docs/design/fusion-fj05-release-evidence-prior-response.md` |
+| 66 | **never asked** (decision A2, option 1) | `## FJ05 (the release evidence at 468d8e87)` above |
+| 67 | **accepted with corrections** at Prior `da02626`; its P67-1 and P67-2 landed at `8bab88a`, corrected by `5199cf1`; the operator lifecycle CLI at `6080ba76` | `Prior: docs/design/fusion-module-bundle-prior-response.md`, and `### Prior's answer to 67 at da02626` above |
+| 68 | **accepted** at Prior `b20edb6`, on macOS arm64, for digest `cd37dac7…` built at fusion `f87609bf` against Prior `6080ba76`; P67-3 complete for that digest and platform; Linux amd64 and arm64 built, not qualified | `Prior: docs/design/fusion-explorer-qualification-prior-response.md`, and `### Prior's answer to 68 at b20edb6` above |
+| 69 | **open**: written at fusion `d40b21fa` against Prior `b20edb6`; waits for P67-4 | this section |
+
+These rows supersede the rows in `### Requests 59 to 68, as they stand` above. Request 69 is the one open request.
